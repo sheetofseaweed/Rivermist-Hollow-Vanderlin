@@ -12,7 +12,12 @@
 	spawn_positions = 2
 
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
+	/* Noctra edit BEGIN */
+	/*
 	allowed_ages = list(AGE_CHILD)
+	*/
+	allowed_ages = list(AGE_ADULT)
+	/* Noctra edit END */
 
 	outfit = /datum/outfit/job/squire
 	display_order = JDO_SQUIRE

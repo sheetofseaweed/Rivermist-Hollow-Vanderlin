@@ -62,6 +62,7 @@
 //Keep this sorted alphabetically
 
 // BEGIN_INCLUDE
+#include "adult_server_assert.dm"
 #include "anchored_mobs.dm"
 #include "component_tests.dm"
 #include "connect_loc.dm"
