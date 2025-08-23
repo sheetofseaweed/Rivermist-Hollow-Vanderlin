@@ -10,6 +10,14 @@
 	/// Last pain effect time
 	var/last_pain = 0
 
+/datum/component/arousal/Initialize(...)
+	. = ..()
+	START_PROCESSING(SSobj, src)
+
+/datum/component/arousal/Destroy(force)
+	. = ..()
+	STOP_PROCESSING(SSobj, src)
+
 /datum/component/arousal/RegisterWithParent()
 	. = ..()
 	RegisterSignal(parent, COMSIG_SEX_ADJUST_AROUSAL, PROC_REF(adjust_arousal))
@@ -17,6 +25,24 @@
 	RegisterSignal(parent, COMSIG_SEX_FREEZE_AROUSAL, PROC_REF(freeze_arousal))
 	RegisterSignal(parent, COMSIG_SEX_GET_AROUSAL, PROC_REF(get_arousal))
 	RegisterSignal(parent, COMSIG_SEX_RECEIVE_ACTION, PROC_REF(receive_sex_action))
+
+/datum/component/arousal/UnregisterFromParent()
+	. = ..()
+	UnregisterSignal(parent, COMSIG_SEX_ADJUST_AROUSAL)
+	UnregisterSignal(parent, COMSIG_SEX_SET_AROUSAL)
+	UnregisterSignal(parent, COMSIG_SEX_FREEZE_AROUSAL)
+	UnregisterSignal(parent, COMSIG_SEX_GET_AROUSAL)
+	UnregisterSignal(parent, COMSIG_SEX_RECEIVE_ACTION)
+
+/datum/component/arousal/process()
+	if(!can_lose_arousal())
+		return
+	adjust_arousal(parent, -1)
+
+/datum/component/arousal/proc/can_lose_arousal()
+	if(last_arousal_increase_time + 2 MINUTES > world.time)
+		return FALSE
+	return TRUE
 
 /datum/component/arousal/proc/set_arousal(datum/source, amount)
 	if(amount > arousal)
