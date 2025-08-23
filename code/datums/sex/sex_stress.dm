@@ -28,3 +28,8 @@
 	timer = 10 MINUTES
 	stressadd = -5
 	desc = "<span class='green'>Pain makes it better.</span>"
+
+/datum/stressevent/public_thrill
+	timer = 1 MINUTES
+	stressadd = -2
+	desc = "<span class='green'>I was caught.</span>"

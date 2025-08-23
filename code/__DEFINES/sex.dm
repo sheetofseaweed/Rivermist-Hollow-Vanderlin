@@ -104,6 +104,10 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define MAX_BREASTS_SIZE 12
 #define DEFAULT_BREASTS_SIZE 3
 
+#define KINK_PROCESS (1 << 0)
+#define KINK_SEX_ACT (1 << 1)
+#define KINK_ATTACKED (1 << 2)
+
 /proc/build_sex_actions()
 	. = list()
 	for(var/path in typesof(/datum/sex_action))

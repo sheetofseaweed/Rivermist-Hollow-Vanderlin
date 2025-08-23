@@ -218,6 +218,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	var/randomize_shutup = FALSE
 	/// Custom UI scale
 	var/ui_scale
+	///this is our character slot
+	var/tmp/current_slot = 1
 
 /datum/preferences/New(client/C)
 	parent = C

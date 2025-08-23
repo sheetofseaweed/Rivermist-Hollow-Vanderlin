@@ -382,6 +382,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	descriptor_entries = SANITIZE_LIST(descriptor_entries)
 	S["custom_descriptors"] >> custom_descriptors
 	custom_descriptors = SANITIZE_LIST(custom_descriptors)
+	current_slot = slot
 
 	validate_descriptors()
 

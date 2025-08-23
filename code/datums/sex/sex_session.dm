@@ -346,7 +346,7 @@
 	dat += ".toggle-btn { padding: 8px 15px; background-color: #4a2c20; color: #d4af8c; text-decoration: none; border-radius: 3px; margin: 5px; border: 1px solid #2a1a15; }"
 	dat += ".toggle-btn:hover { background-color: #5a3525; }"
 
-	// New slider styles
+	// Slider styles
 	dat += ".slider-container { display: flex; align-items: center; justify-content: center; margin: 20px 0; }"
 	dat += ".slider-label { min-width: 80px; text-align: right; margin-right: 15px; color: #d4af8c; font-weight: bold; }"
 	dat += ".slider-wrapper { position: relative; width: 300px; height: 30px; margin: 0 15px; }"
@@ -357,6 +357,21 @@
 	dat += ".slider-notch:hover { background-color: #8b6914; }"
 	dat += ".slider-notch.active { background-color: #a07a1a; height: 20px; }"
 	dat += ".slider-value { min-width: 100px; text-align: left; margin-left: 15px; color: #d4af8c; font-style: italic; }"
+
+	// Styles for kinks and notes tabs
+	dat += ".kink-category { margin: 15px 0; }"
+	dat += ".kink-category-title { background-color: #8b6914; color: #d4af8c; padding: 8px 15px; font-weight: bold; margin-bottom: 5px; }"
+	dat += ".kink-item { background-color: #2a1a15; border: 1px solid #4a2c20; margin: 2px 0; padding: 10px; }"
+	dat += ".kink-name { font-weight: bold; color: #d4af8c; margin-bottom: 5px; }"
+	dat += ".kink-description { color: #b09070; font-size: 11px; margin-bottom: 5px; }"
+	dat += ".kink-intensity { color: #ff69b4; font-size: 11px; }"
+	dat += ".kink-notes { color: #a0a0a0; font-style: italic; font-size: 11px; margin-top: 5px; }"
+	dat += ".kink-disabled { opacity: 0.5; }"
+	dat += ".note-item { background-color: #2a1a15; border: 1px solid #4a2c20; margin: 5px 0; padding: 12px; }"
+	dat += ".note-title { font-weight: bold; color: #d4af8c; margin-bottom: 8px; }"
+	dat += ".note-content { color: #b09070; line-height: 1.4; margin-bottom: 8px; }"
+	dat += ".note-meta { color: #808080; font-size: 10px; }"
+	dat += ".no-data { text-align: center; color: #666666; padding: 20px; font-style: italic; }"
 
 	dat += "</style>"
 
@@ -390,9 +405,12 @@
 
 	dat += "<div class='tabs'>"
 	dat += "<a href='?src=[REF(src)];task=tab;tab=interactions' class='tab [selected_tab == "interactions" ? "active" : ""]'>Interactions</a>"
-	dat += "<a href='?src=[REF(src)];task=tab;tab=genital' class='tab [selected_tab == "genital" ? "active" : ""]'>Genital Options</a>"
+	dat += "<a href='?src=[REF(src)];task=tab;tab=genital' class='tab [selected_tab == "genital" ? "active" : ""]'>Controls</a>"
+	dat += "<a href='?src=[REF(src)];task=tab;tab=kinks' class='tab [selected_tab == "kinks" ? "active" : ""]'>Kinks</a>"
+	dat += "<a href='?src=[REF(src)];task=tab;tab=notes' class='tab [selected_tab == "notes" ? "active" : ""]'>Notes</a>"
 	dat += "</div>"
 
+	// Interactions Tab
 	dat += "<div class='tab-content [selected_tab == "interactions" ? "active" : ""]' id='interactions-tab'>"
 	dat += "<div class='search-container'>"
 	dat += "<span class='search-icon'></span>"
@@ -420,24 +438,20 @@
 		dat += "<a class='[button_class]' href='?src=[REF(src)];task=action;action_type=[action_type];tab=[selected_tab]'>[action.name]</a>"
 
 		dat += "<div class='action-icons'>"
-
-		// Stop button if currently active
 		if(is_current)
 			dat += "<a href='?src=[REF(src)];task=stop;tab=[selected_tab]' class='icon-btn stop'></a>"
-
 		dat += "</div>"
 		dat += "</div>"
 	dat += "</div>"
 	dat += "</div>"
 
-	// Tab Content - Genital Options
+	// Controls Tab
 	dat += "<div class='tab-content [selected_tab == "genital" ? "active" : ""]' id='genital-tab'>"
 	dat += "<div class='control-section'>"
 	dat += "<h3>Speed & Force Controls</h3>"
 
-	// Get current values
-	var/current_speed = get_current_speed() // Should return 1-SEX_MAX_SPEED
-	var/current_force = get_current_force() // Should return 1-SEX_MAX_FORCE
+	var/current_speed = get_current_speed()
+	var/current_force = get_current_force()
 	var/speed_name = get_speed_string()
 	var/force_name = get_force_string()
 	var/manual_arousal_name = get_manual_arousal_string()
@@ -494,17 +508,32 @@
 	dat += "</div>"
 	dat += "</div>"
 
-	//! Tab Content - Content Prefs -TODO
-	dat += "<div class='tab-content [selected_tab == "content" ? "active" : ""]' id='content-tab'>"
-	dat += "<div class='control-section'>"
-	dat += "<h3>Content Preferences</h3>"
-	dat += "<p>Content preference options would go here...</p>"
+	// Kinks Tab
+	dat += "<div class='tab-content [selected_tab == "kinks" ? "active" : ""]' id='kinks-tab'>"
+	dat += get_kinks_tab_content()
 	dat += "</div>"
+
+	// Notes Tab
+	dat += "<div class='tab-content [selected_tab == "notes" ? "active" : ""]' id='notes-tab'>"
+	dat += get_notes_tab_content()
 	dat += "</div>"
 
 	// JavaScript for search functionality and tab management
 	dat += "<script>"
 	dat += "function stopAction() { window.location.href = '?src=[REF(src)];task=stop;tab=[selected_tab]'; }"
+	dat += "function submitNote() {"
+	dat += "  var title = document.getElementById('noteTitle').value.trim();"
+	dat += "  var content = document.getElementById('noteContent').value.trim();"
+	dat += "  if (!title || !content) {"
+	dat += "    alert('Please enter both a title and content for your note.');"
+	dat += "    return;"
+	dat += "  }"
+	dat += "  window.location.href = '?src=[REF(src)];task=submit_note;title=' + encodeURIComponent(title) + ';content=' + encodeURIComponent(content) + ';tab=notes';"
+	dat += "}"
+	dat += "function clearNoteForm() {"
+	dat += "  document.getElementById('noteTitle').value = '';"
+	dat += "  document.getElementById('noteContent').value = '';"
+	dat += "}"
 	dat += "document.addEventListener('DOMContentLoaded', function() {"
 	dat += "  var searchBox = document.getElementById('searchBox');"
 	dat += "  if(searchBox) {"
@@ -518,7 +547,32 @@
 	dat += "    });"
 	dat += "  }"
 	dat += "});"
+
+	dat += "function toggleNoteForm() {"
+	dat += "  var form = document.getElementById('noteForm');"
+	dat += "  var btn = document.getElementById('addNoteBtn');"
+	dat += "  if (form.style.display === 'none' || form.style.display === '') {"
+	dat += "    form.style.display = 'block';"
+	dat += "    btn.textContent = 'Cancel';"
+	dat += "    document.getElementById('noteTitle').focus();"
+	dat += "  } else {"
+	dat += "    form.style.display = 'none';"
+	dat += "    btn.textContent = 'Add New Note';"
+	dat += "    clearNoteForm();"
+	dat += "  }"
+	dat += "}"
+
+	dat += "function cancelNote() {"
+	dat += "  var form = document.getElementById('noteForm');"
+	dat += "  var btn = document.getElementById('addNoteBtn');"
+	dat += "  form.style.display = 'none';"
+	dat += "  btn.textContent = 'Add New Note';"
+	dat += "  clearNoteForm();"
+	dat += "}"
+
 	dat += "</script>"
+
+	dat += "</div>"
 
 	var/datum/browser/popup = new(user, "sexcon[our_sex_id]", "<center>Sate Desire</center>", 750, 650)
 	popup.set_content(dat.Join())
@@ -569,6 +623,71 @@
 			SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, amount)
 		if("freeze_arousal")
 			SEND_SIGNAL(user, COMSIG_SEX_FREEZE_AROUSAL)
+
+		if("submit_note")
+			var/note_title = url_decode(href_list["title"])
+			var/note_content = url_decode(href_list["content"])
+
+			if(!note_title || !note_content)
+				to_chat(user, "<span class='warning'>Both title and content are required.</span>")
+				show_ui(selected_tab)
+				return
+
+			var/character_slot = get_character_slot(user)
+
+			var/list/existing_notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
+			if(existing_notes[note_title])
+				to_chat(user, "<span class='warning'>A note with that title already exists. Please choose a different title.</span>")
+				show_ui(selected_tab)
+				return
+
+			if(set_player_note_about(user.ckey, target.ckey, note_title, note_content, character_slot))
+				to_chat(user, "<span class='notice'>Note '[note_title]' saved successfully.</span>")
+			else
+				to_chat(user, "<span class='warning'>Failed to save note. Please try again.</span>")
+
+		if("edit_note")
+			var/note_title = url_decode(href_list["note_title"])
+			if(!note_title)
+				show_ui(selected_tab)
+				return
+
+			var/character_slot = get_character_slot(user)
+			var/list/notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
+
+			if(!notes[note_title])
+				to_chat(user, "<span class='warning'>Note not found.</span>")
+				show_ui(selected_tab)
+				return
+
+			var/old_content = notes[note_title]["content"]
+			var/new_content = input(user, "Edit your note:", "Edit Note", old_content) as message|null
+
+			if(!new_content)
+				show_ui(selected_tab)
+				return
+
+			set_player_note_about(user.ckey, target.ckey, note_title, new_content, character_slot)
+			to_chat(user, "<span class='notice'>Note '[note_title]' updated.</span>")
+
+		if("remove_note")
+			var/note_title = url_decode(href_list["note_title"])
+			if(!note_title)
+				show_ui(selected_tab)
+				return
+
+			var/character_slot = get_character_slot(user)
+			var/datum/save_manager/SM = get_save_manager(user.ckey)
+			if(SM)
+				var/save_name = "character_[character_slot]_notes"
+				var/list/all_notes = SM.get_data(save_name, "partner_notes", list())
+				if(all_notes[ckey(target.ckey)] && all_notes[ckey(target.ckey)][note_title])
+					all_notes[ckey(target.ckey)] -= note_title
+					SM.set_data(save_name, "partner_notes", all_notes)
+					to_chat(user, "<span class='notice'>Note '[note_title]' removed.</span>")
+				else
+					to_chat(user, "<span class='warning'>Note not found.</span>")
+
 	show_ui(selected_tab)
 
 /datum/sex_session/proc/get_sex_session_header()
@@ -585,6 +704,129 @@
 	data += "</div>"
 	return data.Join("")
 
+/datum/sex_session/proc/get_kinks_tab_content()
+	var/list/content = list()
+
+	var/character_slot = get_character_slot(target)
+	var/list/target_kinks = get_player_kinks(target.ckey, character_slot)
+
+	if(!length(target_kinks))
+		content += "<div class='no-data'>No kink preferences found for this character.</div>"
+		return content.Join("")
+
+	var/list/kinks_by_category = list()
+
+	for(var/kink_name in target_kinks)
+		var/list/kink_data = target_kinks[kink_name]
+		if(!kink_data["enabled"])
+			continue
+
+		var/datum/kink/base_kink = GLOB.available_kinks[kink_name]
+		if(!base_kink)
+			continue
+
+		var/category = base_kink.category
+		if(!kinks_by_category[category])
+			kinks_by_category[category] = list()
+
+		kinks_by_category[category][kink_name] = kink_data
+
+	for(var/category in kinks_by_category)
+		content += "<div class='kink-category'>"
+		content += "<div class='kink-category-title'>[category]</div>"
+
+		for(var/kink_name in kinks_by_category[category])
+			var/list/kink_data = kinks_by_category[category][kink_name]
+			var/datum/kink/base_kink = GLOB.available_kinks[kink_name]
+
+			var/kink_class = "kink-item"
+			if(!kink_data["enabled"])
+				kink_class += " kink-disabled"
+
+			content += "<div class='[kink_class]'>"
+			content += "<div class='kink-name'>[kink_name]</div>"
+			content += "<div class='kink-description'>[base_kink.description]</div>"
+
+			var/intensity_text = ""
+			switch(kink_data["intensity"]) //! TODO replace this with like a string in the kink or a global or something
+				if(1) intensity_text = "Very Light"
+				if(2) intensity_text = "Light"
+				if(3) intensity_text = "Moderate"
+				if(4) intensity_text = "Intense"
+				if(5) intensity_text = "Very Intense"
+
+			content += "<div class='kink-intensity'>Intensity: [intensity_text]</div>"
+
+			if(kink_data["notes"])
+				content += "<div class='kink-notes'>Notes: [kink_data["notes"]]</div>"
+
+			content += "</div>"
+
+		content += "</div>"
+
+	return content.Join("")
+
+
+
+/datum/sex_session/proc/get_notes_tab_content()
+	var/list/content = list()
+
+	var/character_slot = get_character_slot(user)
+	var/list/notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
+
+	// Add note button and hidden form
+	content += "<div class='control-section'>"
+	content += "<div class='control-row'>"
+	content += "<button onclick='toggleNoteForm()' class='control-btn' id='addNoteBtn'>Add New Note</button>"
+	content += "</div>"
+
+	// Hidden form that appears when button is clicked
+	content += "<div id='noteForm' class='note-form' style='display: none;'>"
+	content += "<h4>Add Note about [target.name]</h4>"
+	content += "<input type='text' id='noteTitle' placeholder='Note title...' class='note-input-title'>"
+	content += "<textarea id='noteContent' placeholder='Write your note here...' class='note-input-content'></textarea>"
+	content += "<div class='note-form-buttons'>"
+	content += "<button onclick='submitNote()' class='control-btn'>Save Note</button>"
+	content += "<button onclick='cancelNote()' class='control-btn' style='background-color: #666666; margin-left: 5px;'>Cancel</button>"
+	content += "</div>"
+	content += "</div>"
+	content += "</div>"
+
+	if(!length(notes))
+		content += "<div class='no-data'>"
+		content += "You haven't written any notes about [target.name] yet."
+		content += "</div>"
+		return content.Join("")
+
+	content += "<div class='control-section'>"
+	content += "<h3>Your Notes</h3>"
+
+	for(var/note_title in notes)
+		var/list/note_data = notes[note_title]
+
+		content += "<div class='note-item'>"
+		content += "<div class='note-header'>"
+		content += "<div class='note-title'>[note_title]</div>"
+		content += "<div class='note-buttons'>"
+		content += "<a href='?src=[REF(src)];task=edit_note;note_title=[url_encode(note_title)];tab=notes' class='note-btn'>Edit</a>"
+		content += "<a href='?src=[REF(src)];task=remove_note;note_title=[url_encode(note_title)];tab=notes' class='note-btn remove-btn' onclick='return confirm(\"Remove note: [note_title]?\")'>Remove</a>"
+		content += "</div>"
+		content += "</div>"
+		content += "<div class='note-content'>[note_data["content"]]</div>"
+
+		var/created_time = note_data["created"]
+		var/modified_time = note_data["last_modified"]
+		var/time_text = "Created: [time2text(created_time, "MM/DD/YY hh:mm")]"
+		if(modified_time != created_time)
+			time_text += " | Modified: [time2text(modified_time, "MM/DD/YY hh:mm")]"
+
+		content += "<div class='note-meta'>[time_text]</div>"
+		content += "</div>"
+
+	content += "</div>"
+
+	return content.Join("")
+
 /datum/sex_session/proc/get_current_speed()
 	return speed || SEX_SPEED_LOW
 
@@ -596,3 +838,36 @@
 
 /datum/sex_session/proc/set_current_force(new_force)
 	force = clamp(new_force, SEX_FORCE_MIN, SEX_FORCE_MAX)
+
+/datum/sex_session/proc/get_character_slot(mob/target_mob)
+	return target_mob?.client?.prefs.current_slot || 1
+
+
+/proc/get_player_notes_about(viewer_ckey, target_ckey, character_slot = 1)
+	var/datum/save_manager/SM = get_save_manager(viewer_ckey)
+	if(!SM)
+		return list()
+
+	var/save_name = "character_[character_slot]_notes"
+	var/list/all_notes = SM.get_data(save_name, "partner_notes", list())
+
+	return all_notes[ckey(target_ckey)] || list()
+
+/proc/set_player_note_about(writer_ckey, target_ckey, note_title, note_content, character_slot = 1)
+	var/datum/save_manager/SM = get_save_manager(writer_ckey)
+	if(!SM)
+		return FALSE
+
+	var/save_name = "character_[character_slot]_notes"
+	var/list/all_notes = SM.get_data(save_name, "partner_notes", list())
+
+	if(!all_notes[ckey(target_ckey)])
+		all_notes[ckey(target_ckey)] = list()
+
+	all_notes[ckey(target_ckey)][note_title] = list(
+		"content" = note_content,
+		"created" = world.realtime,
+		"last_modified" = world.realtime
+	)
+
+	return SM.set_data(save_name, "partner_notes", all_notes)
