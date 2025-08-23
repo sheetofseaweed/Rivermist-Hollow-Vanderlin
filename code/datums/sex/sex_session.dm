@@ -218,3 +218,133 @@
 			target.adjust_triumphs(1)
 			to_chat(target, span_love("Our loving is a true TRIUMPH!"))
 	*/
+
+
+/datum/sex_session/proc/get_force_string()
+	switch(force)
+		if(SEX_FORCE_LOW)
+			return "<font color='#eac8de'>GENTLE</font>"
+		if(SEX_FORCE_MID)
+			return "<font color='#e9a8d1'>FIRM</font>"
+		if(SEX_FORCE_HIGH)
+			return "<font color='#f05ee1'>ROUGH</font>"
+		if(SEX_FORCE_EXTREME)
+			return "<font color='#d146f5'>BRUTAL</font>"
+
+/datum/sex_session/proc/get_speed_string()
+	switch(speed)
+		if(SEX_SPEED_LOW)
+			return "<font color='#eac8de'>SLOW</font>"
+		if(SEX_SPEED_MID)
+			return "<font color='#e9a8d1'>STEADY</font>"
+		if(SEX_SPEED_HIGH)
+			return "<font color='#f05ee1'>QUICK</font>"
+		if(SEX_SPEED_EXTREME)
+			return "<font color='#d146f5'>UNRELENTING</font>"
+
+/datum/sex_session/proc/get_manual_arousal_string()
+	switch(manual_arousal)
+		if(SEX_MANUAL_AROUSAL_DEFAULT)
+			return "<font color='#eac8de'>NATURAL</font>"
+		if(SEX_MANUAL_AROUSAL_UNAROUSED)
+			return "<font color='#e9a8d1'>UNAROUSED</font>"
+		if(SEX_MANUAL_AROUSAL_PARTIAL)
+			return "<font color='#f05ee1'>PARTIALLY ERECT</font>"
+		if(SEX_MANUAL_AROUSAL_FULL)
+			return "<font color='#d146f5'>FULLY ERECT</font>"
+/datum/sex_session/proc/get_generic_force_adjective()
+	switch(force)
+		if(SEX_FORCE_LOW)
+			return pick(list("gently", "carefully", "tenderly", "gingerly", "delicately", "lazily"))
+		if(SEX_FORCE_MID)
+			return pick(list("firmly", "vigorously", "eagerly", "steadily", "intently"))
+		if(SEX_FORCE_HIGH)
+			return pick(list("roughly", "carelessly", "forcefully", "fervently", "fiercely"))
+		if(SEX_FORCE_EXTREME)
+			return pick(list("brutally", "violently", "relentlessly", "savagely", "mercilessly"))
+
+/datum/sex_session/proc/spanify_force(string)
+	switch(force)
+		if(SEX_FORCE_LOW)
+			return "<span class='love_low'>[string]</span>"
+		if(SEX_FORCE_MID)
+			return "<span class='love_mid'>[string]</span>"
+		if(SEX_FORCE_HIGH)
+			return "<span class='love_high'>[string]</span>"
+		if(SEX_FORCE_EXTREME)
+			return "<span class='love_extreme'>[string]</span>"
+
+/datum/sex_session/proc/show_ui()
+	var/list/dat = list()
+	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
+	var/force_name = get_force_string()
+	var/speed_name = get_speed_string()
+	var/manual_arousal_name = get_manual_arousal_string()
+	if(!user.getorganslot(ORGAN_SLOT_PENIS))
+		dat += "<center><a href='?src=[REF(src)];task=speed_down'>\<</a> [speed_name] <a href='?src=[REF(src)];task=speed_up'>\></a> ~|~ <a href='?src=[REF(src)];task=force_down'>\<</a> [force_name] <a href='?src=[REF(src)];task=force_up'>\></a></center>"
+	else
+		dat += "<center><a href='?src=[REF(src)];task=speed_down'>\<</a> [speed_name] <a href='?src=[REF(src)];task=speed_up'>\></a> ~|~ <a href='?src=[REF(src)];task=force_down'>\<</a> [force_name] <a href='?src=[REF(src)];task=force_up'>\></a> ~|~ <a href='?src=[REF(src)];task=manual_arousal_down'>\<</a> [manual_arousal_name] <a href='?src=[REF(src)];task=manual_arousal_up'>\></a></center>"
+	dat += "<center>| <a href='?src=[REF(src)];task=toggle_finished'>[do_until_finished ? "UNTIL IM FINISHED" : "UNTIL I STOP"]</a> |</center>"
+	dat += "<center><a href='?src=[REF(src)];task=set_arousal'>SET AROUSAL</a> | <a href='?src=[REF(src)];task=freeze_arousal'>[arousal_data["frozen"] ? "UNFREEZE AROUSAL" : "FREEZE AROUSAL"]</a></center>"
+	if(target == user)
+		dat += "<center>Doing unto yourself</center>"
+	else
+		dat += "<center>Doing unto [target]'s</center>"
+	if(current_action)
+		dat += "<center><a href='?src=[REF(src)];task=stop'>Stop</a></center>"
+	else
+		dat += "<br>"
+	dat += "<table width='100%'><td width='50%'></td><td width='50%'></td><tr>"
+	var/i = 0
+	for(var/action_type in GLOB.sex_actions)
+		var/datum/sex_action/action = SEX_ACTION(action_type)
+		if(!action.shows_on_menu(user, target))
+			continue
+		dat += "<td>"
+		var/link = ""
+		if(!can_perform_action(action_type))
+			link = "linkOff"
+		if(current_action == action_type)
+			link = "linkOn"
+		dat += "<center><a class='[link]' href='?src=[REF(src)];task=action;action_type=[action_type]'>[action.name]</a></center>"
+		dat += "</td>"
+		i++
+		if(i >= 2)
+			i = 0
+			dat += "</tr><tr>"
+
+	dat += "</tr></table>"
+	var/datum/browser/popup = new(user, "sexcon", "<center>Sate Desire</center>", 500, 550)
+	popup.set_content(dat.Join())
+	popup.open()
+	return
+
+/datum/sex_session/Topic(href, href_list)
+	if(usr != user)
+		return
+	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
+	switch(href_list["task"])
+		if("action")
+			var/action_path = text2path(href_list["action_type"])
+			var/datum/sex_action/action = SEX_ACTION(action_path)
+			if(!action)
+				return
+			try_start_action(action_path)
+		if("stop")
+			try_stop_current_action()
+		if("speed_up")
+			adjust_speed(1)
+		if("speed_down")
+			adjust_speed(-1)
+		if("force_up")
+			adjust_force(1)
+		if("force_down")
+			adjust_force(-1)
+		if("toggle_finished")
+			do_until_finished = !do_until_finished
+		if("set_arousal")
+			var/amount = input(user, "Value above 120 will immediately cause orgasm!", "Set Arousal", arousal_data["arousal"]) as num
+			SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, amount)
+		if("freeze_arousal")
+			SEND_SIGNAL(user, COMSIG_SEX_FREEZE_AROUSAL)
+	show_ui()

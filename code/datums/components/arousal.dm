@@ -9,6 +9,8 @@
 	var/last_moan = 0
 	/// Last pain effect time
 	var/last_pain = 0
+	///our multiplier
+	var/arousal_multiplier = 1
 
 /datum/component/arousal/Initialize(...)
 	. = ..()
@@ -54,6 +56,8 @@
 /datum/component/arousal/proc/adjust_arousal(datum/source, amount)
 	if(arousal_frozen)
 		return arousal
+	if(arousal > 0)
+		arousal *= arousal_multiplier
 	return set_arousal(source, arousal + amount)
 
 /datum/component/arousal/proc/freeze_arousal(datum/source, freeze_state = null)
