@@ -94,12 +94,12 @@
  */
 /datum/component/hole_storage/proc/get_hole_fullness(datum/source, hole_id, list/data)
 	if(!hole_id || !hole_array[hole_id])
-		data = list("is_full" = FALSE, "percent_full" = 0, "used_capacity" = 0, "max_capacity" = 0, "redstone_level" = 0)
+		data += list("is_full" = FALSE, "percent_full" = 0, "used_capacity" = 0, "max_capacity" = 0, "redstone_level" = 0)
 		return NONE
 
 	var/datum/component/storage/storage_comp = hole_array[hole_id]
 	if(!storage_comp || QDELETED(storage_comp.parent))
-		data = list("is_full" = FALSE, "percent_full" = 0, "used_capacity" = 0, "max_capacity" = 0, "redstone_level" = 0)
+		data += list("is_full" = FALSE, "percent_full" = 0, "used_capacity" = 0, "max_capacity" = 0, "redstone_level" = 0)
 		return NONE
 
 	var/obj/storage_parent = storage_comp.parent
@@ -107,7 +107,7 @@
 	var/max_capacity = storage_comp.screen_max_rows * storage_comp.screen_max_columns
 
 	if(max_capacity <= 0)
-		data =  list("is_full" = FALSE, "percent_full" = 0, "used_capacity" = 0, "max_capacity" = 0, "redstone_level" = 0)
+		data +=  list("is_full" = FALSE, "percent_full" = 0, "used_capacity" = 0, "max_capacity" = 0, "redstone_level" = 0)
 		return NONE
 
 	var/fullness_ratio = used_capacity / max_capacity
@@ -115,7 +115,7 @@
 	var/is_full = (fullness_ratio >= 1.0)
 	var/redstone_level = round(fullness_ratio * 15)
 
-	data = list(
+	data += list(
 		"is_full" = is_full,
 		"percent_full" = percent_full,
 		"used_capacity" = used_capacity,

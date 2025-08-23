@@ -1,5 +1,5 @@
 
-/datum/sex_action/oral_sex
+/datum/sex_action/blowjob
 	name = "Suck them off"
 	requires_hole_storage = TRUE
 	hole_id = "mouth"
@@ -8,7 +8,7 @@
 	require_grab = FALSE
 	check_same_tile = FALSE
 
-/datum/sex_action/oral_sex/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/blowjob/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	if(user == target)
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_PENIS))

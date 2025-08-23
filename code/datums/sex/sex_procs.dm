@@ -66,7 +66,7 @@
 		to_chat(user, "<span class='warning'>I can't do this.</span>")
 		return
 
-	if(!start_sex_session(target))
+	if(!user.start_sex_session(target))
 		to_chat(user, "<span class='warning'>I'm already sexing.</span>")
 		return
 
@@ -90,3 +90,38 @@
 		return TRUE
 	return FALSE
 
+/mob/living/proc/has_hands()
+	return TRUE
+
+/mob/living/proc/has_mouth()
+	return TRUE
+
+/mob/living/proc/mouth_is_free()
+	return !is_mouth_covered()
+
+/mob/living/proc/foot_is_free()
+	return is_barefoot()
+
+/mob/living/proc/is_barefoot()
+	for(var/item_slot in DEFAULT_SLOT_PRIORITY)
+		var/obj/item/clothing = get_item_by_slot(item_slot)
+		if(!clothing) // Don't have this slot or not wearing anything in it
+			continue
+		if(clothing.body_parts_covered & FEET)
+			return FALSE
+	// If didn't stop before, then we're barefoot
+	return TRUE
+
+/mob/living/carbon/human/has_mouth()
+	return get_bodypart(BODY_ZONE_HEAD)
+
+/mob/living/carbon/human/has_hands() // technically should be an and but i'll replicate original behavior
+	return get_bodypart(BODY_ZONE_L_ARM) || get_bodypart(BODY_ZONE_R_ARM)
+
+/mob/living/proc/return_character_information()
+	var/list/data = list()
+	if(has_hands())
+		data += "<div>...have hands.</div>"
+	if(has_mouth())
+		data += "<div>...have a mouth, which is [mouth_is_free() ? "uncovered" : "covered"].</div>"
+	return data

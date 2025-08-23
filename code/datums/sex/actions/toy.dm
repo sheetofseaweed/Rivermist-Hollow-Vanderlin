@@ -19,6 +19,7 @@
 	return TRUE
 
 /datum/sex_action/insert_toy/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	. = ..()
 	// Get the actual toy from user's hand instead of creating a new one
 	var/obj/item/held_toy = user.get_active_held_item()
 	if(!held_toy)

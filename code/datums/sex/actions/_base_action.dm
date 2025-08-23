@@ -38,6 +38,8 @@
 
 
 /datum/sex_action
+	abstract_type = /datum/sex_action
+
 	/// Display name of the action
 	var/name = "Generic Action"
 	///Description for hover

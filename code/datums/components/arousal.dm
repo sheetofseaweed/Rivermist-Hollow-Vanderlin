@@ -68,7 +68,7 @@
 	return arousal_frozen
 
 /datum/component/arousal/proc/get_arousal(datum/source, list/arousal_data)
-	arousal_data = list(
+	arousal_data += list(
 		"arousal" = arousal,
 		"frozen" = arousal_frozen,
 		"last_increase" = last_arousal_increase_time
