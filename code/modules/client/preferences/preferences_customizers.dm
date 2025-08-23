@@ -49,7 +49,7 @@
 	dat += "<table width='100%'>"
 	dat += "<td valign='top' width='33%'>"
 	var/iterated_customizers = 0
-	for(var/customizer_type in customizers)
+	for(var/customizer_type as anything in customizers)
 		var/datum/customizer/customizer = CUSTOMIZER(customizer_type)
 		if(!customizer.is_allowed(src))
 			continue

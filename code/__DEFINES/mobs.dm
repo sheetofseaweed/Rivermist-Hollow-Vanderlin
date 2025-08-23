@@ -304,6 +304,13 @@
 #define OFFSET_ARMOR "wear_armor"
 #define OFFSET_UNDIES "underwear"
 
+/* Noctra edit BEGIN */
+#define OFFSET_PENIS "penis"
+#define OFFSET_BREASTS "breasts"
+#define OFFSET_TESTICLES "testicles"
+#define OFFSET_VAGINA "vagina"
+/* Noctra edit END */
+
 #define HUNGER_FACTOR		0.15	//factor at which mob nutrition decreases
 #define ETHEREAL_CHARGE_FACTOR	0.12 //factor at which ethereal's charge decreases
 #define REAGENTS_METABOLISM 1	//How many units of reagent are consumed per tick, by default.

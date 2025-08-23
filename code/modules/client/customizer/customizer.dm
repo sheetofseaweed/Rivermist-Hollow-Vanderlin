@@ -10,6 +10,8 @@
 	var/allows_disabling = FALSE
 	/// Whether this choice defaults to being missing.
 	var/default_disabled = FALSE
+	/// Used for automatic disabling for gendered parts
+	var/gender_enabled = null
 
 /datum/customizer/New()
 	. = ..()

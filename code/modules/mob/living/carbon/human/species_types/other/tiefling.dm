@@ -85,6 +85,20 @@
 		OFFSET_UNDIES = list(0,0),\
 	)
 
+	offset_genitals_m = list(
+		OFFSET_PENIS = list(0,0),\
+		OFFSET_BREASTS = list(0,0),\
+		OFFSET_TESTICLES = list(0,0),\
+		OFFSET_VAGINA = list(0,-2),\
+	)
+
+	offset_genitals_f = list(
+		OFFSET_PENIS = list(0,0),\
+		OFFSET_BREASTS = list(0,0),\
+		OFFSET_TESTICLES = list(0,0),\
+		OFFSET_VAGINA = list(0,0),\
+	)
+
 	specstats_m = list(STATKEY_STR = 0, STATKEY_PER = 2, STATKEY_INT = 1, STATKEY_CON = -1, STATKEY_END = 0, STATKEY_SPD = 1, STATKEY_LCK = -1)
 	specstats_f = list(STATKEY_STR = 0, STATKEY_PER = 2, STATKEY_INT = 1, STATKEY_CON = -1, STATKEY_END = 0, STATKEY_SPD = 1, STATKEY_LCK = -1)
 
@@ -119,6 +133,10 @@
 		/datum/customizer/bodypart_feature/hair/facial/humanoid,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/organ/genitals/penis/human,
+		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/breasts/human,
+		/datum/customizer/organ/genitals/testicles/human,
 	)
 
 	body_markings = list(

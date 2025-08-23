@@ -2,7 +2,7 @@
 	name = "Penetrate Vagina"
 	requires_hole_storage = TRUE
 	hole_id = "vagina"
-	stored_item_type = /obj/item/organ/penis // Or whatever penis item type you use
+	stored_item_type = /obj/item/organ/genitals/penis // Or whatever penis item type you use
 	stored_item_name = "penetrating member"
 	require_grab = TRUE
 	check_same_tile = TRUE
@@ -24,7 +24,7 @@
 	name = "Penetrate Anus"
 	requires_hole_storage = TRUE
 	hole_id = "anus"
-	stored_item_type = /obj/item/organ/penis
+	stored_item_type = /obj/item/organ/genitals/penis
 	stored_item_name = "penetrating member"
 	require_grab = TRUE
 	check_same_tile = TRUE

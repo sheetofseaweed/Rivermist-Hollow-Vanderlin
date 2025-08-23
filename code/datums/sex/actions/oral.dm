@@ -3,7 +3,7 @@
 	name = "Suck them off"
 	requires_hole_storage = TRUE
 	hole_id = "mouth"
-	stored_item_type = /obj/item/organ/penis
+	stored_item_type = /obj/item/organ/genitals/penis
 	stored_item_name = "receiving member"
 	require_grab = FALSE
 	check_same_tile = FALSE

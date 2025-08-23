@@ -48,6 +48,10 @@
 		/datum/customizer/bodypart_feature/hair/facial/humanoid,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/organ/genitals/penis/human,
+		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/breasts/human,
+		/datum/customizer/organ/genitals/testicles/human,
 	)
 
 	organs = list(

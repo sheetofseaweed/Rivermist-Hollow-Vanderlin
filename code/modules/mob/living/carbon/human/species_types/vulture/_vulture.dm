@@ -67,6 +67,20 @@
 		OFFSET_UNDIES = list(0,1),\
 	)
 
+	offset_genitals_m = list(
+		OFFSET_PENIS = list(0,0),\
+		OFFSET_BREASTS = list(0,-1),\
+		OFFSET_TESTICLES = list(0,0),\
+		OFFSET_VAGINA = list(0,0),\
+	)
+
+	offset_genitals_f = list(
+		OFFSET_PENIS = list(0,0),\
+		OFFSET_BREASTS = list(0,0),\
+		OFFSET_TESTICLES = list(0,0),\
+		OFFSET_VAGINA = list(0,0),\
+	)
+
 	organs = list(
 		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,
 		ORGAN_SLOT_HEART = /obj/item/organ/heart,
@@ -91,6 +105,10 @@
 		/datum/customizer/bodypart_feature/hair/head/humanoid/medicator,
 		/datum/customizer/bodypart_feature/accessory,
 		/datum/customizer/bodypart_feature/face_detail,
+		/datum/customizer/organ/genitals/penis/human,
+		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/breasts/human,
+		/datum/customizer/organ/genitals/testicles/human,
 	)
 
 	body_markings = list(

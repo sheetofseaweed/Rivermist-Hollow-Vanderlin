@@ -74,6 +74,32 @@
 			appearance.pixel_x += offsets[feature_key][1]
 			appearance.pixel_y += offsets[feature_key][2]
 
+/datum/sprite_accessory/proc/gender_genitals_adjust(list/appearance_list, obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner, feature_key)
+	if(QDELETED(owner) || !ishuman(owner))
+		return
+
+	var/mob/living/carbon/human/H = owner
+	var/datum/species/species = H.dna?.species
+
+	if(!species)
+		return
+
+	var/use_female_sprites = FALSE
+	if(species?.sexes)
+		if(H.gender == FEMALE && !species.swap_female_clothes || H.gender == MALE && species.swap_male_clothes)
+			use_female_sprites = FEMALE_SPRITES
+
+	var/list/offsets
+	if(use_female_sprites)
+		offsets = species.offset_genitals_m
+	else
+		offsets = species.offset_genitals_f
+
+	if(LAZYACCESS(offsets, feature_key))
+		for(var/mutable_appearance/appearance as anything in appearance_list)
+			appearance.pixel_x += offsets[feature_key][1]
+			appearance.pixel_y += offsets[feature_key][2]
+
 /datum/sprite_accessory/proc/validate_color_keys_for_owner(mob/living/carbon/owner, colors)
 	if(!color_keys)
 		return colors

@@ -130,9 +130,9 @@
 
 	// Create the item we want to store for testing
 	var/obj/item/item_to_test
-	if(stored_item_type == /obj/item/organ/penis)
+	if(stored_item_type == /obj/item/organ/genitals/penis)
 		// Get user's penis and create fake variant for testing
-		var/obj/item/organ/penis/user_penis = get_users_penis(user)
+		var/obj/item/organ/genitals/penis/user_penis = get_users_penis(user)
 		if(!user_penis)
 			return FALSE
 		item_to_test = user_penis.create_fake_variant(user)
@@ -161,8 +161,8 @@
 	var/obj/item/item_to_store
 
 	// Handle penis storage specially - create fake variant
-	if(stored_item_type == /obj/item/organ/penis)
-		var/obj/item/organ/penis/user_penis = get_users_penis(user)
+	if(stored_item_type == /obj/item/organ/genitals/penis)
+		var/obj/item/organ/genitals/penis/user_penis = get_users_penis(user)
 		if(!user_penis)
 			to_chat(user, span_warning("You don't have a penis to use!"))
 			return FALSE

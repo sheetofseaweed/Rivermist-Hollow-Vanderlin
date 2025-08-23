@@ -289,7 +289,7 @@
 		if(!C.signal_enabled)
 			return NONE
 		var/proctype = C.signal_procs[src][sigtype]
-		return NONE | CallAsync(C, proctype, arguments)
+		return CallAsync(C, proctype, arguments)
 	. = NONE
 	for(var/datum/C as anything in target)
 		if(!C.signal_enabled)

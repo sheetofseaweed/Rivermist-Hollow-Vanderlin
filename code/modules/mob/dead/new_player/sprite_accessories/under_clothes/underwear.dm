@@ -40,6 +40,8 @@
 	roundstart = FALSE
 
 //For use on Younglings
+/* Noctra edit BEGIN */
+/*
 /datum/sprite_accessory/underwear/child
 	name = "Youngling"
 	icon_state = "male_child"
@@ -53,3 +55,5 @@
 	gender = FEMALE
 	specuse = ALL_RACES_LIST
 	roundstart = FALSE
+*/
+/* Noctra edit END */

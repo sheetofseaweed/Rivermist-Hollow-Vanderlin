@@ -119,6 +119,10 @@
 		/datum/customizer/organ/ears/demihuman,
 		/datum/customizer/organ/horns/demihuman,
 		/datum/customizer/organ/tail/demihuman,
+		/datum/customizer/organ/genitals/penis/human,
+		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/breasts/human,
+		/datum/customizer/organ/genitals/testicles/human,
 	)
 
 	descriptor_choices = list(

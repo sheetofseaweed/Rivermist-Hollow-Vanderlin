@@ -105,6 +105,10 @@
 		/datum/customizer/bodypart_feature/face_detail,
 		/datum/customizer/organ/tail/harpy,
 		/datum/customizer/organ/wings/harpy,
+		/datum/customizer/organ/genitals/penis/human,
+		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/breasts/human,
+		/datum/customizer/organ/genitals/testicles/human,
 	)
 
 	descriptor_choices = list(

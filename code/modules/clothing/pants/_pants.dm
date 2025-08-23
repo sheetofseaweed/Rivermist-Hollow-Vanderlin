@@ -14,6 +14,7 @@
 	permeability_coefficient = 0.9
 	slot_flags = ITEM_SLOT_PANTS
 	armor = list("blunt" = 0, "slash" = 0, "stab" = 0,  "piercing" = 0, "fire" = 0, "acid" = 0)
+	flags_inv = HIDEUNDIESBOT
 
 	equip_sound = 'sound/foley/equip/cloak_equip.ogg'
 	pickup_sound = 'sound/foley/equip/cloak_take_off.ogg'
