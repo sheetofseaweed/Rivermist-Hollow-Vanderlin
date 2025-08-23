@@ -24,6 +24,10 @@
 	user = session_user
 	target = session_target
 
+/datum/sex_session/Destroy(force, ...)
+	. = ..()
+	GLOB.sex_sessions -= user
+
 /datum/sex_session/proc/check_climax()
 	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
 	if(arousal_data["arousal"] < ACTIVE_EJAC_THRESHOLD)
