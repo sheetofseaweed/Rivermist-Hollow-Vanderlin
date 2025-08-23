@@ -100,6 +100,10 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define ORGAN_SLOT_BREASTS "breasts"
 #define ORGAN_SLOT_VAGINA "vagina"
 
+#define MIN_BREASTS_SIZE 0
+#define MAX_BREASTS_SIZE 12
+#define DEFAULT_BREASTS_SIZE 3
+
 /proc/build_sex_actions()
 	. = list()
 	for(var/path in typesof(/datum/sex_action))
