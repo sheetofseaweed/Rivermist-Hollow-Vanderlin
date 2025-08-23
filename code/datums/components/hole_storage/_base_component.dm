@@ -4,6 +4,9 @@
 	max_w_class = WEIGHT_CLASS_NORMAL
 	not_while_equipped = FALSE
 
+	var/target_zone = BODY_ZONE_CHEST
+	var/facing_direction
+
 /datum/component/hole_storage
 	/// Array of holes going by ID = storage holder
 	var/list/hole_array = list()
