@@ -24,6 +24,12 @@
 	user = session_user
 	target = session_target
 
+/datum/sex_session/proc/check_climax()
+	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
+	if(arousal_data["arousal"] < ACTIVE_EJAC_THRESHOLD)
+		return FALSE
+	return TRUE
+
 /datum/sex_session/proc/try_start_action(action_type)
 	if(action_type == current_action)
 		try_stop_current_action()
@@ -172,9 +178,6 @@
 		if("into")
 			log_combat(user, target, "Came inside the target")
 			//playsound(target, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
-		if("oral")
-			log_combat(user, target, "Came inside the target (oral)")
-			//playsound(target, pick(list('sound/misc/mat/mouthend (1).ogg','sound/misc/mat/mouthend (2).ogg')), 100, FALSE, ignore_walls = FALSE)
 		if("self")
 			log_combat(user, user, "Ejaculated")
 			user.visible_message(span_love("[user] makes a mess!"))
@@ -185,7 +188,7 @@
 	after_ejaculation(climax_type == "into" || climax_type == "oral")
 
 /datum/sex_session/proc/after_ejaculation(intimate = FALSE)
-	SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, 40)
+	SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, 20)
 	charge = max(0, charge - CHARGE_FOR_CLIMAX)
 
 	user.add_stress(/datum/stressevent/cumok)

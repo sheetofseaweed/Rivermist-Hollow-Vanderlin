@@ -1,22 +1,38 @@
 
 /datum/sex_action/oral_sex
-	name = "Oral Sex"
+	name = "Suck them off"
 	requires_hole_storage = TRUE
 	hole_id = "mouth"
 	stored_item_type = /obj/item/organ/penis
 	stored_item_name = "receiving member"
 	require_grab = FALSE
-	check_same_tile = TRUE
+	check_same_tile = FALSE
 
 /datum/sex_action/oral_sex/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	. = ..()
-	if(!.)
+	if(user == target)
 		return FALSE
-
-	/*
-	// Check if user has required anatomy
-	if(!user.getorganslot(ORGAN_SLOT_PENIS))
+	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
-	*/
+	if(!check_location_accessible(user, user, BODY_ZONE_PRECISE_MOUTH))
+		return FALSE
+	if(!target.getorganslot(ORGAN_SLOT_PENIS))
+		return FALSE
 
 	return TRUE
+
+/datum/sex_action/blowjob/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	user.visible_message(span_warning("[user] starts sucking [target]'s cock..."))
+
+/datum/sex_action/blowjob/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	user.make_sucking_noise()
+	do_thrust_animate(user, target)
+
+	var/datum/sex_session/sex_session = GET_SEX_SESSION(target)
+
+	sex_session.perform_sex_action(target, 2, 0, TRUE)
+	if(sex_session.check_climax())
+		target.visible_message(span_love("[target] cums into [user]'s mouth!"))
+		sex_session.handle_climax("into")
+
+/datum/sex_action/blowjob/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	user.visible_message(span_warning("[user] stops sucking [target]'s cock ..."))

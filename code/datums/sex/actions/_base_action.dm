@@ -67,6 +67,29 @@
 			return FALSE
 	return TRUE
 
+/datum/sex_action/proc/check_location_accessible(mob/living/carbon/human/user, mob/living/carbon/human/target, location = BODY_ZONE_CHEST, grabs = FALSE, skipundies = TRUE)
+	var/obj/item/bodypart/bodypart = target.get_bodypart(location)
+	var/self_target = FALSE
+	if(target == user)
+		self_target = TRUE
+
+	if(!bodypart)
+		return FALSE
+
+	if(src.check_same_tile && (user != target || self_target))
+		var/same_tile = (get_turf(user) == get_turf(target))
+		var/grab_bypass = (src.aggro_grab_instead_same_tile && user.get_highest_grab_state_on(target) == GRAB_AGGRESSIVE)
+		if(!same_tile && !grab_bypass)
+			return FALSE
+
+	if(src.require_grab && (user != target || self_target))
+		var/grabstate = user.get_highest_grab_state_on(target)
+		if((grabstate == null || grabstate < src.required_grab_state))
+			return FALSE
+
+	var/result = get_location_accessible(target, location = location, grabs = grabs, skipundies = skipundies)
+	return result
+
 /datum/sex_action/proc/check_hole_storage_available(mob/living/carbon/human/target, mob/living/carbon/human/user)
 	if(!hole_id || !stored_item_type)
 		return TRUE // No storage requirements
