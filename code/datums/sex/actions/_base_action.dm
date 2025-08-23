@@ -1,0 +1,194 @@
+
+/datum/storage_tracking_entry
+	var/obj/item/stored_item = null
+	var/mob/living/carbon/human/original_owner = null
+	var/insertion_time = null
+	var/hole_id = null
+	var/stored_by_ckey = null
+
+/datum/storage_tracking_entry/New(obj/item/item, mob/living/carbon/human/owner, hole_id_param, mob/living/carbon/human/stored_by)
+	stored_item = item
+	original_owner = owner
+	insertion_time = world.time
+	hole_id = hole_id_param
+	if(stored_by?.ckey)
+		stored_by_ckey = stored_by.ckey
+
+/datum/storage_tracking_entry/Destroy()
+	stored_item = null
+	original_owner = null
+	return ..()
+
+
+/datum/sex_action
+	/// Display name of the action
+	var/name = "Generic Action"
+	/// Whether this action can continue indefinitely
+	var/continous = TRUE
+	/// How long each iteration takes
+	var/do_time = 30
+	/// Stamina cost per iteration
+	var/stamina_cost = 5
+	/// Whether to check if user is incapacitated
+	var/check_incapacitated = TRUE
+	/// Whether participants must be on same tile
+	var/check_same_tile = TRUE
+	/// Whether this requires a grab
+	var/require_grab = FALSE
+	/// Minimum grab state required
+	var/required_grab_state = GRAB_PASSIVE
+	/// Whether aggressive grab bypasses same tile requirement
+	var/aggro_grab_instead_same_tile = FALSE
+	/// Whether this action requires hole storage integration
+	var/requires_hole_storage = FALSE
+	/// What hole ID this action uses (if any)
+	var/hole_id = null
+	/// What item type this action stores in the hole
+	var/atom/stored_item_type = null
+	/// Custom item name for the stored object
+	var/stored_item_name = null
+	/// Storage tracking for this action
+	var/list/datum/storage_tracking_entry/tracked_storage = list()
+
+/datum/sex_action/Destroy()
+	// Clean up any tracked storage entries
+	for(var/datum/storage_tracking_entry/entry in tracked_storage)
+		qdel(entry)
+	tracked_storage.Cut()
+	return ..()
+
+/datum/sex_action/proc/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	return TRUE
+
+/datum/sex_action/proc/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	// Check hole storage requirements if this action needs it
+	if(requires_hole_storage)
+		if(!check_hole_storage_available(target, user))
+			return FALSE
+	return TRUE
+
+/datum/sex_action/proc/check_hole_storage_available(mob/living/carbon/human/target, mob/living/carbon/human/user)
+	if(!hole_id || !stored_item_type)
+		return TRUE // No storage requirements
+
+	// Check if target has hole storage component
+	var/datum/component/hole_storage/storage_comp = target.GetComponent(/datum/component/hole_storage)
+	if(!storage_comp)
+		return FALSE
+
+	// Create the item we want to store for testing
+	var/obj/item/item_to_test
+	if(stored_item_type == /obj/item/organ/penis)
+		// Get user's penis and create fake variant for testing
+		var/obj/item/organ/penis/user_penis = get_users_penis(user)
+		if(!user_penis)
+			return FALSE
+		item_to_test = user_penis.create_fake_variant(user)
+	else
+		item_to_test = new stored_item_type()
+		if(stored_item_name)
+			item_to_test.name = stored_item_name
+
+	// Check if the specific hole can fit our item
+	var/can_fit = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, item_to_test, hole_id, null, TRUE) // Silent check
+
+	// Clean up test item
+	qdel(item_to_test)
+
+	return can_fit
+
+/datum/sex_action/proc/get_users_penis(mob/living/carbon/human/user)
+	if(!user)
+		return null
+	return user.getorganslot(ORGAN_SLOT_PENIS)
+
+/datum/sex_action/proc/try_store_in_hole(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	if(!requires_hole_storage || !hole_id || !stored_item_type)
+		return TRUE
+
+	var/obj/item/item_to_store
+
+	// Handle penis storage specially - create fake variant
+	if(stored_item_type == /obj/item/organ/penis)
+		var/obj/item/organ/penis/user_penis = get_users_penis(user)
+		if(!user_penis)
+			to_chat(user, span_warning("You don't have a penis to use!"))
+			return FALSE
+
+		// Create fake variant instead of removing real penis
+		item_to_store = user_penis.create_fake_variant(user)
+	else
+		// Create the item to store
+		item_to_store = new stored_item_type()
+		if(stored_item_name)
+			item_to_store.name = stored_item_name
+
+	// Try to fit it in the hole
+	var/success = SEND_SIGNAL(target, COMSIG_HOLE_TRY_FIT, item_to_store, hole_id, user, FALSE)
+	if(!success)
+		qdel(item_to_store)
+		to_chat(user, span_warning("[target]'s [hole_id] can't accommodate [item_to_store.name]!"))
+		return FALSE
+
+	// Track the storage
+	var/datum/storage_tracking_entry/entry = new(item_to_store, user, hole_id, user)
+	tracked_storage += entry
+
+	return TRUE
+
+/datum/sex_action/proc/remove_from_hole(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	if(!requires_hole_storage || !hole_id)
+		return TRUE
+
+	for(var/datum/storage_tracking_entry/entry in tracked_storage)
+		if(entry.hole_id == hole_id && entry.stored_item)
+			var/obj/item/stored_item = entry.stored_item
+
+			SEND_SIGNAL(target, COMSIG_HOLE_REMOVE_ITEM, stored_item, hole_id)
+
+			if(istype(stored_item, /obj/item/penis_fake))
+				var/obj/item/penis_fake/fake_penis = stored_item
+				var/mob/living/carbon/human/original_owner = find_original_owner_by_ckey(fake_penis.original_owner_ckey)
+
+				if(original_owner)
+					to_chat(original_owner, span_notice("Your penis has been withdrawn from [target]'s [hole_id]."))
+					if(original_owner != user)
+						to_chat(user, span_notice("Withdrew [original_owner.name]'s penis from [target]'s [hole_id]."))
+				else
+					to_chat(user, span_notice("Withdrew penis from [target]'s [hole_id]."))
+				qdel(stored_item)
+			else
+				to_chat(user, span_notice("Removed [stored_item.name] from [target]'s [hole_id]."))
+				qdel(stored_item)
+
+			tracked_storage -= entry
+			qdel(entry)
+
+	return TRUE
+
+/datum/sex_action/proc/find_original_owner_by_ckey(target_ckey)
+	if(!target_ckey)
+		return null
+
+	for(var/mob/living/carbon/human/H in GLOB.human_list)
+		if(H.ckey == target_ckey)
+			return H
+
+	return null
+
+/datum/sex_action/proc/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	if(requires_hole_storage)
+		if(!try_store_in_hole(user, target))
+			return FALSE
+	return TRUE
+
+/datum/sex_action/proc/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	return
+
+/datum/sex_action/proc/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	if(requires_hole_storage)
+		remove_from_hole(user, target)
+	return
+
+/datum/sex_action/proc/is_finished(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	return FALSE
