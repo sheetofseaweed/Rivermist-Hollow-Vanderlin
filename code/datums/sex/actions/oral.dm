@@ -27,7 +27,7 @@
 	user.make_sucking_noise()
 	do_thrust_animate(user, target)
 
-	var/datum/sex_session/sex_session = GET_SEX_SESSION(target)
+	var/datum/sex_session/sex_session = get_sex_session(target, user)
 
 	sex_session.perform_sex_action(target, 2, 0, TRUE)
 	if(sex_session.check_climax())

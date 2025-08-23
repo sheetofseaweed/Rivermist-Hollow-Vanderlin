@@ -6,7 +6,7 @@
 	/// Whether the user desires to stop current action
 	var/desire_stop = FALSE
 	/// What is the current performed action
-	var/current_action = null
+	var/datum/sex_action/current_action = null
 	/// Enum of desired speed
 	var/speed = SEX_SPEED_MID
 	/// Enum of desired force
@@ -19,14 +19,27 @@
 	var/do_until_finished = TRUE
 	/// Last ejaculation time
 	var/last_ejaculation_time = 0
+	///inactivity bumps
+	var/inactivity = 0
 
 /datum/sex_session/New(mob/living/carbon/human/session_user, mob/living/carbon/human/session_target)
 	user = session_user
 	target = session_target
 
+	addtimer(CALLBACK(src, PROC_REF(check_sex)), 60 SECONDS, flags = TIMER_LOOP)
+
 /datum/sex_session/Destroy(force, ...)
 	. = ..()
-	GLOB.sex_sessions -= user
+	GLOB.sex_sessions -= src
+
+/datum/sex_session/proc/check_sex()
+	if(current_action)
+		return
+	inactivity++
+
+	if(inactivity < 3)
+		return
+	qdel(src)
 
 /datum/sex_session/proc/check_climax()
 	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
@@ -48,6 +61,7 @@
 
 	desire_stop = FALSE
 	current_action = action_type
+	inactivity = 0
 	var/datum/sex_action/action = SEX_ACTION(current_action)
 	log_combat(user, target, "Started sex action: [action.name]")
 	INVOKE_ASYNC(src, PROC_REF(sex_action_loop))

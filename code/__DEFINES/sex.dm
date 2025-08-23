@@ -2,8 +2,6 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 
 GLOBAL_LIST_EMPTY(sex_sessions)
 
-#define GET_SEX_SESSION(user) length(GLOB.sex_sessions) ? GLOB.sex_sessions[user] : null
-
 #define SEX_ACTION(sex_action_type) GLOB.sex_actions[sex_action_type]
 
 #define COMSIG_HOLE_TRY_FIT "hole_try_fit"                    // (obj/item/item, hole_id, mob/user, silent) - Try to fit an item into a specific hole

@@ -30,11 +30,17 @@
 	animate(pixel_x = oldx, pixel_y = oldy, time = time)
 
 /mob/living/proc/start_sex_session(mob/living/target)
-	if(GET_SEX_SESSION(src) || !target)
+	if(!target)
+		return
+	var/datum/sex_session/old_session = get_sex_session(user, target)
+	if(old_session)
+		old_session.show_ui()
 		return
 
+
 	var/datum/sex_session/session = new /datum/sex_session(src, target)
-	GLOB.sex_sessions[src] = session
+	LAZYADD(GLOB.sex_sessions, session)
+	session.show_ui()
 	return session
 
 /mob/living/carbon/human/proc/make_sucking_noise()
@@ -42,3 +48,33 @@
 		playsound(src, pick('sound/misc/mat/girlmouth (1).ogg','sound/misc/mat/girlmouth (2).ogg'), 25, TRUE, ignore_walls = FALSE)
 	else
 		playsound(src, pick('sound/misc/mat/guymouth (2).ogg','sound/misc/mat/guymouth (3).ogg','sound/misc/mat/guymouth (4).ogg','sound/misc/mat/guymouth (5).ogg'), 35, TRUE, ignore_walls = FALSE)
+
+/mob/living/proc/can_do_sex()
+	return TRUE
+
+/mob/living/carbon/human/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
+	var/mob/living/carbon/human/target = src
+
+	if(user.mmb_intent)
+		return ..()
+	if(!istype(dragged))
+		return
+	// Need to drag yourself to the target.
+	if(dragged != user)
+		return
+	if(!user.can_do_sex())
+		to_chat(user, "<span class='warning'>I can't do this.</span>")
+		return
+
+	if(!start_sex_session(target))
+		to_chat(user, "<span class='warning'>I'm already sexing.</span>")
+		return
+
+/proc/get_sex_session(mob/giver, mob/taker)
+	for(var/datum/sex_session/session as anything in GLOB.sex_sessions)
+		if(session.user != giver)
+			continue
+		if(session.target != taker)
+			continue
+		return session
+	return null
