@@ -68,7 +68,8 @@
 		if(!hole)
 			continue
 		for(var/hole_id in hole.hole_array)
-			var/list/data = SEND_SIGNAL(mob, COMSIG_HOLE_GET_FULLNESS)
+			var/list/data = list()
+			SEND_SIGNAL(mob, COMSIG_HOLE_GET_FULLNESS, hole_id, data)
 			if(strongest_signal < data["redstone_level"])
 				strongest_signal = data["redstone_level"]
 

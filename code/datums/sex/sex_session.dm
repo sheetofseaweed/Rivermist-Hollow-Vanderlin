@@ -42,7 +42,8 @@
 	qdel(src)
 
 /datum/sex_session/proc/check_climax()
-	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
+	var/list/arousal_data = list()
+	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
 	if(arousal_data["arousal"] < ACTIVE_EJAC_THRESHOLD)
 		return FALSE
 	return TRUE
@@ -290,7 +291,8 @@
 
 /datum/sex_session/proc/show_ui()
 	var/list/dat = list()
-	var/list/arousal_data = SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL)
+	var/list/arousal_data = list()
+	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
 	var/force_name = get_force_string()
 	var/speed_name = get_speed_string()
 	var/manual_arousal_name = get_manual_arousal_string()

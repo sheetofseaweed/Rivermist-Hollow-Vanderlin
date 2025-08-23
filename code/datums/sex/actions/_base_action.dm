@@ -40,6 +40,9 @@
 /datum/sex_action
 	/// Display name of the action
 	var/name = "Generic Action"
+	///Description for hover
+	var/description = "Generic desc"
+
 	/// Whether this action can continue indefinitely
 	var/continous = TRUE
 	/// How long each iteration takes
