@@ -99,6 +99,8 @@
 
 /datum/component/arousal/proc/update_blueballs()
 	var/mob/user = parent
+	if(last_arousal_increase_time + 30 SECONDS > world.time)
+		return
 	if(arousal >= BLUEBALLS_GAIN_THRESHOLD)
 		user.add_stress(/datum/stressevent/blue_balls)
 	else if(arousal <= BLUEBALLS_LOOSE_THRESHOLD)
