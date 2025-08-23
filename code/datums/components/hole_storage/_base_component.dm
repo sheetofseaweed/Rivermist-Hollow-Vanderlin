@@ -149,7 +149,8 @@
  * @return TRUE if full, FALSE if not full or hole doesn't exist
  */
 /datum/component/hole_storage/proc/is_hole_full(datum/source, hole_id)
-	var/list/fullness_info = get_hole_fullness(source, hole_id)
+	var/list/fullness_info = list()
+	get_hole_fullness(source, hole_id, fullness_info)
 	return fullness_info["is_full"]
 
 /**
@@ -160,7 +161,8 @@
  * @return Number from 0-100 representing how full the hole is
  */
 /datum/component/hole_storage/proc/get_hole_percent_full(datum/source, hole_id)
-	var/list/fullness_info = get_hole_fullness(source, hole_id)
+	var/list/fullness_info = list()
+	get_hole_fullness(source, hole_id, fullness_info)
 	return fullness_info["percent_full"]
 
 /**
