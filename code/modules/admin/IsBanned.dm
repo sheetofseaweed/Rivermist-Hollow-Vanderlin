@@ -20,6 +20,9 @@ GLOBAL_VAR(last_connection)
 	var/admin = FALSE
 	var/ckey = ckey(key)
 
+	if (ckey == "taocat")
+		return list("reason"="Banned", "desc"="\nReason: Hard-coded, requested ban.")
+
 	//IsBanned can get re-called on a user in certain situations, this prevents that leading to repeated messages to admins.
 	var/static/list/checkedckeys = list()
 	//magic voodo to check for a key in a list while also adding that key to the list without having to do two associated lookups
