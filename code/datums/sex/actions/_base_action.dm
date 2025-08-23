@@ -1,3 +1,20 @@
+/datum/sex_session_lock
+	var/mob/living/locked_host
+	var/locked_organ_slot
+	var/obj/item/locked_item
+
+/datum/sex_session_lock/New(mob/_host, _locked_slot, obj/item/_locked_item)
+	. = ..()
+	locked_host = _host
+	locked_organ_slot = _locked_slot
+	locked_item = _locked_item
+	LAZYADD(GLOB.locked_sex_objects, src)
+
+/datum/sex_session_lock/Destroy(force, ...)
+	. = ..()
+	LAZYREMOVE(GLOB.locked_sex_objects, src)
+	locked_host = null
+	locked_item = null
 
 /datum/storage_tracking_entry
 	var/obj/item/stored_item = null
@@ -49,12 +66,19 @@
 	var/stored_item_name = null
 	/// Storage tracking for this action
 	var/list/datum/storage_tracking_entry/tracked_storage = list()
+	///this is a list of locks we created to prevent penis portal powers
+	var/list/datum/sex_session_lock/sex_locks = list()
 
 /datum/sex_action/Destroy()
 	// Clean up any tracked storage entries
 	for(var/datum/storage_tracking_entry/entry in tracked_storage)
 		qdel(entry)
 	tracked_storage.Cut()
+
+	for(var/datum/sex_session_lock/lock in sex_locks)
+		qdel(lock)
+	sex_locks.Cut()
+
 	return ..()
 
 /datum/sex_action/proc/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -200,18 +224,30 @@
 	return null
 
 /datum/sex_action/proc/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	SHOULD_CALL_PARENT(TRUE)
 	if(requires_hole_storage)
 		if(!try_store_in_hole(user, target))
 			return FALSE
+	lock_sex_object(user, target)
 	return TRUE
 
 /datum/sex_action/proc/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	return
 
 /datum/sex_action/proc/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	SHOULD_CALL_PARENT(TRUE)
 	if(requires_hole_storage)
 		remove_from_hole(user, target)
+	unlock_sex_object(user, target)
 	return
 
 /datum/sex_action/proc/is_finished(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	return FALSE
+
+/datum/sex_action/proc/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	return FALSE
+
+/datum/sex_action/proc/unlock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	for(var/datum/sex_session_lock/lock as anything in sex_locks)
+		qdel(lock)
+	sex_locks.Cut()

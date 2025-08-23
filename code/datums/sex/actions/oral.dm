@@ -11,6 +11,8 @@
 /datum/sex_action/oral_sex/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	if(user == target)
 		return FALSE
+	if(check_sex_lock(user, ORGAN_SLOT_PENIS))
+		return FALSE
 	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
 	if(!check_location_accessible(user, user, BODY_ZONE_PRECISE_MOUTH))
@@ -21,6 +23,7 @@
 	return TRUE
 
 /datum/sex_action/blowjob/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	. = ..()
 	user.visible_message(span_warning("[user] starts sucking [target]'s cock..."))
 
 /datum/sex_action/blowjob/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -35,4 +38,9 @@
 		sex_session.handle_climax("into")
 
 /datum/sex_action/blowjob/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	. = ..()
 	user.visible_message(span_warning("[user] stops sucking [target]'s cock ..."))
+
+/datum/sex_action/blowjob/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_PENIS)
+
