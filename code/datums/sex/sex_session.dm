@@ -69,7 +69,7 @@
 	current_action = action_type
 	inactivity = 0
 	var/datum/sex_action/action = SEX_ACTION(current_action)
-	log_combat(user, target, "Started sex action: [action.name]")
+	log_combat(user, target, "Started sex action: [action.name] with [target.name].")
 	INVOKE_ASYNC(src, PROC_REF(sex_action_loop))
 
 /datum/sex_session/proc/try_stop_current_action()
