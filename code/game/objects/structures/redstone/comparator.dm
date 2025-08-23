@@ -62,7 +62,18 @@
 		if(storage_signal > 0)
 			return storage_signal
 
-	return 0
+	var/strongest_signal = 0
+	for(var/mob/living/carbon/mob in T)
+		var/datum/component/hole_storage/hole = mob.GetComponent(/datum/component/hole_storage)
+		if(!hole)
+			continue
+		for(var/hole_id in hole.hole_array)
+			var/list/data = list()
+			SEND_SIGNAL(mob, COMSIG_HOLE_GET_FULLNESS, hole_id, data)
+			if(strongest_signal < data["redstone_level"])
+				strongest_signal = data["redstone_level"]
+
+	return strongest_signal
 
 /obj/structure/redstone/comparator/proc/get_object_storage_signal(obj/O)
 	if(!O)
