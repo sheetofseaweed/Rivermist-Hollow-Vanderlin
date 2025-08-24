@@ -1,0 +1,40 @@
+name: Sync from Repo A
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # runs daily at 3am UTC
+  workflow_dispatch:       # allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add vanderlin remote
+        run: |
+          git remote add source https://github.com/Monkestation/Vanderlin.git
+          git fetch source
+
+      - name: Create branch with updates
+        run: |
+          git checkout -B sync-from-vander
+          git merge source/main --allow-unrelated-histories || true
+
+      - name: Push branch
+        run: |
+          git push origin sync-from-vander --force
+
+      - name: Open Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Sync from Vanderlin"
+          branch: sync-from-vander
+          title: "Sync updates from Vanderlin"
+          body: |
+            This PR merges the latest changes from Vanderlin into Noctra.
