@@ -10,22 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main
+      - name: Checkout Repo B
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Add vanderlin remote
+      - name: Add Vanderlin remote
         run: |
           git remote add source https://github.com/Monkestation/Vanderlin.git
           git fetch source
 
-      - name: Create branch with updates
+      - name: Create sync branch from Repo B main
         run: |
-          git checkout -B sync-from-vander
+          git checkout -b sync-from-vander origin/main
           git merge source/main --allow-unrelated-histories || true
 
-      - name: Push branch
+      - name: Push sync branch
         run: |
           git push origin sync-from-vander --force
 
@@ -35,6 +35,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Sync from Vanderlin"
           branch: sync-from-vander
+          base: main
           title: "Sync updates from Vanderlin"
           body: |
             This PR merges the latest changes from Vanderlin into Noctra.
