@@ -62,11 +62,6 @@ jobs:
             
             # Create a commit with the conflicts
             git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution
-
-This commit contains merge conflicts that need to be resolved manually.
-Conflicted files:
-$(git diff --name-only --diff-filter=U || echo 'Unable to list conflicts')"
-          fi
           
       - name: Push sync branch
         run: |
