@@ -68,18 +68,18 @@ jobs:
           git push origin sync-from-vander --force
           
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Sync from Vanderlin"
-          branch: sync-from-vander
-          base: main
-          title: "${{ steps.merge_step.outputs.merge_status == 'conflicts' && 'MERGE CONFLICTS: ' || '' }}Sync updates from Vanderlin - ${{ github.run_id }}"
-          body: |
-            This PR merges the latest changes from Vanderlin into Noctra.
-            
-            ${{ steps.merge_step.outputs.merge_status == 'conflicts' && 'MERGE CONFLICTS detected - manual resolution required.' || 'Ready to review and merge.' }}
-            
-            Auto-generated sync from GitHub Actions run #${{ github.run_number }}
-            Triggered at: ${{ github.event.head_commit.timestamp }}
-          delete-branch: false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create PR using GitHub CLI instead of peter-evans action
+          gh pr create \
+            --base main \
+            --head sync-from-vander \
+            --title "${{ steps.merge_step.outputs.merge_status == 'conflicts' && 'MERGE CONFLICTS: ' || '' }}Sync updates from Vanderlin - ${{ github.run_id }}" \
+            --body "This PR merges the latest changes from Vanderlin into Noctra.
+
+          ${{ steps.merge_step.outputs.merge_status == 'conflicts' && 'MERGE CONFLICTS detected - manual resolution required.' || 'Ready to review and merge.' }}
+
+          Auto-generated sync from GitHub Actions run #${{ github.run_number }}
+          Triggered at: $(date)" \
+            || echo "PR may already exist"
