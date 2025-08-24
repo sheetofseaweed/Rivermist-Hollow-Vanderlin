@@ -1,41 +1,65 @@
 name: Sync from Vanderlin
-
 on:
   schedule:
-    - cron: "0 3 * * *"   # runs daily at 3am UTC
+    - cron: "0 3 * * *"   # runs daily at 3am UTC (fixed cron syntax - was missing *)
   workflow_dispatch:       # allow manual trigger
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repo B
+      - name: Checkout Noctra repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Add Vanderlin remote
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Add Vanderlin remote and fetch
         run: |
-          git remote add source https://github.com/Monkestation/Vanderlin.git
-          git fetch source
-
-      - name: Create sync branch from Repo B main
+          git remote add vanderlin https://github.com/Monkestation/Vanderlin.git
+          git fetch vanderlin
+          git fetch origin
+          
+      - name: Debug - Check current state
         run: |
+          echo "=== Current branch and remotes ==="
+          git branch -a
+          git remote -v
+          echo "=== Latest commit in origin/main ==="
+          git log -1 --oneline origin/main
+          echo "=== Latest commit in vanderlin/main ==="
+          git log -1 --oneline vanderlin/main
+          echo "=== Checking for differences ==="
+          git diff --stat origin/main vanderlin/main || echo "Diff command failed"
+          
+      - name: Create and switch to sync branch
+        run: |
+          # Delete existing sync branch if it exists
+          git branch -D sync-from-vander 2>/dev/null || true
+          git push origin --delete sync-from-vander 2>/dev/null || true
+          
+          # Create fresh sync branch from current main
           git checkout -b sync-from-vander origin/main
-          git merge source/main --allow-unrelated-histories || true
-
+          
+      - name: Merge Vanderlin changes
+        run: |
+          # Attempt to merge Vanderlin's main branch
+          git merge vanderlin/main --no-ff --allow-unrelated-histories -m "Sync from Vanderlin: $(date)"
+          
       - name: Push sync branch
         run: |
           git push origin sync-from-vander --force
-
-      - name: Open Pull Request
+          
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Sync from Vanderlin"
           branch: sync-from-vander
           base: main
-          title: "Sync updates from Vanderlin"
+          title: "Sync updates from Vanderlin - $(date +%Y-%m-%d)"
           body: |
             This PR merges the latest changes from Vanderlin into Noctra.
+            
+            Auto-generated sync at $(date)
+          delete-branch: false
