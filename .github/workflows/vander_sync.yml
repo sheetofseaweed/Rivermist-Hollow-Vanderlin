@@ -47,9 +47,26 @@ jobs:
           git checkout -b sync-from-vander origin/main
           
       - name: Merge Vanderlin changes
+        id: merge_step
         run: |
           # Attempt to merge Vanderlin's main branch
-          git merge vanderlin/main --no-ff --allow-unrelated-histories -m "Sync from Vanderlin: $(date)"
+          if git merge vanderlin/main --no-ff --allow-unrelated-histories -m "Sync from Vanderlin: $(date)"; then
+            echo "merge_status=success" >> $GITHUB_OUTPUT
+            echo "Merge completed successfully"
+          else
+            echo "merge_status=conflicts" >> $GITHUB_OUTPUT
+            echo "Merge conflicts detected - will create PR for manual resolution"
+            
+            # Add all files (including conflicted ones) to staging
+            git add -A
+            
+            # Create a commit with the conflicts
+            git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution
+
+This commit contains merge conflicts that need to be resolved manually.
+Conflicted files:
+$(git diff --name-only --diff-filter=U || echo 'Unable to list conflicts')"
+          fi
           
       - name: Push sync branch
         run: |
@@ -62,9 +79,14 @@ jobs:
           commit-message: "Sync from Vanderlin"
           branch: sync-from-vander
           base: main
-          title: "Sync updates from Vanderlin - $(date +%Y-%m-%d)"
+          title: "${{ steps.merge_step.outputs.merge_status == 'conflicts' && 'MERGE CONFLICTS: ' || '' }}Sync updates from Vanderlin - ${{ github.run_id }}"
           body: |
             This PR merges the latest changes from Vanderlin into Noctra.
             
-            Auto-generated sync at $(date)
+            ${{ steps.merge_step.outputs.merge_status == 'conflicts' && '⚠ **MERGE CONFLICTS** ⚠
+            
+            Ready to review and merge.' }}
+            
+            Auto-generated sync from GitHub Actions run #${{ github.run_number }}
+            Triggered at: ${{ github.event.head_commit.timestamp }}
           delete-branch: false
