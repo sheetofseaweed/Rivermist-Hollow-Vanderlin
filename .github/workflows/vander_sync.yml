@@ -1,9 +1,8 @@
 name: Sync from Vanderlin
 on:
   schedule:
-    - cron: "0 3 * * *"   # runs daily at 3am UTC (fixed cron syntax - was missing *)
+    - cron: "0 3 * * *"   # runs daily at 3am UTC
   workflow_dispatch:       # allow manual trigger
-
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -61,7 +60,8 @@ jobs:
             git add -A
             
             # Create a commit with the conflicts
-            git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution
+            git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution"
+          fi
           
       - name: Push sync branch
         run: |
@@ -78,9 +78,7 @@ jobs:
           body: |
             This PR merges the latest changes from Vanderlin into Noctra.
             
-            ${{ steps.merge_step.outputs.merge_status == 'conflicts' && '⚠ **MERGE CONFLICTS** ⚠
-            
-            Ready to review and merge.' }}
+            ${{ steps.merge_step.outputs.merge_status == 'conflicts' && 'MERGE CONFLICTS detected - manual resolution required.' || 'Ready to review and merge.' }}
             
             Auto-generated sync from GitHub Actions run #${{ github.run_number }}
             Triggered at: ${{ github.event.head_commit.timestamp }}
