@@ -1,4 +1,4 @@
-name: Sync from Repo A
+name: Sync from Vanderlin
 
 on:
   schedule:
