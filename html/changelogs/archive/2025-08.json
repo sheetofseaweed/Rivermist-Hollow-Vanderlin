@@ -758,5 +758,17 @@
                 "balance": "werewolves have slightly higher bleed mod. werewolves damage clothing upon transformation."
             }
         ]
+    },
+    "2025-08-25": {
+        "flleeppyy": [
+            {
+                "rscadd": "Proper Discord verification via 'OOC > Verify Discord Account' verb."
+            }
+        ],
+        "Arkatos": [
+            {
+                "bugfix": "Fixed an issue where printing press was not printing correct books"
+            }
+        ]
     }
 }
