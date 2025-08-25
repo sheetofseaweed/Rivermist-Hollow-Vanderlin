@@ -40,6 +40,7 @@ jobs:
         run: |
           # Generate unique branch name with timestamp to avoid conflicts
           BRANCH_NAME="sync-from-vander-$(date +%Y%m%d-%H%M%S)"
+          echo "Generated branch name: $BRANCH_NAME"
           echo "SYNC_BRANCH=$BRANCH_NAME" >> $GITHUB_ENV
           
           # Clean up any old sync branches (older than 7 days)
@@ -53,7 +54,8 @@ jobs:
             done
           
           # Create fresh sync branch from current main
-          git checkout -b $BRANCH_NAME origin/main
+          git checkout -b "$BRANCH_NAME" origin/main
+          echo "Created and switched to branch: $(git branch --show-current)"
           
       - name: Merge Vanderlin changes with auto-resolve for changelogs
         id: merge_step
@@ -107,7 +109,8 @@ jobs:
           
       - name: Push sync branch
         run: |
-          git push origin sync-from-vander --force
+          echo "Pushing branch: $SYNC_BRANCH"
+          git push origin "$SYNC_BRANCH" --force
           
       - name: Create Pull Request
         env:
@@ -146,7 +149,7 @@ jobs:
           # Create PR using GitHub CLI
           gh pr create \
             --base main \
-            --head sync-from-vander \
+            --head $SYNC_BRANCH \
             --title "$pr_title" \
             --body "$pr_body" \
             || echo "PR may already exist"
