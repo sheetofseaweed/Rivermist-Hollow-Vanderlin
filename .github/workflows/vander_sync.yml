@@ -38,79 +38,46 @@ jobs:
           
       - name: Create and switch to sync branch
         run: |
-          # Generate unique branch name with timestamp to avoid conflicts
-          BRANCH_NAME="sync-from-vander-$(date +%Y%m%d-%H%M%S)"
-          echo "Generated branch name: $BRANCH_NAME"
-          echo "SYNC_BRANCH=$BRANCH_NAME" >> $GITHUB_ENV
-          
-          # Clean up any old sync branches (older than 7 days)
-          git for-each-ref --format='%(refname:short) %(committerdate:unix)' refs/remotes/origin/sync-from-vander-* | \
-            while read branch timestamp; do
-              if [ $(($(date +%s) - timestamp)) -gt 604800 ]; then  # 7 days
-                branch_name=${branch#origin/}
-                echo "Deleting old sync branch: $branch_name"
-                git push origin --delete "$branch_name" 2>/dev/null || true
-              fi
-            done
+          # Delete existing sync branch if it exists
+          git branch -D sync-from-vander 2>/dev/null || true
+          git push origin --delete sync-from-vander 2>/dev/null || true
           
           # Create fresh sync branch from current main
-          git checkout -b "$BRANCH_NAME" origin/main
-          echo "Created and switched to branch: $(git branch --show-current)"
+          git checkout -b sync-from-vander origin/main
           
-      - name: Merge Vanderlin changes with auto-resolve for changelogs
+      - name: Merge Vanderlin changes
         id: merge_step
         run: |
-          # Set merge strategy to always use "ours" (Noctra's version) for changelog conflicts
-          git config merge.ours.driver true
-          
-          # Create .gitattributes to specify merge strategy for changelog directory
-          echo "html/changelogs/* merge=ours" >> .gitattributes
-          git add .gitattributes
-          
           # Attempt to merge Vanderlin's main branch
           if git merge vanderlin/main --no-ff --allow-unrelated-histories -m "Sync from Vanderlin: $(date)"; then
             echo "merge_status=success" >> $GITHUB_OUTPUT
             echo "Merge completed successfully"
-            
-            # Check if there were any changelog conflicts that were auto-resolved
-            if git diff --name-only HEAD~1 HEAD | grep -q "html/changelogs"; then
-              echo "Auto-resolved changelog conflicts by keeping Noctra's version"
-            fi
-            
           else
             echo "merge_status=conflicts" >> $GITHUB_OUTPUT
-            echo "Merge conflicts detected in non-changelog files - will create PR for manual resolution"
+            echo "Merge conflicts detected - will create PR for manual resolution"
             
-            # List conflicted files (excluding changelogs since those are auto-resolved)
-            conflicted_files=$(git diff --name-only --diff-filter=U | grep -v "^html/changelogs/" || echo "")
+            # List conflicted files and save to output
+            echo "=== CONFLICTED FILES ==="
+            conflicted_files=$(git diff --name-only --diff-filter=U)
+            echo "$conflicted_files"
+            echo "conflicted_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$conflicted_files" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
             
-            if [ -n "$conflicted_files" ]; then
-              echo "=== CONFLICTED FILES (excluding auto-resolved changelogs) ==="
-              echo "$conflicted_files"
-              echo "conflicted_files<<EOF" >> $GITHUB_OUTPUT
-              echo "$conflicted_files" >> $GITHUB_OUTPUT
-              echo "EOF" >> $GITHUB_OUTPUT
-            else
-              echo "All conflicts were in changelogs and have been auto-resolved"
-              echo "merge_status=success" >> $GITHUB_OUTPUT
-            fi
+            # Show conflict summary
+            echo "=== CONFLICT SUMMARY ==="
+            git status --porcelain | grep "^UU\|^AA\|^DD" || echo "No standard conflict markers found"
             
-            # For any remaining conflicts, add all files to staging
+            # Add all files (including conflicted ones) to staging
             git add -A
             
-            # Create a commit
-            if [ -n "$conflicted_files" ]; then
-              git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution (changelogs auto-resolved)"
-            else
-              git commit -m "Sync from Vanderlin: $(date) - changelogs auto-resolved"
-              echo "merge_status=success" >> $GITHUB_OUTPUT
-            fi
+            # Create a commit with the conflicts
+            git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution"
           fi
           
       - name: Push sync branch
         run: |
-          echo "Pushing branch: $SYNC_BRANCH"
-          git push origin "$SYNC_BRANCH" --force
+          git push origin sync-from-vander --force
           
       - name: Create Pull Request
         env:
@@ -121,10 +88,8 @@ jobs:
             pr_body="This PR merges the latest changes from Vanderlin into Noctra.
 
            **MERGE CONFLICTS DETECTED** - Manual resolution required.
-           
-           **Note:** Changelog conflicts in \`html/changelogs/\` were automatically resolved by keeping Noctra's version.
 
-          ## Conflicted Files (requiring manual resolution):
+          ## Conflicted Files:
           \`\`\`
           ${{ steps.merge_step.outputs.conflicted_files }}
           \`\`\`
@@ -138,8 +103,6 @@ jobs:
             pr_body="This PR merges the latest changes from Vanderlin into Noctra.
 
            **Merge completed successfully** - Ready to review and merge.
-           
-           **Note:** Any changelog conflicts in \`html/changelogs/\` were automatically resolved by keeping Noctra's version.
 
           Auto-generated sync from GitHub Actions run #${{ github.run_number }}
           Triggered at: $(date)"
@@ -149,7 +112,7 @@ jobs:
           # Create PR using GitHub CLI
           gh pr create \
             --base main \
-            --head $SYNC_BRANCH \
+            --head sync-from-vander \
             --title "$pr_title" \
             --body "$pr_body" \
             || echo "PR may already exist"
