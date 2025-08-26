@@ -832,5 +832,15 @@
                 "rscadd": "Mentors can gain 1 Triumph from every 7 likes (it has a limit of 5 Triumphs per round)"
             }
         ]
+    },
+    "2025-08-26": {
+        "Wouju": [
+            {
+                "balance": "Cleaning people with normal soap applies the clean mood effect, which will remove the stink of horcs. Cleaning yourself with herbal soap applies a greater effect, and being cleaned by someone with herbal soap will apply the clean buff"
+            },
+            {
+                "balance": "Soaps now lose a bit of use when dilluted in a bucket of water, it is still way better than using it to clean floors directly"
+            }
+        ]
     }
 }
