@@ -393,6 +393,30 @@
 	dat += ".pref-toggle.enabled { background-color: #8b6914; color: #ffffff; }"
 	dat += ".pref-toggle.disabled { background-color: #666666; cursor: not-allowed; }"
 
+	dat += ".notes-sub-tabs { display: flex; background-color: #4a2c20; border-bottom: 1px solid #8b6914; margin-bottom: 15px; }"
+	dat += ".notes-sub-tab { padding: 10px 15px; background-color: #2a1a15; border-right: 1px solid #4a2c20; color: #d4af8c; cursor: pointer; text-decoration: none; flex: 1; text-align: center; }"
+	dat += ".notes-sub-tab:hover { background-color: #3a2318; }"
+	dat += ".notes-sub-tab.active { background-color: #8b6914; color: #ffffff; }"
+	dat += ".notes-tab-content { display: none; }"
+	dat += ".notes-tab-content.active { display: block; }"
+	dat += ".panel-header { border-bottom: 1px solid #4a2c20; padding-bottom: 10px; margin-bottom: 15px; }"
+	dat += ".panel-header h3 { margin: 0 0 10px 0; color: #d4af8c; font-size: 16px; }"
+	dat += ".note-form { background-color: #1a1010; border: 1px solid #4a2c20; padding: 15px; margin: 10px 0; border-radius: 5px; }"
+	dat += ".note-input-title { width: 100%; padding: 8px; background-color: #2a1a15; border: 1px solid #4a2c20; color: #d4af8c; margin-bottom: 10px; }"
+	dat += ".note-input-content { width: 100%; height: 80px; padding: 8px; background-color: #2a1a15; border: 1px solid #4a2c20; color: #d4af8c; resize: vertical; }"
+	dat += ".note-form-buttons { margin-top: 10px; text-align: right; }"
+	dat += ".note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }"
+	dat += ".note-buttons { display: flex; gap: 5px; }"
+	dat += ".note-btn { padding: 4px 8px; background-color: #4a2c20; color: #d4af8c; text-decoration: none; border-radius: 3px; font-size: 11px; }"
+	dat += ".note-btn:hover { background-color: #5a3525; }"
+	dat += ".note-btn.remove-btn { background-color: #cc4444; }"
+	dat += ".note-btn.remove-btn:hover { background-color: #dd5555; }"
+	dat += ".note-item { background-color: #1a1010; border: 1px solid #4a2c20; margin: 5px 0; padding: 12px; cursor: pointer; transition: all 0.3s ease; }"
+	dat += ".note-item:hover { background-color: #2a1a15; border-color: #8b6914; }"
+	dat += ".note-item.expanded { background-color: #2a1a15; border-color: #8b6914; box-shadow: 0 2px 8px rgba(139, 105, 20, 0.3); }"
+	dat += ".note-content { color: #b09070; line-height: 1.4; margin-bottom: 8px; max-height: 60px; overflow: hidden; transition: max-height 0.3s ease; }"
+	dat += ".note-content.expanded { max-height: none; overflow: visible; }"
+
 	dat += "</style>"
 
 	dat += "<div class='main-container'>"
@@ -552,20 +576,28 @@
 
 	// JavaScript for search functionality and tab management
 	dat += "<script>"
-	dat += "function stopAction() { window.location.href = '?src=[REF(src)];task=stop;tab=[selected_tab]'; }"
-	dat += "function submitNote() {"
-	dat += "  var title = document.getElementById('noteTitle').value.trim();"
-	dat += "  var content = document.getElementById('noteContent').value.trim();"
-	dat += "  if (!title || !content) {"
-	dat += "    alert('Please enter both a title and content for your note.');"
-	dat += "    return;"
+
+	dat += "function switchNotesTab(tabName) {"
+	dat += "  var contents = document.querySelectorAll('.notes-tab-content');"
+	dat += "  contents.forEach(function(content) {"
+	dat += "    content.classList.remove('active');"
+	dat += "  });"
+	dat += "  "
+	dat += "  var tabs = document.querySelectorAll('.notes-sub-tab');"
+	dat += "  tabs.forEach(function(tab) {"
+	dat += "    tab.classList.remove('active');"
+	dat += "  });"
+	dat += "  "
+	dat += "  if (tabName === 'self') {"
+	dat += "    document.getElementById('selfNotesContent').classList.add('active');"
+	dat += "    document.getElementById('selfTab').classList.add('active');"
+	dat += "  } else if (tabName === 'target') {"
+	dat += "    document.getElementById('targetNotesContent').classList.add('active');"
+	dat += "    document.getElementById('targetTab').classList.add('active');"
 	dat += "  }"
-	dat += "  window.location.href = '?src=[REF(src)];task=submit_note;title=' + encodeURIComponent(title) + ';content=' + encodeURIComponent(content) + ';tab=notes';"
 	dat += "}"
-	dat += "function clearNoteForm() {"
-	dat += "  document.getElementById('noteTitle').value = '';"
-	dat += "  document.getElementById('noteContent').value = '';"
-	dat += "}"
+
+	dat += "function stopAction() { window.location.href = '?src=[REF(src)];task=stop;tab=[selected_tab]'; }"
 	dat += "function updateSessionName() {"
 	dat += "  var nameInput = document.getElementById('sessionNameInput');"
 	dat += "  if(nameInput) {"
@@ -589,26 +621,41 @@
 	dat += "  }"
 	dat += "});"
 
-	dat += "function toggleNoteForm() {"
-	dat += "  var form = document.getElementById('noteForm');"
-	dat += "  var btn = document.getElementById('addNoteBtn');"
+	dat += "function toggleSelfNoteForm() {"
+	dat += "  var form = document.getElementById('selfNoteForm');"
+	dat += "  var btn = document.getElementById('addSelfNoteBtn');"
 	dat += "  if (form.style.display === 'none' || form.style.display === '') {"
 	dat += "    form.style.display = 'block';"
 	dat += "    btn.textContent = 'Cancel';"
-	dat += "    document.getElementById('noteTitle').focus();"
+	dat += "    document.getElementById('selfNoteTitle').focus();"
 	dat += "  } else {"
 	dat += "    form.style.display = 'none';"
-	dat += "    btn.textContent = 'Add New Note';"
-	dat += "    clearNoteForm();"
+	dat += "    btn.textContent = 'Add Note About Yourself';"
+	dat += "    clearSelfNoteForm();"
 	dat += "  }"
 	dat += "}"
 
-	dat += "function cancelNote() {"
-	dat += "  var form = document.getElementById('noteForm');"
-	dat += "  var btn = document.getElementById('addNoteBtn');"
+	dat += "function submitSelfNote() {"
+	dat += "  var title = document.getElementById('selfNoteTitle').value.trim();"
+	dat += "  var content = document.getElementById('selfNoteContent').value.trim();"
+	dat += "  if (!title || !content) {"
+	dat += "    alert('Please fill in both title and content.');"
+	dat += "    return;"
+	dat += "  }"
+	dat += "  window.location.href = '?src=[REF(src)];task=submit_self_note;title=' + encodeURIComponent(title) + ';content=' + encodeURIComponent(content) + ';tab=notes';"
+	dat += "}"
+
+	dat += "function cancelSelfNote() {"
+	dat += "  var form = document.getElementById('selfNoteForm');"
+	dat += "  var btn = document.getElementById('addSelfNoteBtn');"
 	dat += "  form.style.display = 'none';"
-	dat += "  btn.textContent = 'Add New Note';"
-	dat += "  clearNoteForm();"
+	dat += "  btn.textContent = 'Add Note About Yourself';"
+	dat += "  clearSelfNoteForm();"
+	dat += "}"
+
+	dat += "function clearSelfNoteForm() {"
+	dat += "  document.getElementById('selfNoteTitle').value = '';"
+	dat += "  document.getElementById('selfNoteContent').value = '';"
 	dat += "}"
 
 	dat += "</script>"
@@ -807,7 +854,7 @@
 			if(!handled)
 				to_chat(user, "<span class='warning'>Unknown preference action.</span>")
 
-		if("submit_note")
+		if("submit_self_note")
 			var/note_title = url_decode(href_list["title"])
 			var/note_content = url_decode(href_list["content"])
 
@@ -818,7 +865,7 @@
 
 			var/character_slot = get_character_slot(user)
 
-			var/list/existing_notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
+			var/list/existing_notes = get_player_notes_about(user.ckey, user.ckey, character_slot)
 			if(existing_notes[note_title])
 				to_chat(user, "<span class='warning'>A note with that title already exists. Please choose a different title.</span>")
 				show_ui(selected_tab)
@@ -829,14 +876,14 @@
 			else
 				to_chat(user, "<span class='warning'>Failed to save note. Please try again.</span>")
 
-		if("edit_note")
+		if("edit_self_note")
 			var/note_title = url_decode(href_list["note_title"])
 			if(!note_title)
 				show_ui(selected_tab)
 				return
 
 			var/character_slot = get_character_slot(user)
-			var/list/notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
+			var/list/notes = get_player_notes_about(user.ckey, user.ckey, character_slot)
 
 			if(!notes[note_title])
 				to_chat(user, "<span class='warning'>Note not found.</span>")
@@ -844,16 +891,16 @@
 				return
 
 			var/old_content = notes[note_title]["content"]
-			var/new_content = input(user, "Edit your note:", "Edit Note", old_content) as message|null
+			var/new_content = input(user, "Edit your self-note:", "Edit Note", old_content) as message|null
 
 			if(!new_content)
 				show_ui(selected_tab)
 				return
 
-			set_player_note_about(user.ckey, target.ckey, note_title, new_content, character_slot)
-			to_chat(user, "<span class='notice'>Note '[note_title]' updated.</span>")
+			set_player_note_about(user.ckey, user.ckey, note_title, new_content, character_slot)
+			to_chat(user, "<span class='notice'>Self-note '[note_title]' updated.</span>")
 
-		if("remove_note")
+		if("remove_self_note")
 			var/note_title = url_decode(href_list["note_title"])
 			if(!note_title)
 				show_ui(selected_tab)
@@ -864,10 +911,10 @@
 			if(SM)
 				var/save_name = "character_[character_slot]_notes"
 				var/list/all_notes = SM.get_data(save_name, "partner_notes", list())
-				if(all_notes[ckey(target.ckey)] && all_notes[ckey(target.ckey)][note_title])
-					all_notes[ckey(target.ckey)] -= note_title
+				if(all_notes[ckey(user.ckey)] && all_notes[ckey(user.ckey)][note_title])
+					all_notes[ckey(user.ckey)] -= note_title
 					SM.set_data(save_name, "partner_notes", all_notes)
-					to_chat(user, "<span class='notice'>Note '[note_title]' removed.</span>")
+					to_chat(user, "<span class='notice'>Self-note '[note_title]' removed.</span>")
 				else
 					to_chat(user, "<span class='warning'>Note not found.</span>")
 
@@ -943,60 +990,92 @@
 
 /datum/sex_session/proc/get_notes_tab_content()
 	var/list/content = list()
-
 	var/character_slot = get_character_slot(user)
-	var/list/notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
 
-	// Add note button and hidden form
-	content += "<div class='control-section'>"
-	content += "<div class='control-row'>"
-	content += "<button onclick='toggleNoteForm()' class='control-btn' id='addNoteBtn'>Add New Note</button>"
+	// Get your own self-notes and the target's self-notes (shared with you)
+	var/list/self_notes = get_player_notes_about(user.ckey, user.ckey, character_slot) // Your notes about yourself
+	var/target_character_slot = get_character_slot(target)
+	var/list/target_self_notes = get_player_notes_about(target.ckey, target.ckey, target_character_slot) // Target's notes about themselves
+
+	// Sub-tabs for notes
+	content += "<div class='notes-sub-tabs'>"
+	content += "<a href='javascript:void(0)' class='notes-sub-tab active' onclick='switchNotesTab(\"self\")' id='selfTab'>Your Notes (Shared)</a>"
+	content += "<a href='javascript:void(0)' class='notes-sub-tab' onclick='switchNotesTab(\"target\")' id='targetTab'>[target.name]'s Notes</a>"
 	content += "</div>"
 
-	// Hidden form that appears when button is clicked
-	content += "<div id='noteForm' class='note-form' style='display: none;'>"
-	content += "<h4>Add Note about [target.name]</h4>"
-	content += "<input type='text' id='noteTitle' placeholder='Note title...' class='note-input-title'>"
-	content += "<textarea id='noteContent' placeholder='Write your note here...' class='note-input-content'></textarea>"
+	// Self notes content (initially visible)
+	content += "<div class='notes-tab-content active' id='selfNotesContent'>"
+	content += "<div class='panel-header'>"
+	content += "<h3>Your Notes (Shared with [target.name])</h3>"
+	content += "<button onclick='toggleSelfNoteForm()' class='control-btn' id='addSelfNoteBtn'>Add Note About Yourself</button>"
+	content += "</div>"
+
+	// Hidden form for self notes
+	content += "<div id='selfNoteForm' class='note-form' style='display: none;'>"
+	content += "<h4>Add Note About Yourself</h4>"
+	content += "<input type='text' id='selfNoteTitle' placeholder='Note title...' class='note-input-title'>"
+	content += "<textarea id='selfNoteContent' placeholder='Write your note here...' class='note-input-content'></textarea>"
 	content += "<div class='note-form-buttons'>"
-	content += "<button onclick='submitNote()' class='control-btn'>Save Note</button>"
-	content += "<button onclick='cancelNote()' class='control-btn' style='background-color: #666666; margin-left: 5px;'>Cancel</button>"
-	content += "</div>"
+	content += "<button onclick='submitSelfNote()' class='control-btn'>Save Note</button>"
+	content += "<button onclick='cancelSelfNote()' class='control-btn' style='background-color: #666666; margin-left: 5px;'>Cancel</button>"
 	content += "</div>"
 	content += "</div>"
 
-	if(!length(notes))
+	// Display self notes
+	if(!length(self_notes))
 		content += "<div class='no-data'>"
-		content += "You haven't written any notes about [target.name] yet."
+		content += "You haven't written any notes about yourself yet."
 		content += "</div>"
-		return content.Join("")
+	else
+		for(var/note_title in self_notes)
+			var/list/note_data = self_notes[note_title]
+			content += "<div class='note-item'>"
+			content += "<div class='note-header'>"
+			content += "<div class='note-title'>[note_title]</div>"
+			content += "<div class='note-buttons'>"
+			content += "<a href='?src=[REF(src)];task=edit_self_note;note_title=[url_encode(note_title)];tab=notes' class='note-btn' onclick='event.stopPropagation()'>Edit</a>"
+			content += "<a href='?src=[REF(src)];task=remove_self_note;note_title=[url_encode(note_title)];tab=notes' class='note-btn remove-btn' onclick='event.stopPropagation(); return confirm(\"Remove note: [note_title]?\")'>Remove</a>"
+			content += "</div>"
+			content += "</div>"
+			content += "<div class='note-content'>[note_data["content"]]</div>"
+			var/created_time = note_data["created"]
+			var/modified_time = note_data["last_modified"]
+			var/time_text = "Created: [time2text(created_time, "MM/DD/YY hh:mm")]"
+			if(modified_time != created_time)
+				time_text += " | Modified: [time2text(modified_time, "MM/DD/YY hh:mm")]"
+			content += "<div class='note-meta'>[time_text]</div>"
+			content += "</div>"
 
-	content += "<div class='control-section'>"
-	content += "<h3>Your Notes</h3>"
+	content += "</div>" // End self notes content
 
-	for(var/note_title in notes)
-		var/list/note_data = notes[note_title]
-
-		content += "<div class='note-item'>"
-		content += "<div class='note-header'>"
-		content += "<div class='note-title'>[note_title]</div>"
-		content += "<div class='note-buttons'>"
-		content += "<a href='?src=[REF(src)];task=edit_note;note_title=[url_encode(note_title)];tab=notes' class='note-btn'>Edit</a>"
-		content += "<a href='?src=[REF(src)];task=remove_note;note_title=[url_encode(note_title)];tab=notes' class='note-btn remove-btn' onclick='return confirm(\"Remove note: [note_title]?\")'>Remove</a>"
-		content += "</div>"
-		content += "</div>"
-		content += "<div class='note-content'>[note_data["content"]]</div>"
-
-		var/created_time = note_data["created"]
-		var/modified_time = note_data["last_modified"]
-		var/time_text = "Created: [time2text(created_time, "MM/DD/YY hh:mm")]"
-		if(modified_time != created_time)
-			time_text += " | Modified: [time2text(modified_time, "MM/DD/YY hh:mm")]"
-
-		content += "<div class='note-meta'>[time_text]</div>"
-		content += "</div>"
-
+	// Target's self-notes content (initially hidden)
+	content += "<div class='notes-tab-content' id='targetNotesContent'>"
+	content += "<div class='panel-header'>"
+	content += "<h3>[target.name]'s Notes (About Themselves)</h3>"
 	content += "</div>"
+
+	// Display target's self-notes (read-only)
+	if(!length(target_self_notes))
+		content += "<div class='no-data'>"
+		content += "[target.name] hasn't shared any notes about themselves yet."
+		content += "</div>"
+	else
+		for(var/note_title in target_self_notes)
+			var/list/note_data = target_self_notes[note_title]
+			content += "<div class='note-item''>"
+			content += "<div class='note-header'>"
+			content += "<div class='note-title'>[note_title]</div>"
+			content += "</div>"
+			content += "<div class='note-content'>[note_data["content"]]</div>"
+			var/created_time = note_data["created"]
+			var/modified_time = note_data["last_modified"]
+			var/time_text = "Created: [time2text(created_time, "MM/DD/YY hh:mm")]"
+			if(modified_time != created_time)
+				time_text += " | Modified: [time2text(modified_time, "MM/DD/YY hh:mm")]"
+			content += "<div class='note-meta'>[time_text]</div>"
+			content += "</div>"
+
+	content += "</div>" // End target notes content
 
 	return content.Join("")
 
