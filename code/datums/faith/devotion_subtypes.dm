@@ -11,12 +11,6 @@
 		/datum/action/cooldown/spell/aoe/abrogation,
 	)
 
-/datum/devotion/divine/make_churching()
-	. = ..()
-	miracles_extra += list(
-		/datum/action/cooldown/spell/healing,
-	)
-
 /datum/devotion/divine/astrata
 	miracles = list(
 		CLERIC_T0 = /datum/action/cooldown/spell/healing,
