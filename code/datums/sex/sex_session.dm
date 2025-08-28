@@ -13,12 +13,8 @@
 	var/force = SEX_FORCE_MID
 	/// Makes genital arousal automatic by default
 	var/manual_arousal = SEX_MANUAL_AROUSAL_DEFAULT
-	/// Our charge gauge
-	var/charge = SEX_MAX_CHARGE
 	/// Whether we want to screw until finished, or non stop
 	var/do_until_finished = TRUE
-	/// Last ejaculation time
-	var/last_ejaculation_time = 0
 	///inactivity bumps
 	var/inactivity = 0
 	/// Reference to the collective this session belongs to
@@ -102,13 +98,21 @@
 		return
 	desire_stop = TRUE
 
+/datum/sex_session/proc/considered_limp(mob/limper)
+	var/list/arousal_data = list()
+	SEND_SIGNAL(limper, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/arousal_value = arousal_data["arousal"]
+	if(arousal_value >= AROUSAL_HARD_ON_THRESHOLD)
+		return FALSE
+	return TRUE
+
 /datum/sex_session/proc/sex_action_loop()
 	var/performed_action_type = current_action
 	var/datum/sex_action/action = SEX_ACTION(current_action)
 	action.on_start(user, target)
 
 	while(TRUE)
-		if(!isnull(target.client))
+		if(isnull(target.client))
 			break
 
 		var/stamina_cost = action.stamina_cost * get_stamina_cost_multiplier()
@@ -179,6 +183,30 @@
 /datum/sex_session/proc/perform_sex_action(mob/living/carbon/human/action_target, arousal_amt, pain_amt, giving)
 	SEND_SIGNAL(action_target, COMSIG_SEX_RECEIVE_ACTION, arousal_amt, pain_amt, giving, force, speed)
 
+/datum/sex_session/proc/handle_passive_ejaculation(mob/living/carbon/human/handler)
+	if(!handler)
+		handler = user
+	var/list/arousal_data = list()
+	SEND_SIGNAL(handler, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/arousal_multiplier = arousal_data["arousal_multiplier"]
+	var/arousal_value = arousal_data["arousal"]
+
+	if(arousal_multiplier > 1.5 && user.check_handholding())
+		if(prob(5))
+			SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, 0, 1, 0)
+		if(arousal_value < 70)
+			SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.2)
+
+		if(handler.handcuffed)
+			if(prob(8))
+				var/chaffepain = pick(10,10,10,10,20,20,30)
+				SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, chaffepain, 1, 0)
+				handler.visible_message(("<span class='love_mid'>[handler] squirms uncomfortably in [handler.p_their()] restraints.</span>"), \
+					("<span class='love_extreme'>I feel [handler.handcuffed] rub uncomfortably against my skin.</span>"))
+			if(arousal_value < ACTIVE_EJAC_THRESHOLD)
+				SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
+
+
 /datum/sex_session/proc/get_speed_multiplier()
 	switch(speed)
 		if(SEX_SPEED_LOW)
@@ -210,59 +238,8 @@
 /datum/sex_session/proc/finished_check()
 	if(!do_until_finished)
 		return FALSE
-	if(!just_ejaculated())
-		return FALSE
 	return TRUE
 
-/datum/sex_session/proc/just_ejaculated()
-	return (last_ejaculation_time + 2 SECONDS >= world.time)
-
-/datum/sex_session/proc/handle_climax(climax_type)
-	switch(climax_type)
-		if("onto")
-			log_combat(user, target, "Came onto the target")
-			//playsound(target, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
-			var/turf/turf = get_turf(target)
-			turf.add_liquid(/datum/reagent/consumable/milk, 5)
-		if("into")
-			log_combat(user, target, "Came inside the target")
-			//playsound(target, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
-		if("self")
-			log_combat(user, user, "Ejaculated")
-			user.visible_message(span_love("[user] makes a mess!"))
-			//playsound(user, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
-			var/turf/turf = get_turf(target)
-			turf.add_liquid(/datum/reagent/consumable/milk, 5)
-
-	after_ejaculation(climax_type == "into" || climax_type == "oral")
-
-/datum/sex_session/proc/after_ejaculation(intimate = FALSE)
-	SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, 20)
-	charge = max(0, charge - CHARGE_FOR_CLIMAX)
-
-	user.add_stress(/datum/stressevent/cumok)
-	user.emote("sexmoanhvy", forced = TRUE)
-	//user.playsound_local(user, 'sound/misc/mat/end.ogg', 100)
-	last_ejaculation_time = world.time
-
-	if(intimate)
-		after_intimate_climax()
-
-/datum/sex_session/proc/after_intimate_climax()
-	if(user == target)
-		return
-	/*
-	if(HAS_TRAIT(target, TRAIT_GOODLOVER))
-		if(!user.mob_timers["cumtri"])
-			user.mob_timers["cumtri"] = world.time
-			user.adjust_triumphs(1)
-			to_chat(user, span_love("Our loving is a true TRIUMPH!"))
-	if(HAS_TRAIT(user, TRAIT_GOODLOVER))
-		if(!target.mob_timers["cumtri"])
-			target.mob_timers["cumtri"] = world.time
-			target.adjust_triumphs(1)
-			to_chat(target, span_love("Our loving is a true TRIUMPH!"))
-	*/
 
 
 /datum/sex_session/proc/get_force_string()
@@ -397,6 +374,24 @@
 	dat += ".note-content { color: #b09070; line-height: 1.4; margin-bottom: 8px; }"
 	dat += ".note-meta { color: #808080; font-size: 10px; }"
 	dat += ".no-data { text-align: center; color: #666666; padding: 20px; font-style: italic; }"
+	dat += ".session-info { background-color: #2a1a15; border: 1px solid #4a2c20; margin: 10px; padding: 15px; }"
+	dat += ".session-name-input { background-color: #2a1a15; border: 1px solid #4a2c20; color: #d4af8c; padding: 8px; margin: 5px 0; width: 200px; }"
+	dat += ".participants-list { margin: 10px 0; }"
+	dat += ".participant-item { background-color: #3a2a20; padding: 8px; margin: 3px 0; border-left: 3px solid #8b6914; }"
+	dat += ".collective-toggle { background-color: #4a2c20; color: #d4af8c; border: 1px solid #2a1a15; padding: 10px 15px; cursor: pointer; margin: 10px 0; }"
+	dat += ".collective-toggle.enabled { background-color: #8b6914; color: #ffffff; }"
+	dat += ".prefs-container { display: flex; height: 400px; }"
+	dat += ".prefs-left, .prefs-right { width: 50%; padding: 10px; }"
+	dat += ".prefs-left { border-right: 1px solid #4a2c20; }"
+	dat += ".prefs-header { background-color: #8b6914; color: #d4af8c; padding: 8px 15px; margin-bottom: 10px; font-weight: bold; }"
+	dat += ".pref-category { margin: 15px 0; }"
+	dat += ".pref-category-title { background-color: #4a2c20; color: #d4af8c; padding: 6px 12px; font-weight: bold; margin-bottom: 5px; }"
+	dat += ".pref-item { background-color: #2a1a15; border: 1px solid #4a2c20; margin: 2px 0; padding: 8px; }"
+	dat += ".pref-name { font-weight: bold; color: #d4af8c; margin-bottom: 3px; }"
+	dat += ".pref-description { color: #b09070; font-size: 11px; margin-bottom: 5px; }"
+	dat += ".pref-toggle { background-color: #4a2c20; color: #d4af8c; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }"
+	dat += ".pref-toggle.enabled { background-color: #8b6914; color: #ffffff; }"
+	dat += ".pref-toggle.disabled { background-color: #666666; cursor: not-allowed; }"
 
 	dat += "</style>"
 
@@ -431,6 +426,8 @@
 	dat += "<div class='tabs'>"
 	dat += "<a href='?src=[REF(src)];task=tab;tab=interactions' class='tab [selected_tab == "interactions" ? "active" : ""]'>Interactions</a>"
 	dat += "<a href='?src=[REF(src)];task=tab;tab=genital' class='tab [selected_tab == "genital" ? "active" : ""]'>Controls</a>"
+	dat += "<a href='?src=[REF(src)];task=tab;tab=session' class='tab [selected_tab == "session" ? "active" : ""]'>Session</a>"
+	dat += "<a href='?src=[REF(src)];task=tab;tab=preferences' class='tab [selected_tab == "preferences" ? "active" : ""]'>Preferences</a>"
 	dat += "<a href='?src=[REF(src)];task=tab;tab=kinks' class='tab [selected_tab == "kinks" ? "active" : ""]'>Kinks</a>"
 	dat += "<a href='?src=[REF(src)];task=tab;tab=notes' class='tab [selected_tab == "notes" ? "active" : ""]'>Notes</a>"
 	dat += "</div>"
@@ -533,6 +530,16 @@
 	dat += "</div>"
 	dat += "</div>"
 
+	// Session Tab
+	dat += "<div class='tab-content [selected_tab == "session" ? "active" : ""]' id='session-tab'>"
+	dat += get_session_tab_content()
+	dat += "</div>"
+
+	// Preferences Tab
+	dat += "<div class='tab-content [selected_tab == "preferences" ? "active" : ""]' id='preferences-tab'>"
+	dat += get_preferences_tab_content()
+	dat += "</div>"
+
 	// Kinks Tab
 	dat += "<div class='tab-content [selected_tab == "kinks" ? "active" : ""]' id='kinks-tab'>"
 	dat += get_kinks_tab_content()
@@ -558,6 +565,15 @@
 	dat += "function clearNoteForm() {"
 	dat += "  document.getElementById('noteTitle').value = '';"
 	dat += "  document.getElementById('noteContent').value = '';"
+	dat += "}"
+	dat += "function updateSessionName() {"
+	dat += "  var nameInput = document.getElementById('sessionNameInput');"
+	dat += "  if(nameInput) {"
+	dat += "    var newName = nameInput.value.trim();"
+	dat += "    if(newName) {"
+	dat += "      window.location.href = '?src=[REF(src)];task=update_session_name;name=' + encodeURIComponent(newName) + ';tab=session';"
+	dat += "    }"
+	dat += "  }"
 	dat += "}"
 	dat += "document.addEventListener('DOMContentLoaded', function() {"
 	dat += "  var searchBox = document.getElementById('searchBox');"
@@ -604,6 +620,121 @@
 	popup.open()
 	return
 
+/datum/sex_session/proc/get_session_tab_content()
+	var/list/content = list()
+
+	content += "<div class='session-info'>"
+
+	// Session name editing
+	var/session_name = collective?.collective_display_name || "Private Session"
+	content += "<div style='margin: 10px 0;'>"
+	content += "<label style='color: #d4af8c; font-weight: bold;'>Session Name:</label><br>"
+	content += "<input type='text' id='sessionNameInput' class='session-name-input' value='[session_name]' placeholder='Enter session name...'>"
+	content += "<button onclick='updateSessionName()' class='control-btn' style='margin-left: 5px;'>Update</button>"
+	content += "</div>"
+
+	// Participants list
+	content += "<div class='participants-list'>"
+	content += "<h4 style='color: #d4af8c;'>Participants:</h4>"
+
+	var/list/participants = list(user, target)
+	if(collective)
+		participants = collective.involved_mobs
+
+	for(var/mob/living/carbon/human/participant in participants)
+		var/display_name = participant.get_face_name() || participant.name
+		var/is_you = (participant == user) ? " (You)" : ""
+		content += "<div class='participant-item'>[display_name][is_you]</div>"
+
+	content += "</div>"
+
+	// Collective messaging toggle
+	var/collective_enabled = collective ? TRUE : FALSE
+	var/any_has_flag = any_has_erp_pref(participants, /datum/erp_preference/boolean/subtle_session_messages)
+
+	var/toggle_class = "collective-toggle"
+	if(collective_enabled && any_has_flag)
+		toggle_class += " enabled"
+
+	content += "<div class='[toggle_class]' onclick=\"window.location.href='?src=[REF(src)];task=toggle_subtle;tab=session'\">"
+	content += "<strong>Subtle Messaging:</strong> [collective_enabled && any_has_flag ? "ENABLED" : "DISABLED"]<br>"
+	content += "<small>Allows group chat between all session participants</small>"
+	content += "</div>"
+
+	content += "</div>"
+
+	return content.Join("")
+
+/datum/sex_session/proc/get_preferences_tab_content()
+	var/list/content = list()
+
+	content += "<div class='prefs-container'>"
+
+	// Left side - User's preferences (editable)
+	content += "<div class='prefs-left'>"
+	content += "<div class='prefs-header'>Your Preferences</div>"
+	content += get_erp_preferences_display(user, TRUE)
+	content += "</div>"
+
+	// Right side - Target's preferences (read-only)
+	content += "<div class='prefs-right'>"
+	content += "<div class='prefs-header'>[target.name]'s Preferences</div>"
+	content += get_erp_preferences_display(target, FALSE)
+	content += "</div>"
+
+	content += "</div>"
+
+	return content.Join("")
+
+/datum/sex_session/proc/get_erp_preferences_display(mob/living/carbon/human/character, editable = FALSE)
+	var/list/content = list()
+
+	if(!character.client?.prefs)
+		content += "<div class='no-data'>No preferences available</div>"
+		return content.Join("")
+
+	var/datum/preferences/prefs = character.client.prefs
+	if(!prefs.erp_preferences)
+		prefs.erp_preferences = list()
+
+	// Group preferences by category
+	var/list/prefs_by_category = list()
+
+	for(var/datum/erp_preference/pref_type as anything in subtypesof(/datum/erp_preference))
+		if(is_abstract(pref_type))
+			continue
+		var/datum/erp_preference/pref = new pref_type()
+		var/category = pref.category
+
+		if(!prefs_by_category[category])
+			prefs_by_category[category] = list()
+
+		prefs_by_category[category][pref_type] = pref
+
+	// Display preferences by category
+	for(var/category in prefs_by_category)
+		content += "<div class='pref-category'>"
+		content += "<div class='pref-category-title'>[category]</div>"
+
+		for(var/pref_type in prefs_by_category[category])
+			var/datum/erp_preference/pref = prefs_by_category[category][pref_type]
+
+			content += "<div class='pref-item'>"
+			content += "<div class='pref-name'>[pref.name]</div>"
+
+			if(pref.description)
+				content += "<div class='pref-description'>[pref.description]</div>"
+
+			// Let the preference datum handle its own UI
+			content += pref.show_session_ui(prefs, editable, src)
+
+			content += "</div>"
+
+		content += "</div>"
+
+	return content.Join("")
+
+
 /datum/sex_session/Topic(href, href_list)
 	if(usr != user)
 		return
@@ -648,6 +779,33 @@
 			SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, amount)
 		if("freeze_arousal")
 			SEND_SIGNAL(user, COMSIG_SEX_FREEZE_AROUSAL)
+
+		if("update_session_name")
+			var/new_name = url_decode(href_list["name"])
+			if(new_name && collective)
+				collective.collective_display_name = new_name
+				collective.update_collective_tab()
+				to_chat(user, "<span class='notice'>Session name updated to '[new_name]'</span>")
+
+		if("toggle_subtle")
+			collective.toggle_subtle()
+
+		// Generic preference handler - delegates to the preference datum
+		if("handle_pref")
+			var/pref_type = text2path(href_list["pref_type"])
+			if(!pref_type || !ispath(pref_type, /datum/erp_preference))
+				show_ui(selected_tab)
+				return
+
+			var/datum/erp_preference/pref = new pref_type()
+			if(!user.client?.prefs)
+				show_ui(selected_tab)
+				return
+
+			// Let the preference handle its own topic
+			var/handled = pref.handle_session_topic(user, href_list, user.client.prefs, src)
+			if(!handled)
+				to_chat(user, "<span class='warning'>Unknown preference action.</span>")
 
 		if("submit_note")
 			var/note_title = url_decode(href_list["title"])
@@ -731,67 +889,57 @@
 
 /datum/sex_session/proc/get_kinks_tab_content()
 	var/list/content = list()
+	var/datum/preferences/prefs = target.client?.prefs
+	if(!prefs || !prefs.erp_preferences)
+		content += "<div class='no-data'>No kink preferences found for this character.</div>"
+		return content.Join("")
 
-	var/character_slot = get_character_slot(target)
-	var/list/target_kinks = get_player_kinks(target.ckey, character_slot)
-
-	if(!length(target_kinks))
+	var/list/kink_prefs = prefs.erp_preferences["kinks"]
+	if(!kink_prefs || !length(kink_prefs))
 		content += "<div class='no-data'>No kink preferences found for this character.</div>"
 		return content.Join("")
 
 	var/list/kinks_by_category = list()
-
-	for(var/kink_name in target_kinks)
-		var/list/kink_data = target_kinks[kink_name]
+	for(var/kink_name in kink_prefs)
+		var/list/kink_data = kink_prefs[kink_name]
 		if(!kink_data["enabled"])
 			continue
-
 		var/datum/kink/base_kink = GLOB.available_kinks[kink_name]
 		if(!base_kink)
 			continue
-
 		var/category = base_kink.category
 		if(!kinks_by_category[category])
 			kinks_by_category[category] = list()
-
 		kinks_by_category[category][kink_name] = kink_data
 
 	for(var/category in kinks_by_category)
 		content += "<div class='kink-category'>"
 		content += "<div class='kink-category-title'>[category]</div>"
-
 		for(var/kink_name in kinks_by_category[category])
 			var/list/kink_data = kinks_by_category[category][kink_name]
 			var/datum/kink/base_kink = GLOB.available_kinks[kink_name]
-
 			var/kink_class = "kink-item"
 			if(!kink_data["enabled"])
 				kink_class += " kink-disabled"
-
 			content += "<div class='[kink_class]'>"
 			content += "<div class='kink-name'>[kink_name]</div>"
 			content += "<div class='kink-description'>[base_kink.description]</div>"
-
-			var/intensity_text = ""
-			switch(kink_data["intensity"]) //! TODO replace this with like a string in the kink or a global or something
-				if(1) intensity_text = "Very Light"
-				if(2) intensity_text = "Light"
-				if(3) intensity_text = "Moderate"
-				if(4) intensity_text = "Intense"
-				if(5) intensity_text = "Very Intense"
-
+			var/intensity_text = get_kink_intensity_text(kink_data["intensity"])
 			content += "<div class='kink-intensity'>Intensity: [intensity_text]</div>"
-
 			if(kink_data["notes"])
 				content += "<div class='kink-notes'>Notes: [kink_data["notes"]]</div>"
-
 			content += "</div>"
-
 		content += "</div>"
-
 	return content.Join("")
 
-
+/proc/get_kink_intensity_text(intensity)//this still needs to be made into a global somewhere numbers are just easier to work with
+	switch(intensity)
+		if(1) return "Very Light"
+		if(2) return "Light"
+		if(3) return "Moderate"
+		if(4) return "Intense"
+		if(5) return "Very Intense"
+	return "Unknown"
 
 /datum/sex_session/proc/get_notes_tab_content()
 	var/list/content = list()
