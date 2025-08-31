@@ -177,6 +177,7 @@
 	H.base_intelligence = 1
 	H.base_constitution = 3
 	H.recalculate_stats(FALSE)
+	H.grant_language(/datum/language/undead)
 
 	H.verbs |= /mob/living/carbon/human/proc/praise
 	H.verbs |= /mob/living/carbon/human/proc/communicate

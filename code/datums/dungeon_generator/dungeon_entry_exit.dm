@@ -18,11 +18,10 @@ GLOBAL_LIST_INIT(dungeon_exits, list())
 	density = TRUE
 	anchored = TRUE
 	SET_BASE_PIXEL(-48, 0)
-	max_integrity = 0
 	bound_width = 128
 	appearance_flags = NONE
 	opacity = TRUE
-	obj_flags = INDESTRUCTIBLE
+	resistance_flags = INDESTRUCTIBLE
 
 	var/dungeon_id
 	var/list/dungeon_exits = list()

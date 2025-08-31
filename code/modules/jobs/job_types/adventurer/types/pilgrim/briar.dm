@@ -85,32 +85,33 @@
 	alpha = 155
 	var/associated_shrine = /obj/structure/fluff/psycross/crafted/shrine/dendor_gote
 
-/obj/item/dendor_blessing/attack_obj(obj/O, mob/living/user)
-	if(istype(O, associated_shrine))
-		. = TRUE
-		if(ishuman(user) && user.patron.type == /datum/patron/divine/dendor)
-			if(!check_blessing_requirements(user))
-				return
-			icon_state = "[icon_state]_end"
+/obj/item/dendor_blessing/attack_atom(atom/attacked_atom, mob/living/user)
+	if(!istype(attacked_atom, associated_shrine))
+		return ..()
 
-			if(!do_after(user, 3 SECONDS, target = src, display_over_user = TRUE))
-				icon_state = initial(icon_state)
-				return
+	. = TRUE
+	if(ishuman(user) && user.patron.type == /datum/patron/divine/dendor)
+		if(!check_blessing_requirements(user))
+			return
+		icon_state = "[icon_state]_end"
 
-			record_round_statistic(STATS_DENDOR_SACRIFICES)
-			if(HAS_TRAIT(user, TRAIT_BLESSED))
-				to_chat(user, span_info("Dendor will not grant more powers, but he still approves of the sacrifice, judging by the signs..."))
-				user.apply_status_effect(/datum/status_effect/buff/blessed)
-				qdel(src)
-				return
+		if(!do_after(user, 3 SECONDS, target = src, display_over_user = TRUE))
+			icon_state = initial(icon_state)
+			return
 
-			ADD_TRAIT(user, TRAIT_BLESSED, TRAIT_GENERIC)
-			INVOKE_ASYNC(src, PROC_REF(give_blessing), user)
+		record_round_statistic(STATS_DENDOR_SACRIFICES)
+		if(HAS_TRAIT(user, TRAIT_BLESSED))
+			to_chat(user, span_info("Dendor will not grant more powers, but he still approves of the sacrifice, judging by the signs..."))
+			user.apply_status_effect(/datum/status_effect/buff/blessed)
 			qdel(src)
-		else
-			to_chat(user, span_warning("Dendor finds me unworthy of his blessings..."))
-		return
-	return ..()
+			return
+
+		ADD_TRAIT(user, TRAIT_BLESSED, TRAIT_GENERIC)
+		INVOKE_ASYNC(src, PROC_REF(give_blessing), user)
+		qdel(src)
+	else
+		to_chat(user, span_warning("Dendor finds me unworthy of his blessings..."))
+	return
 
 /obj/item/dendor_blessing/proc/check_blessing_requirements(mob/living/user)
 	return TRUE
