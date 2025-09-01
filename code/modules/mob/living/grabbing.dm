@@ -19,11 +19,6 @@
 	desc = "I'm covered in oil, making me slippery and harder to grab!"
 	icon_state = "debuff"
 
-/atom/movable/screen/alert/status_effect/oiled
-	name = "Oiled"
-	desc = "I'm covered in oil, making me slippery and harder to grab!"
-	icon_state = "debuff"
-
 /datum/status_effect/buff/oiled/on_apply()
 	. = ..()
 	RegisterSignal(owner, COMSIG_MOVABLE_MOVED, PROC_REF(on_move))

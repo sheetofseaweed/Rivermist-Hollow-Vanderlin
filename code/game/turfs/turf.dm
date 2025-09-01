@@ -1,6 +1,7 @@
 /turf
 	icon = 'icons/turf/floors.dmi'
 	level = 1
+	hover_color = "#607d65"
 	uses_integrity = TRUE
 
 	var/intact = 1

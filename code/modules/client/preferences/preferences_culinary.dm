@@ -173,7 +173,6 @@ GLOBAL_LIST_EMPTY(cached_drink_flat_icons)
 		/obj/item/reagent_containers/food/snacks/veg,
 		/obj/item/reagent_containers/food/snacks/store,
 		/obj/item/reagent_containers/food/snacks/grown,
-		/obj/item/reagent_containers/food/snacks/base_icon_state,
 		/obj/item/reagent_containers/food/snacks/zybcake,
 		/obj/item/reagent_containers/food/snacks/zybcake_ready,
 		/obj/item/reagent_containers/food/snacks/strawbycake,
