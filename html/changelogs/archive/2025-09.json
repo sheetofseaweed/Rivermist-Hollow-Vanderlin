@@ -1,0 +1,36 @@
+{
+    "2025-09-01": {
+        "Just-Sim": [
+            {
+                "sound": "Ambience music can now be muted with ChangeMusicPower"
+            }
+        ],
+        "flleeppyy": [
+            {
+                "rscadd": "Logo for Noctra"
+            },
+            {
+                "bugfix": "Changed server name to NOCTRA in a few places."
+            },
+            {
+                "rscdel": "Removed \\\"NSFW descriptions are prohibited.\\\" from flavortext notice"
+            }
+        ],
+        "CheffieGithub": [
+            {
+                "bugfix": "Fixed void corruption tick interval, it will not spread to the whole town in minutes anymore."
+            },
+            {
+                "bugfix": "Fixed void corruption never getting removed(?) Because it overrode the duration tick."
+            },
+            {
+                "bugfix": "Fixed void corruption not having an alert icon."
+            }
+        ],
+        "wgtjunior743": [
+            {
+                "rscdel": "Void Corruption from the Red Dragon"
+            }
+        ]
+    }
+}
