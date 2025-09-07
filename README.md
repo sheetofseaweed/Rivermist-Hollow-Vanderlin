@@ -1,4 +1,6 @@
-# NOCTRA
+# RIVERMIST HOLLOW
+
+Small-scale and even more explicit Noctra/Vanderlin fork
 
 [![BYOND Build](https://github.com/Monkestation/Vanderlin/actions/workflows/ci_suite.yml/badge.svg)](https://github.com/Monkestation/Vanderlin/actions/workflows/ci_suite.yml)
 
