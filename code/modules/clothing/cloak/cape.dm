@@ -40,3 +40,11 @@
 	icon_state = "puritan_cape"
 	color = CLOTHING_SOOT_BLACK
 	allowed_race = SPECIES_BASE_BODY
+
+/obj/item/clothing/cloak/cape/fur
+	name = "fur cape"
+	icon_state = "furcape"
+	item_state = "furcape"
+	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK
+	inhand_mod = TRUE
+	salvage_result = /obj/item/natural/fur

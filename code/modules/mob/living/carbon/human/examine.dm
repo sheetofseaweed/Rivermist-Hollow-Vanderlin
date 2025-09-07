@@ -234,7 +234,7 @@
 	//head
 	if(head && !(obscured & ITEM_SLOT_HEAD))
 		. += "[m3] [head.get_examine_string(user)] on [m2] head."
-	//suit/armorF
+	//armorF
 	if(wear_armor && !(obscured & ITEM_SLOT_ARMOR))
 		. += "[m3] [wear_armor.get_examine_string(user)]."
 

@@ -737,3 +737,13 @@
 /turf/open/water/acid/mapped
 	desc = "You know how this got here. You think."
 	notake = TRUE
+
+/turf/open/water/pond
+	name = "pond"
+	desc = "Still and idyllic water that flows through meadows."
+	icon_state = "together"
+	water_level = 3
+	slowdown = 3
+	swim_skill = TRUE
+	wash_in = TRUE
+	water_reagent = /datum/reagent/water

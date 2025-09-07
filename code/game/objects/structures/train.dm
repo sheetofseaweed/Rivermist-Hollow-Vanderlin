@@ -99,3 +99,7 @@
 	desc = "A wooden carriage to carry passengers across land without the blessings of Heartfeltian underground train infrastructure."
 	icon = 'icons/roguetown/underworld/enigma_carriage.dmi'
 	icon_state = "carriage_normal"
+
+/obj/structure/train/far_travel
+	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
+	icon_state = "fartravel"

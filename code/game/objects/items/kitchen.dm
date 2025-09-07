@@ -77,3 +77,11 @@
 /obj/item/kitchen/rollingpin/suicide_act(mob/living/carbon/user)
 	user.visible_message("<span class='suicide'>[user] begins flattening [user.p_their()] head with \the [src]! It looks like [user.p_theyre()] trying to commit suicide!</span>")
 	return BRUTELOSS
+
+/obj/item/tablecloth/silk
+	name = "silk tablecloth"
+	desc = "A fancy silk tablecloth, laid out for diplomatic feasts and other important events."
+	icon = 'icons/roguetown/items/cooking.dmi'
+	icon_state = "tablecloth_silk"
+	sellprice = 40
+	w_class = WEIGHT_CLASS_NORMAL

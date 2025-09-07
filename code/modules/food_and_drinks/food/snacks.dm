@@ -163,12 +163,15 @@ All foods are distributed among various categories. Use common sense.
 				// Minimum 0.2x speed (cold slows but doesn't completely stop rot)
 
 		var/obj/structure/fake_machine/vendor = locate(/obj/structure/fake_machine/vendor) in get_turf(src)
-		if(!istype(loc, /obj/item/storage/backpack/backpack/artibackpack) || !istype(loc, /obj/structure/closet/crate/chest/magical))
+		if(!istype(loc, /obj/item/storage/backpack/backpack/artibackpack) || !istype(loc, /obj/structure/closet/crate/chest/magical) || !istype (loc, /obj/structure/table/wood/cooling))
 			var/obj/structure/table/located = locate(/obj/structure/table) in loc
 			if(located || vendor || chest)
 				warming -= 4 * temp_modifier
 			else
-				warming -= 20 * temp_modifier //ssobj processing has a wait of 20
+				if(locate(/obj/structure/table/wood/cooling) in loc)
+					warming -= 0
+				else
+					warming -= 20 * temp_modifier //ssobj processing has a wait of 20
 			if(warming < (-1*rotprocess))
 				if(become_rotten())
 					STOP_PROCESSING(SSobj, src)

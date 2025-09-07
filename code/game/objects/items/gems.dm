@@ -223,6 +223,20 @@
 	attuned = /datum/attunement/dark
 	effect_template = /datum/gem_effect/onyxa
 
+
+/obj/item/gem/random
+	name = "random gem"
+	desc = "You shouldn't be seeing this."
+	icon_state = null
+
+/obj/item/gem/random/Initialize()
+	..()
+	var/newgem = list(/obj/item/gem/red = 5, /obj/item/gem/green = 15, /obj/item/gem/blue = 10, /obj/item/gem/yellow = 20, /obj/item/gem/violet = 10, /obj/item/gem/diamond = 5, /obj/item/riddleofsteel = 1, /obj/item/ore/silver = 3)
+	var/pickgem = pickweight(newgem)
+	new pickgem(get_turf(src))
+	qdel(src)
+
+
 /// riddle
 
 

@@ -52,6 +52,8 @@
 	var/sound/background_track_dusk
 	/// The background music that plays in this area at night
 	var/sound/background_track_night
+	/// The background music that plays in this area at dawn
+	var/sound/background_track_dawn
 	/// Alternative droning loops to replace the background music
 	/// To make things more spooky
 	/// Do not set directly on /area use the index

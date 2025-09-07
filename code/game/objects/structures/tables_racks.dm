@@ -255,8 +255,20 @@
 	name = "counter"
 	icon_state = "longtable_mid"
 
+/obj/structure/table/wood/counter/alt
+	dir = 1
+
 /obj/structure/table/wood/counter/end
 	icon_state = "longtable"
+
+/obj/structure/table/wood/counter/end/right
+	dir = 1
+
+/obj/structure/table/wood/counter/end/north_east
+	dir = 4
+
+/obj/structure/table/wood/counter/end/east
+	dir = 8
 
 /obj/structure/table/wood/plain
 	icon_state = "tablewood1"
@@ -279,6 +291,30 @@
 
 /obj/structure/table/wood/large/corner
 	icon_state = "largetable"
+
+/obj/structure/table/wood/large/corner/south_west
+	dir = 10
+
+/obj/structure/table/wood/large/corner/south_east
+	dir = 6
+
+/obj/structure/table/wood/large/corner/north_west
+	dir = 9
+
+/obj/structure/table/wood/large/corner/north_east
+	dir = 5
+
+/obj/structure/table/wood/large/corner/middle_east
+	dir = 4
+
+/obj/structure/table/wood/large/corner/middle_west
+	dir = 8
+
+/obj/structure/table/wood/large/corner/middle
+	dir = 4
+
+/obj/structure/table/wood/large/corner/north
+	dir = 1
 
 /obj/structure/table/wood/large_alt
 	icon_state = "largetable_mid_alt"
@@ -379,6 +415,16 @@
 /obj/structure/table/wood/fancy/royalblue
 	icon = MAP_SWITCH('icons/obj/smooth_structures/fancy_table_royalblue.dmi', 'icons/obj/structures.dmi')
 	icon_state = "fancy_table_royalblue"
+
+/obj/structure/table/wood/cooling //cooling table made by artificers
+	name = "Cooling Table"
+	desc = "Used to keep your food cool and rot free"
+	icon_state = "tablewood_alt"
+	resistance_flags = FLAMMABLE
+	max_integrity = 40 //making this weak, its fragile
+	//smooth = 0
+	debris = list(/obj/item/grown/log/tree/small, /obj/item/gear/metal)
+	climb_offset = 10
 
 /*	..................   More tables   ................... */
 /obj/structure/table/wood/reinf_long

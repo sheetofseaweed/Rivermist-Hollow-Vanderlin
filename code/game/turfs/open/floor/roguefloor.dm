@@ -43,6 +43,37 @@
 /turf/open/floor/ruinedwood/turned/darker
 	color = "#d9c9b0"
 
+/obj/effect/decal/herringbone
+	name = "herringbone flooring"
+	desc = "These stone bricks have been carefully arranged in a rather pleasing pattern."
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "herringedge"
+	mouse_opacity = 0
+
+/obj/effect/decal/wood/herringbone
+	name = "herringbone flooring"
+	desc = "thin planks of wood carefully arranged in a rather pleasing pattern."
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "herringbonewoodedge"
+	mouse_opacity = 0
+
+/obj/effect/decal/wood/herringbone2
+	name = "herringbone flooring"
+	desc = "Thin planks of wood carefully arranged in a rather pleasing pattern."
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "herringbonewood2edge"
+	mouse_opacity = 0
+
+/turf/open/floor/ruinedwood/herringbone
+	name = "wooden herringbone flooring"
+	desc = "Thin planks of wood carefully arranged in a rather pleasing pattern."
+	icon_state = "herringbonewood"
+
+/turf/open/floor/ruinedwood/herringbone_clear
+	name = "wooden herringbone flooring"
+	desc = "Thin planks of wood carefully arranged in a rather pleasing pattern."
+	icon_state = "herringbonewood2"
+
 /turf/open/floor/tile/kitchen // faded kitchen, too dark floors look bad IMO, this much nicer
 	icon_state = "tavern"
 

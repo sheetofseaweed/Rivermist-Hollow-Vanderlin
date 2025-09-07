@@ -67,3 +67,24 @@
 /obj/structure/curtain/bounty/dir
 	icon_state = MAP_SWITCH("bounty-open", "bountydir")
 	directional = TRUE
+
+/obj/structure/curtain/red
+	color = "#a32121"
+
+/obj/structure/curtain/blue
+	color = "#173266"
+
+/obj/structure/curtain/green
+	color = "#428138"
+
+/obj/structure/curtain/brown
+	color = "#61462c"
+
+/obj/structure/curtain/purple
+	color = "#8747b1"
+
+/obj/structure/curtain/magenta
+	color = "#962e5c"
+
+/obj/structure/curtain/black
+	color = "#414143"

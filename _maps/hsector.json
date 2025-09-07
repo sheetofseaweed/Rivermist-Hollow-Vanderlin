@@ -1,0 +1,24 @@
+{
+    "map_name": "Rivermist Hollow",
+    "map_path": "map_files/hsector",
+    "map_file": [
+    "hsector.dmm",
+    "frozen_mountains.dmm",
+    "underdark.dmm",
+	"bogforest.dmm"
+    ],
+    "traits": [{"Name": "Rivermist Hollow", "Up": true}, {"Up": true, "Down": true}, {"Up": true, "Down": true}, {"Up": true, "Down": true}, {"Down": true},
+    {"Name": "Frozen Mountains", "Up": true}, {"Up": true, "Down": true}, {"Down": true},
+    {"Name": "Underdark", "Up":true}, {"Down":true},
+	{"Name": "Dark Swamps", "Up": true}, {"Up": true, "Down": true}, {"Down": true}
+    ],
+    "minetype": null,
+    "space_empty_levels": 0,
+    "space_ruin_levels": 0,
+    "shuttles": {
+        "cargo": "cargo_rogue",
+        "ferry": "ferry_base",
+        "whiteship": "whiteship_box",
+        "emergency": "emergency_rogue"
+    }
+}

@@ -104,6 +104,15 @@
 /obj/structure/fluff/railing/corner
 	icon_state = "railing_corner"
 
+/obj/structure/fluff/railing/corner/north_east
+	dir = 5
+
+/obj/structure/fluff/railing/corner/south_west
+	dir = 10
+
+/obj/structure/fluff/railing/corner/south_east
+	dir = 6
+
 /obj/structure/fluff/railing/corner/init_connect_loc_element()
 	return
 
@@ -111,6 +120,15 @@
 	icon_state = "woodrailing"
 	blade_dulling = DULLING_BASHCHOP
 	layer = ABOVE_MOB_LAYER
+
+/obj/structure/fluff/railing/wood/north
+	dir = 1
+
+/obj/structure/fluff/railing/wood/east
+	dir = 4
+
+/obj/structure/fluff/railing/wood/west
+	dir = 8
 
 /obj/structure/fluff/railing/stonehedge
 	name = "stone railing"
@@ -195,6 +213,14 @@
 
 /obj/structure/bars/chainlink
 	icon_state = "chainlink"
+
+/obj/structure/bars/steel
+	name = "steel bars"
+	max_integrity = 2000
+
+/obj/structure/bars/tough
+	max_integrity = 9000
+	damage_deflection = 40
 
 /obj/structure/bars/alt
 	icon_state = "bars_alt"
@@ -716,6 +742,24 @@
 	icon = 'icons/roguetown/misc/ay.dmi'
 	icon_state = "1"
 	SET_BASE_PIXEL(-32, -16)
+
+/obj/structure/fluff/statue/femalestatue1
+	icon = 'icons/roguetown/misc/ay.dmi'
+	icon_state = "2"
+	pixel_x = -32
+	pixel_y = -16
+
+/obj/structure/fluff/statue/femalestatue2
+	icon = 'icons/roguetown/misc/ay.dmi'
+	icon_state = "5"
+	pixel_x = -32
+	pixel_y = -16
+
+/obj/structure/fluff/statue/femalestatue/zizo
+	icon = 'icons/roguetown/misc/ay.dmi'
+	icon_state = "4"
+	pixel_x = -32
+	pixel_y = -16
 
 /obj/structure/fluff/statue/femalestatue/clean
 	icon_state = "12"
@@ -1381,3 +1425,31 @@
 /obj/structure/fluff/steamvent/Initialize()
 	. = ..()
 	MakeParticleEmitter(/particles/smoke/cig/big)
+
+/obj/structure/fluff/pillow
+	name = "pillows"
+	desc = "Soft plush pillows. Resting your head on one is so relaxing."
+	icon = 'icons/roguetown/misc/structure.dmi'
+	icon_state = "pillow"
+	density = FALSE
+
+/obj/structure/fluff/pillow/red
+	color = "#8b2323"
+
+/obj/structure/fluff/pillow/blue
+	color = "#173266"
+
+/obj/structure/fluff/pillow/green
+	color = "#264d26"
+
+/obj/structure/fluff/pillow/brown
+	color = "#61462c"
+
+/obj/structure/fluff/pillow/magenta
+	color = "#962e5c"
+
+/obj/structure/fluff/pillow/purple
+	color = "#8747b1"
+
+/obj/structure/fluff/pillow/black
+	color = "#2b292e"

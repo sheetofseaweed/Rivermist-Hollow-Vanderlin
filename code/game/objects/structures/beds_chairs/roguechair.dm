@@ -221,6 +221,12 @@
 	..()
 	density = FALSE
 
+/obj/structure/chair/wood/alt/fancy/chair4
+	icon_state = "chair_green"
+
+/obj/structure/chair/wood/alt/fancy/chair5
+	icon_state = "chair_purple"
+
 /obj/item/chair/stool/bar
 	name = "stool"
 	icon_state = "baritem"
