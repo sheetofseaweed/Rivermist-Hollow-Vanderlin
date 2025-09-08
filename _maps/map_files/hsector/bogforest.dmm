@@ -317,7 +317,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/rmh/goblindungeon)
 "iT" = (
-/obj/structure/door/donjon/stone/broken,
+/obj/structure/door/viewport/stone/broken,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "iV" = (
@@ -502,7 +502,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/woods/rmh)
 "ol" = (
-/obj/structure/bed/bedroll{
+/obj/structure/bed/sleepingbag{
 	dir = 1
 	},
 /turf/open/floor/twig,
@@ -648,7 +648,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/bog/rmh/travel/underdark)
 "sO" = (
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/indoors/town/rmh/magician/pass)
 "sX" = (
 /obj/structure/vine,
@@ -1039,7 +1039,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "Fa" = (
-/obj/structure/bed/bedroll{
+/obj/structure/bed/sleepingbag{
 	dir = 1
 	},
 /turf/open/floor/cobblerock,
@@ -1264,7 +1264,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/bog/rmh/travel/forest_to_main)
 "JV" = (
-/obj/structure/arcyne_wall/greater,
+/obj/structure/forcefield/strong,
 /turf/open/floor/greenstone/runed,
 /area/rogue/indoors/town/rmh/magician/pass)
 "Kk" = (
@@ -1363,7 +1363,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/cave/rmh/goblindungeon)
 "Me" = (
-/obj/structure/bed/bedroll{
+/obj/structure/bed/sleepingbag{
 	dir = 1
 	},
 /turf/open/floor/hay,
@@ -1550,7 +1550,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/orcdungeon)
 "QR" = (
-/obj/structure/bed/bedroll,
+/obj/structure/bed/sleepingbag,
 /turf/open/floor/hay,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "QY" = (
@@ -1850,7 +1850,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/woods/rmh)
 "XR" = (
-/obj/structure/bed/bedroll,
+/obj/structure/bed/sleepingbag,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "Ye" = (

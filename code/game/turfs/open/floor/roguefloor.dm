@@ -161,6 +161,15 @@
 /turf/open/floor/rooftop/green
 	icon_state = MAP_SWITCH("roofg", "roofg-arw")
 
+/turf/open/floor/rooftop/green/north
+	dir = 1
+
+/turf/open/floor/rooftop/green/east
+	dir = 4
+
+/turf/open/floor/rooftop/green/west
+	dir = 8
+
 /*	..................   Grasses   ................... */
 /turf/open/floor/grass
 	name = "grass"

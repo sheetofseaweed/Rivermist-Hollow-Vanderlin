@@ -141,6 +141,15 @@
 	icon_state = "border"
 	passcrawl = FALSE
 
+/obj/structure/fluff/railing/border/north
+	dir = 1
+
+/obj/structure/fluff/railing/border/east
+	dir = 4
+
+/obj/structure/fluff/railing/border/west
+	dir = 8
+
 /obj/structure/fluff/railing/fence
 	name = "palisade"
 	desc = "A sturdy fence of wooden stakes."
@@ -207,6 +216,10 @@
 		return TRUE
 	if(mover.throwing && isitem(mover))
 		return prob(66)
+
+/obj/structure/bars/shop
+	icon_state = "barsbent"
+	layer = BELOW_OBJ_LAYER
 
 /obj/structure/bars/bent
 	icon_state = "barsbent"
@@ -683,6 +696,9 @@
 
 /obj/structure/fluff/statue/knight
 	icon_state = "knightstatue_l"
+
+/obj/structure/fluff/statue/aasimar
+	icon_state = "aasimar"
 
 /obj/structure/fluff/statue/OnCrafted(dirin, mob/user)
 	. = ..()

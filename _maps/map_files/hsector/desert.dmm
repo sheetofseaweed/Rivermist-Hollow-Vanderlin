@@ -277,7 +277,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/outdoors/rmh_air)
 "mN" = (
-/obj/machinery/gear_painter,
+/obj/structure/dye_bin,
 /turf/open/floor/sand/desertsand,
 /area/rogue/outdoors/rmh_desert/port)
 "mS" = (
@@ -328,7 +328,7 @@
 /turf/open/floor/sand/desertsand,
 /area/rogue/outdoors/rmh_desert)
 "om" = (
-/turf/closed/wall/mineral/stone/red_moss,
+/turf/closed/wall/mineral/stone/moss/red,
 /area/rogue/outdoors/rmh_desert/port)
 "ou" = (
 /turf/open/floor/sand/desertsand/sandbrick,

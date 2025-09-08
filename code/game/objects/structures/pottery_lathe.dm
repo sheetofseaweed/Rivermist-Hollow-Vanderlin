@@ -13,8 +13,8 @@
 
 /obj/structure/pottery_lathe
 	name = "potter's lathe"
-	icon = 'icons/obj/pottery_wheel.dmi'
-	icon_state = "wheel"
+	icon = 'modular_rmh/icons/obj/structures/potwheel.dmi'
+	icon_state = "potwheel"
 
 	density = TRUE
 	anchored = TRUE

@@ -76,6 +76,18 @@
 	damage_deflection = 10
 	hardness = 2
 
+/turf/closed/wall/mineral/decostone/long
+	icon_state = "stone_deco-3"
+
+/turf/closed/wall/mineral/decostone/long/east_west
+	icon_state = "stone_deco-12"
+
+/turf/closed/wall/mineral/decostone/end
+	icon_state = "decostone-2"
+
+/turf/closed/wall/mineral/decostone/end/north
+	dir = 1
+
 /turf/closed/wall/mineral/decorstone/window
 	name = "stone murder hole"
 	desc = "A wall of decorated stone with convenient small indents on it, perfect to let loose arrows against invaders."

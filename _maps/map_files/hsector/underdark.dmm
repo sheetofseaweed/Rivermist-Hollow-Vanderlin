@@ -8,7 +8,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/underdark/rmh/shar)
 "ak" = (
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -41,7 +41,7 @@
 /obj/structure/window/stained/zizo{
 	icon_state = "stained-zizobr"
 	},
-/turf/closed/wall/mineral/decostone/mossy/blue/cand,
+/turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/rogue/under/underdark/rmh/shar)
 "aY" = (
 /obj/structure/table/vtable/v2,
@@ -114,7 +114,7 @@
 /obj/structure/window/stained/zizo{
 	icon_state = "stained-zizobr"
 	},
-/turf/closed/wall/mineral/stone/blue_moss{
+/turf/closed/wall/mineral/stone/moss/blue{
 	max_integrity = 5000
 	},
 /area/rogue/under/underdark/rmh/shar)
@@ -266,7 +266,7 @@
 /area/rogue/under/underdark/rmh/shrub)
 "dF" = (
 /obj/structure/fluff/statue/small,
-/turf/closed/wall/mineral/decostone/mossy/blue/cand,
+/turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/rogue/under/underdark/rmh/shar)
 "dG" = (
 /obj/item/natural/glass/shard,
@@ -521,7 +521,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "hW" = (
 /obj/structure/window/stained/zizo,
-/turf/closed/wall/mineral/stone/blue_moss{
+/turf/closed/wall/mineral/stone/moss/blue{
 	max_integrity = 5000
 	},
 /area/rogue/under/underdark/rmh/shar)
@@ -577,7 +577,7 @@
 /turf/open/water/river/flow/east,
 /area/rogue/under/underdark/rmh)
 "iG" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/long,
+/turf/closed/wall/mineral/decostone/moss/blue/long,
 /area/rogue/under/underdark/rmh/main)
 "iH" = (
 /obj/effect/decal/cleanable/blood/splatter,
@@ -606,7 +606,7 @@
 /area/rogue/under/underdark/rmh/deepwastes)
 "jr" = (
 /obj/structure/trap/water,
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -759,7 +759,7 @@
 /obj/structure/window/stained/zizo{
 	icon_state = "stained-zizobr"
 	},
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/under/underdark/rmh/shar)
 "lK" = (
 /obj/structure/fluff/railing/border/east,
@@ -877,13 +877,13 @@
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh/shrub)
 "nQ" = (
-/obj/structure/fluff/walldeco/rpainting{
+/obj/structure/fluff/walldeco/painting{
 	pixel_y = 32
 	},
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "nV" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/cand,
+/turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/rogue/under/underdark/rmh/shar)
 "oa" = (
 /turf/open/lava,
@@ -893,7 +893,7 @@
 /turf/open/floor/tile/masonic/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "os" = (
-/turf/closed/wall/mineral/stone/window/blue_moss,
+/turf/closed/wall/mineral/stone/window/moss/blue,
 /area/rogue/under/underdark/rmh/main)
 "ov" = (
 /obj/structure/fluff/traveltile{
@@ -993,7 +993,7 @@
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -1049,7 +1049,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "qP" = (
 /obj/machinery/light/fueled/firebowl/standing/blue,
-/turf/closed/wall/mineral/decostone/mossy/blue/cand,
+/turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/rogue/under/underdark/rmh/shar)
 "qX" = (
 /turf/open/transparent/openspace,
@@ -1067,7 +1067,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh)
 "rn" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/long{
+/turf/closed/wall/mineral/decostone/moss/blue/long{
 	dir = 1
 	},
 /area/rogue/under/underdark/rmh/main)
@@ -1223,7 +1223,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "tn" = (
 /obj/structure/window/stained/zizo,
-/turf/closed/wall/mineral/decostone/mossy/blue/cand,
+/turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/rogue/under/underdark/rmh/shar)
 "to" = (
 /obj/item/natural/bundle/stoneblock,
@@ -1258,7 +1258,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "ty" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end{
+/turf/closed/wall/mineral/decostone/moss/blue/end{
 	dir = 4
 	},
 /area/rogue/under/underdark/rmh/shar)
@@ -1343,7 +1343,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/underdark/rmh/shar)
 "vh" = (
-/obj/structure/bed/bedroll,
+/obj/structure/bed/sleepingbag,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "vi" = (
@@ -1355,7 +1355,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/main)
 "vr" = (
-/obj/structure/arcyne_wall/greater,
+/obj/structure/forcefield/strong,
 /turf/open/floor/greenstone/runed,
 /area/rogue/indoors/town/rmh/magician/pass)
 "vv" = (
@@ -1368,7 +1368,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "vz" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end{
+/turf/closed/wall/mineral/decostone/moss/blue/end{
 	dir = 1
 	},
 /area/rogue/under/underdark/rmh/main)
@@ -1377,14 +1377,14 @@
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "vM" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/long,
+/turf/closed/wall/mineral/decostone/moss/blue/long,
 /area/rogue/under/underdark/rmh/shar)
 "vR" = (
 /mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "vU" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end{
+/turf/closed/wall/mineral/decostone/moss/blue/end{
 	dir = 8
 	},
 /area/rogue/under/underdark/rmh/main)
@@ -1466,7 +1466,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "xo" = (
-/turf/closed/wall/mineral/stone/window/blue_moss,
+/turf/closed/wall/mineral/stone/window/moss/blue,
 /area/rogue/under/underdark/rmh/shar)
 "xr" = (
 /turf/open/floor/dirt/road,
@@ -1487,7 +1487,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "xA" = (
 /obj/structure/kneestingers,
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -1660,7 +1660,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -1878,7 +1878,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/underdark/rmh/shar)
 "Dt" = (
-/obj/structure/closet/crate/roguecloset/dark,
+/obj/structure/closet/crate/crafted_closet/dark,
 /obj/item/clothing/neck/skullamulet,
 /obj/effect/spawner/lootdrop/cheap_jewelry_spawner,
 /turf/open/floor/hexstone,
@@ -1957,7 +1957,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -2098,7 +2098,7 @@
 /turf/closed/wall/mineral/stonebrick,
 /area/rogue/under/underdark/rmh/shar)
 "Hq" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end{
+/turf/closed/wall/mineral/decostone/moss/blue/end{
 	dir = 8
 	},
 /area/rogue/under/underdark/rmh/shar)
@@ -2155,7 +2155,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/under/underdark/rmh/shar)
 "Iv" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end{
+/turf/closed/wall/mineral/decostone/moss/blue/end{
 	dir = 1
 	},
 /area/rogue/under/underdark/rmh/shar)
@@ -2179,13 +2179,13 @@
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "IV" = (
-/obj/machinery/light/fueled/wallfire/candle/off{
+/obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "IW" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end{
+/turf/closed/wall/mineral/decostone/moss/blue/end{
 	dir = 4
 	},
 /area/rogue/under/underdark/rmh/main)
@@ -2218,7 +2218,7 @@
 /turf/closed/wall/mineral/craftstone,
 /area/rogue/under/underdark/rmh/shar)
 "Jm" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end,
+/turf/closed/wall/mineral/decostone/moss/blue/end,
 /area/rogue/under/underdark/rmh/shar)
 "Jn" = (
 /obj/effect/decal/cleanable/debris/woody,
@@ -2332,7 +2332,7 @@
 	color = "#4dc6eb"
 	},
 /obj/structure/trap/water,
-/turf/open/floor/grasscold{
+/turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
 	},
@@ -2631,7 +2631,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Qr" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/cand,
+/turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/rogue/under/underdark/rmh/main)
 "Qt" = (
 /obj/effect/decal/remains/human,
@@ -2692,7 +2692,7 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/shrub)
 "Ro" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/end,
+/turf/closed/wall/mineral/decostone/moss/blue/end,
 /area/rogue/under/underdark/rmh/main)
 "Rp" = (
 /obj/structure/table/church/alt,
@@ -2737,7 +2737,7 @@
 /turf/open/water/cleanshallow,
 /area/rogue/under/underdark/rmh)
 "So" = (
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/indoors/town/rmh/magician/pass)
 "Sp" = (
 /turf/open/floor/naturalstone,
@@ -2825,7 +2825,7 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/shrub)
 "TA" = (
-/turf/closed/wall/mineral/decostone/mossy/blue,
+/turf/closed/wall/mineral/decostone/moss/blue,
 /area/rogue/under/underdark/rmh/main)
 "TD" = (
 /obj/effect/decal/cleanable/debris/glassy,
@@ -3084,7 +3084,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Xp" = (
-/obj/machinery/light/fueled/wallfire/candle/off{
+/obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
 /obj/item/paper,
@@ -3203,7 +3203,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "ZQ" = (
 /obj/structure/window/stained/zizo,
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/under/underdark/rmh/shar)
 "ZR" = (
 /obj/item/paper/scroll,

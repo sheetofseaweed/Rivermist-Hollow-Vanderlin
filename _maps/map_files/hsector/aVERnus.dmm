@@ -7,7 +7,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/inq/office)
 "aZ" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 1
 	},
 /turf/open/floor/carpet/red,
@@ -29,11 +29,11 @@
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/indoors/inq)
 "bV" = (
-/obj/structure/closet/crate/roguecloset/dark,
+/obj/structure/closet/crate/crafted_closet/dark,
 /turf/open/floor/tile,
 /area/rogue/indoors/inq/office)
 "bW" = (
-/obj/structure/chair/wood/chair5,
+/obj/structure/chair/wood/alt/fancy/chair5,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/inq)
 "cd" = (
@@ -227,7 +227,7 @@
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/indoors/inq)
 "hz" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 8
 	},
 /turf/open/floor/hexstone,
@@ -280,16 +280,16 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/inq)
 "iU" = (
-/obj/structure/closet/crate/roguecloset/dark,
-/obj/item/clothing/shoes/roguetown/boots/armor/matthios,
-/obj/item/clothing/shoes/roguetown/boots/armor/vampire,
-/obj/item/clothing/shoes/roguetown/boots/armor/zizo,
-/obj/item/clothing/shoes/roguetown/boots/armor/dwarven,
-/obj/item/clothing/shoes/roguetown/boots/armor/graggar,
-/obj/item/clothing/shoes/roguetown/boots/armor/iron,
-/obj/item/clothing/shoes/roguetown/boots/armor/blk,
-/obj/item/clothing/shoes/roguetown/boots/armor,
-/obj/item/clothing/shoes/roguetown/boots,
+/obj/structure/closet/crate/crafted_closet/dark,
+/obj/item/clothing/shoes/boots/armor/matthios,
+/obj/item/clothing/shoes/boots/armor/vampire,
+/obj/item/clothing/shoes/boots/armor/zizo,
+/obj/item/clothing/shoes/boots/armor/dwarven,
+/obj/item/clothing/shoes/boots/armor/graggar,
+/obj/item/clothing/shoes/boots/armor/iron,
+/obj/item/clothing/shoes/boots/armor/blk,
+/obj/item/clothing/shoes/boots/armor,
+/obj/item/clothing/shoes/boots,
 /obj/item/clothing/shoes/roguetown/grenzelhoft/gunslinger,
 /turf/open/floor/tile,
 /area/rogue/indoors/inq/office)
@@ -391,11 +391,11 @@
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/inq)
 "kS" = (
-/obj/machinery/gear_painter,
+/obj/structure/dye_bin,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/inq/office)
 "kZ" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle/pink,
+/obj/machinery/light/fueled/candle/floorcandle/pink,
 /obj/machinery/light/fueled/candle/floorcandle/alt/pink{
 	pixel_y = -16
 	},
@@ -607,7 +607,7 @@
 /turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "qM" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 1
 	},
 /turf/open/floor/hexstone,
@@ -690,7 +690,7 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/inq)
 "tT" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 4
 	},
 /turf/open/floor/hexstone,
@@ -788,7 +788,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/inq)
 "xr" = (
-/obj/structure/chair/wood/chair5,
+/obj/structure/chair/wood/alt/fancy/chair5,
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/inq)
 "xy" = (
@@ -888,7 +888,7 @@
 /turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Bc" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle/pink,
+/obj/machinery/light/fueled/candle/floorcandle/pink,
 /turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Bu" = (
@@ -991,7 +991,7 @@
 /turf/closed/wall/mineral/stonebrick,
 /area/rogue/indoors/inq)
 "Eu" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 8
 	},
 /turf/open/floor/carpet/red,
@@ -1330,7 +1330,7 @@
 /turf/open/floor/tile/bath,
 /area/rogue/indoors/inq)
 "Og" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 4
 	},
 /turf/open/floor/carpet/red,

@@ -76,6 +76,12 @@
 /obj/structure/chair/bench/couchablack/r
 	icon_state = "couchablackaright"
 
+/obj/structure/chair/bench/couchamagenta
+	icon_state = "couchamagentaleft"
+
+/obj/structure/chair/bench/couchamagenta/r
+	icon_state = "couchamagentaright"
+
 /obj/structure/chair/bench/throne
 	name = "small throne"
 	icon_state = "thronechair"

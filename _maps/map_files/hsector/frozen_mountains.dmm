@@ -101,7 +101,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "aB" = (
-/obj/structure/fake_machine/withdraw,
+/obj/structure/fake_machine/stockpile,
 /turf/open/floor/herringbone,
 /area/rogue/indoors/town/manor)
 "aC" = (
@@ -111,7 +111,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "aE" = (
 /obj/structure/flora/grass/herb/calendula,
@@ -148,7 +148,7 @@
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
 "aQ" = (
-/obj/structure/chair/wood/chair5,
+/obj/structure/chair/wood/alt/fancy/chair5,
 /turf/open/floor/carpet,
 /area/rogue/indoors/town/manor)
 "aR" = (
@@ -204,7 +204,7 @@
 /obj/structure/flora/tree/pine{
 	icon_state = "pine2-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "bd" = (
 /obj/structure/flora/grass/green,
@@ -217,10 +217,10 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "bf" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /turf/open/floor/tile/tilerg,
@@ -233,7 +233,7 @@
 	icon_state = "dead3";
 	pixel_x = -7
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "bj" = (
 /obj/structure/flora/tree/burnt,
@@ -275,7 +275,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "bq" = (
-/obj/item/clothing/shoes/roguetown/boots/aalloy,
+/obj/item/clothing/shoes/boots/aalloy,
 /turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "br" = (
@@ -296,7 +296,7 @@
 /turf/open/floor/tile,
 /area/rogue/under/town/basement/keep)
 "bu" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	icon_state = "chair1";
 	dir = 4
 	},
@@ -394,7 +394,7 @@
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/town/manor)
 "bO" = (
-/obj/structure/closet/crate/roguecloset/inn/south,
+/obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/item/clothing/pants/trou/leather,
 /obj/item/clothing/pants/tights/black,
 /obj/item/clothing/shirt/tunic/black,
@@ -478,8 +478,8 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "cf" = (
 /obj/structure/closet/crate/chest/wicker,
-/obj/item/neuFarm/seed/wheat/oat,
-/obj/item/neuFarm/seed/wheat/oat,
+/obj/item/neuFarm/seed/oat,
+/obj/item/neuFarm/seed/oat,
 /obj/item/neuFarm/seed/tomato,
 /obj/item/neuFarm/seed/tomato,
 /obj/item/neuFarm/seed/apple,
@@ -552,7 +552,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "cu" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 4
 	},
 /obj/machinery/light/fueled/wallfire/candle,
@@ -606,7 +606,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "cD" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /turf/open/floor/wood,
@@ -633,7 +633,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "cM" = (
 /turf/open/floor/tile/harem1,
@@ -752,7 +752,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "dr" = (
-/obj/structure/fluff/walldeco/rpainting/forest{
+/obj/structure/fluff/walldeco/painting/castle{
 	pixel_x = 32
 	},
 /turf/open/water/bloody,
@@ -807,7 +807,7 @@
 	color = "#4dc6eb"
 	},
 /obj/structure/flora/hotspring_rocks,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "dB" = (
 /obj/structure/fluff/railing/border,
@@ -821,7 +821,7 @@
 /area/rogue/under/town/basement/keep)
 "dE" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt/pink,
-/obj/machinery/light/fueled/wallfire/candle/floorcandle/pink{
+/obj/machinery/light/fueled/candle/floorcandle/pink{
 	pixel_y = -12
 	},
 /turf/open/floor/tile/brownbrick,
@@ -866,7 +866,7 @@
 /area/rogue/indoors/town/manor)
 "dN" = (
 /obj/machinery/light/fueled/campfire,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "dS" = (
 /obj/structure/closet/crate/chest{
@@ -930,7 +930,7 @@
 	color = "#4dc6eb"
 	},
 /obj/structure/flora/grass/bush/wall/tall,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "ek" = (
 /obj/structure/fluff/walldeco/church/line{
@@ -944,7 +944,7 @@
 /area/rogue/indoors/town/manor)
 "el" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt,
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -14
 	},
 /turf/open/floor/tile/harem,
@@ -963,8 +963,8 @@
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
 "eq" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle,
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle,
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -13
 	},
 /turf/open/floor/tile/brownbrick,
@@ -1073,7 +1073,7 @@
 /obj/structure/flora/tree/pine{
 	icon_state = "pine4-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "eP" = (
 /obj/structure/bed/shit,
@@ -1083,7 +1083,7 @@
 /turf/open/floor/cobble,
 /area/rogue/under/town/basement/keep)
 "eQ" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 8
 	},
 /obj/effect/landmark/start/vampiresmithlate,
@@ -1109,7 +1109,7 @@
 /turf/open/floor/grass,
 /area/rogue/indoors/town/manor)
 "eV" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 4
 	},
 /turf/open/floor/carpet/royalblack,
@@ -1217,9 +1217,6 @@
 "fq" = (
 /obj/structure/bars/pipe{
 	pixel_y = 8
-	},
-/obj/machinery/light/small/broken{
-	dir = 4
 	},
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
@@ -1349,7 +1346,7 @@
 /obj/item/clothing/armor/plate/full/zizo,
 /obj/item/clothing/pants/platelegs/zizo,
 /obj/item/clothing/wrists/roguetown/bracers/paalloy,
-/obj/item/clothing/shoes/roguetown/boots/armor/zizo,
+/obj/item/clothing/shoes/boots/armor/zizo,
 /obj/item/clothing/head/helmet/heavy/zizo,
 /obj/item/clothing/gloves/plate/zizo,
 /turf/open/floor/tile/tilerg,
@@ -1456,7 +1453,7 @@
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "gt" = (
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "gv" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -1529,13 +1526,13 @@
 /obj/item/clothing/armor/plate/full/zizo,
 /obj/item/clothing/pants/platelegs/zizo,
 /obj/item/clothing/wrists/roguetown/bracers/paalloy,
-/obj/item/clothing/shoes/roguetown/boots/armor/zizo,
+/obj/item/clothing/shoes/boots/armor/zizo,
 /obj/item/clothing/head/helmet/heavy/zizo,
 /obj/item/clothing/gloves/plate/zizo,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/town/manor)
 "gF" = (
-/obj/structure/chair/wood/chair3{
+/obj/structure/chair/wood/alt/chair3{
 	dir = 8;
 	pixel_x = 9
 	},
@@ -1659,13 +1656,13 @@
 	icon_state = "cobweb2"
 	},
 /obj/structure/rack/shelf,
-/obj/item/reagent_containers/glass/bottle/beer/avarrice{
+/obj/item/reagent_containers/glass/bottle/avarrice{
 	pixel_x = 3
 	},
-/obj/item/reagent_containers/glass/bottle/beer/avarmead{
+/obj/item/reagent_containers/glass/bottle/avarmead{
 	pixel_x = -3
 	},
-/obj/item/reagent_containers/glass/bottle/beer/saigamilk{
+/obj/item/reagent_containers/glass/bottle/saigamilk{
 	pixel_y = 32
 	},
 /turf/open/floor/wood,
@@ -1730,7 +1727,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "hy" = (
 /obj/structure/fluff/railing/border{
@@ -1781,7 +1778,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "hH" = (
-/obj/structure/chair/wood/chair5{
+/obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 1
 	},
 /turf/open/floor/carpet,
@@ -1939,7 +1936,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "iv" = (
-/obj/structure/chair/wood/fancy,
+/obj/structure/chair/wood/alt/fancy,
 /turf/open/floor/carpet/stellar,
 /area/rogue/indoors/town/manor)
 "ix" = (
@@ -2072,7 +2069,7 @@
 /turf/open/floor/tile/bfloorz,
 /area/rogue/indoors/town/manor)
 "jg" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -13
 	},
 /obj/machinery/light/fueled/candle/floorcandle/alt,
@@ -2200,7 +2197,7 @@
 /obj/structure/flora/tree/pine/dead{
 	icon_state = "dead3"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "jx" = (
 /obj/structure/bars/pipe{
@@ -2245,14 +2242,14 @@
 /obj/structure/flora/tree/pine/dead{
 	icon_state = "dead2"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "jF" = (
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "jG" = (
-/obj/structure/chair/wood/fancy,
+/obj/structure/chair/wood/alt/fancy,
 /obj/structure/fluff/walldeco/bigpainting/lake{
 	pixel_x = 0
 	},
@@ -2271,7 +2268,7 @@
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/indoors/town/manor)
 "jN" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	icon_state = "chair1";
 	dir = 4
 	},
@@ -2291,7 +2288,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "jR" = (
 /obj/structure/flora/tree/burnt,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "jS" = (
 /obj/structure/fake_machine/atm{
@@ -2333,7 +2330,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "kb" = (
-/obj/structure/closet/crate/roguecloset/lord,
+/obj/structure/closet/crate/crafted_closet/lord,
 /obj/item/clothing/shirt/tunic/silktunic,
 /obj/item/clothing/shirt/tunic/silktunic,
 /obj/item/clothing/shirt/tunic/red,
@@ -2350,11 +2347,11 @@
 	dir = 8
 	},
 /obj/structure/table/wood/folding,
-/obj/item/reagent_containers/glass/cup/ceramic{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = 5;
 	pixel_y = 7
 	},
-/obj/item/reagent_containers/glass/cup/ceramic,
+/obj/item/reagent_containers/glass/bottle/glazed_teacup,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/manor)
 "kd" = (
@@ -2491,7 +2488,7 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/under/town/basement/keep)
 "kP" = (
-/obj/structure/closet/crate/roguecloset/inn,
+/obj/structure/closet/crate/crafted_closet/inn,
 /obj/item/bouquet/salvia,
 /obj/structure/fluff/statue/small{
 	pixel_x = -32
@@ -2586,11 +2583,11 @@
 	icon_state = "shelf_biggest";
 	pixel_y = 0
 	},
-/obj/item/reagent_containers/glass/bottle/beer/kgunlager{
+/obj/item/reagent_containers/glass/bottle/kgunlager{
 	pixel_x = -6
 	},
-/obj/item/reagent_containers/glass/bottle/beer/kgunplum,
-/obj/item/reagent_containers/glass/bottle/beer/kgunsake{
+/obj/item/reagent_containers/glass/bottle/kgunplum,
+/obj/item/reagent_containers/glass/bottle/kgunsake{
 	pixel_x = 6
 	},
 /obj/structure/rack/shelf,
@@ -2844,7 +2841,7 @@
 "mm" = (
 /obj/structure/table/wood,
 /obj/machinery/light/fueled/wallfire/candle/l,
-obj/item/storage/belt/surgery_bag/full{
+/obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 16;
 	pixel_x = -8
 	},
@@ -2975,7 +2972,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "mL" = (
-/obj/structure/bars/passage/steel{
+/obj/structure/bars/passage{
 	redstone_id = "vgate"
 	},
 /turf/open/floor/metal/barograte,
@@ -3002,7 +2999,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/town/manor)
 "mS" = (
-/obj/structure/closet/crate/roguecloset/inn/south{
+/obj/structure/closet/crate/crafted_closet/inn/south{
 	lockid = ""
 	},
 /turf/open/floor/tile/bath,
@@ -3075,7 +3072,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/closed/wall/mineral/decostone/long,
 /area/rogue/indoors/town/manor)
 "ng" = (
-/obj/structure/bed/bedroll,
+/obj/structure/bed/sleepingbag,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "nh" = (
@@ -3087,7 +3084,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "nj" = (
-/obj/structure/globe,
+/obj/structure/fluff/globe,
 /obj/effect/decal/cobbleedge{
 	dir = 4;
 	icon_state = "borderfall";
@@ -3261,9 +3258,6 @@ obj/item/storage/belt/surgery_bag/full{
 	},
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "ok" = (
-/obj/machinery/light/small/broken{
-	dir = 4
-	},
 /obj/item/ore/iron,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
@@ -3299,8 +3293,8 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "oq" = (
-/obj/structure/globe,
-/obj/structure/globe,
+/obj/structure/fluff/globe,
+/obj/structure/fluff/globe,
 /obj/machinery/light/fueled/wallfire/candle/blue{
 	pixel_y = -32
 	},
@@ -3410,7 +3404,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/concrete,
 /area/rogue/under/town/basement/keep)
 "oZ" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -7
 	},
 /obj/effect/decal/cobbleedge{
@@ -3494,7 +3488,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/town/manor)
 "ps" = (
-/obj/structure/closet/crate/roguecloset/inn/south,
+/obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/item/paper,
 /obj/item/paper,
 /obj/item/paper,
@@ -3523,7 +3517,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/carpet/lord/right,
 /area/rogue/indoors/town/manor)
 "pA" = (
-/obj/structure/door/donjon/stone/broken,
+/obj/structure/door/viewport/stone/broken,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "pB" = (
@@ -3830,7 +3824,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/town/manor)
 "qV" = (
-/obj/structure/chair/wood/fancy,
+/obj/structure/chair/wood/alt/fancy,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/manor)
 "qW" = (
@@ -3838,7 +3832,7 @@ obj/item/storage/belt/surgery_bag/full{
 	color = "#4dc6eb"
 	},
 /obj/structure/flora/tree/burnt,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "qX" = (
 /turf/closed/wall/mineral/decostone/center,
@@ -3970,7 +3964,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/concrete,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "rC" = (
-/obj/structure/bed/inn/wooldouble,
+/obj/structure/bed/wool/double,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "rD" = (
@@ -3998,7 +3992,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/snow/patchy,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "rI" = (
-/obj/structure/closet/crate/roguecloset/inn/south{
+/obj/structure/closet/crate/crafted_closet/inn/south{
 	pixel_y = -16
 	},
 /turf/open/floor/tile/bath,
@@ -4073,7 +4067,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/item/natural/cloth,
 /obj/item/needle,
 /obj/item/needle,
-/obj/structure/closet/crate/roguecloset/inn/south,
+/obj/structure/closet/crate/crafted_closet/inn/south,
 /turf/open/floor/herringbone,
 /area/rogue/indoors/town/manor)
 "rV" = (
@@ -4232,7 +4226,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/tree/pine{
 	icon_state = "pine1-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "sI" = (
 /turf/closed/wall/mineral/craftstone{
@@ -4265,22 +4259,22 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass/bush{
 	pixel_y = 9
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "sN" = (
-/obj/structure/bed/inn/wooldouble{
+/obj/structure/bed/wool/double{
 	dir = 8
 	},
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "sS" = (
-/obj/structure/fake_machine/withdraw,
+/obj/structure/fake_machine/stockpile,
 /obj/structure/fluff/alch,
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "sU" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 1
 	},
 /turf/open/floor/tile/harem,
@@ -4505,10 +4499,10 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "tQ" = (
-/obj/structure/chair/wood/fancy,
+/obj/structure/chair/wood/alt/fancy,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/manor)
 "tR" = (
@@ -4623,7 +4617,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "us" = (
 /obj/structure/bars/cemetery,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "uv" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/original,
@@ -4747,7 +4741,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/stairs/stone{
 	dir = 1
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "uX" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -4758,11 +4752,11 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/cobble,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "va" = (
-/obj/structure/closet/crate/roguecloset/inn,
+/obj/structure/closet/crate/crafted_closet/inn,
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/manor)
 "vb" = (
-/turf/closed/wall/mineral/stone/red_moss,
+/turf/closed/wall/mineral/stone/moss/red,
 /area/rogue/indoors/town/bath)
 "vc" = (
 /obj/effect/decal/cleanable/blood/tracks{
@@ -4778,7 +4772,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass/bush{
 	pixel_y = 9
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "vg" = (
 /obj/structure/healingfountain,
@@ -4972,7 +4966,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/manor)
 "vP" = (
-/obj/structure/chair/wood/fancy,
+/obj/structure/chair/wood/alt/fancy,
 /obj/effect/landmark/start/vampirespawn,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
@@ -5040,7 +5034,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "wd" = (
-/obj/structure/door/donjon/stone/broken,
+/obj/structure/door/viewport/stone/broken,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "we" = (
@@ -5096,7 +5090,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "wq" = (
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "wr" = (
 /obj/structure/fluff/railing/border{
@@ -5174,7 +5168,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
 "wK" = (
-/obj/structure/closet/crate/roguecloset,
+/obj/structure/closet/crate/crafted_closet,
 /obj/item/candle/yellow,
 /obj/item/candle/yellow,
 /obj/item/candle/yellow,
@@ -5197,7 +5191,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "wQ" = (
-/obj/structure/closet/crate/roguecloset{
+/obj/structure/closet/crate/crafted_closet{
 	keylock = 1;
 	lockid = "keep_dungeon"
 	},
@@ -5272,7 +5266,7 @@ obj/item/storage/belt/surgery_bag/full{
 	},
 /area/rogue/indoors/town/manor)
 "xj" = (
-/obj/structure/globe,
+/obj/structure/fluff/globe,
 /obj/effect/decal/cobbleedge{
 	icon_state = "borderfall";
 	pixel_y = -8
@@ -5417,7 +5411,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "xL" = (
-/obj/structure/closet/crate/roguecloset{
+/obj/structure/closet/crate/crafted_closet{
 	keylock = 1;
 	lockid = "keep_dungeon"
 	},
@@ -5439,14 +5433,14 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/tree/pine{
 	icon_state = "pine3-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "xT" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "xU" = (
-/obj/structure/fake_machine/withdraw,
+/obj/structure/fake_machine/stockpile,
 /turf/open/floor/tile{
 	icon_state = "chess"
 	},
@@ -5457,7 +5451,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "xX" = (
-/turf/closed/wall/mineral/decostone/mossy/red/long,
+/turf/closed/wall/mineral/decostone/moss/red/long,
 /area/rogue/indoors/town/manor)
 "xZ" = (
 /turf/open/floor/cobble,
@@ -5476,7 +5470,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/town/manor)
 "yc" = (
 /obj/structure/stairs/stone,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "ye" = (
 /obj/item/fertilizer/ash,
@@ -5598,7 +5592,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "yC" = (
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "yD" = (
 /obj/effect/decal/herringbone,
@@ -5677,7 +5671,7 @@ obj/item/storage/belt/surgery_bag/full{
 	},
 /area/rogue/indoors/town/rmh/magician/pass)
 "yU" = (
-/obj/structure/closet/crate/roguecloset{
+/obj/structure/closet/crate/crafted_closet{
 	keylock = 1;
 	lockid = "keep_dungeon"
 	},
@@ -5821,7 +5815,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "zI" = (
-/obj/machinery/light/roguestreet{
+/obj/machinery/light/fueledstreet{
 	pixel_x = 8;
 	pixel_y = 8
 	},
@@ -5862,8 +5856,8 @@ obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 0
 	},
 /obj/structure/rack/shelf,
-/obj/item/reagent_containers/glass/bottle/beer/nred,
-/obj/item/reagent_containers/glass/bottle/beer/gronnmead{
+/obj/item/reagent_containers/glass/bottle/nred,
+/obj/item/reagent_containers/glass/bottle/gronnmead{
 	pixel_y = 32
 	},
 /turf/open/floor/wood,
@@ -5975,11 +5969,11 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Aw" = (
 /obj/structure/flora/grass/bush/wall/tall,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "Ax" = (
 /obj/structure/flora/hotspring_rocks,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Ay" = (
 /obj/structure/flora/tree/pine/dead{
@@ -6077,7 +6071,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Bb" = (
 /obj/item/bedsheet/wool,
-/obj/structure/bed/inn/wool,
+/obj/structure/bed/wool,
 /turf/open/floor/carpet,
 /area/rogue/under/town/basement/keep)
 "Bc" = (
@@ -6106,7 +6100,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Bg" = (
-/obj/structure/closet/crate/roguecloset/lord,
+/obj/structure/closet/crate/crafted_closet/lord,
 /obj/item/clothing/shirt/tunic/silktunic,
 /obj/item/clothing/shirt/tunic/silktunic,
 /obj/item/clothing/shirt/tunic/red,
@@ -6289,7 +6283,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/town/manor)
 "BP" = (
-/turf/closed/wall/mineral/stone/red_moss,
+/turf/closed/wall/mineral/stone/moss/red,
 /area/rogue/under/town/basement/keep)
 "BQ" = (
 /obj/structure/fluff/railing/border{
@@ -6406,7 +6400,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Cq" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	icon_state = "chair1";
 	dir = 4
 	},
@@ -6458,7 +6452,7 @@ obj/item/storage/belt/surgery_bag/full{
 	dir = 1;
 	icon_state = "longtable"
 	},
-obj/item/storage/belt/surgery_bag/full{
+/obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 10
 	},
 /obj/item/natural/cloth{
@@ -6549,7 +6543,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/tree/pine{
 	icon_state = "pine2-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "CZ" = (
 /obj/machinery/light/fueled/hearth{
@@ -6595,7 +6589,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Dn" = (
 /obj/structure/flora/tree/pine/dead,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Do" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
@@ -6616,7 +6610,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Ds" = (
-/obj/structure/closet/crate/roguecloset/inn/south,
+/obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/item/weapon/knife/idagger/adagger,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -6670,7 +6664,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "DD" = (
 /obj/structure/chair/bench/ancientlog,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "DE" = (
 /turf/closed/wall/mineral/wooddark/window,
@@ -6696,7 +6690,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/tree/pine{
 	icon_state = "pine4-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "DK" = (
 /obj/structure/table/wood{
@@ -6715,7 +6709,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/manor)
 "DN" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 4
 	},
 /turf/open/floor/tile/checkeralt,
@@ -6724,7 +6718,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/basement/keep)
 "DR" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /turf/open/floor/carpet/royalblack,
@@ -6930,7 +6924,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/cobble,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "EN" = (
-/obj/structure/fluff/grindwheel{
+/obj/structure/grindwheel{
 	pixel_y = 6
 	},
 /turf/open/floor/tile/brownbrick,
@@ -7021,7 +7015,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Ft" = (
-/obj/machinery/light/roguestreet/midlamp{
+/obj/machinery/light/fueledstreet/midlamp{
 	pixel_y = 10
 	},
 /turf/open/floor/metal/barograte/open,
@@ -7036,9 +7030,6 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/bars/grille,
 /obj/structure/bars/pipe{
 	pixel_y = 8
-	},
-/obj/machinery/light/small/broken{
-	dir = 4
 	},
 /turf/open/floor/blocks,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
@@ -7091,7 +7082,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "FL" = (
-/obj/structure/globe,
+/obj/structure/fluff/globe,
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/manor)
 "FM" = (
@@ -7241,7 +7232,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
 "Gv" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /turf/open/floor/tile/brownbrick,
@@ -7346,7 +7337,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "GR" = (
-/obj/structure/arcyne_wall/greater,
+/obj/structure/forcefield/strong,
 /turf/open/floor/greenstone/runed,
 /area/rogue/indoors/town/rmh/magician/pass)
 "GS" = (
@@ -7447,7 +7438,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/manor)
 "Hq" = (
-/obj/machinery/light/roguestreet/midlamp{
+/obj/machinery/light/fueledstreet/midlamp{
 	pixel_y = 10
 	},
 /turf/open/floor/metal/barograte/open,
@@ -7507,7 +7498,7 @@ obj/item/storage/belt/surgery_bag/full{
 	color = "#4dc6eb"
 	},
 /obj/structure/flora/grass/thorn_bush,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "HA" = (
 /obj/effect/decal/remains/human,
@@ -7551,7 +7542,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/harem,
 /area/rogue/under/town/basement/keep)
 "HF" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /turf/open/floor/tile/checkeralt,
@@ -7647,9 +7638,6 @@ obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 6;
 	dir = 6
 	},
-/obj/machinery/light/small/broken{
-	dir = 4
-	},
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Ia" = (
@@ -7688,7 +7676,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "Ij" = (
-/obj/structure/door/donjon/stone/broken,
+/obj/structure/door/viewport/stone/broken,
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 4
 	},
@@ -7884,7 +7872,7 @@ obj/item/storage/belt/surgery_bag/full{
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /turf/open/floor/tile/checkeralt,
@@ -7946,7 +7934,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/carpet,
 /area/rogue/indoors/town/manor)
 "Ji" = (
-/turf/closed/wall/mineral/decostone/mossy/blue,
+/turf/closed/wall/mineral/decostone/moss/blue,
 /area/rogue/indoors/town/rmh/magician/pass)
 "Jj" = (
 /obj/structure/fluff/walldeco/customflag{
@@ -8026,9 +8014,6 @@ obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 10;
 	dir = 6
 	},
-/obj/machinery/light/small/broken{
-	dir = 4
-	},
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "JB" = (
@@ -8079,7 +8064,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "JQ" = (
 /obj/structure/flora/grass/thorn_bush,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "JS" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -8163,7 +8148,7 @@ obj/item/storage/belt/surgery_bag/full{
 	color = "#4dc6eb"
 	},
 /obj/structure/flora/grass/bush_meagre,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Kn" = (
 /obj/structure/fake_machine/scomm{
@@ -8212,7 +8197,7 @@ obj/item/storage/belt/surgery_bag/full{
 	},
 /area/rogue/indoors/town/manor)
 "Kw" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 1
 	},
 /turf/open/floor/carpet/royalblack,
@@ -8407,7 +8392,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Ls" = (
-/obj/structure/closet/crate/roguecloset/inn/south,
+/obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/item/reagent_containers/glass/cup/wooden,
 /obj/item/reagent_containers/glass/cup/wooden,
 /obj/item/reagent_containers/glass/cup,
@@ -8673,7 +8658,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Mq" = (
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Mt" = (
 /obj/structure/rack/shelf/biggest,
@@ -8752,7 +8737,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/metal,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "ML" = (
-/turf/closed/wall/mineral/decostone/mossy/blue/long,
+/turf/closed/wall/mineral/decostone/moss/blue/long,
 /area/rogue/indoors/town/rmh/magician/pass)
 "MO" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
@@ -8847,9 +8832,6 @@ obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 7;
 	dir = 6
 	},
-/obj/machinery/light/small/broken{
-	dir = 4
-	},
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Nk" = (
@@ -8859,11 +8841,11 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Nl" = (
 /obj/effect/spawner/roguemap/treeorbush,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Nm" = (
 /obj/structure/fluff/traveltile{
@@ -9007,19 +8989,19 @@ obj/item/storage/belt/surgery_bag/full{
 	icon_state = "largetable"
 	},
 /obj/item/reagent_containers/food/snacks/meat/salami,
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = -3;
 	pixel_y = 14
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = -15;
 	pixel_y = -1
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = 6;
 	pixel_y = 12
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = -16;
 	pixel_y = 13
 	},
@@ -9046,7 +9028,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/cobble,
 /area/rogue/under/town/basement/keep)
 "NR" = (
-/obj/structure/bed/inn/wool,
+/obj/structure/bed/wool,
 /obj/item/bedsheet/wool,
 /turf/open/floor/carpet,
 /area/rogue/under/town/basement/keep)
@@ -9121,7 +9103,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/masonic,
 /area/rogue/indoors/town/manor)
 "Oo" = (
-/obj/structure/chair/bench/couch/r,
+/obj/structure/chair/bench/coucha/r,
 /turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Op" = (
@@ -9154,7 +9136,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/transparent/openspace,
 /area/rogue/outdoors/rmh_air)
 "Ou" = (
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "Ov" = (
 /obj/machinery/light/fueled/oven,
@@ -9558,7 +9540,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Qs" = (
 /obj/structure/fluff/walldeco/maidendrape,
-/obj/structure/globe,
+/obj/structure/fluff/globe,
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "Qt" = (
@@ -9658,7 +9640,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "QP" = (
 /obj/structure/door/stone,
@@ -9690,7 +9672,7 @@ obj/item/storage/belt/surgery_bag/full{
 	dir = 1
 	},
 /obj/structure/flora/grass/bush_meagre,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "QX" = (
 /turf/open/floor/cobble,
@@ -9757,7 +9739,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Rq" = (
 /obj/structure/door/viewport{
@@ -9882,9 +9864,6 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "RU" = (
-/obj/machinery/light/small/broken{
-	dir = 4
-	},
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "RV" = (
@@ -9922,7 +9901,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/town/manor)
 "Sc" = (
 /obj/effect/decal/cleanable/debris/stony,
-/obj/item/clothing/shoes/roguetown/boots/aalloy,
+/obj/item/clothing/shoes/boots/aalloy,
 /turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Sd" = (
@@ -9990,7 +9969,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "St" = (
-/obj/machinery/light/roguestreet{
+/obj/machinery/light/fueledstreet{
 	dir = 1;
 	pixel_x = -8;
 	pixel_y = 8
@@ -10002,7 +9981,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/cobble,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Sz" = (
-/obj/structure/bed/inn/wool,
+/obj/structure/bed/wool,
 /obj/item/bedsheet/pelt,
 /turf/open/floor/ruinedwood{
 	icon_state = "weird1"
@@ -10189,10 +10168,10 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/masonic/single,
 /area/rogue/indoors/town/manor)
 "Tv" = (
-/obj/structure/closet/crate/roguecloset,
+/obj/structure/closet/crate/crafted_closet,
 /obj/item/weapon/knife/cleaver,
 /obj/item/weapon/knife/cleaver,
-/obj/item/clothing/head/chef,
+/obj/item/clothing/head/cookhat/chef,
 /obj/item/kitchen/spoon/iron,
 /obj/item/kitchen/spoon/iron,
 /obj/item/kitchen/spoon/iron,
@@ -10222,7 +10201,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/tree/pine{
 	icon_state = "pine3-snow"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "TA" = (
 /obj/structure/table/wood{
@@ -10362,7 +10341,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "Ua" = (
-/turf/closed/wall/mineral/stone/blue_moss,
+/turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/indoors/town/rmh/magician/pass)
 "Ub" = (
 /obj/structure/table/wood,
@@ -10404,7 +10383,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "Un" = (
 /turf/open/floor/rooftop/green,
@@ -10435,7 +10414,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Uu" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt,
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -14
 	},
 /turf/open/floor/tile/brownbrick,
@@ -10644,9 +10623,6 @@ obj/item/storage/belt/surgery_bag/full{
 	dir = 2
 	},
 /obj/structure/bars/grille,
-/obj/machinery/light/small/broken{
-	dir = 4
-	},
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Vm" = (
@@ -10714,7 +10690,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/indoors/town/manor)
 "VC" = (
 /obj/structure/flora/grass/bush_meagre,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "VD" = (
 /obj/structure/stairs/stone{
@@ -10774,7 +10750,7 @@ obj/item/storage/belt/surgery_bag/full{
 	pixel_y = 0
 	},
 /obj/item/key/vault,
-/obj/structure/fake_machine/withdraw,
+/obj/structure/fake_machine/stockpile,
 /turf/open/floor/tile/harem,
 /area/rogue/under/town/basement/keep)
 "VP" = (
@@ -10821,7 +10797,7 @@ obj/item/storage/belt/surgery_bag/full{
 "VY" = (
 /obj/structure/bed/inn/double,
 /obj/item/bedsheet/double_pelt,
-/obj/structure/fluff/walldeco/rpainting/forest{
+/obj/structure/fluff/walldeco/painting/castle{
 	pixel_x = 32
 	},
 /obj/effect/landmark/start/vampiresmith,
@@ -10922,7 +10898,7 @@ obj/item/storage/belt/surgery_bag/full{
 	pixel_x = 0;
 	name = "Will-o'-the-wisp"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Wy" = (
 /obj/structure/stairs/stone{
@@ -11039,7 +11015,7 @@ obj/item/storage/belt/surgery_bag/full{
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "WY" = (
 /obj/machinery/light/fueled/wallfire/candle,
@@ -11051,7 +11027,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "WZ" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 1
 	},
 /turf/open/floor/wood,
@@ -11061,7 +11037,7 @@ obj/item/storage/belt/surgery_bag/full{
 	color = "#4dc6eb"
 	},
 /obj/structure/chair/bench/ancientlog,
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Xb" = (
 /obj/structure/stairs/stone{
@@ -11075,19 +11051,19 @@ obj/item/storage/belt/surgery_bag/full{
 	list_reagents = list(/datum/reagent/consumable/golden_calendula_tea = 99);
 	pixel_y = 7
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = -10;
 	pixel_y = 10
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = -10;
 	pixel_y = -2
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = 11;
 	pixel_y = -3
 	},
-/obj/item/reagent_containers/glass/cup/ceramic/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
 	pixel_x = 7;
 	pixel_y = 11
 	},
@@ -11133,7 +11109,7 @@ obj/item/storage/belt/surgery_bag/full{
 /area/rogue/under/town/basement/keep)
 "Xn" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt,
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -13
 	},
 /turf/open/floor/tile/brownbrick,
@@ -11172,7 +11148,7 @@ obj/item/storage/belt/surgery_bag/full{
 	},
 /area/rogue/under/town/basement/keep)
 "Xw" = (
-/turf/closed/wall/mineral/decostone/mossy/red/long{
+/turf/closed/wall/mineral/decostone/moss/red/long{
 	dir = 1
 	},
 /area/rogue/indoors/town/manor)
@@ -11212,7 +11188,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "XD" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 1
 	},
 /turf/open/floor/carpet/stellar,
@@ -11274,7 +11250,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/bfloorz,
 /area/rogue/indoors/town/manor)
 "XK" = (
-/obj/structure/chair/wood/chair3,
+/obj/structure/chair/wood/alt/chair3,
 /obj/item/weapon/whip/antique,
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
@@ -11313,7 +11289,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/checkeralt,
 /area/rogue/indoors/town/manor)
 "XV" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle{
+/obj/machinery/light/fueled/candle/floorcandle{
 	pixel_y = -13
 	},
 /obj/machinery/light/fueled/candle/floorcandle/alt,
@@ -11384,7 +11360,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Yh" = (
-/obj/machinery/light/fueled/wallfire/candle/floorcandle,
+/obj/machinery/light/fueled/candle/floorcandle,
 /turf/open/floor/tile/harem2,
 /area/rogue/indoors/town/bath)
 "Yi" = (
@@ -11417,7 +11393,7 @@ obj/item/storage/belt/surgery_bag/full{
 	dir = 10
 	},
 /obj/structure/rack/shelf,
-/obj/item/reagent_containers/glass/bottle/healthpotnew{
+/obj/item/reagent_containers/glass/bottle/vial/healthpot{
 	pixel_y = 46;
 	pixel_x = -7
 	},
@@ -11428,7 +11404,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/manor)
 "Yp" = (
-/obj/structure/chair/wood/fancy{
+/obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
 /obj/machinery/light/fueled/wallfire/candle,
@@ -11575,10 +11551,10 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "YZ" = (
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Zb" = (
-/obj/structure/closet/crate/roguecloset/inn/south{
+/obj/structure/closet/crate/crafted_closet/inn/south{
 	keylock = 1;
 	locked = 1;
 	lockid = "keep_dungeon_torture"
@@ -11595,7 +11571,7 @@ obj/item/storage/belt/surgery_bag/full{
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Ze" = (
-/obj/structure/closet/crate/roguecloset{
+/obj/structure/closet/crate/crafted_closet{
 	keylock = 1;
 	lockid = "keep_dungeon"
 	},
@@ -11715,7 +11691,7 @@ obj/item/storage/belt/surgery_bag/full{
 	icon_state = "dead3";
 	pixel_x = -7
 	},
-/turf/open/floor/grasscold,
+/turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "ZH" = (
 /obj/structure/bookcase/random/archive,

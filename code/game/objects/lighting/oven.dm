@@ -44,6 +44,10 @@
 /obj/machinery/light/fueled/oven/Crossed(atom/movable/AM, oldLoc)
 	return
 
+/obj/machinery/light/fueled/oven/north
+	dir = NORTH
+	SET_BASE_PIXEL(0, -32)
+
 /obj/machinery/light/fueled/oven/south
 	dir = SOUTH
 	SET_BASE_PIXEL(0, 32)

@@ -32,3 +32,8 @@ map whitepalacepass
 	maxplayers 90
 	votable
 endmap
+
+map hsector
+	default
+	votable
+endmap

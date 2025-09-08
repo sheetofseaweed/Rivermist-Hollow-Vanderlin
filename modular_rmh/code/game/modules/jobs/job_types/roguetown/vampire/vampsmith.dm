@@ -36,7 +36,7 @@
 
 	if(H.gender == MALE)
 		pants = /obj/item/clothing/pants/trou
-		shoes = /obj/item/clothing/shoes/roguetown/boots/armor
+		shoes = /obj/item/clothing/shoes/boots/armor
 		shirt = /obj/item/clothing/shirt/shortshirt
 		backr = /obj/item/storage/backpack/satchel
 		backpack_contents = list(/obj/item/weapon/hammer = 1, /obj/item/weapon/tongs = 1)

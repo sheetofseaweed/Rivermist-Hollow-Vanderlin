@@ -4,6 +4,10 @@ GLOBAL_LIST_EMPTY(mana_fountains)
 	name = "Mage's Guild"
 	icon_state = "mageguild"
 
+/obj/structure/fluff/walldeco/mageguild2
+	name = "Mage's Guild"
+	icon_state = "mageguild2"
+
 /obj/effect/turf_decal/magedecal
 	icon = 'icons/effects/96x96.dmi'
 	icon_state = "imbuement2"

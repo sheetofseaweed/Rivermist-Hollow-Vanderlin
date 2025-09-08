@@ -1,4 +1,4 @@
-/obj/machinery/light/fueled/candle/floorcandle/alt/floorcandle
+/obj/machinery/light/fueled/candle/floorcandle
 	name = "candles"
 	icon = 'modular_rmh/icons/obj/lighting/lighting.dmi'
 	icon_state = "floorcandle1"
