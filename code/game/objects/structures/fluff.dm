@@ -102,7 +102,7 @@
 	. = ..()
 
 /obj/structure/fluff/railing/corner
-	icon_state = "railing_corner"
+	icon_state = "border"
 
 /obj/structure/fluff/railing/corner/north_east
 	dir = 5

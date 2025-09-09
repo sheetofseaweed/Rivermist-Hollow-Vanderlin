@@ -471,9 +471,9 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/main)
 "gF" = (
-/obj/effect/spawner/lootdrop/cheap_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/cheap_jewelry_spawner,
 /obj/structure/closet/crate/chest/gold,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "gH" = (
@@ -511,7 +511,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
 "hA" = (
-/obj/item/coin/aalloy/pile,
+/obj/item/coin/iron/pile,
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "hC" = (
@@ -921,7 +921,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "oR" = (
-/obj/effect/spawner/lootdrop/cheap_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/cheap_tableware_spawner,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "oT" = (
@@ -1034,9 +1034,9 @@
 /area/rogue/under/underdark/rmh)
 "qA" = (
 /obj/structure/closet/crate/chest/wicker,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/clothing,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/clothing,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/clothing,
+/obj/effect/spawner/map_spawner/loot/dungeon/clothing,
+/obj/effect/spawner/map_spawner/loot/dungeon/clothing,
+/obj/effect/spawner/map_spawner/loot/dungeon/clothing,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "qM" = (
@@ -1135,7 +1135,7 @@
 	pixel_x = -10;
 	pixel_y = 1
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical,
+/obj/item/reagent_containers/glass/alchemical,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "rW" = (
@@ -1155,7 +1155,7 @@
 "sj" = (
 /obj/effect/decal/cleanable/debris/glassy,
 /obj/structure/table/vtable,
-/obj/item/reagent_containers/glass/bottle/alchemical/perpot,
+/obj/item/reagent_containers/glass/alchemical,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "ss" = (
@@ -1267,7 +1267,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/main)
 "tB" = (
-/obj/effect/spawner/lootdrop/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/deepwastes)
 "tG" = (
@@ -1288,7 +1288,7 @@
 	},
 /area/rogue/under/underdark/rmh)
 "tJ" = (
-/obj/effect/spawner/lootdrop/cheap_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/cheap_jewelry_spawner,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "tL" = (
@@ -1330,7 +1330,7 @@
 "uY" = (
 /obj/effect/decal/cleanable/debris/glassy,
 /obj/structure/table/vtable/v2,
-/obj/item/weapon/knife/chefknife,
+/obj/item/weapon/knife/villager,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "vd" = (
@@ -1373,7 +1373,7 @@
 	},
 /area/rogue/under/underdark/rmh/main)
 "vE" = (
-/obj/item/coin/aalloy,
+/obj/item/coin/iron,
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "vM" = (
@@ -1569,7 +1569,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/underdark/rmh/shar)
 "yp" = (
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "yv" = (
@@ -1609,7 +1609,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "yZ" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/underdark/rmh/main)
 "zh" = (
 /obj/effect/decal/remains/human,
@@ -1630,7 +1630,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/under/underdark/rmh/shar)
 "zD" = (
-/obj/item/millstone,
+/obj/structure/fluff/millstone,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "zK" = (
@@ -1724,7 +1724,7 @@
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/under/underdark/rmh/shar)
 "Bc" = (
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Bg" = (
@@ -1880,7 +1880,7 @@
 "Dt" = (
 /obj/structure/closet/crate/crafted_closet/dark,
 /obj/item/clothing/neck/skullamulet,
-/obj/effect/spawner/lootdrop/cheap_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/cheap_jewelry_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "Dz" = (
@@ -1910,7 +1910,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "DZ" = (
-/obj/item/reagent_containers/glass/bottle/alchemical/strpot,
+/obj/item/reagent_containers/glass/alchemical,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "Eg" = (
@@ -2001,8 +2001,8 @@
 /area/rogue/under/underdark/rmh/shar)
 "Fq" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
-/obj/effect/spawner/lootdrop/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Fr" = (
@@ -2063,7 +2063,7 @@
 /turf/open/water/cleanshallow,
 /area/rogue/under/underdark/rmh/glimmerlakes)
 "Gk" = (
-/obj/effect/spawner/lootdrop/valuable_candle_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_candle_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "Gq" = (
@@ -2342,7 +2342,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Lt" = (
-/obj/item/coin/aalloy,
+/obj/item/coin/iron,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Lv" = (
@@ -2427,7 +2427,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "Mz" = (
 /obj/structure/closet/crate/chest/gold,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "MA" = (
@@ -2466,7 +2466,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "No" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Nq" = (
@@ -2711,8 +2711,8 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/deepwastes)
 "RO" = (
-/obj/item/coin/aalloy,
-/turf/open/floor/herringbone,
+/obj/item/coin/iron,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/underdark/rmh/shar)
 "RV" = (
 /mob/living/simple_animal/hostile/rogue/dreamfiend/ancient,
@@ -2841,7 +2841,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/shelter)
 "TJ" = (
-/obj/item/coin/aalloy/pile,
+/obj/item/coin/iron/pile,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "TQ" = (
@@ -2886,8 +2886,8 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/shrub)
 "Uf" = (
-/obj/item/coin/aalloy/pile,
-/turf/open/floor/herringbone,
+/obj/item/coin/iron/pile,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/underdark/rmh/shar)
 "Uk" = (
 /obj/structure/kneestingers,
@@ -2896,7 +2896,7 @@
 "Ul" = (
 /obj/item/natural/stone,
 /obj/structure/rack/shelf/biggest,
-/obj/item/reagent_containers/glass/bottle/alchemical/spdpot,
+/obj/item/reagent_containers/glass/alchemical,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "Um" = (
@@ -3002,7 +3002,7 @@
 /area/rogue/under/underdark/rmh/main)
 "VS" = (
 /obj/structure/closet/crate/chest/gold,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "VU" = (
@@ -3023,9 +3023,9 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shrub)
 "Wd" = (
-/obj/effect/spawner/lootdrop/cheap_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/cheap_tableware_spawner,
 /obj/structure/closet/crate/chest/gold,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Wi" = (
@@ -3218,7 +3218,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "ZY" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/underdark/rmh/shar)
 
 (1,1,1) = {"

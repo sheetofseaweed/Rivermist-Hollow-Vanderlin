@@ -15,7 +15,7 @@
 "ag" = (
 /obj/structure/table/wood,
 /obj/item/weapon/knife/cleaver,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "ah" = (
 /obj/structure/door/stone,
@@ -36,7 +36,7 @@
 /obj/structure/bed/inn/double{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "am" = (
 /turf/open/floor/tile{
@@ -97,12 +97,12 @@
 /area/rogue/indoors/town/manor)
 "aA" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "aB" = (
 /obj/structure/fake_machine/stockpile,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "aC" = (
 /turf/closed/wall/mineral/stonebrick,
@@ -163,8 +163,8 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "aU" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "aW" = (
@@ -275,8 +275,8 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "bq" = (
-/obj/item/clothing/shoes/boots/aalloy,
-/turf/open/floor/herringbone,
+/obj/item/clothing/shoes/boots/iron,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "br" = (
 /obj/structure/door/stone,
@@ -374,7 +374,7 @@
 /area/rogue/under/rmh_bedrock)
 "bI" = (
 /obj/effect/decal/cleanable/debris/woody,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "bK" = (
 /obj/structure/fluff/railing/border{
@@ -407,7 +407,7 @@
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "bQ" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "bR" = (
 /obj/structure/table/wood/fancy/black{
@@ -450,7 +450,7 @@
 "bZ" = (
 /obj/effect/decal/cleanable/debris/stony,
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "ca" = (
 /obj/structure/fluff/walldeco/bigpainting/lake{
@@ -528,7 +528,7 @@
 "cn" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "co" = (
 /obj/structure/window/openclose{
@@ -571,7 +571,7 @@
 	pixel_x = 0;
 	pixel_y = 0
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "cx" = (
 /obj/structure/fluff/statue/gargoyle{
@@ -595,7 +595,7 @@
 	pixel_x = 16;
 	pixel_y = 16
 	},
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "cB" = (
@@ -660,7 +660,7 @@
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "cU" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -709,7 +709,7 @@
 "df" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "dg" = (
 /obj/structure/fluff/walldeco/church/line{
@@ -811,7 +811,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "dB" = (
 /obj/structure/fluff/railing/border,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "dD" = (
 /turf/closed/wall/mineral/pipe{
@@ -907,7 +907,7 @@
 /area/rogue/indoors/town/vault)
 "eb" = (
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "ed" = (
 /obj/structure/fluff/railing/border{
@@ -940,7 +940,7 @@
 	dir = 1;
 	pixel_y = 6
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "el" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt,
@@ -971,7 +971,7 @@
 /area/rogue/indoors/town/bath)
 "er" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "et" = (
 /obj/structure/fluff/clock{
@@ -1019,7 +1019,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "eB" = (
 /obj/machinery/light/fueled/wallfire/candle/l{
@@ -1093,7 +1093,7 @@
 /obj/machinery/light/fueled/wallfire/candle/r{
 	pixel_y = -32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "eT" = (
 /obj/structure/fluff/walldeco/customflag{
@@ -1134,7 +1134,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/reagent_containers/glass/cup/aalloymug,
+/obj/item/reagent_containers/glass/cup,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "fa" = (
@@ -1234,12 +1234,12 @@
 /obj/structure/chair/bench{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "fu" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "fv" = (
@@ -1253,7 +1253,7 @@
 /area/rogue/indoors/town/manor)
 "fy" = (
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "fz" = (
 /obj/structure/shisha/hookah,
@@ -1264,7 +1264,7 @@
 	dir = 6;
 	icon_state = "largetable"
 	},
-/obj/item/reagent_containers/glass/bucket/pot/teapot/fancy,
+/obj/item/reagent_containers/glass/bottle/glazed_teapot,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/manor)
 "fB" = (
@@ -1303,7 +1303,7 @@
 /obj/structure/table/wood{
 	icon_state = "tablewood1"
 	},
-/obj/item/weapon/knife/chefknife,
+/obj/item/weapon/knife/villager,
 /obj/item/book/yeoldecookingmanual{
 	pixel_x = 10
 	},
@@ -1345,7 +1345,7 @@
 /obj/structure/mannequin,
 /obj/item/clothing/armor/plate/full/zizo,
 /obj/item/clothing/pants/platelegs/zizo,
-/obj/item/clothing/wrists/roguetown/bracers/paalloy,
+/obj/item/clothing/wrists/bracers/copper,
 /obj/item/clothing/shoes/boots/armor/zizo,
 /obj/item/clothing/head/helmet/heavy/zizo,
 /obj/item/clothing/gloves/plate/zizo,
@@ -1377,7 +1377,7 @@
 /obj/structure/stairs/fancy/r{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "fY" = (
 /obj/effect/decal/cobbleedge{
@@ -1387,7 +1387,7 @@
 /turf/open/floor/carpet/lord/left,
 /area/rogue/indoors/town/manor)
 "ga" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "gc" = (
 /obj/machinery/light/fueled/firebowl/off,
@@ -1396,7 +1396,7 @@
 "gd" = (
 /obj/effect/decal/cleanable/debris/stony,
 /mob/living/simple_animal/hostile/retaliate/minotaur/original,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "gf" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l{
@@ -1422,7 +1422,7 @@
 /obj/effect/decal/remains/human{
 	color = "#5e5e5e"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "gl" = (
 /obj/structure/stairs/stone{
@@ -1432,7 +1432,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "gm" = (
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "gn" = (
 /turf/open/floor/hexstone,
@@ -1525,7 +1525,7 @@
 /obj/structure/mannequin,
 /obj/item/clothing/armor/plate/full/zizo,
 /obj/item/clothing/pants/platelegs/zizo,
-/obj/item/clothing/wrists/roguetown/bracers/paalloy,
+/obj/item/clothing/wrists/bracers/copper,
 /obj/item/clothing/shoes/boots/armor/zizo,
 /obj/item/clothing/head/helmet/heavy/zizo,
 /obj/item/clothing/gloves/plate/zizo,
@@ -1573,7 +1573,7 @@
 	pixel_x = -6;
 	pixel_y = -2
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "gT" = (
 /obj/item/ore/coal,
@@ -1591,7 +1591,7 @@
 /obj/structure/stairs/fancy/l{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "gW" = (
 /obj/structure/fluff/railing/border{
@@ -1628,7 +1628,7 @@
 	pixel_x = 1;
 	pixel_y = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "hf" = (
 /obj/structure/chair/bench/couchablack,
@@ -1638,7 +1638,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "hh" = (
 /obj/structure/closet/crate/drawer/random{
@@ -1750,11 +1750,11 @@
 /area/rogue/under/town/basement/keep)
 "hB" = (
 /obj/structure/mannequin,
-/obj/item/clothing/armor/plate/paalloy,
-/obj/item/clothing/pants/platelegs/paalloy,
-/obj/item/clothing/wrists/roguetown/bracers/paalloy,
-/obj/item/clothing/gloves/chain/paalloy,
-/obj/item/clothing/head/helmet/heavy/guard/paalloy,
+/obj/item/clothing/armor/plate/blkknight,
+/obj/item/clothing/pants/platelegs/blk,
+/obj/item/clothing/wrists/bracers/copper,
+/obj/item/clothing/gloves/chain,
+/obj/item/clothing/head/helmet/heavy/blkknight,
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/town/manor)
@@ -1774,7 +1774,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/weapon/tongs/aalloy,
+/obj/item/weapon/tongs,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "hH" = (
@@ -1824,7 +1824,7 @@
 /area/rogue/under/town/basement/keep)
 "hS" = (
 /obj/effect/decal/cleanable/debris/woody,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "hT" = (
 /obj/effect/decal/herringbone{
@@ -1884,9 +1884,9 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "ih" = (
 /obj/structure/rack,
-/obj/item/weapon/mace/warhammer/steel/paalloy,
-/obj/item/weapon/mace/warhammer/steel/paalloy,
-/turf/open/floor/herringbone,
+/obj/item/weapon/mace/warhammer/steel,
+/obj/item/weapon/mace/warhammer/steel,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "ii" = (
 /turf/open/transparent/openspace,
@@ -1948,7 +1948,7 @@
 /area/rogue/indoors/town/manor)
 "iA" = (
 /obj/machinery/light/fueled/wallfire/candle/l,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "iB" = (
 /obj/structure/bookcase/random/archive,
@@ -1966,7 +1966,7 @@
 /obj/machinery/light/fueled/wallfire/candle/l{
 	pixel_y = -32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "iG" = (
 /obj/structure/flora/grass{
@@ -1996,7 +1996,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "iO" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "iP" = (
 /obj/structure/mirror{
@@ -2008,7 +2008,7 @@
 /obj/machinery/light/fueled/firebowl/off{
 	pixel_y = 6
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "iR" = (
 /obj/item/natural/wood/plank,
@@ -2024,7 +2024,7 @@
 /area/rogue/under/town/basement/keep)
 "iW" = (
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "iX" = (
 /obj/effect/decal/remains/human{
@@ -2081,7 +2081,7 @@
 "ji" = (
 /obj/structure/fluff/railing/border,
 /obj/structure/table/wood/cooling,
-/obj/item/weapon/knife/chefknife,
+/obj/item/weapon/knife/villager,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "jk" = (
@@ -2110,35 +2110,35 @@
 	pixel_x = 5;
 	pixel_y = 19
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = -8;
 	pixel_y = 4
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = -3;
 	pixel_y = 4
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = 2;
 	pixel_y = 4
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = 7;
 	pixel_y = 4
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = -8;
 	pixel_y = -3
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = -3;
 	pixel_y = -3
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = 2;
 	pixel_y = -3
 	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
+/obj/item/reagent_containers/glass/alchemical{
 	pixel_x = 7;
 	pixel_y = -3
 	},
@@ -2188,7 +2188,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/under/town/basement/keep)
 "jt" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "ju" = (
 /obj/structure/flora/grass{
@@ -2232,10 +2232,10 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "jC" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /obj/item/coin/gold/pile,
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "jD" = (
@@ -2256,7 +2256,7 @@
 /turf/open/floor/carpet/stellar,
 /area/rogue/indoors/town/manor)
 "jH" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "jL" = (
@@ -2283,7 +2283,7 @@
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "jP" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "jR" = (
@@ -2315,7 +2315,7 @@
 	},
 /area/rogue/under/town/basement/keep)
 "jX" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "jY" = (
@@ -2383,7 +2383,7 @@
 "kh" = (
 /obj/effect/decal/cleanable/debris/stony,
 /mob/living/simple_animal/hostile/retaliate/minotaur/original,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "kj" = (
 /turf/open/floor/metal,
@@ -2392,7 +2392,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 9
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "kn" = (
 /obj/structure/flora/grass/both,
@@ -2510,25 +2510,25 @@
 /area/rogue/indoors/town/manor)
 "kT" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "kU" = (
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "kV" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_clutter_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "kX" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "kY" = (
 /obj/structure/rack,
 /obj/item/weapon/mace/steel/palloy,
 /obj/item/weapon/mace/steel/palloy,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "kZ" = (
 /turf/open/floor/carpet/lord/right,
@@ -2550,7 +2550,7 @@
 /area/rogue/indoors/town/manor)
 "le" = (
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "lg" = (
 /obj/structure/flora/grass{
@@ -2608,7 +2608,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/obj/effect/spawner/roguemap/treeorbush,
+/obj/effect/spawner/map_spawner/treeorbush,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "lp" = (
@@ -2627,7 +2627,7 @@
 	dir = 1;
 	pixel_y = 6
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "lr" = (
 /obj/machinery/light/fueled/firebowl/off,
@@ -2683,8 +2683,8 @@
 /area/rogue/indoors/town/manor)
 "lC" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
-/obj/effect/spawner/lootdrop/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "lD" = (
@@ -2706,13 +2706,13 @@
 /obj/structure/fluff/railing/border{
 	dir = 6
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "lI" = (
 /obj/structure/fluff/railing/border{
 	dir = 9
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "lJ" = (
 /obj/structure/chair/wood/throne,
@@ -2779,7 +2779,7 @@
 	dir = 9
 	},
 /obj/machinery/tanningrack,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "lU" = (
 /obj/structure/window,
@@ -2798,7 +2798,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "mb" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "mc" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
@@ -2831,8 +2831,8 @@
 /turf/open/water/bath,
 /area/rogue/indoors/town/bath)
 "mj" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "ml" = (
@@ -2841,7 +2841,7 @@
 "mm" = (
 /obj/structure/table/wood,
 /obj/machinery/light/fueled/wallfire/candle/l,
-/obj/item/storage/belt/surgery_bag/full{
+/obj/item/storage/backpack/satchel/surgbag{
 	pixel_y = 16;
 	pixel_x = -8
 	},
@@ -2850,7 +2850,7 @@
 	pixel_x = 8;
 	pixel_y = 7
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "mo" = (
 /obj/structure/fluff/walldeco/church/line,
@@ -2888,7 +2888,7 @@
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "mw" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "my" = (
 /obj/structure/bars/pipe{
@@ -2902,7 +2902,7 @@
 "mz" = (
 /obj/effect/decal/remains/human,
 /obj/effect/decal/cleanable/blood/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "mA" = (
 /turf/closed/wall/mineral/decowood,
@@ -2924,11 +2924,11 @@
 /area/rogue/indoors/town/manor)
 "mD" = (
 /obj/structure/table/wood,
-/obj/item/reagent_containers/food/condiment/peppermill{
+/obj/item/reagent_containers/peppermill{
 	pixel_x = -5;
 	pixel_y = 2
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "mE" = (
 /turf/closed/mineral/bedrock{
@@ -2942,7 +2942,7 @@
 "mG" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "mH" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -2968,8 +2968,8 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "mL" = (
 /obj/structure/bars/passage{
@@ -2996,7 +2996,7 @@
 	dir = 8
 	},
 /obj/item/bin/water,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "mS" = (
 /obj/structure/closet/crate/crafted_closet/inn/south{
@@ -3056,7 +3056,7 @@
 "nb" = (
 /obj/effect/decal/cleanable/blood/old,
 /obj/effect/decal/cleanable/debris/woody,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "nc" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
@@ -3129,7 +3129,7 @@
 "nz" = (
 /obj/item/natural/rock,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "nB" = (
 /obj/machinery/light/fueled/wallfire/candle,
@@ -3148,7 +3148,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "nM" = (
 /obj/machinery/light/fueled/firebowl/off,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "nN" = (
 /turf/open/floor/concrete,
@@ -3190,7 +3190,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "nU" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "nV" = (
 /turf/open/floor/rooftop{
@@ -3286,7 +3286,7 @@
 /obj/machinery/light/fueled/torchholder/hotspring{
 	pixel_x = 32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "op" = (
 /obj/structure/stairs/stone,
@@ -3339,7 +3339,7 @@
 /turf/closed/wall/mineral/stone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "oE" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "oI" = (
@@ -3365,7 +3365,7 @@
 /obj/structure/stairs/stone{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "oQ" = (
 /obj/item/natural/stone,
@@ -3381,7 +3381,7 @@
 /area/rogue/under/town/basement/keep)
 "oS" = (
 /obj/item/natural/wood/plank,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "oV" = (
 /obj/structure/fluff/railing/border{
@@ -3389,7 +3389,7 @@
 	pixel_x = 0;
 	pixel_y = 0
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "oW" = (
 /obj/structure/fluff/railing/border/east,
@@ -3397,8 +3397,8 @@
 /area/rogue/indoors/town/manor)
 "oX" = (
 /obj/structure/rack,
-/obj/effect/spawner/lootdrop/heavy_armor_spawner,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/heavy_armor_spawner,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "oY" = (
 /turf/open/floor/concrete,
@@ -3422,7 +3422,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "pc" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /obj/item/coin/gold/pile,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
@@ -3485,7 +3485,7 @@
 	pixel_x = 2;
 	pixel_y = -1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "ps" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
@@ -3535,7 +3535,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "pH" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "pI" = (
@@ -3552,8 +3552,8 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "pL" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_clutter_spawner,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "pM" = (
@@ -3588,7 +3588,7 @@
 	dir = 1
 	},
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "pU" = (
 /obj/structure/table/church/end,
@@ -3705,7 +3705,7 @@
 /area/rogue/indoors/town/manor)
 "qu" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "qv" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -3788,7 +3788,7 @@
 "qM" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "qN" = (
 /obj/structure/fluff/railing/border{
@@ -3821,7 +3821,7 @@
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "qU" = (
 /obj/structure/table/wood,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "qV" = (
 /obj/structure/chair/wood/alt/fancy,
@@ -3890,7 +3890,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "rj" = (
 /turf/open/floor/blocks,
@@ -3922,7 +3922,7 @@
 /area/rogue/indoors/town/vault)
 "rr" = (
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "rs" = (
 /obj/structure/fluff/railing/border{
@@ -3977,7 +3977,7 @@
 /area/rogue/indoors/town/manor)
 "rE" = (
 /obj/effect/decal/cleanable/blood/tracks,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "rF" = (
 /obj/structure/fluff/railing/border{
@@ -4002,14 +4002,14 @@
 /obj/structure/fluff/walldeco/chains{
 	icon_state = "chains7"
 	},
-/obj/item/weapon/tongs/aalloy,
+/obj/item/weapon/tongs,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "rL" = (
 /obj/structure/fluff/railing/border{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "rM" = (
 /obj/machinery/light/fueled/wallfire/candle{
@@ -4019,8 +4019,8 @@
 /area/rogue/under/town/basement/keep)
 "rN" = (
 /obj/structure/closet/crate/chest,
-/obj/item/reagent_containers/food/snacks/honey,
-/obj/item/reagent_containers/food/snacks/honey,
+/obj/item/reagent_containers/food/snacks/spiderhoney/honey,
+/obj/item/reagent_containers/food/snacks/spiderhoney/honey,
 /obj/item/reagent_containers/food/snacks/cheese,
 /obj/item/reagent_containers/food/snacks/cheese,
 /obj/item/reagent_containers/food/snacks/cheese,
@@ -4031,7 +4031,7 @@
 /obj/item/reagent_containers/food/snacks/cheese,
 /obj/item/reagent_containers/food/snacks/butter,
 /obj/item/reagent_containers/food/snacks/butter,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "rO" = (
 /obj/structure/table/wood{
@@ -4068,7 +4068,7 @@
 /obj/item/needle,
 /obj/item/needle,
 /obj/structure/closet/crate/crafted_closet/inn/south,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "rV" = (
 /obj/structure/door/stone,
@@ -4084,7 +4084,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "rY" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "rZ" = (
@@ -4140,7 +4140,7 @@
 /area/rogue/indoors/town/manor)
 "sj" = (
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "sm" = (
 /obj/effect/decal/cleanable/debris/woody,
@@ -4204,17 +4204,17 @@
 /area/rogue/indoors/town/manor)
 "sC" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "sE" = (
-/obj/item/weapon/halberd/bardiche/aalloy,
-/turf/open/floor/herringbone,
+/obj/item/weapon/halberd/bardiche/iron,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "sF" = (
 /obj/effect/decal/remains/human{
 	color = "#5e5e5e"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "sG" = (
 /obj/effect/decal/remains/human{
@@ -4285,7 +4285,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "sX" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/item/ingot/aalloy,
+/obj/item/ingot/iron,
 /obj/item/ingot/iron,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
@@ -4381,7 +4381,7 @@
 	},
 /area/rogue/indoors/town/manor)
 "tt" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "tu" = (
 /obj/structure/fluff/railing/border,
@@ -4466,7 +4466,7 @@
 	pixel_y = 9
 	},
 /obj/structure/fluff/wallclock/vampire/r,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "tK" = (
 /obj/structure/fluff/statue/small,
@@ -4511,7 +4511,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "tS" = (
 /obj/structure/stairs/stone,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "tT" = (
 /obj/structure/barricade/wooden/crude,
@@ -4541,7 +4541,7 @@
 /obj/structure/rack,
 /obj/item/weapon/flail/sflail/paflail,
 /obj/item/weapon/flail/sflail/paflail,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "ub" = (
 /obj/structure/fluff/railing/wood/east{
@@ -4565,7 +4565,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/cold)
 "ug" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "uh" = (
@@ -4596,7 +4596,7 @@
 "un" = (
 /obj/item/natural/bundle/stoneblock,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "uo" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -4621,7 +4621,7 @@
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "uv" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/original,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "uw" = (
 /obj/structure/chair/bench/couchablack,
@@ -4653,7 +4653,7 @@
 /obj/structure/well/fountain{
 	pixel_x = -16
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "uD" = (
 /obj/structure/bars/tough{
@@ -4684,7 +4684,7 @@
 /area/rogue/indoors/town/manor)
 "uN" = (
 /obj/effect/decal/cleanable/debris/woody,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "uO" = (
 /obj/structure/fluff/walldeco/church/line{
@@ -4697,7 +4697,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "uP" = (
 /obj/structure/bars/pipe{
@@ -4927,7 +4927,7 @@
 /obj/structure/rack,
 /obj/item/weapon/sword/long/blackflamb,
 /obj/item/weapon/sword/long/blackflamb,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "vI" = (
 /obj/structure/fluff/railing/border{
@@ -4937,7 +4937,7 @@
 /area/rogue/outdoors/rmh_air)
 "vK" = (
 /obj/structure/table/church/end/alt,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "vM" = (
@@ -4947,11 +4947,11 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/wallclock/vampire/l,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "vN" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "vO" = (
 /obj/structure/table/wood{
@@ -5004,7 +5004,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "vY" = (
-/obj/item/kitchen/fork/aalloy,
+/obj/item/kitchen/fork/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "vZ" = (
@@ -5014,7 +5014,7 @@
 	STALUC = 15;
 	STASPD = 15
 	},
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "wa" = (
@@ -5055,7 +5055,7 @@
 	pixel_x = -7;
 	redstone_id = "mvampire_enter"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "wh" = (
 /obj/structure/fluff/pillow/black{
@@ -5083,10 +5083,10 @@
 /obj/structure/fluff/walldeco/church/line{
 	pixel_y = -5
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "wn" = (
-/obj/item/weapon/hammer/aalloy,
+/obj/item/weapon/hammer/iron,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "wq" = (
@@ -5100,7 +5100,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/manor)
 "ws" = (
-/obj/item/reagent_containers/glass/cup/aalloymug,
+/obj/item/reagent_containers/glass/cup,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "wu" = (
@@ -5114,7 +5114,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "ww" = (
 /obj/structure/rack/shelf,
@@ -5199,7 +5199,7 @@
 /turf/open/floor/wood,
 /area/rogue/under/town/basement/keep)
 "wS" = (
-/obj/effect/spawner/roguemap/treeorbush,
+/obj/effect/spawner/map_spawner/treeorbush,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "wV" = (
@@ -5231,7 +5231,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains)
 "xa" = (
 /obj/effect/decal/cleanable/blood/splatter,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "xb" = (
 /turf/open/water/bloody,
@@ -5247,7 +5247,7 @@
 /obj/structure/stairs/stone{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "xg" = (
 /obj/structure/fluff/pillow/magenta,
@@ -5287,9 +5287,9 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "xm" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/lootdrop/steel_weapon_spawner,
-/obj/effect/spawner/lootdrop/steel_weapon_spawner,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "xn" = (
 /obj/effect/decal/cleanable/blood/old,
@@ -5391,7 +5391,7 @@
 /obj/structure/chair/bench{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "xH" = (
 /obj/structure/flora/grass/thorn_bush,
@@ -5447,7 +5447,7 @@
 /area/rogue/under/town/basement/keep)
 "xW" = (
 /obj/structure/closet/dirthole/closed,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "xX" = (
@@ -5531,7 +5531,7 @@
 	dir = 1
 	},
 /obj/structure/chair/stool,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "yq" = (
 /obj/effect/decal/herringbone{
@@ -5621,8 +5621,8 @@
 /area/rogue/indoors/town/manor)
 "yG" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "yH" = (
@@ -5649,7 +5649,7 @@
 /turf/open/floor/tile,
 /area/rogue/indoors/town/vault)
 "yP" = (
-/obj/effect/spawner/roguemap/hauntpile,
+/obj/effect/spawner/map_spawner/hauntpile,
 /obj/effect/decal/cleanable/debris/woody,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
@@ -5685,7 +5685,7 @@
 "yX" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "yZ" = (
 /turf/closed/mineral/bedrock{
@@ -5747,7 +5747,7 @@
 /area/rogue/indoors/town/manor)
 "zo" = (
 /obj/structure/bed/inn/double,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "zq" = (
 /obj/structure/fluff/railing/border{
@@ -5764,7 +5764,7 @@
 /turf/open/floor/cobble,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "zu" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "zw" = (
@@ -5793,7 +5793,7 @@
 	pixel_y = 0;
 	layer = 4.12
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "zB" = (
 /obj/structure/chair/stool,
@@ -5823,7 +5823,7 @@
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "zJ" = (
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "zL" = (
 /obj/structure/chair/bench/coucha,
@@ -5937,7 +5937,7 @@
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Al" = (
-/obj/item/kitchen/spoon/aalloy,
+/obj/item/kitchen/spoon/iron,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -5991,7 +5991,7 @@
 /obj/machinery/light/fueled/wallfire/candle/blue/r{
 	pixel_y = -32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "AC" = (
 /obj/structure/fluff/statue/gargoyle,
@@ -5999,12 +5999,12 @@
 /area/rogue/indoors/town/manor)
 "AD" = (
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "AG" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "AH" = (
 /turf/closed/wall/mineral/decostone/end{
@@ -6031,8 +6031,8 @@
 /area/rogue/indoors/town/vault)
 "AL" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_clutter_spawner,
-/obj/effect/spawner/lootdrop/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
+/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "AN" = (
@@ -6058,11 +6058,11 @@
 /area/rogue/indoors/town/manor)
 "AW" = (
 /obj/item/natural/stone,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "AX" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "AZ" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
@@ -6081,7 +6081,7 @@
 	layer = 4.12
 	},
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Bd" = (
 /obj/effect/landmark/mapGenerator/cave{
@@ -6280,7 +6280,7 @@
 "BO" = (
 /obj/structure/table/wood,
 /obj/item/kitchen/rollingpin,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "BP" = (
 /turf/closed/wall/mineral/stone/moss/red,
@@ -6397,7 +6397,7 @@
 "Cp" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Cq" = (
 /obj/structure/chair/wood/alt/fancy{
@@ -6429,7 +6429,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Cx" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Cy" = (
@@ -6441,7 +6441,7 @@
 	pixel_y = 7;
 	pixel_x = 3
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Cz" = (
 /obj/structure/table/wood{
@@ -6452,7 +6452,7 @@
 	dir = 1;
 	icon_state = "longtable"
 	},
-/obj/item/storage/belt/surgery_bag/full{
+/obj/item/storage/backpack/satchel/surgbag{
 	pixel_y = 10
 	},
 /obj/item/natural/cloth{
@@ -6481,7 +6481,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "CF" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "CH" = (
 /obj/structure/fluff/statue/gargoyle,
@@ -6490,7 +6490,7 @@
 "CI" = (
 /obj/effect/decal/cleanable/debris/stony,
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "CJ" = (
 /obj/machinery/light/fueled/hearth{
@@ -6549,7 +6549,7 @@
 /obj/machinery/light/fueled/hearth{
 	icon_state = "hearth0"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Db" = (
 /turf/open/floor/wood,
@@ -6575,7 +6575,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Dj" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/original,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Dl" = (
 /obj/structure/fluff/walldeco/maidendrape{
@@ -6607,11 +6607,11 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Dr" = (
 /obj/item/natural/stoneblock,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Ds" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
-/obj/item/weapon/knife/idagger/adagger,
+/obj/item/weapon/knife/dagger/steel/special,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Dt" = (
@@ -6623,7 +6623,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/indoors/town/manor)
 "Dv" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "Dw" = (
 /turf/closed/wall/mineral/pipe{
@@ -6724,7 +6724,7 @@
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/manor)
 "DS" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "DT" = (
@@ -6810,7 +6810,7 @@
 "Em" = (
 /obj/item/natural/wood/plank,
 /obj/effect/decal/cleanable/debris/woody,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "En" = (
 /turf/open/floor/rooftop/green{
@@ -6828,7 +6828,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Ep" = (
 /obj/structure/bars/tough,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Eq" = (
 /mob/living/simple_animal/hostile/retaliate/direbear,
@@ -6847,14 +6847,14 @@
 /area/rogue/indoors/town/manor)
 "Et" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Eu" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Ey" = (
@@ -6882,7 +6882,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "EB" = (
-/obj/effect/spawner/roguemap/hauntpile,
+/obj/effect/spawner/map_spawner/hauntpile,
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "EC" = (
@@ -6907,17 +6907,17 @@
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "EK" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "EL" = (
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/reagent_containers/glass/cup/aalloygob,
+/obj/item/reagent_containers/glass/cup/irongob,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "EM" = (
@@ -6991,7 +6991,7 @@
 	pixel_y = 20
 	},
 /obj/structure/fluff/wallclock,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Fn" = (
 /obj/structure/bars/pipe{
@@ -7123,11 +7123,11 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "FX" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "FY" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "Ga" = (
 /obj/effect/decal/cleanable/blood/old,
@@ -7188,7 +7188,7 @@
 	pixel_x = -7;
 	redstone_id = "vampire_enter"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "Gl" = (
 /obj/item/ore/coal/charcoal,
@@ -7243,7 +7243,7 @@
 	pixel_x = -9;
 	pixel_y = -1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Gx" = (
 /obj/structure/door/viewport{
@@ -7280,7 +7280,7 @@
 /area/rogue/indoors/cave/rmh_cave/cold)
 "GH" = (
 /obj/structure/stairs/stone,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "GI" = (
 /obj/structure/flora/tree/pine{
@@ -7290,7 +7290,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "GJ" = (
 /obj/effect/decal/cleanable/debris/stony,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "GK" = (
@@ -7298,7 +7298,7 @@
 	pixel_x = 32;
 	density = 0
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "GL" = (
 /obj/structure/bars/pipe{
@@ -7358,7 +7358,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "GX" = (
 /turf/open/floor/naturalstone,
@@ -7374,7 +7374,7 @@
 /turf/open/floor/churchbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Ha" = (
-/obj/effect/spawner/roguemap/hauntpile,
+/obj/effect/spawner/map_spawner/hauntpile,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Hb" = (
@@ -7528,16 +7528,15 @@
 /obj/item/key/mercenary,
 /obj/item/key/tavern,
 /obj/item/key/courtphys,
-/obj/item/key/farm,
 /obj/item/key/tailor,
-/obj/item/key/shop,
+/obj/item/key/shops/shop1,
 /obj/item/key/nightmaiden,
 /obj/item/key/archive,
 /obj/item/key/apartments/stable1,
 /obj/item/key/apartments/stable2,
-/obj/item/key/tavernkeep,
+/obj/item/key/tavern,
 /obj/item/key/tower,
-/obj/item/key/crafterguild,
+/obj/item/key/artificer,
 /obj/item/key/dungeon,
 /turf/open/floor/tile/harem,
 /area/rogue/under/town/basement/keep)
@@ -7580,8 +7579,8 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "HM" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "HO" = (
@@ -7614,12 +7613,12 @@
 /obj/structure/stairs/stone{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "HU" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "HV" = (
@@ -7684,7 +7683,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Ik" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Il" = (
@@ -7735,12 +7734,12 @@
 /area/rogue/indoors/town/manor)
 "Iz" = (
 /obj/item/natural/wood/plank,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "IB" = (
 /obj/item/natural/stone,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "IC" = (
 /obj/structure/door/viewport{
@@ -7767,9 +7766,9 @@
 /area/rogue/indoors/town/manor)
 "IG" = (
 /obj/structure/rack,
-/obj/item/weapon/greatsword/paalloy,
-/obj/item/weapon/greatsword/paalloy,
-/turf/open/floor/herringbone,
+/obj/item/weapon/sword/long/greatsword/zwei,
+/obj/item/weapon/sword/long/greatsword/zwei,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "IH" = (
 /obj/structure/fluff/walldeco/customflag{
@@ -7806,7 +7805,7 @@
 	dir = 8
 	},
 /obj/effect/decal/cleanable/blood/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "IM" = (
 /obj/structure/fake_machine/steward,
@@ -7836,8 +7835,8 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "IP" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "IQ" = (
 /turf/closed/wall/mineral/craftstone,
@@ -7862,8 +7861,8 @@
 /area/rogue/indoors/town/manor)
 "IT" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_clutter_spawner,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "IU" = (
@@ -7890,13 +7889,13 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "IY" = (
 /obj/structure/fluff/railing/border,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Ja" = (
 /obj/structure/rack,
-/obj/item/weapon/halberd/bardiche/paalloy,
-/obj/item/weapon/halberd/bardiche/paalloy,
-/turf/open/floor/herringbone,
+/obj/item/weapon/halberd/bardiche,
+/obj/item/weapon/halberd/bardiche,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Jb" = (
 /turf/open/floor/tile/harem1,
@@ -7944,7 +7943,7 @@
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "Jk" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "Jl" = (
 /obj/structure/door/fancy{
@@ -8072,11 +8071,11 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "JT" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "JV" = (
 /obj/effect/decal/cleanable/blood/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "JW" = (
 /obj/structure/bars/tough{
@@ -8123,7 +8122,7 @@
 /area/rogue/indoors/town/manor)
 "Ke" = (
 /obj/structure/rack,
-/obj/item/ingot/aalloy,
+/obj/item/ingot/iron,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Kh" = (
@@ -8135,7 +8134,7 @@
 /area/rogue/indoors/town/vault)
 "Kk" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Kl" = (
 /obj/structure/chair/wood{
@@ -8170,11 +8169,11 @@
 /area/rogue/indoors/town/bath)
 "Kp" = (
 /obj/structure/mannequin,
-/obj/item/clothing/armor/plate/paalloy,
-/obj/item/clothing/pants/platelegs/paalloy,
-/obj/item/clothing/wrists/roguetown/bracers/paalloy,
-/obj/item/clothing/gloves/chain/paalloy,
-/obj/item/clothing/head/helmet/heavy/guard/paalloy,
+/obj/item/clothing/armor/plate/blkknight,
+/obj/item/clothing/pants/platelegs/blk,
+/obj/item/clothing/wrists/bracers/copper,
+/obj/item/clothing/gloves/chain,
+/obj/item/clothing/head/helmet/heavy/blkknight,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/town/manor)
 "Kq" = (
@@ -8206,11 +8205,11 @@
 /obj/structure/chair/bench{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "KA" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "KC" = (
@@ -8262,7 +8261,7 @@
 "KM" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "KN" = (
 /obj/structure/bookcase/random/archive,
@@ -8275,7 +8274,7 @@
 "KP" = (
 /obj/item/natural/stoneblock,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "KQ" = (
 /obj/structure/fluff/railing/border,
@@ -8284,7 +8283,7 @@
 	},
 /area/rogue/indoors/town/manor)
 "KT" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "KU" = (
@@ -8354,12 +8353,12 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "Lg" = (
 /obj/structure/closet/crate/chest/wicker,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/medical,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/medical,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/food,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/food,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/food,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/medical,
+/obj/effect/spawner/map_spawner/loot/dungeon/medical,
+/obj/effect/spawner/map_spawner/loot/dungeon/food,
+/obj/effect/spawner/map_spawner/loot/dungeon/food,
+/obj/effect/spawner/map_spawner/loot/dungeon/food,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Lh" = (
@@ -8438,7 +8437,7 @@
 /obj/structure/stairs{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Lu" = (
 /obj/structure/bars/pipe{
@@ -8469,7 +8468,7 @@
 	icon_state = "longtable";
 	dir = 1
 	},
-/obj/item/roguemachine/mastermail,
+/obj/item/fake_machine/mastermail,
 /obj/item/key/vampire,
 /turf/open/floor/tile/harem,
 /area/rogue/under/town/basement/keep)
@@ -8479,12 +8478,12 @@
 /obj/item/reagent_containers/food/snacks/produce/grain/wheat,
 /obj/item/reagent_containers/food/snacks/produce/grain/wheat,
 /obj/item/reagent_containers/food/snacks/produce/grain/wheat,
-/obj/item/reagent_containers/food/snacks/produce/potato/rogue,
-/obj/item/reagent_containers/food/snacks/produce/potato/rogue,
-/obj/item/reagent_containers/food/snacks/produce/potato/rogue,
-/obj/item/reagent_containers/food/snacks/produce/onion,
-/obj/item/reagent_containers/food/snacks/produce/onion,
-/obj/item/reagent_containers/food/snacks/produce/onion,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/potato,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/potato,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/potato,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/onion,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/onion,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/onion,
 /obj/item/reagent_containers/food/snacks/produce/vegetable/cabbage,
 /obj/item/reagent_containers/food/snacks/produce/vegetable/cabbage,
 /obj/item/reagent_containers/food/snacks/produce/vegetable/cabbage,
@@ -8529,8 +8528,8 @@
 	},
 /area/rogue/indoors/town/manor)
 "LR" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "LT" = (
@@ -8555,7 +8554,7 @@
 /obj/structure/stairs/stone{
 	dir = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "LY" = (
 /obj/structure/stairs/stone{
@@ -8565,8 +8564,8 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "Mb" = (
 /obj/structure/rack,
-/obj/item/weapon/woodstaff,
-/obj/item/weapon/woodstaff,
+/obj/item/weapon/polearm/woodstaff,
+/obj/item/weapon/polearm/woodstaff,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/town/manor)
 "Mc" = (
@@ -8603,7 +8602,7 @@
 "Mh" = (
 /obj/structure/bars/tough,
 /obj/structure/bars/tough,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Mi" = (
 /obj/structure/rack/shelf/big{
@@ -8687,7 +8686,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "Mw" = (
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Mx" = (
 /obj/structure/bars/pipe{
@@ -8702,8 +8701,8 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "MA" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_clutter_spawner,
-/obj/effect/spawner/lootdrop/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
+/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "MB" = (
@@ -8731,7 +8730,7 @@
 /area/rogue/indoors/town/manor)
 "MI" = (
 /obj/machinery/light/fueled/wallfire/candle,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "MK" = (
 /turf/open/floor/metal,
@@ -8741,7 +8740,7 @@
 /area/rogue/indoors/town/rmh/magician/pass)
 "MO" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "MQ" = (
 /obj/structure/flora/newleaf,
@@ -8758,7 +8757,7 @@
 /area/rogue/under/town/basement/keep)
 "MU" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "MV" = (
@@ -8803,7 +8802,7 @@
 /area/rogue/indoors/town/manor)
 "Ne" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Nf" = (
 /obj/effect/decal/herringbone,
@@ -8844,7 +8843,7 @@
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Nl" = (
-/obj/effect/spawner/roguemap/treeorbush,
+/obj/effect/spawner/map_spawner/treeorbush,
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Nm" = (
@@ -8894,7 +8893,7 @@
 /obj/item/bottle_kit{
 	pixel_x = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Nr" = (
 /turf/open/floor/rooftop{
@@ -8921,7 +8920,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Nw" = (
 /obj/structure/fermentation_keg/distiller,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Ny" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
@@ -8939,11 +8938,11 @@
 /area/rogue/under/town/basement/keep)
 "NE" = (
 /obj/effect/decal/cleanable/blood/gibs/core,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "NF" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "NG" = (
 /obj/structure/trap/chill{
@@ -8962,10 +8961,10 @@
 	icon_state = "largetable";
 	pixel_y = 0
 	},
-/obj/item/millstone{
+/obj/structure/fluff/millstone{
 	pixel_y = 12
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "NL" = (
 /obj/structure/door/iron/bars{
@@ -8989,19 +8988,19 @@
 	icon_state = "largetable"
 	},
 /obj/item/reagent_containers/food/snacks/meat/salami,
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = -3;
 	pixel_y = 14
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = -15;
 	pixel_y = -1
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = 6;
 	pixel_y = 12
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = -16;
 	pixel_y = 13
 	},
@@ -9070,7 +9069,7 @@
 "Oc" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Od" = (
 /obj/effect/decal/cobbleedge{
@@ -9082,7 +9081,7 @@
 /area/rogue/under/town/basement/keep)
 "Of" = (
 /obj/structure/chair/bench,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Oh" = (
 /obj/structure/door/stone,
@@ -9199,7 +9198,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/weapon/hammer/aalloy,
+/obj/item/weapon/hammer/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "OO" = (
@@ -9221,7 +9220,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "OQ" = (
 /obj/structure/stairs/stone,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "OR" = (
 /turf/open/floor/carpet/purple,
@@ -9244,7 +9243,7 @@
 /turf/open/floor/grass,
 /area/rogue/indoors/town/manor)
 "OY" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "OZ" = (
@@ -9258,14 +9257,14 @@
 "Pa" = (
 /obj/effect/decal/cleanable/debris/woody,
 /mob/living/simple_animal/hostile/retaliate/minotaur/original,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Pb" = (
 /turf/open/floor/dirt,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "Pc" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Pd" = (
 /obj/structure/fluff/railing/border{
@@ -9296,7 +9295,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Pl" = (
 /obj/effect/decal/cleanable/blood/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Pn" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
@@ -9334,12 +9333,12 @@
 /obj/structure/fluff/walldeco/med3{
 	pixel_y = 32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Pu" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "Pw" = (
 /obj/structure/fluff/railing/border{
@@ -9403,11 +9402,11 @@
 	dir = 1;
 	pixel_y = 6
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "PK" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/tile,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "PN" = (
@@ -9482,7 +9481,7 @@
 /area/rogue/indoors/town/manor)
 "Qb" = (
 /obj/machinery/light/fueled/firebowl/off,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Qc" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -9502,7 +9501,7 @@
 /obj/machinery/light/fueled/torchholder/hotspring{
 	pixel_y = -32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Qh" = (
 /turf/closed/wall/mineral/stonebrick,
@@ -9549,8 +9548,8 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Qu" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/weapons,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/weapons,
+/obj/effect/spawner/map_spawner/loot/dungeon/weapons,
+/obj/effect/spawner/map_spawner/loot/dungeon/weapons,
 /turf/open/floor/volcanic,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Qw" = (
@@ -9562,11 +9561,11 @@
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Qx" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Qy" = (
@@ -9593,17 +9592,17 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "QB" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/materials,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/materials,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "QC" = (
 /turf/closed/wall/mineral/stonebrick,
 /area/rogue/under/town/basement/keep)
 "QE" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "QF" = (
 /obj/item/natural/wood/plank,
@@ -9634,7 +9633,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "QN" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "QO" = (
 /obj/structure/flora/grass{
@@ -9713,7 +9712,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/reagent_containers/glass/bowl/aalloy,
+/obj/item/reagent_containers/glass/bowl/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Rl" = (
@@ -9730,7 +9729,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Rn" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Rp" = (
 /obj/structure/flora/grass{
@@ -9749,7 +9748,7 @@
 	name = "Tower"
 	},
 /obj/effect/mapping_helpers/access/locker,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "Rs" = (
 /obj/structure/fluff/walldeco/painting/seraphina{
@@ -9762,7 +9761,7 @@
 "Rt" = (
 /obj/effect/decal/cleanable/blood/gibs/core,
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Ru" = (
 /turf/open/floor/naturalstone,
@@ -9817,7 +9816,7 @@
 /turf/closed/wall/mineral/decostone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "RF" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "RH" = (
@@ -9831,7 +9830,7 @@
 /obj/machinery/light/fueled/torchholder/hotspring{
 	pixel_x = -32
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "RK" = (
 /turf/open/floor/carpet/lord/center,
@@ -9840,8 +9839,8 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/manor)
 "RN" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "RP" = (
@@ -9860,7 +9859,7 @@
 /area/rogue/indoors/town/manor)
 "RT" = (
 /obj/effect/decal/cleanable/debris/woody,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/misc,
+/obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "RU" = (
@@ -9897,17 +9896,17 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Sb" = (
 /obj/machinery/light/fueled/firebowl/standing,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Sc" = (
 /obj/effect/decal/cleanable/debris/stony,
-/obj/item/clothing/shoes/boots/aalloy,
-/turf/open/floor/herringbone,
+/obj/item/clothing/shoes/boots/iron,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Sd" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Sf" = (
 /obj/item/natural/bundle/plank,
@@ -9916,7 +9915,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Sh" = (
 /obj/structure/rack,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Si" = (
 /obj/structure/flora/tree/burnt,
@@ -9997,7 +9996,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "SC" = (
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "SD" = (
 /obj/structure/fake_machine/mail{
@@ -10042,7 +10041,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "SP" = (
 /obj/structure/rack,
-/obj/item/weapon/hammer/aalloy,
+/obj/item/weapon/hammer/iron,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "SQ" = (
@@ -10067,13 +10066,13 @@
 "SU" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "SV" = (
 /obj/structure/stairs/stone{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "SZ" = (
 /obj/effect/landmark/quest_spawner/hard,
@@ -10083,7 +10082,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 10
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Tb" = (
 /obj/structure/fluff/railing/border{
@@ -10112,7 +10111,7 @@
 /obj/structure/chair/bench{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Tj" = (
 /obj/effect/decal/herringbone{
@@ -10136,7 +10135,7 @@
 /turf/open/water/bath,
 /area/rogue/indoors/town/bath)
 "Tn" = (
-/obj/item/reagent_containers/glass/bowl/aalloy,
+/obj/item/reagent_containers/glass/bowl/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "To" = (
@@ -10230,7 +10229,7 @@
 /area/rogue/indoors/town/manor)
 "TE" = (
 /obj/item/coin/gold/pile,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "TG" = (
@@ -10241,7 +10240,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "TI" = (
 /obj/effect/decal/cleanable/blood/gibs/up,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "TJ" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
@@ -10254,7 +10253,7 @@
 "TM" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "TN" = (
 /obj/effect/decal/cleanable/debris/stony,
@@ -10298,10 +10297,10 @@
 	pixel_y = 0
 	},
 /obj/structure/rack/shelf,
-/obj/item/reagent_containers/glass/bottle/beer/jagdtrunk{
+/obj/item/reagent_containers/glass/bottle/jagdtrunk{
 	pixel_x = -3
 	},
-/obj/item/reagent_containers/glass/bottle/beer/apfelweinheim{
+/obj/item/reagent_containers/glass/bottle/apfelweinheim{
 	pixel_x = 3
 	},
 /obj/item/reagent_containers/glass/bottle/wine/sourwine{
@@ -10345,16 +10344,16 @@
 /area/rogue/indoors/town/rmh/magician/pass)
 "Ub" = (
 /obj/structure/table/wood,
-/obj/item/millstone{
+/obj/structure/fluff/millstone{
 	pixel_y = 12
 	},
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Uf" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_clutter_spawner,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Ug" = (
 /obj/structure/bars/pipe{
@@ -10365,7 +10364,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Uh" = (
 /obj/effect/decal/cleanable/blood/tracks,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Ui" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
@@ -10390,7 +10389,7 @@
 /area/rogue/outdoors/rmh_air)
 "Uo" = (
 /obj/structure/closet/crate/chest/old_crate,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Uq" = (
 /obj/structure/fluff/walldeco/church/line{
@@ -10410,7 +10409,7 @@
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 6
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Uu" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt,
@@ -10444,15 +10443,15 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "UB" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/spawner/lootdrop/valuable_tableware_spawner,
-/obj/effect/spawner/lootdrop/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
+/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "UC" = (
 /obj/structure/stairs/stone{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "UD" = (
 /obj/effect/decal/cobbleedge{
@@ -10518,7 +10517,7 @@
 	},
 /area/rogue/under/town/basement/keep)
 "UR" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "US" = (
 /obj/structure/table/wood{
@@ -10604,7 +10603,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/reagent_containers/glass/cup/aalloygob,
+/obj/item/reagent_containers/glass/cup/irongob,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Vi" = (
@@ -10641,7 +10640,7 @@
 	pixel_x = 0;
 	pixel_y = 0
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Vs" = (
 /obj/item/ore/coal/charcoal,
@@ -10696,7 +10695,7 @@
 /obj/structure/stairs/stone{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "VE" = (
 /obj/effect/decal/herringbone{
@@ -10718,12 +10717,12 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "VH" = (
 /obj/effect/decal/cleanable/blood/old,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "VI" = (
 /obj/machinery/light/fueled/firebowl/off,
 /obj/effect/decal/cleanable/debris/stony,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "VJ" = (
 /obj/structure/fluff/railing/border{
@@ -10782,7 +10781,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/manor)
 "VU" = (
-/obj/item/cooking/pan/aalloy,
+/obj/item/cooking/pan/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "VV" = (
@@ -10805,8 +10804,8 @@
 /area/rogue/indoors/town/manor)
 "Wa" = (
 /obj/structure/rack,
-/obj/effect/spawner/lootdrop/steel_weapon_spawner,
-/turf/open/floor/herringbone,
+/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Wd" = (
 /obj/structure/door/fancy{
@@ -10824,8 +10823,8 @@
 /turf/open/floor/snow/patchy,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Wg" = (
-/obj/effect/spawner/lootdrop/roguetown/dungeon/money,
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/dungeon/money,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Wh" = (
@@ -10908,7 +10907,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Wz" = (
 /obj/structure/table/church/alt,
-/obj/item/reagent_containers/glass/bowl/aalloy,
+/obj/item/reagent_containers/glass/bowl/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "WA" = (
@@ -10992,7 +10991,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "WS" = (
 /obj/structure/closet/crate/chest/neu_fancy,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "WT" = (
 /obj/machinery/light/fueled/firebowl/standing/blue,
@@ -11047,23 +11046,23 @@
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Xc" = (
 /obj/structure/table/wood,
-/obj/item/reagent_containers/glass/bucket/pot/teapot/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teapot{
 	list_reagents = list(/datum/reagent/consumable/golden_calendula_tea = 99);
 	pixel_y = 7
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = -10;
 	pixel_y = 10
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = -10;
 	pixel_y = -2
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = 11;
 	pixel_y = -3
 	},
-/obj/item/reagent_containers/glass/bottle/glazed_teacup/fancy{
+/obj/item/reagent_containers/glass/bottle/glazed_teacup{
 	pixel_x = 7;
 	pixel_y = 11
 	},
@@ -11133,7 +11132,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Xs" = (
 /obj/effect/landmark/start/vampirespawnlate,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Xt" = (
 /turf/open/floor/metal,
@@ -11157,7 +11156,7 @@
 	dir = 6;
 	icon_state = "largetable"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/under/town/basement/keep)
 "Xy" = (
 /obj/structure/bars/pipe{
@@ -11181,11 +11180,11 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "XC" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "XD" = (
 /obj/structure/chair/wood/alt/fancy{
@@ -11210,7 +11209,7 @@
 /obj/item/reagent_containers/food/snacks/egg,
 /obj/item/reagent_containers/food/snacks/egg,
 /obj/item/reagent_containers/food/snacks/egg,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "XF" = (
 /obj/structure/flora/tree/pine{
@@ -11263,7 +11262,7 @@
 "XN" = (
 /obj/item/natural/wood/plank,
 /obj/effect/decal/cleanable/debris/woody,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "XP" = (
 /obj/item/coin/gold/pile,
@@ -11296,7 +11295,7 @@
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "XX" = (
-/obj/item/kitchen/spoon/aalloy,
+/obj/item/kitchen/spoon/iron,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "XY" = (
@@ -11349,7 +11348,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Yg" = (
 /obj/structure/bars/pipe{
@@ -11426,10 +11425,10 @@
 /area/rogue/under/town/basement/keep)
 "Yt" = (
 /obj/structure/closet/crate/chest/neu,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/tools,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/tools,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/armor,
-/obj/effect/spawner/lootdrop/roguetown/dungeon/weapons,
+/obj/effect/spawner/map_spawner/loot/dungeon/tools,
+/obj/effect/spawner/map_spawner/loot/dungeon/tools,
+/obj/effect/spawner/map_spawner/loot/dungeon/armor,
+/obj/effect/spawner/map_spawner/loot/dungeon/weapons,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Yu" = (
@@ -11506,7 +11505,7 @@
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "YM" = (
-/obj/effect/spawner/lootdrop/valuable_jewelry_spawner,
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "YP" = (
@@ -11652,7 +11651,7 @@
 	lockid = "mansionvampire"
 	},
 /obj/effect/mapping_helpers/access/locker,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/manor)
 "Zw" = (
 /obj/structure/bars/pipe{
@@ -11666,7 +11665,7 @@
 /obj/structure/stairs/stone{
 	dir = 1
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "ZB" = (
 /obj/structure/flora/grass{
@@ -11708,7 +11707,7 @@
 "ZJ" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "ZK" = (
 /obj/effect/decal/cleanable/blood/old,
@@ -11737,7 +11736,7 @@
 "ZS" = (
 /obj/effect/decal/cleanable/debris/stony,
 /obj/effect/decal/remains/human,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "ZU" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,

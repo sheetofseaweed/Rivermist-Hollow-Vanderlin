@@ -34,14 +34,14 @@
 	H.adjust_skillrank_up_to(/datum/skill/craft/cooking, 1, TRUE)
 	H.adjust_skillrank_up_to(/datum/skill/misc/medicine, 4, TRUE)
 	belt = /obj/item/storage/belt/rogue/leather
-	shirt = /obj/item/clothing/shirt/undershirt/random
+	shirt = /obj/item/clothing/shirt/undershirt/colored/random
 	cloak = /obj/item/clothing/cloak/raincloak/brown
 	pants = /obj/item/clothing/pants/trou
 	shoes = /obj/item/clothing/shoes/boots/
 	backr = /obj/item/storage/backpack/satchel
-	wrists = /obj/item/clothing/wrists/roguetown/bracers/leather
+	wrists = /obj/item/clothing/wrists/bracers/leather
 	neck = /obj/item/storage/belt/rogue/pouch/coins/poor
-	armor = /obj/item/clothing/armor/workervest
+	armor = /obj/item/clothing/armor/gambeson/light/striped
 	beltr = /obj/item/flint
 	beltl = /obj/item/weapon/knife
 	/*ADD_TRAIT(H, TRAIT_FAITHLESS, TRAIT_GENERIC)

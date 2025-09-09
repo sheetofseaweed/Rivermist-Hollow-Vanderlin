@@ -10,7 +10,7 @@
 /turf/open/floor/sand,
 /area/rogue/indoors/cave/rmh_cave/wet/mindflayer)
 "ar" = (
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/woods/goblincampfire)
 "aA" = (
@@ -219,7 +219,7 @@
 /turf/open/water/swamp,
 /area/rogue/under/cavewet/rmh/swamp_caves)
 "hk" = (
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt/road,
 /area/rogue/under/cave/rmh/goblindungeon)
 "hl" = (
@@ -239,7 +239,7 @@
 /area/rogue/outdoors/bog/rmh/south)
 "hz" = (
 /obj/structure/rack,
-/obj/item/weapon/spear/aalloy,
+/obj/item/weapon/spear/iron,
 /turf/open/floor/dirt,
 /area/rogue/under/cave/rmh/goblindungeon)
 "hA" = (
@@ -294,7 +294,7 @@
 /turf/open/floor/cobble,
 /area/rogue/under/cave/orcdungeon)
 "iq" = (
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/hay,
 /area/rogue/indoors/shelter/rtfield)
 "iy" = (
@@ -322,7 +322,7 @@
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "iV" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog/rmh/south)
 "iY" = (
@@ -565,7 +565,7 @@
 "pZ" = (
 /obj/structure/flora/grass,
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "qe" = (
@@ -629,9 +629,9 @@
 /area/rogue/outdoors)
 "rQ" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/rmh/goblindungeon)
 "rU" = (
@@ -780,7 +780,7 @@
 /area/rogue/under/cavewet/rmh/wolf)
 "xV" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/bog/rmh/south)
 "xY" = (
@@ -836,7 +836,7 @@
 "zN" = (
 /obj/item/natural/wood/plank,
 /obj/effect/decal/cleanable/debris/woody,
-/obj/effect/spawner/lootdrop/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/shelter/bog)
 "zW" = (
@@ -924,7 +924,7 @@
 /area/rogue/under/cavewet/bogcaves/central)
 "Cl" = (
 /obj/structure/table/wood/plain/alt,
-/obj/item/weapon/knife/stoneknife,
+/obj/item/weapon/knife/stone,
 /turf/open/floor/dirt,
 /area/rogue/under/cave/rmh/goblindungeon)
 "Cu" = (
@@ -941,7 +941,7 @@
 /area/rogue/under/cavewet/rmh/swamp_caves)
 "CX" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog/rmh/north)
 "Dl" = (
@@ -1058,7 +1058,7 @@
 /area/rogue/under/cavewet/rmh/swamp_caves)
 "FI" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/bog/rmh/north)
 "FJ" = (
@@ -1205,7 +1205,7 @@
 /area/rogue/outdoors/woods/rmh)
 "Iv" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "Iw" = (
@@ -1339,7 +1339,7 @@
 /area/rogue/outdoors/bog/rmh/south)
 "LJ" = (
 /obj/structure/rack,
-/obj/item/weapon/spear/aalloy,
+/obj/item/weapon/spear/iron,
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/rmh/goblindungeon)
 "LM" = (
@@ -1399,14 +1399,14 @@
 /area/rogue/under/rmh_bedrock)
 "Nb" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog/rmh/north)
 "Nh" = (
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /obj/structure/rack,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt,
 /area/rogue/under/cave/rmh/goblindungeon)
 "Ni" = (
@@ -1473,7 +1473,7 @@
 /area/rogue/outdoors/caves)
 "Pn" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/decrepit_equipment_spawner,
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "Pp" = (
@@ -1862,7 +1862,7 @@
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "Yq" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/lootdrop/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog/rmh/south)
 "YG" = (

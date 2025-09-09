@@ -43,15 +43,15 @@
 		belt = /obj/item/storage/belt/rogue/leather
 		beltl = /obj/item/storage/belt/rogue/pouch/coins/poor
 		//beltr = /obj/item/key/blacksmith
-		cloak = /obj/item/clothing/cloak/apron/blacksmith
+		cloak = /obj/item/clothing/cloak/apron/brown
 	else
 		pants = /obj/item/clothing/pants/trou
-		armor = /obj/item/clothing/shirt/dress/gen/random
+		armor = /obj/item/clothing/shirt/dress/gen/colored/random
 		backr = /obj/item/storage/backpack/satchel
 		backpack_contents = list(/obj/item/weapon/hammer = 1, /obj/item/weapon/tongs = 1)
 		shoes = /obj/item/clothing/shoes/roguetown/shortboots
 		belt = /obj/item/storage/belt/rogue/leather
-		cloak = /obj/item/clothing/cloak/apron/blacksmith
+		cloak = /obj/item/clothing/cloak/apron/brown
 		beltl = /obj/item/storage/belt/rogue/pouch/coins/poor
 		//beltr = /obj/item/key/blacksmith
 	H.change_stat("strength", 2)

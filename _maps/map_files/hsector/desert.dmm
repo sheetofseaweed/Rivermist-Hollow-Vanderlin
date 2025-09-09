@@ -448,10 +448,6 @@
 /turf/open/floor/cobble/mossy,
 /area/rogue/outdoors/rmh_desert/port)
 "uA" = (
-/obj/item/fishingcage{
-	pixel_y = 6;
-	pixel_x = -5
-	},
 /obj/item/rope,
 /turf/open/floor/sand/desertsand,
 /area/rogue/outdoors/rmh_desert/port)
@@ -525,10 +521,6 @@
 /obj/item/storage/sack{
 	pixel_x = -10;
 	pixel_y = -9
-	},
-/obj/item/fishingcage{
-	pixel_y = 12;
-	pixel_x = -1
 	},
 /turf/open/floor/cobble/mossy,
 /area/rogue/outdoors/rmh_desert/port)

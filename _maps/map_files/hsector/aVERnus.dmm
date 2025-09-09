@@ -131,7 +131,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "eU" = (
 /obj/effect/decal/cobbleedge{
@@ -145,7 +145,7 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "eY" = (
 /obj/effect/decal/cobbleedge{
@@ -153,7 +153,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "fg" = (
 /obj/machinery/light/fueled/wallfire/candle,
@@ -170,7 +170,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/inq)
 "fv" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq/office)
 "fQ" = (
 /obj/structure/stairs/fancy{
@@ -246,7 +246,7 @@
 "hP" = (
 /obj/structure/hotspring,
 /obj/structure/fluff/railing/corner,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "ib" = (
 /obj/machinery/light/fueled/firebowl/standing/blue,
@@ -254,7 +254,7 @@
 /area/rogue/indoors/inq)
 "id" = (
 /obj/structure/fermentation_keg/water,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "il" = (
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -312,7 +312,7 @@
 /area/rogue/indoors/inq)
 "jp" = (
 /obj/item/soap/bath,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "jK" = (
 /obj/structure/fluff{
@@ -399,7 +399,7 @@
 /obj/machinery/light/fueled/candle/floorcandle/alt/pink{
 	pixel_y = -16
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "lc" = (
 /turf/open/floor/tile/masonic/single,
@@ -430,7 +430,7 @@
 "md" = (
 /obj/structure/hotspring,
 /obj/structure/fluff/railing/corner/south_east,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "mk" = (
 /obj/structure/fluff/railing/corner/south_west,
@@ -443,7 +443,7 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/railing/border/west,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "mp" = (
 /turf/closed/wall/mineral/stonebrick,
@@ -585,7 +585,7 @@
 /area/rogue/indoors/inq)
 "qu" = (
 /obj/structure/hotspring/border/seven,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "qF" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/r,
@@ -604,7 +604,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "qM" = (
 /obj/structure/chair/wood/alt/fancy/chair5{
@@ -626,10 +626,10 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "rf" = (
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "rp" = (
 /obj/structure/stairs/fancy/l{
@@ -667,7 +667,7 @@
 	dir = 4;
 	icon_state = "borderfall"
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "tz" = (
 /turf/closed/wall/mineral/decostone/long,
@@ -678,7 +678,7 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "tE" = (
 /turf/open/floor/tile,
@@ -730,7 +730,7 @@
 	alpha = 100;
 	brightness = 15
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq/office)
 "ut" = (
 /turf/open/floor/concrete,
@@ -871,7 +871,7 @@
 "AI" = (
 /obj/structure/hotspring,
 /obj/structure/fluff/railing/corner/south_west,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "AZ" = (
 /obj/effect/decal/cobbleedge{
@@ -885,11 +885,11 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Bc" = (
 /obj/machinery/light/fueled/candle/floorcandle/pink,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Bu" = (
 /obj/structure/fluff/railing/corner/south_east,
@@ -1018,7 +1018,7 @@
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "EZ" = (
 /obj/structure/fluff/wallclock/vampire/r,
@@ -1086,7 +1086,7 @@
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Hq" = (
 /obj/effect/decal/cobbleedge{
@@ -1123,7 +1123,7 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Id" = (
 /obj/structure/fluff/railing/corner/south_east,
@@ -1146,7 +1146,7 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/railing/border,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "IU" = (
 /obj/structure/fluff/railing/corner,
@@ -1159,7 +1159,7 @@
 /area/rogue/indoors/inq)
 "Jc" = (
 /obj/machinery/light/fueled/wallfire/candle,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "JY" = (
 /obj/structure/fluff/railing/border/west,
@@ -1217,7 +1217,7 @@
 /area/rogue/indoors/inq/office)
 "Lh" = (
 /obj/effect/landmark/start/nukeop_leader,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq/office)
 "Lo" = (
 /turf/open/floor/tile/masonic/inverted,
@@ -1237,7 +1237,7 @@
 /area/rogue/indoors/inq)
 "Mn" = (
 /obj/structure/hotspring,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "MH" = (
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -1248,7 +1248,7 @@
 /area/rogue/indoors/inq)
 "MR" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Nb" = (
 /obj/machinery/light/fueled/chand{
@@ -1257,7 +1257,7 @@
 	alpha = 100;
 	layer = 4
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Nk" = (
 /obj/structure/table/wood/large/corner{
@@ -1345,7 +1345,7 @@
 /area/rogue/indoors/inq)
 "OP" = (
 /obj/structure/train/far_travel,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq/office)
 "OT" = (
 /obj/effect/decal/cobbleedge{
@@ -1369,7 +1369,7 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Pv" = (
 /obj/machinery/light/fueled/wallfire/candle,
@@ -1450,7 +1450,7 @@
 "Rn" = (
 /obj/structure/hotspring,
 /obj/structure/fluff/railing/corner/north_east,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Rq" = (
 /obj/structure/fluff/statue/tdummy,
@@ -1481,7 +1481,7 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Sq" = (
 /obj/structure/table/wood/large/corner/north_west,
@@ -1510,7 +1510,7 @@
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Ta" = (
 /obj/structure/fluff/statue/aasimar,
@@ -1567,7 +1567,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "UW" = (
 /obj/machinery/light/fueled/wallfire{
@@ -1623,7 +1623,7 @@
 /obj/machinery/light/fueled/candle/floorcandle/alt/pink{
 	pixel_y = -16
 	},
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Wx" = (
 /turf/closed/wall/mineral/decostone/long/east_west,
@@ -1648,7 +1648,7 @@
 /area/rogue/indoors/inq)
 "Xk" = (
 /obj/item/bin/water,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "Xx" = (
 /turf/open/floor/tile/masonic,
@@ -1684,7 +1684,7 @@
 "YA" = (
 /obj/structure/hotspring,
 /obj/item/soap/bath,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "YM" = (
 /obj/structure/fluff/railing/border/east,
@@ -1697,7 +1697,7 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/railing/border/north,
-/turf/open/floor/herringbone,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/inq)
 "ZB" = (
 /obj/structure/fluff/railing/border/west,
