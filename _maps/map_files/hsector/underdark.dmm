@@ -1609,7 +1609,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "yZ" = (
-/turf/open/floor/ruinedwood/herringbone,
+/turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/main)
 "zh" = (
 /obj/effect/decal/remains/human,
@@ -2712,7 +2712,7 @@
 /area/rogue/under/underdark/rmh/deepwastes)
 "RO" = (
 /obj/item/coin/iron,
-/turf/open/floor/ruinedwood/herringbone,
+/turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/shar)
 "RV" = (
 /mob/living/simple_animal/hostile/rogue/dreamfiend/ancient,
@@ -2887,7 +2887,7 @@
 /area/rogue/under/underdark/rmh/shrub)
 "Uf" = (
 /obj/item/coin/iron/pile,
-/turf/open/floor/ruinedwood/herringbone,
+/turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/shar)
 "Uk" = (
 /obj/structure/kneestingers,
@@ -3218,7 +3218,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "ZY" = (
-/turf/open/floor/ruinedwood/herringbone,
+/turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/shar)
 
 (1,1,1) = {"
