@@ -187,9 +187,12 @@ jobs:
             fi
           done
           
-          if [ -f ".git/hooks/pre-commit" ]; then
+          # Run pre-commit hook if it exists and hooks were installed successfully
+          if [ "$hooks_installed" = "true" ] && [ -f ".git/hooks/pre-commit" ]; then
             echo "Running pre-commit hook to process maps..."
             .git/hooks/pre-commit || echo "Pre-commit hook completed with warnings"
+          else
+            echo "Pre-commit hook not available, skipping map processing"
           fi
           
           summary_msg="Sync from Vanderlin: $successful_picks commits"
