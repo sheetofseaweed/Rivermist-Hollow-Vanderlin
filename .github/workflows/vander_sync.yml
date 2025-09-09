@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: "0 3 * * *"   # runs daily at 3am UTC
   workflow_dispatch:       # allow manual trigger
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -24,19 +25,53 @@ jobs:
           git fetch vanderlin
           git fetch origin
           
-      - name: Debug - Check current state
+      - name: Check if sync is needed
+        id: check_sync
         run: |
-          echo "=== Current branch and remotes ==="
-          git branch -a
-          git remote -v
-          echo "=== Latest commit in origin/main ==="
-          git log -1 --oneline origin/main
-          echo "=== Latest commit in vanderlin/main ==="
-          git log -1 --oneline vanderlin/main
-          echo "=== Checking for differences ==="
-          git diff --stat origin/main vanderlin/main || echo "Diff command failed"
+          # Get the last sync commit to find what we've already synced
+          last_sync_commit=$(git log origin/main --grep="Sync from Vanderlin" --format="%H" -n 1 || echo "")
           
-      - name: Create and switch to sync branch
+          if [ -n "$last_sync_commit" ]; then
+            echo "Found last sync commit: $last_sync_commit"
+            # Check if there are new commits in Vanderlin since our last sync
+            new_commits=$(git rev-list --count $last_sync_commit..vanderlin/main 2>/dev/null || git rev-list --count vanderlin/main)
+          else
+            echo "No previous sync found, checking all commits"
+            new_commits=$(git rev-list --count vanderlin/main)
+          fi
+          
+          echo "New commits to sync: $new_commits"
+          echo "new_commits=$new_commits" >> $GITHUB_OUTPUT
+          echo "last_sync_commit=$last_sync_commit" >> $GITHUB_OUTPUT
+          
+          if [ "$new_commits" -eq 0 ]; then
+            echo "No new commits to sync"
+            echo "needs_sync=false" >> $GITHUB_OUTPUT
+          else
+            echo "Sync needed"
+            echo "needs_sync=true" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Skip if no changes
+        if: steps.check_sync.outputs.needs_sync == 'false'
+        run: |
+          echo "No new changes to sync from Vanderlin. Exiting."
+          exit 0
+          
+      - name: Debug - Show what we're syncing
+        if: steps.check_sync.outputs.needs_sync == 'true'
+        run: |
+          echo "=== Changes to be synced ==="
+          if [ -n "${{ steps.check_sync.outputs.last_sync_commit }}" ]; then
+            echo "Changes since last sync:"
+            git log --oneline ${{ steps.check_sync.outputs.last_sync_commit }}..vanderlin/main
+          else
+            echo "Latest commits from Vanderlin:"
+            git log --oneline vanderlin/main -10
+          fi
+          
+      - name: Create sync branch
+        if: steps.check_sync.outputs.needs_sync == 'true'
         run: |
           # Delete existing sync branch if it exists
           git branch -D sync-from-vander 2>/dev/null || true
@@ -45,68 +80,73 @@ jobs:
           # Create fresh sync branch from current main
           git checkout -b sync-from-vander origin/main
           
-      - name: Merge Vanderlin changes
-        id: merge_step
-        run: |
-          # Attempt to merge Vanderlin's main branch
-          if git merge vanderlin/main --no-ff --allow-unrelated-histories -m "Sync from Vanderlin: $(date)"; then
-            echo "merge_status=success" >> $GITHUB_OUTPUT
-            echo "Merge completed successfully"
-          else
-            echo "merge_status=conflicts" >> $GITHUB_OUTPUT
-            echo "Merge conflicts detected - will create PR for manual resolution"
-            
-            # List conflicted files and save to output
-            echo "=== CONFLICTED FILES ==="
-            conflicted_files=$(git diff --name-only --diff-filter=U)
-            echo "$conflicted_files"
-            echo "conflicted_files<<EOF" >> $GITHUB_OUTPUT
-            echo "$conflicted_files" >> $GITHUB_OUTPUT
+ then
+              echo "✅ Successfully picked: $commit_msg"
+              successful_picks=$((successful_picks + 1))
+            else
+              echo "❌ Conflicts in: $commit_msg"
+              conflicts_found=true
+              failed_picks="$failed_picks\n- $commit: $commit_msg"
+              
+              # List conflicted files
+              conflicted_files=$(git diff --name-only --diff-filter=U)
+              echo "Conflicted files: $conflicted_files"
+              
+              # Add conflicted files and continue
+              git add -A
+              git commit --no-edit || git cherry-pick --continue
+            fi
+          done
+          
+          # Create summary commit
+          summary_msg="Sync from Vanderlin: $successful_picks commits"
+          if [ "$conflicts_found" = true ]; then
+            summary_msg="$summary_msg (with conflicts)"
+            echo "sync_status=conflicts" >> $GITHUB_OUTPUT
+            echo "failed_picks<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$failed_picks" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
-            
-            # Show conflict summary
-            echo "=== CONFLICT SUMMARY ==="
-            git status --porcelain | grep "^UU\|^AA\|^DD" || echo "No standard conflict markers found"
-            
-            # Add all files (including conflicted ones) to staging
-            git add -A
-            
-            # Create a commit with the conflicts
-            git commit -m "WIP: Sync from Vanderlin with conflicts - needs manual resolution"
+          else
+            echo "sync_status=success" >> $GITHUB_OUTPUT
           fi
           
+          echo "successful_picks=$successful_picks" >> $GITHUB_OUTPUT
+          
       - name: Push sync branch
+        if: steps.check_sync.outputs.needs_sync == 'true'
         run: |
           git push origin sync-from-vander --force
           
       - name: Create Pull Request
+        if: steps.check_sync.outputs.needs_sync == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Prepare PR body based on merge status
-          if [ "${{ steps.merge_step.outputs.merge_status }}" = "conflicts" ]; then
-            pr_body="This PR merges the latest changes from Vanderlin into Noctra.
+          # Prepare PR body based on sync status
+          if [ "${{ steps.sync_step.outputs.sync_status }}" = "conflicts" ]; then
+            pr_body="This PR syncs ${{ steps.sync_step.outputs.successful_picks }} commits from Vanderlin into Noctra.
 
-           **MERGE CONFLICTS DETECTED** - Manual resolution required.
+          MERGE CONFLICTS DETECTED - Some commits had conflicts that were automatically resolved.
 
-          ## Conflicted Files:
-          \`\`\`
-          ${{ steps.merge_step.outputs.conflicted_files }}
-          \`\`\`
+          ## Commits with conflicts:
+          ${{ steps.sync_step.outputs.failed_picks }}
 
-          Please review and resolve the conflicts in the files listed above.
+          Please review the automatic conflict resolution and ensure it's correct.
 
           Auto-generated sync from GitHub Actions run #${{ github.run_number }}
           Triggered at: $(date)"
-            pr_title="MERGE CONFLICTS: Sync updates from Vanderlin - ${{ github.run_id }}"
+            pr_title="Sync from Vanderlin (${{ steps.sync_step.outputs.successful_picks }} commits) - Review conflicts"
           else
-            pr_body="This PR merges the latest changes from Vanderlin into Noctra.
+            pr_body="This PR cleanly syncs ${{ steps.sync_step.outputs.successful_picks }} new commits from Vanderlin into Noctra.
 
-           **Merge completed successfully** - Ready to review and merge.
+          Clean merge - No conflicts detected.
+
+          ## Recent changes:
+          $(git log --oneline sync-from-vander ^origin/main --max-count=10)
 
           Auto-generated sync from GitHub Actions run #${{ github.run_number }}
           Triggered at: $(date)"
-            pr_title="Sync updates from Vanderlin - ${{ github.run_id }}"
+            pr_title="Sync from Vanderlin (${{ steps.sync_step.outputs.successful_picks }} commits)"
           fi
 
           # Create PR using GitHub CLI
@@ -115,4 +155,4 @@ jobs:
             --head sync-from-vander \
             --title "$pr_title" \
             --body "$pr_body" \
-            || echo "PR may already exist"
+            || echo "PR creation failed or already exists"
