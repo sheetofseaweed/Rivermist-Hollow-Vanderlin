@@ -19,41 +19,6 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-      - name: Install repository hooks and merge drivers
-        run: |
-          if [ -f "tools/hooks/install.sh" ]; then
-            echo "Installing repository hooks and merge drivers..."
-            chmod +x tools/hooks/install.sh
-            cd tools/hooks && ./install.sh
-            cd ../..
-            
-            echo "Installed hooks and merge drivers:"
-            ls -la .git/hooks/
-            echo "Git config for merge drivers:"
-            git config --list | grep merge || echo "No merge drivers configured"
-          elif [ -d "tools/hooks" ]; then
-            echo "Manual hook installation (no install.sh found)..."
-            chmod +x tools/hooks/*
-            
-            for hook_file in tools/hooks/*.hook; do
-              if [ -f "$hook_file" ]; then
-                hook_name=$(basename "$hook_file" .hook)
-                cp "$hook_file" ".git/hooks/$hook_name"
-                chmod +x ".git/hooks/$hook_name"
-                echo "Installed hook: $hook_name"
-              fi
-            done
-            
-            for merge_file in tools/hooks/*.merge; do
-              if [ -f "$merge_file" ]; then
-                merge_name=$(basename "$merge_file" .merge)
-                echo "Found merge driver: $merge_name"
-              fi
-            done
-          else
-            echo "No hooks directory found"
-          fi
-          
       - name: Add Vanderlin remote and fetch
         run: |
           git remote add vanderlin https://github.com/Monkestation/Vanderlin.git
@@ -63,10 +28,12 @@ jobs:
       - name: Check if sync is needed
         id: check_sync
         run: |
+          # Get the last sync commit to find what we've already synced
           last_sync_commit=$(git log origin/main --grep="Sync from Vanderlin" --format="%H" -n 1 || echo "")
           
           if [ -n "$last_sync_commit" ]; then
             echo "Found last sync commit: $last_sync_commit"
+            # Check if there are new commits in Vanderlin since our last sync
             new_commits=$(git rev-list --count $last_sync_commit..vanderlin/main 2>/dev/null || git rev-list --count vanderlin/main)
           else
             echo "No previous sync found, checking all commits"
@@ -106,22 +73,28 @@ jobs:
       - name: Create sync branch
         if: steps.check_sync.outputs.needs_sync == 'true'
         run: |
+          # Delete existing sync branch if it exists
           git branch -D sync-from-vander 2>/dev/null || true
           git push origin --delete sync-from-vander 2>/dev/null || true
+          
+          # Create fresh sync branch from current main
           git checkout -b sync-from-vander origin/main
           
       - name: Apply Vanderlin changes using cherry-pick
         if: steps.check_sync.outputs.needs_sync == 'true'
         id: sync_step
         run: |
+          # Determine the range of commits to cherry-pick
           if [ -n "${{ steps.check_sync.outputs.last_sync_commit }}" ]; then
             commit_range="${{ steps.check_sync.outputs.last_sync_commit }}..vanderlin/main"
           else
+            # For first sync, get a reasonable number of recent commits
             commit_range="vanderlin/main~10..vanderlin/main"
           fi
           
           echo "Cherry-picking commits from range: $commit_range"
           
+          # Get list of commits to cherry-pick (oldest first)
           commits_to_pick=$(git rev-list --reverse $commit_range 2>/dev/null || echo "")
           
           if [ -z "$commits_to_pick" ]; then
@@ -133,6 +106,7 @@ jobs:
           echo "Commits to cherry-pick:"
           echo "$commits_to_pick"
           
+          # Cherry-pick each commit
           conflicts_found=false
           successful_picks=0
           failed_picks=""
@@ -142,59 +116,24 @@ jobs:
             commit_msg=$(git log --format="%s" -n 1 $commit)
             
             if git cherry-pick $commit --no-ff; then
-              echo "Successfully picked: $commit_msg"
+              echo " Successfully picked: $commit_msg"
               successful_picks=$((successful_picks + 1))
             else
               echo "Conflicts in: $commit_msg"
               conflicts_found=true
               failed_picks="$failed_picks\n- $commit: $commit_msg"
               
+              # List conflicted files
               conflicted_files=$(git diff --name-only --diff-filter=U)
               echo "Conflicted files: $conflicted_files"
               
-              echo "Attempting automatic conflict resolution..."
-              
-              if [ -f ".git/hooks/dmi.merge" ] || [ -f "tools/hooks/dmi.merge" ]; then
-                for file in $conflicted_files; do
-                  if [[ "$file" == *.dmi ]]; then
-                    echo "Running DMI merger on $file"
-                  fi
-                done
-              fi
-              
-              if [ -f ".git/hooks/dmm.merge" ] || [ -f "tools/hooks/dmm.merge" ]; then
-                for file in $conflicted_files; do
-                  if [[ "$file" == *.dmm ]]; then
-                    echo "Running DMM merger on $file"
-                  fi
-                done
-              fi
-              
-              remaining_conflicts=$(git diff --name-only --diff-filter=U)
-              if [ -z "$remaining_conflicts" ]; then
-                echo "Conflicts auto-resolved by merge drivers"
-              else
-                echo "Some conflicts remain: $remaining_conflicts"
-              fi
-              
+              # Add conflicted files and continue
               git add -A
-              
-              if git cherry-pick --continue; then
-                echo "Cherry-pick continued successfully"
-              else
-                git commit --no-edit -m "Resolve conflicts in: $commit_msg"
-              fi
+              git commit --no-edit || git cherry-pick --continue
             fi
           done
           
-          # Run pre-commit hook if it exists and hooks were installed successfully
-          if [ "$hooks_installed" = "true" ] && [ -f ".git/hooks/pre-commit" ]; then
-            echo "Running pre-commit hook to process maps..."
-            .git/hooks/pre-commit || echo "Pre-commit hook completed with warnings"
-          else
-            echo "Pre-commit hook not available, skipping map processing"
-          fi
-          
+          # Create summary commit
           summary_msg="Sync from Vanderlin: $successful_picks commits"
           if [ "$conflicts_found" = true ]; then
             summary_msg="$summary_msg (with conflicts)"
@@ -218,10 +157,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Prepare PR body based on sync status
           if [ "${{ steps.sync_step.outputs.sync_status }}" = "conflicts" ]; then
             pr_body="This PR syncs ${{ steps.sync_step.outputs.successful_picks }} commits from Vanderlin into Noctra.
 
-          MERGE CONFLICTS DETECTED - Some commits had conflicts that were automatically resolved.
+          **MERGE CONFLICTS DETECTED** - Some commits had conflicts that were automatically resolved.
 
           ## Commits with conflicts:
           ${{ steps.sync_step.outputs.failed_picks }}
@@ -230,20 +170,21 @@ jobs:
 
           Auto-generated sync from GitHub Actions run #${{ github.run_number }}
           Triggered at: $(date)"
-            pr_title="Sync from Vanderlin (${{ steps.sync_step.outputs.successful_picks }} commits) - Review conflicts"
+            pr_title="⚠ Sync from Vanderlin (${{ steps.sync_step.outputs.successful_picks }} commits) - Review conflicts"
           else
             pr_body="This PR cleanly syncs ${{ steps.sync_step.outputs.successful_picks }} new commits from Vanderlin into Noctra.
 
-          Clean merge - No conflicts detected.
+           **Clean merge** - No conflicts detected.
 
           ## Recent changes:
           $(git log --oneline sync-from-vander ^origin/main --max-count=10)
 
           Auto-generated sync from GitHub Actions run #${{ github.run_number }}
           Triggered at: $(date)"
-            pr_title="Sync from Vanderlin (${{ steps.sync_step.outputs.successful_picks }} commits)"
+            pr_title=" Sync from Vanderlin (${{ steps.sync_step.outputs.successful_picks }} commits)"
           fi
 
+          # Create PR using GitHub CLI
           gh pr create \
             --base main \
             --head sync-from-vander \
