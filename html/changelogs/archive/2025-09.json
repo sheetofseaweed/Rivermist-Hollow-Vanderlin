@@ -260,5 +260,12 @@
                 "rscdel": "deleted herobrine"
             }
         ]
+    },
+    "2025-09-10": {
+        "CheffieGithub": [
+            {
+                "bugfix": "IMPORTANT: fixed toggles not being able to be saved if all options are off."
+            }
+        ]
     }
 }
