@@ -102,8 +102,8 @@
 	background_track_dusk = null
 	background_track_night = null
 	ambush_times = list("night","dawn","dusk","day")
-	/*ambush_mobs = list(
-				/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound = 50)*/
+	ambush_mobs = list(
+				/mob/living/simple_animal/hostile/dreamfiend = 50)
 	//deathsight_message = "Gauntlet of Shar"
 	ceiling_protected = TRUE
 

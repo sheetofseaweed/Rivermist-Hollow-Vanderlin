@@ -49,12 +49,12 @@
 /turf/open/floor/tile/harem2,
 /area/rogue/indoors/town/rmh/town_hall)
 "aby" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/structure/closet/crate/chest/old_crate,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "abG" = (
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /obj/structure/closet/crate/chest/old_crate,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/cave/rmh_cave/mine)
@@ -211,7 +211,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh)
 "ais" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/blocks/paving,
 /area/rogue/under/town/rmh/sewer)
 "aiw" = (
@@ -321,7 +321,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh/tavern)
 "amJ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/landmark/quest_spawner/easy{
 	quest_type = list("Kill","Beacon");
 	kill_mobs = list(/mob/living/simple_animal/hostile/retaliate/bigrat)
@@ -420,7 +420,7 @@
 /area/rogue/indoors/town/rmh/garrison)
 "arQ" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/naturalstone,
 /area/rogue/under/cavewet)
 "arR" = (
@@ -461,7 +461,7 @@
 /turf/open/floor/rooftop/green/east,
 /area/rogue/outdoors/town/rmh/roofs)
 "atO" = (
-/obj/effect/decal/cleanable/debris/woody{
+/obj/effect/decal/cleanable/debris/wood{
 	dir = 1
 	},
 /turf/open/floor/ruinedwood,
@@ -642,10 +642,10 @@
 /area/rogue/indoors/town/rmh/garrison)
 "aAt" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_gloves_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
-/obj/effect/spawner/map_spawner/loot/armored_wrists_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /turf/open/floor/cobblerock,
@@ -780,7 +780,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh/town_hall)
 "aHv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/under/town/rmh/sewer)
 "aHH" = (
@@ -1148,7 +1148,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/mine)
 "aUZ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/underhamlet{
@@ -1162,7 +1162,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh)
 "aVs" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/mole,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -1217,7 +1217,7 @@
 	},
 /area/rogue/outdoors/town/rmh/roofs)
 "aXa" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /mob/living/simple_animal/hostile/retaliate/spider/mutated{
 	BUFSTR = 3;
 	BUFCON = 3
@@ -1312,7 +1312,7 @@
 /area/rogue/indoors/cave/rmh_cave/greenskins)
 "bar" = (
 /obj/structure/chair/stool,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/basement)
 "baF" = (
@@ -1801,7 +1801,7 @@
 /area/rogue/indoors/cave/rmh_cave/wet/lake)
 "bsi" = (
 /obj/item/natural/bundle/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/magician/pass)
 "btm" = (
@@ -2015,7 +2015,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "bAa" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/machinery/light/fueled/torchholder/c{
 	pixel_x = 15
 	},
@@ -2289,7 +2289,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/outdoors/rmh_field/druid)
 "bLe" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/outdoors/town{
 	name = "Rivermist Hollow";
@@ -2306,9 +2306,6 @@
 /obj/item/cooking/pan,
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/rmh/magician)
-"bLH" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/under/town/rmh/basement)
 "bLI" = (
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
@@ -2550,7 +2547,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "bSY" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/wood/herringbone2,
 /turf/open/floor/blocks/stonered/tiny,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
@@ -2591,10 +2588,6 @@
 	name = "Rivermist Hollow";
 	first_time_text = "RIVERMIST HOLLOW"
 	})
-"bVf" = (
-/obj/structure/fermentation_keg/beer,
-/turf/open/floor/blocks,
-/area/rogue/under/town/rmh/basement)
 "bVs" = (
 /obj/structure/bed/inn/double{
 	dir = 1
@@ -3260,11 +3253,8 @@
 /obj/machinery/light/fueled/firebowl/stump,
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field/east)
-"cnX" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh/crafters_guild/under)
 "cnY" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh)
 "coe" = (
@@ -3287,7 +3277,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/town/rmh/sewer)
 "cpA" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/turned,
 /area/rogue/indoors/town/rmh/sawmill)
 "cpS" = (
@@ -3450,7 +3440,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/outdoors/town/rmh/roofs)
 "cwb" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/rooftop/green/east,
 /area/rogue/outdoors/rmh_air)
 "cwj" = (
@@ -3585,7 +3575,7 @@
 /turf/closed/wall/mineral/stone/moss,
 /area/rogue/indoors/town/rmh/garrison/wall)
 "cCn" = (
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/greenskins)
 "cCq" = (
@@ -3719,7 +3709,6 @@
 "cJw" = (
 /obj/structure/bed,
 /obj/item/bedsheet/wool,
-/obj/effect/landmark/start/bogmaster,
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/garrison/wall)
 "cKc" = (
@@ -3789,7 +3778,7 @@
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/rmh/magician)
 "cNb" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/fertilizer/ash,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -3983,7 +3972,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "cUC" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors)
 "cVa" = (
@@ -4606,7 +4595,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "doa" = (
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /obj/structure/closet/crate/chest/old_crate,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/greenskins)
@@ -4777,7 +4766,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh/town_hall)
 "dta" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/outdoors/rmh_field)
 "dtc" = (
@@ -4803,7 +4792,7 @@
 /turf/open/floor/cobble,
 /area/rogue/under/town/rmh/basement)
 "dtB" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "dtY" = (
@@ -4826,7 +4815,7 @@
 	},
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "dvA" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "dvN" = (
@@ -4875,7 +4864,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/outdoors/rmh_air)
 "dwq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "dwF" = (
@@ -4985,7 +4974,6 @@
 	dir = 5;
 	pixel_y = 0
 	},
-/obj/effect/landmark/start/guard_captain,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh/town_hall)
 "dAH" = (
@@ -5049,7 +5037,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/rmh/town_hall)
 "dBB" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "dBL" = (
@@ -5122,7 +5110,7 @@
 /turf/open/floor/ruinedwood/turned,
 /area/rogue/outdoors/river)
 "dDW" = (
-/obj/effect/spawner/map_spawner/loot/medium_armor_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /obj/structure/closet/crate/chest/old_crate,
@@ -5151,7 +5139,6 @@
 	icon_state = "borderfall";
 	pixel_y = 8
 	},
-/obj/effect/landmark/start/knight,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/rmh/town_hall)
 "dEI" = (
@@ -5387,7 +5374,7 @@
 	pixel_y = 32
 	},
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors)
 "dMT" = (
@@ -5671,7 +5658,7 @@
 	amount = 6;
 	icon_state = "plankbundle3"
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/outdoors/rmh_field)
 "dXa" = (
@@ -5716,9 +5703,6 @@
 /obj/item/weapon/hammer/iron,
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
-"dZB" = (
-/turf/open/water/cleanshallow,
-/area/rogue/outdoors/river)
 "ead" = (
 /obj/structure/flora/hotspring_rocks/grassy,
 /obj/structure/flora/grass,
@@ -5829,15 +5813,6 @@
 	},
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/magician)
-"efd" = (
-/obj/effect/landmark/start/apothecary{
-	dir = 8
-	},
-/turf/open/floor/cobble/mossy,
-/area/rogue/outdoors/town{
-	name = "Rivermist Hollow";
-	first_time_text = "RIVERMIST HOLLOW"
-	})
 "efg" = (
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/fluff/railing/wood{
@@ -5912,7 +5887,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "egX" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field/camp)
 "egZ" = (
@@ -6058,12 +6033,12 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "eoL" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stoneblock,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "eoN" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -6175,9 +6150,6 @@
 	},
 /turf/open/floor/wood,
 /area/rogue/outdoors/rmh_field/west)
-"ess" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/under/town/rmh/basement)
 "esB" = (
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/indoors/town/rmh/bath)
@@ -6314,7 +6286,7 @@
 /turf/open/water/swamp,
 /area/rogue/under/town/rmh/basement)
 "ewZ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/bookcase/random/archive{
 	opacity = 0
 	},
@@ -6374,7 +6346,7 @@
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/rmh_field)
 "eyR" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/basement)
@@ -6503,7 +6475,7 @@
 /area/rogue/indoors/town/rmh/chapel/basement)
 "eCT" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_wrists_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /turf/open/floor/cobblerock,
@@ -6626,7 +6598,7 @@
 /area/rogue/outdoors/town/rmh/roofs)
 "eGq" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_gloves_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /obj/item/weapon/pick/steel,
@@ -6863,9 +6835,6 @@
 	},
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh)
-"eQi" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh/chapel/basement)
 "eQN" = (
 /obj/structure/bed/sleepingbag,
 /turf/open/floor/twig,
@@ -7120,7 +7089,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 10
 	},
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/rmh)
 "eYV" = (
@@ -7241,7 +7210,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/indoors/town/rmh/garrison/wall)
 "fgq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/machinery/light/fueled/torchholder/c,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -7331,7 +7300,7 @@
 /area/rogue/indoors/town/rmh/merchant)
 "fjG" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/magician/pass)
 "fka" = (
@@ -7349,7 +7318,6 @@
 	})
 "fkx" = (
 /obj/machinery/light/fueled/torchholder/c,
-/obj/effect/landmark/start/bogguardsman,
 /turf/open/floor/blocks,
 /area/rogue/indoors/town/rmh/garrison)
 "fkz" = (
@@ -7456,10 +7424,6 @@
 /obj/structure/fake_machine/merchantvend,
 /turf/closed/wall/mineral/decowood/vert,
 /area/rogue/indoors/town/rmh/merchant)
-"foS" = (
-/obj/effect/landmark/start/wretch,
-/turf/open/floor/cobblerock,
-/area/rogue/outdoors/rmh_field/west)
 "fpe" = (
 /obj/effect/landmark/mapGenerator/roguetownfield{
 	endTurfX = 255;
@@ -7686,7 +7650,7 @@
 /turf/open/floor/blocks,
 /area/rogue/under/town/rmh/basement)
 "fzq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/roguerock,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
@@ -7803,12 +7767,6 @@
 /obj/structure/fermentation_keg/water,
 /turf/open/floor/blocks,
 /area/rogue/indoors/town/rmh/garrison/wall)
-"fFU" = (
-/obj/effect/landmark/start/druid{
-	dir = 8
-	},
-/turf/open/floor/naturalstone,
-/area/rogue/under/cavewet)
 "fHs" = (
 /obj/structure/closet/crate/crafted_closet,
 /obj/item/clothing/cloak/stole/red,
@@ -7825,10 +7783,6 @@
 	dir = 1
 	},
 /area/rogue/indoors/town/rmh)
-"fHI" = (
-/obj/effect/landmark/start/councillor,
-/turf/open/floor/wood,
-/area/rogue/indoors/town/rmh/town_hall)
 "fHP" = (
 /obj/structure/stairs{
 	dir = 2
@@ -7973,7 +7927,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/under/town/rmh/basement)
 "fND" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/rmh/sewer)
 "fOe" = (
@@ -8173,7 +8127,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "fTs" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/basement)
 "fTt" = (
@@ -8437,8 +8391,8 @@
 /turf/closed/wall/mineral/decostone/moss/blue/long,
 /area/rogue/indoors/town/rmh/magician/pass)
 "gco" = (
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "gcF" = (
@@ -8514,10 +8468,6 @@
 /obj/structure/flora/grass,
 /turf/open/floor/grass,
 /area/rogue/outdoors/exposed/magiciantower)
-"geM" = (
-/obj/effect/landmark/start/bogguardsman,
-/turf/open/floor/blocks,
-/area/rogue/indoors/town/rmh/garrison/wall)
 "geN" = (
 /obj/structure/flora/hotspring_rocks/grassy,
 /turf/open/floor/dirt,
@@ -8544,7 +8494,7 @@
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh)
 "gfB" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/under/town/rmh/sewer)
 "ggk" = (
@@ -8727,9 +8677,9 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/rmh_field/druid)
 "glq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/sewers,
+/obj/effect/spawner/map_spawner/loot/common,
 /turf/open/floor/concrete,
 /area/rogue/under/town/rmh/sewer)
 "gly" = (
@@ -8739,7 +8689,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/outdoors/town/rmh/roofs)
 "gmd" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "gmD" = (
@@ -9065,7 +9015,7 @@
 /turf/open/floor/dirt,
 /area/rogue/indoors/town/church)
 "gwH" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/outdoors/beach/rmh_beach)
 "gwQ" = (
@@ -9183,7 +9133,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/town/rmh/roofs)
 "gBV" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/ruinedwood/herringbone_clear,
@@ -9256,7 +9206,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "gDw" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/cooking/pan,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/town/basement)
@@ -9275,7 +9225,6 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "gDM" = (
-/obj/effect/landmark/start/guildsman,
 /obj/structure/chair/stool,
 /obj/effect/decal/wood/herringbone2,
 /obj/effect/decal/wood/herringbone2{
@@ -9319,12 +9268,12 @@
 /turf/open/floor/AzureSand,
 /area/rogue/outdoors/river)
 "gFS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/rmh/sewer)
 "gGp" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_boots_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /turf/open/floor/naturalstone,
@@ -9373,7 +9322,7 @@
 /turf/open/floor/carpet,
 /area/rogue/indoors/town/rmh/town_hall)
 "gIA" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stoneblock,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
@@ -9426,18 +9375,6 @@
 	},
 /turf/open/floor/grass/yel,
 /area/rogue/outdoors/exposed/town/rmh/farm)
-"gLn" = (
-/obj/structure/fluff/walldeco/church/line{
-	dir = 8;
-	pixel_x = -4
-	},
-/obj/structure/fluff/walldeco/church/line{
-	dir = 4;
-	pixel_x = 4
-	},
-/obj/effect/landmark/start/martyr,
-/turf/open/floor/churchmarble,
-/area/rogue/indoors/town/rmh/chapel)
 "gLy" = (
 /turf/closed/wall/mineral/pipe{
 	dir = 1;
@@ -9692,7 +9629,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh)
 "gVF" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "gVO" = (
@@ -9798,8 +9735,8 @@
 /area/rogue/indoors/town/rmh/town_hall)
 "gYN" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/sewers,
-/obj/effect/spawner/map_spawner/loot/heavy_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/common,
+/obj/effect/spawner/map_spawner/loot/armor,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "gYX" = (
@@ -9945,7 +9882,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh/tavern)
 "hcD" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt,
 /area/rogue/under/town/rmh/sewer)
 "hdO" = (
@@ -10242,7 +10179,7 @@
 /turf/open/floor/grass/yel,
 /area/rogue/outdoors/rmh_field/north_mountain)
 "hmM" = (
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /obj/structure/closet/crate/chest/neu_iron,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/cave/rmh_cave/mine)
@@ -10337,10 +10274,6 @@
 /area/rogue/indoors/cave/underhamlet{
 	ceiling_protected = 1
 	})
-"hpn" = (
-/obj/effect/landmark/start/bogguardsman,
-/turf/open/floor/cobble,
-/area/rogue/indoors/town/rmh/garrison/wall)
 "hpq" = (
 /obj/machinery/anvil/crafted,
 /obj/item/weapon/hammer/iron,
@@ -10467,7 +10400,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/exposed/town/rmh/farm)
 "huz" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "huC" = (
@@ -10545,7 +10478,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/rmh)
 "hxp" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/dirt,
 /area/rogue/under/town/rmh/sewer)
@@ -10630,9 +10563,6 @@
 "hCp" = (
 /turf/open/floor/twig,
 /area/rogue/outdoors/bog)
-"hCB" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh)
 "hCZ" = (
 /obj/structure/door/fancy{
 	lockid = "farm"
@@ -10774,7 +10704,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/rmh/bath)
 "hIR" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/cobblerock,
@@ -10817,7 +10747,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh)
 "hKr" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement)
 "hKO" = (
@@ -10892,18 +10822,11 @@
 /area/rogue/indoors/cave/underhamlet{
 	ceiling_protected = 1
 	})
-"hMV" = (
-/obj/effect/landmark/start/physician,
-/turf/open/floor/cobble/mossy,
-/area/rogue/outdoors/town{
-	name = "Rivermist Hollow";
-	first_time_text = "RIVERMIST HOLLOW"
-	})
 "hNm" = (
 /mob/living/simple_animal/hostile/retaliate/infernal/imp{
 	del_on_deaggro = 599400
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "hNB" = (
@@ -11096,7 +11019,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/indoors/town/rmh/bath)
 "hWp" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt/road,
 /area/rogue/indoors)
 "hWs" = (
@@ -11351,7 +11274,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field/camp)
 "ifv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/blocks/green,
 /area/rogue/under/town/rmh/sewer)
 "ifF" = (
@@ -11398,7 +11321,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field)
 "ihO" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "ihP" = (
@@ -11548,7 +11471,6 @@
 /turf/open/water/swamp/deep,
 /area/rogue/under/town/rmh/sewer)
 "inl" = (
-/obj/effect/landmark/start/sergeant,
 /obj/structure/chair/wood/alt/chair3,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh/garrison)
@@ -11662,10 +11584,6 @@
 	},
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/garrison)
-"iqz" = (
-/obj/structure/fake_machine/merchantvend,
-/turf/closed/wall/mineral/wooddark,
-/area/rogue/indoors/town/rmh/crafters_guild/under)
 "iqA" = (
 /obj/structure/fluff/railing/wood{
 	dir = 8;
@@ -11750,9 +11668,6 @@
 	},
 /turf/open/floor/ruinedwood/chevron,
 /area/rogue/indoors/town/rmh/tavern)
-"itv" = (
-/turf/open/transparent/openspace,
-/area/rogue/indoors/town/rmh/crafters_guild/under)
 "itK" = (
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/town/rmh/magician/pass)
@@ -12027,7 +11942,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "iEs" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "iEt" = (
@@ -12153,14 +12068,6 @@
 	},
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/chapel/basement)
-"iKZ" = (
-/obj/structure/bed/inn,
-/obj/item/bedsheet/wool,
-/obj/effect/landmark/start/bogguardlate{
-	dir = 1
-	},
-/turf/open/floor/twig,
-/area/rogue/indoors/town/rmh/garrison)
 "iLd" = (
 /obj/structure/flora/grass,
 /obj/structure/flora/grass,
@@ -12270,7 +12177,7 @@
 /area/rogue/under/town/rmh/sewer)
 "iPi" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "iPy" = (
@@ -12324,7 +12231,7 @@
 /turf/open/floor/church,
 /area/rogue/indoors/town/rmh/merchant)
 "iQs" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "iQv" = (
@@ -12731,7 +12638,7 @@
 /area/rogue/indoors/town/rmh/cell)
 "jfw" = (
 /obj/structure/fluff/railing/corner/south_west,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/indoors)
 "jfB" = (
@@ -12886,14 +12793,9 @@
 	dir = 8
 	},
 /obj/structure/fluff/railing/border/west,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors)
-"jnB" = (
-/obj/structure/bed/shit,
-/obj/effect/landmark/start/hostage,
-/turf/open/floor/cobble,
-/area/rogue/indoors/town/rmh/cell)
 "jnH" = (
 /obj/effect/decal/cobble/mossy{
 	dir = 5
@@ -13090,7 +12992,7 @@
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/garrison)
 "jsa" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/underhamlet{
 	ceiling_protected = 1
@@ -13653,7 +13555,7 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh)
 "jPg" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/fluff/traveltile{
 	aportalgoesto = "mountainsdwarf";
 	aportalid = "minoutaurb"
@@ -13794,7 +13696,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "jUF" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/fluff/railing/fence{
 	dir = 1
 	},
@@ -13820,7 +13722,7 @@
 /turf/open/floor/tile/brick,
 /area/rogue/under/town/basement)
 "jVs" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/rmh)
 "jVR" = (
@@ -13932,7 +13834,7 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/under/town/rmh/bank)
 "jYZ" = (
-/obj/effect/spawner/map_spawner/loot/armored_gloves_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /obj/structure/closet/crate/chest/old_crate,
@@ -13999,7 +13901,7 @@
 /area/rogue/indoors/town/rmh/garrison/wall)
 "kbL" = (
 /obj/structure/fake_machine/stockpile,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "kbV" = (
@@ -14007,7 +13909,7 @@
 /turf/open/floor/grass,
 /area/rogue/indoors/town/church)
 "kck" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "kcp" = (
@@ -14240,13 +14142,6 @@
 /obj/item/paper/scroll,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
-"kjx" = (
-/obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_gloves_spawner{
-	lootcount = 3
-	},
-/turf/open/floor/naturalstone,
-/area/rogue/indoors/cave/rmh_cave/minotaur)
 "kjD" = (
 /obj/structure/closet/crate/crafted_closet/inn/south{
 	layer = 4.1;
@@ -14473,7 +14368,7 @@
 /area/rogue/indoors)
 "krP" = (
 /obj/structure/fluff/railing/wood,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/grass,
 /area/rogue/outdoors/town{
 	name = "Rivermist Hollow";
@@ -14520,7 +14415,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh/merchant)
 "ktm" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/wood,
 /area/rogue/outdoors/rmh_field)
 "ktr" = (
@@ -14662,7 +14557,7 @@
 /turf/closed/wall/mineral/decowood,
 /area/rogue/indoors/town/rmh)
 "kyZ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/rock,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
@@ -14938,8 +14833,8 @@
 /turf/open/floor/cobble,
 /area/rogue/outdoors/town/rmh/roofs)
 "kHy" = (
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/ruinedwood/turned,
 /area/rogue/indoors)
 "kHZ" = (
@@ -15110,7 +15005,7 @@
 	})
 "kQh" = (
 /obj/structure/fluff/railing/corner/south_west,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "kQl" = (
@@ -15168,7 +15063,7 @@
 	},
 /area/rogue/outdoors/town/rmh/roofs)
 "kTn" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "kTw" = (
@@ -15285,7 +15180,7 @@
 /area/rogue/under/town/rmh/sewer)
 "lax" = (
 /obj/item/natural/bundle/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "laC" = (
@@ -15351,8 +15246,7 @@
 	})
 "lbA" = (
 /obj/effect/turf_decal/magedecal{
-	icon_state = "imbuement"
-	pixel_x = -79;
+	icon_state = "imbuement"pixel_x=-79;
 	pixel_y = -49
 	},
 /turf/open/floor/ruinedwood/herringbone_clear,
@@ -15485,7 +15379,7 @@
 	},
 /area/rogue/under/town/rmh/basement)
 "lgl" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/fluff/railing/fence{
 	dir = 4
 	},
@@ -15547,7 +15441,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "liS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/reagent_containers/glass/cup,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement)
@@ -15890,9 +15784,6 @@
 	},
 /turf/open/floor/ruinedwood,
 /area/rogue/outdoors/town/rmh/roofs)
-"luO" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh/garrison)
 "luS" = (
 /obj/structure/fluff/walldeco/chains{
 	icon_state = "chains6"
@@ -16050,10 +15941,6 @@
 "lBG" = (
 /turf/open/floor/twig,
 /area/rogue/indoors/town)
-"lBV" = (
-/obj/effect/landmark/start/druid,
-/turf/open/floor/dirt/road,
-/area/rogue/outdoors/rmh_field/druid)
 "lCl" = (
 /obj/structure/closet/crate/drawer{
 	lockid = "roomiv"
@@ -16238,9 +16125,6 @@
 /obj/item/handheld_bell,
 /turf/open/floor/church,
 /area/rogue/indoors/town/rmh/chapel)
-"lIW" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh/merchant)
 "lJa" = (
 /obj/effect/decal/cobbleedge{
 	dir = 4;
@@ -16266,12 +16150,6 @@
 	dir = 1
 	},
 /area/rogue/under/town/rmh/basement)
-"lJO" = (
-/obj/effect/landmark/start/bogguardsman{
-	dir = 4
-	},
-/turf/open/floor/blocks,
-/area/rogue/indoors/town/rmh/garrison/wall)
 "lJT" = (
 /obj/effect/decal/cobbleedge{
 	dir = 4;
@@ -16472,7 +16350,7 @@
 /turf/open/floor/metal,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "lSP" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "lTe" = (
@@ -16646,9 +16524,6 @@
 	},
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh/tavern)
-"lZn" = (
-/turf/open/water/swamp/deep,
-/area/rogue/under/town/rmh/sewer)
 "lZx" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
 /obj/structure/fluff/wallclock{
@@ -16971,8 +16846,8 @@
 /turf/open/floor/church,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "mlK" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "mlO" = (
@@ -17167,7 +17042,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field/west)
 "mqr" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/metal/barograte,
 /area/rogue/under/town/rmh/sewer)
 "mqw" = (
@@ -17344,7 +17219,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/west)
 "mxy" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/rock,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/tile/brick,
@@ -17421,7 +17296,7 @@
 /turf/closed/wall/mineral/stonebrick,
 /area/rogue/indoors/town/rmh/magician)
 "myT" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/grown/log/tree/small,
 /turf/open/floor/ruinedwood/turned,
 /area/rogue/indoors/town/rmh/sawmill)
@@ -17651,12 +17526,11 @@
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh/garrison)
 "mIs" = (
-/obj/effect/landmark/start/druid,
 /obj/structure/bed/hay,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/rmh_field/druid)
 "mIu" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/reagent_containers/glass/bowl/iron,
 /turf/open/floor/wood,
 /area/rogue/indoors)
@@ -17804,9 +17678,6 @@
 /obj/structure/flora/grass,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
-"mMP" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh/magician/pass)
 "mNy" = (
 /obj/effect/decal/mossy{
 	dir = 4;
@@ -17981,7 +17852,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/rmh)
 "mRK" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/underhamlet{
 	ceiling_protected = 1
@@ -18311,7 +18182,7 @@
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "njb" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/wood/plank,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -18372,7 +18243,7 @@
 /area/rogue/indoors/town)
 "nkS" = (
 /obj/item/natural/bundle/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "nlu" = (
@@ -18488,7 +18359,7 @@
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh)
 "nqy" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/blocks,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "nqF" = (
@@ -18607,7 +18478,7 @@
 /area/rogue/outdoors/rmh_air)
 "nuQ" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "nuX" = (
@@ -18650,7 +18521,7 @@
 /area/rogue/under/town/rmh/basement)
 "nwB" = (
 /obj/item/natural/bundle/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "nwU" = (
@@ -18758,7 +18629,6 @@
 "nAJ" = (
 /obj/structure/bed/inn,
 /obj/item/bedsheet/wool,
-/obj/effect/landmark/start/bogguardlate,
 /turf/open/floor/twig,
 /area/rogue/indoors/town/rmh/garrison)
 "nCb" = (
@@ -19038,7 +18908,7 @@
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "nLS" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/fluff/traveltile{
 	aportalgoesto = "mountainsdwarf";
 	aportalid = "minoutaurb"
@@ -19227,7 +19097,7 @@
 /turf/open/floor/blocks/newstone/alt,
 /area/rogue/indoors/town/rmh/witch)
 "nVO" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/stone,
 /turf/open/floor/rooftop{
 	dir = 1;
@@ -19299,10 +19169,6 @@
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/garrison)
-"nYx" = (
-/obj/effect/landmark/start/marshal,
-/turf/open/floor/wood,
-/area/rogue/indoors/town/rmh/town_hall)
 "nYM" = (
 /turf/closed/wall/mineral/wooddark/horizontal,
 /area/rogue/indoors/town/rmh/miner)
@@ -19310,7 +19176,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "nZm" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
 /area/rogue/outdoors/rmh_field)
 "nZp" = (
@@ -19399,10 +19265,10 @@
 /area/rogue/outdoors/rmh_field/tavel/desert)
 "obB" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_boots_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
-/obj/effect/spawner/map_spawner/loot/armored_wrists_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /obj/machinery/light/fueled/torchholder{
@@ -19464,7 +19330,7 @@
 /area/rogue/indoors/town/church)
 "oet" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "ofd" = (
@@ -19855,7 +19721,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field)
 "ouC" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "ouD" = (
@@ -20572,7 +20438,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh)
 "oSK" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "oSU" = (
@@ -20675,7 +20541,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "oYw" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/beach/rmh_beach)
 "oYG" = (
@@ -20856,7 +20722,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/outdoors/town/rmh/roofs)
 "peB" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/outdoors/rmh_air)
 "peT" = (
@@ -20883,8 +20749,8 @@
 /area/rogue/indoors/town/rmh/tavern)
 "pfU" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/sewers,
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/common,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "pfW" = (
@@ -21008,7 +20874,7 @@
 /area/rogue/outdoors/beach/rmh_beach)
 "pjo" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "pjr" = (
@@ -21099,10 +20965,10 @@
 /area/rogue/indoors/town/rmh/chapel/basement)
 "pnl" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/armored_boots_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
-/obj/effect/spawner/map_spawner/loot/armored_wrists_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /turf/open/floor/hexstone,
@@ -21339,7 +21205,7 @@
 /turf/open/floor/dirt/road,
 /area/rogue/indoors)
 "pwW" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/rock/gemerald,
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/basement)
@@ -21434,7 +21300,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/rmh/town_hall)
 "pAs" = (
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /obj/structure/closet/crate/chest/old_crate,
 /turf/open/floor/cobble,
 /area/rogue/indoors/cave/rmh_cave/greenskins)
@@ -21687,7 +21553,7 @@
 /area/rogue/outdoors/river)
 "pLD" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/rooftop/green/north,
 /area/rogue/outdoors/rmh_air)
 "pLQ" = (
@@ -21940,7 +21806,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/rmh_air)
 "pYN" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/ore/coal,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -22105,7 +21971,7 @@
 	dir = 9
 	},
 /obj/structure/fluff/railing/corner,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors)
 "qeu" = (
@@ -22361,7 +22227,7 @@
 /obj/item/kitchen/spoon{
 	pixel_x = -11
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/blocks/stonered,
 /area/rogue/under/town/basement)
 "qrH" = (
@@ -22594,13 +22460,6 @@
 /obj/item/flint,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/rmh/basement)
-"qyL" = (
-/obj/effect/spawner/map_spawner/loot/armored_wrists_spawner{
-	lootcount = 3
-	},
-/obj/structure/closet/crate/chest/old_crate,
-/turf/open/floor/cobble,
-/area/rogue/indoors/cave/rmh_cave/greenskins)
 "qyV" = (
 /turf/closed/wall/mineral/roofwall/middle{
 	dir = 8
@@ -22938,7 +22797,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "qLj" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/town/rmh/sawmill)
 "qLr" = (
@@ -22965,10 +22824,6 @@
 	name = "Rivermist Hollow";
 	first_time_text = "RIVERMIST HOLLOW"
 	})
-"qMA" = (
-/obj/effect/landmark/start/knavewench,
-/turf/open/floor/wood,
-/area/rogue/indoors/town/rmh/tavern)
 "qMD" = (
 /obj/item/fertilizer/ash,
 /turf/open/floor/cobblerock,
@@ -23341,7 +23196,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "qZn" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors)
 "qZp" = (
@@ -23485,7 +23340,7 @@
 /area/rogue/outdoors/rmh_field/north)
 "rdK" = (
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/woodturned,
 /area/rogue/indoors)
 "red" = (
@@ -23522,7 +23377,7 @@
 	},
 /area/rogue/indoors/town/rmh)
 "rgc" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
@@ -23534,7 +23389,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/outdoors/rmh_field/west)
 "rgo" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/grown/log/tree,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/town/rmh/sawmill)
@@ -24026,7 +23881,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field/north)
 "rvZ" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors)
 "rwz" = (
@@ -24151,7 +24006,7 @@
 /area/rogue/under/town/rmh/sewer)
 "rCn" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/indoors)
 "rCr" = (
@@ -24253,9 +24108,6 @@
 	dir = 4;
 	pixel_x = 4
 	},
-/obj/effect/landmark/start/druid{
-	dir = 8
-	},
 /turf/open/floor/grass/red,
 /area/rogue/outdoors/rmh_field/druid)
 "rEB" = (
@@ -24355,7 +24207,7 @@
 /area/rogue/outdoors/rmh_field/east)
 "rHX" = (
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "rIc" = (
@@ -24413,7 +24265,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/rmh/garrison)
 "rKg" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/underhamlet{
@@ -24566,7 +24418,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "rOB" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field)
 "rOF" = (
@@ -24765,9 +24617,6 @@
 	},
 /turf/open/floor/church,
 /area/rogue/indoors/town/manor/phys)
-"rUY" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/rmh/tavern)
 "rVf" = (
 /turf/closed/wall/mineral/decowood{
 	dir = 4
@@ -24849,7 +24698,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh)
 "rYm" = (
-/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/armor,
 /obj/structure/closet/crate/chest/neu,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/mine)
@@ -24915,7 +24764,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/rmh/merchant)
 "sbH" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/cavewet)
 "sbY" = (
@@ -24998,7 +24847,7 @@
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "sgD" = (
 /obj/structure/closet/crate/chest/lootbox,
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/greenskins)
 "shk" = (
@@ -25078,7 +24927,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/town/rmh)
 "skB" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/reagent_containers/glass/cup,
 /obj/structure/spider/stickyweb/solo,
 /turf/open/floor/wood,
@@ -25639,7 +25488,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "sFU" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/cobble,
 /area/rogue/under/town/rmh/sewer)
@@ -25684,7 +25533,7 @@
 	},
 /area/rogue/indoors/town/rmh/magician/pass)
 "sIn" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/cobblerock,
 /area/rogue/under/town/basement)
@@ -25697,11 +25546,6 @@
 /obj/structure/flora/ausbushes/ppflowers,
 /turf/open/floor/grass,
 /area/rogue/outdoors/town/rmh/roofs)
-"sIJ" = (
-/obj/effect/spawner/map_spawner/loot/silver_weapon_spawner,
-/obj/structure/closet/crate/chest/old_crate,
-/turf/open/floor/ruinedwood/spiral,
-/area/rogue/indoors/cave/rmh_cave/mine)
 "sJc" = (
 /obj/structure/flora/grass,
 /obj/effect/spawner/map_spawner/treeorbush,
@@ -25837,7 +25681,7 @@
 /turf/open/floor/churchrough,
 /area/rogue/indoors/town/rmh/chapel)
 "sNO" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement)
@@ -25902,7 +25746,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/outdoors/rmh_air)
 "sRa" = (
-/obj/effect/spawner/map_spawner/loot/medium_armor_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /obj/structure/closet/crate/chest/old_crate,
@@ -26037,7 +25881,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/outdoors/rmh_field)
 "sWl" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/broom,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
@@ -26108,7 +25952,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog)
 "sZf" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/rmh_field)
 "sZr" = (
@@ -26156,8 +26000,8 @@
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "taz" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/sewers,
-/obj/effect/spawner/map_spawner/loot/heavy_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/common,
+/obj/effect/spawner/map_spawner/loot/armor,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "taE" = (
@@ -26233,7 +26077,7 @@
 /obj/machinery/light/fueled/wallfire/candle/blue{
 	pixel_y = -32
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "tdN" = (
@@ -26323,7 +26167,7 @@
 /area/rogue/outdoors/rmh_field/west)
 "tgs" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
 /area/rogue/indoors)
 "tgy" = (
@@ -26511,7 +26355,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "tiC" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/wet/lake)
 "tiE" = (
@@ -26576,7 +26420,6 @@
 /obj/structure/fluff/walldeco/painting/castle{
 	pixel_y = 32
 	},
-/obj/effect/landmark/start/barkeeper,
 /turf/open/floor/carpet,
 /area/rogue/under/town/rmh/basement)
 "tkQ" = (
@@ -26648,7 +26491,7 @@
 /area/rogue/indoors/town/rmh/magician)
 "tnn" = (
 /obj/machinery/light/fueled/torchholder/r,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "tnr" = (
@@ -26678,11 +26521,11 @@
 /area/rogue/indoors)
 "tnF" = (
 /obj/structure/flora/grass,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field)
 "toe" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "tov" = (
@@ -27076,7 +26919,7 @@
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "tDl" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors)
 "tDN" = (
@@ -27253,7 +27096,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/outdoors/town/rmh/roofs)
 "tKr" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/wood/plank,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors)
@@ -27337,7 +27180,7 @@
 /turf/open/floor/twig,
 /area/rogue/indoors/town/rmh)
 "tNa" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field)
 "tNe" = (
@@ -27691,10 +27534,6 @@
 /obj/item/natural/rock,
 /turf/open/floor/cobble/mossy,
 /area/rogue/outdoors/exposed/town/rmh/farm)
-"tZG" = (
-/obj/effect/landmark/start/clerk,
-/turf/open/floor/tile/harem1,
-/area/rogue/indoors/town/rmh)
 "tZZ" = (
 /turf/closed/wall/mineral/stone,
 /area/rogue/indoors/town/rmh/library)
@@ -27750,7 +27589,7 @@
 	pixel_x = -16;
 	pixel_y = -3
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/landmark/quest_spawner/easy{
 	quest_type = list("Kill","Beacon");
 	kill_mobs = list(/mob/living/simple_animal/hostile/retaliate/bigrat)
@@ -27775,7 +27614,7 @@
 	dir = 4
 	},
 /obj/structure/fermentation_keg/sourwine,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/rmh)
 "uei" = (
@@ -27858,7 +27697,7 @@
 /area/rogue/indoors/town/rmh/library)
 "uhH" = (
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field/camp)
 "uic" = (
@@ -27885,8 +27724,8 @@
 /area/rogue/outdoors/rmh_air)
 "uiM" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/feather{
 	pixel_x = 5;
 	pixel_y = 6
@@ -28320,7 +28159,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "uAk" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/rmh_field/camp)
 "uAn" = (
@@ -28334,7 +28173,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "uAt" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/landmark/quest_spawner/easy{
 	quest_type = list("Kill","Beacon");
 	kill_mobs = list(/mob/living/simple_animal/hostile/retaliate/bigrat)
@@ -28414,7 +28253,7 @@
 /area/rogue/indoors/cave/rmh_cave/greenskins)
 "uCy" = (
 /obj/item/natural/rock/coal,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "uCD" = (
@@ -28813,7 +28652,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 8
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/rmh)
 "uNN" = (
@@ -29204,7 +29043,7 @@
 /area/rogue/under/town/rmh/sewer)
 "vbp" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/sewers,
+/obj/effect/spawner/map_spawner/loot/common,
 /turf/open/floor/concrete,
 /area/rogue/under/town/rmh/sewer)
 "vcl" = (
@@ -29228,7 +29067,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/town/rmh)
 "vdj" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
 /area/rogue/indoors)
 "vdn" = (
@@ -29550,7 +29389,7 @@
 	})
 "vqj" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "vqM" = (
@@ -29579,13 +29418,6 @@
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/rmh)
-"vrl" = (
-/obj/structure/fluff/railing/border{
-	dir = 1
-	},
-/obj/effect/landmark/start/lady,
-/turf/open/floor/tile/brownbrick,
-/area/rogue/indoors/town/rmh/town_hall)
 "vrm" = (
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/rmh_field/druid)
@@ -29834,10 +29666,6 @@
 	},
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/town/rmh)
-"vCI" = (
-/obj/effect/landmark/start/wretchlate,
-/turf/open/floor/cobblerock,
-/area/rogue/outdoors/rmh_field/west)
 "vDu" = (
 /obj/structure/fluff/railing/border{
 	dir = 8
@@ -29866,7 +29694,7 @@
 /area/rogue/outdoors/rmh_field)
 "vEW" = (
 /obj/machinery/light/fueled/smelter,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "vFN" = (
@@ -29985,7 +29813,7 @@
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "vLK" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "vMb" = (
@@ -30006,9 +29834,6 @@
 "vMn" = (
 /obj/structure/bed/inn/double,
 /obj/item/bedsheet/fabric_double,
-/obj/effect/landmark/start/clerk{
-	dir = 8
-	},
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/town/rmh)
 "vNK" = (
@@ -30288,10 +30113,6 @@
 	},
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/rmh/tavern)
-"waz" = (
-/obj/effect/landmark/start/barkeep,
-/turf/open/floor/wood,
-/area/rogue/indoors/town/rmh/tavern)
 "waE" = (
 /turf/closed/wall/mineral/wood,
 /area/rogue/indoors)
@@ -30389,7 +30210,7 @@
 /turf/closed/wall/mineral/decostone/moss/long,
 /area/rogue/indoors/town/rmh/chapel)
 "wcK" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/roguerune/arcyne/wall,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/underhamlet{
@@ -30535,7 +30356,7 @@
 	first_time_text = "RIVERMIST HOLLOW"
 	})
 "whq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/blocks/paving/vert,
 /area/rogue/under/town/rmh/sewer)
 "whX" = (
@@ -30742,7 +30563,7 @@
 /area/rogue/indoors/town/rmh/magician)
 "wqk" = (
 /obj/structure/roguerock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "wqr" = (
@@ -31082,7 +30903,7 @@
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/rmh/tavern)
 "wCV" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/fluff/railing/fence{
 	dir = 4
 	},
@@ -31374,7 +31195,7 @@
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/exposed/magiciantower)
 "wNa" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/beach/rmh_beach)
 "wNB" = (
@@ -31402,7 +31223,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field/east)
 "wPe" = (
-/obj/effect/spawner/map_spawner/loot/medium_armor_spawner{
+/obj/effect/spawner/map_spawner/loot/armor{
 	lootcount = 3
 	},
 /obj/structure/closet/crate/chest/neu_iron,
@@ -31426,7 +31247,7 @@
 	dir = 4
 	},
 /obj/structure/fluff/wallclock/l,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors)
 "wPQ" = (
@@ -31564,7 +31385,7 @@
 	color = "#633b3b"
 	},
 /obj/structure/barricade/wooden/crude,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors)
 "wUi" = (
@@ -31690,7 +31511,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/mine)
 "wXe" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/wet/lake)
 "wXm" = (
@@ -31724,7 +31545,7 @@
 /turf/open/floor/blocks,
 /area/rogue/indoors/town/rmh/garrison)
 "wYF" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/ruinedwood/spiral,
@@ -31782,7 +31603,7 @@
 /area/rogue/indoors/town/rmh/chapel/basement)
 "wZL" = (
 /obj/item/natural/rock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/beach/rmh_beach)
 "wZP" = (
@@ -31966,7 +31787,7 @@
 /turf/open/floor/dirt,
 /area/rogue/indoors/town/church)
 "xdz" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/concrete,
 /area/rogue/under/town/rmh/sewer)
@@ -32088,7 +31909,7 @@
 /turf/open/floor/grass/yel,
 /area/rogue/outdoors/rmh_air)
 "xhS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/underhamlet{
 	ceiling_protected = 1
@@ -32105,7 +31926,7 @@
 "xjg" = (
 /obj/structure/fluff/railing/corner/south_east,
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/indoors)
 "xjo" = (
@@ -32175,10 +31996,10 @@
 /obj/item/reagent_containers/food/snacks/meat/steak,
 /obj/item/reagent_containers/food/snacks/meat/steak,
 /obj/item/reagent_containers/food/snacks/meat/steak,
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "xkF" = (
@@ -32645,7 +32466,7 @@
 	dir = 2;
 	pixel_y = -32
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt,
 /area/rogue/under/town/rmh/sewer)
 "xDp" = (
@@ -32753,13 +32574,6 @@
 /obj/machinery/light/fueled/torchholder/l,
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/tavern)
-"xHk" = (
-/obj/effect/spawner/map_spawner/loot/armored_boots_spawner{
-	lootcount = 3
-	},
-/obj/structure/closet/crate/chest/old_crate,
-/turf/open/floor/naturalstone,
-/area/rogue/indoors/cave/rmh_cave/greenskins)
 "xHw" = (
 /obj/effect/decal/wood/herringbone{
 	dir = 4
@@ -32772,7 +32586,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "xHW" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/wood/herringbone2{
 	dir = 10
 	},
@@ -32917,7 +32731,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh)
 "xMo" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/flora/grass/water,
 /turf/open/floor/blocks/green,
 /area/rogue/under/town/rmh/sewer)
@@ -32925,7 +32739,7 @@
 /obj/effect/decal/wood/herringbone{
 	dir = 1
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors)
 "xME" = (
@@ -32974,7 +32788,6 @@
 /turf/open/floor/greenstone,
 /area/rogue/indoors/town/rmh/magician)
 "xNK" = (
-/obj/effect/landmark/start/guildmaster,
 /obj/structure/fluff/railing/corner,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/rmh/crafters_guild/under)
@@ -33237,7 +33050,6 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/rmh_field/north_mountain)
 "xXH" = (
-/obj/effect/landmark/start/guildsman,
 /obj/structure/chair/stool,
 /obj/effect/decal/wood/herringbone2,
 /turf/open/floor/blocks/stonered/tiny,
@@ -33529,7 +33341,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field/north)
 "yhF" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/reagent_containers/glass/cup,
 /turf/open/floor/ruinedwood/turned,
 /area/rogue/indoors)
@@ -36806,7 +36618,7 @@ xtS
 xtS
 icT
 icT
-dZB
+icT
 mNT
 pLp
 pLp
@@ -61010,7 +60822,7 @@ nTR
 lRu
 oZi
 oZi
-bVf
+iCe
 nTR
 snm
 snm
@@ -62344,7 +62156,7 @@ geE
 ruW
 pGm
 lVG
-jnB
+ret
 iWb
 xmM
 lVG
@@ -63321,9 +63133,9 @@ nqL
 nqL
 ydN
 gLC
-bLH
+fOY
 toQ
-bLH
+fOY
 ydN
 snm
 snm
@@ -63579,7 +63391,7 @@ hIN
 ydN
 tkN
 gov
-bLH
+fOY
 bgK
 ydN
 snm
@@ -63836,7 +63648,7 @@ kel
 ydN
 mGm
 uIo
-bLH
+fOY
 lvM
 ydN
 snm
@@ -72059,7 +71871,7 @@ kLj
 oRg
 cZS
 rWG
-eQi
+lgS
 svF
 fOB
 ffY
@@ -77476,7 +77288,7 @@ nyi
 rCQ
 uLb
 hKO
-ess
+fOY
 mcH
 bEO
 fix
@@ -78504,7 +78316,7 @@ nyi
 pzX
 pVf
 cNT
-ess
+fOY
 vPJ
 eRj
 fgy
@@ -86873,7 +86685,7 @@ ciB
 uxI
 uxI
 dtB
-kjx
+gGp
 pfU
 mmh
 uxI
@@ -105390,7 +105202,7 @@ snm
 snm
 ccE
 qEr
-lZn
+qEr
 qEr
 snm
 snm
@@ -124802,7 +124614,7 @@ fWD
 teA
 nAJ
 gud
-iKZ
+nAJ
 teA
 snm
 snm
@@ -125268,8 +125080,8 @@ gVA
 lyL
 sDX
 eNx
-rUY
-rUY
+mMl
+mMl
 sDX
 gUB
 sdC
@@ -125525,8 +125337,8 @@ gVA
 lyL
 sDX
 vaj
-rUY
-rUY
+mMl
+mMl
 sDX
 qbp
 iLs
@@ -125573,7 +125385,7 @@ teA
 teA
 nAJ
 yjE
-iKZ
+nAJ
 teA
 snm
 snm
@@ -126843,7 +126655,7 @@ gDK
 cRb
 agA
 gTA
-luO
+mzT
 fHS
 xNk
 koe
@@ -127100,8 +126912,8 @@ foc
 dId
 vXF
 jnr
-luO
-luO
+mzT
+mzT
 dHL
 fWD
 ruu
@@ -128346,7 +128158,7 @@ mMl
 mMl
 qWk
 iDm
-waz
+iDm
 iWz
 oyM
 lix
@@ -128860,7 +128672,7 @@ mMl
 dnp
 yfA
 pgL
-qMA
+iDm
 iDm
 iDm
 lix
@@ -129144,7 +128956,7 @@ nSX
 nSX
 aGb
 rAW
-itv
+iRU
 xEI
 kzR
 kzR
@@ -130948,7 +130760,7 @@ kTw
 uop
 qDu
 tTy
-iqz
+kTw
 ybI
 tDg
 dMC
@@ -132980,10 +132792,10 @@ mFc
 eoi
 dxH
 dsV
-fHI
-nYx
 vqM
-vrl
+vqM
+vqM
+nRI
 fPq
 dNN
 hfi
@@ -134809,8 +134621,8 @@ dId
 dId
 aUa
 pDt
-lIW
-lIW
+xJf
+xJf
 eqB
 ooj
 ooj
@@ -135066,8 +134878,8 @@ hvS
 dId
 dId
 gLV
-lIW
-lIW
+xJf
+xJf
 qgW
 nxq
 oRK
@@ -135324,7 +135136,7 @@ pZb
 dId
 pDt
 lbC
-lIW
+xJf
 jEX
 ooj
 sZP
@@ -138629,7 +138441,7 @@ jRV
 fOI
 xAH
 oRO
-gLn
+oRO
 oRO
 fOI
 fOI
@@ -138906,7 +138718,7 @@ tiz
 fcA
 eYl
 bLP
-tZG
+wkJ
 wkJ
 wkJ
 plJ
@@ -139379,8 +139191,8 @@ jKG
 oln
 aHP
 hDL
-hCB
-hCB
+hHI
+hHI
 oln
 lVe
 eUR
@@ -139637,7 +139449,7 @@ uQH
 jSv
 pNO
 xLJ
-hCB
+hHI
 nFp
 eUR
 aSP
@@ -139688,7 +139500,7 @@ dId
 hvS
 pZb
 qpJ
-hMV
+eUR
 eUR
 cHt
 uoH
@@ -160603,7 +160415,7 @@ snm
 oqv
 vzV
 doa
-xHk
+jYZ
 snm
 snm
 bak
@@ -161022,7 +160834,7 @@ wXc
 jKB
 aUw
 oGt
-sIJ
+abG
 bCd
 jKB
 jKB
@@ -162916,7 +162728,7 @@ oqv
 aPz
 lgP
 lgP
-qyL
+sRa
 asn
 asn
 asn
@@ -189798,7 +189610,7 @@ jQz
 jQz
 cBT
 lGq
-geM
+xiX
 yiR
 cBT
 lzI
@@ -190551,7 +190363,7 @@ uqF
 uqF
 yfA
 ohi
-rUY
+mMl
 gxm
 pbw
 lzI
@@ -190808,7 +190620,7 @@ aFJ
 qZQ
 yfA
 oJw
-rUY
+mMl
 yfA
 cmu
 lzI
@@ -191064,7 +190876,7 @@ isC
 aFJ
 qbe
 yfA
-rUY
+mMl
 jLb
 yfA
 lzI
@@ -192106,8 +191918,8 @@ aoM
 gpX
 hxm
 jhW
-hCB
-hCB
+hHI
+hHI
 gpX
 wtb
 lzI
@@ -192362,9 +192174,9 @@ lzI
 aoM
 gpX
 caH
-hCB
+hHI
 xPo
-hCB
+hHI
 sAU
 wtb
 lzI
@@ -193133,7 +192945,7 @@ lzI
 lzI
 xPd
 tUN
-hCB
+hHI
 xgE
 hrU
 gpX
@@ -193389,8 +193201,8 @@ lzI
 raw
 ljP
 xPd
-hCB
-hCB
+hHI
+hHI
 bpE
 spY
 sAU
@@ -193646,8 +193458,8 @@ lzI
 raw
 iYs
 jOZ
-hCB
-hCB
+hHI
+hHI
 hhi
 hhi
 gpX
@@ -193904,16 +193716,16 @@ raw
 iYs
 xPd
 rLL
-hCB
-hCB
-hCB
+hHI
+hHI
+hHI
 gpX
 lzI
 xid
 dkV
 ktr
 fMP
-cnX
+kzR
 vXs
 dvs
 tXo
@@ -193948,7 +193760,7 @@ gpX
 gpX
 oln
 nTA
-hCB
+hHI
 hDL
 sjj
 xPd
@@ -194206,7 +194018,7 @@ qEh
 gpX
 bQv
 iPV
-hCB
+hHI
 eQf
 sHf
 snm
@@ -194461,9 +194273,9 @@ nWl
 qEh
 xBt
 qds
-hCB
-hCB
-hCB
+hHI
+hHI
+hHI
 nTA
 sHf
 snm
@@ -194683,9 +194495,9 @@ rGx
 nSX
 nSX
 aGb
-cnX
-cnX
-cnX
+kzR
+kzR
+kzR
 mPO
 tXo
 pLQ
@@ -194940,9 +194752,9 @@ rGx
 irW
 kzR
 mwQ
-cnX
+kzR
 jKT
-cnX
+kzR
 tZv
 tXo
 pLQ
@@ -204441,8 +204253,8 @@ lzI
 lzI
 lCY
 rVf
-hCB
-hCB
+hHI
+hHI
 pQS
 eRb
 lpx
@@ -206773,7 +206585,7 @@ gVA
 gVA
 lyL
 pZb
-efd
+eUR
 dFV
 maN
 atp
@@ -213028,7 +212840,7 @@ tBk
 hJR
 izg
 iUO
-lBV
+izg
 hEy
 dFA
 cFg
@@ -228341,7 +228153,7 @@ qRr
 mpV
 qRr
 cQa
-foS
+vQZ
 vQZ
 qYe
 qYe
@@ -228598,7 +228410,7 @@ qRr
 qRr
 mpV
 qRr
-vCI
+vQZ
 qYe
 qYe
 qYe
@@ -256130,7 +255942,7 @@ iXB
 pwm
 rDX
 xiX
-lJO
+xiX
 yiR
 cBT
 snm
@@ -259450,7 +259262,7 @@ wtb
 kQs
 qcc
 kLc
-itv
+iRU
 fHP
 orA
 tmB
@@ -263020,8 +262832,8 @@ lzI
 lpx
 qFa
 nst
-hCB
-hCB
+hHI
+hHI
 rkC
 lpx
 lzI
@@ -263277,9 +263089,9 @@ lzI
 mhJ
 auB
 nst
-hCB
+hHI
 sla
-hCB
+hHI
 sHf
 oZm
 oZm
@@ -263544,7 +263356,7 @@ lpx
 qJY
 kjb
 hmZ
-hCB
+hHI
 kNW
 lpx
 ciH
@@ -263801,7 +263613,7 @@ lpx
 kDr
 xnu
 pHT
-hCB
+hHI
 pmM
 lpx
 ciH
@@ -274102,7 +273914,7 @@ xiX
 yiR
 uet
 xiX
-hpn
+yiR
 yiR
 rDX
 cvG
@@ -283453,7 +283265,7 @@ ueP
 hlC
 rnb
 pfW
-fFU
+pfW
 pfW
 hlC
 snm
@@ -353066,7 +352878,7 @@ wIO
 wxi
 tgf
 drz
-mMP
+laC
 jXv
 jXv
 czC

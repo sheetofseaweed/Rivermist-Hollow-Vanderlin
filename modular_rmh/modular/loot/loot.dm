@@ -387,3 +387,153 @@
 /obj/effect/spawner/map_spawner/loot/dungeon/spells
 	//icon_state = "dungeon spells"
 	loot_table_type = /datum/loot_table/dungeon/spells
+/*
+* map spawners with items from the thi5f pr and other objects of daily living ฅ^•ﻌ•^ฅ
+*/
+
+/datum/loot_table/dungeon/cheap_clutter_spawner
+	name = "cheap clutter spawner"
+	loot_table = list(
+			list(
+				/obj/item/jingle_bells = 1,
+				/obj/item/bouquet/rosa = 1,
+				/obj/item/bouquet/salvia = 1,
+				/obj/item/bouquet/calendula = 1,
+				/obj/item/reagent_containers/glass/bottle/claybottle = 1,
+				/obj/item/reagent_containers/glass/bottle/clayvase = 1,
+				/obj/item/flint = 1,
+				/obj/item/instrument/lute = 1,
+				/obj/item/instrument/guitar = 1,
+				/obj/item/instrument/hurdygurdy = 1,
+				/obj/item/lockpick = 1,
+				/obj/item/needle = 1,
+				/obj/item/needle/thorn = 1,
+				/obj/item/statue/steel = 1,
+				/obj/item/statue/iron = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/valuable_clutter_spawner
+	name = "valuable clutter spawner"
+	loot_table = list(
+		list(
+			/obj/item/reagent_containers/glass/bottle/clayfancyvase = 1,
+			/obj/item/needle = 1,
+			/obj/item/statue/gold/loot = 1,
+			/obj/item/statue/silver = 1,
+			/obj/item/statue/steel = 1,
+			/obj/item/weapon/hammer/steel = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/cheap_candle_spawner
+	name = "cheap candle spawner"
+	loot_table = list(
+		list(
+			/obj/item/candle/yellow/lit = 10,
+			/obj/item/candle/skull/lit = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/valuable_candle_spawner
+	name = "valuable candle spawner"
+	loot_table = list(
+		list(
+			/obj/item/candle/candlestick/gold/lit = 2,
+			/obj/item/candle/candlestick/silver/lit = 1,
+			/obj/item/candle/candlestick/gold/single/lit = 2,
+			/obj/item/candle/candlestick/silver/single/lit = 1,
+			/obj/item/candle/gold/lit = 2,
+			/obj/item/candle/silver/lit = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/cheap_tableware_spawner
+	name = "cheap tableware spawner"
+	loot_table = list(
+		list(
+			/obj/item/kitchen/fork/iron = 1,
+			/obj/item/kitchen/fork = 1,
+			/obj/item/kitchen/fork/pewter = 1,
+			/obj/item/kitchen/spoon = 1,
+			/obj/item/kitchen/spoon/iron = 1,
+			/obj/item/kitchen/spoon/pewter = 1,
+			/obj/item/reagent_containers/glass/bowl = 1,
+			/obj/item/reagent_containers/glass/bowl/iron = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/valuable_tableware_spawner
+	name = "valuable tableware spawner"
+	loot_table = list(
+		list(
+			/obj/item/reagent_containers/glass/cup/silver = 1,
+			/obj/item/reagent_containers/glass/cup/golden = 2,
+			/obj/item/reagent_containers/glass/bowl/gold = 2,
+			/obj/item/reagent_containers/glass/bowl/silver = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/cheap_jewelry_spawner
+	name = "cheap jewelry spawner"
+	loot_table = list(
+		list(
+			/obj/item/clothing/neck/psycross = 1,
+			/obj/item/clothing/neck/psycross/noc = 6,
+			/obj/item/clothing/neck/mercator = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/valuable_jewelry_spawner
+	name = "valuable jewelry spawner"
+	loot_table = list(
+		list(
+			/obj/item/clothing/ring/silver = 10,
+			/obj/item/clothing/ring/gold = 10,
+			/obj/item/clothing/ring/silver/gemerald = 5,
+			/obj/item/clothing/ring/silver/rontz = 3,
+			/obj/item/clothing/ring/gold/saffira = 4,
+			/obj/item/clothing/neck/psycross/silver = 2,
+			/obj/item/clothing/neck/psycross/g = 2,
+			)
+		)
+	base_max = 1
+
+/obj/effect/spawner/map_spawner/loot/cheap_clutter_spawner
+	name = "cheap clutter spawner"
+	loot_table_type = /datum/loot_table/dungeon/cheap_clutter_spawner
+
+/obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner
+	name = "valuable clutter spawner"
+	loot_table_type = /datum/loot_table/dungeon/valuable_clutter_spawner
+
+/obj/effect/spawner/map_spawner/loot/cheap_candle_spawner
+	name = "cheap candle spawner"
+	loot_table_type = /datum/loot_table/dungeon/cheap_candle_spawner
+
+/obj/effect/spawner/map_spawner/loot/valuable_candle_spawner
+	name = "valuable candle spawner"
+	loot_table_type = /datum/loot_table/dungeon/valuable_candle_spawner
+
+/obj/effect/spawner/map_spawner/loot/cheap_tableware_spawner
+	name = "cheap tableware spawner"
+	loot_table_type = /datum/loot_table/dungeon/cheap_tableware_spawner
+
+/obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner
+	name = "valuable tableware spawner"
+	loot_table_type = /datum/loot_table/dungeon/valuable_tableware_spawner
+
+/obj/effect/spawner/map_spawner/loot/cheap_jewelry_spawner
+	name = "cheap jewelry spawner"
+	loot_table_type = /datum/loot_table/dungeon/cheap_jewelry_spawner
+
+/obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner
+	name = "valuable jewelry spawner"
+	loot_table_type = /datum/loot_table/dungeon/valuable_jewelry_spawner

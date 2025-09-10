@@ -70,7 +70,7 @@
 "bi" = (
 /obj/item/natural/stone,
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/burial_shroud,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -92,7 +92,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/deepwastes)
 "bt" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/chair/stool,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
@@ -123,8 +123,8 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "bQ" = (
-/obj/effect/decal/cleanable/debris/glassy,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "bR" = (
@@ -134,12 +134,12 @@
 	},
 /area/rogue/under/underdark/rmh/shar)
 "bT" = (
-/obj/item/chair/stool/bar/rogue,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/item/chair/stool/bar,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "bW" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "bY" = (
@@ -158,7 +158,7 @@
 /area/rogue/under/underdark/rmh/caves)
 "cm" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/table/vtable/v2,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -206,12 +206,12 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "cL" = (
-/obj/effect/decal/cleanable/debris/glassy,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "cN" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
 "cT" = (
@@ -235,7 +235,7 @@
 /turf/open/floor/greenstone/runed,
 /area/rogue/indoors/town/rmh/magician/pass)
 "db" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shar)
 "dc" = (
@@ -275,13 +275,13 @@
 	},
 /area/rogue/under/underdark/rmh/shar)
 "dR" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "dV" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -313,10 +313,10 @@
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "ep" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "ew" = (
@@ -327,7 +327,7 @@
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "eG" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/glass/shard,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
@@ -386,7 +386,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "fu" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "fx" = (
@@ -409,15 +409,15 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/cavelava/rmh/lava_hollows)
 "fN" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "fR" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "fS" = (
-/obj/item/bedroll,
+/obj/item/sleepingbag,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "fU" = (
@@ -448,7 +448,7 @@
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "gn" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/old,
 /obj/machinery/tanningrack,
 /turf/open/floor/tile/brownbrick,
@@ -480,7 +480,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shrub)
 "gP" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/stoneblock,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh)
@@ -516,7 +516,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "hC" = (
 /obj/structure/rack/shelf/biggest,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "hW" = (
@@ -559,7 +559,7 @@
 	pixel_x = 8;
 	pixel_y = 11
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/carpet/red,
 /area/rogue/under/underdark/rmh/shar)
 "iv" = (
@@ -629,13 +629,13 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "jH" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/masonic{
 	dir = 1
 	},
 /area/rogue/under/underdark/rmh/shar)
 "jJ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "jM" = (
@@ -704,16 +704,16 @@
 /area/rogue/under/underdark/rmh/main)
 "kR" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "kT" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "kX" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "la" = (
@@ -735,7 +735,7 @@
 /area/rogue/under/underdark/rmh/glimmerlakes)
 "lr" = (
 /obj/effect/decal/cleanable/blood/old,
-/mob/living/simple_animal/hostile/rogue/dreamfiend/ancient,
+/mob/living/simple_animal/hostile/dreamfiend/ancient,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "lt" = (
@@ -771,7 +771,7 @@
 /area/rogue/under/underdark/rmh/main)
 "lS" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "ma" = (
@@ -823,7 +823,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "mU" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "nb" = (
@@ -864,9 +864,9 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "nI" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "nM" = (
@@ -889,7 +889,7 @@
 /turf/open/lava,
 /area/rogue/under/underdark/rmh)
 "oe" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/major/unbound,
+/mob/living/simple_animal/hostile/dreamfiend/major,
 /turf/open/floor/tile/masonic/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "os" = (
@@ -925,8 +925,8 @@
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "oT" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "pf" = (
@@ -953,7 +953,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shar)
 "pC" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/structure/closet/crate/chest/neu_iron,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
@@ -984,7 +984,7 @@
 /turf/open/lava,
 /area/rogue/under/underdark/rmh/shar)
 "pW" = (
-/obj/item/chair/stool/bar/rogue,
+/obj/item/chair/stool/bar,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "qa" = (
@@ -1006,12 +1006,12 @@
 /area/rogue/under/underdark/rmh/shar)
 "qk" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "qm" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh)
 "qp" = (
@@ -1028,7 +1028,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "qy" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/grown/log/tree/small,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
@@ -1073,20 +1073,20 @@
 /area/rogue/under/underdark/rmh/main)
 "rv" = (
 /obj/structure/fluff/railing/corner/south_east,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "ry" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "rz" = (
 /obj/structure/fluff/railing/border/east,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "rA" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/reagent_containers/glass/bucket,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
@@ -1109,7 +1109,7 @@
 /turf/open/floor/carpet/red,
 /area/rogue/under/underdark/rmh/shar)
 "rJ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
@@ -1129,7 +1129,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "rV" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/structure/rack/shelf/biggest,
 /obj/item/pestle{
 	pixel_x = -10;
@@ -1148,12 +1148,12 @@
 /area/rogue/under/underdark/rmh/shar)
 "sh" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "sj" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/structure/table/vtable,
 /obj/item/reagent_containers/glass/alchemical,
 /turf/open/floor/churchrough,
@@ -1165,7 +1165,7 @@
 /obj/effect/decal/cleanable/blood/gibs/limb{
 	dir = 8
 	},
-/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
+/mob/living/simple_animal/hostile/dreamfiend,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "sB" = (
@@ -1193,7 +1193,7 @@
 "sL" = (
 /obj/item/natural/stoneblock,
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "sP" = (
@@ -1254,7 +1254,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shrub)
 "tx" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "ty" = (
@@ -1267,7 +1267,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/main)
 "tB" = (
-/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/armor,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/deepwastes)
 "tG" = (
@@ -1316,7 +1316,7 @@
 	},
 /area/rogue/under/underdark/rmh/shar)
 "uI" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "uN" = (
@@ -1328,7 +1328,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/caves)
 "uY" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/structure/table/vtable/v2,
 /obj/item/weapon/knife/villager,
 /turf/open/floor/churchrough,
@@ -1363,7 +1363,7 @@
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "vw" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/glass/shard,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
@@ -1380,7 +1380,7 @@
 /turf/closed/wall/mineral/decostone/moss/blue/long,
 /area/rogue/under/underdark/rmh/shar)
 "vR" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
+/mob/living/simple_animal/hostile/dreamfiend,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "vU" = (
@@ -1444,7 +1444,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "wR" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/effect/decal/cleanable/dirt/cobweb{
 	dir = 4
 	},
@@ -1472,7 +1472,7 @@
 /turf/open/floor/dirt/road,
 /area/rogue/under/underdark/rmh)
 "xt" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh)
 "xu" = (
@@ -1542,12 +1542,12 @@
 /turf/open/floor/concrete,
 /area/rogue/under/underdark/rmh/shar)
 "yc" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
+/mob/living/simple_animal/hostile/dreamfiend,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "yd" = (
-/obj/effect/decal/cleanable/debris/glassy,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "yf" = (
@@ -1574,16 +1574,16 @@
 /area/rogue/under/underdark/rmh/deepwastes)
 "yv" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "yw" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/burial_shroud,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "yD" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter)
 "yM" = (
@@ -1600,12 +1600,12 @@
 /area/rogue/under/underdark/rmh/shrub)
 "yR" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/under/underdark/rmh)
 "yU" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "yZ" = (
@@ -1652,7 +1652,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "zQ" = (
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "zX" = (
@@ -1748,7 +1748,7 @@
 	},
 /area/rogue/under/underdark/rmh)
 "Bl" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/glass/shard,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -1764,7 +1764,7 @@
 "Bw" = (
 /obj/effect/decal/cleanable/blood/old,
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "Bz" = (
@@ -1773,16 +1773,16 @@
 /area/rogue/under/underdark/rmh/shar)
 "BB" = (
 /obj/effect/decal/cleanable/blood/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "BE" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/glass/shard,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "BJ" = (
-/obj/item/chair/stool/bar/rogue,
+/obj/item/chair/stool/bar,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "BM" = (
@@ -1791,12 +1791,12 @@
 /area/rogue/under/underdark/rmh)
 "BQ" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "BU" = (
 /obj/item/natural/glass/shard,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "Cd" = (
@@ -1804,14 +1804,14 @@
 /area/rogue/under/underdark/rmh/flow)
 "Ce" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "Ch" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "Co" = (
@@ -1819,7 +1819,7 @@
 /area/rogue/under/rmh_bedrock)
 "Cr" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "Cs" = (
@@ -1833,13 +1833,13 @@
 /area/rogue/under/underdark/rmh/shar)
 "CC" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/glass/shard,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "CH" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter)
 "Df" = (
@@ -1853,7 +1853,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "Di" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/rack/shelf/biggest,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -1903,7 +1903,7 @@
 	},
 /area/rogue/under/underdark/rmh/deepwastes)
 "DT" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "DV" = (
@@ -1917,12 +1917,12 @@
 /turf/open/transparent/openspace,
 /area/rogue/under/underdark/rmh/caves)
 "Ej" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "Eq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -1932,12 +1932,12 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "EC" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh)
 "EF" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "EJ" = (
@@ -1974,17 +1974,17 @@
 /turf/open/floor/dirt/road,
 /area/rogue/under/underdark/rmh)
 "Fa" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Fe" = (
-/obj/effect/decal/cleanable/debris/stony,
-/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/dreamfiend,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Ff" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
@@ -2002,7 +2002,7 @@
 "Fq" = (
 /obj/effect/decal/remains/human,
 /obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner,
-/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/armor,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Fr" = (
@@ -2021,8 +2021,8 @@
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/under/underdark/rmh/shar)
 "FJ" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/under/underdark/rmh)
 "FL" = (
@@ -2045,12 +2045,12 @@
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh/shrub)
 "FZ" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "Ga" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/stoneblock,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
@@ -2077,11 +2077,11 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/flow)
 "GC" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh)
 "GF" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
+/mob/living/simple_animal/hostile/dreamfiend,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "GY" = (
@@ -2129,11 +2129,11 @@
 /area/rogue/under/underdark/rmh)
 "HQ" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "HS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh)
@@ -2170,7 +2170,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/caves)
 "IN" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/structure/trap/rock_fall,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter)
@@ -2197,7 +2197,7 @@
 /area/rogue/under/underdark/rmh/shar)
 "Ja" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/under/underdark/rmh)
 "Jh" = (
@@ -2221,8 +2221,8 @@
 /turf/closed/wall/mineral/decostone/moss/blue/end,
 /area/rogue/under/underdark/rmh/shar)
 "Jn" = (
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Jp" = (
@@ -2261,11 +2261,11 @@
 /area/rogue/under/underdark/rmh/caves)
 "JX" = (
 /obj/structure/fluff/railing/border,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "JZ" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/harem1,
 /area/rogue/under/underdark/rmh/shar)
 "Kf" = (
@@ -2273,7 +2273,7 @@
 /area/rogue/under/underdark/rmh)
 "Kn" = (
 /obj/structure/fluff/railing/corner/north_east,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "Ko" = (
@@ -2286,8 +2286,8 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/cavelava/rmh/lava_hollows)
 "Kx" = (
-/obj/effect/decal/cleanable/debris/glassy,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/glass,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "KK" = (
@@ -2300,7 +2300,7 @@
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "KY" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -2355,7 +2355,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/underdark/rmh/shar)
 "Lz" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
@@ -2379,7 +2379,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/tavel)
 "LU" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/reagent_containers/glass/bottle/manapot,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
@@ -2405,8 +2405,8 @@
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Mk" = (
-/obj/item/chair/stool/bar/rogue,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/item/chair/stool/bar,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "Mt" = (
@@ -2447,7 +2447,7 @@
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "Nb" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
@@ -2461,12 +2461,12 @@
 	},
 /area/rogue/under/underdark/rmh/shar)
 "Nn" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "No" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/map_spawner/loot/light_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/armor,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Nq" = (
@@ -2483,7 +2483,7 @@
 /turf/open/floor/volcanic,
 /area/rogue/under/cavelava/rmh/lava_hollows)
 "NB" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh)
 "NH" = (
@@ -2515,7 +2515,7 @@
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh/tavel)
 "Od" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/major/unbound,
+/mob/living/simple_animal/hostile/dreamfiend/major,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "Ol" = (
@@ -2523,7 +2523,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "Or" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cleanable/blood/old,
 /obj/effect/decal/remains/human,
 /turf/open/floor/church,
@@ -2555,7 +2555,7 @@
 /turf/closed/wall/mineral/decostone/center,
 /area/rogue/under/underdark/rmh/main)
 "OR" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "OS" = (
@@ -2573,12 +2573,12 @@
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "Pl" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/masonic,
 /area/rogue/under/underdark/rmh/shar)
 "Pn" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/item/natural/glass/shard,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -2594,11 +2594,11 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/rmh/magician/pass)
 "PF" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "PI" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cleanable/dirt/cobweb{
 	dir = 8
 	},
@@ -2606,12 +2606,12 @@
 /area/rogue/under/underdark/rmh/shar)
 "PS" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "PU" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/under/underdark/rmh/shar)
 "Qd" = (
@@ -2657,7 +2657,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "QH" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/under/underdark/rmh/shar)
 "QK" = (
@@ -2665,9 +2665,9 @@
 /area/rogue/under/underdark/rmh/shar)
 "QM" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "QR" = (
@@ -2715,7 +2715,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/shar)
 "RV" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/ancient,
+/mob/living/simple_animal/hostile/dreamfiend/ancient,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "RW" = (
@@ -2762,7 +2762,7 @@
 	},
 /area/rogue/under/underdark/rmh)
 "Sv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stoneblock,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/tile/brownbrick,
@@ -2784,7 +2784,7 @@
 /area/rogue/under/underdark/rmh/caves)
 "SO" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dirt/cobweb{
 	dir = 8
 	},
@@ -2811,12 +2811,12 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Tu" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/rack/shelf/biggest,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "Ty" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
@@ -2828,7 +2828,7 @@
 /turf/closed/wall/mineral/decostone/moss/blue,
 /area/rogue/under/underdark/rmh/main)
 "TD" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /obj/effect/decal/cleanable/dirt/cobweb{
 	dir = 1
 	},
@@ -2837,7 +2837,7 @@
 	},
 /area/rogue/under/underdark/rmh/shar)
 "TE" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/shelter)
 "TJ" = (
@@ -2962,7 +2962,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/glimmerlakes)
 "Vd" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "Ve" = (
@@ -2976,7 +2976,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/glimmerlakes)
 "Vn" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/under/underdark/rmh)
 "Vo" = (
@@ -3030,11 +3030,11 @@
 /area/rogue/under/underdark/rmh/shar)
 "Wi" = (
 /obj/effect/decal/cleanable/blood/tracks,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "Wn" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Wv" = (
@@ -3053,7 +3053,7 @@
 /area/rogue/under/underdark/rmh/deepwastes)
 "WQ" = (
 /obj/structure/closet/crate/chest/neu_iron,
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "WR" = (
@@ -3073,7 +3073,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh)
 "Xk" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dirt/cobweb{
 	dir = 4
 	},
@@ -3099,11 +3099,11 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/deepwastes)
 "Xx" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/carpet/royalblack,
 /area/rogue/under/underdark/rmh/shar)
 "Xy" = (
-/mob/living/simple_animal/hostile/rogue/dreamfiend/unbound,
+/mob/living/simple_animal/hostile/dreamfiend,
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Xz" = (
@@ -3123,7 +3123,7 @@
 "Yd" = (
 /obj/item/natural/glass/shard,
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "Yj" = (
@@ -3171,12 +3171,12 @@
 /turf/open/floor/tile/masonic/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "Zf" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/grown/log/tree/small,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter)
 "Zi" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/masonic/single,
 /area/rogue/under/underdark/rmh/shar)
 "Zs" = (
@@ -3214,7 +3214,7 @@
 /turf/open/floor/volcanic,
 /area/rogue/under/underdark/rmh)
 "ZX" = (
-/obj/effect/decal/cleanable/debris/glassy,
+/obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "ZY" = (

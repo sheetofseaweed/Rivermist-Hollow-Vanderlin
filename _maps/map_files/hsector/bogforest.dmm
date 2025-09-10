@@ -227,7 +227,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "hm" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/wood/plank,
 /turf/open/floor/dirt,
 /area/rogue/indoors/shelter/bog)
@@ -461,7 +461,7 @@
 /turf/closed/wall/mineral/wooddark/slitted,
 /area/rogue/outdoors/woods/rmh)
 "nk" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/indoors/shelter/bog)
 "nx" = (
@@ -565,7 +565,7 @@
 "pZ" = (
 /obj/structure/flora/grass,
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "qe" = (
@@ -835,8 +835,8 @@
 /area/rogue/outdoors/woods/goblincampfire)
 "zN" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
-/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/shelter/bog)
 "zW" = (
@@ -883,7 +883,7 @@
 /area/rogue/under/cave/spider/rmh)
 "AW" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/shelter/bog)
 "Bc" = (
@@ -941,7 +941,7 @@
 /area/rogue/under/cavewet/rmh/swamp_caves)
 "CX" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog/rmh/north)
 "Dl" = (
@@ -967,7 +967,7 @@
 /turf/open/floor/dirt/road,
 /area/rogue/indoors/shelter/rtfield)
 "DQ" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood,
 /area/rogue/indoors/shelter/bog)
 "DW" = (
@@ -1058,7 +1058,7 @@
 /area/rogue/under/cavewet/rmh/swamp_caves)
 "FI" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/bog/rmh/north)
 "FJ" = (
@@ -1205,7 +1205,7 @@
 /area/rogue/outdoors/woods/rmh)
 "Iv" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "Iw" = (
@@ -1785,7 +1785,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/rmh/goblindungeon)
 "Wp" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
 /area/rogue/indoors/shelter/bog)
 "Wt" = (
@@ -1862,7 +1862,7 @@
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "Yq" = (
 /obj/effect/decal/remains/human,
-/obj/effect/spawner/map_spawner/loot/general_loot_low/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/bog/rmh/south)
 "YG" = (

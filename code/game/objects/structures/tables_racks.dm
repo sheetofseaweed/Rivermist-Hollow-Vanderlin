@@ -230,6 +230,24 @@
 	icon = 'icons/roguetown/misc/tables.dmi'
 	icon_state = "churchtable_mid"
 
+/obj/structure/table/church/end
+	icon = 'icons/roguetown/misc/tables.dmi'
+	icon_state = "churchtable"
+	dir = NORTH
+
+/obj/structure/table/church/alt
+	icon_state = "churchtable_alt"
+
+/obj/structure/table/church/m/alt
+	icon_state = "churchtable_end"
+
+/obj/structure/table/church/end/alt
+	icon_state = "churchtable_end_alt"
+
+/obj/structure/table/church/end/alt/north
+	icon_state = "churchtable_end_alt"
+	dir = NORTH
+
 /obj/structure/table/stone_small
 	name = "stone table"
 	icon = 'icons/roguetown/misc/tables.dmi'

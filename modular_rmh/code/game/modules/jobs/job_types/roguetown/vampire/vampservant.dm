@@ -19,7 +19,7 @@
 /datum/outfit/job/roguetown/vampservant/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H.gender == MALE)
-		pants = /obj/item/clothing/pants/tights/black
+		pants = /obj/item/clothing/pants/tights/colored/black
 		shirt = /obj/item/clothing/shirt/undershirt
 		shoes = /obj/item/clothing/shoes/roguetown/shortboots
 		backl = /obj/item/storage/backpack/satchel
@@ -31,7 +31,7 @@
 		head = /obj/item/clothing/head/armingcap
 		armor = /obj/item/clothing/shirt/dress/gen/black
 		shoes = /obj/item/clothing/shoes/roguetown/simpleshoes
-		pants = pick(/obj/item/clothing/pants/tights/black, /obj/item/clothing/pants/tights)
+		pants = pick(/obj/item/clothing/pants/tights/colored/black, /obj/item/clothing/pants/tights)
 		cloak = /obj/item/clothing/cloak/apron/waist
 		backl = /obj/item/storage/backpack/satchel
 		belt = /obj/item/storage/belt/rogue/leather

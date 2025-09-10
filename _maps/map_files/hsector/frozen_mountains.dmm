@@ -55,7 +55,7 @@
 /turf/open/floor/carpet/lord/left,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "aq" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "as" = (
@@ -158,7 +158,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "aT" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
@@ -271,11 +271,11 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "bp" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "bq" = (
-/obj/item/clothing/shoes/boots/iron,
+/obj/item/clothing/shoes/boots/armor,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "br" = (
@@ -373,7 +373,7 @@
 /turf/open/floor/dark_ice,
 /area/rogue/under/rmh_bedrock)
 "bI" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "bK" = (
@@ -396,19 +396,16 @@
 "bO" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/item/clothing/pants/trou/leather,
-/obj/item/clothing/pants/tights/black,
-/obj/item/clothing/shirt/tunic/black,
+/obj/item/clothing/pants/tights/colored/black,
+/obj/item/clothing/shirt/tunic/colored/black,
 /obj/item/clothing/shirt/vampire,
-/obj/item/clothing/shirt/robe/physician,
+/obj/item/clothing/shirt/robe/phys,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "bP" = (
 /obj/structure/fluff/statue/pillar,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
-"bQ" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/manor)
 "bR" = (
 /obj/structure/table/wood/fancy/black{
 	color = "#858585"
@@ -448,7 +445,7 @@
 /turf/open/floor/metal/barograte,
 /area/rogue/indoors/town/manor)
 "bZ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
@@ -468,7 +465,7 @@
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "cd" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
@@ -480,12 +477,10 @@
 /obj/structure/closet/crate/chest/wicker,
 /obj/item/neuFarm/seed/oat,
 /obj/item/neuFarm/seed/oat,
-/obj/item/neuFarm/seed/tomato,
-/obj/item/neuFarm/seed/tomato,
 /obj/item/neuFarm/seed/apple,
 /obj/item/neuFarm/seed/apple,
-/obj/item/neuFarm/seed/berryrogue,
-/obj/item/neuFarm/seed/berryrogue,
+/obj/item/neuFarm/seed/berry,
+/obj/item/neuFarm/seed/berry,
 /obj/item/neuFarm/seed/cabbage,
 /obj/item/neuFarm/seed/cabbage,
 /obj/item/neuFarm/seed/potato,
@@ -527,7 +522,7 @@
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "cn" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "co" = (
@@ -584,7 +579,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "cz" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
@@ -643,8 +638,8 @@
 	dir = 1
 	},
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/weapon/shield/tower/metal/palloy,
-/obj/item/weapon/shield/tower/metal/palloy,
+/obj/item/weapon/shield/tower/metal,
+/obj/item/weapon/shield/tower/metal,
 /obj/item/weapon/mace/stunmace,
 /obj/item/key/vampire,
 /turf/open/floor/tile/masonic{
@@ -687,7 +682,7 @@
 /turf/open/floor/carpet,
 /area/rogue/indoors/town/manor)
 "cZ" = (
-/obj/machinery/light/fueled/firebowl/off{
+/obj/machinery/light/fueled/firebowl{
 	pixel_y = 6
 	},
 /turf/open/floor/concrete,
@@ -707,7 +702,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/rogue/indoors/town/manor)
 "df" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -715,7 +710,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 4
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "dh" = (
@@ -755,7 +750,7 @@
 /obj/structure/fluff/walldeco/painting/castle{
 	pixel_x = 32
 	},
-/turf/open/water/bloody,
+/turf/open/water/blood,
 /area/rogue/indoors/town/manor)
 "ds" = (
 /obj/structure/table/wood{
@@ -986,7 +981,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "eu" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/closed/wall/mineral/craftstone{
 	opacity = 0;
 	name = "stone wall with holes"
@@ -1086,7 +1081,6 @@
 /obj/structure/chair/wood/alt/fancy/chair5{
 	dir = 8
 	},
-/obj/effect/landmark/start/vampiresmithlate,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "eS" = (
@@ -1115,7 +1109,7 @@
 /turf/open/floor/carpet/royalblack,
 /area/rogue/indoors/town/manor)
 "eW" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "eX" = (
@@ -1167,8 +1161,8 @@
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "fe" = (
-/obj/effect/decal/cleanable/debris/stony,
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "ff" = (
@@ -1237,7 +1231,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "fu" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
@@ -1359,7 +1353,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 1
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "fT" = (
@@ -1390,12 +1384,12 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "gc" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "gd" = (
-/obj/effect/decal/cleanable/debris/stony,
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "gf" = (
@@ -1456,7 +1450,7 @@
 /turf/closed/wall/mineral/stone/moss/blue,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "gv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "gw" = (
@@ -1464,7 +1458,7 @@
 	dir = 1;
 	icon_state = "longtable"
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = 5;
 	pixel_y = 7
 	},
@@ -1479,7 +1473,7 @@
 	pixel_x = -14;
 	pixel_y = 1
 	},
-/turf/open/water/bloody,
+/turf/open/water/blood,
 /area/rogue/under/town/basement/keep)
 "gy" = (
 /obj/structure/table/wood{
@@ -1487,11 +1481,11 @@
 	icon_state = "tablewood1"
 	},
 /obj/machinery/light/fueled/candle/floorcandle/alt,
-/obj/item/reagent_containers/food/snacks/produce/rogue/swampweeddry{
+/obj/item/reagent_containers/food/snacks/produce/swampweed_dried{
 	pixel_x = 4;
 	pixel_y = -5
 	},
-/obj/item/reagent_containers/food/snacks/produce/rogue/swampweeddry{
+/obj/item/reagent_containers/food/snacks/produce/swampweed_dried{
 	pixel_x = -1;
 	pixel_y = 0
 	},
@@ -1823,7 +1817,7 @@
 /turf/open/floor/ruinedwood,
 /area/rogue/under/town/basement/keep)
 "hS" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "hT" = (
@@ -1940,7 +1934,7 @@
 /turf/open/floor/carpet/stellar,
 /area/rogue/indoors/town/manor)
 "ix" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "iy" = (
@@ -2005,25 +1999,25 @@
 /turf/open/floor/wood,
 /area/rogue/under/town/basement/keep)
 "iQ" = (
-/obj/machinery/light/fueled/firebowl/off{
+/obj/machinery/light/fueled/firebowl{
 	pixel_y = 6
 	},
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "iR" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "iS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "iV" = (
 /turf/closed/wall/mineral/stone/moss,
 /area/rogue/under/town/basement/keep)
 "iW" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "iX" = (
@@ -2165,7 +2159,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "jp" = (
 /obj/structure/table/wood,
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = -5;
 	pixel_y = 10
 	},
@@ -2216,7 +2210,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/manor)
 "jz" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -2278,7 +2272,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "jO" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "jP" = (
@@ -2302,7 +2296,7 @@
 /turf/open/floor/tile/harem,
 /area/rogue/under/town/basement/keep)
 "jT" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/carpet/lord/left,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "jU" = (
@@ -2333,8 +2327,8 @@
 /obj/structure/closet/crate/crafted_closet/lord,
 /obj/item/clothing/shirt/tunic/silktunic,
 /obj/item/clothing/shirt/tunic/silktunic,
-/obj/item/clothing/shirt/tunic/red,
-/obj/item/clothing/shirt/tunic/red,
+/obj/item/clothing/shirt/tunic/colored/red,
+/obj/item/clothing/shirt/tunic/colored/red,
 /obj/effect/decal/cobbleedge{
 	dir = 8;
 	icon_state = "borderfall";
@@ -2381,8 +2375,8 @@
 /turf/open/floor/carpet,
 /area/rogue/indoors/town/manor)
 "kh" = (
-/obj/effect/decal/cleanable/debris/stony,
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "kj" = (
@@ -2399,22 +2393,16 @@
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "kq" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
-"kr" = (
-/obj/machinery/light/fueled/firebowl/off{
-	pixel_y = 6
-	},
-/turf/closed/wall/mineral/decostone/center,
-/area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "ku" = (
 /obj/item/ore/coal,
 /obj/item/ore/coal,
 /turf/open/floor/blocks,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "kv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "kw" = (
@@ -2526,8 +2514,8 @@
 /area/rogue/under/town/basement/keep)
 "kY" = (
 /obj/structure/rack,
-/obj/item/weapon/mace/steel/palloy,
-/obj/item/weapon/mace/steel/palloy,
+/obj/item/weapon/mace/steel,
+/obj/item/weapon/mace/steel,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement/keep)
 "kZ" = (
@@ -2539,7 +2527,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "lb" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "lc" = (
@@ -2549,7 +2537,7 @@
 /turf/open/floor/carpet/lord/left,
 /area/rogue/indoors/town/manor)
 "le" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "lg" = (
@@ -2630,7 +2618,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "lr" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "ls" = (
@@ -2658,7 +2646,7 @@
 /turf/open/floor/carpet/inn,
 /area/rogue/indoors/town/manor)
 "lx" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "ly" = (
@@ -2684,7 +2672,7 @@
 "lC" = (
 /obj/structure/closet/crate/chest/neu_iron,
 /obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
-/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "lD" = (
@@ -2715,8 +2703,8 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "lJ" = (
-/obj/structure/chair/wood/throne,
-/mob/living/simple_animal/hostile/rogue/dreamfiend/ancient{
+/obj/structure/chair/bench/throne,
+/mob/living/simple_animal/hostile/dreamfiend/ancient{
 	faction = list("caves")
 	},
 /turf/open/floor/concrete,
@@ -2818,7 +2806,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/rmh_bedrock)
 "mg" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "mh" = (
@@ -2865,7 +2853,7 @@
 	},
 /area/rogue/under/rmh_bedrock)
 "mq" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "mr" = (
@@ -2940,12 +2928,12 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "mG" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/gibs/old,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "mH" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human{
 	color = "#5e5e5e"
 	},
@@ -3050,12 +3038,12 @@
 /obj/structure/fluff/railing/wood/west{
 	pixel_x = -9
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/indoors/town/manor)
 "nb" = (
 /obj/effect/decal/cleanable/blood/old,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "nc" = (
@@ -3128,7 +3116,7 @@
 /area/rogue/under/town/basement/keep)
 "nz" = (
 /obj/item/natural/rock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "nB" = (
@@ -3147,7 +3135,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "nM" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "nN" = (
@@ -3164,7 +3152,7 @@
 	dir = 8;
 	icon_state = "largetable"
 	},
-/obj/item/kitchen/spoon/gold{
+/obj/item/kitchen/spoon/iron{
 	pixel_y = 4
 	},
 /turf/open/floor/carpet/royalblack,
@@ -3205,7 +3193,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "nZ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/gibs/old,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
@@ -3257,10 +3245,6 @@
 	dir = 1
 	},
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
-"ok" = (
-/obj/item/ore/iron,
-/turf/open/floor/tile/brownbrick,
-/area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "ol" = (
 /obj/structure/door/viewport{
 	dir = 2;
@@ -3397,7 +3381,7 @@
 /area/rogue/indoors/town/manor)
 "oX" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/heavy_armor_spawner,
+/obj/effect/spawner/map_spawner/loot/armor,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "oY" = (
@@ -3455,7 +3439,7 @@
 	pixel_y = 16;
 	list_reagents = list(/datum/reagent/blood = 65)
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = -7;
 	pixel_y = 8
 	},
@@ -3587,7 +3571,7 @@
 /obj/structure/stairs/fancy/c{
 	dir = 1
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "pU" = (
@@ -3620,7 +3604,7 @@
 /turf/open/floor/snow/patchy,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "pY" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "qc" = (
@@ -3632,11 +3616,11 @@
 /area/rogue/under/town/basement/keep)
 "qe" = (
 /obj/effect/decal/cleanable/blood/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "qg" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -3708,7 +3692,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "qv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "qw" = (
@@ -3749,7 +3733,7 @@
 /turf/open/floor/dirt,
 /area/rogue/indoors/cave/rmh_cave/cold)
 "qF" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "qH" = (
@@ -3786,7 +3770,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "qM" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -3896,7 +3880,7 @@
 /turf/open/floor/blocks,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "rl" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -3921,7 +3905,7 @@
 /turf/open/floor/tile,
 /area/rogue/indoors/town/vault)
 "rr" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "rs" = (
@@ -4038,7 +4022,7 @@
 	dir = 1;
 	icon_state = "longtable"
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = 5;
 	pixel_y = 7
 	},
@@ -4115,7 +4099,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "se" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/church,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "sf" = (
@@ -4143,7 +4127,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "sm" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -4207,7 +4191,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "sE" = (
-/obj/item/weapon/halberd/bardiche/iron,
+/obj/item/weapon/polearm/halberd/bardiche,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "sF" = (
@@ -4280,7 +4264,7 @@
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "sV" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "sX" = (
@@ -4313,10 +4297,6 @@
 	icon_state = "linoleum"
 	},
 /area/rogue/indoors/town/vault)
-"tb" = (
-/obj/machinery/light/fueled/firebowl/off,
-/turf/closed/wall/mineral/decostone/cand,
-/area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "te" = (
 /obj/structure/bars/tough,
 /obj/structure/bars/pipe,
@@ -4349,7 +4329,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/manor)
 "tj" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "tl" = (
@@ -4521,11 +4501,11 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "tU" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "tV" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "tX" = (
@@ -4539,8 +4519,8 @@
 /area/rogue/indoors/town/manor)
 "tZ" = (
 /obj/structure/rack,
-/obj/item/weapon/flail/sflail/paflail,
-/obj/item/weapon/flail/sflail/paflail,
+/obj/item/weapon/flail/sflail,
+/obj/item/weapon/flail/sflail,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement/keep)
 "ub" = (
@@ -4552,11 +4532,11 @@
 /area/rogue/indoors/town/manor)
 "uc" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchmarble,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "ud" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stoneblock,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
@@ -4587,7 +4567,9 @@
 /turf/open/water/sewer,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "uk" = (
-/turf/closed/wall/mineral/wooddark/end/north,
+/turf/closed/wall/mineral/wooddark/end{
+	dir = 1
+	},
 /area/rogue/indoors/town/manor)
 "ul" = (
 /obj/structure/stairs/stone,
@@ -4595,18 +4577,18 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "un" = (
 /obj/item/natural/bundle/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "uo" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human{
 	color = "#5e5e5e"
 	},
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "up" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -4620,7 +4602,7 @@
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "uv" = (
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "uw" = (
@@ -4669,7 +4651,7 @@
 /turf/open/floor/dirt,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "uI" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
@@ -4683,7 +4665,7 @@
 	},
 /area/rogue/indoors/town/manor)
 "uN" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "uO" = (
@@ -4744,11 +4726,11 @@
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "uX" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "uZ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "va" = (
@@ -4868,8 +4850,8 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "vz" = (
-/obj/machinery/light/fueled/firebowl/off,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/machinery/light/fueled/firebowl,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "vA" = (
@@ -4925,8 +4907,8 @@
 /area/rogue/indoors/town/manor)
 "vH" = (
 /obj/structure/rack,
-/obj/item/weapon/sword/long/blackflamb,
-/obj/item/weapon/sword/long/blackflamb,
+/obj/item/weapon/sword/long/forgotten,
+/obj/item/weapon/sword/long/forgotten,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement/keep)
 "vI" = (
@@ -4971,7 +4953,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "vQ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/to_underdark)
 "vR" = (
@@ -5008,11 +4990,11 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "vZ" = (
-/mob/living/simple_animal/hostile/retaliate/dragon/broodmother{
+/mob/living/simple_animal/hostile/retaliate/voiddragon{
 	faction = list("caves");
-	STAEND = 15;
-	STALUC = 15;
-	STASPD = 15
+	base_constitution = 15;
+	base_fortune = 15;
+	base_speed = 15
 	},
 /obj/effect/spawner/map_spawner/loot/dungeon/money,
 /turf/open/floor/hexstone,
@@ -5211,7 +5193,7 @@
 /turf/open/floor/tile/harem2,
 /area/rogue/indoors/town/bath)
 "wW" = (
-/obj/item/chair/stool/bar/rogue,
+/obj/item/chair/stool/bar,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "wX" = (
@@ -5234,7 +5216,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "xb" = (
-/turf/open/water/bloody,
+/turf/open/water/blood,
 /area/rogue/under/town/basement/keep)
 "xe" = (
 /obj/effect/decal/cobbleedge{
@@ -5254,7 +5236,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/bath)
 "xh" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "xi" = (
@@ -5274,8 +5256,8 @@
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "xk" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchmarble,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "xl" = (
@@ -5287,8 +5269,8 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "xm" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "xn" = (
@@ -5319,8 +5301,8 @@
 /turf/open/floor/metal,
 /area/rogue/indoors/town/manor)
 "xs" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "xu" = (
@@ -5346,7 +5328,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/under/town/basement/keep)
 "xz" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "xA" = (
@@ -5426,7 +5408,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/indoors/town/manor)
 "xP" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "xR" = (
@@ -5460,7 +5442,7 @@
 /obj/structure/fluff/statue/femalestatue{
 	pixel_y = 0
 	},
-/turf/open/water/bloody,
+/turf/open/water/blood,
 /area/rogue/under/town/basement/keep)
 "yb" = (
 /obj/structure/fluff/railing/border{
@@ -5518,7 +5500,6 @@
 /obj/machinery/light/fueled/wallfire/candle/l,
 /obj/structure/closet/crate/coffin/vampire,
 /obj/structure/curtain/black,
-/obj/effect/landmark/start/vampirelordlate,
 /obj/effect/decal/cobbleedge{
 	dir = 8;
 	icon_state = "borderfall";
@@ -5562,14 +5543,14 @@
 /turf/open/floor/tile/harem,
 /area/rogue/indoors/town/manor)
 "yw" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/ingot/steelholy,
-/obj/item/ingot/steelholy,
+/obj/item/ingot/steel,
+/obj/item/ingot/steel,
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "yy" = (
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "yz" = (
@@ -5585,7 +5566,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/manor)
 "yA" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "yB" = (
@@ -5598,7 +5579,7 @@
 /obj/effect/decal/herringbone,
 /obj/structure/closet/crate/chest/neu_fancy,
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/weapon/shield/tower/metal/palloy,
+/obj/item/weapon/shield/tower/metal,
 /obj/item/weapon/mace/stunmace,
 /obj/item/key/vampire,
 /turf/open/floor/tile/masonic{
@@ -5650,7 +5631,7 @@
 /area/rogue/indoors/town/vault)
 "yP" = (
 /obj/effect/spawner/map_spawner/hauntpile,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "yQ" = (
@@ -5680,10 +5661,12 @@
 /turf/open/floor/wood,
 /area/rogue/under/town/basement/keep)
 "yW" = (
-/turf/closed/wall/mineral/wooddark/end/west,
+/turf/closed/wall/mineral/wooddark/end{
+	dir = 8
+	},
 /area/rogue/indoors/town/manor)
 "yX" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -5822,7 +5805,7 @@
 /turf/closed/wall/mineral/stonebrick,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "zJ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "zL" = (
@@ -5835,10 +5818,12 @@
 /turf/open/floor/tile/bfloorz,
 /area/rogue/indoors/town/manor)
 "zM" = (
-/turf/closed/wall/mineral/pipe/line/four,
+/turf/closed/wall/mineral/pipe/line{
+	dir = 4
+	},
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "zN" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "zP" = (
@@ -5872,7 +5857,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "zV" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/church,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "zW" = (
@@ -5933,7 +5918,7 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "Ak" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Al" = (
@@ -5984,7 +5969,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "Az" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "AB" = (
@@ -5998,11 +5983,11 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "AD" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "AG" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/gibs/old,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
@@ -6032,14 +6017,14 @@
 "AL" = (
 /obj/structure/closet/crate/chest/neu_iron,
 /obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
-/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "AN" = (
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "AS" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "AT" = (
@@ -6066,7 +6051,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "AZ" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Bb" = (
@@ -6080,7 +6065,7 @@
 	pixel_y = 0;
 	layer = 4.12
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Bd" = (
@@ -6096,15 +6081,15 @@
 /turf/closed/wall/mineral/decostone/end,
 /area/rogue/indoors/town/manor)
 "Bf" = (
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Bg" = (
 /obj/structure/closet/crate/crafted_closet/lord,
 /obj/item/clothing/shirt/tunic/silktunic,
 /obj/item/clothing/shirt/tunic/silktunic,
-/obj/item/clothing/shirt/tunic/red,
-/obj/item/clothing/shirt/tunic/red,
+/obj/item/clothing/shirt/tunic/colored/red,
+/obj/item/clothing/shirt/tunic/colored/red,
 /obj/effect/decal/cobbleedge{
 	dir = 8;
 	icon_state = "borderfall";
@@ -6128,7 +6113,7 @@
 /turf/open/floor/carpet/inn,
 /area/rogue/indoors/town/manor)
 "Bm" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human{
 	color = "#5e5e5e"
 	},
@@ -6173,7 +6158,6 @@
 /turf/open/floor/wood,
 /area/rogue/under/town/basement/keep)
 "Bs" = (
-/obj/structure/fake_machine/vaultbank,
 /obj/machinery/light/fueled/wallfire/candle/blue{
 	pixel_y = -32
 	},
@@ -6206,7 +6190,7 @@
 /area/rogue/indoors/town/manor)
 "Bx" = (
 /obj/structure/table/wood,
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = 9;
 	pixel_y = 10
 	},
@@ -6243,12 +6227,12 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "BG" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "BH" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "BI" = (
@@ -6337,7 +6321,6 @@
 /obj/machinery/light/fueled/wallfire/candle/r,
 /obj/structure/closet/crate/coffin/vampire,
 /obj/structure/curtain/black,
-/obj/effect/landmark/start/vampirelordlate,
 /turf/open/floor/carpet/inn,
 /area/rogue/indoors/town/manor)
 "Cb" = (
@@ -6396,7 +6379,7 @@
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Cp" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Cq" = (
@@ -6424,7 +6407,7 @@
 /turf/open/floor/tile,
 /area/rogue/under/town/basement/keep)
 "Cw" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Cx" = (
@@ -6488,7 +6471,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/town/basement/keep)
 "CI" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -6506,7 +6489,7 @@
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
 "CL" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/woodturned,
 /area/rogue/indoors/town/manor)
 "CN" = (
@@ -6574,7 +6557,7 @@
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Dj" = (
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Dl" = (
@@ -6593,7 +6576,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "Do" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -6809,7 +6792,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Em" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "En" = (
@@ -6818,7 +6801,7 @@
 	},
 /area/rogue/outdoors/rmh_air)
 "Eo" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/storage/sack{
 	pixel_x = 13;
 	pixel_y = 13;
@@ -6917,7 +6900,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/reagent_containers/glass/cup/irongob,
+/obj/item/reagent_containers/glass/cup/steel,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "EM" = (
@@ -6963,11 +6946,11 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Fb" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/volcanic,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Fc" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/closed/wall/mineral/craftstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Fe" = (
@@ -7026,13 +7009,6 @@
 	},
 /turf/open/floor/tile/harem2,
 /area/rogue/indoors/town/bath)
-"Fv" = (
-/obj/structure/bars/grille,
-/obj/structure/bars/pipe{
-	pixel_y = 8
-	},
-/turf/open/floor/blocks,
-/area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Fw" = (
 /obj/structure/fluff/telescope,
 /turf/open/floor/tile/tilerg,
@@ -7071,7 +7047,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "FE" = (
 /obj/structure/fluff/railing/border/east,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
 /area/rogue/indoors/town/manor)
 "FG" = (
@@ -7106,7 +7082,7 @@
 	dir = 1
 	},
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/weapon/shield/tower/metal/palloy,
+/obj/item/weapon/shield/tower/metal,
 /obj/item/weapon/mace/stunmace,
 /obj/item/key/vampire,
 /turf/open/floor/tile/masonic,
@@ -7203,7 +7179,7 @@
 /obj/machinery/light/fueled/hearth{
 	icon_state = "hearth0"
 	},
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Gr" = (
@@ -7289,7 +7265,7 @@
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "GJ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -7456,7 +7432,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/town/manor)
 "Ht" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/church,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
@@ -7508,7 +7484,7 @@
 /turf/open/floor/cobble,
 /area/rogue/outdoors/rmh_air)
 "HC" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/carpet/lord/left{
 	dir = 1
 	},
@@ -7530,10 +7506,9 @@
 /obj/item/key/courtphys,
 /obj/item/key/tailor,
 /obj/item/key/shops/shop1,
-/obj/item/key/nightmaiden,
 /obj/item/key/archive,
-/obj/item/key/apartments/stable1,
-/obj/item/key/apartments/stable2,
+/obj/item/key/apartments/apartment1,
+/obj/item/key/apartments/apartment2,
 /obj/item/key/tavern,
 /obj/item/key/tower,
 /obj/item/key/artificer,
@@ -7738,7 +7713,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "IB" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "IC" = (
@@ -7842,7 +7817,7 @@
 /turf/closed/wall/mineral/craftstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "IR" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "IS" = (
@@ -7883,18 +7858,14 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "IW" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/stony,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
-"IY" = (
-/obj/structure/fluff/railing/border,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/town/manor)
 "Ja" = (
 /obj/structure/rack,
-/obj/item/weapon/halberd/bardiche,
-/obj/item/weapon/halberd/bardiche,
+/obj/item/weapon/polearm/halberd/bardiche,
+/obj/item/weapon/polearm/halberd/bardiche,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/town/basement/keep)
 "Jb" = (
@@ -7953,12 +7924,12 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "Jm" = (
-/obj/structure/trap/wall_projectile/frostbolt,
+/obj/structure/trap/wall_projectile,
 /turf/open/floor/snow,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen)
 "Jo" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchmarble,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "Jp" = (
@@ -8057,7 +8028,7 @@
 	},
 /area/rogue/indoors/town/manor)
 "JP" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
@@ -8066,7 +8037,7 @@
 /turf/open/floor/grass/cold,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "JS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/rock,
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
@@ -8268,12 +8239,12 @@
 /turf/closed/wall/mineral/wooddark/horizontal,
 /area/rogue/indoors/town/manor)
 "KO" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "KP" = (
 /obj/item/natural/stoneblock,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "KQ" = (
@@ -8491,7 +8462,7 @@
 /area/rogue/under/town/basement/keep)
 "LE" = (
 /obj/effect/decal/remains/human,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "LF" = (
@@ -8506,7 +8477,7 @@
 	},
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "LI" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "LK" = (
@@ -8547,7 +8518,7 @@
 	},
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "LV" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "LX" = (
@@ -8578,7 +8549,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "Md" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Me" = (
@@ -8633,7 +8604,7 @@
 /obj/item/clothing/cloak/apron/cook{
 	name = "physician's apron"
 	},
-/obj/item/needle/pestra,
+/obj/item/needle/thorn,
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
@@ -8681,11 +8652,11 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/town/bath)
 "Mv" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
 "Mw" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "Mx" = (
@@ -8702,7 +8673,7 @@
 "MA" = (
 /obj/structure/closet/crate/chest/neu_iron,
 /obj/effect/spawner/map_spawner/loot/valuable_clutter_spawner,
-/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "MB" = (
@@ -8725,7 +8696,7 @@
 /area/rogue/indoors/town/bath)
 "ME" = (
 /obj/structure/fluff/railing/corner/north_east,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
 /area/rogue/indoors/town/manor)
 "MI" = (
@@ -8867,7 +8838,7 @@
 /turf/open/floor/greenstone/runed,
 /area/rogue/indoors/town/rmh/magician/pass)
 "No" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Np" = (
@@ -9067,7 +9038,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/town/basement/keep)
 "Oc" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
@@ -9155,7 +9126,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/bath)
 "OB" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "OD" = (
@@ -9179,7 +9150,7 @@
 /turf/open/water/sewer,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "OK" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/metal/barograte,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "OL" = (
@@ -9255,8 +9226,8 @@
 	},
 /area/rogue/indoors/town/manor)
 "Pa" = (
-/obj/effect/decal/cleanable/debris/woody,
-/mob/living/simple_animal/hostile/retaliate/minotaur/original,
+/obj/effect/decal/cleanable/debris/wood,
+/mob/living/simple_animal/hostile/retaliate/minotaur,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Pb" = (
@@ -9336,7 +9307,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "Pu" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
@@ -9442,7 +9413,7 @@
 /turf/open/floor/concrete,
 /area/rogue/under/town/basement/keep)
 "PU" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stone,
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
@@ -9480,11 +9451,11 @@
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "Qb" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Qc" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/carpet/lord/right{
 	dir = 1
 	},
@@ -9553,7 +9524,7 @@
 /turf/open/floor/volcanic,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Qw" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human{
 	color = "#5e5e5e"
 	},
@@ -9570,7 +9541,7 @@
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Qy" = (
 /obj/structure/table/wood,
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = -6
 	},
 /obj/item/candle/candlestick/gold/lit{
@@ -9606,7 +9577,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "QF" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "QG" = (
@@ -9724,7 +9695,7 @@
 	},
 /area/rogue/indoors/town/manor)
 "Rm" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/forge)
 "Rn" = (
@@ -9855,18 +9826,15 @@
 /turf/open/floor/hexstone,
 /area/rogue/outdoors/mountains/rmh_mountains)
 "RS" = (
-/turf/open/water/bloody,
+/turf/open/water/blood,
 /area/rogue/indoors/town/manor)
 "RT" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/effect/spawner/map_spawner/loot/dungeon/misc,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
-"RU" = (
-/turf/open/floor/tile/brownbrick,
-/area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "RV" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchmarble,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "RW" = (
@@ -9899,18 +9867,18 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/town/manor)
 "Sc" = (
-/obj/effect/decal/cleanable/debris/stony,
-/obj/item/clothing/shoes/boots/iron,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/item/clothing/shoes/boots/armor,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Sd" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Sf" = (
 /obj/item/natural/bundle/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Sh" = (
@@ -10064,7 +10032,7 @@
 /turf/open/floor/tile/masonic/single,
 /area/rogue/indoors/town/manor)
 "SU" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
@@ -10096,7 +10064,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Te" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/stoneblock,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep)
@@ -10190,7 +10158,7 @@
 /turf/open/floor/wood,
 /area/rogue/under/town/basement/keep)
 "Tx" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/wood,
 /area/rogue/indoors/town/manor)
 "Ty" = (
@@ -10251,12 +10219,12 @@
 /turf/open/floor/snow/rough,
 /area/rogue/outdoors/exposed/rmh/manorgarri)
 "TM" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "TN" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "TO" = (
@@ -10266,8 +10234,8 @@
 	},
 /area/rogue/indoors/town/vault)
 "TP" = (
-/obj/item/gem/ruby,
-/obj/item/gem/ruby,
+/obj/item/gem/red,
+/obj/item/gem/red,
 /obj/item/gem/violet,
 /obj/item/gem/yellow,
 /obj/item/gem/green,
@@ -10405,7 +10373,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/town/manor)
 "Ut" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 6
 	},
@@ -10438,13 +10406,13 @@
 /area/rogue/indoors/town/manor)
 "UA" = (
 /obj/item/reagent_containers/glass/cup,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "UB" = (
 /obj/structure/closet/crate/chest/neu_iron,
 /obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
-/obj/effect/spawner/map_spawner/loot/general_loot_hi/x3,
+/obj/effect/spawner/map_spawner/loot/medium,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "UC" = (
@@ -10545,7 +10513,7 @@
 /area/rogue/indoors/town/manor)
 "UU" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "UW" = (
@@ -10575,7 +10543,7 @@
 	},
 /area/rogue/under/rmh_bedrock)
 "Va" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/carpet/lord/center,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "Vb" = (
@@ -10585,7 +10553,7 @@
 "Ve" = (
 /obj/effect/decal/herringbone,
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/weapon/shield/tower/metal/palloy,
+/obj/item/weapon/shield/tower/metal,
 /obj/item/weapon/mace/stunmace,
 /obj/item/key/vampire,
 /turf/open/floor/tile/masonic{
@@ -10603,7 +10571,7 @@
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
-/obj/item/reagent_containers/glass/cup/irongob,
+/obj/item/reagent_containers/glass/cup/steel,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "Vi" = (
@@ -10712,7 +10680,7 @@
 /area/rogue/under/town/basement/keep)
 "VG" = (
 /obj/effect/decal/cleanable/blood/gibs/old,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/church,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "VH" = (
@@ -10720,8 +10688,8 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "VI" = (
-/obj/machinery/light/fueled/firebowl/off,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/machinery/light/fueled/firebowl,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "VJ" = (
@@ -10781,7 +10749,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/manor)
 "VU" = (
-/obj/item/cooking/pan/iron,
+/obj/item/cooking/pan,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "VV" = (
@@ -10799,12 +10767,11 @@
 /obj/structure/fluff/walldeco/painting/castle{
 	pixel_x = 32
 	},
-/obj/effect/landmark/start/vampiresmith,
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/town/manor)
 "Wa" = (
 /obj/structure/rack,
-/obj/effect/spawner/map_spawner/loot/steel_weapon_spawner,
+/obj/effect/spawner/map_spawner/loot/weapon,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Wd" = (
@@ -10845,7 +10812,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "Wl" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
 "Wm" = (
@@ -10858,7 +10825,7 @@
 /obj/machinery/light/fueled/wallfire/candle/r,
 /obj/structure/closet/crate/drawer,
 /obj/item/flashlight/flare/torch/lantern,
-/obj/item/bedroll,
+/obj/item/sleepingbag,
 /obj/item/paper/scroll,
 /obj/item/paper/scroll,
 /obj/item/paper/scroll,
@@ -10935,7 +10902,7 @@
 /turf/open/floor/blocks,
 /area/rogue/under/town/basement/keep)
 "WD" = (
-/obj/machinery/light/fueled/firebowl/off,
+/obj/machinery/light/fueled/firebowl,
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "WE" = (
@@ -10960,8 +10927,8 @@
 /area/rogue/indoors/town/vault)
 "WJ" = (
 /obj/structure/rack,
-/obj/item/weapon/mace/wsword,
-/obj/item/weapon/mace/wsword,
+/obj/item/weapon/mace/steel,
+/obj/item/weapon/mace/steel,
 /turf/open/floor/tile/tilerg,
 /area/rogue/indoors/town/manor)
 "WK" = (
@@ -11097,7 +11064,7 @@
 /turf/open/floor/tile/harem1,
 /area/rogue/indoors/town/manor)
 "Xj" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/blocks,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
 "Xm" = (
@@ -11114,7 +11081,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/rogue/indoors/town/bath)
 "Xo" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Xp" = (
@@ -11127,13 +11094,9 @@
 /area/rogue/outdoors/mountains/rmh_mountains)
 "Xq" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
-"Xs" = (
-/obj/effect/landmark/start/vampirespawnlate,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/under/town/basement/keep)
 "Xt" = (
 /turf/open/floor/metal,
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
@@ -11173,7 +11136,7 @@
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
 /area/rogue/indoors/cave/rmh_dwarf_keep/throne)
 "XB" = (
@@ -11239,7 +11202,7 @@
 /area/rogue/indoors/town/manor)
 "XH" = (
 /obj/structure/table/wood,
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_y = 8;
 	pixel_x = 6
 	},
@@ -11261,7 +11224,7 @@
 /area/rogue/outdoors/rmh_air)
 "XN" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/entrance)
 "XP" = (
@@ -11367,7 +11330,7 @@
 /turf/open/floor/volcanic,
 /area/rogue/indoors/cave/rmh_dwarf_keep/grand)
 "Yj" = (
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/volcanic,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Yk" = (
@@ -11438,7 +11401,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 6
 	},
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/rogue/outdoors/exposed/rmh_dwarf_keep)
 "Yz" = (
@@ -11491,7 +11454,7 @@
 /area/rogue/indoors/cave/rmh_dwarf_keep/treasury)
 "YK" = (
 /obj/item/natural/wood/plank,
-/obj/effect/decal/cleanable/debris/woody,
+/obj/effect/decal/cleanable/debris/wood,
 /obj/structure/table/church/m{
 	icon_state = "stonetable_small"
 	},
@@ -11705,7 +11668,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/cave/rmh_dwarf_keep/smelters)
 "ZJ" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
@@ -11720,7 +11683,7 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/rogue/indoors/town/manor)
 "ZN" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /turf/open/floor/hexstone,
 /area/rogue/indoors/cave/rmh_dwarf_keep/living)
@@ -11734,7 +11697,7 @@
 /turf/open/floor/tile/masonic,
 /area/rogue/indoors/town/manor)
 "ZS" = (
-/obj/effect/decal/cleanable/debris/stony,
+/obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/remains/human,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/indoors/cave/rmh_dwarf_keep/communal)
@@ -16440,7 +16403,7 @@ Vu
 Vz
 sg
 ya
-Xs
+nU
 UH
 Qg
 kO
@@ -16956,7 +16919,7 @@ Vz
 Vz
 sg
 ya
-Xs
+nU
 UH
 Qg
 kO
@@ -29497,7 +29460,7 @@ xE
 xK
 SB
 Vw
-Fv
+Gc
 xE
 xl
 xK
@@ -29614,13 +29577,13 @@ xE
 xE
 xE
 EG
-Fv
+Gc
 ku
 xE
 xE
 xE
 lA
-Fv
+Gc
 ku
 ZI
 xl
@@ -29738,7 +29701,7 @@ Vz
 Vz
 Vz
 Ug
-ok
+ig
 Zq
 HJ
 Wm
@@ -30006,7 +29969,7 @@ Gy
 OU
 fa
 wI
-RU
+Wm
 FC
 wI
 my
@@ -30666,7 +30629,7 @@ iW
 iW
 jt
 Qq
-tb
+RZ
 Qq
 Qq
 Qq
@@ -30676,7 +30639,7 @@ kz
 Qq
 Qq
 Qq
-tb
+RZ
 Qq
 jt
 fy
@@ -31422,19 +31385,19 @@ iW
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -31450,19 +31413,19 @@ iW
 jt
 qF
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -32196,7 +32159,7 @@ iW
 fy
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -32208,13 +32171,13 @@ ov
 Oi
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -32230,7 +32193,7 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -32242,7 +32205,7 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -32976,19 +32939,19 @@ ov
 iW
 qF
 sI
-tb
+RZ
 sI
 ov
 iW
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
@@ -32998,25 +32961,25 @@ TN
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 Ml
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -33738,19 +33701,19 @@ IQ
 lQ
 IQ
 IQ
-tb
+RZ
 Qq
 jt
 iW
 ov
 sI
-tb
+RZ
 sI
 qF
 jt
 ov
 sI
-tb
+RZ
 sI
 qF
 jt
@@ -33762,7 +33725,7 @@ ov
 jt
 qF
 sI
-tb
+RZ
 sI
 ov
 Oi
@@ -33772,13 +33735,13 @@ Oi
 TN
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 NV
 jt
@@ -33790,13 +33753,13 @@ ov
 Oi
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
 jt
 Qq
-tb
+RZ
 Qq
 Qq
 Qq
@@ -35028,19 +34991,19 @@ IQ
 lQ
 IQ
 IQ
-tb
+RZ
 Qq
 jt
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
@@ -35052,7 +35015,7 @@ ov
 iW
 ov
 sI
-tb
+RZ
 sI
 ov
 sC
@@ -35062,13 +35025,13 @@ qu
 Oi
 ov
 sI
-tb
+RZ
 sI
 ov
 TN
 ov
 sI
-tb
+RZ
 sI
 ov
 Oi
@@ -35080,13 +35043,13 @@ NV
 jt
 Ml
 sI
-tb
+RZ
 sI
 ov
 jt
 jt
 Qq
-tb
+RZ
 Qq
 Qq
 wq
@@ -35814,19 +35777,19 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
 ov
 sI
-tb
+RZ
 sI
 ov
 NV
@@ -35848,13 +35811,13 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 qF
 iW
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
@@ -36582,7 +36545,7 @@ jt
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -36594,7 +36557,7 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 qF
 jt
@@ -36610,19 +36573,19 @@ Oi
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
@@ -37362,19 +37325,19 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
 ov
 sI
-tb
+RZ
 sI
 qF
 iW
@@ -37390,7 +37353,7 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 iW
@@ -37402,7 +37365,7 @@ ov
 jt
 ov
 sI
-tb
+RZ
 sI
 ov
 jt
@@ -38148,7 +38111,7 @@ jt
 jt
 jt
 Qq
-tb
+RZ
 Qq
 Qq
 Qq
@@ -38158,7 +38121,7 @@ kz
 Qq
 Qq
 Qq
-tb
+RZ
 Qq
 jt
 sC
@@ -40601,19 +40564,19 @@ bo
 bo
 bo
 YS
-kr
+nd
 YS
 VM
 Bh
 NS
 YS
-kr
+nd
 YS
 bo
 IR
 bo
 YS
-kr
+nd
 YS
 bo
 IR
@@ -41621,13 +41584,13 @@ dx
 dx
 EU
 YS
-kr
+nd
 YS
 bo
 bo
 bo
 YS
-kr
+nd
 YS
 bo
 bo
@@ -41651,7 +41614,7 @@ bo
 bo
 bo
 YS
-kr
+nd
 YS
 EU
 dx
@@ -47293,11 +47256,11 @@ BQ
 Vx
 Vq
 vM
-bQ
+aS
 NT
-bQ
-bQ
-bQ
+aS
+aS
+aS
 ls
 ls
 AI
@@ -47422,9 +47385,9 @@ UI
 Du
 Du
 GH
-bQ
+aS
 ls
-bQ
+aS
 mD
 qU
 Sb
@@ -47547,17 +47510,17 @@ Io
 cc
 cc
 KY
-IY
+Lq
 Du
 lT
 mP
-bQ
+aS
 ls
-bQ
-bQ
+aS
+aS
 XE
 qU
-bQ
+aS
 KY
 Ce
 cc
@@ -47676,7 +47639,7 @@ PN
 PN
 cc
 AI
-IY
+Lq
 HS
 yo
 ls
@@ -47684,9 +47647,9 @@ ls
 ls
 ls
 ls
-bQ
+aS
 ag
-bQ
+aS
 AI
 Ce
 Ce
@@ -47805,17 +47768,17 @@ Qh
 Qh
 Qh
 AI
-bQ
-bQ
-bQ
+aS
+aS
+aS
 ls
 Ov
 qs
 Ov
 ls
-bQ
-bQ
-bQ
+aS
+aS
+aS
 AI
 Qh
 Kq
@@ -48064,16 +48027,16 @@ Bk
 Bk
 uM
 aB
-bQ
-bQ
+aS
+aS
 ls
 Ov
 TQ
 Ov
 ls
-bQ
-bQ
-bQ
+aS
+aS
+aS
 AI
 Qh
 cc
@@ -48192,17 +48155,17 @@ Bk
 Bk
 Bk
 nJ
-bQ
-bQ
-bQ
+aS
+aS
+aS
 ls
 ls
 ls
 ls
 ls
-bQ
+aS
 qU
-bQ
+aS
 AI
 cc
 Ce
@@ -48321,17 +48284,17 @@ Bk
 Bk
 Bk
 cs
-bQ
-bQ
+aS
+aS
 Cy
-bQ
-bQ
+aS
+aS
 ls
-bQ
-bQ
+aS
+aS
 rN
 mD
-bQ
+aS
 KY
 cc
 Kq
@@ -48451,12 +48414,12 @@ Bk
 Bk
 ob
 ls
-bQ
+aS
 WS
-bQ
-bQ
+aS
+aS
 ls
-bQ
+aS
 ag
 BO
 Sb
@@ -48581,13 +48544,13 @@ Be
 AI
 tq
 ls
-bQ
-bQ
-bQ
+aS
+aS
+aS
 Nu
-bQ
-bQ
-bQ
+aS
+aS
+aS
 ls
 ls
 AI
@@ -48705,8 +48668,8 @@ DZ
 vv
 mc
 lq
-bQ
-bQ
+aS
+aS
 zZ
 xX
 AH
@@ -48834,7 +48797,7 @@ kM
 DZ
 Kd
 lq
-bQ
+aS
 wl
 mc
 XJ
@@ -48963,7 +48926,7 @@ vv
 kM
 Kd
 lq
-bQ
+aS
 wl
 Kd
 XJ
@@ -49092,7 +49055,7 @@ DZ
 vv
 Kd
 lq
-bQ
+aS
 wl
 io
 Kd
@@ -50124,7 +50087,7 @@ DZ
 np
 Kd
 lq
-bQ
+aS
 wl
 Kd
 Kd
@@ -50253,7 +50216,7 @@ np
 Rw
 Kd
 lq
-bQ
+aS
 wl
 Kd
 XJ
@@ -50382,7 +50345,7 @@ Rw
 DZ
 Kd
 lq
-bQ
+aS
 wl
 bN
 XJ
@@ -50511,8 +50474,8 @@ DZ
 np
 bN
 lq
-bQ
-bQ
+aS
+aS
 zZ
 xX
 xX
@@ -51531,9 +51494,9 @@ zn
 Kd
 vx
 cQ
-bQ
-bQ
-bQ
+aS
+aS
+aS
 yD
 AI
 QX
@@ -51660,9 +51623,9 @@ zn
 Kd
 YT
 Hm
-bQ
-bQ
-bQ
+aS
+aS
+aS
 Nf
 uV
 QX
@@ -51675,11 +51638,11 @@ Tq
 yc
 QX
 eF
-bQ
+aS
 xa
-bQ
-bQ
-bQ
+aS
+aS
+aS
 He
 UT
 nX
@@ -51789,9 +51752,9 @@ zn
 Kd
 Vt
 FR
-bQ
-bQ
-bQ
+aS
+aS
+aS
 Ve
 AI
 QX
@@ -51804,10 +51767,10 @@ tO
 vf
 QX
 ob
-bQ
-bQ
-bQ
-bQ
+aS
+aS
+aS
+aS
 xa
 vq
 nX

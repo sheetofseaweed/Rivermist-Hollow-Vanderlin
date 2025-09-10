@@ -810,7 +810,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/inq)
 "yv" = (
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_y = 15;
 	pixel_x = -6
 	},
@@ -1068,7 +1068,7 @@
 	pixel_x = 8;
 	pixel_y = 11
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_y = 8;
 	pixel_x = -8
 	},
@@ -1486,14 +1486,14 @@
 "Sq" = (
 /obj/structure/table/wood/large/corner/north_west,
 /obj/item/plate/gold,
-/obj/item/kitchen/spoon/gold{
+/obj/item/kitchen/spoon/iron{
 	pixel_x = -7
 	},
 /obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = 3;
 	pixel_y = -10
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_x = 17;
 	pixel_y = 11
 	},
@@ -1541,7 +1541,7 @@
 /obj/structure/fluff/pillow/red{
 	dir = 1
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_y = 15;
 	pixel_x = -6
 	},
@@ -1672,7 +1672,7 @@
 /obj/structure/fluff/pillow/red{
 	dir = 1
 	},
-/obj/item/reagent_containers/glass/cup/golden/small{
+/obj/item/reagent_containers/glass/cup/golden{
 	pixel_y = -4;
 	pixel_x = -6
 	},

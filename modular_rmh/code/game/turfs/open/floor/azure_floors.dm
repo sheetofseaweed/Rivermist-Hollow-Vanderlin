@@ -73,3 +73,32 @@
 /turf/open/floor/tile/harem2
 	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
 	icon_state = "harem2"
+
+/turf/open/floor/rooftop/green/corner1
+	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
+	icon_state = "roofgc1-arw"
+
+/turf/open/floor/rooftop/green/corner1/Initialize()
+	. = ..()
+	icon_state = "roofgc1"
+
+/turf/open/floor/dark_ice
+	name = "black ice"
+	desc = "A deep black rock glazed over with unnaturally cold ice."
+	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
+	icon_state = "blackice"
+	footstep = FOOTSTEP_STONE
+	barefootstep = FOOTSTEP_HARD_BAREFOOT
+	clawfootstep = FOOTSTEP_HARD_CLAW
+	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
+	landsound = 'sound/foley/jumpland/grassland.wav'
+	smoothing_flags = SMOOTH_BITMASK_CARDINALS
+	smoothing_groups = SMOOTH_GROUP_OPEN_FLOOR
+
+/area/rogue/under/town/basement/keep
+	name = "keep basement"
+	icon_state = "basement"
+	keep_area = TRUE
+	town_area = TRUE
+	ceiling_protected = TRUE
+

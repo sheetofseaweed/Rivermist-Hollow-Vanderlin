@@ -436,6 +436,17 @@
 	damage_deflection = 20
 	hardness = 10
 
+/turf/closed/wall/mineral/pipe/line
+	icon_state = "pipe-3"
+	smoothing_flags = SMOOTH_BITMASK
+
+/turf/closed/wall/mineral/pipe/joint
+	icon_state = "pipe-7"
+	smoothing_flags = SMOOTH_BITMASK
+
+/turf/closed/wall/mineral/pipe/joint/four
+	icon_state = "pipe-11"
+
 /turf/closed/wall/mineral/underbrick
 	name = "erebus stone wall"
 	desc = "The toils of hard-working shades."

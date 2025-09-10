@@ -1,4 +1,4 @@
-/datum/resurrection_rune_controller
+/*/datum/resurrection_rune_controller
 	var/obj/structure/resurrection_rune/control/control_rune
 	var/obj/structure/resurrection_rune/sub_rune
 	var/list/linked_users = list()
@@ -71,7 +71,7 @@
 	body.apply_status_effect(/datum/status_effect/debuff/rune_glow)
 	playsound(T, 'sound/misc/vampirespell.ogg', 100, FALSE, -1)
 	to_chat(body, span_blue("You are back."))
-	
+
 
 /datum/resurrection_rune_controller/proc/add_user(mob/user)
 	if(user in linked_users)
@@ -103,13 +103,13 @@
 
 	if(control_rune.disabled_res && !sub_rune.is_main)
 		return
-	
+
 	//if(target.IsSleeping())
 	//	return
-	
+
 	if(!(target in linked_users)) //sanity check
 		return
-	
+
 	var/turf/tur = get_turf(target)
 	if(IS_RES_ELIGIBLE(target) || istype(tur, /turf/open/lava) || istype(tur, /turf/open/lava/acid))
 		if(target in resurrecting)
@@ -159,7 +159,7 @@
 /datum/resurrection_rune_controller/proc/remove_res(mob/living/carbon/user)
 	resurrecting -= user
 
-
+*/
 /obj/structure/resurrection_rune
 	name = "grand rune"
 	desc = "It emits an otherwordly hum."
@@ -174,7 +174,7 @@
 	var/obj/structure/resurrection_rune/control/main_rune_link
 	pixel_x = -64
 	pixel_y = -64
-
+/*
 /obj/structure/resurrection_rune/Initialize()
 	. = ..()
 	resrunecontroler = new /datum/resurrection_rune_controller()
@@ -199,7 +199,7 @@
 
 	if(!istype(user, /mob/living/carbon))
 		return
-	
+
 	if(!resrunecontroler)
 		return
 	if(!main_rune_link && !is_main)
@@ -209,7 +209,7 @@
 	if(main_rune_link.disabled_res && !is_main)
 		to_chat(user, span_blue("Your masters have disabled the rune!"))
 		return
-	
+
 	if(!is_main)
 		var/input = input(user, "What do you wish to do?", "Rune of Souls") as anything in list("Link Soul", "Revive a lost Soul", "Cancel")
 		switch(input)
@@ -226,22 +226,22 @@
 				return
 			else
 				return
-	
+
 
 /obj/structure/resurrection_rune/attacked_by(obj/item/I, mob/living/user)
 	return FALSE
-
+*/
 /obj/structure/resurrection_rune/control
 	name = "master rune"
 	is_main = TRUE
 	var/disabled_res = FALSE
-
+/*
 /obj/structure/resurrection_rune/control/Initialize()
 	. = ..()
 
 /obj/structure/resurrection_rune/control/attack_hand(mob/user)
 	. = ..()
-	
+
 	var/input = input(user, "What do you wish to do?", "Master Rune") as anything in list("Link Soul", "Unlink a Soul", "Toggle Sub Rune", "Cancel")
 	switch(input)
 		if("Link Soul")
@@ -274,4 +274,4 @@
 				to_chat(user, span_blue("Another chance."))
 			return
 		else
-			return
+			return*/
