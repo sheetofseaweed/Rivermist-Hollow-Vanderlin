@@ -131,7 +131,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "eU" = (
 /obj/effect/decal/cobbleedge{
@@ -145,7 +145,7 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "eY" = (
 /obj/effect/decal/cobbleedge{
@@ -153,7 +153,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "fg" = (
 /obj/machinery/light/fueled/wallfire/candle,
@@ -170,7 +170,7 @@
 /turf/open/floor/concrete,
 /area/rogue/indoors/inq)
 "fv" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq/office)
 "fQ" = (
 /obj/structure/stairs/fancy{
@@ -254,7 +254,7 @@
 /area/rogue/indoors/inq)
 "id" = (
 /obj/structure/fermentation_keg/water,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "il" = (
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -442,7 +442,7 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/railing/border/west,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "mp" = (
 /turf/closed/wall/mineral/stonebrick,
@@ -666,7 +666,7 @@
 	dir = 4;
 	icon_state = "borderfall"
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "tz" = (
 /turf/closed/wall/mineral/decostone/long,
@@ -677,7 +677,7 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "tE" = (
 /turf/open/floor/tile,
@@ -729,7 +729,7 @@
 	alpha = 100;
 	brightness = 15
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq/office)
 "ut" = (
 /turf/open/floor/concrete,
@@ -797,6 +797,9 @@
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/indoors/inq/office)
+"xL" = (
+/turf/open/floor/herringbone,
+/area/rogue/indoors/inq)
 "xV" = (
 /turf/open/floor/carpet/lord/center{
 	dir = 2
@@ -884,7 +887,7 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Bc" = (
 /obj/machinery/light/fueled/candle/floorcandle/pink,
@@ -1017,7 +1020,7 @@
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "EZ" = (
 /obj/structure/fluff/wallclock/vampire/r,
@@ -1085,7 +1088,7 @@
 	icon_state = "borderfall";
 	pixel_x = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Hq" = (
 /obj/effect/decal/cobbleedge{
@@ -1122,7 +1125,7 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Id" = (
 /obj/structure/fluff/railing/corner/south_east,
@@ -1145,7 +1148,7 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/railing/border,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "IU" = (
 /obj/structure/fluff/railing/corner,
@@ -1158,7 +1161,7 @@
 /area/rogue/indoors/inq)
 "Jc" = (
 /obj/machinery/light/fueled/wallfire/candle,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "JY" = (
 /obj/structure/fluff/railing/border/west,
@@ -1243,7 +1246,7 @@
 /area/rogue/indoors/inq)
 "MR" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Nb" = (
 /obj/machinery/light/fueled/chand{
@@ -1252,7 +1255,7 @@
 	alpha = 100;
 	layer = 4
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Nk" = (
 /obj/structure/table/wood/large/corner{
@@ -1340,7 +1343,7 @@
 /area/rogue/indoors/inq)
 "OP" = (
 /obj/structure/train/far_travel,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq/office)
 "OT" = (
 /obj/effect/decal/cobbleedge{
@@ -1476,7 +1479,7 @@
 	icon_state = "borderfall";
 	pixel_y = 7
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Sq" = (
 /obj/structure/table/wood/large/corner/north_west,
@@ -1562,7 +1565,7 @@
 	icon_state = "borderfall";
 	pixel_y = -8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "UW" = (
 /obj/machinery/light/fueled/wallfire{
@@ -1643,7 +1646,7 @@
 /area/rogue/indoors/inq)
 "Xk" = (
 /obj/item/bin/water,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "Xx" = (
 /turf/open/floor/tile/masonic,
@@ -1692,7 +1695,7 @@
 	pixel_y = 0
 	},
 /obj/structure/fluff/railing/border/north,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/inq)
 "ZB" = (
 /obj/structure/fluff/railing/border/west,
@@ -2378,9 +2381,9 @@ XL
 tE
 tE
 Ab
-rf
+xL
 Ab
-rf
+xL
 Ab
 tE
 tE
@@ -2390,7 +2393,7 @@ tE
 Ab
 Ab
 Ab
-rf
+xL
 Ab
 tE
 tE
@@ -2535,19 +2538,19 @@ qU
 tE
 Ab
 Ab
-rf
+xL
 Ab
-rf
+xL
 Ab
 Ab
-rf
+xL
 tT
-rf
+xL
 Ab
 Ab
 Ab
 Ab
-rf
+xL
 Ab
 Ab
 tE
@@ -2692,21 +2695,21 @@ RY
 tE
 Ab
 Ab
-rf
+xL
 Dg
-rf
+xL
 Ab
 Ab
-rf
+xL
 Ee
-rf
+xL
 Ab
-rf
-rf
-rf
+xL
+xL
+xL
 Nb
-rf
-rf
+xL
+xL
 tE
 gW
 Ad
@@ -2849,19 +2852,19 @@ RY
 tE
 Ab
 Ab
-rf
+xL
 Ab
-rf
+xL
 Ab
 Ab
-rf
+xL
 Ee
-rf
+xL
 Ab
-rf
+xL
 Ab
 Ab
-rf
+xL
 Ab
 Ab
 tE
@@ -3006,19 +3009,19 @@ qU
 tE
 Ab
 Ab
-rf
+xL
 Ab
-rf
+xL
 Ab
 Ab
-rf
+xL
 hz
-rf
+xL
 Ab
-rf
+xL
 Ab
 Ab
-rf
+xL
 Ab
 Ab
 tE
@@ -3173,9 +3176,9 @@ tE
 tE
 tE
 tE
-rf
-rf
-rf
+xL
+xL
+xL
 Ab
 Ab
 tE
@@ -3487,10 +3490,10 @@ ep
 ep
 ep
 tE
-rf
-rf
-rf
-rf
+xL
+xL
+xL
+xL
 tE
 mp
 mp
@@ -3801,10 +3804,10 @@ ep
 ep
 ep
 tE
-rf
-rf
-rf
-rf
+xL
+xL
+xL
+xL
 tE
 mp
 mp
@@ -4262,7 +4265,7 @@ qU
 tE
 Ab
 Ab
-rf
+xL
 Ee
 Ee
 tE
@@ -4272,11 +4275,11 @@ cH
 Im
 YX
 tE
-rf
-rf
-rf
-rf
-rf
+xL
+xL
+xL
+xL
+xL
 tE
 gW
 Ad
@@ -4417,9 +4420,9 @@ Ad
 Ad
 RY
 tE
-rf
-rf
-rf
+xL
+xL
+xL
 Ee
 Ee
 tE
@@ -4577,8 +4580,8 @@ tE
 Ab
 Ab
 Nb
-rf
-rf
+xL
+xL
 tE
 nM
 Ei
@@ -4586,11 +4589,11 @@ cH
 QH
 nM
 tE
-rf
-rf
-rf
-rf
-rf
+xL
+xL
+xL
+xL
+xL
 tE
 gW
 Ad
@@ -4734,7 +4737,7 @@ tE
 Ab
 Ab
 Ab
-rf
+xL
 Ab
 tE
 IO
@@ -4891,7 +4894,7 @@ tE
 tE
 Ab
 Ab
-rf
+xL
 Ab
 tE
 IO
@@ -5970,11 +5973,11 @@ cw
 NU
 ND
 tE
-rf
-rf
-rf
-rf
-rf
+xL
+xL
+xL
+xL
+xL
 NF
 kz
 XW
@@ -6941,11 +6944,11 @@ ep
 ep
 ep
 tE
-rf
+xL
 eY
 nM
 tB
-rf
+xL
 mZ
 mZ
 Ad
@@ -7569,11 +7572,11 @@ ep
 ep
 ep
 tE
-rf
+xL
 eY
 nM
 tB
-rf
+xL
 mZ
 mZ
 Ad
@@ -8482,11 +8485,11 @@ IB
 ND
 ND
 tE
-rf
-rf
-rf
-rf
-rf
+xL
+xL
+xL
+xL
+xL
 NF
 wY
 XW

@@ -856,7 +856,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 9
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "aJy" = (
 /obj/structure/flora/ausbushes/brflowers,
@@ -1240,7 +1240,7 @@
 /obj/item/weapon/polearm/halberd/bardiche/woodcutter{
 	pixel_x = -4
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "aXR" = (
 /obj/structure/fluff/railing/border,
@@ -2525,7 +2525,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 5
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "bSo" = (
 /turf/closed/wall/mineral/wooddark/vertical,
@@ -2534,7 +2534,7 @@
 /obj/machinery/light/fueled/torchholder{
 	dir = 1
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "bSI" = (
 /obj/structure/fluff/railing/border{
@@ -2596,7 +2596,7 @@
 	dir = 8
 	},
 /obj/effect/landmark/start/magician,
-/turf/open/floor/carpet/royalblack,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "bVy" = (
 /obj/effect/decal/mossy{
@@ -2959,7 +2959,7 @@
 /obj/item/reagent_containers/powder/salt,
 /obj/item/reagent_containers/powder/salt,
 /obj/item/reagent_containers/powder/salt,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "cfI" = (
 /obj/effect/decal/mossy{
@@ -3465,6 +3465,9 @@
 	},
 /turf/open/floor/ruinedwood/turned,
 /area/rogue/outdoors/river)
+"cwK" = (
+/turf/open/floor/ruinedwood/herringbone,
+/area/rogue/indoors/town/rmh/merchant)
 "cwQ" = (
 /obj/structure/flora/tree/pine,
 /turf/open/floor/grass,
@@ -3814,7 +3817,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 10
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "cOv" = (
 /obj/structure/table/wood{
@@ -3984,7 +3987,7 @@
 	name = "pewter goblet";
 	pixel_x = -11
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "cVf" = (
 /turf/closed/wall/mineral/pipe,
@@ -4717,6 +4720,9 @@
 	name = "Rivermist Hollow";
 	first_time_text = "RIVERMIST HOLLOW"
 	})
+"dqS" = (
+/turf/open/floor/ruinedwood/herringbone,
+/area/rogue/indoors/town/rmh/chapel/basement)
 "dqT" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
 /turf/open/floor/blocks,
@@ -6655,7 +6661,7 @@
 /obj/structure/fake_machine/mail{
 	mailtag = "Priest"
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "eIg" = (
 /obj/effect/decal/cleanable/roguerune/arcyne/summoning/adv,
@@ -7504,6 +7510,9 @@
 	},
 /turf/open/floor/blocks,
 /area/rogue/outdoors/town/rmh/roofs)
+"fsU" = (
+/turf/open/floor/herringbone,
+/area/rogue/under/town/rmh/basement)
 "fsZ" = (
 /turf/open/floor/cobble,
 /area/rogue/indoors/town/rmh/tavern)
@@ -7773,7 +7782,7 @@
 /obj/item/clothing/cloak/chasuble,
 /obj/item/weapon/polearm/woodstaff/aries,
 /obj/item/scomstone,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "fHt" = (
 /turf/closed/wall/mineral/decostone/cand,
@@ -9269,7 +9278,7 @@
 /area/rogue/outdoors/river)
 "gFS" = (
 /obj/effect/decal/cleanable/debris/stone,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/sewer)
 "gGp" = (
 /obj/structure/rack,
@@ -10754,7 +10763,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 6
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "hKV" = (
 /obj/item/neuFarm/seed/apple,
@@ -11191,7 +11200,7 @@
 /area/rogue/outdoors/river)
 "ibD" = (
 /obj/structure/fluff/railing/corner/north_east,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "ibY" = (
 /obj/effect/decal/carpet/kover_purple{
@@ -12337,7 +12346,7 @@
 	pixel_x = -5;
 	pixel_y = 12
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "iUM" = (
 /obj/effect/decal/cobbleedge{
@@ -12466,7 +12475,7 @@
 	pixel_x = -14;
 	pixel_y = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "iXX" = (
 /obj/machinery/light/fueled/torchholder{
@@ -13410,7 +13419,7 @@
 /area/rogue/indoors/town/rmh)
 "jJv" = (
 /obj/effect/decal/wood/herringbone2,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "jJK" = (
 /obj/structure/flora/tree/pine/dead{
@@ -14357,7 +14366,7 @@
 	})
 "kqR" = (
 /obj/item/natural/stone,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "kqZ" = (
 /obj/structure/flora/grass/herb/random,
@@ -14773,7 +14782,7 @@
 /obj/effect/decal/wood/herringbone{
 	dir = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "kGq" = (
 /obj/structure/spider/stickyweb/solo,
@@ -14821,7 +14830,7 @@
 	icon_state = "borderfall"
 	},
 /obj/structure/fluff/railing/border/west,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "kHl" = (
 /obj/structure/fluff/railing/wood{
@@ -14913,7 +14922,7 @@
 /turf/open/water/sewer,
 /area/rogue/under/town/rmh/sewer)
 "kMg" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/sewer)
 "kMm" = (
 /turf/closed/wall/mineral/stone,
@@ -15026,7 +15035,7 @@
 /area/rogue/indoors/town/rmh/crafters_guild/under)
 "kQE" = (
 /obj/structure/roguerock,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "kQX" = (
 /obj/structure/stairs,
@@ -15181,7 +15190,7 @@
 "lax" = (
 /obj/item/natural/bundle/stoneblock,
 /obj/effect/decal/cleanable/debris/stone,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "laC" = (
 /turf/open/floor/ruinedwood/herringbone_clear,
@@ -15194,7 +15203,7 @@
 /obj/machinery/light/fueled/wallfire{
 	pixel_y = 33
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "lbh" = (
 /obj/structure/table/wood{
@@ -15322,7 +15331,7 @@
 /turf/open/floor/hexstone,
 /area/rogue/indoors/town/rmh/magician/pass)
 "leK" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "leO" = (
 /obj/structure/door/weak/bolt{
@@ -15411,7 +15420,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/indoors/cave/rmh_cave/greenskins)
 "lgS" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "lgT" = (
 /obj/structure/fluff/railing/wood/north,
@@ -15438,7 +15447,7 @@
 /area/rogue/indoors/town/rmh/tavern)
 "liN" = (
 /obj/item/natural/stone,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "liS" = (
 /obj/effect/decal/cleanable/debris/stone,
@@ -15554,7 +15563,7 @@
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "lor" = (
 /obj/structure/flora/grass/bush/wall,
@@ -15918,7 +15927,7 @@
 /area/rogue/indoors/town/rmh/cell)
 "lAo" = (
 /obj/item/natural/bundle/stoneblock,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "lAG" = (
 /obj/structure/fluff/railing/wood/north,
@@ -16032,8 +16041,10 @@
 /turf/open/floor/cobble,
 /area/rogue/under/town/rmh/basement)
 "lGU" = (
-/obj/structure/fluff/railing/corner,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/obj/structure/fluff/railing/corner/south_west{
+	dir = 9
+	},
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "lHh" = (
 /obj/structure/rack/shelf/biggest,
@@ -16617,7 +16628,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 5
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "mcQ" = (
 /obj/structure/stairs{
@@ -16687,7 +16698,7 @@
 /obj/structure/rack,
 /obj/item/broom,
 /obj/item/broom,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "mfo" = (
 /turf/closed/wall/mineral/wooddark/horizontal,
@@ -16876,7 +16887,7 @@
 /obj/structure/fake_machine/scomm{
 	pixel_y = -32
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "mmJ" = (
 /obj/effect/decal/mossy{
@@ -18184,7 +18195,7 @@
 "njb" = (
 /obj/effect/decal/cleanable/debris/stone,
 /obj/item/natural/wood/plank,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "njj" = (
 /turf/closed/mineral,
@@ -19131,7 +19142,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 6
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "nXj" = (
 /obj/structure/flora/grass/water/reeds,
@@ -19722,7 +19733,7 @@
 /area/rogue/outdoors/rmh_field)
 "ouC" = (
 /obj/effect/decal/cleanable/debris/stone,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "ouD" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -21102,7 +21113,7 @@
 /obj/effect/decal/wood/herringbone{
 	dir = 9
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "ptm" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -21116,7 +21127,7 @@
 /obj/effect/decal/wood/herringbone2{
 	dir = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "pug" = (
 /turf/open/floor/cobblerock,
@@ -21462,7 +21473,7 @@
 	pixel_y = 0
 	},
 /obj/machinery/light/fueled/firebowl/standing,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "pHA" = (
 /obj/structure/flora/tree/pine{
@@ -21517,7 +21528,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "pKn" = (
 /obj/structure/flora/hotspring_rocks/grassy,
@@ -21857,6 +21868,9 @@
 /obj/structure/flora/grass/bush/wall,
 /turf/open/floor/grass,
 /area/rogue/outdoors/rmh_field/north_mountain)
+"qbH" = (
+/turf/open/floor/ruinedwood/herringbone,
+/area/rogue/indoors/town/rmh/magician)
 "qbN" = (
 /obj/structure/chair/stool,
 /obj/effect/landmark/start/butler,
@@ -21888,7 +21902,7 @@
 /obj/machinery/light/fueled/wallfire/candle/blue{
 	pixel_y = -32
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "qcb" = (
 /obj/item/candle/candlestick/gold/lit{
@@ -21897,7 +21911,7 @@
 	},
 /obj/structure/table/wood,
 /obj/item/book/bibble,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "qcc" = (
 /obj/structure/closet/crate/chest/crate,
@@ -22220,6 +22234,9 @@
 	},
 /turf/open/floor/blocks,
 /area/rogue/outdoors/town/rmh/roofs)
+"qqG" = (
+/turf/open/floor/ruinedwood/herringbone,
+/area/rogue/indoors/town/rmh)
 "qre" = (
 /turf/open/floor/hexstone,
 /area/rogue/indoors/town/rmh)
@@ -23699,7 +23716,7 @@
 /obj/effect/decal/wood/herringbone2{
 	dir = 4
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "rpf" = (
 /turf/closed/mineral/random/high{
@@ -23958,7 +23975,7 @@
 /area/rogue/indoors/town/rmh)
 "rAq" = (
 /obj/structure/fluff/railing/border,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "rAI" = (
 /obj/structure/fluff/railing/border/east,
@@ -24974,7 +24991,7 @@
 	pixel_y = 16;
 	pixel_x = 13
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "smb" = (
 /obj/effect/spawner/map_spawner/loot/dungeon/materials,
@@ -25216,7 +25233,7 @@
 /area/rogue/indoors/town/rmh/tavern)
 "svF" = (
 /obj/item/bin/water/gross,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "svM" = (
 /obj/structure/rack/shelf/biggest,
@@ -25245,7 +25262,7 @@
 /obj/effect/decal/wood/herringbone{
 	dir = 1
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "sxp" = (
 /obj/structure/fluff/railing/border{
@@ -25445,7 +25462,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 10
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "sFu" = (
 /obj/structure/bars{
@@ -25717,7 +25734,7 @@
 /obj/structure/chair/wood/alt/fancy{
 	dir = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/chapel/basement)
 "sPG" = (
 /obj/effect/decal/cobbleedge{
@@ -27107,6 +27124,9 @@
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
 /turf/open/floor/hexstone,
 /area/rogue/under/town/rmh/basement)
+"tKS" = (
+/turf/open/floor/herringbone,
+/area/rogue/indoors/town/rmh/magician/pass)
 "tLc" = (
 /obj/structure/flora/grass/bush,
 /obj/structure/flora/grass,
@@ -27161,7 +27181,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 10
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "tMC" = (
 /obj/structure/window/stained/yellow,
@@ -27378,7 +27398,7 @@
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "tUN" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
@@ -27485,7 +27505,7 @@
 	name = "Ancient Statue";
 	pixel_y = 0
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "tXX" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
@@ -27832,7 +27852,7 @@
 "unf" = (
 /turf/closed/wall/mineral/decostone/end{
 	dir = 4
-},
+	},
 /area/rogue/under/town/rmh/bank)
 "unw" = (
 /obj/structure/chair/bench/couchablack{
@@ -28331,7 +28351,7 @@
 	icon_state = "borderfall"
 	},
 /obj/structure/fluff/railing/border/east,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/merchant)
 "uEH" = (
 /turf/closed/wall/mineral/stone,
@@ -28964,7 +28984,7 @@
 	spellname = "shadow step";
 	name = "Scroll of Shadow Step"
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "uYJ" = (
 /obj/structure/stairs,
@@ -29307,7 +29327,7 @@
 	pixel_x = -6
 	},
 /obj/item/weapon/sword/short,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh)
 "vnD" = (
 /obj/effect/decal/cobbleedge{
@@ -29481,7 +29501,7 @@
 	})
 "vvl" = (
 /obj/machinery/light/fueled/firebowl/church,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "vvw" = (
 /obj/item/bin/water,
@@ -29892,7 +29912,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 9
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "vPL" = (
 /obj/machinery/light/fueled/firebowl/church,
@@ -31558,7 +31578,7 @@
 /turf/open/floor/blocks/stonered/tiny,
 /area/rogue/under/town/basement)
 "wYO" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/underhamlet{
 	ceiling_protected = 1
 	})
@@ -32088,7 +32108,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 1
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/under/town/rmh/basement)
 "xnZ" = (
 /obj/item/weapon/mace/church,
@@ -32332,7 +32352,7 @@
 /obj/effect/decal/wood/herringbone{
 	dir = 8
 	},
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "xvW" = (
 /turf/open/floor/carpet/inn,
@@ -32990,7 +33010,7 @@
 /obj/item/paper/scroll,
 /obj/item/paper/scroll,
 /obj/item/natural/feather,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/herringbone,
 /area/rogue/indoors/cave/rmh_cave/minotaur)
 "xUE" = (
 /obj/effect/decal/cobbleedge{
@@ -33185,7 +33205,7 @@
 	pixel_y = 32
 	},
 /obj/machinery/light/fueled/wallfire/candle/blue/r,
-/turf/open/floor/ruinedwood/herringbone_clear,
+/turf/open/floor/ruinedwood/herringbone,
 /area/rogue/indoors/town/rmh/magician)
 "ybi" = (
 /obj/machinery/light/fueled/torchholder/r,
@@ -38362,23 +38382,23 @@ snm
 snm
 dtY
 bxD
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
 uuE
 oVi
 snm
@@ -38635,7 +38655,7 @@ uuE
 uuE
 uuE
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -38892,7 +38912,7 @@ lhr
 lhr
 yfy
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -39149,7 +39169,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -39406,7 +39426,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -39663,7 +39683,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -39920,7 +39940,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -40177,7 +40197,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -40434,7 +40454,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -40691,7 +40711,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -40948,7 +40968,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -41205,7 +41225,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -41462,7 +41482,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -41719,7 +41739,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -41976,7 +41996,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -42233,7 +42253,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -42490,7 +42510,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -42747,7 +42767,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -43004,7 +43024,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -43261,7 +43281,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -43518,7 +43538,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -43775,7 +43795,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -44032,7 +44052,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -44289,7 +44309,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -44546,7 +44566,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -44803,7 +44823,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -45060,7 +45080,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -45317,7 +45337,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -45574,7 +45594,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -45831,7 +45851,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -46088,7 +46108,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -46345,7 +46365,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -46602,7 +46622,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -46859,7 +46879,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -47116,7 +47136,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -47373,7 +47393,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -47630,7 +47650,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -47887,7 +47907,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -48144,7 +48164,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -48401,7 +48421,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -48658,7 +48678,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -48915,7 +48935,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -49172,7 +49192,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -49429,7 +49449,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -49686,7 +49706,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -49943,7 +49963,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -50200,7 +50220,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -50457,7 +50477,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -50714,7 +50734,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -50901,7 +50921,7 @@ snm
 snm
 sHL
 jtU
-laC
+tKS
 uuE
 bwa
 snm
@@ -50971,7 +50991,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -51158,7 +51178,7 @@ snm
 snm
 sHL
 iEs
-laC
+tKS
 uuE
 bwa
 snm
@@ -51228,7 +51248,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -51415,7 +51435,7 @@ snm
 snm
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -51485,7 +51505,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -51672,7 +51692,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -51742,7 +51762,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -51929,7 +51949,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -51999,7 +52019,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -52186,7 +52206,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -52256,7 +52276,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -52443,7 +52463,7 @@ snm
 snm
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -52513,7 +52533,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -52700,7 +52720,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -52770,7 +52790,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -52957,7 +52977,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -53027,7 +53047,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -53214,7 +53234,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -53284,7 +53304,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -53471,7 +53491,7 @@ snm
 snm
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -53541,7 +53561,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -53728,7 +53748,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -53798,7 +53818,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -53985,7 +54005,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -54055,7 +54075,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -54242,7 +54262,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -54312,7 +54332,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 uuE
 yfy
 lhr
@@ -54499,7 +54519,7 @@ snm
 snm
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -54569,7 +54589,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 knC
 uuE
@@ -54756,7 +54776,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -54826,41 +54846,41 @@ snm
 snm
 oVi
 uuE
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
 cNE
 rMP
 dbY
@@ -54887,29 +54907,29 @@ bwa
 tJr
 qDf
 chU
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
 uuE
 oVi
 snm
@@ -55013,7 +55033,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -55166,7 +55186,7 @@ uuE
 uuE
 sSD
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -55270,7 +55290,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -55423,7 +55443,7 @@ gbZ
 gbZ
 yfy
 uuE
-laC
+tKS
 uuE
 yfy
 lhr
@@ -55527,7 +55547,7 @@ gbZ
 gbZ
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -55680,7 +55700,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 knC
 uuE
@@ -55784,7 +55804,7 @@ uuE
 uuE
 uuE
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -55937,111 +55957,111 @@ snm
 snm
 bwa
 uuE
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
 uuE
 bwa
 snm
@@ -56282,7 +56302,7 @@ uuE
 uuE
 sSD
 uuE
-laC
+tKS
 uuE
 sSD
 uuE
@@ -56539,7 +56559,7 @@ tSR
 tSR
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 gbZ
@@ -56796,7 +56816,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -57053,7 +57073,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -57310,7 +57330,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -57567,7 +57587,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -57824,7 +57844,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -58081,7 +58101,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -58338,7 +58358,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -58595,7 +58615,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -58852,7 +58872,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -59109,7 +59129,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -59366,7 +59386,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -59623,7 +59643,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -59880,7 +59900,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -60137,7 +60157,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -60394,7 +60414,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -60651,7 +60671,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -60908,7 +60928,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -61165,7 +61185,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -61422,7 +61442,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -61679,7 +61699,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -61936,7 +61956,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -62193,7 +62213,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -62450,7 +62470,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -62699,7 +62719,7 @@ snm
 snm
 lKf
 oQX
-laC
+tKS
 tdD
 yfy
 snm
@@ -62707,7 +62727,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -62964,7 +62984,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -63213,7 +63233,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -63221,7 +63241,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -63470,7 +63490,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -63478,7 +63498,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -63727,7 +63747,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -63735,7 +63755,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -63984,7 +64004,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -63992,7 +64012,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -64241,7 +64261,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -64249,7 +64269,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -64498,7 +64518,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -64506,7 +64526,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -64755,7 +64775,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -64763,7 +64783,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -65012,7 +65032,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -65020,7 +65040,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -65269,7 +65289,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -65277,7 +65297,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -65526,7 +65546,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -65534,7 +65554,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -65783,7 +65803,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -65791,7 +65811,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -66040,7 +66060,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -66048,7 +66068,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -66297,7 +66317,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -66305,7 +66325,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -66554,7 +66574,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -66562,7 +66582,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -66811,7 +66831,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 gbZ
@@ -66819,7 +66839,7 @@ gbZ
 gbZ
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -67068,7 +67088,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 knC
 uuE
@@ -67076,7 +67096,7 @@ uuE
 uuE
 knC
 uuE
-laC
+tKS
 uuE
 sKZ
 snm
@@ -67325,15 +67345,15 @@ snm
 snm
 sHL
 uuE
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
 uuE
 bwa
 snm
@@ -67582,7 +67602,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sSD
 uuE
@@ -67839,7 +67859,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 lKf
 tSR
@@ -68096,7 +68116,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -68353,7 +68373,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -68610,7 +68630,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -68867,7 +68887,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -69124,7 +69144,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -69381,7 +69401,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -69638,7 +69658,7 @@ snm
 snm
 bwa
 uuE
-laC
+tKS
 uuE
 oVi
 snm
@@ -69895,7 +69915,7 @@ snm
 snm
 mWR
 ldw
-laC
+tKS
 eup
 mWR
 snm
@@ -70152,7 +70172,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -70409,7 +70429,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -70666,7 +70686,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 sHL
 snm
@@ -70923,7 +70943,7 @@ snm
 snm
 lKf
 ldw
-laC
+tKS
 eup
 yfy
 snm
@@ -71180,7 +71200,7 @@ snm
 snm
 sHL
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -71437,7 +71457,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -71694,7 +71714,7 @@ snm
 snm
 oVi
 uuE
-laC
+tKS
 uuE
 bwa
 snm
@@ -71873,7 +71893,7 @@ kLj
 oRg
 cZS
 rWG
-lgS
+dqS
 svF
 fOB
 ffY
@@ -71951,7 +71971,7 @@ gbZ
 gbZ
 lKf
 uuE
-laC
+tKS
 uuE
 yfy
 snm
@@ -72208,7 +72228,7 @@ uuE
 uuE
 knC
 uuE
-laC
+tKS
 uuE
 sKZ
 snm
@@ -72415,57 +72435,57 @@ wYO
 vIc
 vIc
 xlR
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
-laC
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
+tKS
 uuE
 bwa
 snm
@@ -77290,7 +77310,7 @@ nyi
 rCQ
 uLb
 hKO
-fOY
+fsU
 mcH
 bEO
 fix
@@ -78318,7 +78338,7 @@ nyi
 pzX
 pVf
 cNT
-fOY
+fsU
 vPJ
 eRj
 fgy
@@ -130277,7 +130297,7 @@ iEt
 rUE
 gpX
 vnr
-hHI
+qqG
 iXL
 cfl
 gpX
@@ -130535,7 +130555,7 @@ gWU
 dGP
 iUr
 slI
-hHI
+qqG
 meX
 gpX
 snm
@@ -133084,7 +133104,7 @@ lYo
 xVk
 koR
 qgc
-xJf
+cwK
 jJv
 rBC
 sCe
@@ -133598,7 +133618,7 @@ eTn
 xVk
 qmp
 ayi
-xJf
+cwK
 jJv
 rBC
 bzG
@@ -195298,8 +195318,8 @@ lzI
 lzI
 lzI
 mnK
-hHI
-hHI
+qqG
+qqG
 sFb
 pKk
 gpX
@@ -195557,7 +195577,7 @@ lzI
 rtq
 tyv
 tMY
-hHI
+qqG
 bSF
 oln
 dhr
@@ -195814,8 +195834,8 @@ lzI
 mnK
 uWv
 lcv
-hHI
-hHI
+qqG
+qqG
 xPd
 fnb
 dPm
@@ -196071,8 +196091,8 @@ lzI
 oln
 vyC
 adQ
-hHI
-hHI
+qqG
+qqG
 ist
 dPm
 dPm
@@ -196328,8 +196348,8 @@ lzI
 gpX
 ykF
 pfq
-hHI
-hHI
+qqG
+qqG
 xPd
 sSu
 dPm
@@ -285280,7 +285300,7 @@ jKG
 jKG
 bqc
 bVs
-gXa
+qbH
 qbW
 bqc
 bqc
@@ -285536,9 +285556,9 @@ jKG
 jKG
 jKG
 dOp
-gXa
-gXa
-gXa
+qbH
+qbH
+qbH
 uYE
 myI
 etm
@@ -285794,8 +285814,8 @@ jKG
 jKG
 myI
 yaY
-gXa
-gXa
+qbH
+qbH
 sxl
 myI
 myI
