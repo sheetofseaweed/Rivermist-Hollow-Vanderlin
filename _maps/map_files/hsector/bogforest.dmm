@@ -12,7 +12,7 @@
 "ar" = (
 /obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
 /turf/open/floor/dirt,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "aA" = (
 /turf/open/floor/twig,
 /area/rogue/outdoors/rmh_air)
@@ -173,7 +173,7 @@
 /area/rogue/under/cave/orcdungeon)
 "fj" = (
 /turf/open/floor/dirt/road,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "fr" = (
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/rmh_air)
@@ -239,7 +239,7 @@
 /area/rogue/outdoors/bog/rmh/south)
 "hz" = (
 /obj/structure/rack,
-/obj/item/weapon/spear/iron,
+/obj/item/weapon/spear,
 /turf/open/floor/dirt,
 /area/rogue/under/cave/rmh/goblindungeon)
 "hA" = (
@@ -270,19 +270,19 @@
 "hV" = (
 /obj/machinery/light/fueled/campfire/densefire,
 /turf/open/floor/dirt/road,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "ia" = (
 /turf/open/floor/dirt,
 /area/rogue/under/cave/rmh/goblindungeon)
 "ib" = (
 /obj/structure/closet/crate/chest/wicker,
-/obj/item/reagent_containers/food/snacks/bread/raisinbread,
-/obj/item/reagent_containers/food/snacks/bread/raisinbread,
-/obj/item/reagent_containers/food/snacks/bread/raisinbread,
+/obj/item/reagent_containers/food/snacks/bread/raisin,
+/obj/item/reagent_containers/food/snacks/bread/raisin,
+/obj/item/reagent_containers/food/snacks/bread/raisin,
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/rmh/goblindungeon)
 "ih" = (
-/turf/closed/wall/shroud{
+/turf/closed/dungeon_void{
 	name = "dense roots";
 	desc = "Very tough and moist roots covered with some kind of goo.";
 	max_integrity = 9999
@@ -351,7 +351,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/cavewet/rmh/swamp_caves)
 "jC" = (
-/mob/living/simple_animal/hostile/retaliate/orc/ranged,
+/mob/living/simple_animal/hostile/orc/ranged,
 /turf/open/floor/twig,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "jF" = (
@@ -467,7 +467,7 @@
 "nx" = (
 /mob/living/carbon/human/species/goblin/npc,
 /turf/open/floor/dirt/road,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "ny" = (
 /obj/item/flashlight/flare/torch/lantern,
 /obj/structure/closet/crate/chest/wicker,
@@ -486,7 +486,7 @@
 /area/rogue/under/cave/spider/rmh)
 "nU" = (
 /turf/open/transparent/openspace,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "nY" = (
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/outdoors/rmh_air)
@@ -655,7 +655,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/outdoors/caves)
 "td" = (
-/mob/living/carbon/human/species/orc/npc/berserker,
+/mob/living/carbon/human/species/orc/npc,
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/orcdungeon)
 "tj" = (
@@ -666,7 +666,7 @@
 /turf/closed/wall/mineral/wooddark/horizontal,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "tF" = (
-/mob/living/simple_animal/hostile/retaliate/orc/ranged,
+/mob/living/simple_animal/hostile/orc/ranged,
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "ul" = (
@@ -798,7 +798,7 @@
 /area/rogue/outdoors/caves)
 "yh" = (
 /turf/open/water/swamp/deep,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "yn" = (
 /obj/item/reagent_containers/glass/bucket,
 /turf/open/floor/naturalstone,
@@ -832,7 +832,7 @@
 "zJ" = (
 /obj/structure/ladder,
 /turf/open/floor/dirt,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "zN" = (
 /obj/item/natural/wood/plank,
 /obj/effect/decal/cleanable/debris/wood,
@@ -853,7 +853,7 @@
 /turf/open/floor/twig,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "Ah" = (
-/mob/living/carbon/human/species/orc/npc/marauder,
+/mob/living/carbon/human/species/orc/npc,
 /turf/open/floor/dirt,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "At" = (
@@ -1076,7 +1076,7 @@
 /turf/open/water/swamp,
 /area/rogue/outdoors/bog/rmh/travel/underdark)
 "Gk" = (
-/mob/living/carbon/human/species/orc/npc/footsoldier,
+/mob/living/carbon/human/species/orc/npc,
 /turf/open/floor/dirt/road,
 /area/rogue/outdoors)
 "Gl" = (
@@ -1237,7 +1237,7 @@
 /turf/open/floor/hay,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "IL" = (
-/turf/closed/wall/shroud{
+/turf/closed/dungeon_void{
 	name = "dense roots";
 	desc = "Very tough and moist roots covered with some kind of goo.";
 	max_integrity = 9999
@@ -1249,7 +1249,7 @@
 /area/rogue/outdoors)
 "Jk" = (
 /turf/open/floor/cobblerock,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "JA" = (
 /obj/effect/decal/cleanable/blood/tracks,
 /turf/open/floor/cobblerock,
@@ -1339,7 +1339,7 @@
 /area/rogue/outdoors/bog/rmh/south)
 "LJ" = (
 /obj/structure/rack,
-/obj/item/weapon/spear/iron,
+/obj/item/weapon/spear,
 /turf/open/floor/naturalstone,
 /area/rogue/under/cave/rmh/goblindungeon)
 "LM" = (
@@ -1459,7 +1459,7 @@
 /turf/closed/wall/mineral/wooddark/vertical,
 /area/rogue/indoors/shelter/bog/rmh/fort)
 "OS" = (
-/mob/living/carbon/human/species/orc/npc/footsoldier,
+/mob/living/carbon/human/species/orc/npc,
 /turf/open/floor/cobble,
 /area/rogue/outdoors)
 "Pe" = (
@@ -1505,7 +1505,7 @@
 /area/rogue/outdoors/rmh_air)
 "PJ" = (
 /obj/structure/vine,
-/turf/closed/wall/shroud{
+/turf/closed/dungeon_void{
 	name = "dense roots";
 	desc = "Very tough and moist roots covered with some kind of goo.";
 	max_integrity = 9999
@@ -1698,7 +1698,7 @@
 /area/rogue/outdoors/bog/rmh/north)
 "UB" = (
 /turf/open/floor/dirt,
-/area/rogue/outdoors/woods/goblincampfire)
+/area/rogue/outdoors/woods/rmh/goblincampfire)
 "UE" = (
 /obj/structure/bars/tough{
 	icon = 'icons/effects/effects.dmi';
@@ -1823,7 +1823,7 @@
 /turf/open/floor/grass,
 /area/rogue/outdoors/woods/rmh)
 "Xr" = (
-/mob/living/carbon/human/species/orc/npc/footsoldier,
+/mob/living/carbon/human/species/orc/npc,
 /turf/open/floor/cobblerock,
 /area/rogue/under/cave/orcdungeon)
 "Xs" = (

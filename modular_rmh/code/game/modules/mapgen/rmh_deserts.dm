@@ -15,7 +15,7 @@
 	clusterCheckFlags = CLUSTER_CHECK_DIFFERENT_ATOMS
 	allowed_turfs = list(/turf/open/floor/sand/desertsand)
 	excluded_turfs = list(/turf/open/floor/sand/desertsand/sandpath)
-	spawnableAtoms = list(///obj/structure/flora/grass/jungle/b = 5,
+	spawnableAtoms = list(/obj/structure/flora/grass/jungle/b = 5,
 	/obj/structure/flora/grass = 5,
 	/obj/structure/flora/ausbushes/reedbush = 5,
 	/obj/structure/flora/ausbushes/stalkybush = 5,

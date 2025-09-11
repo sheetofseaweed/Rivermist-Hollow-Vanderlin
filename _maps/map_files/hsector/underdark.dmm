@@ -247,7 +247,7 @@
 /turf/open/floor/churchrough,
 /area/rogue/under/underdark/rmh/shar)
 "dj" = (
-/obj/structure/closet/crate/chest/loot_chest,
+/obj/structure/closet/crate/chest/lootbox,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter)
 "dn" = (
@@ -261,7 +261,7 @@
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "do" = (
-/obj/structure/trap/wall_projectile/acidsplash,
+/obj/structure/trap/wall_projectile,
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shrub)
 "dF" = (
@@ -320,7 +320,9 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "ew" = (
-/turf/closed/wall/mineral/decostone/end/west,
+/turf/closed/wall/mineral/decostone/end{
+	dir = 8
+	},
 /area/rogue/under/underdark/rmh/shar)
 "eE" = (
 /obj/item/candle/skull,
@@ -332,7 +334,7 @@
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "eK" = (
-/obj/structure/trap/rock_fall,
+/obj/structure/trap/saw_blades,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "eV" = (
@@ -493,12 +495,6 @@
 	},
 /turf/open/water/cleanshallow,
 /area/rogue/under/underdark/rmh)
-"he" = (
-/obj/structure/flora/grass/water/reeds{
-	layer = 5
-	},
-/turf/open/water/river/flow/east,
-/area/rogue/under/underdark/rmh)
 "hk" = (
 /turf/closed/indestructible/rock,
 /area/rogue/under/rmh_bedrock)
@@ -511,7 +507,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
 "hA" = (
-/obj/item/coin/iron/pile,
+/obj/item/coin/copper/pile,
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "hC" = (
@@ -573,9 +569,6 @@
 /obj/machinery/light/fueled/campfire,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/deepwastes)
-"iF" = (
-/turf/open/water/river/flow/east,
-/area/rogue/under/underdark/rmh)
 "iG" = (
 /turf/closed/wall/mineral/decostone/moss/blue/long,
 /area/rogue/under/underdark/rmh/main)
@@ -605,7 +598,7 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/deepwastes)
 "jr" = (
-/obj/structure/trap/water,
+/obj/structure/trap/chill,
 /turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
@@ -730,7 +723,7 @@
 /turf/open/floor/churchmarble,
 /area/rogue/under/underdark/rmh/shar)
 "ll" = (
-/obj/structure/trap/water,
+/obj/structure/trap/chill,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/glimmerlakes)
 "lr" = (
@@ -778,23 +771,14 @@
 /obj/structure/flora/grass,
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh/shrub)
-"mf" = (
-/obj/structure/flora/grass/water/reeds{
-	layer = 5
-	},
-/turf/open/water/river/flow/west,
-/area/rogue/under/underdark/rmh)
 "mg" = (
 /obj/effect/decal/cleanable/blood/splatter,
-/obj/machinery/light/fueled/firebowl/church/off,
+/obj/machinery/light/fueled/firebowl/church,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "ml" = (
 /obj/structure/roguerock,
 /turf/open/floor/cobblerock,
-/area/rogue/under/underdark/rmh)
-"mq" = (
-/turf/open/water/river/flow,
 /area/rogue/under/underdark/rmh)
 "mz" = (
 /turf/open/floor/ruinedwood/spiral,
@@ -973,7 +957,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/under/underdark/rmh/shrub)
 "pL" = (
-/obj/structure/trap/rock_fall,
+/obj/structure/trap/saw_blades,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh)
 "pM" = (
@@ -1307,7 +1291,7 @@
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh)
 "uu" = (
-/obj/structure/trap/rock_fall,
+/obj/structure/trap/saw_blades,
 /turf/open/floor/dirt/road,
 /area/rogue/under/underdark/rmh)
 "uw" = (
@@ -1373,7 +1357,7 @@
 	},
 /area/rogue/under/underdark/rmh/main)
 "vE" = (
-/obj/item/coin/iron,
+/obj/item/coin/copper,
 /turf/open/floor/tile,
 /area/rogue/under/underdark/rmh/shar)
 "vM" = (
@@ -1732,7 +1716,7 @@
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Bh" = (
-/obj/structure/trap/damage{
+/obj/structure/trap/shock{
 	alpha = 5
 	},
 /turf/open/floor/cobblerock,
@@ -1786,7 +1770,7 @@
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "BM" = (
-/obj/structure/trap/rock_fall,
+/obj/structure/trap/saw_blades,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
 "BQ" = (
@@ -1866,7 +1850,7 @@
 /obj/structure/flora/grass/water/reeds{
 	layer = 5
 	},
-/turf/open/water/river/flow,
+/turf/open/water/river,
 /area/rogue/under/underdark/rmh)
 "Dr" = (
 /obj/structure/gate{
@@ -1879,7 +1863,6 @@
 /area/rogue/under/underdark/rmh/shar)
 "Dt" = (
 /obj/structure/closet/crate/crafted_closet/dark,
-/obj/item/clothing/neck/skullamulet,
 /obj/effect/spawner/map_spawner/loot/cheap_jewelry_spawner,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
@@ -2071,7 +2054,7 @@
 /turf/open/floor/dirt,
 /area/rogue/under/underdark/rmh/shrub)
 "GB" = (
-/obj/structure/trap/damage{
+/obj/structure/trap/shock{
 	alpha = 5
 	},
 /turf/open/floor/naturalstone,
@@ -2166,12 +2149,12 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "IJ" = (
-/obj/structure/trap/water,
+/obj/structure/trap/chill,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/caves)
 "IN" = (
 /obj/effect/decal/cleanable/debris/wood,
-/obj/structure/trap/rock_fall,
+/obj/structure/trap/saw_blades,
 /turf/open/floor/cobble,
 /area/rogue/indoors/shelter)
 "IQ" = (
@@ -2247,7 +2230,7 @@
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh)
 "JK" = (
-/obj/structure/trap/rock_fall,
+/obj/structure/trap/saw_blades,
 /turf/open/floor/naturalstone,
 /area/rogue/under/underdark/rmh/shar)
 "JP" = (
@@ -2268,9 +2251,6 @@
 /obj/effect/decal/cleanable/debris/glass,
 /turf/open/floor/tile/harem1,
 /area/rogue/under/underdark/rmh/shar)
-"Kf" = (
-/turf/open/water/river/flow/west,
-/area/rogue/under/underdark/rmh)
 "Kn" = (
 /obj/structure/fluff/railing/corner/north_east,
 /obj/effect/decal/cleanable/debris/glass,
@@ -2280,7 +2260,7 @@
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Kv" = (
-/obj/structure/trap/flame{
+/obj/structure/trap/fire{
 	alpha = 0
 	},
 /turf/open/floor/naturalstone,
@@ -2331,7 +2311,7 @@
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
 	},
-/obj/structure/trap/water,
+/obj/structure/trap/chill,
 /turf/open/floor/grass/cold{
 	name = "underdark grass";
 	desc = "Grass, frigid and touched by Underdark air."
@@ -2342,7 +2322,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Lt" = (
-/obj/item/coin/iron,
+/obj/item/coin/copper,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "Lv" = (
@@ -2366,11 +2346,13 @@
 /turf/open/water/swamp/deep,
 /area/rogue/under/underdark/rmh)
 "LG" = (
-/obj/machinery/light/fueled/firebowl/church/off,
+/obj/machinery/light/fueled/firebowl/church,
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "LM" = (
-/turf/closed/wall/mineral/decostone/end/east,
+/turf/closed/wall/mineral/decostone/end{
+	dir = 4
+	},
 /area/rogue/under/underdark/rmh/shar)
 "LP" = (
 /turf/open/floor/cobblerock,
@@ -2500,7 +2482,9 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/rogue/under/underdark/rmh/shar)
 "NP" = (
-/turf/closed/wall/mineral/decostone/end/north,
+/turf/closed/wall/mineral/decostone/end{
+	dir = 1
+	},
 /area/rogue/under/underdark/rmh/shar)
 "NQ" = (
 /turf/open/floor/naturalstone,
@@ -2529,7 +2513,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Ow" = (
-/obj/structure/trap/flame{
+/obj/structure/trap/fire{
 	alpha = 0
 	},
 /turf/open/floor/naturalstone,
@@ -2539,7 +2523,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "OJ" = (
-/obj/machinery/light/fueled/firebowl/church/off,
+/obj/machinery/light/fueled/firebowl/church,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "OK" = (
@@ -2559,13 +2543,13 @@
 /turf/open/floor/tile/harem,
 /area/rogue/under/underdark/rmh/shar)
 "OS" = (
-/obj/structure/trap/flame{
+/obj/structure/trap/fire{
 	alpha = 0
 	},
 /turf/open/floor/cobblerock,
 /area/rogue/under/cavelava/rmh/lava_hollows)
 "OX" = (
-/obj/item/chair/rogue/fancy,
+/obj/item/chair/fancy,
 /turf/open/floor/hexstone,
 /area/rogue/under/underdark/rmh/shar)
 "OZ" = (
@@ -2583,7 +2567,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "Pz" = (
-/turf/open/water/river/flow/north,
+/turf/open/water/river,
 /area/rogue/under/underdark/rmh)
 "PC" = (
 /obj/structure/door/arcyne/bolt{
@@ -2678,7 +2662,7 @@
 /turf/open/floor/tile/masonic/single,
 /area/rogue/under/underdark/rmh/shar)
 "QT" = (
-/obj/structure/trap/wall_projectile/acidsplash{
+/obj/structure/trap/wall_projectile{
 	dir = 8
 	},
 /turf/open/floor/dirt,
@@ -2711,7 +2695,7 @@
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/deepwastes)
 "RO" = (
-/obj/item/coin/iron,
+/obj/item/coin/copper,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/shar)
 "RV" = (
@@ -2821,7 +2805,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/under/underdark/rmh/shar)
 "Tz" = (
-/obj/structure/trap/wall_projectile/acidsplash,
+/obj/structure/trap/wall_projectile,
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/shrub)
 "TA" = (
@@ -2841,7 +2825,7 @@
 /turf/open/floor/cobblerock,
 /area/rogue/indoors/shelter)
 "TJ" = (
-/obj/item/coin/iron/pile,
+/obj/item/coin/copper/pile,
 /turf/open/floor/churchbrick,
 /area/rogue/under/underdark/rmh/shar)
 "TQ" = (
@@ -2880,13 +2864,13 @@
 	},
 /area/rogue/under/rmh_bedrock)
 "Ue" = (
-/obj/structure/trap/wall_projectile/acidsplash{
+/obj/structure/trap/wall_projectile{
 	dir = 8
 	},
 /turf/open/floor/grass/yel,
 /area/rogue/under/underdark/rmh/shrub)
 "Uf" = (
-/obj/item/coin/iron/pile,
+/obj/item/coin/copper/pile,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/rogue/under/underdark/rmh/shar)
 "Uk" = (
@@ -2953,7 +2937,7 @@
 /turf/open/transparent/openspace,
 /area/rogue/under/cavelava/rmh/lava_hollows)
 "UY" = (
-/obj/structure/trap/flame{
+/obj/structure/trap/fire{
 	alpha = 0
 	},
 /turf/open/floor/volcanic,
@@ -3038,7 +3022,7 @@
 /turf/open/floor/church,
 /area/rogue/under/underdark/rmh/shar)
 "Wv" = (
-/obj/structure/trap/flame{
+/obj/structure/trap/fire{
 	alpha = 0
 	},
 /turf/open/floor/cobblerock,
@@ -30535,7 +30519,7 @@ ic
 fx
 fx
 fx
-iF
+Pz
 Sk
 Sk
 Sk
@@ -30792,7 +30776,7 @@ ic
 ic
 ic
 fx
-iF
+Pz
 Sk
 hc
 rl
@@ -31049,9 +31033,9 @@ ic
 ic
 ic
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 rl
 rl
 rl
@@ -31306,9 +31290,9 @@ fx
 fx
 ic
 ic
-he
-iF
-iF
+Dp
+Pz
+Pz
 ic
 ic
 ic
@@ -31563,9 +31547,9 @@ fx
 fx
 fx
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 ic
 ic
 ic
@@ -31820,9 +31804,9 @@ ic
 ic
 ic
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 ic
 ic
 ic
@@ -32077,9 +32061,9 @@ ic
 ic
 ic
 ic
-iF
-iF
-iF
+Pz
+Pz
+Pz
 ic
 ic
 ic
@@ -32334,9 +32318,9 @@ fx
 fx
 fx
 ic
-iF
-iF
-iF
+Pz
+Pz
+Pz
 ic
 ic
 ic
@@ -32591,9 +32575,9 @@ fx
 fx
 fx
 fx
-iF
-he
-iF
+Pz
+Dp
+Pz
 ic
 fx
 fx
@@ -32848,9 +32832,9 @@ xr
 tG
 tG
 tG
-iF
-iF
-iF
+Pz
+Pz
+Pz
 ic
 ic
 ic
@@ -34390,9 +34374,9 @@ ic
 ic
 ic
 fx
-he
-iF
-iF
+Dp
+Pz
+Pz
 tG
 tG
 tG
@@ -34647,9 +34631,9 @@ ic
 ic
 ic
 fx
-he
-iF
-iF
+Dp
+Pz
+Pz
 fx
 ic
 fx
@@ -34904,9 +34888,9 @@ ic
 ic
 fx
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 fx
 ic
 ic
@@ -35160,10 +35144,10 @@ ic
 ic
 ic
 fx
-iF
-iF
-iF
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 ic
 ic
@@ -35417,9 +35401,9 @@ ic
 ic
 ic
 fx
-iF
-iF
-he
+Pz
+Pz
+Dp
 Pz
 fx
 ic
@@ -35674,9 +35658,9 @@ fx
 ic
 ic
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 fx
 fx
 ic
@@ -35931,9 +35915,9 @@ ic
 fx
 ic
 fx
-iF
-he
-iF
+Pz
+Dp
+Pz
 fx
 fx
 ic
@@ -36188,10 +36172,10 @@ ic
 ic
 ic
 fx
-iF
-iF
-iF
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 ic
 ic
@@ -36445,10 +36429,10 @@ ic
 fx
 ic
 fx
-mq
-iF
-iF
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 ic
 ic
@@ -36703,9 +36687,9 @@ ic
 pL
 fx
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 fx
 ic
 ic
@@ -36960,9 +36944,9 @@ fx
 fx
 ic
 fx
-iF
-iF
-iF
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -37217,9 +37201,9 @@ fx
 ic
 ic
 fx
-mq
-he
-iF
+Pz
+Dp
+Pz
 fx
 fx
 ic
@@ -37474,10 +37458,10 @@ fx
 ic
 ic
 fx
-mq
-iF
-iF
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -37732,10 +37716,10 @@ ic
 ic
 fx
 fx
-mq
-iF
-he
-iF
+Pz
+Pz
+Dp
+Pz
 fx
 fx
 fx
@@ -37990,11 +37974,11 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 Hy
 fx
@@ -38248,14 +38232,14 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -38507,20 +38491,20 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
-mq
-iF
+Pz
+Pz
 fx
-iF
+Pz
 fx
 fx
 ic
@@ -38767,18 +38751,18 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
-mq
-iF
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -39029,15 +39013,15 @@ fx
 fx
 fx
 Dp
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 ic
@@ -39287,14 +39271,14 @@ fx
 fx
 fx
 fx
-mq
+Pz
 fx
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
+Pz
 fx
 fx
 ic
@@ -39548,11 +39532,11 @@ fx
 fx
 fx
 Dp
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -39806,12 +39790,12 @@ ic
 pL
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -40064,12 +40048,12 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -40323,11 +40307,11 @@ ic
 fx
 fx
 fx
-mq
-mq
+Pz
+Pz
 Dp
-mq
-iF
+Pz
+Pz
 pL
 fx
 fx
@@ -40582,9 +40566,9 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -40840,10 +40824,10 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
 ic
 fx
 fx
@@ -41097,11 +41081,11 @@ ic
 ic
 ic
 fx
-mq
-mq
-mq
-mq
-he
+Pz
+Pz
+Pz
+Pz
+Dp
 fx
 fx
 fx
@@ -41356,10 +41340,10 @@ ic
 fx
 fx
 Dp
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -41613,12 +41597,12 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -41872,12 +41856,12 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 ic
@@ -42130,12 +42114,12 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-mq
-iF
+Pz
+Pz
 fx
 fx
 ic
@@ -42227,7 +42211,7 @@ fx
 fx
 fx
 fx
-mq
+Pz
 LW
 tI
 Su
@@ -42388,12 +42372,12 @@ ic
 fx
 fx
 fx
-mq
+Pz
 Dp
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -42482,10 +42466,10 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
 LW
 LW
 Su
@@ -42646,12 +42630,12 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -42736,14 +42720,14 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 LW
 LW
 Su
@@ -42905,12 +42889,12 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -42991,13 +42975,13 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-mq
-mq
-Kf
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43164,14 +43148,14 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43245,14 +43229,14 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43422,14 +43406,14 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43498,14 +43482,14 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43682,13 +43666,13 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43747,20 +43731,20 @@ ic
 fx
 fx
 fx
-mq
-iF
+Pz
+Pz
 fx
-mq
+Pz
 Dp
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -43941,12 +43925,12 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-mq
-iF
+Pz
+Pz
 fx
 fx
 fx
@@ -44002,20 +43986,20 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Dp
 fx
 fx
 fx
@@ -44201,11 +44185,11 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-iF
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -44258,15 +44242,15 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -44459,11 +44443,11 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-iF
+Pz
 fx
 fx
 fx
@@ -44512,14 +44496,14 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -44718,10 +44702,10 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -44768,12 +44752,12 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
+Pz
+Pz
+Pz
 Dp
-mq
-Kf
+Pz
+Pz
 fx
 pL
 fx
@@ -44976,11 +44960,11 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 ic
@@ -45006,28 +44990,28 @@ ic
 ic
 fx
 fx
-mq
-mq
-iF
+Pz
+Pz
+Pz
 fx
-mq
-mq
-mq
-mq
-iF
-fx
-fx
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
 fx
 fx
-mq
-mq
+fx
+fx
+Pz
+Pz
 Dp
-mq
-mq
-Kf
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -45234,11 +45218,11 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -45262,26 +45246,26 @@ ic
 ic
 ic
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
-iF
+Pz
+Pz
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -45492,11 +45476,11 @@ ic
 ic
 fx
 fx
-mq
-mq
+Pz
+Pz
 Dp
-mq
-iF
+Pz
+Pz
 fx
 fx
 fx
@@ -45519,25 +45503,25 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 ic
@@ -45750,12 +45734,12 @@ ic
 ic
 fx
 Hy
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -45774,24 +45758,24 @@ BM
 ic
 fx
 fx
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
 Dp
-Kf
+Pz
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
-Kf
+Pz
+Pz
 fx
 fx
 fx
@@ -46009,13 +45993,13 @@ ic
 ic
 fx
 fx
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
 Dp
-iF
+Pz
 fx
 fx
 fx
@@ -46030,11 +46014,11 @@ fx
 fx
 fx
 fx
-mq
+Pz
 Dp
-mq
-mq
-Kf
+Pz
+Pz
+Pz
 fx
 fx
 pL
@@ -46042,9 +46026,9 @@ fx
 fx
 fx
 fx
-mq
-mq
-Kf
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -46267,31 +46251,31 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-iF
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 Dp
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 ic
@@ -46525,29 +46509,29 @@ ic
 fx
 fx
 fx
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx
@@ -46785,23 +46769,23 @@ fx
 fx
 fx
 fx
-mq
+Pz
 Dp
-mq
-mq
-mq
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
-mq
-mq
-mq
+Pz
+Pz
+Pz
+Pz
 Dp
-mq
-Kf
+Pz
+Pz
 fx
 fx
 fx
@@ -47049,10 +47033,10 @@ fx
 fx
 fx
 fx
-mq
-mq
-mq
-Kf
+Pz
+Pz
+Pz
+Pz
 fx
 fx
 fx

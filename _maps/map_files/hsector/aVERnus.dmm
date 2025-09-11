@@ -284,13 +284,12 @@
 /obj/item/clothing/shoes/boots/armor/matthios,
 /obj/item/clothing/shoes/boots/armor/vampire,
 /obj/item/clothing/shoes/boots/armor/zizo,
-/obj/item/clothing/shoes/boots/armor/dwarven,
 /obj/item/clothing/shoes/boots/armor/graggar,
-/obj/item/clothing/shoes/boots/armor/iron,
-/obj/item/clothing/shoes/boots/armor/blk,
+/obj/item/clothing/shoes/boots/armor,
+/obj/item/clothing/shoes/boots/armor/light,
 /obj/item/clothing/shoes/boots/armor,
 /obj/item/clothing/shoes/boots,
-/obj/item/clothing/shoes/roguetown/grenzelhoft/gunslinger,
+/obj/item/clothing/shoes/rare/grenzelhoft,
 /turf/open/floor/tile,
 /area/rogue/indoors/inq/office)
 "iX" = (
@@ -384,7 +383,7 @@
 	pixel_x = 8;
 	pixel_y = -2
 	},
-/obj/item/kitchen/fork/gold{
+/obj/item/kitchen/fork/iron{
 	pixel_x = 11;
 	pixel_y = 8
 	},
@@ -767,7 +766,7 @@
 /area/rogue/indoors/inq)
 "wT" = (
 /obj/structure/table/wood/large/corner/north_east,
-/obj/item/kitchen/fork/gold{
+/obj/item/kitchen/fork/iron{
 	pixel_x = -6;
 	pixel_y = -6
 	},
@@ -1215,10 +1214,6 @@
 /obj/machinery/light/fueled/wallfire/candle,
 /turf/open/lava,
 /area/rogue/indoors/inq/office)
-"Lh" = (
-/obj/effect/landmark/start/nukeop_leader,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/rogue/indoors/inq/office)
 "Lo" = (
 /turf/open/floor/tile/masonic/inverted,
 /area/rogue/indoors/inq)
@@ -1310,11 +1305,11 @@
 /obj/item/plate/gold{
 	pixel_y = 10
 	},
-/obj/item/kitchen/fork/gold{
+/obj/item/kitchen/fork/iron{
 	pixel_x = 9;
 	pixel_y = 9
 	},
-/obj/item/kitchen/fork/gold{
+/obj/item/kitchen/fork/iron{
 	pixel_x = -16
 	},
 /turf/open/floor/carpet/red,
@@ -3593,7 +3588,7 @@ Rq
 xy
 aG
 aG
-Lh
+fv
 fv
 OP
 ur

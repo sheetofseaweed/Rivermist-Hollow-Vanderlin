@@ -38,3 +38,44 @@
 /obj/structure/flora/bush/Initialize()
 	icon_state = "snowbush[rand(1, 6)]"
 	. = ..()
+
+//Jungle grass
+
+/obj/structure/flora/grass/jungle
+	name = "jungle grass"
+	desc = ""
+	icon = 'icons/obj/flora/jungleflora.dmi'
+	icon_state = "grassa"
+
+
+/obj/structure/flora/grass/jungle/Initialize()
+	icon_state = "[icon_state][rand(1, 5)]"
+	. = ..()
+
+/obj/structure/flora/grass/jungle/b
+	icon_state = "grassb"
+
+//Jungle bushes
+
+/obj/structure/flora/junglebush
+	name = "bush"
+	desc = ""
+	icon = 'icons/obj/flora/jungleflora.dmi'
+	icon_state = "busha"
+
+/obj/structure/flora/junglebush/Initialize()
+	icon_state = "[icon_state][rand(1, 3)]"
+	. = ..()
+
+/obj/structure/flora/junglebush/b
+	icon_state = "bushb"
+
+/obj/structure/flora/junglebush/c
+	icon_state = "bushc"
+
+/obj/structure/flora/junglebush/large
+	icon_state = "bush"
+	icon = 'icons/obj/flora/largejungleflora.dmi'
+	pixel_x = -16
+	pixel_y = -12
+	layer = ABOVE_ALL_MOB_LAYER

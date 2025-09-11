@@ -27830,7 +27830,9 @@
 /turf/open/floor/blocks/stonered/tiny,
 /area/rogue/indoors/town/rmh)
 "unf" = (
-/turf/closed/wall/mineral/decostone/end/north,
+/turf/closed/wall/mineral/decostone/end{
+	dir = 4
+},
 /area/rogue/under/town/rmh/bank)
 "unw" = (
 /obj/structure/chair/bench/couchablack{

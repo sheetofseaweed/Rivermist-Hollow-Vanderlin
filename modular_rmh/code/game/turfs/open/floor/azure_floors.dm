@@ -95,10 +95,50 @@
 	smoothing_flags = SMOOTH_BITMASK_CARDINALS
 	smoothing_groups = SMOOTH_GROUP_OPEN_FLOOR
 
-/area/rogue/under/town/basement/keep
-	name = "keep basement"
-	icon_state = "basement"
-	keep_area = TRUE
-	town_area = TRUE
-	ceiling_protected = TRUE
+/turf/closed/indestructible/rock
+	name = "granite"
+	desc = ""
+	icon = 'modular_rmh/icons/turf/mining.dmi'
+	icon_state = "rock2"
 
+//Mildly better than stone-wall due to it being harder to make, plus not loose-stone cobbled together. Also higher climbing diff akin to stone-brick wall.
+/turf/closed/wall/mineral/brick
+	name = "brick wall"
+	desc = "Rows of overlapping bricks held together by mortar form a nigh-impenetrable wall of stone."
+	icon = 'modular_rmh/icons/turf/brick_wall.dmi'
+	icon_state = "brick"
+	smoothing_flags = SMOOTH_BITMASK
+	blade_dulling = DULLING_BASH
+	max_integrity = 2000	//200 more than base stone wall
+	sheet_type = /obj/item/natural/brick
+	break_sound = 'sound/combat/hits/onstone/stonedeath.ogg'
+	attacked_sound = list('sound/combat/hits/onstone/wallhit.ogg', 'sound/combat/hits/onstone/wallhit2.ogg', 'sound/combat/hits/onstone/wallhit3.ogg')
+	above_floor = /turf/open/floor/tile/brick
+	baseturfs = list(/turf/open/floor/tile/brick)
+	neighborlay = "dirtedge"
+	climbdiff = 4			//Same as stone-brick wall
+	damage_deflection = 20
+
+/turf/open/floor/tile/brick
+	icon_state = "bricktile"
+
+/turf/open/water/ocean
+	name = "salt water"
+	desc = "The waves lap at the coast, hungry to swallow the land. Doesn't look too deep."
+	icon_state = "ash"
+	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
+	water_level = 2
+	slowdown = 4
+	swim_skill = TRUE
+	wash_in = TRUE
+	water_reagent = /datum/reagent/water/salty
+
+/turf/open/water/ocean/deep
+	name = "salt water"
+	desc = "Deceptively deep, be careful not to find yourself this far out."
+	icon_state = "water"
+	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
+	water_level = 3
+	slowdown = 8
+	swim_skill = TRUE
+	wash_in = TRUE

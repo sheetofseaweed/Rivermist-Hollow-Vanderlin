@@ -204,7 +204,9 @@
 /turf/open/water/ocean,
 /area/rogue/outdoors/rmh_desert/sea)
 "jM" = (
-/turf/open/floor/rooftop/west,
+/turf/open/floor/rooftop{
+	dir = 8
+	},
 /area/rogue/outdoors/rmh_desert/roofs)
 "kh" = (
 /obj/structure/flora/junglebush/large{
@@ -545,7 +547,9 @@
 /turf/open/floor/blocks/stonered/tiny,
 /area/rogue/outdoors/rmh_desert/port)
 "yP" = (
-/turf/open/floor/rooftop/east,
+/turf/open/floor/rooftop{
+	dir = 4
+	},
 /area/rogue/outdoors/rmh_desert/roofs)
 "yX" = (
 /obj/structure/flora/rock/pile,

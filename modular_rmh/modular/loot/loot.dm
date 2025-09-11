@@ -537,3 +537,49 @@
 /obj/effect/spawner/map_spawner/loot/valuable_jewelry_spawner
 	name = "valuable jewelry spawner"
 	loot_table_type = /datum/loot_table/dungeon/valuable_jewelry_spawner
+
+/datum/loot_table/dungeon/silver_weapon_spawner
+	name = "silver weapon spawner"
+	loot_table = list(
+		list(
+			/obj/item/weapon/sword/silver = 1,
+			/obj/item/weapon/knife/dagger/silver = 3,
+			/obj/item/weapon/mace/silver = 1,
+			)
+		)
+	base_max = 1
+
+/datum/loot_table/dungeon/decrepit_equipment_spawner
+	name = "decrepit equipment spawner"
+	loot_table = list(
+		list(
+			/obj/item/clothing/armor/chainmail/iron = 1,
+			/obj/item/clothing/armor/chainmail/hauberk = 1,
+			/obj/item/clothing/armor/plate/rust = 1,
+			/obj/item/clothing/shoes/boots/armor/light/rust = 1,
+			/obj/item/clothing/shoes/sandals = 1,
+			/obj/item/clothing/gloves/plate/rust = 1,
+			/obj/item/clothing/pants/platelegs/rust = 1,
+			/obj/item/clothing/pants/chainlegs/kilt = 1,
+			/obj/item/clothing/head/helmet/heavy/rust = 1,
+			/obj/item/clothing/neck/gorget/hoplite = 1,
+			/obj/item/weapon/sword/short = 1,
+			/obj/item/weapon/sword/gladius = 1,
+			/obj/item/weapon/sword/sabre = 1,
+			/obj/item/weapon/polearm/spear/bronze = 1,
+			/obj/item/weapon/polearm/halberd/bardiche/woodcutter = 1,
+			/obj/item/weapon/knife/dagger = 1,
+			/obj/item/weapon/knife/throwingknife = 1,
+			/obj/item/weapon/flail/peasant = 1,
+			/obj/item/weapon/mace/goden = 1,
+		)
+	)
+	base_max = 1
+
+/obj/effect/spawner/map_spawner/loot/silver_weapon_spawner //doesn't include psydonian or elven
+	name = "silver weapon spawner"
+	loot_table_type = /datum/loot_table/dungeon/silver_weapon_spawner
+
+/obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner
+	name = "decrepit equipment spawner"
+	loot_table_type = /datum/loot_table/dungeon/decrepit_equipment_spawner

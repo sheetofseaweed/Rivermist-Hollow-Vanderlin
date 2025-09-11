@@ -80,13 +80,10 @@
 	icon_state = "stone_deco-3"
 
 /turf/closed/wall/mineral/decostone/long/east_west
-	icon_state = "stone_deco-12"
+	dir = 1
 
 /turf/closed/wall/mineral/decostone/end
 	icon_state = "decostone-2"
-
-/turf/closed/wall/mineral/decostone/end/north
-	dir = 1
 
 /turf/closed/wall/mineral/decorstone/window
 	name = "stone murder hole"

@@ -99,6 +99,10 @@
 	M.add_nausea(12) //Over 8 units will cause puking
 
 
+/datum/reagent/water/salty
+	taste_description = "salt"
+	color = "#417ac5c6"
+
 /*
  *	Water reaction to turf
  */
