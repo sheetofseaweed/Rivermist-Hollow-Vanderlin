@@ -267,5 +267,12 @@
                 "bugfix": "IMPORTANT: fixed toggles not being able to be saved if all options are off."
             }
         ]
+    },
+    "2025-09-12": {
+        "Just-Sim": [
+            {
+                "rscadd": "Vaginal sex"
+            }
+        ]
     }
 }
