@@ -3340,5 +3340,6 @@
 #include "modular_rmh\modular\food\ration.dm"
 #include "modular_rmh\modular\loot\loot.dm"
 #include "modular_rmh\modular\questing\questing_landmarks.dm"
+#include "modular_rmh\modular\resurrection_rune\res_helpers.dm"
 #include "modular_rmh\modular\resurrection_rune\resurrection_rune.dm"
 // END_INCLUDE

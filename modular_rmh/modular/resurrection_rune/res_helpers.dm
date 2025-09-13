@@ -1,6 +1,6 @@
 GLOBAL_LIST_EMPTY(global_resurrunes)
 
-#define IS_RES_ELIGIBLE(source) ((source.InBadHealth() && !source.IsSleeping()) || (source.IsSleeping() && source.health < source.crit_threshold))
+//#define IS_RES_ELIGIBLE(source) ((source.InBadHealth() && !source.IsSleeping()) || (source.IsSleeping() && source.health < source.crit_threshold))
 
 
 //For revive - your body DIDN'T rot, but it did suffer damage. Unlike being rotted, this one is only timed. Not forever.
@@ -18,7 +18,7 @@ GLOBAL_LIST_EMPTY(global_resurrunes)
 /datum/status_effect/debuff/revived/rune/on_apply()
 	. = ..()
 	ADD_TRAIT(owner, TRAIT_PACIFISM, TRAIT_GENERIC)
-	
+
 
 /datum/status_effect/debuff/revived/rune/on_remove()
 	. = ..()

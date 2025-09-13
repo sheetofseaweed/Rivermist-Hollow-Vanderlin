@@ -1,4 +1,4 @@
-/*/datum/resurrection_rune_controller
+/datum/resurrection_rune_controller
 	var/obj/structure/resurrection_rune/control/control_rune
 	var/obj/structure/resurrection_rune/sub_rune
 	var/list/linked_users = list()
@@ -47,7 +47,7 @@
 			if(!isnull(unlinked.client))
 				if(!unlinked.rune_linked)
 					var/turf/tur = get_turf(H)
-					if(IS_RES_ELIGIBLE(unlinked) || istype(tur, /turf/open/lava) || istype(tur, /turf/open/lava/acid))
+					if(unlinked.health <= unlinked.crit_threshold || istype(tur, /turf/open/lava) || istype(tur, /turf/open/lava/acid))
 						if(!(unlinked.mind in resurrecting))
 							resurrecting |= unlinked
 							to_chat(unlinked.mind.get_ghost(TRUE, TRUE), span_blue("An alien force suddenly <b>YANKS</b> you back to life!"))
@@ -60,7 +60,7 @@
 	var/mob/living/body = new mob_type(T)
 	var/mob/ghostie = mind.get_ghost(TRUE)
 	if(ghostie.client && ghostie.client.prefs)
-		ghostie.client.prefs.copy_to(body)
+		ghostie.client.prefs.apply_prefs_to(body, TRUE)
 	mind.current = body //little hack
 	mind.transfer_to(body)
 	mind.grab_ghost(TRUE)
@@ -111,7 +111,7 @@
 		return
 
 	var/turf/tur = get_turf(target)
-	if(IS_RES_ELIGIBLE(target) || istype(tur, /turf/open/lava) || istype(tur, /turf/open/lava/acid))
+	if(target.health <= target.crit_threshold || istype(tur, /turf/open/lava) || istype(tur, /turf/open/lava/acid))
 		if(target in resurrecting)
 			return
 		start_revival(target)
@@ -129,10 +129,10 @@
 
 
 /datum/resurrection_rune_controller/proc/revive_mob(mob/living/carbon/user, is_linked)
-	if(!IS_RES_ELIGIBLE(user) && !(istype(get_turf(user), /turf/open/lava) || istype(get_turf(user), /turf/open/lava/acid)))
-		resurrecting -= user
-		to_chat(user.mind, span_blue("The tugging stops; you seem to be recovering."))
-		return
+	//if(user.health > user.crit_threshold && !(istype(get_turf(user), /turf/open/lava) || istype(get_turf(user), /turf/open/lava/acid)))
+	//	resurrecting -= user
+	//	to_chat(user.mind, span_blue("The tugging stops; you seem to be recovering."))
+	//	return
 	var/turf/T = get_turf(sub_rune)
 	var/mob/living/body = user
 	if(!body)
@@ -159,7 +159,7 @@
 /datum/resurrection_rune_controller/proc/remove_res(mob/living/carbon/user)
 	resurrecting -= user
 
-*/
+
 /obj/structure/resurrection_rune
 	name = "grand rune"
 	desc = "It emits an otherwordly hum."
@@ -174,7 +174,7 @@
 	var/obj/structure/resurrection_rune/control/main_rune_link
 	pixel_x = -64
 	pixel_y = -64
-/*
+
 /obj/structure/resurrection_rune/Initialize()
 	. = ..()
 	resrunecontroler = new /datum/resurrection_rune_controller()
@@ -230,12 +230,12 @@
 
 /obj/structure/resurrection_rune/attacked_by(obj/item/I, mob/living/user)
 	return FALSE
-*/
+
 /obj/structure/resurrection_rune/control
 	name = "master rune"
 	is_main = TRUE
 	var/disabled_res = FALSE
-/*
+
 /obj/structure/resurrection_rune/control/Initialize()
 	. = ..()
 
@@ -274,4 +274,4 @@
 				to_chat(user, span_blue("Another chance."))
 			return
 		else
-			return*/
+			return
