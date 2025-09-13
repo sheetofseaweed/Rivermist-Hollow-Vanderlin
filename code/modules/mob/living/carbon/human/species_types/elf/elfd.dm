@@ -159,7 +159,9 @@
 	"black - midnight" = "1d1b2b",
 
 	"white - cavedew" = "dee9ed",
-	"white - spiderweb" = "f4f4f4"
+	"white - spiderweb" = "f4f4f4",
+
+	"red - ruby" = "880016"
 
 	))
 
