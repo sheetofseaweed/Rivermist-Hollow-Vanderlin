@@ -226,12 +226,15 @@
 /obj/structure/chair/wood/alt/post_unbuckle_mob(mob/living/M)
 	..()
 	density = FALSE
+<<<<<<< HEAD
 
 /obj/structure/chair/wood/alt/fancy/chair4
 	icon_state = "chair_green"
 
 /obj/structure/chair/wood/alt/fancy/chair5
 	icon_state = "chair_purple"
+=======
+>>>>>>> vanderlin/main
 
 /obj/item/chair/stool/bar
 	name = "stool"

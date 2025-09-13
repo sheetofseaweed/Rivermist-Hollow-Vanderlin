@@ -178,6 +178,7 @@
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
 	melting_material = /datum/material/iron
 	melt_amount = 20
+<<<<<<< HEAD
 
 /obj/item/reagent_containers/glass/bowl/gold
 	name = "gold bowl"
@@ -195,6 +196,8 @@
 	melting_material = /datum/material/silver
 	sellprice = 30
 	melt_amount = 20
+=======
+>>>>>>> vanderlin/main
 
 /obj/item/reagent_containers/glass/bowl/pewter
 	icon_state = "bowl_iron"

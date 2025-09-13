@@ -638,6 +638,7 @@
 	var/obj/structure/S = new /obj/structure/table/wood/treestump/shroomstump(loc)
 	S.icon_state = "stump_[icon_state]"
 	return ..()
+<<<<<<< HEAD
 
 /obj/structure/flora/mushroomcluster
 	name = "mushroom cluster"
@@ -655,6 +656,8 @@
 	desc = "A cluster of tiny mushrooms native to the underdark."
 	icon = 'icons/roguetown/misc/foliage.dmi'
 	icon_state = "tinymushrooms"
+=======
+>>>>>>> vanderlin/main
 
 /obj/structure/table/wood/treestump/shroomstump
 	name = "shroom stump"

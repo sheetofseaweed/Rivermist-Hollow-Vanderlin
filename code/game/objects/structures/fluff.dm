@@ -758,6 +758,7 @@
 	icon = 'icons/roguetown/misc/ay.dmi'
 	icon_state = "1"
 	SET_BASE_PIXEL(-32, -16)
+<<<<<<< HEAD
 
 /obj/structure/fluff/statue/femalestatue1
 	icon = 'icons/roguetown/misc/ay.dmi'
@@ -776,6 +777,8 @@
 	icon_state = "4"
 	pixel_x = -32
 	pixel_y = -16
+=======
+>>>>>>> vanderlin/main
 
 /obj/structure/fluff/statue/femalestatue/clean
 	icon_state = "12"
