@@ -397,12 +397,15 @@
 /obj/structure/fluff/walldeco/sign/apothecarysign/left
 	icon_state = "shopsign_apothecary_left"
 
+<<<<<<< HEAD
 /*	..................   Artificer Sign   ................... */
 /obj/structure/fluff/walldeco/artificerflag
 	name = "Artificer's Guild"
 	desc = ""
 	icon_state = "artificer"
 
+=======
+>>>>>>> vanderlin/main
 /*	..................   Wall decorations   ................... */
 /obj/structure/fluff/walldeco/bath // suggestive stonework
 	icon_state = "bath1"

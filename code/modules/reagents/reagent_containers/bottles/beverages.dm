@@ -227,6 +227,7 @@
 	list_reagents = list(/datum/reagent/consumable/ethanol/komuchisake = 48)
 	auto_label_name = "komuchisake"
 	auto_label_desc = "It bears an intricately detailed golden skull seal, and the markings on it are clearly of the Shogunate. It looks to be filled with herbs inside."
+<<<<<<< HEAD
 
 		//////////////////////////
 		/// CLAY BOTTLES ///
@@ -255,3 +256,5 @@
 /obj/item/reagent_containers/glass/bottle/claybottle/whitewine
 	list_reagents = list(/datum/reagent/consumable/ethanol/whitewine = 65)
 	desc = "A bottle with the Otavan Merchant Guild cork-seal. This one appears to be labelled as a sweet wine from the colder northern regions."
+=======
+>>>>>>> vanderlin/main
