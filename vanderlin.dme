@@ -3334,6 +3334,8 @@
 #include "modular_rmh\code\modules\mob\direbear.dm"
 #include "modular_rmh\code\modules\mob\fox.dm"
 #include "modular_rmh\code\modules\mob\undead_wolf.dm"
+#include "modular_rmh\code\modules\sprite_accesory\hair.dm"
+#include "modular_rmh\code\modules\sprite_accesory\horns.dm"
 #include "modular_rmh\modular\ceramics\ceramics_items.dm"
 #include "modular_rmh\modular\food\ration.dm"
 #include "modular_rmh\modular\loot\loot.dm"

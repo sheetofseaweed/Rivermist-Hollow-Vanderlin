@@ -300,6 +300,10 @@
 		/datum/sprite_accessory/hair/head/kusanagi_alt,
 		/datum/sprite_accessory/hair/head/shorthair6,
 		/datum/sprite_accessory/hair/head/helmet,
+
+		//RMH
+		/datum/sprite_accessory/hair/head/cowlick,
+		/datum/sprite_accessory/hair/head/cowbangs,
 		)
 
 /datum/customizer/bodypart_feature/hair/head/humanoid/triton

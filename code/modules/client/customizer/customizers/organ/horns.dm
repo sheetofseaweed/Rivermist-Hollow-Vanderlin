@@ -58,7 +58,10 @@
 		/datum/sprite_accessory/horns/faceguard,
 		/datum/sprite_accessory/horns/sheephorns,
 		/datum/sprite_accessory/horns/doublehorns,
-		/datum/sprite_accessory/horns/tiefling
+		/datum/sprite_accessory/horns/tiefling,
+
+		//RMH
+		/datum/sprite_accessory/horns/cow,
 		)
 
 /datum/customizer/organ/horns/demihuman
@@ -107,6 +110,8 @@
 //		/datum/sprite_accessory/horns/sheephorns,			Ears in horns. Doesn't fit.
 		/datum/sprite_accessory/horns/doublehorns,
 //		/datum/sprite_accessory/horns/tiefling				Hollowkin aren't tieflings.
+		//RMH
+		/datum/sprite_accessory/horns/cow,
 		)
 
 /datum/customizer/organ/horns/anthro
@@ -154,7 +159,9 @@
 		/datum/sprite_accessory/horns/faceguard,
 		/datum/sprite_accessory/horns/sheephorns,
 		/datum/sprite_accessory/horns/doublehorns,
-		/datum/sprite_accessory/horns/tiefling
+		/datum/sprite_accessory/horns/tiefling,
+		//RMH
+		/datum/sprite_accessory/horns/cow,
 		)
 
 /datum/customizer/organ/horns/tiefling
