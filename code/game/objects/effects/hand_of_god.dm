@@ -9,8 +9,8 @@
 	layer = GOD_HAND_LAYER
 	plane = GAME_PLANE_UPPER
 	pixel_z = DISPLACEMENT_AMOUNT
-	icon_w = ANIMATION_W
-	icon_z = ANIMATION_Z
+	//icon_w = ANIMATION_W
+	//icon_z = ANIMATION_Z
 
 	var/atom/movable/thing_to_take
 
