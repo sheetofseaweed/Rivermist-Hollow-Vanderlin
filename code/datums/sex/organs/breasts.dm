@@ -26,6 +26,21 @@
 	var/obj/item/organ/genitals/nipple/right/r_nip = new /obj/item/organ/genitals/nipple/right
 	l_nip.Insert(M, FALSE, FALSE)
 	r_nip.Insert(M, FALSE, FALSE)
+
+
+	var/obj/item/organ/genitals/filling_organ/breasts/badonkas = M.getorganslot(ORGAN_SLOT_BREASTS)
+	//Making users of big BOOBA suk dikus
+	if(badonkas.organ_size == BREAST_SIZE_ENORMOUS)
+		M.apply_status_effect(/datum/status_effect/debuff/bigboobs/permanent)
+	else if(badonkas.organ_size == BREAST_SIZE_LARGE)
+		M.apply_status_effect(/datum/status_effect/debuff/largeboobs/permanent)
+	else if(badonkas.organ_size == BREAST_SIZE_SMALL)
+		M.apply_status_effect(/datum/status_effect/debuff/smallboobs/permanent)
+	else if(badonkas.organ_size == BREAST_SIZE_VERY_SMALL)
+		M.apply_status_effect(/datum/status_effect/debuff/vsmallboobs/permanent)
+	else if(badonkas.organ_size == BREAST_SIZE_FLAT)
+		M.apply_status_effect(/datum/status_effect/debuff/flatboobs/permanent)
+
 /obj/item/organ/genitals/filling_organ/breasts/Remove(mob/living/carbon/M, special, drop_if_replaced)
 	. = ..()
 	var/datum/component/body_storage/breasts/comp = GetComponent(/datum/component/body_storage/breasts)
