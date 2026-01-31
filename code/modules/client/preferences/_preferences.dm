@@ -545,15 +545,14 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	user?.client.acquire_dpi()
 
 	// Изменить размер главного окна - stonekeep_prefwin - skin.dmf
-	// Кривота, если трогать ширину
-	winset(user, "stonekeep_prefwin", "size=700x878")
+	winset(user, "stonekeep_prefwin", "size=700x900")
 	winshow(user, "stonekeep_prefwin", TRUE)
 	winshow(user, "stonekeep_prefwin.character_preview_map", TRUE)
 
 	// Изменить размер браузера внутри окна
-	winset(user, "stonekeep_prefwin.preferences_browser", "size=700x878")
+	winset(user, "stonekeep_prefwin.preferences_browser", "size=700x900")
 
-	var/datum/browser/popup = new(user, "preferences_browser", "<div align='center'>Character Sheet</div>", 700, 878)
+	var/datum/browser/popup = new(user, "preferences_browser", "<div align='center'>Character Sheet</div>", 700, 900)
 	popup.set_window_options(can_close = TRUE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
