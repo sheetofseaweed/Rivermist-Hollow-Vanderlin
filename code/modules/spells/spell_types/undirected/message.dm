@@ -37,7 +37,7 @@
 	if(. & SPELL_CANCEL_CAST)
 		return
 
-	// VERY IMPORTANT: Reset all variables before each cast
+	// Reset all variables before each cast
 	recipient_ref = null
 	message = null
 	anonymous = FALSE
