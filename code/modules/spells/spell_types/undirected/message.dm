@@ -36,6 +36,12 @@
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
 		return
+
+	// VERY IMPORTANT: Reset all variables before each cast
+	recipient_ref = null
+	message = null
+	anonymous = FALSE
+
 	if(!LAZYLEN(owner.mind?.known_people))
 		to_chat(owner, span_warning("I don't know anyone!"))
 		return . | SPELL_CANCEL_CAST
@@ -48,6 +54,8 @@
 	if(!owner.mind?.do_i_know(name = recipient))
 		to_chat(owner, span_warning("I don't know anyone by that name."))
 		return . | SPELL_CANCEL_CAST
+
+	// Recipient Search
 	for(var/client/C as anything in GLOB.clients)
 		var/mob/M = C.mob
 		if(QDELETED(M))
@@ -58,12 +66,16 @@
 	if(!recipient_ref)
 		to_chat(owner, span_warning("I seek a mental connection, but can't find [recipient]."))
 		return . | SPELL_CANCEL_CAST
+
+	// Entering a message
 	message = browser_input_text(owner, "You make a connecton, what are you trying to say?", "BEYOND THE VEIL")
 	if(QDELETED(src) || QDELETED(cast_on) || !can_cast_spell())
 		return . | SPELL_CANCEL_CAST
 	if(!message)
 		reset_cooldown()
 		return . | SPELL_CANCEL_CAST
+
+	// Choosing anonymity
 	var/answer = browser_alert(owner, "Send anonymously?", "BEYOND THE VEIL", DEFAULT_INPUT_CHOICES)
 	if(QDELETED(src) || QDELETED(cast_on) || !can_cast_spell())
 		return . | SPELL_CANCEL_CAST
