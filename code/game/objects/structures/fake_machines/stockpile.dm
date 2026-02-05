@@ -7,6 +7,8 @@
 	blade_dulling = DULLING_BASH
 	SET_BASE_PIXEL(0, 32)
 	var/stockpile_index = 1
+	var/current_category = "Raw Materials"
+	var/list/categories = list("Raw Materials", "Fruit", "Vegetable", "Animal","Seafood")
 	var/datum/withdraw_tab/withdraw_tab = null
 
 /obj/structure/fake_machine/stockpile/Initialize()
@@ -26,6 +28,11 @@
 	if(href_list["navigate"])
 		return attack_hand(usr, href_list["navigate"])
 
+	// Добавлена обработка смены категории
+	if(href_list["stockpilechangecat"])
+		current_category = href_list["stockpilechangecat"]
+		return attack_hand(usr, "deposit")
+	// Добавлена обработка смены категории -
 	if(withdraw_tab.perform_action(href, href_list))
 		if(href_list["remote"])
 			playsound(loc, 'sound/misc/disposalflush.ogg', 100, FALSE, -1)
@@ -53,6 +60,18 @@
 	contents += "----------<BR>"
 	contents += "</center>"
 
+	// Добавлен выбор категорий
+	var/selection = "Categories: "
+	for(var/category in categories)
+		if(category == current_category)
+			selection += "<b>[current_category]</b> "
+		else
+			// Force call navigate so the UI actually updates fml
+			selection += "<a href='byond://?src=[REF(src)];stockpilechangecat=[category]'>[category]</a> "
+	contents += selection + "<BR>"
+	contents += "--------------<BR>"
+	// Добавлен выбор категорий -
+
 	for(var/datum/stock/bounty/R in SStreasury.stockpile_datums)
 		contents += "[R.name] - [R.payout_price][R.percent_bounty ? "%" : ""]"
 		contents += "<BR>"
@@ -60,6 +79,10 @@
 	contents += "<BR>"
 
 	for(var/datum/stock/stockpile/R in SStreasury.stockpile_datums)
+		// Добавлена фильтрация по категории
+		if(R.category != current_category)
+			continue
+		// Добавлена фильтрация по категории -
 		var/message = "[R.name] - Payout: [R.get_payout_price()] - Stockpiled: [R.get_held_count()] - Oversupply at: [R.oversupply_amount]"
 		if(R.get_held_count() >= R.oversupply_amount)
 			message += " - !OVERSUPPLIED!"
@@ -145,9 +168,7 @@
 
 /obj/structure/fake_machine/stockpile/attackby(obj/item/P, mob/user, params)
 	if(ishuman(user))
-		if(user.real_name in GLOB.outlawed_players)
-			say("OUTLAW DETECTED! REFUSING SERVICE!")
-			return
+		// Убрана проверка на outlawed_players
 		if(istype(P, /obj/item/coin))
 			withdraw_tab.insert_coins(P)
 			return attack_hand(user)
@@ -160,9 +181,7 @@
 		return
 	. = SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 	if(ishuman(user))
-		if(user.real_name in GLOB.outlawed_players)
-			say("OUTLAW DETECTED! REFUSING SERVICE!")
-			return
+		// Убрана проверка на outlawed_players
 		var/total_value = 0
 		for(var/obj/I in get_turf(src))
 			total_value += attemptsell(I, user, FALSE, FALSE)
