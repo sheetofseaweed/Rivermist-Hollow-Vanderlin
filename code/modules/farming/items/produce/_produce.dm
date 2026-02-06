@@ -101,6 +101,9 @@
 		. += "I can easily tell that these are oat groats."
 
 // ^ PSA: next time you want to do this, make and run an updatepaths migration in tools/UpdatePaths
+
+/////////////////// - нашел
+
 /obj/item/reagent_containers/food/snacks/produce/fruit/apple
 	seed = /obj/item/neuFarm/seed/apple
 	name = "apple"

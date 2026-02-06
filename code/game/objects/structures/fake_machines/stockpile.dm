@@ -31,6 +31,7 @@
 	// Добавлена обработка смены категории
 
 		///   -   \Twilight-Axis\code\modules\roguetown\roguestock\_roguestock.dm
+		///   -   \Rivermist-Hollow-Vanderlin\code\datums\stock\stockpile.dm
 
 	if(href_list["stockpilechangecat"])
 		current_category = href_list["stockpilechangecat"]
@@ -215,11 +216,12 @@
 	contents += "<a href='byond://?src=[REF(parent_structure)];change=1'>Stored Mammon: [budget]</a><BR>"
 	contents += "<a href='byond://?src=[REF(parent_structure)];compact=1'>Compact Mode: [compact ? "ENABLED" : "DISABLED"]</a></center><BR>"
 
+				///////////// - ВОЗМОЖНО следует глянуть
 	if(compact)
 		for(var/datum/stock/stockpile/A in SStreasury.stockpile_datums)
 			if(!A.withdraw_disabled)
-				contents += "<b>[A.name]:</b> <a href='byond://?src=[REF(parent_structure)];withdraw=[REF(A)]'>AMT: [A.get_held_count()] at [A.withdraw_price]m</a><BR>"
-
+				contents += "<b>[A.name]:</b> <a href='byond://?src=[REF(parent_structure)];withdraw=[REF(A)]'>AMT1111: [A.get_held_count()] at [A.withdraw_price]m</a><BR>"
+				///////////// - ВОЗМОЖНО следует глянуть
 			else
 				contents += "<b>[A.name]:</b> Withdrawing Disabled..."
 

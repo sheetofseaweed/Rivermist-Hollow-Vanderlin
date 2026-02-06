@@ -403,6 +403,10 @@
 				for(var/datum/stock/stockpile/A in SStreasury.stockpile_datums)
 					contents += "<div style='margin-left:20px;'>"
 					contents += "<b>[A.name]:</b>"
+
+					///////////// - глянуть
+
+
 					contents += " AMT: [A.get_held_count()]"
 					contents += " | PAYOUT: <a href='byond://?src=\ref[src];setbounty=\ref[A]'>[A.payout_price]m</a>"
 					contents += " /  WITHDRAW: <a href='byond://?src=\ref[src];setprice=\ref[A]'>[A.withdraw_price]m</a>"
@@ -486,6 +490,9 @@
 				custom_stocks_exist = TRUE
 				if(compact)
 					contents += "<b>[A.name]:</b>"
+
+					////////////// - глянуть
+
 					contents += " AMT: [A.get_held_count()]"
 					contents += " | PAYOUT: <a href='byond://?src=\ref[src];setbounty=\ref[A]'>[A.payout_price]m</a>"
 					contents += " / WITHDRAW: <a href='byond://?src=\ref[src];setprice=\ref[A]'>[A.withdraw_price]m</a>"

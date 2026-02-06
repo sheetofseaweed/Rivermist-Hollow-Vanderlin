@@ -51,6 +51,7 @@
 	withdraw_price = 7
 	export_price = 6
 	importexport_amt = 10
+	stockpile_id = STOCK_METAL
 
 /datum/stock/stockpile/cured
 	name = "Cured Leather"
@@ -60,6 +61,7 @@
 	payout_price = 3
 	withdraw_price = 15
 	export_price = 12
+	stockpile_id = STOCK_METAL
 
 /datum/stock/stockpile/silk
 	name = "Silk"
@@ -91,7 +93,7 @@
 	withdraw_price = 6
 	export_price = 5
 	importexport_amt = 20
-	stockpile_id = STOCK_FOOD
+	stockpile_id = STOCK_VEGETABLE
 
 /datum/stock/stockpile/oat
 	name = "Oat"
@@ -102,7 +104,7 @@
 	withdraw_price = 6
 	export_price = 5
 	importexport_amt = 20
-	stockpile_id = STOCK_FOOD
+	stockpile_id = STOCK_VEGETABLE
 
 /datum/stock/stockpile/turnip
 	name = "Turnips"
@@ -113,7 +115,7 @@
 	withdraw_price = 5
 	export_price = 4
 	importexport_amt = 20
-	stockpile_id = STOCK_FOOD
+	stockpile_id = STOCK_VEGETABLE
 
 /datum/stock/stockpile/potato
 	name = "Potatoes"
@@ -124,7 +126,7 @@
 	withdraw_price = 6
 	export_price = 5
 	importexport_amt = 20
-	stockpile_id = STOCK_FOOD
+	stockpile_id = STOCK_VEGETABLE
 
 /datum/stock/stockpile/borowiki
 	name = "Borowiki"
@@ -135,7 +137,7 @@
 	withdraw_price = 7
 	export_price = 4
 	importexport_amt = 20
-	stockpile_id = STOCK_FOOD
+	stockpile_id = STOCK_VEGETABLE
 
 /datum/stock/stockpile/coal
 	name = "Coal"
@@ -202,3 +204,36 @@
 	export_price = 30
 	importexport_amt = 5
 	stockpile_id = STOCK_METAL
+
+
+/datum/stock/stockpile/apple
+	name = "Apple"
+	desc = "Harvested produce."
+	item_type = /obj/item/reagent_containers/food/snacks/produce/fruit/apple
+	held_items = list(0, 0)
+	payout_price = 2
+	export_price = 3
+	category = "Fruit"
+	stockpile_id = STOCK_FRUIT
+
+
+	// \Twilight-Axis\code\modules\farming\produce.dm
+
+	// Добавить отдельную вкладку мтериалов "Не металлы"/"Сырые материалы"
+
+	// Параметры с твайлайта
+	// importexport_amt = 10
+	// passive_generation = 3 // Apple here remain a clutch for wandering nobles because of sliced??? So higher amount
+	// stockpile_limit = 50
+	// withdraw_price = 2
+
+	// Для скорости копирования
+	// #define STOCK_GENERIC "generic"
+	// #define STOCK_FOOD "foods"
+	// #define STOCK_METAL "metals"
+
+	// #define STOCK_FRUIT "Fruit"
+	// #define STOCK_VEGETABLE "Vegetable"
+	// #define STOCK_ANIMAL "Animal"
+	// #define STOCK_SEAFOOD "Seafood"
+
