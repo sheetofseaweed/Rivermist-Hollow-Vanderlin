@@ -29,6 +29,9 @@
 		return attack_hand(usr, href_list["navigate"])
 
 	// Добавлена обработка смены категории
+
+		///   -   \Twilight-Axis\code\modules\roguetown\roguestock\_roguestock.dm
+
 	if(href_list["stockpilechangecat"])
 		current_category = href_list["stockpilechangecat"]
 		return attack_hand(usr, "deposit")

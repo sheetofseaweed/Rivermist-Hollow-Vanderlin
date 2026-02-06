@@ -23,6 +23,7 @@ GLOBAL_LIST_EMPTY(cache_timestamps) // Timestamps for each cache entry
 	var/list/obj/structure/stockpile_storage/linked_storages = list() // All storage objects with this ID
 	var/list/obj/item/pending_items = list() // Items waiting to be placed when storage is available
 	var/reachability_cache_interval = 2 MINUTES
+	var/category = "Raw Materials"
 
 /datum/stock/New()
 	. = ..()
