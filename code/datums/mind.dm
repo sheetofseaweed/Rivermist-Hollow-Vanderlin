@@ -160,45 +160,43 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 
 /// proc that adds us to their lists, and they are added to ours
 /datum/mind/proc/i_know_person(person)
-	if(!person)
-		return
-	if(person == src)
-		return
-	var/datum/mind/M = person
-	if(ishuman(M.current))
-		var/mob/living/carbon/human/H = M.current
-		if(!known_people[H.real_name])
-			known_people[H.real_name] = list()
-		known_people[H.real_name]["VCOLOR"] = H.voice_color
-		var/used_title = H.get_role_title()
-		if(!used_title)
-			used_title = "Unknown"
-		known_people[H.real_name]["FJOB"] = used_title
-		known_people[H.real_name]["FGENDER"] = H.gender
-		known_people[H.real_name]["FAGE"] = H.age
+    if(!person)
+        return
+    if(person == src || person == current)
+        return
+    if(istype(person, /datum/mind))
+        var/datum/mind/M = person
+        person = M.current
+    if(ishuman(person))
+        var/mob/living/carbon/human/H = person
+        if(!known_people[H.real_name])
+            known_people[H.real_name] = list()
+        known_people[H.real_name]["VCOLOR"] = H.voice_color
+        known_people[H.real_name]["FJOB"] = H.get_role_title() || "Unknown"
+        known_people[H.real_name]["FGENDER"] = H.gender
+        known_people[H.real_name]["FAGE"] = H.age
 
 /// we are added to their lists, they are added to ours
 /datum/mind/proc/person_knows_me(person)
-	if(!person)
-		return
-	if(person == src)
-		return
-	var/datum/mind/M = person
-	if(M.known_people)
-		if(ishuman(current))
-			var/mob/living/carbon/human/H = current
-			if(!M.known_people[H.real_name])
-				M.known_people[H.real_name] = list()
-			M.known_people[H.real_name]["VCOLOR"] = H.voice_color
-			var/used_title
-			if(H.job)
-				var/datum/job/job = SSjob.GetJob(H.job)
-				used_title = job.get_informed_title(H)
-			if(!used_title)
-				used_title = "Unknown"
-			M.known_people[H.real_name]["FJOB"] = used_title
-			M.known_people[H.real_name]["FGENDER"] = H.gender
-			M.known_people[H.real_name]["FAGE"] = H.age
+    if(!person)
+        return
+    if(person == src || person == current)
+        return
+    if(ishuman(person))
+        var/mob/living/carbon/human/guy = person
+        person = guy.mind
+    if(istype(person, /datum/mind))
+        var/datum/mind/M = person
+        if(!M.known_people)
+            M.known_people = list()
+        if(ishuman(current))
+            var/mob/living/carbon/human/H = current
+            if(!M.known_people[H.real_name])
+                M.known_people[H.real_name] = list()
+            M.known_people[H.real_name]["VCOLOR"] = H.voice_color
+            M.known_people[H.real_name]["FJOB"] = H.get_role_title() || "Unknown"
+            M.known_people[H.real_name]["FGENDER"] = H.gender
+            M.known_people[H.real_name]["FAGE"] = H.age
 
 /// check if this mind knows X
 /datum/mind/proc/do_i_know(datum/mind/person, name)
