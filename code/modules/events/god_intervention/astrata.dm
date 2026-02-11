@@ -30,7 +30,7 @@
 			continue
 
 		// Only for astratan clergy and nobles unless ascendant
-		if(!is_ascendant(ASTRATA) && (!(human_mob.mind?.assigned_role.title in GLOB.church_positions) && !human_mob.is_noble()))
+		if(!is_ascendant(ASTRATA) && (!(human_mob.mind?.assigned_role.title in GLOB.chapel_positions) && !human_mob.is_noble()))
 			continue
 
 		human_mob.add_stress(/datum/stress_event/astrata_grandeur)

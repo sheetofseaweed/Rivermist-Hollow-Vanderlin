@@ -1588,7 +1588,7 @@
 
 /obj/item/weapon/sword/long/replica/examine(mob/user)
 	. = ..()
-	if(is_gaffer_job(user.mind.assigned_role))
+	if(is_adventurers_guildmaster_job(user.mind.assigned_role))
 		. += span_info("A useless vanity piece I commissioned after retiring my bow. Unusable in battle, but light enough to forget its on your back.")
 	else
 		. += "A hollow replica of the usual longsword design presumebly made for showsake, useless in real battle"

@@ -1,24 +1,32 @@
 
 /proc/reopen_roundstart_suicide_roles()
 	var/list/valid_positions = list()
-	valid_positions += GLOB.noble_positions
-	valid_positions += GLOB.church_positions
-	valid_positions += GLOB.inquisition_positions
-	valid_positions += GLOB.garrison_positions
-	valid_positions += GLOB.serf_positions
-	valid_positions += GLOB.peasant_positions
-	valid_positions += GLOB.apprentices_positions
-	valid_positions += GLOB.youngfolk_positions
-	valid_positions += GLOB.company_positions
-
+	valid_positions += GLOB.lords_positions
+	valid_positions += GLOB.keep_positions
+	valid_positions += GLOB.townhall_positions
+	valid_positions += GLOB.townwatch_positions
+	valid_positions += GLOB.chapel_positions
+	valid_positions += GLOB.scholars_positions
+	valid_positions += GLOB.traders_positions
+	valid_positions += GLOB.tavern_positions
+	valid_positions += GLOB.town_positions
+	valid_positions += GLOB.outsiders_positions
+	valid_positions += GLOB.adventurers_positions
 
 	var/list/reopened_jobs = list()
 	for(var/X in GLOB.suicided_mob_list)
 		if(!isliving(X))
 			continue
 		var/mob/living/L = X
-		if(L.job in valid_positions)
-			var/datum/job/J = SSjob.GetJob(L.job)
+
+		var/title
+		if(L.mind?.assigned_role.parent_job)
+			title = L.mind?.assigned_role.parent_job.title
+		else
+			title = L.mind?.assigned_role.title
+
+		if(title in valid_positions)
+			var/datum/job/J = SSjob.GetJob(title)
 			if(!J)
 				continue
 			J.adjust_current_positions(-1)

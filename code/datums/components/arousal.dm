@@ -924,12 +924,12 @@
 		if(recent_orgasm_count >= HIGH_ORGASM_THRESHOLD_GAIN + nymph_mod)
 			user.apply_status_effect(/datum/status_effect/debuff/orgasmbroken)
 
-	if(user.has_status_effect(/datum/status_effect/debuff/nympho_addiction))
+	/*if(user.has_status_effect(/datum/status_effect/debuff/nympho_addiction))
 		if(recent_orgasm_count <= OVER_THE_TOP_ORGASM_THRESHOLD_LOSS + nymph_mod)
 			user.remove_status_effect(/datum/status_effect/debuff/nympho_addiction)
 	else
 		if(recent_orgasm_count >= OVER_THE_TOP_ORGASM_THRESHOLD_GAIN + nymph_mod)
-			user.apply_status_effect(/datum/status_effect/debuff/nympho_addiction)
+			user.apply_status_effect(/datum/status_effect/debuff/nympho_addiction)*/
 
 	if(user.has_penis())
 		if(user.has_status_effect(/datum/status_effect/blue_balls))

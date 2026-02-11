@@ -75,6 +75,8 @@
 	equipping.plane = ABOVE_HUD_PLANE
 	equipping.appearance_flags |= NO_CLIENT_COLOR
 	var/not_handled = FALSE
+	if(slot & ITEM_SLOT_EXTRA)
+		not_handled = TRUE
 	switch(slot)
 		if(ITEM_SLOT_MASK)
 			if(wear_mask)

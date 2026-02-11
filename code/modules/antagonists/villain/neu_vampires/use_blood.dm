@@ -286,7 +286,7 @@
 
 	var/mob/living/carbon/human/H_user = user
 	for(var/obj/item/reagent_containers/G_held in H_user.held_items) //Accounts for if the person has multiple grasping organs
-		if (!istype(G_held) || !round(G_held.reagents.get_reagent_amount(/datum/reagent/blood)))
+		if (!istype(G_held) || !has_blood_reagent(G_held))
 			continue
 		else
 			var/blood_volume = round(G_held.reagents.get_reagent_amount(/datum/reagent/blood))
@@ -306,6 +306,8 @@
 
 	//Is there a reagent container on the turf that has blood in it?
 	for (var/obj/item/reagent_containers/G in T)
+		if(!has_blood_reagent(G))
+			continue
 		var/blood_volume = round(G.reagents.get_reagent_amount(/datum/reagent/blood))
 		if (blood_volume)
 			data[BLOODCOST_TARGET_CONTAINER] = G
@@ -336,3 +338,11 @@
 
 	data[BLOODCOST_RESULT] = BLOODCOST_FAILURE
 	return data
+
+/proc/has_blood_reagent(obj/item/item)
+	if(!item)
+		return FALSE
+	if(!item.reagents)
+		return FALSE
+	return round(item.reagents.get_reagent_amount(/datum/reagent/blood))
+

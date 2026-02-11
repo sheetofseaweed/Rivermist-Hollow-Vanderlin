@@ -12,17 +12,7 @@
 	shared_occurence_type = SHARED_MINOR_THREAT
 	minor_roleset = TRUE
 
-	needed_job = list(
-		/datum/job/consort,
-		/datum/job/hand,
-		/datum/job/prince,
-		/datum/job/captain,
-		/datum/job/steward,
-		/datum/job/magician,
-		/datum/job/courtphys,
-		/datum/job/archivist,
-		/datum/job/minor_noble,
-	)
+	needed_job = null
 
 	restricted_roles = list(
 		/datum/job/lord,
@@ -56,23 +46,7 @@
 /datum/round_event/antagonist/solo/aspirant/start()
 	. = ..()
 
-	var/static/list/helping = list(
-		/datum/job/consort,
-		/datum/job/hand,
-		/datum/job/prince,
-		/datum/job/captain,
-		/datum/job/steward,
-		/datum/job/magician,
-		/datum/job/courtphys,
-		/datum/job/archivist,
-		/datum/job/minor_noble,
-		/datum/job/jester,
-		/datum/job/dungeoneer,
-		/datum/job/men_at_arms,
-		/datum/job/gatemaster,
-		/datum/job/butler,
-		/datum/job/servant,
-	)
+	var/static/list/helping = null
 	var/list/possible_helpers = list()
 
 	for(var/mob/living/carbon/human/helper in GLOB.player_list)

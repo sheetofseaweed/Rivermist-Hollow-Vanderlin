@@ -4,7 +4,6 @@
 	title = "Migrant"
 	department_flag = OUTSIDERS
 	job_flags = NONE
-	display_order = JDO_MIGRANT
 	faction = FACTION_MIGRANTS
 	total_positions = 0
 	spawn_positions = 0

@@ -13,6 +13,7 @@
 	light_color = LIGHT_COLOR_LAVA
 	bullet_bounce_sound = 'sound/blank.ogg'
 
+	heelstep = FOOTSTEP_LAVA
 	footstep = FOOTSTEP_LAVA
 	barefootstep = FOOTSTEP_LAVA
 	clawfootstep = FOOTSTEP_LAVA

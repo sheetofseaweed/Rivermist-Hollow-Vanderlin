@@ -12,21 +12,7 @@
 	shared_occurence_type = SHARED_MINOR_THREAT
 	minor_roleset = TRUE
 
-	restricted_roles = list(
-		/datum/job/lord,
-		/datum/job/consort,
-		/datum/job/priest,
-		/datum/job/hand,
-		/datum/job/captain,
-		/datum/job/prince,
-		/datum/job/inquisitor,
-		/datum/job/absolver,
-		/datum/job/orthodoxist,
-		/datum/job/adept,
-		/datum/job/forestwarden,
-		/datum/job/royalknight,
-		/datum/job/templar,
-	)
+	restricted_roles = null
 
 	denominator = 30
 

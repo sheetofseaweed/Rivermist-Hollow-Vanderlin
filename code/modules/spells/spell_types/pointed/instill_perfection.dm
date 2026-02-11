@@ -7,9 +7,8 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/skill/magic/holy
-	required_items = list(/obj/item/clothing/neck/psycross/silver/eora)
 
-	invocation = "Eora, lend some of your divine beauty!"
+	invocation = "Sune, lend some of your divine beauty!"
 	invocation_type = INVOCATION_SHOUT
 
 	charge_required = FALSE

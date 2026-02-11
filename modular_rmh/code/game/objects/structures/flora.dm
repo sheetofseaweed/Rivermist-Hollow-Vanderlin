@@ -114,3 +114,44 @@
 	icon = 'modular_rmh/icons/obj/flora/greenflora.dmi'
 	icon_state = "bush_green3"
 	base_icon_state = "bush_green3"
+
+/obj/structure/flora/mushroomcluster
+	name = "mushroom cluster"
+	desc = "A cluster of mushrooms native to the underdark."
+	icon = 'modular_rmh/icons/obj/flora/foliage.dmi'
+	icon_state = "mushroomcluster"
+	density = TRUE
+
+/obj/structure/flora/mushroomcluster/New(loc)
+	..()
+	set_light(1.5, 1.5, 1.5, l_color ="#5D3FD3")
+
+/obj/structure/flora/tinymushrooms
+	name = "small mushroom cluster"
+	desc = "A cluster of tiny mushrooms native to the underdark."
+	icon = 'modular_rmh/icons/obj/flora/foliage.dmi'
+	icon_state = "tinymushrooms"
+
+/obj/structure/flora/grass/brown
+	icon_state = "snowgrass1bb"
+	icon = 'modular_rmh/icons/obj/flora/snowflora.dmi'
+
+/obj/structure/flora/grass/brown/Initialize()
+	icon_state = "snowgrass[rand(1, 3)]bb"
+	. = ..()
+
+/obj/structure/flora/grass/green
+	icon_state = "snowgrass1gb"
+	icon = 'modular_rmh/icons/obj/flora/snowflora.dmi'
+
+/obj/structure/flora/grass/green/Initialize()
+	icon_state = "snowgrass[rand(1, 3)]gb"
+	. = ..()
+
+/obj/structure/flora/grass/both
+	icon_state = "snowgrassall1"
+	icon = 'modular_rmh/icons/obj/flora/snowflora.dmi'
+
+/obj/structure/flora/grass/both/Initialize()
+	icon_state = "snowgrassall[rand(1, 3)]"
+	. = ..()

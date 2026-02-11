@@ -42,10 +42,24 @@
 			return wear_armor
 		if(ITEM_SLOT_PANTS)
 			return wear_pants
-		if(ITEM_SLOT_UNDERWEAR)
+		if(ITEM_SLOT_UNDER_BOTTOM)
 			return underwear
+		if(ITEM_SLOT_UNDER_TOP)
+			return bra
+		if(ITEM_SLOT_UNDERSHIRT)
+			return undershirt
+		if(ITEM_SLOT_GARTER)
+			return garter
+		if(ITEM_SLOT_CHOKER)
+			return choker
 		if(ITEM_SLOT_SOCKS)
 			return legwear_socks
+		if(ITEM_SLOT_EARRING_L)
+			return earring_l
+		if(ITEM_SLOT_EARRING_R)
+			return earring_r
+		if(ITEM_SLOT_ARMSLEEVES)
+			return armsleeves
 	return null
 
 /mob/living/carbon/human/get_slot_by_item(obj/item/looking_for)
@@ -112,6 +126,33 @@
 	if(looking_for == beltr)
 		return ITEM_SLOT_BELT_R
 
+	if(looking_for == underwear)
+		return ITEM_SLOT_UNDER_BOTTOM
+
+	if(looking_for == bra)
+		return ITEM_SLOT_UNDER_TOP
+
+	if(looking_for == legwear_socks)
+		return ITEM_SLOT_SOCKS
+
+	if(looking_for == undershirt)
+		return ITEM_SLOT_UNDERSHIRT
+
+	if(looking_for == armsleeves)
+		return ITEM_SLOT_ARMSLEEVES
+
+	if(looking_for == garter)
+		return ITEM_SLOT_GARTER
+
+	if(looking_for == choker)
+		return ITEM_SLOT_CHOKER
+
+	if(looking_for == earring_l)
+		return ITEM_SLOT_EARRING_L
+
+	if(looking_for == earring_r)
+		return ITEM_SLOT_EARRING_R
+
 	return ..()
 
 /mob/living/carbon/human/proc/get_all_slots()
@@ -134,7 +175,13 @@
 		backl,
 		beltr,
 		beltl,
-		mouth
+		mouth,
+		underwear,
+		bra,
+		legwear_socks,
+		undershirt,
+		armsleeves,
+		garter,
 		)
 
 /mob/living/carbon/human/proc/get_head_slots()
@@ -143,6 +190,9 @@
 		wear_mask,
 		wear_neck,
 		mouth,
+		earring_l,
+		earring_r,
+		choker,
 		)
 
 /mob/living/carbon/human/proc/get_storage_slots()
@@ -261,16 +311,51 @@
 			if(backl && not_handled)
 				if(SEND_SIGNAL(backl, COMSIG_TRY_STORAGE_CAN_INSERT, equipping, src, TRUE))
 					not_handled = FALSE
-		if(ITEM_SLOT_UNDERWEAR)
+		if(ITEM_SLOT_UNDER_BOTTOM)
 			if(underwear)
 				return
 			underwear = equipping
-			update_inv_undies()
+			update_inv_undie_bot()
+		if(ITEM_SLOT_UNDER_TOP)
+			if(bra)
+				return
+			bra = equipping
+			update_inv_undie_top()
+		if(ITEM_SLOT_UNDERSHIRT)
+			if(undershirt)
+				return
+			undershirt = equipping
+			update_inv_undershirt()
+		if(ITEM_SLOT_GARTER)
+			if(garter)
+				return
+			garter = equipping
+			update_inv_garter()
+		if(ITEM_SLOT_CHOKER)
+			if(choker)
+				return
+			choker = equipping
+			update_inv_choker()
+		if(ITEM_SLOT_EARRING_L)
+			if(earring_l)
+				return
+			earring_l = equipping
+			update_inv_earring_l()
+		if(ITEM_SLOT_EARRING_R)
+			if(earring_r)
+				return
+			earring_r = equipping
+			update_inv_earring_r()
 		if(ITEM_SLOT_SOCKS)
 			if(legwear_socks)
 				return
 			legwear_socks = equipping
 			update_inv_socks()
+		if(ITEM_SLOT_ARMSLEEVES)
+			if(armsleeves)
+				return
+			armsleeves = equipping
+			update_inv_armsleeves()
 		else
 			not_handled = TRUE
 
@@ -365,11 +450,39 @@
 	else if(I == underwear)
 		underwear = null
 		if(!QDELETED(src))
-			update_inv_undies()
+			update_inv_undie_bot()
+	else if(I == bra)
+		bra = null
+		if(!QDELETED(src))
+			update_inv_undie_top()
+	else if(I == undershirt)
+		undershirt = null
+		if(!QDELETED(src))
+			update_inv_undershirt()
+	else if(I == garter)
+		garter = null
+		if(!QDELETED(src))
+			update_inv_garter()
+	else if(I == choker)
+		choker = null
+		if(!QDELETED(src))
+			update_inv_choker()
+	else if(I == earring_l)
+		earring_l = null
+		if(!QDELETED(src))
+			update_inv_earring_l()
+	else if(I == earring_r)
+		earring_r = null
+		if(!QDELETED(src))
+			update_inv_earring_r()
 	else if(I == legwear_socks)
 		legwear_socks = null
 		if(!QDELETED(src))
 			update_inv_socks()
+	else if(I == armsleeves)
+		armsleeves = null
+		if(!QDELETED(src))
+			update_inv_armsleeves()
 	check_armor_class()
 	update_reflection()
 

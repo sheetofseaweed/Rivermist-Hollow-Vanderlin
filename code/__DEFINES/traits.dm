@@ -181,7 +181,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SOOTHED_THROAT    "soothed-throat"
 #define TRAIT_LAW_ENFORCEMENT_METABOLISM "law-enforcement-metabolism"
 #define TRAIT_ALWAYS_CLEAN      "always-clean"
-#define TRAIT_BOOZE_SLIDER      "booze-slider"
+#define TRAIT_BOOZE_SLIDER      "Booze Slider"
 #define TRAIT_QUICK_CARRY		"quick-carry"
 #define TRAIT_QUICKER_CARRY		"quicker-carry"
 #define TRAIT_UNINTELLIGIBLE_SPEECH "unintelligible-speech"
@@ -320,8 +320,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_BAGGED "bagged" // Black-bagged. More snowflaking.
 
 // unique trait sources, still defines
-#define TRAIT_BESTIALSENSE "bestial-sense"
-#define TRAIT_DARKVISION "darkvision"
+#define TRAIT_BESTIALSENSE "Bestial Sense"
+#define TRAIT_DARKVISION "Darkvision"
 #define TRAIT_NOCSHADES "Nocshaded"
 #define CLONING_POD_TRAIT "cloning-pod"
 #define STATUE_MUTE "statue"
@@ -484,13 +484,13 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SCREENSHAKE "screenshake" //screen will always be shaking, you cannot stop it
 #define TRAIT_PUNISHMENT_CURSE "PunishmentCurse"
 #define TRAIT_BANDITCAMP "banditcamp"
-#define TRAIT_KNOWBANDITS "knowbandits"
+#define TRAIT_KNOWBANDITS "Know Bandits"
 #define TRAIT_KNOWKEEPPLANS "knowkeepplans"
 #define TRAIT_VAMPMANSION "vampiremansion"
 #define TRAIT_VAMP_DREAMS "vamp_dreams"
 #define TRAIT_INHUMENCAMP "inhumencamp"
 #define TRAIT_INTRAINING "intraining" //allows certain roles to bypass the average skill limitation of training dummies
-#define TRAIT_STEELHEARTED "steelhearted" //no bad mood from dismembering or seeing this
+#define TRAIT_STEELHEARTED "Steelhearted" //no bad mood from dismembering or seeing this
 #define TRAIT_IWASREVIVED "iwasrevived" //prevents PQ gain from reviving the same person twice
 #define TRAIT_IWASUNZOMBIFIED "iwasunzombified" //prevents PQ gain from curing a zombie twice
 #define TRAIT_ZIZOID_HUNTED "zizoidhunted" // Used to signal character has been marked by death by the Zizoid cult
@@ -639,6 +639,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 // Other RMH traits:
 #define TRAIT_ALLURE "Allure"
 #define TRAIT_DARKLING "Darkling"
+#define TRAIT_WILDMAGIC "Wildmagic"
+#define TRAIT_DRUNKMASTER "Drunkmaster"
 
 // Resurrection rune Severed
 #define TRAIT_RUNE_SEVERED				"runesevered"

@@ -25,7 +25,7 @@
 	)
 
 	use_skintones = TRUE
-	possible_ages = NORMAL_AGES_LIST_CHILD
+	possible_ages = NORMAL_AGES_LIST
 	changesource_flags = WABBAJACK
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/harpy.dmi'

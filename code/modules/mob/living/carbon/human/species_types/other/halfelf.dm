@@ -40,7 +40,7 @@
 	)
 
 	use_skintones = TRUE
-	possible_ages = NORMAL_AGES_LIST_CHILD
+	possible_ages = NORMAL_AGES_LIST
 
 	changesource_flags = WABBAJACK
 
@@ -206,4 +206,4 @@
 
 /datum/species/human/halfelf/on_species_gain(mob/living/carbon/human/C, datum/species/old_species)
 	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(species_stat_pick), C, "Half-Elf Versatility", "Choose an attribute to gain +1:", 1, FALSE), 100)
+	addtimer(CALLBACK(src, PROC_REF(species_stat_pick), C, "Half-Elf Versatility", "Choose an attribute to gain +1:", 2, FALSE), 100)

@@ -1228,7 +1228,7 @@
 		return ..()
 
 	var/is_priest = is_priest_job(user.mind.assigned_role)
-	var/is_eoran_acolyte = is_monk_job(user.mind.assigned_role) && (user.patron.type == /datum/patron/divine/eora)
+	var/is_eoran_acolyte = (user.patron.type == /datum/patron/divine/eora)
 	if(!is_priest && !is_eoran_acolyte && !HAS_TRAIT(user, TRAIT_SECRET_OFFICIANT))
 		return ..()
 
@@ -1486,7 +1486,7 @@
 		return
 	if(!ring_destroyed)
 		return
-	if(is_gaffer_assistant_job(user.mind?.assigned_role))
+	if(is_adventurers_assistant_job(user.mind?.assigned_role))
 		to_chat(user, span_danger("It is not mine to have..."))
 		return
 	to_chat(user, span_danger("As you extend your hand over to the glowing ring, you feel a shiver go up your spine, as if unseen eyes turned to glare at you..."))

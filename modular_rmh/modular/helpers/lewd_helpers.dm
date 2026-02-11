@@ -75,21 +75,44 @@
 	set desc = "Allows you to toggle which genitals should show through clothes or not."
 
 	if(stat != CONSCIOUS)
-		to_chat(usr, "<span class='warning'>You can toggle genitals visibility right now...</span>")
+		to_chat(usr, span_warning("You can toggle genitals visibility right now..."))
 		return
 
 	var/list/genital_list = list()
 	for(var/obj/item/organ/G in internal_organs)
-		if(G.visible_organ && !istype(G, /obj/item/organ/eyes) && !istype(G, /obj/item/organ/ears) && !istype(G, /obj/item/organ/genitals/filling_organ/anus))
+		if(G.visible_organ \
+			&& !istype(G, /obj/item/organ/eyes) \
+			&& !istype(G, /obj/item/organ/ears) \
+			&& !istype(G, /obj/item/organ/genitals/filling_organ/anus))
 			genital_list += G
-	if(!genital_list.len) //There is nothing to expose
+
+	if(!genital_list.len)
 		return
+
 	//Full list of exposable genitals created
 	var/obj/item/organ/genitals/picked_organ
-	picked_organ = input(src, "Choose which genitalia to expose/hide", "Expose/Hide genitals") as null|anything in genital_list
-	if(picked_organ && (picked_organ in internal_organs))
-		var/vis_type = input(src, "How will it be shown?", "Expose/Hide genitals") in list("Hidden", "Show Under clothes", "Show Above clothes")
-		picked_organ.toggle_visibility(vis_type)
+	picked_organ = input(src, "Choose which genitalia to expose/hide", "Expose/Hide genitals") \
+		as null|anything in genital_list
+
+	if(!picked_organ \
+		|| QDELETED(picked_organ) \
+		|| stat != CONSCIOUS \
+		|| picked_organ.owner != src \
+		|| !(picked_organ in internal_organs))
+		return
+
+	var/vis_type = input(src, "How will it be shown?", "Expose/Hide genitals") \
+		in list("Hidden", "Show Under clothes", "Show Above clothes")
+
+	// Re-validate again after yield
+	if(!picked_organ \
+		|| QDELETED(picked_organ) \
+		|| stat != CONSCIOUS \
+		|| picked_organ.owner != src \
+		|| !(picked_organ in internal_organs))
+		return
+
+	picked_organ.toggle_visibility(vis_type)
 
 /obj/item/organ/genitals/proc/toggle_visibility(vis_type)
 	switch(vis_type)

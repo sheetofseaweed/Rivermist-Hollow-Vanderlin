@@ -64,7 +64,7 @@
 	desc = "A hood that's attached to the raincoat."
 	icon_state = "rain_hood"
 	item_state = "rain_hood"
-	slot_flags = ITEM_SLOT_HEAD
+	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 	dynamic_hair_suffix = ""
 	edelay_type = 1 // Leaving as 1 so you get that small do_after for dramatic purposes
 	body_parts_covered = HEAD

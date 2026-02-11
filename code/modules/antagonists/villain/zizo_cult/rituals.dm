@@ -109,7 +109,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 			continue
 		if(HL == SSticker.rulermob)
 			break
-		if(HL.mind?.assigned_role.title in GLOB.church_positions)
+		if(HL.mind?.assigned_role.title in GLOB.chapel_positions)
 			to_chat(HL, span_warning("I sense an unholy presence loom near my soul."))
 			to_chat(user, span_danger("They are protected..."))
 			break

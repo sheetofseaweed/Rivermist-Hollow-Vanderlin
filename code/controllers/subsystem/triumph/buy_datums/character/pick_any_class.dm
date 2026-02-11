@@ -39,12 +39,6 @@
 	for(var/datum/job/advclass/CHECKS in SSrole_class_handler.sorted_class_categories[CTAG_ALLCLASS])
 		if(!length(CHECKS.category_tags))
 			continue
-		if(CTAG_WRETCH in CHECKS.category_tags)
-			continue
-		if(CTAG_INQUISITION in CHECKS.category_tags)
-			continue
-		if(CTAG_PURITAN in CHECKS.category_tags)
-			continue
 		possible_classes += CHECKS
 
 	var/list/class_titles = list()

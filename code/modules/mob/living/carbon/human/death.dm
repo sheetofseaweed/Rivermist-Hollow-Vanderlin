@@ -50,7 +50,7 @@
 		if(ishumannorthern(src))
 			record_round_statistic(STATS_HUMEN_DEATHS)
 		if(mind)
-			if((mind.assigned_role.title in GLOB.church_positions) || (mind.assigned_role.title in GLOB.inquisition_positions))
+			if(mind.assigned_role.title in GLOB.chapel_positions)
 				record_round_statistic(STATS_CLERGY_DEATHS)
 			if(mind.has_antag_datum(/datum/antagonist/vampire))
 				record_round_statistic(STATS_VAMPIRES_KILLED)
@@ -87,7 +87,7 @@
 
 		if(mind && yeae)
 			// Omens are handled here
-			if((is_lord_job(mind.assigned_role)))
+			if((is_burgmeister_job(mind.assigned_role)))
 				//addomen(OMEN_NOLORD)
 				for(var/mob/living/carbon/human/HU in GLOB.player_list)
 					if(HU.stat <= CONSCIOUS && is_in_roguetown(HU))
@@ -159,5 +159,5 @@
 		switch(human_job.type)
 			if(/datum/job/lord)
 				removeomen(OMEN_NOLORD)
-			if(/datum/job/priest)
+			if(/datum/job/moon_priest, /datum/job/heart_priest)
 				removeomen(OMEN_NOPRIEST)

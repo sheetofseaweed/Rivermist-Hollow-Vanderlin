@@ -177,6 +177,8 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Unyielding" = TRAIT_UNDODGING,
 		"Allure" = TRAIT_ALLURE,
 		"Darkling" = TRAIT_DARKLING,
+		"Wildmagic" = TRAIT_WILDMAGIC,
+		"Drunkmaster" = TRAIT_DRUNKMASTER,
 		"TRAIT_RUNE_SEVERED" = TRAIT_RUNE_SEVERED,
 	),
 	/obj/item/bodypart = list(
@@ -316,6 +318,8 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_ABOMINATION = span_info("I am an abomination, others will recognise me for what I am"),
 	TRAIT_ALLURE = span_love("People notice me the moment I enter a room!"),
 	TRAIT_DARKLING = span_info("I am a creature of the dark and am sensitive to the light. The hateful sun is especially harsh on my eyes."),
+	TRAIT_WILDMAGIC = span_info("Unruly magic sparks and fizzes through my veins. Each time I cast a spell, my magic might surge and trigger a random magical effect.."),
+	TRAIT_DRUNKMASTER = span_info("You are Immune to the negative effects of being drunk. It makes you only stronger!"),
 ))
 
 /// value -> trait name, generated on use from trait_by_type global

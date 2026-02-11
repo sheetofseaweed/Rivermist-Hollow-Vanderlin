@@ -21,7 +21,7 @@
 			continue
 		if(!H.patron || !istype(H.patron, /datum/patron/divine/astrata))
 			continue
-		if(H.is_noble() || (H.mind?.assigned_role.title in GLOB.church_positions))
+		if(H.is_noble() || (H.mind?.assigned_role.title in GLOB.chapel_positions))
 			continue
 		if(!(H.dna?.species.id in RACES_PLAYER_NONHERETICAL))
 			continue
@@ -37,7 +37,7 @@
 			continue
 		if(!human_mob.patron || !istype(human_mob.patron, /datum/patron/divine/astrata))
 			continue
-		if(human_mob.is_noble() || (human_mob.mind?.assigned_role.title in GLOB.church_positions))
+		if(human_mob.is_noble() || (human_mob.mind?.assigned_role.title in GLOB.chapel_positions))
 			continue
 		if(!(human_mob.dna?.species.id in RACES_PLAYER_NONHERETICAL))
 			continue

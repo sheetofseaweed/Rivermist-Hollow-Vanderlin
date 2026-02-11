@@ -279,7 +279,7 @@
 				SStreasury.give_money_account(-newtax, A)
 				break
 	if(href_list["payroll"])
-		var/list/L = list(GLOB.noble_positions) + list(GLOB.garrison_positions) + list(GLOB.church_positions) + list(GLOB.serf_positions) + list(GLOB.company_positions) + list(GLOB.peasant_positions) + list(GLOB.youngfolk_positions) + list(GLOB.apprentices_positions) + list(GLOB.inquisition_positions)
+		var/list/L = list(GLOB.townhall_positions) + list(GLOB.townwatch_positions) + list(GLOB.chapel_positions) + list(GLOB.scholars_positions) + list(GLOB.traders_positions) + list(GLOB.tavern_positions) + list(GLOB.town_positions)
 		var/list/jobs = list()
 		for(var/list/category in L)
 			for(var/A in category)

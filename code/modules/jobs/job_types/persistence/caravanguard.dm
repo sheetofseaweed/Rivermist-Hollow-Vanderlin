@@ -1,7 +1,7 @@
 /datum/job/persistence/caravanguard
 	title = "Caravan Guard"
 	tutorial = "You're a caravan guard, ensure the settlers aren't killed and maimed by whatever lurks in here."
-	department_flag = GARRISON
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	outfit = /datum/outfit/caravanguard

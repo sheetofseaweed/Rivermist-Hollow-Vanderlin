@@ -63,7 +63,7 @@
 	var/dynamic_hair_suffix = ""//head > mask for head hair
 	var/dynamic_fhair_suffix = ""//mask > head for facial hair
 	var/list/allowed_sex = list(MALE, FEMALE)
-	var/list/allowed_ages = ALL_AGES_LIST_CHILD
+	var/list/allowed_ages = ALL_AGES_LIST
 	var/list/allowed_race = ALL_RACES_LIST
 	var/armor_class = ARMOR_CLASS_NONE
 	///Multiplies your standing speed by this value.
@@ -548,7 +548,7 @@ BLIND     // can't see anything
 		if(HAS_TRAIT(C, TRAIT_NOBLE) && wet.water_stacks == 0)
 			C.add_stress(/datum/stress_event/noble_tarnished_cloth)
 
-		if(C.mind?.assigned_role == /datum/job/farmer || C.mind?.assigned_role == /datum/job/soilchild || HAS_TRAIT(C, TRAIT_LEECHIMMUNE) || istriton(C))
+		if(C.mind?.assigned_role == /datum/job/farmhand || HAS_TRAIT(C, TRAIT_LEECHIMMUNE) || istriton(C))
 			return
 
 	if(wet.water_stacks < 0)

@@ -324,7 +324,7 @@
 
 /obj/item/clothing/head/helmet/visored
 	name = "parent visored helmet"
-	desc = "If you're reading this, someone forgot to set an item description or spawned the wrong item. Yell at them."
+	desc = "A simple steel bascinet with a visor."
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	equip_sound = 'sound/foley/equip/equip_armor_plate.ogg'
 	adjustable = CAN_CADJUST

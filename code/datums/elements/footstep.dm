@@ -77,7 +77,7 @@
 	if(steps % 2)
 		return
 
-	. = list(FOOTSTEP_MOB_SHOE = turf.footstep, FOOTSTEP_MOB_BAREFOOT = turf.barefootstep, FOOTSTEP_MOB_HEAVY = turf.heavyfootstep, FOOTSTEP_MOB_CLAW = turf.clawfootstep, STEP_SOUND_PRIORITY = STEP_SOUND_NO_PRIORITY)
+	. = list(HEELSTEP_MOB_HEEL = turf.heelstep, FOOTSTEP_MOB_SHOE = turf.footstep, FOOTSTEP_MOB_BAREFOOT = turf.barefootstep, FOOTSTEP_MOB_HEAVY = turf.heavyfootstep, FOOTSTEP_MOB_CLAW = turf.clawfootstep, STEP_SOUND_PRIORITY = STEP_SOUND_NO_PRIORITY)
 	SEND_SIGNAL(source, COMSIG_MOB_PREPARE_STEP_SOUND, .) // Used to override shoe material before turf
 	SEND_SIGNAL(turf, COMSIG_TURF_PREPARE_STEP_SOUND, .)
 	return .
@@ -120,6 +120,10 @@
 		volume_multiplier = 0.6
 		range_adjustment = -2
 
+	if(istype(source.shoes, /obj/item/clothing/shoes/heels))
+		volume_multiplier *= 1.1
+		range_adjustment += 1
+
 	var/list/prepared_steps = prepare_step(source)
 	if(!prepared_steps)
 		return
@@ -134,22 +138,51 @@
 	var/mob/living/carbon/human/H = source
 	var/obj/item/clothing/shoes/humshoes = H.shoes
 	var/feetCover = (H.wear_armor && (H.wear_armor.body_parts_covered & FEET)) || (H.wear_pants && (H.wear_pants.body_parts_covered & FEET))
-	if ((humshoes && !humshoes?.is_barefoot) || feetCover)
-		// we are wearing shoes
 
+	// HEEL CHECK
+	if(istype(humshoes, /obj/item/clothing/shoes/heels))
+		var/heelstep_type = prepared_steps[HEELSTEP_MOB_HEEL]
+		if(!heelstep_type)
+			return
+
+		var/list/heelstep_sounds = GLOB.heelstep
+		heard_clients = playsound(
+			source.loc,
+			pick(heelstep_sounds[heelstep_type][1]),
+			heelstep_sounds[heelstep_type][2] * volume * volume_multiplier,
+			TRUE,
+			heelstep_sounds[heelstep_type][3] + e_range + range_adjustment,
+			falloff_distance = 1,
+			vary = sound_vary
+		)
+
+	// NORMAL SHOES
+	else if ((humshoes && !humshoes?.is_barefoot) || feetCover)
 		var/shoestep_type = prepared_steps[FOOTSTEP_MOB_SHOE]
-		heard_clients = playsound(source.loc, pick(footstep_sounds[shoestep_type][1]),
+		heard_clients = playsound(
+			source.loc,
+			pick(footstep_sounds[shoestep_type][1]),
 			footstep_sounds[shoestep_type][2] * volume * volume_multiplier,
 			TRUE,
-			footstep_sounds[shoestep_type][3] + e_range + range_adjustment, falloff_distance = 1, vary = sound_vary)
+			footstep_sounds[shoestep_type][3] + e_range + range_adjustment,
+			falloff_distance = 1,
+			vary = sound_vary
+		)
+
+	// BAREFOOT
 	else
 		var/barefoot_type = prepared_steps[FOOTSTEP_MOB_BAREFOOT]
-
 		var/list/bare_footstep_sounds = GLOB.barefootstep
-		heard_clients = playsound(source.loc, pick(bare_footstep_sounds[barefoot_type][1]),
+		heard_clients = playsound(
+			source.loc,
+			pick(bare_footstep_sounds[barefoot_type][1]),
 			bare_footstep_sounds[barefoot_type][2] * volume * volume_multiplier,
 			TRUE,
-			bare_footstep_sounds[barefoot_type][3] + e_range + range_adjustment, falloff_distance = 1, vary = sound_vary)
+			bare_footstep_sounds[barefoot_type][3] + e_range + range_adjustment,
+			falloff_distance = 1,
+			vary = sound_vary
+		)
+
 
 	if(heard_clients)
 		return

@@ -8239,15 +8239,6 @@
 /obj/structure/table/wood/treestump/burnt,
 /turf/open/floor/dirt,
 /area/outdoors/mountains/rmh_mountains)
-"JM" = (
-/obj/structure/flora/grass{
-	color = "#4dc6eb"
-	},
-/obj/effect/landmark/start/combatlate{
-	dir = 1
-	},
-/turf/open/floor/grass/cold,
-/area/outdoors/mountains/rmh_mountains/frozen/lowlands)
 "JN" = (
 /turf/open/water/cleanshallow,
 /area/indoors/cave/rmh_cave/cold)
@@ -75852,7 +75843,7 @@ id
 QO
 Mq
 QO
-JM
+QO
 rX
 If
 id

@@ -13,7 +13,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/skill/magic/holy
-	required_items = list(/obj/item/clothing/neck/psycross/silver/necra)
 
 	invocation = "Undermaiden avert your gaze!"
 	invocation_type = INVOCATION_SHOUT

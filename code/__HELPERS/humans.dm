@@ -1,6 +1,6 @@
 /mob/living/carbon/human/proc/is_noble()
 	var/noble = FALSE
-	if (job in GLOB.noble_positions)
+	if (job in GLOB.lords_positions)
 		noble = TRUE
 	if (HAS_TRAIT(src, TRAIT_NOBLE))
 		noble = TRUE
