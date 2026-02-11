@@ -1,7 +1,7 @@
 /datum/job/persistence/miner
 	title = "Mineworker"
 	tutorial = "You're a mineworker, ensure the settlement has stone and ores."
-	department_flag = SERFS
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	outfit = /datum/outfit/miner_p

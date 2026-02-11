@@ -48,12 +48,13 @@
 		picked_organ = basic_mob.getorganslot(ORGAN_SLOT_PENIS)
 	else if(basic_mob.getorganslot(ORGAN_SLOT_VAGINA))
 		picked_organ = basic_mob.getorganslot(ORGAN_SLOT_VAGINA)
-	picked_organ.toggle_visibility("Show Above clothes")
+	if(picked_organ)
+		picked_organ.toggle_visibility("Show Above clothes")
 
 	basic_mob.start_sex_session(target_living)
 	if(QDELETED(target))
 		return FALSE
-	set_movement_target(controller, (target))
+	set_movement_target(controller, target)
 
 	controller.set_blackboard_key(BB_HORNY_STUN_COOLDOWN, world.time)
 	SEND_SIGNAL(controller.pawn, COMSIG_HORNY_TARGET_SET, TRUE)

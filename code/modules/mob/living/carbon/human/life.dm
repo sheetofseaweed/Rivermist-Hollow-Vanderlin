@@ -56,7 +56,7 @@
 					if(!mind.antag_datums || !mind.antag_datums.len)
 						allmig_reward++
 						var/static/list/towner_jobs
-						towner_jobs = GLOB.serf_positions | GLOB.peasant_positions | GLOB.apprentices_positions | GLOB.youngfolk_positions | GLOB.company_positions
+						towner_jobs = GLOB.town_positions
 						if(mind.assigned_role.title in towner_jobs) //If you play a towner-related role, you get triumphs.
 							adjust_triumphs(1)
 						to_chat(src, span_danger("Nights Survived: \Roman[allmig_reward]"))

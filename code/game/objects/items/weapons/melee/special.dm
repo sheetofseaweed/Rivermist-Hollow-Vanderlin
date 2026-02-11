@@ -67,12 +67,17 @@
 	if(ishuman(user))
 		var/mob/living/carbon/human/HU = user
 
-		if(!is_lord_job(HU.mind?.assigned_role))
+		if(!is_burgmeister_job(HU.mind?.assigned_role))
 			to_chat(user, "<span class='danger'>The rod doesn't obey me.</span>")
 			return
 
 		if(ishuman(target))
 			var/mob/living/carbon/human/H = target
+			var/title
+			if(HU.mind?.assigned_role.parent_job)
+				title = HU.mind?.assigned_role.parent_job.title
+			else
+				title = HU.mind?.assigned_role.title
 
 			user.visible_message("<span class='warning'>[user] points [src] at [target].</span>")
 
@@ -83,15 +88,12 @@
 				return
 
 			if(!rod_jobs)
-				rod_jobs = GLOB.noble_positions | GLOB.garrison_positions | list(
-				/datum/job/jester::title,
+				rod_jobs = GLOB.lords_positions | GLOB.keep_positions | GLOB.townhall_positions | GLOB.townwatch_positions | list(
+				/datum/job/town_performer::title,
 				/datum/job/servant::title,
-				/datum/job/adventurer/courtagent::title,
-				/datum/job/butler::title,
-				/datum/job/squire::title,
 			)
 
-			if(!((H.mind?.assigned_role.title in rod_jobs)))
+			if(!((title in rod_jobs)))
 				return
 
 			if(!COOLDOWN_FINISHED(src, scepter))

@@ -1842,12 +1842,6 @@
 	},
 /turf/open/floor/tile/kitchen,
 /area/under/rmh_desert/tea/hareml)
-"cFS" = (
-/obj/effect/landmark/start/combatlate{
-	dir = 1
-	},
-/turf/open/floor/sand/desertsand,
-/area/outdoors/rmh_desert/valley)
 "cFT" = (
 /obj/structure/fluff/walldeco/church/line,
 /turf/open/floor/church,
@@ -13975,10 +13969,6 @@
 	},
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/ziqurat)
-"rNq" = (
-/obj/effect/landmark/start/gravedigger,
-/turf/open/floor/sand/sandbrick,
-/area/outdoors/rmh_desert/port)
 "rOf" = (
 /turf/closed/wall/mineral/decostone/end{
 	dir = 1
@@ -15293,10 +15283,6 @@
 /obj/effect/spawner/map_spawner/loot/dungeon/clothing,
 /turf/open/floor/cobble,
 /area/under/cave/mazedungeon)
-"tAk" = (
-/obj/effect/landmark/start/grabber,
-/turf/open/floor/ruinedwood/spiral,
-/area/outdoors/rmh_desert/port)
 "tAH" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing,
 /turf/open/floor/grass,
@@ -147036,7 +147022,7 @@ eyh
 eyh
 eyh
 eyh
-cFS
+eyh
 eyh
 eyh
 eyh
@@ -148576,7 +148562,7 @@ eyh
 eyh
 eyh
 eyh
-cFS
+eyh
 eyh
 eyh
 eyh
@@ -163450,7 +163436,7 @@ wVz
 aWe
 rVS
 aWe
-tAk
+lyX
 pAp
 rjU
 iGu
@@ -167570,7 +167556,7 @@ rBG
 rBG
 lyX
 lyX
-tAk
+lyX
 rBG
 mYJ
 xCz
@@ -173227,7 +173213,7 @@ etM
 gBO
 gBO
 etM
-rNq
+tye
 vsA
 inb
 bUw

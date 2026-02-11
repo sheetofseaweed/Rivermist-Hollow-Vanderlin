@@ -49,6 +49,17 @@
 	. = ..()
 	. += emissive_appearance(icon, "selune_guard_left_overlay", alpha = 60)
 
+/obj/structure/fluff/statue/eilistraee
+	name = "statue of Eilistraee"
+	desc = "Eilistraee, the Dark Maiden, goddess of song, dance, moonlight, and redemption. She is shown in graceful motion, dancing beneath the moon with a silver blade balanced above her hand."
+	icon = 'modular_rmh/icons/obj/structures/statues/statue_eilistraee.dmi'
+	icon_state = "eilistraee"
+	max_integrity = 100 // You wanted descructible statues, you'll get them.
+	deconstructible = FALSE
+	density = TRUE
+	blade_dulling = DULLING_BASH
+	SET_BASE_PIXEL(-16, 0)
+
 //By InfraredBaron
 
 /obj/structure/fluff/statue/shar

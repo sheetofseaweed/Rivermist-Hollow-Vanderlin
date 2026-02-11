@@ -24,7 +24,7 @@
 	return ..()
 
 /obj/structure/fake_machine/hailer/attackby(obj/item/H, mob/user, params)
-	if(!HAS_TRAIT(user, TRAIT_BURDEN) && !is_gaffer_assistant_job(user.mind.assigned_role))
+	if(!HAS_TRAIT(user, TRAIT_BURDEN) && !is_adventurers_assistant_job(user.mind.assigned_role))
 		to_chat(user, span_danger("you can't feed the [src] without carrying his burden"))
 		return
 	if(istype(H, /obj/item/reagent_containers/powder/salt)) //mmmm, salt.

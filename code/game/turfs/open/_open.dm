@@ -5,6 +5,7 @@
 	var/postdig_icon_change = FALSE
 	var/postdig_icon
 	var/wet
+	var/heelstep = null
 	var/footstep = null
 	var/barefootstep = null
 	var/clawfootstep = null

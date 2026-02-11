@@ -100,7 +100,7 @@ SUBSYSTEM_DEF(treasury)
 		for(var/mob/living/carbon/human/X in GLOB.human_list)
 			if(!X.mind)
 				continue
-			if(is_lord_job(X.mind.assigned_role) || is_consort_job(X.mind.assigned_role) || is_steward_job(X.mind.assigned_role))
+			if(is_burgmeister_job(X.mind.assigned_role) || is_banker_job(X.mind.assigned_role))
 				send_ooc_note("Income from wealth horde: +[amt_to_generate]", name = X.real_name)
 				return
 

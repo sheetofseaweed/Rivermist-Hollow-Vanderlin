@@ -5,6 +5,7 @@
 	icon = 'icons/roguetown/clothing/head.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/head.dmi'
 	abstract_type = /obj/item/clothing/head/hooded
+	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 
 /obj/item/clothing/head/hooded/Destroy()
 	connectedc = null
@@ -43,6 +44,7 @@
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
 	var/default_hidden = null
+	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 
 	body_parts_covered = NECK
 	salvage_amount = 1

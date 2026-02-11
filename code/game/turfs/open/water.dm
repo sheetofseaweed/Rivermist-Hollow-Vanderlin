@@ -27,6 +27,7 @@
 	smoothing_groups = SMOOTH_GROUP_FLOOR_LIQUID
 	smoothing_list = SMOOTH_GROUP_OPEN_FLOOR + SMOOTH_GROUP_CLOSED + SMOOTH_GROUP_CLOSED_WALL
 	neighborlay_self = "edge"
+	heelstep = null
 	footstep = null
 	barefootstep = null
 	clawfootstep = null
@@ -537,6 +538,7 @@
 	slowdown = 1
 	wash_in = FALSE
 	water_reagent = /datum/reagent/water/gross/sewer
+	heelstep = HEELSTEP_SHALLOW
 	footstep = FOOTSTEP_MUD
 	barefootstep = FOOTSTEP_MUD
 	heavyfootstep = FOOTSTEP_MUD

@@ -1,7 +1,7 @@
 /datum/job/persistence/farmer
 	title = "Farmer"
 	tutorial = "You're a farmer, ensure the settlers don't starve."
-	department_flag = PEASANTS
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	outfit = /datum/outfit/farmer_p

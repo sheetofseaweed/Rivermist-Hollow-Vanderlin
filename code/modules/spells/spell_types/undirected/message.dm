@@ -36,6 +36,12 @@
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
 		return
+
+	// Resetting variables before each cast
+	recipient_ref = null
+	message = null
+	anonymous = FALSE
+
 	if(!LAZYLEN(owner.mind?.known_people))
 		to_chat(owner, span_warning("I don't know anyone!"))
 		return . | SPELL_CANCEL_CAST
@@ -72,17 +78,19 @@
 
 /datum/action/cooldown/spell/undirected/message/cast(atom/cast_on)
 	. = ..()
-	var/mob/living/recipient = recipient_ref.resolve()
-	owner.log_message("[key_name(owner)] sent a spell message to [key_name(recipient)]; message: [message]", LOG_GAME)
+	// Saving values to local variables
+	var/datum/weakref/temp_ref = recipient_ref
+	var/temp_message = message
+	var/temp_anonymous = anonymous
+
+	var/mob/living/recipient = temp_ref?.resolve()
+	owner.log_message("[key_name(owner)] sent a spell message to [key_name(recipient)]; message: [temp_message]", LOG_GAME)
 	if(QDELETED(recipient))
 		return
 	if(!recipient.mind)
 		return
-	if(anonymous && (recipient.STAPER >= 15))
+	if(temp_anonymous && (recipient.STAPER >= 15))
 		if(recipient.mind?.do_i_know(name = owner.real_name))
-			to_chat(recipient, "Arcyne whispers fill the back of my head, resolving into [owner]'s voice: <font color=#7246ff>[message]</font>")
+			to_chat(recipient, "Arcyne whispers fill the back of my head, resolving into [owner]'s voice: <font color=#7246ff>[temp_message]</font>")
 			return
-	to_chat(recipient, "Arcyne whispers fill the back of my head, resolving into an unknown [owner.gender == FEMALE ? "woman" : "man"]'s voice: <font color=#7246ff>[message]</font>")
-
-
-
+	to_chat(recipient, "Arcyne whispers fill the back of my head, resolving into an unknown [owner.gender == FEMALE ? "woman" : "man"]'s voice: <font color=#7246ff>[temp_message]</font>")

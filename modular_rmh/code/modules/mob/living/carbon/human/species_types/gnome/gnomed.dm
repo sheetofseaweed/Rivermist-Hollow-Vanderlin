@@ -15,7 +15,7 @@
 	Proficiencies: Sneaking(4), Lockpicking(3), Knives(3), Crossbows(2), Traps(4), Alchemy(3), Mining(3), Arcane(2)."
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_LIGHT_STEP, TRAIT_COIN_ILLITERATE, TRAIT_LUCKY_COOK)
+	inherent_traits = list(TRAIT_TINY, TRAIT_NOMOBSWAP, TRAIT_LIGHT_STEP, TRAIT_COIN_ILLITERATE, TRAIT_LUCKY_COOK)
 	inherent_skills = list(
 		/datum/skill/misc/sneaking = 4,
 		/datum/skill/misc/lockpicking = 3,
@@ -33,7 +33,7 @@
 
 	use_skintones = TRUE
 
-	possible_ages = NORMAL_AGES_LIST_CHILD
+	possible_ages = NORMAL_AGES_LIST
 
 	changesource_flags = WABBAJACK
 

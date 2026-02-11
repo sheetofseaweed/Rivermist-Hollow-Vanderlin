@@ -639,13 +639,13 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 	if(is_flying_animal)
 		ADD_TRAIT(src, TRAIT_MOVE_FLYING, ROUNDSTART_TRAIT)
 
-/mob/living/simple_animal/stripPanelUnequip(obj/item/what, mob/who, where)
+/mob/living/simple_animal/stripPanelUnequip(obj/item/what, mob/who, where, extra_only)
 	if(!can_perform_action(who, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH))
 		return
 	else
 		..()
 
-/mob/living/simple_animal/stripPanelEquip(obj/item/what, mob/who, where)
+/mob/living/simple_animal/stripPanelEquip(obj/item/what, mob/who, where, extra_only)
 	if(!can_perform_action(who, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH))
 		return
 	else

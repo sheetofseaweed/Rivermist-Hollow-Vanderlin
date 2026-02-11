@@ -516,11 +516,6 @@
 	metabolization_rate = 0.3
 
 /datum/reagent/consumable/soup/stew/gross/on_mob_life(mob/living/carbon/M)
-	if(is_vagrant_job(M.mind.assigned_role)) // beggars gets revitalized, a little
-		M.adjustBruteLoss(-0.1)
-		M.adjustFireLoss(-0.1)
-		M.adjust_energy(2)
-		return
 	if(HAS_TRAIT(M, TRAIT_NASTY_EATER))
 		return
 	if(prob(8))

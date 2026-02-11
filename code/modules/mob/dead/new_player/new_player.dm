@@ -304,7 +304,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 		if(JOB_UNAVAILABLE_SEX)
 			return "[jobtitle] is not meant for your sex."
 		if(JOB_UNAVAILABLE_DEITY)
-			return "[jobtitle] requires more faith."
+			return "[jobtitle] is for the folllowers of other gods."
 		if(JOB_UNAVAILABLE_QUALITY)
 			return "[jobtitle] requires higher player quality."
 		if(JOB_UNAVAILABLE_DONATOR)
@@ -363,7 +363,6 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 	if(CONFIG_GET(flag/usewhitelist))
 		if(job.whitelist_req && (!client.whitelisted()))
 			return JOB_UNAVAILABLE_GENERIC
-
 	if(is_role_banned(client.ckey, job.title))
 		return JOB_UNAVAILABLE_BANNED
 	if(is_race_banned(client.ckey, client.prefs.pref_species.id))
@@ -391,6 +390,8 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 		return JOB_UNAVAILABLE_AGE
 	if((client.prefs.lastclass == job.title) && !job.bypass_lastclass)
 		return JOB_UNAVAILABLE_LASTCLASS
+	if(length(job.allowed_patrons) && !(client.prefs.selected_patron.type in job.allowed_patrons))
+		return JOB_UNAVAILABLE_DEITY
 	return JOB_AVAILABLE
 
 /mob/dead/new_player/proc/AttemptLateSpawn(rank)
@@ -460,16 +461,17 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 	var/column_counter = 0
 
 	var/static/list/omegalist = list(
-		GLOB.noble_positions,
-		GLOB.garrison_positions,
-		GLOB.church_positions,
-		GLOB.peasant_positions,
-		GLOB.apprentices_positions,
-		GLOB.serf_positions,
-		GLOB.company_positions,
-		GLOB.youngfolk_positions,
-		GLOB.allmig_positions,
-		GLOB.inquisition_positions,
+		GLOB.lords_positions,
+		GLOB.keep_positions,
+		GLOB.townhall_positions,
+		GLOB.townwatch_positions,
+		GLOB.chapel_positions,
+		GLOB.scholars_positions,
+		GLOB.traders_positions,
+		GLOB.tavern_positions,
+		GLOB.town_positions,
+		GLOB.outsiders_positions,
+		GLOB.adventurers_positions,
 	)
 
 	for(var/list/category in omegalist)
@@ -492,26 +494,30 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 			var/cat_color = SSjob.name_occupations[category[1]].selection_color //use the color of the first job in the category (the department head) as the category color
 			var/cat_name = ""
 			switch (SSjob.name_occupations[category[1]].department_flag)
-				if (NOBLEMEN)
-					cat_name = "Nobles"
-				if (GARRISON)
-					cat_name = "Garrison"
-				if (SERFS)
-					cat_name = "Yeomanry"
-				if (CHURCHMEN)
-					cat_name = "Churchmen"
-				if (COMPANY)
-					cat_name = "Company"
-				if (PEASANTS)
-					cat_name = "Peasantry"
-				if (APPRENTICES)
-					cat_name = "Apprentices"
-				if (YOUNGFOLK)
-					cat_name = "Young Folk"
+				if (LORDS)
+					cat_name = "Lords"
+				if (KEEP)
+					cat_name = "The Keep"
+				if (TOWNHALL)
+					cat_name = "The Town Hall"
+				if (TOWNWATCH)
+					cat_name = "The Town Watch"
+				if (CHAPEL)
+					cat_name = "The Chapel"
+				if (SCHOLARS)
+					cat_name = "The Scholars"
+				if (TRADERS)
+					cat_name = "The Waterdeep Merchant’s Guild"
+				if (TAVERN)
+					cat_name = "The Tavern"
+				if (TOWN)
+					cat_name = "The Town"
 				if (OUTSIDERS)
-					cat_name = "Outsiders"
-				if (INQUISITION)
-					cat_name = "Inquisition"
+					cat_name = "The Outsiders"
+				if (ADVENTURERS)
+					cat_name = "The Adventurers"
+				if (VILLAINS)
+					cat_name = "The Villains"
 
 			dat += "<fieldset style='width: 185px; border: 2px solid [cat_color]; display: inline'>"
 			dat += "<legend align='center' style='font-weight: bold; color: [cat_color]'>[cat_name]</legend>"
@@ -551,7 +557,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 						if(new_slots > job_datum.spawn_positions)
 							job_datum.set_spawn_and_total_positions(get_total_town_members())
 					var/command_bold = ""
-					if(job in GLOB.noble_positions)
+					if(job in GLOB.lords_positions)
 						command_bold = " command"
 					var/used_name = job_datum.title
 					if(client.prefs.gender == FEMALE && job_datum.f_title)

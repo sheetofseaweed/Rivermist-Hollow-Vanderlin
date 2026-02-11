@@ -152,7 +152,7 @@ GLOBAL_LIST_EMPTY(tennite_schisms)
 	// First try to find a challenger supporter who is also clergy
 	for(var/datum/weakref/supporter_ref in supporters_challenger)
 		var/mob/living/carbon/human/human_mob = supporter_ref.resolve()
-		if(human_mob && human_mob.stat != DEAD && human_mob.client && (human_mob.mind?.assigned_role.title in GLOB.church_positions) && human_mob.patron == challenger)
+		if(human_mob && human_mob.stat != DEAD && human_mob.client && (human_mob.mind?.assigned_role.title in GLOB.chapel_positions) && human_mob.patron == challenger)
 			selected_priest = human_mob
 			was_supporter = TRUE
 			break
@@ -160,7 +160,7 @@ GLOBAL_LIST_EMPTY(tennite_schisms)
 	// If no supporter found, fall back to any clergy member who has the challenger as his patron
 	if(!selected_priest)
 		for(var/mob/living/carbon/human/human_mob in GLOB.player_list)
-			if(human_mob.stat != DEAD && human_mob.client && (human_mob.mind?.assigned_role.title in GLOB.church_positions) && human_mob.patron == challenger)
+			if(human_mob.stat != DEAD && human_mob.client && (human_mob.mind?.assigned_role.title in GLOB.chapel_positions) && human_mob.patron == challenger)
 				selected_priest = human_mob
 				break
 
@@ -181,8 +181,6 @@ GLOBAL_LIST_EMPTY(tennite_schisms)
 			START_PROCESSING(SSprocessing, C)
 		selected_priest.verbs |= /mob/living/carbon/human/proc/devotionreport
 		selected_priest.verbs |= /mob/living/carbon/human/proc/clericpray
-		selected_priest.verbs |= /mob/living/carbon/human/proc/churchexcommunicate
-		selected_priest.verbs |= /mob/living/carbon/human/proc/churchcurse
 		selected_priest.verbs |= /mob/living/carbon/human/proc/churchannouncement
 
 		priority_announce("[challenger.name] has selected [selected_priest.real_name] as a new [male ? "Vice Priest" : "Vice Priestess"]! Power sharing begins!", "[male ? "Vice Priest" : "Vice Priestess"] rises", 'sound/magic/inspire_02.ogg')
@@ -394,7 +392,7 @@ GLOBAL_LIST_EMPTY(tennite_schisms)
 
 		var/has_clergy = FALSE
 		for(var/mob/living/carbon/human/H in GLOB.player_list)
-			if(H.stat != DEAD && H.client && H.patron == god && (H.mind?.assigned_role.title in GLOB.church_positions))
+			if(H.stat != DEAD && H.client && H.patron == god && (H.mind?.assigned_role.title in GLOB.chapel_positions))
 				has_clergy = TRUE
 				break
 

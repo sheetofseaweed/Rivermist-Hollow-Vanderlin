@@ -1,7 +1,7 @@
 /datum/job/persistence/woodsman
 	title = "Lumberjack"
 	tutorial = "You're a lumberjack, ensure the settlement has wood."
-	department_flag = PEASANTS
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	allowed_races = RACES_PLAYER_ALL

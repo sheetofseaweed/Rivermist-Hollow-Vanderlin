@@ -65,6 +65,8 @@
 
 	var/shirt = null
 
+	var/armsleeves = null
+
 	var/mouth = null
 
 	var/pants = null
@@ -73,6 +75,21 @@
 
 	var/ring = null
 
+	var/underwear = null
+
+	var/bra = null
+
+	var/undershirt = null
+
+	var/garter = null
+
+	var/choker = null
+
+	var/earring_l = null
+
+	var/earring_r = null
+
+	var/legwear_socks = null
 	///Type path of item to go in the right hand
 	var/r_hand = null
 
@@ -187,14 +204,30 @@
 		H.equip_to_slot_or_del(new backl(H),ITEM_SLOT_BACK_L, TRUE)
 	if(mouth)
 		H.equip_to_slot_or_del(new mouth(H),ITEM_SLOT_MOUTH, TRUE)
-	/*if(undershirt)
-		H.undershirt = initial(undershirt.name)*/
+	if(underwear)
+		H.equip_to_slot_or_del(new underwear(H),ITEM_SLOT_UNDER_BOTTOM, TRUE)
+	if(bra)
+		H.equip_to_slot_or_del(new bra(H),ITEM_SLOT_UNDER_TOP, TRUE)
+	if(undershirt)
+		H.equip_to_slot_or_del(new undershirt(H),ITEM_SLOT_UNDERSHIRT, TRUE)
+	if(garter)
+		H.equip_to_slot_or_del(new garter(H),ITEM_SLOT_GARTER, TRUE)
+	if(choker)
+		H.equip_to_slot_or_del(new choker(H),ITEM_SLOT_CHOKER, TRUE)
+	if(earring_l)
+		H.equip_to_slot_or_del(new earring_l(H),ITEM_SLOT_EARRING_L, TRUE)
+	if(earring_r)
+		H.equip_to_slot_or_del(new earring_r(H),ITEM_SLOT_EARRING_R, TRUE)
+	if(legwear_socks)
+		H.equip_to_slot_or_del(new legwear_socks(H),ITEM_SLOT_SOCKS, TRUE)
 	if(pants)
 		H.equip_to_slot_or_del(new pants(H),ITEM_SLOT_PANTS, TRUE)
 	if(armor)
 		H.equip_to_slot_or_del(new armor(H),ITEM_SLOT_ARMOR, TRUE)
 	if(shirt)
 		H.equip_to_slot_or_del(new shirt(H),ITEM_SLOT_SHIRT, TRUE)
+	if(armsleeves)
+		H.equip_to_slot_or_del(new armsleeves(H),ITEM_SLOT_ARMSLEEVES, TRUE)
 	if(accessory)
 		var/obj/item/clothing/pants/U = H.wear_pants
 		if(U)
@@ -302,7 +335,7 @@
 
 /// Return a list of all the types that are required to disguise as this outfit type
 /datum/outfit/proc/get_chameleon_disguise_info()
-	var/list/types = list(suit, belt, gloves, shoes, head, mask, neck, glasses, ring, l_pocket, r_pocket, r_hand, l_hand)
+	var/list/types = list(suit, belt, gloves, shoes, head, mask, neck, glasses, ring, l_pocket, r_pocket, r_hand, l_hand, underwear, bra, undershirt, garter, choker, earring_l, earring_r, legwear_socks)
 	types += chameleon_extras
 	listclearnulls(types)
 	return types

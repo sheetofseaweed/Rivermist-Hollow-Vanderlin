@@ -119,7 +119,7 @@
 /datum/status_effect/debuff/orgasmbroken
 	id = "orgasmbroken"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/orgasmbroken
-	effectedstats = list("intelligence" = -10, "strength" = -2, "speed" = -2, "perception" = -5, "endurance" = 2, "constitution" = -2)
+	effectedstats = list("intelligence" = -2, "strength" = -1, "speed" = -1, "perception" = -2, "endurance" = 2, "constitution" = -1)
 	duration = -1
 
 /datum/stress_event/orgasmbroken

@@ -173,28 +173,28 @@ GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
 // Meta\Unsorted
 	//#define is__job(job_type) (istype(job_type, /datum/job/)) //template for easy filling in
 	#define is_unassigned_job(job_type) (istype(job_type, /datum/job/unassigned))
+//Townhall
+	#define is_burgmeister_job(job_type) (istype(job_type, /datum/job/burgmeister) || istype(job_type, /datum/job/advclass/burgmeister))
+//Chapel
+	#define is_priest_job(job_type) (istype(job_type, /datum/job/moon_priest || /datum/job/heart_priest))
+//Traders
+	#define is_merchant_job(job_type) (istype(job_type, /datum/job/waterdeep_merchant))
+	#define is_banker_job(job_type) (istype(job_type, /datum/job/waterdeep_banker))
+//Tavern
+	#define is_adventurers_guildmaster_job(job_type) (istype(job_type, /datum/job/adventurers_guildmaster))
+	#define is_adventurers_assistant_job(job_type) (istype(job_type, /datum/job/adventurers_assistant))
+//Town
+	#define is_performer_job(job_type) (istype(job_type, /datum/job/town_performer))
+
+
 // Nobility
 	#define is_lord_job(job_type) (istype(job_type, /datum/job/lord))
-	#define is_consort_job(job_type) (istype(job_type, /datum/job/consort))
-	#define is_merchant_job(job_type) (istype(job_type, /datum/job/merchant))
-	#define is_steward_job(job_type) (istype(job_type, /datum/job/steward))
-// Garrison
-// Church
-	#define is_priest_job(job_type) (istype(job_type, /datum/job/priest))
-	#define is_monk_job(job_type) (istype(job_type, /datum/job/monk))
-	#define is_inquisitor_job(job_type) (istype(job_type, /datum/job/inquisitor))
-	#define is_adept_job(job_type) (istype(job_type, /datum/job/adept))
-// Serfs
-	#define is_gaffer_job(job_type) (istype(job_type, /datum/job/gaffer))
 // Peasantry
-	#define is_jester_job(job_type) (istype(job_type, /datum/job/jester))
 	#define is_adventurer_job(job_type) (istype(job_type, /datum/job/advclass/adventurer))
 	#define is_mercenary_job(job_type) (istype(job_type, /datum/job/advclass/mercenary))
 	#define is_pilgrim_job(job_type) (istype(job_type, /datum/job/advclass/pilgrim))
 	#define is_vagrant_job(job_type) (istype(job_type, /datum/job/vagrant))
 	#define is_servant_job(job_type) (istype(job_type, /datum/job/servant))
-//  Apprentices
-	#define is_gaffer_assistant_job(job_type) (istype(job_type, /datum/job/gaffer_assistant))
 // Villains
 	#define is_skeleton_job(job_type) (istype(job_type, /datum/job/skeleton))
 		#define is_skeleton_knight_job(job_type) (istype(job_type, /datum/job/skeleton/knight))

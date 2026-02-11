@@ -26,7 +26,7 @@
 	use_skintones = TRUE
 	default_color = "FFFFFF"
 
-	possible_ages = NORMAL_AGES_LIST_CHILD
+	possible_ages = NORMAL_AGES_LIST
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, OLDGREY)
 	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_KITTEN_MOM)

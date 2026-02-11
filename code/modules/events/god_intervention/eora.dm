@@ -22,7 +22,7 @@
 			continue
 
 		// Must worship the Ten, clergy is excluded
-		if(!human_mob.patron || !istype(human_mob.patron, /datum/patron/divine) || (human_mob.mind?.assigned_role.title in GLOB.church_positions))
+		if(!human_mob.patron || !istype(human_mob.patron, /datum/patron/divine) || (human_mob.mind?.assigned_role.title in GLOB.chapel_positions))
 			continue
 
 		// Exclude married and children

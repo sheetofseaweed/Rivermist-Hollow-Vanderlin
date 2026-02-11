@@ -17,7 +17,7 @@
 /obj/item/clothing/head/sexy_nun_hat
 	icon = 'modular_rmh/icons/clothing/nun_robes.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/nun_robes.dmi'
-	flags_inv = HIDEEARS
+	flags_inv = HIDEEARS|HIDEHAIR
 	name = "nun hat"
 	desc = "A nun hat."
 	icon_state = "nun_hat"
@@ -39,10 +39,10 @@
 	flags_inv = HIDECROTCH|HIDEBOOB|HIDEBELLY
 	allowed_race = SPECIES_BASE_BODY
 
-/obj/item/clothing/head/sexy_nun_hat
+/obj/item/clothing/head/sexy_nun_hat_alt
 	icon = 'modular_rmh/icons/clothing/nun_robes.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/nun_robes.dmi'
-	flags_inv = HIDEEARS
+	flags_inv = HIDEEARS|HIDEHAIR
 	name = "nun hat"
 	desc = "A nun hat."
 	icon_state = "nun_hat_alt"

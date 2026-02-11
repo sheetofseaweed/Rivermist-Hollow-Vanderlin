@@ -23,8 +23,6 @@
 			continue
 		if(!H.patron || !istype(H.patron, /datum/patron/inhumen/matthios))
 			continue
-		if(istype(H.mind?.assigned_role, /datum/job/bandit) || H.job == "Bandit")
-			continue
 		if(H.get_skill_level(/datum/skill/misc/stealing) < 2)
 			continue
 		return TRUE
@@ -38,8 +36,6 @@
 		if(!istype(human_mob) || human_mob.stat == DEAD || !human_mob.client)
 			continue
 		if(!human_mob.patron || !istype(human_mob.patron, /datum/patron/inhumen/matthios))
-			continue
-		if(istype(human_mob.mind?.assigned_role, /datum/job/bandit) || human_mob.job == "Bandit")
 			continue
 		if(human_mob.get_skill_level(/datum/skill/misc/stealing) < 2)
 			continue

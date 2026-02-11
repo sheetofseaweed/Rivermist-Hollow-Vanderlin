@@ -167,26 +167,6 @@ GLOBAL_LIST_EMPTY(letters_sent)
 	if(istype(P, /obj/item/merctoken))
 		return handle_merctoken(P, user)
 
-	// Inquisition Key Handling
-	if(HAS_TRAIT(user, TRAIT_INQUISITION))
-		if(istype(P, /obj/item/key))
-			return handle_inquisition_key(P, user)
-		if(istype(P, /obj/item/storage/keyring))
-			return handle_keyring(P, user)
-
-	// Inquisition Items (must have TRAIT_INQUISITION or TRAIT_PURITAN)
-	if(HAS_TRAIT(user, TRAIT_INQUISITION) || HAS_TRAIT(user, TRAIT_PURITAN))
-		if(istype(P, /obj/item/inqarticles/bmirror))
-			return handle_broken_mirror(P, user)
-		if(istype(P, /obj/item/paper/inqslip/confession))
-			return handle_confession(P, user)
-		if(istype(P, /obj/item/inqarticles/indexer))
-			return handle_indexer(P, user)
-		if(istype(P, /obj/item/paper/inqslip/arrival))
-			return handle_arrival_slip(P, user)
-		if(istype(P, /obj/item/paper/inqslip/accusation))
-			return handle_accusation(P, user)
-
 	// Regular Mail
 	if(istype(P, /obj/item/paper))
 		return handle_paper_mail(P, user)
@@ -207,12 +187,8 @@ GLOBAL_LIST_EMPTY(letters_sent)
 	var/mob/living/carbon/human/H = user
 
 	// Check job restrictions
-	if(is_merchant_job(H.mind.assigned_role) || is_gaffer_job(H.mind.assigned_role))
+	if(is_merchant_job(H.mind.assigned_role) || is_adventurers_guildmaster_job(H.mind.assigned_role))
 		to_chat(H, span_warning("This is of no use to me - I may give this to a mercenary so they may send it themselves."))
-		return
-
-	if(!is_mercenary_job(H.mind.assigned_role))
-		to_chat(H, span_warning("I can't make use of this - I do not belong to the Guild."))
 		return
 
 	if(H.tokenclaimed)
@@ -293,96 +269,6 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		else if(mirror.bloody)
 			to_chat(user, span_warning("Clean it first."))
 
-/obj/structure/fake_machine/mail/proc/handle_confession(obj/item/paper/inqslip/confession/confession, mob/living/carbon/human/user)
-	if(!confession.signee || !confession.signed)
-		return
-
-	var/is_duplicate = FALSE
-	var/is_accused = FALSE
-	var/is_indexed = FALSE
-	var/is_selfreport = FALSE
-	var/is_correct = !confession.false_confession
-
-	// Check if confessor is inquisition member
-	if(HAS_TRAIT(confession.signee, TRAIT_INQUISITION))
-		is_selfreport = TRUE
-
-	// Check if confessor is actually guilty
-	if(HAS_TRAIT(confession.signee, TRAIT_CABAL))
-		is_correct = TRUE
-
-	if(confession.signee.name in GLOB.excommunicated_players)
-		is_correct = TRUE
-
-	// Check paired indexer
-	if(confession.paired)
-		if(HAS_TRAIT(confession.paired.subject, TRAIT_INQUISITION))
-			is_selfreport = TRUE
-			is_indexed = TRUE
-
-		if(confession.paired.subject && confession.paired.full && GLOB.indexed && !is_selfreport)
-			if(check_global_list(GLOB.indexed, confession.signee))
-				is_indexed = TRUE
-			else
-				add_to_global_list(GLOB.indexed, confession.signee)
-
-	// Check if already accused
-	if(GLOB.accused && !is_selfreport)
-		is_accused = check_global_list(GLOB.accused, confession.signee)
-
-	// Check if already confessed
-	if(GLOB.confessors && !is_selfreport)
-		is_duplicate = check_global_list(GLOB.confessors, confession.signee)
-		if(!is_duplicate)
-			add_to_global_list(GLOB.confessors, confession.signee)
-
-	// Handle rejections
-	if(is_duplicate || is_selfreport)
-		cleanup_confession(confession, user)
-
-		if(is_duplicate)
-			to_chat(user, span_notice("They've already confessed."))
-		else if(is_selfreport)
-			to_chat(user, span_notice("Why was that confession signed by an inquisition member? What?"))
-			if(is_indexed)
-				visible_message(span_warning("[user] receives something."))
-				var/obj/item/inqarticles/indexer/replacement = new /obj/item/inqarticles/indexer/
-				user.put_in_hands(replacement)
-		return
-
-	// Calculate marque value
-	var/marque_value = confession.marquevalue
-	if(confession.false_confession)
-		var/mob/living/carbon/human/human = confession.signee
-		if(human)
-			human.inquisition_position.merits -= 4
-		to_chat(user, span_notice("To lie to the church is a sin my son, do not do it again."))
-
-	else if(confession.paired && !is_indexed && !is_correct)
-		marque_value = 2
-		GLOB.vanderlin_round_stats[STATS_MARQUES_MADE] += 2
-		budget2change(marque_value, user, "MARQUE")
-	else if(is_correct)
-		if(confession.paired && !is_indexed)
-			marque_value += 2
-		if(is_accused)
-			marque_value -= 4
-
-		GLOB.vanderlin_round_stats[STATS_MARQUES_MADE] += marque_value
-		user.inquisition_position.merits += CEILING(marque_value * 0.5, 1)
-		budget2change(marque_value, user, "MARQUE")
-
-	// Accept confession
-	cleanup_confession(confession, user)
-	playsound(loc, 'sound/misc/otavanlament.ogg', 100, FALSE, -1)
-
-/obj/structure/fake_machine/mail/proc/cleanup_confession(obj/item/paper/inqslip/confession/confession, mob/user)
-	if(confession.paired)
-		qdel(confession.paired)
-	qdel(confession)
-	visible_message(span_warning("[user] sends something."))
-	playsound(loc, 'sound/misc/disposalflush.ogg', 100, FALSE, -1)
-
 
 /obj/structure/fake_machine/mail/proc/handle_indexer(obj/item/inqarticles/indexer/indexer, mob/living/carbon/human/user)
 	// Handle cursed blood samples
@@ -441,7 +327,6 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		else
 			budget2change(2, user, "MARQUE")
 			GLOB.vanderlin_round_stats[STATS_MARQUES_MADE] += 2
-			user.inquisition_position.merits += 1
 			qdel(indexer)
 			visible_message(span_warning("[user] sends something."))
 			playsound(loc, 'sound/misc/otavasent.ogg', 100, FALSE, -1)
@@ -555,7 +440,6 @@ GLOBAL_LIST_EMPTY(letters_sent)
 
 		budget2change(marque_value, user, "MARQUE")
 		GLOB.vanderlin_round_stats[STATS_MARQUES_MADE] += marque_value
-		user.inquisition_position.merits += CEILING(marque_value * 0.5, 1)
 
 	qdel(accusation.paired)
 	qdel(accusation)

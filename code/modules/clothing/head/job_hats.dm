@@ -147,16 +147,3 @@
 	desc = "A pleated cloth headband. It has gained widespread popularity from Valorian nobles travelling with their servants."
 	icon_state = "maidband"
 	body_parts_covered = NONE
-
-/obj/item/clothing/head/maidband/Initialize(mapload, ...)
-	. = ..()
-	// I fucking love pilgrims
-	AddComponent(
-		/datum/component/equipment_stress/job_specific, \
-		/datum/stress_event/maidband, \
-		list(TRAIT_VILLAIN = null, TRAIT_NOBLE = /datum/stress_event/maidband/noble), \
-		immune_jobs = list(/datum/job/prince, /datum/job/squire, /datum/job/advclass/pilgrim/noble, /datum/job/advclass/pilgrim/rare/zaladin, /datum/job/advclass/pilgrim/rare/grenzelhoft, /datum/job/advclass/pilgrim/rare/merchant), \
-		immune_departments = (NOBLEMEN | GARRISON | OUTSIDERS | COMPANY), \
-		department_exceptions = list(/datum/job/advclass/pilgrim, /datum/job/grabber), \
-		inverse = TRUE, \
-	)

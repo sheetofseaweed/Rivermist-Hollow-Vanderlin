@@ -1,7 +1,7 @@
 /datum/job/persistence/stonemason
 	title = "Stonemason"
 	tutorial = "You're a stonemason, ensure the settlement isn't a bunch of tents."
-	department_flag = SERFS
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	outfit = /datum/outfit/stonemason_p

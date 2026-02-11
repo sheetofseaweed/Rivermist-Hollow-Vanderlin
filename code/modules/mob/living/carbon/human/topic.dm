@@ -111,9 +111,14 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 
 	if(href_list["item"]) //canUseTopic check for this is handled by mob/Topic()
 		var/slot = text2num(href_list["item"])
-		if(slot & check_obscured_slots(TRUE))
-			to_chat(usr, span_warning("I can't reach that! Something is covering it."))
-			return
+		var/obscured = check_obscured_slots(TRUE)
+		var/obscured_extra = (obscured << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work.
+		if((!(slot & ITEM_SLOT_EXTRA) && (slot & obscured)) || ((slot & ITEM_SLOT_EXTRA) && (slot & obscured_extra)))
+			if((slot & ITEM_SLOT_EXTRA) && get_erp_pref(/datum/erp_preference/boolean/clothed_sex))
+				to_chat(usr, span_info("I reach under [src]'s clothes..."))
+			else
+				to_chat(usr, span_warning("I can't reach that! Something is covering it."))
+				return
 
 	return ..() //end of this massive fucking chain. TODO: make the hud chain not spooky. - Yeah, great job doing that.
 

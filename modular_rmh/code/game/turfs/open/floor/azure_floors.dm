@@ -4,6 +4,7 @@
 	desc = "Warm sand that, sadly, have been mixed with dirt."
 	icon_state = "grimshart"
 	layer = MID_TURF_LAYER
+	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -87,6 +88,7 @@
 	desc = "A deep black rock glazed over with unnaturally cold ice."
 	icon = 'modular_rmh/icons/turf/roguefloor.dmi'
 	icon_state = "blackice"
+	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW

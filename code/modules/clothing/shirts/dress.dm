@@ -135,20 +135,6 @@
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	uses_lord_coloring = LORD_SECONDARY
 
-/obj/item/clothing/shirt/dress/maid/Initialize(mapload, ...)
-	. = ..()
-	// I fucking love pilgrims
-	AddComponent(
-		/datum/component/equipment_stress/job_specific, \
-		/datum/stress_event/maiddress, \
-		list(TRAIT_VILLAIN = null, TRAIT_NOBLE = /datum/stress_event/maiddress/noble), \
-		immune_jobs = list(/datum/job/prince, /datum/job/squire, /datum/job/advclass/pilgrim/noble, /datum/job/advclass/pilgrim/rare/zaladin, /datum/job/advclass/pilgrim/rare/grenzelhoft, /datum/job/advclass/pilgrim/rare/merchant), \
-		immune_departments = (NOBLEMEN | GARRISON | OUTSIDERS | COMPANY), \
-		department_exceptions = list(/datum/job/advclass/pilgrim, /datum/job/grabber), \
-		inverse = TRUE, \
-	)
-
-
 //................ Servant Gown   ............... //
 /obj/item/clothing/shirt/dress/maid/servant
 	name = "servant gown"
@@ -159,7 +145,7 @@
 //End Servant Clothing
 
 /obj/item/clothing/shirt/dress/gen/sexy
-	slot_flags = ITEM_SLOT_ARMOR
+	slot_flags = ITEM_SLOT_SHIRT | ITEM_SLOT_ARMOR
 	name = "dress"
 	desc = ""
 	body_parts_covered = null

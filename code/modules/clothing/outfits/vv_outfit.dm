@@ -47,6 +47,24 @@
 			beltl = item_path
 		if(ITEM_SLOT_BELT_R)
 			beltr = item_path
+		if(ITEM_SLOT_UNDER_BOTTOM)
+			underwear = item_path
+		if(ITEM_SLOT_UNDER_TOP)
+			bra = item_path
+		if(ITEM_SLOT_UNDERSHIRT)
+			undershirt = item_path
+		if(ITEM_SLOT_GARTER)
+			garter = item_path
+		if(ITEM_SLOT_CHOKER)
+			choker = item_path
+		if(ITEM_SLOT_EARRING_L)
+			earring_l = item_path
+		if(ITEM_SLOT_EARRING_R)
+			earring_r = item_path
+		if(ITEM_SLOT_SOCKS)
+			legwear_socks = item_path
+		if(ITEM_SLOT_ARMSLEEVES)
+			armsleeves = item_path
 
 /datum/outfit/varedit/proc/add_scabbard(scabbard_path)
 	LAZYADD(scabbards, scabbard_path)

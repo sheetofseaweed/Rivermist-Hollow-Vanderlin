@@ -20,6 +20,20 @@
 //misc footstep sounds
 #define FOOTSTEP_GENERIC_HEAVY "heavy"
 
+//heelsteps
+
+#define HEELSTEP_WOOD "heel_wood"
+#define HEELSTEP_FLOOR "heel_floor"
+#define HEELSTEP_PLATING "heel_plating"
+#define HEELSTEP_CARPET "heel_carpet"
+#define HEELSTEP_SAND "heel_sand"
+#define HEELSTEP_SNOW "heel_snow"
+#define HEELSTEP_GRASS "heel_grass"
+#define HEELSTEP_WATER "heel_water"
+#define HEELSTEP_MUD "heel_mud"
+#define HEELSTEP_STONE "heel_stone"
+#define HEELSTEP_SHALLOW "heel_shallow"
+
 //footstep mob defines
 #define FOOTSTEP_MOB_CLAW "footstep_claw"
 #define FOOTSTEP_MOB_BAREFOOT "footstep_barefoot"
@@ -27,6 +41,9 @@
 #define FOOTSTEP_MOB_SHOE "footstep_shoe"
 #define FOOTSTEP_MOB_HUMAN "footstep_human" //Warning: Only works on /mob/living/carbon/human
 #define FOOTSTEP_MOB_SLIME "footstep_slime"
+
+//heelsteps
+#define HEELSTEP_MOB_HEEL "heelstep_heel"
 
 //priority defines for the footstep_override element
 #define STEP_SOUND_NO_PRIORITY 0
@@ -186,3 +203,85 @@ GLOBAL_LIST_INIT(heavyfootstep, list(
 		'sound/foley/footsteps/FTMUD (5).ogg'), 100, 0),
 ))
 
+//Heelsteps
+GLOBAL_LIST_INIT(heelstep, list(
+	HEELSTEP_WOOD = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/wood1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/wood2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/wood3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/wood4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/wood5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/wood6.ogg',), 84, 0),
+	HEELSTEP_FLOOR = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile6.ogg'), 100, 0),
+	HEELSTEP_PLATING = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile6.ogg'), 100, 0),
+	HEELSTEP_CARPET = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/carpet1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/carpet2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/carpet3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/carpet4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/carpet5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/carpet6.ogg'), 24, 0),
+	HEELSTEP_SAND = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand6.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand7.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/sand8.ogg'), 20, 0),
+	HEELSTEP_GRASS = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/grass1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/grass2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/grass3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/grass4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/grass5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/grass6.ogg'), 30, 0),
+	HEELSTEP_WATER = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/water1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water6.ogg'), 100, 0),
+	HEELSTEP_SHALLOW = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/water1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/water6.ogg'), 100, 0),
+	HEELSTEP_STONE = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/tile6.ogg'), 100, 0),
+	HEELSTEP_MUD = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/dirt1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/dirt2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/dirt3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/dirt4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/dirt5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/dirt6.ogg'), 80, 0),
+	HEELSTEP_SNOW = list(list(
+		'modular_rmh/sound/foley/footsteps/heelsteps/snow1.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/snow2.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/snow3.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/snow4.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/snow5.ogg',
+		'modular_rmh/sound/foley/footsteps/heelsteps/snow6.ogg'), 80, 0),
+))

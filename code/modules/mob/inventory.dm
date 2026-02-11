@@ -382,6 +382,20 @@
 		items += mouth
 	if(wear_shirt)
 		items += wear_shirt
+	if(underwear)
+		items += underwear
+	if(bra)
+		items += bra
+	if(undershirt)
+		items += undershirt
+	if(garter)
+		items += garter
+	if(choker)
+		items += choker
+	if(earring_l)
+		items += earring_l
+	if(earring_r)
+		items += earring_r
 	return items
 
 /mob/living/proc/unequip_everything()
@@ -403,6 +417,9 @@
 
 	if(hidden_slots & HIDENECK)
 		obscured |= ITEM_SLOT_NECK
+		obscured |= ITEM_SLOT_CHOKER
+		obscured |= ITEM_SLOT_EARRING_L
+		obscured |= ITEM_SLOT_EARRING_R
 	if(hidden_slots & HIDEMASK)
 		obscured |= ITEM_SLOT_MASK
 	if(hidden_slots & HIDEGLOVES)
@@ -410,14 +427,19 @@
 	if(hidden_slots & HIDEJUMPSUIT)
 		obscured |= ITEM_SLOT_PANTS
 		obscured |= ITEM_SLOT_SOCKS
+		obscured |= ITEM_SLOT_UNDERSHIRT
+		obscured |= ITEM_SLOT_ARMSLEEVES
 	if(hidden_slots & HIDESHOES)
 		obscured |= ITEM_SLOT_SHOES
 	if(hidden_slots & HIDEBELT)
 		obscured |= ITEM_SLOT_BELT_R
 		obscured |= ITEM_SLOT_BELT_L
 		obscured |= ITEM_SLOT_BELT
+		obscured |= ITEM_SLOT_GARTER
+	if(hidden_slots & HIDEUNDIESTOP)
+		obscured |= ITEM_SLOT_UNDER_TOP
 	if(hidden_slots & HIDEUNDIESBOT)
-		obscured |= ITEM_SLOT_UNDERWEAR
+		obscured |= ITEM_SLOT_UNDER_BOTTOM
 
 	return obscured
 

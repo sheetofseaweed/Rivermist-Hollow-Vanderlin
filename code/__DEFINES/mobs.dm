@@ -317,6 +317,7 @@
 #define OFFSET_SHIRT "wear_shirt"
 #define OFFSET_ARMOR "wear_armor"
 #define OFFSET_UNDIES "underwear"
+#define OFFSET_BRA "underwear"
 
 /* Noctra edit BEGIN */
 #define OFFSET_PENIS "penis"

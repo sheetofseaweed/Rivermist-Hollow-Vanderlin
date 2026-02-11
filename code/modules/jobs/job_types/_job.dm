@@ -134,7 +134,7 @@
 	var/banned_leprosy = TRUE
 	var/banned_lunatic = TRUE
 
-	var/bypass_lastclass = FALSE
+	var/bypass_lastclass = TRUE
 
 	var/list/peopleiknow = list()
 	var/list/peopleknowme = list()
@@ -191,10 +191,7 @@
 
 	/// Blacklisted from the actor
 
-	var/static/list/actors_list_blacklist = list(
-		/datum/job/adventurer,
-		/datum/job/pilgrim,
-	)
+	var/static/list/actors_list_blacklist = null
 
 	///list of job packs we select from during job setup
 	var/list/job_packs
@@ -217,31 +214,37 @@
 /datum/job/New()
 	. = ..()
 	if(give_bank_account)
-		for(var/X in GLOB.peasant_positions)
+		for(var/X in GLOB.lords_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.serf_positions)
+		for(var/X in GLOB.keep_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.company_positions)
+		for(var/X in GLOB.townhall_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.church_positions)
+		for(var/X in GLOB.townwatch_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.garrison_positions)
+		for(var/X in GLOB.chapel_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.noble_positions)
+		for(var/X in GLOB.scholars_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.apprentices_positions)
+		for(var/X in GLOB.traders_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.youngfolk_positions)
+		for(var/X in GLOB.tavern_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.inquisition_positions)
+		for(var/X in GLOB.town_positions)
+			peopleiknow += X
+			peopleknowme += X
+		for(var/X in GLOB.outsiders_positions)
+			peopleiknow += X
+			peopleknowme += X
+		for(var/X in GLOB.adventurers_positions)
 			peopleiknow += X
 			peopleknowme += X
 
@@ -863,8 +866,8 @@
 						dat += "<br><font color ='#7a4d0a'><b>Sub</b>class Traits:</font> "
 					else if(!length(adv_ref.traits) && length(traits))
 						traitlist = traits
-						show_traits = FALSE
-						dat += "<font color ='#7a4d0a'><b>Class</b> Traits:</font> "
+						//show_traits = FALSE
+						dat += "<br><font color ='#7a4d0a'><b>Class</b> Traits:</font> "
 					for(var/trait in traitlist)
 						dat += "<details><summary><i><font color ='#ccbb82'>[trait]</font></i></summary>"
 						dat += "<i><font color = '#a3ffe0'>[GLOB.roguetraits[trait]]</font></i></details>"
@@ -909,14 +912,16 @@
 					dat += "["[capitalize(stat)]: <b>\Roman[stat_ceilings[stat]]</b>"] | "
 				dat += "<br><i>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"
 				dat += "</font>"	//Ends the stat limit colors
+		if(spell_points > 0)
+			dat += "<br><font color = '#a3a7e0'>Starting Spellpoints: <b>[spell_points]</b></font>"
 		if(length(traits) && (show_traits || sclass_count > 1))
-			dat += "<b>Class</b></font> Traits: "
+			dat += "<br><b>Class</b></font> Traits: "
 			for(var/trait in traits)
 				dat += "<details><summary><i><font color ='#ccbb82'>[trait]</font></i></summary>"
 				dat += "<i><font color = '#a3ffe0'>[GLOB.roguetraits[trait]]</font></i></details>"
 			dat += "</font>"
 		dat += "<br><i>This information is not all-encompassing. Many classes have other quirks and skills that define them.</i>"
-		if(istype(src,/datum/job/jester))
+		if(istype(src,/datum/job/town_performer))
 			LAZYCLEARLIST(dat)
 			dat = list("<font color = '#d151ab'><center>Come one, come all, where Psydon Lies! <br>Let Xylix roll the dice, <br>unto our untimely demise! <br>Ahahaha!</center>")
 			dat += "<center><b><font size = 4>STR: ???</b><br>"

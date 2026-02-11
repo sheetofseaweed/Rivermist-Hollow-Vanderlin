@@ -8,6 +8,15 @@
 	var/ring_bound = FALSE
 	var/obj/item/clothing/neck/slave_collar/bound_collar
 
+/obj/item/clothing/ring/slave_control/attack(mob/living/M, mob/living/user, def_zone)
+	. = ..()
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		var/obj/item/I = H.wear_neck
+		if(istype(I, /obj/item/clothing/neck/slave_collar))
+			var/obj/item/clothing/neck/slave_collar/sc = I
+			sc.bind_collar(src, user, TRUE)
+
 /obj/item/clothing/ring/slave_control/attackby(obj/item/I, mob/living/user)
 	if(!ismob(user))
 		return
@@ -57,15 +66,6 @@
 			to_chat(user, "<font size='1' color='grey'>The ring vibrates imperceptably - the linking was a success.</font>")
 		else
 			to_chat(user, "<font size='1' color='red'>The ring lies still - the linking failed to perform.</font>")
-
-/obj/item/clothing/ring/slave_control/master/attack(mob/living/M, mob/living/user, def_zone)
-	. = ..()
-	if(ishuman(M))
-		var/mob/living/carbon/human/H = M
-		var/obj/item/I = H.wear_neck
-		if(istype(I, /obj/item/clothing/neck/slave_collar))
-			var/obj/item/clothing/neck/slave_collar/sc = I
-			sc.bind_collar(src, user, TRUE)
 
 /datum/anvil_recipe/slave_control_master
 	name = "Master Slaver ring"

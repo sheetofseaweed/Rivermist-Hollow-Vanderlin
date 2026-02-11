@@ -136,7 +136,6 @@
 // Mild Poison Recipes
 /datum/container_craft/cooking/herbal_tea/weak_atropa
 	name = "Diluted Atropa Extract"
-	name = "Diluted Atropa Extract"
 	created_reagent = /datum/reagent/poison/herbal/weak_atropa
 	requirements = list(
 		/obj/item/alch/herb/atropa = 1
@@ -325,7 +324,7 @@
 	finished_smell = /datum/pollutant/food/flower
 	complete_message = "The draught radiates purity and cleansing!"
 
-/datum/container_craft/cooking/herbal_tea/purification_draught
+/datum/container_craft/cooking/herbal_tea/transis_potion
 	name = "Transis Potion"
 	created_reagent = /datum/reagent/medicine/gender_potion
 	water_conversion = 0.5
@@ -354,112 +353,43 @@
 	used_skill = /datum/skill/craft/alchemy
 	quality_modifier = 0.8
 
-/datum/container_craft/cooking/perfume/rosa
-	name = "Rosa Perfume"
-	created_reagent = /obj/item/perfume/rose
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/alch/herb/rosa = 1
-	)
-	finished_smell = /datum/pollutant/fragrance/rose
-
-	wording_choice = "petals of"
-	complete_message = "A strong, fragrant scent of rosa permeates the area."
-
-/datum/container_craft/cooking/perfume/mint
-	name = "Mint Perfume"
-	created_reagent = /obj/item/perfume/mint
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/alch/herb/mentha = 1
-	)
-	finished_smell = /datum/pollutant/fragrance/mint
-
-	wording_choice = "leaves of"
-	complete_message = "A strong, fragrant scent of mint permeates the area."
-
-/datum/container_craft/cooking/perfume/pear
-	name = "Pear Perfume"
-	created_reagent = /obj/item/perfume/pear
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/reagent_containers/food/snacks/produce/fruit/pear = 1
-	)
-	finished_smell = /datum/pollutant/fragrance/pear
-	complete_message = "A strong, fragrant scent of pear permeates the area."
-
-	wording_choice = "pieces of"
-
-/datum/container_craft/cooking/perfume/strawberry
-	name = "Strawberry Perfume"
-	created_reagent = /obj/item/perfume/strawberry
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/reagent_containers/food/snacks/produce/fruit/strawberry = 1
-	)
-	finished_smell = /datum/pollutant/fragrance/strawberry
-	complete_message = "A strong, fragrant scent of strawberry permeates the area."
-	wording_choice = "pieces of"
-
-/datum/container_craft/cooking/perfume
-	abstract_type = /datum/container_craft/cooking/perfume
-	category = "Fragrances"
-	crafting_time = 30 SECONDS
-	water_conversion = 0.5
-	reagent_requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25
-	)
-	craft_verb = "brewing "
-	required_chem_temp = 350 // Lower temp for gentle herbal brewing
-	pollute_amount = 200
-	complete_message = "A strong, fragrant scent permeates the area."
-	wording_choice = "leaves of"
-	used_skill = /datum/skill/craft/alchemy
-	quality_modifier = 0.8
 
 /datum/container_craft/cooking/perfume/rosa
 	name = "Rosa Perfume"
 	created_reagent = /obj/item/perfume/rose
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/alch/herb/rosa = 1
-	)
+	reagent_requirements = list(/datum/reagent/medicine/herbal/simple_rosa = 25)
+	requirements = list(/obj/item/alch/herb/rosa = 1)
 	finished_smell = /datum/pollutant/fragrance/rose
-
-	wording_choice = "petals of"
 	complete_message = "A strong, fragrant scent of rosa permeates the area."
+	wording_choice = "petals of"
+
 
 /datum/container_craft/cooking/perfume/mint
 	name = "Mint Perfume"
 	created_reagent = /obj/item/perfume/mint
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/alch/herb/mentha = 1
-	)
+	reagent_requirements = list(/datum/reagent/medicine/herbal/simple_rosa = 25)
+	requirements = list(/obj/item/alch/herb/mentha = 1)
 	finished_smell = /datum/pollutant/fragrance/mint
-
-	wording_choice = "leaves of"
 	complete_message = "A strong, fragrant scent of mint permeates the area."
+	wording_choice = "leaves of"
+
 
 /datum/container_craft/cooking/perfume/pear
 	name = "Pear Perfume"
 	created_reagent = /obj/item/perfume/pear
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/reagent_containers/food/snacks/produce/fruit/pear = 1
-	)
+	reagent_requirements = list(/datum/reagent/medicine/herbal/simple_rosa = 25)
+	requirements = list(/obj/item/reagent_containers/food/snacks/produce/fruit/pear = 1)
 	finished_smell = /datum/pollutant/fragrance/pear
 	complete_message = "A strong, fragrant scent of pear permeates the area."
-
 	wording_choice = "pieces of"
+
 
 /datum/container_craft/cooking/perfume/strawberry
 	name = "Strawberry Perfume"
 	created_reagent = /obj/item/perfume/strawberry
-	requirements = list(
-		/datum/reagent/medicine/herbal/simple_rosa = 25,
-		/obj/item/reagent_containers/food/snacks/produce/fruit/strawberry = 1
-	)
+	reagent_requirements = list(/datum/reagent/medicine/herbal/simple_rosa = 25)
+	requirements = list(/obj/item/reagent_containers/food/snacks/produce/fruit/strawberry = 1)
 	finished_smell = /datum/pollutant/fragrance/strawberry
 	complete_message = "A strong, fragrant scent of strawberry permeates the area."
 	wording_choice = "pieces of"
+

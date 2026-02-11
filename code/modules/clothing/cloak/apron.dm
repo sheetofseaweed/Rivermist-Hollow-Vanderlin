@@ -52,17 +52,3 @@
 	grid_width = 64
 	grid_height = 64
 	pocket_storage_component_path = /datum/component/storage/concrete/grid/cloak
-
-/obj/item/clothing/cloak/apron/maid/Initialize(mapload, ...)
-	. = ..()
-	// I fucking love pilgrims
-	AddComponent(
-		/datum/component/equipment_stress/job_specific, \
-		/datum/stress_event/maidapron, \
-		list(TRAIT_VILLAIN = null, TRAIT_NOBLE = /datum/stress_event/maidapron/noble), \
-		immune_jobs = list(/datum/job/prince, /datum/job/squire, /datum/job/advclass/pilgrim/noble, /datum/job/advclass/pilgrim/rare/zaladin, /datum/job/advclass/pilgrim/rare/grenzelhoft, /datum/job/advclass/pilgrim/rare/merchant), \
-		immune_departments = (NOBLEMEN | GARRISON | OUTSIDERS | COMPANY), \
-		department_exceptions = list(/datum/job/advclass/pilgrim, /datum/job/grabber), \
-		inverse = TRUE, \
-	)
-

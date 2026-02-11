@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/undirected/hag_call
 	name = "Hag's Call"
-	desc = "Callout for my children, or my old friends."
+	desc = "Callout for my old friends."
 	button_icon_state = "message"
 
 	spell_type = NONE
@@ -30,9 +30,6 @@
 		if(!HL.mind)
 			continue
 		if(HL.real_name == brat_name)
-			if(HAS_TRAIT(HL, TRAIT_ORPHAN) || HAS_TRAIT(HL, TRAIT_OLDPARTY))
+			if(HAS_TRAIT(HL, TRAIT_OLDPARTY))
 				to_chat(HL, span_reallybig("[brat_name]!"))
-				if(HAS_TRAIT(HL, TRAIT_ORPHAN))
-					HL.add_stress(/datum/stress_event/mother_calling)
-				else
-					HL.add_stress(/datum/stress_event/friend_calling)
+				HL.add_stress(/datum/stress_event/friend_calling)

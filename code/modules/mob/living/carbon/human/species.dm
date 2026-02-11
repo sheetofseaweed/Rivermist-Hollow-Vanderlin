@@ -17,7 +17,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 	/// if alien colors are disabled, this is the color that will be used by that race
 	var/default_color = "#FFF"
 	/// List of ages that can be selected in prefs for this species
-	var/list/possible_ages = ALL_AGES_LIST_CHILD
+	var/list/possible_ages = ALL_AGES_LIST
 	/// Whether or not this species has sexual characteristics
 	var/sexes = TRUE
 	/// Whether this species a requires donator subscription to access, we removed all donator restrictions for species, but it's here if we ever want to reenable them or smth.
@@ -53,6 +53,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 		OFFSET_SHIRT = list(0,0),\
 		OFFSET_ARMOR = list(0,0),\
 		OFFSET_UNDIES = list(0,0),\
+		OFFSET_BRA = list(0,0),\
 	)
 
 	var/list/offset_features_f = list(
@@ -72,6 +73,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 		OFFSET_SHIRT = list(0,0),\
 		OFFSET_ARMOR = list(0,0),\
 		OFFSET_UNDIES = list(0,0),\
+		OFFSET_BRA = list(0,0),\
 	)
 
 	var/list/offset_genitals_m = list(
@@ -1015,6 +1017,8 @@ GLOBAL_LIST_EMPTY(donator_races)
 		if(!I.species_exception || !is_type_in_list(src, I.species_exception))
 			return FALSE
 
+	var/extra_flags = (I.slot_flags << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work.
+
 	switch(slot)
 		if(ITEM_SLOT_HANDS)
 			if(H.get_empty_held_indexes())
@@ -1214,16 +1218,58 @@ GLOBAL_LIST_EMPTY(donator_races)
 				if(SEND_SIGNAL(H.belt, COMSIG_TRY_STORAGE_CAN_INSERT, I, H, TRUE))
 					return TRUE
 			return FALSE
-		if(ITEM_SLOT_UNDERWEAR)
+		if(ITEM_SLOT_UNDER_BOTTOM)
 			if(H.underwear)
 				return FALSE
-			if( !(I.slot_flags & ITEM_SLOT_UNDERWEAR) )
+			if( !((extra_flags & ITEM_SLOT_UNDER_BOTTOM) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_UNDER_TOP)
+			if(H.bra)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_UNDER_TOP) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_UNDERSHIRT)
+			if(H.undershirt)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_UNDERSHIRT) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_GARTER)
+			if(H.garter)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_GARTER) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_CHOKER)
+			if(H.choker)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_CHOKER) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_EARRING_L)
+			if(H.earring_l)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_EARRING_L) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_EARRING_R)
+			if(H.earring_r)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_EARRING_R) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
 				return FALSE
 			return equip_delay_self_check(I, H, bypass_equip_delay_self)
 		if(ITEM_SLOT_SOCKS)
 			if(H.legwear_socks)
 				return FALSE
-			if( !(I.slot_flags & ITEM_SLOT_SOCKS) )
+			if( !((extra_flags & ITEM_SLOT_SOCKS) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_ARMSLEEVES)
+			if(H.armsleeves)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_ARMSLEEVES) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
 				return FALSE
 			return equip_delay_self_check(I, H, bypass_equip_delay_self)
 	return FALSE //Unsupported slot

@@ -73,3 +73,25 @@ GLOBAL_LIST_INIT(steam_armor, list(
 	/obj/item/clothing/shoes/boots/armor/steam,
 	/obj/item/clothing/cloak/boiler,
 ))
+
+
+//normal clothing addition
+GLOBAL_LIST_INIT(common_dyes, list(
+	"Clothing Red" = CLOTHING_RED,
+	"Clothing Purple" = CLOTHING_PURPLE,
+	"Clothing Black" = CLOTHING_BLACK,
+	"Clothing Grey" = CLOTHING_GREY,
+	"Clothing Brown" = CLOTHING_BROWN,
+	"Clothing Green" = CLOTHING_GREEN,
+	"Clothing Dark Green" = CLOTHING_DARK_GREEN,
+	"Clothing Blue" = CLOTHING_BLUE,
+	"Clothing Yellow" = CLOTHING_YELLOW,
+	"Clothing Teal" = CLOTHING_TEAL,
+	"Clothing Azure" = CLOTHING_AZURE,
+	"Clothing White" = CLOTHING_WHITE,
+	"Clothing Orange" = CLOTHING_ORANGE,
+	"Clothing Magenta" = CLOTHING_MAGENTA,
+))
+
+GLOBAL_PROTECT(common_dyes)
+
