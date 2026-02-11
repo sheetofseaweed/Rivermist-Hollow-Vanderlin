@@ -46,7 +46,7 @@
 
 	use_skintones = TRUE
 
-	possible_ages = NORMAL_AGES_LIST
+	possible_ages = NORMAL_AGES_LIST_CHILD
 
 	changesource_flags = WABBAJACK
 

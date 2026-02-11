@@ -454,8 +454,11 @@
 		if(signee)
 			to_chat(user, span_warning("This token has already been signed."))
 			return
-		if(!is_adventurers_guildmaster_job(user.mind.assigned_role) && !is_merchant_job(user.mind.assigned_role))
-			to_chat(user, span_warning("This is incomprehensible."))
+		if(!is_gaffer_job(user.mind.assigned_role) && !is_merchant_job(user.mind.assigned_role))
+			if(is_mercenary_job(user.mind.assigned_role))
+				to_chat(user, span_warning("I can not sign my own commendation."))
+			else
+				to_chat(user, span_warning("This is incomprehensible."))
 			return
 		else
 			signee = user.real_name

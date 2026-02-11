@@ -1,8 +1,8 @@
 /obj/item/clothing/undies
 	name = "briefs"
 	desc = "An absolute necessity."
-	icon = 'modular_rmh/icons/clothing/underwear.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/underwear.dmi'
+	icon = 'modular_rmh/icons/obj/misc.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/mob/sprite_accessory/underwear.dmi'
 	icon_state = "briefs"
 	item_state = "briefs"
 	w_class = WEIGHT_CLASS_TINY
@@ -13,18 +13,16 @@
 	max_integrity = 200
 	integrity_failure = 0.1
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
+	var/gendered = TRUE
 	var/covers_breasts = FALSE
-	var/icon_state_base
 	boob_sized = FALSE
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/cloth
-	slot_flags = ITEM_SLOT_MOUTH | ITEM_SLOT_UNDER_BOTTOM
+	grid_height = 32
+	grid_width = 32
+	slot_flags = ITEM_SLOT_MOUTH | ITEM_SLOT_UNDERWEAR
 	muteinmouth = TRUE
 	flags_inv = HIDECROTCH
-
-/obj/item/clothing/undies/Initialize(mapload, ...)
-	. = ..()
-	icon_state_base = icon_state
 
 /obj/item/clothing/undies/attack(mob/M, mob/user, def_zone)
 	if(ishuman(M))
@@ -34,33 +32,47 @@
 				return
 			user.visible_message(span_notice("[user] tries to put [src] on [H]..."))
 			if(do_after(user, 50, target = H))
-				H.equip_to_slot_if_possible(src, ITEM_SLOT_UNDER_BOTTOM, disable_warning = TRUE)
+				H.equip_to_slot_if_possible(src, ITEM_SLOT_UNDERWEAR, disable_warning = TRUE)
 
 /obj/item/clothing/undies/equipped(mob/living/carbon/user, slot)
 	. = ..()
 	if(user.mouth == src)
-		flags_inv = null
-		icon_state = null
+		slot_flags = ITEM_SLOT_MOUTH
 		user.update_body()
 		user.update_body_parts()
 
 /obj/item/clothing/undies/dropped(mob/user)
 	. = ..()
-	flags_inv = HIDECROTCH
-	icon_state = icon_state_base
+	slot_flags = ITEM_SLOT_MOUTH | ITEM_SLOT_UNDERWEAR
 
-/obj/item/clothing/undies/bikini_bottom
-	name = "bikini bottom"
-	desc = "A perfect bathing garment."
-	icon_state = "bikini_bottom"
-	item_state = "bikini_bottom"
+/obj/item/clothing/undies/bikini
+	name = "bikini"
+	icon_state = "bikini"
+	item_state = "bikini"
+	covers_breasts = TRUE
 	gendered = TRUE
+	boob_sized = TRUE
 
 /obj/item/clothing/undies/panties
 	name = "panties"
 	icon_state = "panties"
 	item_state = "panties"
 	gendered = FALSE
+
+/obj/item/clothing/undies/leotard
+	name = "leotard"
+	icon_state = "leotard"
+	item_state = "leotard"
+	covers_breasts = TRUE
+	gendered = TRUE
+	boob_sized = TRUE
+
+/obj/item/clothing/undies/athletic_leotard
+	name = "athletic leotard"
+	icon_state = "athletic_leotard"
+	item_state = "athletic_leotard"
+	covers_breasts = TRUE
+	gendered = TRUE
 
 /obj/item/clothing/undies/braies
 	name = "braies"
@@ -84,9 +96,9 @@
 				/obj/item/natural/fibers = 1)
 	craftdiff = 2
 
-/datum/repeatable_crafting_recipe/sewing/bikini_bottom
-	name = "bikini bottom"
-	output = /obj/item/clothing/undies/bikini_bottom
+/datum/repeatable_crafting_recipe/sewing/bikini
+	name = "bikini"
+	output = /obj/item/clothing/undies/bikini
 	requirements = list(/obj/item/natural/cloth = 2,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 2
@@ -95,6 +107,20 @@
 	name = "panties"
 	output = /obj/item/clothing/undies/panties
 	requirements = list(/obj/item/natural/cloth = 1)
+	craftdiff = 2
+
+/datum/repeatable_crafting_recipe/sewing/leotard
+	name = "leotard"
+	output = /obj/item/clothing/undies/leotard
+	requirements = list(/obj/item/natural/silk = 1,
+				/obj/item/natural/fibers = 1)
+	craftdiff = 2
+
+/datum/repeatable_crafting_recipe/sewing/athletic_leotard
+	name = "athletic leotard"
+	output = /obj/item/clothing/undies/athletic_leotard
+	requirements = list(/obj/item/natural/silk = 1,
+				/obj/item/natural/fibers = 1)
 	craftdiff = 2
 
 /datum/repeatable_crafting_recipe/sewing/braies

@@ -58,110 +58,123 @@
 #define FACTION_BUMS		"Bums"
 #define FACTION_MATTHIOS	"Matthios"
 
-#define LORDS			(1<<0)	//For the Vampire Lords and Ladies
-#define KEEP			(1<<1)	//For the Vampire Keep servants and guards
-#define TOWNHALL		(1<<2)	//For the people who work at the town hall
-#define TOWNWATCH		(1<<3)	//For the town watch
-#define CHAPEL			(1<<4)	//For the chapel roles
-#define SCHOLARS		(1<<5)	//For the mages, alchemists and librarians
-#define TRADERS			(1<<6)	//For the Waterdeep's Guild
-#define TAVERN			(1<<7)	//For the tavern roles
-#define TOWN			(1<<8)	//For all the other roles within the town
-#define OUTSIDERS		(1<<9)	//For the witch, the druids and others
-#define ADVENTURERS		(1<<10)	//For all the adventurer classes
-#define VILLAINS		(1<<11)	//For the bandits, cultists and other scum
+#define NOBLEMEN		(1<<0)
+#define GARRISON		(1<<1)
+#define CHURCHMEN		(1<<2)
+#define SERFS			(1<<3)
+#define PEASANTS		(1<<4)
+#define APPRENTICES		(1<<5)
+#define YOUNGFOLK		(1<<6)
+#define OUTSIDERS		(1<<7)
+#define COMPANY			(1<<8)
+#define INQUISITION 	(1<<9)
 
-#define UNDEAD			(1<<12)
+#define UNDEAD			(1<<10)
 
 
-#define JCOLOR_LORDS        "#b02a3c" // Regal blood red
-#define JCOLOR_KEEP         "#6e6a8c" // Cold dusk violet
-#define JCOLOR_TOWNHALL     "#4fa1a8" // Civic teal
-#define JCOLOR_TOWNWATCH   	"#7b8a99" // Cold steel blue-gray
-#define JCOLOR_CHAPEL       "#e6c35c" // Radiant sacred gold
-#define JCOLOR_SCHOLARS 	"#b07cff" // Vivid arcane violet
-#define JCOLOR_TRADERS 	    "#6a7fd6" // Violet-blue
-#define JCOLOR_TAVERN       "#d08a4b" // Warm amber ale
-#define JCOLOR_TOWN         "#7f9a77" // Soft moss green
-#define JCOLOR_OUTSIDERS    "#8c6fb1" // Witch violet
-#define JCOLOR_ADVENTURERS  "#4fc48d" // Bright emerald
-#define JCOLOR_VILLAINS     "#9b3d6a" // Sinister magenta-crimson
-
+#define JCOLOR_NOBLE "#9c40bf"
+#define JCOLOR_MERCHANT "#c2b449"
+#define JCOLOR_SOLDIER "#b64949"
+#define JCOLOR_SERF "#669968"
+#define JCOLOR_PEASANT "#936d6c"
+#define JCOLOR_INQUISITION "#FF0000"
 
 // job display orders //
 
 #define JDO_DEFAULT 0
-//LORDS
 #define JDO_LORD 1
-#define JDO_SECONDLORD 2
-//KEEP
-#define JDO_KEEPGUARD 3
-#define JDO_KEEPSERVANT 3.5
-//TOWNHALL
-#define JDO_BURGMEISTER 4
-#define JDO_COUNCILOR 4.5
-#define JDO_SERVANT 5
-//TOWNWATCH
-#define JDO_WATCH_CAPTAIN 6
-#define JDO_WATCH_SERGEANT 6.5
-#define JDO_WATCH_VETERAN 7
-#define JDO_WATCH_WARDEN 7.5
-#define JDO_WATCH_GUARD 8
-//CHAPEL
-#define JDO_MOON_PRIEST 9
-#define JDO_HEART_PRIEST 9.5
-#define JDO_CHAPEL_ACOLYTE 10
-//SCHOLARS
-#define JDO_GUILD_WIZARD_MASTER 11
-#define JDO_GUILD_WIZARD_EXPERT 11.5
-#define JDO_GUILD_WIZARD_APPRENTICE 12
-#define JDO_PHYSICIAN 13
-#define JDO_PHYSICIAN_APPRENTICE 13.5
-#define JDO_LIBRARIAN 14
-//TRADERS
-#define JDO_WATERDEEP_MERCHANT 15
-#define JDO_WATERDEEP_BANKER 15.5
-#define JDO_WATERDEEP_GUARD 16
-#define JDO_WATERDEEP_ASSISTANT 16.5
-//TAVERN
-#define JDO_ADVENTURERS_HEAD 17
-#define JDO_ADVENTURERS_ASSISTANT 17.5
-#define JDO_INNKEEP 18
-#define JDO_COOK 18.5
-#define JDO_MATRON 19
-#define JDO_WAITRESS 19.5
-//TOWN
-#define JDO_TOWNER 20
-#define JDO_TOWN_MOUTH 21
-#define JDO_PERFORMER 21.5
-#define JDO_ARTISAN 22
-#define JDO_ARTISAN_APPRENTICE 22.5
-#define JDO_MINER 23
-#define JDO_FARMER 23.5
-#define JDO_HUNTER 24
-#define JDO_FISHER 24.5
-//OUTSIDERS
-#define JDO_FOREST_WARDEN 25
-#define JDO_FOREST_RANGER 25.5
-#define JDO_GROVE_DRUID 26
-#define JDO_SWAMP_WITCH 26.5
-//ADVENTURERS
-#define JDO_ADVENTURER_BARBARIAN 27
-#define JDO_ADVENTURER_BARD 27.5
-#define JDO_ADVENTURER_CLERIC 28
-#define JDO_ADVENTURER_DRUID 28.5
-#define JDO_ADVENTURER_FIGHTER 29
-#define JDO_ADVENTURER_MONK 29.5
-#define JDO_ADVENTURER_PALADIN 30
-#define JDO_ADVENTURER_RANGER 30.5
-#define JDO_ADVENTURER_ROGUE 31
-#define JDO_ADVENTURER_SORCERER 31.5
-#define JDO_ADVENTURER_WARLOCK 32
-#define JDO_ADVENTURER_WIZARD 32.5
-//VILLAINS
+#define JDO_CONSORT 1.1
+#define JDO_PRINCE 1.2
+#define JDO_HAND 2
+#define JDO_STEWARD 3
+#define JDO_MINOR_NOBLE 3.5
+#define JDO_PHYSICIAN 3.7
 
+#define JDO_MAGICIAN 4
+#define JDO_WAPP 5
+
+#define JDO_APOTHECARY 6
+#define JDO_FELDSHER 6.1
+#define JDO_CLINICAPPRENTICE 6.2
+
+#define JDO_CAPTAIN 7
+#define JDO_VET 7.1
+#define JDO_ROYALKNIGHT 7.2
+#define JDO_MENATARMS 8
+#define JDO_CITYWATCHMEN 8.1
+#define JDO_GATEMASTER 8.2
+#define JDO_DUNGEONEER 9
+#define JDO_JAILOR 9.1
+#define JDO_SQUIRE 10
+#define JDO_FORWARDEN 11
+#define JDO_FORGUARD 11.1
+
+#define JDO_PRIEST 12
+#define JDO_CLERIC 13
+#define JDO_MONK 14
+#define JDO_GRAVETENDER 15
+#define JDO_CHURCHLING 15.1
+
+#define JDO_SHEPHERD 17
+#define JDO_TEMPLAR 17.1
+
+#define JDO_MERCHANT 18
+#define JDO_SHOPHAND 18.1
+#define JDO_GRABBER 18.2
+
+#define JDO_TAILOR 19
+
+#define JDO_ARMORER 20
+#define JDO_WSMITH 21
+#define JDO_BAPP 22
+#define JDO_ARTIFICER 23
+
+
+
+#define JDO_BUTLER 25
+#define JDO_SERVANT 26
+
+#define JDO_INNKEEP 27
+#define JDO_INNKEEP_CHILD 27.5
+#define JDO_COOK 28
+
+#define JDO_BUTCHER 28.1
+#define JDO_SOILSON 28.2
+#define JDO_FISHER 28.3
+#define JDO_HUNTER 28.4
+#define JDO_CARPENTER 28.6
+#define JDO_MASON 28.61
+#define JDO_CHEESEMAKER 28.7
+#define JDO_MINER 28.8
+#define JDO_MATRON 28.9
+#define JDO_GRAVEMAN 29
+
+
+#define JDO_JESTER 30
+#define JDO_BARD 30.1
+#define JDO_PRISONER 31
+
+#define JDO_CHIEF 32
+
+#define JDO_ADVENTURER 33
+#define JDO_GAFFER 33.1
+#define JDO_PILGRIM 34.2
+#define JDO_MIGRANT  34.3
+#define JDO_BANDIT 34.3
+#define JDO_WRETCH 34.4
+
+#define JDO_MERCENARY 35
+
+#define JDO_VAGRANT 36
+#define JDO_ORPHAN 37
+#define JDO_SOILCHILD 38
+
+#define JDO_PURITAN 40
+#define JDO_ORTHODOXIST	40.1
+#define JDO_ABSOLVER 40.2
 
 #define BITFLAG_CHURCH (1<<0)
 #define BITFLAG_ROYALTY (1<<1)
 #define BITFLAG_CONSTRUCTOR (1<<2)
 #define BITFLAG_GARRISON (1<<3)
+

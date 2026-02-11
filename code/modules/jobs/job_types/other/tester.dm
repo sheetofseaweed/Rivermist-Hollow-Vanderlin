@@ -1,9 +1,10 @@
 /datum/job/tester
 	title = "Tester"
 	tutorial = "Try not to get obliterated by the Gods while they toy with you."
-	department_flag = TOWN
+	department_flag = PEASANTS
 	job_flags = (JOB_EQUIP_RANK)
 	faction = FACTION_TOWN
+	display_order = JDO_MERCENARY
 	#ifdef TESTSERVER
 	total_positions = 99
 	spawn_positions = 99

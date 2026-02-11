@@ -55,25 +55,22 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 ///// DOOR TYPES //////
 /obj/structure/door/secret/vault
 	vip = list(
-	/datum/job/burgmeister,
-	/datum/job/councilor,
-	/datum/job/advclass/councilor,
-	/datum/job/advclass/burgmeister,
+	/datum/job/lord,
+	/datum/job/consort,
+	/datum/job/steward,
+	/datum/job/hand,
 	)
 
 /obj/structure/door/secret/merchant
 	vip = list(
-		/datum/job/waterdeep_merchant,
-		/datum/job/waterdeep_banker,
-		/datum/job/waterdeep_guild_guard,
-		/datum/job/waterdeep_guild_assistant,
+		/datum/job/merchant,
 	)
 
 /obj/structure/door/secret/wizard //for wizard tower
 	vip = list(
-		/datum/job/guild_master_wizard,
-		/datum/job/guild_wizard,
-		/datum/job/guild_wizard_apprentice,
+		/datum/job/magician,
+		/datum/job/mageapprentice,
+		/datum/job/archivist,
 	)
 	//make me look like an arcane door
 
@@ -297,8 +294,11 @@ GLOBAL_LIST_EMPTY(thieves_guild_doors)
 /obj/structure/door/secret/keep
 	hidden_dc = 14
 	vip = list(
-		/datum/job/burgmeister,
-		/datum/job/councilor,
+		/datum/job/lord,
+		/datum/job/consort,
+		/datum/job/prince,
+		/datum/job/hand,
+		/datum/job/butler,
 	)
 
 /obj/structure/door/secret/keep/Initialize()

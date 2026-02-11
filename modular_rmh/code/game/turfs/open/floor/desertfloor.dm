@@ -4,7 +4,6 @@
 	icon_state = "sand-1"
 	icon = 'modular_rmh/icons/turf/desert.dmi'
 	layer = MID_TURF_LAYER
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -22,7 +21,6 @@
 	icon_state = "sandbrick-1"
 	icon = 'modular_rmh/icons/turf/desert.dmi'
 	layer = MID_TURF_LAYER
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -41,7 +39,6 @@
 	desc = "Tamped sand. Looks like a path."
 	icon_state = "sandpath-1"
 	layer = MID_TURF_LAYER
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -59,7 +56,6 @@
 	desc = "Dump sand."
 	icon_state = "oasissand-1"
 	layer = MID_TURF_LAYER
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY

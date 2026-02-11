@@ -858,7 +858,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 
 	if(href_list["refresh"])
 		if(machine && in_range(src, usr))
-			show_inv(machine, text2num(href_list["extra_only"]))
+			show_inv(machine)
 
 	if(href_list["item"] && usr.can_perform_action(src, FORBID_TELEKINESIS_REACH))
 		var/slot = text2num(href_list["item"])
@@ -871,29 +871,24 @@ GLOBAL_VAR_INIT(mobids, 1)
 			what = get_item_by_slot(slot)
 		if(what)
 			if(!(what.item_flags & ABSTRACT))
-				usr.stripPanelUnequip(what,src,slot, text2num(href_list["extra_only"]))
+				usr.stripPanelUnequip(what,src,slot)
 		else
-			usr.stripPanelEquip(what,src,slot, text2num(href_list["extra_only"]))
-
-	if(href_list["show_storage"])
-		var/slot = text2num(href_list["show_storage"])
-		var/obj/item/what = get_item_by_slot(slot)
-		SEND_SIGNAL(what, COMSIG_ATOM_ATTACK_HAND, usr)
+			usr.stripPanelEquip(what,src,slot)
 
 	if(usr.machine == src)
 		if(Adjacent(usr))
-			show_inv(usr, text2num(href_list["extra_only"]))
+			show_inv(usr)
 		else
 			usr << browse(null,"window=mob[REF(src)]")
 
 // The src mob is trying to strip an item from someone
 // Defined in living.dm
-/mob/proc/stripPanelUnequip(obj/item/what, mob/who, extra_only)
+/mob/proc/stripPanelUnequip(obj/item/what, mob/who)
 	return
 
 // The src mob is trying to place an item on someone
 // Defined in living.dm
-/mob/proc/stripPanelEquip(obj/item/what, mob/who, extra_only)
+/mob/proc/stripPanelEquip(obj/item/what, mob/who)
 	return
 
 /**

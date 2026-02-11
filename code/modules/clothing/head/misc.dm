@@ -10,7 +10,6 @@
 	icon_state = "dungeoneer"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
 	fiber_salvage = FALSE
-	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 
 /obj/item/clothing/head/menacing
 	name = "sack hood"
@@ -18,7 +17,6 @@
 	icon_state = "menacing"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
 	fiber_salvage = FALSE
-	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 
 /obj/item/clothing/head/knitcap
 	name = "knit cap"

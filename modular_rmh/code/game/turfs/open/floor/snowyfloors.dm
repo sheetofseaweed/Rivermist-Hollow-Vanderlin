@@ -3,7 +3,6 @@
 	desc = "The dirt road is covered in a layer of snow."
 	icon = 'modular_rmh/icons/turf/snow.dmi'
 	icon_state = "snowpatchy_grass"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -21,7 +20,6 @@
 	desc = "The dirt is covered in a layer of snow."
 	icon = 'modular_rmh/icons/turf/snow.dmi'
 	icon_state = "snow"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -38,7 +36,6 @@
 	desc = "The path road is covered in a layer of snow."
 	icon = 'modular_rmh/icons/turf/snow.dmi'
 	icon_state = "snowpath"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -56,7 +53,6 @@
 	desc = "The path road is covered in a layer of snow."
 	icon = 'modular_rmh/icons/turf/snow.dmi'
 	icon_state = "snowpathcorner"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -74,7 +70,6 @@
 	desc = "The path road is covered in a layer of snow."
 	icon = 'modular_rmh/icons/turf/snow.dmi'
 	icon_state = "snowpatht"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -92,7 +87,6 @@
 	desc = "The path road is covered in a layer of snow."
 	icon = 'modular_rmh/icons/turf/snow.dmi'
 	icon_state = "snowpathx"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY

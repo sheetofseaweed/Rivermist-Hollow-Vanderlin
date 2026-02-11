@@ -4,7 +4,6 @@
 	icon_state = "carpet"
 	flags_1 = NONE
 	landsound = 'sound/foley/jumpland/carpetland.ogg'
-	heelstep = HEELSTEP_CARPET
 	footstep = FOOTSTEP_CARPET
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	clawfootstep = FOOTSTEP_CARPET_BAREFOOT

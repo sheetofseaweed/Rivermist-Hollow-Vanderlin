@@ -91,7 +91,9 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 			if(!player)
 				continue
 			if(player.client.prefs.job_preferences[job.title] != JP_HIGH)
-				continue
+				//i'm sorry for doing this
+				if(!istype(job, /datum/job/adventurer) || player.client.prefs.job_preferences["Court Agent"] != JP_HIGH)
+					continue
 			if(player.ready != PLAYER_READY_TO_PLAY)
 				continue
 

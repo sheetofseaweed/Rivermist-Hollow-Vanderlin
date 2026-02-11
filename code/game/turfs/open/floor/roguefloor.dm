@@ -2,7 +2,6 @@
 /turf/open/floor/ruinedwood
 	icon = 'icons/turf/constructed/wood.dmi'
 	icon_state = "wooden_floor"
-	heelstep = HEELSTEP_WOOD
 	footstep = FOOTSTEP_WOOD
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_WOOD_CLAW
@@ -87,7 +86,6 @@
 /turf/open/floor/twig
 	icon = 'icons/turf/constructed/wood.dmi'
 	icon_state = "twig"
-	heelstep = HEELSTEP_GRASS
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -111,7 +109,6 @@
 /turf/open/floor/wood
 	icon = 'icons/turf/smooth/floors/wood.dmi'
 	icon_state = MAP_SWITCH("wood", "wood-0")
-	heelstep = HEELSTEP_WOOD
 	footstep = FOOTSTEP_WOOD
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_WOOD_CLAW
@@ -134,7 +131,6 @@
 /turf/open/floor/woodturned
 	icon = 'icons/turf/smooth/floors/wood_turned.dmi'
 	icon_state = MAP_SWITCH("wood", "wood-0")
-	heelstep = HEELSTEP_WOOD
 	footstep = FOOTSTEP_WOOD
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_WOOD_CLAW
@@ -159,7 +155,6 @@
 	name = "roof"
 	icon = 'icons/turf/constructed/roof.dmi'
 	icon_state = MAP_SWITCH("roof", "roof-arw")
-	heelstep = HEELSTEP_WOOD
 	footstep = FOOTSTEP_WOOD
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_WOOD_CLAW
@@ -189,7 +184,6 @@
 	desc = "Grass, sodden in mud and bogwater."
 	icon = 'icons/turf/natural/grasses.dmi'
 	icon_state = "grass"
-	heelstep = HEELSTEP_GRASS
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -256,7 +250,6 @@
 	desc = "A gentle blanket of snow."
 	icon = 'icons/turf/natural/snow.dmi'
 	icon_state = "snow"
-	heelstep = HEELSTEP_SNOW
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -290,7 +283,6 @@
 	desc = "The dirt is pocked with the scars of countless wars."
 	icon = 'icons/turf/natural/soils.dmi'
 	icon_state = "dirt"
-	heelstep = HEELSTEP_MUD
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -375,7 +367,6 @@
 			slowdown = initial(slowdown)
 			icon_state = initial(icon_state)
 			name = initial(name)
-			heelstep = initial(heelstep)
 			footstep = initial(footstep)
 			barefootstep = initial(barefootstep)
 			clawfootstep = initial(clawfootstep)
@@ -390,7 +381,6 @@
 		icon_state = "mud[rand (1,3)]"
 		name = "mud"
 		slowdown = 2
-		heelstep = HEELSTEP_SHALLOW
 		footstep = FOOTSTEP_MUD
 		barefootstep = FOOTSTEP_MUD
 		heavyfootstep = FOOTSTEP_MUD
@@ -402,7 +392,6 @@
 	name = "dirt road"
 	desc = "The dirt is pocked with the scars of countless steps."
 	icon_state = "road"
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	smoothing_flags = NONE
 	smoothing_groups = SMOOTH_GROUP_OPEN_FLOOR + SMOOTH_GROUP_FLOOR_DIRT_ROAD
@@ -422,7 +411,6 @@
 	desc = "Smells like burnt wood."
 	icon = 'icons/turf/natural/ash.dmi'
 	icon_state = "ash"
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -438,7 +426,6 @@
 	desc = "This has been pranced upon by countless skeletal fighters."
 	icon = 'icons/turf/natural/ash.dmi'
 	icon_state = "ash3"
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -453,7 +440,6 @@
 	name = "void"
 	desc = "The shifting blanket of Necra's realm."
 	icon_state = "undervoid"
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -475,7 +461,6 @@
 	desc = "The dirt is pocked with the scars of tectonic movement."
 	icon = 'icons/turf/natural/soils.dmi'
 	icon_state = "lavafloor"
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	clawfootstep = FOOTSTEP_SAND
@@ -495,7 +480,6 @@
 	desc = "A light covering of hay strewn across the ground."
 	icon = 'icons/turf/constructed/misc.dmi'
 	icon_state = "hay"
-	heelstep = HEELSTEP_GRASS
 	footstep = FOOTSTEP_GRASS
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -506,7 +490,6 @@
 /turf/open/floor/blocks
 	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "blocks"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -560,7 +543,6 @@
 
 /turf/open/floor/greenstone
 	icon_state = "greenstone"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -600,7 +582,6 @@
 /turf/open/floor/hexstone
 	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "hexstone"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -624,7 +605,6 @@
 /turf/open/floor/churchmarble
 	icon = 'icons/turf/constructed/church.dmi'
 	icon_state = "church_marble"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -648,7 +628,6 @@
 /turf/open/floor/church
 	icon = 'icons/turf/constructed/church.dmi'
 	icon_state = "church"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -670,7 +649,6 @@
 /turf/open/floor/churchbrick
 	icon = 'icons/turf/constructed/church.dmi'
 	icon_state = "church_marble"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -692,7 +670,6 @@
 /turf/open/floor/churchrough
 	icon = 'icons/turf/constructed/church.dmi'
 	icon_state = "church_rough"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -776,7 +753,6 @@
 /turf/open/floor/herringbone
 	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "herringbone"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -800,7 +776,6 @@
 /turf/open/floor/cobble
 	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "cobblestone1"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -848,7 +823,6 @@
 /turf/open/floor/cobblerock
 	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "cobblerock"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -907,7 +881,6 @@
 	icon = 'icons/turf/constructed/tile.dmi'
 	icon_state = "chess"
 	landsound = 'sound/foley/jumpland/tileland.ogg'
-	heelstep = HEELSTEP_FLOOR
 	footstep = FOOTSTEP_FLOOR
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -969,7 +942,6 @@
 	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "concretefloor1"
 	landsound = 'sound/foley/jumpland/stoneland.ogg'
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -993,7 +965,6 @@
 	icon = 'icons/turf/constructed/metal.dmi'
 	icon_state = "plating1"
 	landsound = 'sound/foley/jumpland/metalland.ogg'
-	heelstep = HEELSTEP_PLATING
 	footstep = FOOTSTEP_PLATING
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -1056,7 +1027,6 @@
 /turf/open/floor/naturalstone
 	icon = 'icons/turf/natural/stones.dmi'
 	icon_state = "digstone"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -1066,7 +1036,6 @@
 /turf/open/floor/plank
 	icon = 'icons/turf/constructed/misc.dmi'
 	icon_state = "plank"
-	heelstep = HEELSTEP_WOOD
 	footstep = FOOTSTEP_WOOD
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_WOOD_CLAW
@@ -1098,7 +1067,6 @@
 
 /turf/open/floor/sandstone
 	icon_state = "sandstone"
-	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -1136,7 +1104,6 @@
 	icon = 'icons/turf/floors.dmi'
 	icon_state = "woodglass"
 
-	heelstep = HEELSTEP_PLATING
 	footstep = FOOTSTEP_PLATING
 	barefootstep = FOOTSTEP_HARD_BAREFOOT
 	clawfootstep = FOOTSTEP_HARD_CLAW
@@ -1149,7 +1116,6 @@
 	icon_state = "sand_abyss"
 	icon = 'icons/delver/abyss_objects.dmi'
 	layer = MID_TURF_LAYER
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
@@ -1165,7 +1131,6 @@
 	icon_state = "gravel"
 	icon = 'icons/turf/natural/soils.dmi'
 	layer = MID_TURF_LAYER
-	heelstep = HEELSTEP_SAND
 	footstep = FOOTSTEP_SAND
 	barefootstep = FOOTSTEP_SOFT_BAREFOOT
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY

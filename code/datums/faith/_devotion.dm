@@ -128,22 +128,34 @@
 	)
 
 /datum/devotion/proc/make_templar()
-	devotion = 200
+	devotion = 50
 	max_devotion = CLERIC_REQ_3
-	progression = CLERIC_REQ_2
-	max_progression = CLERIC_REQ_3
+	progression = CLERIC_REQ_1
+	max_progression = CLERIC_REQ_2
 
-/datum/devotion/proc/make_cleric()
-	devotion = 200
+/datum/devotion/proc/make_absolver()
+	devotion = 100
 	max_devotion = CLERIC_REQ_3
 	progression = CLERIC_REQ_3
 	max_progression = CLERIC_REQ_3
 
 /datum/devotion/proc/make_acolyte()
-	devotion = 150
+	progression = CLERIC_REQ_1
+
+/datum/devotion/proc/make_cleric()
+	devotion = 50
 	max_devotion = CLERIC_REQ_3
-	progression = CLERIC_REQ_3
+	progression = CLERIC_REQ_1
 	max_progression = CLERIC_REQ_3
+
+/datum/devotion/proc/make_churching()
+	max_devotion = CLERIC_REQ_1
+	progression = CLERIC_REQ_1
+	max_progression = CLERIC_REQ_1
+	miracles_extra = list(
+		/datum/action/cooldown/spell/undirected/touch/orison/lesser,
+		/datum/action/cooldown/spell/diagnose/holy,
+	)
 
 /mob/living/carbon/human/proc/devotionreport()
 	set name = "Check Devotion"

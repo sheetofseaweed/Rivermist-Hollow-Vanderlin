@@ -9,9 +9,7 @@
 	var/heavyfootstep
 	///The sound played for movables with shoed step sound type.
 	var/footstep
-	///Heelsteps
-	var/heelstep
-	///The priority this element has in relation to other elements of the same type attached to other movables on the same turf.	var/priority
+	///The priority this element has in relation to other elements of the same type attached to other movables on the same turf.
 	var/priority
 	/**
 	 * A list of turfs occupied by the movables this element is attached to.
@@ -74,7 +72,6 @@
 	SIGNAL_HANDLER
 	if(steps[STEP_SOUND_PRIORITY] > priority)
 		return
-	steps[HEELSTEP_MOB_HEEL]  = heelstep
 	steps[FOOTSTEP_MOB_SHOE] = footstep
 	steps[FOOTSTEP_MOB_BAREFOOT] = barefootstep
 	steps[FOOTSTEP_MOB_HEAVY] = heavyfootstep

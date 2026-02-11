@@ -253,8 +253,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/fiber_salvage = FALSE
 	/// Number of torn sleves, important for salvaging calculations and examine text
 	var/torn_sleeve_number = 0
-	/// Use for clothing which has cropped parts for hands and doesn't use sleeved system. They will have layer under gloves
-	var/ignore_sleeves_code = FALSE
 
 	var/blocking_behavior
 	var/wetness = 0
@@ -262,8 +260,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/detail_tag
 	var/detail_color
 
-	/// Whether or not we use gendered onmob sprites
-	var/gendered = TRUE
 
 	// ~Grid INVENTORY VARIABLES
 	/// Width we occupy on the hud - Keep null to generate based on w_class
@@ -837,8 +833,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(!silent)
 		playsound(src, drop_sound, DROP_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
 	toggle_altgrip(user, FALSE)
-	if(user)
-		user.update_equipment_speed_mods()
+	user.update_equipment_speed_mods()
 	if(isliving(user))
 		var/mob/living/living_user = user
 		living_user.encumbrance_to_speed()
@@ -1085,7 +1080,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(ishuman(owner))
 		H = owner
 	var/flags = slot_flags
-	var/extra_flags = (flags << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work. //I know that this is a sin, but damn me if it doesn't work.
 	if(flags & ITEM_SLOT_GLOVES)
 		owner.update_inv_gloves()
 	if(flags & ITEM_SLOT_MASK)
@@ -1104,24 +1098,10 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		owner.update_inv_pants()
 	if(flags & ITEM_SLOT_CLOAK)
 		owner.update_inv_cloak()
-	if((extra_flags & ITEM_SLOT_UNDER_BOTTOM) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_undie_bot()
-	if((extra_flags & ITEM_SLOT_UNDER_TOP) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_undie_top()
-	if((extra_flags & ITEM_SLOT_UNDERSHIRT) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_undershirt()
-	if((extra_flags & ITEM_SLOT_GARTER) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_garter()
-	if((extra_flags & ITEM_SLOT_CHOKER) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_choker()
-	if((extra_flags & ITEM_SLOT_EARRING_L) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_garter()
-	if((extra_flags & ITEM_SLOT_EARRING_R) && (flags & ITEM_SLOT_EXTRA))
-		owner.update_inv_choker()
-	if((extra_flags & ITEM_SLOT_SOCKS) && (flags & ITEM_SLOT_EXTRA))
+	if(flags & ITEM_SLOT_UNDERWEAR)
+		owner.update_inv_undies()
+	if(flags & ITEM_SLOT_SOCKS)
 		owner.update_inv_socks()
-	if((extra_flags & ITEM_SLOT_ARMSLEEVES) && (flags & ITEM_SLOT_ARMSLEEVES))
-		owner.update_inv_armsleeves()
 	if(H)
 		if(flags & ITEM_SLOT_HEAD && H.head == src)
 			owner.update_inv_head()

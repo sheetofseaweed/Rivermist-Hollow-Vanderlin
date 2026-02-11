@@ -229,6 +229,7 @@
 	taste_description = "bitterness"
 	reagent_state = LIQUID
 	color = "#000067"
+	metabolization_rate = 0.5 * REAGENTS_METABOLISM
 
 /datum/reagent/sleep_potion/on_mob_life(mob/living/carbon/human/C)
 	switch(current_cycle)
@@ -247,7 +248,7 @@
 			current_cycle++
 			C.set_blurriness(10)
 
-			if(prob(10))
+			if(prob(30))
 				C.emote("yawn", forced = TRUE)
 
 			return

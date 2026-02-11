@@ -18,7 +18,6 @@
 	..()
 	if(!quirk_mob || (human_only && !ishuman(quirk_mob)) || quirk_mob.has_quirk(type))
 		qdel(src)
-		return
 	quirk_holder = quirk_mob
 	SSquirks.quirk_objects += src
 	to_chat(quirk_holder, gain_text)
@@ -29,9 +28,7 @@
 	add()
 	if(spawn_effects)
 		on_spawn()
-		if(!QDELETED(src))
-			addtimer(CALLBACK(src, PROC_REF(post_add)), 30)
-
+		addtimer(CALLBACK(src, PROC_REF(post_add)), 30)
 
 /datum/quirk/Destroy()
 	STOP_PROCESSING(SSquirks, src)
@@ -55,9 +52,8 @@
 
 /datum/quirk/proc/reapply()
 	if(revive_reapply)
-		if(!QDELETED(src))
-			on_spawn()
-			addtimer(CALLBACK(src, PROC_REF(post_add)), 30)
+		on_spawn()
+		addtimer(CALLBACK(src, PROC_REF(post_add)), 30)
 
 /datum/quirk/proc/add() //special "on add" effects
 /datum/quirk/proc/on_spawn() //these should only trigger when the character is being created for the first time, i.e. roundstart/latejoin

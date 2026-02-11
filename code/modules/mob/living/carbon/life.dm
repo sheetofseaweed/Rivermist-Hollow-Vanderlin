@@ -643,10 +643,7 @@ All effects don't start immediately, but rather get worse over time; the rate is
 			if(prob(3))
 				slurring += 2
 			jitteriness = max(jitteriness - 3, 0)
-			if(HAS_TRAIT(src, TRAIT_DRUNKMASTER))
-				apply_status_effect(/datum/status_effect/buff/drunk_master)
-			else
-				apply_status_effect(/datum/status_effect/buff/drunk)
+			apply_status_effect(/datum/status_effect/buff/drunk)
 		else
 			remove_stress(/datum/stress_event/drunk)
 		if(drunkenness >= 11 && slurring < 5)

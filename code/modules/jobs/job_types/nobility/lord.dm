@@ -9,18 +9,19 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	you sit at the center of every plot, and every whisper of ambition. Every man, woman, and child may envy your power and \
 	would replace you in the blink of an eye. But remember, its not envy that keeps you in place, it is your will. Show them \
 	the error of their ways."
-	department_flag = TOWN
+	department_flag = NOBLEMEN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK ) // | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_LORD
 	faction = FACTION_TOWN
-	total_positions = 0
-	spawn_positions = 0
+	total_positions = 1
+	spawn_positions = 1
 	spells = list(
 		/datum/action/cooldown/spell/undirected/list_target/grant_title,
 		/datum/action/cooldown/spell/undirected/list_target/grant_nobility,
 	)
 	allowed_races = RACES_PLAYER_ROYALTY
 	outfit = /datum/outfit/lord
+	bypass_lastclass = TRUE
 	give_bank_account = 500
 	selection_color = "#7851A9"
 	cmode_music = 'sound/music/cmode/nobility/combat_noble.ogg'
@@ -152,7 +153,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 
 /datum/job/exlord //just used to change the lords title
 	title = "Ex-Monarch"
-	department_flag = TOWN
+	department_flag = NOBLEMEN
 	faction = FACTION_TOWN
 	total_positions = 0
 	spawn_positions = 0

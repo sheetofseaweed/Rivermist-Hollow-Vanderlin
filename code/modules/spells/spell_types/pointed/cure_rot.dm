@@ -9,6 +9,7 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/skill/magic/holy
+	required_items = list(/obj/item/clothing/neck/psycross/silver)
 
 	charge_time = 2 SECONDS
 	charge_slowdown = 0.8

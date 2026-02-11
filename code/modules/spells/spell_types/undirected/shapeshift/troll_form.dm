@@ -7,10 +7,11 @@
 	charge_required = FALSE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/skill/magic/holy
+	required_items = list(/obj/item/clothing/neck/psycross/silver/dendor)
 
 	possible_shapes = list(/mob/living/simple_animal/hostile/retaliate/troll)
 
-	die_with_shapeshifted_form = FALSE
+	die_with_shapeshifted_form = TRUE
 
 	invocation = "DENDOR GRANT ME THE FORM OF A MIGHTY TROLL!"
 	invocation_type = INVOCATION_SHOUT
@@ -18,7 +19,7 @@
 	charge_required = TRUE
 	charge_time = 8 SECONDS
 	charge_slowdown = 3
-	cooldown_time = 3 MINUTES
+	cooldown_time = 7 MINUTES
 	spell_cost = 100
 	keep_name = TRUE
 
@@ -40,5 +41,6 @@
 	. = ..()
 	if(!.)
 		return
+	required_items = list(/obj/item/clothing/neck/psycross/silver/dendor)
 	spell_cost = 100
 	spell_type = SPELL_MIRACLE

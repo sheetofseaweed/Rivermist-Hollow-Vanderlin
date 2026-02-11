@@ -33,7 +33,7 @@
 
 	use_skintones = 1
 
-	possible_ages = NORMAL_AGES_LIST
+	possible_ages = NORMAL_AGES_LIST_CHILD
 	changesource_flags = WABBAJACK
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/mt_muscular.dmi'

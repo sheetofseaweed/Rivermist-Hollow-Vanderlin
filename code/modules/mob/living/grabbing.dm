@@ -41,7 +41,7 @@
 		return
 
 	if(istype(mover))
-		if(is_performer_job(mover.mind?.assigned_role))
+		if(is_jester_job(mover.mind?.assigned_role))
 			mover.liquid_slip(total_time = 1 SECONDS, stun_duration = 1 SECONDS, height = 30, flip_count = 10)
 		else
 			mover.liquid_slip(total_time = 1 SECONDS, stun_duration = 1 SECONDS, height = 12, flip_count = 0)
