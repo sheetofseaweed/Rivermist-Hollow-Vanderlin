@@ -22,7 +22,8 @@ GLOBAL_LIST_EMPTY(burgmeister_titles)
 	can_have_apprentices = FALSE
 
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch,
-					/datum/action/cooldown/spell/undirected/list_target/convert_role/servant)
+					/datum/action/cooldown/spell/undirected/list_target/convert_role/servant,
+					/datum/action/cooldown/spell/undirected/list_target/grant_title)
 
 	advclass_cat_rolls = list(CAT_BURGMESITER = 20)
 
@@ -33,8 +34,6 @@ GLOBAL_LIST_EMPTY(burgmeister_titles)
 		EXP_TYPE_NOBLE = 900,
 		EXP_TYPE_LEADERSHIP = 300
 	)
-
-	spells = list(/datum/action/cooldown/spell/undirected/list_target/grant_title)
 
 	job_subclasses = list(
 		/datum/job/advclass/burgmeister/marshall,
