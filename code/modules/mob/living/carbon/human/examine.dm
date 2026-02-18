@@ -1,6 +1,9 @@
 /mob/living/carbon/human/proc/on_examine_face(mob/living/carbon/human/user)
 	if(!istype(user))
 		return
+// Запоминание персонажа при осмотре
+	if(user.mind)
+		user.mind.i_know_person(src)
 	if(!HAS_TRAIT(src, TRAIT_TOLERANT))
 		if(!isdarkelf(user) && isdarkelf(src))
 			user.add_stress(/datum/stress_event/delf)
@@ -20,7 +23,7 @@
 			user.add_stress(/datum/stress_event/beautiful_self)
 		else
 			user.add_stress(/datum/stress_event/beautiful)
-	if(HAS_TRAIT(src, TRAIT_UGLY) &&  user != src)
+	if(HAS_TRAIT(src, TRAIT_UGLY) && user != src)
 		if(user == src)
 			user.add_stress(/datum/stress_event/ugly_self)
 		else
