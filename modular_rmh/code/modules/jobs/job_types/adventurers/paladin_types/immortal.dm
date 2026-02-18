@@ -6,6 +6,7 @@
 	allowed_races = list(SPEC_ID_AASIMAR)
 	outfit = /datum/outfit/adventurer_paladin/immortal
 	category_tags = list(CAT_ADVENTURER_PALADIN)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/wrestling = 2,
@@ -62,7 +63,7 @@
 	shoes = /obj/item/clothing/shoes/rare/hoplite
 	backr = null
 	backl = /obj/item/weapon/shield/tower/hoplite
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
 	beltl = null
 	beltr = /obj/item/flashlight/flare/torch/lantern
 	ring = null
@@ -70,7 +71,6 @@
 	r_hand = null
 
 	// Weapon will be set in pre_equip() based on random selection
-
 /datum/outfit/adventurer_paladin/immortal/pre_equip(mob/living/carbon/human/H, visuals_only)
 	. = ..()
 	H.mana_pool?.set_intrinsic_recharge(MANA_ALL_LEYLINES)

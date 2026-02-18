@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/dragoon
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 2,
@@ -47,7 +48,7 @@
 	shoes = /obj/item/clothing/shoes/boots/armor/light/rust
 	backl = /obj/item/storage/backpack/satchel
 	backr = /obj/item/weapon/polearm/spear
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/sword
 	beltr = /obj/item/flashlight/flare/torch/lantern
 	ring = null

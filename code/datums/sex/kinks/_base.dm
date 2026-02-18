@@ -44,7 +44,7 @@ GLOBAL_LIST_INIT(available_kinks, generate_kink_list())
 /proc/generate_kink_list()
 	var/list/kinks = list()
 	for(var/datum/kink/kink as anything in subtypesof(/datum/kink))
-		if(is_abstract(kink))
+		if(IS_ABSTRACT(kink))
 			continue
 		kinks[initial(kink.name)] = new kink
 	return kinks

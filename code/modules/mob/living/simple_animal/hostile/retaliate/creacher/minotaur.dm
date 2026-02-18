@@ -15,10 +15,10 @@
 						/obj/item/natural/hide = 10, /obj/item/natural/bundle/bone/full = 2)
 	faction = list("caves")
 	mob_biotypes = MOB_ORGANIC|MOB_BEAST
-	health = 1500
-	maxHealth = 1500
-	melee_damage_lower = 55
-	melee_damage_upper = 80
+	health = 500
+	maxHealth = 500
+	melee_damage_lower = 35
+	melee_damage_upper = 50
 	vision_range = 3
 	aggro_vision_range = 8
 	environment_smash = ENVIRONMENT_SMASH_STRUCTURES
@@ -60,8 +60,8 @@
 	icon_living = "MinotaurMale_Axe"
 	icon_dead = "MinotaurMale_dead"
 	base_intents = list(/datum/intent/simple/minotaur_axe)
-	melee_damage_lower = 65
-	melee_damage_upper = 85
+	melee_damage_lower = 45
+	melee_damage_upper = 65
 	loot = list(/obj/item/weapon/greataxe/steel/doublehead)
 
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe/female
@@ -87,45 +87,6 @@
 
 
 /mob/living/simple_animal/hostile/retaliate/minotaur/simple_limb_hit(zone)
-	if(!zone)
-		return ""
-	switch(zone)
-		if(BODY_ZONE_PRECISE_R_EYE)
-			return "head"
-		if(BODY_ZONE_PRECISE_L_EYE)
-			return "head"
-		if(BODY_ZONE_PRECISE_NOSE)
-			return "nose"
-		if(BODY_ZONE_PRECISE_MOUTH)
-			return "mouth"
-		if(BODY_ZONE_PRECISE_SKULL)
-			return "head"
-		if(BODY_ZONE_PRECISE_EARS)
-			return "head"
-		if(BODY_ZONE_PRECISE_NECK)
-			return "neck"
-		if(BODY_ZONE_PRECISE_L_HAND)
-			return "foreleg"
-		if(BODY_ZONE_PRECISE_R_HAND)
-			return "foreleg"
-		if(BODY_ZONE_PRECISE_L_FOOT)
-			return "leg"
-		if(BODY_ZONE_PRECISE_R_FOOT)
-			return "leg"
-		if(BODY_ZONE_PRECISE_STOMACH)
-			return "stomach"
-		if(BODY_ZONE_PRECISE_GROIN)
-			return "tail"
-		if(BODY_ZONE_HEAD)
-			return "head"
-		if(BODY_ZONE_R_LEG)
-			return "leg"
-		if(BODY_ZONE_L_LEG)
-			return "leg"
-		if(BODY_ZONE_R_ARM)
-			return "foreleg"
-		if(BODY_ZONE_L_ARM)
-			return "foreleg"
 	return ..()
 
 /datum/intent/simple/minotaur_unarmed
@@ -209,14 +170,14 @@
 	transform = matrix() * 0.5 // Start small
 	animate(src, alpha = 200, color = "#ff5500", transform = matrix(), time = 1 SECONDS)
 	addtimer(CALLBACK(src, PROC_REF(activate)), 1.5 SECONDS)
-	playsound(get_turf(src), 'sound/misc/bamf.ogg', 25, TRUE)
+	playsound(src, 'sound/misc/bamf.ogg', 25, TRUE)
 
 /obj/effect/temp_visual/minotaur_fury_zone/proc/activate()
 	active = TRUE
 	color = "#ff0000" // Red active color
 	alpha = 230
 	icon_state = "fire"
-	playsound(get_turf(src), 'sound/misc/bamf.ogg', 50, TRUE)
+	playsound(src, 'sound/misc/bamf.ogg', 50, TRUE)
 
 	START_PROCESSING(SSobj, src)
 

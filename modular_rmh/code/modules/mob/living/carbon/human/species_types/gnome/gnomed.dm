@@ -202,47 +202,6 @@
 		"Black 3"      = SKIN_TONE_BLACK3,
 	))
 
-/datum/species/gnome/deep/on_species_gain(mob/living/carbon/C, datum/species/old_species, datum/preferences/pref_load)
-	. = ..()
-
-	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
-	C.grant_language(/datum/language/common)
-
-	RegisterSignal(C, COMSIG_MOB_EQUIPPED_ITEM, PROC_REF(handle_equip))
-
-	if(!C.shoes)
-		C.apply_status_effect(/datum/status_effect/buff/free_feet)
-
-/datum/species/gnome/deep/on_species_loss(mob/living/carbon/human/C, datum/species/new_species, pref_load)
-	. = ..()
-	if(QDELETED(C))
-		return
-	C.remove_language(/datum/language/common)
-	UnregisterSignal(C, COMSIG_MOB_SAY)
-	UnregisterSignal(C, COMSIG_MOB_EQUIPPED_ITEM)
-	C.remove_status_effect(/datum/status_effect/buff/free_feet)
-	C.remove_status_effect(/datum/status_effect/buff/stuffed)
-
-/datum/species/gnome/deep/handle_equip(mob/living/carbon/source, obj/item/equipping, slot)
-	if(QDELETED(source) || !istype(source))
-		return
-
-	// This is bad :(
-	if(slot & ITEM_SLOT_SHOES)
-		source.remove_status_effect(/datum/status_effect/buff/free_feet)
-	else if(!source.shoes)
-		source.apply_status_effect(/datum/status_effect/buff/free_feet)
-
-/datum/species/gnome/deep/handle_digestion(mob/living/carbon/human/H)
-	. = ..()
-	if(H.stat == DEAD || HAS_TRAIT(H, TRAIT_NOHUNGER))
-		return
-
-	if(H.nutrition > NUTRITION_LEVEL_FAT)
-		H.apply_status_effect(/datum/status_effect/buff/stuffed)
-	else
-		H.remove_status_effect(/datum/status_effect/buff/stuffed)
-
 /datum/species/gnome/deep/on_species_gain(mob/living/carbon/C, datum/species/old_species)
 	. = ..()
 

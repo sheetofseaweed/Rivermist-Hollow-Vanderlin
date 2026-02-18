@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/calishite_assasin
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/knives = 4,
@@ -49,7 +50,7 @@
 	shoes = /obj/item/clothing/shoes/shalal
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/shalal
+	belt = /obj/item/storage/belt/leather/shalal/adventurers_subclasses
 	beltl = null
 	beltr = /obj/item/weapon/knife/dagger/steel/special
 	ring = null

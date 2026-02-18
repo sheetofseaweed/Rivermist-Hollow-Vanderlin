@@ -9,6 +9,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/porter
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_CON = 1,
@@ -38,7 +39,6 @@
 		/datum/skill/craft/tanning = 3,
 		/datum/skill/craft/crafting = 3,
 		/datum/skill/craft/engineering = 3,
-		/datum/skill/craft/bombs = 3,
 		/datum/skill/craft/carpentry = 3,
 		/datum/skill/craft/masonry = 3,
 		/datum/skill/craft/traps = 3,
@@ -69,7 +69,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = /obj/item/fishingrod/fisher
 	backl = /obj/item/storage/backpack/backpack/artibackpack/porter //+1 to Row/Columns compared to a regular backpack alongside preserving foods.
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/storage/messkit
 	beltl = /obj/item/weapon/knife/cleaver
 	ring = null

@@ -14,8 +14,8 @@
 	selection_color = JCOLOR_TOWN
 	advclass_cat_rolls = list(CAT_ARTISAN = 20)
 
+	give_bank_account = 5
 	job_subclasses = list(
-		/datum/job/advclass/artisan/artificer,
 		/datum/job/advclass/artisan/blacksmith,
 		/datum/job/advclass/artisan/carpenter,
 		/datum/job/advclass/artisan/mason,

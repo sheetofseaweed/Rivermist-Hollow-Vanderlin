@@ -49,7 +49,7 @@
 /area/outdoors/rmh_air)
 "ar" = (
 /turf/closed/wall/mineral/wooddark/vertical,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "as" = (
 /obj/item/natural/wood/plank,
 /turf/open/floor/dirt/road,
@@ -273,7 +273,7 @@
 "bB" = (
 /obj/structure/bed/shit,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "bC" = (
 /obj/effect/decal/cleanable/debris/wood,
 /obj/item/bedsheet/cloth,
@@ -298,7 +298,7 @@
 "bL" = (
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newbranch/connector,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "bP" = (
 /obj/item/grown/log/tree/stick,
@@ -333,7 +333,7 @@
 /area/outdoors)
 "bW" = (
 /obj/structure/flora/newbranch/connector,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "bX" = (
 /obj/structure/fluff/railing/tall/palisade{
@@ -513,7 +513,7 @@
 "df" = (
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newbranch/leafless,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "dh" = (
 /obj/structure/flora/tree,
@@ -539,7 +539,7 @@
 "dm" = (
 /obj/structure/flora/newleaf,
 /obj/structure/vine,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "dn" = (
 /obj/structure/hay_stack,
@@ -581,7 +581,7 @@
 	})
 "dy" = (
 /obj/structure/fluff/railing/border/west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "dz" = (
 /obj/structure/flora/tree,
@@ -704,7 +704,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 5
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "es" = (
 /obj/item/natural/stoneblock,
@@ -736,7 +736,7 @@
 /turf/open/floor/cobblerock,
 /area/under/cave/rmh/goblindungeon)
 "ez" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "eA" = (
 /turf/open/water/swamp,
@@ -924,7 +924,7 @@
 "fF" = (
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "fG" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
@@ -979,7 +979,7 @@
 /area/under/cavewet/rmh/swamp_caves)
 "gf" = (
 /turf/closed/wall/mineral/tent,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "gg" = (
 /turf/closed/mineral,
 /area/outdoors/caves)
@@ -1132,7 +1132,7 @@
 "ho" = (
 /obj/structure/vine,
 /obj/structure/vine,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/dungeon)
 "hq" = (
 /obj/structure/vine,
@@ -1180,7 +1180,7 @@
 /area/indoors/dungeon)
 "hL" = (
 /obj/structure/fluff/railing/corner/south_west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "hM" = (
 /turf/open/floor/dirt/road,
@@ -1215,7 +1215,7 @@
 "hV" = (
 /obj/machinery/light/fueled/firebowl/stump,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "hW" = (
 /mob/living/simple_animal/hostile/retaliate/troll/rous{
 	faction = list("Hostile")
@@ -1324,7 +1324,7 @@
 /area/outdoors/rmh_air)
 "iz" = (
 /obj/structure/vine,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/dungeon)
 "iA" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -1468,7 +1468,7 @@
 /turf/open/floor/grass/cold,
 /area/outdoors)
 "jz" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/dungeon)
 "jB" = (
 /obj/structure/vine,
@@ -1573,7 +1573,7 @@
 /turf/open/floor/grass/red,
 /area/outdoors/woods/rmh)
 "ke" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors)
 "kf" = (
 /obj/effect/decal/cobblerockedge/alt{
@@ -1660,7 +1660,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "kC" = (
 /obj/effect/decal/cleanable/blood/old,
@@ -1830,11 +1830,11 @@
 /turf/open/floor/naturalstone,
 /area/under/cave/rmh/goblindungeon)
 "lC" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/shelter/bog)
 "lD" = (
 /turf/closed/wall/mineral/wooddark/horizontal,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "lG" = (
 /obj/item/natural/rock,
 /obj/effect/decal/cobblerockedge/alt{
@@ -2083,7 +2083,7 @@
 "nn" = (
 /mob/living/carbon/human/species/goblin/npc/cave,
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "np" = (
 /obj/structure/vine,
 /turf/open/floor/ruinedwood/platform,
@@ -2125,7 +2125,7 @@
 /area/under/town/basement)
 "nx" = (
 /turf/closed/wall/mineral/wooddark/slitted,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "ny" = (
 /obj/item/flashlight/flare/torch/lantern{
 	anchored = 1;
@@ -2187,7 +2187,7 @@
 /turf/open/floor/dirt,
 /area/outdoors)
 "nU" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh/goblincampfire)
 "nW" = (
 /obj/structure/closet/crate/drawer{
@@ -2240,7 +2240,7 @@
 /turf/closed/wall/window,
 /area/indoors/dungeon)
 "oh" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/bog/rmh/south)
 "oj" = (
 /obj/structure/fluff/walldeco/vinez,
@@ -2438,7 +2438,7 @@
 	})
 "pt" = (
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "pu" = (
 /turf/open/floor/wood,
 /area/indoors)
@@ -2446,7 +2446,7 @@
 /obj/structure/flora/newbranch{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "pA" = (
 /obj/structure/chair/stool,
@@ -2539,7 +2539,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "qa" = (
 /obj/item/natural/stone,
@@ -2594,7 +2594,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "qq" = (
 /obj/structure/fluff/railing/wood/north{
@@ -2613,7 +2613,7 @@
 /turf/open/floor/cobble/alt,
 /area/outdoors)
 "qx" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/cave/orcdungeon{
 	name = "oldruins"
 	})
@@ -2753,7 +2753,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "rn" = (
 /obj/structure/fluff/walldeco/vinez,
@@ -2911,7 +2911,7 @@
 /obj/structure/bridge{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "sl" = (
 /obj/effect/wisp/prestidigitation{
@@ -2927,7 +2927,7 @@
 /area/indoors/shelter/bog/rmh)
 "so" = (
 /turf/closed/wall/mineral/wood,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "sr" = (
 /obj/effect/decal/cleanable/blood/old,
 /turf/closed/mineral/bedrock{
@@ -3263,7 +3263,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "uT" = (
 /obj/structure/door/weak,
@@ -3352,7 +3352,7 @@
 "vo" = (
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newbranch/leafless,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "vr" = (
 /obj/effect/decal/cleanable/blood/old,
@@ -3380,7 +3380,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 9
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "vx" = (
 /obj/structure/flora/grass/thorn_bush,
@@ -3436,7 +3436,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "vO" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -3541,7 +3541,7 @@
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newleaf,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "ws" = (
 /obj/structure/fluff/walldeco/vinez,
@@ -3592,7 +3592,7 @@
 /area/outdoors)
 "wE" = (
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "wG" = (
 /obj/structure/door/viewport{
 	dir = 2;
@@ -3795,7 +3795,7 @@
 "yh" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "yj" = (
 /obj/structure/fluff/railing/wood/north{
 	pixel_y = 9
@@ -3910,7 +3910,7 @@
 "yS" = (
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "yT" = (
 /turf/closed/mineral/bedrock{
 	name = "solid rock"
@@ -3982,12 +3982,10 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 2
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "zy" = (
-/obj/structure/door/iron/bars{
-	lockid = "gcell"
-	},
+/obj/structure/door/iron/bars,
 /obj/effect/mapping_helpers/access/keyset/garrison/forest,
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/concrete,
@@ -4070,7 +4068,7 @@
 /obj/structure/bridge{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "zU" = (
 /obj/structure/bridge_stakes{
@@ -4192,7 +4190,7 @@
 "AF" = (
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newbranch/connector,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "AG" = (
 /turf/closed/wall/mineral/decostone/cand,
@@ -4218,7 +4216,7 @@
 /turf/open/floor/grass/red,
 /area/outdoors/woods/rmh)
 "AQ" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/bog/rmh/north)
 "AS" = (
 /obj/structure/spider/stickyweb,
@@ -4274,7 +4272,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 6
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Bx" = (
 /obj/effect/decal/cobbleedge{
@@ -4395,7 +4393,7 @@
 /turf/closed/wall/mineral/stone,
 /area/outdoors)
 "Cp" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors)
 "Cq" = (
 /obj/structure/chair/stool/crafted,
@@ -4435,7 +4433,7 @@
 "CN" = (
 /obj/structure/pillory,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "CO" = (
 /turf/open/floor/twig{
 	baseturfs = /turf/open/water/swamp/deep
@@ -4574,7 +4572,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 10
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "DO" = (
 /mob/living/simple_animal/hostile/retaliate/wolf,
@@ -4602,13 +4600,13 @@
 /obj/structure/chair/bench/throne,
 /mob/living/carbon/human/species/goblin/npc/cave,
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "DW" = (
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newbranch/leafless{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "DX" = (
 /obj/machinery/light/fueled/hearth,
@@ -4678,7 +4676,7 @@
 	})
 "Eq" = (
 /obj/structure/vine,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_bedrock)
 "Er" = (
 /obj/structure/lootable_structure/fish_barrel,
@@ -4759,7 +4757,7 @@
 /area/under/rmh_bedrock)
 "EM" = (
 /obj/structure/bridge,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "EO" = (
 /obj/effect/decal/cleanable/blood/tracks{
@@ -4833,7 +4831,7 @@
 "Fq" = (
 /obj/structure/flora/newleaf,
 /obj/structure/flora/newleaf,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Fr" = (
 /obj/structure/closet/crate/crafted_closet,
@@ -4876,7 +4874,7 @@
 "Fz" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "FA" = (
 /mob/living/simple_animal/hostile/retaliate/wolf,
 /turf/open/floor/naturalstone,
@@ -4955,7 +4953,7 @@
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Gc" = (
 /obj/structure/door/iron/bars/cell,
@@ -5028,7 +5026,7 @@
 	dir = 9
 	},
 /obj/structure/vine,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Gs" = (
 /obj/structure/fluff/railing/border,
@@ -5058,7 +5056,7 @@
 /obj/structure/bars/grille{
 	max_integrity = 1500
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/shelter/bog/rmh/fort)
 "Gy" = (
 /obj/structure/fluff/railing/wood/north{
@@ -5078,7 +5076,7 @@
 	endTurfX = 215;
 	endTurfY = 215
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_bedrock)
 "GC" = (
 /turf/open/floor/cobblerock/alt,
@@ -5180,7 +5178,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Hc" = (
 /turf/open/floor/cobblerock,
@@ -5198,7 +5196,7 @@
 "Hg" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "Hh" = (
 /obj/structure/fluff/railing/wood/north{
 	layer = 2.7;
@@ -5330,7 +5328,7 @@
 	})
 "HU" = (
 /obj/structure/flora/newleaf,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "HX" = (
 /turf/open/floor/dirt,
@@ -5343,7 +5341,7 @@
 /turf/closed/wall/mineral/tent{
 	dir = 2
 	},
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "Ig" = (
 /obj/structure/flora/grass/thorn_bush,
 /turf/open/floor/dirt/road,
@@ -5449,7 +5447,7 @@
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "IL" = (
 /turf/closed/dungeon_void{
@@ -5512,7 +5510,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "Jc" = (
 /obj/structure/flora/tree/pine/dead{
@@ -5761,7 +5759,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 10
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "KG" = (
 /obj/structure/flora/tree/pine/dead{
@@ -5772,7 +5770,7 @@
 "KH" = (
 /obj/structure/roguetent,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "KI" = (
 /obj/structure/fluff/railing/tall/palisade{
 	dir = 8
@@ -5797,7 +5795,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 2
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "KN" = (
 /obj/effect/decal/cleanable/debris/stone,
@@ -5927,13 +5925,13 @@
 	})
 "Lv" = (
 /obj/structure/flora/newleaf,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "Lw" = (
 /turf/closed/wall/mineral/tent{
 	dir = 8
 	},
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "Lx" = (
 /obj/structure/flora/newleaf,
 /turf/open/floor/twig,
@@ -6033,7 +6031,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Me" = (
 /obj/machinery/light/fueled/torchholder/r,
@@ -6292,7 +6290,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "NE" = (
 /turf/closed/wall/mineral/wood,
@@ -6322,10 +6320,10 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "NS" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/caves)
 "NT" = (
 /obj/item/natural/stone,
@@ -6349,7 +6347,7 @@
 	})
 "NZ" = (
 /obj/structure/flora/newbranch,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Oa" = (
 /obj/structure/fluff/walldeco/vinez,
@@ -6451,7 +6449,7 @@
 /turf/open/floor/grass/cold,
 /area/outdoors)
 "OK" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_bedrock)
 "OL" = (
 /turf/closed/wall/mineral/stone,
@@ -6515,7 +6513,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 1
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "Pc" = (
 /turf/open/floor/cobble/alt,
@@ -6526,7 +6524,7 @@
 /turf/open/floor/grass/cold,
 /area/outdoors)
 "Pe" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Pf" = (
 /turf/open/floor/dirt,
@@ -6628,7 +6626,7 @@
 "PH" = (
 /obj/item/natural/stone,
 /turf/open/floor/dirt/road,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "PI" = (
 /obj/structure/fluff/walldeco/skullspike,
 /turf/open/floor/grass/cold,
@@ -6855,7 +6853,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 5
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Ra" = (
 /obj/effect/decal/cleanable/debris/wood,
@@ -6981,7 +6979,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 6
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "RR" = (
 /mob/living/carbon/human/species/goblin/npc/ambush/cave,
@@ -7242,7 +7240,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Ua" = (
 /obj/structure/vine,
@@ -7415,7 +7413,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 1
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "UQ" = (
 /obj/effect/decal/cleanable/debris/wood,
@@ -7425,7 +7423,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/indoors/shelter/bog/rmh)
 "US" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/shelter/bog/rmh/fort)
 "UV" = (
 /turf/closed/wall/mineral/wooddark,
@@ -7584,7 +7582,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "VP" = (
 /turf/closed/wall/mineral/wooddark/window,
@@ -7753,7 +7751,7 @@
 	endTurfY = 215;
 	endTurfX = 215
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_bedrock)
 "WW" = (
 /obj/structure/fluff/railing/border/west,
@@ -7842,7 +7840,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 4
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "Xt" = (
 /obj/machinery/tanningrack,
@@ -7888,7 +7886,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 1
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "XH" = (
 /obj/effect/decal/cobblerockedge{
@@ -7949,7 +7947,7 @@
 "Yd" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt,
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "Ye" = (
 /obj/structure/vine,
 /turf/open/floor/cobblerock,
@@ -7969,7 +7967,7 @@
 /turf/closed/wall/mineral/tent{
 	dir = 4
 	},
-/area/indoors/shelter/rtfield)
+/area/indoors/shelter/basin)
 "Yp" = (
 /turf/closed/wall/mineral/wooddark/slitted,
 /area/indoors/shelter/bog/rmh/fort)
@@ -8041,7 +8039,7 @@
 /obj/structure/flora/newleaf/corner{
 	dir = 9
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "YP" = (
 /obj/structure/statue/bone/rib,
@@ -8062,7 +8060,7 @@
 /obj/structure/flora/newbranch/connector{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "YV" = (
 /obj/machinery/light/fueled/firebowl/blackfire,
@@ -8135,7 +8133,7 @@
 /obj/structure/flora/newbranch/leafless{
 	dir = 1
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/woods/rmh)
 "Zk" = (
 /mob/living/simple_animal/hostile/retaliate/troll/bog,
@@ -8204,7 +8202,7 @@
 /area/outdoors/bog/rmh/south)
 "ZF" = (
 /obj/structure/fluff/railing/corner,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "ZG" = (
 /obj/structure/vine,
@@ -8238,7 +8236,7 @@
 	endTurfX = 215;
 	endTurfY = 215
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_bedrock)
 "ZX" = (
 /obj/effect/wisp/prestidigitation{

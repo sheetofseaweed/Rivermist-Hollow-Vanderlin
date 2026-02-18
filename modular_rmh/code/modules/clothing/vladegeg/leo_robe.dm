@@ -16,6 +16,7 @@
 	nodismemsleeves = TRUE
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/leo_robe/AdjustClothes(mob/user)
 	if(loc == user)

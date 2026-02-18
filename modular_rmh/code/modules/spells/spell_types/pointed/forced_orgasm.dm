@@ -33,10 +33,10 @@
 		("<span class='aphrodisiac'>([forced_orgasm_to_public]</span>"),
 		("<span class='aphrodisiac'>([forced_orgasm_to_target]</span>"))
 	cast_on.Immobilize(85)
-	cast_on.Jitter(50)
+	cast_on.adjust_jitter(50)
 	cast_on.add_stress(/datum/stress_event/forced_orgasm)
 	aro.ejaculate(null, cast_on, null, FALSE)
 	SEND_SIGNAL(cast_on, COMSIG_SEX_ADJUST_AROUSAL, 80)
 	SEND_SIGNAL(cast_on, COMSIG_SEX_ADJUST_ORGASM_PROG, 50)
-	if(cast_on.has_flaw(/datum/charflaw/addiction/lovefiend))
-		cast_on.sate_addiction()
+	if(cast_on.has_quirk(/datum/quirk/vice/lovefiend))
+		cast_on.sate_addiction(/datum/quirk/vice/lovefiend)

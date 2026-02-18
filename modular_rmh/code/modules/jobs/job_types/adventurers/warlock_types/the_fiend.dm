@@ -2,6 +2,7 @@
 	title = "The Fiend"
 	tutorial = "You have pledged your soul to the Hells or Abyss in return for a deadly arsenal of fiendish arcana."
 
+	give_bank_account = TRUE
 	outfit = /datum/outfit/adventurer_warlock/the_fiend
 	category_tags = list(CAT_ADVENTURER_WARLOCK)
 
@@ -53,7 +54,7 @@
 	shoes = /obj/item/clothing/shoes/nobleboot
 	backr = null
 	backl = /obj/item/storage/backpack/satchel/black
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/reagent_containers/glass/bottle/manapot
 	beltr = null
 	ring = null

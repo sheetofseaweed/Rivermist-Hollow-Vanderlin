@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/sembian_merc
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 2,
@@ -42,7 +43,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/weapon/sword/long/greatsword/steelclaymore
-	belt = /obj/item/storage/belt/leather/mercenary/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = /obj/item/weapon/mace/cudgel
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	ring = null

@@ -6,6 +6,7 @@
 	allowed_races = list(SPEC_ID_HARPY)
 	outfit = /datum/outfit/adventurer_fighter/winged_rescuer
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 
 	jobstats = list(
@@ -48,7 +49,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/weapon/sword
 	beltl = /obj/item/reagent_containers/glass/bottle/stronghealthpot
 	ring = null

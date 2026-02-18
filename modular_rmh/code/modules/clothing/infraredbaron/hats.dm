@@ -1,4 +1,6 @@
 //----------------- INFAREDBARON/HATS.DM ---------------------
+/obj/item/clothing/head/roguetown
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguetown/helmet/guildguard
 	name = "guild guard helm"

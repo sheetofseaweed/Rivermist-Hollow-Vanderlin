@@ -5,6 +5,7 @@
 	allowed_races = list(SPEC_ID_TRITON)
 	outfit = /datum/outfit/adventurer_fighter/abyssal
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/misc/swimming = 3,
@@ -65,7 +66,7 @@
 	shoes = /obj/item/clothing/shoes/sandals
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/sword/sabre/cutlass
 	beltr = null
 	ring = null

@@ -8,6 +8,7 @@
 	nodismemsleeves = TRUE
 	sleevetype = null
 	sleeved = null
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /datum/repeatable_crafting_recipe/leather/corset_color
 	name = "colorable corset"

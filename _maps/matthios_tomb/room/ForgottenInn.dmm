@@ -110,9 +110,7 @@
 /turf/open/floor/ruinedwood/spiralfade,
 /area/under/tomb/indoors)
 "mI" = (
-/obj/effect/mapping_helpers/outfit_handler{
-	outfit_to_equip = /datum/outfit/adventurer/barbarian
-	},
+/obj/effect/mapping_helpers/outfit_handler,
 /mob/living/carbon/human/species/orc/npc,
 /turf/open/floor/ruinedwood/spiralfade,
 /area/under/tomb/indoors)
@@ -222,7 +220,7 @@
 "yc" = (
 /obj/machinery/light/fueled/chand,
 /obj/item/clothing/ring/silver,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/tomb/indoors)
 "ye" = (
 /obj/structure/fluff/railing/border{
@@ -231,7 +229,7 @@
 /turf/open/floor/ruinedwood/spiralfade,
 /area/under/tomb/indoors)
 "yH" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/tomb/indoors)
 "AX" = (
 /turf/closed/wall/mineral/decowood/vert,
@@ -287,7 +285,7 @@
 	},
 /area/under/tomb)
 "Ft" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/tomb)
 "GU" = (
 /obj/machinery/light/fueled/torchholder/r,
@@ -376,9 +374,7 @@
 "Rh" = (
 /obj/structure/toilet,
 /mob/living/carbon/human/species/orc/npc,
-/obj/effect/mapping_helpers/outfit_handler{
-	outfit_to_equip = /datum/outfit/adventurer/barbarian
-	},
+/obj/effect/mapping_helpers/outfit_handler,
 /turf/open/floor/ruinedwood/spiralfade,
 /area/under/tomb/indoors)
 "RA" = (
@@ -482,7 +478,7 @@
 /area/under/tomb/indoors)
 "Zt" = (
 /obj/machinery/light/fueled/chand,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/tomb/indoors)
 "Zv" = (
 /obj/effect/dungeon_directional_helper/south,

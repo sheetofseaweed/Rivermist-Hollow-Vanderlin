@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_bard/college_lore
 	category_tags = list(CAT_ADVENTURER_BARD)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_PER = 1,
@@ -70,7 +71,7 @@
 	shoes = /obj/item/clothing/shoes/boots
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/storage/belt/pouch/coins/poor
 	beltr = /obj/item/weapon/knife/dagger/steel/special
 	ring = null

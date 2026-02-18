@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_druid/troll_skin
 	category_tags = list(CAT_ADVENTURER_DRUID)
+	give_bank_account = TRUE
 	total_positions = 2
 
 	jobstats = list(
@@ -65,7 +66,7 @@
 	shoes = null
 	backr = null
 	backl = /obj/item/weapon/mace/goden/shillelagh
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
 	beltl = /obj/item/weapon/knife/stone
 	beltr = null
 	ring = null

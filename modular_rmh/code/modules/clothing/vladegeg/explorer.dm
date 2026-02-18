@@ -10,6 +10,7 @@
 	sleeved = 'modular_rmh/icons/clothing/vladegeg/onmob/helpers/explorer_sleeves.dmi'
 	allowed_race = SPECIES_BASE_BODY
 	nodismemsleeves = FALSE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/explorer/update_icon()
 	. = ..()
@@ -29,6 +30,7 @@
 	resistance_flags = FIRE_PROOF
 	salvage_result = /obj/item/natural/hide/cured
 	allowed_race = SPECIES_BASE_BODY
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/explorer
 	icon = 'modular_rmh/icons/clothing/vladegeg/explorer.dmi'
@@ -41,3 +43,4 @@
 	armor = ARMOR_HEAD_LEATHER
 	color = COLOR_DARK_BROWN
 	salvage_result = /obj/item/natural/hide/cured
+	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -9,7 +9,7 @@
 	faction = FACTION_TOWN
 	total_positions = 4
 	spawn_positions = 4
-	give_bank_account = TRUE
+	give_bank_account = 60
 	can_have_apprentices = FALSE
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)

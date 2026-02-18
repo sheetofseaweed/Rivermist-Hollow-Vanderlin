@@ -4,6 +4,7 @@
 	and you're too busy getting the job done for honour."
 
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 	total_positions = 2
 	antags_can_pick = FALSE //Assassins are antagonists by default, so they can't be chosen if you're already an antagonist.
 	antag_role = /datum/antagonist/assassin

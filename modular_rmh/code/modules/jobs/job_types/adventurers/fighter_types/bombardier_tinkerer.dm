@@ -5,6 +5,7 @@
 	allowed_races = list(SPEC_ID_DWARF, SPEC_ID_DUERGAR, SPEC_ID_GNOME, SPEC_ID_GNOME_D)
 	outfit = /datum/outfit/adventurer_fighter/bombardier_tinkerer
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 1,
@@ -44,7 +45,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = /obj/item/storage/backpack/backpack
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/pick
 	beltr = /obj/item/weapon/hammer/iron
 	ring = null

@@ -7,6 +7,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/elven_blademaster
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/knives = 2,
@@ -47,7 +48,7 @@
 	shoes = /obj/item/clothing/shoes/boots/rare/elfplate/welfplate
 	backr = /obj/item/weapon/sword/long/greatsword/elfgsword
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltl = /obj/item/storage/belt/pouch/coins/mid
 	ring = null

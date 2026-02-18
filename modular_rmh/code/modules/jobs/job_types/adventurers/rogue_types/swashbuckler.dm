@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/swashbuckler
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/swords = 4,
@@ -49,7 +50,7 @@
 	shoes = /obj/item/clothing/shoes/boots
 	backl = /obj/item/storage/backpack/satchel
 	backr = /obj/item/fishingrod/fisher
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/sword/sabre/cutlass
 	beltr = /obj/item/weapon/knife/dagger
 	ring = null

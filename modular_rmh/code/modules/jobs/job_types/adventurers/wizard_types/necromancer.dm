@@ -4,6 +4,7 @@
 	Society calls your magic unnatural, yet through forbidden study, you wield dominion over souls and corpses. \
 	Your loyalty is to the Cabal, and your ambition surpasses mortal morality."
 
+	give_bank_account = TRUE
 	outfit = /datum/outfit/adventurer_wizard/necromancer
 	category_tags = list(CAT_ADVENTURER_WIZARD)
 	exp_types_granted = list(EXP_TYPE_COMBAT, EXP_TYPE_MAGICK)
@@ -66,7 +67,7 @@
 	shoes = /obj/item/clothing/shoes/shortboots
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	backl = /obj/item/storage/backpack/satchel
 	beltr = /obj/item/reagent_containers/glass/bottle/manapot
 	ring = null

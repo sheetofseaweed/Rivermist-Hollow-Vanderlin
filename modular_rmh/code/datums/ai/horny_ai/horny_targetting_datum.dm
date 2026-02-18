@@ -43,6 +43,6 @@
 
 	if(ishuman(the_target))
 		var/mob/living/carbon/human/th = the_target
-		if((th.has_quirk(/datum/quirk/monsterhuntermale) && living_mob.gender == MALE) || (th.has_quirk(/datum/quirk/monsterhunterfemale) && living_mob.gender == FEMALE))
+		if((th.has_quirk(/datum/quirk/peculiarity/monsterhuntermale) && living_mob.gender == MALE) || (th.has_quirk(/datum/quirk/peculiarity/monsterhunterfemale) && living_mob.gender == FEMALE))
 			return TRUE
 	return FALSE

@@ -1,7 +1,7 @@
 /datum/job/moon_priest
 	title = "Moon Priest"
 	f_title = "Moon Priestess"
-	tutorial = "You serve Selûne, the Moonmaiden. \
+	tutorial = "You serve Selune, the Moonmaiden. \
 	In darkness and doubt, her silver light guides the lost. \
 	This humble chapel is a refuge for travelers and the faithful. \
 	You are healer, watcher, and keeper of the night."

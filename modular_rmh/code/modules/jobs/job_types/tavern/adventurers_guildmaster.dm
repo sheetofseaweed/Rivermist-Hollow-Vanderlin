@@ -13,7 +13,7 @@
 	display_order = JDO_ADVENTURERS_HEAD
 
 	allowed_races = ALL_RACES_LIST
-	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
+	allowed_ages = list (AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
 
 	selection_color = JCOLOR_TAVERN
 	advclass_cat_rolls = list(CAT_AHEAD = 20)

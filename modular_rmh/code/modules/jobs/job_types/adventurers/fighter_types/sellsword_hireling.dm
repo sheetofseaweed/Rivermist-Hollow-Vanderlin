@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/sellsword_hireling
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	allowed_ages = list(AGE_ADULT)
 
 	skills = list(
@@ -53,7 +54,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/adventurer
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

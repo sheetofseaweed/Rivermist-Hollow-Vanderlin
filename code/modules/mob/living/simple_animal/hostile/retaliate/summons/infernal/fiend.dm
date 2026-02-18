@@ -20,8 +20,8 @@
 	butcher_results = list()
 	faction = list("infernal")
 	mob_biotypes = MOB_ORGANIC|MOB_BEAST
-	health = 700
-	maxHealth = 700
+	health = 500
+	maxHealth = 500
 	melee_damage_lower = 20
 	melee_damage_upper = 30
 	vision_range = 7
@@ -49,12 +49,29 @@
 	aggressive = 1
 	ranged = TRUE
 	rapid = TRUE
-	projectiletype = /obj/projectile/magic/aoe/fireball/rogue
+	projectiletype = /obj/projectile/magic/aoe/fireball/rogue/fiend
 	ranged_message = "throws fire"
 
 	ai_controller = /datum/ai_controller/fiend
 
 	del_on_death = TRUE
+
+	ranged_cooldown = 80
+	ranged_cooldown_time = 100
+
+/obj/projectile/magic/aoe/fireball/rogue/fiend
+	name = "fireball"
+	exp_heavy = 0
+	exp_light = 3
+	exp_flash = 0
+	exp_fire = 3
+	damage = 10
+	damage_type = BURN
+	nodamage = FALSE
+	flag = "magic"
+	hitsound = 'sound/fireball.ogg'
+	aoe_range = 0
+	speed = 2
 
 /mob/living/simple_animal/hostile/retaliate/infernal/fiend/Initialize()
 	. = ..()

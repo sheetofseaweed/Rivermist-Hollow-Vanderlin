@@ -3,6 +3,7 @@
 	tutorial = "Once a prodigy of the arcane academies, you were cast out for defying tradition and pursuing forbidden experiments. \
 	You now roam the world, wielding improvised magic and hidden knowledge. Show them the power they refused to recognize."
 
+	give_bank_account = TRUE
 	outfit = /datum/outfit/adventurer_wizard/hedge_wizard
 	category_tags = list(CAT_ADVENTURER_WIZARD)
 	total_positions = 2
@@ -47,7 +48,7 @@
 	shoes = /obj/item/clothing/shoes/simpleshoes
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
 	beltl = /obj/item/reagent_containers/glass/bottle/manapot
 	beltr = /obj/item/storage/magebag/apprentice
 	ring = null

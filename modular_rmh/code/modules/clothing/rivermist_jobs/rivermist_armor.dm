@@ -1,5 +1,6 @@
 /obj/item/clothing/armor/gambeson/steward/townhall
 	name = "rich tailcoat"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/jacket/gatemaster_jacket/armored/bulwark
 	name = "town watch bulwark armor"
@@ -21,6 +22,7 @@
 	prevent_crits = ALL_EXCEPT_BLUNT
 	max_integrity = INTEGRITY_STRONGEST
 	stand_speed_reduction = 1.2
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/colored
 	icon_state = "gambesonl"

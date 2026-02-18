@@ -8,6 +8,7 @@
 	allowed_sexes = list(FEMALE)
 	outfit = /datum/outfit/adventurer_cleric/ironmaiden
 	category_tags = list(CAT_ADVENTURER_CLERIC)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 1,
@@ -62,7 +63,7 @@
 	shoes = /obj/item/clothing/shoes/boots/armor
 	backl = /obj/item/storage/backpack/satchel
 	backr = /obj/item/storage/backpack/satchel/surgbag
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/weapon/knife/dagger/steel
 	beltl = /obj/item/weapon/knife/cleaver
 	ring = null

@@ -3,6 +3,7 @@
 	f_title = "Wild Magic Sorceress"
 	tutorial = "Your powers come from ancient forces of chaos. They churn within you - waiting to burst free at any time."
 
+	give_bank_account = TRUE
 	outfit = /datum/outfit/adventurer_sorcerer/wild_magic
 	category_tags = list(CAT_ADVENTURER_SORCERER)
 
@@ -47,8 +48,8 @@
 	shoes = /obj/item/clothing/shoes/shortboots
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
-	beltl = null
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
+	beltl = /obj/item/storage/magebag/apprentice
 	beltr = /obj/item/reagent_containers/glass/bottle/manapot
 	ring = null
 	l_hand = null

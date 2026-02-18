@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_barbarian/wild_magic
 	category_tags = list(CAT_ADVENTURER_BARBARIAN)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 3,
@@ -79,7 +80,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather/advanced
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

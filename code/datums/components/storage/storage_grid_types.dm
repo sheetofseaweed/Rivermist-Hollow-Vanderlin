@@ -232,7 +232,7 @@
 	max_w_class = WEIGHT_CLASS_HUGE
 	not_while_equipped = TRUE
 
-/datum/component/storage/concrete/grid/crucible/can_be_inserted(obj/item/storing, stop_messages, mob/user, worn_check, params, storage_click)
+/datum/component/storage/concrete/grid/crucible/can_be_inserted(obj/item/storing, stop_messages, mob/user, worn_check, list/modifiers, storage_click)
 	if(!storing.melting_material)
 		var/obj/item/ingot/ingot = storing.smeltresult
 		if(!ispath(ingot, /obj/item/ingot))
@@ -250,7 +250,7 @@
 		return FALSE
 	. = ..()
 
-/datum/component/storage/concrete/grid/anvil_bin/can_be_inserted(obj/item/storing, stop_messages, mob/user, worn_check, params, storage_click)
+/datum/component/storage/concrete/grid/anvil_bin/can_be_inserted(obj/item/storing, stop_messages, mob/user, worn_check, list/modifiers, storage_click)
 	var/obj/structure/material_bin/source = src.parent
 	if(!source.opened)
 		return FALSE
@@ -264,7 +264,7 @@
 /datum/component/storage/concrete/grid/kobold_storage/New(datum/P, ...)
 	. = ..()
 	set_holdable(list(
-		/obj/item/clothing/head/mob_holder,
+		/obj/item/mob_holder,
 		))
 
 /datum/component/storage/concrete/grid/zigbox
@@ -318,6 +318,7 @@
 				/obj/item/reagent_containers/powder,
 				/obj/item/organ,
 				/obj/item/neuFarm/seed,
+				/obj/item/mob_holder,
 				)
 			),
 		)

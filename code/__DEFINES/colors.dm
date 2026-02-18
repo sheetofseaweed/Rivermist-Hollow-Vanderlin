@@ -81,6 +81,7 @@
 #define CLOTHING_MAGE_GREEN "#60794a"
 #define CLOTHING_MAGE_ORANGE "#935329"
 #define CLOTHING_MAGE_YELLOW "#a79730"
+#define CLOTHING_DARKEST_NIGHT "#414143"
 
 // Royal dyes ==========================
 #define CLOTHING_ROYAL_RED "#813434"
@@ -129,8 +130,14 @@
 
 #define CLOTHING_WET			"#bbbbbb"
 
+//This is i-dont-a-give-a-fuk dyes
+#define CLOTHING_BABY_PUKE "#b5b004"
+#define CLOTHING_GOLD "#f9a602"
+#define CLOTHING_MAGE_RED "#b8252c"
+
+
 /// Deprecated macro, should be removed
-#define CLOTHING_COLOR_NAMES	list("Ash Grey","Chalk White","Cream","White","Dark Ink","Plum Purple","Salmon","Blood Red", "Maroon","Red Ochre","Russet","Chestnut","Mustard Yellow","Yellow Ochre","Forest Green","Sky Blue","Teal", "Royal Black","Soot Black","Winestain Red","Royal Red","Royal Majenta","Fyritius Orange","Bark Brown","Peasant Brown","Mud Brown","Pear Yellow","Spring Green","Bog Green","Royal Teal","Berry Blue", "Royal Blue", "Royal Purple","Dunked in Water" )
+#define CLOTHING_COLOR_NAMES	list("Ash Grey","Chalk White","Cream","White","Dark Ink","Plum Purple","Salmon","Blood Red", "Maroon","Red Ochre","Russet","Chestnut","Mustard Yellow","Yellow Ochre","Forest Green","Sky Blue","Teal", "Royal Black","Soot Black","Winestain Red","Royal Red","Royal Majenta","Fyritius Orange","Bark Brown","Peasant Brown","Mud Brown","Pear Yellow","Spring Green","Bog Green","Royal Teal","Berry Blue","Royal Blue","Royal Purple","Dunked in Water","Darkest Night","PURPLE","BLACK","BROWN","YELLOW","AZURE","Baby Puke","Gold","Mage Red","Orange","Red")
 
 /proc/clothing_color2hex(input)
 	var/static/list/all_colors = GLOB.peasant_dyes + GLOB.noble_dyes + GLOB.royal_dyes + GLOB.common_dyes

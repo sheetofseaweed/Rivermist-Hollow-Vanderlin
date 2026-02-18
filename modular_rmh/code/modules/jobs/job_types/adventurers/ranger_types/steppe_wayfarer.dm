@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_ranger/steppe_wayfarer
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_PER = 2,
@@ -44,7 +45,7 @@
 	shoes = null
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/short
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/ammo_holder/quiver/arrows
 	beltl = /obj/item/storage/meatbag
 	ring = null

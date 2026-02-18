@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_ranger/beastmaster
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/knives = 3,
@@ -53,7 +54,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/flashlight/flare/torch/lantern
 	beltl = /obj/item/ammo_holder/quiver/arrows
 	ring = null

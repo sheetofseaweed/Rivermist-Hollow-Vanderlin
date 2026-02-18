@@ -93,9 +93,10 @@
 #define WEATHER_OVERLAY_PLANE -80
 #define WEATHER_RENDER_TARGET "*WEATHER_RENDER_TARGET"
 
-#define OPENSPACE_PLANE -15 //! Openspace plane below all turfs
-#define OPENSPACE_BACKDROP_PLANE -14 //! Black square just over openspace plane to guaranteed cover all in openspace turf
+#define OPENSPACE_PLANE -16 //! Openspace plane below all turfs
+#define OPENSPACE_BACKDROP_PLANE -15 //! Black square just over openspace plane to guaranteed cover all in openspace turf
 
+#define TRANSPARENT_FLOOR_PLANE -14
 #define FLOOR_PLANE -13
 #define WALL_PLANE -12
 #define FLOOR_PLANE_RENDER_TARGET "FLOOR_PLANE_RENDER_TARGET"

@@ -66,12 +66,12 @@
 	exp_light = 3
 	exp_flash = 0
 	exp_fire = 3
-	damage = 10
+	damage = 80
 	damage_type = BURN
 	nodamage = FALSE
 	flag = "magic"
 	hitsound = 'sound/fireball.ogg'
-	aoe_range = 0
+	aoe_range = 5
 	speed = 3
 
 /obj/projectile/magic/aoe/fireball/rogue/great
@@ -81,5 +81,7 @@
 	exp_light = 5
 	exp_flash = 0
 	exp_fire = 4
+	damage = 180
 	exp_hotspot = 0
+	aoe_range = 8
 	speed = 6

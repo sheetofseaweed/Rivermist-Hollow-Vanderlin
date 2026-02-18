@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/warrior
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/wrestling = 2,
@@ -17,7 +18,7 @@
 		/datum/skill/combat/polearms = 2,
 		/datum/skill/combat/bows = 1,
 		/datum/skill/combat/crossbows = 1,
-		/datum/skill/combat/shields = 2,
+		/datum/skill/combat/shields = 3,
 		/datum/skill/combat/knives = 2,
 		/datum/skill/misc/swimming = 2,
 		/datum/skill/misc/climbing = 2,
@@ -54,7 +55,7 @@
 	shoes = null
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/adventurer
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

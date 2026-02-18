@@ -94,7 +94,7 @@ SUBSYSTEM_DEF(treasury)
 		*/
 		amt_to_generate = amt_to_generate - (amt_to_generate * queens_tax)
 		amt_to_generate = round(amt_to_generate)
-		give_money_treasury(amt_to_generate, "Wealth Horde")
+		give_money_treasury(amt_to_generate, "Wealth Hoard")
 		force_set_round_statistic(STATS_REGULAR_VAULT_INCOME, amt_to_generate)
 		record_round_statistic(STATS_VAULT_TOTAL_REVENUE, amt_to_generate)
 		for(var/mob/living/carbon/human/X in GLOB.human_list)

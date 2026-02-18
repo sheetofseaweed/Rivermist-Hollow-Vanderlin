@@ -116,6 +116,7 @@
     var/obj/item/portallight/linked_light = null
     var/mob/living/carbon/human/current_wearer = null
     var/org_target = ORGAN_SLOT_VAGINA
+    misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/undies/portalpanties/equipped(mob/living/carbon/human/H, slot)
 	. = ..()

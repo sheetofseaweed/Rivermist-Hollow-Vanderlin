@@ -16,8 +16,7 @@
 	selection_color = JCOLOR_TOWNHALL
 
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch,
-					/datum/action/cooldown/spell/undirected/list_target/convert_role/servant,
-					/datum/action/cooldown/spell/undirected/list_target/grant_title)
+					/datum/action/cooldown/spell/undirected/list_target/convert_role/servant)
 
 	give_bank_account = 250
 	noble_income = 18
@@ -30,6 +29,7 @@
 		EXP_TYPE_LIVING = 600,
 		EXP_TYPE_NOBLE = 300
 	)
+
 	job_subclasses = list(
 		/datum/job/advclass/councilor/adjutant,
 		/datum/job/advclass/councilor/clerk,

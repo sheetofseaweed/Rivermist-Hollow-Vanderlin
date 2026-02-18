@@ -6,6 +6,7 @@
 	allowed_races = RACES_PLAYER_ELF_ALL
 	outfit = /datum/outfit/adventurer_ranger/elf_caravan
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 	// Base stats
 	jobstats = list(
@@ -61,7 +62,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = /obj/item/weapon/knife/dagger/steel/special
 	beltr = null
 	ring = null

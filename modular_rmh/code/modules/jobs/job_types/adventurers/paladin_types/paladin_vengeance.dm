@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_paladin/vengeance
 	category_tags = list(CAT_ADVENTURER_PALADIN)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/axesmaces = 2,
@@ -72,7 +73,7 @@
 	shoes = /obj/item/clothing/shoes/otavan/inqboots
 	backr = /obj/item/storage/backpack/satchel/otavan
 	backl = /obj/item/weapon/sword/long/judgement
-	belt = /obj/item/storage/belt/leather/steel
+	belt = /obj/item/storage/belt/leather/steel/adventurers_subclasses
 	beltl = /obj/item/storage/belt/pouch/coins/mid
 	beltr = null
 	ring = /obj/item/clothing/ring/signet/silver

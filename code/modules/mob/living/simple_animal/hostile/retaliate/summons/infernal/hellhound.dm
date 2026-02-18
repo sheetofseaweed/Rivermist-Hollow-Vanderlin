@@ -17,8 +17,8 @@
 	butcher_results = list()
 	faction = list("infernal")
 	mob_biotypes = MOB_ORGANIC|MOB_BEAST
-	health = 170
-	maxHealth = 170
+	health = 120
+	maxHealth = 120
 	melee_damage_lower = 15
 	melee_damage_upper = 17
 	vision_range = 7
@@ -49,6 +49,9 @@
 	ai_controller = /datum/ai_controller/hellhound
 
 	del_on_death = TRUE
+
+	ranged_cooldown = 40
+	ranged_cooldown_time = 50
 
 /mob/living/simple_animal/hostile/retaliate/infernal/hellhound/Initialize()
 	. = ..()

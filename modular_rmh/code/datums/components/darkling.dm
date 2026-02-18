@@ -16,7 +16,7 @@
 	update_light_stress(parent)
 
 /datum/component/darkling/proc/update_light_stress(var/mob/living/carbon/darkling)
-	if(darkling.eyesclosed || darkling.eye_blind)
+	if(darkling.eyesclosed || darkling.is_blind())
 		current_light_stress = max(current_light_stress - 2, 0)
 		if(darkling.IsSleeping())
 			current_light_stress = max(current_light_stress - 6, 0)

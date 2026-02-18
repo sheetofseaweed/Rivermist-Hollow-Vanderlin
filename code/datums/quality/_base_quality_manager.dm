@@ -121,15 +121,16 @@
 		// if(W.wdefense)
 		// 	W.wdefense *= modifier
 
-		// Special handling for axes and pick-axes - better at woodcutting
-		if(istype(target, /obj/item/weapon/axe/iron) || istype(target, /obj/item/weapon/pick/paxe))
-			var/obj/item/weapon/A = target
-			A.axe_cut += (A.force * modifier) * 0.5 // Add half of modified damage as axe_cut
+		// Hybrid tool support (axes, picks, paxes, future tools)
 
-		// Special handling for picks - better at mining
-		if(istype(target, /obj/item/weapon/pick))
-			var/obj/item/weapon/pick/P = target
-			P.pickmult *= modifier
+		// Woodcutting scaling
+		if(W.axe_cut)
+			W.axe_cut *= modifier
+
+		// Mining scaling
+		if(W.pickmult)
+			W.pickmult *= modifier
+
 
 	// Crossbows - modify damage multiplier
 	else if(istype(target, /obj/item/gun/ballistic/revolver/grenadelauncher))

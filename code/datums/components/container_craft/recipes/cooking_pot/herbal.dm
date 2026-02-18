@@ -156,10 +156,12 @@
 	name = "Rosa Water"
 	created_reagent = /datum/reagent/medicine/herbal/simple_rosa
 	requirements = list(
-		/obj/item/alch/herb/rosa = 1
+		/obj/item/alch/herb/rosa = 3,
+
 	)
 	crafting_time = 4 SECONDS
 	finished_smell = /datum/pollutant/food/flower
+	isolation_craft = TRUE
 
 /datum/container_craft/cooking/herbal_tea/euphrasia_wash
 	name = "Euphrasia Eye Wash"
@@ -303,6 +305,7 @@
 	)
 	max_optionals = 1
 	crafting_time = 14 SECONDS
+	isolation_craft = TRUE
 	finished_smell = /datum/pollutant/food/herb
 	complete_message = "The insight brew swirls with hidden knowledge!"
 

@@ -61,8 +61,7 @@
 	title = "BARD"
 	)
 
-	var/datum/inspiration/I = new /datum/inspiration(spawned)
-	I.grant_inspiration(spawned, bard_tier = BARD_T3)
+	spawned.inspiration = new /datum/inspiration(spawned)
 	spawned.clamped_adjust_skillrank(/datum/skill/misc/music, 4, 4, TRUE)
 
 /datum/outfit/towner/bard

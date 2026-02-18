@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/amnian_merc
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(STATKEY_CON = 2)
 	skills = list(
@@ -37,7 +38,7 @@
 	shoes = /obj/item/clothing/shoes/rare/grenzelhoft
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

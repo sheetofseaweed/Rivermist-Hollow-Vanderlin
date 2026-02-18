@@ -71,7 +71,7 @@
 	alternate_worn_layer = TABARD_LAYER
 	body_parts_covered = CHEST|GROIN
 	boobed = TRUE
-	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	flags_inv = HIDEBOOB
 	var/overarmor = TRUE
 	sellprice = 300

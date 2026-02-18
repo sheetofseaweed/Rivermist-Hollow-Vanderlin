@@ -19,6 +19,7 @@
 #define SPEC_ID_HALFLING "halfling"
 #define SPEC_ID_GNOME "gnome"
 #define SPEC_ID_GNOME_D "deep gnome"
+#define SPEC_ID_AUTOMATON "automaton"
 
 #define SPEC_ID_ORC	"orc"
 #define SPEC_ID_GOBLIN	"goblin"
@@ -52,6 +53,7 @@
 	SPEC_ID_HALFLING,\
 	SPEC_ID_GNOME,\
 	SPEC_ID_GNOME_D,\
+	SPEC_ID_AUTOMATON, \
 )
 
 /// Species where females get underwear, no underwear for kobold, rakshari, medicator and triton, dwarves handled seperately
@@ -232,6 +234,7 @@
 	SPEC_ID_RAKSHARI,\
 	SPEC_ID_TRITON,\
 	SPEC_ID_MEDICATOR,\
+	SPEC_ID_HOLLOWKIN,\
 )
 
 /// Vanderlin royalty

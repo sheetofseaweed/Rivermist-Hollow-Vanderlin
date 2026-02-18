@@ -11,6 +11,7 @@
 	nodismemsleeves = TRUE
 	sleevetype = null
 	sleeved = null
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/loincloth/desert_sorceress
 	name = "desert sorceress skirt"
@@ -19,6 +20,11 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/vladegeg/onmob/desert_sorceress.dmi'
 	icon_state = "skirt"
 	item_state = "skirt"
+	ignore_sleeves_code = TRUE // No sleeves, otherwise arms will be over the sprite
+	nodismemsleeves = TRUE
+	sleevetype = null
+	sleeved = null
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/desert_sorceress
 	name = "desert sorceress hood"
@@ -28,3 +34,4 @@
 	flags_inv = HIDEEARS|HIDEHAIR
 	icon_state = "hood"
 	item_state = "hood"
+	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -3,6 +3,7 @@
 	tutorial = "Once a noble trained in the arcane arts in Waterdeep, \
 	you lost your fortune and now offer your magical skills to those who can pay. \
 	Adept in spellcraft and versed in courtly knowledge, you can hold your own in combat while ensuring your employer’s goals are met."
+	give_bank_account = TRUE
 
 	outfit = /datum/outfit/adventurer_wizard/sell_wizard
 	category_tags = list(CAT_ADVENTURER_WIZARD)
@@ -54,7 +55,7 @@
 	shoes = /obj/item/clothing/shoes/nobleboot
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/weapon/polearm/woodstaff/quarterstaff/iron
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/storage/magebag/poor
 	beltl = /obj/item/weapon/knife/dagger/steel/special //remnant from when they were a noble
 	ring = /obj/item/clothing/ring/silver

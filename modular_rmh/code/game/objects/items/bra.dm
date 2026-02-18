@@ -43,12 +43,15 @@
 // Craft
 
 /datum/repeatable_crafting_recipe/sewing/bra
-	name = "briefs"
+	name = "bra"
 	output = /obj/item/clothing/bra
 	requirements = list(/obj/item/natural/cloth = 1,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 2
 
+/datum/repeatable_crafting_recipe/sewing/bra/bikini
+	name = "bikini top"
+	output = /obj/item/clothing/bra/bikini
 
 /datum/component/storage/concrete/bra
 	max_w_class = WEIGHT_CLASS_SMALL

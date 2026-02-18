@@ -4,6 +4,7 @@
 	Now you must survive among mortals while hiding your true nature."
 	outfit = /datum/outfit/adventurer_rogue/bloodsucker
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 	total_positions = 2
 	antag_job = TRUE
 	traits = list(
@@ -53,7 +54,7 @@
 	shoes = /obj/item/clothing/shoes/rare/grenzelhoft
 	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/plaquegold
+	belt = /obj/item/storage/belt/leather/plaquegold/adventurers_subclasses
 	beltl = /obj/item/ammo_holder/quiver/arrows
 	beltr = /obj/item/weapon/sword/rapier/dec
 	ring = /obj/item/clothing/ring/gold

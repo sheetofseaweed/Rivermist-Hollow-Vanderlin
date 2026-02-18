@@ -49,10 +49,13 @@
 
 	del_on_death = TRUE
 
+	ranged_cooldown = 40
+	ranged_cooldown_time = 50
+
 /obj/projectile/magic/firebolt
 	name = "ball of fire"
 	icon_state = "fireball"
-	damage = 20
+	damage = 10
 	damage_type = BURN
 	nodamage = FALSE
 	armor_penetration = 0

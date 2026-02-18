@@ -932,7 +932,7 @@
 	var/list/prefs_by_category = list()
 
 	for(var/datum/erp_preference/pref_type as anything in subtypesof(/datum/erp_preference))
-		if(is_abstract(pref_type))
+		if(IS_ABSTRACT(pref_type))
 			continue
 		var/datum/erp_preference/pref = new pref_type()
 		var/category = pref.category

@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_barbarian/rat_wildman
 	category_tags = list(CAT_ADVENTURER_BARBARIAN)
+	give_bank_account = TRUE
 	total_positions = 2
 	faction = FACTION_RATS
 
@@ -57,7 +58,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather/advanced
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
 	beltl = null
 	beltr = /obj/item/weapon/knife/hunting
 	ring = null

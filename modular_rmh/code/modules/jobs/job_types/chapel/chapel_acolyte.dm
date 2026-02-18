@@ -167,7 +167,7 @@
 
 /datum/job/advclass/acolyte/selune
 	title = "Selune Acolyte"
-	tutorial = "You serve Selûne, the Moonmaiden. \
+	tutorial = "You serve Selune, the Moonmaiden. \
 	You keep night vigils, aid travelers and the vulnerable, and assist Moon Priests."
 	outfit = /datum/outfit/acolyte/selune
 	category_tags = list(CAT_CHAPEL)

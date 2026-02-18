@@ -115,7 +115,7 @@
 	starting_atom = /obj/item/grown/log/tree/small
 	attacked_atom = /obj/item/natural/fibers
 	allow_inverse_start = TRUE
-	output = /obj/item/weapon/mace/woodclub/crafted
+	output = /obj/item/weapon/mace/woodclub
 
 /datum/repeatable_crafting_recipe/survival/woodstaff
 	name = "wood staff"
@@ -243,6 +243,37 @@
 	craftdiff = 1
 	skillcraft = /datum/skill/misc/sewing
 	subtypes_allowed = TRUE
+
+/datum/repeatable_crafting_recipe/survival/poor_sewingkit
+    name = "Poor sewing kit"
+    requirements = list(
+        /obj/item/natural/cloth = 2,
+        /obj/item/natural/fibers = 2,
+    )
+    tool_usage = list(
+        /obj/item/needle = list("starts to sew", "start to sew")
+    )
+    starting_atom = /obj/item/needle
+    attacked_atom = /obj/item/natural/cloth
+    output = /obj/item/repair_kit/poor_sewingkit
+    craftdiff = 1
+    skillcraft = /datum/skill/misc/sewing
+
+/datum/repeatable_crafting_recipe/survival/sewingkit
+    name = "Sewing kit"
+    requirements = list(
+        /obj/item/natural/cloth = 2,
+        /obj/item/natural/hide/cured = 2,
+        /obj/item/natural/fibers = 2,
+    )
+    tool_usage = list(
+        /obj/item/needle = list("starts to sew", "start to sew")
+    )
+    starting_atom = /obj/item/needle
+    attacked_atom = /obj/item/natural/cloth
+    output = /obj/item/repair_kit/sewingkit
+    craftdiff = 3
+    skillcraft = /datum/skill/misc/sewing
 
 /datum/repeatable_crafting_recipe/survival/clay
 	name = "clay lump"

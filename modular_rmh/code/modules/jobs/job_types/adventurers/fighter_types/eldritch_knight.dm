@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/eldritch_knight
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	exp_types_granted = list(EXP_TYPE_MERCENARY, EXP_TYPE_COMBAT, EXP_TYPE_MAGICK)
 
 	magic_user = TRUE
@@ -95,7 +96,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/storage/magebag/poor
 	beltr = /obj/item/weapon/sword
 	ring = null

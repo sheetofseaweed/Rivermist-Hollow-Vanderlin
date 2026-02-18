@@ -4,10 +4,11 @@
 
 	outfit = /datum/outfit/adventurer_ranger/steppesman
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 
 	jobstats = list(
-		STATKEY_STR = 2,
+		STATKEY_STR = 1,
 		STATKEY_END = 1,
 		STATKEY_PER = 1,
 	)
@@ -33,8 +34,8 @@
 	)
 
 	traits = list(
-        TRAIT_MEDIUMARMOR,
-        TRAIT_DUALWIELDER,
+		TRAIT_DUALWIELDER,
+		TRAIT_DODGEEXPERT,
 	)
 
 /datum/outfit/adventurer_ranger/steppesman
@@ -51,7 +52,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/short
 	backr = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltr = /obj/item/weapon/sword/long/rider/steppe
 	beltl = /obj/item/ammo_holder/quiver/arrows
 	ring = null

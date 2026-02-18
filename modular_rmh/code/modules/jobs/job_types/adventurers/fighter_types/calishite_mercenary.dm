@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/calishite_mercenary
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 1,
@@ -51,7 +52,7 @@
 	shoes = /obj/item/clothing/shoes/shalal
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary/shalal
+	belt = /obj/item/storage/belt/leather/shalal/adventurers_subclasses
 	beltr = /obj/item/weapon/sword/long/rider
 	beltl = /obj/item/flashlight/flare/torch/lantern
 	ring = null

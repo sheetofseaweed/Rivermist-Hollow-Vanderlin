@@ -10,15 +10,18 @@
 
 /obj/item/clothing/head/helmet/sargebarbute/town_watch
 	name = "captain barbute"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/kettle/slit/atarms/town_watch
 	name = "sergeant kettle"
 	desc = "A lightweight steel helmet decorated for the sergeant of the town watch."
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/townwatch/town_warden
 	name = "warden helmet"
 	desc = "An old archaic helmet of a symbol long forgotten, now owned by the Warden. The shape resembles the bars of a prison."
 	icon_state = "gatehelm"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/townwatch/gatemaster/bulwark
 	name = "town watch bulwark helmet"
@@ -38,9 +41,11 @@
 	max_integrity = INTEGRITY_STRONG
 	prevent_crits = ALL_CRITICAL_HITS
 	item_weight = 6 * STEEL_MULTIPLIER
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/crown/circlet/silverdiadem/moon_priest
 	name = "silver diadem"
-	desc = "A luxurious diadem forged out of silver, etched with lunar sigils and blessed under moonlight. Worn by priests of Selûne as a symbol of guidance, mercy, and quiet vigilance in the dark."
+	desc = "A luxurious diadem forged out of silver, etched with lunar sigils and blessed under moonlight. Worn by priests of Selune as a symbol of guidance, mercy, and quiet vigilance in the dark."
 	icon_state = "diadem_s"
 	sellprice = VALUE_SILVER_ITEM
+	misc_flags = CRAFTING_TEST_EXCLUDE

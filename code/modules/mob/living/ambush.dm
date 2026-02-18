@@ -80,12 +80,15 @@
 
 	if(iscarbon(src))
 		var/mob/living/carbon/C = src
-		if(C.stress >= 30 && (prob(50)))
+		var/heart_value = 30
+		if(HAS_TRAIT(C, TRAIT_WEAK_HEART))
+			heart_value *= 0.5
+		if(C.stress >= heart_value && (prob(50)))
 			C.heart_attack()
 			if(mustype == 1)
-				playsound(get_turf(src), pick('modular_rmh/sound/misc/suprised (1).ogg','modular_rmh/sound/misc/suprised (2).ogg','modular_rmh/sound/misc/suprised (3).ogg','modular_rmh/sound/misc/suprised (4).ogg', 'modular_rmh/sound/misc/suprised (5).ogg'), 100)
+				playsound(src, pick('modular_rmh/sound/misc/suprised (1).ogg','modular_rmh/sound/misc/suprised (2).ogg','modular_rmh/sound/misc/suprised (3).ogg','modular_rmh/sound/misc/suprised (4).ogg', 'modular_rmh/sound/misc/suprised (5).ogg'), 100)
 			else
-				playsound(get_turf(src), pick('sound/misc/jumphumans (1).ogg','sound/misc/jumphumans (2).ogg','sound/misc/jumphumans (3).ogg'), 100)
+				playsound(src, pick('sound/misc/jumphumans (1).ogg','sound/misc/jumphumans (2).ogg','sound/misc/jumphumans (3).ogg'), 100)
 			shake_camera(src, 2, 2)
 
 #undef AMBUSH_CHANCE

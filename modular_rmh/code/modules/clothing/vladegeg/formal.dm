@@ -20,7 +20,6 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/vladegeg/onmob/formal.dmi'
 	icon_state = "skirt"
 	item_state = "skirt"
-	mob_overlay_icon = 'icons/roguetown/clothing/onmob/pants.dmi'
 	ignore_sleeves_code = TRUE // No sleeves, otherwise arms will be over the sprite
 	nodismemsleeves = TRUE
 	sleevetype = null

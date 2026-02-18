@@ -12,3 +12,4 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	allowed_race = SPECIES_BASE_BODY
+	misc_flags = CRAFTING_TEST_EXCLUDE

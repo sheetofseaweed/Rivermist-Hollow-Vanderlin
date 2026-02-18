@@ -70,8 +70,8 @@
 	spawned.grant_undead_eyes()
 	spawned.ambushable = FALSE
 	spawned.underwear = "Nude"
-	if(spawned.charflaw)
-		QDEL_NULL(spawned.charflaw)
+	if(length(spawned.quirks))
+		spawned.clear_quirks()
 	spawned.update_body()
 	spawned.mob_biotypes = MOB_UNDEAD
 	spawned.faction = list(FACTION_UNDEAD)
@@ -98,7 +98,6 @@
 	spawned.real_name = "skeleton"
 	spawned.remove_all_languages()
 	spawned.grant_language(/datum/language/hellspeak)
-	spawned.silent = TRUE
 
 	// Randomized stats
 	spawned.base_strength = rand(8,12)

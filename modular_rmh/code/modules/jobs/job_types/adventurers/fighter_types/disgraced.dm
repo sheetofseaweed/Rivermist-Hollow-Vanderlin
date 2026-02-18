@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/disgraced
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	total_positions = 2
 
 	jobstats = list(
@@ -121,17 +122,26 @@
 			spawned.adjust_stat_modifier(STATMOD_JOB, STATKEY_CON, 1)
 
 /datum/outfit/adventurer_fighter/disgraced
-	name = "Disgraced Knight (Wretch)"
+	name = "Disgraced Knigh"
+	head = null
+	mask = null
 	neck = /obj/item/clothing/neck/chaincoif
-	pants = /obj/item/clothing/pants/platelegs
 	cloak = /obj/item/clothing/cloak/tabard/knight
-	shirt = /obj/item/clothing/armor/gambeson/arming
-	belt = /obj/item/storage/belt/leather
 	armor = /obj/item/clothing/armor/plate
+	shirt = /obj/item/clothing/armor/gambeson/arming
+	wrists = null
 	gloves = /obj/item/clothing/gloves/plate
+	pants = /obj/item/clothing/pants/platelegs
 	shoes = /obj/item/clothing/shoes/boots/armor
+	backr = null
 	backl = /obj/item/storage/backpack/satchel
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
+	beltl = null
 	beltr = /obj/item/weapon/sword/arming
+	ring = null
+	l_hand = null
+	r_hand = null
+
 	scabbards = list(/obj/item/weapon/scabbard/sword/noble)
 	backpack_contents = list(
 		/obj/item/weapon/knife/hunting = 1,

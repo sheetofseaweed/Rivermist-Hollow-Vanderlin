@@ -7,3 +7,4 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/licensed-infraredbaron/onmob/cloaks.dmi'
 	icon_state = "citywatch_cape"
 	item_state = "citywatch_cape"
+	misc_flags = CRAFTING_TEST_EXCLUDE

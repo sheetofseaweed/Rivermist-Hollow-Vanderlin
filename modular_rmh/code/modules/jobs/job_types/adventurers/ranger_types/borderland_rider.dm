@@ -5,6 +5,7 @@
 	allowed_races = list(SPEC_ID_TIEFLING)
 	outfit = /datum/outfit/adventurer_ranger/borderland_rider
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/misc/athletics = 3,
@@ -48,7 +49,7 @@
 	shoes = /obj/item/clothing/shoes/boots
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/sword/rapier
 	beltr = /obj/item/weapon/whip
 	ring = null

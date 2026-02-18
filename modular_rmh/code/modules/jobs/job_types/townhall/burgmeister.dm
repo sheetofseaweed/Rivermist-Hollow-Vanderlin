@@ -42,6 +42,9 @@ GLOBAL_LIST_EMPTY(burgmeister_titles)
 		/datum/job/advclass/burgmeister/scholar
 	)
 
+	mind_traits = list(
+		TRAIT_KNOW_KEEP_DOORS
+	)
 
 /datum/job/burgmeister/get_informed_title(mob/mob, change_title = FALSE, new_title)
 	if(change_title)
@@ -58,8 +61,6 @@ GLOBAL_LIST_EMPTY(burgmeister_titles)
 	ruler_title = "Burgmeister"
 	to_chat(world, "<b>[span_notice(span_big("[H.real_name] is [ruler_title] of [SSmapping.config.map_name]."))]</b>")
 	to_chat(world, "<br>")
-	if(GLOB.keep_doors.len > 0)
-		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(know_keep_door_password), H), 7 SECONDS)
 	spawned.verbs |= /mob/living/carbon/human/proc/burgmeister_announcement
 
 /datum/outfit/burgmeister/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

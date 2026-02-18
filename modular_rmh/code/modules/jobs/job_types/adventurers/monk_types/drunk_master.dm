@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_monk/drunk_master
 	category_tags = list(CAT_ADVENTURER_MONK)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/misc/reading = 3,
@@ -58,7 +59,7 @@
 	shoes = /obj/item/clothing/shoes/shortboots
 	backr = /obj/item/weapon/polearm/woodstaff
 	backl = /obj/item/storage/backpack/backpack
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	beltr = null
 	ring = null

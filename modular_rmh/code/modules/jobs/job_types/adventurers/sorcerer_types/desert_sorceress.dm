@@ -2,6 +2,7 @@
 	title = "Desert Sorceress"
 	tutorial = "You call on the Weave to shape fire and ash. Magic is delicate, but deadly in skilled hands."
 
+	give_bank_account = TRUE
 	allowed_sexes = list(FEMALE)
 	outfit = /datum/outfit/adventurer_sorcerer/desert_sorceress
 	category_tags = list(CAT_ADVENTURER_SORCERER)
@@ -56,9 +57,9 @@
 	shoes = /obj/item/clothing/shoes/heels
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/whip
-	beltr = null
+	beltr = /obj/item/storage/magebag/apprentice
 	ring = /obj/item/clothing/ring/active/nomag
 	l_hand = null
 	r_hand = null

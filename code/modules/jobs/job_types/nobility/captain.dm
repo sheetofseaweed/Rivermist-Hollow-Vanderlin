@@ -12,7 +12,7 @@
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
 
 	outfit = /datum/outfit/captain
-	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/guard)
+	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch)
 	give_bank_account = 120
 	cmode_music = 'sound/music/cmode/antag/CombatSausageMaker.ogg'
 	noble_income = 11
@@ -37,7 +37,7 @@
 		/datum/skill/combat/swords = 5,
 		/datum/skill/combat/wrestling = 4,
 		/datum/skill/combat/axesmaces = 4,
-		/datum/skill/combat/shields = 3,
+		/datum/skill/combat/shields = 4,
 		/datum/skill/combat/unarmed = 3,
 		/datum/skill/combat/knives = 3,
 		/datum/skill/combat/polearms = 2,

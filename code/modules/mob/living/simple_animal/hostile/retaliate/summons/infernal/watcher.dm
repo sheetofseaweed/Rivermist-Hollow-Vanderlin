@@ -46,6 +46,8 @@
 //	stat_attack = UNCONSCIOUS
 	ranged = TRUE
 	ranged_cooldown = 40
+	ranged_cooldown_time = 50
+
 	projectiletype = /obj/projectile/magic/firebolt
 	ranged_message = "stares"
 

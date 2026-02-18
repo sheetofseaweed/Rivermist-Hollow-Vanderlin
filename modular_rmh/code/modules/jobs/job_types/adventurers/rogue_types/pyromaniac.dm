@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/pyromaniac
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 	total_positions = 2
 
 	jobstats = list(
@@ -71,7 +72,7 @@
 	shoes = /obj/item/clothing/shoes/boots/armor
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

@@ -43,7 +43,7 @@
 	owner.update_inv_hands()
 	cast_on.update_body()
 
-/datum/action/cooldown/spell/attach_bodypart/proc/get_organs(mob/living/target, mob/living/user)
+/datum/action/cooldown/spell/attach_bodypart/proc/get_organs(mob/living/carbon/target, mob/living/user)
 	var/list/missing_organs = list(
 		ORGAN_SLOT_EARS,
 		ORGAN_SLOT_EYES,
@@ -78,7 +78,7 @@
 		organs += dismembered
 	return organs
 
-/datum/action/cooldown/spell/attach_bodypart/proc/get_limbs(mob/living/target, mob/living/user)
+/datum/action/cooldown/spell/attach_bodypart/proc/get_limbs(mob/living/carbon/target, mob/living/user)
 	var/list/missing_limbs = target.get_missing_limbs()
 	if(!length(missing_limbs))
 		return

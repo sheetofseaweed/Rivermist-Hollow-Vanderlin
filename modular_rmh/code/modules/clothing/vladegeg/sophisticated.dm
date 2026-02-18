@@ -7,6 +7,7 @@
 	icon = 'modular_rmh/icons/clothing/vladegeg/sophisticated.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/vladegeg/onmob/sophisticated.dmi'
 	sleeved = 'modular_rmh/icons/clothing/vladegeg/onmob/helpers/sophisticated_sleeves.dmi'
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/sophisticated_coat
 	name = "sophisticated coat"
@@ -17,3 +18,4 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/vladegeg/onmob/sophisticated.dmi'
 	sleeved = 'modular_rmh/icons/clothing/vladegeg/onmob/helpers/sophisticated_sleeves.dmi'
 	slot_flags = ITEM_SLOT_ARMOR | ITEM_SLOT_CLOAK
+	misc_flags = CRAFTING_TEST_EXCLUDE

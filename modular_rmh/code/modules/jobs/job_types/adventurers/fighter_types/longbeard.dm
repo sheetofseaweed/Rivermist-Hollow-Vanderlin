@@ -7,6 +7,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/longbeard
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/combat/axesmaces = 4,
@@ -48,7 +49,7 @@
 	shoes = /obj/item/clothing/shoes/boots/rare/dwarfplate
 	backr = /obj/item/weapon/mace/goden/steel/warhammer
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/storage/belt/pouch/coins/mid
 	beltr = null
 	ring = null

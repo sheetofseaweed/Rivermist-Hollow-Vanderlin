@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_paladin/crown
 	category_tags = list(CAT_ADVENTURER_PALADIN)
+	give_bank_account = TRUE
 
 
 	skills = list(
@@ -74,7 +75,7 @@
 	shoes = /obj/item/clothing/shoes/boots/armor
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/weapon/sword/long/greatsword/psydon/relic
-	belt = /obj/item/storage/belt/leather/steel
+	belt = /obj/item/storage/belt/leather/steel/adventurers_subclasses
 	beltl = /obj/item/storage/belt/pouch/coins/mid
 	beltr = null
 	ring = /obj/item/clothing/ring/silver/toper

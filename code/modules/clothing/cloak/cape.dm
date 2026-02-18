@@ -41,11 +41,13 @@
 	icon_state = "puritan_cape"
 	color = CLOTHING_SOOT_BLACK
 	allowed_race = SPECIES_BASE_BODY
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
-/obj/item/clothing/cloak/cape/fur
+/*/obj/item/clothing/cloak/cape/fur
 	name = "fur cape"
-	icon_state = "furcape"
-	item_state = "furcape"
+	icon_state = "fur"
+	item_state = "fur"
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK
 	inhand_mod = TRUE
 	salvage_result = /obj/item/natural/fur
+	misc_flags = CRAFTING_TEST_EXCLUDE*/

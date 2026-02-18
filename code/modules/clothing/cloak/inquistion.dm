@@ -9,7 +9,7 @@
 	alternate_worn_layer = TABARD_LAYER
 	body_parts_covered = CHEST|GROIN
 	boobed = TRUE
-	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	flags_inv = HIDEBOOB
 	var/open_wear = FALSE
 
@@ -40,7 +40,7 @@
 			flags_inv =HIDEBOOB
 			open_wear = FALSE
 			to_chat(usr, span_warning("Now wearing normally!"))
-	update_icon()
+
 	if(user)
 		if(ishuman(user))
 			var/mob/living/carbon/H = user

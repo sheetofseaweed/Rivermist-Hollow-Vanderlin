@@ -33,9 +33,9 @@
 		("<span class='aphrodisiac'>([enrapture_to_public]</span>"),
 		("<span class='aphrodisiac'>([enrapture_to_target]</span>"))
 	cast_on.Immobilize(85)
-	cast_on.Jitter(20)
+	cast_on.adjust_jitter(20)
 	cast_on.add_stress(/datum/stress_event/enrapture)
 	cast_on.emote(pick("twitch","drool","moan"))
 	SEND_SIGNAL(cast_on, COMSIG_SEX_ADJUST_AROUSAL, 50)
-	if(cast_on.has_flaw(/datum/charflaw/addiction/lovefiend))
-		cast_on.sate_addiction()
+	if(cast_on.has_quirk(/datum/quirk/vice/lovefiend))
+		cast_on.sate_addiction(/datum/quirk/vice/lovefiend)

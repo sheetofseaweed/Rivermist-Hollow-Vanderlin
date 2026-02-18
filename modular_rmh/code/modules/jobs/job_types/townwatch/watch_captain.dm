@@ -118,6 +118,6 @@
 	accept_message = "I swear fealty to the Burgmeister and the Town Watch!"
 	refuse_message = "I refuse."
 
-/datum/action/cooldown/spell/undirected/list_target/convert_role/guard/on_conversion(mob/living/cast_on)
+/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch/on_conversion(mob/living/cast_on)
 	. = ..()
 	cast_on.verbs |= /mob/proc/haltyell

@@ -335,7 +335,7 @@ SUBSYSTEM_DEF(migrants)
 		return
 
 	var/mob/living/carbon/human/human_character = character
-	SSquirks.AssignQuirks(human_character, human_character.client, TRUE)
+	//SSquirks.AssignQuirks(human_character, human_character.client, TRUE)
 
 	if(migrant_job.rune_linked)
 		GLOB.rune_roundstart_mobs += character

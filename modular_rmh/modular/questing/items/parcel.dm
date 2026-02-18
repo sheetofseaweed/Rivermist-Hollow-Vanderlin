@@ -56,7 +56,7 @@
 		/area/indoors/town/church = list("Priest", "Acolyte", "Templar", "Churchling"),
 		/area/indoors/town/dwarfin = list("Guildmaster", "Guildsman"),
 		/area/indoors/town/shop = list("Merchant", "Shophand"),
-		/area/indoors/town/manor = list("Councillor", "Nobleman", "Hand", "Knight Captain", "Marshal", "Steward", "Clerk", "Head Mage", "Duke"),
+		/area/indoors//area/indoors/town/keep = list("Councillor", "Nobleman", "Hand", "Knight Captain", "Marshal", "Steward", "Clerk", "Head Mage", "Duke"),
 		/area/indoors/town/magician = list("Court Magician", "Magicians Associate"),
 		/area/indoors/town = list("Guild Handler")
 	)

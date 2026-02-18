@@ -151,7 +151,8 @@ GLOBAL_LIST_EMPTY(job_respawn_delays)
 #define CAT_CHAPEL			"CAT_CHAPEL"		// Chapel acolyte class - 3 types
 //SCHOLARS
 #define CAT_GUILDWIZARD		"GUILDWIZARD"		// Guild wizard class - 2 types
-#define CAT_ARCHIVIST		"ARCHIVIST"			// Archivist class - 3 types
+#define CAT_ARCHIVIST		"ARCHIVIST"			// Archivist class - 4 types
+#define CAT_ARCHIVISTAP		"ARCHIVISTAP"		// Archivist apprentice class - 3 types
 //TRADERS
 #define CAT_SHOPHAND		"SHOPHAND"			// Waterdeep assistant class - 2 types
 //TAVERN
@@ -390,6 +391,7 @@ Thing can move up or down an armor class by significant changes to coverage & cr
 \--------------------*/
 
 // Light AC
+#define ARMOR_NONE			list("blunt" = 0, "slash" = 0, "stab" = 0, "piercing" = 0, "fire" = 0, "acid" = 0)
 #define ARMOR_MINIMAL		list("blunt" = 5, "slash" = 5, "stab" = 5, "piercing" = 0, "fire" = 0, "acid" = 0)
 #define ARMOR_WEAK			list("blunt" = 10, "slash" = 10, "stab" = 10, "piercing" = 5, "fire" = 0, "acid" = 0)
 

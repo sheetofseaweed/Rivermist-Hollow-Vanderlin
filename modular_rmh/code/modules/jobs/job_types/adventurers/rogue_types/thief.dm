@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/thief
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 
 
 	skills = list(
@@ -54,7 +55,7 @@
 	shoes = /obj/item/clothing/shoes/boots
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/weapon/mace/cudgel // TEMP until I make a blackjack- for now though this will do.
 	beltl = /obj/item/storage/belt/pouch/coins/poor
 	ring = null

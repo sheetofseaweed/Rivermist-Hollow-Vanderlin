@@ -19,6 +19,7 @@
 	anvilrepair = TRUE
 	sellprice = 80
 	allowed_race = SPECIES_BASE_BODY
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/snscarf
 	name = "scarf"
@@ -30,6 +31,7 @@
 	resistance_flags = FIRE_PROOF
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_MASK
 	body_parts_covered = NECK|FACE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/sillyhat
 	name = "bamboo hat"
@@ -45,6 +47,7 @@
 	flags_inv = HIDEEARS
 	body_parts_covered = HEAD|HAIR|EARS|NOSE|EYES
 	resistance_flags = FIRE_PROOF
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/snakekini
 	name = "segmented cuirass"
@@ -57,6 +60,7 @@
 	armor = ARMOR_CUIRASS // Identical to steel cuirass, but covering the groin instead of the vitals.
 	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL	// Identical to steel cuirasss. Same steel price.
 	armor_class = AC_MEDIUM
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/snakeshell
 	name = "naga's head-shell"
@@ -69,3 +73,4 @@
 	flags_inv = HIDEHAIR
 	block2add = FOV_BEHIND
 	smeltresult = /obj/item/ingot/steel
+	misc_flags = CRAFTING_TEST_EXCLUDE

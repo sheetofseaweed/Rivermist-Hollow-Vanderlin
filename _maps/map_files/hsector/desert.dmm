@@ -42,7 +42,7 @@
 /turf/open/floor/sand/desertsand,
 /area/outdoors/rmh_desert)
 "adS" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/tea)
 "aec" = (
 /obj/effect/decal/cobbleedge{
@@ -534,7 +534,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "aPy" = (
 /obj/structure/flora/ausbushes/fullgrass,
@@ -902,7 +902,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "bqP" = (
 /obj/structure/closet/crate/chest/neu_fancy,
@@ -1021,7 +1021,7 @@
 	dir = 8
 	},
 /obj/structure/fluff/railing/wood/west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/tea)
 "bzg" = (
 /obj/structure/door/stone,
@@ -1053,7 +1053,7 @@
 /area/indoors/rmh_desert/tea)
 "bAl" = (
 /obj/structure/fluff/railing/corner/south_west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "bBk" = (
 /obj/structure/flora/hotspring_rocks/grassy,
@@ -1658,7 +1658,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "cre" = (
 /obj/structure/fluff/railing/wood/west,
@@ -1830,7 +1830,7 @@
 /area/indoors/rmh_desert/tea)
 "cFf" = (
 /obj/effect/decal/cleanable/dirt/dust,
-/turf/open/transparent/glass,
+/turf/open/glass,
 /area/outdoors/rmh_desert/tea)
 "cFl" = (
 /turf/open/water/marsh,
@@ -2105,7 +2105,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "dbE" = (
 /turf/open/floor/ruinedwood/turned,
@@ -2909,7 +2909,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "eiU" = (
 /obj/structure/table/wood/reinf_long{
@@ -3129,7 +3129,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/outdoors/rmh_desert/port)
 "euY" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/cave)
 "evd" = (
 /obj/item/fishingrod,
@@ -3200,7 +3200,7 @@
 /area/under/rmh_desert/pyramid)
 "eAG" = (
 /obj/structure/fluff/railing/corner/north_east,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "eAL" = (
 /obj/effect/decal/cleanable/dirt/cobweb,
@@ -3334,7 +3334,7 @@
 /area/outdoors/rmh_desert/port)
 "eKT" = (
 /obj/structure/fluff/railing/corner/south_east,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "eLi" = (
 /obj/effect/spawner/map_spawner/loot/dungeon/misc,
@@ -3783,7 +3783,7 @@
 "fgE" = (
 /obj/structure/fluff/railing/border/east,
 /obj/structure/fluff/railing/wood/east,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/tea)
 "fgY" = (
 /obj/structure/closet/crate/coffin,
@@ -4459,7 +4459,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "vertw"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "ghJ" = (
 /obj/effect/decal/cleanable/dirt/dust{
@@ -4496,7 +4496,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 8
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "glx" = (
 /obj/effect/decal/edge_corner{
@@ -4663,7 +4663,7 @@
 /area/under/rmh_desert/tea/palacecellar)
 "gtV" = (
 /obj/structure/fluff/railing/corner/south_west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/tea)
 "gwm" = (
 /obj/effect/particle_effect/smoke{
@@ -4719,7 +4719,7 @@
 /obj/effect/landmark/tram/queued_path/cargo_map_exit{
 	next_path_id = "cargo_return_1"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "gAS" = (
 /obj/structure/closet/crate/chest/neu_iron,
@@ -5522,7 +5522,7 @@
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement)
 "hyD" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/roofs)
 "hzR" = (
 /obj/effect/decal/cobbleedge{
@@ -5949,7 +5949,7 @@
 	pixel_x = 24;
 	pixel_y = -24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "hQR" = (
 /obj/effect/decal/mossy{
@@ -6508,7 +6508,7 @@
 /turf/open/floor/tile/harem1,
 /area/under/rmh_desert/tea/palacecasemates)
 "iGu" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/port)
 "iHq" = (
 /turf/open/floor/cobblerock,
@@ -6649,7 +6649,7 @@
 /area/under/rmh_desert/tea/hareml)
 "iRM" = (
 /obj/structure/fluff/railing/border/east,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/tea)
 "iSb" = (
 /turf/closed/wall/mineral/wooddark/end{
@@ -6661,7 +6661,7 @@
 	next_path_id = "cargo_pre_enter";
 	platform_code = "point_4"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "iST" = (
 /turf/closed/wall/mineral/decostone/cand,
@@ -6990,7 +6990,7 @@
 	next_path_id = "cargo_map_enter";
 	platform_code = "cargo_return_2"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "jlj" = (
 /obj/structure/water_pipe,
@@ -7302,7 +7302,7 @@
 	pixel_x = -24;
 	pixel_y = 24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "jvF" = (
 /obj/effect/decal/cleanable/blood/tracks{
@@ -7315,7 +7315,7 @@
 	endTurfX = 315;
 	endTurfY = 255
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "jwk" = (
 /obj/structure/flora/ausbushes/sparsegrass,
@@ -7331,7 +7331,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "vertw"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "jyX" = (
 /turf/open/floor/sandstone_tile,
@@ -7438,7 +7438,7 @@
 	next_path_id = "point_4";
 	platform_code = "point_1"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "jHn" = (
 /turf/open/water/ocean,
@@ -7656,7 +7656,7 @@
 /turf/closed/wall/mineral/desert_sandstone,
 /area/under/rmh_desert/tea/harem)
 "jRk" = (
-/turf/open/transparent/glass,
+/turf/open/glass,
 /area/outdoors/rmh_desert/tea)
 "jRR" = (
 /obj/effect/decal/cleanable/debris/wood,
@@ -7992,7 +7992,7 @@
 /obj/structure/fluff/railing/corner{
 	dir = 9
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "klt" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -8139,7 +8139,7 @@
 /turf/open/floor/carpet/stellar,
 /area/indoors/rmh_desert/tea)
 "ksX" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/phouse)
 "ksZ" = (
 /obj/structure/trap/wall_projectile/fireball{
@@ -8783,7 +8783,7 @@
 /turf/open/floor/tile/kitchen,
 /area/indoors/rmh_desert/tea)
 "llm" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/cave/rmh_desertcaves)
 "llL" = (
 /obj/structure/fluff/railing/corner{
@@ -8793,7 +8793,7 @@
 /area/indoors/rmh_desert/tea)
 "lmU" = (
 /obj/structure/industrial_lift/tram,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "lnk" = (
 /mob/living/carbon/human/species/skeleton{
@@ -9038,7 +9038,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "vertw"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "lxe" = (
 /turf/open/water/cleanshallow,
@@ -9728,7 +9728,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "mwh" = (
 /turf/closed/wall/mineral/desert_soapstone,
@@ -10327,7 +10327,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "ncF" = (
 /obj/structure/fluff/railing/stonehedge{
@@ -10341,7 +10341,7 @@
 /turf/closed/wall/mineral/desert_sandstone,
 /area/under/rmh_desert/tea/palacecellar)
 "ndK" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert)
 "ndW" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -10651,7 +10651,7 @@
 	pixel_x = -24;
 	pixel_y = 24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "nzY" = (
 /obj/structure/closet/crate/chest/neu_iron,
@@ -11013,7 +11013,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "vertw"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "nUN" = (
 /obj/structure/fluff/railing/border/west{
@@ -11064,7 +11064,7 @@
 	next_path_id = "cargo_return_2";
 	platform_code = "cargo_return_1"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "nXJ" = (
 /mob/living/simple_animal/hostile/retaliate/infernal/hellhound{
@@ -11164,7 +11164,7 @@
 /turf/open/floor/grass/healthy,
 /area/under/cave/mazedungeon)
 "odQ" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_desert/ziqurat)
 "odU" = (
 /obj/effect/decal/cobbleedge{
@@ -11177,7 +11177,7 @@
 /obj/structure/fluff/railing/border{
 	dir = 6
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "oeg" = (
 /obj/structure/minecart_rail/railbreak,
@@ -11307,7 +11307,7 @@
 /area/outdoors/rmh_desert/roofs)
 "okN" = (
 /obj/structure/fluff/railing/border/north,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "olU" = (
 /obj/structure/fluff/railing/border/west,
@@ -11471,7 +11471,7 @@
 	pixel_x = 24;
 	pixel_y = 24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "osp" = (
 /obj/machinery/light/fueled/firebowl/standing,
@@ -11538,7 +11538,7 @@
 /obj/structure/fluff/railing/corner/north_east{
 	dir = 9
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "ovV" = (
 /obj/structure/fermentation_keg,
@@ -12202,7 +12202,7 @@
 	pixel_x = -24;
 	pixel_y = -24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "pjE" = (
 /obj/structure/closet/crate/chest/neu_iron,
@@ -12494,7 +12494,7 @@
 /area/outdoors/rmh_desert/valley)
 "pzD" = (
 /obj/machinery/light/fueled/wallfire/candle,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/tea)
 "pzY" = (
 /obj/structure/fluff/railing/wood/north,
@@ -12596,7 +12596,7 @@
 /turf/open/floor/churchrough,
 /area/under/cave/mazedungeon)
 "pHM" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/valley)
 "pHZ" = (
 /obj/structure/fluff/traveltile{
@@ -13032,7 +13032,7 @@
 "qos" = (
 /obj/structure/fluff/railing/border/west,
 /obj/machinery/light/fueled/torchholder/c,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "qoV" = (
 /obj/machinery/light/fueledstreet/orange/wall{
@@ -13044,7 +13044,7 @@
 /area/under/cave/mazedungeon)
 "qpu" = (
 /obj/structure/fluff/railing/corner/south_east,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/tea)
 "qpP" = (
 /obj/structure/fluff/railing/wood/east{
@@ -13066,7 +13066,6 @@
 "qqr" = (
 /obj/effect/mapping_helpers/secret_door_creator{
 	redstone_id = "pyramid";
-	vip_message = null;
 	vips = null;
 	name = "Pyramid Secret Door";
 	floor_turf = /turf/open/floor/tile/brownbrick
@@ -13435,7 +13434,7 @@
 /turf/open/floor/grass/healthy,
 /area/under/cave/mazedungeon)
 "rbb" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_desert/pyramid)
 "rbM" = (
 /obj/effect/decal/cobbleedge{
@@ -13475,7 +13474,7 @@
 /area/under/cave/mazedungeon)
 "rei" = (
 /obj/structure/fluff/railing/border/east,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "rgE" = (
 /turf/open/floor/tile/kitchen,
@@ -13519,7 +13518,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/outdoors/rmh_desert/port)
 "rkM" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_desert/tea/harem)
 "rkO" = (
 /obj/structure/fluff/railing/border/north,
@@ -13542,14 +13541,14 @@
 /area/under/rmh_desert/tea/palacecellar)
 "rlz" = (
 /obj/structure/fluff/big_chain,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "rlJ" = (
 /turf/closed/wall/mineral/desert_sandstone,
 /area/indoors/rmh_desert/tea)
 "rlK" = (
 /obj/machinery/light/fueled/chand,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/tea)
 "rmt" = (
 /obj/structure/spider/stickyweb,
@@ -13764,7 +13763,7 @@
 /area/outdoors/rmh_desert/port)
 "rzo" = (
 /obj/structure/fluff/railing/border/west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "rzx" = (
 /turf/open/floor/naturalstone,
@@ -14073,7 +14072,7 @@
 	icon_state = "wooden_floor"
 	},
 /obj/machinery/light/fueledstreet/midlamp,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "rXA" = (
 /obj/effect/spawner/trap,
@@ -14322,7 +14321,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "spt" = (
 /obj/structure/closet/crate/chest/wicker,
@@ -14367,7 +14366,7 @@
 /area/under/cave/mazedungeon)
 "srv" = (
 /obj/structure/fluff/railing/border/west,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/tea)
 "srx" = (
 /obj/structure/fluff/pillow/blue{
@@ -14392,7 +14391,7 @@
 	pixel_x = 24;
 	pixel_y = 24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "stk" = (
 /obj/machinery/light/fueled/firebowl,
@@ -14429,7 +14428,6 @@
 "swX" = (
 /obj/effect/mapping_helpers/secret_door_creator{
 	redstone_id = "pyramid1";
-	vip_message = null;
 	vips = null;
 	name = "Pyramid Secret Door";
 	floor_turf = /turf/open/floor/tile/brownbrick
@@ -14631,7 +14629,7 @@
 /area/indoors/rmh_desert/tea)
 "sJg" = (
 /obj/structure/water_pipe,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/phouse)
 "sJq" = (
 /obj/structure/lootable_structure/fish_barrel,
@@ -14848,7 +14846,7 @@
 /area/outdoors/rmh_desert/port)
 "sYT" = (
 /obj/structure/fluff/railing/border,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "sZf" = (
 /obj/effect/decal/cobbleedge{
@@ -15119,7 +15117,7 @@
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/ziqurat)
 "tpn" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_desert/spider)
 "tpu" = (
 /obj/structure/fluff/railing/corner,
@@ -15584,7 +15582,7 @@
 	pixel_x = 24;
 	pixel_y = 24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "tLJ" = (
 /obj/structure/fluff/walldeco/church/line{
@@ -15801,7 +15799,7 @@
 	pixel_x = -24;
 	pixel_y = -24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "uaB" = (
 /obj/structure/forcefield/strong,
@@ -16109,7 +16107,7 @@
 /obj/structure/industrial_lift/tram{
 	icon_state = "wooden_floor"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "uDR" = (
 /obj/structure/carpet/cyan,
@@ -16190,7 +16188,7 @@
 /obj/structure/bars/grille{
 	max_integrity = 1500
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/phouse)
 "uJh" = (
 /obj/structure/rack/underworld,
@@ -16449,7 +16447,7 @@
 /turf/open/floor/tile/tilerg,
 /area/indoors/rmh_desert/tea)
 "vcg" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/indoors/rmh_desert/tea)
 "vcx" = (
 /obj/structure/underworld/barrier,
@@ -16667,7 +16665,7 @@
 /obj/effect/landmark/tram/queued_path/cargo_pre_enter{
 	next_path_id = "cargo_stop"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "vqu" = (
 /obj/machinery/light/fueled/firebowl/standing,
@@ -16781,7 +16779,7 @@
 	pixel_x = -24;
 	pixel_y = 24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "vwj" = (
 /obj/structure/bars/pipe{
@@ -17102,7 +17100,7 @@
 "vQr" = (
 /obj/structure/fluff/railing/border/east,
 /obj/machinery/light/fueled/torchholder/c,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "vRq" = (
 /obj/effect/decal/cleanable/blood/tracks{
@@ -17222,7 +17220,7 @@
 /area/under/rmh_desert/tea/hareml)
 "wbg" = (
 /obj/effect/landmark/tram/queued_path/cargo_stop,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_desert/port)
 "wbF" = (
 /obj/structure/fluff/railing/corner/north_east,
@@ -17681,7 +17679,7 @@
 /obj/effect/landmark/tram/queued_path/cargo_exit{
 	next_path_id = "cargo_map_exit"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "wCt" = (
 /turf/open/water/cleanshallow/dirt,
@@ -17753,7 +17751,7 @@
 	pixel_x = 24;
 	pixel_y = -24
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "wHS" = (
 /obj/structure/fluff/railing/border/west,
@@ -17968,7 +17966,7 @@
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/tea/palacecellar)
 "wVz" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "wWL" = (
 /obj/structure/fluff/railing/border/north,
@@ -18001,7 +17999,7 @@
 	icon_state = "wooden_floor"
 	},
 /obj/structure/fluff/railing/border,
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/outdoors/rmh_air)
 "wYH" = (
 /obj/effect/decal/edge{

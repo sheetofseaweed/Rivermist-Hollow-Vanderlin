@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/treasurehunter
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/misc/medicine = 1,
@@ -50,7 +51,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = /obj/item/weapon/shovel
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/whip // You know why.
 	beltr = /obj/item/flashlight/flare/torch/lantern
 	ring = null

@@ -8,6 +8,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/underdweller
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_LCK = 1,
@@ -63,7 +64,7 @@
 	shoes = /obj/item/clothing/shoes/boots/armor/light
 	backr = null
 	backl = /obj/item/storage/backpack/backpack
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = /obj/item/weapon/knife/hunting
 	ring = null

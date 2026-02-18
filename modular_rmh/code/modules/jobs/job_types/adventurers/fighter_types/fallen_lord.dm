@@ -5,6 +5,7 @@
 	vengeance, or a chance to reclaim what was lost."
 
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	outfit = /datum/outfit/adventurer_fighter/fallen_lord
 	total_positions = 1
 
@@ -51,7 +52,7 @@
 	shoes = /obj/item/clothing/shoes/nobleboot
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltr = /obj/item/storage/belt/pouch/coins/rich
 	beltl = /obj/item/weapon/sword/long
 	ring = null

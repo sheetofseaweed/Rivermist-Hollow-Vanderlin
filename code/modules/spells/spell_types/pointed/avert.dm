@@ -17,6 +17,7 @@
 	invocation = "Undermaiden avert your gaze!"
 	invocation_type = INVOCATION_SHOUT
 
+	self_cast_possible = FALSE
 	charge_required = FALSE
 	cooldown_time = 3 MINUTES
 

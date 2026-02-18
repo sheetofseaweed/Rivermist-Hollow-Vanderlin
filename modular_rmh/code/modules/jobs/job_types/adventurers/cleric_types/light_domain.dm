@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_cleric/light_domain
 	category_tags = list(CAT_ADVENTURER_CLERIC)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 1,
@@ -50,7 +51,7 @@
 	. = ..()
 
 	var/static/list/selectable = list( \
-		"Silver Rungu" = /obj/item/weapon/mace/silver/rungu, \
+		"Silver Rungu" = /obj/item/weapon/mace/rungu/silver, \
 		"Silver Sengese" = /obj/item/weapon/sword/scimitar/sengese/silver \
 	)
 	var/choice = spawned.select_equippable(player_client, selectable, message = "What is your weapon of choice?")
@@ -84,7 +85,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/adventurer
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

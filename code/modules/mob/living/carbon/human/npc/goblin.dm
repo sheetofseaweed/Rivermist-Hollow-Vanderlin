@@ -112,15 +112,15 @@
 //	qdel(H)
 
 /obj/item/bodypart/chest/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/l_arm/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/r_arm/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/r_leg/goblin
-	dismemberable = 0
+	dismemberable = 1
 /obj/item/bodypart/l_leg/goblin
-	dismemberable = 0
+	dismemberable = 1
 
 /obj/item/bodypart/head/goblin/update_icon_dropped()
 	return
@@ -265,9 +265,8 @@
 	for(var/slot in internal_organs_slot)
 		var/obj/item/organ/organ = internal_organs_slot[slot]
 		organ.sellprice = 5
-	underwear = null
-	if(src.charflaw)
-		QDEL_NULL(src.charflaw)
+	if(length(quirks))
+		clear_quirks()
 	update_body()
 	faction = list(FACTION_ORCS)
 	var/turf/turf = get_turf(src)

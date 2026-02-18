@@ -6,6 +6,7 @@
 
 	outfit = /datum/outfit/adventurer_rogue/royal_outcast
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 	total_positions = 2
 
 	jobstats = list(
@@ -38,6 +39,9 @@
 		/datum/skill/labor/mathematics = 3
 	)
 
+	mind_traits = list(
+		TRAIT_KNOW_KEEP_DOORS
+	)
 	traits = list(
 		TRAIT_BEAUTIFUL,
 		TRAIT_DODGEEXPERT,
@@ -59,7 +63,7 @@
 	shoes = /obj/item/clothing/shoes/nobleboot
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/weapon/sword
 	beltl = /obj/item/ammo_holder/quiver/bolts
 	ring = null

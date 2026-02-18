@@ -28,3 +28,4 @@
 	)
 
 	salvage_result = /obj/item/natural/hide/cured
+	misc_flags = CRAFTING_TEST_EXCLUDE

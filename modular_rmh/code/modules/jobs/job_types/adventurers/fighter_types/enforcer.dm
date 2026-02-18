@@ -5,6 +5,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/enforcer
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_CON = 3,
@@ -40,9 +41,9 @@
 	name = "Enforcer"
 	var/is_leader = FALSE //does nothing except give you a cooler blade.
 
-/datum/outfit/adventurer_fighter/enforcer/enforcer/pre_equip(mob/living/carbon/human/H)
+/datum/outfit/adventurer_fighter/enforcer/pre_equip(mob/living/carbon/human/H)
 	shirt = /obj/item/clothing/shirt/undershirt/easttats
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	backr = /obj/item/storage/backpack/satchel
 	if(H.gender == MALE)
 		cloak = /obj/item/clothing/cloak/eastcloak1

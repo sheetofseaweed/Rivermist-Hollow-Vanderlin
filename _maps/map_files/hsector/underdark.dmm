@@ -492,7 +492,7 @@
 /turf/open/floor/concrete,
 /area/under/underdark/rmh/shar)
 "fe" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/rmh_bedrock)
 "ff" = (
 /turf/open/floor/tile/masonic/spiral,
@@ -671,7 +671,7 @@
 /turf/open/floor/naturalstone,
 /area/under/underdark/rmh)
 "gW" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh)
 "hc" = (
 /obj/structure/flora/grass/water/reeds{
@@ -1262,7 +1262,7 @@
 /turf/open/floor/churchbrick,
 /area/under/underdark/rmh/shar)
 "pI" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/shrub)
 "pL" = (
 /turf/open/floor/naturalstone,
@@ -1348,7 +1348,7 @@
 /turf/closed/wall/mineral/decostone/moss/blue/cand,
 /area/under/underdark/rmh/shar)
 "qX" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/deepwastes)
 "rb" = (
 /obj/effect/spawner/map_spawner/loot/rare,
@@ -1997,7 +1997,7 @@
 	status = 3;
 	icon_state = "chand0"
 	},
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/shar)
 "zv" = (
 /turf/open/floor/mushroom/green,
@@ -2339,7 +2339,7 @@
 /turf/open/floor/churchrough,
 /area/under/underdark/rmh/shar)
 "Eg" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/caves)
 "Ej" = (
 /obj/effect/decal/cleanable/debris/stone,
@@ -2401,7 +2401,7 @@
 	},
 /area/under/underdark/rmh/glimmerlakes)
 "EQ" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/glimmerlakes)
 "ER" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/huge,
@@ -2859,7 +2859,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/under/underdark/rmh)
 "Lh" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/main)
 "Li" = (
 /obj/machinery/light/fueled/firebowl/standing,
@@ -3632,7 +3632,7 @@
 /turf/open/floor/church,
 /area/under/underdark/rmh/shar)
 "UV" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/cavelava/rmh/lava_hollows)
 "UY" = (
 /obj/structure/trap/fire{
@@ -3745,7 +3745,7 @@
 /turf/open/floor/naturalstone,
 /area/under/underdark/rmh)
 "WK" = (
-/turf/open/transparent/openspace,
+/turf/open/openspace,
 /area/under/underdark/rmh/shar)
 "WO" = (
 /obj/structure/flora/grass,

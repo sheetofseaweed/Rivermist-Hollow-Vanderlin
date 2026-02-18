@@ -26,7 +26,7 @@
 	. = ..()
 	icon_state_base = icon_state
 
-/obj/item/clothing/undies/attack(mob/M, mob/user, def_zone)
+/obj/item/undies/attack(mob/M, mob/user, list/modifiers)
 	if(ishuman(M))
 		var/mob/living/carbon/human/H = M
 		if(!H.underwear)
@@ -83,6 +83,12 @@
 	requirements = list(/obj/item/natural/cloth = 1,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 2
+
+/datum/repeatable_crafting_recipe/sewing/undies/thong
+	name = "thong"
+	output = /obj/item/clothing/undies/thong
+	requirements = list(/obj/item/natural/cloth = 1,
+				/obj/item/natural/fibers = 2)
 
 /datum/repeatable_crafting_recipe/sewing/bikini_bottom
 	name = "bikini bottom"

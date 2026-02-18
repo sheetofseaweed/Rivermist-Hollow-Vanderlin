@@ -882,6 +882,11 @@ GLOBAL_LIST_INIT(binary, list("0","1"))
 	catch
 		return
 
+/// Removes all non-alphanumerics from the text, keep in mind this can lead to id conflicts
+/proc/sanitize_css_class_name(name)
+	var/static/regex/regex = new(@"[^a-zA-Z0-9]","g")
+	return replacetext(name, regex, "")
+
 /proc/remove_all_spaces(text)
 	return replacetext_char(text, " ", "")
 

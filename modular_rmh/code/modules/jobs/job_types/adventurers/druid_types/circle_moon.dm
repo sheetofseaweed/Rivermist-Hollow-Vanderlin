@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_druid/circle_moon
 	category_tags = list(CAT_ADVENTURER_DRUID)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_END = 2,
@@ -64,7 +65,7 @@
 	shoes = /obj/item/clothing/shoes/sandals
 	backr = /obj/item/storage/backpack/satchel/cloth
 	backl = /obj/item/weapon/polearm/woodstaff
-	belt = /obj/item/storage/belt/leather/rope
+	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
 	beltl = /obj/item/weapon/knife/stone
 	beltr = null
 	ring = null

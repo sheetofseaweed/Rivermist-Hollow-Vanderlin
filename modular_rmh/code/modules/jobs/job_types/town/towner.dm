@@ -16,6 +16,8 @@
 	selection_color = JCOLOR_TOWN
 	advclass_cat_rolls = list(CAT_TOWNER = 20)
 
+	give_bank_account = 5
+
 	job_subclasses = list(
 		/datum/job/advclass/towner/commoner,
 		/datum/job/advclass/towner/burgess,
@@ -24,6 +26,7 @@
 		/datum/job/advclass/towner/bard,
 		/datum/job/advclass/towner/jester,
 		/datum/job/advclass/towner/miner,
+		/datum/job/advclass/towner/lumberjack,
 		/datum/job/advclass/towner/farmhand,
 		/datum/job/advclass/towner/hunter,
 		/datum/job/advclass/towner/fisher,

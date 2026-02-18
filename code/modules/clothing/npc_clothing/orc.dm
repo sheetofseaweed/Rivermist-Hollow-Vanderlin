@@ -6,11 +6,13 @@
 	allowed_race = list(SPEC_ID_ORC)
 	smeltresult = /obj/item/ingot/iron
 	sellprice = NO_MARKET_VALUE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 	armor_class = AC_MEDIUM
 	armor = ARMOR_PADDED_GOOD
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
 	max_integrity = INTEGRITY_POOR
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/orc/warlord
 	name = "warlord armor"
@@ -18,6 +20,7 @@
 	icon_state = "warlord_armor"
 	item_state = "warlord_armor"
 	armor = ARMOR_PLATE_BAD
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/iron/orc
 	name = "crude maille"
@@ -25,12 +28,14 @@
 	item_state = "orc_chainvest"
 	allowed_race = list(SPEC_ID_ORC)
 	sellprice = NO_MARKET_VALUE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 	armor_class = AC_MEDIUM
 	armor = list("blunt" = 25, "slash" = 25, "stab" = 25,  "piercing" = 50, "fire" = 0, "acid" = 0)
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
 	prevent_crits = ALL_EXCEPT_BLUNT
 	max_integrity = INTEGRITY_POOR
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/orc
 	name = "Orc Marauder Helmet"

@@ -60,6 +60,7 @@
 	selection_color = JCOLOR_ADVENTURERS
 	scales = TRUE
 
+	give_bank_account = TRUE
 	exp_types_granted = list(EXP_TYPE_ADVENTURER, EXP_TYPE_COMBAT, EXP_TYPE_CLERIC, EXP_TYPE_MEDICAL)
 
 	magic_user = TRUE

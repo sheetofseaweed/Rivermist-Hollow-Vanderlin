@@ -5,6 +5,7 @@
 	allowed_races = list(SPEC_ID_DROW)
 	outfit = /datum/outfit/adventurer_rogue/shadowblade
 	category_tags = list(CAT_ADVENTURER_ROGUE)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/misc/swimming = 2,
@@ -71,7 +72,7 @@
 	shoes = /obj/item/clothing/shoes/boots
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

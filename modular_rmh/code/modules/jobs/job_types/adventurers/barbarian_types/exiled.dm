@@ -7,6 +7,7 @@
 	allowed_races = list(SPEC_ID_HALF_ORC)
 	outfit = /datum/outfit/adventurer_barbarian/exiled
 	category_tags = list(CAT_ADVENTURER_BARBARIAN)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 1,
@@ -62,7 +63,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather/mercenary
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/axe/iron
 	beltr = /obj/item/weapon/axe/iron
 	ring = null

@@ -15,6 +15,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	nodismemsleeves = TRUE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/nightgown/colored
 	color = "#FFFFFF"

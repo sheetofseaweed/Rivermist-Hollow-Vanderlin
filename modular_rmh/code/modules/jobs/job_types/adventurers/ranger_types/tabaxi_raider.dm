@@ -7,6 +7,7 @@
 	allowed_races = list(SPEC_ID_RAKSHARI)
 	outfit = /datum/outfit/adventurer_ranger/tabaxi_raider
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_STR = 1,
@@ -50,7 +51,7 @@
 	shoes = /obj/item/clothing/shoes/ridingboots
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/short
-	belt = /obj/item/storage/belt/leather/mercenary/shalal
+	belt = /obj/item/storage/belt/leather/shalal/adventurers_subclasses
 	beltl = /obj/item/ammo_holder/quiver/arrows
 	beltr = /obj/item/weapon/sword/sabre
 	ring = null

@@ -6,6 +6,7 @@
 	allowed_sexes = list(MALE)
 	outfit = /datum/outfit/adventurer_fighter/black_swordsman
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	total_positions = 1
 
 	skills = list(
@@ -55,7 +56,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather/advanced
 	backr = /obj/item/storage/backpack/satchel/black
 	backl = null
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null
 	ring = null

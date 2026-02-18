@@ -4,6 +4,7 @@
 	With your hold in ruins, you now serve in exile — guarding secrets, managing survival, and deciding how far loyalty truly goes."
 
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	outfit = /datum/outfit/adventurer_fighter/fallen_hand
 	total_positions = 1
 
@@ -46,7 +47,7 @@
 	shoes = /obj/item/clothing/shoes/nobleboot
 	backr = /obj/item/storage/backpack/satchel/heartfelt
 	backl = null
-	belt = /obj/item/storage/belt/leather/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = /obj/item/weapon/sword/decorated
 	beltr = /obj/item/storage/belt/pouch/coins/rich
 	ring = null

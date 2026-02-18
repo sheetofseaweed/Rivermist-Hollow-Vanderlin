@@ -10,6 +10,7 @@
 	icon = 'modular_rmh/icons/clothing/physician.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/physician.dmi'
 	salvage_result = /obj/item/natural/silk
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/courtphysician/Initialize()
 	. = ..()
@@ -32,6 +33,7 @@
 	item_state = "dochat2"
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguetown/courtphysician/female/Initialize()
 	. = ..()
@@ -56,6 +58,7 @@
 	icon = 'modular_rmh/icons/clothing/physician.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/physician.dmi'
 	salvage_result = /obj/item/natural/silk
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //NECK
 
@@ -66,6 +69,7 @@
 	item_state = "courtcollar"
 	icon = 'modular_rmh/icons/clothing/physician.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/physician.dmi'
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //MASKS
 
@@ -80,6 +84,7 @@
 	salvage_result = /obj/item/alch/bone
 	resistance_flags = FLAMMABLE
 	gas_transfer_coefficient = 0.3
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/physician
 	name = "physician's mask"
@@ -91,6 +96,7 @@
 	salvage_result = /obj/item/alch/bone
 	resistance_flags = FLAMMABLE
 	gas_transfer_coefficient = 0.3
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //GLOVES
 
@@ -113,6 +119,7 @@
 	anvilrepair = null
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/hide/cured
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/leather/courtphysician/female
 	name = "sanguine sleeves"
@@ -125,6 +132,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
 	salvage_result = /obj/item/natural/silk
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/leather/courtphysician/female/Initialize()
 	. = ..()
@@ -154,6 +162,7 @@
 	sleeved = 'modular_rmh/icons/clothing/onmob/helpers/physician_sleeves.dmi'
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/courtphysician/Initialize()
 	. = ..()
@@ -181,6 +190,7 @@
 	sleeved = 'modular_rmh/icons/clothing/onmob/helpers/physician_sleeves.dmi'
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/courtphysician/female/Initialize()
 	. = ..()
@@ -210,6 +220,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
 	salvage_result = /obj/item/natural/silk
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/undershirt/courtphysician/Initialize()
 	. = ..()
@@ -237,6 +248,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
 	salvage_result = /obj/item/natural/silk
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/undershirt/courtphysician/female/Initialize()
 	. = ..()
@@ -261,6 +273,7 @@
 	icon = 'modular_rmh/icons/clothing/physician.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/physician.dmi'
 	sleeved = 'modular_rmh/icons/clothing/onmob/helpers/physician_sleeves.dmi'
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //PANTS
 
@@ -273,6 +286,7 @@
 	icon = 'modular_rmh/icons/clothing/physician.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/physician.dmi'
 	sleeved = 'modular_rmh/icons/clothing/onmob/helpers/physician_sleeves.dmi'
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/skirt/courtphysician
 	name = "sanguine skirt"
@@ -286,6 +300,7 @@
 	detail_color = CLOTHING_RED
 	alternate_worn_layer = (SHIRT_LAYER)
 	salvage_result = /obj/item/natural/silk
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/skirt/courtphysician/Initialize()
 	. = ..()
@@ -313,6 +328,7 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/physician.dmi'
 	sleeved = 'modular_rmh/icons/clothing/onmob/helpers/physician_sleeves.dmi'
 	salvage_result = /obj/item/natural/hide/cured
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/heels/courtphysician/female
 	name = "sanguine heels"
@@ -324,6 +340,7 @@
 	sleeved = 'modular_rmh/icons/clothing/onmob/helpers/physician_sleeves.dmi'
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/heels/courtphysician/female/Initialize()
 	. = ..()

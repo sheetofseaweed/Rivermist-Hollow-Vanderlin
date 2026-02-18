@@ -11,6 +11,7 @@
 	nodismemsleeves = TRUE
 	sleevetype = null
 	sleeved = null
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/loincloth/warrior_nun
 	name = "warrior priestess loincloth"
@@ -19,6 +20,7 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/unholyspirit/onmob/warrior_nun.dmi'
 	icon_state = "bottom"
 	item_state = "bottom"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/warrior_nun
 	name = "warrior priestess hood"
@@ -28,6 +30,7 @@
 	flags_inv = HIDEEARS|HIDEHAIR
 	icon_state = "hood"
 	item_state = "hood"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/undershirt/tamer_priestess
 	slot_flags = ITEM_SLOT_SHIRT | ITEM_SLOT_ARMOR
@@ -42,6 +45,7 @@
 	nodismemsleeves = TRUE
 	sleevetype = null
 	sleeved = null
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/loincloth/tamer_priestess
 	name = "priestess loincloth"
@@ -50,6 +54,7 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/unholyspirit/onmob/priestess.dmi'
 	icon_state = "bottom"
 	item_state = "bottom"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/tamer_priestess
 	name = "priestess hood"
@@ -59,3 +64,4 @@
 	flags_inv = HIDEEARS|HIDEHAIR
 	icon_state = "hood"
 	item_state = "hood"
+	misc_flags = CRAFTING_TEST_EXCLUDE

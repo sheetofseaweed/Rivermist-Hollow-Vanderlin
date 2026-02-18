@@ -16,7 +16,6 @@
 
 	summon_type = list(/obj/item/phantom_ear)
 	summon_radius = 0
-	cast_range = 14
 
 	var/datum/weakref/current_ear
 

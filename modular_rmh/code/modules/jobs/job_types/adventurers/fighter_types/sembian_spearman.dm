@@ -7,6 +7,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/sembian_spearman
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 
 	jobstats = list(
 		STATKEY_SPD = 2,
@@ -42,7 +43,7 @@
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backl = /obj/item/weapon/polearm/spear
 	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
-	belt = /obj/item/storage/belt/leather/mercenary/black
+	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	beltl = /obj/item/ammo_holder/quiver/arrows
 	ring = null

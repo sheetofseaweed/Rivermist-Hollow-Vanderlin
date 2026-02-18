@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_fighter/sembian_count
 	category_tags = list(CAT_ADVENTURER_FIGHTER)
+	give_bank_account = TRUE
 	total_positions = 1
 
 	jobstats = list(
@@ -61,7 +62,7 @@
 	shoes = /obj/item/clothing/shoes/rare/grenzelhoft
 	backr = null
 	backl = null
-	belt = /obj/item/storage/belt/leather/plaquesilver
+	belt = /obj/item/storage/belt/leather/plaquesilver/adventurers_subclasses
 	beltl = /obj/item/weapon/sword/sabre/dec
 	beltr = /obj/item/flashlight/flare/torch/lantern
 	ring = /obj/item/clothing/ring/gold

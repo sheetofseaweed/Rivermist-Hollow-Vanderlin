@@ -32,7 +32,7 @@
 		return
 	if(owner.stat == DEAD)
 		return
-	if(owner.has_quirk(/datum/quirk/selfawaregeni))
+	if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 		to_chat(owner, span_love("I feel a surge of warmth in my [src.name], I’m definitely pregnant!"))
 	reagents.maximum_volume *= 0.5 //ick ock, should make the thing recalculate on next life tick.
 	pregnant = TRUE

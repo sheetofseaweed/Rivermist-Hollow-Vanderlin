@@ -6,5 +6,5 @@
 
 /datum/map_adjustment/voyager
 	map_file_name = "voyager.dmm"
-	blacklist = null
-	slot_adjust = null
+	blacklist = list()
+	slot_adjust = list()

@@ -4,6 +4,7 @@
 
 	outfit = /datum/outfit/adventurer_ranger/monster_hunter
 	category_tags = list(CAT_ADVENTURER_RANGER)
+	give_bank_account = TRUE
 
 	skills = list(
 		/datum/skill/misc/sewing = 2,
@@ -47,7 +48,7 @@
 	shoes = /obj/item/clothing/shoes/boots
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
-	belt = /obj/item/storage/belt/leather
+	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/sword/rapier/silver
 	beltr = /obj/item/weapon/whip/silver
 	ring = null
