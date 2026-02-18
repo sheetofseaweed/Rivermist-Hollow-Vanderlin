@@ -66,7 +66,7 @@
 
 	if(used)
 		if(used.blocksound)
-			playsound(loc, get_armor_sound(used.blocksound, blade_dulling), 100)
+			playsound(src, get_armor_sound(used.blocksound, blade_dulling), 100)
 		used.take_damage(damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
 
 	if(steam_boiler && def_zone == BODY_ZONE_CHEST)
@@ -281,12 +281,12 @@
 	if(M.used_intent.type == INTENT_DISARM) //Always drop item in hand, if no item, get stunned instead.
 		var/obj/item/I = get_active_held_item()
 		if(I && dropItemToGround(I, silent = FALSE))
-			playsound(loc, 'sound/blank.ogg', 25, TRUE, -1)
+			playsound(src, 'sound/blank.ogg', 25, TRUE, -1)
 			visible_message("<span class='danger'>[M] disarmed [src]!</span>", \
 							"<span class='danger'>[M] disarmed you!</span>", "<span class='hear'>I hear aggressive shuffling!</span>", null, M)
 			to_chat(M, "<span class='danger'>I disarm [src]!</span>")
 		else if(!M.client || prob(5)) // only natural monkeys get to stun reliably, (they only do it occasionaly)
-			playsound(loc, 'sound/blank.ogg', 25, TRUE, -1)
+			playsound(src, 'sound/blank.ogg', 25, TRUE, -1)
 			if(HAS_TRAIT(src, TRAIT_FLOORED) && !IsParalyzed())
 				Paralyze(40)
 				log_combat(M, src, "pinned")
@@ -345,6 +345,9 @@
 			return FALSE
 
 /mob/living/carbon/human/ex_act(severity, target, epicenter, devastation_range, heavy_impact_range, light_impact_range, flame_range)
+	if(HAS_TRAIT(src, TRAIT_BOMBIMMUNE))
+		return
+
 	..()
 	if (!severity)
 		return
@@ -635,7 +638,7 @@
 
 	examination += "ø ------------ ø" //automatically lists internal organs that have those functions
 	var/mob/living/carbon/human/userino = user
-	if(userino.has_quirk(/datum/quirk/selfawaregeni))
+	if(userino.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 		for(var/obj/item/organ/genitals/filling_organ/forgan in userino.internal_organs)
 			var/health_status = ""
 			var/health_ratio = (forgan.maxHealth - forgan.damage) / forgan.maxHealth
@@ -705,6 +708,12 @@
 	//CHEST//
 	if(!def_zone || def_zone == BODY_ZONE_CHEST)
 		var/obj/item/clothing/chest_clothes = null
+		if(bra)
+			chest_clothes = bra
+		if(underwear)
+			chest_clothes = underwear
+		if(undershirt)
+			chest_clothes = undershirt
 		if(wear_pants)
 			chest_clothes = wear_pants
 		if(wear_armor)
@@ -717,6 +726,8 @@
 		var/obj/item/clothing/arm_clothes = null
 		if(gloves)
 			arm_clothes = gloves
+		if(armsleeves)
+			arm_clothes = armsleeves
 		if(wear_pants && ((wear_pants.body_parts_covered & HANDS) || (wear_pants.body_parts_covered & ARMS)))
 			arm_clothes = wear_pants
 		if(wear_armor && ((wear_armor.body_parts_covered & HANDS) || (wear_armor.body_parts_covered & ARMS)))
@@ -727,6 +738,8 @@
 	//LEGS & FEET//
 	if(!def_zone || def_zone == BODY_ZONE_L_LEG || def_zone == BODY_ZONE_R_LEG)
 		var/obj/item/clothing/leg_clothes = null
+		if(legwear_socks)
+			leg_clothes = legwear_socks
 		if(shoes)
 			leg_clothes = shoes
 		if(wear_pants && ((wear_pants.body_parts_covered & FEET) || (wear_pants.body_parts_covered & LEGS)))

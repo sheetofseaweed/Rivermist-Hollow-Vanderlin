@@ -103,9 +103,9 @@
 	background_track_dusk = null
 	background_track_night = null
 
-/area/outdoors/rtfield
+/area/outdoors/basin
 	name = "town basin"
-	icon_state = "rtfield"
+	icon_state = "basin"
 	soundenv = 19
 	ambush_times = list("night","dawn","dusk","day")
 	ambush_types = list(
@@ -118,52 +118,21 @@
 	background_track = 'sound/music/area/field.ogg'
 	background_track_dusk = 'sound/music/area/septimus.ogg'
 	background_track_night = 'sound/music/area/sleeping.ogg'
-	converted_type = /area/indoors/shelter/rtfield
+	converted_type = /area/indoors/shelter/basin
 
-/area/outdoors/rtfield/Initialize()
+/area/outdoors/basin/Initialize()
 	. = ..()
 	first_time_text = "[uppertext(SSmapping.config.map_name)] BASIN"
 
-/area/outdoors/rtfield/safe
+/area/outdoors/basin/safe
+	icon_state = "basin_safe"
 	ambush_mobs = null
 
-/area/rogue/outdoors/farm
-	name = "soilery"
-	icon_state = "rtfield"
-	soundenv = 19
+/area/indoors/shelter/basin
+	icon_state = "basin"
 	background_track = 'sound/music/area/field.ogg'
 	background_track_dusk = 'sound/music/area/septimus.ogg'
 	background_track_night = 'sound/music/area/sleeping.ogg'
-	converted_type = /area/indoors/shelter/rtfield
-
-/area/indoors/shelter/rtfield
-	icon_state = "rtfield"
-	background_track = 'sound/music/area/field.ogg'
-	background_track_dusk = 'sound/music/area/septimus.ogg'
-	background_track_night = 'sound/music/area/sleeping.ogg'
-
-/area/outdoors/woods
-	name = "wilderness"
-	icon_state = "woods"
-	droning_index = DRONING_FOREST_DAY
-	droning_index_night = DRONING_FOREST_NIGHT
-	ambient_index = AMBIENCE_BIRDS
-	ambient_index_night = AMBIENCE_FOREST
-	background_track = 'sound/music/area/forest.ogg'
-	background_track_dusk = 'sound/music/area/septimus.ogg'
-	background_track_night = 'sound/music/area/forestnight.ogg'
-	soundenv = 15
-	ambush_times = list("night","dawn","dusk","day")
-	ambush_types = list(
-				/turf/open/floor/grass)
-	ambush_mobs = list(
-				/mob/living/simple_animal/hostile/retaliate/wolf = 60,
-				/mob/living/simple_animal/hostile/retaliate/troll/axe = 10,
-				/mob/living/carbon/human/species/goblin/npc/ambush = 45,
-				/mob/living/simple_animal/hostile/retaliate/mole = 25)
-	first_time_text = "THE MURDERWOOD"
-	custom_area_sound = 'sound/misc/stings/ForestSting.ogg'
-	converted_type = /area/indoors/shelter/woods
 
 /area/indoors/shelter/woods
 	icon_state = "woods"
@@ -381,7 +350,7 @@
 	background_track_night = 'sound/music/area/deliverer.ogg'
 
 ///// MANOR AREAS //////
-
+/*
 /area/indoors/town/manor
 	name = "Manor"
 	icon = 'icons/turf/areas_manor.dmi'
@@ -538,7 +507,7 @@
 	icon_state = "manorgarri"
 	background_track = 'sound/music/area/manor.ogg'
 	background_track_dusk = null
-	background_track_night = null
+	background_track_night = null*/
 
 /area/outdoors/exposed/cell
 	icon_state = "cell"
@@ -778,122 +747,6 @@
 	background_track_dusk = 'sound/music/area/septimus.ogg'
 	background_track_night = 'sound/music/area/sleeping.ogg'
 
-///// OUTDOORS AREAS (again, for some reason)
-
-/area/outdoors/town
-	name = "outdoors"
-	icon_state = "town"
-	background_track = 'sound/music/area/townstreets.ogg'
-	background_track_dusk = 'sound/music/area/septimus.ogg'
-	background_track_night = 'sound/music/area/deliverer.ogg'
-	converted_type = /area/indoors/shelter/town
-
-/area/outdoors/town/Initialize()
-	. = ..()
-	first_time_text = "[uppertext(SSmapping.config.map_name)]"
-
-/area/indoors/shelter/town
-	icon_state = "town"
-	background_track = 'sound/music/area/townstreets.ogg'
-	background_track_dusk = 'sound/music/area/septimus.ogg'
-	background_track_night = 'sound/music/area/deliverer.ogg'
-
-/area/outdoors/town/sargoth
-	name = "outdoors"
-	icon_state = "sargoth"
-	background_track = 'sound/music/area/sargoth.ogg'
-	background_track_dusk = null
-	converted_type = /area/indoors/shelter/town/sargoth
-
-/area/indoors/shelter/town/sargoth
-	icon_state = "sargoth"
-	background_track = 'sound/music/area/sargoth.ogg'
-	background_track_dusk = null
-	background_track_night = null
-
-/area/outdoors/town/roofs
-	name = "roofs"
-	icon_state = "roofs"
-	droning_index = DRONING_MOUNTAIN
-	ambient_index = AMBIENCE_GENERIC
-	background_track = 'sound/music/area/field.ogg'
-	converted_type = /area/indoors/shelter/town/roofs
-
-/area/indoors/shelter/town/roofs
-	icon_state = "roofs"
-	background_track = 'sound/music/area/field.ogg'
-	background_track_dusk = 'sound/music/area/septimus.ogg'
-	background_track_night = 'sound/music/area/deliverer.ogg'
-
-/area/outdoors/town/dwarf
-	name = "makers quarter"
-	icon_state = "dwarf"
-	background_track = 'sound/music/area/dwarf.ogg'
-	background_track_dusk = null
-	background_track_night = null
-	first_time_text = "The Makers' Quarter"
-	converted_type = /area/indoors/shelter/town/dwarf
-
-/area/indoors/shelter/town/dwarf
-	icon_state = "dwarf"
-	background_track = 'sound/music/area/dwarf.ogg'
-	background_track_dusk = null
-	background_track_night = null
-
-///// UNDERGROUND AREAS //////
-
-/area/under/town
-	name = "basement"
-	icon_state = "town"
-	background_track = 'sound/music/area/catacombs.ogg'
-	background_track_dusk = null
-	background_track_night = null
-	converted_type = /area/outdoors/exposed/under/town
-
-/area/outdoors/exposed/under/town
-	icon_state = "town"
-	background_track = 'sound/music/area/catacombs.ogg'
-	background_track_dusk = null
-	background_track_night = null
-
-/area/under/town/sewer
-	name = "sewer"
-	icon_state = "sewer"
-	droning_index = DRONING_CAVE_WET
-	ambient_index = AMBIENCE_RAT
-	background_track = 'sound/music/area/sewers.ogg'
-	background_track_dusk = null
-	background_track_night = null
-	custom_area_sound = 'sound/misc/stings/SewerSting.ogg'
-	converted_type = /area/outdoors/exposed/under/sewer
-
-/area/under/town/sewer/Initialize()
-	. = ..()
-	first_time_text = "[uppertext(SSmapping.config.map_name)]'S SEWERS"
-
-/area/outdoors/exposed/under/sewer
-	icon_state = "sewer"
-	background_track = 'sound/music/area/sewers.ogg'
-	background_track_dusk = null
-	background_track_night = null
-
-/area/under/town/basement
-	name = "basement"
-	icon_state = "basement"
-	droning_index = DRONING_BASEMENT
-	ambient_index = AMBIENCE_DUNGEON
-	background_track = 'sound/music/area/catacombs.ogg'
-	background_track_dusk = null
-	background_track_night = null
-	soundenv = 5
-	converted_type = /area/outdoors/exposed/under/basement
-
-/area/outdoors/exposed/under/basement
-	icon_state = "basement"
-	background_track = 'sound/music/area/catacombs.ogg'
-	background_track_dusk = null
-	background_track_night = null
-
 
 ///// UNDERWORLD AREAS //////
 
@@ -932,7 +785,7 @@
 			//put this idiot SOMEWHERE
 			var/static/list/unsafe_turfs = list(
 				/turf/open/floor/underworld/space,
-				/turf/open/transparent/openspace,
+				/turf/open/openspace,
 			)
 
 			var/static/list/turfs = list()
@@ -970,44 +823,6 @@
 	background_track = 'sound/music/area/townstreets.ogg'
 	background_track_dusk = 'sound/music/area/septimus.ogg'
 	background_track_night = 'sound/music/area/sleeping.ogg'
-
-// Players are penalized for entering the Guild Gaptain's quarters (FAFO)
-/area/outdoors/beach/boat/captain
-	name = "guild captain"
-	droning_index = DRONING_LAKE
-	droning_index_night = DRONING_LAKE
-	background_track = 'sound/music/area/townstreets.ogg'
-	background_track_dusk = 'sound/music/area/septimus.ogg'
-	background_track_night = 'sound/music/area/sleeping.ogg'
-
-/area/indoors/town/theatre
-	name = "theatre"
-	icon_state = "manor"
-	background_track = null
-	background_track_dusk = null
-	background_track_night = null
-	converted_type = /area/outdoors/exposed/theatre
-
-/area/outdoors/exposed/theatre
-	name = "theatre"
-	icon_state = "manor"
-	background_track = null
-	background_track_dusk = null
-	background_track_night = null
-
-/area/indoors/town/apothecary
-	name = "apothecary"
-	icon_state = "manor"
-	background_track = null
-	background_track_dusk = null
-	background_track_night = null
-
-/area/under/town/ruin
-	name = "townruin"
-	icon_state = "town"
-	background_track = 'sound/music/area/catacombs.ogg'
-	background_track_dusk = null
-	background_track_night = null
 
 
 ///// ANTAGONIST AREAS //////  - used on centcom so you can teleport there easily. Each antag area just gets one unique type, if its outdoor use generic indoors, vice versa, to avoid clutter in area list

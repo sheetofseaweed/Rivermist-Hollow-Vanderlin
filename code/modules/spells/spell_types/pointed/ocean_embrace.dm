@@ -9,7 +9,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/skill/magic/holy
-	required_items = list(/obj/item/clothing/neck/psycross/silver/abyssor)
 
 	invocation = "Embrace the waters of Abyssor's domain!"
 	invocation_type = INVOCATION_SHOUT
@@ -39,7 +38,7 @@
 		else
 			cast_on.Knockdown(5)
 			cast_on.Slowdown(60)
-			cast_on.Dizzy(10)
+			cast_on.set_dizzy(10 SECONDS)
 			cast_on.set_eye_blur_if_lower(40 SECONDS)
 			cast_on.emote("drown")
 		return

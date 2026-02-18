@@ -4,11 +4,7 @@ GLOBAL_LIST_EMPTY(machines)					        //NOTE: this is a list of ALL machines n
 GLOBAL_LIST(chemical_reactions_list)				//list of all /datum/chemical_reaction datums. Used during chemical reactions
 GLOBAL_LIST(chemical_reagents_list)				//list of all /datum/reagent datums indexed by reagent id. Used by chemistry stuff
 GLOBAL_LIST_INIT(chemical_reagents_color_list, build_chemical_reagent_color_list())		//list of random colors for reagents, initiated at roundstart or when a reagent is created
-GLOBAL_LIST_EMPTY(crafting_recipes)				//list of all table craft recipes
-GLOBAL_LIST_EMPTY(anvil_recipes)				//list of all anvil crafted recipes
-GLOBAL_LIST_EMPTY(artificer_recipes)			//list of all artificer recipes
-GLOBAL_LIST_EMPTY(alch_grind_recipes)			//list of all alchemy grinding recipes
-GLOBAL_LIST_EMPTY(alch_cauldron_recipes)		//list of all alchemy cauldron recipes
+
 GLOBAL_LIST_EMPTY(poi_list)					//list of points of interest for observe/follow
 GLOBAL_LIST_EMPTY(pinpointer_list)			//list of all pinpointers. Used to change stuff they are pointing to all at once.
 GLOBAL_LIST_EMPTY(zombie_infection_list) 		// A list of all zombie_infection organs, for any mass "animation"
@@ -16,6 +12,11 @@ GLOBAL_LIST_EMPTY(ladders)
 GLOBAL_LIST_EMPTY(trophy_cases)
 
 GLOBAL_LIST_EMPTY(mob_spawners) 		    // All mob_spawn objects
+
+GLOBAL_LIST_INIT(anvil_recipes, init_subtypes(/datum/anvil_recipe, list()))
+GLOBAL_LIST_INIT(artificer_recipes, init_subtypes(/datum/artificer_recipe, list()))
+GLOBAL_LIST_INIT(alch_grind_recipes, init_subtypes(/datum/alch_grind_recipe, list()))
+GLOBAL_LIST_INIT(alch_cauldron_recipes, init_subtypes(/datum/alch_cauldron_recipe, list()))
 
 /* COLORS */
 GLOBAL_LIST_INIT(peasant_dyes, list(
@@ -30,6 +31,16 @@ GLOBAL_LIST_INIT(peasant_dyes, list(
 	"Spring Green" = CLOTHING_SPRING_GREEN,
 	"Berry Blue" = CLOTHING_BERRY_BLUE,
 	"Taraxacum Yellow" = CLOTHING_TARAXACUM_YELLOW,
+	"PURPLE" = CLOTHING_PURPLE,
+	"BLACK" = CLOTHING_BLACK,
+	"BROWN" = CLOTHING_BROWN,
+	"YELLOW" = CLOTHING_YELLOW,
+	"AZURE" = CLOTHING_AZURE,
+	"Baby Puke" = CLOTHING_BABY_PUKE,
+	"Gold" = CLOTHING_GOLD,
+	"Mage Red" = CLOTHING_MAGE_RED,
+	"Orange" = CLOTHING_ORANGE,
+	"Red" = CLOTHING_RED,
 ))
 GLOBAL_PROTECT(peasant_dyes)
 
@@ -48,6 +59,7 @@ GLOBAL_LIST_INIT(noble_dyes, list(
 	"Blood Red" = CLOTHING_BLOOD_RED,
 	"Swampweed" = CLOTHING_SWAMPWEED,
 	"Ocean" = CLOTHING_OCEAN,
+	"Darkest Night" = CLOTHING_DARKEST_NIGHT,
 ))
 GLOBAL_PROTECT(noble_dyes)
 
@@ -73,3 +85,25 @@ GLOBAL_LIST_INIT(steam_armor, list(
 	/obj/item/clothing/shoes/boots/armor/steam,
 	/obj/item/clothing/cloak/boiler,
 ))
+
+
+//normal clothing addition
+GLOBAL_LIST_INIT(common_dyes, list(
+	"Clothing Red" = CLOTHING_RED,
+	"Clothing Purple" = CLOTHING_PURPLE,
+	"Clothing Black" = CLOTHING_BLACK,
+	"Clothing Grey" = CLOTHING_GREY,
+	"Clothing Brown" = CLOTHING_BROWN,
+	"Clothing Green" = CLOTHING_GREEN,
+	"Clothing Dark Green" = CLOTHING_DARK_GREEN,
+	"Clothing Blue" = CLOTHING_BLUE,
+	"Clothing Yellow" = CLOTHING_YELLOW,
+	"Clothing Teal" = CLOTHING_TEAL,
+	"Clothing Azure" = CLOTHING_AZURE,
+	"Clothing White" = CLOTHING_WHITE,
+	"Clothing Orange" = CLOTHING_ORANGE,
+	"Clothing Magenta" = CLOTHING_MAGENTA,
+))
+
+GLOBAL_PROTECT(common_dyes)
+

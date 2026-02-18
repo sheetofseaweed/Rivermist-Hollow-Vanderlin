@@ -5,12 +5,13 @@
 	var/postdig_icon_change = FALSE
 	var/postdig_icon
 	var/wet
+	var/heelstep = null
 	var/footstep = null
 	var/barefootstep = null
 	var/clawfootstep = null
 	var/heavyfootstep = null
 	var/footstepstealth = FALSE
-	baseturfs = /turf/open/transparent/openspace
+	baseturfs = /turf/open/openspace
 
 	smoothing_groups = SMOOTH_GROUP_OPEN
 
@@ -100,7 +101,7 @@
 			return 0
 	if(!(lube&SLIDE_ICE))
 		to_chat(C, "<span class='notice'>I slipped[ O ? " on the [O.name]" : ""]!</span>")
-		playsound(C.loc, 'sound/blank.ogg', 50, TRUE, -3)
+		playsound(C, 'sound/blank.ogg', 50, TRUE, -3)
 
 	C.add_stress(/datum/stress_event/slipped)
 	if(force_drop)

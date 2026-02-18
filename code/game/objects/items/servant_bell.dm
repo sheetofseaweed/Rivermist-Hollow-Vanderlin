@@ -20,7 +20,7 @@
 	/// used for adding roundstart individuals to the bell. This will actively update the targets if they cryo or latejoin.
 	var/list/job_targets
 	/// jobs who can use/configure this bell without needing to be a noble
-	var/list/noble_exemptions = list(/datum/job/butler)
+	var/list/noble_exemptions = list(/datum/job/servant)
 
 	COOLDOWN_DECLARE(ring_bell)
 	var/cooldown = 3 MINUTES
@@ -52,7 +52,7 @@
 		. += span_notice("Use on a commoner to bind their mind to the bell.")
 		. += span_notice("Right click with an open hand to relinquish servants.")
 
-/obj/item/servant_bell/afterattack(atom/target, mob/living/user, proximity_flag, click_parameters)
+/obj/item/servant_bell/afterattack(atom/target, mob/living/user, proximity_flag, list/modifiers)
 	. = ..()
 	if(!COOLDOWN_FINISHED(src, nearby_ring_bell) || !is_bell_proficient(user) || !ishuman(target))
 		return
@@ -209,7 +209,7 @@
 
 /// Keep Bell
 /obj/item/servant_bell/lord
-	job_targets = list(/datum/job/servant, /datum/job/butler)
+	job_targets = list(/datum/job/servant)
 	uses_lord_coloring = LORD_PRIMARY
 
 /obj/item/servant_bell/lord/Initialize(mapload)

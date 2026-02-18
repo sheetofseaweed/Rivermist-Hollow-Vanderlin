@@ -25,18 +25,18 @@
 /datum/species/human/halfelf
 		cum = /datum/reagent/consumable/cum/halfelf
 		femcum = /datum/reagent/consumable/femcum/halfelf
-
+/*
 /datum/species/lizardfolk
 		cum = /datum/reagent/consumable/cum/lizardfolk
-		femcum = /datum/reagent/consumable/femcum/lizardfolk
+		femcum = /datum/reagent/consumable/femcum/lizardfolk*/
 
 /datum/species/rakshari
 		cum = /datum/reagent/consumable/cum/tabaxi
 		femcum = /datum/reagent/consumable/femcum/tabaxi
-
+/*
 /datum/species/dracon
 		cum = /datum/reagent/consumable/cum/dracon
-		femcum = /datum/reagent/consumable/femcum/dracon
+		femcum = /datum/reagent/consumable/femcum/dracon*/
 
 /datum/species/halforc
 		cum = /datum/reagent/consumable/cum/halforc

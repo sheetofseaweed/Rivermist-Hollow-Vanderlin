@@ -77,7 +77,7 @@
 		if(captarget != reagents.maximum_volume)
 			if(!(reagents.has_reagent(/datum/reagent/consumable/femcum) && (reagents.get_reagent_amount(/datum/reagent/consumable/femcum) > captarget*0.8))) //so that vaginas don't spam messages
 				reagents.maximum_volume = captarget
-				if(H.has_quirk(/datum/quirk/selfawaregeni) && world.time > last_size_alert + 12 SECONDS)
+				if(H.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && world.time > last_size_alert + 12 SECONDS)
 					last_size_alert = world.time
 					to_chat(H, span_blue("My [pick(altnames)] hold a different amount now."))
 
@@ -155,7 +155,7 @@
 					blockingitem = H.underwear
 			/*if(blockingitem && !blockingitem.genital_access) //we aint dripping a drop.
 				tempdriprate = 0.1 //if worn slot cover it, drip nearly nothing.
-				if(owner.has_quirk(/datum/quirk/selfawaregeni))
+				if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 					if(prob(5))
 						if(!MOBTIMER_FINISHED(H, "organ_drip", rand(20,120)))
 							return
@@ -167,7 +167,7 @@
 							span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)] to my [blockingitem.name].")))*/
 			if(!(blockingitem && !blockingitem.genital_access)) //we drippin
 				if(prob(5)) //with selfawaregeni quirk you got some chance to see what type of liquid is dripping from you.
-					if(owner.has_quirk(/datum/quirk/selfawaregeni))
+					if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 						if(!MOBTIMER_FINISHED(H, "organ_drip", rand(20,120)))
 							return
 

@@ -185,8 +185,8 @@
 	item_weight = 5.5 * IRON_MULTIPLIER
 
 /obj/item/clothing/head/helmet/ironpot/lakkariancap
-	name = "lakkarian crowned cap"
-	desc = "a crimson red iron cap decorated with gold trims and embellishments. The design of this Lakkarian helmet hasn't changed in centuries."
+	name = "embellished crowned cap"
+	desc = "A crimson red iron cap decorated with gold trims and embellishments."
 	icon_state = "lakkaricap"
 	item_state = "lakkaricap"
 	sellprice = 50
@@ -324,7 +324,7 @@
 
 /obj/item/clothing/head/helmet/visored
 	name = "parent visored helmet"
-	desc = "If you're reading this, someone forgot to set an item description or spawned the wrong item. Yell at them."
+	desc = "A simple steel bascinet with a visor."
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	equip_sound = 'sound/foley/equip/equip_armor_plate.ogg'
 	adjustable = CAN_CADJUST

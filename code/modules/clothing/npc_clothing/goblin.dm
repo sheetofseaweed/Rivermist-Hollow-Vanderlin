@@ -12,6 +12,7 @@
 	max_integrity = 60
 	armor_class = AC_LIGHT // Otherwise they get knocked down TOO easily!!!
 	sellprice = 0
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/goblin
 	name = "goblin leather armor"

@@ -57,9 +57,6 @@ GLOBAL_VAR_INIT(cmp_field, "name")
 /proc/cmp_timer(datum/timedevent/a, datum/timedevent/b)
 	return a.timeToRun - b.timeToRun
 
-/proc/cmp_clientcolour_priority(datum/client_colour/A, datum/client_colour/B)
-	return B.priority - A.priority
-
 /proc/cmp_ruincost_priority(datum/map_template/ruin/A, datum/map_template/ruin/B)
 	return initial(A.cost) - initial(B.cost)
 
@@ -116,21 +113,3 @@ GLOBAL_VAR_INIT(cmp_field, "name")
 
 /proc/cmp_wound_severity_dsc(datum/wound/A, datum/wound/B)
 	return B.severity - A.severity
-
-/proc/cmp_quirk_asc(datum/quirk/A, datum/quirk/B)
-	var/a_sign = num2sign(initial(A.value) * -1)
-	var/b_sign = num2sign(initial(B.value) * -1)
-
-	// Neutral traits go last.
-	if(a_sign == 0)
-		a_sign = 2
-	if(b_sign == 0)
-		b_sign = 2
-
-	var/a_name = initial(A.name)
-	var/b_name = initial(B.name)
-
-	if(a_sign != b_sign)
-		return a_sign - b_sign
-	else
-		return sorttext(b_name, a_name)

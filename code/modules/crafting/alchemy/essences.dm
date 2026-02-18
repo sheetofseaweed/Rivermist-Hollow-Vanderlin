@@ -15,7 +15,7 @@
 	. = ..()
 	update_appearance(UPDATE_OVERLAYS)
 
-/obj/item/essence_vial/attack_self(mob/user, params)
+/obj/item/essence_vial/attack_self(mob/user, list/modifiers)
 
 	if(extract_amount == 60)
 		extract_index = 1
@@ -26,7 +26,7 @@
 
 	to_chat(user, span_info("You adjust the vial to extract [extract_amount] unit[extract_amount > 1 ? "s" : ""] of essence."))
 
-/obj/item/essence_vial/attack_self_secondary(mob/user, params)
+/obj/item/essence_vial/attack_self_secondary(mob/user, list/modifiers)
 	if(extract_amount != 30)
 		extract_amount = 30
 		to_chat(user, span_info("You adjust the vial to extract [extract_amount] unit[extract_amount > 1 ? "s" : ""] of essence."))

@@ -9,6 +9,7 @@
 	icon_state = "leatherkini"
 	item_state = "leatherkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/leather/bikini/bra
@@ -28,6 +29,7 @@
 	icon_state = "studleatherkini"
 	item_state = "studleatherkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/leather/studded/mail/bikini/bra
@@ -47,6 +49,7 @@
 	icon_state = "studleatherkini"
 	item_state = "studleatherkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/leather/studded/bikini/bra
@@ -66,6 +69,7 @@
 	icon_state = "hidearmorkini"
 	item_state = "hidearmorkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/leather/hide/bikini/bra
@@ -85,6 +89,8 @@
 	icon_state = "advkini"
 	item_state = "advkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/leather/advanced/bikini/bra
@@ -105,6 +111,7 @@
 	icon_state = "mastkini"
 	item_state = "mastkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/leather/masterwork/bikini/bra
@@ -124,6 +131,7 @@
 	icon_state = "halfplatekini"
 	item_state = "halfplatekini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/plate/bikini/bra
@@ -144,6 +152,7 @@
 	item_state = "halfplatekini"
 	color = "#9EA48E"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/plate/iron/bikini/bra
@@ -163,6 +172,7 @@
 	sleeved = 'modular_rmh/icons/clothing/armor/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "platekini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/plate/full/bikini/bra
@@ -182,6 +192,7 @@
 	icon_state = "hauberkkini"
 	item_state = "hauberkkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDEBOOB|HIDECROTCH
 
 /obj/item/clothing/armor/chainmail/hauberk/bikini/bra
@@ -201,6 +212,7 @@
 	icon_state = "chainkini"
 	item_state = "chainkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDEBOOB|HIDECROTCH
 
 /obj/item/clothing/armor/chainmail/bikini/bra
@@ -221,6 +233,7 @@
 	item_state = "chainkini"
 	color = "#9EA48E"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDEBOOB|HIDECROTCH
 
 /obj/item/clothing/armor/chainmail/iron/bikini/bra
@@ -241,6 +254,7 @@
 	icon_state = "scalekini"
 	item_state = "scalekini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/medium/scale/bikini/bra
@@ -260,6 +274,7 @@
 	icon_state = "halfplatekini"
 	item_state = "halfplatekini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/brigandine/bikini/bra
@@ -279,6 +294,7 @@
 	icon_state = "gambesonkini"
 	item_state = "gambesonkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/gambeson/bikini/bra
@@ -290,6 +306,7 @@
 	icon_state = "gambesonbra"
 	item_state = "gambesonbra"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/gambeson/light/bikini
@@ -301,6 +318,7 @@
 	icon_state = "gambesonlkini"
 	item_state = "gambesonlkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/gambeson/light/bikini/bra
@@ -320,6 +338,7 @@
 	icon_state = "gambesonpkini"
 	item_state = "gambesonpkini"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 /obj/item/clothing/armor/gambeson/heavy/bikini/bra
@@ -331,6 +350,7 @@
 	icon_state = "gambesonpbra"
 	item_state = "gambesonpbra"
 	allowed_sex = list(FEMALE)
+	misc_flags = CRAFTING_TEST_EXCLUDE
 	flags_inv = HIDECROTCH|HIDEBOOB
 
 //recipes

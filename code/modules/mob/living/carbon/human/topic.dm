@@ -86,7 +86,7 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 			L.receive_damage(I.embedding.embedded_unsafe_removal_pain_multiplier*I.w_class)//It hurts to rip it out, get surgery you dingus.
 			usr.put_in_hands(I)
 			emote("pain", TRUE)
-			playsound(loc, 'sound/foley/flesh_rem.ogg', 100, TRUE, -2)
+			playsound(src, 'sound/foley/flesh_rem.ogg', 100, TRUE, -2)
 			if(usr == src)
 				usr.visible_message(span_notice("[usr] rips [I] out of [usr.p_their()] [L.name]!"), span_notice("I successfully remove [I] from my [L.name]."))
 			else
@@ -99,11 +99,13 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 		var/obj/item/I = L.bandage
 		if(!I)
 			return
+
+		var/time_to_unbandage = 5 SECONDS * (1 - (usr.get_skill_level(/datum/skill/misc/medicine, TRUE) * 0.15))
 		if(usr == src)
 			usr.visible_message(span_warning("[usr] starts unbandaging [usr.p_their()] [L.name]."),span_warning("I start unbandaging [L.name]..."))
 		else
 			usr.visible_message(span_warning("[usr] starts unbandaging [src]'s [L.name]."),span_warning("I start unbandaging [src]'s [L.name]..."))
-		if(do_after(usr, 5 SECONDS, src))
+		if(do_after(usr, time_to_unbandage, src))
 			if(QDELETED(I) || QDELETED(L) || (L.bandage != I))
 				return
 			L.remove_bandage()
@@ -111,9 +113,14 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 
 	if(href_list["item"]) //canUseTopic check for this is handled by mob/Topic()
 		var/slot = text2num(href_list["item"])
-		if(slot & check_obscured_slots(TRUE))
-			to_chat(usr, span_warning("I can't reach that! Something is covering it."))
-			return
+		var/obscured = check_obscured_slots(TRUE)
+		var/obscured_extra = (obscured << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work.
+		if((!(slot & ITEM_SLOT_EXTRA) && (slot & obscured)) || ((slot & ITEM_SLOT_EXTRA) && (slot & obscured_extra)))
+			if((slot & ITEM_SLOT_EXTRA) && get_erp_pref(/datum/erp_preference/boolean/clothed_sex))
+				to_chat(usr, span_info("I reach under [src]'s clothes..."))
+			else
+				to_chat(usr, span_warning("I can't reach that! Something is covering it."))
+				return
 
 	return ..() //end of this massive fucking chain. TODO: make the hud chain not spooky. - Yeah, great job doing that.
 

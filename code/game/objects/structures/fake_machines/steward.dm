@@ -55,7 +55,7 @@
 	var/current_tab = TAB_MAIN
 	var/compact = FALSE
 
-/obj/structure/fake_machine/steward/attackby(obj/item/I, mob/user, params)
+/obj/structure/fake_machine/steward/attackby(obj/item/I, mob/user, list/modifiers)
 	if(istype(I, /obj/item/coin))
 		record_round_statistic(STATS_MAMMONS_DEPOSITED, I.get_real_price())
 		SStreasury.give_money_treasury(I.get_real_price(), "NERVE MASTER deposit")
@@ -279,7 +279,7 @@
 				SStreasury.give_money_account(-newtax, A)
 				break
 	if(href_list["payroll"])
-		var/list/L = list(GLOB.noble_positions) + list(GLOB.garrison_positions) + list(GLOB.church_positions) + list(GLOB.serf_positions) + list(GLOB.company_positions) + list(GLOB.peasant_positions) + list(GLOB.youngfolk_positions) + list(GLOB.apprentices_positions) + list(GLOB.inquisition_positions)
+		var/list/L = list(GLOB.townhall_positions) + list(GLOB.townwatch_positions) + list(GLOB.chapel_positions) + list(GLOB.scholars_positions) + list(GLOB.traders_positions) + list(GLOB.tavern_positions) + list(GLOB.town_positions)
 		var/list/jobs = list()
 		for(var/list/category in L)
 			for(var/A in category)
@@ -337,7 +337,7 @@
 		to_chat(user, "<span class='warning'>It's locked. Of course.</span>")
 		return
 	user.changeNext_move(CLICK_CD_MELEE)
-	playsound(loc, 'sound/misc/keyboard_enter.ogg', 100, FALSE, -1)
+	playsound(src, 'sound/misc/keyboard_enter.ogg', 100, FALSE, -1)
 	var/canread = user.can_read(src, TRUE)
 	SSassets.transport.send_assets(user?.client, list("try4_border.png", "try5.png", "slop_menustyle2.css"))
 	var/contents
@@ -386,7 +386,7 @@
 			for(var/mob/living/carbon/human/A in SStreasury.bank_accounts)
 				if(ishuman(A))
 					var/mob/living/carbon/human/tmp = A
-					contents += "[tmp.real_name] ([tmp.get_role_title()]) - [SStreasury.bank_accounts[A]]m<BR>"
+					contents += "[tmp.real_name] ([tmp.get_role_title(steward_check = TRUE)]) - [SStreasury.bank_accounts[A]]m<BR>"
 				else
 					contents += "[A.real_name] - [SStreasury.bank_accounts[A]]m<BR>"
 				contents += "<a href='byond://?src=\ref[src];givemoney=\ref[A]'>\[Give Money\]</a> <a href='byond://?src=\ref[src];fineaccount=\ref[A]'>\[Fine Account\]</a><BR><BR>"

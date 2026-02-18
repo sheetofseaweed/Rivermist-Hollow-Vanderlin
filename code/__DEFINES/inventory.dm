@@ -35,12 +35,22 @@
 #define ITEM_SLOT_LEGCUFFED 	(1<<17)
 #define ITEM_SLOT_BELT_L		(1<<18)
 #define ITEM_SLOT_BELT_R		(1<<19)
-#define ITEM_SLOT_UNDERWEAR		(1<<20)
-#define ITEM_SLOT_SOCKS			(1<<21)
-/// Inside of a character's backpack
-#define ITEM_SLOT_BACKPACK 		(1<<22)
+#define ITEM_SLOT_BACKPACK 		(1<<20)
 
-#define SLOTS_AMT			23 // Keep this up to date!
+#define ITEM_SLOT_EXTRA			(1<<23)
+
+#define ITEM_SLOT_UNDER_BOTTOM	(ITEM_SLOT_EXTRA | (1<<0))
+#define ITEM_SLOT_UNDER_TOP		(ITEM_SLOT_EXTRA | (1<<1))
+#define ITEM_SLOT_UNDERSHIRT	(ITEM_SLOT_EXTRA | (1<<2))
+#define ITEM_SLOT_SOCKS			(ITEM_SLOT_EXTRA | (1<<3))
+#define ITEM_SLOT_CHOKER		(ITEM_SLOT_EXTRA | (1<<4))
+#define ITEM_SLOT_GARTER		(ITEM_SLOT_EXTRA | (1<<5))
+#define ITEM_SLOT_EARRING_L		(ITEM_SLOT_EXTRA | (1<<6))
+#define ITEM_SLOT_EARRING_R		(ITEM_SLOT_EXTRA | (1<<7))
+#define ITEM_SLOT_ARMSLEEVES	(ITEM_SLOT_EXTRA | (1<<8))
+/// Inside of a character's backpack
+
+#define SLOTS_AMT			29 // Keep this up to date! //This is for UI slots, extra ones not needed.
 
 #define ITEM_SLOT_BACK			(ITEM_SLOT_BACK_L | ITEM_SLOT_BACK_R)
 #define ITEM_SLOT_HIP			(ITEM_SLOT_BELT_L | ITEM_SLOT_BELT_R)
@@ -64,8 +74,15 @@
 	ITEM_SLOT_NECK,\
 	ITEM_SLOT_RING,\
 	ITEM_SLOT_HANDS,\
-	ITEM_SLOT_UNDERWEAR,\
+	ITEM_SLOT_UNDER_BOTTOM,\
+	ITEM_SLOT_UNDER_TOP,\
+	ITEM_SLOT_UNDERSHIRT,\
+	ITEM_SLOT_ARMSLEEVES,\
 	ITEM_SLOT_SOCKS,\
+	ITEM_SLOT_CHOKER,\
+	ITEM_SLOT_GARTER,\
+	ITEM_SLOT_EARRING_L,\
+	ITEM_SLOT_EARRING_R,\
 )
 
 //Bit flags for the flags_inv variable, which determine when a piece of clothing hides another. IE a helmet hiding glasses.

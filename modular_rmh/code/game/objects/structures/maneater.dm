@@ -53,10 +53,10 @@
 			eaten.forceMove(target)
 			contents.Remove(eaten)
 	STOP_PROCESSING(SSobj, src)
-	..()
+	. = ..()
 
 /obj/structure/flora/grass/maneater/real/Crossed(atom/movable/AM)
-	..()
+	. = ..()
 	if(world.time <= last_eat + 5 SECONDS)
 		return
 	if(has_buckled_mobs())
@@ -159,7 +159,7 @@
 
 /obj/structure/flora/grass/maneater/real/user_unbuckle_mob(mob/living/M, mob/user, var/break_factor = 1)
 	if(obj_broken)
-		..()
+		. = ..()
 		return
 	if(!isliving(user))
 		return
@@ -179,13 +179,13 @@
 		return
 	if(!prob(time2mount))
 		user_unbuckle_mob(M, user, break_factor * 1.5)
-	..()
+	. = ..()
 
 /obj/structure/flora/grass/maneater/real/user_buckle_mob(mob/living/M, mob/living/user) //Don't want them getting put on the rack other than by spiking
 	return
 
 /obj/structure/flora/grass/maneater/real/attackby(obj/item/W, mob/user, params)
-	..()
+	. = ..()
 	aggroed = world.time
 	update_icon()
 
@@ -206,12 +206,12 @@
 
 
 /obj/structure/flora/grass/maneater/real/juvenile/Initialize()
-	..()
+	. = ..()
 	transform = transform.Scale(0.5, 0.5)  // Start at half size
 	addtimer(CALLBACK(src, .proc/try_grow), growth_time)
 
 /obj/structure/flora/grass/maneater/real/juvenile/Crossed(atom/movable/AM)
-	..()
+	. = ..()
 	if(world.time <= last_eat + 5 SECONDS)
 		return
 	if(has_buckled_mobs())
@@ -245,7 +245,7 @@
 	qdel(src)
 
 /obj/structure/flora/grass/maneater/real/juvenile/update_icon()
-	..()
+	. = ..()
 	name = "juvenile " + name
 
 
@@ -284,7 +284,7 @@
 			qdel(src)
 			message_admins("[user]/([user.ckey]) plants a maneater seed at [ADMIN_VERBOSEJMP(T)]")
 			return
-	..()
+	. = ..()
 
 /obj/structure/flora/grass/maneater/real/proc/produce_seed()
 	visible_message(span_warning("[src] spits out a seed!"))

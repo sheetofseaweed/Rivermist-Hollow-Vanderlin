@@ -6,7 +6,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'
 	sleevetype = "shirt"
-	slot_flags = ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	allowed_sex = list(MALE)
 	allowed_race = SPECIES_BASE_BODY
 	nodismemsleeves = TRUE
@@ -34,7 +34,7 @@
 	body_parts_covered = CHEST|GROIN|VITALS|ARMS
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'
 	sleevetype = "shirt"
-	slot_flags = ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	allowed_sex = list(MALE)
 	allowed_race = SPECIES_BASE_BODY
 	sellprice = 50
@@ -62,7 +62,7 @@
 	body_parts_covered = CHEST|GROIN|VITALS|ARMS
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'
 	sleevetype = "shirt"
-	slot_flags = ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	allowed_sex = list(MALE)
 	allowed_race = SPECIES_BASE_BODY
 	sellprice = 50
@@ -163,9 +163,8 @@
 	body_parts_covered = CHEST|GROIN|VITALS|ARMS
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'
 	sleevetype = "shirt"
-	slot_flags = ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	nodismemsleeves = TRUE
-	slot_flags = ITEM_SLOT_CLOAK
 
 //............... Battle Nun ........................... (unique kit for the role, tabard for aesthetics)
 /obj/item/clothing/cloak/battlenun
@@ -177,7 +176,7 @@
 	item_state = "battlenun"
 	alternate_worn_layer = TABARD_LAYER
 	body_parts_covered = CHEST|GROIN
-	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 
 //.............inquisitor cloaks......... (For inquisitors..)
 /obj/item/clothing/cloak/cape/puritan
@@ -292,8 +291,8 @@
 	allowed_race = SPECIES_BASE_BODY
 
 /obj/item/clothing/cloak/pegasusknight
-	name = "pegasus knight tabard"
-	desc = "A quilted tabard worn by Lakkarian pegasus knights."
+	name = "checkered tabard"
+	desc = "A quilted checkered tabard."
 	icon_state = "lakkaritabard"
 	item_state = "lakkaritabard"
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'

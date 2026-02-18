@@ -41,6 +41,31 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 //This only really meant to avoid annoying frequent players
 //if your savefile is 3 months out of date, then 'tough shit'.
 
+// Safely extract a type path from datums or type values; returns null if unset/invalid.
+/proc/preferences_typepath_or_null(value)
+	if(isnull(value))
+		return null
+	if(ispath(value))
+		return value
+	if(istype(value, /datum))
+		var/datum/D = value
+		return D.type
+	return null
+
+// Convert a string path to an actual type path, returns null if invalid
+// This is needed for JSON-decoded presets where type paths become strings
+/proc/string_to_typepath(value)
+	if(isnull(value))
+		return null
+	if(ispath(value))
+		return value
+	if(istext(value))
+		// Try to convert string to type path
+		var/path = text2path(value)
+		if(ispath(path))
+			return path
+	return null
+
 /datum/preferences/proc/update_preferences(current_version, savefile/S)
 	if(current_version < 29)
 		key_bindings = (hotkeys) ? deepCopyList(GLOB.hotkey_keybinding_list_by_key) : deepCopyList(GLOB.classic_keybinding_list_by_key)
@@ -52,8 +77,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		job_preferences = list() //It loaded null from nonexistant savefile field.
 
 		//Can't use SSjob here since this happens right away on login
-		for(var/job in subtypesof(/datum/job))
-			var/datum/job/J = job
+		for(var/datum/job/J as anything in subtypesof(/datum/job))
 			var/new_value
 			if(new_value)
 				job_preferences[initial(J.title)] = new_value
@@ -97,6 +121,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["oocpronouns"]		>> oocpronouns
 	S["admin_ghost_icon"]	>> admin_ghost_icon
 	S["ui_theme"]			>> ui_theme
+	S["char_theme"]			>> char_theme
 	S["lastchangelog"]		>> lastchangelog
 	S["UI_style"]			>> UI_style
 	S["hotkeys"]			>> hotkeys
@@ -138,7 +163,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["enable_tips"]		>> enable_tips
 	S["tip_delay"]			>> tip_delay
 	S["ui_scale"]			>> ui_scale
-	S["chat_scale"]			>> chat_scale
 	S["multi_char_ready"] >> multi_char_ready
 
 	S["multi_ready_slots"] >> multi_ready_slots
@@ -148,8 +172,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	// Custom hotkeys
 	S["key_bindings"]		>> key_bindings
 
-	if(!chat_scale)
-		chat_scale = 1
+	if(!char_theme)
+		char_theme = "grimshart"
 	//try to fix any outdated data if necessary
 	if(needs_update >= 0)
 		update_preferences(needs_update, S)		//needs_update = savefile_version if we need an update (positive integer)
@@ -210,6 +234,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["anonymize"], anonymize)
 	WRITE_FILE(S["admin_ghost_icon"], admin_ghost_icon)
 	WRITE_FILE(S["ui_theme"], ui_theme)
+	WRITE_FILE(S["char_theme"], char_theme)
 	WRITE_FILE(S["crt"], crt)
 	WRITE_FILE(S["lastclass"], lastclass)
 	WRITE_FILE(S["mastervol"], mastervol)
@@ -248,7 +273,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["enable_tips"], enable_tips)
 	WRITE_FILE(S["tip_delay"], tip_delay)
 	WRITE_FILE(S["ui_scale"], ui_scale)
-	WRITE_FILE(S["chat_scale"], chat_scale)
 	WRITE_FILE(S["key_bindings"], key_bindings)
 	WRITE_FILE(S["multi_char_ready"], multi_char_ready)
 	WRITE_FILE(S["multi_ready_slots"], multi_ready_slots)
@@ -261,32 +285,147 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		var/newtype = GLOB.species_list[species_name]
 		if(newtype)
 			pref_species = new newtype
+///Loadout
 
-/datum/preferences/proc/_load_flaw(S)
-	var/charflaw_type
-	S["charflaw"]			>> charflaw_type
-	if(charflaw_type)
-		charflaw = new charflaw_type()
+/datum/preferences/proc/_load_loadout1(S)
+	var/loadout_type
+	S["loadout1"] >> loadout_type
+	loadout1 = (loadout_type && ispath(loadout_type)) ? new loadout_type() : null
+
+/datum/preferences/proc/_load_loadout2(S)
+	var/loadout_type2
+	S["loadout2"] >> loadout_type2
+	loadout2 = (loadout_type2 && ispath(loadout_type2)) ? new loadout_type2() : null
+
+/datum/preferences/proc/_load_loadout3(S)
+	var/loadout_type3
+	S["loadout3"] >> loadout_type3
+	loadout3 = (loadout_type3 && ispath(loadout_type3)) ? new loadout_type3() : null
+
+/datum/preferences/proc/_load_loadout4(S)
+	var/loadout_type4
+	S["loadout4"] >> loadout_type4
+	loadout4 = (loadout_type4 && ispath(loadout_type4)) ? new loadout_type4() : null
+
+/datum/preferences/proc/_load_loadout5(S)
+	var/loadout_type5
+	S["loadout5"] >> loadout_type5
+	loadout5 = (loadout_type5 && ispath(loadout_type5)) ? new loadout_type5() : null
+
+/datum/preferences/proc/_load_loadout6(S)
+	var/loadout_type6
+	S["loadout6"] >> loadout_type6
+	loadout6 = (loadout_type6 && ispath(loadout_type6)) ? new loadout_type6() : null
+
+/datum/preferences/proc/_load_loadout7(S)
+	var/loadout_type7
+	S["loadout7"] >> loadout_type7
+	loadout7 = (loadout_type7 && ispath(loadout_type7)) ? new loadout_type7() : null
+
+/datum/preferences/proc/_load_loadout8(S)
+	var/loadout_type8
+	S["loadout8"] >> loadout_type8
+	loadout8 = (loadout_type8 && ispath(loadout_type8)) ? new loadout_type8() : null
+
+/datum/preferences/proc/_load_loadout9(S)
+	var/loadout_type9
+	S["loadout9"] >> loadout_type9
+	loadout9 = (loadout_type9 && ispath(loadout_type9)) ? new loadout_type9() : null
+
+/datum/preferences/proc/_load_loadout10(S)
+	var/loadout_type10
+	S["loadout10"] >> loadout_type10
+	loadout10 = (loadout_type10 && ispath(loadout_type10)) ? new loadout_type10() : null
+
+/datum/preferences/proc/_load_loadout_presets(S)
+	var/preset1_json
+	var/preset2_json
+	var/preset3_json
+	S["loadout_preset_1"] >> preset1_json
+	S["loadout_preset_2"] >> preset2_json
+	S["loadout_preset_3"] >> preset3_json
+
+	// Load and validate preset 1
+	if(preset1_json)
+		var/decoded = json_decode(preset1_json)
+		if(decoded && istype(decoded, /list))
+			loadout_preset_1 = decoded
+		else
+			loadout_preset_1 = null
 	else
-		charflaw = pick(GLOB.character_flaws)
-		charflaw = GLOB.character_flaws[charflaw]
-		charflaw = new charflaw()
+		loadout_preset_1 = null
 
-/datum/preferences/proc/_load_loadouts(S)
-	for(var/i in 1 to 3)
-		S["loadout[i]"]	>> vars["loadout[i]"]
-	validate_loadouts()
+	// Load and validate preset 2
+	if(preset2_json)
+		var/decoded = json_decode(preset2_json)
+		if(decoded && istype(decoded, /list))
+			loadout_preset_2 = decoded
+		else
+			loadout_preset_2 = null
+	else
+		loadout_preset_2 = null
 
-/datum/preferences/proc/validate_loadouts()
-	/*if(!parent.patreon.has_access(ACCESS_ASSISTANT_RANK) && !parent.twitch.has_access(ACCESS_TWITCH_SUB_TIER_1))
-		loadout1 = null
-		loadout2 = null
-		loadout3 = null
-		return FALSE*/
+	// Load and validate preset 3
+	if(preset3_json)
+		var/decoded = json_decode(preset3_json)
+		if(decoded && istype(decoded, /list))
+			loadout_preset_3 = decoded
+		else
+			loadout_preset_3 = null
+	else
+		loadout_preset_3 = null
 
-	for(var/i in 1 to 3)
-		if(!(vars["loadout[i]"] in GLOB.loadout_items)) // bite me
-			vars["loadout[i]"] = null
+/datum/preferences/proc/_save_loadout_presets(S)
+	// Save loadout presets as JSON
+	if(loadout_preset_1)
+		WRITE_FILE(S["loadout_preset_1"], json_encode(loadout_preset_1))
+	else
+		WRITE_FILE(S["loadout_preset_1"], null)
+
+	if(loadout_preset_2)
+		WRITE_FILE(S["loadout_preset_2"], json_encode(loadout_preset_2))
+	else
+		WRITE_FILE(S["loadout_preset_2"], null)
+
+	if(loadout_preset_3)
+		WRITE_FILE(S["loadout_preset_3"], json_encode(loadout_preset_3))
+	else
+		WRITE_FILE(S["loadout_preset_3"], null)
+
+
+/datum/preferences/proc/_load_loadout_colours(S)
+	S["loadout_1_hex"] >> loadout_1_hex
+	S["loadout_2_hex"] >> loadout_2_hex
+	S["loadout_3_hex"] >> loadout_3_hex
+	S["loadout_4_hex"] >> loadout_4_hex
+	S["loadout_5_hex"] >> loadout_5_hex
+	S["loadout_6_hex"] >> loadout_6_hex
+	S["loadout_7_hex"] >> loadout_7_hex
+	S["loadout_8_hex"] >> loadout_8_hex
+	S["loadout_9_hex"] >> loadout_9_hex
+	S["loadout_10_hex"] >> loadout_10_hex
+	// Load custom names
+	S["loadout_1_name"] >> loadout_1_name
+	S["loadout_2_name"] >> loadout_2_name
+	S["loadout_3_name"] >> loadout_3_name
+	S["loadout_4_name"] >> loadout_4_name
+	S["loadout_5_name"] >> loadout_5_name
+	S["loadout_6_name"] >> loadout_6_name
+	S["loadout_7_name"] >> loadout_7_name
+	S["loadout_8_name"] >> loadout_8_name
+	S["loadout_9_name"] >> loadout_9_name
+	S["loadout_10_name"] >> loadout_10_name
+	// Load custom descriptions
+	S["loadout_1_desc"] >> loadout_1_desc
+	S["loadout_2_desc"] >> loadout_2_desc
+	S["loadout_3_desc"] >> loadout_3_desc
+	S["loadout_4_desc"] >> loadout_4_desc
+	S["loadout_5_desc"] >> loadout_5_desc
+	S["loadout_6_desc"] >> loadout_6_desc
+	S["loadout_7_desc"] >> loadout_7_desc
+	S["loadout_8_desc"] >> loadout_8_desc
+	S["loadout_9_desc"] >> loadout_9_desc
+	S["loadout_10_desc"] >> loadout_10_desc
 
 /datum/preferences/proc/_load_combat_music(S)
 	var/combat_music_type
@@ -363,9 +502,19 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	//Species
 	_load_species(S)
 
-	_load_flaw(S)
-
-	_load_loadouts(S)
+	//Loadout
+	_load_loadout1(S)
+	_load_loadout2(S)
+	_load_loadout3(S)
+	_load_loadout4(S)
+	_load_loadout5(S)
+	_load_loadout6(S)
+	_load_loadout7(S)
+	_load_loadout8(S)
+	_load_loadout9(S)
+	_load_loadout10(S)
+	_load_loadout_colours(S)
+	_load_loadout_presets(S)
 
 	_load_culinary_preferences(S)
 
@@ -375,6 +524,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	_load_smallclothes_preferences(S)
 
 	_load_combat_music(S)
+	load_quirks(S)
 
 	var/patron_typepath
 	S["selected_patron"] >> patron_typepath
@@ -394,9 +544,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	//Load prefs
 	S["job_preferences"] >> job_preferences
-
-	//Quirks
-	S["all_quirks"] >> all_quirks
 
 	//Load headshot link
 	S["headshot_link"]			>> headshot_link
@@ -469,8 +616,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH)
 			job_preferences -= j
 
-	all_quirks = SANITIZE_LIST(all_quirks)
-
 	S["customizer_entries"] >> customizer_entries
 	validate_customizer_entries()
 
@@ -509,10 +654,53 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["moan_selection"] , moan_selection)	//RMH edit
 	WRITE_FILE(S["combat_music"], combat_music.type)
 	WRITE_FILE(S["species"]			, pref_species.name)
-	WRITE_FILE(S["charflaw"]			, charflaw.type)
-	WRITE_FILE(S["loadout1"]		, loadout1)
-	WRITE_FILE(S["loadout2"]		, loadout2)
-	WRITE_FILE(S["loadout3"]		, loadout3)
+	// Loadout
+	WRITE_FILE(S["loadout1"] , preferences_typepath_or_null(loadout1))
+	WRITE_FILE(S["loadout2"] , preferences_typepath_or_null(loadout2))
+	WRITE_FILE(S["loadout3"] , preferences_typepath_or_null(loadout3))
+	WRITE_FILE(S["loadout4"] , preferences_typepath_or_null(loadout4))
+	WRITE_FILE(S["loadout5"] , preferences_typepath_or_null(loadout5))
+	WRITE_FILE(S["loadout6"] , preferences_typepath_or_null(loadout6))
+	WRITE_FILE(S["loadout7"] , preferences_typepath_or_null(loadout7))
+	WRITE_FILE(S["loadout8"] , preferences_typepath_or_null(loadout8))
+	WRITE_FILE(S["loadout9"] , preferences_typepath_or_null(loadout9))
+	WRITE_FILE(S["loadout10"] , preferences_typepath_or_null(loadout10))
+
+	_save_loadout_presets(S)
+
+	WRITE_FILE(S["loadout_1_hex"], loadout_1_hex)
+	WRITE_FILE(S["loadout_2_hex"], loadout_2_hex)
+	WRITE_FILE(S["loadout_3_hex"], loadout_3_hex)
+	WRITE_FILE(S["loadout_4_hex"], loadout_4_hex)
+	WRITE_FILE(S["loadout_5_hex"], loadout_5_hex)
+	WRITE_FILE(S["loadout_6_hex"], loadout_6_hex)
+	WRITE_FILE(S["loadout_7_hex"], loadout_7_hex)
+	WRITE_FILE(S["loadout_8_hex"], loadout_8_hex)
+	WRITE_FILE(S["loadout_9_hex"], loadout_9_hex)
+	WRITE_FILE(S["loadout_10_hex"], loadout_10_hex)
+	// Save custom names
+	WRITE_FILE(S["loadout_1_name"], loadout_1_name)
+	WRITE_FILE(S["loadout_2_name"], loadout_2_name)
+	WRITE_FILE(S["loadout_3_name"], loadout_3_name)
+	WRITE_FILE(S["loadout_4_name"], loadout_4_name)
+	WRITE_FILE(S["loadout_5_name"], loadout_5_name)
+	WRITE_FILE(S["loadout_6_name"], loadout_6_name)
+	WRITE_FILE(S["loadout_7_name"], loadout_7_name)
+	WRITE_FILE(S["loadout_8_name"], loadout_8_name)
+	WRITE_FILE(S["loadout_9_name"], loadout_9_name)
+	WRITE_FILE(S["loadout_10_name"], loadout_10_name)
+	// Save custom descriptions
+	WRITE_FILE(S["loadout_1_desc"], loadout_1_desc)
+	WRITE_FILE(S["loadout_2_desc"], loadout_2_desc)
+	WRITE_FILE(S["loadout_3_desc"], loadout_3_desc)
+	WRITE_FILE(S["loadout_4_desc"], loadout_4_desc)
+	WRITE_FILE(S["loadout_5_desc"], loadout_5_desc)
+	WRITE_FILE(S["loadout_6_desc"], loadout_6_desc)
+	WRITE_FILE(S["loadout_7_desc"], loadout_7_desc)
+	WRITE_FILE(S["loadout_8_desc"], loadout_8_desc)
+	WRITE_FILE(S["loadout_9_desc"], loadout_9_desc)
+	WRITE_FILE(S["loadout_10_desc"], loadout_10_desc)
+
 	WRITE_FILE(S["culinary_preferences"], culinary_preferences)
 	WRITE_FILE(S["smallclothes_preferences"], smallclothes_preferences)
 	WRITE_FILE(S["family"]			, 	family)
@@ -530,9 +718,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["joblessrole"]		, joblessrole)
 	//Write prefs
 	WRITE_FILE(S["job_preferences"] , job_preferences)
-
-	//Quirks
-	WRITE_FILE(S["all_quirks"]			, all_quirks)
 
 	//Patron
 	WRITE_FILE(S["selected_patron"]		, selected_patron.type)
@@ -558,6 +743,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	save_erp_preferences(S)
 
+	save_quirks(S)
 	return TRUE
 
 

@@ -806,14 +806,14 @@
 	gender = FEMALE
 	specuse = ALL_RACES_LIST
 
-/datum/sprite_accessory/hair/head/lakkaricut
-	name = "Lakkari Cut"
+/datum/sprite_accessory/hair/head/ruffled
+	name = "Ruffled"
 	icon_state = "lakkaricut"
 	gender = FEMALE
 	specuse = ALL_RACES_LIST
 
-/datum/sprite_accessory/hair/head/lakkaribun
-	name = "Lakkari Bun"
+/datum/sprite_accessory/hair/head/highbun
+	name = "High Bun"
 	icon_state = "lakkaribun"
 	gender = FEMALE
 	specuse = ALL_RACES_LIST

@@ -1,6 +1,6 @@
 /obj/structure/fluff/walldeco/selune_banner
-	name = "banner of Selûne"
-	desc = "A silken banner bearing the symbols of Selûne: a pair of luminous eyes set within a field of silver stars, crowned by the crescent moon."
+	name = "banner of Selune"
+	desc = "A silken banner bearing the symbols of Selune: a pair of luminous eyes set within a field of silver stars, crowned by the crescent moon."
 	icon = 'modular_rmh/icons/misc/selune_walldeco.dmi'
 	icon_state = "ban"
 

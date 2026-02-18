@@ -37,7 +37,7 @@
 		TRAIT_RESISTLOWPRESSURE,
 		TRAIT_RADIMMUNE,
 		TRAIT_NODISMEMBER,
-		TRAIT_LYCANRESILENCE,
+		TRAIT_POISON_RESILIENCE,
 		TRAIT_STRONGBITE,
 		TRAIT_ZJUMP,
 		TRAIT_NOFALLDAMAGE1,
@@ -61,8 +61,8 @@
 	offset_features_m = list(OFFSET_HANDS = list(0,2))
 	offset_features_f = list(OFFSET_HANDS = list(0,2))
 
-	soundpack_m = null
-	soundpack_f = null
+	soundpack_m = /datum/voicepack/orc
+	soundpack_f = /datum/voicepack/orc
 
 	specstats_m = list(STATKEY_STR = 5, STATKEY_PER = 5, STATKEY_INT = -3, STATKEY_CON = 5, STATKEY_END = 5, STATKEY_SPD = 3, STATKEY_LCK = 0)
 	specstats_f = list(STATKEY_STR = 5, STATKEY_PER = 5, STATKEY_INT = -3, STATKEY_CON = 5, STATKEY_END = 5, STATKEY_SPD = 3, STATKEY_LCK = 0)

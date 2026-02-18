@@ -48,7 +48,7 @@
 
 /obj/item/clothing/head/flowercrown/rosa
 	name = "rosa crown"
-	desc = "A crown of rosas, often worn during weddings officiated by Eoran acolytes."
+	desc = "A crown of rosas, often worn during weddings officiated by Sune acolytes."
 	item_state = "rosa_crown"
 	icon_state = "rosa_crown"
 

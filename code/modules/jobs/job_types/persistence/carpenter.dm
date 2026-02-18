@@ -1,7 +1,7 @@
 /datum/job/persistence/carpenter
 	title = "Woodworker"
 	tutorial = "You're a woodworker, ensure the settlement isn't a bunch of tents."
-	department_flag = PEASANTS
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
 	outfit = /datum/outfit/carpenter_p
@@ -12,7 +12,7 @@
 		/datum/skill/combat/unarmed = 1,
 		/datum/skill/misc/reading = 1,
 		/datum/skill/craft/crafting = 1,
-		/datum/skill/misc/climbing = 3,
+		/datum/skill/misc/climbing = 2,
 		/datum/skill/misc/swimming = 1,
 		/datum/skill/misc/athletics = 1,
 		/datum/skill/combat/axesmaces = 2,

@@ -72,7 +72,7 @@
 			/obj/item/gun/ballistic/revolver/grenadelauncher/crossbow = 2,
 			/obj/item/ammo_holder/quiver/arrows = 2,
 			/obj/item/ammo_holder/quiver/bolts = 2,
-			/obj/item/weapon/mace/woodclub/crafted = 3,
+			/obj/item/weapon/mace/woodclub = 3,
 			/obj/item/weapon/mace/steel/morningstar =2,
 			/obj/item/weapon/mace/cudgel = 2,
 			/obj/item/weapon/knife = 3,
@@ -252,7 +252,7 @@
 			/obj/item/gun/ballistic/revolver/grenadelauncher/crossbow = 2,
 			/obj/item/ammo_holder/quiver/arrows = 2,
 			/obj/item/ammo_holder/quiver/bolts = 2,
-			/obj/item/weapon/mace/woodclub/crafted = 3,
+			/obj/item/weapon/mace/woodclub = 3,
 			/obj/item/weapon/mace/steel/morningstar =2,
 			/obj/item/weapon/mace/cudgel = 2,
 			/obj/item/weapon/knife = 3,
@@ -546,7 +546,7 @@
 		list(
 			/obj/item/weapon/sword/silver = 1,
 			/obj/item/weapon/knife/dagger/silver = 3,
-			/obj/item/weapon/mace/silver = 1,
+			/obj/item/weapon/mace/rungu/silver = 1,
 			)
 		)
 	base_max = 1

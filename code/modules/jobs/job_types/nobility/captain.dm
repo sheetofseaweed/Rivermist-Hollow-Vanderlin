@@ -3,18 +3,16 @@
 	tutorial = "Law and Order, your divine reason for existence. \
 	You have been given command over the town and keep garrison to help ensure order and peace within the city, \
 	and defend it against the many dangers of the peninsula."
-	department_flag = NOBLEMEN
-	display_order = JDO_CAPTAIN
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	faction = FACTION_TOWN
-	total_positions = 1
-	spawn_positions = 1
-	bypass_lastclass = TRUE
+	total_positions = 0
+	spawn_positions = 0
 
 	allowed_races = RACES_PLAYER_NONDISCRIMINATED
 
 	outfit = /datum/outfit/captain
-	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/guard)
+	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch)
 	give_bank_account = 120
 	cmode_music = 'sound/music/cmode/antag/CombatSausageMaker.ogg'
 	noble_income = 11
@@ -39,7 +37,7 @@
 		/datum/skill/combat/swords = 5,
 		/datum/skill/combat/wrestling = 4,
 		/datum/skill/combat/axesmaces = 4,
-		/datum/skill/combat/shields = 3,
+		/datum/skill/combat/shields = 4,
 		/datum/skill/combat/unarmed = 3,
 		/datum/skill/combat/knives = 3,
 		/datum/skill/combat/polearms = 2,

@@ -67,7 +67,7 @@
 		return FALSE
 	var/mob/living/carbon/human/target = get_wearer()
 	if(!target)
-		to_chat(user, span_info("There's no one on \the other side!"))
+		to_chat(user, span_info("There's no one on the other side!"))
 		return FALSE
 	var/mob/living/carbon/human/user_human = user
 	var/datum/sex_session/session = get_sex_session(user_human, target)
@@ -84,16 +84,16 @@
 		return
 	var/mob/living/carbon/human/target = get_wearer()
 	if(!target)
-		to_chat(user, span_info("There's no one on \the other side!"))
+		to_chat(user, span_info("There's no one on the other side!"))
 		return
 	if(linked_underwear.org_target == ORGAN_SLOT_VAGINA)
-		to_chat(user, span_info("You refocus \the portal to your target's backside!"))
+		to_chat(user, span_info("You refocus the portal to your target's backside!"))
 		org_target = ORGAN_SLOT_ANUS
 		linked_underwear.org_target = ORGAN_SLOT_ANUS
 		update_appearance()
 		return
 	else if(target.getorganslot(ORGAN_SLOT_VAGINA))
-		to_chat(user, span_info("You refocus \the portal to your target's loins!"))
+		to_chat(user, span_info("You refocus the portal to your target's loins!"))
 		org_target = ORGAN_SLOT_VAGINA
 		linked_underwear.org_target = ORGAN_SLOT_VAGINA
 		update_appearance()
@@ -110,12 +110,13 @@
     item_state = "panties"
     icon_state = "panties"
     gendered = TRUE
-    slot_flags = ITEM_SLOT_UNDERWEAR
+    slot_flags = ITEM_SLOT_UNDER_BOTTOM
     loadout_blacklisted = TRUE
 
     var/obj/item/portallight/linked_light = null
     var/mob/living/carbon/human/current_wearer = null
     var/org_target = ORGAN_SLOT_VAGINA
+    misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/undies/portalpanties/equipped(mob/living/carbon/human/H, slot)
 	. = ..()
@@ -227,7 +228,7 @@
 /datum/sex_action/portal_base/portal_hand/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
 	to_chat(user, span_warning("You start touching the needy hole through the portal."))
-	to_chat(target, span_love("You feel a distant touch through \the portal!"))
+	to_chat(target, span_love("You feel a distant touch through the portal!"))
 
 /datum/sex_action/portal_base/portal_hand/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
     var/datum/sex_session/sex_session = get_sex_session(user, target)
@@ -235,21 +236,21 @@
         sex_session = new(user, target)
     do_thrust_animate(user, user)
     if(can_show_action_message())
-        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] finger your target through \the portal."))
-        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] fingers you through \the portal."))
+        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] finger your target through the portal."))
+        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] fingers you through the portal."))
     sex_session.perform_sex_action(target, user, 2, 4, 2, src)
     sex_session.handle_passive_ejaculation(target)
     playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-/datum/sex_action/portal_base/portal_hand/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip) //must_flip indicates when \the target of your actions orgasms rom this action
+/datum/sex_action/portal_base/portal_hand/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip) //must_flip indicates when the target of your actions orgasms rom this action
 	if(must_flip)
-		to_chat(user, span_love("You climax from \the portal touch! Your body trembles with pleasure."))//thus you must flip user and target in \the logic when must_flip == TRUE
-		to_chat(target, span_love("Your target shudders and reacts to your touch through \the portal."))
+		to_chat(user, span_love("You climax from the portal touch! Your body trembles with pleasure."))//thus you must flip user and target in the logic when must_flip == TRUE
+		to_chat(target, span_love("Your target shudders and reacts to your touch through the portal."))
 		return ORGASM_LOCATION_SELF
 
 /datum/sex_action/portal_base/portal_hand/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_notice("You withdraw your hand from \the portal."))
+	to_chat(user, span_notice("You withdraw your hand from the portal."))
 	to_chat(target, span_notice("The distant touch fades away."))
 
 /**
@@ -263,7 +264,7 @@
 
 /datum/sex_action/portal_base/portal_oral/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_warning("You press your mouth to \the portal, reaching your target."))
+	to_chat(user, span_warning("You press your mouth to the portal, reaching your target."))
 	to_chat(target, span_love("Warm sensations bloom between your legs!"))
 
 /datum/sex_action/portal_base/portal_oral/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -272,22 +273,22 @@
         sex_session = new(user, target)
     user.make_sucking_noise()
     if(can_show_action_message())
-        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] lick your target through \the portal."))
-        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] licks you through \the portal."))
+        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] lick your target through the portal."))
+        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] licks you through the portal."))
     sex_session.perform_sex_action(target, user, 2, 3, 2, src)
     sex_session.handle_passive_ejaculation(target)
 
 /datum/sex_action/portal_base/portal_oral/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("You climax from \the portal oral! Your body shudders in ecstasy."))
+		to_chat(user, span_love("You climax from the portal oral! Your body shudders in ecstasy."))
 		user.visible_message(span_love("Your target shudders and moans, their legs almost giving out!"))
-		to_chat(target, span_love("You bring your target to climax through \the portal!"))
+		to_chat(target, span_love("You bring your target to climax through the portal!"))
 		return ORGASM_LOCATION_ORAL
 
 /datum/sex_action/portal_base/portal_oral/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_notice("You pull back from \the portal."))
-	to_chat(target, span_notice("The sensations from \the portal fade away."))
+	to_chat(user, span_notice("You pull back from the portal."))
+	to_chat(target, span_notice("The sensations from the portal fade away."))
 
 /**
  * SEX ACTION: PORTAL PENIS
@@ -311,8 +312,8 @@
 
 /datum/sex_action/portal_base/portal_penis_vaginal/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_warning("You slide your cock into \the portal, reaching your target's pussy."))
-	to_chat(target, span_love("You feel feel someting penetrating your pussy through \the portal!"))
+	to_chat(user, span_warning("You slide your cock into the portal, reaching your target's pussy."))
+	to_chat(target, span_love("You feel feel someting penetrating your pussy through the portal!"))
 
 /datum/sex_action/portal_base/portal_penis_vaginal/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
     var/datum/sex_session/sex_session = get_sex_session(user, target)
@@ -320,8 +321,8 @@
         sex_session = new(user, target)
     do_thrust_animate(user, user)
     if(can_show_action_message(user, target))
-        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] fuck \the your target's pussy through \the portal."))
-        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] fucks you through \the portal."))
+        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] fuck your target's pussy through the portal."))
+        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] fucks you through the portal."))
     sex_session.perform_sex_action(user, target, 2, 0, 2, src)
     sex_session.perform_sex_action(target, user, 2, 3, 2, src)
     sex_session.handle_passive_ejaculation(target)
@@ -330,7 +331,7 @@
 
 /datum/sex_action/portal_base/portal_penis_vaginal/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("You cum from \the portal fuck! Your body trembles in ecstasy."))
+		to_chat(user, span_love("You cum from the portal fuck! Your body trembles in ecstasy."))
 		to_chat(target, span_love("You feel your target's pussy spasming around your member, shuddering in orgasm."))
 		user.virginity = FALSE
 		target.virginity = FALSE
@@ -344,8 +345,8 @@
 
 /datum/sex_action/portal_base/portal_penis_vaginal/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_notice("You pull your cock back from \the portal."))
-	to_chat(target, span_notice("The penetration through \the portal ends."))
+	to_chat(user, span_notice("You pull your cock back from the portal."))
+	to_chat(target, span_notice("The penetration through the portal ends."))
 
 /**
  * SEX ACTION: PORTAL PENIS
@@ -369,8 +370,8 @@
 
 /datum/sex_action/portal_base/portal_penis_anal/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_warning("You slide your cock into \the portal, reaching your target's ass."))
-	to_chat(target, span_love("You feel someting penetrating your ass through \the portal!"))
+	to_chat(user, span_warning("You slide your cock into the portal, reaching your target's ass."))
+	to_chat(target, span_love("You feel someting penetrating your ass through the portal!"))
 
 /datum/sex_action/portal_base/portal_penis_anal/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
     var/datum/sex_session/sex_session = get_sex_session(user, target)
@@ -378,8 +379,8 @@
         sex_session = new(user, target)
     do_thrust_animate(user, user)
     if(can_show_action_message(user, target))
-        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] fuck \the your target's ass through \the portal."))
-        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] fucks your ass through \the portal."))
+        to_chat(user, sex_session.spanify_force("You [sex_session.get_generic_force_adjective()] fuck your target's ass through the portal."))
+        to_chat(target, sex_session.spanify_force("Someone [sex_session.get_generic_force_adjective()] fucks your ass through the portal."))
     sex_session.perform_sex_action(user, target, 2, 0, 2, src)
     sex_session.perform_sex_action(target, user, 2, 3, 2, src)
     sex_session.handle_passive_ejaculation(target)
@@ -388,7 +389,7 @@
 
 /datum/sex_action/portal_base/portal_penis_anal/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("You cum from \the portal fuck! Your body trembles in ecstasy."))
+		to_chat(user, span_love("You cum from the portal fuck! Your body trembles in ecstasy."))
 		to_chat(target, span_love("You feel your target's ass spasming around your member, shuddering in orgasm."))
 		user.virginity = FALSE
 		target.virginity = FALSE
@@ -402,8 +403,8 @@
 
 /datum/sex_action/portal_base/portal_penis_anal/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
-	to_chat(user, span_notice("You pull your cock back from \the portal."))
-	to_chat(target, span_notice("The penetration through \the portal ends."))
+	to_chat(user, span_notice("You pull your cock back from the portal."))
+	to_chat(target, span_notice("The penetration through the portal ends."))
 
 /**
  * SEX ACTION: PORTAL STORAGE
@@ -439,11 +440,11 @@
 
 	if(user == target)
 		target_organ = user.getorganslot(hole_id)
-		to_chat(user, sex_session.spanify_force("I start inserting \the [dildo] in \the portal..."))
+		to_chat(user, sex_session.spanify_force("I start inserting \the [dildo] in the portal..."))
 	else
 		target_organ = target.getorganslot(hole_id)
-		to_chat(user, sex_session.spanify_force("I start inserting \the [dildo] in \the portal..."))
-		to_chat(target, sex_session.spanify_force("You feel someting being inserted in you through \the portal..."))
+		to_chat(user, sex_session.spanify_force("I start inserting \the [dildo] in the portal..."))
+		to_chat(target, sex_session.spanify_force("You feel someting being inserted in you through the portal..."))
 
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
@@ -469,33 +470,33 @@
 	switch(success)
 		if(INSERT_FEEDBACK_OK)
 			if(self)
-				to_chat(user, sex_session.spanify_force("I stuff \the [dildo] in \the portal..."))
+				to_chat(user, sex_session.spanify_force("I stuff \the [dildo] in the portal..."))
 			else
-				to_chat(user, sex_session.spanify_force("I stuff \the [dildo] in \the portal..."))
-				to_chat(target, sex_session.spanify_force("You feel like someting was inserted in you through \the portal!"))
+				to_chat(user, sex_session.spanify_force("I stuff \the [dildo] in the portal..."))
+				to_chat(target, sex_session.spanify_force("You feel like someting was inserted in you through the portal!"))
 		if(INSERT_FEEDBACK_OK_FORCE)
 			if(prob(15))
 				var/stuffed_res = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, STORAGE_LAYER_INNER, STORAGE_LAYER_DEEP, force)
 				if(stuffed_res == INSERT_FEEDBACK_OK_FORCE || stuffed_res == INSERT_FEEDBACK_OK)
 					pain_amt += 4
 					if(self)
-						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of \the portal!"))
+						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of the portal!"))
 					else
-						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of \the portal pussy!"))
+						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of the portal pussy!"))
 						to_chat(target, sex_session.spanify_force("You feel someting slipping deep inside you!"))
 			else
 				pain_amt += 4
 				if(self)
-					to_chat(user, sex_session.spanify_force("I force \the [dildo] in \the portal, fighting \the pressure!"))
+					to_chat(user, sex_session.spanify_force("I force \the [dildo] in the portal, fighting the pressure!"))
 				else
-					to_chat(user, sex_session.spanify_force("I force \the [dildo] in \the portal, fighting \the pressure!"))
+					to_chat(user, sex_session.spanify_force("I force \the [dildo] in the portal, fighting the pressure!"))
 					to_chat(target, sex_session.spanify_force("Something was forcefully inserted inside you!"))
 		if(INSERT_FEEDBACK_ALMOST_FULL)
 			pain_amt += 2
 			if(self)
-				to_chat(user, sex_session.spanify_force("I stuff \the \the [dildo] in \the portal, seems like it won't fit much more..."))
+				to_chat(user, sex_session.spanify_force("I stuff \the [dildo] in the portal, seems like it won't fit much more..."))
 			else
-				to_chat(user, sex_session.spanify_force("I stuff \the \the [dildo] in \the portal pussy, seems like it won't fit much more..."))
+				to_chat(user, sex_session.spanify_force("I stuff \the [dildo] in the portal pussy, seems like it won't fit much more..."))
 				to_chat(target, sex_session.spanify_force("You feel another item inserted in you, strething you to the limit."))
 		if(INSERT_FEEDBACK_STUFFED)
 			if(force && prob(50))
@@ -503,9 +504,9 @@
 				if(stuffed_res == INSERT_FEEDBACK_OK_FORCE || stuffed_res == INSERT_FEEDBACK_OK)
 					pain_amt += 2
 					if(self)
-						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of \the portal!"))
+						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of the portal!"))
 					else
-						to_chat(user, sex_session.spanify_force("The [dildo] slips deep inside of \the portal pussy!"))
+						to_chat(user, sex_session.spanify_force("\The [dildo] slips deep inside of the portal pussy!"))
 						to_chat(target, sex_session.spanify_force("You feel someting slipping deep inside you!"))
 			else
 				if(self)
@@ -524,9 +525,9 @@
 				to_chat(target, sex_session.spanify_force("You feel someting probing the portal entrance..."))
 		if(FALSE)
 			if(self)
-				to_chat(user, sex_session.spanify_force("I fail to stuff \the [dildo] in \the portal."))
+				to_chat(user, sex_session.spanify_force("I fail to stuff \the [dildo] in the portal."))
 			else
-				to_chat(user, sex_session.spanify_force("I fail to stuff \the [dildo] in \the portal."))
+				to_chat(user, sex_session.spanify_force("I fail to stuff \the [dildo] in the portal."))
 				to_chat(target, sex_session.spanify_force("You feel someting probing the portal entrance..."))
 			sex_session.stop_current_action()
 			return
@@ -567,10 +568,10 @@
 
 	if(user == target)
 		target_organ = user.getorganslot(hole_id)
-		to_chat(user, span_warning("I start removing items from \the portal..."))
+		to_chat(user, span_warning("I start removing items from the portal..."))
 	else
 		target_organ = target.getorganslot(hole_id)
-		user.visible_message(span_warning("[user] starts removing items from \the portal pussy..."))
+		user.visible_message(span_warning("[user] starts removing items from the portal pussy..."))
 
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
@@ -594,13 +595,13 @@
 		sex_session.stop_current_action()
 		return
 	if(user.get_active_held_item())
-		user.visible_message(sex_session.spanify_force("The [removed_item] falls down on \the floor..."))
+		user.visible_message(sex_session.spanify_force("\The [removed_item] falls down on the floor..."))
 		removed_item.doMove(get_turf(user))
 	else
 		if(self)
-			to_chat(user, sex_session.spanify_force("I fish out \the [removed_item] from \the portal..."))
+			to_chat(user, sex_session.spanify_force("I fish out \the [removed_item] from the portal..."))
 		else
-			user.visible_message(sex_session.spanify_force("I fish out \the [removed_item] from \the portal pussy..."))
+			user.visible_message(sex_session.spanify_force("I fish out \the [removed_item] from the portal pussy..."))
 		removed_item.doMove(get_turf(user))
 		user.put_in_active_hand(removed_item)
 	sex_session.perform_sex_action(user, target, 0.5, pain_amt, 0.5, src)

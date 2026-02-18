@@ -265,9 +265,8 @@
 	for(var/slot in internal_organs_slot)
 		var/obj/item/organ/organ = internal_organs_slot[slot]
 		organ.sellprice = 5
-	underwear = null
-	if(src.charflaw)
-		QDEL_NULL(src.charflaw)
+	if(length(quirks))
+		clear_quirks()
 	update_body()
 	faction = list(FACTION_ORCS)
 	var/turf/turf = get_turf(src)

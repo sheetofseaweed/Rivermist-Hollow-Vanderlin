@@ -2,7 +2,7 @@
 	mob_species = /datum/species/dwarf/mountain
 
 /obj/effect/mob_spawn/human/dwarf/trader
-	outfit = /datum/outfit/miner
+	outfit = /datum/outfit/towner/miner
 
 /datum/world_faction/mountain_clans
 	faction_name = "Dwarven Clans"
@@ -114,7 +114,6 @@
 		/datum/supply_pack/weapons/iron/iwodao,
 		/datum/supply_pack/weapons/shield/iron,
 		/datum/supply_pack/weapons/shield/towershield,
-		/datum/supply_pack/weapons/iron/ihwi,
 		/datum/supply_pack/weapons/steel/ida,
 		/datum/supply_pack/weapons/iron/injora,
 		/datum/supply_pack/weapons/iron/ishishpar,
@@ -161,7 +160,6 @@
 		/datum/supply_pack/weapons/iron/iirumi,
 		/datum/supply_pack/weapons/iron/insapo,
 		/datum/supply_pack/weapons/iron/isengese,
-		/datum/supply_pack/weapons/steel/hwi,
 		/datum/supply_pack/weapons/steel/njora,
 		/datum/supply_pack/weapons/steel/kukri,
 		/datum/supply_pack/weapons/ranged/slurbow,
@@ -196,6 +194,11 @@
 		/datum/supply_pack/weapons/ammo/bullets,
 		/datum/supply_pack/weapons/ranged/musket,
 		/datum/supply_pack/portals_and_fleshlight
+	)
+
+	bounty_path_weights = list(
+		/obj/item/ingot = 500,
+		/obj/item/ore = 600,
 	)
 
 /datum/world_faction/mountain_clans/initialize_faction_stock()

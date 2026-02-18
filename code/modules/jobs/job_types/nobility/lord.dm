@@ -9,19 +9,18 @@ GLOBAL_LIST_EMPTY(lord_titles)
 	you sit at the center of every plot, and every whisper of ambition. Every man, woman, and child may envy your power and \
 	would replace you in the blink of an eye. But remember, its not envy that keeps you in place, it is your will. Show them \
 	the error of their ways."
-	department_flag = NOBLEMEN
+	department_flag = TOWN
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK ) // | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_LORD
 	faction = FACTION_TOWN
-	total_positions = 1
-	spawn_positions = 1
+	total_positions = 0
+	spawn_positions = 0
 	spells = list(
 		/datum/action/cooldown/spell/undirected/list_target/grant_title,
 		/datum/action/cooldown/spell/undirected/list_target/grant_nobility,
 	)
 	allowed_races = RACES_PLAYER_ROYALTY
 	outfit = /datum/outfit/lord
-	bypass_lastclass = TRUE
 	give_bank_account = 500
 	selection_color = "#7851A9"
 	cmode_music = 'sound/music/cmode/nobility/combat_noble.ogg'
@@ -54,23 +53,25 @@ GLOBAL_LIST_EMPTY(lord_titles)
 		/datum/skill/combat/knives = 3,
 		/datum/skill/misc/swimming = 1,
 		/datum/skill/misc/climbing = 1,
-		/datum/skill/misc/athletics = 4,
+		/datum/skill/misc/athletics = 3,
 		/datum/skill/misc/reading = 4,
 		/datum/skill/misc/riding = 3,
 		/datum/skill/labor/mathematics = 3
 	)
 
+	mind_traits = list(
+		TRAIT_KNOW_KEEP_DOORS
+	)
 	traits = list(
 		TRAIT_NOBLE,
 		TRAIT_NOSEGRAB,
 		TRAIT_HEAVYARMOR,
 		TRAIT_MEDIUMARMOR,
-		TRAIT_KNOWKEEPPLANS
 	)
 
 	voicepack_m = /datum/voicepack/male/evil
 
-/datum/job/lord/get_informed_title(mob/mob, change_title = FALSE, new_title)
+/datum/job/lord/get_informed_title(mob/mob, ignore_pronouns, change_title = FALSE, new_title)
 	if(change_title)
 		ruler_title = new_title
 		return "[ruler_title]"
@@ -95,9 +96,6 @@ GLOBAL_LIST_EMPTY(lord_titles)
 
 	to_chat(world, "<b>[span_notice(span_big("[spawned.real_name] is [ruler_title] of [SSmapping.config.map_name]."))]</b>")
 	to_chat(world, "<br>")
-
-	if(GLOB.keep_doors.len > 0)
-		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(know_keep_door_password), spawned), 7 SECONDS)
 
 	if(spawned.age == AGE_OLD)
 		spawned.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)
@@ -153,7 +151,7 @@ GLOBAL_LIST_EMPTY(lord_titles)
 
 /datum/job/exlord //just used to change the lords title
 	title = "Ex-Monarch"
-	department_flag = NOBLEMEN
+	department_flag = TOWN
 	faction = FACTION_TOWN
 	total_positions = 0
 	spawn_positions = 0

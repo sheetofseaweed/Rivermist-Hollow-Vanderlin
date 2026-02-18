@@ -170,7 +170,7 @@
 /datum/status_effect/debuff/nympho_addiction/on_apply()
 	. = ..()
 	var/mob/living/carbon/human/human = owner
-	human.charflaw = new /datum/charflaw/addiction/lovefiend(human)
+	human.add_quirk(/datum/quirk/vice/lovefiend)
 
 /atom/movable/screen/alert/status_effect/debuff/nympho_addiction
 	name = "Addicted to Sex"

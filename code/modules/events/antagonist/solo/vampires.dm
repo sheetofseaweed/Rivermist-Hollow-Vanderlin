@@ -21,21 +21,7 @@
 	typepath = /datum/round_event/antagonist/solo/vampire
 	antag_datum = /datum/antagonist/vampire/lord
 
-	restricted_roles = list(
-		/datum/job/lord,
-		/datum/job/consort,
-		/datum/job/priest,
-		/datum/job/hand,
-		/datum/job/captain,
-		/datum/job/prince,
-		/datum/job/inquisitor,
-		/datum/job/absolver,
-		/datum/job/orthodoxist,
-		/datum/job/adept,
-		/datum/job/forestwarden,
-		/datum/job/royalknight,
-		/datum/job/templar,
-	)
+	restricted_roles = null
 
 /datum/round_event/antagonist/solo/vampire
 

@@ -40,7 +40,7 @@
 		var/mob/living/L = the_target
 		if(faction_check(living_mob, L) || L.stat >= DEAD) //basic targetting doesn't target dead people
 			return FALSE
-		if((L.has_quirk(/datum/quirk/monsterhuntermale) && living_mob.gender == MALE) || (L.has_quirk(/datum/quirk/monsterhunterfemale) && living_mob.gender == FEMALE) || HAS_TRAIT(L, TRAIT_PACIFISM) || L.surrendering)
+		if((L.has_quirk(/datum/quirk/peculiarity/monsterhuntermale) && living_mob.gender == MALE) || (L.has_quirk(/datum/quirk/peculiarity/monsterhunterfemale) && living_mob.gender == FEMALE) || HAS_TRAIT(L, TRAIT_PACIFISM) || L.surrendering)
 			return FALSE
 		if((L.body_position == LYING_DOWN) && !L.get_active_held_item() && L.ckey && !L.cmode) //if is laying and holding nothing, and not in cmode. Ignore.
 			return FALSE

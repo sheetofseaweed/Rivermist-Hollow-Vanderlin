@@ -10,6 +10,7 @@
 	icon_state = "dungeoneer"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
 	fiber_salvage = FALSE
+	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 
 /obj/item/clothing/head/menacing
 	name = "sack hood"
@@ -17,6 +18,7 @@
 	icon_state = "menacing"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
 	fiber_salvage = FALSE
+	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_MASK
 
 /obj/item/clothing/head/knitcap
 	name = "knit cap"
@@ -220,7 +222,7 @@
 	..()
 	user.cure_blind("blindfold_[REF(src)]")
 
-/obj/item/clothing/head/sack/attack(mob/living/target, mob/living/user)
+/obj/item/clothing/head/sack/attack(mob/living/target, mob/living/user, list/modifiers)
 	if(target.get_item_by_slot(ITEM_SLOT_HEAD))
 		to_chat(user, "<span class='warning'>Remove [target.p_their()] headgear first!</span>")
 		return
@@ -333,8 +335,8 @@
 	item_flags = ABSTRACT
 
 /obj/item/clothing/head/helmet/pegasusknight
-	name = "pegasus knight helm"
-	desc = "A helmet typically worn by Lakkarian pegasus knights. Many find the design of this helmet unusual, but it protects the neck well and is easy to see out of."
+	name = "coifed helmet"
+	desc = "Many find the design of this helmet unusual, but it protects the neck well and is easy to see out of."
 	icon_state = "lakkarihelm"
 	armor = ARMOR_PLATE
 	flags_inv = HIDEEARS|HIDEHAIR

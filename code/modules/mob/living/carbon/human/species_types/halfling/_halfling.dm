@@ -19,7 +19,7 @@
 	default_color = "FFFFFF"
 	native_language = "Halfling"
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_LIGHT_STEP, TRAIT_COIN_ILLITERATE, TRAIT_LUCKY_COOK)
+	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_LIGHT_STEP, TRAIT_COIN_ILLITERATE, TRAIT_LUCKY_COOK, TRAIT_TINY)
 	inherent_skills = list(
 		/datum/skill/misc/sneaking = 4,
 		/datum/skill/misc/stealing = 3,
@@ -34,7 +34,7 @@
 
 	use_skintones = TRUE
 
-	possible_ages = NORMAL_AGES_LIST_CHILD
+	possible_ages = NORMAL_AGES_LIST
 
 	changesource_flags = WABBAJACK
 

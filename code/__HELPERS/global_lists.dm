@@ -3,6 +3,7 @@
 //////////////////////////
 
 /proc/make_datum_references_lists()
+	init_quirk_registry()
 	//underwear
 	//init_sprite_accessory_subtypes(/datum/sprite_accessory/underwear, GLOB.underwear_list, GLOB.underwear_m, GLOB.underwear_f)
 	//undershirt
@@ -32,19 +33,7 @@
 	init_slapcraft_recipes()
 	init_curse_names()
 
-	init_orderless_slapcraft_recipes()
-	init_crafting_repeatable_recipes()
-	setup_particles()
-
 	GLOB.emote_list = init_emote_list()
-
-	init_subtypes(/datum/anvil_recipe, GLOB.anvil_recipes)
-
-	init_subtypes(/datum/artificer_recipe, GLOB.artificer_recipes)
-
-	init_subtypes(/datum/alch_grind_recipe, GLOB.alch_grind_recipes)
-
-	init_subtypes(/datum/alch_cauldron_recipe,GLOB.alch_cauldron_recipes)
 
 	// Faiths
 	for(var/path in subtypesof(/datum/faith))
@@ -81,6 +70,11 @@
 		var/datum/combat_music/trackref = GLOB.cmode_tracks_by_type[path]
 		cmode_track_to_namelist(trackref)
 
+	// Loadout items
+	for (var/path in subtypesof(/datum/loadout_item))
+		var/datum/loadout_item/loadout_item = new path()
+		GLOB.loadout_items += loadout_item
+
 
 //creates every subtype of prototype (excluding prototype) and adds it to list L.
 //if no list/L is provided, one is created.
@@ -111,7 +105,7 @@
 /proc/init_curse_names()
 	GLOB.curse_names = list()
 	for(var/datum/curse/curse_type as anything in subtypesof(/datum/curse))
-		if(is_abstract(curse_type))
+		if(IS_ABSTRACT(curse_type))
 			continue
 		GLOB.curse_names |= initial(curse_type.name)
 		GLOB.curse_names[initial(curse_type.name)] = new curse_type

@@ -117,6 +117,9 @@
 	/// Supports (/datum/skill/bar = list(value, clamp)).
 	var/list/skills
 
+	/// Associative list of skill - base multiplier to set for skill_holder
+	var/list/skill_multipliers = list()
+
 	/// Innate spells that get removed when the job is removed
 	var/list/spells
 
@@ -134,7 +137,7 @@
 	var/banned_leprosy = TRUE
 	var/banned_lunatic = TRUE
 
-	var/bypass_lastclass = FALSE
+	var/bypass_lastclass = TRUE
 
 	var/list/peopleiknow = list()
 	var/list/peopleknowme = list()
@@ -166,7 +169,7 @@
 
 	var/is_recognized = FALSE // For foreigners who are recognized.
 
-	var/datum/charflaw/forced_flaw
+	var/datum/quirk/forced_flaw
 
 	var/shows_in_list = TRUE
 
@@ -191,10 +194,7 @@
 
 	/// Blacklisted from the actor
 
-	var/static/list/actors_list_blacklist = list(
-		/datum/job/adventurer,
-		/datum/job/pilgrim,
-	)
+	var/static/list/actors_list_blacklist = null
 
 	///list of job packs we select from during job setup
 	var/list/job_packs
@@ -217,31 +217,37 @@
 /datum/job/New()
 	. = ..()
 	if(give_bank_account)
-		for(var/X in GLOB.peasant_positions)
+		for(var/X in GLOB.lords_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.serf_positions)
+		for(var/X in GLOB.keep_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.company_positions)
+		for(var/X in GLOB.townhall_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.church_positions)
+		for(var/X in GLOB.townwatch_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.garrison_positions)
+		for(var/X in GLOB.chapel_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.noble_positions)
+		for(var/X in GLOB.scholars_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.apprentices_positions)
+		for(var/X in GLOB.traders_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.youngfolk_positions)
+		for(var/X in GLOB.tavern_positions)
 			peopleiknow += X
 			peopleknowme += X
-		for(var/X in GLOB.inquisition_positions)
+		for(var/X in GLOB.town_positions)
+			peopleiknow += X
+			peopleknowme += X
+		for(var/X in GLOB.outsiders_positions)
+			peopleiknow += X
+			peopleknowme += X
+		for(var/X in GLOB.adventurers_positions)
 			peopleiknow += X
 			peopleknowme += X
 
@@ -258,7 +264,7 @@
 
 /// Executes after the mob has been spawned in the map.
 /// Client might not be yet in the mob, and is thus a separate variable.
-/datum/job/proc/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+/datum/job/proc/after_spawn(mob/living/carbon/human/spawned, client/player_client, clear_job_stats = TRUE)
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_JOB_AFTER_SPAWN, src, spawned, player_client)
 
@@ -293,8 +299,10 @@
 	spawned.adjust_spell_points(spell_points)
 	spawned.generate_random_attunements(rand(attunements_min, attunements_max))
 
-	if(!parent_job) // Prevent the advclass job from removing the parent job stats.
-		spawned.remove_stat_modifier(STATMOD_JOB) // Reset so no inf stat
+	// When we have sourced skill mods (praying, add to this as well)
+	if(clear_job_stats) // Reset for most non-advclasses
+		spawned.remove_stat_modifier(STATMOD_JOB)
+
 	spawned.adjust_stat_modifier_list(STATMOD_JOB, jobstats)
 
 	for(var/datum/skill/skill as anything in skills)
@@ -303,6 +311,9 @@
 			spawned.clamped_adjust_skillrank(skill, amount_or_list[1], amount_or_list[2], TRUE)
 		else
 			spawned.adjust_skillrank(skill, amount_or_list, TRUE)
+
+	for(var/skill_type in skill_multipliers)
+		spawned.set_skill_exp_multiplier(skill_type, skill_multipliers[skill_type])
 
 	for(var/X in peopleknowme)
 		for(var/datum/mind/MF in get_minds(X))
@@ -347,10 +358,7 @@
 		GLOB.actors_list[spawned.mobid] = "[spawned.real_name] as [used_title]<BR>"
 
 	if(forced_flaw)
-		spawned.set_flaw(forced_flaw)
-
-	if(spawned.charflaw)
-		spawned.charflaw.after_spawn(spawned, player_client)
+		spawned.add_quirk(forced_flaw)
 
 	if(antag_role && spawned.mind)
 		spawned.mind.add_antag_datum(antag_role)
@@ -455,15 +463,16 @@
 				continue
 			reals |= real_pack
 		if(!length(reals))
+			message_admins("ERROR: [key_name_admin(src)] failed job pack selection.")
 			return
 
 		var/datum/job_pack/picked_pack
-		if(!client)
-			picked_pack = GLOB.job_pack_singletons[pick(reals)]
-		else
-			picked_pack = browser_input_list(src, equipping.pack_title, equipping.pack_message, reals, timeout = 20 SECONDS)
+		if(client)
+			picked_pack = browser_input_list(src, equipping.pack_title, equipping.pack_message, reals, timeout = 40 SECONDS)
 			if(QDELETED(src))
 				return
+		if(!picked_pack)
+			picked_pack = pick(reals)
 
 		if(picked_pack.type)
 			previous_picked_types |= picked_pack.type
@@ -601,15 +610,16 @@
 /datum/job/proc/remove_spells(mob/living/equipped_human)
 	equipped_human.remove_spells(source = src)
 
-/datum/job/proc/get_informed_title(mob/mob)
+/datum/job/proc/get_informed_title(mob/mob, ignore_pronouns = FALSE)
 	if(mob.admin_title)
 		return mob.admin_title
 
 	if(title_override)
 		return title_override
 
-	if(mob.pronouns == SHE_HER && f_title)
-		return f_title
+	if(f_title)
+		if(ignore_pronouns && mob.gender == FEMALE || !ignore_pronouns && mob.pronouns == SHE_HER)
+			return f_title
 
 	return title
 
@@ -863,8 +873,8 @@
 						dat += "<br><font color ='#7a4d0a'><b>Sub</b>class Traits:</font> "
 					else if(!length(adv_ref.traits) && length(traits))
 						traitlist = traits
-						show_traits = FALSE
-						dat += "<font color ='#7a4d0a'><b>Class</b> Traits:</font> "
+						//show_traits = FALSE
+						dat += "<br><font color ='#7a4d0a'><b>Class</b> Traits:</font> "
 					for(var/trait in traitlist)
 						dat += "<details><summary><i><font color ='#ccbb82'>[trait]</font></i></summary>"
 						dat += "<i><font color = '#a3ffe0'>[GLOB.roguetraits[trait]]</font></i></details>"
@@ -909,14 +919,16 @@
 					dat += "["[capitalize(stat)]: <b>\Roman[stat_ceilings[stat]]</b>"] | "
 				dat += "<br><i>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"
 				dat += "</font>"	//Ends the stat limit colors
+		if(spell_points > 0)
+			dat += "<br><font color = '#a3a7e0'>Starting Spellpoints: <b>[spell_points]</b></font>"
 		if(length(traits) && (show_traits || sclass_count > 1))
-			dat += "<b>Class</b></font> Traits: "
+			dat += "<br><b>Class</b></font> Traits: "
 			for(var/trait in traits)
 				dat += "<details><summary><i><font color ='#ccbb82'>[trait]</font></i></summary>"
 				dat += "<i><font color = '#a3ffe0'>[GLOB.roguetraits[trait]]</font></i></details>"
 			dat += "</font>"
 		dat += "<br><i>This information is not all-encompassing. Many classes have other quirks and skills that define them.</i>"
-		if(istype(src,/datum/job/jester))
+		if(istype(src,/datum/job/advclass/towner/jester))
 			LAZYCLEARLIST(dat)
 			dat = list("<font color = '#d151ab'><center>Come one, come all, where Psydon Lies! <br>Let Xylix roll the dice, <br>unto our untimely demise! <br>Ahahaha!</center>")
 			dat += "<center><b><font size = 4>STR: ???</b><br>"

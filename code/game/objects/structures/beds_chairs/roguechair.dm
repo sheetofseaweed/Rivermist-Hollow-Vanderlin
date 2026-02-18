@@ -169,7 +169,7 @@
 				var/movefrom = get_dir(M.loc, loc)
 				if(movefrom == dir && item_chair != null)
 					if(M.cmode) //RHM edit: chairs fall down only on combat mode
-						playsound(loc, 'sound/foley/chairfall.ogg', 100, FALSE)
+						playsound(src, 'sound/foley/chairfall.ogg', 100, FALSE)
 						var/obj/item/I = new item_chair(loc)
 						item_chair = null
 						I.dir = dir
@@ -180,7 +180,7 @@
 	if(!user)
 		return
 	if(isturf(loc))
-		playsound(loc, 'sound/foley/chairfall.ogg', 100, FALSE)
+		playsound(src, 'sound/foley/chairfall.ogg', 100, FALSE)
 		var/obj/item/I = new item_chair(loc)
 		item_chair = null
 		I.dir = dir
@@ -196,7 +196,7 @@
 		return
 	if(get_dir(leaving.loc, new_location) == REVERSE_DIR(dir))
 		if(M.cmode) //RHM edit: chairs fall down only on combat mode
-			playsound(loc, 'sound/foley/chairfall.ogg', 100, FALSE)
+			playsound(src, 'sound/foley/chairfall.ogg', 100, FALSE)
 			var/obj/item/I = new item_chair(loc)
 			item_chair = null
 			I.dir = dir
@@ -205,7 +205,7 @@
 
 /obj/structure/chair/wood/alt/take_damage(damage_amount, damage_type = BRUTE, damage_flag = 0, sound_effect = 1)
 	if(damage_amount > 5 && item_chair != null)
-		playsound(loc, 'sound/foley/chairfall.ogg', 100, FALSE)
+		playsound(src, 'sound/foley/chairfall.ogg', 100, FALSE)
 		var/obj/item/I = new item_chair(loc)
 		item_chair = null
 		I.dir = dir
@@ -292,6 +292,7 @@
 	name = "big wool bed"
 	desc = "A large soft bed, could fit two people."
 	icon_state = "double_wool"
+	max_buckled_mobs = 2
 	debris = list(/obj/item/grown/log/tree/small = 2)
 	/// The mob who buckled to this bed second, to avoid other mobs getting pixel-shifted before they unbuckle.
 	var/mob/living/goldilocks
@@ -343,7 +344,7 @@
 	sleepy = 0.75
 	var/item_path = /obj/item/sleepingbag
 
-/obj/structure/bed/sleepingbag/MiddleClick(mob/user, params)
+/obj/structure/bed/sleepingbag/MiddleClick(mob/user, list/modifiers)
 	..()
 	user.visible_message("<span class='notice'>[user] begins rolling up \the [src].</span>")
 	if(do_after(user, 2 SECONDS, target = src))
@@ -369,7 +370,7 @@
 	grid_width = 96
 	var/bed_path = /obj/structure/bed/sleepingbag
 
-/obj/item/sleepingbag/attack_self(mob/user, params)
+/obj/item/sleepingbag/attack_self(mob/user, list/modifiers)
 	..()
 	var/turf/T = get_turf(loc)
 	if(!isfloorturf(T))
@@ -385,9 +386,9 @@
 		new_bedroll.color = color
 		qdel(src)
 
-/obj/item/sleepingbag/MiddleClick(mob/user, params)
+/obj/item/sleepingbag/MiddleClick(mob/user, list/modifiers)
 	. = ..()
-	attack_self(user, params)
+	attack_self(user, modifiers)
 
 /obj/item/sleepingbag/deluxe
 	name = "rolled-up deluxe bedroll"

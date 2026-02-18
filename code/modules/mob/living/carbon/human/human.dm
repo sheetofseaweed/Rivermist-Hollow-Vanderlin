@@ -1,5 +1,5 @@
-/mob/living/carbon/human/MiddleClick(mob/user, params)
-	..()
+/mob/living/carbon/human/MiddleClick(mob/user, list/modifiers)
+	. = ..()
 	if(!user)
 		return
 	var/obj/item/held_item = user.get_active_held_item()
@@ -14,39 +14,18 @@
 				if(do_after(user, 5 SECONDS, src))
 					var/obj/item/bodypart/part = src.get_bodypart(BODY_ZONE_PRECISE_NECK)
 					part.add_wound(/datum/wound/artery/neck)
-		else if(user.pulledby)
-			if(ishuman(user.pulledby) && isliving(user))
-				var/mob/living/carbon/human/grabber = user.pulledby
-				var/mob/living/grabbed = user
-				if(grabbed.has_status_effect(/datum/status_effect/grab_counter_cd))
-					to_chat(user, span_warning("I already tried to counter someone grab recently!"))
-					return
-				var/skill_diff = 0
-				var/modifier = 1
-				if(user.mind)
-					skill_diff += (user.get_skill_level(/datum/skill/combat/wrestling))
-				if(grabber.mind)
-					skill_diff -= (grabber.get_skill_level(/datum/skill/combat/wrestling))
-				skill_diff = max(skill_diff, 1)
-				var/base_chance = 20
-				if(HAS_TRAIT(user, TRAIT_RESTRAINED))
-					modifier -= 0.5
-				var/counter_chance = (base_chance * skill_diff) * modifier
-				counter_chance = CLAMP(counter_chance, 5, 95)
-				if(prob(counter_chance))
-					grabber.Stun(10)
-					grabber.stop_pulling()
-					to_chat(user, span_notice("[grabber] fell for my grab counter!"))
-					to_chat(grabber, span_danger("I fall for [src]'s grab counter!"))
-				else
-					grabbed.Stun(20)
-					var/fail_message = "[grabber] did not fall for my grab counter..."
-					if(user.client?.prefs.showrolls)
-						fail_message += " [counter_chance]%"
-					to_chat(grabber, span_notice("[src] failed to counter my grab!"))
-					to_chat(user, span_warning(fail_message))
-				grabbed.apply_status_effect(/datum/status_effect/grab_counter_cd)
-	else
+
+	else if(held_item && (user.zone_selected == BODY_ZONE_PRECISE_SKULL))
+		if(held_item.get_sharpness() && held_item.wlength == WLENGTH_SHORT)
+			playsound(src, 'sound/foley/shaving.ogg', 100, TRUE, -1)
+			if(user == src)
+				user.visible_message(span_danger("[user] starts to shave [user.p_their()] hair with [held_item].</span>"))
+			else
+				user.visible_message(span_danger("[user] starts to shave [src]'s hair with [held_item].</span>"))
+			if(do_after(user, 10 SECONDS, src))
+				set_hair_style(/datum/sprite_accessory/hair/head/bald)
+				update_body()
+
 		if(held_item && (user.zone_selected == BODY_ZONE_PRECISE_MOUTH))
 			if(held_item.get_sharpness() && held_item.wlength == WLENGTH_SHORT)
 				var/datum/bodypart_feature/hair/facial = get_bodypart_feature_of_slot(BODYPART_FEATURE_FACIAL_HAIR)
@@ -60,7 +39,7 @@
 						has_stubble = FALSE
 						update_body()
 					else
-						held_item.melee_attack_chain(user, src, params)
+						held_item.melee_attack_chain(user, src, modifiers)
 				else if(facial?.accessory_type != /datum/sprite_accessory/hair/facial/none)
 					playsound(src, 'sound/foley/shaving.ogg', 100, TRUE, -1)
 					if(user == src)
@@ -76,7 +55,7 @@
 								var/mob/living/carbon/V = src
 								V.add_stress(/datum/stress_event/dwarfshaved)
 					else
-						held_item.melee_attack_chain(user, src, params)
+						held_item.melee_attack_chain(user, src, modifiers)
 		else if(held_item && (user.zone_selected == BODY_ZONE_PRECISE_R_FOOT || user.zone_selected == BODY_ZONE_PRECISE_L_FOOT))
 			var/obj/item/clothing/shoes/shoes_check
 			var/mob/living/carbon/target
@@ -238,6 +217,7 @@
 	create_dna(src)
 	randomize_human(src)
 	dna.initialize_dna()
+	reset_limb_fingerprints()
 
 /mob/living/carbon/human/Stat()
 	..()
@@ -249,142 +229,184 @@
 				stat("Vitae:",bloodpool)
 	return
 
-/mob/living/carbon/human/show_inv(mob/user)
+/mob/living/carbon/human/show_inv(mob/user, extra_only = FALSE)
 	user.set_machine(src)
 	var/obscured = check_obscured_slots()
 	var/list/dat = list()
 
 	dat += "<table>"
+	if(!extra_only)
+		if(handcuffed)
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HANDCUFFED]'>Remove [handcuffed]</A></td></tr>"
+		if(legcuffed)
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_LEGCUFFED]'>Remove [legcuffed]</A></td></tr>"
 
-	if(handcuffed)
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HANDCUFFED]'>Remove [handcuffed]</A></td></tr>"
-	if(legcuffed)
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_LEGCUFFED]'>Remove [legcuffed]</A></td></tr>"
+		dat += "<tr><td><hr></td></tr>"
 
-	dat += "<tr><td><hr></td></tr>"
+		for(var/i in 1 to held_items.len)
+			var/obj/item/I = get_item_for_held_index(i)
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HANDS];hand_index=[i]'>[(I && !(I.item_flags & ABSTRACT)) ? I : "<font color=grey>[get_held_index_name(i)]</font>"]</a></td></tr>"
 
-	for(var/i in 1 to held_items.len)
-		var/obj/item/I = get_item_for_held_index(i)
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HANDS];hand_index=[i]'>[(I && !(I.item_flags & ABSTRACT)) ? I : "<font color=grey>[get_held_index_name(i)]</font>"]</a></td></tr>"
+		dat += "<tr><td><hr></td></tr>"
 
-	dat += "<tr><td><hr></td></tr>"
+		dat += "<tr><td><B>HEAD</B></td></tr>"
 
-//	dat += "<tr><td><B>HEAD</B></td></tr>"
+		if(obscured & ITEM_SLOT_HEAD)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HEAD]'>[(head && !(head.item_flags & ABSTRACT)) ? head : "<font color=grey>Head</font>"]</A></td></tr>"
 
-	if(obscured & ITEM_SLOT_HEAD)
+		if(obscured & ITEM_SLOT_MASK)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_MASK]'>[(wear_mask && !(wear_mask.item_flags & ABSTRACT)) ? wear_mask : "<font color=grey>Mask</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_MOUTH)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_MOUTH]'>[(mouth && !(mouth.item_flags & ABSTRACT)) ? mouth : "<font color=grey>Mouth</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_NECK)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_NECK]'>[(wear_neck && !(wear_neck.item_flags & ABSTRACT)) ? wear_neck : "<font color=grey>Neck</font>"]</A></td></tr>"
+
+		dat += "<tr><td><hr></td></tr>"
+
+		dat += "<tr><td><B>BACK</B></td></tr>"
+
+		if(obscured & ITEM_SLOT_CLOAK)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_CLOAK]'>[(cloak && !(cloak.item_flags & ABSTRACT)) ? cloak : "<font color=grey>Cloak</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_BACK_R)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BACK_R]'>[(backr && !(backr.item_flags & ABSTRACT)) ? backr : "<font color=grey>Back</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_BACK_L)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BACK_L]'>[(backl && !(backl.item_flags & ABSTRACT)) ? backl : "<font color=grey>Back</font>"]</A></td></tr>"
+
+		dat += "<tr><td><hr></td></tr>"
+
+		dat += "<tr><td><B>TORSO</B></td></tr>"
+
+		if(obscured & ITEM_SLOT_ARMOR)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_ARMOR]'>[(wear_armor && !(wear_armor.item_flags & ABSTRACT)) ? wear_armor : "<font color=grey>Armor</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_SHIRT)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_SHIRT]'>[(wear_shirt && !(wear_shirt.item_flags & ABSTRACT)) ? wear_shirt : "<font color=grey>Shirt</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_GLOVES)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_GLOVES]'>[(gloves && !(gloves.item_flags & ABSTRACT)) ? gloves : "<font color=grey>Gloves</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_RING)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_RING]'>[(wear_ring && !(wear_ring.item_flags & ABSTRACT)) ? wear_ring : "<font color=grey>Ring</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_WRISTS)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_WRISTS]'>[(wear_wrists && !(wear_wrists.item_flags & ABSTRACT)) ? wear_wrists : "<font color=grey>Wrists</font>"]</A></td></tr>"
+
+		dat += "<tr><td><hr></td></tr>"
+
+		dat += "<tr><td><B>WAIST</B></td></tr>"
+
+		if(obscured & ITEM_SLOT_BELT)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BELT]'>[(belt && !(belt.item_flags & ABSTRACT)) ? belt : "<font color=grey>Belt</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_BELT_R)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BELT_R]'>[(beltr && !(beltr.item_flags & ABSTRACT)) ? beltr : "<font color=grey>Hip</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_BELT_L)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BELT_L]'>[(beltl && !(beltl.item_flags & ABSTRACT)) ? beltl : "<font color=grey>Hip</font>"]</A></td></tr>"
+
+		dat += "<tr><td><hr></td></tr>"
+
+		dat += "<tr><td><B>LEGS</B></td></tr>"
+
+		if(obscured  & ITEM_SLOT_PANTS)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_PANTS]'>[(wear_pants && !(wear_pants.item_flags & ABSTRACT)) ? wear_pants : "<font color=grey>Trousers</font>"]</A></td></tr>"
+
+		if(obscured & ITEM_SLOT_SHOES)
+			dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+		else
+			dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_SHOES]'>[(shoes && !(shoes.item_flags & ABSTRACT)) ? shoes : "<font color=grey>Boots</font>"]</A></td></tr>"
+
+		dat += "<tr><td><hr></td></tr>"
+
+	dat += "<tr><td><B>UNDERWEAR</B></td></tr>"
+	var/extra_obscured
+	if(get_erp_pref(/datum/erp_preference/boolean/clothed_sex))
+		extra_obscured = 0
+	else
+		extra_obscured = (obscured << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work.
+
+	if((extra_obscured & ITEM_SLOT_UNDER_BOTTOM) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HEAD]'>[(head && !(head.item_flags & ABSTRACT)) ? head : "<font color=grey>Head</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_UNDER_BOTTOM];extra_only=[extra_only]'>[(underwear && !(underwear.item_flags & ABSTRACT)) ? underwear : "<font color=grey>Underwear</font>"]</A></td></tr>"
 
-	if(obscured & ITEM_SLOT_MASK)
+	if((extra_obscured & ITEM_SLOT_UNDER_TOP) && (obscured & ITEM_SLOT_EXTRA))
+		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
+	else if(bra && (user == src))
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_UNDER_TOP];extra_only=[extra_only]'>[(bra && !(bra.item_flags & ABSTRACT)) ? bra : "<font color=grey>Bra</font>"]</A> | <A href='byond://?src=[REF(src)];show_storage=[ITEM_SLOT_UNDER_TOP];extra_only=[extra_only]'>["Storage"]</A></td></tr>"
+	else
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_UNDER_TOP];extra_only=[extra_only]'>[(bra && !(bra.item_flags & ABSTRACT)) ? bra : "<font color=grey>Bra</font>"]</A></td></tr>"
+
+	if((extra_obscured & ITEM_SLOT_UNDERSHIRT) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_MASK]'>[(wear_mask && !(wear_mask.item_flags & ABSTRACT)) ? wear_mask : "<font color=grey>Mask</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_UNDERSHIRT];extra_only=[extra_only]'>[(undershirt && !(undershirt.item_flags & ABSTRACT)) ? undershirt : "<font color=grey>Undershirt</font>"]</A></td></tr>"
 
-	if(obscured & ITEM_SLOT_MOUTH)
+	if((extra_obscured & ITEM_SLOT_ARMSLEEVES) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_MOUTH]'>[(mouth && !(mouth.item_flags & ABSTRACT)) ? mouth : "<font color=grey>Mouth</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_ARMSLEEVES];extra_only=[extra_only]'>[(armsleeves && !(armsleeves.item_flags & ABSTRACT)) ? armsleeves : "<font color=grey>Armsleeves</font>"]</A></td></tr>"
 
-	if(obscured & ITEM_SLOT_NECK)
+	if((extra_obscured & ITEM_SLOT_GARTER) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_NECK]'>[(wear_neck && !(wear_neck.item_flags & ABSTRACT)) ? wear_neck : "<font color=grey>Neck</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_GARTER];extra_only=[extra_only]'>[(garter && !(garter.item_flags & ABSTRACT)) ? garter : "<font color=grey>Garter</font>"]</A></td></tr>"
 
-	dat += "<tr><td><hr></td></tr>"
-
-//	dat += "<tr><td><B>BACK</B></td></tr>"
-
-	if(obscured & ITEM_SLOT_CLOAK)
+	if((extra_obscured & ITEM_SLOT_CHOKER) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_CLOAK]'>[(cloak && !(cloak.item_flags & ABSTRACT)) ? cloak : "<font color=grey>Cloak</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_CHOKER];extra_only=[extra_only]'>[(choker && !(choker.item_flags & ABSTRACT)) ? choker : "<font color=grey>Choker</font>"]</A></td></tr>"
 
-	if(obscured & ITEM_SLOT_BACK_R)
+	if((extra_obscured & ITEM_SLOT_EARRING_L) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BACK_R]'>[(backr && !(backr.item_flags & ABSTRACT)) ? backr : "<font color=grey>Back</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_EARRING_L];extra_only=[extra_only]'>[(earring_l && !(earring_l.item_flags & ABSTRACT)) ? earring_l : "<font color=grey>Left Earring</font>"]</A></td></tr>"
 
-	if(obscured & ITEM_SLOT_BACK_L)
+	if((extra_obscured & ITEM_SLOT_EARRING_R) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BACK_L]'>[(backl && !(backl.item_flags & ABSTRACT)) ? backl : "<font color=grey>Back</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_EARRING_R];extra_only=[extra_only]'>[(earring_r && !(earring_r.item_flags & ABSTRACT)) ? earring_r : "<font color=grey>Right Earring</font>"]</A></td></tr>"
 
-	dat += "<tr><td><hr></td></tr>"
-
-//	dat += "<tr><td><B>TORSO</B></td></tr>"
-
-	if(obscured & ITEM_SLOT_ARMOR)
+	if((extra_obscured & ITEM_SLOT_SOCKS) && (obscured & ITEM_SLOT_EXTRA))
 		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
 	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_ARMOR]'>[(wear_armor && !(wear_armor.item_flags & ABSTRACT)) ? wear_armor : "<font color=grey>Armor</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_SHIRT)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_SHIRT]'>[(wear_shirt && !(wear_shirt.item_flags & ABSTRACT)) ? wear_shirt : "<font color=grey>Shirt</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_GLOVES)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_GLOVES]'>[(gloves && !(gloves.item_flags & ABSTRACT)) ? gloves : "<font color=grey>Gloves</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_RING)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_RING]'>[(wear_ring && !(wear_ring.item_flags & ABSTRACT)) ? wear_ring : "<font color=grey>Ring</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_WRISTS)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_WRISTS]'>[(wear_wrists && !(wear_wrists.item_flags & ABSTRACT)) ? wear_wrists : "<font color=grey>Wrists</font>"]</A></td></tr>"
-
-	dat += "<tr><td><hr></td></tr>"
-
-//	dat += "<tr><td><B>WAIST</B></td></tr>"
-
-	if(obscured & ITEM_SLOT_BELT)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BELT]'>[(belt && !(belt.item_flags & ABSTRACT)) ? belt : "<font color=grey>Belt</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_BELT_R)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BELT_R]'>[(beltr && !(beltr.item_flags & ABSTRACT)) ? beltr : "<font color=grey>Hip</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_BELT_L)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_BELT_L]'>[(beltl && !(beltl.item_flags & ABSTRACT)) ? beltl : "<font color=grey>Hip</font>"]</A></td></tr>"
-
-	dat += "<tr><td><hr></td></tr>"
-
-//	dat += "<tr><td><B>LEGS</B></td></tr>"
-
-	if(obscured  & ITEM_SLOT_PANTS)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_PANTS]'>[(wear_pants && !(wear_pants.item_flags & ABSTRACT)) ? wear_pants : "<font color=grey>Trousers</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_SHOES)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_SHOES]'>[(shoes && !(shoes.item_flags & ABSTRACT)) ? shoes : "<font color=grey>Boots</font>"]</A></td></tr>"
-
-	dat += "<tr><td><hr></td></tr>"
-
-	//dat += "<tr><td><B>UNDERWEAR</B></td></tr>"
-
-	if(obscured & ITEM_SLOT_UNDERWEAR)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_UNDERWEAR]'>[(underwear && !(underwear.item_flags & ABSTRACT)) ? underwear : "<font color=grey>Underwear</font>"]</A></td></tr>"
-
-	if(obscured & ITEM_SLOT_SOCKS)
-		dat += "<tr><td><font color=grey>Obscured</font></td></tr>"
-	else
-		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_SOCKS]'>[(legwear_socks && !(legwear_socks.item_flags & ABSTRACT)) ? legwear_socks : "<font color=grey>Socks</font>"]</A></td></tr>"
+		dat += "<tr><td><A href='byond://?src=[REF(src)];item=[ITEM_SLOT_SOCKS];extra_only=[extra_only]'>[(legwear_socks && !(legwear_socks.item_flags & ABSTRACT)) ? legwear_socks : "<font color=grey>Socks</font>"]</A></td></tr>"
 
 	dat += "<tr><td><hr></td></tr>"
 	dat += {"</table>"}
@@ -516,43 +538,70 @@
 	if(dna?.species?.update_health_hud())
 		return
 	else
-		if(hud_used.bloods && !stamina_only)
+		if(hud_used.bloods)
 			var/bloodloss = ((BLOOD_VOLUME_NORMAL - blood_volume) / BLOOD_VOLUME_NORMAL) * 100
 
-			var/burnhead = 0
-			var/brutehead = 0
-			var/obj/item/bodypart/head = get_bodypart(BODY_ZONE_HEAD)
-			if(head)
-				burnhead = (head.burn_dam / head.max_damage) * 100
-				brutehead = (head.brute_dam / head.max_damage) * 100
-
 			var/toxloss = getToxLoss()
-			var/oxloss = getOxyLoss()
+			var/oxyloss = getOxyLoss()
+			var/painpercent = (get_complex_pain() / (STAEND * 12)) * 100
 
-			var/hungloss = nutrition*-1 //this is smart i think
 
 			var/usedloss = 0
 			if(bloodloss > 0)
 				usedloss = bloodloss
-			if(burnhead > usedloss)
-				usedloss = burnhead
-			if(brutehead > usedloss)
-				usedloss = brutehead
-			if(toxloss > usedloss)
-				usedloss = toxloss
-			if(oxloss > usedloss)
-				usedloss = oxloss
-			if(hungloss > usedloss)
-				usedloss = hungloss
 
+			hud_used.bloods.cut_overlays()
 			if(usedloss <= 0)
 				hud_used.bloods.icon_state = "dam0"
+				if(toxloss > 0)
+					var/toxoverlay
+					switch(toxloss)
+						if(1 to 20)
+							toxoverlay = "toxloss20"
+						if(21 to 49)
+							toxoverlay = "toxloss40"
+						if(50 to 79)
+							toxoverlay = "toxloss60"
+						if(80 to 99)
+							toxoverlay = "toxloss80"
+						if(100 to 999)
+							toxoverlay = "toxloss100"
+					hud_used.bloods.add_overlay(toxoverlay)
+
+				if(oxyloss > 0)
+					var/oxyoverlay
+					switch(oxyloss)
+						if(1 to 20)
+							oxyoverlay = "oxyloss20"
+						if(21 to 49)
+							oxyoverlay = "oxyloss40"
+						if(50 to 79)
+							oxyoverlay = "oxyloss60"
+						if(80 to 99)
+							oxyoverlay = "oxyloss80"
+						if(100 to 999)
+							oxyoverlay = "oxyloss100"
+					hud_used.bloods.add_overlay(oxyoverlay)
 			else
 				var/used = round(usedloss, 10)
 				if(used <= 80)
 					hud_used.bloods.icon_state = "dam[used]"
 				else
 					hud_used.bloods.icon_state = "damelse"
+			if(painpercent > 0)
+				var/painoverlay
+				switch(painpercent)
+					if(1 to 29)
+						painoverlay = "painloss20"
+					if(30 to 59)
+						painoverlay = "painloss40"
+					if(60 to 79)
+						painoverlay = "painloss60"
+					if(80 to 99)
+						painoverlay = "painloss80"
+					if(100 to 999)
+						painoverlay = "painloss100"
+				hud_used.bloods.add_overlay(painoverlay)
 			SEND_SIGNAL(src, COMSIG_MOB_HEALTHHUD_UPDATE, hud_used.bloods.icon_state)
 
 		if(hud_used.stamina)
@@ -610,16 +659,11 @@
 	if(hud_used.zone_select && !stamina_only)
 		hud_used.zone_select.update_appearance(UPDATE_OVERLAYS)
 
-/mob/living/carbon/human/fully_heal(admin_revive = FALSE)
-	dna?.species.spec_fully_heal(src)
-	if(admin_revive)
-		regenerate_limbs()
-		regenerate_organs()
-	spill_embedded_objects()
-	set_heartattack(FALSE)
-	drunkenness = 0
-	set_hygiene(HYGIENE_LEVEL_NORMAL)
-	..()
+/mob/living/carbon/human/fully_heal(heal_flags = HEAL_ALL)
+	// set_heartattack(FALSE)
+	if(heal_flags & HEAL_ESSENTIALS)
+		set_hygiene(HYGIENE_LEVEL_NORMAL)
+	return ..()
 
 /mob/living/carbon/human/check_weakness(obj/item/weapon, mob/living/attacker)
 	. = ..()
@@ -701,7 +745,7 @@
 	if(href_list[VV_HK_CORONATE])
 		if(!src.mind)
 			return
-		if(is_lord_job(mind.assigned_role))
+		if(is_burgmeister_job(mind.assigned_role))
 			return
 
 		var/appointment_type = browser_alert(usr, "Are you sure you want to coronate [src.real_name] as the new Monarch?", "Confirmation", DEFAULT_INPUT_CHOICES)
@@ -712,23 +756,19 @@
 		coronated = src
 
 		var/datum/job/lord_job = SSjob.GetJobType(/datum/job/lord)
-		var/datum/job/consort_job = SSjob.GetJobType(/datum/job/consort)
 		for(var/mob/living/carbon/human/HL in GLOB.human_list)
 			//this sucks ass. refactor to locate the current ruler/consort
 			if(HL.mind)
-				if(is_lord_job(HL.mind.assigned_role) || is_consort_job(HL.mind.assigned_role))
-					HL.mind.set_assigned_role(SSjob.GetJobType(/datum/job/villager))
+				if(is_burgmeister_job(HL.mind.assigned_role))
+					HL.mind.set_assigned_role(SSjob.GetJobType(/datum/job/towner))
 			//would be better to change their title directly, but that's not possible since the title comes from the job datum
 			if(HL.job == "Monarch")
 				HL.job = "Ex-Monarch"
 				lord_job?.remove_spells(HL)
-			if(HL.job == "Consort")
-				HL.job = "Ex-Consort"
-				consort_job?.remove_spells(HL)
 
 		var/new_title = (coronated.gender == MALE) ? SSmapping.config.monarch_title : SSmapping.config.monarch_title_f
 		coronated.mind.set_assigned_role(/datum/job/lord)
-		lord_job?.get_informed_title(coronated, TRUE, new_title)
+		lord_job?.get_informed_title(coronated, FALSE, TRUE, new_title)
 		coronated.job = "Monarch" //Monarch is used when checking if the ruler is alive, not "King" or "Queen". Can also pass it on and have the title change properly later.
 		lord_job?.add_spells(coronated)
 		SSticker.rulermob = coronated
@@ -743,8 +783,8 @@
 		if(!new_title)
 			return
 		admin_title = new_title
-		if(is_lord_job(human_job))
-			var/datum/job/lord_job = SSjob.GetJobType(/datum/job/lord)
+		if(is_burgmeister_job(human_job))
+			var/datum/job/lord_job = SSjob.GetJobType(human_job.type)
 			lord_job?.get_informed_title(src, TRUE, new_title)
 
 /mob/living/carbon/human/MouseDrop_T(mob/living/target, mob/living/user)
@@ -914,6 +954,7 @@
 	copy_bodyparts(target)
 
 	target.dna.transfer_identity(src)
+	reset_limb_fingerprints()
 
 	updateappearance(mutcolor_update = TRUE)
 

@@ -23,12 +23,12 @@
 
 /mob/living/carbon/human/Life()
 //	set invisibility = 0
+	SEND_SIGNAL(src, COMSIG_HUMAN_LIFE)
+
 	if (HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return
 
 	. = ..()
-
-	SEND_SIGNAL(src, COMSIG_HUMAN_LIFE)
 
 	if(HAS_TRAIT(src, TRAIT_SILVER_BLESSED))
 		adjust_bloodpool(3)
@@ -56,7 +56,7 @@
 					if(!mind.antag_datums || !mind.antag_datums.len)
 						allmig_reward++
 						var/static/list/towner_jobs
-						towner_jobs = GLOB.serf_positions | GLOB.peasant_positions | GLOB.apprentices_positions | GLOB.youngfolk_positions | GLOB.company_positions
+						towner_jobs = GLOB.town_positions
 						if(mind.assigned_role.title in towner_jobs) //If you play a towner-related role, you get triumphs.
 							adjust_triumphs(1)
 						to_chat(src, span_danger("Nights Survived: \Roman[allmig_reward]"))
@@ -79,15 +79,16 @@
 		handle_environment()
 		handle_hygiene()
 		handle_comfy()
-		if(health <= 0)
-			apply_damage(1, OXY)
 		if(dna?.species)
 			dna.species.spec_life(src) // for mutantraces
 
 	//heart attack stuff
 	handle_curses()
-	if(charflaw && !charflaw.ephemeral)
-		charflaw.flaw_on_life(src)
+
+	if(quirks && quirks.len)
+		for(var/datum/quirk/Q in quirks)
+			Q.on_life(src)
+
 	if(!client && !HAS_TRAIT(src, TRAIT_NOSLEEP) && !ai_controller)
 		if(MOBTIMER_EXISTS(src, MT_SLO))
 			if(MOBTIMER_FINISHED(src, MT_SLO, 90 SECONDS)) //?????
@@ -148,14 +149,6 @@
 					if(prob(50))
 						has_stubble = TRUE
 						update_body()
-
-
-/mob/living/carbon/human/handle_traits()
-	if (getOrganLoss(ORGAN_SLOT_BRAIN) >= 60)
-		add_stress(/datum/stress_event/brain_damage)
-	else
-		remove_stress(/datum/stress_event/brain_damage)
-	return ..()
 
 /mob/living/proc/handle_environment()
 	return

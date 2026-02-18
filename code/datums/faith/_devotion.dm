@@ -26,6 +26,9 @@
 	var/list/favored_miracles = list()
 	var/devotion_color = "#3C41A4"
 
+	var/list/datum/devotion_task/tasks = list()
+	var/list/viable_tasks = list()
+
 /datum/devotion/Destroy(force)
 	remove()
 	STOP_PROCESSING(SSprocessing, src)
@@ -53,6 +56,27 @@
 		grant_miracle(miracle)
 	holder_mob.verbs += list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray)
 	check_progression()
+	initialize_tasks()
+
+/datum/devotion/proc/initialize_tasks()
+	if(!holder_mob?.patron)
+		return
+
+	var/list/task_types = get_patron_tasks()
+	for(var/task_type in task_types)
+		add_task(task_type)
+
+/datum/devotion/proc/get_patron_tasks()
+	return viable_tasks
+
+/datum/devotion/proc/add_task(datum/devotion_task/task_type)
+	var/datum/devotion_task/new_task = new task_type(src)
+	tasks += new_task
+	return new_task
+
+/datum/devotion/proc/remove_task(datum/devotion_task/task)
+	tasks -= task
+	qdel(task)
 
 /datum/devotion/proc/remove()
 	if(holder_mob)
@@ -128,38 +152,26 @@
 	)
 
 /datum/devotion/proc/make_templar()
-	devotion = 50
+	devotion = 200
 	max_devotion = CLERIC_REQ_3
-	progression = CLERIC_REQ_1
-	max_progression = CLERIC_REQ_2
+	progression = CLERIC_REQ_2
+	max_progression = CLERIC_REQ_3
 
-/datum/devotion/proc/make_absolver()
-	devotion = 100
+/datum/devotion/proc/make_cleric()
+	devotion = 200
 	max_devotion = CLERIC_REQ_3
 	progression = CLERIC_REQ_3
 	max_progression = CLERIC_REQ_3
 
 /datum/devotion/proc/make_acolyte()
-	progression = CLERIC_REQ_1
-
-/datum/devotion/proc/make_cleric()
-	devotion = 50
+	devotion = 150
 	max_devotion = CLERIC_REQ_3
-	progression = CLERIC_REQ_1
+	progression = CLERIC_REQ_3
 	max_progression = CLERIC_REQ_3
-
-/datum/devotion/proc/make_churching()
-	max_devotion = CLERIC_REQ_1
-	progression = CLERIC_REQ_1
-	max_progression = CLERIC_REQ_1
-	miracles_extra = list(
-		/datum/action/cooldown/spell/undirected/touch/orison/lesser,
-		/datum/action/cooldown/spell/diagnose/holy,
-	)
 
 /mob/living/carbon/human/proc/devotionreport()
 	set name = "Check Devotion"
-	set category = "Cleric"
+	set category = "RoleUnique"
 
 	if(!ishuman(src))
 		return
@@ -170,7 +182,7 @@
 
 /mob/living/carbon/human/proc/clericpray()
 	set name = "Give Prayer"
-	set category = "Cleric"
+	set category = "RoleUnique"
 
 	if(!ishuman(src))
 		return

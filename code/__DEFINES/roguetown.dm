@@ -138,29 +138,48 @@ GLOBAL_LIST_EMPTY(job_respawn_delays)
 
 #define CTAG_ALLCLASS		"CAT_ALLCLASS"		// jus a define for allclass to not deal with actively typing strings
 #define CTAG_PILGRIM 		"CAT_PILGRIM"  		// Pilgrim classes
-#define CTAG_ADVENTURER 	"CAT_ADVENTURER"  	// Adventurer classes
-#define CTAG_TOWNER 		"CAT_TOWNER"  		// Villager class - Villagers can use it
 #define CTAG_ANTAG 			"CAT_ANTAG"  		// Antag class - results in an antag
-#define CTAG_BANDIT			"CAT_BANDIT"		// Bandit class - Tied to the bandit antag really	<- Disabled; bandits got stuck with class selection
 #define CTAG_CHALLENGE 		"CAT_CHALLENGE"  	// Challenge class - Meant to be free for everyone
-#define CTAG_MERCENARY		"CAT_MERCENARY"
-#define CTAG_GARRISON		"CAT_GARRISON"
-#define CTAG_FORGARRISON	"CAT_FORGARRISON"
-#define CTAG_ADEPT			"CAT_ADEPT" // Used for Adept class selection
-#define CTAG_SQUIRE 		"CAT_SQUIRE" // Squire Love, Classes, as above.
-#define CTAG_MAGIE			"CAT_MAGIE" //for Mage Associate
-#define CTAG_HEIR			"CAT_HEIR"
-#define CTAG_HAND			"CAT_HAND"			// Hand class - Handles Hand class selector
-#define CTAG_CONSORT 		"CAT_CONSORT" 		// Consort classes
-#define CTAG_VETERAN		"CAT_VETERAN"		// Veteran class - Handles Veteran class selector
-#define CTAG_TOWN_ELDER		"CAT_TOWN_ELDER"		// Town Elder class - Handles Town Elder class selector
-#define CTAG_ROYALKNIGHT	"CAT_ROYAL_KNIGHT"
-#define CTAG_MENATARMS		"CAT_MENATARMS"
-#define CTAG_SERVANT		"CAT_SERVANT" 		// Servant class - 4 type of servant to fill in someplace.
-#define CTAG_GATEMASTER		"CAT_GATEMASTER"
-#define CTAG_WRETCH			"CAT_WRETCH"
-#define CTAG_INQUISITION	"CAT_INQUISITION"	// For Orthodoxist subclasses
-#define CTAG_PURITAN "CAT_PURITAN"
+
+//TOWNHALL
+#define CAT_BURGMESITER		"CAT_BURGMESITER"		// Burgmeister class - 4 types
+#define CAT_COUNCILOR		"CAT_COUNCILOR"		// Councilor class - 4 types
+#define CAT_SERVANT			"CAT_SERVANT"		// Servant class - 3 types
+//TOWNWATCH
+#define CAT_WATCHMAN		"CAT_WATCHMAN"		// Town Watch Guard class - 3 types
+//CHAPEL
+#define CAT_CHAPEL			"CAT_CHAPEL"		// Chapel acolyte class - 3 types
+//SCHOLARS
+#define CAT_GUILDWIZARD		"GUILDWIZARD"		// Guild wizard class - 2 types
+#define CAT_ARCHIVIST		"ARCHIVIST"			// Archivist class - 4 types
+#define CAT_ARCHIVISTAP		"ARCHIVISTAP"		// Archivist apprentice class - 3 types
+//TRADERS
+#define CAT_SHOPHAND		"SHOPHAND"			// Waterdeep assistant class - 2 types
+//TAVERN
+#define CAT_AHEAD			"AHEAD"				// Adventurer's guild head class - 2 types
+#define CAT_WAITRESS		"WAITRESS"			// Waitress class - 4 types
+//TOWN
+#define CAT_TOWNER 			"CAT_TOWNER"  		// Towner class - 3 types
+#define CAT_PERFORMER		"PERFORMER"			// Performer class - 2 types
+#define CAT_ARTISAN			"ARTISAN"			// Artisan class - 5 types
+#define CAT_ARTISANAP		"ARTISANAP"			// Artisan apprentice class -5 types
+//OUTSIDERS
+#define CAT_FOREST_RANGER	"FOREST_RANGER"		// Forest ranger class - 3 types
+#define CAT_SWAMP_WITCH		"SWAMP_WITCH"		// Swamp witch class - 4 types
+//ADVENTURERS
+#define CAT_ADVENTURER_BARBARIAN 	"CAT_ADVENTURER_BARBARIAN"  // Adventurer Barbarian classes
+#define CAT_ADVENTURER_BARD	 		"CAT_ADVENTURER_BARD"  		// Adventurer Bard classes
+#define CAT_ADVENTURER_CLERIC	 	"CAT_ADVENTURER_CLERIC"  	// Adventurer Cleric classes
+#define CAT_ADVENTURER_DRUID	 	"CAT_ADVENTURER_DRUID"  	// Adventurer Druid classes
+#define CAT_ADVENTURER_FIGHTER 		"CAT_ADVENTURER_FIGHTER"  	// Adventurer Fighter classes
+#define CAT_ADVENTURER_MONK	 		"CAT_ADVENTURER_MONK"  		// Adventurer Monk classes
+#define CAT_ADVENTURER_PALADIN 		"CAT_ADVENTURER_PALADIN"  	// Adventurer Paladin classes
+#define CAT_ADVENTURER_RANGER	 	"CAT_ADVENTURER_RANGER"  	// Adventurer Ranger classes
+#define CAT_ADVENTURER_ROGUE	 	"CAT_ADVENTURER_ROGUE"  	// Adventurer Rogue classes
+#define CAT_ADVENTURER_SORCERER		"CAT_ADVENTURER_SORCERER"  	// Adventurer Sorcerer classes
+#define CAT_ADVENTURER_WARLOCK 		"CAT_ADVENTURER_WARLOCK"  	// Adventurer Warlock classes
+#define CAT_ADVENTURER_WIZARD	 	"CAT_ADVENTURER_WIZARD"  	// Adventurer Wizard classes
+
 
 // Character category and its buys
 #define TRIUMPH_CAT_CHARACTER "CHARACTER"
@@ -372,6 +391,7 @@ Thing can move up or down an armor class by significant changes to coverage & cr
 \--------------------*/
 
 // Light AC
+#define ARMOR_NONE			list("blunt" = 0, "slash" = 0, "stab" = 0, "piercing" = 0, "fire" = 0, "acid" = 0)
 #define ARMOR_MINIMAL		list("blunt" = 5, "slash" = 5, "stab" = 5, "piercing" = 0, "fire" = 0, "acid" = 0)
 #define ARMOR_WEAK			list("blunt" = 10, "slash" = 10, "stab" = 10, "piercing" = 5, "fire" = 0, "acid" = 0)
 

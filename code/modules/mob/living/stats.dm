@@ -83,11 +83,6 @@
 
 		switch(H.age)
 			if(AGE_CHILD)
-				set_stat_modifier(STATMOD_AGE, STATKEY_STR, -2)
-				set_stat_modifier(STATMOD_AGE, STATKEY_CON, -2)
-				set_stat_modifier(STATMOD_AGE, STATKEY_PER, 1)
-				set_stat_modifier(STATMOD_AGE, STATKEY_END, 1)
-				set_stat_modifier(STATMOD_AGE, STATKEY_SPD, round(rand(1,2)))
 			// nothing for adults/immortals,
 			if(AGE_MIDDLEAGED)
 				set_stat_modifier(STATMOD_AGE, STATKEY_END, 1)

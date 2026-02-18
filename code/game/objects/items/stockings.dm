@@ -12,12 +12,18 @@
 	max_integrity = 200
 	integrity_failure = 0.1
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
-	var/gendered
-	var/covers_breasts = FALSE
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/cloth
 	slot_flags = ITEM_SLOT_MOUTH | ITEM_SLOT_SOCKS
 	muteinmouth = TRUE
+	color = "#e6e5e5"
+	var/icon_state_base
+	var/damaged_icon = 'modular_rmh/icons/clothing/onmob/helpers/ripped_stockings_icon.dmi'
+	var/damaged_overlay_icon = 'modular_rmh/icons/clothing/onmob/helpers/ripped_stockings_onmob.dmi'
+
+/obj/item/clothing/legwears/Initialize(mapload, ...)
+	. = ..()
+	icon_state_base = icon_state
 
 /obj/item/clothing/legwears/attack(mob/M, mob/user, def_zone)
 	if(ishuman(M))
@@ -31,18 +37,44 @@
 			if(do_after(user, 50, target = H))
 				H.equip_to_slot_if_possible(src, ITEM_SLOT_SOCKS, disable_warning = TRUE)
 
+/obj/item/clothing/legwears/update_clothes_damaged_state(damaging = TRUE)
+	if(damaged_icon && damaged_overlay_icon)
+
+		if(damaging)
+			damaged_clothes = 1
+			icon = damaged_icon
+			mob_overlay_icon = damaged_overlay_icon
+			icon_state = icon_state + "_ripped"
+			name = "ripped " + name
+		else
+			damaged_clothes = 0
+			icon = initial(icon)
+			mob_overlay_icon = initial(mob_overlay_icon)
+			icon_state = initial(icon_state)
+			name = initial(name)
+		update_appearance(updates = ALL)
+	else
+		. = ..()
+
+	if(ismob(loc))
+		var/mob/M = loc
+		M.update_inv_socks()
 
 /obj/item/clothing/legwears/equipped(mob/living/carbon/user, slot)
 	. = ..()
 	if(user.mouth == src)
-		slot_flags = ITEM_SLOT_MOUTH
+		icon_state = null
 		user.update_body()
 		user.update_body_parts()
 
 /obj/item/clothing/legwears/dropped(mob/user)
 	. = ..()
-	slot_flags = ITEM_SLOT_MOUTH | ITEM_SLOT_SOCKS
+	icon_state = icon_state_base
+	update_clothes_damaged_state(damaged_clothes)
 
+
+/obj/item/clothing/legwears/random
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/random/Initialize()
 	. = ..()
@@ -50,18 +82,23 @@
 
 /obj/item/clothing/legwears/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //Silk variants
 
@@ -71,24 +108,32 @@
 	icon_state = "silk"
 	item_state = "silk"
 
+/obj/item/clothing/legwears/silk/random
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
 /obj/item/clothing/legwears/silk/random/Initialize()
 	. = ..()
 	color = pick("#e6e5e5", "#2b292e", "#173266", "#6F0000", "#664357")
 
 /obj/item/clothing/legwears/silk/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //Fishnets
 
@@ -98,24 +143,32 @@
 	icon_state = "fishnet"
 	item_state = "fishnet"
 
+/obj/item/clothing/legwears/fishnet/random
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
 /obj/item/clothing/legwears/fishnet/random/Initialize()
 	. = ..()
 	color = pick("#e6e5e5", "#2b292e", "#173266", "#6F0000", "#664357")
 
 /obj/item/clothing/legwears/fishnet/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //garters
 
@@ -127,18 +180,23 @@
 
 /obj/item/clothing/legwears/stockings_wg/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_wg/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_wg/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_wg/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_wg/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //silk garters
 
@@ -150,18 +208,23 @@
 
 /obj/item/clothing/legwears/silk_wg/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_wg/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_wg/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_wg/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_wg/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //stirrup
 
@@ -173,18 +236,23 @@
 
 /obj/item/clothing/legwears/stockings_sir/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_sir/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_sir/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_sir/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/stockings_sir/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //silk stirrup
 
@@ -196,18 +264,23 @@
 
 /obj/item/clothing/legwears/silk_sir/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_sir/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_sir/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_sir/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/silk_sir/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //fishnet stirrup
 
@@ -219,18 +292,23 @@
 
 /obj/item/clothing/legwears/fishnet_sir/white
 	color = "#e6e5e5"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet_sir/black
 	color = "#2b292e"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet_sir/blue
 	color = "#173266"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet_sir/red
 	color = "#6F0000"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/legwears/fishnet_sir/purple
 	color = "#664357"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 //pantyhose
 
@@ -272,6 +350,32 @@
 	icon_state = "fishnet_thighs_cl"
 	item_state = "fishnet_thighs_cl"
 
+//Mesh
+
+/obj/item/clothing/legwears/stockings_mesh
+	name = "mesh stockings"
+	desc = "Snug mesh stockings."
+	icon_state = "stockings_mesh_low"
+	item_state = "stockings_mesh_low"
+
+/obj/item/clothing/legwears/stockings_mesh_stirrup
+	name = "stirrup mesh stockings"
+	desc = "Snug mesh stockings with stirrups that hook under the foot for a tight fit."
+	icon_state = "stockings_mesh_low_sir"
+	item_state = "stockings_mesh_low_sir"
+
+/obj/item/clothing/legwears/stockings_mesh_crotchless
+	name = "crotchless mesh pantyhose"
+	desc = "Snug mesh pantyhose with an intentionally open design."
+	icon_state = "stockings_mesh_cl"
+	item_state = "stockings_mesh_cl"
+
+/obj/item/clothing/legwears/stockings_mesh_crotchless_stirrup
+	name = "crotchless mesh pantyhose with stirrup"
+	desc = "Snug mesh pantyhose with stirrups and an intentionally open design."
+	icon_state = "stockings_mesh_sir_cl"
+	item_state = "stockings_mesh_sir_cl"
+
 //Priestess
 
 /obj/item/clothing/legwears/priestess
@@ -279,6 +383,7 @@
 	desc = "Pure white stockings adorned with delicate golden bands, worn by priestesses during rites and ceremonies."
 	icon_state = "priestess"
 	item_state = "priestess"
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 // Supply
 
@@ -425,21 +530,21 @@
 
 /datum/repeatable_crafting_recipe/sewing/stockings_white
 	name = "stockings"
-	output = /obj/item/clothing/legwears/white
+	output = /obj/item/clothing/legwears
 	requirements = list(/obj/item/natural/cloth = 1,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 2
 
 /datum/repeatable_crafting_recipe/sewing/stockings_white_silk
 	name = "silk stockings"
-	output = /obj/item/clothing/legwears/silk/white
+	output = /obj/item/clothing/legwears/silk
 	requirements = list(/obj/item/natural/silk = 1,
 				/obj/item/natural/fibers = 1)
 	craftdiff = 3
 
 /datum/repeatable_crafting_recipe/sewing/stockings_white_fishnet
 	name = "fishnet stockings"
-	output = /obj/item/clothing/legwears/fishnet/white
+	output = /obj/item/clothing/legwears/fishnet
 	requirements = list(/obj/item/natural/fibers = 2)
 	craftdiff = 3
 
@@ -460,3 +565,87 @@
 		/obj/item/natural/fibers = 2
 	)
 	craftdiff = 4
+
+/datum/repeatable_crafting_recipe/sewing/stockings_mesh
+	name = "mesh stockings"
+	output = /obj/item/clothing/legwears/stockings_mesh
+	requirements = list(
+		/obj/item/natural/cloth = 1,
+		/obj/item/natural/fibers = 2
+	)
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/sewing/stockings_mesh/stirrup
+	name = "stirrup mesh stockings"
+	output = /obj/item/clothing/legwears/stockings_mesh_stirrup
+
+/datum/repeatable_crafting_recipe/sewing/stockings_mesh/crotchless
+	name = "crotchless mesh pantyhose"
+	output = /obj/item/clothing/legwears/stockings_mesh_crotchless
+
+/datum/repeatable_crafting_recipe/sewing/stockings_mesh/stirrup_crotchless
+	name = "crotchless mesh pantyhose with stirrups"
+	output = /obj/item/clothing/legwears/stockings_mesh_crotchless_stirrup
+
+/datum/repeatable_crafting_recipe/sewing/thighs
+	name = "pantyhose"
+	output = /obj/item/clothing/legwears/thighs
+	requirements = list(
+		/obj/item/natural/cloth = 2,
+		/obj/item/natural/fibers = 1
+	)
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/sewing/stockings_mesh/crotchless
+	name = "crotchless pantyhose"
+	output = /obj/item/clothing/legwears/thighs_cl
+
+/datum/repeatable_crafting_recipe/sewing/silk_thighs
+	name = "silk pantyhose"
+	output = /obj/item/clothing/legwears/silk_thighs
+	requirements = list(
+		/obj/item/natural/silk = 2,
+		/obj/item/natural/fibers = 1
+	)
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/sewing/silk_thighs/crotchless
+	name = "crotchless silk pantyhose"
+	output = /obj/item/clothing/legwears/silk_thighs_cl
+
+/datum/repeatable_crafting_recipe/sewing/fishnet_thighs
+	name = "fishnet pantyhose"
+	output = /obj/item/clothing/legwears/fishnet_thighs
+	requirements = list(
+		/obj/item/natural/cloth = 1,
+		/obj/item/natural/fibers = 2
+	)
+	craftdiff = 3
+
+/datum/repeatable_crafting_recipe/sewing/fishnet_thighs/fishnet_thighs_cl
+	name = "crotchless fishnet thighs"
+	output = /obj/item/clothing/legwears/fishnet_thighs_cl
+
+/datum/repeatable_crafting_recipe/sewing/stockings_white/stockings_wg
+	name = "stockings with garter"
+	output = /obj/item/clothing/legwears/stockings_wg
+
+/datum/repeatable_crafting_recipe/sewing/stockings_white_silk/silk_wg
+	name = "silk stockings with garter"
+	output = /obj/item/clothing/legwears/silk_wg
+
+/datum/repeatable_crafting_recipe/sewing/stockings_white/stockings_sir
+	name = "stirrup stockings"
+	output = /obj/item/clothing/legwears/stockings_sir
+
+/datum/repeatable_crafting_recipe/sewing/stockings_white_silk/silk_sir
+	name = "silk stirrup stockings"
+	output = /obj/item/clothing/legwears/silk_sir
+
+/datum/repeatable_crafting_recipe/sewing/stockings_white_fishnet/fishnet_sir
+	name = "fisnet stirrup stockings"
+	output = /obj/item/clothing/legwears/fishnet_sir
+
+/datum/repeatable_crafting_recipe/sewing/stockings_mesh/stockings_mesh_crotchless
+	name = "crotchless mesh pantyhose"
+	output = /obj/item/clothing/legwears/stockings_mesh_crotchless

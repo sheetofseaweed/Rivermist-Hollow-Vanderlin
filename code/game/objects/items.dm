@@ -5,6 +5,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /obj/item
 	name = "item"
+	var/original_name = null // Stores the original name if item was renamed
 	icon = 'icons/obj/items_and_weapons.dmi'
 	pass_flags_self = PASSITEM
 	pass_flags = PASSTABLE
@@ -174,7 +175,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/list/alt_intents //these replace main intents
 	var/gripsprite = FALSE //use alternate grip sprite for inhand
 	var/gripspriteonmob = FALSE //use alternate sprite for onmob
-	var/wieldsound = FALSE
 
 	/// Item will be scaled by this factor when on the ground.
 	var/dropshrink = 0
@@ -253,6 +253,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/fiber_salvage = FALSE
 	/// Number of torn sleves, important for salvaging calculations and examine text
 	var/torn_sleeve_number = 0
+	/// Use for clothing which has cropped parts for hands and doesn't use sleeved system. They will have layer under gloves
+	var/ignore_sleeves_code = FALSE
 
 	var/blocking_behavior
 	var/wetness = 0
@@ -260,6 +262,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/detail_tag
 	var/detail_color
 
+	/// Whether or not we use gendered onmob sprites
+	var/gendered = TRUE
 
 	// ~Grid INVENTORY VARIABLES
 	/// Width we occupy on the hud - Keep null to generate based on w_class
@@ -346,7 +350,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 /obj/item/proc/apply_components()
 	if(force_wielded || gripped_intents)
 		var/wielded_force = force_wielded ? force_wielded : force
-		AddComponent(/datum/component/two_handed, force_unwielded = force, force_wielded = wielded_force, wield_callback = CALLBACK(src, PROC_REF(on_wield)), unwield_callback = CALLBACK(src, PROC_REF(on_unwield)), wield_blocking = wield_block)
+		AddComponent(/datum/component/two_handed, force_unwielded = force, force_wielded = wielded_force, wield_callback = CALLBACK(src, PROC_REF(on_wield)), unwield_callback = CALLBACK(src, PROC_REF(on_unwield)), wield_block_offhand = wield_block)
 
 /obj/item/proc/get_detail_tag() //this is for extra layers on clothes or items
 	return detail_tag
@@ -607,7 +611,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		get_inspect_entries(inspec)
 		SEND_SIGNAL(src, COMSIG_TOPIC_INSPECT, inspec)
 
-		to_chat(usr, "[inspec.Join()]")
+		to_chat(usr, examine_block("[inspec.Join()]"))
 
 /obj/item
 	var/simpleton_price = FALSE
@@ -645,10 +649,10 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 //			inspec += "\n<b>ENCUMBRANCE:</b> [eweight]"
 
 	if(alt_intents)
-		inspect_list += "\n<b>ALT-GRIP</b>"
+		inspect_list += "\n<b>ALT-GRIPPABLE</b>"
 
 	if(can_parry)
-		inspect_list += "\n<b>DEFENSE:</b> [wdefense]"
+		inspect_list += "\n<b>PARRY:</b> [wdefense]"
 
 	if(max_blade_int)
 		inspect_list += "\n<b>SHARPNESS:</b> "
@@ -681,12 +685,15 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /obj/item/proc/attempt_pickup(mob/user)
 	. = TRUE
+	var/mob/living/carbon/C = user
+	if(C.has_status_effect(/datum/status_effect/tremor_grip_loss))
+		return
+
 	if(HAS_TRAIT(src, TRAIT_NEEDS_QUENCH))
 		to_chat(user, "<span class='warning'>[src] is too hot to touch.</span>")
 		return
 
 	if(resistance_flags & ON_FIRE)
-		var/mob/living/carbon/C = user
 		var/can_handle_hot = FALSE
 		if(!istype(C))
 			can_handle_hot = TRUE
@@ -707,7 +714,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 			return
 
 	if(acid_level > 20 && !ismob(loc))// so we can still remove the clothes on us that have acid.
-		var/mob/living/carbon/C = user
 		if(istype(C))
 			if(!C.gloves || (!(C.gloves.resistance_flags & (UNACIDABLE|ACID_PROOF))))
 				to_chat(user, "<span class='warning'>The acid on [src] burns my hand!</span>")
@@ -833,7 +839,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(!silent)
 		playsound(src, drop_sound, DROP_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
 	toggle_altgrip(user, FALSE)
-	user.update_equipment_speed_mods()
+	if(user)
+		user.update_equipment_speed_mods()
 	if(isliving(user))
 		var/mob/living/living_user = user
 		living_user.encumbrance_to_speed()
@@ -976,7 +983,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 	src.add_fingerprint(user)
 
-	playsound(loc, src.hitsound, 30, TRUE, -1)
+	playsound(src, src.hitsound, 30, TRUE, -1)
 
 	user.do_attack_animation(M, used_intent = user.used_intent, used_item = src)
 
@@ -1008,7 +1015,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		M.adjust_eye_blur(30 SECONDS)
 		if(M.stat != DEAD)
 			to_chat(M, "<span class='danger'>My eyes start to bleed profusely!</span>")
-		if(!(HAS_TRAIT(M, TRAIT_BLIND) || HAS_TRAIT(M, TRAIT_NEARSIGHT)))
+		if(!M.is_nearsighted_from(EYE_DAMAGE))
 			to_chat(M, "<span class='danger'>I become nearsighted!</span>")
 		M.become_nearsighted(EYE_DAMAGE)
 		if(prob(50))
@@ -1080,6 +1087,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(ishuman(owner))
 		H = owner
 	var/flags = slot_flags
+	var/extra_flags = (flags << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work. //I know that this is a sin, but damn me if it doesn't work.
 	if(flags & ITEM_SLOT_GLOVES)
 		owner.update_inv_gloves()
 	if(flags & ITEM_SLOT_MASK)
@@ -1098,10 +1106,24 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		owner.update_inv_pants()
 	if(flags & ITEM_SLOT_CLOAK)
 		owner.update_inv_cloak()
-	if(flags & ITEM_SLOT_UNDERWEAR)
-		owner.update_inv_undies()
-	if(flags & ITEM_SLOT_SOCKS)
+	if((extra_flags & ITEM_SLOT_UNDER_BOTTOM) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_undie_bot()
+	if((extra_flags & ITEM_SLOT_UNDER_TOP) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_undie_top()
+	if((extra_flags & ITEM_SLOT_UNDERSHIRT) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_undershirt()
+	if((extra_flags & ITEM_SLOT_GARTER) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_garter()
+	if((extra_flags & ITEM_SLOT_CHOKER) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_choker()
+	if((extra_flags & ITEM_SLOT_EARRING_L) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_garter()
+	if((extra_flags & ITEM_SLOT_EARRING_R) && (flags & ITEM_SLOT_EXTRA))
+		owner.update_inv_choker()
+	if((extra_flags & ITEM_SLOT_SOCKS) && (flags & ITEM_SLOT_EXTRA))
 		owner.update_inv_socks()
+	if((extra_flags & ITEM_SLOT_ARMSLEEVES) && (flags & ITEM_SLOT_ARMSLEEVES))
+		owner.update_inv_armsleeves()
 	if(H)
 		if(flags & ITEM_SLOT_HEAD && H.head == src)
 			owner.update_inv_head()
@@ -1360,8 +1382,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /obj/item/proc/on_wield(obj/item/source, mob/living/carbon/user)
 	wdefense += 1
-	if(!wieldsound)
-		playsound(loc, pick('sound/combat/weaponr1.ogg','sound/combat/weaponr2.ogg'), 50, TRUE)
 	user.update_a_intents()
 
 /obj/item/proc/on_unwield(obj/item/source, mob/living/carbon/user)
@@ -1393,7 +1413,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	if(impactee.lying)
 		target_zone = BODY_ZONE_CHEST
 	*/
-	playsound(impactee.loc, pick('sound/combat/gib (1).ogg','sound/combat/gib (2).ogg'), 200, FALSE, 3)
+	playsound(impactee, pick('sound/combat/gib (1).ogg','sound/combat/gib (2).ogg'), 200, FALSE, 3)
 	add_blood_DNA(GET_ATOM_BLOOD_DNA(impactee))
 	impactee.visible_message(span_danger("[src] crashes into [impactee]'s [target_zone]!"), span_danger("A [src] hits you in your [target_zone]!"))
 	impactee.apply_damage(item_weight * fall_speed, BRUTE, target_zone, impactee.run_armor_check(target_zone, "blunt", damage = item_weight * fall_speed))

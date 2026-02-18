@@ -20,6 +20,11 @@
 	set name = "Journey to the Underworld"
 	set category = "Spirit"
 
+	var/mob/living/liver = mob
+	if(istype(liver))
+		if(liver.has_quirk(/datum/quirk/vice/hardcore))
+			SEND_SIGNAL(liver, COMSIG_LIVING_TRY_ENTER_AFTERLIFE)
+			return
 	var/answer = browser_alert(src, "Begin the long walk in the Underworld to your judgement?", "JUDGEMENT", DEFAULT_INPUT_CHOICES)
 	if(!answer || QDELETED(src) || QDELETED(mob))
 		return
@@ -45,7 +50,7 @@
 					//GLOB.job_respawn_delays[src.ckey] = world.time + target_job.same_job_respawn_delay
 		verbs -= GLOB.ghost_verbs
 		mob.returntolobby()
-	/*if((mob.has_flaw(/datum/charflaw/wanted) || HAS_TRAIT(mob, TRAIT_ZIZOID_HUNTED)) && !MOBTIMER_FINISHED(mob, MT_LASTDIED, 60 SECONDS))
+	/*if((mob.has_quirk(/datum/charflaw/wanted) || HAS_TRAIT(mob, TRAIT_ZIZOID_HUNTED)) && !MOBTIMER_FINISHED(mob, MT_LASTDIED, 60 SECONDS))
 		to_chat(src, span_warning("Graggar's influence is currently preventing me from fleeing to the Underworld!"))
 		return
 	var/datum/mind/mind = mob.mind

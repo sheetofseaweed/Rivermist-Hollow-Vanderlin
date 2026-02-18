@@ -214,3 +214,16 @@
 		"Deneir, let my hand record truth without error!"
 	)
 	profane_words = list()
+
+/datum/patron/faerun/good_gods/Garl_Glittergold
+	name = "Garl Glittergold"
+	domain = "Humor, Protection, Gnomes"
+	desc = "A clever trickster whose mischief teaches wisdom and resilience."
+	flaws = "Practical jokes go too far; seldom gives straightforward answers."
+	worshippers = "Gnomes, inventors, illusionists, lighthearted adventurers."
+	sins = "Malicious pranks, needless gloom, cruelty disguised as humor."
+	boons = "Trickster’s luck, protective laughter, inventive insight."
+
+	confess_lines = list(
+		"May my wit shine bright and my laughter shield me!"
+	)

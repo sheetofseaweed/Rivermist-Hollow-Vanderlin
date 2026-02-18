@@ -17,7 +17,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 	/// if alien colors are disabled, this is the color that will be used by that race
 	var/default_color = "#FFF"
 	/// List of ages that can be selected in prefs for this species
-	var/list/possible_ages = ALL_AGES_LIST_CHILD
+	var/list/possible_ages = ALL_AGES_LIST
 	/// Whether or not this species has sexual characteristics
 	var/sexes = TRUE
 	/// Whether this species a requires donator subscription to access, we removed all donator restrictions for species, but it's here if we ever want to reenable them or smth.
@@ -53,6 +53,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 		OFFSET_SHIRT = list(0,0),\
 		OFFSET_ARMOR = list(0,0),\
 		OFFSET_UNDIES = list(0,0),\
+		OFFSET_BRA = list(0,0),\
 	)
 
 	var/list/offset_features_f = list(
@@ -72,6 +73,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 		OFFSET_SHIRT = list(0,0),\
 		OFFSET_ARMOR = list(0,0),\
 		OFFSET_UNDIES = list(0,0),\
+		OFFSET_BRA = list(0,0),\
 	)
 
 	var/list/offset_genitals_m = list(
@@ -828,7 +830,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 		C.setToxLoss(0, TRUE, TRUE)
 
 	if(TRAIT_NOMETABOLISM in inherent_traits)
-		C.reagents.end_metabolization(C, keep_liverless = TRUE)
+		C.reagents.end_metabolization(src, keep_liverless = TRUE)
 
 	if(inherent_factions)
 		for(var/i in inherent_factions)
@@ -868,8 +870,6 @@ GLOBAL_LIST_EMPTY(donator_races)
 	if(inherent_factions)
 		for(var/i in inherent_factions)
 			C.faction -= i
-
-	C.remove_movespeed_modifier(MOVESPEED_ID_SPECIES)
 
 	SEND_SIGNAL(C, COMSIG_SPECIES_LOSS, src)
 
@@ -995,13 +995,14 @@ GLOBAL_LIST_EMPTY(donator_races)
 
 /datum/species/proc/spec_life(mob/living/carbon/human/H)
 	SHOULD_CALL_PARENT(TRUE)
+	if(H.stat == DEAD)
+		return
 
 	if(HAS_TRAIT(H, TRAIT_NOBREATH))
 		H.setOxyLoss(0)
 		H.losebreath = 0
-
-	if((H.health < H.crit_threshold) && !HAS_TRAIT(H, TRAIT_NOCRITDAMAGE))
-		H.adjustBruteLoss(1)
+	else if((H.health < H.crit_threshold) && !HAS_TRAIT(H, TRAIT_NOCRITDAMAGE))
+		H.adjustOxyLoss(1)
 
 /datum/species/proc/spec_death(gibbed, mob/living/carbon/human/H)
 	return
@@ -1014,6 +1015,8 @@ GLOBAL_LIST_EMPTY(donator_races)
 	if(slot in no_equip)
 		if(!I.species_exception || !is_type_in_list(src, I.species_exception))
 			return FALSE
+
+	var/extra_flags = (I.slot_flags << 1) >> 1 //We "cut off" the 24th bit of the extra slots flag so that the bitwise & can work.
 
 	switch(slot)
 		if(ITEM_SLOT_HANDS)
@@ -1214,16 +1217,58 @@ GLOBAL_LIST_EMPTY(donator_races)
 				if(SEND_SIGNAL(H.belt, COMSIG_TRY_STORAGE_CAN_INSERT, I, H, TRUE))
 					return TRUE
 			return FALSE
-		if(ITEM_SLOT_UNDERWEAR)
+		if(ITEM_SLOT_UNDER_BOTTOM)
 			if(H.underwear)
 				return FALSE
-			if( !(I.slot_flags & ITEM_SLOT_UNDERWEAR) )
+			if( !((extra_flags & ITEM_SLOT_UNDER_BOTTOM) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_UNDER_TOP)
+			if(H.bra)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_UNDER_TOP) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_UNDERSHIRT)
+			if(H.undershirt)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_UNDERSHIRT) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_GARTER)
+			if(H.garter)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_GARTER) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_CHOKER)
+			if(H.choker)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_CHOKER) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_EARRING_L)
+			if(H.earring_l)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_EARRING_L) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_EARRING_R)
+			if(H.earring_r)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_EARRING_R) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
 				return FALSE
 			return equip_delay_self_check(I, H, bypass_equip_delay_self)
 		if(ITEM_SLOT_SOCKS)
 			if(H.legwear_socks)
 				return FALSE
-			if( !(I.slot_flags & ITEM_SLOT_SOCKS) )
+			if( !((extra_flags & ITEM_SLOT_SOCKS) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
+				return FALSE
+			return equip_delay_self_check(I, H, bypass_equip_delay_self)
+		if(ITEM_SLOT_ARMSLEEVES)
+			if(H.armsleeves)
+				return FALSE
+			if( !((extra_flags & ITEM_SLOT_ARMSLEEVES) && (I.slot_flags & ITEM_SLOT_EXTRA)) )
 				return FALSE
 			return equip_delay_self_check(I, H, bypass_equip_delay_self)
 	return FALSE //Unsupported slot
@@ -1304,7 +1349,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 			if(CONFIG_GET(flag/starvation_death))
 				H.apply_status_effect(/datum/status_effect/debuff/hungryt4)
 			if(prob(3))
-				playsound(get_turf(H), pick('sound/vo/hungry1.ogg','sound/vo/hungry2.ogg','sound/vo/hungry3.ogg'), 100, TRUE, -1)
+				playsound(H, pick('sound/vo/hungry1.ogg','sound/vo/hungry2.ogg','sound/vo/hungry3.ogg'), 100, TRUE, -1)
 
 	switch(H.hydration)
 		if(HYDRATION_LEVEL_THIRSTY to HYDRATION_LEVEL_SMALLTHIRST)
@@ -1386,9 +1431,6 @@ GLOBAL_LIST_EMPTY(donator_races)
 //////////////////
 
 /datum/species/proc/spec_updatehealth(mob/living/carbon/human/H)
-	return
-
-/datum/species/proc/spec_fully_heal(mob/living/carbon/human/H)
 	return
 
 /datum/species/proc/help(mob/living/carbon/human/user, mob/living/carbon/human/target, datum/martial_art/attacker_style)
@@ -1552,7 +1594,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 		if(target.body_position == LYING_DOWN)
 			target.forcesay(GLOB.hit_appends)
 		if(!nodmg)
-			playsound(target.loc, user.used_intent.hitsound, 100, FALSE)
+			playsound(target, user.used_intent.hitsound, 100, FALSE)
 
 
 /datum/species/proc/spec_unarmedattacked(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -1683,15 +1725,14 @@ GLOBAL_LIST_EMPTY(donator_races)
 		return FALSE
 	if(user == target)
 		return FALSE
-	if(!HAS_TRAIT(user, TRAIT_GARROTED))
-		if(user.check_leg_grabbed(1) || user.check_leg_grabbed(2))
-			if(user.check_leg_grabbed(1) && user.check_leg_grabbed(2))		//If both legs are grabbed
-				to_chat(user, span_notice("I can't move my legs!"))
-				return
-			else															//If only one leg is grabbed
-				to_chat(user, span_notice("I can't move my leg!"))
-				user.resist_grab()
+	if(user.check_leg_grabbed(1) || user.check_leg_grabbed(2))
+		if(user.check_leg_grabbed(1) && user.check_leg_grabbed(2))		//If both legs are grabbed
+			to_chat(user, span_notice("I can't move my legs!"))
 			return
+		else															//If only one leg is grabbed
+			to_chat(user, span_notice("I can't move my leg!"))
+			user.resist_grab()
+		return
 
 	if(user.stamina >= user.maximum_stamina)
 		return FALSE
@@ -1933,7 +1974,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 					affecting.receive_damage(I.embedding.embedded_unsafe_removal_pain_multiplier*I.w_class)//It hurts to rip it out, get surgery you dingus.
 					user.put_in_hands(I)
 					H.emote("pain", TRUE)
-					playsound(H.loc, 'sound/foley/flesh_rem.ogg', 100, TRUE, -2)
+					playsound(H, 'sound/foley/flesh_rem.ogg', 100, TRUE, -2)
 			I.do_special_attack_effect(user, affecting, intent, H, selzone)
 			if(istype(user.used_intent, /datum/intent/effect) && selzone)
 				var/datum/intent/effect/effect_intent = user.used_intent
@@ -2555,7 +2596,7 @@ GLOBAL_LIST_EMPTY(donator_races)
 	var/skill_modifier = 10
 	if(istype(starting_turf) && !QDELETED(starting_turf))
 		distance = get_dist(starting_turf, src)
-	skill_modifier *= get_skill_level(/datum/skill/misc/athletics)
+	skill_modifier *= get_skill_level(/datum/skill/misc/athletics, TRUE)
 	var/modifier = -distance
 	if(!prob(STAEND+skill_modifier+modifier))
 		Knockdown(8)

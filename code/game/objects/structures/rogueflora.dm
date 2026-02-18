@@ -34,21 +34,15 @@
 	metalizer_result = /obj/machinery/light/fueledstreet
 	smeltresult = /obj/item/ore/coal
 
-/obj/structure/flora/tree/attack_hand_secondary(mob/user, params)
-	. = ..()
-	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
-		return
-	if(user.mind && isliving(user))
-		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = browser_input_list(user, "What will I take?", "STASH", user.mind.special_items)
-			if(item)
-				if(user.Adjacent(src))
-					if(user.mind.special_items[item])
-						var/path2item = user.mind.special_items[item]
-						user.mind.special_items -= item
-						var/obj/item/I = new path2item(user.loc)
-						user.put_in_hands(I)
-		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+/obj/structure/flora/tree/attack_hand_secondary(mob/user, list/modifiers)
+
+    . = ..()
+    if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
+        return
+
+    handle_special_items_retrieval(user, src)
+
+    return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/structure/flora/tree/attacked_by(obj/item/I, mob/living/user)
 	. = ..()
@@ -160,7 +154,7 @@
 	target.Knockdown(2 SECONDS)
 	target.adjustBruteLoss(8)
 
-/obj/structure/flora/tree/wise/attackby(obj/item/I, mob/user, params)
+/obj/structure/flora/tree/wise/attackby(obj/item/I, mob/user, list/modifiers)
 	. = ..()
 	if(activated && !cooldown)
 		retaliate(user)
@@ -242,7 +236,7 @@
 	. = ..()
 	icon_state = "stumpt[rand(1,4)]"
 
-/obj/structure/table/wood/treestump/attackby(obj/item/I, mob/user, params)
+/obj/structure/table/wood/treestump/attackby(obj/item/I, mob/user, list/modifiers)
 	if(istype(I, /obj/item/weapon/shovel))
 		to_chat(user, "I start unearthing the stump...")
 		playsound(src,'sound/items/dig_shovel.ogg', 100, TRUE)
@@ -579,21 +573,15 @@
 	destroy_sound = 'sound/misc/woodhit.ogg'
 	static_debris = list(/obj/item/grown/log/tree/small = 1)
 
-/obj/structure/flora/shroom_tree/attack_hand_secondary(mob/user, params)
-	. = ..()
-	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
-		return
-	if(user.mind && isliving(user))
-		if(user.mind.special_items && user.mind.special_items.len)
-			var/item = browser_input_list(user, "What will I take?", "STASH", user.mind.special_items)
-			if(item)
-				if(user.Adjacent(src))
-					if(user.mind.special_items[item])
-						var/path2item = user.mind.special_items[item]
-						user.mind.special_items -= item
-						var/obj/item/I = new path2item(user.loc)
-						user.put_in_hands(I)
-		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+/obj/structure/flora/shroom_tree/attack_hand_secondary(mob/user, list/modifiers)
+
+    . = ..()
+    if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
+        return
+
+    handle_special_items_retrieval(user, src)
+
+    return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/structure/flora/shroom_tree/Initialize()
 	. = ..()

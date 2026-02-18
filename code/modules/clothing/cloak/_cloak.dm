@@ -2,7 +2,7 @@
 	name = "cloak"
 	icon = 'icons/roguetown/clothing/cloaks.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/cloaks.dmi'
-	slot_flags = ITEM_SLOT_CLOAK
+	slot_flags = ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	desc = "A simple cloak covering the body."
 	edelay_type = 1
 	equip_delay_self = 10
