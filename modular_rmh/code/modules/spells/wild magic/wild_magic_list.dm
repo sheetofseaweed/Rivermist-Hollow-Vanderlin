@@ -1,8 +1,4 @@
-#define WILD_TARGET_SELF 1
-#define WILD_TARGET_RANDOM_LIVING 2
-#define WILD_TARGET_CAST_ON 3
-#define WILD_TARGET_TURF_OF_CAST_ON 4
-#define WILD_TARGET_TURF_OF_CASTER 5
+
 
 /datum/wild_surge_entry
 	var/name
@@ -39,7 +35,7 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 		"surge_crow")
 
 	// ======================================================
-	// SPELL ENTRIES 2–50
+	// SPELL ENTRIES
 	// ======================================================
 
 	AddSpell(L,"Flashpowder",
