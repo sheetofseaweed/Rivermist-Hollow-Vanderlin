@@ -1,8 +1,11 @@
 #define WILD_CHANCE 99
+#define WILD_CD 1.5 SECONDS
+
+#define SHAPE_CD 10 SECONDS
+#define MUTE 60 SECONDS
 
 /datum/element/wild_magic
 	element_flags = ELEMENT_DETACH
-	var/processing = FALSE
 
 /datum/element/wild_magic/Attach(datum/target)
 	. = ..()
@@ -17,18 +20,18 @@
 	return ..()
 
 /datum/element/wild_magic/proc/OnSpellCast(mob/living/caster, datum/action/cooldown/spell/spell, atom/target)
-	if(processing)
-		return
 	if(!caster || QDELETED(caster))
 		return
-
+	if(HAS_TRAIT(caster, TRAIT_WILDMAGIC))
+		return
 	if(!prob(WILD_CHANCE))
 		return
 
+	ADD_TRAIT(caster, TRAIT_WILDMAGIC, "wild_magic")
+	addtimer(CALLBACK(src, PROC_REF(RemoveWildMagicCD), caster),WILD_CD)
 	to_chat(caster, span_danger("⚡ Your wild magic surges uncontrollably! ⚡"))
 
 	DoWildSurge(caster, spell, target)
-	processing = FALSE
 
 /datum/element/wild_magic/proc/DoWildSurge(mob/living/caster, datum/action/cooldown/spell/spell, atom/target)
 	if(!length(GLOB.wild_surge_table))
@@ -42,9 +45,12 @@
 	var/mob/living/random_target = length(nearby) ? pick(nearby) : caster
 
 	caster.visible_message(span_danger("<span style='font-size:150%'>[caster]'s magic spirals out of control!</span>"))
-
+/*
 	var/datum/wild_surge_entry/E = pick(GLOB.wild_surge_table)
 	RunSurgeEntry(E, caster, target, random_target)
+*/
+	for(var/datum/wild_surge_entry/E in GLOB.wild_surge_table)
+		RunSurgeEntry(E, caster, target, random_target)
 
 /datum/element/wild_magic/proc/RunSurgeEntry(datum/wild_surge_entry/E, mob/living/caster, atom/cast_on, mob/living/random_target)
 	if(!E || !caster || QDELETED(caster))
@@ -96,7 +102,7 @@
 
 /datum/element/wild_magic/proc/surge_mute(mob/living/caster, atom/real_target, mob/living/random_target)
 	ADD_TRAIT(caster, TRAIT_MUTE, "wild_magic")
-	addtimer(CALLBACK(src, PROC_REF(RestoreMute), caster), 60 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(RestoreMute), caster), MUTE)
 
 /datum/element/wild_magic/proc/RestoreMute(mob/living/M)
 	if(!M || QDELETED(M))
@@ -108,21 +114,21 @@
 	M.owner = caster
 	var/mob/living/mist = M.do_shapeshift(caster)
 	if(mist)
-		addtimer(CALLBACK(src, PROC_REF(RestoreShape), mist), 10 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(RestoreShape), mist), SHAPE_CD)
 
 /datum/element/wild_magic/proc/surge_cat(mob/living/caster, atom/real_target, mob/living/random_target)
 	var/datum/action/cooldown/spell/undirected/shapeshift/cat/C = new
 	C.owner = caster
 	var/mob/living/cat = C.do_shapeshift(caster)
 	if(cat)
-		addtimer(CALLBACK(src, PROC_REF(RestoreShape), cat), 10 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(RestoreShape), cat), SHAPE_CD)
 
 /datum/element/wild_magic/proc/surge_crow(mob/living/caster, atom/real_target, mob/living/random_target)
 	var/datum/action/cooldown/spell/undirected/shapeshift/crow/C = new
 	C.owner = caster
 	var/mob/living/crow = C.do_shapeshift(caster)
 	if(crow)
-		addtimer(CALLBACK(src, PROC_REF(RestoreShape), crow), 10 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(RestoreShape), crow), SHAPE_CD)
 
 /datum/element/wild_magic/proc/RestoreShape(mob/living/M)
 	if(!M || QDELETED(M))
@@ -131,4 +137,13 @@
 	if(S)
 		S.restore_caster()
 
+/datum/element/wild_magic/proc/RemoveWildMagicCD(mob/living/M)
+	if(!M || QDELETED(M))
+		return
+
+	REMOVE_TRAIT(M, TRAIT_WILDMAGIC, "wild_magic")
+
 #undef WILD_CHANCE
+#undef WILD_CD
+#undef SHAPE_CD
+#undef MUTE
