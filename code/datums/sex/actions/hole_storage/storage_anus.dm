@@ -131,8 +131,10 @@
 	else
 		target_organ = target.get_sex_organ(hole_id)
 	var/list/stored_items = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_GET_LISTS)
+	if(!islist(stored_items))
+		return FALSE
 	var/list/stored_items_layer = stored_items[STORAGE_LAYER_INNER]
-	if(!stored_items_layer.len)
+	if(!islist(stored_items_layer) || !stored_items_layer.len)
 		return FALSE
 	return TRUE
 
@@ -206,8 +208,10 @@
 	else
 		target_organ = target.get_sex_organ(hole_id)
 	var/list/stored_items = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_GET_LISTS)
+	if(!islist(stored_items))
+		return FALSE
 	var/list/stored_items_layer = stored_items[STORAGE_LAYER_DEEP]
-	if(!stored_items_layer.len)
+	if(!islist(stored_items_layer) || !stored_items_layer.len)
 		return FALSE
 	return TRUE
 

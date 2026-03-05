@@ -44,6 +44,8 @@
 /mob/living/proc/start_sex_session(mob/living/target, show_ui = TRUE)
 	if(!target)
 		return
+	if(!can_do_sex() || !target.has_sex_interface())
+		return
 	var/datum/sex_session/old_session = get_sex_session(src, target)
 	if(old_session && !QDELETED(old_session))
 		if(show_ui)
@@ -64,7 +66,10 @@
 		playsound(src, pick('sound/misc/mat/guymouth (2).ogg','sound/misc/mat/guymouth (3).ogg','sound/misc/mat/guymouth (4).ogg','sound/misc/mat/guymouth (5).ogg'), 35, TRUE, ignore_walls = FALSE)
 
 /mob/living/proc/can_do_sex()
-	return TRUE
+	return has_sex_interface()
+
+/mob/living/proc/has_sex_interface()
+	return istype(src, /mob/living/carbon/human) || !!get_sex_source_human()
 
 /mob/living/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
 	var/mob/living/target = src
@@ -77,6 +82,9 @@
 	if(dragged != user)
 		return
 	if(!user.can_do_sex())
+		to_chat(user, "<span class='warning'>I can't do this.</span>")
+		return
+	if(!target.has_sex_interface())
 		to_chat(user, "<span class='warning'>I can't do this.</span>")
 		return
 
@@ -137,10 +145,16 @@
 
 /mob/living/proc/can_use_sex_organ_slot(organ_slot)
 	var/mob/living/carbon/human/source_human = get_sex_source_human()
-	if(source_human && source_human != src)
-		return !!source_human.get_native_sex_organ(organ_slot)
+	if(!source_human || source_human == src)
+		return FALSE
 
-	return FALSE
+	var/list/internal_organ_slots = source_human.vars["internal_organs_slot"]
+	if(islist(internal_organ_slots))
+		if(!isnull(internal_organ_slots[organ_slot]))
+			return TRUE
+		return organ_slot in internal_organ_slots
+
+	return !!source_human.get_native_sex_organ(organ_slot)
 
 /mob/living/proc/get_sex_fallback_organ_type(organ_slot)
 	switch(organ_slot)
@@ -200,7 +214,7 @@
 
 	var/storage_component_type = get_sex_fallback_storage_component(organ_slot)
 	if(storage_component_type)
-		fallback_organ.AddComponent(storage_component_type)
+		fallback_organ.add_bodystorage(src, null, storage_component_type)
 
 	return fallback_organ
 
@@ -221,12 +235,21 @@
 	return fallback_organ
 
 /mob/living/proc/get_sex_organ(organ_slot)
-	var/obj/item/organ/native_organ = get_native_sex_organ(organ_slot)
-	if(native_organ)
-		return native_organ
-	if(!can_use_sex_organ_slot(organ_slot))
+	var/mob/living/carbon/human/source_human = get_sex_source_human()
+	if(source_human && source_human != src)
+		if(!can_use_sex_organ_slot(organ_slot))
+			return null
+
+		var/obj/item/organ/native_organ = get_native_sex_organ(organ_slot)
+		if(native_organ)
+			return native_organ
+
+		return get_cached_sex_organ(organ_slot)
+
+	if(!istype(src, /mob/living/carbon/human))
 		return null
-	return get_cached_sex_organ(organ_slot)
+
+	return get_native_sex_organ(organ_slot)
 
 /mob/living/proc/has_hands()
 	return TRUE
