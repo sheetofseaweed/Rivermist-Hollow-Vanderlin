@@ -85,12 +85,12 @@
 
 //#define LOWMEMORYMODE //uncomment this to load centcom and roguetest and thats it.
 
-#define NO_DUNGEON //comment this to load dungeons.
+//#define NO_DUNGEON //comment this to load dungeons.
 
 //#define USES_PQ
 //#define ABSOLUTE_MINIMUM_MODE //uncomment this to skip as many resource intensive ops as possible to load in for testing the fastest while preserving most gameplay features.
 
-//#ifdef LOWMEMORYMODE
+#ifdef LOWMEMORYMODE
 #ifdef ABSOLUTE_MINIMUM_MODE
 #define FORCE_MAP "minimal_test"
 #define FORCE_MAP_DIRECTORY "_maps"
