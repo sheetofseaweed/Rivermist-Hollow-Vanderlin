@@ -10,7 +10,7 @@
 	var/self = FALSE
 	var/obj/item/organ/genitals/target_organ
 
-/datum/sex_action/hole_storage/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE

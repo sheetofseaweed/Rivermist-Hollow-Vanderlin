@@ -1,16 +1,18 @@
-/mob/living/carbon/human/proc/get_highest_grab_state_on(mob/living/carbon/human/victim)
+/mob/living/proc/get_highest_grab_state_on(mob/living/victim)
 	var/grabstate = null
-	if(r_grab && r_grab.grabbed == victim)
-		if(grabstate == null || r_grab.grab_state > grabstate)
-			grabstate = r_grab.grab_state
-	if(l_grab && l_grab.grabbed == victim)
-		if(grabstate == null || l_grab.grab_state > grabstate)
-			grabstate = l_grab.grab_state
+	var/obj/item/grabbing/right_grab = vars["r_grab"]
+	var/obj/item/grabbing/left_grab = vars["l_grab"]
+	if(right_grab && right_grab.grabbed == victim)
+		if(grabstate == null || right_grab.grab_state > grabstate)
+			grabstate = right_grab.grab_state
+	if(left_grab && left_grab.grabbed == victim)
+		if(grabstate == null || left_grab.grab_state > grabstate)
+			grabstate = left_grab.grab_state
 	return grabstate
 
 /proc/do_thrust_animate(atom/movable/user, atom/movable/target, pixels = 4, time = 2.7)
 	var/datum/sex_session/sex_session
-	if(ishuman(user) && ishuman(target))
+	if(isliving(user) && isliving(target))
 		sex_session = get_sex_session(user, target)
 		if(!sex_session)
 			sex_session = get_sex_session(target, user)
@@ -64,8 +66,8 @@
 /mob/living/proc/can_do_sex()
 	return TRUE
 
-/mob/living/carbon/human/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
-	var/mob/living/carbon/human/target = src
+/mob/living/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
+	var/mob/living/target = src
 
 	if(user.mmb_intent)
 		return ..()
@@ -91,6 +93,141 @@
 		return session
 	return null
 
+/mob/living/proc/get_native_sex_organ(organ_slot)
+	if(!organ_slot)
+		return null
+	if(!hascall(src, "getorganslot"))
+		return null
+	return call(src, "getorganslot")(organ_slot)
+
+/mob/living/proc/find_sex_source_human_in_list(list/candidates)
+	if(!islist(candidates))
+		return null
+
+	var/mob/living/carbon/human/fallback = null
+	for(var/entry as anything in candidates)
+		if(!istype(entry, /mob/living/carbon/human))
+			continue
+		var/mob/living/carbon/human/human = entry
+		if(human == src)
+			continue
+		if(human.client || human.mind || human.ckey)
+			return human
+		if(!fallback)
+			fallback = human
+	return fallback
+
+/mob/living/proc/get_sex_source_human()
+	if(istype(src, /mob/living/carbon/human))
+		return src
+
+	var/mob/living/carbon/human/source_human = find_sex_source_human_in_list(contents)
+	if(source_human)
+		return source_human
+
+	source_human = find_sex_source_human_in_list(vars["important_recursive_contents"])
+	if(source_human)
+		return source_human
+
+	source_human = find_sex_source_human_in_list(vars["recursive_contents_client_mobs"])
+	if(source_human)
+		return source_human
+
+	return null
+
+/mob/living/proc/can_use_sex_organ_slot(organ_slot)
+	var/mob/living/carbon/human/source_human = get_sex_source_human()
+	if(source_human && source_human != src)
+		return !!source_human.get_native_sex_organ(organ_slot)
+
+	return FALSE
+
+/mob/living/proc/get_sex_fallback_organ_type(organ_slot)
+	switch(organ_slot)
+		if(ORGAN_SLOT_TESTICLES)
+			return ball_organ || /obj/item/organ/genitals/filling_organ/testicles
+		if(ORGAN_SLOT_PENIS)
+			return penis_organ || /obj/item/organ/genitals/penis
+		if(ORGAN_SLOT_BREASTS)
+			return breast_organ || /obj/item/organ/genitals/filling_organ/breasts
+		if(ORGAN_SLOT_VAGINA)
+			return vagina_organ || /obj/item/organ/genitals/filling_organ/vagina
+		if(ORGAN_SLOT_BUTT)
+			return butt_organ || ass_organ || /obj/item/organ/genitals/butt
+		if(ORGAN_SLOT_ANUS)
+			return anus_organ
+		if(ORGAN_SLOT_BELLY)
+			return belly_organ
+	return null
+
+/mob/living/proc/get_sex_fallback_organ_size(organ_slot)
+	switch(organ_slot)
+		if(ORGAN_SLOT_TESTICLES)
+			return rand(ball_min, ball_max)
+		if(ORGAN_SLOT_PENIS)
+			return rand(penis_min, penis_max)
+		if(ORGAN_SLOT_BREASTS)
+			return rand(breast_min, breast_max)
+		if(ORGAN_SLOT_BUTT)
+			return rand(butt_min, butt_max)
+	return null
+
+/mob/living/proc/get_sex_fallback_storage_component(organ_slot)
+	switch(organ_slot)
+		if(ORGAN_SLOT_TESTICLES)
+			return /datum/component/body_storage/testicles
+		if(ORGAN_SLOT_PENIS)
+			return /datum/component/body_storage/penis
+		if(ORGAN_SLOT_BREASTS)
+			return /datum/component/body_storage/breasts
+		if(ORGAN_SLOT_VAGINA)
+			return /datum/component/body_storage/vagina
+		if(ORGAN_SLOT_ANUS)
+			return /datum/component/body_storage/anus
+	return null
+
+/mob/living/proc/create_sex_fallback_organ(organ_slot)
+	var/organ_type = get_sex_fallback_organ_type(organ_slot)
+	if(!organ_type)
+		return null
+
+	var/obj/item/organ/genitals/fallback_organ = new organ_type()
+	var/organ_size = get_sex_fallback_organ_size(organ_slot)
+	if(!isnull(organ_size))
+		fallback_organ.organ_size = organ_size
+		fallback_organ.body_storage_bulk = initial(fallback_organ.body_storage_bulk) * fallback_organ.organ_size
+	fallback_organ.owner = src
+
+	var/storage_component_type = get_sex_fallback_storage_component(organ_slot)
+	if(storage_component_type)
+		fallback_organ.AddComponent(storage_component_type)
+
+	return fallback_organ
+
+/mob/living/proc/get_cached_sex_organ(organ_slot)
+	if(!sex_fallback_organs)
+		sex_fallback_organs = list()
+
+	var/obj/item/organ/genitals/fallback_organ = sex_fallback_organs[organ_slot]
+	if(QDELETED(fallback_organ))
+		sex_fallback_organs -= organ_slot
+		fallback_organ = null
+
+	if(!fallback_organ)
+		fallback_organ = create_sex_fallback_organ(organ_slot)
+		if(fallback_organ)
+			sex_fallback_organs[organ_slot] = fallback_organ
+
+	return fallback_organ
+
+/mob/living/proc/get_sex_organ(organ_slot)
+	var/obj/item/organ/native_organ = get_native_sex_organ(organ_slot)
+	if(native_organ)
+		return native_organ
+	if(!can_use_sex_organ_slot(organ_slot))
+		return null
+	return get_cached_sex_organ(organ_slot)
+
 /mob/living/proc/has_hands()
 	return TRUE
 
@@ -98,45 +235,33 @@
 	return TRUE
 
 /mob/living/proc/has_penis()
-	return gender == MALE
+	return get_sex_organ(ORGAN_SLOT_PENIS)
 
 /mob/living/proc/has_testicles()
-	return gender == MALE
+	return get_sex_organ(ORGAN_SLOT_TESTICLES)
 
 /mob/living/proc/has_vagina()
-	return gender == FEMALE
+	return get_sex_organ(ORGAN_SLOT_VAGINA)
 
 /mob/living/proc/has_breasts()
-	return gender == FEMALE
-
-/mob/living/carbon/human/has_penis()
-	return getorganslot(ORGAN_SLOT_PENIS)
-
-/mob/living/carbon/human/has_testicles()
-	return getorganslot(ORGAN_SLOT_TESTICLES)
-
-/mob/living/carbon/human/has_vagina()
-	return getorganslot(ORGAN_SLOT_VAGINA)
-
-/mob/living/carbon/human/has_breasts()
 	RETURN_TYPE(/obj/item/organ/genitals/filling_organ/breasts)
-	return getorganslot(ORGAN_SLOT_BREASTS)
+	return get_sex_organ(ORGAN_SLOT_BREASTS)
 
-/mob/living/carbon/human/proc/has_belly()
+/mob/living/proc/has_belly()
 	RETURN_TYPE(/obj/item/organ/genitals/belly)
-	return getorganslot(ORGAN_SLOT_BELLY)
+	return get_sex_organ(ORGAN_SLOT_BELLY)
 
-/mob/living/carbon/human/proc/has_butt()
+/mob/living/proc/has_butt()
 	RETURN_TYPE(/obj/item/organ/genitals/butt)
-	return getorganslot(ORGAN_SLOT_BUTT)
+	return get_sex_organ(ORGAN_SLOT_BUTT)
 
-/mob/living/carbon/human/proc/is_fertile()
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina = getorganslot(ORGAN_SLOT_VAGINA)
-	return vagina.fertility
+/mob/living/proc/is_fertile()
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = get_sex_organ(ORGAN_SLOT_VAGINA)
+	return vagina?.fertility
 
-/mob/living/carbon/human/proc/is_virile()
-	var/obj/item/organ/genitals/filling_organ/testicles/testicles = getorganslot(ORGAN_SLOT_TESTICLES)
-	return testicles.virility
+/mob/living/proc/is_virile()
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = get_sex_organ(ORGAN_SLOT_TESTICLES)
+	return testicles?.virility
 
 /mob/living/proc/mouth_is_free()
 	return !is_mouth_covered()
@@ -159,6 +284,55 @@
 
 /mob/living/carbon/human/has_hands() // technically should be an and but i'll replicate original behavior
 	return get_bodypart(BODY_ZONE_L_ARM) || get_bodypart(BODY_ZONE_R_ARM)
+
+/mob/living/proc/get_sex_display_name()
+	return name
+
+/mob/living/carbon/human/get_sex_display_name()
+	return get_face_name() || name
+
+/mob/living/proc/mark_sex_virginity_lost()
+	return
+
+/mob/living/carbon/human/mark_sex_virginity_lost()
+	virginity = FALSE
+
+/mob/living/proc/get_sex_restraints()
+	return vars["handcuffed"]
+
+/mob/living/proc/is_sex_sneaking()
+	return !!vars["rogue_sneaking"]
+
+/mob/living/proc/is_sex_combat_mode()
+	return !!vars["cmode"]
+
+/mob/living/proc/is_sex_location_accessible(location)
+	switch(location)
+		if(BODY_ZONE_PRECISE_MOUTH, BODY_ZONE_HEAD)
+			return has_mouth() && mouth_is_free()
+		if(BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_PRECISE_L_HAND, BODY_ZONE_PRECISE_R_HAND)
+			return has_hands()
+		if(BODY_ZONE_PRECISE_L_FOOT, BODY_ZONE_PRECISE_R_FOOT, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
+			return foot_is_free()
+	return TRUE
+
+/mob/living/carbon/human/is_sex_location_accessible(location)
+	var/obj/item/bodypart/bodypart = get_bodypart(location)
+	if(!bodypart)
+		return FALSE
+
+	var/hidden_slots = NONE
+	for(var/obj/item/item as anything in get_equipped_items())
+		if(!istype(item, /obj/item/clothing))
+			continue
+		var/obj/item/clothing/clothing = item
+		if(clothing.armor_class > AC_LIGHT)
+			hidden_slots |= clothing.body_parts_covered
+
+	if(location in body_parts_covered2organ_names(hidden_slots))
+		return FALSE
+
+	return TRUE
 
 /mob/living/proc/return_character_information()
 	var/list/data = list()
@@ -188,7 +362,7 @@
 				if(G.limb_grabbed == LH || G.limb_grabbed == RH)
 					return TRUE
 
-/proc/return_sessions_with_user(mob/living/carbon/human/user)
+/proc/return_sessions_with_user(mob/living/user)
 	var/list/sessions = list()
 	for(var/datum/sex_session/session in GLOB.sex_sessions)
 		if(user != session.target && user != session.user)
@@ -196,7 +370,7 @@
 		sessions |= session
 	return sessions
 
-/proc/return_highest_priority_action(list/sessions = list(), mob/living/carbon/human/user)
+/proc/return_highest_priority_action(list/sessions = list(), mob/living/user)
 	var/datum/sex_session/highest_session
 	for(var/datum/sex_session/session in sessions)
 		if(!session.current_action)
@@ -286,6 +460,7 @@
 /mob/living
 
 	///npc organs to use
+	var/list/sex_fallback_organs = null
 	var/ball_organ = /obj/item/organ/genitals/filling_organ/testicles
 	var/ball_min = MIN_TESTICLES_SIZE
 	var/ball_max = MAX_TESTICLES_SIZE
@@ -301,6 +476,8 @@
 	var/butt_organ = /obj/item/organ/genitals/butt
 	var/butt_min = MIN_BUTT_SIZE
 	var/butt_max = MAX_BUTT_SIZE
+	var/anus_organ = /obj/item/organ/genitals/filling_organ/anus
+	var/belly_organ = /obj/item/organ/genitals/belly
 	var/vagina_organ = /obj/item/organ/genitals/filling_organ/vagina
 	var/show_genitals = FALSE
 	var/mouth_blocked = FALSE
@@ -314,9 +491,9 @@
 
 /mob/living/proc/give_genitals()
 	if(!isanimal(src))
-		var/mob/living/carbon/human/user = src
+		var/mob/living/user = src
 		if(gender == MALE)
-			var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.getorganslot(ORGAN_SLOT_TESTICLES)
+			var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.get_native_sex_organ(ORGAN_SLOT_TESTICLES)
 			if(!testicles)
 				if(!show_genitals)
 					testicles = new /obj/item/organ/genitals/filling_organ/testicles/invisible
@@ -324,7 +501,7 @@
 					testicles = new ball_organ
 				testicles.organ_size = rand(ball_min, ball_max)
 				testicles.Insert(user, TRUE)
-			var/obj/item/organ/genitals/penis/penis = user.getorganslot(ORGAN_SLOT_PENIS)
+			var/obj/item/organ/genitals/penis/penis = user.get_native_sex_organ(ORGAN_SLOT_PENIS)
 			if(!penis)
 				if(!show_genitals)
 					penis = new /obj/item/organ/genitals/penis
@@ -333,7 +510,7 @@
 				penis.organ_size = rand(penis_min, penis_max)
 				penis.Insert(user, TRUE)
 		if(gender == FEMALE)
-			var/obj/item/organ/genitals/butt/buttie = user.getorganslot(ORGAN_SLOT_BUTT)
+			var/obj/item/organ/genitals/butt/buttie = user.get_native_sex_organ(ORGAN_SLOT_BUTT)
 			if(!buttie)
 				if(!show_genitals)
 					buttie = new /obj/item/organ/genitals/butt/invisible
@@ -341,7 +518,7 @@
 					buttie = new butt_organ
 				buttie.organ_size = rand(butt_min, butt_max)
 				buttie.Insert(user, TRUE)
-			var/obj/item/organ/genitals/filling_organ/breasts/breasts = user.getorganslot(ORGAN_SLOT_BREASTS)
+			var/obj/item/organ/genitals/filling_organ/breasts/breasts = user.get_native_sex_organ(ORGAN_SLOT_BREASTS)
 			if(!breasts)
 				if(!show_genitals)
 					breasts = new /obj/item/organ/genitals/filling_organ/breasts
@@ -349,7 +526,7 @@
 					breasts = new breast_organ
 				breasts.organ_size = rand(breast_min,breast_max)
 				breasts.Insert(user, TRUE)
-			var/obj/item/organ/genitals/filling_organ/vagina/vagina = user.getorganslot(ORGAN_SLOT_VAGINA)
+			var/obj/item/organ/genitals/filling_organ/vagina/vagina = user.get_native_sex_organ(ORGAN_SLOT_VAGINA)
 			if(!vagina)
 				if(!show_genitals)
 					vagina = new /obj/item/organ/genitals/filling_organ/vagina
@@ -357,7 +534,7 @@
 					vagina = new vagina_organ
 				vagina.Insert(user, TRUE)
 			if(prob(5)) //5 chance to be dickgirl.
-				var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.getorganslot(ORGAN_SLOT_TESTICLES)
+				var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.get_native_sex_organ(ORGAN_SLOT_TESTICLES)
 				if(!testicles)
 					if(!show_genitals)
 						testicles = new /obj/item/organ/genitals/filling_organ/testicles/invisible
@@ -365,7 +542,7 @@
 						testicles = new ball_organ
 					testicles.organ_size = rand(ball_min, ball_max)
 					testicles.Insert(user, TRUE)
-				var/obj/item/organ/genitals/penis/penis = user.getorganslot(ORGAN_SLOT_PENIS)
+				var/obj/item/organ/genitals/penis/penis = user.get_native_sex_organ(ORGAN_SLOT_PENIS)
 				if(!penis)
 					if(!show_genitals)
 						penis = new /obj/item/organ/genitals/penis

@@ -28,7 +28,7 @@
 	r_nip.Insert(M, FALSE, FALSE)
 
 
-	var/obj/item/organ/genitals/filling_organ/breasts/badonkas = M.getorganslot(ORGAN_SLOT_BREASTS)
+	var/obj/item/organ/genitals/filling_organ/breasts/badonkas = M.get_sex_organ(ORGAN_SLOT_BREASTS)
 	//Making users of big BOOBA suk dikus
 	if(badonkas.organ_size >= BREAST_SIZE_ENORMOUS)
 		M.apply_status_effect(/datum/status_effect/debuff/bigboobs/permanent/lite)

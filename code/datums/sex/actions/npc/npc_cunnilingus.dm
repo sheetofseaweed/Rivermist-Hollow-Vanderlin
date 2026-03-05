@@ -23,7 +23,7 @@
 
 	sex_session.perform_sex_action(target, user, 2, 3,  2, src)
 
-/datum/sex_action/npc/npc_cunnilingus/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/npc/npc_cunnilingus/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		target.visible_message(span_love("[user] squirts girlcum into [target]'s mouth!"))
 		return ORGASM_LOCATION_ORAL
@@ -38,7 +38,7 @@
 	user.visible_message(span_warning("[user] stops sucking [target]'s clit ..."))
 
 
-/datum/sex_action/npc/npc_cunnilingus/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/npc/npc_cunnilingus/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_VAGINA)
 	sex_locks |= new /datum/sex_session_lock(user, BODY_ZONE_PRECISE_MOUTH)
 

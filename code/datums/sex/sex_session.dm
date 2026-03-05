@@ -1,8 +1,8 @@
 /datum/sex_session //! TODO SEX SOUNDS
 	/// The initiating user
-	var/mob/living/carbon/human/user
+	var/mob/living/user
 	/// Target of our actions
-	var/mob/living/carbon/human/target
+	var/mob/living/target
 	/// Whether the user desires to stop current action
 	var/desire_stop = FALSE
 	/// What is the current performed action
@@ -31,7 +31,7 @@
 
 	var/datum/ui_updater/session_updater
 
-/datum/sex_session/New(mob/living/carbon/human/session_user, mob/living/carbon/human/session_target)
+/datum/sex_session/New(mob/living/session_user, mob/living/session_target)
 	user = session_user
 	target = session_target
 	sex_id++
@@ -233,7 +233,7 @@
 			return FALSE
 	return TRUE
 
-/datum/sex_session/proc/perform_sex_action(mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
+/datum/sex_session/proc/perform_sex_action(mob/living/action_initiator, mob/living/action_target, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
 
 	var/list/arousal_data_target = list()
 	SEND_SIGNAL(action_target, COMSIG_SEX_GET_AROUSAL, arousal_data_target)
@@ -280,7 +280,7 @@
 
 	SEND_SIGNAL(action_user_final, COMSIG_SEX_RECEIVE_ACTION, sex_act, action_initiator, action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, force, speed, res_send)
 
-/datum/sex_session/proc/handle_passive_ejaculation(mob/living/carbon/human/handler)
+/datum/sex_session/proc/handle_passive_ejaculation(mob/living/handler)
 	if(!handler)
 		handler = user
 	var/list/arousal_data = list()
@@ -294,12 +294,13 @@
 		if(arousal_value < 70)
 			SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.2)
 
-		if(handler.handcuffed)
+		var/restraints = handler.get_sex_restraints()
+		if(restraints)
 			if(prob(8))
 				var/chaffepain = pick(10,10,10,10,20,20,30)
 				SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, chaffepain, 1, 0)
 				handler.visible_message(("<span class='love_mid'>[handler] squirms uncomfortably in [handler.p_their()] restraints.</span>"), \
-					("<span class='love_extreme'>I feel [handler.handcuffed] rub uncomfortably against my skin.</span>"))
+					("<span class='love_extreme'>I feel [restraints] rub uncomfortably against my skin.</span>"))
 			if(arousal_value < ACTIVE_EJAC_THRESHOLD)
 				SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
 
@@ -704,7 +705,7 @@
 	dat += "<a href='?src=[REF(src)];task=toggle_edging_other;tab=[selected_tab]' class='toggle-btn'>[edging_other ? "EDGE THEM" : "DON'T EDGE THEM"]</a>"
 	dat += "</div>"
 
-	if(user.getorganslot(ORGAN_SLOT_PENIS))
+	if(user.get_sex_organ(ORGAN_SLOT_PENIS))
 		dat += "<div class='control-row'>"
 		dat += "<a href='?src=[REF(src)];task=manual_arousal_down;tab=[selected_tab]' class='control-btn'><</a>"
 		dat += " [manual_arousal_name] "
@@ -872,8 +873,8 @@
 	if(collective)
 		participants = collective.involved_mobs
 
-	for(var/mob/living/carbon/human/participant in participants)
-		var/display_name = participant.get_face_name() || participant.name
+	for(var/mob/living/participant in participants)
+		var/display_name = participant.get_sex_display_name()
 		var/is_you = (participant == user) ? " (You)" : ""
 		content += "<div class='participant-item'>[display_name][is_you]</div>"
 
@@ -917,7 +918,7 @@
 
 	return content.Join("")
 
-/datum/sex_session/proc/get_erp_preferences_display(mob/living/carbon/human/character, editable = FALSE)
+/datum/sex_session/proc/get_erp_preferences_display(mob/living/character, editable = FALSE)
 	var/list/content = list()
 
 	if(!character.client?.prefs)

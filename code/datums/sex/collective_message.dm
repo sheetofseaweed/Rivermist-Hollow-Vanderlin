@@ -29,8 +29,8 @@
 
 /datum/collective_message/proc/update_display_name()
 	var/list/names = list()
-	for(var/mob/living/carbon/human/person in involved_mobs)
-		var/display_name = person.get_face_name() || person.name
+	for(var/mob/living/person in involved_mobs)
+		var/display_name = person.get_sex_display_name()
 		names += display_name
 
 	collective_display_name = jointext(names, " & ")
@@ -62,17 +62,17 @@
 	subtle_mode = any_has_erp_pref(involved_mobs, /datum/erp_preference/boolean/subtle_session_messages)
 /*
 /datum/collective_message/proc/register_collective_tab()
-	for(var/mob/living/carbon/human/person in involved_mobs)
+	for(var/mob/living/person in involved_mobs)
 		if(person?.client?.chatOutput)
 			person.client.chatOutput.addCollectiveTab(collective_span_class, collective_display_name)
 
 /datum/collective_message/proc/update_collective_tab()
-	for(var/mob/living/carbon/human/person in involved_mobs)
+	for(var/mob/living/person in involved_mobs)
 		if(person?.client?.chatOutput)
 			person.client.chatOutput.updateCollectiveTab(collective_span_class, collective_display_name)
 
 /datum/collective_message/proc/unregister_collective_tab()
-	for(var/mob/living/carbon/human/person in involved_mobs)
+	for(var/mob/living/person in involved_mobs)
 		if(person?.client?.chatOutput)
 			person.client.chatOutput.removeCollectiveTab(collective_span_class)
 

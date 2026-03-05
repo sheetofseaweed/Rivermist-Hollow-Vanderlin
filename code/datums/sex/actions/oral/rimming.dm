@@ -2,7 +2,7 @@
 	name = "Lick their anus"
 	gags_user = TRUE
 
-/datum/sex_action/rimming/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/rimming/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	return TRUE
@@ -23,11 +23,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/rimming/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/rimming/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] starts rimming [target]'s butt..."))
 
-/datum/sex_action/rimming/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/rimming/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rims [target]'s butt..."))
@@ -37,10 +37,10 @@
 	sex_session.perform_sex_action(target, user, 2, 0, 1.5, src)
 	sex_session.handle_passive_ejaculation(target)
 
-/datum/sex_action/rimming/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/rimming/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops rimming [target]'s butt ..."))
 
-/datum/sex_action/rimming/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/rimming/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(user, BODY_ZONE_PRECISE_MOUTH)
 	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_ANUS)

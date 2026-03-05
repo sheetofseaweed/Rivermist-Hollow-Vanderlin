@@ -72,7 +72,7 @@
 		owner.update_body_parts(TRUE)
 
 
-/obj/item/organ/genitals/penis/proc/create_fake_variant(mob/living/carbon/human/user)
+/obj/item/organ/genitals/penis/proc/create_fake_variant(mob/living/user)
 	var/obj/item/penis_fake/fake = new()
 	fake.copy_properties_from(src)
 	fake.set_original_owner(user)
@@ -86,6 +86,7 @@
 	var/penis_type = PENIS_TYPE_PLAIN
 	var/penis_size = DEFAULT_PENIS_SIZE
 	// Tracking vars
+	var/mob/living/original_owner_ref = null
 	var/original_owner_ckey = null
 	var/original_owner_name = null
 	var/insertion_timestamp = null
@@ -105,12 +106,18 @@
 	body_storage_bulk = source.body_storage_bulk
 	name = "[source.name]"
 
-/obj/item/penis_fake/proc/set_original_owner(mob/living/carbon/human/owner)
+/obj/item/penis_fake/proc/set_original_owner(mob/living/owner)
+	original_owner_ref = owner
 	if(owner?.ckey)
 		original_owner_ckey = owner.ckey
-		original_owner_name = owner.real_name || owner.name
+	original_owner_name = owner?.get_sex_display_name() || owner?.name
 
-/obj/item/penis_fake/proc/is_owned_by(mob/living/carbon/human/user)
+/obj/item/penis_fake/proc/get_original_owner()
+	if(QDELETED(original_owner_ref))
+		return null
+	return original_owner_ref
+
+/obj/item/penis_fake/proc/is_owned_by(mob/living/user)
 	if(!user?.ckey)
 		return FALSE
 	return user.ckey == original_owner_ckey

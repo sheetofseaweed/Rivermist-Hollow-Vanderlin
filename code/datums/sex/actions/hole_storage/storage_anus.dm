@@ -3,8 +3,8 @@
 	name = "Store items in anus"
 	hole_id = ORGAN_SLOT_ANUS
 
-/datum/sex_action/hole_storage/anus_store/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	if(!target.getorganslot(ORGAN_SLOT_ANUS))
+/datum/sex_action/hole_storage/anus_store/shows_on_menu(mob/living/user, mob/living/target)
+	if(!target.get_sex_organ(ORGAN_SLOT_ANUS))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_ANUS))
 		return FALSE
@@ -12,7 +12,7 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/hole_storage/anus_store/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_store/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -22,29 +22,29 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/hole_storage/anus_store/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_store/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/obj/item/dildo = user.get_active_held_item()
 
 	if(user == target)
-		target_organ = user.getorganslot(hole_id)
+		target_organ = user.get_sex_organ(hole_id)
 		to_chat(user, sex_session.spanify_force("I start inserting \the [dildo] in my ass..."))
 	else
-		target_organ = target.getorganslot(hole_id)
+		target_organ = target.get_sex_organ(hole_id)
 		user.visible_message(span_warning("[user] starts inserting \the [dildo] in [target]'s ass..."))
 
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
 
-/datum/sex_action/hole_storage/anus_store/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_store/on_perform(mob/living/user, mob/living/target)
 	var/pain_amt = 4 //base pain amt to use
 	var/self = (user == target)
 	if(!target_organ)
 		if(self)
-			target_organ = user.getorganslot(hole_id)
+			target_organ = user.get_sex_organ(hole_id)
 		else
-			target_organ = target.getorganslot(hole_id)
+			target_organ = target.get_sex_organ(hole_id)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 
 	var/obj/item/dildo = user.get_active_held_item()
@@ -121,22 +121,22 @@
 	name = "Remove items from anus"
 	hole_id = ORGAN_SLOT_ANUS
 
-/datum/sex_action/hole_storage/anus_remove/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	if(!target.getorganslot(ORGAN_SLOT_ANUS))
+/datum/sex_action/hole_storage/anus_remove/shows_on_menu(mob/living/user, mob/living/target)
+	if(!target.get_sex_organ(ORGAN_SLOT_ANUS))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_ANUS))
 		return FALSE
 	if(user == target)
-		target_organ = user.getorganslot(hole_id)
+		target_organ = user.get_sex_organ(hole_id)
 	else
-		target_organ = target.getorganslot(hole_id)
+		target_organ = target.get_sex_organ(hole_id)
 	var/list/stored_items = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_GET_LISTS)
 	var/list/stored_items_layer = stored_items[STORAGE_LAYER_INNER]
 	if(!stored_items_layer.len)
 		return FALSE
 	return TRUE
 
-/datum/sex_action/hole_storage/anus_remove/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_remove/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -146,20 +146,20 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/hole_storage/anus_remove/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_remove/on_start(mob/living/user, mob/living/target)
 	. = ..()
 
 	if(user == target)
-		target_organ = user.getorganslot(hole_id)
+		target_organ = user.get_sex_organ(hole_id)
 		to_chat(user, span_warning("I start removing items from my ass..."))
 	else
-		target_organ = target.getorganslot(hole_id)
+		target_organ = target.get_sex_organ(hole_id)
 		user.visible_message(span_warning("[user] starts removing items from [target]'s ass..."))
 
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
 
-/datum/sex_action/hole_storage/anus_remove/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_remove/on_perform(mob/living/user, mob/living/target)
 	var/pain_amt = 2 //base pain amt to use
 
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
@@ -167,9 +167,9 @@
 
 	if(!target_organ)
 		if(self)
-			target_organ = user.getorganslot(hole_id)
+			target_organ = user.get_sex_organ(hole_id)
 		else
-			target_organ = target.getorganslot(hole_id)
+			target_organ = target.get_sex_organ(hole_id)
 
 	var/obj/item/removed_item
 	removed_item = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_REMOVE_RAND_ITEM, STORAGE_LAYER_INNER)
@@ -196,22 +196,22 @@
 	hole_id = ORGAN_SLOT_ANUS
 	do_time = 10
 
-/datum/sex_action/hole_storage/anus_remove_deep/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
-	if(!target.getorganslot(ORGAN_SLOT_ANUS))
+/datum/sex_action/hole_storage/anus_remove_deep/shows_on_menu(mob/living/user, mob/living/target)
+	if(!target.get_sex_organ(ORGAN_SLOT_ANUS))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_ANUS))
 		return FALSE
 	if(user == target)
-		target_organ = user.getorganslot(hole_id)
+		target_organ = user.get_sex_organ(hole_id)
 	else
-		target_organ = target.getorganslot(hole_id)
+		target_organ = target.get_sex_organ(hole_id)
 	var/list/stored_items = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_GET_LISTS)
 	var/list/stored_items_layer = stored_items[STORAGE_LAYER_DEEP]
 	if(!stored_items_layer.len)
 		return FALSE
 	return TRUE
 
-/datum/sex_action/hole_storage/anus_remove_deep/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_remove_deep/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -221,20 +221,20 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/hole_storage/anus_remove_deep/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_remove_deep/on_start(mob/living/user, mob/living/target)
 	. = ..()
 
 	if(user == target)
-		target_organ = user.getorganslot(hole_id)
+		target_organ = user.get_sex_organ(hole_id)
 		to_chat(user, span_warning("I start removing items from deep in my ass..."))
 	else
-		target_organ = target.getorganslot(hole_id)
+		target_organ = target.get_sex_organ(hole_id)
 		user.visible_message(span_warning("[user] starts removing items from deep in [target]'s ass..."))
 
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
 
-/datum/sex_action/hole_storage/anus_remove_deep/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/anus_remove_deep/on_perform(mob/living/user, mob/living/target)
 	var/pain_amt = 2 //base pain amt to use
 
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
@@ -242,9 +242,9 @@
 
 	if(!target_organ)
 		if(self)
-			target_organ = user.getorganslot(hole_id)
+			target_organ = user.get_sex_organ(hole_id)
 		else
-			target_organ = target.getorganslot(hole_id)
+			target_organ = target.get_sex_organ(hole_id)
 
 	var/obj/item/removed_item
 	removed_item = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_REMOVE_RAND_ITEM, STORAGE_LAYER_DEEP)

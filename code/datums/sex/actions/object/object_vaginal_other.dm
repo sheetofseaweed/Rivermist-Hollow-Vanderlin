@@ -8,7 +8,7 @@
 /datum/sex_action/object_fuck/object_vaginal_other/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
-	if(!target.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!target.get_sex_organ(ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_VAGINA))
 		return FALSE
@@ -16,7 +16,7 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/object_fuck/object_vaginal_other/other/vagina/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/object_fuck/object_vaginal_other/other/vagina/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/obj/item/dildo = user.get_active_held_item()
@@ -34,14 +34,14 @@
 	user.visible_message(span_warning("[user] stuffs \the [dildo] in [target]'s cunt..."))
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
-/datum/sex_action/object_fuck/object_vaginal_other/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/object_fuck/object_vaginal_other/on_perform(mob/living/user, mob/living/target)
 	var/pain_amt = 3 //base pain amt to use
 	var/obj/item/dildo = user.get_active_held_item()
 
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s cunt with \the [dildo]."))
-	if(user.rogue_sneaking || user.alpha <= 100)
+	if(user.is_sex_sneaking() || user.alpha <= 100)
 		action_volume *= 0.5
 	playsound(target, sex_session.get_force_sound(), 50, TRUE, -2, ignore_walls = FALSE)
 
@@ -54,7 +54,7 @@
 		if(target.body_position == LYING_DOWN) //double spill odds if lying down due gravity and stuff.
 			spillchance *= 2
 		if(contdildo.spillable && prob(spillchance) && contdildo.reagents.total_volume)
-			var/obj/item/organ/genitals/filling_organ/targetpuss = target.getorganslot(ORGAN_SLOT_VAGINA)
+			var/obj/item/organ/genitals/filling_organ/targetpuss = target.get_sex_organ(ORGAN_SLOT_VAGINA)
 			if(targetpuss.reagents.total_volume >= (targetpuss.reagents.maximum_volume -0.5))
 				target.visible_message(span_notice("[contdildo] splashes it's contents around [target]'s hole as it is packed full!"))
 				contdildo.reagents.reaction(target, TOUCH, sex_session.speed, FALSE)
@@ -70,10 +70,10 @@
 	sex_session.handle_passive_ejaculation(target)
 
 
-/datum/sex_action/object_fuck/object_vaginal_other/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/object_fuck/object_vaginal_other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		target.visible_message(span_love("[user] cream themselves around [target]'s thrusting dildo!"))
-		target.virginity = FALSE
+		target.mark_sex_virginity_lost()
 		return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_vaginal_other/on_finish(mob/living/user, mob/living/target)
