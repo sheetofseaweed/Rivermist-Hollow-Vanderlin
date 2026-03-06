@@ -311,11 +311,17 @@
 	if(source_human)
 		return source_human
 
-	source_human = find_sex_source_human_in_list(vars["important_recursive_contents"])
+	var/list/important_recursive_contents = null
+	if("important_recursive_contents" in vars)
+		important_recursive_contents = vars["important_recursive_contents"]
+	source_human = find_sex_source_human_in_list(important_recursive_contents)
 	if(source_human)
 		return source_human
 
-	source_human = find_sex_source_human_in_list(vars["recursive_contents_client_mobs"])
+	var/list/recursive_contents_client_mobs = null
+	if("recursive_contents_client_mobs" in vars)
+		recursive_contents_client_mobs = vars["recursive_contents_client_mobs"]
+	source_human = find_sex_source_human_in_list(recursive_contents_client_mobs)
 	if(source_human)
 		return source_human
 
