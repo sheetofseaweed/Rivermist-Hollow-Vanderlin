@@ -36,8 +36,9 @@
 	qdel(comp)
 
 /obj/item/organ/genitals/penis/proc/on_arousal_changed()
-	var/list/arousal_data = list()
-	SEND_SIGNAL(owner, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	if(!owner)
+		return
+	var/list/arousal_data = owner.get_sex_arousal_data()
 	var/max_arousal = ACTIVE_EJAC_THRESHOLD || 120
 	var/current_arousal = arousal_data["arousal"] || 0
 	var/arousal_percent = min(100, (current_arousal / max_arousal) * 100)
@@ -60,7 +61,7 @@
 	var/oldstate = erect_state
 	if(owner.mind)
 		var/datum/antagonist/werewolf/W = owner.mind.has_antag_datum(/datum/antagonist/werewolf/)
-		if(W && W.transformed == TRUE)
+		if(W && W.transformed == TRUE && hascall(owner, "regenerate_icons"))
 			owner.regenerate_icons()
 	if(!LAZYLEN(return_sessions_with_user(owner)))
 		always_hard = FALSE
@@ -68,7 +69,7 @@
 		erect_state = ERECT_STATE_HARD
 	else
 		erect_state = new_state
-	if(oldstate != erect_state && owner)
+	if(oldstate != erect_state && owner && hascall(owner, "update_body_parts"))
 		owner.update_body_parts(TRUE)
 
 

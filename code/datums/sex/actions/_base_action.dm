@@ -125,7 +125,7 @@
 	var/datum/sex_session/session = get_sex_session(user, target)
 	if(!session)
 		return FALSE
-	return SEND_SIGNAL(user, COMSIG_SEX_TRY_KNOT, target, session.force)
+	return user.try_sex_knot(target, session.force)
 
 /datum/sex_action/proc/check_location_accessible(mob/living/user, mob/living/target, location = BODY_ZONE_CHEST, grabs = TRUE, skipundies = TRUE)
 	var/self_target = FALSE
@@ -182,8 +182,10 @@
 
 	var/self = (user == target)
 	var/datum/sex_session/session = get_sex_session(user, target)
+	if(!session)
+		session = get_sex_session(target, user)
 	var/force = FALSE
-	if(session.get_current_force() >= SEX_FORCE_HIGH)
+	if(session && session.get_current_force() >= SEX_FORCE_HIGH)
 		force = TRUE
 	// Handle penis storage specially - create fake variant
 	if(stored_item_type == /obj/item/organ/genitals/penis)

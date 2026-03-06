@@ -4,6 +4,8 @@
 	hole_id = ORGAN_SLOT_BREASTS
 
 /datum/sex_action/hole_storage/boobs_store/shows_on_menu(mob/living/user, mob/living/target)
+	if(!istype(user, /mob/living/carbon/human) || !istype(target, /mob/living/carbon/human))
+		return FALSE
 	if(!target.get_sex_organ(ORGAN_SLOT_BREASTS))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_BREASTS))
@@ -87,6 +89,8 @@
 	hole_id = ORGAN_SLOT_BREASTS
 
 /datum/sex_action/hole_storage/boobs_remove/shows_on_menu(mob/living/user, mob/living/target)
+	if(!istype(user, /mob/living/carbon/human) || !istype(target, /mob/living/carbon/human))
+		return FALSE
 	if(!target.get_sex_organ(ORGAN_SLOT_BREASTS))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_BREASTS))

@@ -4,6 +4,8 @@
 	hole_id = ORGAN_SLOT_VAGINA
 
 /datum/sex_action/hole_storage/vagina_store/shows_on_menu(mob/living/user, mob/living/target)
+	if(!istype(user, /mob/living/carbon/human) || !istype(target, /mob/living/carbon/human))
+		return FALSE
 	if(!target.get_sex_organ(ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_VAGINA))
@@ -122,6 +124,8 @@
 	hole_id = ORGAN_SLOT_VAGINA
 
 /datum/sex_action/hole_storage/vagina_remove/shows_on_menu(mob/living/user, mob/living/target)
+	if(!istype(user, /mob/living/carbon/human) || !istype(target, /mob/living/carbon/human))
+		return FALSE
 	if(!target.get_sex_organ(ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_VAGINA))
@@ -199,6 +203,8 @@
 	do_time = 10
 
 /datum/sex_action/hole_storage/vagina_remove_deep/shows_on_menu(mob/living/user, mob/living/target)
+	if(!istype(user, /mob/living/carbon/human) || !istype(target, /mob/living/carbon/human))
+		return FALSE
 	if(!target.get_sex_organ(ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_VAGINA))

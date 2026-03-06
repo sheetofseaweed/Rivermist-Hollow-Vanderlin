@@ -101,8 +101,7 @@
         session_updater.push_data_change("arousal_data", arousal_string)
 
 /datum/sex_session/proc/get_arousal_data_string()
-	var/list/arousal_data = list()
-	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/list/arousal_data = user.get_sex_arousal_data()
 
 	var/max_arousal = MAX_AROUSAL || 500
 	var/orgasm_threshold = PASSIVE_EJAC_THRESHOLD
@@ -110,13 +109,12 @@
 	var/current_orgasm_prog = arousal_data["orgasm_progress"] || 0
 	var/arousal_percent = min(100, (current_arousal / max_arousal) * 100)
 	var/pleasure_percent = min(100, (current_orgasm_prog / orgasm_threshold) * 100)
-	var/pain_percent = 0
+	var/pain_percent = user.get_sex_pain_percent()
 
 	return "[arousal_percent],[pleasure_percent],[pain_percent]"
 
 /datum/sex_session/proc/check_climax()
-	var/list/arousal_data = list()
-	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/list/arousal_data = user.get_sex_arousal_data()
 	if(arousal_data["arousal"] < ACTIVE_EJAC_THRESHOLD)
 		return FALSE
 	return TRUE
@@ -145,11 +143,10 @@
 		return
 	desire_stop = TRUE
 
-/datum/sex_session/proc/considered_limp(mob/limper)
+/datum/sex_session/proc/considered_limp(mob/living/limper)
 	if(QDELETED(limper))
 		return TRUE // If no limper or deleted, consider it limp
-	var/list/arousal_data = list()
-	SEND_SIGNAL(limper, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/list/arousal_data = limper.get_sex_arousal_data()
 	var/arousal_value = arousal_data["arousal"]
 	if(arousal_value >= VISIBLE_AROUSAL_THRESHOLD)
 		return FALSE
@@ -235,8 +232,7 @@
 
 /datum/sex_session/proc/perform_sex_action(mob/living/action_initiator, mob/living/action_target, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
 
-	var/list/arousal_data_target = list()
-	SEND_SIGNAL(action_target, COMSIG_SEX_GET_AROUSAL, arousal_data_target)
+	var/list/arousal_data_target = action_target.get_sex_arousal_data()
 
 
 	if(HAS_TRAIT(user, TRAIT_GOODLOVER) && user != action_initiator)
@@ -262,7 +258,7 @@
 				if(prob(10))
 					to_chat(user, span_love("I can't tell if they are close or not..."))
 			if(prob(succes_chance))
-				SEND_SIGNAL(action_target, COMSIG_SEX_EDGED_BY_OTHER_STATE, TRUE) //yeah, feels like a hack, honesytly, but it works
+				action_target.set_sex_edged_by_other_state(TRUE) //yeah, feels like a hack, honesytly, but it works
 
 	var/res_send = RESIST_NONE
 	var/mob/living/action_user_final
@@ -274,35 +270,33 @@
 		action_user_final = action_initiator
 		giving = FALSE
 
-	var/list/arousal_data_user = list()
-	SEND_SIGNAL(action_user_final, COMSIG_SEX_GET_AROUSAL, arousal_data_user)
+	var/list/arousal_data_user = action_user_final.get_sex_arousal_data()
 	res_send = arousal_data_user["resistance_to_pleasure"]
 
-	SEND_SIGNAL(action_user_final, COMSIG_SEX_RECEIVE_ACTION, sex_act, action_initiator, action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, force, speed, res_send)
+	action_user_final.receive_sex_action(sex_act, action_initiator, action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, force, speed, res_send)
 
 /datum/sex_session/proc/handle_passive_ejaculation(mob/living/handler)
 	if(!handler)
 		handler = user
-	var/list/arousal_data = list()
-	SEND_SIGNAL(handler, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/list/arousal_data = handler.get_sex_arousal_data()
 	var/arousal_multiplier = arousal_data["arousal_multiplier"]
 	var/arousal_value = arousal_data["arousal"]
 
 	if(arousal_multiplier > 1.5 && user.check_handholding())
 		if(prob(5))
-			SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, 0, 1, 0)
+			handler.receive_simple_sex_action(3, 0, 1, 0)
 		if(arousal_value < 70)
-			SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.2)
+			handler.adjust_sex_arousal(0.2)
 
 		var/restraints = handler.get_sex_restraints()
 		if(restraints)
 			if(prob(8))
 				var/chaffepain = pick(10,10,10,10,20,20,30)
-				SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, chaffepain, 1, 0)
+				handler.receive_simple_sex_action(3, chaffepain, 1, 0)
 				handler.visible_message(("<span class='love_mid'>[handler] squirms uncomfortably in [handler.p_their()] restraints.</span>"), \
 					("<span class='love_extreme'>I feel [restraints] rub uncomfortably against my skin.</span>"))
 			if(arousal_value < ACTIVE_EJAC_THRESHOLD)
-				SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
+				handler.adjust_sex_arousal(0.25)
 
 /datum/sex_session/proc/perform_deepthroat_oxyloss(mob/living/action_target, oxyloss_amt)
 	var/oxyloss_multiplier = 0
@@ -442,8 +436,7 @@
 
 /datum/sex_session/proc/show_ui(selected_tab = "interactions")
 	var/list/dat = list()
-	var/list/arousal_data = list()
-	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/list/arousal_data = user.get_sex_arousal_data()
 
 	// CSS styling to match the dark red/brown color scheme
 	dat += "<style>"
@@ -576,6 +569,7 @@
 	var/orgasm_progress = arousal_data["orgasm_progress"] || 0
 	var/pleasure_percent = min(100, (orgasm_progress / orgasm_threshold) * 100)
 	var/arousal_percent = min(100, (current_arousal / max_arousal) * 100)
+	var/pain_percent = user.get_sex_pain_percent()
 
 	dat += "<div class='progress-bar'>"
 	dat += "<div class='progress-fill-pleasure' style='width: [pleasure_percent]%;'></div>"
@@ -588,7 +582,7 @@
 	dat += "</div>"
 
 	dat += "<div class='progress-bar'>"
-	dat += "<div class='progress-fill-pain' style='width: 0%;'></div>"
+	dat += "<div class='progress-fill-pain' style='width: [pain_percent]%;'></div>"
 	dat += "<div class='progress-label'>Pain</div>"
 	dat += "</div>"
 	dat += "</div>"
@@ -970,8 +964,7 @@
 /datum/sex_session/Topic(href, href_list)
 	if(usr != user)
 		return
-	var/list/arousal_data = list()
-	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/list/arousal_data = user.get_sex_arousal_data()
 	var/selected_tab = href_list["tab"] || "interactions"
 
 	switch(href_list["task"])
@@ -1021,9 +1014,9 @@
 			do_until_finished = !do_until_finished
 		if("set_arousal")
 			var/amount = input(user, "Value above [MAX_AROUSAL || 120] will immediately cause orgasm!", "Set Arousal", arousal_data["arousal"]) as num
-			SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, amount)
+			user.set_sex_arousal(amount)
 		if("freeze_arousal")
-			SEND_SIGNAL(user, COMSIG_SEX_FREEZE_AROUSAL)
+			user.toggle_sex_arousal_freeze()
 		if("toggle_edging_other")
 			edging_other = !edging_other
 
@@ -1296,12 +1289,12 @@
 
 /datum/sex_session/proc/set_current_resist(new_resist)
 	resistance_to_pleasure = clamp(new_resist, RESIST_NONE, RESIST_HIGH)
-	SEND_SIGNAL(user, COMSIG_SEX_SET_HOLDING, resistance_to_pleasure)
+	user.set_sex_holding(resistance_to_pleasure)
 
 /datum/sex_session/proc/adjust_arousal_manual(amt)
 	manual_arousal = clamp(manual_arousal + amt, SEX_MANUAL_AROUSAL_MIN, SEX_MANUAL_AROUSAL_MAX)
 	var/aroused = manual_arousal > 2
-	SEND_SIGNAL(user, COMSIG_SET_ERECT_STATE, aroused)
+	user.set_sex_erect_state(aroused)
 
 /datum/sex_session/proc/get_character_slot(mob/target_mob)
 	return target_mob?.client?.prefs.current_slot || 1

@@ -21,4 +21,4 @@
 		break
 	if(outside || seen_by_people)
 		target.add_stress(/datum/stress_event/public_thrill)
-		SEND_SIGNAL(target, COMSIG_SEX_ADJUST_AROUSAL, 0.5)
+		target.adjust_sex_arousal(0.5)

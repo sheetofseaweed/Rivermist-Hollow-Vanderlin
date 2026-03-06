@@ -44,8 +44,6 @@
 /mob/living/proc/start_sex_session(mob/living/target, show_ui = TRUE)
 	if(!target)
 		return
-	if(!can_do_sex() || !target.has_sex_interface())
-		return
 	var/datum/sex_session/old_session = get_sex_session(src, target)
 	if(old_session && !QDELETED(old_session))
 		if(show_ui)
@@ -66,10 +64,10 @@
 		playsound(src, pick('sound/misc/mat/guymouth (2).ogg','sound/misc/mat/guymouth (3).ogg','sound/misc/mat/guymouth (4).ogg','sound/misc/mat/guymouth (5).ogg'), 35, TRUE, ignore_walls = FALSE)
 
 /mob/living/proc/can_do_sex()
-	return has_sex_interface()
+	return TRUE
 
 /mob/living/proc/has_sex_interface()
-	return istype(src, /mob/living/carbon/human) || !!get_sex_source_human()
+	return TRUE
 
 /mob/living/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
 	var/mob/living/target = src
@@ -82,9 +80,6 @@
 	if(dragged != user)
 		return
 	if(!user.can_do_sex())
-		to_chat(user, "<span class='warning'>I can't do this.</span>")
-		return
-	if(!target.has_sex_interface())
 		to_chat(user, "<span class='warning'>I can't do this.</span>")
 		return
 
@@ -101,12 +96,195 @@
 		return session
 	return null
 
+/mob/living/proc/uses_sex_state_fallback()
+	return !istype(src, /mob/living/carbon/human)
+
+/mob/living/proc/get_sex_arousal_cap()
+	return MAX_AROUSAL || 120
+
+/mob/living/proc/get_sex_pain_cap()
+	return 100
+
+/mob/living/proc/get_sex_arousal_multiplier()
+	var/arousal_cap = max(1, ACTIVE_EJAC_THRESHOLD || get_sex_arousal_cap())
+	return 1 + min(1, (sex_arousal || 0) / arousal_cap)
+
+/mob/living/proc/get_sex_arousal_data()
+	var/list/arousal_data = list()
+	if(!uses_sex_state_fallback())
+		SEND_SIGNAL(src, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	else
+		arousal_data["arousal"] = sex_arousal || 0
+		arousal_data["orgasm_progress"] = sex_orgasm_progress || 0
+		arousal_data["pain"] = sex_pain || 0
+		arousal_data["frozen"] = !!sex_arousal_frozen
+		arousal_data["arousal_multiplier"] = get_sex_arousal_multiplier()
+		arousal_data["resistance_to_pleasure"] = sex_resistance_to_pleasure || RESIST_NONE
+
+	if(isnull(arousal_data["pain"]))
+		arousal_data["pain"] = 0
+	if(isnull(arousal_data["frozen"]))
+		arousal_data["frozen"] = FALSE
+	if(isnull(arousal_data["arousal_multiplier"]))
+		arousal_data["arousal_multiplier"] = 1
+	if(isnull(arousal_data["resistance_to_pleasure"]))
+		arousal_data["resistance_to_pleasure"] = RESIST_NONE
+
+	return arousal_data
+
+/mob/living/proc/get_sex_pain_percent()
+	var/list/arousal_data = get_sex_arousal_data()
+	var/pain_cap = max(1, get_sex_pain_cap())
+	var/current_pain = arousal_data["pain"] || 0
+	return min(100, (current_pain / pain_cap) * 100)
+
+/mob/living/proc/notify_sex_arousal_changed()
+	if(!uses_sex_state_fallback())
+		return
+	sync_sex_arousal_organs()
+	SEND_SIGNAL(src, COMSIG_SEX_AROUSAL_CHANGED)
+
+/mob/living/proc/sync_sex_arousal_organs()
+	var/obj/item/organ/genitals/penis/native_penis = get_native_sex_organ(ORGAN_SLOT_PENIS)
+	if(istype(native_penis))
+		native_penis.on_arousal_changed()
+
+	if(!sex_fallback_organs)
+		return
+
+	var/obj/item/organ/genitals/penis/fallback_penis = sex_fallback_organs[ORGAN_SLOT_PENIS]
+	if(istype(fallback_penis) && fallback_penis != native_penis)
+		fallback_penis.on_arousal_changed()
+
+/mob/living/proc/set_sex_erect_state(aroused)
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SET_ERECT_STATE, aroused)
+
+	var/obj/item/organ/genitals/penis/native_penis = get_native_sex_organ(ORGAN_SLOT_PENIS)
+	if(istype(native_penis))
+		native_penis.set_hard(null, aroused)
+
+	if(!sex_fallback_organs)
+		return
+
+	var/obj/item/organ/genitals/penis/fallback_penis = sex_fallback_organs[ORGAN_SLOT_PENIS]
+	if(istype(fallback_penis) && fallback_penis != native_penis)
+		fallback_penis.set_hard(null, aroused)
+
+/mob/living/proc/adjust_sex_arousal(amount)
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SEX_ADJUST_AROUSAL, amount)
+	if(sex_arousal_frozen)
+		return
+
+	sex_arousal = clamp((sex_arousal || 0) + amount, 0, get_sex_arousal_cap())
+	if(sex_arousal >= ACTIVE_EJAC_THRESHOLD)
+		trigger_sex_climax()
+	else
+		notify_sex_arousal_changed()
+
+/mob/living/proc/set_sex_arousal(amount)
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SEX_SET_AROUSAL, amount)
+
+	sex_arousal = clamp(amount, 0, get_sex_arousal_cap())
+	if(amount >= ACTIVE_EJAC_THRESHOLD || sex_arousal >= ACTIVE_EJAC_THRESHOLD)
+		trigger_sex_climax()
+	else
+		notify_sex_arousal_changed()
+
+/mob/living/proc/toggle_sex_arousal_freeze()
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SEX_FREEZE_AROUSAL)
+
+	sex_arousal_frozen = !sex_arousal_frozen
+	notify_sex_arousal_changed()
+
+/mob/living/proc/set_sex_holding(new_resist)
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SEX_SET_HOLDING, new_resist)
+
+	sex_resistance_to_pleasure = clamp(new_resist, RESIST_NONE, RESIST_HIGH)
+	notify_sex_arousal_changed()
+
+/mob/living/proc/set_sex_edged_by_other_state(new_state)
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SEX_EDGED_BY_OTHER_STATE, new_state)
+
+	sex_edged_by_other = !!new_state
+
+/mob/living/proc/receive_simple_sex_action(arousal_amt, pain_amt, orgasm_prog_amt, giving = FALSE)
+	return receive_sex_action(null, null, null, arousal_amt, pain_amt, orgasm_prog_amt, giving)
+
+/mob/living/proc/receive_sex_action(datum/sex_action/sex_act, mob/living/action_initiator, mob/living/action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving = TRUE, incoming_force = SEX_FORCE_MID, incoming_speed = SEX_SPEED_MID, incoming_resistance = RESIST_NONE)
+	if(!uses_sex_state_fallback())
+		return SEND_SIGNAL(src, COMSIG_SEX_RECEIVE_ACTION, sex_act, action_initiator, action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, incoming_force, incoming_speed, incoming_resistance)
+
+	var/arousal_mult = 1
+	var/orgasm_mult = 1
+	switch(incoming_resistance)
+		if(RESIST_LOW)
+			arousal_mult = 0.9
+			orgasm_mult = 0.9
+		if(RESIST_MEDIUM)
+			arousal_mult = 0.75
+			orgasm_mult = 0.75
+		if(RESIST_HIGH)
+			arousal_mult = 0.6
+			orgasm_mult = 0.6
+
+	if(sex_edged_by_other && orgasm_prog_amt > 0)
+		orgasm_mult *= 0.5
+		sex_edged_by_other = FALSE
+
+	if(!sex_arousal_frozen)
+		sex_arousal = clamp((sex_arousal || 0) + (arousal_amt * arousal_mult), 0, get_sex_arousal_cap())
+	sex_orgasm_progress = clamp((sex_orgasm_progress || 0) + (orgasm_prog_amt * orgasm_mult), 0, PASSIVE_EJAC_THRESHOLD || 100)
+	sex_pain = clamp((sex_pain || 0) + pain_amt, 0, get_sex_pain_cap())
+
+	if(sex_arousal >= ACTIVE_EJAC_THRESHOLD || sex_orgasm_progress >= PASSIVE_EJAC_THRESHOLD)
+		trigger_sex_climax()
+	else
+		notify_sex_arousal_changed()
+
+/mob/living/proc/trigger_sex_climax()
+	if(!uses_sex_state_fallback())
+		return
+
+	sex_orgasm_progress = 0
+	sex_arousal = clamp(round((sex_arousal || 0) * 0.35), 0, get_sex_arousal_cap())
+	sex_pain = max(0, (sex_pain || 0) - 10)
+	sex_edged_by_other = FALSE
+	notify_sex_arousal_changed()
+	SEND_SIGNAL(src, COMSIG_SEX_CLIMAX)
+
+/mob/living/proc/try_sex_knot(mob/living/target, sex_force)
+	return SEND_SIGNAL(src, COMSIG_SEX_TRY_KNOT, target, sex_force)
+
+/mob/living/proc/get_sex_var_value(var_name, default_value = null)
+	if(!var_name)
+		return default_value
+	if(var_name in vars)
+		return vars[var_name]
+
+	var/mob/living/carbon/human/source_human = get_sex_source_human()
+	if(source_human && source_human != src && (var_name in source_human.vars))
+		return source_human.vars[var_name]
+
+	return default_value
+
 /mob/living/proc/get_native_sex_organ(organ_slot)
 	if(!organ_slot)
 		return null
 	if(!hascall(src, "getorganslot"))
 		return null
 	return call(src, "getorganslot")(organ_slot)
+
+/mob/living/proc/get_sex_source_organ(organ_slot)
+	var/mob/living/carbon/human/source_human = get_sex_source_human()
+	if(!source_human || source_human == src)
+		return null
+	return source_human.get_native_sex_organ(organ_slot)
 
 /mob/living/proc/find_sex_source_human_in_list(list/candidates)
 	if(!islist(candidates))
@@ -175,6 +353,10 @@
 	return null
 
 /mob/living/proc/get_sex_fallback_organ_size(organ_slot)
+	var/obj/item/organ/genitals/source_organ = get_sex_source_organ(organ_slot)
+	if(istype(source_organ))
+		return source_organ.organ_size
+
 	switch(organ_slot)
 		if(ORGAN_SLOT_TESTICLES)
 			return rand(ball_min, ball_max)
@@ -211,12 +393,54 @@
 		fallback_organ.organ_size = organ_size
 		fallback_organ.body_storage_bulk = initial(fallback_organ.body_storage_bulk) * fallback_organ.organ_size
 	fallback_organ.owner = src
+	configure_sex_fallback_organ(fallback_organ, organ_slot)
 
 	var/storage_component_type = get_sex_fallback_storage_component(organ_slot)
 	if(storage_component_type)
 		fallback_organ.add_bodystorage(src, null, storage_component_type)
 
 	return fallback_organ
+
+/mob/living/proc/configure_sex_fallback_organ(obj/item/organ/genitals/fallback_organ, organ_slot)
+	if(!fallback_organ)
+		return
+
+	var/obj/item/organ/genitals/source_organ = get_sex_source_organ(organ_slot)
+	if(istype(source_organ))
+		fallback_organ.organ_size = source_organ.organ_size
+		fallback_organ.body_storage_bulk = source_organ.body_storage_bulk
+
+	if(istype(fallback_organ, /obj/item/organ/genitals/filling_organ))
+		var/obj/item/organ/genitals/filling_organ/filling_organ = fallback_organ
+		var/obj/item/organ/genitals/filling_organ/source_filling_organ = source_organ
+
+		if(istype(source_filling_organ))
+			filling_organ.reagent_to_make = source_filling_organ.reagent_to_make
+			if(filling_organ.reagents && source_filling_organ.reagents)
+				filling_organ.reagents.clear_reagents()
+				for(var/datum/reagent/reagent as anything in source_filling_organ.reagents.reagent_list)
+					filling_organ.reagents.add_reagent(reagent.type, reagent.volume)
+
+		switch(organ_slot)
+			if(ORGAN_SLOT_TESTICLES)
+				var/reagent_type = get_sex_var_value("cum")
+				if(ispath(reagent_type, /datum/reagent))
+					filling_organ.reagent_to_make = reagent_type
+					if(filling_organ.reagents)
+						filling_organ.reagents.clear_reagents()
+						filling_organ.reagents.add_reagent(reagent_type, filling_organ.reagents.maximum_volume)
+			if(ORGAN_SLOT_VAGINA)
+				var/reagent_type = get_sex_var_value("femcum")
+				if(ispath(reagent_type, /datum/reagent))
+					filling_organ.reagent_to_make = reagent_type
+			if(ORGAN_SLOT_BREASTS)
+				var/reagent_type = get_sex_var_value("breast_milk")
+				if(ispath(reagent_type, /datum/reagent))
+					filling_organ.reagent_to_make = reagent_type
+
+	if(istype(fallback_organ, /obj/item/organ/genitals/penis))
+		var/obj/item/organ/genitals/penis/penis = fallback_organ
+		penis.on_arousal_changed()
 
 /mob/living/proc/get_cached_sex_organ(organ_slot)
 	if(!sex_fallback_organs)
@@ -235,21 +459,24 @@
 	return fallback_organ
 
 /mob/living/proc/get_sex_organ(organ_slot)
+	var/obj/item/organ/native_organ = get_native_sex_organ(organ_slot)
 	var/mob/living/carbon/human/source_human = get_sex_source_human()
 	if(source_human && source_human != src)
 		if(!can_use_sex_organ_slot(organ_slot))
 			return null
 
-		var/obj/item/organ/native_organ = get_native_sex_organ(organ_slot)
 		if(native_organ)
 			return native_organ
 
 		return get_cached_sex_organ(organ_slot)
 
-	if(!istype(src, /mob/living/carbon/human))
-		return null
+	if(native_organ)
+		return native_organ
 
-	return get_native_sex_organ(organ_slot)
+	if(!istype(src, /mob/living/carbon/human))
+		return get_cached_sex_organ(organ_slot)
+
+	return null
 
 /mob/living/proc/has_hands()
 	return TRUE
@@ -484,6 +711,12 @@
 
 	///npc organs to use
 	var/list/sex_fallback_organs = null
+	var/sex_arousal = 0
+	var/sex_orgasm_progress = 0
+	var/sex_pain = 0
+	var/sex_arousal_frozen = FALSE
+	var/sex_edged_by_other = FALSE
+	var/sex_resistance_to_pleasure = RESIST_NONE
 	var/ball_organ = /obj/item/organ/genitals/filling_organ/testicles
 	var/ball_min = MIN_TESTICLES_SIZE
 	var/ball_max = MAX_TESTICLES_SIZE

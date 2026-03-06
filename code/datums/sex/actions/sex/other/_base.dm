@@ -13,7 +13,7 @@
 	var/datum/sex_session/session = get_sex_session(user, target)
 	if(!session)
 		return FALSE
-	return SEND_SIGNAL(target, COMSIG_SEX_TRY_KNOT, user, session.force)
+	return target.try_sex_knot(user, session.force)
 
 /datum/sex_action/sex/other/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_PENIS)
