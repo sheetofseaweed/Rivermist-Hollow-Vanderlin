@@ -1,5 +1,3 @@
-
-
 /datum/wild_surge_entry
 	var/name
 	var/message
