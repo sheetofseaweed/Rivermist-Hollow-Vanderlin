@@ -8,15 +8,10 @@
 
 // --- HELPERS ---
 #define WILD_TARGET_SELF 1
-#define WILD_TARGET_RANDOM_LIVING 2
-#define WILD_TARGET_CAST_ON 3
-#define WILD_TARGET_TURF_OF_CAST_ON 4
-#define WILD_TARGET_TURF_OF_CASTER 5
-
-/// Targeting modes for surges
-#define WILD_TARGET_SELF 1
 #define WILD_TARGET_CAST_ON 2
 #define WILD_TARGET_RANDOM_LIVING 3
+#define WILD_TARGET_TURF_OF_CAST_ON 4
+#define WILD_TARGET_TURF_OF_CASTER 5
 
 // --- LOAD ORDER ---
 #include "wild_magic_job_list.dm"

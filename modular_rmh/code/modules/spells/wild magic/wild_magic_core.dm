@@ -1,13 +1,25 @@
 
+/datum/action/cooldown/spell/undirected/teleport/radius_turf/wild_magic
+	charge_required = FALSE
+
+/datum/action/cooldown/spell/essence/silence/wild_magic
+	charge_required = FALSE
+
+/datum/action/cooldown/spell/essence/toxic_cleanse/wild_magic
+	charge_required = FALSE
 
 /datum/element/wild_magic
 	element_flags = ELEMENT_DETACH
 	var/processing = FALSE
+	var/static/list/forbidden_trigger_spell_types = typecacheof(list(
+		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
+		/datum/action/cooldown/spell/undirected/learn,
+	))
 
 /datum/element/wild_magic/Attach(datum/target)
-	. = ..()
-	if(!ismob(target))
+	if(!isliving(target))
 		return ELEMENT_INCOMPATIBLE
+	. = ..()
 
 	RegisterSignal(target, COMSIG_MOB_AFTER_SPELL_CAST, PROC_REF(OnSpellCast))
 	return
@@ -17,9 +29,13 @@
 	return ..()
 
 /datum/element/wild_magic/proc/OnSpellCast(mob/living/caster, datum/action/cooldown/spell/spell, atom/target)
+	SIGNAL_HANDLER
+
 	if(processing)
 		return
 	if(!caster || QDELETED(caster))
+		return
+	if(!spell || is_type_in_typecache(spell, forbidden_trigger_spell_types))
 		return
 
 	if(!prob(WILD_CHANCE))
@@ -34,14 +50,24 @@
 		return
 
 	var/datum/wild_surge_entry/E = pick(GLOB.wild_surge_table)
-
-	var/mob/living/random_living = null
-	for(var/mob/living/M in view(7, caster))
-		if(M != caster)
-			random_living = M
-			break
+	var/mob/living/random_living = FindRandomLivingTarget(caster)
 
 	RunSurgeEntry(E, caster, original_target, random_living)
+
+/datum/element/wild_magic/proc/FindRandomLivingTarget(mob/living/caster)
+	var/list/targets = list()
+
+	for(var/mob/living/possible_target in view(7, caster))
+		if(possible_target == caster)
+			continue
+		if(possible_target.stat == DEAD)
+			continue
+		targets += possible_target
+
+	if(!length(targets))
+		return null
+
+	return pick(targets)
 
 /datum/element/wild_magic/proc/RunSurgeEntry(
 	datum/wild_surge_entry/E,
@@ -53,58 +79,238 @@
 		var/msg = replacetext(E.message, "\[WILD_CASTER\]", "[caster]")
 		caster.visible_message(msg)
 
-	// PROC based surge
-	if(E.progname)
-		if(hascall(src, E.progname))
-			call(src, E.progname)(caster, real_target)
+	if(E.effect_proc)
+		if(hascall(src, E.effect_proc))
+			call(src, E.effect_proc)(caster, real_target, random_target)
 		return
 
-	// SPELL based surge
 	if(E.spell_type)
-		CastSurgeSpell(E, caster, ResolveTarget(E, caster, real_target, random_target))
+		CastSurgeSpell(E, caster, real_target, random_target)
 
-/datum/element/wild_magic/proc/ResolveTarget(
+/datum/element/wild_magic/proc/CastSurgeSpell(
 	datum/wild_surge_entry/E,
 	mob/living/caster,
 	atom/real_target,
 	mob/living/random_target
 )
-	switch(E.target_mode)
-		if(WILD_TARGET_SELF)
-			return caster
+	if(!caster || QDELETED(caster) || !ispath(E.spell_type, /datum/action/cooldown/spell))
+		return
 
-		if(WILD_TARGET_RANDOM_LIVING)
-			return random_target ? random_target : caster
+	var/datum/action/cooldown/spell/surge_spell = new E.spell_type
+	surge_spell.owner = caster
 
-		if(WILD_TARGET_CAST_ON)
-			return real_target ? real_target : caster
+	PrepareSurgeSpell(E, surge_spell)
 
-		if(WILD_TARGET_TURF_OF_CAST_ON)
-			return real_target ? get_turf(real_target) : get_turf(caster)
+	var/atom/target = ResolveSpellTarget(E, surge_spell, caster, real_target, random_target)
+	if(!target)
+		return
 
-		if(WILD_TARGET_TURF_OF_CASTER)
-			return get_turf(caster)
+	if(istype(surge_spell, /datum/action/cooldown/spell/undirected/teleport))
+		target = get_turf(target)
+		if(!target)
+			return
 
-	return caster
+	surge_spell.cast(target)
 
-/datum/element/wild_magic/proc/CastSurgeSpell(
+/datum/element/wild_magic/proc/PrepareSurgeSpell(
+	datum/wild_surge_entry/E,
+	datum/action/cooldown/spell/surge_spell
+)
+	if(length(surge_spell.attunements))
+		surge_spell.handle_attunements()
+	else
+		surge_spell.attuned_strength = 1
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/projectile))
+		var/datum/action/cooldown/spell/projectile/projectile_spell = surge_spell
+		projectile_spell.current_amount = max(projectile_spell.projectile_amount, 1)
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/undirected/teleport/radius_turf))
+		var/datum/action/cooldown/spell/undirected/teleport/radius_turf/teleport_spell = surge_spell
+		if(!isnull(E.inner_tele_radius))
+			teleport_spell.inner_tele_radius = E.inner_tele_radius
+		if(!isnull(E.outer_tele_radius))
+			teleport_spell.outer_tele_radius = E.outer_tele_radius
+
+/datum/element/wild_magic/proc/ResolveSpellTarget(
+	datum/wild_surge_entry/E,
+	datum/action/cooldown/spell/surge_spell,
+	mob/living/caster,
+	atom/real_target,
+	mob/living/random_target
+)
+	var/list/candidates = BuildTargetCandidates(E, caster, real_target, random_target)
+
+	for(var/atom/candidate as anything in candidates)
+		if(IsSpellTargetSafe(surge_spell, candidate, caster))
+			return candidate
+
+	return null
+
+/datum/element/wild_magic/proc/BuildTargetCandidates(
 	datum/wild_surge_entry/E,
 	mob/living/caster,
-	atom/target
+	atom/real_target,
+	mob/living/random_target
 )
+	var/list/candidates = list()
+
+	switch(E.target_mode)
+		if(WILD_TARGET_SELF)
+			AddTargetCandidate(candidates, caster)
+
+		if(WILD_TARGET_CAST_ON)
+			AddTargetCandidate(candidates, real_target)
+			AddTargetCandidate(candidates, caster)
+
+		if(WILD_TARGET_RANDOM_LIVING)
+			AddTargetCandidate(candidates, random_target)
+			AddTargetCandidate(candidates, real_target)
+			AddTargetCandidate(candidates, caster)
+
+		if(WILD_TARGET_TURF_OF_CAST_ON)
+			AddTargetCandidate(candidates, get_turf(real_target))
+
+		if(WILD_TARGET_TURF_OF_CASTER)
+			AddTargetCandidate(candidates, get_turf(caster))
+
+	return candidates
+
+/datum/element/wild_magic/proc/AddTargetCandidate(list/candidates, atom/candidate)
+	if(!candidate || QDELETED(candidate))
+		return
+	if(candidate in candidates)
+		return
+	candidates += candidate
+
+/datum/element/wild_magic/proc/IsSpellTargetSafe(
+	datum/action/cooldown/spell/surge_spell,
+	atom/candidate,
+	mob/living/caster
+)
+	if(!candidate || QDELETED(candidate))
+		return FALSE
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/healing))
+		return isliving(candidate)
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/beast_tame))
+		return istype(candidate, /mob/living/simple_animal/hostile/retaliate)
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/find_flaw))
+		return ishuman(candidate)
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/blindness))
+		return isliving(candidate)
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/chill_touch))
+		return istype(candidate, /mob/living/carbon)
+
+	if(istype(surge_spell, /datum/action/cooldown/spell/gravity))
+		return isliving(candidate)
+
+	return TRUE
+
+/datum/element/wild_magic/proc/surge_mute(mob/living/caster, atom/real_target, mob/living/random_target)
 	if(!caster || QDELETED(caster))
 		return
 
-	if(!target)
-		target = caster
+	ADD_TRAIT(caster, TRAIT_MUTE, "wild_magic")
+	addtimer(CALLBACK(src, PROC_REF(restore_mute), caster), 60 SECONDS)
 
-	var/datum/action/cooldown/spell/S = new E.spell_type
+/datum/element/wild_magic/proc/surge_mist(mob/living/caster, atom/real_target, mob/living/random_target)
+	if(!caster || QDELETED(caster))
+		return
+	if(caster.has_status_effect(/datum/status_effect/shapechange_mob/from_spell) || !isturf(caster.loc))
+		return
 
-	S.owner = caster
-	S.cast(target)
+	var/datum/action/cooldown/spell/undirected/shapeshift/mist/mist_spell = new
+	mist_spell.owner = caster
+	mist_spell.shapeshift_type = mist_spell.possible_shapes[1]
+
+	var/mob/living/mist = mist_spell.do_shapeshift(caster)
+	if(!mist)
+		return
+
+	addtimer(CALLBACK(src, PROC_REF(restore_mist_form), mist), WILD_SHAPESHIFT_DURATION)
+
+/datum/element/wild_magic/proc/surge_cat(mob/living/caster, atom/real_target, mob/living/random_target)
+	if(!caster || QDELETED(caster))
+		return
+	if(caster.has_status_effect(/datum/status_effect/shapechange_mob/from_spell) || !isturf(caster.loc))
+		return
+
+	var/datum/action/cooldown/spell/undirected/shapeshift/cat/cat_spell = new
+	cat_spell.owner = caster
+	cat_spell.shapeshift_type = cat_spell.possible_shapes[1]
+
+	var/mob/living/cat = cat_spell.do_shapeshift(caster)
+	if(!cat)
+		return
+
+	addtimer(CALLBACK(src, PROC_REF(restore_cat_form), cat), WILD_SHAPESHIFT_DURATION)
+
+/datum/element/wild_magic/proc/surge_crow(mob/living/caster, atom/real_target, mob/living/random_target)
+	if(!caster || QDELETED(caster))
+		return
+	if(caster.has_status_effect(/datum/status_effect/shapechange_mob/from_spell) || !isturf(caster.loc))
+		return
+
+	var/datum/action/cooldown/spell/undirected/shapeshift/crow/crow_spell = new
+	crow_spell.owner = caster
+	crow_spell.shapeshift_type = crow_spell.possible_shapes[1]
+
+	var/mob/living/crow = crow_spell.do_shapeshift(caster)
+	if(!crow)
+		return
+
+	addtimer(CALLBACK(src, PROC_REF(restore_crow_form), crow), WILD_SHAPESHIFT_DURATION)
+
+/datum/element/wild_magic/proc/restore_mist_form(mob/living/mist)
+	if(!mist || QDELETED(mist))
+		return
+
+	var/datum/status_effect/shapechange_mob/from_spell/shape = mist.has_status_effect(/datum/status_effect/shapechange_mob/from_spell)
+	if(!shape)
+		return
+
+	mist.visible_message(span_notice("The mist condenses, reforming into a solid body!"))
+	shape.restore_caster()
+
+/datum/element/wild_magic/proc/restore_cat_form(mob/living/cat)
+	if(!cat || QDELETED(cat))
+		return
+
+	var/datum/status_effect/shapechange_mob/from_spell/shape = cat.has_status_effect(/datum/status_effect/shapechange_mob/from_spell)
+	if(!shape)
+		return
+
+	cat.visible_message(span_notice("[cat] shimmers and reforms into their original shape!"))
+	shape.restore_caster()
+
+/datum/element/wild_magic/proc/restore_crow_form(mob/living/crow)
+	if(!crow || QDELETED(crow))
+		return
+
+	var/datum/status_effect/shapechange_mob/from_spell/shape = crow.has_status_effect(/datum/status_effect/shapechange_mob/from_spell)
+	if(!shape)
+		return
+
+	crow.visible_message(span_notice("The crow shimmers and reforms into its original shape!"))
+	shape.restore_caster()
+
+/datum/element/wild_magic/proc/restore_mute(mob/living/caster)
+	if(!caster || QDELETED(caster))
+		return
+	if(!HAS_TRAIT(caster, TRAIT_MUTE))
+		return
+
+	REMOVE_TRAIT(caster, TRAIT_MUTE, "wild_magic")
+	caster.visible_message(span_danger("Pink bubbles stop coming out of [caster]'s mouth."))
 
 #undef WILD_CHANCE
 #undef WILD_CD
+#undef WILD_SHAPESHIFT_DURATION
 
 #undef WILD_TARGET_SELF
 #undef WILD_TARGET_RANDOM_LIVING

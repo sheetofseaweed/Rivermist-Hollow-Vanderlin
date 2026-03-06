@@ -5,7 +5,7 @@
 	var/message
 	var/target_mode
 	var/spell_type
-	var/progname
+	var/effect_proc
 	var/inner_tele_radius
 	var/outer_tele_radius
 
@@ -14,38 +14,18 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 /proc/init_wild_surge_table()
 	var/list/L = list()
 
-	// ======================================================
-	// PROC ENTRIES
-	// ======================================================
-
 	L += WildProc("Pink Bubbles",
 		span_danger("Pink bubbles start flying out of \[WILD_CASTER\]'s mouth!"),
 		"surge_mute")
 
-	L += WildProc("Mist Form",
-		span_danger("\[WILD_CASTER\]'s body dissolves into drifting mist!"),
-		"surge_mist")
-
-	L += WildProc("Cat Form",
-		span_danger("\[WILD_CASTER\]'s body shifts into a nimble cat!"),
-		"surge_cat")
-
-	L += WildProc("Crow Form",
-		span_danger("\[WILD_CASTER\]'s body twists into a crow!"),
-		"surge_crow")
-
-	// ======================================================
-	// SPELL ENTRIES
-	// ======================================================
-
 	AddSpell(L,"Flashpowder",
 		span_danger("\[WILD_CASTER\] casts flashpowder!"),
-		/obj/projectile/magic/flashpowder,
+		/datum/action/cooldown/spell/projectile/flashpowder,
 		WILD_TARGET_RANDOM_LIVING)
 
 	AddSpell(L,"Teleport Distortion",
 		span_danger("\[WILD_CASTER\] vanishes in a violent magical distortion!"),
-		/datum/action/cooldown/spell/undirected/teleport/radius_turf,
+		/datum/action/cooldown/spell/undirected/teleport/radius_turf/wild_magic,
 		WILD_TARGET_SELF, 1, 5)
 
 	AddSpell(L,"Fireball",
@@ -67,6 +47,10 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 		span_nicegreen("The target's wounds instantly begin to heal."),
 		/datum/action/cooldown/spell/healing/greater,
 		WILD_TARGET_RANDOM_LIVING)
+
+	L += WildProc("Mist Form",
+		span_danger("\[WILD_CASTER\]'s body dissolves into drifting mist!"),
+		"surge_mist")
 
 	AddSpell(L,"Ethereal Jaunt",
 		span_danger("\[WILD_CASTER\] flickers and slips partially out of reality!"),
@@ -158,6 +142,46 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 		/datum/action/cooldown/spell/projectile/acid_splash,
 		WILD_TARGET_RANDOM_LIVING)
 
+	AddSpell(L,"Kneestingers",
+		span_notice("\[WILD_CASTER\] whispers 'Treefather light the way.' and kneestingers sprout!"),
+		/datum/action/cooldown/spell/conjure/kneestingers,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"Phantom Ear",
+		span_notice("\[WILD_CASTER\] whispers 'Lend me thine ear.' and a phantom ear appears."),
+		/datum/action/cooldown/spell/conjure/phantom_ear,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"ROUS",
+		span_notice("\[WILD_CASTER\] calls for their brethren!"),
+		/datum/action/cooldown/spell/conjure/rous,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"Bonfire",
+		span_notice("\[WILD_CASTER\] shouts 'Bonfire!' and a magical flame appears."),
+		/datum/action/cooldown/spell/conjure/bonfire,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"Raise Lesser Undead",
+		span_warning("\[WILD_CASTER\] shouts 'SERVE ME!' and a skeleton rises."),
+		/datum/action/cooldown/spell/conjure/raise_lesser_undead,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"Web",
+		span_notice("\[WILD_CASTER\] whispers 'Strands that bind!' and webs appear around you."),
+		/datum/action/cooldown/spell/conjure/web,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"Familiar",
+		span_notice("\[WILD_CASTER\] shouts 'B'ST FR'ND!' and a spectral wolf familiar appears."),
+		/datum/action/cooldown/spell/conjure/familiar,
+		WILD_TARGET_SELF)
+
+	AddSpell(L,"Beam of Frost",
+		span_notice("\[WILD_CASTER\] shouts 'Chill!' and a frost beam emerges."),
+		/datum/action/cooldown/spell/beam/beam_of_frost,
+		WILD_TARGET_RANDOM_LIVING)
+
 	AddSpell(L,"Meteor Storm",
 		span_boldwarning("METEORS RAIN FROM THE SKY!"),
 		/datum/action/cooldown/spell/aoe/on_turf/meteor_storm,
@@ -166,6 +190,11 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 	AddSpell(L,"Snap Freeze",
 		span_notice("Frost envelops the area!"),
 		/datum/action/cooldown/spell/aoe/on_turf/snap_freeze,
+		WILD_TARGET_RANDOM_LIVING)
+
+	AddSpell(L,"Arcyne Storm",
+		span_notice("\[WILD_CASTER\] shouts 'BE TORN APART!!!' and arcyne energy swirls."),
+		/datum/action/cooldown/spell/aoe/on_turf/arcyne_storm,
 		WILD_TARGET_RANDOM_LIVING)
 
 	AddSpell(L,"Repulse",
@@ -182,6 +211,14 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 		span_notice("Undead energies churn violently!"),
 		/datum/action/cooldown/spell/aoe/churn_undead,
 		WILD_TARGET_SELF)
+
+	L += WildProc("Cat Form",
+		span_danger("\[WILD_CASTER\]'s body shifts and shrinks into a nimble cat!"),
+		"surge_cat")
+
+	L += WildProc("Crow Form",
+		span_danger("\[WILD_CASTER\]'s body twists and feathers sprout as they become a crow!"),
+		"surge_crow")
 
 	AddSpell(L,"Gravity Crush",
 		span_danger("\[WILD_CASTER\] crushes space around the target!"),
@@ -215,19 +252,16 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 
 	AddSpell(L,"Silence",
 		span_notice("A zone of silence forms."),
-		/datum/action/cooldown/spell/essence/silence,
+		/datum/action/cooldown/spell/essence/silence/wild_magic,
 		WILD_TARGET_RANDOM_LIVING)
 
 	AddSpell(L,"Toxic Cleanse",
 		span_notice("All toxins are purged."),
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/wild_magic,
 		WILD_TARGET_RANDOM_LIVING)
 
-	while(length(L) < 50)
-		AddSpell(L,"Chaotic Spark",
-			span_notice("Chaotic sparks scatter wildly."),
-			/datum/action/cooldown/spell/projectile/arcyne_bolt,
-			WILD_TARGET_RANDOM_LIVING)
+	if(length(L) != 50)
+		stack_trace("Wild surge table expected 50 entries, got [length(L)].")
 
 	return L
 
@@ -246,7 +280,7 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 	var/datum/wild_surge_entry/E = new
 	E.name = name
 	E.message = message
-	E.progname = procname
+	E.effect_proc = procname
 	return E
 
 /proc/AddSpell(list/L, name, message, spell_type, target_mode, inner=null, outer=null)
