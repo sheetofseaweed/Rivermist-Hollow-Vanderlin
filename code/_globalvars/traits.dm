@@ -192,6 +192,7 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Drunkmaster" = TRAIT_DRUNKMASTER,
 		"Rune Severed" = TRAIT_RUNE_SEVERED,
 		"Inflexible" = TRAIT_UNDODGING,
+		"Freeze Hunger" = TRAIT_FREEZEHUNGER,
 	),
 	/obj/item/bodypart = list(
 		"TRAIT_PARALYSIS" = TRAIT_PARALYSIS
@@ -244,7 +245,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_CRACKHEAD = span_love("I can use drugs as much as I want!"),
 	TRAIT_CIVILIZEDBARBARIAN = span_info("My rigorous training in the martial arts has turned me into a living weapon. No limb is out of reach for my fists and feet, and my unarmed strikes now have a higher chance to inflict critical damage."),
 	TRAIT_NUDE_SLEEPER = span_warning("I can't fall asleep unless I'm nude and in bed."),
-	TRAIT_SOUL_EXAMINE = span_deadsay("I know when someone's soul has departed after checking their heartbeat."),
+	TRAIT_SOUL_EXAMINE = span_suicide("I know when someone's soul has departed after checking their heartbeat."),
 	TRAIT_CYCLOPS_LEFT = span_warning("My left eye has been poked out..."),
 	TRAIT_CYCLOPS_RIGHT = span_warning("My right eye has been poked out..."),
 	TRAIT_LEECHIMMUNE = "Leeches are reluctant to drain my blood.",

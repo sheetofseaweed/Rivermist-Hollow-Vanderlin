@@ -1,15 +1,14 @@
 /mob/living/carbon/human/proc/handle_comfy()
-	if(last_move_time < world.time - 10 MINUTES)
+	if(last_move_time < world.time - 15 MINUTES)
 		apply_status_effect(/datum/status_effect/buff/comfy)
 	else
 		remove_status_effect(/datum/status_effect/buff/comfy)
 
 /mob/living/carbon/human/proc/comfy_heal()
-	var/sleepy_mod = 0.5
+	var/sleepy_mod = 0.1
 	if(!bleed_rate)
 		blood_volume = min(blood_volume + (4 * sleepy_mod), BLOOD_VOLUME_NORMAL)
 	for(var/obj/item/bodypart/affecting as anything in bodyparts)
-		//for context, it takes 5 small cuts (0.2 x 5) or 3 normal cuts (0.4 x 3) for a bodypart to not be able to heal itself
 		if(affecting.get_bleed_rate() >= 1)
 			continue
 		if(affecting.heal_damage(sleepy_mod, sleepy_mod, required_status = BODYPART_ORGANIC))
@@ -33,20 +32,18 @@
 
 /datum/status_effect/buff/comfy/on_apply()
 	. = ..()
-	ADD_TRAIT(owner, TRAIT_NOHUNGER, TRAIT_GENERIC)
+	ADD_TRAIT(owner, TRAIT_FREEZEHUNGER, "comfy")
 	owner.add_stress(/datum/stress_event/comfy)
 
 
 /datum/status_effect/buff/comfy/on_remove()
 	. = ..()
-	REMOVE_TRAIT(owner, TRAIT_NOHUNGER, TRAIT_GENERIC)
+	REMOVE_TRAIT(owner, TRAIT_FREEZEHUNGER, "comfy")
 	owner.remove_stress(/datum/stress_event/comfy)
 
 
 /datum/status_effect/buff/comfy/tick()
 	var/mob/living/carbon/human/bob = owner
-	bob.hydration = HYDRATION_LEVEL_FULL
-	bob.nutrition = NUTRITION_LEVEL_WELL_FED
 	bob.comfy_heal()
 
 /datum/stress_event/comfy

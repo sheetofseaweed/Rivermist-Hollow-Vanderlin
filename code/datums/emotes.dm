@@ -83,18 +83,9 @@
 	if(!msg && nomsg == FALSE)
 		return
 
-	var/collective_span = ""
-	if(ishuman(user))
-		var/mob/living/carbon/human/human_speaker = user
-		// Find any collective this person is involved in
-		for(var/datum/collective_message/collective in GLOB.sex_collectives)
-			if(human_speaker in collective.involved_mobs)
-				collective_span = " [collective.collective_span_class]"
-				break
-
 	if(!nomsg)
 		user.log_message(msg, LOG_EMOTE)
-		msg = "<span class = '[collective_span]'><b>[user]</b> " + msg + "</span>"
+		msg = "<b>[user]</b> " + msg
 
 	var/pitch = 1 //bespoke vary system so deep voice/high voiced humans
 	if(isliving(user))

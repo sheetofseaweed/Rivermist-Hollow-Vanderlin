@@ -77,6 +77,7 @@
 	log_game("Cryo successful for [mob_name], adjusting job [J.title].")
 	if(J.parent_job)
 		J.parent_job.adjust_current_positions(-1)
+		J.adjust_current_positions(-1)
 	else
 		J.adjust_current_positions(-1)
 	for(var/obj/structure/resurrection_rune/rr in GLOB.global_resurrunes)

@@ -1,10 +1,11 @@
 
 /datum/quirk/vice/wanted
 	name = "Wanted"
-	desc = "Something in my past has made me a target. I am marked as an outlaw in these lands. I'm always looking over my shoulder. And protect my loins...	\
-	\nTHIS IS A DIFFICULT FLAW, YOU WILL BE HUNTED AND HAVE NON-CON AND RAPE ATTEMPTS MADE AGAINST YOU WITHOUT ANY ESCALATION. \
-	PLAY AT YOUR OWN RISK."
-	point_value = 5
+	desc = "Something in my past has made me a target. I am marked as an outlaw in these lands. I'm always looking over my shoulder. And protecting my loins...	\
+	\nTHIS IS A DIFFICULT FLAW, YOU WILL BE HUNTED AND HAVE NON-CON AND RAPE ATTEMPTS MADE AGAINST YOU BY TOWN GUARDS. \
+	THIS DOES NOT GIVE YOU A LICENSE TO GRIEF OR PERFORM CRIMINAL ACTS WITH IMPUNITY, \
+	THIS IS A ROLEPLAY FLAW TO MAKE YOU A 'TARGET' - PLAY AT YOUR OWN RISK."
+	point_value = 3
 	customization_type = QUIRK_TEXT
 	customization_label = "Why are you being hunted?"
 	customization_placeholder = "Fleeing prison."

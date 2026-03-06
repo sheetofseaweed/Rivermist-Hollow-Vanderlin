@@ -272,6 +272,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 	observer.key = key
 	observer.client = client
 	observer.set_ghost_appearance()
+	observer.mind = mind
 	if(observer.client && observer.client.prefs)
 		observer.real_name = observer.client.prefs.real_name
 		observer.name = observer.real_name

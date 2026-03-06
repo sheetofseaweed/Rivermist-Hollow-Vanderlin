@@ -194,6 +194,8 @@
 		/obj/item/mana_battery/mana_crystal,
 		/obj/item/fertilizer/ash,
 		/obj/item/reagent_containers/food/snacks/produce,
+		/obj/item/natural/melded,
+		/obj/item/natural/voidstone
 		))
 
 /datum/component/storage/concrete/grid/headhook
@@ -383,7 +385,8 @@
 			/obj/item/reagent_containers/syringe,
 			/obj/item/reagent_containers/pill,
 			/obj/item/storage/fancy/pilltin,
-			/obj/item/candle/yellow
+			/obj/item/candle/yellow,
+			/obj/item/reagent_containers/glass/bottle/vial
 			)
 		)
 	)
@@ -405,3 +408,12 @@
 /datum/component/storage/concrete/grid/tray/New(datum/P, ...)
 	. = ..()
 	set_holdable(list(/obj/item/plate))
+
+/datum/component/storage/concrete/grid/bag_of_holding
+	screen_max_rows = 20
+	screen_max_columns = 20
+	max_w_class = WEIGHT_CLASS_HUGE
+
+/datum/component/storage/concrete/grid/bag_of_holding/New(datum/P, ...)
+	. = ..()
+	cant_hold = typecacheof(list(/obj/item/storage/backpack/bag_of_holding))

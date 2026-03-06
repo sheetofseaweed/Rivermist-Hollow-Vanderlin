@@ -55,7 +55,7 @@
 		collective.sessions -= src
 		// If this was the last session in the collective, remove the collective
 		if(!length(collective.sessions))
-			collective.unregister_collective_tab()
+			//collective.unregister_collective_tab()
 			LAZYREMOVE(GLOB.sex_collectives, collective)
 			qdel(collective)
 
@@ -1030,7 +1030,7 @@
 			var/new_name = url_decode(href_list["name"])
 			if(new_name && collective)
 				collective.collective_display_name = new_name
-				collective.update_collective_tab()
+				//collective.update_collective_tab()
 				to_chat(user, "<span class='notice'>Session name updated to '[new_name]'</span>")
 
 		if("toggle_subtle")

@@ -24,7 +24,7 @@
 	sessions += session
 
 	update_display_name()
-	register_collective_tab()
+	//register_collective_tab()
 	update_subtle()
 
 /datum/collective_message/proc/update_display_name()
@@ -52,7 +52,7 @@
 	sessions += new_session
 	new_session.collective = src
 
-	update_collective_tab()
+	//update_collective_tab()
 	update_subtle()
 
 /datum/collective_message/proc/update_subtle()
@@ -60,7 +60,7 @@
 		return
 
 	subtle_mode = any_has_erp_pref(involved_mobs, /datum/erp_preference/boolean/subtle_session_messages)
-
+/*
 /datum/collective_message/proc/register_collective_tab()
 	for(var/mob/living/carbon/human/person in involved_mobs)
 		if(person?.client?.chatOutput)
@@ -86,4 +86,4 @@
 
 /datum/chatOutput/proc/removeCollectiveTab(collective_id)
 	var/list/params = list(collective_id)
-	owner << output(list2params(params), "browseroutput:removeCollectiveTab")
+	owner << output(list2params(params), "browseroutput:removeCollectiveTab")*/

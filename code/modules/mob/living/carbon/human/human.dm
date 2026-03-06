@@ -203,7 +203,7 @@
 /mob/living/carbon/human/ZImpactDamage(turf/T, levels)
 	var/mob/living/carbon/V = src
 	var/obj/item/bodypart/affecting
-	var/dam = levels * rand(10,50)
+	var/dam = levels * rand(5,10) // less damage
 	V.add_stress(/datum/stress_event/felldown)
 	record_round_statistic(STATS_MOAT_FALLERS, -1) // If you get your ankles broken you fall. This makes sure only those that DIDN'T get damage get counted.
 	record_round_statistic(STATS_ANKLES_BROKEN)
@@ -225,7 +225,7 @@
 			chat_message = "<span class='danger'>I fall on my head!</span>"
 	if(affecting && apply_damage(dam, BRUTE, affecting, run_armor_check(affecting, "blunt", damage = dam)))
 		update_damage_overlays()
-		if(levels >= 1)
+		if(levels >= 2)
 			//absurd damage to guarantee a crit
 			affecting.try_crit(BCLASS_TWIST, 300)
 

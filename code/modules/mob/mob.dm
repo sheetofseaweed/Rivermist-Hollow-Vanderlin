@@ -1444,7 +1444,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 /mob/proc/adjust_nutrition(change) //Honestly FUCK the oldcoders for putting nutrition on /mob someone else can move it up because holy hell I'd have to fix SO many typechecks
 	if(HAS_TRAIT(src, TRAIT_NOHUNGER))
 		nutrition = NUTRITION_LEVEL_FULL
-	if(client?.manual_afk && change < 0)
+	if((client?.manual_afk || HAS_TRAIT(src, TRAIT_FREEZEHUNGER)) && change < 0)
 		return FALSE
 	nutrition = max(0, nutrition + change)
 	if(nutrition > NUTRITION_LEVEL_FULL)
@@ -1461,7 +1461,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 /mob/proc/adjust_hydration(change)
 	if(HAS_TRAIT(src, TRAIT_NOHUNGER))
 		hydration = HYDRATION_LEVEL_FULL
-	if(client?.manual_afk && change < 0)
+	if((client?.manual_afk || HAS_TRAIT(src, TRAIT_FREEZEHUNGER)) && change < 0)
 		return FALSE
 	hydration = max(0, hydration + change)
 	if(hydration > HYDRATION_LEVEL_FULL)

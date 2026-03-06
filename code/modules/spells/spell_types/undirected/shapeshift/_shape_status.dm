@@ -42,6 +42,8 @@
 	owner.regenerate_icons()
 	caster_mob.mind?.transfer_to(owner)
 	caster_mob.forceMove(owner)
+	if(caster_mob.client)
+		caster_mob.client.fps = caster_mob.client.prefs?.clientfps // refresh?
 	ADD_TRAIT(caster_mob, TRAIT_NO_TRANSFORM, id)
 	ADD_TRAIT(caster_mob, TRAIT_BOMBIMMUNE, id)
 	caster_mob.apply_status_effect(/datum/status_effect/grouped/stasis, STASIS_SHAPECHANGE_EFFECT)

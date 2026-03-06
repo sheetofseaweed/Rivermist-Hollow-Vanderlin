@@ -550,14 +550,15 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SNOB				"snob"
 
 // Other RMH traits:
-#define TRAIT_GOODLOVER					"Fabled Lover"
-#define TRAIT_NYMPHO_CURSE "Nymphs Curse"
-#define TRAIT_ALLURE "Allure"
-#define TRAIT_DARKLING "Darkling"
-#define TRAIT_WILDMAGIC "Wildmagic"
-#define TRAIT_DRUNKMASTER "Drunkmaster"
-#define TRAIT_RUNE_SEVERED				"runesevered"
+#define TRAIT_GOODLOVER			"Fabled Lover"
+#define TRAIT_NYMPHO_CURSE 		"Nymphs Curse"
+#define TRAIT_ALLURE 			"Allure"
+#define TRAIT_DARKLING 			"Darkling"
+#define TRAIT_WILDMAGIC 		"Wildmagic"
+#define TRAIT_DRUNKMASTER 		"Drunkmaster"
+#define TRAIT_RUNE_SEVERED		"runesevered"
+#define TRAIT_FREEZEHUNGER 		"Freeze Hunger"
 /// This mob cannot cast spells
-#define TRAIT_NO_SELF_MAGIC "noselfmagic"
+#define TRAIT_NO_SELF_MAGIC 	"noselfmagic"
 
 #define TRAIT_PONYGIRL_RIDEABLE "Mount" //riding

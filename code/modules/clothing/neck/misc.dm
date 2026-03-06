@@ -269,6 +269,7 @@
 	max_integrity = INTEGRITY_STRONGEST
 	prevent_crits = ALL_EXCEPT_BLUNT
 
+	material_category = ARMOR_MAT_CHAINMAIL
 
 /obj/item/clothing/neck/chaincoif/AdjustClothes(mob/user)
 	if(loc == user)
@@ -349,6 +350,8 @@
 	max_integrity = INTEGRITY_STRONGEST
 	prevent_crits = ALL_EXCEPT_STAB
 
+	material_category = ARMOR_MAT_PLATE
+
 /obj/item/clothing/neck/bevor/Initialize()
 	. = ..()
 	ADD_TRAIT(src, TRAIT_HARD_TO_STEAL, TRAIT_GENERIC)
@@ -384,6 +387,8 @@
 	body_parts_covered = NECK
 	max_integrity = INTEGRITY_STRONG
 	prevent_crits = ALL_EXCEPT_STAB
+
+	material_category = ARMOR_MAT_PLATE
 
 /obj/item/clothing/neck/gorget/Initialize()
 	. = ..()
@@ -545,6 +550,8 @@
 	clothing_flags = CANT_SLEEP_IN
 	max_integrity = INTEGRITY_STRONGEST
 	prevent_crits = ALL_EXCEPT_BLUNT
+
+	material_category = ARMOR_MAT_CHAINMAIL
 
 /obj/item/clothing/neck/highcollier/AdjustClothes(mob/user)
 	if(loc == user)

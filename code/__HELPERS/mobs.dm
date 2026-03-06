@@ -73,9 +73,24 @@
 
 GLOBAL_LIST_INIT(skin_tones, sortList(
 	list(
-		"skin1" = "ffe0d1",
-		"skin2" = "fcccb3",
-		"skin3" = "e8b59b"
+		"Pale"         = SKIN_TONE_PALE,
+		"White 1"      = SKIN_TONE_WHITE1,
+		"White 2"      = SKIN_TONE_WHITE2,
+		"White 3"      = SKIN_TONE_WHITE3,
+		"White 4"      = SKIN_TONE_WHITE4,
+		"Tan"          = SKIN_TONE_TAN,
+		"Mediterranean 1" = SKIN_TONE_MEDIT1,
+		"Mediterranean 2" = SKIN_TONE_MEDIT2,
+		"Latin"        = SKIN_TONE_LATIN,
+		"Middle-east 1" = SKIN_TONE_MID_EAST1,
+		"Middle-east 2" = SKIN_TONE_MID_EAST2,
+		"Native American 1" = SKIN_TONE_NATIVE1,
+		"Native American 2" = SKIN_TONE_NATIVE2,
+		"Polynesian"   = SKIN_TONE_POLYNESIAN,
+		"Melanesian"   = SKIN_TONE_MELANESIAN,
+		"Black 1"      = SKIN_TONE_BLACK1,
+		"Black 2"      = SKIN_TONE_BLACK2,
+		"Black 3"      = SKIN_TONE_BLACK3,
 	)))
 
 /proc/random_skin_tone()

@@ -45,9 +45,14 @@
 		if(outlaw.real_name in GLOB.outlawed_players)
 			var/icon/credit_icon = SScrediticons.get_credit_icon(outlaw, TRUE)
 			if(credit_icon)
+				var/reason
+				if(outlaw.get_quirk(/datum/quirk/vice/wanted))
+					var/datum/quirk/vice/wanted/w_quirk = outlaw.get_quirk(/datum/quirk/vice/wanted)
+					reason = w_quirk.customization_value
 				outlaws += list(list(
 					"name" = outlaw.real_name,
-					"icon" = credit_icon
+					"icon" = credit_icon,
+					"reason" = reason
 				))
 
 	if(!length(outlaws))
@@ -152,11 +157,16 @@
 		else
 			icon_html = "<div class='wanted-icon' style='background:#8B4513;'></div>"
 
+		var/o_reason = "Suspicious activity."
+		if(outlaw_data["reason"])
+			o_reason = outlaw_data["reason"]
+
 		dat += {"
 		<div class='wanted-poster'>
 			<div class='wanted-header'>WANTED</div>
 			<div class='wanted-divider'></div>
 			<div class='wanted-footer'>BRED AND ALIVE ONLY</div>
+			<div class='wanted-footer'>REASON: [o_reason]</div>
 			<div class='wanted-icon-container'>
 				[icon_html]
 			</div>

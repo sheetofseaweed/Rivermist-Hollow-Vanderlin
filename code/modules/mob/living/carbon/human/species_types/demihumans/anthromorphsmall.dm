@@ -182,10 +182,17 @@
 /datum/species/anthromorphsmall/on_species_gain(mob/living/carbon/C, datum/species/old_species)
 	..()
 	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
+	C.grant_language(/datum/language/common)
+
+/datum/species/anthromorphsmall/after_creation(mob/living/carbon/C)
+	. = ..()
+	C.grant_language(/datum/language/beast)
+	to_chat(C, "<span class='info'>I can speak Beastish with ,b before my speech.</span>")
 
 /datum/species/anthromorphsmall/on_species_loss(mob/living/carbon/C)
 	. = ..()
 	UnregisterSignal(C, COMSIG_MOB_SAY)
+	C.remove_language(/datum/language/beast)
 
 /datum/species/anthromorphsmall/check_roundstart_eligible()
 	return TRUE
