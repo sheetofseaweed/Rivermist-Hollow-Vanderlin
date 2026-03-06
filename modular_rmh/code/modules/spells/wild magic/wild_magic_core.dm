@@ -110,6 +110,14 @@
 		if(!target)
 			return
 
+	INVOKE_ASYNC(src, PROC_REF(PerformSurgeCast), surge_spell, target)
+
+/datum/element/wild_magic/proc/PerformSurgeCast(datum/action/cooldown/spell/surge_spell, atom/target)
+	if(!surge_spell || QDELETED(surge_spell))
+		return
+	if(!target || QDELETED(target))
+		return
+
 	surge_spell.cast(target)
 
 /datum/element/wild_magic/proc/PrepareSurgeSpell(

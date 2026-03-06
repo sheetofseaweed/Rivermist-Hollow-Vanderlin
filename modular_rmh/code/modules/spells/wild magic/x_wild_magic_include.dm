@@ -2,7 +2,7 @@
 // --- CONFIG ---
 
 // --- CORE ---
-#define WILD_CHANCE 100
+#define WILD_CHANCE 70
 #define WILD_CD 1 SECONDS
 #define WILD_SHAPESHIFT_DURATION 30 SECONDS
 
