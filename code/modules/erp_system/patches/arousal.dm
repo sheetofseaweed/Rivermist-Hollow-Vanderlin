@@ -554,7 +554,7 @@
 		cost = round(cost * 0.75)
 	return max(1, cost)
 
-/datum/component/arousal/after_ejaculation(datum/sex_action/action, mob/living/carbon/human/climaxer, mob/living/carbon/human/partner)
+/datum/component/arousal/after_ejaculation(action, mob/living/carbon/human/climaxer, mob/living/carbon/human/partner)
 	SEND_SIGNAL(climaxer, COMSIG_SEX_SET_AROUSAL, 20)
 	SEND_SIGNAL(climaxer, COMSIG_SEX_CLIMAX)
 

@@ -75,7 +75,11 @@
 	if(!controller.active_partner)
 		return "Нет партнёра."
 
-	if(ctx.distance > 1)
+	var/custom_reason = A.get_custom_block_reason(controller, init, target, ctx)
+	if(!isnull(custom_reason))
+		return custom_reason
+
+	if(!A.allow_remote && ctx.distance > 1)
 		return "Слишком далеко."
 
 	if(A.require_same_tile && !(ctx.same_tile || ctx.has_passive_grab))
@@ -90,7 +94,7 @@
 	if(A.required_target_organ && target.erp_organ_type != A.required_target_organ)
 		return "Нужна другая цель."
 
-	if(!ctx.has_passive_grab)
+	if(!A.skip_access_checks && !ctx.has_passive_grab)
 		var/it = init.erp_organ_type
 		if(!(it in ctx.self_access))
 			ctx.self_access[it] = controller.owner.is_organ_accessible_for(controller.owner, it, FALSE)

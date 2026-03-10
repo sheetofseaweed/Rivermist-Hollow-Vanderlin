@@ -12,7 +12,7 @@
 		var/current_value = get_value(prefs)
 		set_value(prefs, !current_value)
 
-/datum/erp_preference/boolean/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session)
+/datum/erp_preference/boolean/show_session_ui(datum/preferences/prefs, editable = FALSE, session)
 	var/current_value = get_value(prefs)
 	var/toggle_class = "pref-toggle"
 	var/toggle_text = current_value ? "ENABLED" : "DISABLED"
@@ -26,7 +26,7 @@
 		toggle_class += " disabled"
 		return "<button class='[toggle_class]'>[toggle_text]</button>"
 
-/datum/erp_preference/boolean/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
+/datum/erp_preference/boolean/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, session)
 	if(href_list["action"] != "toggle")
 		return FALSE
 

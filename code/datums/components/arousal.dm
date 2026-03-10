@@ -81,6 +81,21 @@
 	UnregisterSignal(parent, COMSIG_SEX_SET_ORGASM_PROG)
 	UnregisterSignal(parent, COMSIG_SEX_ORGASM)
 
+/proc/sex_action_handle_climax_message(action, mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+	if(!action || !hascall(action, "handle_climax_message"))
+		return null
+	return call(action, "handle_climax_message")(user, target, must_flip)
+
+/proc/sex_action_try_knot_on_climax(action, mob/living/carbon/human/user, mob/living/carbon/human/target)
+	if(!action || !hascall(action, "try_knot_on_climax"))
+		return
+	call(action, "try_knot_on_climax")(user, target)
+
+/proc/sex_action_check_lock(action, mob/living/carbon/human/user, organ_slot)
+	if(!action || !hascall(action, "check_sex_lock"))
+		return FALSE
+	return !!call(action, "check_sex_lock")(user, organ_slot)
+
 /datum/component/arousal/process()
 	handle_charge()
 	handle_aroousal_cooling()
@@ -539,7 +554,7 @@
 					turf.add_liquid_from_reagents(vag.reagents, amount = femcum_to_take)
 		after_ejaculation(FALSE, mob, null)
 	else
-		var/return_type = action:handle_climax_message(mob, target, must_flip)
+		var/return_type = sex_action_handle_climax_message(action, mob, target, must_flip)
 		if(!return_type)
 			var/turf/turf = get_turf(mob)
 			if(mob.getorganslot(ORGAN_SLOT_TESTICLES) && mob.getorganslot(ORGAN_SLOT_PENIS))
@@ -559,7 +574,7 @@
 			handle_climax(action, return_type, mob, target, giving)
 
 		if(action:vars["knot_on_finish"]) //no idea how to stop other partner from triggering the knotting yet sorry
-			action:try_knot_on_climax(mob, target)
+			sex_action_try_knot_on_climax(action, mob, target)
 
 
 /datum/component/arousal/proc/handle_climax(action, climax_type, mob/living/carbon/human/user, mob/living/carbon/human/target, giving)
@@ -581,7 +596,7 @@
 	var/is_oral = FALSE
 	if(action)
 		var/hole_id = action:vars["hole_id"]
-		if(hole_id == BODY_ZONE_PRECISE_MOUTH || action:check_sex_lock(user, BODY_ZONE_PRECISE_MOUTH))
+		if(hole_id == BODY_ZONE_PRECISE_MOUTH || sex_action_check_lock(action, user, BODY_ZONE_PRECISE_MOUTH))
 			is_oral = TRUE
 
 	switch(climax_type)
@@ -628,11 +643,11 @@
 			var/mob/living/carbon/human/played_on = target ? target : user
 			playsound(played_on, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
 			if(target && action)
-				if(user.getorganslot(ORGAN_SLOT_PENIS) && action:check_sex_lock(user, ORGAN_SLOT_PENIS))
+				if(user.getorganslot(ORGAN_SLOT_PENIS) && sex_action_check_lock(action, user, ORGAN_SLOT_PENIS))
 					if(testes && testes.reagents)
 						var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, min(testes.reagents.total_volume, target.reagents.maximum_volume - target.reagents.total_volume))
 						testes.reagents.trans_to(target, cum_to_take, transfered_by = user, method = INGEST)
-				if(user.getorganslot(ORGAN_SLOT_VAGINA) && action:check_sex_lock(user, ORGAN_SLOT_VAGINA))
+				if(user.getorganslot(ORGAN_SLOT_VAGINA) && sex_action_check_lock(action, user, ORGAN_SLOT_VAGINA))
 					if(vag && vag.reagents)
 						var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
 						vag.reagents.trans_to(target, femcum_to_take, transfered_by = user, method = INGEST)

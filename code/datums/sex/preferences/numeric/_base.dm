@@ -43,7 +43,7 @@
 			var/new_value = max(current_value - step_size, min_value)
 			set_value(prefs, new_value)
 
-/datum/erp_preference/numeric/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session)
+/datum/erp_preference/numeric/show_session_ui(datum/preferences/prefs, editable = FALSE, session)
 	var/current_value = get_value(prefs)
 
 	if(editable)
@@ -58,7 +58,7 @@
 		var/range_info = "<div style='text-align: center; font-size: 10px; color: #808080; margin-top: 2px;'>Range: [min_value] - [max_value]</div>"
 		return "[value_display][range_info]"
 
-/datum/erp_preference/numeric/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
+/datum/erp_preference/numeric/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, session)
 	switch(href_list["action"])
 		if("increase", "decrease")
 			var/current_value = get_value(prefs)

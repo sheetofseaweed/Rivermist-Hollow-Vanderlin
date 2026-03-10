@@ -22,6 +22,8 @@
 		return FALSE
 	if(!L.target_organ.host || QDELETED(L.target_organ.host))
 		return FALSE
+	if(L.action && !L.action.is_link_valid(L))
+		return FALSE
 
 	return TRUE
 

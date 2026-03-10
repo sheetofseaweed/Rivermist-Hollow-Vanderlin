@@ -53,6 +53,7 @@
 
 	if(L.is_valid())
 		controller._send_link_finish_message(L)
+	L.action?.on_link_finished(L)
 
 	if(L in controller.links)
 		controller.links -= L
@@ -205,7 +206,7 @@
 	if(!actor_object || !partner_object)
 		return FALSE
 
-	if(get_dist(actor_object, partner_object) > 1)
+	if(!A.allow_remote && get_dist(actor_object, partner_object) > 1)
 		return FALSE
 
 	var/list/p1 = controller.actions_d.pick_first_by_type(controller.owner, TRUE)
@@ -247,6 +248,10 @@
 	var/list/organs = list("init" = init, "target" = target)
 	var/datum/erp_sex_link/L = new(controller.owner, controller.active_partner, A, organs, controller)
 	controller.links += L
+	A.on_link_started(L)
+	if(QDELETED(L) || !(L in controller.links) || L.state == LINK_STATE_FINISHED)
+		controller.ui?.request_update()
+		return FALSE
 
 	controller._send_link_start_message(L)
 	controller.ui?.request_update()
@@ -276,15 +281,17 @@
 		if(mover != A && mover != B)
 			continue
 
+		var/datum/erp_action/ACT = L.action
 		var/dist = get_dist(A, B)
 		if(dist > 1)
+			if(ACT?.allow_remote)
+				continue
 			if(dist < 3 && controller._is_knot_pair_link(L))
 				continue
 			LAZYADD(to_stop, L)
 			continue
 
-		var/datum/erp_action/ACT = L.action
-		if(!ACT || !ACT.allow_sex_on_move)
+		if(!ACT || (!ACT.allow_sex_on_move && !ACT.allow_remote))
 			LAZYADD(to_stop, L)
 
 	if(!to_stop)

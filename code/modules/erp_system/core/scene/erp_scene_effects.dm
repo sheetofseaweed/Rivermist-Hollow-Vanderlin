@@ -29,6 +29,9 @@
 
 		n++
 		controller._note_knot_activity_from_link(L)
+		L.action?.on_link_tick(L, dt)
+		if(!L || QDELETED(L) || !L.is_valid())
+			continue
 
 		var/f = clamp(round(L.force || SEX_FORCE_MID), SEX_FORCE_LOW, SEX_FORCE_EXTREME)
 		var/s = clamp(round(L.speed || SEX_SPEED_MID), SEX_SPEED_LOW, SEX_SPEED_EXTREME)

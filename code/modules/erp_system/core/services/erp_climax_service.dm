@@ -33,7 +33,7 @@
 			as_actor = best.actor_passive
 
 		var/text = null
-		if(SSerp?.action_message_renderer)
+		if(best.action.use_message_templates && SSerp?.action_message_renderer)
 			var/tpl = best.action.message_climax_active
 			if(as_actor && as_actor == best.actor_passive)
 				tpl = best.action.message_climax_passive
@@ -42,6 +42,8 @@
 
 		if(text)
 			controller.send_message(controller.spanify_scene_climax(text), best)
+
+		best.action.on_link_climax(best, who)
 
 	INVOKE_ASYNC(controller, TYPE_PROC_REF(/datum/erp_controller, handle_arousal_climax_effects), who, active)
 

@@ -26,13 +26,13 @@
 /datum/erp_preference/proc/handle_topic(mob/user, list/href_list, datum/preferences/prefs)
 	return
 
-/datum/erp_preference/proc/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session)
+/datum/erp_preference/proc/show_session_ui(datum/preferences/prefs, editable = FALSE, session)
 	var/current_value = get_value(prefs)
 	if(editable)
 		return "<div class='pref-toggle enabled'>[current_value]</div>"
 	else
 		return "<div class='pref-toggle disabled'>[current_value]</div>"
 
-/datum/erp_preference/proc/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
+/datum/erp_preference/proc/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, session)
 	// Return TRUE if the topic was handled, FALSE otherwise
 	return FALSE

@@ -167,6 +167,10 @@
 		link.speed = clamp(round(base_speed), SEX_SPEED_MIN, SEX_SPEED_MAX)
 
 	controller.links += link
+	action.on_link_started(link)
+	if(QDELETED(link) || !(link in controller.links) || link.state == LINK_STATE_FINISHED)
+		controller.ui?.request_update()
+		return null
 	controller._send_link_start_message(link)
 	controller.ui?.request_update()
 	return link

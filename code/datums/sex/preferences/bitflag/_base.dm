@@ -49,7 +49,7 @@
 		return TRUE
 	return FALSE
 
-/datum/erp_preference/bitflag/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session)
+/datum/erp_preference/bitflag/show_session_ui(datum/preferences/prefs, editable = FALSE, session)
 	var/current_value = get_value(prefs)
 	var/list/output = list()
 
@@ -81,7 +81,7 @@
 	output += "</div>"
 	return jointext(output, "")
 
-/datum/erp_preference/bitflag/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
+/datum/erp_preference/bitflag/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, session)
 	if(href_list["action"] != "toggle_flag")
 		return FALSE
 

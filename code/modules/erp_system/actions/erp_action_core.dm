@@ -20,9 +20,12 @@
 	var/require_same_tile = TRUE
 	var/require_grab = FALSE
 	var/allow_when_restrained = FALSE
+	var/allow_remote = FALSE
+	var/skip_access_checks = FALSE
 	var/list/required_item_tags = list()
 	var/list/action_tags = list()
 	var/allow_sex_on_move = FALSE
+	var/use_message_templates = TRUE
 
 	var/message_start = null
 	var/message_tick = null
@@ -73,3 +76,27 @@
 
 	if(source)
 		L.request_inject(source, inject_target_mode, who)
+
+/// Returns action-specific validation reason or null when the action can start.
+/datum/erp_action/proc/get_custom_block_reason(datum/erp_controller/controller, datum/erp_sex_organ/init, datum/erp_sex_organ/target, datum/erp_action_context/ctx)
+	return null
+
+/// Returns whether an already running link is still valid for this action.
+/datum/erp_action/proc/is_link_valid(datum/erp_sex_link/L)
+	return TRUE
+
+/// Hook called after link creation and before the default start message.
+/datum/erp_action/proc/on_link_started(datum/erp_sex_link/L)
+	return
+
+/// Hook called once per ERP scene tick before generic effects are applied.
+/datum/erp_action/proc/on_link_tick(datum/erp_sex_link/L, dt)
+	return
+
+/// Hook called before the link is detached and deleted.
+/datum/erp_action/proc/on_link_finished(datum/erp_sex_link/L)
+	return
+
+/// Hook called when this link wins climax resolution.
+/datum/erp_action/proc/on_link_climax(datum/erp_sex_link/L, mob/living/carbon/human/who)
+	return

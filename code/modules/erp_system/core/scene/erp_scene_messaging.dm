@@ -72,7 +72,7 @@
 
 /// Sends link start message.
 /datum/erp_scene_messaging/proc/send_link_start_message(datum/erp_sex_link/L)
-	if(!L || QDELETED(L) || !L.action)
+	if(!L || QDELETED(L) || !L.action || !L.action.use_message_templates)
 		return
 
 	var/text = null
@@ -86,7 +86,7 @@
 
 /// Sends link finish message.
 /datum/erp_scene_messaging/proc/send_link_finish_message(datum/erp_sex_link/L)
-	if(!L || QDELETED(L) || !L.action)
+	if(!L || QDELETED(L) || !L.action || !L.action.use_message_templates)
 		return
 
 	var/text = null

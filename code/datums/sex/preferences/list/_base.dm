@@ -61,7 +61,7 @@
 
 			set_value(prefs, choices[target_index])
 
-/datum/erp_preference/list_choice/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session)
+/datum/erp_preference/list_choice/show_session_ui(datum/preferences/prefs, editable = FALSE, session)
 	var/current_value = get_value(prefs)
 
 	if(editable)
@@ -72,7 +72,7 @@
 	else
 		return "<div class='pref-toggle disabled' style='margin-top: 5px;'>[current_value]</div>"
 
-/datum/erp_preference/list_choice/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
+/datum/erp_preference/list_choice/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, session)
 	switch(href_list["action"])
 		if("prev", "next")
 			var/current_value = get_value(prefs)
