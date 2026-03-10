@@ -1,4 +1,11 @@
 
+/**
+ * Wild magic support code.
+ *
+ * The element attaches to a caster, listens for completed spell casts,
+ * rolls one surge from the wild surge table, and executes it safely.
+ * The local spell subtypes below are wrappers used by surge-only casts.
+ */
 /datum/action/cooldown/spell/undirected/teleport/radius_turf/wild_magic
 	charge_required = FALSE
 
@@ -227,52 +234,35 @@
 	addtimer(CALLBACK(src, PROC_REF(restore_mute), caster), 60 SECONDS)
 
 /datum/element/wild_magic/proc/surge_mist(mob/living/caster, atom/real_target, mob/living/random_target)
-	if(!caster || QDELETED(caster))
-		return
-	if(caster.has_status_effect(/datum/status_effect/shapechange_mob/from_spell) || !isturf(caster.loc))
-		return
-
-	var/datum/action/cooldown/spell/undirected/shapeshift/mist/mist_spell = new
-	mist_spell.owner = caster
-	mist_spell.shapeshift_type = mist_spell.possible_shapes[1]
-
-	var/mob/living/mist = mist_spell.do_shapeshift(caster)
-	if(!mist)
-		return
-
-	addtimer(CALLBACK(src, PROC_REF(restore_mist_form), mist), WILD_SHAPESHIFT_DURATION)
+	RunShapeshiftSurge(caster, /datum/action/cooldown/spell/undirected/shapeshift/mist, PROC_REF(restore_mist_form))
 
 /datum/element/wild_magic/proc/surge_cat(mob/living/caster, atom/real_target, mob/living/random_target)
-	if(!caster || QDELETED(caster))
-		return
-	if(caster.has_status_effect(/datum/status_effect/shapechange_mob/from_spell) || !isturf(caster.loc))
-		return
-
-	var/datum/action/cooldown/spell/undirected/shapeshift/cat/cat_spell = new
-	cat_spell.owner = caster
-	cat_spell.shapeshift_type = cat_spell.possible_shapes[1]
-
-	var/mob/living/cat = cat_spell.do_shapeshift(caster)
-	if(!cat)
-		return
-
-	addtimer(CALLBACK(src, PROC_REF(restore_cat_form), cat), WILD_SHAPESHIFT_DURATION)
+	RunShapeshiftSurge(caster, /datum/action/cooldown/spell/undirected/shapeshift/cat, PROC_REF(restore_cat_form))
 
 /datum/element/wild_magic/proc/surge_crow(mob/living/caster, atom/real_target, mob/living/random_target)
+	RunShapeshiftSurge(caster, /datum/action/cooldown/spell/undirected/shapeshift/crow, PROC_REF(restore_crow_form))
+
+/datum/element/wild_magic/proc/RunShapeshiftSurge(
+	mob/living/caster,
+	datum/action/cooldown/spell/undirected/shapeshift/spell_type,
+	restore_proc
+)
 	if(!caster || QDELETED(caster))
 		return
 	if(caster.has_status_effect(/datum/status_effect/shapechange_mob/from_spell) || !isturf(caster.loc))
 		return
 
-	var/datum/action/cooldown/spell/undirected/shapeshift/crow/crow_spell = new
-	crow_spell.owner = caster
-	crow_spell.shapeshift_type = crow_spell.possible_shapes[1]
+	var/datum/action/cooldown/spell/undirected/shapeshift/shift_spell = new spell_type
+	shift_spell.owner = caster
+	if(!length(shift_spell.possible_shapes))
+		return
+	shift_spell.shapeshift_type = shift_spell.possible_shapes[1]
 
-	var/mob/living/crow = crow_spell.do_shapeshift(caster)
-	if(!crow)
+	var/mob/living/shifted_mob = shift_spell.do_shapeshift(caster)
+	if(!shifted_mob)
 		return
 
-	addtimer(CALLBACK(src, PROC_REF(restore_crow_form), crow), WILD_SHAPESHIFT_DURATION)
+	addtimer(CALLBACK(src, restore_proc, shifted_mob), WILD_SHAPESHIFT_DURATION)
 
 /datum/element/wild_magic/proc/restore_mist_form(mob/living/mist)
 	if(!mist || QDELETED(mist))
