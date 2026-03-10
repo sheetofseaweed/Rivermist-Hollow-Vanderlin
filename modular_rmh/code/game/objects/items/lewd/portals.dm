@@ -110,6 +110,14 @@
 	if(!controller)
 		to_chat(user_human, span_warning("The portal refuses to stabilize."))
 		return FALSE
+	var/datum/erp_sex_ui/ui = controller.ui
+	if(ui)
+		ui.active_tab = "actions"
+		var/datum/erp_sex_ui_tab/actions/actions_tab = ui.actions_tab
+		if(actions_tab)
+			actions_tab.selected_actor_type = null
+			actions_tab.selected_partner_type = get_erp_target_organ_type()
+	controller.request_ui_update()
 	controller.open_ui(user_human)
 	. = ..()
 

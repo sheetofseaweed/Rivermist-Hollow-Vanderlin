@@ -2099,7 +2099,11 @@ export const EroticRolePlayPanel: React.FC = () => {
           </Stack.Item>
           <Stack.Item>
             {activeTab === 'actions' ? (
-              <ActionsTab payload={actionsPayload} act={act} />
+              <ActionsTab
+                key={String(data.current_partner_ref || 'self')}
+                payload={actionsPayload}
+                act={act}
+              />
             ) : activeTab === 'kinks' ? (
               <Stack vertical>
                 <Stack.Item>

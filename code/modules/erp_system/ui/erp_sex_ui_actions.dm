@@ -3,6 +3,16 @@
 	var/selected_actor_type = null
 	var/selected_partner_type = null
 
+/datum/erp_sex_ui_tab/actions/proc/_is_filter_present(list/nodes, value)
+	if(isnull(value) || !islist(nodes))
+		return FALSE
+
+	for(var/list/entry in nodes)
+		if(entry?["type"] == value)
+			return TRUE
+
+	return FALSE
+
 /datum/erp_sex_ui_tab/actions/build()
 	var/list/D = list(
 		"actor_nodes" = list(),
@@ -32,6 +42,12 @@
 	D["climax_modes"] = list(list("id"="outside","name"="НАРУЖУ"),list("id"="inside","name"="ВНУТРЬ"))
 	D["actor_nodes"] = C.get_actor_type_filters_ui() || list()
 	D["partner_nodes"] = C.get_partner_type_filters_ui() || list()
+	if(selected_actor_type && !_is_filter_present(D["actor_nodes"], selected_actor_type))
+		selected_actor_type = null
+	if(selected_partner_type && !_is_filter_present(D["partner_nodes"], selected_partner_type))
+		selected_partner_type = null
+	D["selected_actor_node"] = selected_actor_type
+	D["selected_partner_node"] = selected_partner_type
 	D["actions"] = C.get_action_list_ui(selected_actor_type, selected_partner_type) || list()
 	D["active_links"] = C.get_active_links_ui(ui.actor) || list()
 	D["base_speed"] = C.default_link_speed
