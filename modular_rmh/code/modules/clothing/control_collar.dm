@@ -205,17 +205,12 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 	if(msg == normalize_slave_phrase(phrases_list["touch_phrase"]))
 		H.visible_message("<span class='danger'><b>[H] starts masturbating uncontrollably!</b></span>")
 		H.emote("moan")
-		H.start_sex_session(H, FALSE)
-		var/current_action = /datum/sex_action/masturbate/anus
+		var/current_action = /datum/erp_action/self/hands/fingering_anal
 		if(H.getorganslot(ORGAN_SLOT_VAGINA))
-			current_action = /datum/sex_action/masturbate/vagina
+			current_action = /datum/erp_action/self/hands/teasing_clitoris
 		else if(H.getorganslot(ORGAN_SLOT_PENIS))
-			current_action = /datum/sex_action/masturbate/penis
-		var/datum/sex_session/session = get_sex_session(H, H)
-		session.try_start_action(current_action)
-		session.set_current_force(SEX_FORCE_HIGH)
-		session.set_current_speed(SEX_SPEED_MAX)
-		return TRUE
+			current_action = /datum/erp_action/self/hands/masturbate_penis
+		return !!erp_start_action_pair(H, H, current_action, SEX_FORCE_HIGH, SEX_SPEED_MAX)
 
 	if(msg == normalize_slave_phrase(phrases_list["orgasm_phrase"]))
 		H.visible_message("<span class='danger'><b>[H] convulses in a sudden orgasm!</b></span>")

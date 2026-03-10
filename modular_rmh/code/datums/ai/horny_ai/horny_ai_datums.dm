@@ -51,7 +51,7 @@
 	if(picked_organ)
 		picked_organ.toggle_visibility("Show Above clothes")
 
-	basic_mob.start_sex_session(target_living)
+	erp_prepare_controller(basic_mob, target_living)
 	if(QDELETED(target))
 		return FALSE
 	set_movement_target(controller, target)
@@ -108,14 +108,11 @@
 	var/is_spent = arousal_data["is_spent"]
 	var/last_orgasm_time = arousal_data["last_ejaculation_time"]
 
-	var/datum/sex_session/session = get_sex_session(basic_mob, target_living)
-	if(!session) //if we took too long and it's deleted
-		session = basic_mob.start_sex_session(target_living)
+	erp_prepare_controller(basic_mob, target_living)
 
 	//check if we are sated
 	if(last_orgasm_time > world.time - 10 SECONDS || is_spent || controller.blackboard[BB_HORNY_TIME_START] < world.time - 5 MINUTES)
-		if(session)
-			session.stop_current_action()
+		erp_stop_action_pair(basic_mob, target_living)
 		finish_action(controller, TRUE, target_key)
 		return
 
@@ -241,20 +238,17 @@
 
 	//starting the action
 
-	if(session)
-		//make it depend on anger or smth
-		var/action_type = basic_mob.select_horny_ai_act(target_living)
-		if(isnull(session.current_action))
-			session.try_start_action(action_type)
-			basic_mob.face_atom(target_living)
-			var/force = rand(SEX_FORCE_MID, SEX_FORCE_MAX)
-			var/speed = rand(SEX_SPEED_MID, SEX_SPEED_MAX)
-			session.set_current_force(force)
-			session.set_current_speed(speed)
+	var/action_type = basic_mob.select_horny_ai_act(target_living)
+	if(!erp_pair_has_active_links(basic_mob, target_living))
+		basic_mob.face_atom(target_living)
+		var/force = rand(SEX_FORCE_MID, SEX_FORCE_MAX)
+		var/speed = rand(SEX_SPEED_MID, SEX_SPEED_MAX)
+		var/datum/erp_sex_link/started_link = erp_start_action_pair(basic_mob, target_living, action_type, force, speed)
+		if(started_link)
 			target_living.apply_status_effect(/datum/status_effect/debuff/mob_fucked)
-			if(isnull(session.current_action))
-				wrong_action = TRUE
-				finish_action(controller, FALSE, target_key)
+		else
+			wrong_action = TRUE
+			finish_action(controller, FALSE, target_key)
 
 
 
@@ -273,6 +267,8 @@
 	if(basic_mob.getorganslot(ORGAN_SLOT_VAGINA))
 		picked_organ = basic_mob.getorganslot(ORGAN_SLOT_VAGINA)
 		picked_organ.toggle_visibility(FALSE)
+
+	erp_stop_action_pair(basic_mob, controller.blackboard[target_key])
 
 
 	seekboredom = 0
@@ -298,34 +294,34 @@
 	//controller.CancelActions()
 
 /mob/living/proc/select_horny_ai_act(mob/living/target)
-	var/current_action = /datum/sex_action/rub_body
+	var/current_action = /datum/erp_action/other/body/rubbing
 	var/mob/living/target_mob = target
 	if(gender == FEMALE && target_mob.gender == MALE)
 		switch(rand(1,2))
 			if(1) //anal
-				current_action = /datum/sex_action/npc/npc_anal_ride_sex
+				current_action = /datum/erp_action/other/anus/sex
 			if(2) //vaginal
-				current_action = /datum/sex_action/npc/npc_vaginal_ride_sex
+				current_action = /datum/erp_action/other/vagina/sex
 	if(gender == MALE && target_mob.gender == MALE)
 		switch(rand(1,2))
 			if(1) //oral
-				current_action = /datum/sex_action/npc/npc_throat_sex
+				current_action = /datum/erp_action/other/penis/oral_sex
 			if(2) //anal
-				current_action = /datum/sex_action/npc/npc_anal_sex
+				current_action = /datum/erp_action/other/penis/anal_sex
 	if(gender == MALE && target_mob.gender == FEMALE)
 		switch(rand(1,3))
 			if(1) //oral
-				current_action = /datum/sex_action/npc/npc_throat_sex
+				current_action = /datum/erp_action/other/penis/oral_sex
 			if(2) //anal
-				current_action = /datum/sex_action/npc/npc_anal_sex
+				current_action = /datum/erp_action/other/penis/anal_sex
 			if(3) //vaginal
-				current_action = /datum/sex_action/npc/npc_vaginal_sex
+				current_action = /datum/erp_action/other/penis/vaginal_sex
 	if(gender == FEMALE && target_mob.gender == FEMALE)
 		switch(rand(1,3))
 			if(1) //oral
-				current_action = /datum/sex_action/npc/npc_facesitting
+				current_action = /datum/erp_action/other/anus/face
 			if(2) //anal
-				current_action = /datum/sex_action/npc/npc_rimming
+				current_action = /datum/erp_action/other/mouth/rimming
 			if(3) //vaginal
-				current_action = /datum/sex_action/npc/npc_cunnilingus
+				current_action = /datum/erp_action/other/mouth/cunnilingus
 	return current_action
