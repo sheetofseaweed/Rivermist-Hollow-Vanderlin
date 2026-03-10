@@ -178,4 +178,5 @@
 #include "patches\preferences.dm"
 
 #include "bridges\erp_kink_bridge.dm"
+#include "bridges\erp_legacy_compat.dm"
 #include "bridges\erp_mob.dm"

@@ -212,11 +212,10 @@
 	// Fireman carry case
 	if(prob(10) && top.m_intent == MOVE_INTENT_WALK && (btm in top.buckled_mobs))
 		var/obj/item/organ/genitals/penis/penis = top.getorganslot(ORGAN_SLOT_PENIS)
-		var/datum/sex_session/session = get_sex_session(top, btm)
-		if(session)
-			session.perform_sex_action(btm, penis?.organ_size > DEFAULT_PENIS_SIZE ? 6.0 : 3.0, 2, 3, FALSE)
-			var/datum/component/arousal/btm_arousal = btm.GetComponent(/datum/component/arousal)
-			btm_arousal?.try_ejaculate()
+		var/arousal_amt = penis?.organ_size > DEFAULT_PENIS_SIZE ? 6.0 : 3.0
+		SEND_SIGNAL(btm, COMSIG_SEX_RECEIVE_ACTION, arousal_amt, 2, FALSE, SEX_FORCE_MID, SEX_SPEED_LOW, null)
+		var/datum/component/arousal/btm_arousal = btm.GetComponent(/datum/component/arousal)
+		btm_arousal?.try_ejaculate()
 		if(prob(50))
 			to_chat(top, span_love("I feel [btm] tightening over my knot."))
 			to_chat(btm, span_love("I feel [top] rubbing inside."))

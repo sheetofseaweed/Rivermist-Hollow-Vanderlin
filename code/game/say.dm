@@ -27,15 +27,12 @@
 			continue
 		hearing_movable.Hear(rendered, src, message_language, message, , spans, message_mods, original_message)
 /atom/movable/proc/compose_message(atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, list/spans, list/message_mods = list(), face_name = FALSE)
-	// Check if this message should be part of a sex collective
 	var/collective_span = ""
 	if(ishuman(speaker))
 		var/mob/living/carbon/human/human_speaker = speaker
-		// Find any collective this person is involved in
-		for(var/datum/collective_message/collective in GLOB.sex_collectives)
-			if(human_speaker in collective.involved_mobs)
-				collective_span = " [collective.collective_span_class]"
-				break
+		var/span_class = get_erp_scene_span_class_for_mob(human_speaker)
+		if(span_class)
+			collective_span = " [span_class]"
 
 	//This proc uses text() because it is faster than appending strings. Thanks BYOND.
 	//Basic span

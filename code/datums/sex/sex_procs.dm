@@ -8,16 +8,172 @@
 			grabstate = l_grab.grab_state
 	return grabstate
 
+/proc/get_erp_links_for_mob(mob/living/M, active_only = TRUE)
+	var/list/out = list()
+	if(!istype(M) || QDELETED(M))
+		return out
+
+	SEND_SIGNAL(M, COMSIG_ERP_GET_LINKS, out)
+	if(!active_only)
+		return out
+
+	var/list/active = list()
+	for(var/datum/erp_sex_link/L in out)
+		if(!istype(L, /datum/erp_sex_link))
+			continue
+		if(!L || QDELETED(L))
+			continue
+		if(!L.is_valid())
+			continue
+		if(!isnull(L.vars["state"]) && L.state != 1)
+			continue
+		active += L
+
+	return active
+
+/proc/get_erp_partner_for_link(datum/erp_sex_link/L, mob/living/me)
+	if(!L || !istype(me))
+		return null
+
+	var/mob/living/A = L.actor_active?.get_effect_mob()
+	var/mob/living/B = L.actor_passive?.get_effect_mob()
+	if(A == me)
+		return B
+	if(B == me)
+		return A
+
+	A = L.actor_active?.physical
+	B = L.actor_passive?.physical
+	if(A == me)
+		return B
+	if(B == me)
+		return A
+
+	return null
+
+/proc/pick_best_erp_link_for_mob(mob/living/me, mob/living/prefer_partner = null)
+	if(!istype(me) || QDELETED(me))
+		return null
+
+	var/list/links = get_erp_links_for_mob(me, TRUE)
+	if(!links.len)
+		return null
+
+	var/datum/erp_sex_link/best = null
+	var/best_score = -1
+
+	for(var/datum/erp_sex_link/L in links)
+		if(!istype(L, /datum/erp_sex_link))
+			continue
+		if(!L || QDELETED(L))
+			continue
+		if(!L.is_valid())
+			continue
+
+		var/mob/living/partner = get_erp_partner_for_link(L, me)
+		var/score = L.get_climax_score()
+		if(prefer_partner && partner == prefer_partner)
+			score += 1000
+
+		if(score > best_score)
+			best_score = score
+			best = L
+
+	return best
+
+/proc/get_erp_scene_participants_for_mob(mob/living/me)
+	var/list/out = list()
+	if(!istype(me) || QDELETED(me))
+		return out
+
+	out |= me
+
+	var/list/links = get_erp_links_for_mob(me, TRUE)
+	for(var/datum/erp_sex_link/L in links)
+		if(!istype(L, /datum/erp_sex_link))
+			continue
+		if(!L || QDELETED(L))
+			continue
+		if(!L.is_valid())
+			continue
+
+		var/mob/living/partner = get_erp_partner_for_link(L, me)
+		if(istype(partner) && !QDELETED(partner))
+			out |= partner
+
+	return out
+
+/proc/get_erp_scene_context_for_mob(mob/living/me)
+	var/list/context = list(
+		"has_scene" = FALSE,
+		"hidden" = FALSE,
+		"subtle" = FALSE,
+		"span_class" = null,
+		"participants" = list(),
+	)
+	if(!istype(me) || QDELETED(me))
+		return context
+
+	var/list/links = get_erp_links_for_mob(me, TRUE)
+	if(!links.len)
+		return context
+
+	var/list/participants = get_erp_scene_participants_for_mob(me)
+	var/hidden_mode = FALSE
+	var/scene_key = null
+
+	for(var/datum/erp_sex_link/L in links)
+		if(!istype(L, /datum/erp_sex_link))
+			continue
+		if(!L || QDELETED(L))
+			continue
+		if(!L.is_valid())
+			continue
+
+		var/datum/erp_controller/C = L.session
+		if(C)
+			if(C.hidden_mode)
+				hidden_mode = TRUE
+			if(isnull(scene_key))
+				scene_key = md5("\ref[C]")
+
+	context["has_scene"] = TRUE
+	context["hidden"] = hidden_mode
+	context["subtle"] = hidden_mode || any_has_erp_pref(participants, /datum/erp_preference/boolean/subtle_session_messages)
+	context["span_class"] = scene_key ? "erp_scene_[copytext(scene_key, 1, 9)]" : "erp_scene_active"
+	context["participants"] = participants
+	return context
+
+/proc/get_erp_scene_span_class_for_mob(mob/living/me)
+	var/list/context = get_erp_scene_context_for_mob(me)
+	return context["span_class"] || ""
+
+/proc/is_subtle_erp_scene_for_mob(mob/living/me)
+	var/list/context = get_erp_scene_context_for_mob(me)
+	return !!context["subtle"]
+
+/proc/is_mob_in_erp_scene(mob/living/me)
+	var/list/context = get_erp_scene_context_for_mob(me)
+	return !!context["has_scene"]
+
+/proc/wrap_message_in_erp_scene_span(mob/living/me, text)
+	if(!text)
+		return text
+
+	var/span_class = get_erp_scene_span_class_for_mob(me)
+	if(!span_class)
+		return text
+
+	return "<span class='[span_class]'>[text]</span>"
+
 /proc/do_thrust_animate(atom/movable/user, atom/movable/target, pixels = 4, time = 2.7)
-	var/datum/sex_session/sex_session
+	var/datum/erp_sex_link/erp_link
 	if(ishuman(user) && ishuman(target))
-		sex_session = get_sex_session(user, target)
-		if(!sex_session)
-			sex_session = get_sex_session(target, user)
-	if(sex_session)
-		if(sex_session.speed > SEX_SPEED_MID)
+		erp_link = pick_best_erp_link_for_mob(user, target)
+	if(erp_link)
+		if(erp_link.speed > SEX_SPEED_MID)
 			time = max(0.5, time - 0.25)
-		if(sex_session.force < SEX_FORCE_MID)
+		if(erp_link.force < SEX_FORCE_MID)
 			pixels = max(1, pixels - 1)
 	var/oldx = user.pixel_x
 	var/oldy = user.pixel_y
@@ -43,22 +199,8 @@
 	if(!target)
 		return
 	if(show_ui && client && ishuman(src) && ishuman(target))
-		var/datum/erp_controller/erp_controller = start_erp_session(target)
-		if(erp_controller)
-			return erp_controller
-
-	var/datum/sex_session/old_session = get_sex_session(src, target)
-	if(old_session && !QDELETED(old_session))
-		if(show_ui)
-			old_session.show_ui()
-		return old_session
-
-
-	var/datum/sex_session/session = new /datum/sex_session(src, target)
-	LAZYADD(GLOB.sex_sessions, session)
-	if(target.client && client && show_ui)
-		session.show_ui()
-	return session
+		return start_erp_session(target)
+	return null
 
 /mob/living/proc/make_sucking_noise()
 	if(gender == FEMALE)
@@ -86,15 +228,6 @@
 	if(!user.start_sex_session(target))
 		to_chat(user, "<span class='warning'>I'm already sexing.</span>")
 		return
-
-/proc/get_sex_session(mob/giver, mob/taker)
-	for(var/datum/sex_session/session as anything in GLOB.sex_sessions)
-		if(session.user != giver)
-			continue
-		if(session.target != taker)
-			continue
-		return session
-	return null
 
 /mob/living/proc/has_hands()
 	return TRUE
@@ -192,32 +325,6 @@
 			for(var/obj/item/grabbing/G in src.grabbedby)
 				if(G.limb_grabbed == LH || G.limb_grabbed == RH)
 					return TRUE
-
-/proc/return_sessions_with_user(mob/living/carbon/human/user)
-	var/list/sessions = list()
-	for(var/datum/sex_session/session in GLOB.sex_sessions)
-		if(user != session.target && user != session.user)
-			continue
-		sessions |= session
-	return sessions
-
-/proc/return_highest_priority_action(list/sessions = list(), mob/living/carbon/human/user)
-	var/datum/sex_session/highest_session
-	for(var/datum/sex_session/session in sessions)
-		if(!session.current_action)
-			continue
-		if(!highest_session)
-			highest_session = session
-			continue
-		if(user == session.target)
-			if(session.current_action.target_priority > highest_session.current_action.target_priority)
-				highest_session = session
-				continue
-		if(user == session.user)
-			if(session.current_action.user_priority > highest_session.current_action.user_priority)
-				highest_session = session
-				continue
-	return highest_session
 
 /mob/proc/get_erp_pref(pref_type)
 	if(!client?.prefs)

@@ -26,13 +26,11 @@ GLOBAL_LIST_INIT(available_kinks, generate_kink_list())
 /datum/kink/process()
 	if(!length(tracked_mobs))
 		return
-	var/list/sexing_mobs = list()
-	for(var/datum/sex_session/session in GLOB.sex_sessions)
-		if(session.user in tracked_mobs)
-			sexing_mobs |= session.user
-		if(session.target in tracked_mobs)
-			sexing_mobs |= session.target
-	for(var/mob/living/mob in sexing_mobs)
+	for(var/mob/living/mob in tracked_mobs)
+		if(!istype(mob) || QDELETED(mob))
+			continue
+		if(!LAZYLEN(get_erp_links_for_mob(mob, TRUE)))
+			continue
 		on_process(mob)
 
 /datum/kink/proc/apply_kink(mob/target)

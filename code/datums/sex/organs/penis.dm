@@ -71,7 +71,7 @@
 		var/datum/antagonist/werewolf/W = owner.mind.has_antag_datum(/datum/antagonist/werewolf/)
 		if(W && W.transformed == TRUE)
 			owner.regenerate_icons()
-	if(!LAZYLEN(return_sessions_with_user(owner)))
+	if(!LAZYLEN(get_erp_links_for_mob(owner, TRUE)))
 		always_hard = FALSE
 	if(always_hard)
 		erect_state = ERECT_STATE_HARD

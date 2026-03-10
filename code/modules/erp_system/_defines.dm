@@ -74,7 +74,6 @@ var/global/list/ERP_ACTION_EDITOR_FIELDS = list(
 	list("id"="message_climax_passive", "label"="Оргазм: цель",        "type"="multiline", "section"="Сообщения"),
 )
 
-#define COMSIG_ERP_GET_LINKS "erp_get_links"
 #define COMSIG_ERP_ANATOMY_CHANGED "erp_anatomy_changed"
 #define COMSIG_SEX_MODIFY_EFFECT "sex_modify_effect"
 

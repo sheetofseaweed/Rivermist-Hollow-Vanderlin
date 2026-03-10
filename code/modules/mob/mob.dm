@@ -217,6 +217,9 @@ GLOBAL_VAR_INIT(mobids, 1)
 	if(ishuman(src))
 		var/mob/living/carbon/human/human_speaker = src
 		var/subtle_prefs = human_speaker.get_erp_pref(/datum/erp_preference/bitflag/subtle)
+		var/list/erp_scene = get_erp_scene_context_for_mob(human_speaker)
+		var/in_erp_scene = !!erp_scene["has_scene"]
+		var/collective_subtle = !!erp_scene["subtle"]
 
 		// Check if message starts with @ (Subtle Tag preference)
 		if(subtle_prefs & SUBTLE_TAG)
@@ -233,38 +236,12 @@ GLOBAL_VAR_INIT(mobids, 1)
 					if(self_at_pos)
 						var/self_closing_tag_end = self_at_pos + 4
 						self_message = copytext(self_message, 1, self_closing_tag_end) + copytext(self_message, self_closing_tag_end + 2)
+					self_message = wrap_message_in_erp_scene_span(human_speaker, self_message)
 
-					var/collective_span = ""
-					// Find any collective this person is involved in
-					for(var/datum/collective_message/collective in GLOB.sex_collectives)
-						if(human_speaker in collective.involved_mobs)
-							collective_span = " [collective.collective_span_class]"
-							break
-
-					self_message = "<span class= '[collective_span]'> " + self_message + "</span>"
-
-		var/collective_span = ""
-		// Find any collective this person is involved in
-		for(var/datum/collective_message/collective in GLOB.sex_collectives)
-			if(human_speaker in collective.involved_mobs)
-				collective_span = " [collective.collective_span_class]"
-				break
-
-		message = "<span class= '[collective_span]'> " + message + "</span>"
-
-
-		// Check if we're in a collective with subtle mode
-		var/collective_subtle = FALSE
-		var/in_sex_session = FALSE
-		for(var/datum/collective_message/collective in GLOB.sex_collectives)
-			if(human_speaker in collective.involved_mobs)
-				in_sex_session = TRUE
-				if(collective.subtle_mode)
-					collective_subtle = TRUE
-					break
+		message = wrap_message_in_erp_scene_span(human_speaker, message)
 
 		if(subtle_prefs & SUBTLE_ALL)
-			if(in_sex_session || collective_subtle)
+			if(in_erp_scene || collective_subtle)
 				is_subtle_message = TRUE
 
 		if(collective_subtle)
@@ -359,6 +336,9 @@ GLOBAL_VAR_INIT(mobids, 1)
 	if(ishuman(src))
 		var/mob/living/carbon/human/human_speaker = src
 		var/subtle_prefs = human_speaker.get_erp_pref(/datum/erp_preference/bitflag/subtle)
+		var/list/erp_scene = get_erp_scene_context_for_mob(human_speaker)
+		var/in_erp_scene = !!erp_scene["has_scene"]
+		var/collective_subtle = !!erp_scene["subtle"]
 
 		if(subtle_prefs & SUBTLE_TAG)
 			// Look for @ after the character name formatting
@@ -374,37 +354,13 @@ GLOBAL_VAR_INIT(mobids, 1)
 					if(self_at_pos)
 						var/self_closing_tag_end = self_at_pos + 4
 						self_message = copytext(self_message, 1, self_closing_tag_end) + copytext(self_message, self_closing_tag_end + 2)
-					var/collective_span = ""
-					// Find any collective this person is involved in
-					for(var/datum/collective_message/collective in GLOB.sex_collectives)
-						if(human_speaker in collective.involved_mobs)
-							collective_span = " [collective.collective_span_class]"
-							break
+					self_message = wrap_message_in_erp_scene_span(human_speaker, self_message)
 
-					self_message = "<span class= '[collective_span]'> " + self_message + "</span>"
-
-		var/collective_span = ""
-		// Find any collective this person is involved in
-		for(var/datum/collective_message/collective in GLOB.sex_collectives)
-			if(human_speaker in collective.involved_mobs)
-				collective_span = " [collective.collective_span_class]"
-				break
-
-		message = "<span class= '[collective_span]'> " + message + "</span>"
-
-		// Check if we're in a collective with subtle mode
-		var/collective_subtle = FALSE
-		var/in_sex_session = FALSE
-		for(var/datum/collective_message/collective in GLOB.sex_collectives)
-			if(human_speaker in collective.involved_mobs)
-				in_sex_session = TRUE
-				if(collective.subtle_mode)
-					collective_subtle = TRUE
-					break
+		message = wrap_message_in_erp_scene_span(human_speaker, message)
 
 		// Check All Session Messages preference
 		if(subtle_prefs & SUBTLE_ALL)
-			if(in_sex_session || collective_subtle)
+			if(in_erp_scene || collective_subtle)
 				is_subtle_message = TRUE
 
 		// Apply collective subtle mode

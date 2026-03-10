@@ -215,7 +215,6 @@
 /datum/component/arousal/proc/receive_generic_sex_action(datum/source, mob/living/carbon/human/action_target, arousal_amt, pain_amt, orgasm_prog_amt, action_initiator)
 	var/mob/living/user = parent
 	var/giving = action_target != action_initiator
-	var/datum/sex_action/generic/s_action = new()
 
 	if(user.stat == DEAD)
 		arousal_amt = 0
@@ -223,11 +222,10 @@
 		orgasm_prog_amt = 0
 	var/applied_resist = RESIST_NONE
 	var/applied_force = SEX_FORCE_MID
-	var/datum/sex_session/s_session = get_sex_session(action_target, action_target)
+	var/datum/erp_sex_link/erp_link = pick_best_erp_link_for_mob(user, action_target)
 
-	if(s_session)
-		applied_resist = s_session.get_current_resist()
-		applied_force = s_session.get_current_force()
+	if(erp_link)
+		applied_force = erp_link.force || SEX_FORCE_MID
 
 	var/isnymph = FALSE
 	if(HAS_TRAIT(user, TRAIT_NYMPHO_CURSE) || user.has_quirk(/datum/quirk/vice/lovefiend))
@@ -303,12 +301,43 @@
 	adjust_orgasm_prog(parent, orgasm_prog_amt)
 
 	damage_from_pain(pain_amt, giving)
-	try_ejaculate(s_action, action_initiator, action_target, giving)
+	try_ejaculate(null, action_initiator, action_target, giving)
 	try_do_moan(arousal_amt, pain_amt, applied_force, giving)
 	try_do_pain_effect(pain_amt, giving)
 
-/datum/component/arousal/proc/receive_sex_action(datum/source, datum/sex_action/s_action, mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, applied_force, applied_speed, applied_resist)
+/datum/component/arousal/proc/receive_sex_action(datum/source, s_action, mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, applied_force, applied_speed, applied_resist)
 	var/mob/living/user = parent
+
+	if(isnull(s_action) || !isdatum(s_action))
+		var/erp_arousal_amt = 0
+		var/erp_pain_amt = 0
+		var/erp_giving = FALSE
+		var/erp_force = SEX_FORCE_MID
+		var/erp_speed = SEX_SPEED_MID
+
+		if(ismob(s_action))
+			erp_arousal_amt = isnum(action_initiator) ? action_initiator : 0
+			erp_pain_amt = isnum(action_target) ? action_target : 0
+			erp_giving = !!arousal_amt
+			erp_force = isnum(pain_amt) ? pain_amt : SEX_FORCE_MID
+			erp_speed = isnum(orgasm_prog_amt) ? orgasm_prog_amt : SEX_SPEED_MID
+		else
+			erp_arousal_amt = isnum(s_action) ? s_action : 0
+			erp_pain_amt = isnum(action_initiator) ? action_initiator : 0
+			erp_giving = !!action_target
+			erp_force = isnum(arousal_amt) ? arousal_amt : SEX_FORCE_MID
+			erp_speed = isnum(pain_amt) ? pain_amt : SEX_SPEED_MID
+
+		s_action = null
+		action_initiator = null
+		action_target = null
+		arousal_amt = erp_arousal_amt
+		pain_amt = erp_pain_amt
+		orgasm_prog_amt = max(0.1, erp_arousal_amt * 0.75)
+		giving = erp_giving
+		applied_force = erp_force
+		applied_speed = erp_speed
+		applied_resist = RESIST_NONE
 
 	// Apply multipliers
 	arousal_amt *= get_force_pleasure_multiplier(applied_force, giving)
@@ -448,9 +477,11 @@
 	handle_statuses()
 	//update_erect_state()
 
-/datum/component/arousal/proc/try_ejaculate(datum/sex_action/s_action, mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, giving = FALSE)
+/datum/component/arousal/proc/try_ejaculate(s_action, mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, giving = FALSE)
 	if(orgasm_progress < PASSIVE_EJAC_THRESHOLD)
-		return
+		var/list/erp_links = get_erp_links_for_mob(parent, TRUE)
+		if(!erp_links.len || arousal < PASSIVE_EJAC_THRESHOLD)
+			return
 	if(!can_climax())
 		return
 	ejaculate(s_action, action_initiator, action_target, giving)
@@ -458,18 +489,22 @@
 /datum/component/arousal/proc/manual_orgasm(datum/source)
 	ejaculate()
 
-/datum/component/arousal/proc/ejaculate(datum/sex_action/s_action, mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, giving = FALSE)
+/datum/component/arousal/proc/ejaculate(s_action, mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, giving = FALSE)
 
 	var/mob/living/mob = parent
-	var/list/parent_sessions = return_sessions_with_user(parent)
-	var/datum/sex_session/highest_priority = return_highest_priority_action(parent_sessions, parent)
-	var/datum/sex_action/action
+	var/datum/erp_sex_link/erp_link = null
+	if(!s_action)
+		erp_link = pick_best_erp_link_for_mob(mob, action_target)
+	if(erp_link)
+		var/mob/living/carbon/human/erp_target = get_erp_partner_for_link(erp_link, mob)
+		var/intimate = (!!erp_target && erp_link.climax_target == "inside")
+		after_ejaculation(intimate, mob, erp_target)
+		return
+
+	var/action = null
 
 	if(s_action)
 		action = s_action
-
-	else if(highest_priority)
-		action = highest_priority.current_action
 
 	if(!action_initiator)
 		action_initiator = parent
@@ -504,7 +539,7 @@
 					turf.add_liquid_from_reagents(vag.reagents, amount = femcum_to_take)
 		after_ejaculation(FALSE, mob, null)
 	else
-		var/return_type = action.handle_climax_message(mob, target, must_flip)
+		var/return_type = action:handle_climax_message(mob, target, must_flip)
 		if(!return_type)
 			var/turf/turf = get_turf(mob)
 			if(mob.getorganslot(ORGAN_SLOT_TESTICLES) && mob.getorganslot(ORGAN_SLOT_PENIS))
@@ -523,11 +558,11 @@
 		else
 			handle_climax(action, return_type, mob, target, giving)
 
-		if(action.knot_on_finish) //no idea how to stop other partner from triggering the knotting yet sorry
-			action.try_knot_on_climax(mob, target)
+		if(action:vars["knot_on_finish"]) //no idea how to stop other partner from triggering the knotting yet sorry
+			action:try_knot_on_climax(mob, target)
 
 
-/datum/component/arousal/proc/handle_climax(datum/sex_action/action, climax_type, mob/living/carbon/human/user, mob/living/carbon/human/target, giving)
+/datum/component/arousal/proc/handle_climax(action, climax_type, mob/living/carbon/human/user, mob/living/carbon/human/target, giving)
 	var/obj/item/organ/genitals/filling_organ/testicles/testes
 	var/obj/item/organ/genitals/filling_organ/vagina/vag
 	if(user.getorganslot(ORGAN_SLOT_TESTICLES) && user.getorganslot(ORGAN_SLOT_PENIS))
@@ -545,7 +580,8 @@
 
 	var/is_oral = FALSE
 	if(action)
-		if(action.hole_id == BODY_ZONE_PRECISE_MOUTH || istype(action, /datum/sex_action/cunnilingus))
+		var/hole_id = action:vars["hole_id"]
+		if(hole_id == BODY_ZONE_PRECISE_MOUTH || action:check_sex_lock(user, BODY_ZONE_PRECISE_MOUTH))
 			is_oral = TRUE
 
 	switch(climax_type)
@@ -563,7 +599,7 @@
 				if(vag.reagents)
 					var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
 					turf.add_liquid_from_reagents(vag.reagents, amount = femcum_to_take)
-			if(target && (!action || !action.knot_on_finish))
+			if(target && (!action || !action:vars["knot_on_finish"]))
 				apply_facial_effect(target)
 
 		if(ORGASM_LOCATION_INTO)
@@ -573,7 +609,7 @@
 			if(testes && testes.reagents)
 				var/obj/item/organ/genitals/filling_organ/cameloc
 				if(target && action)
-					switch(action.hole_id)
+					switch(action:vars["hole_id"])
 						if(ORGAN_SLOT_VAGINA)
 							cameloc = target.getorganslot(ORGAN_SLOT_VAGINA)
 						if(ORGAN_SLOT_ANUS)
@@ -592,11 +628,11 @@
 			var/mob/living/carbon/human/played_on = target ? target : user
 			playsound(played_on, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
 			if(target && action)
-				if(user.getorganslot(ORGAN_SLOT_PENIS) && action.check_sex_lock(user, ORGAN_SLOT_PENIS))
+				if(user.getorganslot(ORGAN_SLOT_PENIS) && action:check_sex_lock(user, ORGAN_SLOT_PENIS))
 					if(testes && testes.reagents)
 						var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, min(testes.reagents.total_volume, target.reagents.maximum_volume - target.reagents.total_volume))
 						testes.reagents.trans_to(target, cum_to_take, transfered_by = user, method = INGEST)
-				if(user.getorganslot(ORGAN_SLOT_VAGINA) && action.check_sex_lock(user, ORGAN_SLOT_VAGINA))
+				if(user.getorganslot(ORGAN_SLOT_VAGINA) && action:check_sex_lock(user, ORGAN_SLOT_VAGINA))
 					if(vag && vag.reagents)
 						var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
 						vag.reagents.trans_to(target, femcum_to_take, transfered_by = user, method = INGEST)

@@ -1,13 +1,3 @@
-GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
-
-GLOBAL_LIST_EMPTY(sex_sessions)
-GLOBAL_LIST_EMPTY(sex_collectives)
-GLOBAL_VAR_INIT(collective_counter, 1)
-GLOBAL_LIST_EMPTY(locked_sex_objects)
-
-#define SEX_ACTION(sex_action_type) GLOB.sex_actions[sex_action_type]
-
-
 #define COMSIG_SEX_ADJUST_AROUSAL "sex_adjust_arousal"                  // (amount) - Adjust arousal level
 #define COMSIG_SEX_SET_AROUSAL "sex_set_arousal"                        // (amount) - Set arousal to specific value
 #define COMSIG_SEX_AROUSAL_CHANGED "sex_arosual_change"					// fires to the parent about a change
@@ -41,6 +31,7 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define COMSIG_SEX_CAN_USE_PENIS "sex_can_use_penis"
 /// Checks if user is considered limp. Return: TRUE/FALSE
 #define COMSIG_SEX_CONSIDERED_LIMP "sex_considered_limp"
+#define COMSIG_ERP_GET_LINKS "erp_get_links"
 
 
 #define COMSIG_BODYSTORAGE_TRY_INSERT "hole_try_fit"			// (incoming_item, target_layer, force, override)
@@ -87,6 +78,8 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 
 #define SEX_MANUAL_AROUSAL_MIN 1
 #define SEX_MANUAL_AROUSAL_MAX 4
+
+GLOBAL_LIST_EMPTY(locked_sex_objects)
 
 #define BLUEBALLS_GAIN_THRESHOLD 40
 #define BLUEBALLS_LOOSE_THRESHOLD 35
@@ -254,14 +247,6 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define ORGASM_LOCATION_ONTO "onto"
 #define ORGASM_LOCATION_ORAL "oral"
 #define ORGASM_LOCATION_SELF "self"
-
-/proc/build_sex_actions()
-	. = list()
-	for(var/datum/path as anything in typesof(/datum/sex_action))
-		if(IS_ABSTRACT(path))
-			continue
-		.[path] = new path()
-	return .
 
 
 #define SUBTLE_TAG (1 << 0)
