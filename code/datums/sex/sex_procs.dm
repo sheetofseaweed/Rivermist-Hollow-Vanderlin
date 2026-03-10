@@ -42,6 +42,11 @@
 /mob/living/proc/start_sex_session(mob/living/target, show_ui = TRUE)
 	if(!target)
 		return
+	if(show_ui && client && ishuman(src) && ishuman(target))
+		var/datum/erp_controller/erp_controller = start_erp_session(target)
+		if(erp_controller)
+			return erp_controller
+
 	var/datum/sex_session/old_session = get_sex_session(src, target)
 	if(old_session && !QDELETED(old_session))
 		if(show_ui)

@@ -256,10 +256,19 @@
 
 /datum/preferences/proc/save_erp_preferences(savefile/S)
 	WRITE_FILE(S["erp_preferences"], erp_preferences)
+	WRITE_FILE(S["erp_custom_actions"], erp_custom_actions)
+	WRITE_FILE(S["erp_kink_prefs"], erp_kink_prefs)
+	WRITE_FILE(S["erp_organ_prefs"], erp_organ_prefs)
 
 /datum/preferences/proc/load_erp_preferences(savefile/S)
 	S["erp_preferences"] >> erp_preferences
+	S["erp_custom_actions"] >> erp_custom_actions
+	S["erp_kink_prefs"] >> erp_kink_prefs
+	S["erp_organ_prefs"] >> erp_organ_prefs
 	erp_preferences = SANITIZE_LIST(erp_preferences)
+	erp_custom_actions = SANITIZE_LIST(erp_custom_actions)
+	erp_kink_prefs = SANITIZE_LIST(erp_kink_prefs)
+	erp_organ_prefs = SANITIZE_LIST(erp_organ_prefs)
 	validate_erp_preferences()
 
 /datum/preferences/proc/validate_erp_preferences()
@@ -289,9 +298,19 @@
 			if(!GLOB.available_kinks[kink_name])
 				kink_prefs -= kink_name
 
+	sanitize_erp_custom_actions()
+	sanitize_erp_kink_prefs()
+	sanitize_erp_organ_prefs()
+
 /datum/preferences/proc/setup_default_erp_preferences()
 	if(!erp_preferences)
 		erp_preferences = list()
+	if(!islist(erp_custom_actions))
+		erp_custom_actions = list()
+	if(!islist(erp_kink_prefs))
+		erp_kink_prefs = list()
+	if(!islist(erp_organ_prefs))
+		erp_organ_prefs = list()
 
 	// Set up default values for any missing ERP preferences
 	for(var/pref_type in subtypesof(/datum/erp_preference))
