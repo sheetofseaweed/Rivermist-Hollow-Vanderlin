@@ -3,6 +3,7 @@
  *
  * Proc flow:
  * - OnSpellCast() receives COMSIG_MOB_AFTER_SPELL_CAST.
+ * - EnsureWildSurgeTable() builds the surge table once for the module.
  * - EnsureForbiddenTriggerSpellTypes() builds the local denylist for excluded spells.
  * - CanTriggerWildMagic() filters blocked spells and invalid casters.
  * - HandleWildSurge() async-hands off the surge work out of the signal path.
@@ -31,6 +32,7 @@
 		return ELEMENT_INCOMPATIBLE
 	. = ..()
 
+	EnsureWildSurgeTable()
 	EnsureForbiddenTriggerSpellTypes()
 	RegisterSignal(target, COMSIG_MOB_AFTER_SPELL_CAST, PROC_REF(OnSpellCast))
 	return
@@ -38,6 +40,12 @@
 /datum/element/wild_magic/Detach(datum/source)
 	UnregisterSignal(source, COMSIG_MOB_AFTER_SPELL_CAST)
 	return ..()
+
+/datum/element/wild_magic/proc/EnsureWildSurgeTable()
+	if(length(GLOB.wild_surge_table))
+		return
+
+	GLOB.wild_surge_table = BuildWildSurgeTable()
 
 /datum/element/wild_magic/proc/EnsureForbiddenTriggerSpellTypes()
 	if(forbidden_trigger_spell_types)
@@ -87,6 +95,8 @@
 	DoWildSurge(caster, original_target)
 
 /datum/element/wild_magic/proc/DoWildSurge(mob/living/caster, atom/original_target)
+	EnsureWildSurgeTable()
+
 	if(!length(GLOB.wild_surge_table))
 		return
 
