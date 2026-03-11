@@ -14,7 +14,7 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 
 	L += WildProc("Pink Bubbles",
 		span_danger("Pink bubbles start flying out of \[WILD_CASTER\]'s mouth!"),
-		"surge_mute")
+		TYPE_PROC_REF(/datum/element/wild_magic, surge_mute))
 
 	AddSpell(L,"Flashpowder",
 		span_danger("\[WILD_CASTER\] casts flashpowder!"),
@@ -48,7 +48,7 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 
 	L += WildProc("Mist Form",
 		span_danger("\[WILD_CASTER\]'s body dissolves into drifting mist!"),
-		"surge_mist")
+		TYPE_PROC_REF(/datum/element/wild_magic, surge_mist))
 
 	AddSpell(L,"Ethereal Jaunt",
 		span_danger("\[WILD_CASTER\] flickers and slips partially out of reality!"),
@@ -212,11 +212,11 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 
 	L += WildProc("Cat Form",
 		span_danger("\[WILD_CASTER\]'s body shifts and shrinks into a nimble cat!"),
-		"surge_cat")
+		TYPE_PROC_REF(/datum/element/wild_magic, surge_cat))
 
 	L += WildProc("Crow Form",
 		span_danger("\[WILD_CASTER\]'s body twists and feathers sprout as they become a crow!"),
-		"surge_crow")
+		TYPE_PROC_REF(/datum/element/wild_magic, surge_crow))
 
 	AddSpell(L,"Gravity Crush",
 		span_danger("\[WILD_CASTER\] crushes space around the target!"),
@@ -274,11 +274,11 @@ GLOBAL_LIST_INIT(wild_surge_table, init_wild_surge_table())
 	E.outer_tele_radius = outer
 	return E
 
-/proc/WildProc(name, message, procname)
+/proc/WildProc(name, message, effect_proc)
 	var/datum/wild_surge_entry/E = new
 	E.name = name
 	E.message = message
-	E.effect_proc = procname
+	E.effect_proc = effect_proc
 	return E
 
 /proc/AddSpell(list/L, name, message, spell_type, target_mode, inner=null, outer=null)

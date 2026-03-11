@@ -38,19 +38,33 @@
 /datum/element/wild_magic/proc/OnSpellCast(mob/living/caster, datum/action/cooldown/spell/spell, atom/target)
 	SIGNAL_HANDLER
 
-	if(processing)
-		return
-	if(!caster || QDELETED(caster))
-		return
-	if(!spell || is_type_in_typecache(spell, forbidden_trigger_spell_types))
+	if(!CanTriggerWildMagic(caster, spell))
 		return
 
 	if(!prob(WILD_CHANCE))
 		return
 
 	processing = TRUE
-	DoWildSurge(caster, target)
+	// Keep the spell after-cast signal path cheap and non-blocking.
+	INVOKE_ASYNC(src, PROC_REF(HandleWildSurge), caster, target)
 	addtimer(VARSET_CALLBACK(src, processing, FALSE), WILD_CD)
+
+/datum/element/wild_magic/proc/CanTriggerWildMagic(mob/living/caster, datum/action/cooldown/spell/spell)
+	if(processing)
+		return FALSE
+	if(!caster || QDELETED(caster))
+		return FALSE
+	if(!spell || QDELETED(spell))
+		return FALSE
+	if(is_type_in_typecache(spell, forbidden_trigger_spell_types))
+		return FALSE
+	return TRUE
+
+/datum/element/wild_magic/proc/HandleWildSurge(mob/living/caster, atom/original_target)
+	if(!caster || QDELETED(caster))
+		return
+
+	DoWildSurge(caster, original_target)
 
 /datum/element/wild_magic/proc/DoWildSurge(mob/living/caster, atom/original_target)
 	if(!length(GLOB.wild_surge_table))
@@ -87,12 +101,17 @@
 		caster.visible_message(msg)
 
 	if(E.effect_proc)
-		if(hascall(src, E.effect_proc))
-			call(src, E.effect_proc)(caster, real_target, random_target)
+		RunSurgeEffect(E.effect_proc, caster, real_target, random_target)
 		return
 
 	if(E.spell_type)
 		CastSurgeSpell(E, caster, real_target, random_target)
+
+/datum/element/wild_magic/proc/RunSurgeEffect(effect_proc, mob/living/caster, atom/real_target, mob/living/random_target)
+	if(!effect_proc || !hascall(src, effect_proc))
+		return
+
+	call(src, effect_proc)(caster, real_target, random_target)
 
 /datum/element/wild_magic/proc/CastSurgeSpell(
 	datum/wild_surge_entry/E,
