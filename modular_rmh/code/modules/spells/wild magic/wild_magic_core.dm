@@ -15,15 +15,21 @@
 /datum/action/cooldown/spell/essence/toxic_cleanse/wild_magic
 	charge_required = FALSE
 
-/datum/element/wild_magic
-	element_flags = ELEMENT_DETACH
-	var/processing = FALSE
-	var/static/list/forbidden_trigger_spell_types = typecacheof(list(
+/proc/init_wild_magic_forbidden_trigger_spell_types()
+	return typecacheof(list(
+		// UI and utility spells.
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/learn,
+
+		// Explicit gameplay exclusions.
 		/datum/action/cooldown/spell/enrapture,
 		/datum/action/cooldown/spell/forced_orgasm,
 	))
+
+/datum/element/wild_magic
+	element_flags = ELEMENT_DETACH
+	var/processing = FALSE
+	var/static/list/forbidden_trigger_spell_types = init_wild_magic_forbidden_trigger_spell_types()
 
 /datum/element/wild_magic/Attach(datum/target)
 	if(!isliving(target))
