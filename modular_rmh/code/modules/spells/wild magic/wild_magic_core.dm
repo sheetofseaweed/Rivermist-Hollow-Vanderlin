@@ -1,9 +1,14 @@
-
 /**
  * Wild magic support code.
  *
- * The element attaches to a caster, listens for completed spell casts,
- * rolls one surge from the wild surge table, and executes it safely.
+ * Proc flow:
+ * - OnSpellCast() receives COMSIG_MOB_AFTER_SPELL_CAST.
+ * - CanTriggerWildMagic() filters blocked spells and invalid casters.
+ * - HandleWildSurge() async-hands off the surge work out of the signal path.
+ * - DoWildSurge() picks one entry from the surge table.
+ * - RunSurgeEntry() routes the entry into either an effect proc or a spell cast.
+ * - CastSurgeSpell() prepares the spell, resolves a safe target, then async-casts it.
+ *
  * The local spell subtypes below are wrappers used by surge-only casts.
  */
 /datum/action/cooldown/spell/undirected/teleport/radius_turf/wild_magic
