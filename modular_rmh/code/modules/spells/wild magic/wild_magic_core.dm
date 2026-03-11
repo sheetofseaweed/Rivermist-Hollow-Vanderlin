@@ -3,6 +3,7 @@
  *
  * Proc flow:
  * - OnSpellCast() receives COMSIG_MOB_AFTER_SPELL_CAST.
+ * - EnsureForbiddenTriggerSpellTypes() builds the local denylist for excluded spells.
  * - CanTriggerWildMagic() filters blocked spells and invalid casters.
  * - HandleWildSurge() async-hands off the surge work out of the signal path.
  * - DoWildSurge() picks one entry from the surge table.
@@ -20,8 +21,29 @@
 /datum/action/cooldown/spell/essence/toxic_cleanse/wild_magic
 	charge_required = FALSE
 
-/proc/init_wild_magic_forbidden_trigger_spell_types()
-	return typecacheof(list(
+/datum/element/wild_magic
+	element_flags = ELEMENT_DETACH
+	var/processing = FALSE
+	var/static/list/forbidden_trigger_spell_types
+
+/datum/element/wild_magic/Attach(datum/target)
+	if(!isliving(target))
+		return ELEMENT_INCOMPATIBLE
+	. = ..()
+
+	EnsureForbiddenTriggerSpellTypes()
+	RegisterSignal(target, COMSIG_MOB_AFTER_SPELL_CAST, PROC_REF(OnSpellCast))
+	return
+
+/datum/element/wild_magic/Detach(datum/source)
+	UnregisterSignal(source, COMSIG_MOB_AFTER_SPELL_CAST)
+	return ..()
+
+/datum/element/wild_magic/proc/EnsureForbiddenTriggerSpellTypes()
+	if(forbidden_trigger_spell_types)
+		return
+
+	forbidden_trigger_spell_types = typecacheof(list(
 		// UI and utility spells.
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/learn,
@@ -30,23 +52,6 @@
 		/datum/action/cooldown/spell/enrapture,
 		/datum/action/cooldown/spell/forced_orgasm,
 	))
-
-/datum/element/wild_magic
-	element_flags = ELEMENT_DETACH
-	var/processing = FALSE
-	var/static/list/forbidden_trigger_spell_types = init_wild_magic_forbidden_trigger_spell_types()
-
-/datum/element/wild_magic/Attach(datum/target)
-	if(!isliving(target))
-		return ELEMENT_INCOMPATIBLE
-	. = ..()
-
-	RegisterSignal(target, COMSIG_MOB_AFTER_SPELL_CAST, PROC_REF(OnSpellCast))
-	return
-
-/datum/element/wild_magic/Detach(datum/source)
-	UnregisterSignal(source, COMSIG_MOB_AFTER_SPELL_CAST)
-	return ..()
 
 /datum/element/wild_magic/proc/OnSpellCast(mob/living/caster, datum/action/cooldown/spell/spell, atom/target)
 	SIGNAL_HANDLER
@@ -63,6 +68,8 @@
 	addtimer(VARSET_CALLBACK(src, processing, FALSE), WILD_CD)
 
 /datum/element/wild_magic/proc/CanTriggerWildMagic(mob/living/caster, datum/action/cooldown/spell/spell)
+	EnsureForbiddenTriggerSpellTypes()
+
 	if(processing)
 		return FALSE
 	if(!caster || QDELETED(caster))
