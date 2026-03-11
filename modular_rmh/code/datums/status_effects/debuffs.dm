@@ -160,17 +160,14 @@
 	stress_change = -3
 
 /datum/status_effect/debuff/nympho_addiction/on_apply()
-	owner.add_stress(/datum/stress_event/nympho_addiction)
-	. = ..()
-
-/datum/status_effect/debuff/nympho_addiction/on_remove()
-	owner.remove_stress(/datum/stress_event/nympho_addiction)
-	. = ..()
-
-/datum/status_effect/debuff/nympho_addiction/on_apply()
 	. = ..()
 	var/mob/living/carbon/human/human = owner
 	human.add_quirk(/datum/quirk/vice/lovefiend)
+	owner.add_stress(/datum/stress_event/nympho_addiction)
+
+/datum/status_effect/debuff/nympho_addiction/on_remove()
+	. = ..()
+	owner.remove_stress(/datum/stress_event/nympho_addiction)
 
 /atom/movable/screen/alert/status_effect/debuff/nympho_addiction
 	name = "Addicted to Sex"

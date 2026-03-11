@@ -17,7 +17,7 @@
 /obj/item/organ/genitals/penis/Initialize()
 	. = ..()
 
-/obj/item/organ/genitals/penis/Insert(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/penis/Insert(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	RegisterSignal(M, COMSIG_SEX_AROUSAL_CHANGED, PROC_REF(on_arousal_changed), TRUE)
 	RegisterSignal(M, COMSIG_SET_ERECT_STATE, PROC_REF(set_hard), TRUE)
@@ -25,7 +25,7 @@
 		M.AddComponent(/datum/component/knotting)
 	add_bodystorage(M, null, /datum/component/body_storage/penis)
 
-/obj/item/organ/genitals/penis/Remove(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/penis/Remove(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	UnregisterSignal(M, COMSIG_SEX_AROUSAL_CHANGED)
 	UnregisterSignal(M, COMSIG_SET_ERECT_STATE)
@@ -34,6 +34,15 @@
 	var/datum/component/body_storage/penis/comp = GetComponent(/datum/component/body_storage/penis)
 	comp?.RemoveComponent()
 	qdel(comp)
+
+/obj/item/organ/genitals/penis/get_availability(datum/species/owner_species, mob/living/C, datum/preferences/pref_load)
+	if(issimple(C))
+		return C.gender == MALE
+	else
+		if(pref_load)
+			return pref_load.get_customizer_entry_of_type(/datum/customizer_entry/organ/genitals/penis)
+		else
+			return C.gender == MALE
 
 /obj/item/organ/genitals/penis/proc/on_arousal_changed()
 	var/list/arousal_data = list()
@@ -69,10 +78,12 @@
 	else
 		erect_state = new_state
 	if(oldstate != erect_state && owner)
-		owner.update_body_parts(TRUE)
+		if(iscarbon(owner))
+			var/mob/living/carbon/carbon_owner = owner
+			carbon_owner.update_body_parts()
 
 
-/obj/item/organ/genitals/penis/proc/create_fake_variant(mob/living/carbon/human/user)
+/obj/item/organ/genitals/penis/proc/create_fake_variant(mob/living/user)
 	var/obj/item/penis_fake/fake = new()
 	fake.copy_properties_from(src)
 	fake.set_original_owner(user)
@@ -105,12 +116,12 @@
 	body_storage_bulk = source.body_storage_bulk
 	name = "[source.name]"
 
-/obj/item/penis_fake/proc/set_original_owner(mob/living/carbon/human/owner)
+/obj/item/penis_fake/proc/set_original_owner(mob/living/owner)
 	if(owner?.ckey)
 		original_owner_ckey = owner.ckey
 		original_owner_name = owner.real_name || owner.name
 
-/obj/item/penis_fake/proc/is_owned_by(mob/living/carbon/human/user)
+/obj/item/penis_fake/proc/is_owned_by(mob/living/user)
 	if(!user?.ckey)
 		return FALSE
 	return user.ckey == original_owner_ckey

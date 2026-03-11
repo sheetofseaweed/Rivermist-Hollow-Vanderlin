@@ -139,9 +139,9 @@
 			owner.emote("rage", forced = TRUE)
 			to_chat(owner, span_userdanger("The family curse fills you with rage!"))
 			if(owner.get_active_held_item())
-				victim.attacked_by(owner.get_active_held_item(), owner)
+				INVOKE_ASYNC(victim, TYPE_PROC_REF(/atom, attacked_by), owner.get_active_held_item(), owner)
 			else
-				victim.attacked_by(owner, owner)
+				INVOKE_ASYNC(victim, TYPE_PROC_REF(/atom, attacked_by), owner, owner)
 			found_target = TRUE
 			break
 
@@ -202,7 +202,7 @@
 			var/obj/item/target_food = pick(nearby_food)
 			if(owner.put_in_active_hand(target_food))
 				to_chat(owner, span_userdanger("The family curse compels me to consume this!"))
-				target_food.attack(owner, owner)
+				INVOKE_ASYNC(target_food, TYPE_PROC_REF(/obj/item, attack), owner, owner)
 		else
 			if(!owner.has_stress_type(/datum/stress_event/cursed_hunger))
 				to_chat(owner, span_userdanger("I hunger for anything to satisfy this cursed bloodline!"))

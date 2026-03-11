@@ -55,7 +55,7 @@
 	/// Picks able to be used
 	var/list/lockpicks = list(/obj/item/lockpick)
 	/// Wedges able to be used
-	var/list/wedges = list(/obj/item/weapon/knife/dagger, /obj/item/lockpick) //when we add more thieves tools check this
+	var/list/wedges = list(/obj/item/weapon/knife, /obj/item/lockpick) //when we add more thieves tools check this
 	/// Can we be picked
 	var/pickable = TRUE
 	/// Requires left/right inputs for key turning

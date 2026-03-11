@@ -22,7 +22,7 @@
 	var/obj/item/the_wedge = get_inactive_held_item()
 
 	if(!is_type_in_list(the_wedge, wedges))
-		to_chat(src, span_notice("I need a wedge in order to lockpick \the [P]."))
+		to_chat(src, span_notice("I need a knife in order to lockpick \the [P]."))
 		return FALSE
 
 	client.spawn_lockpicking_UI(P, src, L, the_wedge, difficulty, KL.get_string_difficulty(), get_skill_level(/datum/skill/misc/lockpicking))

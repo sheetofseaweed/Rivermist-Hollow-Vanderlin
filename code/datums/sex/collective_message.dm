@@ -29,8 +29,11 @@
 
 /datum/collective_message/proc/update_display_name()
 	var/list/names = list()
-	for(var/mob/living/carbon/human/person in involved_mobs)
-		var/display_name = person.get_face_name() || person.name
+	for(var/mob/living/person in involved_mobs)
+		var/display_name = person.name
+		if(ishuman(person))
+			var/mob/living/carbon/human/human_person = person
+			display_name = human_person.get_face_name() || person.name
 		names += display_name
 
 	collective_display_name = jointext(names, " & ")

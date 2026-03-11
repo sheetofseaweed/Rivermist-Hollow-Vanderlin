@@ -17,6 +17,7 @@
 	background_track_dusk = 'modular_rmh/sound/music/area/desert_dusk.ogg'
 	background_track_night = 'modular_rmh/sound/music/area/desert_night.ogg'
 	converted_type = /area/indoors/shelter/rmh_desert
+	threat_region = THREAT_REGION_RMH_DESERT
 	//deathsight_message = "somewhere far in sands"
 
 /area/outdoors/rmh_desert/valley

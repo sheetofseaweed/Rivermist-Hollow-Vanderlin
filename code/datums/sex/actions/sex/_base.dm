@@ -8,5 +8,10 @@
 	user_priority = 100
 	target_priority = 0
 
-/datum/sex_action/sex/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(user, ORGAN_SLOT_PENIS)
+
+/datum/sex_action/generic
+
+/datum/sex_action/generic/shows_on_menu(mob/living/user, mob/living/target)
+	return FALSE

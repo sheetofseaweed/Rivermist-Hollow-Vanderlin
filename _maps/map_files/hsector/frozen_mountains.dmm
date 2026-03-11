@@ -975,6 +975,10 @@
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
 /turf/open/floor/herringbone,
 /area/indoors/cave/rmh_dwarf_keep/grand)
+"es" = (
+/obj/effect/landmark/quest_spawner/hard,
+/turf/open/floor/snow,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "et" = (
 /obj/structure/fluff/clock{
 	pixel_x = -4
@@ -1575,6 +1579,10 @@
 /obj/item/natural/stone,
 /turf/open/floor/snow/rough,
 /area/outdoors/mountains/rmh_mountains/frozen)
+"gO" = (
+/obj/effect/landmark/quest_spawner/medium,
+/turf/open/floor/snow,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "gP" = (
 /obj/structure/toilet,
 /turf/open/floor/wood,
@@ -1836,6 +1844,10 @@
 "hM" = (
 /turf/open/floor/snow/patchy,
 /area/outdoors/mountains/rmh_mountains)
+"hN" = (
+/obj/effect/landmark/quest_spawner,
+/turf/open/floor/naturalstone,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "hO" = (
 /obj/structure/table/wood{
 	dir = 1;
@@ -3479,6 +3491,10 @@
 	},
 /turf/open/floor/woodturned,
 /area/under/town/basement/keep)
+"oM" = (
+/obj/effect/landmark/quest_spawner/medium,
+/turf/open/floor/snow/rough,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "oO" = (
 /turf/closed/wall/mineral/decostone/cand,
 /area/indoors/cave/rmh_dwarf_keep/entrance)
@@ -3933,6 +3949,10 @@
 	},
 /turf/open/openspace,
 /area/outdoors/rmh_air)
+"qO" = (
+/obj/structure/underworld/barrier,
+/turf/closed/wall/mineral/stonebrick,
+/area/under/rmh_bedrock)
 "qP" = (
 /obj/machinery/light/fueled/hearth{
 	icon_state = "hearth0"
@@ -4528,6 +4548,10 @@
 	icon_state = "chess"
 	},
 /area/indoors/town/keep)
+"ts" = (
+/obj/structure/underworld/barrier,
+/turf/open/floor/metal,
+/area/outdoors/exposed/rmh/manorgarri)
 "tt" = (
 /turf/open/floor/herringbone,
 /area/indoors/cave/rmh_dwarf_keep/treasury)
@@ -5853,6 +5877,10 @@
 /obj/item/instrument/lute,
 /turf/open/floor/wood,
 /area/under/town/basement/keep)
+"yV" = (
+/obj/effect/landmark/quest_spawner,
+/turf/open/floor/cobblerock,
+/area/indoors/cave/rmh_cave/cold)
 "yW" = (
 /turf/closed/wall/mineral/wooddark/end{
 	dir = 8
@@ -8181,6 +8209,10 @@
 /obj/structure/fluff/statue/knight,
 /turf/open/floor/concrete,
 /area/indoors/cave/rmh_dwarf_keep/grand)
+"Jv" = (
+/obj/effect/landmark/quest_spawner/hard,
+/turf/open/floor/snow,
+/area/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "Jw" = (
 /obj/structure/flora/grass{
 	color = "#4dc6eb"
@@ -8722,6 +8754,10 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock/snow,
 /area/outdoors/exposed/rmh_dwarf_keep)
+"LJ" = (
+/obj/effect/landmark/quest_spawner,
+/turf/open/floor/naturalstone,
+/area/indoors/cave/rmh_cave/cold)
 "LK" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor,
 /turf/open/floor/metal/barograte,
@@ -11699,6 +11735,10 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/volcanic,
 /area/outdoors/exposed/rmh_dwarf_keep)
+"Yy" = (
+/obj/effect/landmark/quest_spawner,
+/turf/open/floor/snow,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "Yz" = (
 /obj/structure/flora/ausbushes/ppflowers,
 /obj/structure/flora/ausbushes/ppflowers,
@@ -56579,19 +56619,19 @@ bH
 bH
 bH
 bH
-xC
-xC
-xC
-xC
-xC
-ru
-ru
-ru
-xC
-xC
-xC
-xC
-xC
+qO
+qO
+qO
+qO
+qO
+ts
+ts
+ts
+qO
+qO
+qO
+qO
+qO
 bH
 bH
 bH
@@ -56972,7 +57012,7 @@ xC
 xC
 xC
 ao
-WO
+hN
 WO
 xC
 xC
@@ -58828,7 +58868,7 @@ wD
 AN
 QL
 QL
-QL
+es
 QL
 AN
 wD
@@ -60428,7 +60468,7 @@ lY
 Sk
 vE
 vE
-vE
+Jv
 vE
 Oz
 Oz
@@ -65135,7 +65175,7 @@ QL
 Wb
 QD
 Gb
-QL
+es
 QL
 QL
 QL
@@ -67225,7 +67265,7 @@ Jm
 oK
 oK
 Jm
-Jm
+yV
 oK
 bH
 bH
@@ -69284,7 +69324,7 @@ zg
 QL
 QL
 QL
-AN
+oM
 AN
 AN
 AN
@@ -70327,7 +70367,7 @@ bH
 bH
 oK
 vA
-SZ
+LJ
 oK
 oK
 bH
@@ -71778,7 +71818,7 @@ QL
 AN
 FU
 AN
-QL
+gO
 QL
 QL
 QL
@@ -73644,7 +73684,7 @@ DX
 QL
 QL
 QL
-QL
+Yy
 LM
 LM
 QL
@@ -76353,7 +76393,7 @@ QL
 QL
 QL
 QL
-QL
+gO
 QL
 QL
 Wr
@@ -77088,7 +77128,7 @@ bH
 bH
 oK
 oK
-oK
+SZ
 oK
 JN
 JN

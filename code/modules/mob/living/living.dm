@@ -30,8 +30,8 @@
 	//for organ spawning
 	if(ai_controller)
 		var/datum/ai_planning_subtree/horny/hornybehavior = locate() in ai_controller.planning_subtrees
-		if(hornybehavior)
-			addtimer(CALLBACK(src, PROC_REF(give_genitals)), 1)
+		if(hornybehavior && !GetComponent(/datum/component/arousal))
+			AddComponent(/datum/component/arousal)
 
 /mob/living/Destroy()
 	if(FACTION_MATTHIOS in faction)
@@ -1722,7 +1722,7 @@
 /mob/living/proc/resist_fire()
 	return
 
-/mob/living/proc/resist_restraints()
+/mob/living/proc/resist_restraints(instant = FALSE)
 	return
 
 /mob/living/proc/get_visible_name()

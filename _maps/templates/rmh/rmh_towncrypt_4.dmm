@@ -1,0 +1,205 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"g" = (
+/obj/structure/closet/crate/chest/old_crate,
+/obj/item/ingot/thaumic,
+/obj/item/ingot/thaumic,
+/obj/item/ingot/thaumic,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"h" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_poisons,
+/obj/effect/spawner/map_spawner/loot/potion_vitals,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"i" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"k" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_poisons,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"l" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/textbook/journeyman/alchemy,
+/obj/effect/decal/cleanable/dirt/paper,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"m" = (
+/obj/structure/closet/crate/chest/old_crate,
+/obj/item/mana_battery/mana_crystal/standard,
+/obj/item/mana_battery/mana_crystal/standard,
+/obj/item/mana_battery/mana_crystal/small,
+/obj/item/mana_battery/mana_crystal/small,
+/obj/item/mana_battery/mana_crystal/small,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"q" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/stone,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"t" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"v" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/stoneblock,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"w" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/stone,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"x" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"y" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/rock/cinnabar,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"z" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"A" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/stone,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"B" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"D" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"E" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/dirt/paper{
+	dir = 1
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"F" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"G" = (
+/obj/machinery/tanningrack,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"J" = (
+/obj/structure/closet/crate/chest/wicker,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"K" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_stats,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"L" = (
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"N" = (
+/obj/structure/rack,
+/obj/effect/spawner/map_spawner/loot/dungeon/tools,
+/obj/effect/spawner/map_spawner/loot/dungeon/tools,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"P" = (
+/obj/item/natural/stoneblock,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"Q" = (
+/obj/structure/closet/crate/chest/old_crate,
+/obj/item/natural/glass,
+/obj/item/natural/glass,
+/obj/item/natural/glass,
+/obj/item/natural/glass,
+/obj/item/natural/glass,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"W" = (
+/obj/structure/closet/crate/chest/wicker,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"Y" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+
+(1,1,1) = {"
+Y
+A
+a
+Q
+D
+h
+a
+"}
+(2,1,1) = {"
+v
+i
+P
+L
+E
+l
+w
+"}
+(3,1,1) = {"
+G
+x
+t
+N
+J
+v
+z
+"}
+(4,1,1) = {"
+K
+y
+x
+F
+B
+B
+g
+"}
+(5,1,1) = {"
+k
+F
+W
+Y
+m
+q
+B
+"}

@@ -36,7 +36,6 @@
 		TRAIT_NOSEGRAB,
 		TRAIT_NUTCRACKER,
 		TRAIT_DRUNKMASTER
-
 	)
 
 	spells = list(
@@ -63,7 +62,7 @@
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	beltr = null
 	ring = null
-	l_hand = null
+	l_hand = /obj/item/weapon/knuckles
 	r_hand = null
 
 	backpack_contents = list(

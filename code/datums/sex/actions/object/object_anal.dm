@@ -24,7 +24,7 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/object_fuck/object_anal/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/object_fuck/object_anal/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/obj/item/dildo = user.get_active_held_item()
@@ -42,7 +42,7 @@
 	user.visible_message(span_warning("[user] stuffs \the [dildo] in their ass..."))
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
-/datum/sex_action/object_fuck/object_anal/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/object_fuck/object_anal/on_perform(mob/living/user, mob/living/target)
 	var/pain_amt = 3 //base pain amt to use
 	var/obj/item/dildo = user.get_active_held_item()
 
@@ -77,9 +77,9 @@
 	sex_session.perform_sex_action(user, target, 2, pain_amt, 2, src)
 	sex_session.handle_passive_ejaculation()
 
-/datum/sex_action/object_fuck/object_anal/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/object_fuck/object_anal/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	user.visible_message(span_love("[user] cums with their ass!"))
-	user.virginity = FALSE
+	user.lose_virginity()
 	return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_anal/on_finish(mob/living/user, mob/living/target)

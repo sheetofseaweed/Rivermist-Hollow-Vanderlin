@@ -27,14 +27,14 @@
 /mob/proc/getorganszone(zone, subzones = FALSE)
 	return
 
-/mob/living/carbon/getorgan(typepath)
+/mob/living/getorgan(typepath)
 	return (locate(typepath) in internal_organs)
 
-/mob/living/carbon/getorganslot(slot)
+/mob/living/getorganslot(slot)
 	RETURN_TYPE(/obj/item/organ)
 	return internal_organs_slot[slot]
 
-/mob/living/carbon/getorganszone(zone, subzones = FALSE)
+/mob/living/getorganszone(zone, subzones = FALSE)
 	var/list/returnorg = list()
 	if(subzones)
 		var/obj/item/bodypart/bodypart = get_bodypart(zone)

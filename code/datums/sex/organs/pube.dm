@@ -5,11 +5,11 @@
 	name = "pube"
 	altnames = list("pelvis", "pubes") //used in thought messages.
 
-/obj/item/organ/genitals/pubes/Insert(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/pubes/Insert(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	add_bodystorage(M, null, /datum/component/body_storage/pubes)
 
-/obj/item/organ/genitals/pubes/Remove(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/pubes/Remove(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	var/datum/component/body_storage/pubes/comp = GetComponent(/datum/component/body_storage/pubes)
 	comp?.RemoveComponent()

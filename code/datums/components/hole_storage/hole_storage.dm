@@ -92,6 +92,7 @@
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_IS_ITEM_TYPE_IN, PROC_REF(check_item_type_in_layer))
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_GET_2D_ITEM_LIST, PROC_REF(return_2d_list))
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_UPDATE_SIZE, PROC_REF(update_size))
+	RegisterSignal(parent, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, PROC_REF(find_item_layer))
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, PROC_REF(rand_item_layer_swap))
 
 /datum/component/body_storage/UnregisterFromParent()
@@ -108,6 +109,7 @@
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_IS_ITEM_TYPE_IN)
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_GET_2D_ITEM_LIST)
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_UPDATE_SIZE)
+	UnregisterSignal(parent, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER)
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND)
 
 /datum/component/body_storage/Destroy()
@@ -131,20 +133,20 @@
 
 /**
  * Inserts an item into a hole
- * @param incoming_item - The incoming item
+ * @param incoming_item - The incsoming item
  * @param target_layer - The storage layer where we should put the item in
 */
 /datum/component/body_storage/proc/insert_in_storage(datum/source, obj/item/incoming_item, target_layer)
 	if(iscarbon(incoming_item.loc))
 		var/mob/living/carbon/M = incoming_item.loc
 		M.dropItemToGround(incoming_item, FALSE, TRUE)
-	organ_storing.contents += incoming_item
+	organ_storing.contents |= incoming_item
 	incoming_item.forceMove(organ_storing)
 	var/list/t_layer = all_layers[target_layer]
 	t_layer.Add(incoming_item)
 	layer_storage_cur_bulk[target_layer] += incoming_item.body_storage_bulk
 	var/diff = layer_storage_cur_bulk[target_layer] - layer_storage_max_bulk[target_layer]
-	if(incoming_item.has_body_storage_overlay)
+	if(incoming_item.has_body_storage_overlay && incoming_item.bstorage_visible_layer == target_layer)
 		apply_outer_overlay(incoming_item)
 	if(diff > 0)
 		handle_stretch(source, diff)
@@ -312,7 +314,7 @@
 	for(var/list in available_layers)
 		for(var/el in all_layers[list])
 			if(el == t_item)
-				return TRUE
+				return list
 	return null
 
 /**
@@ -323,7 +325,10 @@
 	if(!i_item)
 		return
 
-	var/mutable_appearance/item_overlay = mutable_appearance(i_item.mob_overlay_icon, i_item.icon_state, -BODY_LAYER)
+	var/icon = i_item.storage_overlay_icon ? i_item.storage_overlay_icon : i_item.mob_overlay_icon
+	var/state = i_item.storage_icon_state ? i_item.storage_icon_state : i_item.icon_state
+
+	var/mutable_appearance/item_overlay = mutable_appearance(icon, state, -BODY_LAYER)
 
 	owner.add_overlay(item_overlay)
 	outer_overlays[i_item] = item_overlay

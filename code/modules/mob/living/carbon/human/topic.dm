@@ -119,6 +119,21 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 			L.remove_bandage()
 			usr.put_in_hands(I)
 
+	if(href_list["leech"]) //canUseTopic check for this is handled by mob/Topic()
+		var/obj/item/organ/genitals/gen = locate(href_list["organ"]) in internal_organs
+		var/obj/item/natural/worms/leech/invader = locate(href_list["leech"]) in gen.contents
+
+		if(do_after(usr, 2 SECONDS, src) )
+			if(QDELETED(invader))
+				return
+			if(prob(75))
+				SEND_SIGNAL(src, COMSIG_SEX_ADJUST_AROUSAL, rand(2, 6))
+				invader.horny_leech_unattach(src, gen, STORAGE_LAYER_OUTER)
+				to_chat(usr, span_info("I yank off the leech."))
+			else
+				SEND_SIGNAL(src, COMSIG_SEX_ADJUST_AROUSAL, rand(4, 12))
+				to_chat(usr, span_warn("I fail to take off the leech!"))
+
 	if(href_list["item"]) //canUseTopic check for this is handled by mob/Topic()
 		var/slot = text2num(href_list["item"])
 		var/list/obscured = check_obscured_slots(TRUE)

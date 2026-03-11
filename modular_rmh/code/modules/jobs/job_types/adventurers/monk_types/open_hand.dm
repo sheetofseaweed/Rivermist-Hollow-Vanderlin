@@ -32,7 +32,7 @@
 		TRAIT_DODGEEXPERT,
 		TRAIT_STEELHEARTED,
 		TRAIT_CRITICAL_RESISTANCE,
-		TRAIT_NUTCRACKER,
+		TRAIT_NUTCRACKER
 	)
 
 	spells = list(
@@ -60,7 +60,7 @@
 	beltr = /obj/item/storage/belt/pouch/coins/poor
 	beltr = null
 	ring = null
-	l_hand = null
+	l_hand = /obj/item/weapon/knuckles
 	r_hand = null
 
 	backpack_contents = list(

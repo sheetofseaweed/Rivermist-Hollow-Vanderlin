@@ -1,7 +1,7 @@
 /obj/item/organ
 	name = "organ"
 	icon = 'icons/obj/surgery.dmi'
-	var/mob/living/carbon/owner = null
+	var/mob/living/owner = null
 	var/status = ORGAN_ORGANIC
 	w_class = WEIGHT_CLASS_SMALL
 	throwforce = 0
@@ -35,7 +35,7 @@
 	/// What food typepath should be used when eaten
 	var/food_type = /obj/item/reagent_containers/food/snacks/meat/organ
 	/// Original owner of the organ, the one who had it inside them last
-	var/mob/living/carbon/last_owner = null
+	var/mob/living/last_owner = null
 
 	// For stretching of the body storages
 	var/stretchable = FALSE
@@ -105,8 +105,8 @@
 	for(var/mutable_appearance/node_overlay in organ.overlay_states)
 		. += node_overlay
 
-/obj/item/organ/proc/Insert(mob/living/carbon/M, special = 0, drop_if_replaced = TRUE)
-	if(!iscarbon(M) || owner == M)
+/obj/item/organ/proc/Insert(mob/living/M, special = 0, drop_if_replaced = TRUE)
+	if(!M || owner == M)
 		return
 
 	var/obj/item/organ/replaced = M.getorganslot(slot)
@@ -127,9 +127,12 @@
 		A.Grant(M)
 	update_accessory_colors()
 	STOP_PROCESSING(SSobj, src)
+	if(visible_organ && iscarbon(M))
+		var/mob/living/carbon/carbon_owner = M
+		carbon_owner.update_body_parts()
 
 //Special is for instant replacement like autosurgeons
-/obj/item/organ/proc/Remove(mob/living/carbon/M, special = FALSE, drop_if_replaced = TRUE)
+/obj/item/organ/proc/Remove(mob/living/M, special = FALSE, drop_if_replaced = TRUE)
 	SEND_SIGNAL(src, COMSIG_ORGAN_REMOVED, M)
 	owner = null
 	if(M)
@@ -140,8 +143,9 @@
 			M.death()
 	for(var/datum/action/A as anything in actions)
 		A.Remove(M)
-	if(visible_organ)
-		M.update_body_parts(TRUE)
+	if(visible_organ && iscarbon(M))
+		var/mob/living/carbon/carbon_owner = M
+		carbon_owner.update_body_parts()
 	update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/organ/proc/on_find(mob/living/finder)

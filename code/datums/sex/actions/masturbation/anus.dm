@@ -1,12 +1,12 @@
 /datum/sex_action/masturbate/anus
 	name = "Finger butt"
 
-/datum/sex_action/masturbate/anus/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/anus/shows_on_menu(mob/living/user, mob/living/target)
 	if(user != target)
 		return FALSE
 	return TRUE
 
-/datum/sex_action/masturbate/anus/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/anus/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -18,11 +18,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/masturbate/anus/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/anus/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] starts fingering [user.p_their()] butt..."))
 
-/datum/sex_action/masturbate/anus/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/anus/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message())
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fingers [user.p_their()] butt..."))
@@ -31,6 +31,6 @@
 	sex_session.perform_sex_action(user, user, 2, 6, 2, src)
 	sex_session.handle_passive_ejaculation()
 
-/datum/sex_action/masturbate/anus/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/anus/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops fingering [user.p_their()] butt."))

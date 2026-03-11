@@ -69,7 +69,7 @@
 		/datum/language/orcish
 	)
 
-/datum/outfit/town_scholar/librarian
+/datum/outfit/town_scholar_apprentice/librarian
 	name = "Librarian"
 	head = null
 	mask = /obj/item/clothing/face/spectacles

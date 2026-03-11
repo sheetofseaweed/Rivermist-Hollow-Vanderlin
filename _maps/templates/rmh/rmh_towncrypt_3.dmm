@@ -1,0 +1,207 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/effect/decal/cleanable/dirt/paper,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"e" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/r,
+/obj/item/trash/candle,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"f" = (
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"h" = (
+/obj/structure/fluff/walldeco/vinez/l,
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/rock/mana_crystal,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"i" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"k" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/statue/gargoyle/candles,
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"n" = (
+/obj/item/trash/candle,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"q" = (
+/obj/structure/fluff/walldeco/vinez/l,
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/statue/gargoyle/candles,
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"r" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"s" = (
+/obj/item/candle/skull/darkskull/lit,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"t" = (
+/obj/structure/fluff/walldeco/vinez/offset,
+/obj/item/recipe_book/underworld,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"w" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"y" = (
+/obj/item/textbook/journeyman/mathematics,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"z" = (
+/obj/item/natural/rock/mana_crystal,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"A" = (
+/obj/structure/fluff/walldeco/vinez/r,
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"B" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/book/granter/spellbook/expert,
+/obj/item/natural/rock/random_ore,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"D" = (
+/obj/effect/decal/cleanable/dirt/paper{
+	dir = 1
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"E" = (
+/obj/effect/decal/cleanable/roguerune/arcyne/leylines,
+/turf/open/floor/greenstone/runed,
+/area/under/town/rmh/basement)
+"F" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/offset{
+	pixel_y = -32
+	},
+/obj/effect/decal/cleanable/dirt/paper{
+	dir = 8
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"I" = (
+/obj/item/natural/stoneblock,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"O" = (
+/obj/structure/fluff/walldeco/vinez/r,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"R" = (
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"S" = (
+/obj/item/fertilizer/ash,
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/l,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"T" = (
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"U" = (
+/obj/structure/fluff/walldeco/vinez/offset{
+	pixel_y = -32
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"W" = (
+/obj/structure/fluff/walldeco/vinez/r,
+/obj/structure/fluff/statue/gargoyle/candles,
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"X" = (
+/obj/effect/decal/cleanable/dirt/paper{
+	dir = 4
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"Y" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/offset{
+	pixel_y = -32
+	},
+/obj/item/recipe_book/arcyne,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"Z" = (
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+
+(1,1,1) = {"
+q
+h
+a
+T
+w
+S
+Y
+"}
+(2,1,1) = {"
+I
+f
+Z
+Z
+n
+T
+F
+"}
+(3,1,1) = {"
+t
+r
+i
+E
+Z
+z
+k
+"}
+(4,1,1) = {"
+D
+s
+i
+Z
+Z
+X
+U
+"}
+(5,1,1) = {"
+W
+O
+B
+e
+A
+R
+y
+"}

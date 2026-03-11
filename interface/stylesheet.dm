@@ -80,6 +80,7 @@ h1.alert, h2.alert	{color: #c9c1ba;font-family: Mookmania, TrueType;}
 .boldred				{color: #b84d47;	font-weight: bold;}
 .blue					{color: #6a8cb7;}
 .lightpurple			{color: #967aaf;}
+.lightpurple			{color: #967aaf;}
 .nicegreen				{color: #9bccd0;}
 .cult					{color: #960000;}
 .narsie					{color: #960000;	font-weight: bold;	font-size: 12;}

@@ -1,0 +1,221 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobble,
+/area)
+"b" = (
+/obj/effect/decal/cleanable/blood/gibs/up,
+/turf/open/floor/cobblerock,
+/area)
+"c" = (
+/obj/structure/circle_protection{
+	pixel_x = -16;
+	pixel_y = -16
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/dreamfiend_ichor/huge,
+/turf/open/floor/cobblerock,
+/area)
+"d" = (
+/obj/item/trash/candle{
+	pixel_x = 20;
+	pixel_y = 7
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area)
+"e" = (
+/obj/effect/decal/cleanable/blood/tracks,
+/turf/open/floor/cobblerock,
+/area)
+"h" = (
+/obj/effect/decal/cobbleedge{
+	pixel_y = 0;
+	dir = 9
+	},
+/turf/open/floor/cobblerock,
+/area)
+"i" = (
+/obj/effect/decal/cobbleedge{
+	dir = 6;
+	pixel_y = 0
+	},
+/obj/item/alch/airdust,
+/turf/open/floor/cobblerock,
+/area)
+"j" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/fairydust,
+/turf/open/floor/cobble,
+/area)
+"l" = (
+/obj/effect/decal/cleanable/blood/gibs/old{
+	pixel_y = -10;
+	pixel_x = 4
+	},
+/obj/effect/decal/cobbleedge{
+	dir = 2;
+	pixel_y = 0
+	},
+/obj/item/natural/fairydust,
+/turf/open/floor/cobblerock,
+/area)
+"m" = (
+/obj/item/weapon/knife/dagger/steel/dirk,
+/turf/open/floor/cobblerock,
+/area)
+"o" = (
+/obj/effect/decal/cobbleedge{
+	dir = 2;
+	pixel_y = 0
+	},
+/turf/open/floor/cobblerock,
+/area)
+"p" = (
+/turf/open/floor/cobblerock,
+/area)
+"r" = (
+/obj/item/alch/feaudust,
+/turf/open/floor/cobble,
+/area)
+"s" = (
+/obj/item/alch/feaudust,
+/turf/open/floor/cobblerock,
+/area)
+"x" = (
+/obj/item/trash/candle{
+	pixel_x = -19;
+	pixel_y = 5
+	},
+/turf/open/floor/cobblerock,
+/area)
+"C" = (
+/obj/effect/decal/cobbleedge{
+	dir = 5;
+	pixel_y = 0
+	},
+/turf/open/floor/cobblerock,
+/area)
+"D" = (
+/obj/item/alch/airdust,
+/turf/open/floor/cobblerock,
+/area)
+"I" = (
+/obj/effect/decal/cobbleedge{
+	dir = 9;
+	pixel_y = 0
+	},
+/turf/open/floor/cobblerock,
+/area)
+"J" = (
+/obj/effect/decal/cobbleedge{
+	dir = 1
+	},
+/turf/open/floor/cobblerock,
+/area)
+"K" = (
+/obj/effect/decal/cleanable/blood/old,
+/turf/open/floor/cobble,
+/area)
+"M" = (
+/obj/effect/decal/cobbleedge{
+	dir = 10;
+	pixel_y = 0
+	},
+/turf/open/floor/cobblerock,
+/area)
+"N" = (
+/obj/effect/decal/cleanable/blood/gibs/limb,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area)
+"Q" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area)
+"R" = (
+/obj/effect/decal/cobbleedge{
+	dir = 4
+	},
+/obj/item/natural/fairydust,
+/turf/open/floor/cobblerock,
+/area)
+"S" = (
+/obj/item/trash/candle{
+	pixel_x = -13;
+	pixel_y = 22
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area)
+"U" = (
+/obj/effect/decal/cobbleedge{
+	dir = 5;
+	pixel_y = 0
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area)
+"Y" = (
+/obj/structure/bed/shit,
+/obj/structure/fluff/walldeco/chains{
+	icon_state = "chains6"
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobble,
+/area)
+"Z" = (
+/obj/effect/decal/cleanable/blood/tracks{
+	dir = 10
+	},
+/turf/open/floor/cobblerock,
+/area)
+
+(1,1,1) = {"
+o
+Q
+C
+R
+a
+a
+"}
+(2,1,1) = {"
+i
+N
+d
+Q
+U
+r
+"}
+(3,1,1) = {"
+b
+Q
+p
+c
+Q
+C
+"}
+(4,1,1) = {"
+h
+M
+m
+D
+S
+I
+"}
+(5,1,1) = {"
+Y
+l
+x
+s
+I
+j
+"}
+(6,1,1) = {"
+j
+K
+e
+Z
+J
+a
+"}

@@ -2,14 +2,14 @@
 	name = "Jerk them off with thighs"
 	requires_hole_storage = FALSE
 
-/datum/sex_action/sex/other/thighjob/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/thighjob/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	if(!target.getorganslot(ORGAN_SLOT_PENIS))
 		return FALSE
 	return TRUE
 
-/datum/sex_action/sex/other/thighjob/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/thighjob/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -23,11 +23,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/sex/other/thighjob/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/thighjob/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] moves [user.p_their()] thighs between [target]'s cock..."))
 
-/datum/sex_action/sex/other/thighjob/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/thighjob/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] jerks [target]'s cock with [user.p_their()] thighs..."))
@@ -37,7 +37,7 @@
 	sex_session.perform_sex_action(target, user, 2, 4, 2, src)
 	sex_session.handle_passive_ejaculation(target)
 
-/datum/sex_action/sex/other/thighjob/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/thighjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops jerking [target] off with [user.p_their()] thighs..."))
 

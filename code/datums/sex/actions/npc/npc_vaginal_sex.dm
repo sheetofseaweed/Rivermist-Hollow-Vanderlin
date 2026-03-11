@@ -31,16 +31,16 @@
 		sex_session.perform_sex_action(target, user, 2.4, 9, 2.4, src)
 	sex_session.handle_passive_ejaculation(target)
 
-/datum/sex_action/npc/npc_vaginal_sex/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/npc/npc_vaginal_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		user.visible_message(span_love("[user] creams themselves around [target]'s dick!"))
-		user.virginity = FALSE
-		target.virginity = FALSE
+		user.lose_virginity()
+		target.lose_virginity()
 		return ORGASM_LOCATION_ONTO
 	else
 		user.visible_message(span_love("[user] cums into [target]'s pussy!"))
-		user.virginity = FALSE
-		target.virginity = FALSE
+		user.lose_virginity()
+		target.lose_virginity()
 		return ORGASM_LOCATION_INTO
 
 /datum/sex_action/npc/npc_vaginal_sex/on_finish(mob/living/user, mob/living/target)

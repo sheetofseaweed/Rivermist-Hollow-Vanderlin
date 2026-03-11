@@ -1,0 +1,239 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/structure/fluff/walldeco/vinez/l,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"c" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/obj/structure/fluff/walldeco/vinez/offset,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"e" = (
+/obj/structure/carpet/purple,
+/obj/item/paper/scroll,
+/obj/item/natural/feather,
+/obj/item/fertilizer/ash{
+	pixel_y = 10;
+	pixel_x = -7
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"f" = (
+/obj/effect/decal/cleanable/dirt/paper,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"i" = (
+/obj/structure/carpet/purple,
+/obj/item/reagent_containers/food/snacks/produce/manabloom,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"m" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"n" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"q" = (
+/obj/item/fertilizer/ash,
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/l,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"r" = (
+/obj/item/fertilizer/ash,
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"u" = (
+/obj/effect/decal/cleanable/roguerune/arcyne/summoning/adv{
+	pixel_x = -48
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"w" = (
+/obj/structure/fluff/walldeco/vinez/offset{
+	pixel_y = -32
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"x" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/offset{
+	pixel_y = -32
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"y" = (
+/obj/item/natural/stoneblock,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"z" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/l,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"C" = (
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"D" = (
+/obj/effect/decal/cleanable/dirt/paper{
+	dir = 4
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"G" = (
+/obj/item/fertilizer/bone_meal,
+/obj/structure/fluff/walldeco/vinez/r,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"I" = (
+/obj/structure/carpet/purple,
+/obj/item/fertilizer/ash{
+	pixel_y = 10;
+	pixel_x = -7
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/reagent_containers/glass/bottle/manapot,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"K" = (
+/obj/structure/fluff/walldeco/vinez/offset,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"N" = (
+/obj/item/fertilizer/bone_meal,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"O" = (
+/obj/item/natural/stoneblock,
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"P" = (
+/obj/effect/decal/cleanable/roguerune/arcyne/knowledge,
+/obj/item/book/granter/spellbook/adept{
+	pixel_x = -12;
+	pixel_y = 11
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"Q" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/stoneblock,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"T" = (
+/obj/item/fertilizer/ash,
+/obj/structure/fluff/walldeco/vinez/r,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"U" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"V" = (
+/obj/item/natural/leyline,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"W" = (
+/turf/open/floor/cobble,
+/area/under/town/rmh/basement)
+"Y" = (
+/obj/structure/carpet/purple,
+/obj/item/chalk,
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/fluff/walldeco/vinez/offset,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"Z" = (
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+
+(1,1,1) = {"
+c
+W
+C
+W
+y
+a
+z
+q
+x
+"}
+(2,1,1) = {"
+K
+r
+C
+W
+W
+N
+Z
+i
+x
+"}
+(3,1,1) = {"
+Z
+P
+W
+m
+u
+Z
+Z
+e
+Q
+"}
+(4,1,1) = {"
+Y
+Z
+W
+W
+n
+Z
+Z
+D
+w
+"}
+(5,1,1) = {"
+I
+f
+Z
+Z
+n
+V
+W
+C
+W
+"}
+(6,1,1) = {"
+Q
+n
+Z
+G
+T
+O
+C
+U
+W
+"}

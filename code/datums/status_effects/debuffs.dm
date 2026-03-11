@@ -1,4 +1,11 @@
 //Largely negative status effects go here, even if they have small benificial effects
+/proc/restore_status_effect_click_state(mob/living/restored_mob, datum/intent/restored_intent = null, restored_cmode = null)
+	if(QDELETED(restored_mob))
+		return
+	if(!isnull(restored_intent))
+		restored_mob.a_intent = restored_intent
+	if(!isnull(restored_cmode))
+		restored_mob.cmode = restored_cmode
 //STUN EFFECTS
 /datum/status_effect/incapacitating
 	tick_interval = 0
@@ -371,57 +378,57 @@
 	status_type = STATUS_EFFECT_MULTIPLE
 	alert_type = null
 
+/datum/status_effect/spasms/proc/do_spasm_click(atom/target)
+	if(QDELETED(owner) || !target)
+		return
+	var/datum/intent/prev_intent = owner.a_intent
+	owner.a_intent = INTENT_HARM
+	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(restore_status_effect_click_state), owner, prev_intent), 1)
+	INVOKE_ASYNC(owner, TYPE_PROC_REF(/mob, ClickOn), target)
+
 /datum/status_effect/spasms/tick()
-	if(prob(15))
-		switch(rand(1,5))
-			if(1)
-				if(!HAS_TRAIT(owner, TRAIT_IMMOBILIZED) && isturf(owner.loc))
-					to_chat(owner, "<span class='warning'>My leg spasms!</span>")
-					step(owner, pick(GLOB.cardinals))
-			if(2)
-				if(owner.incapacitated(IGNORE_GRAB))
-					return
-				var/obj/item/I = owner.get_active_held_item()
-				if(I)
-					to_chat(owner, "<span class='warning'>My fingers spasm!</span>")
-					owner.log_message("used [I] due to a Muscle Spasm", LOG_ATTACK)
-					I.attack_self(owner)
-			if(3)
-				var/prev_intent = owner.a_intent
-				owner.a_intent = INTENT_HARM
-
-				var/range = 1
-				if(istype(owner.get_active_held_item(), /obj/item/gun)) //get targets to shoot at
-					range = 7
-
-				var/list/mob/living/targets = list()
-				for(var/mob/M in oview(owner, range))
-					if(isliving(M))
-						targets += M
-				if(LAZYLEN(targets))
-					to_chat(owner, "<span class='warning'>My arm spasms!</span>")
-					owner.log_message(" attacked someone due to a Muscle Spasm", LOG_ATTACK) //the following attack will log itself
-					owner.ClickOn(pick(targets))
-				owner.a_intent = prev_intent
-			if(4)
-				var/prev_intent = owner.a_intent
-				owner.a_intent = INTENT_HARM
+	if(!prob(15))
+		return
+	switch(rand(1,5))
+		if(1)
+			if(!HAS_TRAIT(owner, TRAIT_IMMOBILIZED) && isturf(owner.loc))
+				to_chat(owner, "<span class='warning'>My leg spasms!</span>")
+				step(owner, pick(GLOB.cardinals))
+		if(2)
+			if(owner.incapacitated(IGNORE_GRAB))
+				return
+			var/obj/item/I = owner.get_active_held_item()
+			if(I)
+				to_chat(owner, "<span class='warning'>My fingers spasm!</span>")
+				owner.log_message("used [I] due to a Muscle Spasm", LOG_ATTACK)
+				INVOKE_ASYNC(I, TYPE_PROC_REF(/obj/item, attack_self), owner)
+		if(3)
+			var/range = 1
+			if(istype(owner.get_active_held_item(), /obj/item/gun))
+				range = 7
+			var/list/mob/living/targets = list()
+			for(var/mob/M in oview(owner, range))
+				if(isliving(M))
+					targets += M
+			if(LAZYLEN(targets))
 				to_chat(owner, "<span class='warning'>My arm spasms!</span>")
-				owner.log_message("attacked [owner.p_them()]self to a Muscle Spasm", LOG_ATTACK)
-				owner.ClickOn(owner)
-				owner.a_intent = prev_intent
-			if(5)
-				if(owner.incapacitated(IGNORE_GRAB))
-					return
-				var/obj/item/I = owner.get_active_held_item()
-				var/list/turf/targets = list()
-				for(var/turf/T in oview(owner, 3))
-					targets += T
-				if(LAZYLEN(targets) && I)
-					to_chat(owner, "<span class='warning'>My arm spasms!</span>")
-					owner.log_message("threw [I] due to a Muscle Spasm", LOG_ATTACK)
-					owner.throw_item(pick(targets))
-
+				owner.log_message(" attacked someone due to a Muscle Spasm", LOG_ATTACK)
+				do_spasm_click(pick(targets))
+		if(4)
+			to_chat(owner, "<span class='warning'>My arm spasms!</span>")
+			owner.log_message("attacked [owner.p_them()]self to a Muscle Spasm", LOG_ATTACK)
+			do_spasm_click(owner)
+		if(5)
+			if(owner.incapacitated(IGNORE_GRAB))
+				return
+			var/obj/item/I = owner.get_active_held_item()
+			var/list/turf/targets = list()
+			for(var/turf/T in oview(owner, 3))
+				targets += T
+			if(LAZYLEN(targets) && I)
+				to_chat(owner, "<span class='warning'>My arm spasms!</span>")
+				owner.log_message("threw [I] due to a Muscle Spasm", LOG_ATTACK)
+				INVOKE_ASYNC(owner, TYPE_PROC_REF(/mob, throw_item), pick(targets))
 /datum/status_effect/go_away
 	id = "go_away"
 	duration = 100

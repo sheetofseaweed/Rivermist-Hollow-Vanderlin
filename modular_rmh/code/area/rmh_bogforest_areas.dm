@@ -19,6 +19,7 @@
 				/mob/living/carbon/human/species/goblin/npc/ambush = 30,
 				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 30)
 	converted_type = /area/indoors/shelter/bog/rmh
+	threat_region = THREAT_REGION_RMH_BOG
 	//deathsight_message = "a swamp"
 
 /area/indoors/shelter/bog/rmh
@@ -39,6 +40,7 @@
 	first_time_text = "SOUTHERN GREEN SWAMPS"
 	icon = 'modular_rmh/icons/turf/areas.dmi'
 	icon_state = "s_basin"
+	threat_region = THREAT_REGION_RMH_ORC_FORT
 
 /area/indoors/shelter/bog/rmh/fort
 	name = "The Dark Fort"
@@ -49,6 +51,7 @@
 	background_track_dusk = null
 	background_track_night = null
 	//deathsight_message = "Dark Fort"
+	threat_region = THREAT_REGION_RMH_ORC_FORT
 
 //FOREST AREAS
 
@@ -75,6 +78,7 @@
 				/mob/living/carbon/human/species/goblin/npc/ambush = 30)
 	first_time_text = "THE DARK FOREST"
 	converted_type = /area/indoors/shelter/woods
+	threat_region = THREAT_REGION_RMG_DARK_FOREST
 	//deathsight_message = "somewhere in the forest"
 
 /area/indoors/shelter/woods/rmh
@@ -95,6 +99,7 @@
 	background_track_night = null
 	//converted_type = /area/outdoors
 	ceiling_protected = TRUE
+	threat_region = THREAT_REGION_RMG_DARK_FOREST
 	//deathsight_message = "goblin dungeon"
 
 /area/outdoors/woods/rmh/goblincampfire
@@ -118,13 +123,14 @@
 	background_track_dusk = null
 	background_track_night = null
 	ambush_times = list("night","dawn","dusk","day")
-	/*ambush_mobs = list(
+	ambush_mobs = list(
 				/mob/living/carbon/human/species/skeleton/npc/easy = 10,
 				/mob/living/simple_animal/hostile/retaliate/bigrat = 30,
 				/mob/living/carbon/human/species/goblin/npc/sea = 20,
 				/mob/living/carbon/human/species/human/northern/highwayman/ambush = 20,
-				/mob/living/simple_animal/hostile/retaliate/troll = 15)*/
+				/mob/living/simple_animal/hostile/retaliate/troll = 15)
 	converted_type = /area/outdoors/caves_rmh
+	threat_region = THREAT_REGION_RMH_BOG
 	//deathsight_message = "moist tunnels"
 
 /area/indoors/cave/rmh_cave/wet/mindflayer
@@ -146,6 +152,7 @@
 	background_track_dusk = null
 	background_track_night = null
 	converted_type = /area/outdoors/spidercave/rmh
+	threat_region = THREAT_REGION_RMH_BOG
 	//deathsight_message = "Spider Caves"
 
 /area/outdoors/spidercave/rmh
@@ -156,6 +163,7 @@
 	background_track = 'sound/music/area/spidercave.ogg'
 	background_track_dusk = null
 	background_track_night = null
+	threat_region = THREAT_REGION_RMH_BOG
 	//deathsight_message = "Spider Caves"
 
 /area/under/cavewet/rmh/wolf

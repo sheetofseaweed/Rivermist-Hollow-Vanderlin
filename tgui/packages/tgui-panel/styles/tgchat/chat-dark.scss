@@ -410,6 +410,22 @@ em {
   font-weight: bold;
 }
 
+.love_low	{
+  color: hsl(321, 45%, 85%);	font-size: 75%;
+}
+.love_mid	{
+  color: hsl(322, 60%, 79%);	font-size: 75%;
+}
+.love_high {
+  color:hsl(306, 83%, 65%);	font-size: 75%;
+}
+.love_extreme	{
+  color: hsl(288, 90%, 62%);	font-size: 75%;
+}
+.love {
+  color: hsl(322, 46%, 83%);
+  font-size: 75%;
+}
 .crit {
   font-size: 160%;
 }

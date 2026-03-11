@@ -6,17 +6,18 @@
 	target_priority = 100
 
 /datum/sex_action/object_fuck/object_vaginal_other/shows_on_menu(mob/living/user, mob/living/target)
+	var/obj/item/dildo = get_sextoy_in_hand(user)
 	if(user == target)
 		return FALSE
 	if(!target.getorganslot(ORGAN_SLOT_VAGINA))
 		return FALSE
-	if(check_sex_lock(target, ORGAN_SLOT_VAGINA))
+	if(check_sex_lock(target, ORGAN_SLOT_VAGINA, null, dildo))
 		return FALSE
-	if(!get_sextoy_in_hand(user))
+	if(!dildo)
 		return FALSE
 	return TRUE
 
-/datum/sex_action/object_fuck/object_vaginal_other/other/vagina/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/object_fuck/object_vaginal_other/other/vagina/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/obj/item/dildo = user.get_active_held_item()
@@ -34,7 +35,7 @@
 	user.visible_message(span_warning("[user] stuffs \the [dildo] in [target]'s cunt..."))
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
-/datum/sex_action/object_fuck/object_vaginal_other/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/object_fuck/object_vaginal_other/on_perform(mob/living/user, mob/living/target)
 	var/pain_amt = 3 //base pain amt to use
 	var/obj/item/dildo = user.get_active_held_item()
 
@@ -70,10 +71,10 @@
 	sex_session.handle_passive_ejaculation(target)
 
 
-/datum/sex_action/object_fuck/object_vaginal_other/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/object_fuck/object_vaginal_other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		target.visible_message(span_love("[user] cream themselves around [target]'s thrusting dildo!"))
-		target.virginity = FALSE
+		target.lose_virginity()
 		return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_vaginal_other/on_finish(mob/living/user, mob/living/target)

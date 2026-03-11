@@ -22,14 +22,23 @@
 	bloatable = TRUE
 	stretchable = FALSE
 
-/obj/item/organ/genitals/filling_organ/vagina/Insert(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/filling_organ/vagina/Insert(mob/living/M, special, drop_if_replaced)
 	. = ..()
-	if(ishuman(M))
-		if(M.femcum)
-			reagent_to_make = M.femcum
+	if(M.femcum)
+		reagent_to_make = M.femcum
 	add_bodystorage(M, null, /datum/component/body_storage/vagina)
 
-/obj/item/organ/genitals/filling_organ/vagina/Remove(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/filling_organ/vagina/Remove(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	var/datum/component/body_storage/vagina/comp = GetComponent(/datum/component/body_storage/vagina)
 	comp?.RemoveComponent()
+
+/obj/item/organ/genitals/filling_organ/vagina/get_availability(datum/species/owner_species, mob/living/C, datum/preferences/pref_load)
+	if(issimple(C))
+		return C.gender == FEMALE
+	else
+		if(pref_load)
+			return pref_load.get_customizer_entry_of_type(/datum/customizer_entry/organ/genitals/vagina)
+		else
+			return C.gender == FEMALE
+

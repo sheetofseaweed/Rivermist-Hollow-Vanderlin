@@ -17,8 +17,9 @@
 	)
 
 	skills = list(
-		/datum/skill/combat/polearms = 3,
+		/datum/skill/combat/polearms = 4,
 		/datum/skill/combat/bows = 3,
+		/datum/skill/combat/shields = 4,
 		/datum/skill/combat/wrestling = 2,
 		/datum/skill/misc/athletics = 2,
 		/datum/skill/misc/reading = 4,
@@ -41,6 +42,10 @@
 		TRAIT_NOPAINSTUN
 	)
 
+	spells = list(
+		/datum/action/cooldown/spell/undirected/battle_song
+	)
+
 /datum/outfit/adventurer_barbarian/spearmaiden
 	name = "Spearmaiden"
 	head = null
@@ -60,5 +65,5 @@
 	beltr = /obj/item/ammo_holder/quiver/arrows
 	beltr = null
 	ring = null
-	l_hand = null
+	l_hand = /obj/item/weapon/shield/wood
 	r_hand = null

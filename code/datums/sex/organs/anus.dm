@@ -18,13 +18,13 @@
 	additional_blocker = "underwear"
 	stretchable = TRUE
 
-/obj/item/organ/genitals/filling_organ/anus/Insert(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/filling_organ/anus/Insert(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	if(!refilling)
 		reagents.clear_reagents()
 	add_bodystorage(M, null, /datum/component/body_storage/anus)
 
-/obj/item/organ/genitals/filling_organ/anus/Remove(mob/living/carbon/M, special, drop_if_replaced)
+/obj/item/organ/genitals/filling_organ/anus/Remove(mob/living/M, special, drop_if_replaced)
 	. = ..()
 	var/datum/component/body_storage/anus/comp = GetComponent(/datum/component/body_storage/anus)
 	comp?.RemoveComponent()

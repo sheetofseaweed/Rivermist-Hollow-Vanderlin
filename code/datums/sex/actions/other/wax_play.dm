@@ -4,8 +4,9 @@
 	continous = FALSE
 	do_time = 2.5 SECONDS
 	stamina_cost = 0.2
+	requires_free_hands = TRUE
 
-/datum/sex_action/wax_play/proc/get_held_lit_candle(mob/living/carbon/human/user)
+/datum/sex_action/wax_play/proc/get_held_lit_candle(mob/living/user)
 	var/obj/item/held_item = user.get_active_held_item()
 	if(istype(held_item, /obj/item/candle))
 		var/obj/item/candle/candle = held_item
@@ -18,12 +19,12 @@
 			return candle
 	return null
 
-/datum/sex_action/wax_play/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/shows_on_menu(mob/living/user, mob/living/target)
 	if(!get_held_lit_candle(user))
 		return FALSE
 	return TRUE
 
-/datum/sex_action/wax_play/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -34,7 +35,7 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/wax_play/proc/apply_wax_effects(mob/living/carbon/human/user, mob/living/carbon/human/target, text_target, arousal_base, pain_base)
+/datum/sex_action/wax_play/proc/apply_wax_effects(mob/living/user, mob/living/target, text_target, arousal_base, pain_base)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] drips hot wax over [target]'s [text_target]."))
@@ -52,7 +53,7 @@
 /datum/sex_action/wax_play/breasts
 	name = "Pour wax on breasts"
 
-/datum/sex_action/wax_play/breasts/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/breasts/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -62,18 +63,18 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/wax_play/breasts/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/breasts/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] tilts the candle over [target]'s chest..."))
 
-/datum/sex_action/wax_play/breasts/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/breasts/on_perform(mob/living/user, mob/living/target)
 	apply_wax_effects(user, target, "breasts", 1.2, 2.5)
 
-/datum/sex_action/wax_play/breasts/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/breasts/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops dripping wax onto [target]."))
 
-/datum/sex_action/wax_play/breasts/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/breasts/lock_sex_object(mob/living/user, mob/living/target)
 	var/obj/item/candle/candle = get_held_lit_candle(user)
 	if(candle)
 		sex_locks |= new /datum/sex_session_lock(user, null, candle)
@@ -81,7 +82,7 @@
 /datum/sex_action/wax_play/butt
 	name = "Pour wax on butt"
 
-/datum/sex_action/wax_play/butt/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/butt/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -89,18 +90,18 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/wax_play/butt/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/butt/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] tilts the candle over [target]'s rear..."))
 
-/datum/sex_action/wax_play/butt/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/butt/on_perform(mob/living/user, mob/living/target)
 	apply_wax_effects(user, target, "butt", 1.0, 2.0)
 
-/datum/sex_action/wax_play/butt/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/butt/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops dripping wax onto [target]."))
 
-/datum/sex_action/wax_play/butt/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/wax_play/butt/lock_sex_object(mob/living/user, mob/living/target)
 	var/obj/item/candle/candle = get_held_lit_candle(user)
 	if(candle)
 		sex_locks |= new /datum/sex_session_lock(user, null, candle)

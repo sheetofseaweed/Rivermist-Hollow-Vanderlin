@@ -55,7 +55,9 @@
 	if(owner.getorganslot(ORGAN_SLOT_BELLY))
 		var/obj/item/organ/genitals/belly/bellyussy = owner.getorganslot(ORGAN_SLOT_BELLY)
 		bellyussy.organ_size = pre_pregnancy_size
-	owner.update_body_parts(TRUE)
+	if(iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		carbon_owner.update_body_parts()
 
 /obj/item/organ/genitals/filling_organ/vagina/proc/handle_preggoness()
 	if(owner.getorganslot(ORGAN_SLOT_BELLY))
@@ -64,7 +66,9 @@
 			if(prob(30))
 				to_chat(owner, span_love("I notice my belly has grown due to pregnancy...")) //dont need to repeat this probably if size cant grow anyway.
 				bellyussy.organ_size = bellyussy.organ_size + 1
-				owner.update_body_parts(TRUE)
+				if(iscarbon(owner))
+					var/mob/living/carbon/carbon_owner = owner
+					carbon_owner.update_body_parts()
 			preggotimer = addtimer(CALLBACK(src, PROC_REF(handle_preggoness)), 3 HOURS, TIMER_STOPPABLE)
 		else
 			deltimer(preggotimer)

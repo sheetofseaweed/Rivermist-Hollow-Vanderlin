@@ -13,6 +13,8 @@
 	var/list/unlocked_spells = list()
 	var/datum/spell_node/selected_spell = null
 
+	disable_wild_magic = TRUE
+
 /datum/action/cooldown/spell/undirected/learn/Destroy()
 	unlocked_spells = null
 	selected_spell = null

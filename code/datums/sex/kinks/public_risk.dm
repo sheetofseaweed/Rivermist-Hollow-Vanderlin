@@ -14,8 +14,8 @@
 			participants |= session.user
 			participants |= session.target
 
-	for(var/mob/living/carbon/human/human in view(5, target))
-		if(human in participants)
+	for(var/mob/living/viewer in view(5, target))
+		if(viewer in participants)
 			continue
 		seen_by_people = TRUE
 		break

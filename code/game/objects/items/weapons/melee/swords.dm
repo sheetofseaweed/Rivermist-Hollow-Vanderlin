@@ -1235,7 +1235,7 @@
 	name = "berserker sword"
 	desc = "A huge sword constructed out of a slab of Iron."
 	icon_state = "gutsclaymore"
-	force_wielded = DAMAGE_GREATSWORD_WIELD + 2
+	force_wielded = DAMAGE_GREATSWORD_WIELD + 3
 	wdefense = ULTMATE_PARRY
 	possible_item_intents = list(SWORD_CUT, SWORD_THRUST, SWORD_STRIKE)
 	gripped_intents = list(GUTS_CUT, GUTS_THRUST, GUTS_STRIKE, GUTS_CHOP)

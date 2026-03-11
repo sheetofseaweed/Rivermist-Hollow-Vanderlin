@@ -3,7 +3,7 @@
 	check_same_tile = FALSE
 	user_priority = 20
 
-/datum/sex_action/masturbate/penis_over/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/penis_over/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	if(!user.getorganslot(ORGAN_SLOT_PENIS))
@@ -12,7 +12,7 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/masturbate/penis_over/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/penis_over/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -26,11 +26,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/masturbate/penis_over/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/penis_over/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] starts jerking over [target]..."))
 
-/datum/sex_action/masturbate/penis_over/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/penis_over/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/chosen_verb = pick(list("jerks [user.p_their()] cock", "strokes [user.p_their()] cock", "masturbates", "jerks off"))
 	if(can_show_action_message(user, target))
@@ -39,14 +39,14 @@
 
 	sex_session.perform_sex_action(user, user, 2, 4, 2, src)
 
-/datum/sex_action/masturbate/penis_over/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/masturbate/penis_over/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	user.visible_message(span_love("[user] cums over [target]'s body!"))
 	return ORGASM_LOCATION_ONTO
 
-/datum/sex_action/masturbate/penis_over/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/penis_over/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops jerking off."))
 
-/datum/sex_action/masturbate/penis_over/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/penis_over/lock_sex_object(mob/living/user, mob/living/target)
 	. = ..()
 	sex_locks |= new /datum/sex_session_lock(user, ORGAN_SLOT_PENIS)

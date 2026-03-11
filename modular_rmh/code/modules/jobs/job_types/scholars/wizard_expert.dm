@@ -168,10 +168,10 @@
 	wrists = null
 	gloves = null
 	pants = null
-	shoes = /obj/item/clothing/shoes/shortboots
+	shoes = /obj/item/clothing/shoes/boots
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
-	belt = /obj/item/storage/belt/leather/plaquesilver
+	belt = /obj/item/storage/belt/leather/black
 	beltr = /obj/item/storage/magebag/apprentice
 	beltl = /obj/item/storage/keyring/master_wizard
 	ring = null

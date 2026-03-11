@@ -14,6 +14,7 @@ GLOBAL_LIST_INIT(target_interested_atoms, typecacheof(list(/mob)))
 	return ..()
 
 /datum/ai_behavior/find_potential_targets/perform(seconds_per_tick, datum/ai_controller/controller, target_key, targetting_datum_key, hiding_location_key)
+	. = ..()
 	var/mob/living/living_mob = controller.pawn
 	if(living_mob.pet_passive)
 		finish_action(controller, succeeded = FALSE)
@@ -140,6 +141,7 @@ GLOBAL_LIST_INIT(target_interested_atoms, typecacheof(list(/mob)))
 
 	if(!LAZYLEN(accepted_targets))
 		finish_action(controller, succeeded = FALSE)
+		return
 
 	// Alright, we found something acceptable, let's use it yeah?
 	var/atom/target = pick_final_target(controller, accepted_targets)
@@ -151,6 +153,7 @@ GLOBAL_LIST_INIT(target_interested_atoms, typecacheof(list(/mob)))
 			controller.CancelActions() // On retarget cancel any further queued actions so that they will setup again with new target
 			qdel(field) // autoclears so it's fine
 			finish_action(controller, succeeded = FALSE)
+			return
 
 	controller.set_blackboard_key(target_key, target)
 
@@ -167,7 +170,7 @@ GLOBAL_LIST_INIT(target_interested_atoms, typecacheof(list(/mob)))
 		var/datum/proximity_monitor/field = controller.blackboard[BB_FIND_TARGETS_FIELD(type)]
 		qdel(field) // autoclears so it's fine
 		controller.CancelActions() // On retarget cancel any further queued actions so that they will setup again with new target
-		controller.modify_cooldown(controller, get_cooldown(controller))
+		controller.modify_cooldown(controller, world.time + get_cooldown(controller))
 
 /// Returns the desired final target from the filtered list of targets
 /datum/ai_behavior/find_potential_targets/proc/pick_final_target(datum/ai_controller/controller, list/filtered_targets)

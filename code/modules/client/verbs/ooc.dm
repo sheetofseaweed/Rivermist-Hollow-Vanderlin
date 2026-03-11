@@ -375,6 +375,15 @@ GLOBAL_LIST_INIT(oocpronouns_required, list(
 	to_chat(src, span_notice("Your OOC pronouns have been set to: [new_pronouns]"))
 
 
+/client/verb/html_chat()
+	set name = "Switch to Old Chat"
+	set category = "OOC.Fix"
+	set hidden = FALSE
+
+
+	to_chat(src, "Going back to old chat.")
+	winset(src, "output_selector.legacy_output_selector", "left=output_legacy")
+
 /client/verb/motd()
 	set name = "MOTD"
 	set category = "OOC"

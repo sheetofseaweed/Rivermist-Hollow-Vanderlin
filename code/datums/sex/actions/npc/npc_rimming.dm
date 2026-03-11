@@ -21,10 +21,10 @@
 	sex_session.perform_sex_action(target, user, 2, 0, 2, src)
 	sex_session.handle_passive_ejaculation(target)
 
-/datum/sex_action/npc/npc_rimming/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/npc/npc_rimming/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops rimming [target]'s butt ..."))
 
-/datum/sex_action/npc/npc_rimming/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/npc/npc_rimming/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(user, BODY_ZONE_PRECISE_MOUTH)
 	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_ANUS)

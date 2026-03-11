@@ -15,6 +15,8 @@
 	invocation = "Enchanta Amoria!"
 	associated_skill = /datum/skill/magic/holy
 
+	disable_wild_magic = TRUE
+
 /datum/action/cooldown/spell/forced_orgasm/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

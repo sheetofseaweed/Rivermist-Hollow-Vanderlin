@@ -100,8 +100,10 @@
 	playsound(owner, 'sound/blank.ogg', 75, FALSE)
 	var/obj/item/slashy
 	slashy = owner.get_active_held_item()
+	if(!slashy)
+		return
 	for(var/mob/living/M in orange(1,owner))
-		slashy.attack(M, owner)
+		INVOKE_ASYNC(slashy, TYPE_PROC_REF(/obj/item, attack), M, owner)
 
 /datum/status_effect/sword_spin/on_remove()
 	. = ..()
@@ -134,15 +136,7 @@
 	id = "Exercised"
 	duration = 1200
 	alert_type = null
-
-/datum/status_effect/exercised/on_creation(mob/living/new_owner, duration_override, ...)
-	. = ..()
-	STOP_PROCESSING(SSfastprocess, src)
-	START_PROCESSING(SSprocessing, src) //this lasts 20 minutes, so SSfastprocess isn't needed.
-
-/datum/status_effect/exercised/Destroy()
-	. = ..()
-	STOP_PROCESSING(SSprocessing, src)
+	processing_speed = STATUS_EFFECT_NORMAL_PROCESS
 
 /datum/status_effect/good_music
 	id = "Good Music"

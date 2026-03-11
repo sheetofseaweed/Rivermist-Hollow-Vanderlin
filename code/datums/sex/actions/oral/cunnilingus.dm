@@ -3,7 +3,7 @@
 	target_priority = 100
 	gags_user = TRUE
 
-/datum/sex_action/cunnilingus/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/cunnilingus/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	if(!target.getorganslot(ORGAN_SLOT_VAGINA))
@@ -28,11 +28,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/cunnilingus/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/cunnilingus/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] starts sucking [target]'s clit..."))
 
-/datum/sex_action/cunnilingus/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/cunnilingus/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] sucks [target]'s clit..."))
@@ -43,7 +43,7 @@
 	sex_session.handle_passive_ejaculation(target)
 	sex_session.perform_sex_action(user, target, 0.5, 0, 0, src)
 
-/datum/sex_action/cunnilingus/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/cunnilingus/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		target.visible_message(span_love("[user] squirts girlcum into [target]'s mouth!"))
 		return ORGASM_LOCATION_ORAL
@@ -52,10 +52,10 @@
 		return ORGASM_LOCATION_SELF
 
 
-/datum/sex_action/cunnilingus/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/cunnilingus/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops sucking [target]'s clit ..."))
 
-/datum/sex_action/cunnilingus/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/cunnilingus/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_VAGINA)
 	sex_locks |= new /datum/sex_session_lock(user, BODY_ZONE_PRECISE_MOUTH)

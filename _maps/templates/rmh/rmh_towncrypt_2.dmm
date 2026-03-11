@@ -1,0 +1,292 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/structure/table/stone_small,
+/obj/machinery/essence/harvester,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"b" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/effect/decal/cobblerockedge{
+	dir = 10
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"c" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/obj/effect/decal/cleanable/debris/glass,
+/obj/item/natural/glass/shard,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"d" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 6
+	},
+/obj/item/ingot/thaumic,
+/obj/structure/table/stone_small,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"f" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/obj/structure/table/stone_small,
+/obj/machinery/essence/combiner{
+	pixel_y = 9
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"h" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"i" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"k" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"m" = (
+/obj/machinery/light/fueled/cauldron,
+/turf/open/floor/concrete,
+/area/under/town/rmh/basement)
+"o" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"p" = (
+/obj/effect/decal/cleanable/debris/glass,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"q" = (
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"r" = (
+/obj/item/natural/glass,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"s" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 6
+	},
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"t" = (
+/obj/effect/decal/cleanable/debris/glass,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"v" = (
+/obj/structure/essence_node,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone/runed,
+/area/under/town/rmh/basement)
+"x" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/obj/item/ingot/thaumic,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"y" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/obj/item/mana_battery/mana_crystal/standard,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"z" = (
+/obj/item/natural/glass/shard,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"A" = (
+/obj/effect/decal/cleanable/dirt/paper,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"D" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"E" = (
+/obj/item/mana_battery/mana_crystal/standard,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"F" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"G" = (
+/obj/structure/table/stone_small,
+/obj/item/natural/glass,
+/obj/machinery/essence/reservoir{
+	pixel_y = 20;
+	pixel_x = -3
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"I" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"J" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 6
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"K" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 10
+	},
+/obj/effect/spawner/map_spawner/loot/potion_ingredient/herb,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"L" = (
+/obj/structure/essence_node,
+/turf/open/floor/greenstone/runed,
+/area/under/town/rmh/basement)
+"M" = (
+/obj/structure/table/stone_small,
+/obj/item/essence_node_jar/advanced{
+	pixel_y = 5
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"N" = (
+/obj/effect/decal/cleanable/debris/glass,
+/obj/item/natural/glass/shard,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"P" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"Q" = (
+/obj/effect/decal/cleanable/dirt/paper{
+	dir = 8
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"R" = (
+/obj/structure/table/stone_small,
+/obj/item/essence_connector,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"T" = (
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"U" = (
+/obj/item/natural/glass,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"W" = (
+/obj/effect/spawner/map_spawner/loot/potion_vitals,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"X" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 10
+	},
+/obj/item/ingot/thaumic,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+"Y" = (
+/obj/item/ingot/thaumic,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"Z" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 10
+	},
+/turf/open/floor/greenstone,
+/area/under/town/rmh/basement)
+
+(1,1,1) = {"
+Y
+I
+o
+U
+T
+s
+N
+P
+F
+"}
+(2,1,1) = {"
+c
+k
+M
+W
+E
+X
+h
+v
+F
+"}
+(3,1,1) = {"
+t
+r
+f
+T
+A
+p
+Z
+h
+P
+"}
+(4,1,1) = {"
+Z
+L
+q
+o
+m
+b
+a
+K
+i
+"}
+(5,1,1) = {"
+E
+Z
+x
+F
+o
+J
+G
+z
+p
+"}
+(6,1,1) = {"
+o
+o
+D
+R
+d
+Q
+y
+p
+T
+"}

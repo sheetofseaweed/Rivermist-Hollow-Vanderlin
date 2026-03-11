@@ -660,6 +660,15 @@
 			continue
 		examination += "ø ------------ ø</span>"
 
+
+	var/mob/living/carbon/human/H = user
+	for(var/obj/item/organ/genitals/gen in H.internal_organs)
+		if(SEND_SIGNAL(gen, COMSIG_BODYSTORAGE_IS_ITEM_TYPE_IN, /obj/item/natural/worms/leech, STORAGE_LAYER_OUTER))
+			for(var/obj/item/natural/worms/leech/invader in gen.contents)
+				if(SEND_SIGNAL(gen, COMSIG_BODYSTORAGE_IS_ITEM_IN, invader, STORAGE_LAYER_OUTER))
+					examination += "☼ <a href='byond://?src=[REF(src)];leech=[REF(invader)];organ=[REF(gen)]'>There's a leech on my [gen.name]!</a>"
+
+	for(var/body_zone)
 	if(!silent)
 		to_chat(user, examination.Join("\n"))
 	return examination

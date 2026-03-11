@@ -204,7 +204,7 @@
 
 /mob/living/carbon/handle_inwater(turf/open/water/W)
 	. = ..()
-	if(stat == DEAD)
+	/*if(stat == DEAD)
 		return
 	if(W.water_volume < 10 || !W.water_reagent)
 		return
@@ -214,17 +214,17 @@
 	if(!is_laying && W.water_level < 2)
 		return
 	if(is_laying && !(HAS_TRAIT(src, TRAIT_WATER_BREATHING) || HAS_TRAIT(src, TRAIT_NOBREATH)))
-		/*var/drown_damage = has_world_trait(/datum/world_trait/abyssor_rage) ? (is_ascendant(ABYSSOR) ? 15 : 10) : 5 //we breathing' water here
+		var/drown_damage = has_world_trait(/datum/world_trait/abyssor_rage) ? (is_ascendant(ABYSSOR) ? 15 : 10) : 5 //we breathing' water here
 		adjustOxyLoss(drown_damage)
 		if(stat == DEAD && client)
 			record_round_statistic(STATS_PEOPLE_DROWNED)
 			return
-		emote("drown")*/
+		emote("drown")
 		react_volume = 1
 		react_type = INGEST
 	var/datum/reagents/reagents = new()
 	reagents.add_reagent(W.water_reagent, react_volume)
-	reagents.reaction(src, react_type, W.level / 2)
+	reagents.reaction(src, react_type, W.level / 2)*/
 
 /mob/living/carbon/human/handle_inwater()
 	. = ..()

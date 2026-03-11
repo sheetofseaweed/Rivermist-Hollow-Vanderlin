@@ -23,6 +23,11 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	//Forced mob worn layer instead of the standard preferred ssize.
 	var/alternate_worn_layer
 
+	///Hole storage icon override
+	var/icon/storage_overlay_icon
+	///Hole storage icon state override
+	var/storage_icon_state
+
 	//Dimensions of the icon file used when this item is worn, eg: hats.dmi
 	//eg: 32x32 sprite, 64x64 sprite, etc.
 	//allows inhands/worn sprites to be of any size, but still centered on a mob properly
@@ -31,6 +36,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	//Same as above but for inhands, uses the lefthand_ and righthand_ file vars
 	var/inhand_x_dimension = 64
 	var/inhand_y_dimension = 64
+
+	var/flags_ai_inventory = NONE
 
 	var/no_effect = FALSE
 
@@ -305,6 +312,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/body_storage_bulk
 	/// If this item has visual overlay when inserted into a body_storage
 	var/has_body_storage_overlay = FALSE
+	/// If the item has visual overlay only on specific layer
+	var/bstorage_visible_layer
 	/// If this item has visual overlay when inserted into a body_storage
 	var/loadout_blacklisted = FALSE
 
@@ -845,6 +854,7 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 			animate(src, pixel_y = oldy, time = 0.5)
 	item_flags &= ~IN_INVENTORY
 	SEND_SIGNAL(src, COMSIG_ITEM_DROPPED,user)
+	SEND_SIGNAL(user, COMSIG_MOB_DROPITEM,src)
 	if(!silent)
 		playsound(src, drop_sound, DROP_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
 	toggle_altgrip(user, FALSE)
@@ -1380,6 +1390,14 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 		return TRUE
 
 /obj/item/proc/canStrip(mob/stripper, mob/owner)
+	if(HAS_TRAIT(loc, TRAIT_STUCKITEMS))
+		return FALSE
+	if(HAS_TRAIT(loc, TRAIT_HIGHVALUE_STUCK))
+		if(melting_material == /datum/material/steel)
+			return FALSE
+		if(item_flags & HIGH_VALUE)
+			return FALSE
+
 	return !HAS_TRAIT(src, TRAIT_NODROP)
 
 /obj/item/proc/doStrip(mob/stripper, mob/owner)

@@ -30,6 +30,6 @@
 	. = ..()
 	user.visible_message(span_warning("[user] gets off [target]'s face."))
 
-/datum/sex_action/npc/npc_facesitting/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/npc/npc_facesitting/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(target, BODY_ZONE_PRECISE_MOUTH)
 	sex_locks |= new /datum/sex_session_lock(user, ORGAN_SLOT_VAGINA)

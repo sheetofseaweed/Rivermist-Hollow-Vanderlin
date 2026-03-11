@@ -1116,6 +1116,10 @@
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/mountains/decap)
+"eg" = (
+/obj/effect/landmark/quest_spawner/easy,
+/turf/open/floor/grass/yel,
+/area/outdoors)
 "ek" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing{
 	pixel_x = 15
@@ -1405,6 +1409,10 @@
 /obj/structure/closet/crate/miningcar,
 /turf/open/floor/grass/yel,
 /area/outdoors)
+"ke" = (
+/mob/living/carbon/human/species/automaton/prefilled_vessel,
+/turf/open/floor/wood,
+/area/indoors/town/keep)
 "ki" = (
 /obj/structure/rotation_piece/cog{
 	dir = 4
@@ -2403,6 +2411,7 @@
 	dir = 1;
 	pixel_y = -5
 	},
+/obj/structure/fake_machine/contractledger,
 /turf/open/floor/wood,
 /area/indoors/town/keep)
 "Be" = (
@@ -3044,6 +3053,11 @@
 	},
 /turf/open/floor/grass/yel,
 /area/outdoors)
+"Pn" = (
+/obj/structure/flora/grass,
+/obj/effect/landmark/quest_spawner/medium,
+/turf/open/floor/grass/yel,
+/area/outdoors)
 "Pq" = (
 /obj/machinery/light/fueled/smelter/great,
 /turf/open/floor/cobble,
@@ -3527,6 +3541,10 @@
 "Yv" = (
 /obj/structure/flora/ausbushes/ppflowers,
 /obj/structure/flora/grass,
+/turf/open/floor/grass/yel,
+/area/outdoors)
+"YO" = (
+/obj/effect/landmark/quest_spawner/hard,
 /turf/open/floor/grass/yel,
 /area/outdoors)
 "YR" = (
@@ -16144,7 +16162,7 @@ QN
 Wr
 QN
 aq
-QN
+eg
 QN
 ky
 ew
@@ -16638,7 +16656,7 @@ QN
 Wr
 QN
 zg
-GB
+ke
 GB
 vD
 vD
@@ -22304,7 +22322,7 @@ tA
 tA
 tA
 ai
-QN
+YO
 ai
 tA
 tA
@@ -76019,7 +76037,7 @@ QN
 qc
 QN
 ky
-qc
+Pn
 QN
 ky
 jC

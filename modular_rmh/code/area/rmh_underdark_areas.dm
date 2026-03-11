@@ -19,6 +19,7 @@
 				/mob/living/carbon/human/species/goblin/npc/ambush/moon = 30,
 				/mob/living/simple_animal/hostile/retaliate/troll = 15)
 	converted_type = /area/outdoors/caves
+	threat_region = THREAT_REGION_RMH_UNDERDARK
 	//deathsight_message = "Depths of Underdark"
 
 /area/under/underdark/rmh/caves
@@ -43,6 +44,7 @@
 	background_track_night = null
 	ambush_times = null
 	ambush_mobs = null
+	threat_region = THREAT_REGION_RMH_UNDERDARK
 	//deathsight_message = "Glimmerlakes"
 
 /area/under/underdark/rmh/shrub

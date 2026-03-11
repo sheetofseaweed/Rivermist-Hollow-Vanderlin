@@ -28,10 +28,17 @@
 	to_chat(owner, span_boldwarning("You feel filled with a rage that is not your own!"))
 	return TRUE
 
-/datum/status_effect/amok/tick()
+/datum/status_effect/amok/proc/do_amok_click(atom/target)
+	if(QDELETED(owner) || !target)
+		return
+	var/datum/intent/prev_intent = owner.a_intent
 	var/prev_combat_mode = owner.cmode
+	owner.a_intent = INTENT_HARM
 	owner.cmode = TRUE
+	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(restore_status_effect_click_state), owner, prev_intent, prev_combat_mode), 1)
+	INVOKE_ASYNC(owner, TYPE_PROC_REF(/mob, ClickOn), target)
 
+/datum/status_effect/amok/tick()
 	var/search_radius = 1
 
 	var/list/mob/living/targets = list()
@@ -39,10 +46,8 @@
 		targets += potential_target
 
 	if(LAZYLEN(targets))
-		owner.log_message(" attacked someone due to the amok debuff.", LOG_ATTACK) //the following attack will log itself
-		owner.ClickOn(pick(targets))
-
-	owner.cmode = prev_combat_mode
+		owner.log_message(" attacked someone due to the amok debuff.", LOG_ATTACK)
+		do_amok_click(pick(targets))
 
 /datum/status_effect/cloudstruck
 	id = "cloudstruck"

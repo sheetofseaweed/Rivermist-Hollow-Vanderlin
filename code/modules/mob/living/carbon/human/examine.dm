@@ -697,7 +697,7 @@
 					if(getorganslot(ORGAN_SLOT_PENIS))
 						organ_desc += "[capitalize(m3)] a visible bulge in [m2] [pantsies.name]."
 					if(getorganslot(ORGAN_SLOT_VAGINA))
-						organ_desc += "[capitalize(m1)] shifting their legs uncomfortably."
+						organ_desc += "[capitalize(m1)] shifting [m2] legs uncomfortably."
 					//show_pant_desc = TRUE
 		else if(undies)
 			if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)

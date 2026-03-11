@@ -1,0 +1,119 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/wooddark,
+/area/indoors/town/rmh)
+"b" = (
+/turf/open/floor/ruinedwood/spiral,
+/area/indoors/town/rmh)
+"q" = (
+/obj/structure/stairs{
+	dir = 2
+	},
+/obj/structure/fluff/railing/wood/east,
+/obj/structure/fluff/railing/wood/west,
+/turf/open/floor/ruinedwood/spiral,
+/area/indoors/town/rmh)
+"r" = (
+/turf/closed/wall/mineral/wooddark/vertical,
+/area/indoors/town/rmh)
+"J" = (
+/obj/structure/window/openclose/reinforced{
+	dir = 4
+	},
+/obj/structure/curtain/dir{
+	dir = 4;
+	color = "#8a6b6b"
+	},
+/turf/open/floor/woodturned,
+/area/indoors/town/rmh)
+"P" = (
+/turf/open/openspace,
+/area/indoors/town/rmh)
+"V" = (
+/obj/structure/sign/property_sign/claim{
+	icon = 'icons/roguetown/misc/decoration.dmi';
+	icon_state = "skullpainting_deployed"
+	},
+/turf/closed/wall/mineral/wooddark,
+/area/indoors/town/rmh)
+"X" = (
+/turf/closed/wall/mineral/wooddark/horizontal,
+/area/indoors/town/rmh)
+
+(1,1,1) = {"
+a
+J
+X
+X
+J
+X
+X
+X
+a
+"}
+(2,1,1) = {"
+r
+b
+b
+b
+b
+b
+b
+b
+r
+"}
+(3,1,1) = {"
+r
+b
+P
+q
+b
+b
+b
+b
+r
+"}
+(4,1,1) = {"
+r
+b
+b
+b
+V
+b
+b
+b
+r
+"}
+(5,1,1) = {"
+r
+b
+b
+b
+b
+b
+b
+b
+r
+"}
+(6,1,1) = {"
+r
+b
+b
+b
+b
+b
+b
+b
+r
+"}
+(7,1,1) = {"
+a
+X
+X
+X
+X
+X
+X
+X
+a
+"}

@@ -32,7 +32,7 @@
 	   oxy   >= threshold_oxy)
 
 
-		if(prob(chance_escape))
+		if(prob(chance_escape && legcuffed == null && handcuffed == null && buckled == null && !pulledby))
 			visible_message("<span class='warning'>[src] escapes!</span>")
 			do_smoke(1, get_turf(src), /obj/effect/particle_effect/smoke)
 			qdel(src)

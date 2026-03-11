@@ -1,0 +1,213 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/obj/item/natural/rock/gemerald,
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"e" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/item/fertilizer/bone_meal,
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"f" = (
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"i" = (
+/obj/item/natural/rock/gemerald,
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"j" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 10
+	},
+/obj/structure/statue/bone/rib{
+	dir = 2
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"m" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/obj/item/natural/rock/gemerald,
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"o" = (
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"q" = (
+/obj/effect/decal/cobblerockedge,
+/obj/item/natural/rock/gemerald,
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"s" = (
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"v" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/obj/effect/decal/cobblerockedge,
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"y" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"C" = (
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"G" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/obj/structure/statue/bone/rib{
+	dir = 2;
+	pixel_y = 15
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"H" = (
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/obj/structure/statue/bone/rib{
+	dir = 8
+	},
+/turf/open/floor/cobblerock,
+/area/under/town/rmh/basement)
+"I" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/obj/structure/statue/bone/rib{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"L" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"O" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 6
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"R" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/obj/effect/decal/cobblerockedge{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"U" = (
+/obj/effect/decal/cobblerockedge,
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/obj/effect/decal/cleanable/roguerune/arcyne/attunement{
+	layer = 3.1;
+	pixel_x = -48;
+	pixel_y = -48
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"V" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+"Y" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 9
+	},
+/obj/structure/fluff/walldeco/vinez{
+	name = "crawling vines";
+	debris = list(/obj/item/natural/fibers = 1)
+	},
+/turf/open/floor/naturalstone,
+/area/under/town/rmh/basement)
+
+(1,1,1) = {"
+f
+a
+y
+C
+C
+s
+"}
+(2,1,1) = {"
+o
+I
+C
+s
+H
+i
+"}
+(3,1,1) = {"
+V
+R
+s
+U
+e
+O
+"}
+(4,1,1) = {"
+L
+e
+C
+q
+f
+o
+"}
+(5,1,1) = {"
+f
+G
+C
+s
+j
+Y
+"}
+(6,1,1) = {"
+m
+s
+s
+s
+v
+R
+"}

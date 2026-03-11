@@ -2,6 +2,22 @@
 	race = /datum/species/automaton
 	footstep_type = FOOTSTEP_MOB_METAL
 
+/mob/living/carbon/human/species/automaton/vessel/LateInitialize()
+	. = ..()
+	AddComponent(/datum/component/ghost_vessel, /obj/item/reagent_containers/lux)
+
+/mob/living/carbon/human/species/automaton/prefilled_vessel/LateInitialize()
+	. = ..()
+	AddComponent(/datum/component/ghost_vessel)
+
+/mob/living/carbon/human/species/automaton/vessel/LateInitialize()
+	. = ..()
+	AddComponent(/datum/component/ghost_vessel, /obj/item/reagent_containers/lux)
+
+/mob/living/carbon/human/species/automaton/prefilled_vessel/LateInitialize()
+	. = ..()
+	AddComponent(/datum/component/ghost_vessel)
+
 /datum/species/automaton
 	name = "Automaton"
 	id = SPEC_ID_AUTOMATON
@@ -115,6 +131,8 @@
 	C.AddComponent(/datum/component/steam_life)
 	C.AddComponent(/datum/component/command_follower)
 	C.AddComponent(/datum/component/augmentable)
+	C.AddComponent(/datum/component/easy_repair)
+	C.AddComponent(/datum/component/damage_shutdown)
 
 	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
 	C.grant_language(/datum/language/common)
@@ -123,6 +141,9 @@
 		C.add_spell(action)
 
 	C.add_movespeed_modifier("automaton", multiplicative_slowdown = 0.9)
+
+	for(var/obj/item/bodypart/part as anything in C.bodyparts)
+		part.status = BODYPART_ROBOTIC
 
 /datum/species/automaton/on_species_loss(mob/living/carbon/C)
 	. = ..()
@@ -176,12 +197,10 @@
 /obj/item/organ/heart/automaton
 	name = "steam engine"
 	desc = "A miniature steam engine that powers the automaton's movements."
-	icon_state = "steam_heart"
 
 /obj/item/organ/eyes/automaton
 	name = "optical sensors"
 	desc = "Glowing lenses that allow the automaton to perceive the world."
-	icon_state = "automaton_eyes"
 
 /datum/blood_type/oil
 	name = "Lubricating Oil"

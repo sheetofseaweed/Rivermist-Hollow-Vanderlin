@@ -194,7 +194,7 @@
 	UnregisterSignal(leash_pet, COMSIG_PARENT_EXAMINE)
 	leash_pet = null
 
-/obj/item/leash/process(delta_time)
+/obj/item/leash/process()
 	if(!leash_pet) //No pet, break loop
 		w_class = WEIGHT_CLASS_SMALL
 		return PROCESS_KILL
@@ -209,6 +209,7 @@
 		leash_pet.remove_status_effect(/datum/status_effect/leash_pet)
 		w_class = WEIGHT_CLASS_SMALL
 		QDEL_NULL(leash)
+		return PROCESS_KILL
 
 	if(!leash_pet.has_status_effect(/datum/status_effect/leash_pet)) //If there is no pet, there is no dom. Loop breaks.
 		if(leash_master) UnregisterSignal(leash_master, COMSIG_MOVABLE_MOVED)

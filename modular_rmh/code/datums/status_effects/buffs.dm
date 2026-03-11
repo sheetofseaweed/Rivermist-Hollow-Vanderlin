@@ -54,7 +54,7 @@
 /datum/status_effect/buff/drunk_master
 	id = "drunk master"
 	alert_type = /atom/movable/screen/alert/status_effect/buff/drunk
-	effectedstats = list(STATKEY_STR = 5, STATKEY_PER = 5, STATKEY_CON = 5, STATKEY_END = 5, STATKEY_SPD = 5, STATKEY_LCK = 5)
+	effectedstats = list(STATKEY_STR = 3, STATKEY_PER = 3, STATKEY_CON = 3, STATKEY_END = 3, STATKEY_SPD = 3, STATKEY_LCK = 3)
 	duration = 12 MINUTES
 
 /atom/movable/screen/alert/status_effect/buff/drunk_master
@@ -73,3 +73,16 @@
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.remove_stress(/datum/stress_event/drunk)
+
+//BATTLESONG
+
+/datum/status_effect/buff/battle_song
+	id = "battle_song"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/battle_song
+	effectedstats = list(STATKEY_STR = 2, STATKEY_END = 2)
+	duration = 30 SECONDS
+
+/atom/movable/screen/alert/status_effect/buff/battle_song
+	name = "Battle Song"
+	desc = span_nicegreen("I FEEL INSPIRED!")
+	icon_state = "ravox"

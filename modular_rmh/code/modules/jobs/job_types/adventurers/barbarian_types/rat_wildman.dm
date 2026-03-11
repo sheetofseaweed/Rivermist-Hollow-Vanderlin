@@ -37,7 +37,7 @@
 		TRAIT_NOPAINSTUN,
 		TRAIT_STEELHEARTED,
 		TRAIT_STRONGBITE,
-		TRAIT_NASTY_EATER
+		TRAIT_NASTY_EATER,
 	)
 
 	spells = list(
@@ -62,5 +62,5 @@
 	beltl = null
 	beltr = /obj/item/weapon/knife/hunting
 	ring = null
-	l_hand = null
+	l_hand = /obj/item/weapon/knuckles
 	r_hand = null

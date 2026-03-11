@@ -2,7 +2,7 @@
 	name = "Finger their pussy"
 	check_same_tile = FALSE
 
-/datum/sex_action/masturbate/other/vagina/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/other/vagina/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	if(!target.getorganslot(ORGAN_SLOT_VAGINA))
@@ -25,11 +25,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/masturbate/other/vagina/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/other/vagina/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] starts fingering [target]'s [pick("slit","cunt","pussy","snatch")]..."))
 
-/datum/sex_action/masturbate/other/vagina/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/other/vagina/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fingers [target]'s [pick("slit","cunt","pussy","snatch")]..."))
@@ -39,10 +39,10 @@
 
 	sex_session.handle_passive_ejaculation(target)
 
-/datum/sex_action/masturbate/other/vagina/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/other/vagina/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops fingering [target]'s [pick("slit","cunt","pussy","snatch")]."))
 
-/datum/sex_action/masturbate/other/vagina/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/masturbate/other/vagina/lock_sex_object(mob/living/user, mob/living/target)
 	. = ..()
 	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_VAGINA)

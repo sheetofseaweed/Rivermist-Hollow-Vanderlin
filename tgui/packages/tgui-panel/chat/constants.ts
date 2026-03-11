@@ -28,6 +28,7 @@ export const MESSAGE_TYPE_ENTERTAINMENT = 'entertainment';
 export const MESSAGE_TYPE_INFO = 'info';
 export const MESSAGE_TYPE_WARNING = 'warning';
 export const MESSAGE_TYPE_DEADCHAT = 'deadchat';
+export const MESSAGE_TYPE_LOVE = 'love';
 export const MESSAGE_TYPE_OOC = 'ooc';
 export const MESSAGE_TYPE_ADMINPM = 'adminpm';
 export const MESSAGE_TYPE_COMBAT = 'combat';
@@ -97,6 +98,12 @@ export const MESSAGE_TYPES: MessageType[] = [
     name: 'Admin PMs',
     description: 'Messages to/from admins (adminhelp)',
     selector: '.pm, .adminhelp',
+  },
+  {
+    type: MESSAGE_TYPE_LOVE,
+    name: 'Combat Log',
+    description: 'Urist McLover has kissed you passionately!',
+    selector: '.love, .love_extreme, .love_high, .love_mid, .love_low',
   },
   {
     type: MESSAGE_TYPE_COMBAT,

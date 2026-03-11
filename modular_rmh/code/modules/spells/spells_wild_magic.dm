@@ -1,6 +1,11 @@
+/datum/action/cooldown/spell
+	var/disable_wild_magic = FALSE
+
 /datum/action/cooldown/spell/after_cast(atom/cast_on)
 	. = ..()
 
+	if(disable_wild_magic)
+		return
 	handle_wild_magic(cast_on)
 
 /datum/action/cooldown/spell/proc/restore_frog_form(mob/living/frog)

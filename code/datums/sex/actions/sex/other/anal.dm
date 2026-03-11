@@ -5,14 +5,14 @@
 	aggro_grab_instead_same_tile = FALSE
 	target_priority = 100
 
-/datum/sex_action/sex/other/anal/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/anal/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	if(!target.getorganslot(ORGAN_SLOT_PENIS))
 		return FALSE
 	return TRUE
 
-/datum/sex_action/sex/other/anal/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/anal/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -28,12 +28,12 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/sex/other/anal/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/anal/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] gets on top of [target] and begins riding [target.p_them()] with [user.p_their()] butt!"))
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), 20, TRUE, ignore_walls = FALSE)
 
-/datum/sex_action/sex/other/anal/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/anal/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rides [target]."))
@@ -52,19 +52,19 @@
 	sex_session.perform_sex_action(target, user, 2, 4, 2, src)
 
 
-/datum/sex_action/sex/other/anal/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/sex/other/anal/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		target.visible_message(span_love("[user] cums into [target]'s butt!"))
-		user.virginity = FALSE
-		target.virginity = FALSE
+		user.lose_virginity()
+		target.lose_virginity()
 		return ORGASM_LOCATION_INTO
 	else
 		user.visible_message(span_love("[user] cums with their butt from [target]'s cock!"))
-		user.virginity = FALSE
-		target.virginity = FALSE
+		user.lose_virginity()
+		target.lose_virginity()
 		return ORGASM_LOCATION_SELF
 
 
-/datum/sex_action/sex/other/anal/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/sex/other/anal/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] gets off [target]."))

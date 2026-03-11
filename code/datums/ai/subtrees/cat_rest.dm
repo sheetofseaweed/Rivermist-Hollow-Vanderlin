@@ -24,6 +24,8 @@
 
 /datum/ai_behavior/cat_rest/perform(delta_time, datum/ai_controller/controller)
 	. = ..()
+	if(QDELETED(src))
+		finish_action(controller, FALSE)
 	var/mob/living/simple_animal/pet/cat/cat_pawn = controller.pawn
 	cat_pawn.emote("me", 1, pick("stretches out for a belly rub.", "wags its tail.", "lies down."))
 	cat_pawn.icon_state = "[cat_pawn.icon_living]_rest"

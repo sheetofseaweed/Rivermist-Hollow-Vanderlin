@@ -1,4 +1,4 @@
-/mob/living/carbon/human/proc/get_highest_grab_state_on(mob/living/carbon/human/victim)
+/mob/living/proc/get_highest_grab_state_on(mob/living/victim)
 	var/grabstate = null
 	if(r_grab && r_grab.grabbed == victim)
 		if(grabstate == null || r_grab.grab_state > grabstate)
@@ -10,7 +10,7 @@
 
 /proc/do_thrust_animate(atom/movable/user, atom/movable/target, pixels = 4, time = 2.7)
 	var/datum/sex_session/sex_session
-	if(ishuman(user) && ishuman(target))
+	if(isliving(user) && isliving(target))
 		sex_session = get_sex_session(user, target)
 		if(!sex_session)
 			sex_session = get_sex_session(target, user)
@@ -42,6 +42,10 @@
 /mob/living/proc/start_sex_session(mob/living/target, show_ui = TRUE)
 	if(!target)
 		return
+	if(!GetComponent(/datum/component/arousal))
+		AddComponent(/datum/component/arousal)
+	if(!target.GetComponent(/datum/component/arousal))
+		target.AddComponent(/datum/component/arousal)
 	var/datum/sex_session/old_session = get_sex_session(src, target)
 	if(old_session && !QDELETED(old_session))
 		if(show_ui)
@@ -64,8 +68,8 @@
 /mob/living/proc/can_do_sex()
 	return TRUE
 
-/mob/living/carbon/human/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
-	var/mob/living/carbon/human/target = src
+/mob/living/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
+	var/mob/living/target = src
 
 	if(user.mmb_intent)
 		return ..()
@@ -94,20 +98,39 @@
 /mob/living/proc/has_hands()
 	return TRUE
 
+/mob/living/proc/has_free_sex_hands()
+	return has_hands() && !HAS_TRAIT(src, TRAIT_HANDS_BLOCKED)
+
 /mob/living/proc/has_mouth()
 	return TRUE
 
 /mob/living/proc/has_penis()
-	return gender == MALE
+	return getorganslot(ORGAN_SLOT_PENIS) || gender == MALE
 
 /mob/living/proc/has_testicles()
-	return gender == MALE
+	return getorganslot(ORGAN_SLOT_TESTICLES) || gender == MALE
 
 /mob/living/proc/has_vagina()
-	return gender == FEMALE
+	return getorganslot(ORGAN_SLOT_VAGINA) || gender == FEMALE
 
 /mob/living/proc/has_breasts()
-	return gender == FEMALE
+	return getorganslot(ORGAN_SLOT_BREASTS) || gender == FEMALE
+
+/mob/living/proc/has_belly()
+	RETURN_TYPE(/obj/item/organ/genitals/belly)
+	return getorganslot(ORGAN_SLOT_BELLY)
+
+/mob/living/proc/has_butt()
+	RETURN_TYPE(/obj/item/organ/genitals/butt)
+	return getorganslot(ORGAN_SLOT_BUTT)
+
+/mob/living/proc/is_fertile()
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = getorganslot(ORGAN_SLOT_VAGINA)
+	return vagina?.fertility
+
+/mob/living/proc/is_virile()
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = getorganslot(ORGAN_SLOT_TESTICLES)
+	return testicles?.virility
 
 /mob/living/carbon/human/has_penis()
 	return getorganslot(ORGAN_SLOT_PENIS)
@@ -122,24 +145,38 @@
 	RETURN_TYPE(/obj/item/organ/genitals/filling_organ/breasts)
 	return getorganslot(ORGAN_SLOT_BREASTS)
 
-/mob/living/carbon/human/proc/has_belly()
-	RETURN_TYPE(/obj/item/organ/genitals/belly)
-	return getorganslot(ORGAN_SLOT_BELLY)
-
-/mob/living/carbon/human/proc/has_butt()
-	RETURN_TYPE(/obj/item/organ/genitals/butt)
-	return getorganslot(ORGAN_SLOT_BUTT)
-
-/mob/living/carbon/human/proc/is_fertile()
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina = getorganslot(ORGAN_SLOT_VAGINA)
-	return vagina.fertility
-
-/mob/living/carbon/human/proc/is_virile()
-	var/obj/item/organ/genitals/filling_organ/testicles/testicles = getorganslot(ORGAN_SLOT_TESTICLES)
-	return testicles.virility
-
 /mob/living/proc/mouth_is_free()
-	return !is_mouth_covered()
+	return has_mouth() && !mouth_blocked && !is_muzzled() && !is_mouth_covered()
+
+/mob/living/proc/get_worn_choker()
+	return null
+
+/mob/living/carbon/get_worn_choker()
+	if(istype(choker, /obj/item/clothing/choker))
+		return choker
+	if(istype(wear_neck, /obj/item/clothing/choker))
+		return wear_neck
+	return null
+
+/mob/living/proc/snap_worn_choker(mob/living/puller)
+	var/obj/item/clothing/choker/worn_choker = get_worn_choker()
+	if(!worn_choker)
+		return FALSE
+
+	if(worn_choker.loc == src)
+		dropItemToGround(worn_choker, TRUE, TRUE)
+
+	if(worn_choker.break_sound)
+		playsound(src, 'modular_rmh/sound/effects/snap.ogg', 30, TRUE, -1)
+
+	visible_message(
+		span_warning("[puller ? "[puller] thrusts hard enough to snap [src]'s [worn_choker.name]!" : "[src]'s [worn_choker.name] snaps!"]"),
+		span_warning("[puller ? "[puller] thrusts hard enough to snap my [worn_choker.name]!" : "My [worn_choker.name] snaps!"]")
+	)
+
+	worn_choker.atom_break()
+
+	return TRUE
 
 /mob/living/proc/foot_is_free()
 	return is_barefoot()
@@ -188,7 +225,7 @@
 				if(G.limb_grabbed == LH || G.limb_grabbed == RH)
 					return TRUE
 
-/proc/return_sessions_with_user(mob/living/carbon/human/user)
+/proc/return_sessions_with_user(mob/living/user)
 	var/list/sessions = list()
 	for(var/datum/sex_session/session in GLOB.sex_sessions)
 		if(user != session.target && user != session.user)
@@ -196,7 +233,7 @@
 		sessions |= session
 	return sessions
 
-/proc/return_highest_priority_action(list/sessions = list(), mob/living/carbon/human/user)
+/proc/return_highest_priority_action(list/sessions = list(), mob/living/user)
 	var/datum/sex_session/highest_session
 	for(var/datum/sex_session/session in sessions)
 		if(!session.current_action)
@@ -284,6 +321,7 @@
 
 
 /mob/living
+	var/list/attached_sex_toys = list()
 
 	///npc organs to use
 	var/ball_organ = /obj/item/organ/genitals/filling_organ/testicles
@@ -309,13 +347,57 @@
 	. = ..()
 	if(ai_controller)
 		var/datum/ai_planning_subtree/horny/hornybehavior = locate() in ai_controller.planning_subtrees
-		if(hornybehavior)
-			addtimer(CALLBACK(src, PROC_REF(give_genitals)), 1)
+		if(hornybehavior && !GetComponent(/datum/component/arousal))
+			AddComponent(/datum/component/arousal)
 
 /mob/living/proc/give_genitals()
-	if(!isanimal(src))
-		var/mob/living/carbon/human/user = src
-		if(gender == MALE)
+	var/mob/living/user = src
+	var/obj/item/organ/genitals/filling_organ/anus/anus = user.getorganslot(ORGAN_SLOT_ANUS)
+	if(!anus)
+		anus = new /obj/item/organ/genitals/filling_organ/anus
+		anus.Insert(user, TRUE)
+	if(gender == MALE)
+		var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.getorganslot(ORGAN_SLOT_TESTICLES)
+		if(!testicles)
+			if(!show_genitals)
+				testicles = new /obj/item/organ/genitals/filling_organ/testicles/invisible
+			else
+				testicles = new ball_organ
+			testicles.organ_size = rand(ball_min, ball_max)
+			testicles.Insert(user, TRUE)
+		var/obj/item/organ/genitals/penis/penis = user.getorganslot(ORGAN_SLOT_PENIS)
+		if(!penis)
+			if(!show_genitals)
+				penis = new /obj/item/organ/genitals/penis
+			else
+				penis = new penis_organ
+			penis.organ_size = rand(penis_min, penis_max)
+			penis.Insert(user, TRUE)
+	if(gender == FEMALE)
+		var/obj/item/organ/genitals/butt/buttie = user.getorganslot(ORGAN_SLOT_BUTT)
+		if(!buttie)
+			if(!show_genitals)
+				buttie = new /obj/item/organ/genitals/butt/invisible
+			else
+				buttie = new butt_organ
+			buttie.organ_size = rand(butt_min, butt_max)
+			buttie.Insert(user, TRUE)
+		var/obj/item/organ/genitals/filling_organ/breasts/breasts = user.getorganslot(ORGAN_SLOT_BREASTS)
+		if(!breasts)
+			if(!show_genitals)
+				breasts = new /obj/item/organ/genitals/filling_organ/breasts
+			else
+				breasts = new breast_organ
+			breasts.organ_size = rand(breast_min,breast_max)
+			breasts.Insert(user, TRUE)
+		var/obj/item/organ/genitals/filling_organ/vagina/vagina = user.getorganslot(ORGAN_SLOT_VAGINA)
+		if(!vagina)
+			if(!show_genitals)
+				vagina = new /obj/item/organ/genitals/filling_organ/vagina
+			else
+				vagina = new vagina_organ
+			vagina.Insert(user, TRUE)
+		if(prob(5)) //5 chance to be dickgirl.
 			var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.getorganslot(ORGAN_SLOT_TESTICLES)
 			if(!testicles)
 				if(!show_genitals)
@@ -332,45 +414,23 @@
 					penis = new penis_organ
 				penis.organ_size = rand(penis_min, penis_max)
 				penis.Insert(user, TRUE)
-		if(gender == FEMALE)
-			var/obj/item/organ/genitals/butt/buttie = user.getorganslot(ORGAN_SLOT_BUTT)
-			if(!buttie)
-				if(!show_genitals)
-					buttie = new /obj/item/organ/genitals/butt/invisible
-				else
-					buttie = new butt_organ
-				buttie.organ_size = rand(butt_min, butt_max)
-				buttie.Insert(user, TRUE)
-			var/obj/item/organ/genitals/filling_organ/breasts/breasts = user.getorganslot(ORGAN_SLOT_BREASTS)
-			if(!breasts)
-				if(!show_genitals)
-					breasts = new /obj/item/organ/genitals/filling_organ/breasts
-				else
-					breasts = new breast_organ
-				breasts.organ_size = rand(breast_min,breast_max)
-				breasts.Insert(user, TRUE)
-			var/obj/item/organ/genitals/filling_organ/vagina/vagina = user.getorganslot(ORGAN_SLOT_VAGINA)
-			if(!vagina)
-				if(!show_genitals)
-					vagina = new /obj/item/organ/genitals/filling_organ/vagina
-				else
-					vagina = new vagina_organ
-				vagina.Insert(user, TRUE)
-			if(prob(5)) //5 chance to be dickgirl.
-				var/obj/item/organ/genitals/filling_organ/testicles/testicles = user.getorganslot(ORGAN_SLOT_TESTICLES)
-				if(!testicles)
-					if(!show_genitals)
-						testicles = new /obj/item/organ/genitals/filling_organ/testicles/invisible
-					else
-						testicles = new ball_organ
-					testicles.organ_size = rand(ball_min, ball_max)
-					testicles.Insert(user, TRUE)
-				var/obj/item/organ/genitals/penis/penis = user.getorganslot(ORGAN_SLOT_PENIS)
-				if(!penis)
-					if(!show_genitals)
-						penis = new /obj/item/organ/genitals/penis
-					else
-						penis = new penis_organ
-					penis.organ_size = rand(penis_min, penis_max)
-					penis.Insert(user, TRUE)
-		color_key_source_list_from_carbon(src)
+	if(iscarbon(user))
+		var/mob/living/carbon/carbon_user = user
+		carbon_user.update_body_parts()
+
+/mob/living/proc/lose_virginity()
+	return
+
+/mob/living/carbon/human/lose_virginity()
+	virginity = FALSE
+
+/mob/living/proc/adjacent_or_closet(atom/neighbor)
+	if(istype(loc, /obj/structure/closet) || istype(loc, /obj/structure/handcart) || istype(neighbor.loc, /obj/structure/closet) || istype(neighbor.loc, /obj/structure/handcart)) // within container
+		return loc == neighbor.loc
+	return Adjacent(neighbor)
+
+/mob/living/proc/check_closet(atom/neighbor)
+	if(istype(loc, /obj/structure/closet) || istype(loc, /obj/structure/handcart) || istype(neighbor.loc, /obj/structure/closet) || istype(neighbor.loc, /obj/structure/handcart)) // within container
+		return loc == neighbor.loc
+	else
+		return FALSE

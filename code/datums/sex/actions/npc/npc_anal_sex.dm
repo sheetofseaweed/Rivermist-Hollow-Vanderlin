@@ -34,16 +34,16 @@
 	sex_session.handle_passive_ejaculation(target)
 
 
-/datum/sex_action/npc/npc_anal_sex/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/npc/npc_anal_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		user.visible_message(span_love("[user] cums with their butt from [target]'s cock!"))
-		user.virginity = FALSE
-		target.virginity = FALSE
+		user.lose_virginity()
+		target.lose_virginity()
 		return ORGASM_LOCATION_SELF
 	else
 		user.visible_message(span_love("[user] cums into [target]'s butt!"))
-		user.virginity = FALSE
-		target.virginity = FALSE
+		user.lose_virginity()
+		target.lose_virginity()
 		return ORGASM_LOCATION_INTO
 
 /datum/sex_action/npc/npc_anal_sex/on_finish(mob/living/user, mob/living/target)

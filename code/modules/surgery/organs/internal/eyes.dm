@@ -222,5 +222,6 @@
 	if(color_two)
 		eyes.second_color = color_two
 	eyes.update_accessory_colors()
-	if(eyes.owner)
-		eyes.owner.update_body_parts(TRUE)
+	if(iscarbon(eyes.owner))
+		var/mob/living/carbon/carbon_owner = eyes.owner
+		carbon_owner.update_body_parts()

@@ -18,12 +18,12 @@
 
 /datum/storage_tracking_entry
 	var/obj/item/stored_item = null
-	var/mob/living/carbon/human/original_owner = null
+	var/mob/living/original_owner = null
 	var/insertion_time = null
 	var/hole_id = null
 	var/stored_by_ckey = null
 
-/datum/storage_tracking_entry/New(obj/item/item, mob/living/carbon/human/owner, hole_id_param, mob/living/carbon/human/stored_by)
+/datum/storage_tracking_entry/New(obj/item/item, mob/living/owner, hole_id_param, mob/living/stored_by)
 	stored_item = item
 	original_owner = owner
 	insertion_time = world.time
@@ -65,6 +65,8 @@
 	var/aggro_grab_instead_same_tile = FALSE
 	/// Whether this action requires hole storage integration
 	var/requires_hole_storage = FALSE
+	/// Whether this action needs the initiator's hands to be free
+	var/requires_free_hands = FALSE
 	/// What hole ID this action uses (if any)
 	var/hole_id = null
 	/// What item type this action stores in the hole
@@ -106,17 +108,17 @@
 
 	return ..()
 
-/datum/sex_action/proc/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/shows_on_menu(mob/living/user, mob/living/target)
 	return TRUE
 
-/datum/sex_action/proc/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/can_perform(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
 	if(requires_hole_storage)
-		if(!check_hole_storage_available(target, user))
+		if(!check_hole_storage_available(user, target))
 			return FALSE
 	return TRUE
 
-/datum/sex_action/proc/try_knot_on_climax(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/try_knot_on_climax(mob/living/user, mob/living/target)
 	if(!knot_on_finish)
 		return FALSE
 	if(!can_knot)
@@ -127,14 +129,11 @@
 		return FALSE
 	return SEND_SIGNAL(user, COMSIG_SEX_TRY_KNOT, target, session.force)
 
-/datum/sex_action/proc/check_location_accessible(mob/living/carbon/human/user, mob/living/carbon/human/target, location = BODY_ZONE_CHEST, grabs = TRUE, skipundies = TRUE)
+/datum/sex_action/proc/check_location_accessible(mob/living/user, mob/living/target, location = BODY_ZONE_CHEST, grabs = TRUE, skipundies = TRUE)
 	var/obj/item/bodypart/bodypart = target.get_bodypart(location)
 	var/self_target = FALSE
 	if(target == user)
 		self_target = TRUE
-
-	if(!bodypart)
-		return FALSE
 
 	if(src.check_same_tile && (user != target || self_target))
 		var/same_tile = (get_turf(user) == get_turf(target))
@@ -156,6 +155,16 @@
 	if(location in body_parts_covered2organ_names(hidden_slots))
 		return FALSE
 
+	if(location == BODY_ZONE_PRECISE_MOUTH)
+		return target.has_mouth() && target.mouth_is_free()
+
+	if(!bodypart)
+		if(iscarbon(target))
+			return FALSE
+		if(location == BODY_ZONE_PRECISE_L_FOOT || location == BODY_ZONE_PRECISE_R_FOOT)
+			return target.foot_is_free()
+		return TRUE
+
 	return TRUE
 	/*if(self_target)
 		grabs = FALSE
@@ -163,24 +172,59 @@
 	var/result = get_location_accessible(target, location = location, grabs = grabs, skipundies = skipundies)
 	return result*/
 
-/datum/sex_action/proc/check_hole_storage_available(mob/living/carbon/human/target, mob/living/carbon/human/user)
-	if(!hole_id || !stored_item_type)
-		return TRUE // No storage requirements
+/datum/sex_action/proc/get_storage_receiver(mob/living/user, mob/living/target)
+	return flipped ? user : target
 
-	// Check if target has hole storage components
-	var/obj/item/organ/target_o = target.getorganslot(hole_id)
-	var/datum/component/body_storage/storage_comp = target_o.GetComponent(/datum/component/body_storage)
+/datum/sex_action/proc/get_storage_insertor(mob/living/user, mob/living/target)
+	return flipped ? target : user
+
+/datum/sex_action/proc/get_storage_check_item(mob/living/user, mob/living/target)
+	if(stored_item_type == /obj/item/organ/genitals/penis)
+		var/mob/living/storage_insertor = get_storage_insertor(user, target)
+		return get_users_penis(storage_insertor)
+	return null
+
+/datum/sex_action/proc/get_hole_storage_force(mob/living/user, mob/living/target)
+	var/datum/sex_session/session = get_sex_session(user, target)
+	if(!session)
+		return FALSE
+	return session.get_current_force() >= SEX_FORCE_HIGH
+
+/datum/sex_action/proc/can_fit_item_in_hole(mob/living/storage_owner, hole_slot, obj/item/item_to_check, force = FALSE)
+	if(!storage_owner || !hole_slot || !item_to_check)
+		return FALSE
+
+	var/obj/item/organ/target_organ = storage_owner.getorganslot(hole_slot)
+	if(!target_organ)
+		return FALSE
+
+	var/datum/component/body_storage/storage_comp = target_organ.GetComponent(/datum/component/body_storage)
 	if(!storage_comp)
 		return FALSE
 
-	return TRUE
+	var/fit_result = storage_comp.check_fit(target_organ, item_to_check, STORAGE_LAYER_INNER, force)
+	switch(fit_result)
+		if(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
+			return TRUE
+	return FALSE
 
-/datum/sex_action/proc/get_users_penis(mob/living/carbon/human/user)
+/datum/sex_action/proc/check_hole_storage_available(mob/living/user, mob/living/target)
+	if(!hole_id || !stored_item_type)
+		return TRUE // No storage requirements
+
+	var/mob/living/storage_owner = get_storage_receiver(user, target)
+	var/obj/item/item_to_check = get_storage_check_item(user, target)
+	if(!item_to_check)
+		return FALSE
+
+	return can_fit_item_in_hole(storage_owner, hole_id, item_to_check, get_hole_storage_force(user, target))
+
+/datum/sex_action/proc/get_users_penis(mob/living/user)
 	if(!user)
 		return null
 	return user.getorganslot(ORGAN_SLOT_PENIS)
 
-/datum/sex_action/proc/try_store_in_hole(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/try_store_in_hole(mob/living/user, mob/living/target)
 	if(!requires_hole_storage || !hole_id || !stored_item_type)
 		return TRUE
 
@@ -258,7 +302,7 @@
 
 	return TRUE
 
-/datum/sex_action/proc/remove_from_hole(mob/living/carbon/human/user, mob/living/carbon/human/target, silent = FALSE)
+/datum/sex_action/proc/remove_from_hole(mob/living/user, mob/living/target, silent = FALSE)
 	if(!requires_hole_storage || !hole_id)
 		return TRUE
 
@@ -269,7 +313,7 @@
 
 			if(istype(stored_item, /obj/item/penis_fake))
 				var/obj/item/penis_fake/fake_penis = stored_item
-				var/mob/living/carbon/human/original_owner = find_original_owner_by_ckey(fake_penis.original_owner_ckey)
+				var/mob/living/original_owner = find_original_owner_by_ckey(fake_penis.original_owner_ckey)
 				SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_FORCE_REMOVE, fake_penis, STORAGE_LAYER_INNER)
 				if(!silent)
 					if(original_owner)
@@ -293,13 +337,13 @@
 	if(!target_ckey)
 		return null
 
-	for(var/mob/living/carbon/human/H in GLOB.human_list)
+	for(var/mob/living/H in GLOB.mob_living_list)
 		if(H.ckey == target_ckey)
 			return H
 
 	return null
 
-/datum/sex_action/proc/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/on_start(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
 	if(gags_user)
 		user.mouth_blocked = TRUE
@@ -315,10 +359,10 @@
 	lock_sex_object(user, target)
 	return TRUE
 
-/datum/sex_action/proc/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/on_perform(mob/living/user, mob/living/target)
 	return
 
-/datum/sex_action/proc/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/on_finish(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
 	if(gags_user)
 		user.mouth_blocked = FALSE
@@ -332,39 +376,44 @@
 	unlock_sex_object(user, target)
 	return
 
-/datum/sex_action/proc/is_finished(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/is_finished(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(sex_session.finished_check())
 		return TRUE
 	return FALSE
 
 
-/datum/sex_action/proc/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/lock_sex_object(mob/living/user, mob/living/target)
 	return FALSE
 
-/datum/sex_action/proc/unlock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/unlock_sex_object(mob/living/user, mob/living/target)
 	for(var/datum/sex_session_lock/lock as anything in sex_locks)
 		qdel(lock)
 	sex_locks.Cut()
 
-/datum/sex_action/proc/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip = FALSE) //must_flip is for handling partner's message
+/datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE) //must_flip is for handling partner's message
 	return
 
-/datum/sex_action/proc/check_sex_lock(mob/locked, organ_slot, obj/item/item)
+/datum/sex_action/proc/check_sex_lock(mob/locked, organ_slot, obj/item/item, obj/item/storage_item)
 	if(!organ_slot && !item)
 		return FALSE
 
 	for(var/datum/sex_session_lock/lock as anything in GLOB.locked_sex_objects)
 		if(lock.locked_host == locked)
-			if(((lock.locked_item == item) && lock.locked_item) || ((lock.locked_organ_slot == organ_slot) && lock.locked_organ_slot))
-				return TRUE
+			var/item_lock = ((lock.locked_item == item) && lock.locked_item)
+			var/organ_lock = ((lock.locked_organ_slot == organ_slot) && lock.locked_organ_slot)
+			if(!item_lock && !organ_lock)
+				continue
+			if(organ_lock && storage_item && can_fit_item_in_hole(locked, organ_slot, storage_item))
+				continue
+			return TRUE
 	return FALSE
 
 
-/datum/sex_action/proc/do_onomatopoeia(mob/living/carbon/human/user)
+/datum/sex_action/proc/do_onomatopoeia(mob/living/user)
 	user.balloon_alert_to_viewers("Plap!")
 
-/datum/sex_action/proc/show_sex_effects(mob/living/carbon/human/user)
+/datum/sex_action/proc/show_sex_effects(mob/living/user)
 	for(var/i in 1 to rand(1, 3))
 		if(!user.cmode) // Combat mode
 			new /obj/effect/temp_visual/heart/sex_effects(get_turf(user))
@@ -372,7 +421,7 @@
 			new /obj/effect/temp_visual/heart/sex_effects/red_heart(get_turf(user))
 
 
-/datum/sex_action/proc/can_show_action_message(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/proc/can_show_action_message(mob/living/user, mob/living/target)
 	if(world.time >= next_message_time)
 		var/datum/sex_session/sex_session = get_sex_session(user, target)
 		var/speed_time = 40

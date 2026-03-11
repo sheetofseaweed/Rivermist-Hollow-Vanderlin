@@ -231,6 +231,7 @@
 		/datum/sprite_accessory/tail/large_snake_plain
 		)
 /datum/customizer/organ/tail/aura
+	allows_disabling = TRUE
 	customizer_choices = list(/datum/customizer_choice/organ/tail/aura)
 
 /datum/customizer_choice/organ/tail/aura

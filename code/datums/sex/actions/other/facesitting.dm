@@ -2,12 +2,12 @@
 	name = "Sit on their face"
 	gags_target = TRUE
 
-/datum/sex_action/facesitting/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/facesitting/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	return TRUE
 
-/datum/sex_action/facesitting/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/facesitting/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -29,11 +29,11 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/facesitting/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/facesitting/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] sits [user.p_their()] butt on [target]'s face!"))
 
-/datum/sex_action/facesitting/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/facesitting/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/verbstring = pick(list("rubs", "smushes", "forces"))
 	if(can_show_action_message(user, target))
@@ -47,10 +47,10 @@
 	sex_session.perform_sex_action(target, user, 0.5, 2, 0, src)
 	sex_session.handle_passive_ejaculation(target)
 
-/datum/sex_action/facesitting/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/facesitting/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] gets off [target]'s face."))
 
-/datum/sex_action/facesitting/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/facesitting/lock_sex_object(mob/living/user, mob/living/target)
 	sex_locks |= new /datum/sex_session_lock(target, BODY_ZONE_PRECISE_MOUTH)
 	sex_locks |= new /datum/sex_session_lock(user, ORGAN_SLOT_ANUS)

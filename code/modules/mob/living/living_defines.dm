@@ -78,6 +78,8 @@
 	var/metabolism_efficiency = 1 //more or less efficiency to metabolize helpful/harmful reagents and regulate body temperature..
 	var/has_limbs = 0 //does the mob have distinct limbs?(arms,legs, chest,head)
 
+	/// Chem effects
+	var/list/chem_effects
 	///How many legs does this mob have by default. This shouldn't change at runtime.
 	var/default_num_legs = 2
 	///How many legs does this mob currently have. Should only be changed through set_num_legs()
@@ -240,3 +242,7 @@
 	//all mobs get organs
 	var/list/internal_organs		= list()	//List of /obj/item/organ in the mob. They don't go in the contents for some reason I don't want to know.
 	var/list/internal_organs_slot= list() //Same as above, but stores "slot ID" - "organ" pairs for easy access.
+
+	//Handcuffs and Legcuffs
+	var/obj/item/handcuffed = null //Whether or not the mob is handcuffed
+	var/obj/item/legcuffed = null  //Same as handcuffs but for legs. Bear traps use this.

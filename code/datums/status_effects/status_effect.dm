@@ -26,7 +26,7 @@
 	var/alert_type = /atom/movable/screen/alert/status_effect
 	/// The alert itself, if it exists
 	var/atom/movable/screen/alert/status_effect/linked_alert = null
-	/// Used to define if the status effect should be using SSfastprocess or SSprocessing
+	/// Used to define if the status effect should be using SSstatusprocess or SSprocessing
 	var/processing_speed = STATUS_EFFECT_FAST_PROCESS
 	/// Do we self-terminate when a fullheal is called?
 	var/remove_on_fullheal = FALSE
@@ -70,14 +70,14 @@
 	if(duration > world.time || tick_interval > world.time) //don't process if we don't care
 		switch(processing_speed)
 			if(STATUS_EFFECT_FAST_PROCESS)
-				START_PROCESSING(SSfastprocess, src)
+				START_PROCESSING(SSstatusprocess, src)
 			if(STATUS_EFFECT_NORMAL_PROCESS)
 				START_PROCESSING(SSprocessing, src)
 
 	return TRUE
 
 /datum/status_effect/Destroy()
-	STOP_PROCESSING(SSfastprocess, src)
+	STOP_PROCESSING(SSstatusprocess, src)
 	if(owner)
 		linked_alert = null
 		owner.clear_alert(id)

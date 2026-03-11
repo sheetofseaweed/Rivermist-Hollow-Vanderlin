@@ -1,8 +1,8 @@
 /datum/sex_session //! TODO SEX SOUNDS
 	/// The initiating user
-	var/mob/living/carbon/human/user
+	var/mob/living/user
 	/// Target of our actions
-	var/mob/living/carbon/human/target
+	var/mob/living/target
 	/// Whether the user desires to stop current action
 	var/desire_stop = FALSE
 	/// What is the current performed action
@@ -31,7 +31,7 @@
 
 	var/datum/ui_updater/session_updater
 
-/datum/sex_session/New(mob/living/carbon/human/session_user, mob/living/carbon/human/session_target)
+/datum/sex_session/New(mob/living/session_user, mob/living/session_target)
 	user = session_user
 	target = session_target
 	sex_id++
@@ -42,7 +42,7 @@
 
 	add_ui_tracking("sexcon[our_sex_id]")
 
-	addtimer(CALLBACK(src, PROC_REF(check_sex)), 180 SECONDS, flags = TIMER_LOOP)
+	addtimer(CALLBACK(src, PROC_REF(check_sex)), 30 SECONDS)
 
 /datum/sex_session/Destroy(force, ...)
 	UnregisterSignal(user, list(COMSIG_SEX_CLIMAX, COMSIG_SEX_AROUSAL_CHANGED))
@@ -84,6 +84,7 @@
 	inactivity++
 
 	if(inactivity < 5)
+		addtimer(CALLBACK(src, PROC_REF(check_sex)), 30 SECONDS)
 		return
 	qdel(src)
 
@@ -183,6 +184,9 @@
 			break
 
 		action.on_perform(user, target)
+		if(istype(user.loc, /obj/structure/closet))
+			var/obj/structure/closet/sex_shack = user.loc
+			sex_shack.Shake(1, 3, 15)
 
 		if(user.has_kink(KINK_VISUAL_EFFECTS)) //Hearts played on action that can be turned off at will
 			action.show_sex_effects(user)
@@ -218,11 +222,17 @@
 		return FALSE
 	if(user.stat != CONSCIOUS)
 		return FALSE
-	if(!user.Adjacent(target) && action.check_distance)
+	if(!user.adjacent_or_closet(target) && action.check_distance)
 		return FALSE
-	if(action.check_incapacitated && user.incapacitated())
+	if(action.check_incapacitated)
+		var/incapacitated_flags = IGNORE_GRAB
+		if(!action.requires_free_hands)
+			incapacitated_flags |= IGNORE_RESTRAINTS
+		if(user.incapacitated(incapacitated_flags))
+			return FALSE
+	if(action.requires_free_hands && !user.has_free_sex_hands())
 		return FALSE
-	if(action.check_same_tile)
+	if(action.check_same_tile && !user.check_closet(target))
 		var/same_tile = (get_turf(user) == get_turf(target))
 		var/grab_bypass = (action.aggro_grab_instead_same_tile && user.get_highest_grab_state_on(target) == GRAB_AGGRESSIVE)
 		if(!same_tile && !grab_bypass)
@@ -233,7 +243,7 @@
 			return FALSE
 	return TRUE
 
-/datum/sex_session/proc/perform_sex_action(mob/living/carbon/human/action_initiator, mob/living/carbon/human/action_target, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
+/datum/sex_session/proc/perform_sex_action(mob/living/action_initiator, mob/living/action_target, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
 
 	var/list/arousal_data_target = list()
 	SEND_SIGNAL(action_target, COMSIG_SEX_GET_AROUSAL, arousal_data_target)
@@ -280,7 +290,7 @@
 
 	SEND_SIGNAL(action_user_final, COMSIG_SEX_RECEIVE_ACTION, sex_act, action_initiator, action_target, arousal_amt, pain_amt, orgasm_prog_amt, giving, force, speed, res_send)
 
-/datum/sex_session/proc/handle_passive_ejaculation(mob/living/carbon/human/handler)
+/datum/sex_session/proc/handle_passive_ejaculation(mob/living/handler)
 	if(!handler)
 		handler = user
 	var/list/arousal_data = list()
@@ -294,14 +304,16 @@
 		if(arousal_value < 70)
 			SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.2)
 
-		if(handler.handcuffed)
-			if(prob(8))
-				var/chaffepain = pick(10,10,10,10,20,20,30)
-				SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, chaffepain, 1, 0)
-				handler.visible_message(("<span class='love_mid'>[handler] squirms uncomfortably in [handler.p_their()] restraints.</span>"), \
-					("<span class='love_extreme'>I feel [handler.handcuffed] rub uncomfortably against my skin.</span>"))
-			if(arousal_value < ACTIVE_EJAC_THRESHOLD)
-				SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
+		if(iscarbon(handler))
+			var/mob/living/carbon/carbon_handler = handler
+			if(carbon_handler.handcuffed)
+				if(prob(8))
+					var/chaffepain = pick(10,10,10,10,20,20,30)
+					SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, 3, chaffepain, 1, 0)
+					handler.visible_message(("<span class='love_mid'>[handler] squirms uncomfortably in [handler.p_their()] restraints.</span>"), \
+						("<span class='love_extreme'>I feel [carbon_handler.handcuffed] rub uncomfortably against my skin.</span>"))
+				if(arousal_value < ACTIVE_EJAC_THRESHOLD)
+					SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
 
 /datum/sex_session/proc/perform_deepthroat_oxyloss(mob/living/action_target, oxyloss_amt)
 	var/oxyloss_multiplier = 0
@@ -872,8 +884,11 @@
 	if(collective)
 		participants = collective.involved_mobs
 
-	for(var/mob/living/carbon/human/participant in participants)
-		var/display_name = participant.get_face_name() || participant.name
+	for(var/mob/living/participant in participants)
+		var/display_name = participant.name
+		if(ishuman(participant))
+			var/mob/living/carbon/human/human_participant = participant
+			display_name = human_participant.get_face_name() || participant.name
 		var/is_you = (participant == user) ? " (You)" : ""
 		content += "<div class='participant-item'>[display_name][is_you]</div>"
 
@@ -917,7 +932,7 @@
 
 	return content.Join("")
 
-/datum/sex_session/proc/get_erp_preferences_display(mob/living/carbon/human/character, editable = FALSE)
+/datum/sex_session/proc/get_erp_preferences_display(mob/living/character, editable = FALSE)
 	var/list/content = list()
 
 	if(!character.client?.prefs)

@@ -331,7 +331,7 @@
 				spawned_type = /obj/item/coin/silver
 			if(CTYPE_INQU)
 				spawned_type = /obj/item/coin/inqcoin
-			if("t1")
+			if(CTYPE_GUILD)
 				spawned_type = /obj/item/coin/gild
 			else
 				spawned_type = /obj/item/coin/copper

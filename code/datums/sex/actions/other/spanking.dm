@@ -4,13 +4,14 @@
 	check_same_tile = FALSE
 	do_time = 2.5 SECONDS // Slightly faster than average for repeated action
 	stamina_cost = 0
+	requires_free_hands = TRUE
 
-/datum/sex_action/spanking/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/spanking/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
 	return TRUE
 
-/datum/sex_action/spanking/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/spanking/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -24,11 +25,11 @@
 	// No clothing or body zone checks, can always spank
 	return TRUE
 
-/datum/sex_action/spanking/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/spanking/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] positions [user.p_their()] hand to spank [target]'s butt!"))
 
-/datum/sex_action/spanking/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/spanking/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/force = sex_session.force
 	var/sound = pick('sound/foley/slap.ogg', 'sound/foley/smackspecial.ogg')
@@ -54,10 +55,10 @@
 		if(prob(10))
 			to_chat(target, span_notice("A gentle warmth spreads across your buttocks."))
 
-/datum/sex_action/spanking/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/spanking/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops spanking [target]."))
 
-/datum/sex_action/spanking/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/spanking/lock_sex_object(mob/living/user, mob/living/target)
 	var/locked = user.get_active_precise_hand()
 	sex_locks |= new /datum/sex_session_lock(user, locked)

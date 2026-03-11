@@ -1,0 +1,33 @@
+
+#define DANGER_SAFE_FLOOR 0
+#define DANGER_SAFE_LIMIT 10
+#define DANGER_LOW_FLOOR 11
+#define DANGER_LOW_LIMIT 20
+#define DANGER_MODERATE_FLOOR 21
+#define DANGER_MODERATE_LIMIT 30
+#define DANGER_DANGEROUS_FLOOR 31
+#define DANGER_DANGEROUS_LIMIT 40
+#define DANGER_DIRE_FLOOR 41
+#define DANGER_DIRE_LIMIT 60
+
+#define DANGER_LEVEL_SAFE "Safe"
+#define DANGER_LEVEL_LOW "Low"
+#define DANGER_LEVEL_MODERATE "Moderate"
+#define DANGER_LEVEL_DANGEROUS "Dangerous"
+#define DANGER_LEVEL_BLEAK "Bleak"
+
+#define THREAT_REGION_BASIN "Basin"
+#define THREAT_REGION_NORTHERN_GROVE "Northern Grove"
+#define THREAT_REGION_OUTER_GROVE "Outer Grove" // Grove west of the road
+#define THREAT_REGION_MOUNT_DECAP "Mount Decapitation"
+#define THREAT_REGION_TERRORBOG "Terrorbog"
+#define THREAT_REGION_COAST "Coast"
+
+//RMH
+#define THREAT_REGION_RMH_MOUNTAINS "Dusk Spire"
+#define THREAT_REGION_RMH_DWARF_FORTRESS "Dwarf Fort"
+#define THREAT_REGION_RMH_BOG "The Swamps"
+#define THREAT_REGION_RMH_ORC_FORT "Orc Fort"
+#define THREAT_REGION_RMG_DARK_FOREST "Dark Forest"
+#define THREAT_REGION_RMH_DESERT "Enchanted Desert"
+#define THREAT_REGION_RMH_UNDERDARK "RMH Underdark"

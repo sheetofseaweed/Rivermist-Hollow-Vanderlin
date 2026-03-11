@@ -79,7 +79,7 @@
 			/obj/item/weapon/knife/copper = 3,
 			/obj/item/weapon/polearm/halberd = 1,
 			/obj/item/weapon/polearm/woodstaff = 3,
-			/obj/item/weapon/spear = 2,
+			/obj/item/weapon/polearm/spear = 2,
 			/obj/item/weapon/knife/dagger/navaja = 2,
 			/obj/item/weapon/sword/sabre/cutlass = 2,
 			/obj/item/weapon/sword/long = 2,
@@ -88,7 +88,7 @@
 			/obj/item/weapon/sword/long/greatsword/zwei = 1,
 			/obj/item/weapon/polearm/eaglebeak/lucerne = 1,
 			/obj/item/weapon/polearm/eaglebeak = 1,
-			/obj/item/weapon/spear = 1,
+			/obj/item/weapon/polearm/spear = 1,
 			/obj/item/weapon/knife/throwingknife/steel = 1,
 
 			// tools
@@ -259,7 +259,7 @@
 			/obj/item/weapon/knife/copper = 3,
 			/obj/item/weapon/polearm/halberd = 1,
 			/obj/item/weapon/polearm/woodstaff = 3,
-			/obj/item/weapon/spear = 2,
+			/obj/item/weapon/polearm/spear = 2,
 			/obj/item/weapon/knife/dagger/navaja = 2,
 			/obj/item/weapon/sword/sabre/cutlass = 2,
 			/obj/item/weapon/sword/long = 2,
@@ -268,7 +268,7 @@
 			/obj/item/weapon/sword/long/greatsword/zwei = 1,
 			/obj/item/weapon/polearm/eaglebeak/lucerne = 1,
 			/obj/item/weapon/polearm/eaglebeak = 1,
-			/obj/item/weapon/spear = 1
+			/obj/item/weapon/polearm/spear = 1
 
 
 			)

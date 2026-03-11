@@ -1,3 +1,5 @@
+GLOBAL_LIST_EMPTY(paladin_evil_subclasses)
+
 /datum/job/adventurer_paladin
 	title = "Adventurer Paladin"
 	tutorial = "A promise made so deeply that it becomes divine in itself flows through a paladin, burning bright enough to inspire allies and smite foes. \
@@ -80,3 +82,13 @@
 		total_positions_so_far = slots
 
 	return slots
+
+/datum/job/advclass/combat/adventurer_paladin/check_requirements(mob/living/carbon/human/to_check)
+	if(!..())
+		return FALSE
+
+	if(istype(to_check.patron, /datum/patron/faerun/evil_gods) && !(type in GLOB.paladin_evil_subclasses))
+		return FALSE
+
+	return TRUE
+

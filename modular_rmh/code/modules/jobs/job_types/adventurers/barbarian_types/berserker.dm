@@ -21,6 +21,7 @@
 		/datum/skill/combat/wrestling = 3,
 		/datum/skill/combat/unarmed = 3,
 		/datum/skill/combat/swords = 3,
+		/datum/skill/combat/shields = 3,
 		/datum/skill/craft/tanning = 2,
 		/datum/skill/misc/swimming = 4,
 		/datum/skill/misc/climbing = 4,
@@ -47,7 +48,7 @@
 /datum/job/advclass/combat/adventurer_barbarian/berserker/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	var/static/list/selectableweapon = list(
-		"MY BARE HANDS!!!" = /obj/item/weapon/knife/dagger/steel,
+		"MY BARE HANDS!!!" = /obj/item/weapon/knuckles,
 		"Great Axe" = /obj/item/weapon/greataxe/steel,
 		"Mace" = /obj/item/weapon/mace/goden/steel,
 		"Sword" = /obj/item/weapon/sword/arming
@@ -59,14 +60,13 @@
 
 	switch(choice)
 		if("MY BARE HANDS!!!")
-			spawned.adjust_skillrank(/datum/skill/combat/unarmed, 2)
-			spawned.adjust_skillrank(/datum/skill/combat/knives, 4)
+			spawned.adjust_skillrank(/datum/skill/combat/unarmed, 5)
 		if("Great Axe")
-			spawned.clamped_adjust_skillrank(/datum/skill/combat/axesmaces, 4, 4, TRUE)
+			spawned.clamped_adjust_skillrank(/datum/skill/combat/axesmaces, 5)
 		if("Mace")
-			spawned.clamped_adjust_skillrank(/datum/skill/combat/axesmaces, 4, 4, TRUE)
+			spawned.clamped_adjust_skillrank(/datum/skill/combat/axesmaces, 5)
 		if("Sword")
-			spawned.clamped_adjust_skillrank(/datum/skill/combat/swords, 4, 4, TRUE)
+			spawned.clamped_adjust_skillrank(/datum/skill/combat/swords, 5)
 
 /datum/outfit/adventurer_barbarian/berserker
 	name = "Berserker"
@@ -81,7 +81,7 @@
 	pants = /obj/item/clothing/pants/trou/leather/advanced
 	shoes = /obj/item/clothing/shoes/boots/leather/advanced
 	backr = /obj/item/storage/backpack/satchel
-	backl = null
+	backl = /obj/item/weapon/shield/wood
 	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
 	beltr = null

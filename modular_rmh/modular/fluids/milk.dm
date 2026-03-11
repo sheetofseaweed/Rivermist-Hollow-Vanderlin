@@ -1,4 +1,4 @@
-/mob/living/carbon
+/mob/living
 	var/breast_milk = /datum/reagent/consumable/milk
 
 /datum/species
@@ -20,7 +20,7 @@
 	. = ..()
 	C.set_milk(breast_milk)
 
-/mob/living/carbon/proc/set_milk(milk)
+/mob/living/proc/set_milk(milk)
 	breast_milk = milk
 	if(getorganslot(ORGAN_SLOT_BREASTS))
 		var/obj/item/organ/genitals/filling_organ/breasts/breasties = getorganslot(ORGAN_SLOT_BREASTS)

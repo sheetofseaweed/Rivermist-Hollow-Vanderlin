@@ -34,7 +34,6 @@
 	traits = list(
 		TRAIT_DODGEEXPERT,
 		TRAIT_MEDIUMARMOR, // so they can dodge wearing their mask, these guys dont actually spawn with medium armor, they have to EARN it.
-
 	)
 
 /datum/outfit/adventurer_monk/shadow
@@ -55,5 +54,5 @@
 	beltr = /obj/item/weapon/mace/rungu
 	beltl = /obj/item/storage/belt/pouch //broke as hell!
 	ring = null
-	l_hand = null
+	l_hand = /obj/item/weapon/knuckles
 	r_hand = null

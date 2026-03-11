@@ -43,6 +43,10 @@
 
 	if(ishuman(the_target))
 		var/mob/living/carbon/human/th = the_target
-		if((th.has_quirk(/datum/quirk/peculiarity/monsterhuntermale) && living_mob.gender == MALE) || (th.has_quirk(/datum/quirk/peculiarity/monsterhunterfemale) && living_mob.gender == FEMALE))
+
+		var/mobs_flags = th.client?.prefs?.erp_preferences[/datum/erp_preference/bitflag/horny_mobs]
+		if(!mobs_flags)
+			mobs_flags = 0
+		if((mobs_flags & HORNY_MOBS_TAG_MALES) && living_mob.gender == MALE || (mobs_flags & HORNY_MOBS_TAG_FEMALES) && living_mob.gender == FEMALE)
 			return TRUE
 	return FALSE

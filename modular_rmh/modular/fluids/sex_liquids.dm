@@ -1,4 +1,4 @@
-/mob/living/carbon
+/mob/living
 	var/cum = /datum/reagent/consumable/cum
 	var/femcum = /datum/reagent/consumable/femcum
 
@@ -56,7 +56,7 @@
 	C.set_cum(cum)
 	C.set_girlcum(femcum)
 
-/mob/living/carbon/proc/set_cum(cum_in) //haha come in
+/mob/living/proc/set_cum(cum_in) //haha come in
 	cum = cum_in
 	if(getorganslot(ORGAN_SLOT_TESTICLES))
 		var/obj/item/organ/genitals/filling_organ/testicles/testes = getorganslot(ORGAN_SLOT_TESTICLES)
@@ -64,7 +64,7 @@
 		testes.reagents.clear_reagents()
 		testes.create_reagents(testes.max_reagents/2)
 
-/mob/living/carbon/proc/set_girlcum(femcum_in)
+/mob/living/proc/set_girlcum(femcum_in)
 	femcum = femcum_in
 	if(getorganslot(ORGAN_SLOT_VAGINA))
 		var/obj/item/organ/genitals/filling_organ/vagina/vag = getorganslot(ORGAN_SLOT_VAGINA)

@@ -8,9 +8,30 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	var/description
 	/// Path to the item to spawn
 	var/item_path
-
+	/// Typepath of a /datum/award that must be unlocked to use this loadout item. Null = no requirement.
+	var/required_award = null
 	var/point_cost = 0
 	var/keep_loadout_stats = FALSE	// If TRUE, item keeps default values (not nerfed)
+
+
+/// Returns TRUE if the given client has satisfied this loadout item's award requirement.
+/datum/loadout_item/proc/is_unlocked_for(client/C)
+	if(!required_award)
+		return TRUE
+	if(!C?.player_details?.achievements)
+		return FALSE
+	var/datum/award/A = SSachievements.awards[required_award]
+	if(!A)
+		return FALSE
+	if(istype(A, /datum/award/achievement/progress))
+		var/datum/award/achievement/progress/PA = A
+		return C.player_details.achievements.get_achievement_status(required_award) >= PA.required_progress
+	if(istype(A, /datum/award/achievement))
+		return C.player_details.achievements.get_achievement_status(required_award) == TRUE
+	if(istype(A, /datum/award/score))
+		return C.player_details.achievements.get_achievement_status(required_award) > 0
+	return FALSE
+
 
 /datum/loadout_item/New()
 	if (point_cost)
@@ -647,3 +668,8 @@ GLOBAL_LIST_EMPTY(loadout_items)
 /datum/loadout_item/duchess_hood
 	name = "Dignified Veil"
 	item_path = /obj/item/clothing/head/roguetown/duchess_hood
+
+/datum/loadout_item/pocket_rous
+	name = "Pocket Rous"
+	item_path = /obj/item/reagent_containers/food/snacks/smallrat
+	required_award = /datum/award/achievement/progress/rat_genocide

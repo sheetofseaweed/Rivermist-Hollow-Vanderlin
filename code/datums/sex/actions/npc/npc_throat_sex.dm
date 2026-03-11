@@ -13,7 +13,7 @@
 		return TRUE
 	return FALSE*/
 
-/datum/sex_action/npc/npc_throat_sex/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/npc/npc_throat_sex/on_perform(mob/living/user, mob/living/target)
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s throat."))
@@ -26,20 +26,26 @@
 		sex_session.perform_sex_action(target, user, 0, 2, 2, src)
 	else
 		sex_session.perform_sex_action(target, user, 0, 7, 2, src)
+		if(sex_session.get_current_force() >= SEX_FORCE_HIGH)
+			var/choker_snap_chance = 5
+			if(sex_session.get_current_force() >= SEX_FORCE_EXTREME)
+				choker_snap_chance = 15
+			if(prob(choker_snap_chance))
+				target.snap_worn_choker(user)
 	sex_session.handle_passive_ejaculation()
 
-/datum/sex_action/npc/npc_throat_sex/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
+/datum/sex_action/npc/npc_throat_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		user.visible_message(span_love("[user] shudders in orgasm from being throatfucked!"))
-		user.virginity = FALSE
+		user.lose_virginity()
 		return ORGASM_LOCATION_SELF
 	else
 		user.visible_message(span_love("[user] cums into [target]'s throat!"))
-		user.virginity = FALSE
+		user.lose_virginity()
 		return ORGASM_LOCATION_ORAL
 
 
-/datum/sex_action/npc/npc_throat_sex/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/npc/npc_throat_sex/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] pulls [user.p_their()] cock out of [target]'s throat."))
 

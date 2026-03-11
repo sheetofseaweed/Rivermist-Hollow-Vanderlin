@@ -2,6 +2,7 @@
 	abstract_type = /datum/sex_action/hole_storage
 	name = "hole_storage"
 	requires_hole_storage = FALSE //ironic
+	requires_free_hands = TRUE
 	hole_id = ORGAN_SLOT_VAGINA
 	stored_item_type = /obj/item
 	continous = TRUE
@@ -10,7 +11,7 @@
 	var/self = FALSE
 	var/obj/item/organ/genitals/target_organ
 
-/datum/sex_action/hole_storage/can_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
+/datum/sex_action/hole_storage/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
