@@ -19,7 +19,6 @@
 	if(!H)
 		return
 
-	H.client?.prefs?.apply_customizer_organs_to_mob(H)
 	_collect_bodypart_organs(H)
 	_collect_internal_organs(H)
 

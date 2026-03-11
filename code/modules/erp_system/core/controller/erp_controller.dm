@@ -16,6 +16,8 @@
 	var/allow_user_moan = TRUE
 	var/arousal_frozen = FALSE
 	var/do_knot_action = FALSE
+	var/forced_action_scope = null
+	var/list/context_required_item_tags = null
 
 	var/last_scene_tick = 0
 	var/next_scene_tick = 0

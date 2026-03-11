@@ -200,6 +200,8 @@
 	var/datum/erp_action/A = controller.get_action_by_id_or_path(action_id)
 	if(!A)
 		return FALSE
+	if(!controller.actions_d.is_action_allowed_by_context(A))
+		return FALSE
 
 	var/mob/living/carbon/human/actor_object = controller.owner?.physical
 	var/mob/living/carbon/human/partner_object = controller.active_partner?.physical

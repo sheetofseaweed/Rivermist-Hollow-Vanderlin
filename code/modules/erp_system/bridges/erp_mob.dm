@@ -7,8 +7,6 @@
 	if(!istype(H))
 		return L
 
-	H.client?.prefs?.apply_customizer_organs_to_mob(H)
-
 	for(var/obj/item/organ/O in H.internal_organs)
 		var/datum/erp_sex_organ/erp_organ = erp_ensure_sex_organ(O)
 		if(erp_organ)
@@ -136,9 +134,6 @@
 	var/mob/living/carbon/human/consent = SSerp.get_consent_mob_for_target(target_atom)
 	if(!istype(consent))
 		return null
-
-	human_actor.client?.prefs?.apply_customizer_organs_to_mob(human_actor)
-	consent.client?.prefs?.apply_customizer_organs_to_mob(consent)
 
 	if(!human_actor.can_do_sex())
 		if(!silent)

@@ -110,6 +110,8 @@
 	if(!controller)
 		to_chat(user_human, span_warning("The portal refuses to stabilize."))
 		return FALSE
+	controller.forced_action_scope = ERP_SCOPE_OTHER
+	controller.context_required_item_tags = islist(erp_item_tags) ? erp_item_tags.Copy() : list("portal")
 	var/datum/erp_sex_ui/ui = controller.ui
 	if(ui)
 		ui.active_tab = "actions"

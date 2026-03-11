@@ -84,9 +84,26 @@
 	if(sound_pick)
 		playsound(user, sound_pick, 40, TRUE, -2, ignore_walls = FALSE)
 
+/datum/erp_action/portal_base/proc/get_active_portal_link(datum/erp_controller/controller, datum/erp_sex_link/exclude = null)
+	if(!controller?.links || !controller.links.len)
+		return null
+
+	for(var/datum/erp_sex_link/L in controller.links)
+		if(!L || QDELETED(L) || L == exclude)
+			continue
+		if(L.state == LINK_STATE_FINISHED)
+			continue
+		if(!istype(L.action, /datum/erp_action/portal_base))
+			continue
+		return L
+
+	return null
+
 /datum/erp_action/portal_base/get_custom_block_reason(datum/erp_controller/controller, datum/erp_sex_organ/init, datum/erp_sex_organ/target, datum/erp_action_context/ctx)
 	if(!get_portallight_for_controller(controller))
 		return "Hold a linked portal light in your active hand."
+	if(get_active_portal_link(controller))
+		return "The portal is already occupied."
 	return null
 
 /datum/erp_action/portal_base/is_link_valid(datum/erp_sex_link/L)

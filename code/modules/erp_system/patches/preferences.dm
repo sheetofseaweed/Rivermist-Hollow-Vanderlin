@@ -103,6 +103,8 @@
 	if(!H || !pref_species)
 		return
 
+	validate_customizer_entries()
+
 	var/list/organ_dna_by_slot = get_organ_dna_list()
 	if(!length(organ_dna_by_slot))
 		return

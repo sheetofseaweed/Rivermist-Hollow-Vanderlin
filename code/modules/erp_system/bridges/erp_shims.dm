@@ -64,10 +64,16 @@
 	if(!controller)
 		return null
 
+	controller.forced_action_scope = null
+	controller.context_required_item_tags = null
+
 	if(partner_atom && !QDELETED(partner_atom))
 		controller.add_partner_atom(partner_atom, set_active)
 	else if(set_active && controller.owner)
 		controller.active_partner = controller.owner
+
+	controller.owner?.mark_organs_dirty()
+	controller.active_partner?.mark_organs_dirty()
 
 	return controller
 

@@ -5,6 +5,39 @@
 	. = ..()
 	controller = C
 
+/datum/erp_controller_actions/proc/get_effective_scene_scope(datum/erp_actor/actor, datum/erp_actor/partner)
+	if(controller?.forced_action_scope in list(ERP_SCOPE_SELF, ERP_SCOPE_OTHER))
+		return controller.forced_action_scope
+
+	var/is_self = FALSE
+	if(actor && partner)
+		if(actor == partner)
+			is_self = TRUE
+		else if(actor.physical && partner.physical && actor.physical == partner.physical)
+			is_self = TRUE
+
+	return is_self ? ERP_SCOPE_SELF : ERP_SCOPE_OTHER
+
+/datum/erp_controller_actions/proc/is_action_allowed_by_context(datum/erp_action/A)
+	if(!A)
+		return FALSE
+
+	var/list/required_context_tags = controller?.context_required_item_tags
+	if(islist(required_context_tags) && required_context_tags.len)
+		if(!islist(A.required_item_tags) || !A.required_item_tags.len)
+			return FALSE
+
+		var/has_tag_match = FALSE
+		for(var/tag in required_context_tags)
+			if(tag in A.required_item_tags)
+				has_tag_match = TRUE
+				break
+
+		if(!has_tag_match)
+			return FALSE
+
+	return TRUE
+
 /// Gets action by type path or id (core+custom).
 /datum/erp_controller_actions/proc/get_action_by_id_or_path(action_type)
 	if(!action_type)
@@ -28,25 +61,17 @@
 /// Returns all actions filtered by self/other scope.
 /datum/erp_controller_actions/proc/get_all_actions_for_ui(datum/erp_actor/actor, datum/erp_actor/partner)
 	var/list/out = list()
-	var/is_self = FALSE
-
-	if(actor && partner)
-		if(actor == partner)
-			is_self = TRUE
-		else if(actor.physical && partner.physical && actor.physical == partner.physical)
-			is_self = TRUE
+	var/effective_scope = get_effective_scene_scope(actor, partner)
 
 	for(var/k in SSerp.actions)
 		var/datum/erp_action/A = SSerp.actions[k]
 		if(!A || A.abstract)
 			continue
 
-		if(is_self)
-			if(A.action_scope != ERP_SCOPE_SELF)
-				continue
-		else
-			if(A.action_scope != ERP_SCOPE_OTHER)
-				continue
+		if(A.action_scope != effective_scope)
+			continue
+		if(!is_action_allowed_by_context(A))
+			continue
 
 		out += A
 
@@ -54,12 +79,10 @@
 		if(!A2 || A2.abstract)
 			continue
 
-		if(is_self)
-			if(A2.action_scope != ERP_SCOPE_SELF)
-				continue
-		else
-			if(A2.action_scope != ERP_SCOPE_OTHER)
-				continue
+		if(A2.action_scope != effective_scope)
+			continue
+		if(!is_action_allowed_by_context(A2))
+			continue
 
 		out += A2
 
