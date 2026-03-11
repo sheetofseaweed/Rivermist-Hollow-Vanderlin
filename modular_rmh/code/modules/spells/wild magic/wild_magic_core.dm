@@ -21,6 +21,8 @@
 	var/static/list/forbidden_trigger_spell_types = typecacheof(list(
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/learn,
+		/datum/action/cooldown/spell/enrapture,
+		/datum/action/cooldown/spell/forced_orgasm,
 	))
 
 /datum/element/wild_magic/Attach(datum/target)
