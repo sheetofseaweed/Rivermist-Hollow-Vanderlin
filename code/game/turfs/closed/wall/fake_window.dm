@@ -17,5 +17,8 @@
 /turf/closed/wall/window/stained/red
 	icon_state = "stained-zizo"
 
+/turf/closed/wall/window/stained/red/broken
+	icon_state = "stained-zizobr"
+
 /turf/closed/wall/window/stained/yellow
 	icon_state = "stained-yellow"

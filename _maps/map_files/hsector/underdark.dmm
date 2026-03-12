@@ -60,10 +60,7 @@
 /turf/open/water/swamp,
 /area/under/underdark/rmh/flow)
 "aU" = (
-/obj/structure/window/stained/zizo{
-	icon_state = "stained-zizobr"
-	},
-/turf/closed/wall/mineral/decostone/moss/blue/cand,
+/turf/closed/wall/window/stained/red/broken,
 /area/under/underdark/rmh/shar)
 "aV" = (
 /mob/living/simple_animal/hostile/retaliate/voiddragon,
@@ -138,10 +135,7 @@
 /turf/open/floor/naturalstone,
 /area/under/underdark/rmh)
 "bD" = (
-/obj/structure/window/stained/zizo{
-	icon_state = "stained-zizobr"
-	},
-/turf/closed/wall/mineral/stone/moss/blue{
+/turf/closed/wall/window/stained/red/broken{
 	max_integrity = 5000
 	},
 /area/under/underdark/rmh/shar)
@@ -1020,10 +1014,7 @@
 /turf/open/floor/churchmarble,
 /area/under/underdark/rmh/shar)
 "lH" = (
-/obj/structure/window/stained/zizo{
-	icon_state = "stained-zizobr"
-	},
-/turf/closed/wall/mineral/stone/moss/blue,
+/turf/closed/wall/window/stained/red/broken,
 /area/under/underdark/rmh/shar)
 "lK" = (
 /obj/structure/fluff/railing/border/east,
@@ -1073,9 +1064,8 @@
 /turf/open/floor/churchrough,
 /area/under/underdark/rmh/shar)
 "mL" = (
-/turf/open/water/river{
-	dir = 8;
-	icon_state = "rockwd"
+/turf/open/water/river/rockwd{
+	dir = 8
 	},
 /area/under/underdark/rmh)
 "mM" = (
@@ -1563,8 +1553,7 @@
 /turf/open/floor/cobblerock/alt,
 /area/under/underdark/rmh/shar)
 "tn" = (
-/obj/structure/window/stained/zizo,
-/turf/closed/wall/mineral/decostone/moss/blue/cand,
+/turf/closed/wall/window/stained/red,
 /area/under/underdark/rmh/shar)
 "to" = (
 /obj/item/natural/bundle/stoneblock,
@@ -1856,10 +1845,7 @@
 /turf/open/floor/carpet/red,
 /area/under/underdark/rmh/shar)
 "xy" = (
-/obj/structure/window/stained/zizo{
-	icon_state = "stained-zizobr"
-	},
-/turf/closed/wall/mineral/craftstone,
+/turf/closed/wall/window/stained/red/broken,
 /area/under/underdark/rmh/shar)
 "xA" = (
 /obj/structure/kneestingers,
@@ -2722,8 +2708,7 @@
 /turf/open/floor/hexstone,
 /area/under/underdark/rmh/shar)
 "IX" = (
-/obj/structure/window/stained/silver/alt,
-/turf/closed/wall/mineral/underbrick{
+/turf/closed/wall/window/stained/alt{
 	damage_deflection = 1000
 	},
 /area/under/underdark/rmh/main)
@@ -2759,8 +2744,7 @@
 /turf/open/floor/tile/harem,
 /area/under/underdark/rmh/shar)
 "Jj" = (
-/obj/structure/window/stained/zizo,
-/turf/closed/wall/mineral/craftstone,
+/turf/closed/wall/window/stained/red,
 /area/under/underdark/rmh/shar)
 "Jm" = (
 /obj/structure/stalagmite,
@@ -4026,8 +4010,7 @@
 /turf/open/floor/church,
 /area/under/underdark/rmh/shar)
 "ZQ" = (
-/obj/structure/window/stained/zizo,
-/turf/closed/wall/mineral/stone/moss/blue,
+/turf/closed/wall/window/stained/red,
 /area/under/underdark/rmh/shar)
 "ZR" = (
 /obj/item/paper/scroll,

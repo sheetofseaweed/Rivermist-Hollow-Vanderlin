@@ -781,6 +781,9 @@
 	water_reagent = /datum/reagent/water/gross
 	cleanliness_factor = -5
 
+/turf/open/water/river/rockwd
+	icon_state = "rockwd"
+
 /turf/open/water/river/blood
 	icon_state = MAP_SWITCH("rock", "rivermovealt2-dir")
 	water_reagent = /datum/reagent/blood

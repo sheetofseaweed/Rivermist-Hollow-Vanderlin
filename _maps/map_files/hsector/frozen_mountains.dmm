@@ -40,9 +40,7 @@
 /turf/open/floor/herringbone,
 /area/indoors/town/keep)
 "am" = (
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/under/town/basement/keep)
 "an" = (
 /obj/structure/flora/ausbushes/lavendergrass,
@@ -414,9 +412,7 @@
 /obj/structure/table/wood/fancy/black{
 	color = "#858585"
 	},
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "bT" = (
 /turf/closed/wall/mineral/decostone/end{
@@ -665,7 +661,6 @@
 /area/indoors/cave/rmh_dwarf_keep/entrance)
 "cV" = (
 /obj/structure/chair/stool,
-/obj/structure/chair/stool,
 /turf/open/floor/cobble,
 /area/under/town/basement/keep)
 "cW" = (
@@ -764,9 +759,7 @@
 	icon_state = "largetable"
 	},
 /obj/item/candle/gold/lit,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "dt" = (
 /obj/structure/flora/grass/green,
@@ -1421,9 +1414,7 @@
 /obj/machinery/light/fueled/wallfire/candle/blue/l{
 	pixel_y = 32
 	},
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/under/town/basement/keep)
 "gh" = (
 /obj/structure/fluff/railing/border{
@@ -1525,9 +1516,7 @@
 /turf/open/floor/tile/harem2,
 /area/indoors/town/bath)
 "gz" = (
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "gA" = (
 /obj/structure/table/wood{
@@ -2742,9 +2731,7 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/indoors/cave/rmh_dwarf_keep/living)
 "ls" = (
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "lt" = (
 /obj/structure/table/wood,
@@ -2785,9 +2772,7 @@
 	pixel_y = 0;
 	pixel_x = -32
 	},
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "lC" = (
 /obj/structure/closet/crate/chest/neu_iron,
@@ -3615,9 +3600,7 @@
 "pm" = (
 /obj/structure/window,
 /obj/structure/curtain/black,
-/turf/open/floor/ruinedwood{
-	icon_state = "weird1"
-	},
+/turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/keep)
 "pn" = (
 /mob/living/simple_animal/hostile/retaliate/minotaur/axe,
@@ -4544,9 +4527,7 @@
 /area/outdoors/mountains/rmh_mountains/frozen)
 "tq" = (
 /obj/structure/closet/crate/chest/wicker,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "ts" = (
 /obj/structure/underworld/barrier,
@@ -5653,9 +5634,7 @@
 /area/indoors/cave/rmh_dwarf_keep/communal)
 "xU" = (
 /obj/structure/fake_machine/submission,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/under/town/basement/keep)
 "xW" = (
 /obj/structure/closet/dirthole/closed,
@@ -5801,7 +5780,6 @@
 "yD" = (
 /obj/effect/decal/herringbone,
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/structure/closet/crate/chest/neu_fancy,
 /obj/item/weapon/shield/tower/metal,
 /obj/item/weapon/mace/stunmace,
 /obj/item/key/vampire,
@@ -5946,9 +5924,7 @@
 /obj/structure/fluff/statue/small{
 	pixel_x = 32
 	},
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "zn" = (
 /turf/open/floor/church,
@@ -6487,9 +6463,7 @@
 	dir = 6
 	},
 /obj/item/broom,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "BR" = (
 /obj/structure/table/wood,
@@ -6506,9 +6480,7 @@
 /obj/structure/stairs/fancy/l{
 	dir = 1
 	},
-/turf/open/floor/carpet/lord{
-	icon_state = "carpet_l"
-	},
+/turf/open/floor/carpet/lord/left,
 /area/indoors/town/keep)
 "BV" = (
 /obj/machinery/light/fueled/chand,
@@ -6603,9 +6575,7 @@
 	icon_state = "chair1";
 	dir = 4
 	},
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "Cs" = (
 /obj/item/natural/stone,
@@ -6637,10 +6607,6 @@
 /turf/open/floor/herringbone,
 /area/indoors/town/keep)
 "Cz" = (
-/obj/structure/table/wood{
-	dir = 1;
-	icon_state = "longtable"
-	},
 /obj/structure/table/wood{
 	dir = 1;
 	icon_state = "longtable"
@@ -6878,9 +6844,7 @@
 "DF" = (
 /obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/black,
-/turf/open/floor/ruinedwood{
-	icon_state = "weird1"
-	},
+/turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/keep)
 "DG" = (
 /turf/closed/wall/mineral/craftstone,
@@ -7873,9 +7837,7 @@
 /area/indoors/cave/rmh_dwarf_keep/living)
 "Ib" = (
 /obj/structure/window,
-/turf/open/floor/ruinedwood{
-	icon_state = "weird1"
-	},
+/turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/keep)
 "Ic" = (
 /turf/open/floor/cobblerock/snow,
@@ -8613,9 +8575,7 @@
 /area/indoors/town/keep)
 "Lm" = (
 /obj/machinery/light/fueled/wallfire/candle,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "Ln" = (
 /obj/structure/door/viewport{
@@ -8776,9 +8736,7 @@
 /area/indoors/town/keep)
 "LP" = (
 /obj/machinery/light/fueled/wallfire/candle,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "LU" = (
 /turf/closed/mineral/bedrock/cold{
@@ -9045,9 +9003,7 @@
 "Nc" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
 /obj/machinery/light/fueled/wallfire/candle/r,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "Ne" = (
 /obj/effect/decal/cleanable/dreamfiend_ichor/large,
@@ -9155,9 +9111,7 @@
 /area/indoors/town/keep)
 "Nu" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "Nv" = (
 /turf/closed/wall/mineral/decostone/long,
@@ -9280,9 +9234,7 @@
 /area/indoors/cave/rmh_dwarf_keep/throne)
 "NT" = (
 /obj/machinery/light/fueled/wallfire/candle/l,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "NV" = (
 /obj/effect/decal/remains/human{
@@ -9525,9 +9477,7 @@
 /obj/structure/stairs/fancy/r{
 	dir = 1
 	},
-/turf/open/floor/carpet/lord{
-	icon_state = "carpet_r"
-	},
+/turf/open/floor/carpet/lord/right,
 /area/indoors/town/keep)
 "Pa" = (
 /obj/effect/decal/cleanable/debris/wood,
@@ -9690,9 +9640,7 @@
 /area/indoors/cave/rmh_dwarf_keep/smelters)
 "PP" = (
 /obj/structure/bookcase/random/archive,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "PQ" = (
 /turf/open/floor/metal/barograte,
@@ -9805,9 +9753,7 @@
 /area/indoors/town/keep)
 "Qp" = (
 /obj/structure/window,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "Qq" = (
 /turf/closed/wall/mineral/craftstone,
@@ -9941,9 +9887,7 @@
 	icon_state = "largetable"
 	},
 /obj/item/candle/gold/lit,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "QV" = (
 /obj/structure/fluff/railing/border{
@@ -10002,9 +9946,7 @@
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "Rm" = (
 /obj/effect/decal/cleanable/debris/stone,
@@ -10092,8 +10034,7 @@
 /turf/open/floor/dirt/road,
 /area/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
 "RE" = (
-/obj/structure/window/stained/yellow,
-/turf/closed/wall/mineral/decostone,
+/turf/closed/wall/window/stained/yellow,
 /area/indoors/cave/rmh_dwarf_keep/forge)
 "RF" = (
 /obj/effect/decal/edge_corner{
@@ -10237,7 +10178,6 @@
 /obj/effect/decal/herringbone{
 	dir = 5
 	},
-/obj/structure/closet/crate/coffin/vampire,
 /obj/structure/closet/crate/coffin/vampire,
 /turf/open/floor/tile/masonic{
 	dir = 4
@@ -10493,9 +10433,7 @@
 	icon_state = "largetable"
 	},
 /obj/item/candle/candlestick/gold/lit,
-/turf/open/floor/tile{
-	icon_state = "bfloorz"
-	},
+/turf/open/floor/tile/bfloorz,
 /area/indoors/town/keep)
 "TB" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing,
@@ -10753,9 +10691,7 @@
 /area/under/town/basement/keep)
 "UI" = (
 /obj/structure/fluff/railing/border,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "UK" = (
 /obj/structure/stairs/stone{
@@ -10876,9 +10812,7 @@
 "Vf" = (
 /obj/structure/window/openclose,
 /obj/structure/curtain/black,
-/turf/open/floor/ruinedwood{
-	icon_state = "weird1"
-	},
+/turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/keep)
 "Vg" = (
 /obj/structure/table/church/m{
@@ -10946,9 +10880,7 @@
 	pixel_x = 0;
 	pixel_y = 0
 	},
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/indoors/town/keep)
 "Vy" = (
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -11402,9 +11334,7 @@
 /area/indoors/cave/rmh_dwarf_keep/communal)
 "Xm" = (
 /obj/machinery/light/fueled/wallfire/candle/blue,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/under/town/basement/keep)
 "Xn" = (
 /obj/machinery/light/fueled/candle/floorcandle/alt,
@@ -11438,9 +11368,7 @@
 /area/outdoors/exposed/rmh_dwarf_keep)
 "Xv" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
-/turf/open/floor/tile{
-	icon_state = "chess"
-	},
+/turf/open/floor/tile,
 /area/under/town/basement/keep)
 "Xw" = (
 /turf/closed/wall/mineral/decostone/moss/red/long{

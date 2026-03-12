@@ -78,6 +78,7 @@ class DMMParser:
 
         pop_key = pop_match.group("key")
         contents = []
+        pop_ended_in_var_edit = False
 
         while next_line := self.next_line():
             next_line = next_line.rstrip()
@@ -93,8 +94,13 @@ class DMMParser:
             if content_end == ")":
                 break
             elif content_end == "{":
-                while (var_edit := self.parse_var_edit()) is not None:
+                while True:
+                    (var_edit, pop_ended_in_var_edit) = self.parse_var_edit()
+                    if var_edit is None:
+                        break
                     content.var_edits[var_edit[0]] = var_edit[1]
+                if pop_ended_in_var_edit:
+                    break
             elif content_end == ",":
                 continue
 
@@ -105,12 +111,14 @@ class DMMParser:
     def parse_var_edit(self):
         line = self.next_line()
         if line == "\t},":
-            return None
+            return (None, False)
+        if line == "\t})":
+            return (None, True)
 
         var_edit_match = REGEX_VAR_EDIT.match(line)
         self.expect(var_edit_match is not None, "Var edits ended too early, expected a newline in between.")
 
-        return (var_edit_match.group("name"), self.parse_constant(var_edit_match.group("definition")))
+        return ((var_edit_match.group("name"), self.parse_constant(var_edit_match.group("definition"))), False)
 
     def parse_constant(self, constant):
         if (float_constant := self.safe_float(constant)) is not None:

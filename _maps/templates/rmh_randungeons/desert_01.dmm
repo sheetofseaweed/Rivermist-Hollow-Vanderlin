@@ -166,8 +166,7 @@
 /turf/open/floor/sandstone_tile,
 /area/under/rmh_desert/pyramid)
 "eO" = (
-/obj/structure/window/stained/yellow,
-/turf/closed/wall/mineral/desert_sandstone,
+/turf/closed/wall/window/stained/yellow,
 /area/under/rmh_desert/pyramid)
 "eR" = (
 /obj/structure/flora/grass/bush/wall,
@@ -846,12 +845,11 @@
 /turf/open/floor/tile/brownbrick,
 /area/under/rmh_desert/pyramid)
 "FD" = (
-/obj/structure/window/stained/yellow,
 /obj/structure/lever/hidden{
 	redstone_id = "Desertdoor5";
 	name = "secret lever"
 	},
-/turf/closed/wall/mineral/desert_soapstone,
+/turf/closed/wall/window/stained/yellow,
 /area/under/rmh_desert/pyramid)
 "FN" = (
 /obj/structure/stone_tile/block{
@@ -967,8 +965,7 @@
 	redstone_id = "Desertdoor5";
 	floor_turf = /turf/open/floor/concrete
 	},
-/obj/structure/window/stained/yellow,
-/turf/closed/wall/mineral/desert_soapstone,
+/turf/closed/wall/window/stained/yellow,
 /area/under/rmh_desert/pyramid)
 "JH" = (
 /obj/effect/decal/edge{
@@ -1140,8 +1137,7 @@
 /turf/open/floor/tile/harem,
 /area/under/rmh_desert/pyramid)
 "Op" = (
-/obj/structure/window/stained/yellow,
-/turf/closed/wall/mineral/desert_soapstone,
+/turf/closed/wall/window/stained/yellow,
 /area/under/rmh_desert/pyramid)
 "OK" = (
 /obj/effect/decal/borderfall{
@@ -1163,12 +1159,11 @@
 /turf/open/floor/sandstone_tile,
 /area/under/rmh_desert/pyramid)
 "Qf" = (
-/obj/structure/window/stained/yellow,
 /obj/structure/lever/hidden{
 	redstone_id = "Desertdoor1";
 	name = "secret lever"
 	},
-/turf/closed/wall/mineral/desert_sandstone,
+/turf/closed/wall/window/stained/yellow,
 /area/under/rmh_desert/pyramid)
 "Ro" = (
 /obj/effect/decal/edge{
