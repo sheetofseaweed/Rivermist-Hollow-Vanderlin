@@ -23762,7 +23762,7 @@
 "iSO" = (
 /obj/machinery/light/fueled/firebowl/stump,
 /obj/structure/fluff/signage/newsign/tall{
-	desc = Mineinthenorth.Villageintheeast.;
+	desc = "Mine in the north. Village in the east.";
 	name = "Mine and Village";
 	pixel_x = -19
 	},

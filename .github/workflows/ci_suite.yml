@@ -123,19 +123,25 @@ jobs:
       max_required_byond_client: ${{ steps.max_required_byond_client.outputs.max_required_byond_client }}
     steps:
       - uses: actions/checkout@v4
-      - name: Find RMH Maps
+      - name: Find CI Maps
         id: map_finder
         run: |
-          map_file="_maps/hsector.json"
-          if [ ! -f "$map_file" ]; then
-            echo "Missing CI map config: $map_file"
-            exit 1
-          fi
-          if jq -e '.exclude_from_ci == true' "$map_file" >/dev/null 2>&1; then
-            echo "Configured CI map is excluded: $map_file"
-            exit 1
-          fi
-          echo 'maps={"paths":["hsector"]}' >> "$GITHUB_OUTPUT"
+          selected_maps=(hsector minimal_test roguetest)
+          map_names=()
+          for map in "${selected_maps[@]}"; do
+            map_file="_maps/${map}.json"
+            if [ ! -f "$map_file" ]; then
+              echo "Missing CI map config: $map_file"
+              exit 1
+            fi
+            if jq -e '.exclude_from_ci == true' "$map_file" >/dev/null 2>&1; then
+              echo "Configured CI map is excluded: $map_file"
+              exit 1
+            fi
+            map_names+=("\"${map}\"")
+          done
+          map_list=$(IFS=,; echo "${map_names[*]}")
+          echo "maps={\"paths\":[${map_list}]}" >> "$GITHUB_OUTPUT"
       - name: Collect byond client version configuration
         id: max_required_byond_client
         #the regex here does not filter out non-numbers because error messages about no input are less helpful then error messages about bad input (which includes the bad input)

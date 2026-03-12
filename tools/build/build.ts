@@ -81,17 +81,22 @@ const writeIncludeFile = (output: string, patterns: string[]) => {
   fs.writeFileSync(output, content);
 };
 
-const rmhMapPatterns = ['_maps/map_files/hsector/*.dmm'];
+const ciMapPatterns = [
+  '_maps/map_files/debug/minimal.dmm',
+  '_maps/map_files/debug/roguetest.dmm',
+  '_maps/map_files/hsector/*.dmm',
+];
 
 export const DmAllMapsIncludeTarget = new Juke.Target({
-  inputs: rmhMapPatterns,
+  inputs: ciMapPatterns,
   outputs: ['_maps/all_maps.dm'],
   executes: async () => {
-    writeIncludeFile('_maps/all_maps.dm', rmhMapPatterns);
+    writeIncludeFile('_maps/all_maps.dm', ciMapPatterns);
   },
 });
 
 const rmhTemplatePatterns = [
+  '_maps/matthios_tomb/**/*.dmm',
   '_maps/templates/rmh/**/*.dmm',
 ];
 
