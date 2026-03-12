@@ -45018,7 +45018,6 @@
 /obj/effect/decal/cleanable/debris/stone,
 /obj/effect/landmark/quest_spawner/easy{
 	quest_type = list("Kill","Beacon");
-	kill_mobs = list(/mob/living/simple_animal/hostile/retaliate/bigrat)
 	},
 /turf/open/floor/dirt,
 /area/under/town/rmh/sewer)
