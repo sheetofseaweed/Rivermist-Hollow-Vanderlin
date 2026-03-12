@@ -51448,7 +51448,6 @@
 "xaw" = (
 /obj/structure/fake_machine/scomm/l,
 /turf/open/floor/cobble,
-/area/indoors/town/rmh/garrison,
 /area/indoors/town/rmh/garrison)
 "xaB" = (
 /obj/structure/hotspring/border/seven,
