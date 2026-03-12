@@ -58,6 +58,19 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define COMSIG_BODYSTORAGE_FIND_ITEM_LAYER "hole_find_item_layer"	// ()
 #define COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND "hole_swap_layers"	// (target_layer, force)
 
+#define STORAGE_LAYER_OUTER "layer_outer"
+#define STORAGE_LAYER_INNER "layer_inner"
+#define STORAGE_LAYER_DEEP "layer_deep"
+
+#define INSERT_FEEDBACK_OK "feedback_ok"
+#define INSERT_FEEDBACK_OK_FORCE "feedback_ok_force"
+#define INSERT_FEEDBACK_OK_OVERRIDE "feedback_override"
+#define INSERT_FEEDBACK_ALMOST_FULL "feedback_almost"
+#define INSERT_FEEDBACK_STUFFED "feedback_stuffed"
+#define INSERT_FEEDBACK_TRY_FORCE "feedback_try_force"
+
+#define HOLE_MAX_BULK_INSERT 10 // we want sufficiently large items to trigger stretching by themselves
+
 #define SEX_SPEED_LOW 1
 #define SEX_SPEED_MID 2
 #define SEX_SPEED_HIGH 3

@@ -1097,3 +1097,5 @@
 	timer = 1 MINUTES
 	stress_change = 2
 	desc = span_red("My loins ache!")
+
+#undef ARO_LOSS_COEFFICIENT

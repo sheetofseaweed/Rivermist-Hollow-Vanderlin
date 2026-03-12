@@ -149,14 +149,16 @@
 		OFFSET_CLOAK = list(0,0), OFFSET_FACEMASK = list(0,-5), OFFSET_HEAD = list(0,-4), \
 		OFFSET_FACE = list(0,-5), OFFSET_BELT = list(0,-4), OFFSET_BACK = list(0,-4), \
 		OFFSET_NECK = list(0,-4), OFFSET_MOUTH = list(0,-4), OFFSET_PANTS = list(0,0), \
-		OFFSET_SHIRT = list(0,0), OFFSET_ARMOR = list(0,0), OFFSET_HANDS = list(0,-3), OFFSET_BUTT = list(0,-4),\ OFFSET_UNDIES = list(0,-4)
+		OFFSET_SHIRT = list(0,0), OFFSET_ARMOR = list(0,0), OFFSET_HANDS = list(0,-3), OFFSET_BUTT = list(0,-4), \
+		OFFSET_UNDIES = list(0,-4)
 		)
 	offset_features_f = list(
 		OFFSET_ID = list(0,-5), OFFSET_GLOVES = list(0,-4), OFFSET_WRISTS = list(0,-4), OFFSET_HANDS = list(0,-4), \
 		OFFSET_CLOAK = list(0,0), OFFSET_FACEMASK = list(0,-5), OFFSET_HEAD = list(0,-5), \
 		OFFSET_FACE = list(0,-5), OFFSET_BELT = list(0,-4), OFFSET_BACK = list(0,-5), \
 		OFFSET_NECK = list(0,-5), OFFSET_MOUTH = list(0,-5), OFFSET_PANTS = list(0,0), \
-		OFFSET_SHIRT = list(0,0), OFFSET_ARMOR = list(0,0), OFFSET_BUTT = list(0,-4),\ OFFSET_UNDIES = list(0,-4)
+		OFFSET_SHIRT = list(0,0), OFFSET_ARMOR = list(0,0), OFFSET_BUTT = list(0,-4), \
+		OFFSET_UNDIES = list(0,-4)
 		)
 
 	dam_icon_f = null

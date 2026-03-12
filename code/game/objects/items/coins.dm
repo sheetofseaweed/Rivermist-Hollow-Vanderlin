@@ -510,6 +510,7 @@
 
 #undef CTYPE_PLAT
 #undef CTYPE_GOLD
+#undef CTYPE_GUILD
 #undef CTYPE_ELEC
 #undef CTYPE_SILV
 #undef CTYPE_COPP
