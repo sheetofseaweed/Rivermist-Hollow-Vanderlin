@@ -1893,7 +1893,7 @@
 /area/indoors/town/church/chapel)
 "aMJ" = (
 /obj/structure/fluff/customsign{
-	desc = ""Dangerouswildandcoldterritory.". ";
+	desc = "Dangerous wild and cold territory. ";
 	name = "FROZEN MOUNTAINS";
 	icon = 'icons/roguetown/misc/signs.dmi';
 	icon_state = "signskull"
