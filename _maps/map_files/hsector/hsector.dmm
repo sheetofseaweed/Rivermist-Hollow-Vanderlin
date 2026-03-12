@@ -33928,7 +33928,7 @@
 /obj/structure/closet/crate/chest/wicker,
 /obj/item/rope,
 /obj/item/key/bandit{
-	lockids = s;
+	lockids = list("pillory");
 	name = "pillory key"
 	},
 /obj/item/key/bandit{
