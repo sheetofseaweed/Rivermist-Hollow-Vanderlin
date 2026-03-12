@@ -1450,7 +1450,7 @@
 /area/indoors/town/church/chapel)
 "aMJ" = (
 /obj/structure/fluff/customsign{
-	desc = ""Dangerouswildandcoldterritory.". ";
+	desc = "Dangerous wild and cold territory. ";
 	name = "FROZEN MOUNTAINS";
 	icon = 'icons/roguetown/misc/signs.dmi';
 	icon_state = "signskull"
@@ -28064,7 +28064,7 @@
 /obj/structure/closet/crate/chest/wicker,
 /obj/item/rope,
 /obj/item/key/bandit{
-	lockids = s;
+	lockids = list("pillory");
 	name = "pillory key"
 	},
 /obj/item/key/bandit{
@@ -35925,7 +35925,7 @@
 /area/indoors/town/rmh)
 "qkf" = (
 /obj/structure/fluff/signage/newsign/tall{
-	desc = Mineinthenorth.Villageintheeast.;
+	desc = "Mine in the north. Village in the east.";
 	name = "Mine and Village"
 	},
 /turf/open/floor/dirt/road,
