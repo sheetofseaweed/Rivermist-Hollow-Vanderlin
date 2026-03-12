@@ -123,20 +123,19 @@ jobs:
       max_required_byond_client: ${{ steps.max_required_byond_client.outputs.max_required_byond_client }}
     steps:
       - uses: actions/checkout@v4
-      - name: Find Maps
+      - name: Find RMH Maps
         id: map_finder
         run: |
-          > maps_output.txt
-          for file in _maps/*.json; do
-            if ! jq -e '.exclude_from_ci == true' "$file" >/dev/null 2>&1; then
-              echo "\"$(basename "$file" .json)\"" >> maps_output.txt
-            else
-              echo "Excluded: $file"
-            fi
-          done
-          map_list=$(paste -sd, maps_output.txt)
-          echo "Maps: $map_list"
-          echo "maps={\"paths\":[$map_list]}" >> "$GITHUB_OUTPUT"
+          map_file="_maps/hsector.json"
+          if [ ! -f "$map_file" ]; then
+            echo "Missing CI map config: $map_file"
+            exit 1
+          fi
+          if jq -e '.exclude_from_ci == true' "$map_file" >/dev/null 2>&1; then
+            echo "Configured CI map is excluded: $map_file"
+            exit 1
+          fi
+          echo 'maps={"paths":["hsector"]}' >> "$GITHUB_OUTPUT"
       - name: Collect byond client version configuration
         id: max_required_byond_client
         #the regex here does not filter out non-numbers because error messages about no input are less helpful then error messages about bad input (which includes the bad input)

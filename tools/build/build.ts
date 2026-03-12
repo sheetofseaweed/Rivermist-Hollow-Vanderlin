@@ -64,18 +64,42 @@ export const NoWarningParameter = new Juke.Parameter({
   alias: 'I',
 });
 
-export const DmMapsIncludeTarget = new Juke.Target({
+const writeIncludeFile = (output: string, patterns: string[]) => {
+  const files = patterns
+    .flatMap((pattern) => Juke.glob(pattern))
+    .sort();
+  if (files.length === 0) {
+    Juke.logger.error(
+      `No files matched include patterns for ${output}: ${patterns.join(', ')}`,
+    );
+    throw new Juke.ExitCode(1);
+  }
+  const content = `${files
+    .map((file) => file.replace('_maps/', ''))
+    .map((file) => `#include "${file}"`)
+    .join('\n')}\n`;
+  fs.writeFileSync(output, content);
+};
+
+const rmhMapPatterns = ['_maps/map_files/hsector/*.dmm'];
+
+export const DmAllMapsIncludeTarget = new Juke.Target({
+  inputs: rmhMapPatterns,
+  outputs: ['_maps/all_maps.dm'],
   executes: async () => {
-    const folders = [
-      ...Juke.glob('_maps/kalypso/**/*.dmm'),
-      ...Juke.glob('_maps/matthios_tomb/**/*.dmm'),
-      ...Juke.glob('_maps/templates/**/*.dmm'),
-    ];
-    const content = `${folders
-      .map((file) => file.replace('_maps/', ''))
-      .map((file) => `#include "${file}"`)
-      .join('\n')}\n`;
-    fs.writeFileSync('_maps/templates.dm', content);
+    writeIncludeFile('_maps/all_maps.dm', rmhMapPatterns);
+  },
+});
+
+const rmhTemplatePatterns = [
+  '_maps/templates/rmh/**/*.dmm',
+];
+
+export const DmTemplatesIncludeTarget = new Juke.Target({
+  inputs: rmhTemplatePatterns,
+  outputs: ['_maps/templates.dm'],
+  executes: async () => {
+    writeIncludeFile('_maps/templates.dm', rmhTemplatePatterns);
   },
 });
 
@@ -87,7 +111,8 @@ export const DmTarget = new Juke.Target({
     NoWarningParameter,
   ],
   dependsOn: ({ get }) => [
-    get(DefineParameter).includes('ALL_TEMPLATES') && DmMapsIncludeTarget
+    get(DefineParameter).includes('ALL_MAPS') && DmAllMapsIncludeTarget,
+    get(DefineParameter).includes('ALL_TEMPLATES') && DmTemplatesIncludeTarget,
   ],
   inputs: [
     '_maps/map_files/generic/**',
@@ -126,7 +151,7 @@ export const DmTestTarget = new Juke.Target({
     NoWarningParameter,
   ],
   dependsOn: ({ get }) => [
-    get(DefineParameter).includes('ALL_MAPS') && DmMapsIncludeTarget
+    get(DefineParameter).includes('ALL_MAPS') && DmAllMapsIncludeTarget,
   ],
   executes: async ({ get }) => {
     fs.copyFileSync(`${DME_NAME}.dme`, `${DME_NAME}.test.dme`);
@@ -295,6 +320,7 @@ export const CleanTarget = new Juke.Target({
   dependsOn: [TguiCleanTarget],
   executes: async () => {
     Juke.rm('*.{dmb,rsc}');
+    Juke.rm('_maps/all_maps.dm');
     Juke.rm('_maps/templates.dm');
   },
 });
