@@ -1,7 +1,7 @@
 /// Jobs that should receive Wild Magic on spawn
 var/static/list/WILD_MAGIC_JOB_TYPES = list(
 	/datum/job/advclass/combat/adventurer_barbarian/wild_magic,
-	/datum/job/swamp_witch,
+	/datum/job/advclass/swamp_witch/wild,
 	/datum/job/advclass/combat/adventurer_sorcerer/wild_magic
 )
 
