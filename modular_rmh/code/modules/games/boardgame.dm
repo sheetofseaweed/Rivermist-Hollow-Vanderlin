@@ -42,30 +42,35 @@
 
 /obj/item/game_kit/proc/build_html(mob/user)
 	var/dat = "<center><b>Game Board</b></center><br>"
+	var/table_style = "width:256px;height:256px;border-collapse:collapse;border-spacing:0;table-layout:fixed;font-size:0;line-height:0;"
+	var/tile_style = "width:32px;height:32px;padding:0;margin:0;line-height:0;"
+	var/board_link_style = "display:block;width:32px;height:32px;padding:0;margin:0;border:0;background:transparent;line-height:0;font-size:0;text-decoration:none;"
+	var/board_image_style = "display:block;width:32px;height:32px;padding:0;margin:0;border:0;background:transparent;"
+	var/piece_link_style = "display:inline-block;width:32px;height:32px;padding:0;margin:0 6px 0 0;border:0;background:transparent;line-height:0;font-size:0;text-decoration:none;"
 	dat += "<a href='?src=\ref[src];mode=hia'>[(selected ? "Selected: [selected]" : "Nothing Selected")]</a> "
 	dat += "<a href='?src=\ref[src];mode=remove'>Chess Removal</a><hr>"
-	dat += "<table width=256 height=256 cellspacing=0 cellpadding=0>"
+	dat += "<table style='[table_style]' cellspacing=0 cellpadding=0>"
 	for(var/y = 1 to 8)
-		dat += "<tr>"
+		dat += "<tr style='height:32px'>"
 		for(var/x = 1 to 8)
 			var/color = (y + x) % 2 ? "#ffffff" : "#999999"
 			var/index = ((y - 1) * 8 + x)
 			var/piece = copytext(board_stat, index * 2 - 1, index * 2 + 1)
-			var/icon_name = (piece != "BB") ? "board_[piece].png" : "board_none.png"
-			var/url = get_icon_url(icon_name)
-			dat += "<td style='background-color:[color]' width=32 height=32>"
-			dat += "<a href='?src=\ref[src];s_board=[x],[y]'>"
-			dat += "<img src='[url]' width=32 height=32>"
+			dat += "<td style='background-color:[color];[tile_style]'>"
+			dat += "<a href='?src=\ref[src];s_board=[x],[y]' style='[board_link_style]'>"
+			if(piece != "BB")
+				var/url = get_icon_url("board_[piece].png")
+				dat += "<img src='[url]' width='32' height='32' style='[board_image_style]'>"
 			dat += "</a></td>"
 		dat += "</tr>"
 	dat += "</table><hr><b>Chess pieces:</b><br>"
 	for(var/piece in list("WP","WK","WQ","WI","WN","WR"))
 		var/url = get_icon_url("board_[piece].png")
-		dat += "<a href='?src=\ref[src];s_piece=[piece]'><img src='[url]' width=32 height=32></a>"
+		dat += "<a href='?src=\ref[src];s_piece=[piece]' style='[piece_link_style]'><img src='[url]' width='32' height='32' style='[board_image_style]'></a>"
 	dat += "<br>"
 	for(var/piece in list("BP","BK","BQ","BI","BN","BR"))
 		var/url = get_icon_url("board_[piece].png")
-		dat += "<a href='?src=\ref[src];s_piece=[piece]'><img src='[url]' width=32 height=32></a>"
+		dat += "<a href='?src=\ref[src];s_piece=[piece]' style='[piece_link_style]'><img src='[url]' width='32' height='32' style='[board_image_style]'></a>"
 	return dat
 
 /obj/item/game_kit/proc/open_ui(mob/user)
