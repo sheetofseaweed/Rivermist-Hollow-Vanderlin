@@ -16,7 +16,7 @@
 	///Sound used when item sold/bought
 	var/sell_sound = 'sound/blank.ogg'
 	///The currency name
-	var/currency_name = "zennies"
+	var/currency_name = "danters"
 	///The spawner we use to create our look
 	var/obj/effect/mob_spawn/human/spawner_path = /obj/effect/mob_spawn/human/dwarf/trader
 	///Our species to create our look
