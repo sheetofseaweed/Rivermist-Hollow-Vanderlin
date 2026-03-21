@@ -8,7 +8,7 @@
 	///Sound used when item sold/bought
 	var/sell_sound = 'sound/blank.ogg'
 	///The currency name
-	var/currency_name = "zennies"
+	var/currency_name = "danters"
 	///Which types of supply packs can we use here
 	var/list/base_type = list()
 	///Custom items that this trader type can sell with their weights and pricing
