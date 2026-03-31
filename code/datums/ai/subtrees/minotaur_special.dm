@@ -1,3 +1,4 @@
+/// Minotaur special attacks subtree — selects and queues special attacks based on cooldowns, phase, and rage.
 /datum/ai_planning_subtree/minotaur_special_attacks
 /datum/ai_planning_subtree/minotaur_special_attacks/SelectBehaviors(datum/ai_controller/controller, delta_time)
 	. = ..()
@@ -9,7 +10,6 @@
 	var/current_rage = controller.blackboard[BB_MINOTAUR_RAGE_METER]
 	var/world_time = world.time
 
-	// Check cooldowns for special attacks
 	var/can_charge = world_time > controller.blackboard[BB_MINOTAUR_CHARGE_COOLDOWN]
 	var/can_fury = world_time > controller.blackboard[BB_MINOTAUR_FURY_COOLDOWN] && current_phase >= 2
 	var/can_slam = world_time > controller.blackboard[BB_MINOTAUR_SLAM_COOLDOWN] && current_phase >= 3
@@ -25,31 +25,38 @@
 	if(can_slam && current_rage >= 50)
 		possible_attacks += "slam"
 
-	if(length(possible_attacks))
-		var/chosen_attack = pick(possible_attacks)
+	if(!length(possible_attacks))
+		return
 
-		if(length(possible_attacks) > 1 && chosen_attack == controller.blackboard[BB_MINOTAUR_LAST_SPECIAL_ATTACK])
-			possible_attacks -= chosen_attack
-			chosen_attack = pick(possible_attacks)
+	var/chosen_attack = pick(possible_attacks)
 
-		controller.set_blackboard_key(BB_MINOTAUR_LAST_SPECIAL_ATTACK, chosen_attack)
+	// Avoid repeating the same special attack
+	if(length(possible_attacks) > 1 && chosen_attack == controller.blackboard[BB_MINOTAUR_LAST_SPECIAL_ATTACK])
+		possible_attacks -= chosen_attack
+		chosen_attack = pick(possible_attacks)
 
-		switch(chosen_attack)
-			if("charge")
-				controller.queue_behavior(/datum/ai_behavior/minotaur_charge_attack, BB_BASIC_MOB_CURRENT_TARGET)
-				return SUBTREE_RETURN_FINISH_PLANNING
-			if("fury")
-				controller.queue_behavior(/datum/ai_behavior/minotaur_fury_slam, BB_BASIC_MOB_CURRENT_TARGET)
-				return SUBTREE_RETURN_FINISH_PLANNING
-			if("slam")
-				controller.queue_behavior(/datum/ai_behavior/minotaur_ground_slam)
-				controller.set_blackboard_key(BB_MINOTAUR_RAGE_METER, max(0, current_rage - 50))
-				return SUBTREE_RETURN_FINISH_PLANNING
+	controller.set_blackboard_key(BB_MINOTAUR_LAST_SPECIAL_ATTACK, chosen_attack)
+
+	switch(chosen_attack)
+		if("charge")
+			controller.queue_behavior(/datum/ai_behavior/minotaur_charge_attack, BB_BASIC_MOB_CURRENT_TARGET)
+			return SUBTREE_RETURN_FINISH_PLANNING
+		if("fury")
+			controller.queue_behavior(/datum/ai_behavior/minotaur_fury_slam, BB_BASIC_MOB_CURRENT_TARGET)
+			return SUBTREE_RETURN_FINISH_PLANNING
+		if("slam")
+			controller.queue_behavior(/datum/ai_behavior/minotaur_ground_slam)
+			controller.set_blackboard_key(BB_MINOTAUR_RAGE_METER, max(0, current_rage - 50))
+			return SUBTREE_RETURN_FINISH_PLANNING
+
+// ============================================================
+// CHARGE ATTACK — stage-driven, no sleep(), state in blackboard
+// ============================================================
+// Stages: 0 = telegraphing, 1 = charging (tick-by-tick movement), 2 = done
 
 /datum/ai_behavior/minotaur_charge_attack
 	behavior_flags = AI_BEHAVIOR_MOVE_AND_PERFORM
-	action_cooldown = 3 SECONDS
-	var/charge_stage = 0 // 0 = setup, 1 = preparing, 2 = charging
+	action_cooldown = 1 // Fast tick for smooth charge movement
 
 /datum/ai_behavior/minotaur_charge_attack/setup(datum/ai_controller/controller, target_key)
 	. = ..()
@@ -58,105 +65,116 @@
 		return FALSE
 
 	controller.set_blackboard_key(BB_MINOTAUR_CHARGE_COOLDOWN, world.time + 15 SECONDS)
-	charge_stage = 0
+	controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STAGE, 0)
+	controller.set_blackboard_key(BB_MINOTAUR_CHARGE_DIRECTION, 0)
+	controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STEPS_LEFT, 0)
 	return TRUE
 
 /datum/ai_behavior/minotaur_charge_attack/perform(delta_time, datum/ai_controller/controller, target_key)
 	. = ..()
 	var/mob/living/simple_animal/hostile/retaliate/minotaur/boss = controller.pawn
-	if(!boss || boss.stat != CONSCIOUS)
-		return
-	var/atom/target = controller.blackboard[target_key]
-
-	if(!istype(boss) || QDELETED(target))
+	if(!istype(boss) || boss.stat != CONSCIOUS)
 		finish_action(controller, FALSE)
 		return
 
-	switch(charge_stage)
-		if(0)
+	var/atom/target = controller.blackboard[target_key]
+	if(QDELETED(target))
+		finish_action(controller, FALSE)
+		return
+
+	var/stage = controller.blackboard[BB_MINOTAUR_CHARGE_STAGE]
+
+	switch(stage)
+		if(0) // Telegraph
 			boss.visible_message("<span class='danger'>[boss] lowers its head and prepares to charge!</span>")
 			playsound(boss, 'sound/misc/meteorimpact.ogg', 50, TRUE)
 			show_charge_path(boss, target)
-			charge_stage = 1
-			addtimer(CALLBACK(src, PROC_REF(advance_stage), controller, target_key), 2 SECONDS)
 
-		if(1)
-			charge_stage = 2
-			do_charge(controller, target)
+			// Calculate charge direction and distance
+			var/turf/start_turf = get_turf(boss)
+			var/turf/target_turf = get_turf(target)
+			var/direction = get_dir(start_turf, target_turf)
+			var/distance = get_dist(start_turf, target_turf)
+			var/charge_distance = min(distance + 2, 15)
 
-		if(2)
-			finish_action(controller, TRUE)
+			controller.set_blackboard_key(BB_MINOTAUR_CHARGE_DIRECTION, direction)
+			controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STEPS_LEFT, charge_distance)
+			controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STAGE, 1)
 
-/datum/ai_behavior/minotaur_charge_attack/proc/advance_stage(datum/ai_controller/controller, target_key)
-	if(controller.current_behaviors?[src])
-		charge_stage = 1
+			// Pause before charging
+			action_cooldown = 2 SECONDS
+			controller.PauseAi(2 SECONDS)
 
-/datum/ai_behavior/minotaur_charge_attack/proc/do_charge(datum/ai_controller/controller, atom/target)
-	var/mob/living/simple_animal/hostile/retaliate/minotaur/boss = controller.pawn
-	if(!istype(boss) || QDELETED(target))
+		if(1) // Charging — move one tile per perform tick
+			action_cooldown = 1 // Fast ticks for smooth movement
+			var/direction = controller.blackboard[BB_MINOTAUR_CHARGE_DIRECTION]
+			var/steps_left = controller.blackboard[BB_MINOTAUR_CHARGE_STEPS_LEFT]
+
+			if(steps_left <= 0 || !direction)
+				finish_charge(controller, boss)
+				return
+
+			var/turf/next_turf = get_step(boss, direction)
+
+			// Blocked by closed turf
+			if(isclosedturf(next_turf) && next_turf.density)
+				finish_charge(controller, boss)
+				return
+
+			// Blocked by dense structure
+			for(var/obj/structure/A in next_turf)
+				if(A.density)
+					A.take_damage(30)
+					finish_charge(controller, boss)
+					return
+
+			// Leave afterimage
+			new /obj/effect/temp_visual/decoy/fading(get_turf(boss), boss)
+
+			// Hit living mobs in path
+			for(var/atom/A in next_turf)
+				if(isliving(A) && A != boss)
+					var/mob/living/M = A
+					M.Knockdown(2 SECONDS)
+					M.adjustBruteLoss(20)
+					M.throw_at(get_edge_target_turf(boss, direction), 4, 1)
+					playsound(M, pick('sound/combat/hits/punch/punch_hard (1).ogg','sound/combat/hits/punch/punch_hard (2).ogg','sound/combat/hits/punch/punch_hard (3).ogg'), 50, TRUE)
+				else if(isstructure(A) && !A.density)
+					var/obj/structure/S = A
+					S.take_damage(30)
+
+			boss.forceMove(next_turf)
+			boss.setDir(direction)
+
+			// First step: announce and add afterimage component
+			if(steps_left == controller.blackboard[BB_MINOTAUR_CHARGE_STEPS_LEFT])
+				boss.visible_message("<span class='danger'>[boss] charges forward!</span>")
+				playsound(boss, 'sound/combat/hits/kick/stomp.ogg', 50, TRUE)
+
+			controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STEPS_LEFT, steps_left - 1)
+
+			if(steps_left - 1 <= 0)
+				finish_charge(controller, boss)
+
+/datum/ai_behavior/minotaur_charge_attack/proc/finish_charge(datum/ai_controller/controller, mob/living/simple_animal/hostile/retaliate/minotaur/boss)
+	if(!istype(boss))
+		finish_action(controller, FALSE)
 		return
 
-	var/turf/start_turf = get_turf(boss)
-	var/turf/target_turf = get_turf(target)
-
-	var/direction = get_dir(start_turf, target_turf)
-	var/distance = get_dist(start_turf, target_turf)
-
-	var/charge_distance = min(distance + 2, 15)
-	var/charge_speed = 1
-	var/delay = 3
-
-	boss.setDir(direction)
-	boss.visible_message("<span class='danger'>[boss] charges forward!</span>")
-	playsound(boss, 'sound/combat/hits/kick/stomp.ogg', 50, TRUE)
-
-	controller.PauseAi(charge_distance * delay)
-	boss.AddComponent(/datum/component/after_image)
-	for(var/i in 1 to charge_distance step charge_speed)
-		if(QDELETED(boss))
-			break
-
-		var/turf/next_turf = get_step(boss, direction)
-		if(isclosedturf(next_turf))
-			if(next_turf.density)
-				break
-
-		var/break_early
-		for(var/obj/structure/A in next_turf)
-			if(A.density)
-				A.take_damage(30)
-				break_early = TRUE
-				break
-
-		if(break_early)
-			break
-
-		new /obj/effect/temp_visual/decoy/fading(start_turf, boss)
-
-		for(var/atom/A in get_turf(next_turf))
-			if(isliving(A) && A != boss)
-				var/mob/living/M = A
-				M.Knockdown(2 SECONDS)
-				M.adjustBruteLoss(20)
-				M.throw_at(get_edge_target_turf(boss, direction), 4, 1)
-				playsound(M, pick('sound/combat/hits/punch/punch_hard (1).ogg','sound/combat/hits/punch/punch_hard (2).ogg','sound/combat/hits/punch/punch_hard (3).ogg'), 50, TRUE)
-
-			else if(isstructure(A) && !A.density)
-				var/obj/structure/S = A
-				S.take_damage(30)
-
-		boss.forceMove(next_turf)
-		sleep(delay)
-
 	playsound(boss, 'sound/misc/meteorimpact.ogg', 50, TRUE)
+	// Impact damage to adjacent mobs
 	for(var/mob/living/L in orange(1, boss))
 		if(L != boss)
 			L.Knockdown(1 SECONDS)
 			L.adjustBruteLoss(10)
 
 	new /obj/effect/temp_visual/minotaur_impact(get_turf(boss))
-	qdel(boss.GetComponent(/datum/component/after_image))
-	charge_stage = 2
+
+	// Reset charge state
+	controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STAGE, 0)
+	controller.set_blackboard_key(BB_MINOTAUR_CHARGE_STEPS_LEFT, 0)
+	action_cooldown = 3 SECONDS // Reset to normal
+	finish_action(controller, TRUE)
 
 /datum/ai_behavior/minotaur_charge_attack/proc/show_charge_path(mob/living/boss, atom/target)
 	var/turf/start_turf = get_turf(boss)
@@ -189,6 +207,10 @@
 		if(blocked)
 			break
 
+// ============================================================
+// FURY SLAM — timer-based, no sleep()
+// ============================================================
+
 /datum/ai_behavior/minotaur_fury_slam
 	action_cooldown = 5 SECONDS
 	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM
@@ -206,11 +228,12 @@
 /datum/ai_behavior/minotaur_fury_slam/perform(delta_time, datum/ai_controller/controller, target_key)
 	. = ..()
 	var/mob/living/simple_animal/hostile/retaliate/minotaur/boss = controller.pawn
-	if(!boss || boss.stat != CONSCIOUS)
+	if(!istype(boss) || boss.stat != CONSCIOUS)
+		finish_action(controller, FALSE)
 		return
-	var/atom/target = controller.blackboard[target_key]
 
-	if(!istype(boss) || QDELETED(target))
+	var/atom/target = controller.blackboard[target_key]
+	if(QDELETED(target))
 		finish_action(controller, FALSE)
 		return
 
@@ -228,14 +251,13 @@
 		finish_action(controller, FALSE)
 		return
 
-	// Get target location
 	var/turf/target_turf = get_turf(target)
 
 	boss.visible_message("<span class='danger'>[boss] slams the ground, creating a rain of fiery debris!</span>")
 	playsound(boss, 'sound/misc/bamf.ogg', 50, TRUE)
 
 	var/current_phase = controller.blackboard[BB_MINOTAUR_PHASE]
-	var/zone_count = 3 + (current_phase * 2) // More zones at higher phases
+	var/zone_count = 3 + (current_phase * 2)
 
 	if(target_turf)
 		new /obj/effect/temp_visual/minotaur_fury_zone/strong(target_turf)
@@ -276,15 +298,17 @@
 	else
 		new /obj/effect/temp_visual/minotaur_fury_zone(zone_turf)
 
+// ============================================================
+// GROUND SLAM — timer-based, no sleep()
+// ============================================================
+
 /datum/ai_behavior/minotaur_ground_slam
 	action_cooldown = 4 SECONDS
 
 /datum/ai_behavior/minotaur_ground_slam/perform(delta_time, datum/ai_controller/controller)
 	. = ..()
 	var/mob/living/simple_animal/hostile/retaliate/minotaur/boss = controller.pawn
-	if(!boss || boss.stat != CONSCIOUS)
-		return
-	if(!istype(boss))
+	if(!istype(boss) || boss.stat != CONSCIOUS)
 		finish_action(controller, FALSE)
 		return
 
@@ -303,10 +327,9 @@
 	boss.visible_message("<span class='danger'>[boss] slams the ground with tremendous force!</span>")
 	playsound(boss, 'sound/misc/explode/explosionfar (1).ogg', 50, TRUE)
 
-	// Create shockwave visual effect
 	new /obj/effect/temp_visual/minotaur_slam(get_turf(boss))
 
-	// Affect mobs in increasing radius
+	// Shockwave rings via timers
 	for(var/i in 1 to 5)
 		addtimer(CALLBACK(src, PROC_REF(shockwave_effect), controller, i), i * 3)
 
@@ -317,27 +340,22 @@
 	if(!istype(boss))
 		return
 
-	// Visual effects in ring
 	for(var/turf/T in orange(radius, boss))
 		if(prob(20))
 			new /obj/effect/temp_visual/minotaur_impact(T)
 
-	// Apply effects to mobs
 	for(var/mob/living/L in range(radius, boss))
 		if(L != boss && !L.faction_check_mob(boss))
-			// Closer targets take more damage
 			var/distance = get_dist(boss, L)
 			var/damage = 30 - (distance * 5)
 			if(damage > 0)
 				L.adjustBruteLoss(damage)
 
-			// Knockdown based on distance
 			if(distance <= 3)
 				L.Knockdown(3 SECONDS - (distance * 0.5 SECONDS))
 
-			// Throw them away from the boss
 			var/throw_dir = get_dir(boss, L)
 			var/throw_strength = 1
-			if(radius == 3) // Peak of the shockwave
+			if(radius == 3)
 				throw_strength = 3
 			L.throw_at(get_edge_target_turf(L, throw_dir), throw_strength, 1)

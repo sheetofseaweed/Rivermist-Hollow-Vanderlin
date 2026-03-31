@@ -271,6 +271,9 @@
 #define BB_MINOTAUR_FURY_COOLDOWN "minotaur_fury"
 #define BB_MINOTAUR_LAST_SPECIAL_ATTACK "minotaur_last_special"
 #define BB_MINOTAUR_ENRAGE_BONUS "minotaur_enrage"
+#define BB_MINOTAUR_CHARGE_STAGE "minotaur_charge_stage"
+#define BB_MINOTAUR_CHARGE_DIRECTION "minotaur_charge_dir"
+#define BB_MINOTAUR_CHARGE_STEPS_LEFT "minotaur_charge_steps"
 
 #define BB_FLESH_IS_REGENERATING "flesh_regenerating"
 #define BB_FLESH_FRENZY_ACTIVE "flesh_frenzy"

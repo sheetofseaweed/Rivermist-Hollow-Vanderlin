@@ -6,17 +6,21 @@
 		BB_MINOTAUR_RAGE_METER = 0,
 		BB_MINOTAUR_PHASE = 1,
 		BB_MINOTAUR_CHARGE_COOLDOWN = 0,
-		BB_MINOTAUR_SUMMON_COOLDOWN = 0,
+		BB_MINOTAUR_FURY_COOLDOWN = 0,
 		BB_MINOTAUR_SLAM_COOLDOWN = 0,
 		BB_MINOTAUR_LAST_SPECIAL_ATTACK = null,
+		BB_MINOTAUR_ENRAGE_BONUS = 0,
+		BB_MINOTAUR_CHARGE_STAGE = 0,
+		BB_MINOTAUR_CHARGE_DIRECTION = 0,
+		BB_MINOTAUR_CHARGE_STEPS_LEFT = 0,
 	)
 	planning_subtrees = list(
 		/datum/ai_planning_subtree/simple_find_horny,
 		/datum/ai_planning_subtree/horny,
 		/datum/ai_planning_subtree/minotaur_targeting,
+		/datum/ai_planning_subtree/minotaur_enrage,
 		/datum/ai_planning_subtree/minotaur_special_attacks,
-		/datum/ai_planning_subtree/minotaur_melee_attack,
-		/datum/ai_planning_subtree/minotaur_enrage // Special behavior at low health
+		/datum/ai_planning_subtree/basic_melee_attack_subtree/minotaur,
 	)
 	idle_behavior = /datum/idle_behavior/minotaur_patrol
 
