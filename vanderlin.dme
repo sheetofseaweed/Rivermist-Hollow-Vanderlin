@@ -720,7 +720,7 @@
 #include "code\datums\ai\controllers\lamia.dm"
 #include "code\datums\ai\controllers\lycan.dm"
 #include "code\datums\ai\controllers\mimic.dm"
-#include "code\datums\ai\controllers\minoutaur.dm"
+#include "code\datums\ai\controllers\minotaur.dm"
 #include "code\datums\ai\controllers\mirespider.dm"
 #include "code\datums\ai\controllers\mole.dm"
 #include "code\datums\ai\controllers\pig.dm"
