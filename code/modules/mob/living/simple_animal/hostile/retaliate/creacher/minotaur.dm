@@ -94,28 +94,28 @@
 	icon_state = "instrike"
 	attack_verb = list("punches", "strikes", "kicks", "steps on", "crushes", "bites")
 	animname = "blank22"
-	blade_class = BCLASS_CUT
-	hitsound = "smallslash"
+	blade_class = BCLASS_PUNCH
+	hitsound = "punch"
 	chargetime = 0
 	penfactor = 5
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
-	item_damage_type = "stab"
+	item_damage_type = "blunt"
 
 /datum/intent/simple/minotaur_axe
 	name = "minotaur axe"
 	icon_state = "instrike"
 	attack_verb = list("hacks at", "slashes", "chops", "steps on", "crushes", "bites")
 	animname = "blank22"
-	blade_class = BCLASS_CUT
+	blade_class = BCLASS_CHOP
 	hitsound = "genchop"
 	chargetime = 20
 	penfactor = 10
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
-	item_damage_type = "stab"
+	item_damage_type = "slash"
 
 /obj/effect/temp_visual/minotaur_rage
 	icon = 'icons/effects/effects.dmi'

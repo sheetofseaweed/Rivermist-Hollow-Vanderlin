@@ -274,6 +274,12 @@
 #define BB_MINOTAUR_CHARGE_STAGE "minotaur_charge_stage"
 #define BB_MINOTAUR_CHARGE_DIRECTION "minotaur_charge_dir"
 #define BB_MINOTAUR_CHARGE_STEPS_LEFT "minotaur_charge_steps"
+#define BB_MINOTAUR_BERSERK "minotaur_berserk"
+#define BB_MINOTAUR_COMBAT_PLAN "minotaur_combat_plan"
+#define BB_MINOTAUR_PLAN_ZONE "minotaur_plan_zone"
+#define BB_MINOTAUR_PLAN_TARGET "minotaur_plan_target"
+#define BB_MINOTAUR_WOUNDS_INFLICTED "minotaur_wounds_inflicted"
+#define BB_MINOTAUR_DEFENSE_COOLDOWN "minotaur_defense_cd"
 
 #define BB_FLESH_IS_REGENERATING "flesh_regenerating"
 #define BB_FLESH_FRENZY_ACTIVE "flesh_frenzy"
