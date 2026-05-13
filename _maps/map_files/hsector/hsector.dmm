@@ -1324,11 +1324,6 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/east)
-"ayS" = (
-/turf/closed/wall/mineral/roofwall/outercorner{
-	dir = 1
-	},
-/area/indoors/town/rmh)
 "ayT" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -11101,11 +11096,6 @@
 /obj/structure/flora/grass/crawlvines,
 /turf/open/openspace,
 /area/outdoors/rmh_field/north)
-"elL" = (
-/turf/closed/wall/mineral/roofwall/outercorner{
-	dir = 8
-	},
-/area/indoors/town/rmh)
 "elN" = (
 /obj/structure/flora/grass/sparegrass,
 /turf/open/floor/grass,
@@ -30519,11 +30509,6 @@
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/jergal)
-"lsP" = (
-/turf/closed/wall/mineral/roofwall/middle{
-	dir = 4
-	},
-/area/indoors/town/rmh)
 "lsX" = (
 /obj/machinery/light/fueled/wallfire/candle/r,
 /obj/effect/decal/edge_corner{
@@ -32069,9 +32054,6 @@
 "lXd" = (
 /turf/closed/wall/mineral/craftstone,
 /area/under/rmh_dungeon/arena)
-"lXf" = (
-/turf/closed/wall/mineral/roofwall/center,
-/area/indoors/town/rmh)
 "lXj" = (
 /obj/structure/fluff/railing/wood/east,
 /turf/open/floor/rooftop{
@@ -50206,11 +50188,6 @@
 	},
 /turf/open/floor/tile/harem2,
 /area/indoors/town/rmh/bank)
-"sxh" = (
-/turf/closed/mineral/bedrock{
-	name = "solid rock"
-	},
-/area/outdoors/town/rmh/roofs)
 "sxl" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/spider/stickyweb/solo,
@@ -57247,11 +57224,6 @@
 	},
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_magelake)
-"vee" = (
-/turf/closed/wall/mineral/roofwall/middle{
-	dir = 1
-	},
-/area/indoors/town/rmh)
 "veg" = (
 /obj/item/bin/water,
 /turf/open/floor/cobblerock,
@@ -59947,9 +59919,6 @@
 /obj/structure/fluff/railing/wood/west,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
-"wff" = (
-/turf/closed/wall/mineral/roofwall/middle,
-/area/indoors/town/rmh)
 "wfg" = (
 /obj/structure/door{
 	name = "Surgery"
@@ -62836,9 +62805,6 @@
 	},
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/garrison/wall)
-"xfv" = (
-/turf/closed/wall/mineral/roofwall/outercorner,
-/area/indoors/town/rmh)
 "xfz" = (
 /obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
@@ -354188,13 +354154,13 @@ fza
 fza
 fza
 lzI
-oLQ
-ciH
-ciH
-ciH
-ciH
-ciH
-sHw
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
@@ -354445,13 +354411,13 @@ fza
 fza
 fza
 fza
-oLQ
-xfv
-sIO
-sIO
-sIO
-tcu
-sHw
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
@@ -354696,19 +354662,19 @@ lzI
 fza
 fza
 fza
-sxh
-sxh
-sxh
-sxh
 fza
 fza
-oLQ
-vee
-lXf
-lXf
-lXf
-wff
-sHw
+fza
+fza
+fza
+fza
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
@@ -354951,21 +354917,21 @@ lzI
 lzI
 lzI
 fza
-sxh
-sxh
-sxh
-sxh
-sxh
-sxh
-sxh
 fza
-oLQ
-vee
-lXf
-lXf
-lXf
-wff
-sHw
+fza
+fza
+fza
+fza
+fza
+fza
+fza
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
@@ -355210,19 +355176,19 @@ lzI
 lzI
 lzI
 lzI
-sxh
-sxh
-sxh
-sxh
-sxh
 fza
-oLQ
-vee
-lXf
-lXf
-lXf
-wff
-sHw
+fza
+fza
+fza
+fza
+fza
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
@@ -355470,16 +355436,16 @@ lzI
 lzI
 lzI
 fza
-sxh
-sxh
 fza
-oLQ
-ayS
-lsP
-lsP
-lsP
-elL
-sHw
+fza
+fza
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
@@ -355730,13 +355696,13 @@ lzI
 lzI
 lzI
 lzI
-dwF
-dwF
-dwF
-dwF
-dwF
-dwF
-sHw
+cua
+cua
+cua
+cua
+cua
+cua
+cua
 lzI
 lzI
 lzI
