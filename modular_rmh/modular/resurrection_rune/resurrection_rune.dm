@@ -125,6 +125,9 @@
 		return FALSE
 
 	var/mob/living/carbon/carbon_owner = owner
+	if(rune_controller.can_offer_defeat_rune_return(carbon_owner))
+		return TRUE
+
 	var/rescue_stage = rune_controller.get_rescue_stage(carbon_owner)
 	if(rescue_stage == RUNE_STAGE_SOFT_CRIT || rescue_stage == RUNE_STAGE_HARD_CRIT)
 		return TRUE
@@ -138,6 +141,10 @@
 		return
 
 	var/mob/living/carbon/carbon_owner = owner
+	if(rune_controller.can_offer_defeat_rune_return(carbon_owner))
+		rune_controller.trigger_defeat_rune_return(carbon_owner)
+		return
+
 	var/rescue_stage = rune_controller.get_rescue_stage(carbon_owner)
 	if(rescue_stage == RUNE_STAGE_SOFT_CRIT || rescue_stage == RUNE_STAGE_HARD_CRIT)
 		rune_controller.trigger_voluntary_revival(carbon_owner)
@@ -578,6 +585,9 @@
 		resurrecting -= target
 		clear_linked_user_rescue_state(target)
 		return
+	if(target.defeat_mode == DEFEAT_MODE_NO_RETURN)
+		clear_linked_user_rescue_state(target)
+		return
 	if(target in resurrecting)
 		clear_linked_user_rescue_state(target)
 		return
@@ -587,7 +597,7 @@
 	if(rescue_stage != RUNE_STAGE_IMMEDIATE)
 		return
 
-	queue_revival(target)
+	queue_revival(target, rune_charge_result = target.mind?.get_defeat_rune_emergency_result())
 
 /datum/resurrection_rune_controller/proc/handle_linked_user_deletion(mob/living/carbon/target)
 	SIGNAL_HANDLER
@@ -670,6 +680,11 @@
 
 /datum/resurrection_rune_controller/proc/update_linked_user_rescue_state(mob/living/carbon/user, rescue_stage = get_rescue_stage(user))
 	if(!user)
+		return
+
+	if(can_offer_defeat_rune_return(user))
+		ensure_rescue_action(user)
+		clear_hard_crit_deadline(user)
 		return
 
 	switch(rescue_stage)
@@ -827,7 +842,28 @@
 	queue_revival(user, voluntary = TRUE)
 	return TRUE
 
-/datum/resurrection_rune_controller/proc/queue_revival(mob/living/carbon/user, is_linked = TRUE, voluntary = FALSE, allow_outlaw_redirect = TRUE)
+/datum/resurrection_rune_controller/proc/can_offer_defeat_rune_return(mob/living/carbon/user)
+	if(!can_queue_rescue_for(user))
+		return FALSE
+	if(user.defeat_mode != DEFEAT_MODE_KO_RUNE)
+		return FALSE
+	if(!user.has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	return user.mind?.can_spend_defeat_rune_charge()
+
+/datum/resurrection_rune_controller/proc/trigger_defeat_rune_return(mob/living/carbon/user)
+	if(!can_offer_defeat_rune_return(user))
+		return FALSE
+
+	var/list/rune_charge_result = user.mind.spend_defeat_rune_charge()
+	if(!rune_charge_result)
+		update_linked_user_rescue_state(user)
+		return FALSE
+
+	queue_revival(user, voluntary = TRUE, allow_outlaw_redirect = FALSE, rune_charge_result = rune_charge_result)
+	return TRUE
+
+/datum/resurrection_rune_controller/proc/queue_revival(mob/living/carbon/user, is_linked = TRUE, voluntary = FALSE, allow_outlaw_redirect = TRUE, list/rune_charge_result = null)
 	if(!user)
 		return
 	if(user in resurrecting)
@@ -843,9 +879,9 @@
 
 	sub_rune.visible_message(span_blue("The rune begins to grow brighter."))
 	resurrecting |= user
-	addtimer(CALLBACK(src, PROC_REF(complete_revival), user, voluntary, allow_outlaw_redirect), RUNE_REVIVE_DELAY)
+	addtimer(CALLBACK(src, PROC_REF(complete_revival), user, voluntary, allow_outlaw_redirect, rune_charge_result), RUNE_REVIVE_DELAY)
 
-/datum/resurrection_rune_controller/proc/complete_revival(mob/living/carbon/user, voluntary = FALSE, allow_outlaw_redirect = TRUE)
+/datum/resurrection_rune_controller/proc/complete_revival(mob/living/carbon/user, voluntary = FALSE, allow_outlaw_redirect = TRUE, list/rune_charge_result = null)
 	var/mob/living/carbon/body = user
 	if(QDELETED(body))
 		body = null
@@ -864,12 +900,16 @@
 		resurrecting -= user
 		return
 
+	var/had_defeat_knockout = body.has_status_effect(/datum/status_effect/defeat_knockout)
 	body.visible_message(span_blue("With a loud pop, [body.name] suddenly disappears!"))
 	playsound(get_turf(body), 'sound/magic/repulse.ogg', 100, FALSE, -1)
 	body.ExtinguishMob()
 	maybe_strip_revival_clothes(body, voluntary)
 	body.forceMove(destination_turf)
 	body.revive(ADMIN_HEAL_ALL, force_grab_ghost = TRUE)
+	body.remove_status_effect(/datum/status_effect/defeat_knockout)
+	if(had_defeat_knockout)
+		body.apply_defeat_snapshot_debuffs()
 	body.clear_fullscreens()
 	body.reload_fullscreen()
 	body.update_cone_show()
@@ -881,7 +921,7 @@
 
 	body.grab_ghost(TRUE)
 	body.flash_act()
-	apply_revival_debuffs(body, voluntary)
+	apply_revival_debuffs(body, voluntary, rune_charge_result)
 	apply_revival_side_effects(body, voluntary, return_turf)
 	addtimer(CALLBACK(src, PROC_REF(clear_resurrection_lockout), body), RUNE_REVIVE_LOCKOUT)
 	playsound(destination_turf, 'sound/misc/vampirespell.ogg', 100, FALSE, -1)
@@ -916,9 +956,12 @@
 	target.update_body()
 	target.visible_message("<span class='notice'>The rot leaves [target]'s body!</span>", "<span class='green'>I feel the rot leave my body!</span>")
 
-/datum/resurrection_rune_controller/proc/apply_revival_debuffs(mob/living/carbon/target, voluntary = FALSE)
+/datum/resurrection_rune_controller/proc/apply_revival_debuffs(mob/living/carbon/target, voluntary = FALSE, list/rune_charge_result = null)
 	clear_revival_debuffs(target)
-	if(voluntary)
+	if(rune_charge_result)
+		target.apply_status_effect(get_revival_debuff_for_defeat_rune_result(rune_charge_result))
+		target.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/rune, get_defeat_rune_trauma_severity(rune_charge_result))
+	else if(voluntary)
 		target.apply_status_effect(/datum/status_effect/debuff/revived/rune/light)
 	else if(ishuman(target))
 		var/mob/living/carbon/human/human_target = target
@@ -930,6 +973,28 @@
 		target.apply_status_effect(/datum/status_effect/debuff/revived/rune/rough)
 
 	target.apply_status_effect(/datum/status_effect/debuff/rune_glow)
+
+/datum/resurrection_rune_controller/proc/get_revival_debuff_for_defeat_rune_result(list/rune_charge_result)
+	var/spend_kind = rune_charge_result?[DEFEAT_RUNE_SPEND_KIND]
+	var/charges_remaining = rune_charge_result?[DEFEAT_RUNE_CHARGES_REMAINING]
+	if(spend_kind == DEFEAT_RUNE_SPEND_EMERGENCY)
+		return /datum/status_effect/debuff/revived/rune/rough
+	if(spend_kind == DEFEAT_RUNE_SPEND_CHARGED && charges_remaining <= 0)
+		return /datum/status_effect/debuff/revived/rune/rough
+	if(spend_kind == DEFEAT_RUNE_SPEND_CHARGED && charges_remaining <= 2)
+		return /datum/status_effect/debuff/revived/rune
+	return /datum/status_effect/debuff/revived/rune/light
+
+/datum/resurrection_rune_controller/proc/get_defeat_rune_trauma_severity(list/rune_charge_result)
+	var/spend_kind = rune_charge_result?[DEFEAT_RUNE_SPEND_KIND]
+	var/charges_remaining = rune_charge_result?[DEFEAT_RUNE_CHARGES_REMAINING]
+	if(spend_kind == DEFEAT_RUNE_SPEND_EMERGENCY)
+		return DEFEAT_SEVERITY_SEVERE
+	if(spend_kind == DEFEAT_RUNE_SPEND_CHARGED && charges_remaining <= 0)
+		return DEFEAT_SEVERITY_SEVERE
+	if(spend_kind == DEFEAT_RUNE_SPEND_CHARGED && charges_remaining <= 2)
+		return DEFEAT_SEVERITY_NORMAL
+	return DEFEAT_SEVERITY_LIGHT
 
 /datum/resurrection_rune_controller/proc/clear_revival_debuffs(mob/living/carbon/target)
 	if(!target)

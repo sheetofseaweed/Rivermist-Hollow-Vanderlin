@@ -436,6 +436,13 @@
 			to_chat(M, span_warning("I can't put [p_them()] out with just my bare hands!"))
 		return
 
+	if(has_status_effect(/datum/status_effect/defeat_knockout))
+		if(defeat_rescue(M, "help_shake"))
+			M.visible_message(span_notice("[M] helps [src] back from defeat."), span_notice("I help [src] back from defeat."))
+			return
+		to_chat(M, span_warning("I can't safely rescue [src] right now."))
+		return
+
 //	if(!(mobility_flags & MOBILITY_STAND))
 //		if(buckled)
 //			to_chat(M, "<span class='warning'>I need to unbuckle [src] first to do that!</span>")

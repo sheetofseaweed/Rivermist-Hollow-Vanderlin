@@ -77,6 +77,7 @@
 #include "craftable_clothes.dm"
 #include "craftable_turfs.dm"
 #include "create_and_destroy.dm"
+#include "defeat_system.dm"
 #include "dye_bin.dm"
 #include "faction_supply_packs.dm"
 #include "fall_damage.dm"
