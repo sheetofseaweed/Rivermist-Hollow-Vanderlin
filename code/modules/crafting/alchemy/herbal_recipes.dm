@@ -477,6 +477,32 @@
 		M.heal_bodypart_damage(1, 1, 0)
 	. = ..()
 
+// Defeat Trauma Treatment
+
+/datum/reagent/medicine/herbal/mercy_draught
+	name = "Mercy Draught"
+	description = "A rare draught used to draw one lingering defeat trauma out of the body or spirit."
+	reagent_state = LIQUID
+	color = "#b7d9c1"
+	metabolization_rate = REAGENTS_METABOLISM * 2
+	overdose_threshold = 20
+	taste_description = "cool mercy and bitter herbs"
+	scent_description = "clean herbs and rain"
+
+/datum/reagent/medicine/herbal/mercy_draught/on_mob_metabolize(mob/living/L)
+	. = ..()
+	if(!L.has_any_defeat_trauma())
+		return
+	if(L.defeat_treat_trauma(L, DEFEAT_TREATMENT_UNIVERSAL))
+		to_chat(L, span_notice("The draught eases one lingering defeat trauma."))
+
+/datum/reagent/medicine/herbal/mercy_draught/reaction_mob(mob/living/M, method = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0, target_zone = null)
+	. = ..()
+	if(method != TOUCH || reac_volume < 5 || !M.has_any_defeat_trauma())
+		return
+	if(M.defeat_treat_trauma(M, DEFEAT_TREATMENT_UNIVERSAL) && show_message)
+		to_chat(M, span_notice("The draught draws out one lingering defeat trauma."))
+
 // Anti-Poison Blend
 
 /datum/reagent/medicine/herbal/witches_bane

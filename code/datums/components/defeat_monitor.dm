@@ -2,6 +2,8 @@
 	dupe_mode = COMPONENT_DUPE_HIGHLANDER
 	/// First tick at or above the sustained pain defeat stage.
 	var/shock_defeat_started_at = 0
+	/// Last warning tick while pain shock is approaching defeat.
+	var/shock_warning_last_at = 0
 	/// Valid hostile climax events accumulated toward horny defeat.
 	var/horny_defeat_climax_count = 0
 
@@ -45,6 +47,7 @@
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
 
 	var/current_shock_stage = carbon_parent.getShockStage()
+	maybe_warn_shock_defeat(current_shock_stage)
 	if(current_shock_stage >= DEFEAT_SHOCK_HARD_STAGE)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_PAIN, DEFEAT_SEVERITY_SEVERE)
 
@@ -64,6 +67,20 @@
 /datum/component/defeat_monitor/proc/reset_shock_defeat_window()
 	shock_defeat_started_at = 0
 
+/datum/component/defeat_monitor/proc/maybe_warn_shock_defeat(current_shock_stage)
+	var/mob/living/carbon/carbon_parent = parent
+	if(!istype(carbon_parent))
+		return FALSE
+	if(current_shock_stage < DEFEAT_SHOCK_WARNING_STAGE)
+		shock_warning_last_at = 0
+		return FALSE
+	if(shock_warning_last_at && world.time - shock_warning_last_at < DEFEAT_SHOCK_WARNING_COOLDOWN)
+		return FALSE
+	shock_warning_last_at = world.time
+	to_chat(carbon_parent, span_warning("Pain is pulling you toward defeat. You need help soon."))
+	carbon_parent.flash_fullscreen("redflash1")
+	return TRUE
+
 /datum/component/defeat_monitor/proc/on_health_update(datum/source, ...)
 	SIGNAL_HANDLER
 	return check_defeat_triggers()
@@ -74,7 +91,16 @@
 
 /datum/component/defeat_monitor/proc/on_death(datum/source, ...)
 	SIGNAL_HANDLER
-	return
+	var/mob/living/carbon/carbon_parent = parent
+	if(!istype(carbon_parent))
+		return FALSE
+	if(!is_defeat_eligible())
+		return FALSE
+	if(carbon_parent.has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(!carbon_parent.defeat_is_immediate_rune_hazard())
+		return FALSE
+	return carbon_parent.enter_defeat(DEFEAT_REASON_HAZARD, DEFEAT_SEVERITY_SEVERE)
 
 /datum/component/defeat_monitor/proc/on_climax(datum/source, datum/sex_action/action, mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
 	SIGNAL_HANDLER
@@ -108,3 +134,27 @@
 
 	horny_defeat_climax_count = 0
 	return carbon_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
+
+/datum/component/defeat_ai_opt_in
+	dupe_mode = COMPONENT_DUPE_UNIQUE
+	var/previous_opt_in = FALSE
+
+/datum/component/defeat_ai_opt_in/Initialize(...)
+	if(!isliving(parent))
+		return COMPONENT_INCOMPATIBLE
+	return ..()
+
+/datum/component/defeat_ai_opt_in/RegisterWithParent()
+	var/mob/living/living_parent = parent
+	previous_opt_in = living_parent.defeat_system_ai_opt_in
+	living_parent.defeat_system_ai_opt_in = TRUE
+	living_parent.ensure_defeat_monitor()
+
+/datum/component/defeat_ai_opt_in/UnregisterFromParent()
+	var/mob/living/living_parent = parent
+	if(!istype(living_parent))
+		return
+	living_parent.defeat_system_ai_opt_in = previous_opt_in
+	if(!living_parent.defeat_system_is_eligible())
+		var/datum/component/defeat_monitor/monitor = living_parent.GetComponent(/datum/component/defeat_monitor)
+		qdel(monitor)

@@ -223,6 +223,8 @@
 	cast_on.adjustToxLoss(-amount_healed)
 	cast_on.adjustOxyLoss(-amount_healed)
 	cast_on.adjust_bloodvolume(blood_restoration + situational_blood, BLOOD_VOLUME_NORMAL)
+	var/mob/living/healing_owner = owner
+	cast_on.defeat_try_auto_rescue_from_healing(healing_owner, amount_healed, "healing miracle")
 	if(!iscarbon(cast_on))
 		cast_on.adjustBruteLoss(-amount_healed)
 		cast_on.adjustFireLoss(-amount_healed)
@@ -276,3 +278,38 @@
 	required_items = null
 	stun_undead = FALSE
 	is_profane = TRUE
+
+/datum/action/cooldown/spell/defeat_absolution
+	name = "Merciful Absolution"
+	desc = "Call on your patron to lift one lingering defeat trauma from yourself or another."
+	button_icon_state = "lesserheal"
+	sound = 'sound/magic/heal.ogg'
+	charge_sound = 'sound/magic/holycharging.ogg'
+	cast_range = 1
+	spell_type = SPELL_MIRACLE
+	antimagic_flags = MAGIC_RESISTANCE_HOLY
+	associated_skill = /datum/attribute/skill/magic/holy
+	charge_required = TRUE
+	charge_time = 2 SECONDS
+	cooldown_time = 2 MINUTES
+	spell_cost = 100
+	self_cast_possible = TRUE
+
+/datum/action/cooldown/spell/defeat_absolution/is_valid_target(atom/cast_on)
+	. = ..()
+	if(!.)
+		return FALSE
+	return isliving(cast_on)
+
+/datum/action/cooldown/spell/defeat_absolution/cast(mob/living/cast_on)
+	. = ..()
+	var/mob/living/caster = owner
+	if(!cast_on.has_any_defeat_trauma())
+		to_chat(caster, span_warning("[cast_on] has no defeat trauma I can absolve."))
+		return FALSE
+	if(!cast_on.defeat_treat_trauma(caster, DEFEAT_TREATMENT_UNIVERSAL))
+		to_chat(caster, span_warning("The trauma resists my absolution."))
+		return FALSE
+	caster.visible_message(span_notice("[caster] absolves a lingering defeat trauma from [cast_on]."), span_notice("I absolve one lingering defeat trauma from [cast_on]."))
+	to_chat(cast_on, span_notice("A lingering defeat trauma loosens its hold on you."))
+	return TRUE

@@ -545,6 +545,9 @@
 			limb_msg = span_boldwarning(limb_msg)
 		. += limb_msg
 
+	if(has_status_effect(/datum/status_effect/defeat_knockout))
+		. += span_boldwarning("[P[THEYRE]] defeated and unable to rise.")
+
 	// Health statuses
 	if(stat == DEAD || (HAS_TRAIT(src, TRAIT_FAKEDEATH)))
 		appears_dead = TRUE

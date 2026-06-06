@@ -77,15 +77,31 @@
 		return FALSE
 	if(stat == DEAD || helper.stat == DEAD)
 		return FALSE
-	if(defeat_recent_source_is(helper))
+	if(!helper.Adjacent(src))
 		return FALSE
-	if(pulledby == helper && helper.grab_state >= GRAB_AGGRESSIVE)
-		return FALSE
-	if(helper.pulling == src && helper.grab_state >= GRAB_AGGRESSIVE)
-		return FALSE
-	if(helper.ai_controller?.current_movement_target == src)
+	if(defeat_is_active_harm_from(helper))
 		return FALSE
 	return TRUE
+
+/mob/living/proc/defeat_is_active_harm_from(mob/living/helper)
+	if(!helper)
+		return FALSE
+	if(pulledby == helper && helper.grab_state >= GRAB_AGGRESSIVE)
+		return TRUE
+	if(helper.pulling == src && helper.grab_state >= GRAB_AGGRESSIVE)
+		return TRUE
+	if(defeat_recent_source_is(helper) && recent_damage_source_time && world.time - recent_damage_source_time <= DEFEAT_ACTIVE_HARM_WINDOW)
+		return TRUE
+	if(helper.ai_controller?.current_movement_target == src)
+		return TRUE
+	return FALSE
+
+/mob/living/proc/defeat_try_auto_rescue_from_healing(mob/living/helper, amount = 0, rescue_source = "healing")
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(amount < DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD)
+		return FALSE
+	return defeat_rescue(helper, rescue_source)
 
 /mob/living/proc/defeat_recent_source_is(mob/living/helper)
 	if(!helper)
@@ -142,26 +158,87 @@
 	if(!helper || helper.stat == DEAD)
 		return FALSE
 
+	var/treated = FALSE
 	switch(treatment_type)
 		if(DEFEAT_TREATMENT_MEDICAL)
 			if(!helper.defeat_can_do_medical_treatment())
 				return FALSE
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/physical)
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/physical/wound) || .
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/physical/burn) || .
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/physical/body) || .
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/physical/concussion) || .
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/pain) || .
-			return .
+			treated = defeat_clear_matching_trauma(helper, list(
+				/datum/status_effect/debuff/defeat/physical,
+				/datum/status_effect/debuff/defeat/physical/wound,
+				/datum/status_effect/debuff/defeat/physical/burn,
+				/datum/status_effect/debuff/defeat/physical/body,
+				/datum/status_effect/debuff/defeat/physical/concussion,
+				/datum/status_effect/debuff/defeat/pain,
+			), treatment_type)
 		if(DEFEAT_TREATMENT_SPIRITUAL)
 			if(!helper.defeat_can_do_spiritual_treatment())
 				return FALSE
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/rune)
-			. = remove_status_effect(/datum/status_effect/debuff/defeat/horny) || .
-			return .
+			treated = defeat_clear_matching_trauma(helper, list(
+				/datum/status_effect/debuff/defeat/rune,
+				/datum/status_effect/debuff/defeat/horny,
+			), treatment_type)
 		if(DEFEAT_TREATMENT_UNIVERSAL)
-			return defeat_clear_one_trauma()
-	return FALSE
+			treated = defeat_clear_one_trauma()
+			if(treated)
+				SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
+	return treated
+
+/mob/living/proc/defeat_clear_matching_trauma(mob/living/helper, list/trauma_types, treatment_type = DEFEAT_TREATMENT_MEDICAL)
+	var/treated = FALSE
+	for(var/trauma_type in trauma_types)
+		treated = remove_status_effect(trauma_type) || treated
+	if(treated)
+		SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
+	return treated
+
+/mob/living/proc/defeat_treat_tool_physical_trauma(mob/living/helper, list/trauma_types)
+	if(!helper || helper.stat == DEAD)
+		return FALSE
+	if(!helper.defeat_can_do_medical_treatment())
+		return FALSE
+	return defeat_clear_matching_trauma(helper, trauma_types, DEFEAT_TREATMENT_MEDICAL)
+
+/mob/living/proc/defeat_attempt_adjacent_treatment(mob/living/helper, treatment_type = DEFEAT_TREATMENT_MEDICAL)
+	if(!helper || helper == src)
+		return FALSE
+	if(stat == DEAD || helper.stat == DEAD)
+		return FALSE
+	if(!helper.Adjacent(src))
+		return FALSE
+
+	var/treatment_time = defeat_treatment_time(helper, treatment_type)
+	if(!do_after(helper, treatment_time, target = src))
+		return FALSE
+	if(!defeat_treat_trauma(helper, treatment_type))
+		to_chat(helper, span_warning("There is no matching defeat trauma I can treat."))
+		return FALSE
+	helper.visible_message(span_notice("[helper] treats the lingering defeat trauma in [src]."), span_notice("I treat the lingering defeat trauma in [src]."))
+	return TRUE
+
+/mob/living/proc/defeat_treatment_time(mob/living/helper, treatment_type = DEFEAT_TREATMENT_MEDICAL)
+	var/skill_value = 0
+	if(treatment_type == DEFEAT_TREATMENT_SPIRITUAL)
+		skill_value = GET_MOB_SKILL_VALUE_OLD(helper, /datum/attribute/skill/magic/holy)
+	else
+		skill_value = GET_MOB_SKILL_VALUE_OLD(helper, /datum/attribute/skill/misc/medicine)
+	return max(8 SECONDS, 12 SECONDS - (skill_value * 0.5 SECONDS))
+
+/mob/living/verb/treat_defeat_trauma_medical()
+	set name = "Treat Defeat Trauma"
+	set category = "IC"
+	set src in oview(1)
+
+	var/mob/living/helper = usr
+	defeat_attempt_adjacent_treatment(helper, DEFEAT_TREATMENT_MEDICAL)
+
+/mob/living/verb/treat_defeat_trauma_spiritual()
+	set name = "Soothe Defeat Trauma"
+	set category = "IC"
+	set src in oview(1)
+
+	var/mob/living/helper = usr
+	defeat_attempt_adjacent_treatment(helper, DEFEAT_TREATMENT_SPIRITUAL)
 
 /mob/living/proc/defeat_can_do_medical_treatment()
 	return HAS_TRAIT(src, TRAIT_SURGEON) || (get_skill_level(/datum/skill/misc/medicine) >= SKILL_RANK_APPRENTICE)
@@ -185,6 +262,12 @@
 			return TRUE
 	return FALSE
 
+/mob/living/proc/has_any_defeat_trauma()
+	for(var/datum/status_effect/debuff/defeat/trauma as anything in status_effects)
+		if(istype(trauma))
+			return TRUE
+	return FALSE
+
 /mob/living/proc/has_any_defeat_physical_trauma()
 	return has_status_effect(/datum/status_effect/debuff/defeat/physical) \
 		|| has_status_effect(/datum/status_effect/debuff/defeat/physical/wound) \
@@ -194,6 +277,9 @@
 
 /mob/living/proc/defeat_stabilize_from_snapshot(datum/defeat_snapshot/snapshot)
 	defeat_stabilize_live_damage()
+	if(iscarbon(src))
+		var/mob/living/carbon/carbon_target = src
+		carbon_target.defeat_stabilize_active_injuries()
 
 /mob/living/proc/defeat_stabilize_live_damage(run_update = TRUE)
 	setBruteLoss(0, FALSE, TRUE)
@@ -205,6 +291,52 @@
 	setShockStage(0, FALSE, TRUE)
 	if(run_update)
 		updatehealth()
+
+/mob/living/carbon/proc/defeat_stabilize_active_injuries(run_update = TRUE)
+	var/cleared_anything = FALSE
+
+	for(var/obj/item/bodypart/bodypart as anything in bodyparts)
+		if(!bodypart)
+			continue
+		if(length(bodypart.embedded_objects))
+			var/list/embedded_to_clear = bodypart.embedded_objects.Copy()
+			for(var/obj/item/embedded_item as anything in embedded_to_clear)
+				if(bodypart.remove_embedded_object(embedded_item))
+					cleared_anything = TRUE
+
+	if(length(simple_embedded_objects))
+		var/list/simple_embedded_to_clear = simple_embedded_objects.Copy()
+		for(var/obj/item/embedded_item as anything in simple_embedded_to_clear)
+			if(simple_remove_embedded_object(embedded_item))
+				cleared_anything = TRUE
+
+	if(length(all_injuries))
+		var/list/injuries_to_clear = all_injuries.Copy()
+		for(var/datum/injury/injury as anything in injuries_to_clear)
+			if(!injury || QDELETED(injury))
+				continue
+			var/obj/item/bodypart/injured_bodypart = injury.parent_bodypart
+			if(length(injury.embedded_objects))
+				var/list/injury_embedded_to_clear = injury.embedded_objects.Copy()
+				for(var/obj/item/embedded_item as anything in injury_embedded_to_clear)
+					if(injured_bodypart?.remove_embedded_object(embedded_item))
+						cleared_anything = TRUE
+					else if(simple_remove_embedded_object(embedded_item))
+						cleared_anything = TRUE
+			if(injury.damage > 0)
+				injury.heal_damage(injury.damage)
+			if(!QDELETED(injury))
+				qdel(injury)
+			cleared_anything = TRUE
+
+	for(var/obj/item/bodypart/bodypart as anything in bodyparts)
+		bodypart.update_damages()
+		bodypart.update_bodypart_damage_state()
+
+	if(run_update)
+		update_damage_overlays()
+		updatehealth()
+	return cleared_anything
 
 /datum/defeat_snapshot
 	var/reason

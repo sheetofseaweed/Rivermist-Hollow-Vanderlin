@@ -1,3 +1,9 @@
+/proc/defeat_unit_place_adjacent(mob/living/first, mob/living/second)
+	var/turf/first_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/turf/second_turf = get_step(first_turf, EAST)
+	first.forceMove(first_turf)
+	second.forceMove(second_turf)
+
 /datum/unit_test/defeat_preferences_defaults_and_sanitize
 
 /datum/unit_test/defeat_preferences_defaults_and_sanitize/Run()
@@ -54,6 +60,38 @@
 	TEST_ASSERT_EQUAL(snapshot.tox_loss, test_human.getToxLoss(), "The snapshot should preserve major damage totals before stabilization.")
 	TEST_ASSERT_EQUAL(snapshot.worst_body_zone, BODY_ZONE_HEAD, "The snapshot should prefer the highest-damage injury bodypart.")
 	TEST_ASSERT_EQUAL(snapshot.worst_injury_type, WOUND_BLUNT, "The snapshot should preserve the worst injury type for aftermath mapping.")
+
+/datum/unit_test/defeat_stabilization_clears_live_injuries_after_snapshot
+
+/datum/unit_test/defeat_stabilization_clears_live_injuries_after_snapshot/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_system_ai_opt_in = TRUE
+	var/obj/item/bodypart/chest = test_human.get_bodypart(BODY_ZONE_CHEST)
+	chest.create_injury(WOUND_SLASH, 45, TRUE)
+	test_human.setBruteLoss(200, FALSE, TRUE)
+
+	TEST_ASSERT(length(test_human.all_injuries), "The setup should create active injury data before defeat.")
+	TEST_ASSERT(test_human.defeat_stabilize_active_injuries(FALSE), "The dedicated defeat injury stabilizer should report that it cleared active injuries.")
+	TEST_ASSERT(!length(test_human.all_injuries), "The dedicated defeat injury stabilizer should clear live injury datums.")
+	TEST_ASSERT_EQUAL(test_human.get_bleed_rate(), 0, "Cleared defeat injuries should not keep bleeding invisibly.")
+
+	chest.create_injury(WOUND_PIERCE, 50, TRUE)
+	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat.")
+	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.worst_injury_type, WOUND_PIERCE, "Defeat should capture the worst injury before stabilizing it.")
+	TEST_ASSERT(!length(test_human.all_injuries), "Defeat stabilization should clear live injury datums after snapshot capture.")
+	TEST_ASSERT_EQUAL(test_human.getBruteLoss(), 0, "Defeat stabilization should still clear live damage.")
+
+/datum/unit_test/defeat_death_signal_is_conservative_fallback
+
+/datum/unit_test/defeat_death_signal_is_conservative_fallback/Run()
+	var/mob/living/carbon/human/normal_dead = allocate(/mob/living/carbon/human)
+	normal_dead.defeat_system_ai_opt_in = TRUE
+	normal_dead.stat = DEAD
+	var/datum/component/defeat_monitor/normal_monitor = normal_dead.AddComponent(/datum/component/defeat_monitor)
+
+	normal_monitor.on_death(normal_dead)
+	TEST_ASSERT_NULL(normal_dead.has_status_effect(/datum/status_effect/defeat_knockout), "Ordinary completed death should not be converted into defeat KO by the death signal fallback.")
+	TEST_ASSERT_NULL(normal_dead.last_defeat_snapshot, "Ordinary completed death should not capture a defeat snapshot in the death signal fallback.")
 
 /datum/unit_test/defeat_damage_threshold_edges
 
@@ -174,11 +212,43 @@
 	TEST_ASSERT(!HAS_TRAIT(test_human, TRAIT_KNOCKEDOUT), "Defeat KO must not use normal unconsciousness.")
 	TEST_ASSERT(test_human.stat != DEAD, "Defeat KO should not make the mob dead.")
 
+/datum/unit_test/defeat_knockout_has_alert_and_overlay_feedback
+
+/datum/unit_test/defeat_knockout_has_alert_and_overlay_feedback/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_system_ai_opt_in = TRUE
+
+	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat.")
+	var/datum/status_effect/defeat_knockout/knockout = test_human.has_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NOTNULL(knockout, "Defeat should apply the custom KO status.")
+	TEST_ASSERT_NOTNULL(knockout.alert_type, "Defeat KO should expose a status alert.")
+	TEST_ASSERT_NOTNULL(test_human.screens["defeat"], "Defeat KO should apply a limited-vision fullscreen overlay.")
+
+	test_human.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NULL(test_human.screens["defeat"], "Removing defeat KO should clear the fullscreen overlay.")
+
+/datum/unit_test/defeat_shock_warning_feedback_is_throttled
+
+/datum/unit_test/defeat_shock_warning_feedback_is_throttled/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_system_ai_opt_in = TRUE
+	var/datum/component/defeat_monitor/monitor = test_human.AddComponent(/datum/component/defeat_monitor)
+
+	TEST_ASSERT(monitor.maybe_warn_shock_defeat(DEFEAT_SHOCK_WARNING_STAGE), "Shock warning stage should produce an initial warning.")
+	TEST_ASSERT(!monitor.maybe_warn_shock_defeat(DEFEAT_SHOCK_WARNING_STAGE), "Shock warnings should be throttled during their cooldown.")
+	monitor.shock_warning_last_at = world.time - DEFEAT_SHOCK_WARNING_COOLDOWN
+	TEST_ASSERT(monitor.maybe_warn_shock_defeat(DEFEAT_SHOCK_WARNING_STAGE), "Shock warning should fire again after the cooldown.")
+
+	test_human.setShockStage(DEFEAT_SHOCK_WARNING_STAGE - 1, FALSE, TRUE)
+	monitor.check_defeat_triggers()
+	TEST_ASSERT_EQUAL(monitor.shock_warning_last_at, 0, "Dropping below the shock warning stage should clear the warning cooldown.")
+
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff
 
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, helper)
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
@@ -187,17 +257,55 @@
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Rescue should clear the defeat KO status.")
 	TEST_ASSERT(victim.has_any_defeat_physical_trauma(), "Damage defeat should leave physical trauma after rescue.")
 
-/datum/unit_test/defeat_rescue_rejects_recent_attacker
+/datum/unit_test/defeat_rescue_allows_inactive_recent_attacker
 
-/datum/unit_test/defeat_rescue_rejects_recent_attacker/Run()
+/datum/unit_test/defeat_rescue_allows_inactive_recent_attacker/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, attacker)
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL, attacker)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(attacker)
+	victim.recent_damage_source_time = world.time - DEFEAT_ACTIVE_HARM_WINDOW - 1
 
-	TEST_ASSERT(!victim.defeat_rescue(attacker), "The recent attacker should not be able to trivially erase defeat consequences.")
-	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Rejected rescues should leave defeat KO in place.")
+	TEST_ASSERT(victim.defeat_rescue(attacker), "A recent attacker should be able to rescue once active harm has stopped.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Accepted rescues should clear defeat KO.")
+
+/datum/unit_test/defeat_rescue_blocks_active_harm
+
+/datum/unit_test/defeat_rescue_blocks_active_harm/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, attacker)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setBruteLoss(200, FALSE, TRUE)
+	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL, attacker)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(attacker)
+	victim.recent_damage_source_time = world.time
+
+	TEST_ASSERT(!victim.defeat_rescue(attacker), "Very recent direct harm should block rescues.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Blocked rescues should leave defeat KO in place.")
+
+	victim.recent_damage_source_time = world.time - DEFEAT_ACTIVE_HARM_WINDOW - 1
+	attacker.pulling = victim
+	attacker.grab_state = GRAB_AGGRESSIVE
+	TEST_ASSERT(!victim.defeat_rescue(attacker), "Active aggressive grabs should block rescues.")
+
+/datum/unit_test/defeat_auto_rescue_from_healing_threshold
+
+/datum/unit_test/defeat_auto_rescue_from_healing_threshold/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, helper)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setBruteLoss(200, FALSE, TRUE)
+	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+
+	TEST_ASSERT(!victim.defeat_try_auto_rescue_from_healing(helper, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD - 1, "small healing"), "Tiny healing should not auto-rescue defeated targets.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Sub-threshold healing should leave KO in place.")
+	TEST_ASSERT(victim.defeat_try_auto_rescue_from_healing(helper, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD, "meaningful healing"), "Meaningful healing should auto-rescue when the helper is allowed.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Auto-rescue should clear defeat KO.")
 
 /datum/unit_test/defeat_treatment_clears_correct_trauma
 
@@ -219,6 +327,39 @@
 	TEST_ASSERT(patient.defeat_treat_trauma(priest, DEFEAT_TREATMENT_SPIRITUAL), "A priestly helper should clear rune trauma.")
 	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/rune), "Spiritual treatment should clear rune trauma.")
 
+/datum/unit_test/defeat_tool_treatment_clears_matching_trauma_only
+
+/datum/unit_test/defeat_tool_treatment_clears_matching_trauma_only/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human)
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/burn, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/pain, null, DEFEAT_SEVERITY_NORMAL)
+
+	TEST_ASSERT(patient.defeat_treat_tool_physical_trauma(doctor, list(/datum/status_effect/debuff/defeat/physical/wound)), "Qualified wound care should clear wound trauma.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/wound), "Wound care should remove wound trauma.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/burn), "Wound care should not remove burn trauma.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/pain), "Wound care should not remove pain trauma.")
+
+/datum/unit_test/defeat_universal_treatment_and_priest_spell_surface
+
+/datum/unit_test/defeat_universal_treatment_and_priest_spell_surface/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/pain, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_NORMAL)
+
+	TEST_ASSERT(patient.defeat_treat_trauma(patient, DEFEAT_TREATMENT_UNIVERSAL), "Universal defeat treatment should clear one trauma.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/pain), "Universal treatment should clear the highest-priority matching trauma.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/rune), "Universal treatment should clear only one trauma at a time.")
+
+	var/datum/devotion/devotion = allocate(/datum/devotion)
+	devotion.make_priest()
+	TEST_ASSERT((/datum/action/cooldown/spell/defeat_absolution in devotion.miracles_extra), "Priest setup should grant the dedicated defeat-absolution spell.")
+
+	var/datum/container_craft/cooking/herbal_tea/mercy_draught/recipe = allocate(/datum/container_craft/cooking/herbal_tea/mercy_draught)
+	TEST_ASSERT_EQUAL(recipe.created_reagent, /datum/reagent/medicine/herbal/mercy_draught, "Mercy Draught recipe should create the universal trauma-clearing reagent.")
+
 /datum/unit_test/defeat_debuff_fallback_duration_by_severity
 
 /datum/unit_test/defeat_debuff_fallback_duration_by_severity/Run()
@@ -229,6 +370,21 @@
 
 	TEST_ASSERT_EQUAL(light_effect.initial_duration, 10 MINUTES, "Light defeat trauma should decay slowly but sooner than worse trauma.")
 	TEST_ASSERT_EQUAL(severe_effect.initial_duration, 60 MINUTES, "Severe defeat trauma should have the longest fallback decay.")
+
+/datum/unit_test/defeat_trauma_subtypes_have_distinct_stat_profiles
+
+/datum/unit_test/defeat_trauma_subtypes_have_distinct_stat_profiles/Run()
+	var/mob/living/carbon/human/wound_patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/burn_patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/concussion_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/wound_effect = wound_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/status_effect/debuff/defeat/burn_effect = burn_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/burn, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/status_effect/debuff/defeat/concussion_effect = concussion_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/concussion, null, DEFEAT_SEVERITY_NORMAL)
+
+	TEST_ASSERT_NOTNULL(wound_effect.effectedstats[STAT_SPEED], "Wound trauma should pressure speed.")
+	TEST_ASSERT_NOTNULL(burn_effect.effectedstats[STAT_CONSTITUTION], "Burn trauma should pressure constitution.")
+	TEST_ASSERT_NOTNULL(concussion_effect.effectedstats[STAT_INTELLIGENCE], "Concussion trauma should pressure intelligence.")
+	TEST_ASSERT_NULL(burn_effect.effectedstats[STAT_SPEED], "Burn trauma should not use the old generic speed profile.")
 
 /datum/unit_test/defeat_rune_charge_first_free_spend_and_recharge
 
@@ -374,3 +530,16 @@
 	var/datum/component/defeat_monitor/unopted_monitor = unopted_ai.AddComponent(/datum/component/defeat_monitor)
 	unopted_monitor.on_climax(unopted_ai, null, unopted_ai, grabber, grabber)
 	TEST_ASSERT_NULL(unopted_ai.has_status_effect(/datum/status_effect/defeat_knockout), "AI without explicit opt-in should not be defeated through horny defeat.")
+
+/datum/unit_test/defeat_ai_opt_in_component_sets_monitor
+
+/datum/unit_test/defeat_ai_opt_in_component_sets_monitor/Run()
+	var/mob/living/carbon/human/ai_body = allocate(/mob/living/carbon/human)
+	TEST_ASSERT(!ai_body.defeat_system_is_eligible(), "Clientless, mindless AI bodies should not be eligible before explicit opt-in.")
+
+	var/datum/component/defeat_ai_opt_in/opt_in = ai_body.AddComponent(/datum/component/defeat_ai_opt_in)
+	TEST_ASSERT(ai_body.defeat_system_ai_opt_in, "The opt-in component should set the explicit AI defeat flag.")
+	TEST_ASSERT_NOTNULL(ai_body.GetComponent(/datum/component/defeat_monitor), "The opt-in component should ensure the defeat monitor.")
+
+	opt_in.UnregisterFromParent()
+	TEST_ASSERT(!ai_body.defeat_system_ai_opt_in, "Removing the opt-in component should restore the previous opt-in flag.")

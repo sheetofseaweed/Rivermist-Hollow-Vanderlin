@@ -266,6 +266,10 @@
 		injury.suture_injury()
 		injury_healed = TRUE
 
+	if(injury_healed)
+		target.defeat_try_auto_rescue_from_healing(user, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD, "suture")
+		target.defeat_treat_tool_physical_trauma(user, list(/datum/status_effect/debuff/defeat/physical/wound))
+
 	var/list/sewable = affecting.get_sewable_wounds()
 	if(!length(sewable))
 		if(!injury_healed)

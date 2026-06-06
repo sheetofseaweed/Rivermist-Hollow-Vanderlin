@@ -138,6 +138,12 @@
 	layer = 20.51
 	plane = FULLSCREEN_PLANE
 
+/atom/movable/screen/fullscreen/defeat
+	icon_state = "passage"
+	layer = 20.51
+	plane = FULLSCREEN_PLANE
+	alpha = 190
+
 /atom/movable/screen/fullscreen/crit/uncon
 	icon_state = "uncon"
 	layer = 20.511

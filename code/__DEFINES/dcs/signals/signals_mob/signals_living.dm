@@ -71,6 +71,8 @@
 
 /// From /mob/living/proc/defeat_rescue(): (mob/living/helper, rescue_source)
 #define COMSIG_LIVING_DEFEAT_RESCUED "living_defeat_rescued"
+/// From /mob/living/proc/defeat_treat_trauma(): (mob/living/helper, treatment_type)
+#define COMSIG_LIVING_DEFEAT_TREATED "living_defeat_treated"
 #define COMSIG_LIVING_TRY_ENTER_AFTERLIFE "try_enter_afterlife"
 /// From /mob/living/befriend() : (mob/living/new_friend)
 #define COMSIG_LIVING_BEFRIENDED "living_befriended"
