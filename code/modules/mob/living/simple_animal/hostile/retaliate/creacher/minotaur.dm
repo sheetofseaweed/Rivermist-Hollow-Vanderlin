@@ -15,8 +15,8 @@
 						/obj/item/natural/hide = 10, /obj/item/natural/bundle/bone/full = 2)
 	faction = list("caves")
 	mob_biotypes = MOB_ORGANIC|MOB_BEAST
-	health = 1000
-	maxHealth = 1000
+	health = 600
+	maxHealth = 600
 	melee_damage_lower = 35
 	melee_damage_upper = 50
 	vision_range = 3

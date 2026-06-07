@@ -65,6 +65,7 @@
 #include "ai_idle_detection.dm"
 #include "alchemy_medicine.dm"
 #include "anchored_mobs.dm"
+#include "armor_damage.dm"
 #include "belly_fullness.dm"
 #include "bellyriding.dm"
 #include "blueprint_mode.dm"

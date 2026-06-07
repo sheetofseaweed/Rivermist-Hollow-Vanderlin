@@ -1,21 +1,23 @@
-/mob/living/carbon/human/getarmor(def_zone, type, damage, armor_penetration, blade_dulling)
+/mob/living/carbon/human/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
 	var/armorval = 0
 	var/organnum = 0
 
+	type = normalize_armor_attack_flag(type)
 	if(def_zone)
-		return checkarmor(def_zone, type, damage, armor_penetration, blade_dulling)
+		return checkarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon)
 		//If a specific bodypart is targetted, check how that bodypart is protected and return the value.
 
 	//If you don't specify a bodypart, it checks ALL my bodyparts for protection, and averages out the values
 	for(var/obj/item/bodypart/BP as anything in bodyparts)
-		armorval += checkarmor(BP, type, damage, armor_penetration)
+		armorval += checkarmor(BP, type, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon)
 		organnum++
 	return (armorval/max(organnum, 1))
 
 
-/mob/living/carbon/human/proc/checkarmor(def_zone, d_type, damage, armor_penetration, blade_dulling)
+/mob/living/carbon/human/proc/checkarmor(def_zone, d_type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
 	if(!d_type)
 		return 0
+	d_type = normalize_armor_attack_flag(d_type)
 	if(isbodypart(def_zone))
 		var/obj/item/bodypart/CBP = def_zone
 		def_zone = CBP.body_zone
@@ -69,7 +71,15 @@
 	if(used)
 		if(used.blocksound)
 			playsound(src, get_armor_sound(used.blocksound, blade_dulling), 100)
-		used.take_damage(damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+		var/intdamage = damage || 0
+		var/protection_tier = normalize_armor_rating(d_type, protection)
+		if(protection_tier > ARMOR_TIER_NONE && (d_type in ARMOR_DR_PIERCE_TYPES))
+			intdamage = get_armor_blocked_damage(d_type, protection, armor_penetration, damage)
+		else if(protection_tier > ARMOR_TIER_NONE && (d_type in ARMOR_DR_ABSORB_TYPES))
+			intdamage = intdamage / (1 + (0.2 * protection_tier))
+		if(intdamfactor != 1)
+			intdamage *= intdamfactor
+		used.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
 
 	if(steam_boiler && def_zone == BODY_ZONE_CHEST)
 		steam_boiler.take_damage(boiler_damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
@@ -335,7 +345,7 @@
 		var/obj/item/bodypart/affecting = get_bodypart(ran_zone(dam_zone))
 		if(!affecting)
 			affecting = get_bodypart(BODY_ZONE_CHEST)
-		var/armor = run_armor_check(affecting, M.damage_type, armor_penetration = M.a_intent.penfactor, damage = damage)
+		var/armor = run_armor_check(affecting, M.damage_type, armor_penetration = M.a_intent.penfactor, damage = damage, attacker = M, used_intent = M.a_intent)
 		next_attack_msg.Cut()
 
 		var/nodmg = FALSE

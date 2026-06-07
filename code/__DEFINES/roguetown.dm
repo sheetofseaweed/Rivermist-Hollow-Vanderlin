@@ -295,32 +295,32 @@ Thing can move up or down an armor class by significant changes to coverage & cr
 \--------------------*/
 
 // Light AC
-#define ARMOR_NONE			list("blunt" = 0, "slash" = 0, "stab" = 0, "piercing" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_MINIMAL		list("blunt" = 5, "slash" = 5, "stab" = 5, "piercing" = 0, "fire" = 0, "acid" = 0)
-#define ARMOR_WEAK			list("blunt" = 10, "slash" = 10, "stab" = 10, "piercing" = 5, "fire" = 0, "acid" = 0)
+#define ARMOR_NONE			list("blunt" = DR_NONE, "slash" = DBLOCK_NONE, "stab" = DBLOCK_NONE, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_MINIMAL		list("blunt" = DR_LIGHT, "slash" = DBLOCK_LIGHT, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_WEAK			list("blunt" = DR_LIGHT, "slash" = DBLOCK_LIGHT, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 
-#define ARMOR_PADDED_BAD	list("blunt" = 15, "slash" = 15, "stab" = 15, "piercing" = 15, "fire" = 0, "acid" = 0)
-#define ARMOR_PADDED		list("blunt" = 35, "slash" = 25, "stab" = 25, "piercing" = 30, "fire" = 0, "acid" = 0)
-#define ARMOR_PADDED_GOOD	list("blunt" = 45, "slash" = 30, "stab" = 30, "piercing" = 35, "fire" = 0, "acid" = 0)
+#define ARMOR_PADDED_BAD	list("blunt" = DR_MEDIUM, "slash" = DBLOCK_LIGHT, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_PADDED		list("blunt" = DR_SUPER, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_BSTEEL, "fire" = DR_MEDIUM, "acid" = DR_NONE)
+#define ARMOR_PADDED_GOOD	list("blunt" = DR_SUPER, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_BSTEEL, "fire" = DR_MEDIUM, "acid" = DR_NONE)
 
-#define ARMOR_LEATHER_BAD	list("blunt" = 30, "slash" = 30, "stab" = 30, "piercing" = 10, "fire" = 0, "acid" = 0)
-#define ARMOR_LEATHER		list("blunt" = 35, "slash" = 35, "stab" = 35, "piercing" = 15, "fire" = 0, "acid" = 0)
-#define	ARMOR_LEATHER_GOOD	list("blunt" = 40, "slash" = 40, "stab" = 40, "piercing" = 20, "fire" = 0, "acid" = 0)
+#define ARMOR_LEATHER_BAD	list("blunt" = DR_HEAVY, "slash" = DBLOCK_LIGHT, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_LEATHER		list("blunt" = DR_ULTRA, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_HEAVY, "fire" = DR_NONE, "acid" = DR_NONE)
+#define	ARMOR_LEATHER_GOOD	list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_HEAVY, "fire" = DR_NONE, "acid" = DR_NONE)
 
 // Medium AC
-#define ARMOR_MAILLE_IRON	list("blunt" = 30, "slash" = 45, "stab" = 50, "piercing" = 30, "fire" = 0, "acid" = 0)
-#define ARMOR_MAILLE		list("blunt" = 45, "slash" = 55, "stab" = 55, "piercing" = 40, "fire" = 0, "acid" = 0)
-#define ARMOR_MAILLE_GOOD	list("blunt" = 55, "slash" = 60, "stab" = 60, "piercing" = 45, "fire" = 0, "acid" = 0)
-#define ARMOR_SCALE			list("blunt" = 65, "slash" = 65, "stab" = 65, "piercing" = 65, "fire" = 0, "acid" = 0)
-#define ARMOR_BRIGANDINE	list("blunt" = 70, "slash" = 70, "stab" = 70, "piercing" = 50, "fire" = 0, "acid" = 0)
+#define ARMOR_MAILLE_IRON	list("blunt" = DR_MEDIUM, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_MAILLE		list("blunt" = DR_MEDIUM, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_MAILLE_GOOD	list("blunt" = DR_MEDIUM, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_SCALE			list("blunt" = DR_HEAVY, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_HEAVY, "fire" = DR_NONE, "acid" = DR_NONE)
+#define ARMOR_BRIGANDINE	list("blunt" = DR_HEAVY, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_HEAVY, "fire" = DR_NONE, "acid" = DR_NONE)
 
 // Heavy AC
-#define ARMOR_PLATE_BAD		list("blunt" = 75, "slash" = 75, "stab" = 75, "piercing" = 55, "fire" = 0, "acid" = 0)
-#define ARMOR_PLATE			list("blunt" = 85, "slash" = 85, "stab" = 85, "piercing" = 70, "fire" = 0, "acid" = 0)
-#define ARMOR_PLATE_SILVER	list("blunt" = 85, "slash" = 85, "stab" = 85, "piercing" = 80, "fire" = 0, "acid" = 0)
-#define ARMOR_PLATE_GOOD	list("blunt" = 90, "slash" = 90, "stab" = 90, "piercing" = 85, "fire" = 0, "acid" = 0)
+#define ARMOR_PLATE_BAD		list("blunt" = DR_LIGHT, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_LIGHT, "acid" = DR_NONE)
+#define ARMOR_PLATE			list("blunt" = DR_LIGHT, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_LIGHT, "acid" = DR_NONE)
+#define ARMOR_PLATE_SILVER	list("blunt" = DR_LIGHT, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_HEAVY, "fire" = DR_LIGHT, "acid" = DR_NONE)
+#define ARMOR_PLATE_GOOD	list("blunt" = DR_MEDIUM, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_HEAVY, "fire" = DR_LIGHT, "acid" = DR_NONE)
 
-#define ARMOR_BLACKBAG list("blunt" = 100, "slash" = 100, "stab" = 100, "piercing" = 100, "fire" = 75, "acid" = 100)
+#define ARMOR_BLACKBAG list("blunt" = DR_ULTRA, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_BSTEEL, "fire" = DR_ULTRA, "acid" = DR_ULTRA)
 #define ARMOR_BROADSWORD list("blunt" = 40, "slash" = 50, "stab" = 50, "piercing" = 0)
 
 // Misc defines. These are here just in case. Inherited by their relevant subtypes.
@@ -330,14 +330,14 @@ Thing can move up or down an armor class by significant changes to coverage & cr
 #define ARMOR_CLOSET list("blunt" = 20, "slash" = 10, "stab" = 15, "piercing" = 10, "fire" = 70, "acid" = 60)
 
 // Light AC | Chest
-#define ARMOR_CLOTHING list("blunt" = 0, "slash" = 10, "stab" = 20, "piercing" = 0, "fire" = 0, "acid" = 0)
+#define ARMOR_CLOTHING list("blunt" = DR_NONE, "slash" = DBLOCK_NONE, "stab" = DBLOCK_NONE, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 
 #define ARMOR_SPELLSINGER list("blunt" = 70, "slash" = 70, "stab" = 50, "piercing" = 30, "fire" = 0, "acid" = 0)
 #define ARMOR_LEATHER_STUDDED list("blunt" = 80, "slash" = 80, "stab" = 60, "piercing" = 20, "fire" = 0, "acid" = 0)
 
 // Medium AC | Chest
 #define ARMOR_CUIRASS list("blunt" = 40, "slash" = 100, "stab" = 80, "piercing" = 40, "fire" = 0, "acid" = 0)
-#define ARMOR_PLATE_BSTEEL list("blunt" = 80, "slash" = 100, "stab" = 90, "piercing" = 80, "fire" = 0, "acid" = 0) // It's EVIL. OH GOD.
+#define ARMOR_PLATE_BSTEEL list("blunt" = DR_MEDIUM, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_BSTEEL, "fire" = DR_MEDIUM, "acid" = DR_MEDIUM) // It's EVIL. OH GOD.
 
 // Boot Armor
 #define ARMOR_BOOTS_PLATED list("blunt" = 10, "slash" = 100, "stab" = 80, "piercing" = 50, "fire" = 0, "acid" = 0)

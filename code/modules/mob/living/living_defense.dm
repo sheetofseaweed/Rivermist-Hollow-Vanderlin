@@ -1,30 +1,119 @@
 
-/mob/living/proc/run_armor_check(def_zone = null, attack_flag = "blunt", absorb_text = null, soften_text = null, armor_penetration, penetrated_text, damage, blade_dulling)
-	var/armor = getarmor(def_zone, attack_flag, damage, armor_penetration, blade_dulling)
-	var/armor_check = 0
+/proc/normalize_armor_attack_flag(attack_flag)
+	switch(attack_flag)
+		if(BCLASS_BLUNT, BCLASS_SMASH, BCLASS_PUNCH, BCLASS_BITE)
+			return BLUNT
+		if(BCLASS_CUT, BCLASS_CHOP, BCLASS_LASHING)
+			return SLASH
+		if(BCLASS_STAB, BCLASS_PICK, BCLASS_DRILL, BCLASS_TWIST)
+			return STAB
+		if(BCLASS_PIERCE, BCLASS_SHOT)
+			return PIERCE
+		if(BCLASS_BURN)
+			return FIRE
+	return attack_flag
+
+/proc/legacy_armor_rating_to_tier(rating, max_tier = ARMOR_TIER_BSTEEL)
+	if(!isnum(rating) || rating <= 0)
+		return ARMOR_TIER_NONE
+	if(rating < 25)
+		return min(ARMOR_TIER_LIGHT, max_tier)
+	if(rating < 50)
+		return min(ARMOR_TIER_MEDIUM, max_tier)
+	if(rating < 75)
+		return min(ARMOR_TIER_HEAVY, max_tier)
+	return max_tier
+
+/proc/normalize_armor_rating(attack_flag, rating)
+	attack_flag = normalize_armor_attack_flag(attack_flag)
+	if(!isnum(rating) || rating <= 0)
+		return ARMOR_TIER_NONE
+	if(attack_flag in ARMOR_DBLOCK_TYPES)
+		return legacy_armor_rating_to_tier(rating, ARMOR_TIER_BSTEEL)
+	if(attack_flag in ARMOR_DR_TYPES)
+		if(rating == DR_SUPER)
+			return ARMOR_TIER_SUPER
+		return legacy_armor_rating_to_tier(rating, ARMOR_TIER_ULTRA)
+	return rating
+
+/proc/normalize_penetration(armor_penetration)
+	if(!isnum(armor_penetration) || armor_penetration < PEN_LIGHT)
+		return PEN_NONE
+	if(armor_penetration < PEN_MEDIUM)
+		return ARMOR_TIER_LIGHT
+	if(armor_penetration < PEN_HEAVY)
+		return ARMOR_TIER_MEDIUM
+	if(armor_penetration < PEN_BSTEEL)
+		return ARMOR_TIER_HEAVY
+	return ARMOR_TIER_BSTEEL
+
+/proc/get_pen_info(mob/living/attacker, obj/item/used_weapon, datum/intent/used_intent)
+	var/pen_info = 1
+	if(attacker && used_weapon)
+		var/strength_bonus = max(GET_MOB_ATTRIBUTE_VALUE(attacker, STAT_STRENGTH) - 10, 0)
+		var/speed_bonus = max(GET_MOB_ATTRIBUTE_VALUE(attacker, STAT_SPEED) - 10, 0)
+		if(used_weapon.wbalance >= HARD_TO_DODGE)
+			pen_info += speed_bonus
+		else
+			pen_info += strength_bonus
+		if(used_weapon.max_blade_int && used_weapon.sharpness != IS_BLUNT)
+			var/dullness_ratio = used_weapon.blade_int / used_weapon.max_blade_int
+			if(dullness_ratio <= SHARPNESS_TIER2_THRESHOLD)
+				pen_info -= 2
+			else if(dullness_ratio < SHARPNESS_TIER1_THRESHOLD)
+				pen_info -= 1
+	if(used_intent?.damfactor > 1)
+		pen_info += round((used_intent.damfactor - 1) * 2)
+	return CLAMP(pen_info, 1, PEN_PASSTHROUGH_CAP)
+
+/proc/get_armor_blocked_damage(attack_flag, armor_rating, armor_penetration = PEN_NONE, damage, pen_info)
+	attack_flag = normalize_armor_attack_flag(attack_flag)
+	var/block_damage = damage || 999
+	var/armor_tier = normalize_armor_rating(attack_flag, armor_rating)
+	if(armor_tier <= ARMOR_TIER_NONE)
+		return 0
+	if(attack_flag in ARMOR_DR_ABSORB_TYPES)
+		return block_damage
+	if(attack_flag in ARMOR_DR_PIERCE_TYPES)
+		var/dr_multiplier = 1 / (1 + (0.2 * armor_tier))
+		return block_damage * (1 - dr_multiplier)
+	if(attack_flag in ARMOR_DBLOCK_TYPES)
+		var/penetration_tier = normalize_penetration(armor_penetration)
+		if(penetration_tier < armor_tier)
+			return block_damage * 10
+		if(attack_flag == PIERCE)
+			if(penetration_tier == armor_tier)
+				return block_damage * PEN_PROJECTILE_EQUAL_BLOCK_RATIO
+			return block_damage * PEN_PROJECTILE_OVERMATCH_BLOCK_RATIO
+		pen_info = isnull(pen_info) ? 1 : CLAMP(pen_info, 1, PEN_PASSTHROUGH_CAP)
+		return block_damage * max(0, 1 - (pen_info * PEN_PASSTHROUGH_RATIO))
+
+	var/legacy_penetration = isnum(armor_penetration) ? armor_penetration : 0
+	return max(0, armor_rating - legacy_penetration)
+
+/mob/living/proc/run_armor_check(def_zone = null, attack_flag = "blunt", absorb_text = null, soften_text = null, armor_penetration = PEN_NONE, penetrated_text, damage, blade_dulling, intdamfactor = 1, used_weapon, pen_info, mob/living/attacker, datum/intent/used_intent)
+	attack_flag = normalize_armor_attack_flag(attack_flag)
+	var/armor = getarmor(def_zone, attack_flag, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon)
+	var/blocked = get_armor_blocked_damage(attack_flag, armor, armor_penetration, damage, isnull(pen_info) ? get_pen_info(attacker, used_weapon, used_intent) : pen_info)
+	var/block_damage = damage || 999
 
 	if(alpha <= 100 || rogue_sneaking)
 		apply_status_effect(/datum/status_effect/debuff/stealthcd)
 		mob_timers[MT_SNEAKATTACK] = world.time //Stops you from sneaking after being hit. (Should work!)
-	// Only run armor logic if there actually is armor
-	if(armor > 0)
-		if(armor_penetration)
-			armor = max(0, armor - armor_penetration)
-		armor_check = max(0, armor - damage)
 
-		// Decide feedback based on how much damage got through
-		if(armor_check == 0 && armor_penetration)
+	if(armor > 0)
+		if(blocked < block_damage && armor_penetration)
 			to_chat(src, "<span class='danger'>[penetrated_text || "My armor was penetrated!"]</span>")
-		else if(armor_check > 0)
+		else if(blocked > 0)
 			if(armor_penetration)
 				to_chat(src, "<span class='warning'>[soften_text || "My armor softens the blow!"]</span>")
 			else
 				to_chat(src, "<span class='notice'>[absorb_text || "My armor absorbs the blow!"]</span>")
 
-	return armor
+	return blocked
 
 
-/mob/living/proc/getarmor(def_zone, type, damage, armor_penetration, blade_dulling)
+/mob/living/proc/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
 	return 0
 
 //this returns the mob's protection against eye damage (number between -1 and 2) from bright lights
@@ -60,7 +149,10 @@
 	if(!prob(P.accuracy + P.bonus_accuracy)) //if your accuracy check fails, you wont hit your intended target
 		def_zone = ran_zone(BODY_ZONE_CHEST, 65)//Hits a random part of the body, geared towards the chest
 
-	var/armor = run_armor_check(def_zone, P.flag, "", "",P.armor_penetration, damage = P.damage)
+	var/mob/living/projectile_firer
+	if(isliving(P.firer))
+		projectile_firer = P.firer
+	var/armor = run_armor_check(def_zone, P.flag, "", "", P.armor_penetration, damage = P.damage, attacker = projectile_firer)
 
 	next_attack_msg.Cut()
 
@@ -125,7 +217,10 @@
 		var/zone = ran_zone(BODY_ZONE_CHEST, 65)//Hits a random part of the body, geared towards the chest
 		SEND_SIGNAL(I, COMSIG_MOVABLE_IMPACT_ZONE, src, zone)
 		if(!blocked)
-			var/armor = run_armor_check(zone, damage_type, "", "",I.armor_penetration, damage = I.throwforce)
+			var/mob/living/thrower
+			if(isliving(throwingdatum?.thrower))
+				thrower = throwingdatum.thrower
+			var/armor = run_armor_check(zone, damage_type, "", "", I.armor_penetration, damage = I.throwforce, used_weapon = I, attacker = thrower)
 			next_attack_msg.Cut()
 			var/nodmg = FALSE
 			var/damagetype = damage_type
@@ -134,8 +229,7 @@
 					damagetype = BRUTE
 				if("fire", "acid")
 					damagetype = BURN
-			if(isliving(throwingdatum?.thrower))
-				var/mob/living/thrower = throwingdatum.thrower
+			if(thrower)
 				set_damage_attack_context(thrower)
 			var/real_damage = apply_damage(I.throwforce, damagetype, zone, armor)
 			if(!real_damage)

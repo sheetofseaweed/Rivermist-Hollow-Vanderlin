@@ -2009,7 +2009,7 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 			item_force += (item_force * 0.5) * percentage
 			pen = 100
 
-	var/armor_block = H.run_armor_check(selzone, I.damage_type, "", "", pen, damage = item_force, blade_dulling = user.used_intent.blade_class)
+	var/armor_block = H.run_armor_check(selzone, I.damage_type, "", "", pen, damage = item_force, blade_dulling = user.used_intent.blade_class, used_weapon = I, attacker = user, used_intent = user.used_intent)
 	var/weakness = H.check_weakness(I, user)
 	var/actual_damage = apply_damage(item_force * weakness, I.damtype, def_zone, armor_block, H, skip_dtype = TRUE)
 
