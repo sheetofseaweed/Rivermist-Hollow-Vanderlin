@@ -149,6 +149,12 @@
 #define BB_THREAT_THRESHOLD "threat_threshold" // Minimum threat to be considered hostile
 #define BB_AGGRO_RANGE "aggro_range" // Range at which mobs can detect and add threats
 #define BB_AGGRO_MAINTAIN_RANGE "aggro_maintain_range" // Range at which target is dropped if exceeded
+#define BB_AI_ALERT_MODE_UNTIL "ai_alert_mode_until"
+#define BB_LAST_RANGED_HIT_TIME "bb_last_ranged_hit_time"
+#define BB_LAST_RANGED_ATTACKER "bb_last_ranged_attacker"
+#define AI_ALERT_ON_CLIENT_TIME (30 SECONDS)
+#define AI_ALERT_ON_ATTACK_TIME (30 SECONDS)
+#define AI_RANGED_HOT_PURSUIT_TIME (15 SECONDS)
 #define BB_HEALING_SOURCE "healing_source" // Who last healed the mob
 #define BB_SNEAKING "bb_sneaking"
 #define BB_SNEAK_COOLDOWN "bb_sneak_cooldown"

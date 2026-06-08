@@ -78,7 +78,7 @@
 		if(attempt_nonlethal_mob_erp_subdue(td, pawn, h_target))
 			return
 
-	if(!pawn.CanReach(target))
+	if(!pawn.CanReach(target, pawn.get_active_held_item()))
 		finish_action(controller, FALSE, target_key)
 		return
 

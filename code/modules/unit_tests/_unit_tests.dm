@@ -62,6 +62,7 @@
 //Keep this sorted alphabetically
 
 // BEGIN_INCLUDE
+#include "ai_combat_flow.dm"
 #include "ai_idle_detection.dm"
 #include "alchemy_medicine.dm"
 #include "anchored_mobs.dm"
