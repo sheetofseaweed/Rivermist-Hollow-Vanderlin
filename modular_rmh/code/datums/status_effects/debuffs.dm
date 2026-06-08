@@ -167,8 +167,7 @@
 /atom/movable/screen/alert/status_effect/debuff/nympho_addiction
 	name = "Addicted to Sex"
 	desc = "I want to do it again. And again. And again."
-	icon = 'modular_rmh/icons/mob/screen_alert.dmi'
-	icon_state = "fentanyl"
+	icon_state = "debuff"
 
 /datum/status_effect/debuff/cumbrained
 	id = "cumbrained"

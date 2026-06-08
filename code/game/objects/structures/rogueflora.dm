@@ -299,6 +299,8 @@
 	icon_state = "grass1"
 	base_icon_state = "grass"
 	num_random_icons = 6
+	layer = BELOW_MOB_LAYER
+	plane = GAME_PLANE
 	attacked_sound = "plantcross"
 	destroy_sound = "plantcross"
 	max_integrity = 5

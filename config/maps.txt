@@ -44,7 +44,6 @@ map hsector
 endmap
 
 map rmh_calim
-	default
 	votable
 endmap
 

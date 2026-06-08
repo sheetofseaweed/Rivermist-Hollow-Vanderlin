@@ -12,6 +12,8 @@
 
 /datum/sprite_accessory/genitals/breasts/is_visible(obj/item/organ/genitals/organ, obj/item/bodypart/bodypart, mob/living/carbon/human/owner)
 	draw_above_clothes = FALSE
+	//if(!organ || organ.organ_size <= BREAST_SIZE_FLAT)
+	//	return FALSE
 	if(organ.visible_through_clothes)
 		if(organ.visible_through_clothes == DRAW_ABOVE)
 			draw_above_clothes = TRUE

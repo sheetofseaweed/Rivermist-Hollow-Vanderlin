@@ -1001,7 +1001,7 @@
 	var/mob/living/user = parent
 	if(pain_amt >= LOINHURT_GAIN_THRESHOLD)
 		if(user.has_quirk(/datum/quirk/vice/masochist))
-			user.sate_addiction(/datum/quirk/vice/lovefiend)
+			user.sate_addiction(/datum/quirk/vice/masochist)
 			user.add_stress(/datum/stress_event/loinachegood)
 			return
 		if(user.has_quirk(/datum/quirk/vice/lovefiend))
@@ -1108,7 +1108,7 @@
 			user.remove_status_effect(/datum/status_effect/debuff/cumbrained)
 	else
 		if(orgasm_strain >= MED_ORGASM_STRAIN_GAIN + nymph_mod)
-			user.apply_status_effect(/datum/status_effect/debuff/)
+			user.apply_status_effect(/datum/status_effect/debuff/cumbrained)
 
 	if(user.has_status_effect(/datum/status_effect/debuff/orgasmbroken))
 		if(orgasm_strain <= HIGH_ORGASM_STRAIN_LOSS + nymph_mod)
@@ -1117,7 +1117,10 @@
 		if(orgasm_strain >= HIGH_ORGASM_STRAIN_GAIN + nymph_mod)
 			user.apply_status_effect(/datum/status_effect/debuff/orgasmbroken)
 
-	if(!user.has_status_effect(/datum/status_effect/debuff/nympho_addiction))
+	if(user.has_status_effect(/datum/status_effect/debuff/nympho_addiction))
+		if(orgasm_strain <= OVER_THE_TOP_ORGASM_STRAIN_LOSS + nymph_mod)
+			user.remove_status_effect(/datum/status_effect/debuff/nympho_addiction)
+	else
 		if(orgasm_strain >= OVER_THE_TOP_ORGASM_STRAIN_GAIN + nymph_mod)
 			user.apply_status_effect(/datum/status_effect/debuff/nympho_addiction)
 
