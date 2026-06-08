@@ -182,3 +182,65 @@
 	controller.process(1)
 
 	TEST_ASSERT(!controller.blackboard["ai_combat_flow_non_reach_probe_fired"], "Movement behaviors without AI_BEHAVIOR_REQUIRE_REACH should not use combat intent reach to satisfy required_distance.")
+
+/datum/unit_test/ai_combat_human_gap_close_is_before_basic_melee_and_after_horny
+
+/datum/unit_test/ai_combat_human_gap_close_is_before_basic_melee_and_after_horny/Run()
+	var/mob/living/carbon/human/pawn = allocate(/mob/living/carbon/human)
+	var/datum/ai_controller/human_npc/controller = allocate(/datum/ai_controller/human_npc, pawn)
+	var/gap_close_subtree = text2path("/datum/ai_planning_subtree/human_npc_gap_close")
+
+	TEST_ASSERT_NOTNULL(gap_close_subtree, "Human NPC gap-close subtree should exist.")
+
+	var/gap_close_index = controller.get_subtree_index(gap_close_subtree)
+	var/horny_index = controller.get_subtree_index(/datum/ai_planning_subtree/horny)
+	var/harass_index = controller.get_subtree_index(/datum/ai_planning_subtree/wounded_harass)
+	var/flank_index = controller.get_subtree_index(/datum/ai_planning_subtree/squad_flank)
+	var/basic_melee_index = controller.get_subtree_index(/datum/ai_planning_subtree/basic_melee_attack_subtree/human_npc)
+
+	TEST_ASSERT(gap_close_index > horny_index, "Gap-close planning must stay after horny handling.")
+	TEST_ASSERT(harass_index > horny_index, "Wounded harass planning must stay after horny handling.")
+	TEST_ASSERT(harass_index < flank_index, "Wounded harass should pre-empt squad flanking.")
+	TEST_ASSERT(gap_close_index > harass_index, "Gap-close planning should not pre-empt wounded harass.")
+	TEST_ASSERT(gap_close_index < basic_melee_index, "Gap-close planning should get a chance before direct human NPC melee.")
+
+/datum/unit_test/ai_combat_agile_simple_mobs_use_agile_melee_behavior
+
+/datum/unit_test/ai_combat_agile_simple_mobs_use_agile_melee_behavior/Run()
+	var/agile_subtree = text2path("/datum/ai_planning_subtree/basic_melee_attack_subtree/agile")
+	TEST_ASSERT_NOTNULL(agile_subtree, "Agile simple-mob melee subtree should exist.")
+
+	var/list/agile_controllers = list(
+		/datum/ai_controller/mirespider,
+		/datum/ai_controller/spider,
+		/datum/ai_controller/volf/agile,
+		/datum/ai_controller/wolf_undead,
+	)
+
+	for(var/controller_type in agile_controllers)
+		var/mob/living/simple_animal/agile_pawn = allocate(/mob/living/simple_animal)
+		var/datum/ai_controller/agile_controller = allocate(controller_type, agile_pawn)
+		TEST_ASSERT(agile_controller.get_subtree_index(agile_subtree), "[controller_type] should opt into agile sidestepping melee.")
+
+	var/wolf_type = text2path("/mob/living/simple_animal/hostile/retaliate/wolf")
+	TEST_ASSERT_NOTNULL(wolf_type, "Wolf mob type should exist.")
+	TEST_ASSERT_EQUAL(initial(wolf_type:ai_controller), /datum/ai_controller/volf/agile, "Only actual wolves should use the agile wolf controller; other /volf users should stay unchanged.")
+
+	var/list/heavy_controllers = list(
+		/datum/ai_controller/minotaur,
+		/datum/ai_controller/troll,
+		/datum/ai_controller/volf,
+	)
+
+	for(var/controller_type in heavy_controllers)
+		var/mob/living/simple_animal/heavy_pawn = allocate(/mob/living/simple_animal)
+		var/datum/ai_controller/heavy_controller = allocate(controller_type, heavy_pawn)
+		TEST_ASSERT(!heavy_controller.get_subtree_index(agile_subtree), "[controller_type] should not opt into agile sidestepping melee.")
+
+/datum/unit_test/ai_combat_human_npc_has_sparse_combat_bark_cooldown_state
+
+/datum/unit_test/ai_combat_human_npc_has_sparse_combat_bark_cooldown_state/Run()
+	var/mob/living/carbon/human/pawn = allocate(/mob/living/carbon/human)
+	var/datum/ai_controller/human_npc/controller = allocate(/datum/ai_controller/human_npc, pawn)
+
+	TEST_ASSERT(!isnull(controller.blackboard["human_npc_combat_bark_cooldown"]), "Human NPC combat barks should have shared cooldown state to prevent spam.")

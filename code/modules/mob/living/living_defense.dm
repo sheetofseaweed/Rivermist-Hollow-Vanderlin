@@ -93,7 +93,7 @@
 
 /mob/living/proc/run_armor_check(def_zone = null, attack_flag = "blunt", absorb_text = null, soften_text = null, armor_penetration = PEN_NONE, penetrated_text, damage, blade_dulling, intdamfactor = 1, used_weapon, pen_info, mob/living/attacker, datum/intent/used_intent)
 	attack_flag = normalize_armor_attack_flag(attack_flag)
-	var/armor = getarmor(def_zone, attack_flag, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon)
+	var/armor = getarmor(def_zone, attack_flag, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon, attacker)
 	var/blocked = get_armor_blocked_damage(attack_flag, armor, armor_penetration, damage, isnull(pen_info) ? get_pen_info(attacker, used_weapon, used_intent) : pen_info)
 	var/block_damage = damage || 999
 
@@ -104,16 +104,19 @@
 	if(armor > 0)
 		if(blocked < block_damage && armor_penetration)
 			to_chat(src, "<span class='danger'>[penetrated_text || "My armor was penetrated!"]</span>")
+			balloon_alert_to_viewers("<font color='#d07171'>armor pierced</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -8)
 		else if(blocked > 0)
 			if(armor_penetration)
 				to_chat(src, "<span class='warning'>[soften_text || "My armor softens the blow!"]</span>")
+				balloon_alert_to_viewers("<font color='#d4d36c'>armor softened</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -8)
 			else
 				to_chat(src, "<span class='notice'>[absorb_text || "My armor absorbs the blow!"]</span>")
+				balloon_alert_to_viewers("<font color='#8aaa4d'>armor held</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -8)
 
 	return blocked
 
 
-/mob/living/proc/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
+/mob/living/proc/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon, mob/living/attacker)
 	return 0
 
 //this returns the mob's protection against eye damage (number between -1 and 2) from bright lights

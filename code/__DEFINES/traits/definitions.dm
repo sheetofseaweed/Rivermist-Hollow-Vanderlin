@@ -298,6 +298,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SUPERNATURAL_LUCK	"supernatural_luck"
 /// Lets the mob block projectiles like bullets using only their hands.
 #define TRAIT_HANDS_BLOCK_PROJECTILES "hands_block_projectiles"
+/// Shows extra floating combat information.
+#define TRAIT_COMBAT_AWARE "combat_aware"
 /// The mob always dodges melee attacks
 #define TRAIT_ENHANCED_MELEE_DODGE "enhanced_melee_dodge"
 /// The mob can easily swim and jump very far.

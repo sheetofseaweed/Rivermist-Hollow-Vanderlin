@@ -1,7 +1,7 @@
 /mob/living/armor_damage_test_dummy
 	var/test_armor = 0
 
-/mob/living/armor_damage_test_dummy/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
+/mob/living/armor_damage_test_dummy/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon, mob/living/attacker)
 	return test_armor
 
 /datum/unit_test/armor_damage_legacy_raw_armor_normalizes_to_heavy/Run()

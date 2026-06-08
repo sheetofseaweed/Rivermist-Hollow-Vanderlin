@@ -751,7 +751,7 @@
 	I.do_special_attack_effect(user, null, null, src, null)
 
 
-/mob/living/simple_animal/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
+/mob/living/simple_animal/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon, mob/living/attacker)
 	if(!type)
 		return 0
 	var/armorval = 0

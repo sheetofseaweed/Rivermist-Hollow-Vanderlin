@@ -4,13 +4,13 @@
 	/// List of lines to say on death.
 	var/list/death_lines
 	/// Cooldown between combat barks (say() calls during handle_combat equivalent)
-	var/bark_cooldown = 8 SECONDS
+	var/bark_cooldown = 20 SECONDS
 	/// Cooldown between emotes during combat
-	var/emote_cooldown = 5 SECONDS
+	var/emote_cooldown = 12 SECONDS
 	/// Chance per planning tick to bark
-	var/bark_chance = 3
+	var/bark_chance = 1
 	/// Chance per planning tick to emote
-	var/emote_chance = 5
+	var/emote_chance = 2
 
 	COOLDOWN_DECLARE(last_bark)
 	COOLDOWN_DECLARE(last_emote)

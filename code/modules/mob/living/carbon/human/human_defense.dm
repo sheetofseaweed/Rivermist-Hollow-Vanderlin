@@ -1,20 +1,20 @@
-/mob/living/carbon/human/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
+/mob/living/carbon/human/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon, mob/living/attacker)
 	var/armorval = 0
 	var/organnum = 0
 
 	type = normalize_armor_attack_flag(type)
 	if(def_zone)
-		return checkarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon)
+		return checkarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon, attacker)
 		//If a specific bodypart is targetted, check how that bodypart is protected and return the value.
 
 	//If you don't specify a bodypart, it checks ALL my bodyparts for protection, and averages out the values
 	for(var/obj/item/bodypart/BP as anything in bodyparts)
-		armorval += checkarmor(BP, type, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon)
+		armorval += checkarmor(BP, type, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon, attacker)
 		organnum++
 	return (armorval/max(organnum, 1))
 
 
-/mob/living/carbon/human/proc/checkarmor(def_zone, d_type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon)
+/mob/living/carbon/human/proc/checkarmor(def_zone, d_type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon, mob/living/attacker)
 	if(!d_type)
 		return 0
 	d_type = normalize_armor_attack_flag(d_type)
@@ -79,7 +79,10 @@
 			intdamage = intdamage / (1 + (0.2 * protection_tier))
 		if(intdamfactor != 1)
 			intdamage *= intdamfactor
-		used.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+		var/old_integrity = used.get_integrity()
+		var/armor_damage_dealt = used.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
+		if(armor_damage_dealt > 0)
+			show_armor_damage_feedback(used, armor_damage_dealt, old_integrity, used.get_integrity(), attacker)
 
 	if(steam_boiler && def_zone == BODY_ZONE_CHEST)
 		steam_boiler.take_damage(boiler_damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
@@ -87,6 +90,47 @@
 	if(physiology)
 		protection += physiology.armor.getRating(d_type)
 	return protection
+
+/proc/armor_integrity_percent(obj/item/clothing/armor)
+	if(!armor || armor.max_integrity <= 0)
+		return 0
+	var/failure_integrity = armor.max_integrity * armor.integrity_failure
+	var/usable_integrity = max(armor.get_integrity() - failure_integrity, 0)
+	var/usable_max = max(armor.max_integrity - failure_integrity, 1)
+	return CLAMP(round((usable_integrity / usable_max) * 100), 0, 100)
+
+/proc/armor_integrity_status(percent)
+	if(percent <= 0)
+		return "broken"
+	if(percent <= 25)
+		return "sundered"
+	if(percent <= 50)
+		return "damaged"
+	if(percent <= 75)
+		return "marred"
+	return "holding"
+
+/proc/armor_integrity_color(percent)
+	if(percent <= 25)
+		return "#a8705a"
+	if(percent <= 50)
+		return "#d4d36c"
+	if(percent <= 75)
+		return "#d4d36c"
+	return "#8aaa4d"
+
+/mob/living/carbon/human/proc/show_armor_damage_feedback(obj/item/clothing/used, armor_damage_dealt, old_integrity, new_integrity, mob/living/attacker)
+	if(!used || armor_damage_dealt <= 0 || old_integrity <= new_integrity)
+		return
+	var/percent = armor_integrity_percent(used)
+	var/status = armor_integrity_status(percent)
+	var/armor_damage_text = round(armor_damage_dealt, 0.1)
+	var/detail = HAS_TRAIT(src, TRAIT_COMBAT_AWARE) ? " for [armor_damage_text] integrity damage" : ""
+	to_chat(src, span_warning("My [used.name] is [status][detail] ([percent]% integrity)."))
+	if(attacker && attacker != src && !QDELETED(attacker))
+		var/attacker_detail = HAS_TRAIT(attacker, TRAIT_COMBAT_AWARE) ? " for [armor_damage_text] integrity damage" : ""
+		to_chat(attacker, span_notice("[src]'s [used.name] is [status][attacker_detail] ([percent]% integrity)."))
+	balloon_alert_to_viewers("<font color='[armor_integrity_color(percent)]'>armor [percent]%</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -10)
 
 /// Return the armor that blocks the crit
 /mob/living/carbon/human/proc/check_crit_armor(def_zone, d_type)

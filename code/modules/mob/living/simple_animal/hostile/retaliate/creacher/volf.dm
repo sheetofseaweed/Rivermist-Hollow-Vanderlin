@@ -63,7 +63,7 @@
 	///this mob was updated to new ai
 
 
-	ai_controller = /datum/ai_controller/volf
+	ai_controller = /datum/ai_controller/volf/agile
 	var/static/list/pet_commands = list(
 		/datum/pet_command/fish,
 		/datum/pet_command/idle,

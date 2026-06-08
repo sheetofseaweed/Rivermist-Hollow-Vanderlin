@@ -241,6 +241,8 @@
 #define BB_HUMAN_NPC_HARASS_RETREATING   "human_npc_harass_retreating"
 #define BB_HUMAN_NPC_HARASS_COOLDOWN     "human_npc_harass_cooldown"
 #define BB_HUMAN_NPC_JUKE_COOLDOWN       "human_npc_juke_cooldown"
+#define BB_HUMAN_NPC_COMMITTED_SWING_TOKEN "human_npc_committed_swing_token"
+#define BB_HUMAN_NPC_COMBAT_BARK_COOLDOWN "human_npc_combat_bark_cooldown"
 #define BB_HUMAN_NPC_CURRENT_INTENT_ATTACKS_LEFT "human_npc_intent_attacks"
 #define BB_BEGGING_FOOD_ITEM "item_beg_target"
 #define BB_ARCHER_NPC_TARGET_ARROW      "archer_target_arrow"
