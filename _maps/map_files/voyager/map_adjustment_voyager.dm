@@ -62,6 +62,7 @@
 		/datum/job/advclass/artisan/blacksmith = 2,
 		/datum/job/advclass/artisan/tailor = 2,
 		/datum/job/town_scholar = 1,
+		/datum/job/navigator = 2,
 		/datum/job/watch_guard = 4,
 		/datum/job/cook = 1,
 		/datum/job/tavern_wench = 2,

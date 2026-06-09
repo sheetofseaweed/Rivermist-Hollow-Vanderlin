@@ -63,7 +63,7 @@
 	r_hand = /obj/item/flashlight/flare/torch/prelit
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 	)
 
 // ------------------------------------------------------------

@@ -122,7 +122,7 @@
 	var/fishsize
 
 	if(prob(16 - GET_MOB_ATTRIBUTE_VALUE(fisher, STAT_FORTUNE))) //you will always have a chance at this, legendary fishers got a 10% chance - their luck stat
-		fishtype = pickweight(list(/obj/item/natural/fibers = 1, /obj/item/storage/belt/pouch/coins/poor = 1, /obj/item/clothing/shoes/boots/leather = 1, /obj/structure/fermentation_keg = 1, /obj/item/clothing/head/fisherhat = 1))
+		fishtype = pickweight(list(/obj/item/natural/fibers = 1, /obj/item/storage/belt/pouch/cloth/coins/poor = 1, /obj/item/clothing/shoes/boots/leather = 1, /obj/structure/fermentation_keg = 1, /obj/item/clothing/head/fisherhat = 1))
 		trashfishing = TRUE
 
 	if(!trashfishing)

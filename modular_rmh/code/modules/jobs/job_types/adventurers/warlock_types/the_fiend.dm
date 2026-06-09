@@ -63,7 +63,7 @@
 	r_hand = null
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 	)
 
 /datum/outfit/adventurer_warlock/the_fiend/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

@@ -77,7 +77,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltr = /obj/item/key/tavern
 	ring = null
 	l_hand = null
@@ -148,7 +148,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/cloth/lady
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltr = /obj/item/key/tavern
 	ring = /obj/item/clothing/ring/gold
 	l_hand = null
@@ -205,7 +205,7 @@
 	backr = null
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltr = /obj/item/key/tavern
 	ring = null
 	l_hand = /obj/item/soap/bath

@@ -607,7 +607,7 @@
 /area/under/mountains/anvil/lower/building)
 "jo" = (
 /obj/item/grown/log/tree/stake,
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /obj/effect/decal/cleanable/blood,
 /turf/open/floor/cobble,
 /area/under/mountains/anvil/lower/building)

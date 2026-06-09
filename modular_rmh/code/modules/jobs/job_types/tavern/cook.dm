@@ -47,7 +47,7 @@
 	name = "Cook"
 	head = /obj/item/clothing/head/cookhat
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/apron/cook
 	armor = null
 	shirt = null

@@ -41,13 +41,13 @@
 	var/add_random_deserter_beltl_stuff = rand(1,7)
 	switch(add_random_deserter_beltl_stuff)
 		if(1)
-			beltl = /obj/item/storage/belt/pouch/food
+			beltl = /obj/item/storage/belt/pouch/cloth/food
 		if(2)
-			beltl = /obj/item/storage/belt/pouch/medicine
+			beltl = /obj/item/storage/belt/pouch/cloth/medicine
 		if(3)
-			beltl = /obj/item/storage/belt/pouch/coins/poor
+			beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 		if(4)
-			beltl = /obj/item/storage/belt/pouch/coins/mid
+			beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 		if(5)
 			beltl = /obj/item/reagent_containers/glass/bottle/waterskin
 		if(6)
@@ -59,13 +59,13 @@
 	var/add_random_deserter_beltr_stuff = rand(1,7)
 	switch(add_random_deserter_beltr_stuff)
 		if(1)
-			beltr = /obj/item/storage/belt/pouch/food
+			beltr = /obj/item/storage/belt/pouch/cloth/food
 		if(2)
-			beltr = /obj/item/storage/belt/pouch/medicine
+			beltr = /obj/item/storage/belt/pouch/cloth/medicine
 		if(3)
-			beltr = /obj/item/storage/belt/pouch/coins/poor
+			beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 		if(4)
-			beltr = /obj/item/storage/belt/pouch/coins/mid
+			beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 		if(5)
 			beltr = /obj/item/reagent_containers/glass/bottle/waterskin
 		if(6)

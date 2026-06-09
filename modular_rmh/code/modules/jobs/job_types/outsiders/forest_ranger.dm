@@ -98,7 +98,7 @@
 	pants = /obj/item/clothing/pants/trou/leather
 	shoes = /obj/item/clothing/shoes/boots
 	backr = /obj/item/weapon/shield/heater
-	backl = /obj/item/storage/backpack/satchel
+	backl = /obj/item/storage/backpack/backpack/longhike
 	belt = /obj/item/storage/belt/leather/fgarrison
 	beltl = /obj/item/weapon/flail/militia
 	beltr = /obj/item/weapon/axe/iron
@@ -109,7 +109,7 @@
 	backpack_contents = list(
 		/obj/item/weapon/knife/hunting = 1,
 		/obj/item/rope/chain = 1,
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 		/obj/item/signal_horn = 1,
 	)
 
@@ -183,7 +183,7 @@
 	pants = /obj/item/clothing/pants/trou/leather
 	shoes = /obj/item/clothing/shoes/boots
 	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/long
-	backl = /obj/item/storage/backpack/satchel
+	backl = /obj/item/storage/backpack/backpack/longhike/with_bedroll
 	belt = /obj/item/storage/belt/leather/fgarrison
 	beltl = /obj/item/weapon/knife/cleaver/combat
 	beltr = /obj/item/ammo_holder/quiver/arrows
@@ -194,7 +194,7 @@
 	backpack_contents = list(
 		/obj/item/weapon/knife/hunting = 1,
 		/obj/item/rope/chain = 1,
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 		/obj/item/signal_horn = 1,
 	)
 
@@ -270,7 +270,7 @@
 	pants = /obj/item/clothing/pants/trou/leather
 	shoes = /obj/item/clothing/shoes/boots
 	backr = /obj/item/weapon/polearm/halberd/bardiche/woodcutter
-	backl = /obj/item/storage/backpack/satchel
+	backl = /obj/item/storage/backpack/backpack/longhike
 	belt = /obj/item/storage/belt/leather/fgarrison
 	beltl = /obj/item/weapon/mace/steel/morningstar
 	beltr = /obj/item/weapon/axe/iron
@@ -281,7 +281,7 @@
 	backpack_contents = list(
 		/obj/item/weapon/knife/hunting = 1,
 		/obj/item/rope/chain = 1,
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 		/obj/item/signal_horn = 1
 	)
 

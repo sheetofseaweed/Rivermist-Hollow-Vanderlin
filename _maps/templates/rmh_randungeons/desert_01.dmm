@@ -2,7 +2,6 @@
 "aa" = (
 /obj/structure/well/fountain{
 	pixel_y = 0;
-	plane = -7;
 	layer = 5
 	},
 /turf/open/floor/tile/brick,

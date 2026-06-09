@@ -706,18 +706,16 @@
 		else
 			playsound(src, "nodmg", I.get_clamped_volume(), FALSE, extrarange = I.stealthy_audio ? SILENCED_SOUND_EXTRARANGE : -1, falloff_distance = 0)
 	if(I.force)
-		if(from_behind && user.mind && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !user.has_status_effect(/datum/status_effect/debuff/stealthcd))//Backstabs do increased damage; Sneak attacks have a higher crit chance. Combined, a stealthy backstab should be very damaging.
-			var/sneakmult = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/misc/sneaking)
-			newforce *= max(1,sneakmult)
-			newforce += 15
+		if(from_behind && user.mind && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !user.has_status_effect(/datum/status_effect/debuff/stealthcd))//Backstabs do a little bit increased damage.
+			newforce += 10
 			user.apply_status_effect(/datum/status_effect/debuff/stealthcd)
-			to_chat(src, span_userdanger("BACKSTAB!!! THE ATTACK DEALS GREATER DAMAGE!"))
-			to_chat(user, span_userdanger("BACKSTAB!!! MY ATTACK DOES GREATER DAMAGE!"))
-			user.adjust_experience(/datum/skill/misc/sneaking, user.STAINT * 5, TRUE)
-		if(from_behind || user.alpha < 15)//From Dreamkeep (no can_see_cone here cuz idk if it applies to simple mobs)
+			to_chat(src, span_userdanger("Backstabed!"))
+			to_chat(user, span_userdanger("Backstab!"))
+			user.adjust_experience(/datum/skill/misc/sneaking, user.STAINT * 2, TRUE)
+		if(from_behind && user.m_intent == MOVE_INTENT_SNEAK && user.alpha <= 15)//From Dreamkeep (no can_see_cone here cuz idk if it applies to simple mobs)
 			if(user.mind && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !user.has_status_effect(/datum/status_effect/debuff/stealthcd))
 				var/sneakmult = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/misc/sneaking)
-				newforce *= max(1,sneakmult)
+				newforce *= max(1, sneakmult)
 				newforce += 15
 				user.apply_status_effect(/datum/status_effect/debuff/stealthcd)
 				to_chat(src, span_userdanger("SNEAK ATTACK!!!"))

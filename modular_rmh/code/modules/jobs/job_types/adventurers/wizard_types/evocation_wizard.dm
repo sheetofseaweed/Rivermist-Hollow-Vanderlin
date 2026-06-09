@@ -54,7 +54,7 @@
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)
 
 /datum/outfit/adventurer_wizard/evocation_wizard/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

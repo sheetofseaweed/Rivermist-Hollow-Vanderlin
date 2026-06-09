@@ -12,6 +12,7 @@
 	nodismemsleeves = TRUE
 	inhand_mod = FALSE
 	slot_flags = ITEM_SLOT_BACK_R | ITEM_SLOT_CLOAK
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/cape/colored
 	misc_flags = CRAFTING_TEST_EXCLUDE

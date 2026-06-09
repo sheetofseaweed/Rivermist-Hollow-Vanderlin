@@ -1748,7 +1748,6 @@
 /obj/structure/lootable_structure/fish_barrel{
 	pixel_y = 0;
 	pixel_x = 1;
-	plane = -7;
 	layer = 5;
 	interaction_time = 120;
 	max_spawns = 2
@@ -1811,7 +1810,7 @@
 	pixel_x = -5;
 	pixel_y = 4
 	},
-/obj/item/storage/belt/pouch/coins/poor{
+/obj/item/storage/belt/pouch/cloth/coins/poor{
 	pixel_x = 8;
 	pixel_y = 12
 	},

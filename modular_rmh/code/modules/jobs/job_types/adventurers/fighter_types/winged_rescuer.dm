@@ -58,7 +58,7 @@
 	r_hand = null
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/coins/mid = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/mid = 1,
 		/obj/item/reagent_containers/glass/bottle/healthpot = 3,
 		/obj/item/weapon/knife/hunting = 1
 	)

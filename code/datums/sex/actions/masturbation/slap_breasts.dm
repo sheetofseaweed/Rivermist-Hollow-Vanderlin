@@ -68,6 +68,7 @@
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 	do_time = 2.5 SECONDS
 	stamina_cost = 0
+	mage_hand_overlay_zone = MAGE_HAND_ZONE_CHEST
 
 /datum/sex_action/masturbate/other/slap_breasts/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)

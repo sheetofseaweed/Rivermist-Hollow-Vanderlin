@@ -106,6 +106,10 @@
 	var/user_menu_zone_mask = SEX_UI_ZONE_ANY
 	/// Which zone on the other side this action focuses on for interaction-menu filtering
 	var/target_menu_zone_mask = SEX_UI_ZONE_ANY
+	/// Whether Mage Hand can perform this action remotely.
+	var/mage_hand_allowed = FALSE
+	/// Overlay zone used by Mage Hand while this action is active.
+	var/mage_hand_overlay_zone = null
 	var/sex_volume = 50 //volume for plaps
 
 /datum/sex_action/Destroy()
@@ -136,6 +140,10 @@
 			return FALSE
 	return TRUE
 
+/datum/sex_action/proc/can_mage_hand_reach(mob/living/user, mob/living/target)
+	var/datum/sex_session/session = get_sex_session(user, target)
+	return !!session?.can_remote_interact_with_action(src)
+
 /datum/sex_action/proc/try_knot_on_climax(mob/living/user, mob/living/target)
 	if(!knot_on_finish)
 		return FALSE
@@ -153,13 +161,14 @@
 	if(target == user)
 		self_target = TRUE
 
-	if(src.check_same_tile && (user != target || self_target))
+	var/mage_hand_reach = can_mage_hand_reach(user, target)
+	if(!mage_hand_reach && src.check_same_tile && (user != target || self_target))
 		var/same_tile = (get_turf(user) == get_turf(target))
 		var/grab_bypass = (src.aggro_grab_instead_same_tile && user.get_effective_grab_state_on(target) == GRAB_AGGRESSIVE)
 		if(!same_tile && !grab_bypass)
 			return FALSE
 
-	if(src.require_grab && (user != target || self_target))
+	if(!mage_hand_reach && src.require_grab && (user != target || self_target))
 		var/grabstate = user.get_effective_grab_state_on(target)
 		if((grabstate == null || grabstate < src.required_grab_state))
 			return FALSE
@@ -501,6 +510,8 @@
 
 
 /datum/sex_action/proc/can_show_action_message(mob/living/user, mob/living/target)
+	if(can_mage_hand_reach(user, target))
+		return FALSE
 	if(user && (user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)) //stealth sex les go
 		return FALSE
 	if(world.time >= next_message_time)

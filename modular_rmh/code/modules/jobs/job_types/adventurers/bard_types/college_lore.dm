@@ -62,7 +62,7 @@
 	name = "College of Lore"
 	head = /obj/item/clothing/head/bardhat
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/raincloak/colored/blue
 	armor = /obj/item/clothing/armor/leather/vest
 	shirt = /obj/item/clothing/shirt/tunic/noblecoat
@@ -73,7 +73,7 @@
 	backr = null
 	backl = /obj/item/storage/backpack/satchel
 	belt = /obj/item/storage/belt/leather/adventurers_subclasses
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltr = /obj/item/weapon/knife/dagger/steel/special
 	ring = null
 	l_hand = null

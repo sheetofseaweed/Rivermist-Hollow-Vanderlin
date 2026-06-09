@@ -506,9 +506,7 @@
 /obj/structure/fluff/railing/wood{
 	dir = 4
 	},
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "aht" = (
@@ -960,9 +958,7 @@
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
 "aqh" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/west)
 "aqp" = (
@@ -1312,9 +1308,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/central)
 "avL" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/flora/grass/fullgrass,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/north)
@@ -1695,9 +1689,7 @@
 /turf/open/floor/dirt,
 /area/outdoors/town/rmh/ruinedzone)
 "aEe" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_eilistraee)
 "aEn" = (
@@ -2202,7 +2194,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 14;
-	plane = -7;
 	pixel_x = -17
 	},
 /turf/open/floor/blocks/stonered/tiny,
@@ -3077,9 +3068,7 @@
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/camp)
 "bge" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/flora/grass/fullgrass,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north)
@@ -6163,9 +6152,7 @@
 /turf/open/floor/ruinedwood/herringbone,
 /area/indoors/town/rmh/crafters_guild)
 "ckU" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /obj/structure/vine,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/druid)
@@ -6540,9 +6527,7 @@
 /area/indoors/town/rmh/craft/clinic)
 "cst" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
 /area/outdoors/town/rmh)
 "csz" = (
@@ -7911,9 +7896,7 @@
 /turf/open/floor/wood,
 /area/indoors/town/rmh)
 "cRG" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/red,
 /area/outdoors/rmh_field/north)
 "cRR" = (
@@ -9251,9 +9234,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/indoors/town/rmh/magician)
 "doq" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field)
 "dou" = (
@@ -9540,9 +9521,7 @@
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/town/rmh/farm/ambar)
 "dta" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field)
 "dtr" = (
@@ -10480,9 +10459,7 @@
 /turf/open/floor/ruinedwood/platform,
 /area/outdoors/town/rmh/roofs)
 "dGe" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/east)
 "dGj" = (
@@ -10647,9 +10624,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/northern)
 "dIn" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/dirt/ambush,
 /area/outdoors/rmh_field/druid)
 "dIp" = (
@@ -10930,9 +10905,7 @@
 /turf/open/floor/cobble/alt,
 /area/indoors/cave/rmh_cave/southern)
 "dNg" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north)
 "dNk" = (
@@ -10996,9 +10969,7 @@
 /turf/open/floor/concrete,
 /area/indoors/town/rmh)
 "dNE" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/north)
 "dNF" = (
@@ -12554,7 +12525,6 @@
 	},
 /obj/structure/fluff/railing/border,
 /obj/structure/flora/grass/bush/green{
-	plane = -7;
 	pixel_y = 7
 	},
 /turf/open/floor/grass/healthy,
@@ -13656,9 +13626,7 @@
 /area/indoors/town/rmh/farm/house)
 "eHm" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/north)
 "eHp" = (
@@ -14715,7 +14683,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 2;
-	plane = -7;
 	pixel_x = -17
 	},
 /turf/open/floor/woodturned,
@@ -19341,9 +19308,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/town/rmh)
 "gAl" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/flora/grass/fullgrass,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/basinruin)
@@ -20518,7 +20483,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 3;
-	plane = -7;
 	pixel_x = -17
 	},
 /obj/effect/decal/edge_corner{
@@ -21363,9 +21327,7 @@
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/west)
 "hit" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/west)
 "hiu" = (
@@ -22029,9 +21991,7 @@
 /turf/open/floor/wood,
 /area/outdoors/rmh_platz)
 "huk" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/east)
 "hup" = (
@@ -25506,9 +25466,7 @@
 /turf/open/floor/dirt,
 /area/outdoors/town/rmh)
 "iyB" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/east)
 "iyJ" = (
@@ -25546,9 +25504,7 @@
 /turf/open/floor/wood,
 /area/indoors/town/rmh)
 "izb" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/east)
 "izg" = (
@@ -25920,9 +25876,7 @@
 /area/under/town/rmh/basement/tavern)
 "iFG" = (
 /obj/effect/decal/cleanable/dirt/dust,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/basinruin)
 "iFN" = (
@@ -27561,9 +27515,7 @@
 /turf/closed/wall/mineral/wooddark/horizontal,
 /area/indoors/cave/rmh_cave/mine)
 "jiV" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/west)
 "jiW" = (
@@ -27606,9 +27558,7 @@
 	},
 /area/indoors/town/rmh/magician)
 "jkg" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "jkq" = (
@@ -27853,9 +27803,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/indoors/town/rmh/town_hall)
 "jpf" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/fluff/railing/wood/west,
 /turf/open/floor/grass,
 /area/outdoors/town/rmh)
@@ -28204,9 +28152,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/miner)
 "jvZ" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/item/key/houses/house7{
 	pixel_y = -5
 	},
@@ -28369,9 +28315,7 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "jzs" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/red,
 /area/outdoors/town/rmh)
 "jzy" = (
@@ -29741,9 +29685,7 @@
 /turf/closed/wall/mineral/wooddark,
 /area/under/tomb/indoors/church)
 "jWK" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt,
 /area/outdoors/town/rmh/livingquart)
 "jWW" = (
@@ -29801,9 +29743,7 @@
 /turf/open/floor/cobble,
 /area/under/rmh_dungeon/jergal)
 "jXF" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_air)
 "jXH" = (
@@ -30707,9 +30647,7 @@
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
 "knk" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/indoors/cave/rmh_cave/cave_druid)
 "knr" = (
@@ -31189,7 +31127,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 2;
-	plane = -7;
 	pixel_x = -17
 	},
 /obj/structure/fluff/festive_flags/red{
@@ -33126,9 +33063,7 @@
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/town/rmh/loudmouth)
 "lbo" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/fluff/railing/wood/north{
 	layer = 2.7;
@@ -34028,9 +33963,7 @@
 /turf/open/floor/naturalstone,
 /area/under/rmh_dungeon/jergal)
 "lpl" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_air)
 "lpm" = (
@@ -34121,9 +34054,7 @@
 /area/indoors/town/rmh/chapel)
 "lqC" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh)
 "lqP" = (
@@ -35451,9 +35382,7 @@
 /turf/open/floor/tile/bfloorz,
 /area/indoors/town/rmh/tavern)
 "lNP" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/flora/grass/fullgrass,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh/livingquart)
@@ -36226,9 +36155,7 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh/roofs)
 "mag" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/mountains/rmh_mountains)
 "mas" = (
@@ -36257,9 +36184,7 @@
 /area/under/rmh_dungeon/catacombs_town)
 "maN" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/town/rmh)
 "maT" = (
@@ -36486,9 +36411,7 @@
 /turf/open/floor/naturalstone,
 /area/under/rmh_dungeon/catacombs_town)
 "meL" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/effect/landmark/quest_spawner/easy,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north)
@@ -37434,9 +37357,7 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "mvn" = (
 /obj/structure/ladder/earth,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/west)
 "mvq" = (
@@ -37771,7 +37692,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 2;
-	plane = -7;
 	pixel_x = -17
 	},
 /turf/open/floor/tile/checker,
@@ -39683,9 +39603,7 @@
 /turf/open/floor/grass/mixyel,
 /area/outdoors/exposed/town/rmh/farm)
 "njI" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/west)
 "njO" = (
@@ -40606,9 +40524,7 @@
 /turf/open/floor/wood,
 /area/outdoors/rmh_field/east)
 "nAy" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh)
 "nAA" = (
@@ -40630,9 +40546,7 @@
 /turf/open/floor/ruinedwood/herringbone,
 /area/indoors/town/rmh)
 "nBc" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/basinruin)
 "nBd" = (
@@ -41705,9 +41619,7 @@
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh/livingquart)
 "nSl" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/druid)
 "nSn" = (
@@ -42003,9 +41915,7 @@
 /turf/open/floor/cobble,
 /area/under/town/rmh/basement/tavern)
 "nXa" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/north)
 "nXd" = (
@@ -42198,12 +42108,8 @@
 /turf/open/floor/ruinedwood,
 /area/outdoors/rmh_river)
 "nZN" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/druid)
 "nZR" = (
@@ -42835,9 +42741,7 @@
 /obj/structure/fluff/railing/wood{
 	plane = -6
 	},
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "ojp" = (
@@ -43331,7 +43235,7 @@
 /obj/machinery/light/fueled/wallfire/candle,
 /obj/structure/carpet/red,
 /obj/structure/closet/crate/chest/neu_fancy,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/indoors/town/rmh/loudmouth)
 "oqp" = (
@@ -43386,9 +43290,7 @@
 /turf/open/floor/ruinedwood/chevron,
 /area/indoors/town/rmh)
 "orO" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field)
 "orR" = (
@@ -44068,9 +43970,7 @@
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/camp)
 "oCF" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/druid)
 "oCI" = (
@@ -44251,9 +44151,7 @@
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement)
 "oGe" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/naturalstone,
 /area/outdoors/rmh_field/west)
 "oGi" = (
@@ -44266,9 +44164,7 @@
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "oGl" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/west)
 "oGt" = (
@@ -44438,9 +44334,7 @@
 	layer = 2.7;
 	pixel_y = 7
 	},
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_eilistraee)
 "oJc" = (
@@ -44461,12 +44355,8 @@
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/garrison/wall)
 "oJr" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/druid)
 "oJv" = (
@@ -45217,9 +45107,7 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_eilistraee)
 "oTI" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/west)
 "oTN" = (
@@ -45264,9 +45152,7 @@
 /turf/open/floor/ruinedwood/herringbone,
 /area/under/rmh_dungeon/catacombs_church)
 "oUi" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/druid)
 "oUl" = (
@@ -45399,9 +45285,7 @@
 /area/indoors/town/rmh/merchant)
 "oXN" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north)
 "oXV" = (
@@ -45727,9 +45611,7 @@
 /turf/open/floor/ruinedwood/spiralfade,
 /area/indoors/town/rmh/tavern)
 "pdF" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/basinruin)
 "pdL" = (
@@ -46751,9 +46633,7 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "puX" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "pva" = (
@@ -46992,7 +46872,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 2;
-	plane = -7;
 	pixel_x = -17
 	},
 /turf/open/floor/wood,
@@ -47855,9 +47734,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/minotaur)
 "pMm" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/red,
 /area/outdoors/rmh_field/druid)
 "pMp" = (
@@ -52048,9 +51925,7 @@
 /area/indoors/cave/rmh_cave/cave_druid)
 "rct" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh)
 "rcx" = (
@@ -52418,9 +52293,7 @@
 /turf/open/floor/concrete,
 /area/under/town/rmh/basement/townhall)
 "rkt" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north_mountain)
 "rkB" = (
@@ -52925,7 +52798,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 2;
-	plane = -7;
 	pixel_x = -17
 	},
 /turf/open/floor/wood,
@@ -53382,9 +53254,7 @@
 /turf/open/openspace,
 /area/indoors/cave/rmh_cave/central)
 "ryS" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/fluff/walldeco/vinez/offset,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_air)
@@ -53683,9 +53553,7 @@
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/under/town/rmh/basement/townhall)
 "rED" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/town/rmh)
 "rEI" = (
@@ -54207,9 +54075,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/cave/rmh_cave/west)
 "rOB" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field)
 "rOC" = (
@@ -54336,9 +54202,7 @@
 /turf/closed/wall/mineral/wooddark/vertical,
 /area/indoors/cave/rmh_cave/safezone)
 "rQa" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/north_mountain)
 "rQc" = (
@@ -55032,9 +54896,7 @@
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/jergal)
 "saX" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/red,
 /area/outdoors/mountains/rmh_mountains)
 "sbd" = (
@@ -55539,9 +55401,7 @@
 /turf/closed/wall/mineral/wooddark/horizontal,
 /area/indoors/town/rmh/town_hall)
 "sld" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass,
 /area/outdoors/town/rmh)
 "slg" = (
@@ -55573,9 +55433,7 @@
 /turf/open/floor/ruinedwood/darker,
 /area/indoors/town/rmh/town_hall)
 "slD" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/east)
 "slI" = (
@@ -56302,9 +56160,7 @@
 /turf/open/floor/carpet/inn,
 /area/indoors/town/rmh/town_hall)
 "sBe" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "sBh" = (
@@ -58056,9 +57912,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/shelter/woods)
 "ten" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/town/rmh/livingquart)
 "teq" = (
@@ -59979,9 +59833,7 @@
 /turf/open/water/bath,
 /area/indoors/town/rmh/bath)
 "tLc" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /obj/structure/flora/grass/fullgrass,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/north)
@@ -60840,7 +60692,6 @@
 	},
 /obj/structure/flora/junglebush/large{
 	pixel_y = 3;
-	plane = -7;
 	pixel_x = -17
 	},
 /turf/open/floor/churchrough/green,
@@ -60965,9 +60816,7 @@
 /area/indoors/cave/rmh_cave/wet/lake)
 "ucY" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/north_mountain)
 "udb" = (
@@ -61187,9 +61036,7 @@
 /turf/open/floor/grass/healthy,
 /area/outdoors/beach/rmh_beach)
 "ufT" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh/livingquart)
 "ufW" = (
@@ -61250,7 +61097,6 @@
 /obj/structure/well/climb_down{
 	pixel_x = 5;
 	pixel_y = 9;
-	plane = -7;
 	layer = 5
 	},
 /turf/open/floor/cobblerock,
@@ -62797,9 +62643,7 @@
 /turf/open/floor/desert/deserttile/tilegreeny,
 /area/indoors/town/rmh/bank)
 "uKd" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/west)
 "uKf" = (
@@ -63561,9 +63405,7 @@
 /turf/open/floor/blocks,
 /area/under/town/rmh/sewer)
 "uYE" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/indoors/cave/rmh_cave/wet/lake)
 "uYJ" = (
@@ -65140,9 +64982,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/loudmouth)
 "vBr" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north)
 "vBx" = (
@@ -68738,9 +68578,7 @@
 /area/indoors/town/rmh/merchant)
 "wKM" = (
 /obj/structure/flora/newtree,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north)
 "wKQ" = (
@@ -69079,9 +68917,7 @@
 /area/outdoors/exposed/town/rmh/farm)
 "wRK" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
 "wRL" = (
@@ -70481,9 +70317,7 @@
 /turf/open/floor/dirt/road,
 /area/outdoors/rmh_air)
 "xnR" = (
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/indoors/cave/rmh_cave/cave_druid)
 "xnV" = (
@@ -70925,9 +70759,7 @@
 /turf/closed/mineral/random/high_nonval,
 /area/indoors/cave/rmh_cave/northern)
 "xvw" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/druid)
 "xvE" = (
@@ -72852,9 +72684,7 @@
 /turf/open/floor/tile/harem2,
 /area/indoors/town/rmh/town_hall)
 "yeb" = (
-/obj/structure/flora/grass/bush/wall/tall/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/wall/tall/green,
 /mob/living/simple_animal/hostile/retaliate/trufflepig/female,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/west)
@@ -72884,9 +72714,7 @@
 /area/under/rmh_dungeon/catacombs_town)
 "yeG" = (
 /obj/structure/flora/grass/fullgrass,
-/obj/structure/flora/grass/bush/green{
-	plane = -7
-	},
+/obj/structure/flora/grass/bush/green,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field)
 "yeH" = (

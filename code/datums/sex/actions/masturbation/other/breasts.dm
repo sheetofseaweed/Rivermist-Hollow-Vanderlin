@@ -1,6 +1,7 @@
 /datum/sex_action/masturbate/other/breasts
 	name = "Rub their breasts"
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
+	mage_hand_overlay_zone = MAGE_HAND_ZONE_CHEST
 
 /datum/sex_action/masturbate/other/breasts/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)

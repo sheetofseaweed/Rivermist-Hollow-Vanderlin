@@ -44,7 +44,7 @@
 	belt = /obj/item/storage/belt/leather
 	armor = /obj/item/clothing/armor/gambeson/arming
 	neck = /obj/item/clothing/neck/gorget
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltr = /obj/item/weapon/sword/sabre
 	shirt = /obj/item/clothing/shirt/shortshirt/colored/merc
 	pants = /obj/item/clothing/pants/trou/leather

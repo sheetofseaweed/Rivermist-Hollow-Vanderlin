@@ -74,7 +74,7 @@
 	r_hand = /obj/item/weapon/sword/sabre
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/bullets,
+		/obj/item/storage/belt/pouch/cloth/bullets,
 		/obj/item/reagent_containers/glass/bottle/aflask,
 		/obj/item/gun/ballistic/revolver/grenadelauncher/pistol,
 	)

@@ -45,7 +45,7 @@
 	name = "Miner"
 	head = /obj/item/clothing/head/helmet/leather/minershelm
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = null
 	armor = /obj/item/clothing/armor/gambeson/light/striped
 	shirt = /obj/item/clothing/shirt/undershirt/colored/random

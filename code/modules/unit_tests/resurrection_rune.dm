@@ -1,3 +1,4 @@
+#define TEST_RUNE_STAGE_NONE 0
 #define TEST_RUNE_STAGE_SOFT_CRIT 1
 #define TEST_RUNE_THRESHOLD_SOFTCRIT 45
 
@@ -26,7 +27,7 @@
 	var/datum/resurrection_rune_controller/controller = allocate(/datum/resurrection_rune_controller)
 	var/mob/living/carbon/human/sleeper = allocate(/mob/living/carbon/human)
 
-	sleeper.set_health(sleeper.crit_threshold)
+	sleeper.setOxyLoss(sleeper.maxHealth - sleeper.crit_threshold)
 	TEST_ASSERT(sleeper.Sleeping(1 MINUTES), "Test human should be able to fall asleep.")
 	TEST_ASSERT(sleeper.IsSleeping(), "Test human should be sleeping.")
 
@@ -62,6 +63,25 @@
 	var/rescue_stage = controller.get_rescue_stage(injured)
 	TEST_ASSERT_EQUAL(rescue_stage, TEST_RUNE_STAGE_SOFT_CRIT, "The resurrection rune should treat serious new bodypart injuries as rescue-worthy even when health has not dropped.")
 
+/datum/unit_test/resurrection_rune_ignores_human_brain_health_for_living_rescue
+#ifdef FOCUS_RESURRECTION_RUNE_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/resurrection_rune_ignores_human_brain_health_for_living_rescue/Run()
+	var/datum/resurrection_rune_controller/controller = allocate(/datum/resurrection_rune_controller)
+	var/mob/living/carbon/human/brain_damaged = allocate(/mob/living/carbon/human)
+
+	brain_damaged.setOrganLoss(ORGAN_SLOT_BRAIN, brain_damaged.maxHealth - 2)
+	brain_damaged.setOxyLoss(10)
+	brain_damaged.updatehealth()
+
+	TEST_ASSERT_EQUAL(brain_damaged.health, brain_damaged.maxHealth - brain_damaged.getOxyLoss(), "Brain damage should not lower regular human health.")
+	TEST_ASSERT_EQUAL(brain_damaged.getOxyLoss(), 10, "Test setup should keep visible oxygen damage low.")
+	var/rescue_stage = controller.get_rescue_stage(brain_damaged)
+	TEST_ASSERT_EQUAL(rescue_stage, TEST_RUNE_STAGE_NONE, "Low human brain-health alone should not trigger living rune rescue.")
+
+#undef TEST_RUNE_STAGE_NONE
 #undef TEST_RUNE_STAGE_SOFT_CRIT
 #undef TEST_RUNE_THRESHOLD_SOFTCRIT
 

@@ -52,6 +52,9 @@
 
 	var/voicecolor_override
 
+	/// Counted source-side suppression for visible_message() calls inside scoped systems.
+	var/tmp/visible_message_suppression_count = 0
+
 	///overlays that should remain on top and not normally removed when using cut_overlay functions, like c4.
 	var/list/priority_overlays
 	/// a very temporary list of overlays to remove

@@ -270,7 +270,7 @@
 	if(real_damage)
 		affecting.bodypart_attacked_by(user.used_intent.blade_class, real_damage, crit_message = TRUE, pre_applied = TRUE)
 
-	if(!can_see_cone(user) || user.alpha < 15)//From Dreamkeep
+	if(!can_see_cone(user) && user.m_intent == MOVE_INTENT_SNEAK && user.alpha <= 15)//From Dreamkeep
 		if(user.mind && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !user.has_status_effect(/datum/status_effect/debuff/stealthcd))
 			var/sneakmult = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/misc/sneaking)
 			statforce *= max(1,sneakmult)

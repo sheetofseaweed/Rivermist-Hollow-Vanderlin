@@ -40,7 +40,7 @@
 	name = "Fisher"
 	head = /obj/item/clothing/head/fisherhat
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = null
 	armor = /obj/item/clothing/armor/gambeson/light/striped
 	shirt = null

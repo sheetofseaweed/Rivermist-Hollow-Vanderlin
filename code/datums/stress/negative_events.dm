@@ -301,7 +301,7 @@
 /datum/stress_event/coldhead
 	timer = 60 SECONDS
 	stress_change = 1
-//	desc = "<span class='red'>My head is cold and ugly.</span>"
+	desc = span_red("My head is cold and ugly.")
 
 /datum/stress_event/sleepytime
 	timer = 0

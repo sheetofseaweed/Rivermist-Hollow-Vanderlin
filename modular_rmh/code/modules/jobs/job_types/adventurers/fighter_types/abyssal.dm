@@ -79,5 +79,5 @@
 	scabbards = list(/obj/item/weapon/scabbard/sword)
 	backpack_contents = list(
 		/obj/item/key/mercenary,
-		/obj/item/storage/belt/pouch/coins/poor,
+		/obj/item/storage/belt/pouch/cloth/coins/poor,
 	)

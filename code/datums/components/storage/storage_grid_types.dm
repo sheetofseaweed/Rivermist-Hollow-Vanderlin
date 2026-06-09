@@ -32,12 +32,12 @@
 
 /datum/component/storage/concrete/grid/coin_pouch
 	screen_max_rows = 4
-	screen_max_columns = 1
+	screen_max_columns = 2
 	max_w_class = WEIGHT_CLASS_NORMAL
 	not_while_equipped = FALSE
 
 /datum/component/storage/concrete/grid/coin_pouch/cloth
-	screen_max_rows = 2
+	screen_max_rows = 4
 	screen_max_columns = 1
 
 /datum/component/storage/concrete/grid/potion_belt

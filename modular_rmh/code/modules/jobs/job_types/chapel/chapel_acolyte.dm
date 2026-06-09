@@ -148,7 +148,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null
@@ -226,7 +226,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null
@@ -309,7 +309,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null
@@ -389,7 +389,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null
@@ -469,7 +469,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null
@@ -551,7 +551,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/rope
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null
@@ -642,7 +642,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/cloth
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/town_chapel
 	ring = null
 	l_hand = null

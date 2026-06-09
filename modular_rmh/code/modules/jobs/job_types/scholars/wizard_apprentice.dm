@@ -66,7 +66,7 @@
 	backpack_contents = list(
 		/obj/item/book/granter/spellbook/apprentice = 1,
 		/obj/item/chalk = 1,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)
 
 /datum/outfit/guild_wizard_apprentice/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

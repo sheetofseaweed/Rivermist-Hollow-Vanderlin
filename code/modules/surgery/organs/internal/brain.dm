@@ -115,7 +115,14 @@
 	. = ..()
 
 	if(owner)
+		. += span_tooltip(get_brain_damage_recovery_tip(), "Brain damage is tracked separately from regular bodily health.")
 		. += "Use a hemostat to perform a lobotomy on this brain."
+
+/obj/item/organ/brain/proc/get_brain_damage_recovery_tip()
+	return "Stabilize blood flow and oxygen first: restore breathing, treat blood loss, and restart the heart or stop cardiac arrest. Mannitol, brain-regenerating medicine, or direct brain surgery can repair existing brain damage."
+
+/obj/item/organ/brain/proc/brain_damage_warning(message)
+	return span_warning(span_tooltip(get_brain_damage_recovery_tip(), message))
 
 /obj/item/organ/brain/handle_organ_attack(obj/item/tool, mob/living/user, params)
 	if(owner && DOING_INTERACTION_WITH_TARGET(user, owner))
@@ -333,14 +340,14 @@
 			return
 		var/brain_message
 		if(prev_damage < BRAIN_DAMAGE_MILD && damage >= BRAIN_DAMAGE_MILD)
-			brain_message = span_warning("I feel lightheaded.")
+			brain_message = brain_damage_warning("A dull ache throbs behind my eyes. My brain is hurt.")
 		else if(prev_damage < BRAIN_DAMAGE_SEVERE && damage >= BRAIN_DAMAGE_SEVERE)
-			brain_message = span_warning("I feel less in control of my thoughts.")
+			brain_message = brain_damage_warning("Pain lashes through my skull. My thoughts are slipping away from me.")
 		else if(prev_damage < (BRAIN_DAMAGE_DEATH - 20) && damage >= (BRAIN_DAMAGE_DEATH - 20) && damage < BRAIN_DAMAGE_DEATH)
-			brain_message = span_warning("I can feel my mind flickering on and off...")
-		if(.)
+			brain_message = brain_damage_warning("My mind flickers at the edge of going dark. My brain cannot take much more.")
+		if(brain_message && .)
 			. += "\n[brain_message]"
-		else
+		else if(brain_message)
 			return brain_message
 
 /obj/item/organ/brain/can_heal(delta_time, times_fired)

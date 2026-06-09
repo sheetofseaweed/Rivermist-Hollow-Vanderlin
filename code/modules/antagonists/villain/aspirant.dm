@@ -57,7 +57,7 @@
 
 		if(CHOICE_GUN)
 			owner.special_items["Puffer"] = /obj/item/gun/ballistic/revolver/grenadelauncher/pistol
-			owner.special_items["Puffer Bullets"] = /obj/item/storage/belt/pouch/bullets
+			owner.special_items["Puffer Bullets"] = /obj/item/storage/belt/pouch/cloth/bullets
 			owner.special_items["Puffet Gunpowder"] = /obj/item/reagent_containers/glass/bottle/aflask
 			aspirant_mob.clamped_adjust_skill_level(/datum/attribute/skill/combat/firearms, 60, 60)
 			to_chat(owner, span_notice("I can retrieve my item from a statue, tree or clock by right clicking it."))

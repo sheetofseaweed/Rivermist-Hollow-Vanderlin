@@ -122,7 +122,7 @@
 	l_hand = null
 	r_hand = /obj/item/flashlight/flare/torch/prelit
 
-	backpack_contents = list(/obj/item/storage/belt/pouch/coins/poor = 1, /obj/item/reagent_containers/food/snacks/hardtack = 1)
+	backpack_contents = list(/obj/item/storage/belt/pouch/cloth/coins/poor = 1, /obj/item/reagent_containers/food/snacks/hardtack = 1)
 
 /datum/outfit/adventurer_cleric/war_domain/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)
 	. = ..()

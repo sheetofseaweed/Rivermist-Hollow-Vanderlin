@@ -33,7 +33,7 @@
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] bathes [target]'s body with [user.p_their()] tongue..."))
 	user.make_sucking_noise()
 
-	sex_session.perform_sex_action(target, user, 0.5, 0, 0,5, src)
+	sex_session.perform_sex_action(user, target, 0.5, 0, 0, src)
 	sex_session.handle_passive_ejaculation(target)
 
 /datum/sex_action/tonguebath/on_finish(mob/living/user, mob/living/target)

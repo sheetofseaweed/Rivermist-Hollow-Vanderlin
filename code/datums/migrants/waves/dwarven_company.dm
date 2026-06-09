@@ -60,7 +60,7 @@
 	pants = /obj/item/clothing/pants/trou
 	shoes = /obj/item/clothing/shoes/simpleshoes/buckle
 	backl = /obj/item/storage/backpack/satchel
-	backpack_contents = list(/obj/item/storage/belt/pouch/coins/poor)
+	backpack_contents = list(/obj/item/storage/belt/pouch/cloth/coins/poor)
 
 /datum/migrant_role/dwarven_company/weaponsmith
 	name = "Dwarven Weaponsmith"
@@ -127,7 +127,7 @@
 	ring = /obj/item/clothing/ring/silver/makers_guild
 	head = /obj/item/clothing/head/hatfur
 	cloak = /obj/item/clothing/cloak/apron/brown
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	armor = /obj/item/clothing/armor/leather/splint
 	belt = /obj/item/storage/belt/leather
 	pants = /obj/item/clothing/pants/trou
@@ -142,7 +142,7 @@
 	if(equipped_human.gender == MALE)
 		shoes = /obj/item/clothing/shoes/boots/leather
 		shirt = /obj/item/clothing/shirt/shortshirt
-		beltl = /obj/item/storage/belt/pouch/coins/poor
+		beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 		backl =	/obj/item/weapon/hammer/sledgehammer
 	else
 		shirt = /obj/item/clothing/shirt/dress/gen/colored/random
@@ -216,7 +216,7 @@
 	head = /obj/item/clothing/head/hatfur
 	pants = /obj/item/clothing/pants/trou
 	belt = /obj/item/storage/belt/leather
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/apron/brown
 	armor = /obj/item/clothing/armor/chainmail
 	backr = /obj/item/weapon/axe/steel

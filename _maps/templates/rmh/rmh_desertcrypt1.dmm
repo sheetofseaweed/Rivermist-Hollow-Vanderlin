@@ -404,7 +404,6 @@
 /obj/structure/well/fountain{
 	pixel_x = -16;
 	pixel_y = 0;
-	plane = -7;
 	layer = 5
 	},
 /turf/open/floor/tile/diamond,
@@ -660,7 +659,6 @@
 /obj/structure/well/fountain{
 	pixel_x = -16;
 	pixel_y = 0;
-	plane = -7;
 	layer = 5
 	},
 /obj/effect/decal/cleanable/dirt/dust,

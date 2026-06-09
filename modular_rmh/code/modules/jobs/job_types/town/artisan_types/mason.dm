@@ -42,7 +42,7 @@
 	name = "Mason"
 	head = /obj/item/clothing/head/hatfur
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/mid
+	neck = /obj/item/storage/belt/pouch/cloth/coins/mid
 	cloak = /obj/item/clothing/cloak/apron/waist/colored/brown
 	armor = /obj/item/clothing/armor/leather/vest
 	shirt = /obj/item/clothing/shirt/undershirt/colored/random

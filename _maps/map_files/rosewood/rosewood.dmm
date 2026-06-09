@@ -15548,7 +15548,7 @@
 /obj/structure/closet/crate/drawer{
 	pixel_y = 6
 	},
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /obj/item/servant_bell/lord,
 /turf/open/floor/carpet/red,
 /area/indoors/town/keep)
@@ -23529,7 +23529,7 @@
 /area/indoors/town/keep/magician)
 "ltR" = (
 /obj/structure/closet/crate/drawer,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /obj/item/servant_bell/lord,
 /turf/open/floor/carpet/royalblack,
 /area/indoors/town/keep)
@@ -31750,7 +31750,7 @@
 /area/outdoors/town)
 "pmL" = (
 /obj/structure/rack,
-/obj/item/storage/belt/pouch/coins/poor{
+/obj/item/storage/belt/pouch/cloth/coins/poor{
 	pixel_x = 5;
 	pixel_y = -7
 	},
@@ -35520,7 +35520,7 @@
 /obj/structure/closet/crate/drawer,
 /obj/item/reagent_containers/powder/moondust,
 /obj/item/reagent_containers/powder/moondust,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/carpet/red,
 /area/indoors/town/merc_guild)
 "rkv" = (
@@ -42026,7 +42026,7 @@
 /area/indoors/town/bath)
 "uuP" = (
 /obj/structure/closet/crate/drawer,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /obj/item/clothing/head/crown/circlet/goldheaddress{
 	name = "gold headdress";
 	desc = "a fancy headdress made out of zenarii. Light and fashionable."

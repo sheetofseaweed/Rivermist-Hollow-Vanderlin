@@ -1312,7 +1312,8 @@
 		used_damage = total_tox
 	if(used_damage < total_oxy)
 		used_damage = total_oxy
-	set_health(maxHealth - GETBRAINLOSS(src))
+	set_health(round(maxHealth - used_damage, DAMAGE_PRECISION))
+	update_stat()
 	update_pain()
 	update_shock()
 	handle_defeat_health_update()

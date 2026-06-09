@@ -178,7 +178,7 @@ GLOBAL_LIST_EMPTY(burgmeister_titles)
 	r_hand = null
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/bullets,
+		/obj/item/storage/belt/pouch/cloth/bullets,
 		/obj/item/reagent_containers/glass/bottle/aflask,
 		/obj/item/gun/ballistic/revolver/grenadelauncher/pistol,
 		/obj/item/clothing/neck/slave_collar,

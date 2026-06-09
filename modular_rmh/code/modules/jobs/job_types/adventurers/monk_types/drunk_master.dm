@@ -63,7 +63,7 @@
 	backr = /obj/item/weapon/polearm/woodstaff
 	backl = /obj/item/storage/backpack/backpack
 	belt = /obj/item/storage/belt/leather/rope/adventurers_subclasses
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltr = null
 	ring = null
 	l_hand = /obj/item/weapon/knuckles

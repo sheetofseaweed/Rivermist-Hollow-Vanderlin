@@ -71,12 +71,12 @@
 		if("Axe")
 			head = /obj/item/clothing/head/helmet/nasal
 			backr = /obj/item/weapon/polearm/halberd/bardiche/woodcutter
-			beltr = /obj/item/storage/belt/pouch/coins/poor
+			beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 			beltl = /obj/item/weapon/sword/iron
 			H.adjust_skillrank(/datum/skill/combat/axesmaces, 1, TRUE)
 		if("Claymore")
 			head = /obj/item/clothing/head/helmet/nasal
 			backr = /obj/item/weapon/sword/long/greatsword/claymore/iron
 			beltl = /obj/item/weapon/axe/iron
-			beltr = /obj/item/storage/belt/pouch/coins/poor
+			beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 			H.adjust_skillrank(/datum/skill/combat/swords, 1, TRUE)

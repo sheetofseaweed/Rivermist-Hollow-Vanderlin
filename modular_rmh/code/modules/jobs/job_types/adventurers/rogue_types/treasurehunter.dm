@@ -42,7 +42,7 @@
 	name = "Treasure Hunter"
 	head = /obj/item/clothing/head/explorer
 	mask = null
-	neck = /obj/item/storage/belt/pouch
+	neck = /obj/item/storage/belt/pouch/cloth
 	cloak = /obj/item/clothing/cloak/raincloak/colored/mortus
 	armor = /obj/item/clothing/armor/gambeson/explorer
 	shirt = /obj/item/clothing/shirt/undershirt/colored/black
@@ -51,7 +51,7 @@
 	pants = /obj/item/clothing/pants/trou/leather/explorer
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backr = /obj/item/weapon/shovel
-	backl = /obj/item/storage/backpack/satchel
+	backl = /obj/item/storage/backpack/backpack/longhike/with_bedroll
 	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = /obj/item/weapon/whip // You know why.
 	beltr = /obj/item/flashlight/flare/torch/lantern

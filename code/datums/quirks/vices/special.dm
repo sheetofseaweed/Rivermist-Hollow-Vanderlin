@@ -229,66 +229,6 @@
 	stress_change = 4
 	timer = 5 MINUTES
 
-/datum/quirk/vice/hardcore
-	name = "Hardcore"
-	desc = "ONE CHANCE. When you die, you have no place in the underworld. You will be reincarnated as a rat, unable to do anything."
-	point_value = 3
-	random_exempt = TRUE
-	var/turning = FALSE
-
-/datum/quirk/vice/hardcore/on_spawn()
-	if(!ishuman(owner))
-		return
-	RegisterSignal(owner, COMSIG_LIVING_DEATH, PROC_REF(on_death))
-	RegisterSignal(owner, COMSIG_LIVING_TRY_ENTER_AFTERLIFE, PROC_REF(on_death))
-	to_chat(owner, span_boldwarning("You have chosen HARDCORE mode. If you die, you will become a rat. There are no second chances."))
-
-/datum/quirk/vice/hardcore/on_remove()
-	if(!ishuman(owner))
-		return
-	UnregisterSignal(owner, COMSIG_LIVING_DEATH)
-	UnregisterSignal(owner, COMSIG_LIVING_TRY_ENTER_AFTERLIFE)
-
-/datum/quirk/vice/hardcore/proc/on_death(mob/living/source)
-	if(turning)
-		return TRUE
-	if(!ishuman(source))
-		return
-
-	addtimer(CALLBACK(src, PROC_REF(transform_to_rat), source), 3 SECONDS)
-	turning = TRUE
-	return TRUE
-
-/datum/quirk/vice/hardcore/proc/transform_to_rat(mob/living/carbon/human/H)
-	turning = FALSE
-
-	if(!H.mind)
-		return
-
-	var/turf/T
-	if(!H || QDELETED(H))
-		T = get_turf(pick(SSjob.latejoin_trackers))
-	else
-		T = get_turf(H)
-	if(!T)
-		return
-
-	var/mob/living/simple_animal/hostile/retaliate/smallrat/new_rat = new(T)
-
-	if(H.mind)
-		H.mind.transfer_to(new_rat)
-
-	to_chat(new_rat, span_userdanger("You have been reincarnated as a rat. Your adventure ends here."))
-
-	// Make the rat unable to do much
-	ADD_TRAIT(new_rat, TRAIT_PACIFISM, QUIRK_TRAIT)
-	ADD_TRAIT(new_rat, TRAIT_MUTE, QUIRK_TRAIT)
-	new_rat.melee_damage_lower = 0
-	new_rat.melee_damage_upper = 0
-	new_rat.obj_damage = 0
-	new_rat.status_flags |= GODMODE
-	ADD_TRAIT(new_rat, TRAIT_NOFIRE, QUIRK_TRAIT)
-
 /datum/quirk/vice/weak_heart
 	name = "Weak Heart"
 	desc = "You were born with a weak heart. You can't handle stressful situations for fear of your heart giving out."

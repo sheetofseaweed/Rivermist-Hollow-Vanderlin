@@ -61,7 +61,7 @@
 	backpack_contents = list(
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot = 1,
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 	)
 
 /datum/outfit/adventurer_sorcerer/wild_magic/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

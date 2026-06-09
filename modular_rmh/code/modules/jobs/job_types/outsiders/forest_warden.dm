@@ -85,10 +85,10 @@
 	pants = /obj/item/clothing/pants/platelegs
 	shoes = /obj/item/clothing/shoes/boots
 	backr = /obj/item/weapon/polearm/halberd/bardiche/warcutter
-	backl = /obj/item/storage/backpack/satchel
+	backl = /obj/item/storage/backpack/backpack/longhike
 	belt = /obj/item/storage/belt/leather/fgarrison
 	beltl = /obj/item/weapon/axe/iron
-	beltr = /obj/item/storage/belt/pouch/coins/mid
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 	ring = null
 	l_hand = null
 	r_hand = null

@@ -946,7 +946,7 @@
 /obj/structure/table/wood/reinforced_alt{
 	dir = 8
 	},
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /turf/open/floor/ruinedwood/chevron,
 /area/ship/nobledeck)
 "gc" = (
@@ -3214,7 +3214,7 @@
 	name = "silk dress"
 	},
 /obj/item/clothing/shirt/undershirt,
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/ruinedwood/two,
 /area/ship/nobledeck)
@@ -4163,7 +4163,7 @@
 	name = "silk dress"
 	},
 /obj/item/clothing/shirt/undershirt,
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /turf/open/floor/ruinedwood/two,
 /area/ship/nobledeck)
 "Cb" = (
@@ -5005,7 +5005,7 @@
 /turf/open/floor/wood,
 /area/ship/middeck)
 "HH" = (
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /obj/item/gem/diamond,
 /obj/item/scomstone,
 /obj/item/scomstone,

@@ -40,7 +40,7 @@
 	backr = /obj/item/weapon/axe/iron
 	backl = /obj/item/storage/backpack/backpack
 	belt = /obj/item/storage/belt/leather
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/weapon/hammer/steel
 	ring = null
 	l_hand = null

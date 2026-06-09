@@ -62,6 +62,7 @@
 /datum/sex_action/masturbate/other/nipples
 	name = "Rub their nipples"
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
+	mage_hand_overlay_zone = MAGE_HAND_ZONE_CHEST
 
 /datum/sex_action/masturbate/other/nipples/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)

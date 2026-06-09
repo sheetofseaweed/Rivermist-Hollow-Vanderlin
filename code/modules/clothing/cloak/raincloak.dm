@@ -19,6 +19,7 @@
 	salvage_result = /obj/item/natural/hide/cured
 	color = CLOTHING_BARK_BROWN
 	wetable = FALSE
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/raincloak/Initialize(mapload, ...)
 	. = ..()
@@ -71,6 +72,7 @@
 	resistance_flags = FLAMMABLE
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDETAIL //hide tail for more anonimity
 	block2add = FOV_BEHIND
+	wetable = FALSE
 
 /obj/item/clothing/head/hooded/equipped(mob/user, slot)
 	. = ..()

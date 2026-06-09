@@ -51,7 +51,7 @@
 	backr = /obj/item/weapon/polearm/halberd/bardiche/woodcutter
 	backl = /obj/item/weapon/shield/wood
 	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/weapon/sword/short/iron
 	ring = null
 	l_hand = null

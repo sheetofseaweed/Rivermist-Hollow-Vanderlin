@@ -69,7 +69,7 @@
 	backl = null
 	belt = /obj/item/storage/belt/leather
 	beltl = /obj/item/storage/keyring/jester
-	beltr = /obj/item/storage/belt/pouch
+	beltr = /obj/item/storage/belt/pouch/cloth
 	ring = null
 	l_hand = null
 	r_hand = null

@@ -55,7 +55,7 @@
 	l_hand = null
 	r_hand = null
 
-	backpack_contents = list(/obj/item/storage/belt/pouch/coins/poor = 1)
+	backpack_contents = list(/obj/item/storage/belt/pouch/cloth/coins/poor = 1)
 
 /datum/job/advclass/combat/adventurer_fighter/qualinesti/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()

@@ -50,6 +50,10 @@
 /mob/living/proc/start_sex_session(mob/living/target, show_ui = TRUE)
 	if(!target)
 		return
+	if(QDELETED(src) || QDELETED(target))
+		return
+	if(stat == DEAD || target.stat == DEAD)
+		return
 	if(src != target && !target.allows_player_erp_while_disconnected())
 		return
 	if(!GetComponent(/datum/component/arousal))

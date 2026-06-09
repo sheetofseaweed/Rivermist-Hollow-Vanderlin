@@ -22,11 +22,36 @@
 	dropshrink = 0.75
 	throwforce = 0
 	max_integrity = 10
+	uses_integrity = TRUE
 	var/picklvl = 1
 	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_MOUTH|ITEM_SLOT_NECK
 	destroy_sound = 'sound/items/pickbreak.ogg'
 	grid_width = 32
 	grid_height = 32
+
+/obj/item/lockpick/hairpinsilver
+	item_weight = 10 GRAMS
+	name = "Silver Hairpin"
+	desc = "A silver hair clip, beautiful and popular with the church and the minor nobility"
+	icon_state = "silverpin"
+	icon = 'icons/roguetown/clothing/head.dmi'
+	w_class = WEIGHT_CLASS_TINY
+	dropshrink = 0.75
+	throwforce = 0
+	max_integrity = 100
+	anvilrepair = /datum/attribute/skill/craft/traps
+	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
+	destroy_sound = 'sound/items/pickbreak.ogg'
+	grid_width = 32
+	grid_height = 32
+
+/obj/item/lockpick/hairpinsilver/hairpingold
+	item_weight = 15 GRAMS
+	name = "Gold Hairpin"
+	desc = "The golden hairpin is popular among the upper nobility and merchants"
+	icon_state = "goldpin"
+	icon = 'icons/roguetown/clothing/head.dmi'
+	max_integrity = 200
 
 //custom key
 /obj/item/key/custom

@@ -56,7 +56,7 @@
 	beltr = /obj/item/storage/keyring/clinic
 	beltl = /obj/item/storage/fancy/ifak
 	ring = /obj/item/clothing/ring/feldsher_ring
-	l_hand = /obj/item/storage/belt/pouch/coins/mid
+	l_hand = /obj/item/storage/belt/pouch/cloth/coins/mid
 	r_hand = null
 
 /datum/outfit/town_scholar_apprentice/physician_apprentice/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

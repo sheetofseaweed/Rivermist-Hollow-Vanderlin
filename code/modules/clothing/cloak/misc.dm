@@ -40,6 +40,7 @@
 	sellprice = 50
 	nodismemsleeves = TRUE
 	min_cold_protection_temperature = -20
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/tribal
 	name = "tribal pelt"
@@ -54,6 +55,7 @@
 	nodismemsleeves = TRUE
 	boobed = FALSE
 	sellprice = 10
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/heartfelt
 	name = "red cloak"
@@ -67,6 +69,7 @@
 	allowed_race = SPECIES_BASE_BODY
 	sellprice = 50
 	nodismemsleeves = TRUE
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/half
 	name = "half cloak"
@@ -86,6 +89,7 @@
 	color = CLOTHING_SOOT_BLACK
 	allowed_sex = list(MALE, FEMALE)
 	allowed_race = SPECIES_BASE_BODY
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/half/Initialize(mapload, ...)
 	. = ..()
@@ -165,6 +169,7 @@
 	sleevetype = "shirt"
 	slot_flags = ITEM_SLOT_CLOAK | ITEM_SLOT_BACK_R
 	nodismemsleeves = TRUE
+	is_rain_protective = TRUE
 
 //............... Battle Nun ........................... (unique kit for the role, tabard for aesthetics)
 /obj/item/clothing/cloak/battlenun
@@ -227,6 +232,7 @@
 	nodismemsleeves = TRUE
 	inhand_mod = FALSE
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/wickercloak
 	name = "wicker cloak"
@@ -240,6 +246,7 @@
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
 	allowed_race = SPECIES_BASE_BODY
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/faceless
 	name = "sash"
@@ -268,6 +275,7 @@
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/evilarmor.dmi'
 	sleeved = 'icons/roguetown/clothing/special/onmob/evilarmor.dmi'
 	sellprice = 0 // See above comment
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/silktabard
 	name = "fine silk tabard"
@@ -306,6 +314,7 @@
 	item_state = "poncho"
 	boobed = FALSE
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'
+	is_rain_protective = TRUE
 
 /obj/item/clothing/cloak/pantheon
 	name = "pantheon cloak"

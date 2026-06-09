@@ -14,20 +14,82 @@
 	effectedstats = list(STAT_ENDURANCE = -1, STAT_FORTUNE = -1)
 	duration = 100
 
-//these legit just exist sow we get unique instances
 /datum/status_effect/debuff/addiction/alcoholic
+	id = "addiction_alcoholic"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/alcoholic
+
 /datum/status_effect/debuff/addiction/smoker
+	id = "addiction_smoker"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/smoker
+
 /datum/status_effect/debuff/addiction/junkie
+	id = "addiction_junkie"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/junkie
+
 /datum/status_effect/debuff/addiction/pyromaniac
+	id = "addiction_pyromaniac"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/pyromaniac
+
 /datum/status_effect/debuff/addiction/kleptomaniac
+	id = "addiction_kleptomaniac"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/kleptomaniac
+
 /datum/status_effect/debuff/addiction/godfearing
+	id = "addiction_godfearing"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/godfearing
+
 /datum/status_effect/debuff/addiction/maniac
+	id = "addiction_maniac"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/maniac
+
 /datum/status_effect/debuff/addiction/greedy
+	id = "addiction_greedy"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/greedy
+
+/datum/status_effect/debuff/addiction/masochist
+	id = "addiction_masochist"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/masochist
 
 /atom/movable/screen/alert/status_effect/debuff/addiction
 	name = "Addiction"
-	desc = ""
+	desc = "I need to sate my vice."
 	icon_state = "debuff"
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/alcoholic
+	name = "Alcohol Craving"
+	desc = "I need a drink."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/smoker
+	name = "Smoke Craving"
+	desc = "I need a smoke."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/junkie
+	name = "Drug Craving"
+	desc = "I need a high."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/pyromaniac
+	name = "Pyromania Craving"
+	desc = "I need to see something burn."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/kleptomaniac
+	name = "Theft Craving"
+	desc = "I need to steal something."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/godfearing
+	name = "Prayer Craving"
+	desc = "I need to pray."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/maniac
+	name = "Blood Craving"
+	desc = "I need bloodshed."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/greedy
+	name = "Greed Craving"
+	desc = "I need more amnas."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/masochist
+	name = "Pain Craving"
+	desc = "I need pain."
 
 /datum/quirk/vice/greedy
 	name = "Greedy"
@@ -310,7 +372,7 @@
 		return
 
 	H.add_stress(/datum/stress_event/vice)
-	H.apply_status_effect(/datum/status_effect/debuff/addiction)
+	H.apply_status_effect(/datum/status_effect/debuff/addiction/masochist)
 
 	var/current_pain = H.getShock()
 	var/bloodloss_factor = clamp(1.0 - (H.blood_volume / BLOOD_VOLUME_NORMAL), 0.0, 0.5)
@@ -336,7 +398,7 @@
 		to_chat(H, span_blue("<b>That's more like it...</b>"))
 		next_paincrave = world.time + rand(35 MINUTES, 45 MINUTES)
 		H.remove_stress(/datum/stress_event/vice)
-		H.remove_status_effect(/datum/status_effect/debuff/addiction)
+		H.remove_status_effect(/datum/status_effect/debuff/addiction/masochist)
 
 /datum/quirk/vice/masochist/proc/get_pain_threshold(pain_amt)
 	switch(pain_amt)

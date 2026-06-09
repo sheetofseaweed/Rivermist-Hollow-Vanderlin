@@ -374,6 +374,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NOBLE_POWER TRAIT_NOBLE
 #define TRAIT_EMPATH "Empath"
 #define TRAIT_BREADY "Battleready"
+#define TRAIT_CAN_STEER_SHIP "Can steer the ship"
 #define TRAIT_BLINDFIGHTING "Sixth-Sense"
 #define TRAIT_HEARING_SENSITIVE "hearing_sensitive"
 #define TRAIT_MEDIUMARMOR "Mail Training"

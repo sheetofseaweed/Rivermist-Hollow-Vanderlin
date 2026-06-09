@@ -179,7 +179,7 @@
 	grid_width = 64
 	grid_height = 64
 	icon_state = "net"
-	throw_speed = 1.5
+	throw_speed = 0.5
 	breakouttime = 3.5 SECONDS //easy to apply, easy to break out of
 	gender = NEUTER
 	var/knockdown = 2 SECONDS
@@ -212,6 +212,20 @@
 		if(M.legcuffed == src)
 			M.remove_status_effect(/datum/status_effect/debuff/netted)
 	return ..()
+
+/obj/item/rope/net/bola
+	item_weight = 800 GRAMS
+	name = "Bola"
+	desc = "A clever but simple bundle of rope and stones used to catch criminals"
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "bola"
+	grid_width = 64
+	grid_height = 64
+	throw_range = 10
+	throw_speed = 1.5
+	breakouttime = 6 SECONDS
+	knockdown = 3 SECONDS
+	legcuff_multiplicative_slowdown = 2.5
 
 /obj/structure/noose
 	name = "noose"

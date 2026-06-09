@@ -122,7 +122,7 @@
 	if(can_show_action_message(user, target))
 		user.visible_message(sex_session.spanify_force("[user] [action_text] [target]'s [pussy_text]."))
 
-	sex_session.perform_sex_action(target, user, arousal_amt, pain_amt, orgasm_amt, src)
+	sex_session.perform_sex_action(user, target, arousal_amt, pain_amt, orgasm_amt, src)
 	sex_session.handle_passive_ejaculation(target)
 
 /datum/sex_action/masturbate/other/slap_pussy/on_finish(mob/living/user, mob/living/target)

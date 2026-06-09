@@ -209,3 +209,56 @@
 	target_mind.current = null
 
 	TEST_ASSERT_EQUAL(can_perform, FALSE, "Existing sex sessions should not perform actions with disconnected player bodies that have not opted in.")
+
+/datum/unit_test/erp_preferences_dead_mobs_do_not_start_sex_sessions
+#ifdef FOCUS_ERP_PREFERENCES_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/erp_preferences_dead_mobs_do_not_start_sex_sessions/Run()
+	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
+
+	user.death()
+	var/datum/sex_session/dead_user_session = user.start_sex_session(target, FALSE)
+	if(dead_user_session)
+		qdel(dead_user_session)
+
+	var/mob/living/carbon/human/second_user = allocate(/mob/living/carbon/human)
+	target.death()
+	var/datum/sex_session/dead_target_session = second_user.start_sex_session(target, FALSE)
+	if(dead_target_session)
+		qdel(dead_target_session)
+
+	TEST_ASSERT_NULL(dead_user_session, "Dead users should not start sex sessions.")
+	TEST_ASSERT_NULL(dead_target_session, "Dead targets should not accept sex sessions.")
+
+/datum/unit_test/erp_preferences_death_ends_existing_sex_sessions
+#ifdef FOCUS_ERP_PREFERENCES_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/erp_preferences_death_ends_existing_sex_sessions/Run()
+	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
+	var/datum/sex_session/session = user.start_sex_session(target, FALSE)
+	TEST_ASSERT_NOTNULL(session, "Living participants should be able to start a sex session before the death check.")
+
+	target.death()
+
+	TEST_ASSERT(QDELETED(session), "Sex sessions should end when a participant dies.")
+
+/datum/unit_test/erp_preferences_dead_targets_block_existing_sex_actions
+#ifdef FOCUS_ERP_PREFERENCES_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/erp_preferences_dead_targets_block_existing_sex_actions/Run()
+	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
+	target.death()
+
+	var/datum/sex_session/session = allocate(/datum/sex_session, user, target)
+	var/can_perform = session.can_perform_action(/datum/sex_action/unit_test_disconnected_erp)
+
+	TEST_ASSERT_EQUAL(can_perform, FALSE, "Existing sex sessions should not perform actions with dead targets.")

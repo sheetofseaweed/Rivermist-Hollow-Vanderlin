@@ -51,7 +51,7 @@
 	backl = /obj/item/storage/backpack/satchel
 	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltl = null
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	ring = null
 	l_hand = null
 	r_hand = null

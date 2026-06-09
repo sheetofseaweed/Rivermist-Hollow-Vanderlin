@@ -57,7 +57,7 @@
 		if("Zweihander")
 			H.equip_to_slot_or_del(new /obj/item/weapon/sword/long/greatsword/zwei, ITEM_SLOT_BACK_R, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/storage/backpack/satchel, ITEM_SLOT_BACK_L, TRUE)
-			H.equip_to_slot_or_del(new /obj/item/storage/belt/pouch/coins/poor, ITEM_SLOT_BELT_R, TRUE)
+			H.equip_to_slot_or_del(new /obj/item/storage/belt/pouch/cloth/coins/poor, ITEM_SLOT_BELT_R, TRUE)
 			H.equip_to_slot_or_del(new /obj/item/weapon/mace/cudgel, ITEM_SLOT_BELT_L, TRUE)
 			H.adjust_stat_modifier(STATMOD_JOB, STATKEY_STR, 2) // They need this to roll at least min STR for the Zwei.
 			H.adjust_skillrank(/datum/skill/combat/axesmaces, pick(2,3), TRUE) // Equal chance between skilled and average, can use a cudgel to beat less dangerous targets into submission

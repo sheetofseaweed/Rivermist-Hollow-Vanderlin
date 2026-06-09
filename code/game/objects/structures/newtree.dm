@@ -380,7 +380,8 @@
 	num_random_icons = 2
 	var/underlay_base = "center-leaf"
 	var/num_underlay_icons = 2
-	layer = ABOVE_ALL_MOB_LAYER
+	layer = BELOW_MOB_LAYER
+	plane = GAME_PLANE
 
 /obj/structure/flora/newbranch/Initialize(mapload, ...)
 	. = ..()
@@ -437,7 +438,8 @@
 	base_icon_state = "center-leaf"
 	num_random_icons = 2
 	max_integrity = 10
-	layer = ABOVE_ALL_MOB_LAYER
+	layer = BELOW_MOB_LAYER
+	plane = GAME_PLANE
 
 /obj/structure/flora/newleaf/attack_hand(mob/user)
 	if(isopenspace(loc))

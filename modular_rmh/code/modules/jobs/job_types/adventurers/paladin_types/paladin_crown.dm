@@ -77,7 +77,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/weapon/sword/long/greatsword/psydon/relic
 	belt = /obj/item/storage/belt/leather/steel/adventurers_subclasses
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltr = null
 	ring = /obj/item/clothing/ring/silver/toper
 	l_hand = null

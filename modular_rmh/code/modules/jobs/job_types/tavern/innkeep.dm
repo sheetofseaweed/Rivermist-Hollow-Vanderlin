@@ -53,7 +53,7 @@
 	name = "Innkeep"
 	head = null
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/mid
+	neck = /obj/item/storage/belt/pouch/cloth/coins/mid
 	cloak = /obj/item/clothing/cloak/apron/waist
 	armor = null
 	shirt = null

@@ -18,3 +18,5 @@
 	grid_width = 64
 	grid_height = 64
 	item_weight = 350 GRAMS
+
+	var/is_rain_protective = FALSE

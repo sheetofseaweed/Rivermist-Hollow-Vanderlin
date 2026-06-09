@@ -222,11 +222,11 @@
 	var/list/standing = list()
 	var/mutable_appearance/body_overlay
 	if(wear_armor)
-		body_overlay = mutable_appearance(icon, "[wear_armor.item_state]", -ARMOR_LAYER)
+		body_overlay = mutable_appearance(wear_armor.mob_overlay_icon? wear_armor.mob_overlay_icon : icon, "[wear_armor.item_state]", -ARMOR_LAYER)
 		if(body_overlay)
 			standing += body_overlay
 	if(head)
-		body_overlay = mutable_appearance(icon, "[head.item_state]", -ARMOR_LAYER)
+		body_overlay = mutable_appearance(head.mob_overlay_icon? head.mob_overlay_icon : icon, "[head.item_state]", -ARMOR_LAYER)
 		if(body_overlay)
 			standing += body_overlay
 	if(standing.len)

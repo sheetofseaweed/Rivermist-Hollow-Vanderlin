@@ -61,7 +61,7 @@
 	name = "Town Physician"
 	head = null
 	mask = /obj/item/clothing/face/courtphysician
-	neck = /obj/item/storage/belt/pouch/coins/mid
+	neck = /obj/item/storage/belt/pouch/cloth/coins/mid
 	cloak = null
 	armor = null
 	shirt = null

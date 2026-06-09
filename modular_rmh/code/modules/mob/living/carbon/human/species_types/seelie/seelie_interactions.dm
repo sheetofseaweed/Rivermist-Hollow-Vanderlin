@@ -25,6 +25,9 @@
 	target.buckle_mob(src, TRUE, FALSE, FALSE, 0, 0)
 	if(buckled != target)
 		return FALSE
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		human_target.update_carry_weight()
 
 	visible_message(
 		span_notice("[src] flutters onto [target]'s shoulder."),

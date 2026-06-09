@@ -254,7 +254,7 @@
 
 /obj/structure/closet/crate/chest/inqcrate/equipment/puffer/populate_contents()
 	new /obj/item/gun/ballistic/revolver/grenadelauncher/pistol(src)
-	new /obj/item/storage/belt/pouch/bullets(src)
+	new /obj/item/storage/belt/pouch/cloth/bullets(src)
 	new /obj/item/reagent_containers/glass/bottle/aflask(src)
 
 /*

@@ -1,4 +1,4 @@
-
+/// Rucksack
 /obj/item/storage/backpack/backpack/bagpack
 	name = "rucksack"
 	desc = "A sack tied with some rope. Can be flung over your shoulders, if it's tied shut."
@@ -40,3 +40,71 @@
 		icon_state = "rucksack_tied_sling"
 	else
 		icon_state = "rucksack_untied"
+
+///////////////////////////////////////////////////////////////
+
+/// Backpack
+/obj/item/storage/backpack/backpack/longhike
+	name = "longhike backpack"
+	desc = "That bulky backpack is surely designed for long-range hikes. It even has gears for bedroll to attach."
+	icon_state = "backpack_deluxe"
+	item_state = "backpack"
+	icon = 'modular_rmh/icons/clothing/storage.dmi'
+	var/obj/item/sleepingbag/deluxe/backpack_bedroll
+	var/bedroll_spawn = FALSE
+
+/obj/item/storage/backpack/backpack/longhike/Initialize()
+	. = ..()
+	if(bedroll_spawn)
+		add_bedroll(new /obj/item/sleepingbag/deluxe(src), null)
+		update_appearance(UPDATE_OVERLAYS)
+
+/obj/item/storage/backpack/backpack/longhike/with_bedroll
+	bedroll_spawn = TRUE
+
+/obj/item/storage/backpack/backpack/longhike/MiddleClick(mob/user, list/modifiers)
+	if(backpack_bedroll)
+		remove_bedroll(user)
+	..()
+
+/////////////////////////////
+
+/obj/item/storage/backpack/backpack/longhike/worn_overlays(mutable_appearance/standing, isinhands = FALSE, icon_file = icon, dummy_block = FALSE)
+	. = ..()
+	if(!isinhands && backpack_bedroll)
+		var/mutable_appearance/bedroll_overlay_mob = mutable_appearance('modular_rmh/icons/clothing/onmob/back_l.dmi', "[icon_state]_bedroll_overlay")
+		. += bedroll_overlay_mob
+
+/obj/item/storage/backpack/backpack/longhike/update_overlays()
+	. = ..()
+	if(backpack_bedroll)
+		var/mutable_appearance/bedroll_overlay_item = mutable_appearance(icon, "[icon_state]_bedroll_overlay")
+		. += bedroll_overlay_item
+
+/// Proc for handling script + icon changes of bedroll being added on backpack
+/obj/item/storage/backpack/backpack/longhike/proc/add_bedroll(obj/item/bedroll, mob/living/M)
+	if(backpack_bedroll)
+		if(M)
+			to_chat(M, span_red("The [name] already have a bedroll on it!"))
+		return
+	backpack_bedroll = bedroll
+	item_weight += backpack_bedroll.item_weight
+	bedroll.moveToNullspace() // To avoid bugs like getting bedroll with inventory frame. Still accessable via middle click
+
+	update_appearance(UPDATE_OVERLAYS)
+	if(M)
+		M.update_inv_back()
+
+/// Same as add_bedroll() but opposite one
+/obj/item/storage/backpack/backpack/longhike/proc/remove_bedroll(mob/living/M)
+	if(!backpack_bedroll)
+		return
+	M.put_in_hands(backpack_bedroll)
+	item_weight -= backpack_bedroll.item_weight
+	backpack_bedroll = null
+
+	update_appearance(UPDATE_OVERLAYS)
+	if(M)
+		M.update_inv_back()
+
+///////////////////////////////////////////////////////////////

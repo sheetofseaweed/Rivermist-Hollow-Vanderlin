@@ -45,7 +45,7 @@
 	backl = /obj/item/weapon/polearm/spear
 	backr = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
 	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/ammo_holder/quiver/arrows
 	ring = null
 	l_hand = null

@@ -32,7 +32,7 @@
 	armor = /obj/item/clothing/armor/leather/jacket
 	beltl = /obj/item/weapon/knife/dagger/steel
 	backr = /obj/item/storage/backpack/satchel
-	backl = /obj/item/storage/belt/pouch/coins/poor
+	backl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/half/shadowcloak
 	head = /obj/item/clothing/head/roguehood/colored/black
 

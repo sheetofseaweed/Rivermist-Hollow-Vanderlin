@@ -29,7 +29,7 @@
 	name = "Mason Apprentice"
 	head = null
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/apron/waist/colored/brown
 	armor = null
 	shirt = /obj/item/clothing/shirt/undershirt/colored/random

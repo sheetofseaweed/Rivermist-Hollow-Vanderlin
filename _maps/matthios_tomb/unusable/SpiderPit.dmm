@@ -94,7 +94,7 @@
 "F" = (
 /mob/living/simple_animal/hostile/retaliate/spider,
 /obj/effect/decal/cleanable/dirt/cobweb,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/naturalstone,
 /area/under/tomb/cave)
 "G" = (

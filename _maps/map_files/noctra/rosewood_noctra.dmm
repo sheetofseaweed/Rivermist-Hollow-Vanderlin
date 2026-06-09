@@ -958,7 +958,7 @@
 /area/indoors/town/magician)
 "aBE" = (
 /obj/structure/closet/crate/drawer,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/carpet/royalblack,
 /area/indoors/town/keep)
 "aBK" = (
@@ -2797,7 +2797,7 @@
 /obj/structure/closet/crate/drawer{
 	pixel_y = 6
 	},
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /turf/open/floor/carpet/red,
 /area/indoors/town/keep)
 "bCY" = (
@@ -4913,7 +4913,7 @@
 /area/outdoors)
 "cKJ" = (
 /obj/structure/closet/crate/drawer,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/carpet/lord/center,
 /area/indoors/town/keep)
 "cKK" = (
@@ -11714,7 +11714,7 @@
 /area/indoors/town/shop)
 "gzE" = (
 /obj/structure/rack,
-/obj/item/storage/belt/pouch/coins/poor{
+/obj/item/storage/belt/pouch/cloth/coins/poor{
 	pixel_x = 5;
 	pixel_y = -7
 	},
@@ -14447,7 +14447,7 @@
 /obj/structure/closet/crate/drawer{
 	pixel_y = 6
 	},
-/obj/item/storage/belt/pouch/coins/poor,
+/obj/item/storage/belt/pouch/cloth/coins/poor,
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/carpet/red,
 /area/indoors/town/keep)
@@ -30725,7 +30725,7 @@
 /obj/structure/closet/crate/drawer,
 /obj/item/reagent_containers/powder/moondust,
 /obj/item/reagent_containers/powder/moondust,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/carpet/red,
 /area/indoors/town/merc_guild)
 "rkv" = (

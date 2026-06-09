@@ -30,7 +30,7 @@
 			nearmob.ai_controller.CancelActions()
 	ADD_TRAIT(user, TRAIT_IMPERCEPTIBLE, "[type]")
 	animate(user, alpha = 100, time = 0.5 SECONDS, easing = EASE_IN)
-	addtimer(CALLBACK(src, PROC_REF(unvanish), user), 6 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(unvanish), user), 2 SECONDS)
 	return FALSE
 
 /datum/action/cooldown/spell/undirected/rogue_vanish/proc/unvanish(mob/living/carbon/human/user)

@@ -18398,7 +18398,7 @@
 /area/indoors/town/keep/kitchen)
 "qaB" = (
 /obj/structure/closet/crate/drawer,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /turf/open/floor/tile/masonic,
 /area/indoors/town/keep/lord_appt)
 "qaR" = (
@@ -25203,11 +25203,11 @@
 /area/outdoors/town)
 "wng" = (
 /obj/structure/table/wood/counter/end,
-/obj/item/storage/belt/pouch{
+/obj/item/storage/belt/pouch/cloth{
 	pixel_x = 9;
 	pixel_y = -2
 	},
-/obj/item/storage/belt/pouch{
+/obj/item/storage/belt/pouch/cloth{
 	pixel_x = -4;
 	pixel_y = -8
 	},

@@ -25,13 +25,26 @@
 	if(can_weather_effect(L))
 		weather_act(L)
 		var/mob/living/carbon/C = L
-		if(!istype(C))
+		if(!iscarbon(C))
 			return
-		var/obj/item/clothing/head/hooded/rainhood = C.head
-		if(!istype(rainhood))
-			C.SoakMob(FULL_BODY, dirty_water = FALSE, rain = TRUE)
-		else
+		var/mob/living/carbon/human/H = C
+		var/obj/item/clothing/cloak/cloak_on_body = null
+		if(ishuman(C))
+			cloak_on_body = H.cloak
+
+		var/has_hood = istype(C.head, /obj/item/clothing/head/hooded) || istype(C.head, /obj/item/clothing/head/roguehood)
+		var/cloak_protection = cloak_on_body?.is_rain_protective
+
+		if(has_hood && cloak_protection)
 			C.SoakMob(FEET, dirty_water = FALSE, rain = TRUE)
+		else if(cloak_protection)
+			C.SoakMob(FULL_HEAD, dirty_water = FALSE, rain = TRUE)
+			C.SoakMob(FEET, dirty_water = FALSE, rain = TRUE)
+		else if(has_hood)
+			C.SoakMob(CHEST, dirty_water = FALSE, rain = TRUE)
+			C.SoakMob(FEET, dirty_water = FALSE, rain = TRUE)
+		else
+			C.SoakMob(FULL_BODY, dirty_water = FALSE, rain = TRUE)
 
 /datum/particle_weather/rain/rain_gentle
 	name = "Rain"

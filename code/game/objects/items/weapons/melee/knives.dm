@@ -497,18 +497,7 @@
 			return
 
 		if(target.has_quirk(/datum/quirk/vice/wanted) || HAS_TRAIT(target, TRAIT_ZIZOID_HUNTED)) // The profane dagger only thirsts for those who are hunted, by flaw or by zizoid curse.
-			if(target.has_quirk(/datum/quirk/vice/hardcore))
-				if(HAS_TRAIT(target, TRAIT_HARDCORE_PROFANE))
-					return
-				record_featured_stat(FEATURED_STATS_CRIMINALS, user)
-				record_round_statistic(STATS_ASSASSINATIONS)
-				user.adjust_triumphs(1)
-				target.visible_message("<span class='danger'>[target]'s soul is pulled from their body and sucked into the profane dagger!</span>", "<span class='danger'>My soul is trapped within the profane dagger. Damnation!</span>")
-				playsound(src, 'sound/magic/soulsteal.ogg', 100, extrarange = 5)
-				blade_int = max_blade_int // Stealing a soul successfully sharpens the blade.
-				repair_damage(max_integrity) // And fixes the dagger. No blacksmith required!
-				ADD_TRAIT(target, TRAIT_HARDCORE_PROFANE, "[type]")
-			else if(target.client == null) //See if the target's soul has left their body
+			if(target.client == null) //See if the target's soul has left their body
 				to_chat(user, "<span class='danger'>Your target's soul has already escaped its corpse...you try to call it back!</span>")
 				get_profane_ghost(target,user) //Proc to capture a soul that has left the body.
 			else

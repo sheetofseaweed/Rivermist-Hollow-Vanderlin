@@ -371,7 +371,7 @@
 /datum/supply_pack/weapons/ammo/bullets
 	name = "Pouch of Lead Bullets"
 	cost = 100
-	contains = /obj/item/storage/belt/pouch/bullets
+	contains = /obj/item/storage/belt/pouch/cloth/bullets
 
 /datum/supply_pack/weapons/ammo/bullets
 	name = "Gunpowder Flask"

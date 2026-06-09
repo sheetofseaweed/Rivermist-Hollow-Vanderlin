@@ -53,7 +53,7 @@
 	pants = /obj/item/clothing/pants/tights/colored/red
 	shoes = /obj/item/clothing/shoes/boots/leather
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow/short
-	backr = /obj/item/storage/backpack/satchel
+	backr = /obj/item/storage/backpack/backpack/longhike/with_bedroll
 	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltr = /obj/item/weapon/sword/long/rider/steppe
 	beltl = /obj/item/ammo_holder/quiver/arrows

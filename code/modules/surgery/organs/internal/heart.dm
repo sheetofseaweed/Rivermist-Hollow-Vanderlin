@@ -154,6 +154,12 @@
 /obj/item/organ/heart/get_mechanics_examine(mob/user)
 	. = ..()
 
+	. += span_tooltip(get_heart_care_tip(), beating ? "This heart is beating." : span_warning("This heart is silent and still."))
+	if(open)
+		. += span_tooltip(get_heart_care_tip(), "This heart has been opened or bypassed; a bare pulse check may be muddled.")
+	if(damage)
+		. += span_tooltip(get_heart_repair_tip(), span_warning("This heart has [round(damage)]/[maxHealth] damage."))
+
 	if(owner && !damage)
 		var/datum/component/chimeric_organ/chimeric = GetComponent(/datum/component/chimeric_organ)
 		if(length(loose_humors))
@@ -165,6 +171,12 @@
 
 	if(owner)
 		. += "Place a chimeric node on this heart to add a humor to it."
+
+/obj/item/organ/heart/proc/get_heart_care_tip()
+	return "The heart keeps blood moving to the brain. If it stops or cardiac arrest begins, restart or replace the heart, restore breathing, treat blood loss, and keep oxygenated blood flowing."
+
+/obj/item/organ/heart/proc/get_heart_repair_tip()
+	return "Repair heart damage with organ healing items or tools, or perform surgery when the heart is attached. A working heart helps prevent oxygen-starved brain damage."
 
 /obj/item/organ/heart/handle_organ_attack(obj/item/tool, mob/living/user, params)
 	if(owner && DOING_INTERACTION_WITH_TARGET(user, owner))

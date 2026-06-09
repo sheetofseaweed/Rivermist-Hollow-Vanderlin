@@ -102,7 +102,7 @@
 	gloves = /obj/item/clothing/gloves/bandages/pugilist
 	pants = /obj/item/clothing/pants/trou/leather
 	shoes = /obj/item/clothing/shoes/boots/leather
-	backr = /obj/item/storage/backpack/satchel
+	backr = /obj/item/storage/backpack/backpack/longhike/with_bedroll
 	backl = null
 	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = /obj/item/weapon/mace/cudgel

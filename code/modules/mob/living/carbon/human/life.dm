@@ -266,7 +266,7 @@
 	for(var/bp in body_parts)
 		if(!bp)
 			continue
-		if(bp && istype(bp , /obj/item/clothing))
+		if(istype(bp , /obj/item/clothing))
 			var/obj/item/clothing/C = bp
 			if(zone2covered(BODY_ZONE_HEAD, C.body_parts_covered))
 				coverhead = TRUE
@@ -289,10 +289,10 @@
 			var/obj/item/clothing/C = shoes
 			if(C && C.wetable)
 				C.wet.add_water(20, dirty_water)
-		else
+		else if(!rain || (locations & BELOW_CHEST))
 			var/list/below_chest = list(wear_pants, shoes)
 			for(var/obj/item/clothing/C in below_chest)
-				if(C.wetable)
+				if(C && C.wetable)
 					C.wet.add_water(20, dirty_water)
 
 //This proc returns a number made up of the flags for body parts which you are protected on. (such as HEAD, CHEST, GROIN, etc. See setup.dm for the full list)

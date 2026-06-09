@@ -49,7 +49,7 @@
 	pants = /obj/item/clothing/pants/tights
 	armor = /obj/item/clothing/shirt/jester
 	belt = /obj/item/storage/belt/leather
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltr = /obj/item/weapon/knife/villager
 	backl = /obj/item/instrument/lute
 	backr = /obj/item/instrument/viola

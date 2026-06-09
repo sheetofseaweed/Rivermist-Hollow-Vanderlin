@@ -17,4 +17,17 @@
 	debuff = /datum/status_effect/debuff/addiction/sadist
 
 /datum/status_effect/debuff/addiction/sadist //yes it's intended
+	id = "addiction_sadist"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/sadist
+
 /datum/status_effect/debuff/addiction/lovefiend
+	id = "addiction_lovefiend"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/addiction/lovefiend
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/sadist
+	name = "Sadistic Craving"
+	desc = "I need to hear someone suffer."
+
+/atom/movable/screen/alert/status_effect/debuff/addiction/lovefiend
+	name = "Nymphomaniac Craving"
+	desc = "I need intimacy."

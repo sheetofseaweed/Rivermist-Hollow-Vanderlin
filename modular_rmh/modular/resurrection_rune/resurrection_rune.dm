@@ -605,7 +605,9 @@
 	if(!target)
 		return
 
-	var/datum/mind/linked_mind = target.mind
+	var/datum/mind/linked_mind = get_linked_mind_for_body(target)
+	if(!linked_mind)
+		linked_mind = target.mind
 	clear_linked_user_rescue_state(target)
 	linked_users -= target
 	linked_users_by_name.Remove(target.name)
@@ -615,6 +617,8 @@
 		linked_body_by_mind.Remove(linked_mind)
 	if(linked_mind && (linked_mind?.current == target || QDELETED(linked_mind?.current)))
 		linked_mind.current = null
+	if(can_auto_remake_deleted_body(linked_mind))
+		queue_body_remake(linked_mind)
 
 /datum/resurrection_rune_controller/proc/prune_deleted_linked_body_state(datum/mind/linked_mind)
 	if(!linked_mind)
@@ -629,6 +633,17 @@
 
 	if(QDELETED(linked_mind.current))
 		linked_mind.current = null
+
+/datum/resurrection_rune_controller/proc/can_auto_remake_deleted_body(datum/mind/linked_mind)
+	if(!linked_mind)
+		return FALSE
+	if(!(linked_mind in linked_users_minds))
+		return FALSE
+	if(resurrections_disabled())
+		return FALSE
+	if(linked_mind in resurrecting)
+		return FALSE
+	return TRUE
 
 /datum/resurrection_rune_controller/proc/get_rescue_stage(mob/living/carbon/target)
 	if(!target)
@@ -656,7 +671,12 @@
 		return INFINITY
 
 	var/injury_pressure = target.getBruteLoss() + target.getFireLoss() + target.getToxLoss() + target.getOxyLoss() + target.getCloneLoss()
-	injury_pressure += target.getOrganLoss(ORGAN_SLOT_BRAIN)
+	if(ishuman(target))
+		// Human health does not include all bodypart injury, so keep using
+		// explicit body pressure. Brain damage is handled by brain death, not
+		// living rune rescue.
+		return target.maxHealth - injury_pressure
+
 	return min(target.health, target.maxHealth - injury_pressure)
 
 /datum/resurrection_rune_controller/proc/process_hard_crit_timeouts()

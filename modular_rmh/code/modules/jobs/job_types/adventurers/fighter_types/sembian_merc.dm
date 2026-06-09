@@ -46,7 +46,7 @@
 	backl = /obj/item/weapon/sword/long/greatsword/claymore
 	belt = /obj/item/storage/belt/leather/black/adventurers_subclasses
 	beltl = /obj/item/weapon/mace/cudgel
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	ring = null
 	l_hand = null
 	r_hand = null

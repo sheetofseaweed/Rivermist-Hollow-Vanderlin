@@ -36,7 +36,7 @@
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fingers [target]'s [pick("slit","cunt","pussy","snatch")]..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(target, user, 2, 4, 2, src)
+	sex_session.perform_sex_action(user, target, 2, 4, 2, src)
 
 	sex_session.handle_passive_ejaculation(target)
 

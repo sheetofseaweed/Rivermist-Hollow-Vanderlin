@@ -1,6 +1,8 @@
 /datum/sex_action/masturbate/other
 	abstract_type = /datum/sex_action/masturbate/other
 	flipped = TRUE
+	mage_hand_allowed = TRUE
+	mage_hand_overlay_zone = MAGE_HAND_ZONE_GROIN
 
 /datum/sex_action/masturbate/other/can_perform(mob/living/user, mob/living/target)
 	. = ..()

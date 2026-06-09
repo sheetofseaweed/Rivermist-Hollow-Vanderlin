@@ -54,7 +54,7 @@
 	l_hand = null
 	r_hand = null
 
-	backpack_contents = list(/obj/item/storage/belt/pouch/coins/mid = 1)
+	backpack_contents = list(/obj/item/storage/belt/pouch/cloth/coins/mid = 1)
 	scabbards = list(/obj/item/weapon/scabbard/sword)
 
 /datum/outfit/adventurer_rogue/duelist/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

@@ -11,7 +11,7 @@
 
 	armor_class = AC_MEDIUM
 	armor = ARMOR_PADDED_GOOD
-	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
+	body_parts_covered = CHEST|GROIN|ARMS|VITALS
 	max_integrity = INTEGRITY_POOR
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -83,6 +83,30 @@
 	armor = list("blunt" = 30, "slash" = 30, "stab" = 30,  "piercing" = 0, "fire" = 0, "acid" = 0)
 	body_parts_covered = CHEST|GROIN
 	sellprice = 0
+
+/obj/item/clothing/shoes/boots/armor/orc
+	name = "orc boots"
+	icon_state = "matthiosboots"
+	item_state = "matthiosboots"
+	allowed_race = list(SPEC_ID_ORC)
+	smeltresult = /obj/item/ingot/iron
+	melting_material = /datum/material/iron
+	sellprice = NO_MARKET_VALUE
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
+	armor_class = AC_MEDIUM
+	armor = ARMOR_PADDED_GOOD
+	body_parts_covered = LEGS
+	max_integrity = INTEGRITY_POOR
+	misc_flags = CRAFTING_TEST_EXCLUDE
+
+/obj/item/clothing/shoes/boots/armor/orc/warlord
+	name = "warlord sabatons"
+	desc = "Gruelsome plated boots."
+	icon_state = "armorboots"
+	item_state = "armorboots"
+	armor = ARMOR_PLATE_BAD
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 ///obj/item/clothing/armor/leather/hide/orc
 

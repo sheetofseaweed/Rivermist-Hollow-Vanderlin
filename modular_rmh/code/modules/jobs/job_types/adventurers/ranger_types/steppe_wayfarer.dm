@@ -36,7 +36,7 @@
 	name = "Steppe Wayfarer"
 	head = /obj/item/clothing/head/papakha
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/volfmantle
 	armor = /obj/item/clothing/armor/leather/hide/steppe
 	shirt = /obj/item/clothing/armor/gambeson/light/steppe

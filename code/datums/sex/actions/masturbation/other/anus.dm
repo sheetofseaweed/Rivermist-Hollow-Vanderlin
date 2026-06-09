@@ -1,6 +1,7 @@
 /datum/sex_action/masturbate/other/anus
 	name = "Finger their butt"
 	check_same_tile = FALSE
+	mage_hand_overlay_zone = MAGE_HAND_ZONE_BUTT
 
 /datum/sex_action/masturbate/other/anus/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
@@ -30,7 +31,7 @@
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fingers [target]'s butt..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(target, user, 2, 6, 2, src)
+	sex_session.perform_sex_action(user, target, 2, 6, 2, src)
 	sex_session.handle_passive_ejaculation(target)
 
 /datum/sex_action/masturbate/other/anus/on_finish(mob/living/user, mob/living/target)

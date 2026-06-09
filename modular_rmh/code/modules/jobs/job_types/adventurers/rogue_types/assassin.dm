@@ -65,7 +65,7 @@
 	backl = /obj/item/storage/backpack/satchel
 	belt = /obj/item/storage/belt/leather/assassin
 	beltr = /obj/item/weapon/knife/dagger/steel/special
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	ring = null
 	l_hand = null
 	r_hand = null

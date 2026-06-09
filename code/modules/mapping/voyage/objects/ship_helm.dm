@@ -60,21 +60,15 @@
 		to_chat(user, span_warning("This wheel isn't connected to a ship!"))
 		return
 	if(!can_navigate(user))
-		to_chat(user, span_warning("You are not the captain!"))
+		to_chat(user, span_warning("You do not know how to steer this ship!"))
 		return
 
 	interact(user)
 
 /obj/structure/ship_wheel/proc/can_navigate(mob/user)
-	var/datum/job/job_datum = SSjob.name_occupations[user.job]
-	var/job_name
-	if(job_datum.parent_job)
-		job_name = job_datum.parent_job.title
-	else
-		job_name = job_datum.title
-	if(job_name in GLOB.townhall_positions)
-		return TRUE
-	return FALSE
+	if(!user)
+		return FALSE
+	return HAS_TRAIT(user, TRAIT_CAN_STEER_SHIP)
 
 
 /obj/structure/ship_wheel/interact(mob/user)
@@ -692,6 +686,11 @@
 
 	if(!controlled_ship)
 		return
+
+	if(!can_navigate(usr))
+		to_chat(usr, span_warning("You do not know how to steer this ship!"))
+		return
+
 	SEND_SIGNAL(usr, COMSIG_SHIP_SAILED)
 
 	if(href_list["set_direction"])

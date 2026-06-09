@@ -116,6 +116,8 @@
 	var/list/datum/sex_action/active_actions = list()
 	/// Compatibility pointer for older callers that still expect one current action
 	var/datum/sex_action/current_action = null
+	/// Optional remote interaction context, such as Mage Hand.
+	var/datum/sex_remote_context/remote_context = null
 	/// Enum of desired speed
 	var/speed = SEX_SPEED_MID
 	/// Enum of desired force
@@ -157,18 +159,19 @@
 	assign_to_collective()
 
 	RegisterSignal(user, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
-	RegisterSignal(user, COMSIG_PARENT_QDELETING, PROC_REF(on_participant_qdeleting))
+	RegisterSignal(user, list(COMSIG_PARENT_QDELETING, COMSIG_LIVING_DEATH), PROC_REF(on_participant_invalidated))
 	if(target != user)
-		RegisterSignal(target, COMSIG_PARENT_QDELETING, PROC_REF(on_participant_qdeleting))
+		RegisterSignal(target, list(COMSIG_PARENT_QDELETING, COMSIG_LIVING_DEATH), PROC_REF(on_participant_invalidated))
 
 	addtimer(CALLBACK(src, PROC_REF(check_sex)), 30 SECONDS)
 
 /datum/sex_session/Destroy(force, ...)
 	if(user)
-		UnregisterSignal(user, list(COMSIG_SEX_CLIMAX, COMSIG_SEX_AROUSAL_CHANGED, COMSIG_PARENT_QDELETING))
+		UnregisterSignal(user, list(COMSIG_SEX_CLIMAX, COMSIG_SEX_AROUSAL_CHANGED, COMSIG_PARENT_QDELETING, COMSIG_LIVING_DEATH))
 	if(target && target != user)
-		UnregisterSignal(target, COMSIG_PARENT_QDELETING)
+		UnregisterSignal(target, list(COMSIG_PARENT_QDELETING, COMSIG_LIVING_DEATH))
 	stop_current_action()
+	clear_remote_context()
 	unregister_sex_session(src)
 	// Remove from collective
 	if(session_updater)
@@ -188,6 +191,7 @@
 		active_actions.Cut()
 	active_actions = null
 	current_action = null
+	remote_context = null
 	user = null
 	target = null
 	. = ..()
@@ -219,7 +223,7 @@
 		return
 	qdel(src)
 
-/datum/sex_session/proc/on_participant_qdeleting()
+/datum/sex_session/proc/on_participant_invalidated()
 	SIGNAL_HANDLER
 	qdel(src)
 
@@ -347,9 +351,16 @@
 	if(!can_perform_action(action, TRUE))
 		stop_current_action(action)
 		return
-	if(action.on_start(user, target) == FALSE)
+	var/suppress_visible_messages = begin_remote_action_visible_message_suppression(action)
+	var/start_result = action.on_start(user, target)
+	end_remote_action_visible_message_suppression(suppress_visible_messages)
+	if(start_result == FALSE)
 		stop_current_action(action)
 		return
+	var/datum/sex_remote_context/action_remote_context = get_valid_remote_context(action)
+	if(action_remote_context)
+		action_remote_context.show_action_overlay(action)
+		action_remote_context.show_action_message(action, MAGE_HAND_ACTION_MESSAGE_START)
 
 	while(action in active_actions)
 		//if(isnull(target.client))
@@ -363,7 +374,7 @@
 		var/do_after_flags = IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_SLOWDOWNS | IGNORE_SLOWDOWNS | IGNORE_USER_DOING | IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE
 		var/interaction_key = "sex_action_[REF(action)]"
 		//loc check for proximity instead of move disruption.
-		if(!(target in view(1, user)))
+		if(!(target in view(1, user)) && !can_remote_interact_with_action(action))
 			if(current_action)
 				stop_current_action()
 			return
@@ -379,7 +390,12 @@
 		if(action.stop_requested)
 			break
 
+		suppress_visible_messages = begin_remote_action_visible_message_suppression(action)
 		action.on_perform(user, target)
+		end_remote_action_visible_message_suppression(suppress_visible_messages)
+		action_remote_context = get_valid_remote_context(action)
+		if(action_remote_context)
+			action_remote_context.show_action_message(action, MAGE_HAND_ACTION_MESSAGE_PERFORM)
 		if(QDELETED(action) || !(action in active_actions))
 			break
 		if(istype(user.loc, /obj/structure/closet))
@@ -413,12 +429,66 @@
 		return
 
 	active_actions -= action
+	var/datum/sex_remote_context/action_remote_context = get_valid_remote_context(action)
+	if(action_remote_context)
+		action_remote_context.show_action_message(action, MAGE_HAND_ACTION_MESSAGE_FINISH)
+		action_remote_context.clear_action_overlay(action)
+	else
+		remote_context?.clear_action_overlay(action)
+	var/suppress_visible_messages = begin_remote_action_visible_message_suppression(action)
 	action.on_finish(user, target)
+	end_remote_action_visible_message_suppression(suppress_visible_messages)
 	update_current_action()
 	if(!length(active_actions))
 		// This is only a one-shot "finish the current loop" latch; don't let it leak into a future encounter.
 		just_climaxed = FALSE
 	qdel(action)
+
+/datum/sex_session/proc/begin_remote_action_visible_message_suppression(action_type)
+	if(!get_valid_remote_context(action_type))
+		return FALSE
+	user?.push_visible_message_suppression()
+	if(target && target != user)
+		target.push_visible_message_suppression()
+	return TRUE
+
+/datum/sex_session/proc/end_remote_action_visible_message_suppression(was_suppressed)
+	if(!was_suppressed)
+		return
+	user?.pop_visible_message_suppression()
+	if(target && target != user)
+		target.pop_visible_message_suppression()
+
+/datum/sex_session/proc/set_remote_context(datum/sex_remote_context/context)
+	if(remote_context == context)
+		return
+	clear_remote_context()
+	remote_context = context
+	if(remote_context)
+		remote_context.session = src
+
+/datum/sex_session/proc/clear_remote_context()
+	if(!remote_context)
+		return
+	var/datum/sex_remote_context/context = remote_context
+	remote_context = null
+	qdel(context)
+
+/datum/sex_session/proc/get_valid_remote_context(action_type)
+	if(!remote_context)
+		return null
+	var/datum/sex_action/action = get_action_template(action_type)
+	if(!action)
+		return null
+	if(!remote_context.is_valid(src))
+		clear_remote_context()
+		return null
+	if(!remote_context.allows_action(action))
+		return null
+	return remote_context
+
+/datum/sex_session/proc/can_remote_interact_with_action(action_type)
+	return !!get_valid_remote_context(action_type)
 
 /datum/sex_session/proc/can_perform_action(action_type, performing = FALSE)
 	var/datum/sex_action/action = get_action_template(action_type)
@@ -439,11 +509,16 @@
 	var/datum/sex_action/action = get_action_template(action_type)
 	if(!action)
 		return FALSE
-	if(!target)
+	if(!user || !target)
+		return FALSE
+	if(QDELETED(user) || QDELETED(target))
 		return FALSE
 	if(user.stat != CONSCIOUS)
 		return FALSE
-	if(!user.adjacent_or_closet(target) && action.check_distance)
+	if(target.stat == DEAD)
+		return FALSE
+	var/remote_interaction = can_remote_interact_with_action(action)
+	if(!remote_interaction && !user.adjacent_or_closet(target) && action.check_distance)
 		return FALSE
 	if(action.check_incapacitated)
 		var/incapacitated_flags = IGNORE_GRAB
@@ -453,12 +528,12 @@
 			return FALSE
 	if(action.requires_free_hands && !user.has_free_sex_hands())
 		return FALSE
-	if(action.check_same_tile && !user.check_closet(target))
+	if(!remote_interaction && action.check_same_tile && !user.check_closet(target))
 		var/same_tile = (get_turf(user) == get_turf(target))
 		var/grab_bypass = (action.aggro_grab_instead_same_tile && user.get_effective_grab_state_on(target) == GRAB_AGGRESSIVE)
 		if(!same_tile && !grab_bypass)
 			return FALSE
-	if(action.require_grab)
+	if(!remote_interaction && action.require_grab)
 		var/grabstate = user.get_effective_grab_state_on(target)
 		if(grabstate == null || grabstate < action.required_grab_state)
 			return FALSE

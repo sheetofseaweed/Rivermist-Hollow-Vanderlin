@@ -4,6 +4,8 @@
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 	check_same_tile = FALSE
 	requires_free_hands = TRUE
+	mage_hand_allowed = TRUE
+	mage_hand_overlay_zone = MAGE_HAND_ZONE_BODY
 
 /datum/sex_action/rub_body/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
@@ -29,7 +31,7 @@
 		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rubs [target]'s body..."))
 	user.make_sucking_noise()
 
-	sex_session.perform_sex_action(target, user, 0.5, 0, 0.5, src)
+	sex_session.perform_sex_action(user, target, 0.5, 0, 0, src)
 	sex_session.handle_passive_ejaculation(target)
 
 /datum/sex_action/rub_body/on_finish(mob/living/user, mob/living/target)

@@ -46,7 +46,7 @@
 	name = "Sellwizard"
 	head = null
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor //broke
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor //broke
 	cloak = null
 	armor = null
 	shirt = /obj/item/clothing/armor/gambeson

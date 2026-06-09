@@ -188,5 +188,5 @@
 	shirt = /obj/item/clothing/armor/gambeson/light
 	pants = /obj/item/clothing/pants/trou/leather
 	belt = /obj/item/storage/belt/leather/knifebelt/black/steel
-	beltr = /obj/item/storage/belt/pouch/medicine
+	beltr = /obj/item/storage/belt/pouch/cloth/medicine
 	H.attributes.add_sheet(/datum/attribute_holder/sheet/job/orc_npc/elite)

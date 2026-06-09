@@ -117,7 +117,7 @@
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 		/obj/item/reagent_containers/glass/bottle/beer/emberwine,
 		/obj/item/key/outsider/witch = 1,
 	)
@@ -203,7 +203,7 @@
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 		/obj/item/key/outsider/witch = 1,
 	)
 
@@ -290,7 +290,7 @@
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 		/obj/item/key/outsider/witch = 1,
 	)
 
@@ -370,7 +370,7 @@
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 		/obj/item/key/outsider/witch = 1,
 	)
 

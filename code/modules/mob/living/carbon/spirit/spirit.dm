@@ -208,11 +208,11 @@
 	var/datum/mind/corpse_mind = get_mind(corpse, include_last = TRUE)
 	if(corpse_mind?.remove_antag_datum(/datum/antagonist/zombie))
 		. = TRUE
-	if(QDELETED(corpse_mind) || corpse.has_quirk(/datum/quirk/vice/hardcore))
+	if(QDELETED(corpse_mind))
 		return
 	var/mob/ghost
 	//Try to find a lost ghost if there is no client
-	if(!corpse.client && !corpse.has_quirk(/datum/quirk/vice/hardcore))
+	if(!corpse.client)
 		ghost = corpse.get_ghost()
 		//Try to find underworld spirit, if there is no observer ghost
 		if(!ghost)

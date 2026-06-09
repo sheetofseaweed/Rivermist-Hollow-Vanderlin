@@ -75,7 +75,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = null
 	ring = null
 	l_hand = null
@@ -150,10 +150,10 @@
 		pants = /obj/item/clothing/pants/tights/colored/black
 		shoes = /obj/item/clothing/shoes/nobleboot
 		belt = /obj/item/storage/belt/leather/suspenders
-		beltr = /obj/item/storage/belt/pouch/coins/poor
+		beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	else
 		shirt = /obj/item/clothing/shirt/undershirt/blouse
 		pants = /obj/item/clothing/pants/skirt/pencil
 		shoes = /obj/item/clothing/shoes/heels
 		belt = /obj/item/storage/belt/leather/plaquesilver
-		beltr = /obj/item/storage/belt/pouch/coins/poor
+		beltr = /obj/item/storage/belt/pouch/cloth/coins/poor

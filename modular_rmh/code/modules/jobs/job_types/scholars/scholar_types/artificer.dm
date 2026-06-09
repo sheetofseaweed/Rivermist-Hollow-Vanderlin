@@ -61,7 +61,7 @@
 	backr = null
 	backl = /obj/item/storage/backpack/backpack/artibackpack
 	belt = /obj/item/storage/belt/leather
-	beltr = /obj/item/storage/belt/pouch/coins/mid
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltl = /obj/item/weapon/mace/cane/bronze
 	ring = /obj/item/clothing/ring/silver/makers_guild
 	l_hand = null

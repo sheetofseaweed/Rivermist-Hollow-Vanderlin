@@ -169,10 +169,28 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 
 /mob/living/proc/check_heartbeat(mob/user)
 	var/list/message = list()
+	var/heartbeat_tip = "A stopped or missing heart means blood is not reaching the brain. Restart or replace the heart, treat cardiac arrest and blood loss, and restore breathing or blood oxygen as quickly as possible."
 	if(stat >= DEAD)
-		message += "<B>No heartbeat...</B>"
+		message += span_tooltip(heartbeat_tip, "<B>No heartbeat...</B>")
+	else if(iscarbon(src))
+		var/mob/living/carbon/carbon_target = src
+		var/list/hearts = carbon_target.getorganslotlist(ORGAN_SLOT_HEART)
+		if(!length(hearts))
+			message += span_tooltip(heartbeat_tip, "<B>There is no heart to hear.</B>")
+		else
+			var/list/heart_descriptions = list()
+			for(var/thing in hearts)
+				var/obj/item/organ/heart/heart = thing
+				var/heart_description = heart.beating ? "The heart is beating" : "The heart is silent and still"
+				if(heart.open)
+					heart_description += ", but the beat is muddled by the opened bypass"
+				if(heart.damage)
+					heart_description += ", and it sounds strained"
+				heart_descriptions += "[heart_description]."
+			var/joined_heart_descriptions = heart_descriptions.Join(" ")
+			message += span_tooltip(heartbeat_tip, "<B>[joined_heart_descriptions]</B>")
 	else
-		message += "<B>The heart is still beating.</B>"
+		message += span_tooltip(heartbeat_tip, "<B>The heart is still beating.</B>")
 	var/list/soul_message = soul_examine(user)
 	if(soul_message)
 		message += soul_message

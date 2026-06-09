@@ -60,7 +60,7 @@
 
 	var/arousal_amt = arousal_base + (sex_session.force * 0.4)
 	var/pain_amt = pain_base + (sex_session.force * 1.5)
-	sex_session.perform_sex_action(target, user, arousal_amt, pain_amt, arousal_amt, src)
+	sex_session.perform_sex_action(user, target, arousal_amt, pain_amt, arousal_amt, src)
 	sex_session.handle_passive_ejaculation(target)
 
 	var/obj/item/candle/candle = get_held_lit_candle(user)

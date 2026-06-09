@@ -495,6 +495,33 @@
 	prerequisites = list(/datum/spell_node/arcyne_eye)
 	spell_type = /datum/action/cooldown/spell/undirected/touch/prestidigitation
 
+/*/datum/spell_node/mage_hand
+	name = "Mage Hand"
+	desc = "Shape a distant arcyne hand for careful remote touch."
+	node_x = 0
+	node_y = 160
+	prerequisites = list(/datum/spell_node/prestidigitation)
+	spell_type = /datum/action/cooldown/spell/mage_hand
+
+/datum/spell_node/scrying_mage_hand
+	name = "Scrying Mage Hand"
+	desc = "Project Mage Hand through a scrying eye."
+	cost = 2
+	node_x = 0
+	node_y = 220
+	prerequisites = list(/datum/spell_node/mage_hand)
+	is_passive = TRUE
+
+/datum/spell_node/scrying_mage_hand/on_node_buy(mob/user)
+	if(!isliving(user))
+		return
+	var/mob/living/living_user = user
+	var/spell_source = user.mind
+	if(!spell_source)
+		spell_source = user
+	living_user.add_spell(/datum/action/cooldown/spell/mage_hand/scrying, silent = TRUE, source = spell_source, override = TRUE)
+	to_chat(user, span_notice("My Mage Hand can now follow my scrying vision."))*/
+
 /datum/spell_node/frost_affinity
 	name = "Frost Affinity"
 	desc = "Embrace the cold within your soul."

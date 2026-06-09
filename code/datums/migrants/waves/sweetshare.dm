@@ -54,7 +54,7 @@
 	backl = /obj/item/storage/backpack/backpack
 	belt = /obj/item/storage/belt/leather
 	beltr = /obj/item/weapon/knife/cleaver
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	backpack_contents = list(
 		/obj/item/reagent_containers/powder/spice = 8,
 		/obj/item/reagent_containers/powder/ozium = 8,

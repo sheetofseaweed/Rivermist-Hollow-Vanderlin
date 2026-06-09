@@ -117,12 +117,59 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 	invisibility = INVISIBILITY_GHOST
 	see_invisible = SEE_INVISIBLE_GHOST
 
+/mob/dead/observer/screye/Initialize()
+	. = ..()
+	add_verb(src, /mob/dead/observer/screye/proc/reach_with_mage_hand)
+
 /mob/dead/observer/screye/blackmirror
 	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS
 	see_in_dark = 100
 
 /mob/dead/observer/screye/Move(n, direct)
 	return
+
+/mob/dead/observer/screye/proc/get_scrying_mage_hand_caster()
+	var/mob/living/caster = mind?.current
+	if(!isliving(caster))
+		return null
+	return caster
+
+/mob/dead/observer/screye/proc/reach_with_mage_hand()
+	set category = "Magic"
+	set name = "Reach With Mage Hand"
+	set desc = "Project Mage Hand through this scrying vision."
+
+	if(!client)
+		return
+	var/mob/living/caster = get_scrying_mage_hand_caster()
+	if(!caster || !caster.get_spell(/datum/action/cooldown/spell/mage_hand/scrying, TRUE))
+		to_chat(src, span_warning("I don't know how to project Mage Hand through this vision."))
+		return
+
+	var/list/targets = list()
+	for(var/mob/living/possible_target in view(client.view, src))
+		if(possible_target == caster)
+			continue
+		if(QDELETED(possible_target) || possible_target.stat == DEAD)
+			continue
+		targets += possible_target
+
+	if(!length(targets))
+		to_chat(src, span_warning("No living target is close enough to this vision."))
+		return
+
+	var/mob/living/target = input(src, "Reach toward whom?", "Scrying Mage Hand") as null|anything in targets
+	if(!target || !client)
+		return
+	if(!(target in view(client.view, src)))
+		to_chat(src, span_warning("[target] is no longer within this vision."))
+		return
+	if(!can_start_scrying_mage_hand(caster, target))
+		to_chat(src, span_warning("I can't project Mage Hand toward [target]."))
+		return
+	if(!reenter_corpse(TRUE))
+		return
+	start_scrying_mage_hand(caster, target)
 
 /mob/dead/observer/profane // Ghost type for souls trapped by the profane dagger. They can't move, but can talk to the dagger's wielder and other trapped souls.
 	sight = 0

@@ -36,7 +36,6 @@
 /obj/structure/well/fountain{
 	pixel_x = -16;
 	pixel_y = 3;
-	plane = -7;
 	layer = 5
 	},
 /obj/structure/hotspring,
@@ -1759,8 +1758,7 @@
 "cNV" = (
 /obj/structure/drape/desert{
 	pixel_y = 32;
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone_tile,
 /area/under/rmh_desert/tea/palacecellar)
@@ -3807,8 +3805,7 @@
 /obj/structure/spider/stickyweb,
 /obj/structure/drape/desert{
 	pixel_y = 32;
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone_tile,
 /area/under/rmh_desert/tea/palacecellar)
@@ -8047,8 +8044,7 @@
 "lSY" = (
 /obj/structure/bars,
 /obj/structure/drape/desert{
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/tea/palacecellar)
@@ -8682,8 +8678,7 @@
 "mXN" = (
 /obj/structure/drape/desert{
 	pixel_y = 32;
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/tea/palacecellar)
@@ -11226,8 +11221,7 @@
 	},
 /obj/structure/drape/desert{
 	pixel_y = 32;
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/tea/palacecellar)
@@ -11248,8 +11242,7 @@
 /obj/effect/decal/cleanable/blood/old,
 /obj/structure/drape/desert{
 	pixel_y = 32;
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/tea/palacecellar)
@@ -11384,8 +11377,7 @@
 /obj/item/bin/water/gross,
 /obj/structure/drape/desert{
 	pixel_y = 32;
-	layer = 4.2;
-	plane = -7
+	layer = 4.2
 	},
 /turf/open/floor/sandstone,
 /area/under/rmh_desert/tea/palacecellar)
@@ -14100,9 +14092,7 @@
 /turf/open/floor/tile/harem1,
 /area/outdoors/rmh_desert/valley)
 "uLy" = (
-/obj/structure/fluff/walldeco/vinez{
-	plane = -7
-	},
+/obj/structure/fluff/walldeco/vinez,
 /turf/closed/mineral/bedrock{
 	name = "solid rock"
 	},
@@ -15975,9 +15965,7 @@
 /area/outdoors/rmh_air)
 "xEQ" = (
 /obj/structure/flora/grass/bush/wall,
-/obj/structure/fluff/walldeco/vinez{
-	plane = -7
-	},
+/obj/structure/fluff/walldeco/vinez,
 /turf/closed/mineral/bedrock{
 	name = "solid rock"
 	},

@@ -52,7 +52,7 @@
 	name = "Farmhand"
 	head = null
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = null
 	armor = null
 	shirt = null

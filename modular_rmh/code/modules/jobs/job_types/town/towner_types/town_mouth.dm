@@ -45,7 +45,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/plaquesilver
-	beltr = /obj/item/storage/belt/pouch/coins/mid
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltl = null
 	ring = null
 	l_hand = null

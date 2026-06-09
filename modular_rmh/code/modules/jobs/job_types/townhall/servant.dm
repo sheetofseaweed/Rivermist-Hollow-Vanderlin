@@ -86,7 +86,7 @@
 	backl = null
 	belt = /obj/item/storage/belt/leather/suspenders
 	beltr = /obj/item/storage/keyring/rmh_servant
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	ring = null
 	l_hand = null
 	r_hand = null
@@ -143,7 +143,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/cloth_belt
-	beltr = /obj/item/storage/belt/pouch/coins/poor
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltl = /obj/item/storage/keyring/rmh_servant
 	ring = null
 	l_hand = null

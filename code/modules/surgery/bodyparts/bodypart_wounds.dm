@@ -239,7 +239,7 @@
 		from_behind = TRUE
 	if(owner.body_position == LYING_DOWN)
 		dam += 15
-	if(user && (from_behind || user.alpha <= 15))//From Dreamkeep -- Attacks from stealth should be much more likely to crit
+	if(user && (from_behind && user.m_intent == MOVE_INTENT_SNEAK && user.alpha <= 15))//From Dreamkeep -- Attacks from stealth should be much more likely to crit
 		if(user.mind && !HAS_TRAIT(owner, TRAIT_BLINDFIGHTING) && !user.has_status_effect(/datum/status_effect/debuff/stealthcd))
 			var/sneakmult = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/misc/sneaking)
 			dam *= max(1,sneakmult)
@@ -317,7 +317,7 @@
 				from_behind = TRUE
 			if(owner.resting)
 				dam += 15
-			if(user && (from_behind || user.alpha <= 15))//From Dreamkeep -- Attacks from stealth should be much more likely to crit
+			if(user && (from_behind && user.m_intent == MOVE_INTENT_SNEAK && user.alpha <= 15))//From Dreamkeep -- Attacks from stealth should be much more likely to crit
 				if(user.mind && !HAS_TRAIT(owner, TRAIT_BLINDFIGHTING) && !user.has_status_effect(/datum/status_effect/debuff/stealthcd))
 					var/sneakmult = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/misc/sneaking)
 					dam *= max(1,sneakmult)

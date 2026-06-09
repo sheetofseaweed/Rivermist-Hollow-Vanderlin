@@ -93,7 +93,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/adventurer
-	beltr = /obj/item/storage/belt/pouch/coins/mid
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltl = /obj/item/storage/keyring/archivist
 	ring = null
 	l_hand = /obj/item/weapon/whip
@@ -103,7 +103,7 @@
 		/obj/item/textbook = 1,
 		/obj/item/natural/feather = 1,
 		/obj/item/book/granter/spellbook/apprentice,
-		/obj/item/storage/belt/pouch/bullets,
+		/obj/item/storage/belt/pouch/cloth/bullets,
 		/obj/item/reagent_containers/glass/bottle/aflask,
 		)
 
@@ -174,7 +174,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = null
 	belt = /obj/item/storage/belt/leather/plaquesilver
-	beltr = /obj/item/storage/belt/pouch/coins/mid
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltl = /obj/item/storage/keyring/archivist
 	ring = null
 	l_hand = null

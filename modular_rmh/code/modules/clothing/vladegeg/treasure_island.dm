@@ -46,3 +46,8 @@
 
 /obj/item/clothing/armor/gambeson/treasure_island/green
 	color = COLOR_GREEN
+
+/obj/item/clothing/armor/gambeson/treasure_island/navigator
+	name = "navigator's jacket"
+	desc = "A well-cut officer's jacket in deep green, made for a steady hand at the helm rather than a ruler's parade."
+	color = CLOTHING_FOREST_GREEN

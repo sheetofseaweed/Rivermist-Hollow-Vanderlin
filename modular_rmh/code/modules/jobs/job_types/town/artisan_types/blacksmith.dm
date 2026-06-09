@@ -55,7 +55,7 @@
 	backr = null
 	backl = /obj/item/weapon/hammer/sledgehammer
 	belt = /obj/item/storage/belt/leather
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltr = null
 	ring = /obj/item/clothing/ring/silver/makers_guild
 	l_hand = null

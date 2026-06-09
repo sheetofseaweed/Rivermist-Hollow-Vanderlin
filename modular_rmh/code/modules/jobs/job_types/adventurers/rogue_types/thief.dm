@@ -63,7 +63,7 @@
 	backl = /obj/item/storage/backpack/satchel
 	belt = /obj/item/storage/belt/leather/adventurers_subclasses
 	beltr = /obj/item/weapon/mace/cudgel // TEMP until I make a blackjack- for now though this will do.
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	ring = null
 	l_hand = null
 	r_hand = null

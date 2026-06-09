@@ -3684,11 +3684,11 @@
 	pixel_x = -7;
 	pixel_y = -5
 	},
-/obj/item/storage/belt/pouch/coins/mid{
+/obj/item/storage/belt/pouch/cloth/coins/mid{
 	pixel_x = 5;
 	pixel_y = 12
 	},
-/obj/item/storage/belt/pouch/coins/poor{
+/obj/item/storage/belt/pouch/cloth/coins/poor{
 	pixel_x = 5;
 	pixel_y = -5
 	},
@@ -22834,7 +22834,7 @@
 /area/indoors/town/tavern)
 "vcC" = (
 /obj/structure/closet/crate/crafted_closet/inn,
-/obj/item/storage/belt/pouch/coins/mid,
+/obj/item/storage/belt/pouch/cloth/coins/mid,
 /obj/item/clothing/armor/leather/jacket/leathercoat/black,
 /obj/item/clothing/armor/leather/jacket/artijacket,
 /obj/item/clothing/armor/gambeson/heavy/winterdress,

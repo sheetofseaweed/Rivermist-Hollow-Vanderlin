@@ -234,7 +234,9 @@
 		if(HAS_TRAIT(user, TRAIT_BASHDOORS))
 			if(locked())
 				user.visible_message(span_warning("[user] bashes into [src]!"))
-				take_damage(200, BRUTE, BCLASS_BLUNT, TRUE)
+				var/bash_old_integrity = get_integrity()
+				var/bash_damage_done = take_damage(200, BRUTE, BCLASS_BLUNT, TRUE)
+				log_game("[key_name(user)] bashed locked [src] ([type]) at [AREACOORD(src)] for [bash_damage_done || 0] damage ([bash_old_integrity] -> [get_integrity()]).")
 			else
 				playsound(src, 'sound/combat/hits/onwood/woodimpact (1).ogg', 100)
 				force_open(AM)
@@ -243,7 +245,9 @@
 		if(HAS_TRAIT(user, TRAIT_ROTMAN))
 			if(locked())
 				user.visible_message(span_warning("The deadite bashes into [src]!"))
-				take_damage(50, BRUTE, BCLASS_BLUNT, TRUE)
+				var/rotman_old_integrity = get_integrity()
+				var/rotman_damage_done = take_damage(50, BRUTE, BCLASS_BLUNT, TRUE)
+				log_game("[key_name(user)] bashed locked [src] ([type]) at [AREACOORD(src)] for [rotman_damage_done || 0] damage ([rotman_old_integrity] -> [get_integrity()]).")
 			else
 				playsound(src, 'sound/combat/hits/onwood/woodimpact (1).ogg', 90)
 				force_open(AM)

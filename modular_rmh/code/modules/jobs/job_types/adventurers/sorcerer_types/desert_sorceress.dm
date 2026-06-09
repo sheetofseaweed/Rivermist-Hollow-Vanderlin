@@ -68,7 +68,7 @@
 	backpack_contents = list(
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot = 1,
-		/obj/item/storage/belt/pouch/coins/mid = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/mid = 1,
 	)
 
 /datum/outfit/adventurer_sorcerer/desert_sorceress/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

@@ -83,7 +83,7 @@
 	backpack_contents = list(
 		/obj/item/explosive/bottle = 2,
 		/obj/item/weapon/knife/hunting = 1,
-		/obj/item/storage/belt/pouch/coins/poor = 1,
+		/obj/item/storage/belt/pouch/cloth/coins/poor = 1,
 		/obj/item/rope/chain = 1,
 		/obj/item/flint = 1,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot = 1,

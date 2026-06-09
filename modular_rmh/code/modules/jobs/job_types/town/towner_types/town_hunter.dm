@@ -45,7 +45,7 @@
 	name = "Hunter"
 	head = /obj/item/clothing/head/brimmed
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/poor
+	neck = /obj/item/storage/belt/pouch/cloth/coins/poor
 	cloak = /obj/item/clothing/cloak/raincloak/furcloak/colored/brown
 	armor = null
 	shirt = /obj/item/clothing/shirt/shortshirt/colored/random
@@ -53,7 +53,7 @@
 	gloves = /obj/item/clothing/gloves/leather
 	pants = /obj/item/clothing/pants/tights/colored/random
 	shoes = /obj/item/clothing/shoes/boots/leather
-	backr = /obj/item/storage/backpack/satchel
+	backr = /obj/item/storage/backpack/backpack/longhike/with_bedroll
 	backl = /obj/item/gun/ballistic/revolver/grenadelauncher/bow
 	belt = /obj/item/storage/belt/leather
 	beltl = /obj/item/ammo_holder/quiver/arrows

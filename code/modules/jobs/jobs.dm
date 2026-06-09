@@ -15,6 +15,7 @@ GLOBAL_PROTECT(keep_positions)
 GLOBAL_LIST_INIT(townhall_positions, list(
 	/datum/job/burgmeister::title,
 	/datum/job/councilor::title,
+	/datum/job/navigator::title,
 	/datum/job/servant::title,
 ))
 GLOBAL_PROTECT(townhall_positions)

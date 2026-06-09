@@ -55,7 +55,7 @@
 	backr = /obj/item/weapon/axe/iron
 	backl = /obj/item/storage/backpack/backpack
 	belt = /obj/item/storage/belt/leather
-	beltr = /obj/item/storage/belt/pouch/coins/mid
+	beltr = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltl = /obj/item/weapon/hammer/steel
 	ring = /obj/item/clothing/ring/silver/makers_guild
 	l_hand = /obj/item/storage/keyring/guild_artisan

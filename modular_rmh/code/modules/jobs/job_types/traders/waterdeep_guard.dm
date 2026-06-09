@@ -79,6 +79,6 @@
 	backpack_contents = list(
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot,
 		/obj/item/flashlight/flare/torch/lantern,
-		/obj/item/storage/belt/pouch/coins/mid,
+		/obj/item/storage/belt/pouch/cloth/coins/mid,
 		/obj/item/rope/chain,
 	)

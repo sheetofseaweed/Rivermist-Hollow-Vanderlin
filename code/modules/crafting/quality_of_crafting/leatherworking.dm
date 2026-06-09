@@ -103,6 +103,16 @@
 /datum/repeatable_crafting_recipe/leather/storage/backpack/create_blacklisted_paths()
 	blacklisted_paths = subtypesof(/obj/item/rope)
 
+/datum/repeatable_crafting_recipe/leather/storage/backpack/longhike
+	name = "longhike backpack"
+	requirements = list(
+		/obj/item/natural/hide/cured = 3,
+		/obj/item/rope = 1,
+		/obj/item/ingot/iron = 1,
+	)
+	output = /obj/item/storage/backpack/backpack/longhike
+	craftdiff = 3
+
 /datum/repeatable_crafting_recipe/leather/storage/knife_sheath
 	name = "knife sheath"
 	output = /obj/item/weapon/scabbard/knife

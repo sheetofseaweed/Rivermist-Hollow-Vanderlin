@@ -108,7 +108,7 @@
 	backr = /obj/item/storage/backpack/satchel
 	backl = /obj/item/weapon/sword/long/greatsword/zizo
 	belt = /obj/item/storage/belt/leather/steel/adventurers_subclasses
-	beltl = /obj/item/storage/belt/pouch/coins/mid
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/mid
 	beltr = null
 	ring = null
 	l_hand = null

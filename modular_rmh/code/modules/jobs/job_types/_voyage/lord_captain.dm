@@ -32,6 +32,7 @@
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/burgmeister/lord_captain
 
 	traits = list(
+		TRAIT_CAN_STEER_SHIP,
 		TRAIT_MEDIUMARMOR,
 		TRAIT_DODGEEXPERT,
 		TRAIT_BREADY,
@@ -64,7 +65,7 @@
 	r_hand = /obj/item/weapon/sword/sabre
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/bullets,
+		/obj/item/storage/belt/pouch/cloth/bullets,
 		/obj/item/reagent_containers/glass/bottle/aflask,
 		/obj/item/gun/ballistic/revolver/grenadelauncher/pistol,
 		/obj/item/clothing/neck/slave_collar,

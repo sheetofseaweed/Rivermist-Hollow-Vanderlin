@@ -134,6 +134,10 @@
 				. += span_necrosis("[P[THEYRE]] hideous!")
 				user.add_stress(self_inspect ? /datum/stress_event/ugly_self : /datum/stress_event/ugly)
 
+	if(HAS_TRAIT(src, TRAIT_ALLURE))
+		. += span_love(span_bold("[P[THEYVE]] quite a tempting appeal"))
+		user.add_stress(self_inspect ? /datum/stress_event/allure_self : /datum/stress_event/allure)
+
 	//Facial status
 	var/datum/status_effect/facial/facial = has_status_effect(/datum/status_effect/facial)
 	if(facial)
@@ -188,12 +192,6 @@
 		if(HAS_TRAIT(src, TRAIT_THIEVESGUILD) && HAS_TRAIT(user, TRAIT_THIEVESGUILD))
 			. += span_smallgreen("A member of the Thieves' Guild.")
 
-
-		if(HAS_TRAIT(src, TRAIT_ALLURE))
-			if(user == src)
-				user.add_stress(/datum/stress_event/allure_self)
-			else
-				user.add_stress(/datum/stress_event/allure)
 
 		// Cabal
 		if(HAS_TRAIT(user, TRAIT_CABAL) && (istype(patron, /datum/patron/inhumen/zizo) || HAS_TRAIT(src, TRAIT_CABAL)))
@@ -464,7 +462,7 @@
 		var/handcuff_msg = "[capitalize(P[THEIR])] arms are restrained by [handcuffed.get_examine_string(user)]!"
 		. += "<A href='byond://?src=[REF(src)];item=[ITEM_SLOT_HANDCUFFED]'>[handcuff_msg]</A>"
 	if(legcuffed)
-		var/legcuff_msg = "[capitalize(P[THEIR])] legs are restrained by [handcuffed.get_examine_string(user)]!"
+		var/legcuff_msg = "[capitalize(P[THEIR])] legs are restrained by [legcuffed.get_examine_string(user)]!"
 		. += "<A href='byond://?src=[REF(src)];item=[ITEM_SLOT_LEGCUFFED]'>[legcuff_msg]</A>"
 
 	//Bloody hands
@@ -503,6 +501,10 @@
 
 
 /// Things relevant to one's health.
+/mob/living/carbon/proc/get_heartbeat_examine_link(label)
+	var/heartbeat_tip = "Listen for a heartbeat. A working heart keeps blood moving and helps prevent brain damage; if it is stopped, restart or replace the heart, treat cardiac arrest, and restore breathing or blood oxygen."
+	return "<a href='byond://?src=[REF(src)];check_hb=1'>[span_tooltip(heartbeat_tip, label)]</a>"
+
 /mob/living/carbon/proc/get_examine_health(mob/user, list/P, list/examine_list)
 	var/self_inspect = user == src
 	var/pl = self_inspect ? "" : p_s()
@@ -678,12 +680,12 @@
 				zone_str += "<a href='byond://?src=[REF(src)];inspect_limb=[zone]'>Inspect [parse_zone(zone)]</a>"
 			if(length(zone_str))
 				. += zone_str.Join(" ")
-			. += "<a href='byond://?src=[REF(src)];check_hb=1'>Check Heartbeat</a>"
+			. += get_heartbeat_examine_link("Check Heartbeat")
 		else
 			var/checked_zone = check_zone(user.zone_selected)
 			. += "<a href='byond://?src=[REF(src)];inspect_limb=[checked_zone]'>Inspect [parse_zone(checked_zone)]</a>"
 			if(!self_inspect && body_position == LYING_DOWN && (user.zone_selected == BODY_ZONE_CHEST))
-				. += "<a href='byond://?src=[REF(src)];check_hb=1'>Listen to Heartbeat</a>"
+				. += get_heartbeat_examine_link("Listen to Heartbeat")
 
 	// i dont really wanna put this here but its kinda of a huge hassel to make an appropriate spot
 	if(IsAdminGhost(user))

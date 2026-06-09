@@ -193,19 +193,48 @@
 	grid_height = 64
 	grid_width = 32
 
-/obj/item/storage/belt/pouch/medicine
+/obj/item/storage/belt/pouch/update_icon_state()
+	. = ..()
+	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
+	var/list/things = STR.contents()
+	if(length(things))
+		icon_state = "pouch"
+		w_class = WEIGHT_CLASS_BULKY
+	else
+		icon_state = "pouch_e"
+		w_class = WEIGHT_CLASS_NORMAL
+
+/obj/item/storage/belt/pouch/cloth
+	name = "cloth pouch"
+	desc = "Usually used for holding small amount of coins."
+	icon_state = "clothpouch"
+	salvage_result = /obj/item/natural/cloth
+	component_type = /datum/component/storage/concrete/grid/coin_pouch/cloth
+
+/obj/item/storage/belt/pouch/cloth/update_icon_state()
+	. = ..()
+	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
+	var/list/things = STR.contents()
+	if(length(things))
+		icon_state = "clothpouch"
+		w_class = WEIGHT_CLASS_BULKY
+	else
+		icon_state = "clothpouch_e"
+		w_class = WEIGHT_CLASS_NORMAL
+
+/obj/item/storage/belt/pouch/cloth/medicine
 	populate_contents = list(
 		/obj/item/needle,
 		/obj/item/natural/bundle/cloth/bandage/full,
 		/obj/item/reagent_containers/glass/bottle/healthpot
 	)
 
-/obj/item/storage/belt/pouch/food
+/obj/item/storage/belt/pouch/cloth/food
 	populate_contents = list(
 		/obj/item/reagent_containers/food/snacks/hardtack,
 	)
 
-/obj/item/storage/belt/pouch/coins/mid/Initialize()
+/obj/item/storage/belt/pouch/cloth/coins/mid/Initialize()
 	. = ..()
 	var/obj/item/coin/silver/pile/H = new(loc)
 	if(istype(H))
@@ -216,7 +245,7 @@
 		if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, C, null, TRUE, TRUE))
 			qdel(C)
 
-/obj/item/storage/belt/pouch/coins/poor/Initialize()
+/obj/item/storage/belt/pouch/cloth/coins/poor/Initialize()
 	. = ..()
 	var/obj/item/coin/copper/pile/H = new(loc)
 	if(istype(H))
@@ -260,7 +289,7 @@
 			if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, H, null, TRUE, TRUE))
 				qdel(H)
 
-/obj/item/storage/belt/pouch/bullets
+/obj/item/storage/belt/pouch/cloth/bullets
 	populate_contents = list(
 		/obj/item/ammo_casing/caseless/bullet,
 		/obj/item/ammo_casing/caseless/bullet,
@@ -268,15 +297,8 @@
 		/obj/item/ammo_casing/caseless/bullet,
 	)
 
-/obj/item/storage/belt/pouch/cloth
-	name = "cloth pouch"
-	desc = "Usually used for holding small amount of coins."
-	icon_state = "clothpouch"
-	salvage_result = /obj/item/natural/cloth
-	component_type = /datum/component/storage/concrete/grid/coin_pouch/cloth
-
 //Poison darts pouch
-/obj/item/storage/belt/pouch/pdarts
+/obj/item/storage/belt/pouch/cloth/pdarts
 	populate_contents = list(
 		/obj/item/ammo_casing/caseless/dart/poison,
 		/obj/item/ammo_casing/caseless/dart/poison,
@@ -425,7 +447,7 @@
 /obj/item/storage/backpack/satchel/musketeer
 	populate_contents = list(
 		/obj/item/weapon/knife/dagger/bayonet,
-		/obj/item/storage/belt/pouch/coins/poor,
+		/obj/item/storage/belt/pouch/cloth/coins/poor,
 		/obj/item/reagent_containers/glass/bottle/aflask
 	)
 

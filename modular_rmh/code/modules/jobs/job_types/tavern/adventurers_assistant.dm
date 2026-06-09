@@ -58,7 +58,7 @@
 	backl = null
 	belt = /obj/item/storage/belt/leather
 	beltr = /obj/item/storage/keyring/adventurers_guild
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	ring = null
 	l_hand = null
 	r_hand = null

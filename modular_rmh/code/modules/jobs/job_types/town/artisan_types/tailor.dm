@@ -43,7 +43,7 @@
 	name = "Tailor"
 	head = /obj/item/clothing/head/courtierhat
 	mask = null
-	neck = /obj/item/storage/belt/pouch/coins/mid
+	neck = /obj/item/storage/belt/pouch/cloth/coins/mid
 	cloak = null
 	armor = null
 	shirt = null

@@ -38,7 +38,7 @@
 	if(prob(break_prob))
 		to_chat(user, span_notice("My \the [lockpick_used] broke!"))
 		playsound(src, 'sound/items/LPBreak.ogg', min(100 - (15 * skill_level) + (10 * 6 - difficulty), 100), extrarange = SILENCED_SOUND_EXTRARANGE)
-		qdel(lockpick_used)
+		lockpick_used.take_damage(10)
 
 	if(user.client?.prefs.showrolls)
 		to_chat(user, span_notice("The chance to break was [break_prob]%!"))
@@ -125,7 +125,7 @@
 	var/mouse_status = LOCKPICK_MOUSEUP
 
 	//the lockpick being used
-	var/the_lockpick
+	var/obj/the_lockpick
 	//the wedge being used
 	var/the_wedge
 
@@ -312,7 +312,7 @@
 			if(prob(break_prob))
 				to_chat(picker, span_notice("My \the [the_lockpick] broke!"))
 				playsound(src, 'sound/items/LPBreak.ogg', min(100 - (15 * skill_level) + (10 * 6 - difficulty), 100), extrarange = SILENCED_SOUND_EXTRARANGE)
-				qdel(the_lockpick)
+				the_lockpick.take_damage(10)
 				//one tenth of the usual boost for picking a lock
 				if(isliving(picker))
 					var/mob/living/picker_real = picker

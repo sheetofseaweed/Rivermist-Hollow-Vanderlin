@@ -43,7 +43,7 @@
 	backr = null
 	backl = /obj/item/weapon/hammer/sledgehammer
 	belt = /obj/item/storage/belt/leather
-	beltl = /obj/item/storage/belt/pouch/coins/poor
+	beltl = /obj/item/storage/belt/pouch/cloth/coins/poor
 	beltr = null
 	ring = null
 	l_hand = null

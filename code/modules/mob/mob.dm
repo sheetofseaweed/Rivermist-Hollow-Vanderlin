@@ -226,6 +226,8 @@ GLOBAL_VAR_INIT(mobids, 1)
  * * ignored_mob (optional) doesn't show any message to a given mob if TRUE.
  */
 /atom/proc/visible_message(message, self_message, blind_message, vision_distance = DEFAULT_MESSAGE_RANGE, list/ignored_mobs, runechat_message = null, log_seen = NONE, log_seen_msg = null)
+	if(visible_message_suppression_count > 0)
+		return
 	var/turf/T = get_turf(src)
 	if(!T)
 		return
@@ -262,8 +264,16 @@ GLOBAL_VAR_INIT(mobids, 1)
 	portal_skipped_mobs |= ignored_mobs
 	relay_visible_message_to_portals(message, portal_skipped_mobs)
 
+/atom/proc/push_visible_message_suppression()
+	visible_message_suppression_count++
+
+/atom/proc/pop_visible_message_suppression()
+	visible_message_suppression_count = max(visible_message_suppression_count - 1, 0)
+
 ///Adds the functionality to self_message.
 /mob/visible_message(message, self_message, blind_message, vision_distance = DEFAULT_MESSAGE_RANGE, list/ignored_mobs, runechat_message = null, log_seen = NONE, log_seen_msg = null)
+	if(visible_message_suppression_count > 0)
+		return
 	. = ..()
 	if(self_message)
 		show_message(self_message, MSG_VISUAL, blind_message, MSG_AUDIBLE)
