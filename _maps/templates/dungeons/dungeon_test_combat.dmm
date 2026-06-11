@@ -1,0 +1,87 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/wood,
+/area/pocket_dimension/dungeon)
+"b" = (
+/turf/open/floor/wood,
+/area/pocket_dimension/dungeon)
+"c" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/wood,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/effect/landmark/dungeon/guardian/test,
+/turf/open/floor/wood,
+/area/pocket_dimension/dungeon)
+"g" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/wood,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/wood,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+b
+b
+g
+b
+b
+a
+"}
+(3,1,1) = {"
+a
+b
+b
+b
+b
+h
+a
+"}
+(4,1,1) = {"
+a
+b
+e
+c
+b
+b
+a
+"}
+(5,1,1) = {"
+a
+b
+b
+b
+b
+h
+a
+"}
+(6,1,1) = {"
+a
+b
+b
+b
+b
+b
+a
+"}
+(7,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+"}
