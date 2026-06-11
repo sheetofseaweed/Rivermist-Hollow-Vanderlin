@@ -154,11 +154,16 @@
 	if(new_parent)
 		parent = new_parent
 		new_parent.attributes = src
-	else
-		parent.attributes = null
+		update_attributes()
+		RegisterSignal(parent, COMSIG_SHARE_APPRENTICE_XP, PROC_REF(onshare_apprentice_xp))
+		return
+	if(parent)
+		UnregisterSignal(parent, COMSIG_SHARE_APPRENTICE_XP)
+		// Only clear the mob's pointer if it still points at us - the mob may already own a replacement holder.
+		if(parent.attributes == src)
+			parent.attributes = null
 		parent = null
 	update_attributes()
-	RegisterSignal(parent, COMSIG_SHARE_APPRENTICE_XP, PROC_REF(onshare_apprentice_xp))
 
 /**
  * Seeds the XP pool to match the current raw skill level.
@@ -397,7 +402,7 @@
 		else
 			success_result = DICE_FAILURE
 	if(CHECK_MULTIPLE_BITFIELDS(return_flags, RETURN_DICE_SUCCESS|RETURN_DICE_DIFFERENCE))
-		return list(RETURN_DICE_INDEX_SUCCESS = success_result, \
+		return alist(RETURN_DICE_INDEX_SUCCESS = success_result, \
 					RETURN_DICE_INDEX_DIFFERENCE = difference)
 	else if(return_flags & RETURN_DICE_DIFFERENCE)
 		return difference

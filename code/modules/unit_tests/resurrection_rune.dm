@@ -73,6 +73,10 @@
 	var/mob/living/carbon/human/brain_damaged = allocate(/mob/living/carbon/human)
 
 	brain_damaged.setOrganLoss(ORGAN_SLOT_BRAIN, brain_damaged.maxHealth - 2)
+	// Heavy brain damage can randomly roll a severe trauma, including limb paralysis -
+	// disabled legs are a legitimate rescue trigger and would make this test flaky.
+	// We only test raw brain-health here, so scrub the side effects.
+	brain_damaged.cure_all_traumas(TRAUMA_RESILIENCE_ABSOLUTE)
 	brain_damaged.setOxyLoss(10)
 	brain_damaged.updatehealth()
 

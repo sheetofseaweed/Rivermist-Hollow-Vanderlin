@@ -632,6 +632,16 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	RETURN_TYPE(/list)
 	return GLOB.skin_tones
 
+/datum/species/proc/get_skintone_name(tone)
+	if(isnull(tone))
+		return null
+	var/list/skins = get_skin_list()
+	var/tone_num = text2num(tone)
+	for(var/name in skins)
+		if(skins[name] == tone || (!isnull(tone_num) && skins[name] == tone_num))
+			return name
+	return "[tone]"
+
 /datum/species/proc/get_random_features()
 	var/list/returned = random_features()
 

@@ -1431,6 +1431,8 @@
 			continue
 		. += worn_item.get_carry_weight(src) * weight_multiplier
 	for(var/mob/living/carbon/human/friend in buckled_mobs)
+		if(friend.dna?.species?.id == SPEC_ID_SEELIE)
+			continue
 		. += friend.get_mob_weight() + friend.carry_weight
 
 	carry_weight = .

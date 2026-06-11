@@ -157,9 +157,9 @@
 	display_color = "#d7a29d"
 	incubation_stage_duration = 8 MINUTES
 	stage_messages = list(
-		1 = "Something fertile settles deep in my %CONTAINER%.",
-		2 = "The embryo in my %CONTAINER% grows heavier and more alive.",
-		3 = "A tight, restless pressure builds in my %CONTAINER%.",
+    "Something fertile settles deep in my %CONTAINER%.",
+    "The embryo in my %CONTAINER% grows heavier and more alive.",
+    "A tight, restless pressure builds in my %CONTAINER%."
 	)
 	ready_message = "The embryo in my %CONTAINER% is fully grown and about to hatch inside me."
 	hatch_message = "Something alive hatches from %EGG% inside my %CONTAINER%!"
@@ -187,9 +187,9 @@
 	require_ghost_to_hatch = FALSE
 	incubation_stage_duration = 90 SECONDS
 	stage_messages = list(
-		1 = "A tiny leech egg settles in my %CONTAINER%.",
-		2 = "The leech egg in my %CONTAINER% twitches with small, eager movements.",
-		3 = "The leech egg in my %CONTAINER% feels ready to split.",
+	"A tiny leech egg settles in my %CONTAINER%.",
+	"The leech egg in my %CONTAINER% twitches with small, eager movements.",
+	"The leech egg in my %CONTAINER% feels ready to split.",
 	)
 	ready_message = "The leech egg in my %CONTAINER% is ready to hatch."
 	hatch_message = "%EGG% splits open with a wet little twitch!"

@@ -25,34 +25,62 @@
 /obj/structure/fake_machine/stockpile_withdraw/attackby(obj/item/P, mob/user, params)
 	if(istype(P, /obj/item/coin))
 		withdraw_tab.insert_coins(P)
+		SStgui.update_uis(src) //RMH EDITED
 		return attack_hand(user)
 
 	playsound(src, 'sound/misc/machineno.ogg', 100, FALSE, -1)
 	say("TAKING ONLY YOUR COINS! NOT YOUR TRASH!")
 	return
 
-/obj/structure/fake_machine/stockpile_withdraw/Topic(href, href_list)
-	. = ..()
-	if(!usr.can_perform_action(src, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH))
-		return
-
-	if(withdraw_tab.perform_action(href, href_list))
-		if(href_list["withdraw"])
-			playsound(loc, 'sound/misc/disposalflush.ogg', 100, FALSE, -1)
-			flick("submit_anim", src)
-		return attack_hand(usr)
-	return attack_hand(usr)
-
+//RMH EDITED START
 /obj/structure/fake_machine/stockpile_withdraw/attack_hand(mob/living/user)
 	. = ..()
 	if(.)
 		return
-
+	if(!ishuman(user))
+		return
 	user.changeNext_move(CLICK_CD_MELEE)
 	playsound(loc, 'sound/misc/keyboard_enter.ogg', 100, FALSE, -1)
+	ui_interact(user)
 
-	var/contents = withdraw_tab.get_contents("STOCKPILE EXTRACTOR", FALSE)
+/obj/structure/fake_machine/stockpile_withdraw/ui_state(mob/user)
+	return GLOB.physical_state
 
-	var/datum/browser/popup = new(user, "VENDORTHING", "", 370, 800)
-	popup.set_content(contents)
-	popup.open()
+/obj/structure/fake_machine/stockpile_withdraw/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "Stockpile", "STOCKPILE EXTRACTOR", 480, 640)
+		ui.open()
+
+/obj/structure/fake_machine/stockpile_withdraw/ui_data(mob/user)
+	var/list/data = list()
+	data["title"] = "STOCKPILE EXTRACTOR"
+	data["budget"] = withdraw_tab.budget
+	data["compact"] = withdraw_tab.compact
+	data["can_read"] = user.can_read(src, TRUE) ? TRUE : FALSE
+	data["is_full"] = FALSE
+	data["view"] = "withdraw"
+	data["items"] = withdraw_tab.get_ui_items()
+	return data
+
+/obj/structure/fake_machine/stockpile_withdraw/ui_act(action, list/params)
+	. = ..()
+	if(.)
+		return
+	if(!ishuman(usr))
+		return
+	if(!usr.can_perform_action(src, NEED_DEXTERITY|FORBID_TELEKINESIS_REACH))
+		return
+	switch(action)
+		if("toggle_compact")
+			withdraw_tab.perform_action(null, list("compact" = "1"))
+			return TRUE
+		if("change")
+			withdraw_tab.perform_action(null, list("change" = "1"))
+			return TRUE
+		if("withdraw")
+			if(withdraw_tab.perform_action(null, list("withdraw" = params["ref"])))
+				playsound(loc, 'sound/misc/disposalflush.ogg', 100, FALSE, -1)
+				flick("submit_anim", src)
+			return TRUE
+//RMH EDITED END

@@ -199,10 +199,8 @@
 	var/list/things = STR.contents()
 	if(length(things))
 		icon_state = "pouch"
-		w_class = WEIGHT_CLASS_BULKY
 	else
 		icon_state = "pouch_e"
-		w_class = WEIGHT_CLASS_NORMAL
 
 /obj/item/storage/belt/pouch/cloth
 	name = "cloth pouch"
@@ -217,10 +215,8 @@
 	var/list/things = STR.contents()
 	if(length(things))
 		icon_state = "clothpouch"
-		w_class = WEIGHT_CLASS_BULKY
 	else
 		icon_state = "clothpouch_e"
-		w_class = WEIGHT_CLASS_NORMAL
 
 /obj/item/storage/belt/pouch/cloth/medicine
 	populate_contents = list(

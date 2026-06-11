@@ -39,6 +39,10 @@
 	on_craft_finished = success
 	RegisterSignal(parent, COMSIG_STORAGE_CLOSED, PROC_REF(async_start))
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(async_start))
+	// BUGFIX (cooking): COMSIG_STORAGE_CLOSED only fires when nobody is looking at the storage UI,
+	// so cooking never started while the player stood next to the oven/pan with the inventory open.
+	// React to items physically entering the container instead.
+	RegisterSignal(parent, COMSIG_ATOM_ENTERED, PROC_REF(on_entered))
 	if(temperature_listener)
 		RegisterSignal(parent, COMSIG_REAGENTS_EXPOSE_TEMPERATURE, PROC_REF(async_start))
 
@@ -47,6 +51,18 @@
  */
 /datum/component/container_craft/proc/async_start(datum/source, mob/user)
 	INVOKE_ASYNC(src, PROC_REF(attempt_crafts), source, user)
+
+/**
+ * BUGFIX (cooking): an item was placed inside the container - try to start crafting
+ * immediately, even if someone is still looking at the storage UI.
+ * user is passed as null on purpose: attempt_crafts() will resolve the cook
+ * via fingerprintslast (set by handle_item_insertion), so skill bonuses still apply.
+ */
+/datum/component/container_craft/proc/on_entered(datum/source, atom/movable/arrived, atom/old_loc)
+	SIGNAL_HANDLER
+	if(!isitem(arrived))
+		return
+	INVOKE_ASYNC(src, PROC_REF(attempt_crafts), source, null)
 
 /**
  * Attempt to craft all possible recipes - try normal priority first, then fallbacks

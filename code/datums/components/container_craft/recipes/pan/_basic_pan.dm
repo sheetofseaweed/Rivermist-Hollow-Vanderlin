@@ -27,7 +27,7 @@
 	if(!istype(crafter.loc, /obj/machinery/light/fueled))
 		return FALSE
 	var/obj/machinery/light/fueled/fueled = crafter.loc
-	if(!fueled.fueluse)
+	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - checked leftover fuel, so a snuffed hearth still started cooking
 		return FALSE
 	. = ..()
 
@@ -35,7 +35,7 @@
 	if(!istype(crafter.loc, /obj/machinery/light/fueled))
 		return TRUE
 	var/obj/machinery/light/fueled/fueled = crafter.loc
-	if(!fueled.fueluse)
+	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - a snuffed fire shouldn't finish cooking
 		return TRUE
 	return FALSE
 

@@ -36,6 +36,7 @@
 
 // Themes
 @include meta.load-css('./themes/grim.scss');
+@include meta.load-css('./themes/parchment.scss'); //RMH EDITED
 
 @include meta.load-css('~highlight.js/scss/a11y-dark.scss');
 

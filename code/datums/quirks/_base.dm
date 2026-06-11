@@ -252,6 +252,32 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 			return Q
 	return null
 
+/mob/living/carbon/human/proc/get_quirk_names_by_category(category)
+	var/list/quirk_names = list()
+	for(var/datum/quirk/Q in quirks)
+		if(Q.quirk_category == category)
+			quirk_names += Q.name
+	if(!length(quirk_names))
+		return "None"
+	return quirk_names.Join(", ")
+
+/mob/living/carbon/human/proc/get_active_addiction_names()
+	var/list/addiction_names = list()
+	for(var/datum/status_effect/status_effect as anything in status_effects)
+		if(!istype(status_effect, /datum/status_effect/debuff/addiction))
+			continue
+		var/atom/movable/screen/alert/status_effect/status_alert = status_effect.alert_type
+		var/addiction_name = initial(status_alert.name)
+		addiction_names += addiction_name || "Addiction"
+	if(!length(addiction_names))
+		return "None active"
+	return addiction_names.Join(", ")
+
+/mob/living/carbon/human/proc/show_self_quirk_summary()
+	to_chat(src, span_info("Boons: [get_quirk_names_by_category(QUIRK_BOON)]"))
+	to_chat(src, span_info("Vices: [get_quirk_names_by_category(QUIRK_VICE)]"))
+	to_chat(src, span_info("Addictions: [get_active_addiction_names()]"))
+
 /mob/living/carbon/human/proc/clear_quirks()
 	for(var/datum/quirk/Q in quirks)
 		qdel(Q)

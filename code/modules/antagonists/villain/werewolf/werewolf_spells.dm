@@ -31,18 +31,23 @@
 	// sound played for owner
 	playsound(owner, pick('sound/vo/mobs/wwolf/howl (1).ogg', 'sound/vo/mobs/wwolf/howl (2).ogg'), 75, TRUE)
 
-	// for(var/mob/player as anything in (GLOB.player_list - owner))
-	// 	if(!player.mind)
-	// 		continue
-	// 	if(player.stat == DEAD)
-	// 		continue
+	var/datum/antagonist/werewolf/werewolf_antag = IS_WEREWOLF(owner)
+	var/howler_name = werewolf_antag ? werewolf_antag.wolfname : owner.real_name
 
-	// 	// Announcement to other werewolves (and anyone else who has beast language somehow)
-	// 	if(player.mind.has_antag_datum(/datum/antagonist/werewolf) || (use_language && player.has_language(/datum/language/beast)))
-	// 		to_chat(player, span_boldannounce("[werewolf_player ? werewolf_player.wolfname : owner.real_name] howls to the hidden moon: [message]"))
+	to_chat(owner, span_boldannounce("I howl to the hidden moon: \"[message]\""))
 
-	// 	if(get_dist(player, owner) > 7)
-	// 		player.playsound_local(get_turf(player), pick('sound/vo/mobs/wwolf/howldist (1).ogg','sound/vo/mobs/wwolf/howldist (2).ogg'), 50, FALSE, pressure_affected = FALSE)
+	for(var/mob/player as anything in (GLOB.player_list - owner))
+		if(!player.mind)
+			continue
+		if(player.stat == DEAD)
+			continue
+
+		// Announcement to other werewolves (and anyone else who has beast language somehow)
+		if(player.mind.has_antag_datum(/datum/antagonist/werewolf) || (use_language && player.has_language(/datum/language/beast)))
+			to_chat(player, span_boldannounce("[howler_name] howls to the hidden moon: \"[message]\""))
+
+		if(get_dist(player, owner) > 7)
+			player.playsound_local(get_turf(player), pick('sound/vo/mobs/wwolf/howldist (1).ogg','sound/vo/mobs/wwolf/howldist (2).ogg'), 50, FALSE, pressure_affected = FALSE)
 
 	owner.log_message("howls: [message] (WEREWOLF)", LOG_ATTACK)
 

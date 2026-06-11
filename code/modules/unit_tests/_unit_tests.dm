@@ -87,7 +87,6 @@
 #include "leeches.dm"
 #include "load_map_security.dm"
 #include "lootpanel.dm"
-#include "mage_hand.dm"
 #include "mana_capacity_enchantment.dm"
 #include "map_landmarks.dm"
 #include "mapping.dm"

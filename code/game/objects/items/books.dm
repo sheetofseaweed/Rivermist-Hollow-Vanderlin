@@ -1403,6 +1403,8 @@
 	icon_state = "manuscript"
 	dir = 2 //! dir is used to decide how many pages are displayed in the icon
 	resistance_flags = FLAMMABLE
+	grid_width = 32
+	grid_height = 64
 	var/number_of_pages = 2
 	var/compiled_pages = null
 	var/list/obj/item/paper/pages = new/list(2) //very intentional constructor

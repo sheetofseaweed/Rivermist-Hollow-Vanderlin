@@ -900,6 +900,9 @@
 	background_track = 'sound/music/area/caves.ogg'
 	background_track_dusk = 'sound/music/area/caves.ogg'
 	background_track_night = 'sound/music/area/caves.ogg'
+	ambush_times = null
+	ambush_types = null
+	ambush_mobs = null
 	//deathsight_message = "wet caverns"
 
 /area/indoors/cave/rmh_cave/wet/lake
@@ -936,16 +939,25 @@
 	name = "Southern Caves"
 	first_time_text = "Southern Caves"
 	ceiling_protected = TRUE
+	ambush_times = null
+	ambush_types = null
+	ambush_mobs = null
 
 /area/indoors/cave/rmh_cave/cave_druid
 	name = "Druid's Caves"
 	first_time_text = "Druid's Caves"
 	ceiling_protected = TRUE
+	ambush_times = null
+	ambush_types = null
+	ambush_mobs = null
 
 /area/indoors/cave/rmh_cave/cave_leshiy
 	name = "Warrior's Caves"
 	first_time_text = "Hidden Cave"
 	ceiling_protected = TRUE
+	ambush_times = null
+	ambush_types = null
+	ambush_mobs = null
 
 // - - - - - -
 //BASEMENTS

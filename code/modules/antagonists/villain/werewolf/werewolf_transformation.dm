@@ -20,8 +20,9 @@
 	if(current_body.advsetup)
 		return
 
-	handle_time_of_day(current_body)
-	process_pending_forced_transformation()
+	if(subject_to_moon_pressure)
+		handle_time_of_day(current_body)
+		process_pending_forced_transformation()
 
 	if(transformed && !HAS_TRAIT(current_body, TRAIT_PARALYSIS))
 		if(current_body.rage_datum?.check_rage(text2num(WW_RAGE_MEDIUM)))
@@ -69,19 +70,34 @@
 /datum/antagonist/werewolf/proc/mark_transformation_complete()
 	transformed_since_last_nightfall = TRUE
 	reset_transformation_pressure()
-	COOLDOWN_START(src, transformation_cooldown, WW_TRANSFORMATION_COOLDOWN)
-	sync_transformation_action_cooldown(WW_TRANSFORMATION_COOLDOWN)
+	var/datum/action/cooldown/spell/undirected/werewolf_form/transformation_action = get_transformation_action()
+	transformation_action?.StartCooldown(WW_TRANSFORMATION_COOLDOWN)
 
-/datum/antagonist/werewolf/proc/sync_transformation_action_cooldown(cooldown_duration)
+/datum/antagonist/werewolf/proc/get_transformation_action()
+	RETURN_TYPE(/datum/action/cooldown/spell/undirected/werewolf_form)
 	var/mob/living/current_body = owner?.current
 	if(!istype(current_body))
-		return
+		return null
+	return current_body.get_spell(/datum/action/cooldown/spell/undirected/werewolf_form, TRUE)
 
-	var/datum/action/cooldown/spell/undirected/werewolf_form/transformation_action = current_body.get_spell(/datum/action/cooldown/spell/undirected/werewolf_form, TRUE)
+/// Remaining time before another form change is allowed. The toggle action's own cooldown is the single source of truth.
+/datum/antagonist/werewolf/proc/get_transformation_cooldown_remaining()
+	var/datum/action/cooldown/transformation_action = get_transformation_action()
 	if(!transformation_action)
-		return
+		return 0
+	return max(transformation_action.next_use_time - world.time, 0)
 
-	transformation_action.set_external_cooldown(cooldown_duration)
+/datum/antagonist/werewolf/proc/apply_transformed_rage_decay(datum/rage/rage_datum)
+	if(transform_rage_decay_active || !rage_datum)
+		return
+	rage_datum.rage_change_on_life -= transformed_rage_decay
+	transform_rage_decay_active = TRUE
+
+/datum/antagonist/werewolf/proc/remove_transformed_rage_decay(datum/rage/rage_datum)
+	if(!transform_rage_decay_active || !rage_datum)
+		return
+	rage_datum.rage_change_on_life += transformed_rage_decay
+	transform_rage_decay_active = FALSE
 
 /datum/antagonist/werewolf/proc/handle_time_of_day(mob/living/carbon/human/current_body)
 	if(last_seen_tod == GLOB.tod)
@@ -157,10 +173,12 @@
 			to_chat(current_body, span_warning("My body is already in the middle of changing."))
 		return FALSE
 
-	if(!ignore_cooldown && !COOLDOWN_FINISHED(src, transformation_cooldown))
-		if(feedback)
-			to_chat(current_body, span_warning("My form is still settling. I can transform again in [DisplayTimeText(COOLDOWN_TIMELEFT(src, transformation_cooldown))]."))
-		return FALSE
+	if(!ignore_cooldown)
+		var/cooldown_remaining = get_transformation_cooldown_remaining()
+		if(cooldown_remaining > 0)
+			if(feedback)
+				to_chat(current_body, span_warning("My form is still settling. I can transform again in [DisplayTimeText(cooldown_remaining)]."))
+			return FALSE
 
 	return TRUE
 
@@ -234,7 +252,6 @@
 	else
 		to_chat(human_user, span_userdanger("The Moon calls!"))
 	human_user.Stun(WW_TRANSFORMATION_LOCKDOWN, ignore_canstun = TRUE)
-	//human_user.Knockdown(WW_TRANSFORMATION_LOCKDOWN, ignore_canstun = TRUE)w
 	sleep(WW_TRANSFORMATION_AGONY_INTERVAL)
 	human_user.flash_fullscreen("redflash3")
 	human_user.emote("scream", forced = TRUE)
@@ -242,8 +259,11 @@
 	if(!QDELETED(human_user))
 		REMOVE_TRAIT(human_user, TRAIT_NO_TRANSFORM, REF(src))
 
-	if(!can_transform(FALSE, FALSE, TRUE))
+	if(!can_transform(TRUE, FALSE, TRUE))
 		transformation_in_progress = FALSE
+		if(!QDELETED(human_user))
+			human_user.SetStun(0, ignore_canstun = TRUE)
+			to_chat(human_user, span_warning("The change collapses and the beast recoils beneath my skin."))
 		return FALSE
 
 	return werewolf_transform(force_due_to_missed_nights)
@@ -261,34 +281,39 @@
 	pre_transformation()
 
 	var/mob/living/carbon/human/species/werewolf/new_werewolf = generate_werewolf(human_user)
-	new_werewolf.apply_status_effect(/datum/status_effect/shapechange_mob/die_with_form, human_user, FALSE)
+	new_werewolf.apply_status_effect(/datum/status_effect/shapechange_mob/die_with_form, human_user)
 	transfer_skill_state_to_werewolf(human_user, new_werewolf)
 	apply_werewolf_transformation_bonuses(new_werewolf)
 	new_werewolf.dna?.species.after_creation(new_werewolf) // funny accented werewolf
 	new_werewolf.set_patron(human_user.patron)
 	human_user.rage_datum.grant_to_secondary(new_werewolf)
-	human_user.rage_datum.rage_change_on_life -= transformed_rage_decay
+	apply_transformed_rage_decay(human_user.rage_datum)
 
 	new_werewolf.blood_volume = human_user.blood_volume
 	human_user.fully_heal(HEAL_DAMAGE|HEAL_BLOOD|HEAL_WOUNDS|HEAL_RESTRAINTS)
 
 	if(human_user.getorganslot(ORGAN_SLOT_PENIS))
-		var/obj/item/organ/genitals/penis/penis = new_werewolf.getorganslot(ORGAN_SLOT_PENIS)
-		penis = new /obj/item/organ/genitals/penis/knotted/big
-		penis.Insert(new_werewolf, TRUE)
+		var/obj/item/organ/genitals/penis/knotted/big/penis = new
+		penis.Insert(new_werewolf, TRUE, FALSE)
 	if(human_user.getorganslot(ORGAN_SLOT_TESTICLES))
-		var/obj/item/organ/genitals/filling_organ/testicles/testicles = new_werewolf.getorganslot(ORGAN_SLOT_TESTICLES)
-		testicles = new /obj/item/organ/genitals/filling_organ/testicles/internal
-		testicles.Insert(new_werewolf, TRUE)
+		var/obj/item/organ/genitals/filling_organ/testicles/internal/testicles = new
+		testicles.Insert(new_werewolf, TRUE, FALSE)
 	if(human_user.getorganslot(ORGAN_SLOT_BREASTS))
-		var/obj/item/organ/genitals/filling_organ/breasts/breasts = new_werewolf.getorganslot(ORGAN_SLOT_BREASTS)
-		breasts = new /obj/item/organ/genitals/filling_organ/breasts
-		breasts.Insert(new_werewolf, TRUE)
+		var/obj/item/organ/genitals/filling_organ/breasts/breasts = new
+		breasts.Insert(new_werewolf, TRUE, FALSE)
 	if(human_user.getorganslot(ORGAN_SLOT_VAGINA))
-		var/obj/item/organ/genitals/filling_organ/vagina/vagina = new_werewolf.getorganslot(ORGAN_SLOT_VAGINA)
-		vagina = new /obj/item/organ/genitals/filling_organ/vagina
-		vagina.Insert(new_werewolf, TRUE)
+		var/obj/item/organ/genitals/filling_organ/vagina/vagina = new
+		vagina.Insert(new_werewolf, TRUE, FALSE)
 
+	transformed = TRUE
+	transformation_in_progress = FALSE
+
+	var/datum/mind/werewolf_mind = human_user.mind
+	if(werewolf_mind?.current == human_user)
+		// Keep the werewolf player in control of the beast, along with any mind-bound actions.
+		werewolf_mind.transfer_to(new_werewolf, TRUE)
+
+	// Feedback comes after the mind transfer so the player's client is in the new body to receive it.
 	playsound(new_werewolf, pick('sound/combat/gib (1).ogg', 'sound/combat/gib (2).ogg'), 200, FALSE, 3)
 	new_werewolf.playsound_local(get_turf(new_werewolf), 'sound/music/wolfintro.ogg', 80, FALSE, pressure_affected = FALSE)
 	if(force_due_to_missed_nights)
@@ -297,15 +322,10 @@
 		to_chat(new_werewolf, span_userdanger("I transform into a horrible beast!"))
 	new_werewolf.emote("rage")
 
-	transformed = TRUE
-	var/datum/mind/werewolf_mind = human_user.mind
-	if(werewolf_mind?.current == human_user)
-		// Keep the werewolf player in control of the beast, along with any mind-bound actions.
-		werewolf_mind.transfer_to(new_werewolf, TRUE)
-	transformation_in_progress = FALSE
 	mark_transformation_complete()
 	RegisterSignal(new_werewolf, COMSIG_LIVING_COMBAT_KILL, PROC_REF(on_werewolf_kill))
 	RegisterSignal(new_werewolf, COMSIG_LIVING_UNSHAPESHIFTED, PROC_REF(werewolf_untransform))
+	RegisterSignal(new_werewolf, COMSIG_PARENT_QDELETING, PROC_REF(on_werewolf_body_deleted))
 	return TRUE
 
 /datum/antagonist/werewolf/proc/pre_transformation()
@@ -335,19 +355,8 @@
 	new_werewolf.attributes.copy_skill_state(human_user.attributes)
 
 /datum/antagonist/werewolf/proc/apply_werewolf_transformation_bonuses(mob/living/carbon/human/species/werewolf/new_werewolf)
-	var/datum/attribute_holder/werewolf_attributes = new_werewolf?.attributes
-	var/datum/species/werewolf/werewolf_species = new_werewolf?.dna?.species
-	if(!werewolf_attributes || !istype(werewolf_species))
-		return
-
-	var/datum/attribute_holder/sheet/inherent_sheet = werewolf_species.get_inherent_attribute_sheet()
-	if(inherent_sheet)
-		werewolf_attributes.add_sheet(inherent_sheet)
-
-	var/datum/attribute_holder/sheet/gender_sheet = werewolf_species.get_gender_attribute_sheet(new_werewolf.gender)
-	if(gender_sheet)
-		werewolf_attributes.add_sheet(gender_sheet)
-
+	// The beast body keeps the statline it was created with (base stats + species sheets applied on
+	// species gain) - the human's stats do not carry over, only skills do. Enforce minimum ferocity here.
 	apply_werewolf_skill_floor(new_werewolf, /datum/attribute/skill/combat/wrestling, 50)
 	apply_werewolf_skill_floor(new_werewolf, /datum/attribute/skill/combat/unarmed, 50)
 	apply_werewolf_skill_floor(new_werewolf, /datum/attribute/skill/misc/climbing, 60)
@@ -381,39 +390,67 @@
 
 	var/mob/living/carbon/human/werewolf_user = status_owner
 	var/mob/living/carbon/human/caster_mob = status_caster_mob
-	if(!istype(werewolf_user) || !istype(caster_mob))
-		if(istype(werewolf_user))
-			QDEL_NULL(werewolf_user.skin_armor)
-		transformed = FALSE
-		transformation_in_progress = FALSE
-		return
 
-	QDEL_NULL(werewolf_user.skin_armor)
-
-	for(var/obj/item/dropped_item in werewolf_user)
-		werewolf_user.dropItemToGround(dropped_item, silent = TRUE)
-
-	INVOKE_ASYNC(werewolf_user, TYPE_PROC_REF(/mob, emote), "scream")
 	transformed = FALSE
 	transformation_in_progress = FALSE
 
-	var/datum/mind/werewolf_mind = werewolf_user.mind
-	if(werewolf_mind?.current == werewolf_user)
-		// Restore control to the hidden human before the beast body is cleaned up.
-		werewolf_mind.transfer_to(caster_mob, TRUE)
+	// Recover the rage datum from whichever body still holds a reference to it.
+	var/datum/rage/rage_datum
+	if(istype(caster_mob))
+		rage_datum = caster_mob.rage_datum
+	if(!rage_datum && istype(werewolf_user))
+		rage_datum = werewolf_user.rage_datum
+	remove_transformed_rage_decay(rage_datum)
+	rage_datum?.remove_secondary()
+
+	if(istype(werewolf_user))
+		QDEL_NULL(werewolf_user.skin_armor)
+		UnregisterSignal(werewolf_user, list(COMSIG_LIVING_COMBAT_KILL, COMSIG_LIVING_UNSHAPESHIFTED, COMSIG_PARENT_QDELETING))
+		// Shed only what the beast held or wore - organs and bodyparts are mob contents too and must stay put.
+		for(var/obj/item/held_item as anything in werewolf_user.held_items)
+			if(held_item)
+				werewolf_user.dropItemToGround(held_item, silent = TRUE)
+		for(var/obj/item/equipped_item as anything in werewolf_user.get_equipped_items(TRUE))
+			werewolf_user.dropItemToGround(equipped_item, silent = TRUE)
+
+	if(!istype(caster_mob))
+		return
+
+	if(istype(werewolf_user))
+		INVOKE_ASYNC(werewolf_user, TYPE_PROC_REF(/mob, emote), "scream")
+
+		var/datum/mind/werewolf_mind = werewolf_user.mind
+		if(werewolf_mind?.current == werewolf_user)
+			// Restore control to the hidden human before the beast body is cleaned up.
+			werewolf_mind.transfer_to(caster_mob, TRUE)
+
+		caster_mob.adjustBruteLoss(werewolf_user.getBruteLoss() / 2)
+		caster_mob.adjustFireLoss(werewolf_user.getFireLoss() / 2)
+		caster_mob.adjustToxLoss(werewolf_user.getToxLoss() / 2)
+		caster_mob.adjustOxyLoss(werewolf_user.getOxyLoss() / 2)
+		caster_mob.adjustCloneLoss(werewolf_user.getCloneLoss() / 2)
 
 	to_chat(caster_mob, span_userdanger("The beast within returns to slumber."))
 	playsound(caster_mob, pick('sound/combat/gib (1).ogg', 'sound/combat/gib (2).ogg'), 200, FALSE, 3)
 	caster_mob.Knockdown(30)
 	caster_mob.Stun(30)
-	caster_mob.rage_datum.remove_secondary()
-	caster_mob.rage_datum.rage_change_on_life += transformed_rage_decay
 
-	caster_mob.adjustBruteLoss(werewolf_user.getBruteLoss() / 2)
-	caster_mob.adjustFireLoss(werewolf_user.getFireLoss() / 2)
-	caster_mob.adjustToxLoss(werewolf_user.getToxLoss() / 2)
-	caster_mob.adjustOxyLoss(werewolf_user.getOxyLoss() / 2)
-	caster_mob.adjustCloneLoss(werewolf_user.getCloneLoss() / 2)
+	// Async because we are a signal handler and StartCooldown's call tree can theoretically sleep.
+	INVOKE_ASYNC(src, PROC_REF(mark_transformation_complete))
 
-	UnregisterSignal(werewolf_user, list(COMSIG_LIVING_COMBAT_KILL, COMSIG_LIVING_UNSHAPESHIFTED))
-	mark_transformation_complete()
+/// The beast body was hard-deleted (gibbed, admin-removed) without unshapeshifting; clear the stale state.
+/datum/antagonist/werewolf/proc/on_werewolf_body_deleted(datum/source)
+	SIGNAL_HANDLER
+
+	transformed = FALSE
+	transformation_in_progress = FALSE
+
+	var/datum/rage/rage_datum
+	var/mob/living/carbon/human/deleted_body = source
+	if(istype(deleted_body))
+		rage_datum = deleted_body.rage_datum
+	if(!rage_datum)
+		var/mob/living/carbon/human/current_body = owner?.current
+		if(istype(current_body) && !QDELETED(current_body))
+			rage_datum = current_body.rage_datum
+	remove_transformed_rage_decay(rage_datum)

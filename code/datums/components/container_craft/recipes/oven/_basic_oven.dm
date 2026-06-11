@@ -24,7 +24,7 @@
 	var/obj/machinery/light/fueled/oven/fueled = crafter.loc
 	if(!istype(fueled))
 		fueled = crafter
-	if(!fueled.fueluse)
+	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - checked leftover fuel, so a snuffed oven still started cooking
 		return FALSE
 	. = ..()
 
@@ -34,7 +34,7 @@
 	var/obj/machinery/light/fueled/oven/fueled = crafter.loc
 	if(!istype(fueled))
 		fueled = crafter
-	if(!fueled.fueluse)
+	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - a snuffed oven shouldn't finish cooking
 		return TRUE
 	return FALSE
 

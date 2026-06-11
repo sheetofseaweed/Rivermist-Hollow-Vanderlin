@@ -1,9 +1,3 @@
-#define MAGE_HAND_ZONE_GROIN "groin"
-#define MAGE_HAND_ZONE_CHEST "chest"
-#define MAGE_HAND_ZONE_BUTT "butt"
-#define MAGE_HAND_ZONE_MOUTH "mouth"
-#define MAGE_HAND_ZONE_BODY "body"
-
 /datum/sex_remote_context
 	var/datum/weakref/caster_ref
 	var/datum/weakref/target_ref
