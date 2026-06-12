@@ -1536,12 +1536,14 @@
 	icon_state = "hollyH"
 	gender = NEUTER
 	specuse = ALL_RACES_LIST
+	icon = 'modular_rmh/icons/mob/sprite_accessory/head/hair/hollyhair.dmi'
 
 /datum/sprite_accessory/hair/head/azur/cowbangs
 	name = "Cow Bangs"
 	icon_state = "cowBangs"
 	gender = NEUTER
 	specuse = ALL_RACES_LIST
+	icon = 'modular_rmh/icons/mob/sprite_accessory/head/hair/cowhair.dmi'
 
 /datum/sprite_accessory/hair/head/azur/shorthaireighties
 	name = "80s-style Hair"

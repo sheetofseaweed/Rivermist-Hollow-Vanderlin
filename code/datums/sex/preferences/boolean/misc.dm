@@ -7,7 +7,7 @@
 /datum/erp_preference/boolean/allow_horny_leeches
 	name = "Horny Leeches"
 	description = "Enables the horny leeches interactions"
-	default_value = TRUE
+	default_value = FALSE
 	category = "General"
 
 /datum/erp_preference/boolean/allow_forced_lactation

@@ -4,15 +4,19 @@
 	var/next_sate = 0
 	var/sated = TRUE
 	var/time = 50 MINUTES
-	var/debuff = /datum/status_effect/debuff/addiction
+	var/debuff = null
 	var/needsate_text
 	var/sated_text = "That's much better..."
 	var/unsate_time
 
 /datum/quirk/vice/on_spawn()
+	if(!needsate_text && !debuff)
+		return
 	next_sate = world.time + time
 
 /datum/quirk/vice/on_life(mob/living/user)
+	if(!needsate_text && !debuff)
+		return
 	if(!ishuman(user))
 		return
 	var/mob/living/carbon/human/H = user

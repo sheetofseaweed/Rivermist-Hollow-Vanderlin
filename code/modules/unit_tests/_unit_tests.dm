@@ -95,6 +95,7 @@
 #include "preferences_preview_construct_cleanup.dm"
 #include "preferences_preview_taur_cleanup.dm"
 #include "projectiles.dm"
+#include "quirks.dm"
 #include "reagent_id_typos.dm"
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
