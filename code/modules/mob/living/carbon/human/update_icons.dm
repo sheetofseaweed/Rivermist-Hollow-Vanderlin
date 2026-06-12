@@ -2133,6 +2133,15 @@ generate/load female uniform sprites matching all previously decided variables
 
 	for(var/obj/item/bodypart/BP as anything in bodyparts)
 		. += BP.body_zone
+		// Taur bodies share the global static limb_icon_cache with everyone else,
+		// but different taur types use different sprites and body_offset_y shifts
+		// every other limb's pixel_y. Without these in the key, a jdeer
+		// (body_offset_y = 17) can load limbs cached by an offset-less taur and
+		// its head/arms render 17px low, hidden inside the taur body (and vice versa).
+		if(BP.body_zone == BODY_ZONE_TAUR)
+			var/obj/item/bodypart/taur/taur_part = BP
+			. += "taur[taur_part.taur_icon_state]"
+			. += "tauroffset[taur_part.body_offset_y]"
 		if(BP.status == BODYPART_ORGANIC)
 			. += "organic"
 		else

@@ -15,4 +15,8 @@ export type ExaminePanelData = {
   is_playing: boolean;
   has_song: boolean;
   is_naked: boolean;
+  // Character preview
+  has_headshot: boolean;
+  has_nsfw_headshot: boolean;
+  preview_image: string;
 };
