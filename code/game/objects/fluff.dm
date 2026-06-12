@@ -48,6 +48,8 @@
 	icon = 'icons/obj/flora/ausflora.dmi'
 	icon_state = "firstbush_1"
 	max_integrity = 25
+	layer = BELOW_MOB_LAYER
+	plane = GAME_PLANE
 
 /obj/structure/flora/ausbushes/Initialize()
 	if(icon_state == "firstbush_1")

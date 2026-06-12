@@ -18,6 +18,10 @@
 	max_pq = null
 	cmode_music = 'sound/music/combat_vamp.ogg'
 
+	traits = list(
+		TRAIT_VMANSION,
+	)
+
 /datum/outfit/job/roguetown/vamplord/regular/pre_equip(mob/living/carbon/human/H)
 	..()
 	if(H && H.mind)

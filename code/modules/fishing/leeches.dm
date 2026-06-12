@@ -12,7 +12,12 @@
 /proc/leech_body_storage_success(fit_result)
 	return fit_result in list(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
 
-/proc/roll_wild_leech_type()
+/proc/roll_wild_leech_type(atom/location)
+	if(!ishuman(location))
+		return /obj/item/natural/worms/leech
+	var/mob/living/carbon/human/H = location
+	if(!H.get_erp_pref(/datum/erp_preference/boolean/allow_horny_leeches))
+		return /obj/item/natural/worms/leech
 	return pickweight(list(
 		/obj/item/natural/worms/leech/erotic/basic = 45,
 		/obj/item/natural/worms/leech/erotic/aphrodisiac = 20,
@@ -22,7 +27,7 @@
 	))
 
 /proc/spawn_wild_leech(atom/location)
-	var/leech_type = roll_wild_leech_type()
+	var/leech_type = roll_wild_leech_type(location)
 	var/obj/item/natural/worms/leech/leech = new leech_type(location)
 	if(ishuman(location))
 		var/mob/living/carbon/human/H = location

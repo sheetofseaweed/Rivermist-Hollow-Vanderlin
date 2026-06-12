@@ -215,12 +215,14 @@
 
 /datum/species/kobold/get_skin_list()
 	return sortList(list(
-		"Moonshade" = SKIN_COLOR_MOONSHADE,
-		"Sunstreak" = SKIN_COLOR_SUNSTREAK,
-		"Stonepaw" = SKIN_COLOR_STONEPAW,
-		"Emberhide" = SKIN_COLOR_EMBERHIDE,
-		"Sandswept" = SKIN_COLOR_SANDSWEPT,
-		"Icepack" = SKIN_COLOR_ICEPACK,
+		"Bronze Claw"	= SKIN_COLOR_BRONZECLAW,
+		"Ember Hide"	= SKIN_COLOR_EMBERHIDE,
+		"Ice Pack"		= SKIN_COLOR_ICEPACK,
+		"Malachite"		= SKIN_COLOR_MALACHITE,
+		"Moon Shade"	= SKIN_COLOR_MOONSHADE,
+		"Sand Swept"	= SKIN_COLOR_SANDSWEPT,
+		"Stone Paw"		= SKIN_COLOR_STONEPAW,
+		"Sun Streak"	= SKIN_COLOR_SUNSTREAK,
 	))
 
 /datum/species/kobold/get_possible_names(gender = MALE)

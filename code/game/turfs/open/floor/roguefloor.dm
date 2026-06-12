@@ -898,9 +898,12 @@
 /obj/effect/decal/cobblerockedge/alt
 	icon_state = "cobblealt_edges"
 
-/obj/effect/decal/borderfall
+/obj/effect/decal/borderfall //RMH EDIT
+	name = ""
+	desc = ""
 	icon = 'icons/turf/constructed/misc.dmi'
 	icon_state = "borderfall"
+	mouse_opacity = 0
 
 /*	..................   Miscellany   ................... */
 /turf/open/floor/tile

@@ -1,34 +1,122 @@
-import { useMemo, useState } from 'react';
-import { Box, Button, Image, Section, Stack } from 'tgui-core/components';
+import { useEffect, useMemo, useState } from "react";
+import { Box, Button, Image, Section, Stack } from "tgui-core/components";
 
-import { resolveAsset } from '../assets';
-import { useBackend } from '../backend';
-import type { ExaminePanelData } from './ExaminePanelData';
+import { resolveAsset } from "../assets";
+import { useBackend } from "../backend";
+import type { ExaminePanelData } from "./ExaminePanelData";
 
-function setHeadshotImageSource(asset: string) {
-  const headshotImage = document.getElementById(
-    'headshot_image',
-  ) as HTMLImageElement | null;
-  if (headshotImage) {
-    headshotImage.src = resolveAsset(asset);
-  }
-}
+const CharacterPortrait = (props: { nsfw: boolean }) => {
+  const { act, data } = useBackend<ExaminePanelData>();
+  const {
+    headshot,
+    nsfw_headshot,
+    has_headshot,
+    has_nsfw_headshot,
+    preview_image,
+  } = data;
+  const hasShot = props.nsfw ? has_nsfw_headshot : has_headshot;
+  const shot = props.nsfw
+    ? nsfw_headshot || "headshot_red.png"
+    : headshot || "headshot_red.png";
+  // Default to the live character preview when no headshot is set
+  const [showPreview, setShowPreview] = useState(!hasShot);
+  const previewActive = showPreview || !hasShot;
+
+  // Ask the server to flatten the character the first time the preview is shown
+  useEffect(() => {
+    if (previewActive && !preview_image) {
+      act("generate_preview");
+    }
+  }, [previewActive, preview_image]);
+
+  return (
+    <Stack vertical g={0.5}>
+      <Stack.Item>
+        <Box
+          width="350px"
+          height="350px"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto",
+          }}
+        >
+          {previewActive ? (
+            preview_image ? (
+              <img
+                src={preview_image}
+                style={{
+                  // The server always sends a fixed 96x96 canvas, so a fixed
+                  // render size means a constant, non-jumping sprite scale
+                  width: "336px",
+                  height: "336px",
+                  imageRendering: "pixelated",
+                }}
+              />
+            ) : (
+              <Box color="gray" italic>
+                Loading character...
+              </Box>
+            )
+          ) : (
+            <img
+              src={resolveAsset(shot)}
+              width="350px"
+              height="350px"
+              style={{ objectFit: "contain" }}
+            />
+          )}
+        </Box>
+      </Stack.Item>
+      <Stack.Item>
+        <Stack align="center" justify="center">
+          {previewActive && (
+            <Stack.Item>
+              <Button
+                icon="rotate-left"
+                tooltip="Rotate counterclockwise"
+                onClick={() => act("rotate", { clockwise: false })}
+              />
+            </Stack.Item>
+          )}
+          <Stack.Item>
+            <Button
+              icon={previewActive ? "image" : "user"}
+              disabled={!hasShot}
+              tooltip={
+                hasShot
+                  ? previewActive
+                    ? "Show the headshot image"
+                    : "Show the in-game character"
+                  : "No headshot set"
+              }
+              onClick={() => setShowPreview(!previewActive)}
+            >
+              {previewActive ? "Headshot" : "Character Preview"}
+            </Button>
+          </Stack.Item>
+          {previewActive && (
+            <Stack.Item>
+              <Button
+                icon="rotate-right"
+                tooltip="Rotate clockwise"
+                onClick={() => act("rotate", { clockwise: true })}
+              />
+            </Stack.Item>
+          )}
+        </Stack>
+      </Stack.Item>
+    </Stack>
+  );
+};
 
 export const FlavorTextPage = (props) => {
   const { data } = useBackend<ExaminePanelData>();
-  const {
-    flavor_text,
-    flavor_text_nsfw,
-    ooc_notes,
-    ooc_notes_nsfw,
-    headshot,
-    nsfw_headshot,
-    is_naked,
-  } = data;
-  const safeHeadshot = headshot || 'headshot_red.png';
-  const safeNsfwHeadshot = nsfw_headshot || 'headshot_red.png';
-  const [oocNotesIndex, setOocNotesIndex] = useState('SFW');
-  const [flavorTextIndex, setFlavorTextIndex] = useState('SFW');
+  const { flavor_text, flavor_text_nsfw, ooc_notes, ooc_notes_nsfw, is_naked } =
+    data;
+  const [oocNotesIndex, setOocNotesIndex] = useState("SFW");
+  const [flavorTextIndex, setFlavorTextIndex] = useState("SFW");
 
   const flavorHTML = useMemo(
     () => ({
@@ -62,12 +150,7 @@ export const FlavorTextPage = (props) => {
     <Stack fill>
       <Stack fill vertical>
         <Stack.Item align="center">
-          <img
-            id="headshot_image"
-            src={resolveAsset(safeHeadshot)}
-            width="350px"
-            height="350px"
-          />
+          <CharacterPortrait nsfw={flavorTextIndex === "NSFW"} />
         </Stack.Item>
         <Stack.Item grow>
           <Stack fill>
@@ -80,10 +163,10 @@ export const FlavorTextPage = (props) => {
                 buttons={
                   <>
                     <Button
-                      selected={oocNotesIndex === 'SFW'}
-                      bold={oocNotesIndex === 'SFW'}
+                      selected={oocNotesIndex === "SFW"}
+                      bold={oocNotesIndex === "SFW"}
                       onClick={() => {
-                        setOocNotesIndex('SFW');
+                        setOocNotesIndex("SFW");
                       }}
                       textAlign="center"
                       minWidth="60px"
@@ -91,11 +174,11 @@ export const FlavorTextPage = (props) => {
                       SFW
                     </Button>
                     <Button
-                      selected={oocNotesIndex === 'NSFW'}
+                      selected={oocNotesIndex === "NSFW"}
                       disabled={!ooc_notes_nsfw}
-                      bold={oocNotesIndex === 'NSFW'}
+                      bold={oocNotesIndex === "NSFW"}
                       onClick={() => {
-                        setOocNotesIndex('NSFW');
+                        setOocNotesIndex("NSFW");
                       }}
                       textAlign="center"
                       minWidth="60px"
@@ -105,16 +188,16 @@ export const FlavorTextPage = (props) => {
                   </>
                 }
               >
-                {oocNotesIndex === 'SFW' && (
+                {oocNotesIndex === "SFW" && (
                   <Box
                     dangerouslySetInnerHTML={{
                       __html: ooc_notes
                         ? `<span class='Chat'>${ooc_notes}</span>`
-                        : '<i>No OOC notes provided.</i>',
+                        : "<i>No OOC notes provided.</i>",
                     }}
                   />
                 )}
-                {oocNotesIndex === 'NSFW' && (
+                {oocNotesIndex === "NSFW" && (
                   <Box dangerouslySetInnerHTML={oocnsfwHTML} />
                 )}
               </Section>
@@ -131,25 +214,19 @@ export const FlavorTextPage = (props) => {
           buttons={
             <>
               <Button
-                selected={flavorTextIndex === 'SFW'}
-                bold={flavorTextIndex === 'SFW'}
-                onClick={() => {
-                  setFlavorTextIndex('SFW');
-                  setHeadshotImageSource(safeHeadshot);
-                }}
+                selected={flavorTextIndex === "SFW"}
+                bold={flavorTextIndex === "SFW"}
+                onClick={() => setFlavorTextIndex("SFW")}
                 textAlign="center"
                 width="60px"
               >
                 SFW
               </Button>
               <Button
-                selected={flavorTextIndex === 'NSFW'}
+                selected={flavorTextIndex === "NSFW"}
                 disabled={!is_naked || !flavor_text_nsfw}
-                bold={flavorTextIndex === 'NSFW'}
-                onClick={() => {
-                  setFlavorTextIndex('NSFW');
-                  setHeadshotImageSource(safeNsfwHeadshot);
-                }}
+                bold={flavorTextIndex === "NSFW"}
+                onClick={() => setFlavorTextIndex("NSFW")}
                 textAlign="center"
                 width="60px"
               >
@@ -158,16 +235,16 @@ export const FlavorTextPage = (props) => {
             </>
           }
         >
-          {flavorTextIndex === 'SFW' && (
+          {flavorTextIndex === "SFW" && (
             <Box
               dangerouslySetInnerHTML={{
                 __html: flavor_text
                   ? `<span class='Chat'>${flavor_text}</span>`
-                  : '<i>No flavor text provided.</i>',
+                  : "<i>No flavor text provided.</i>",
               }}
             />
           )}
-          {flavorTextIndex === 'NSFW' && (
+          {flavorTextIndex === "NSFW" && (
             <Box dangerouslySetInnerHTML={nsfwHTML} />
           )}
         </Section>
@@ -184,9 +261,9 @@ export const ImageGalleryPage = () => {
     ? nsfw_img_gallery
     : [];
 
-  const [galleryMode, setGalleryMode] = useState<'SFW' | 'NSFW'>('SFW');
+  const [galleryMode, setGalleryMode] = useState<"SFW" | "NSFW">("SFW");
 
-  const images = galleryMode === 'NSFW' ? nsfwImgGallery : imgGallery;
+  const images = galleryMode === "NSFW" ? nsfwImgGallery : imgGallery;
 
   return (
     <Section
@@ -196,19 +273,19 @@ export const ImageGalleryPage = () => {
       buttons={
         <>
           <Button
-            selected={galleryMode === 'SFW'}
-            bold={galleryMode === 'SFW'}
-            onClick={() => setGalleryMode('SFW')}
+            selected={galleryMode === "SFW"}
+            bold={galleryMode === "SFW"}
+            onClick={() => setGalleryMode("SFW")}
             textAlign="center"
             minWidth="60px"
           >
             SFW
           </Button>
           <Button
-            selected={galleryMode === 'NSFW'}
+            selected={galleryMode === "NSFW"}
             disabled={!is_naked || nsfwImgGallery.length === 0}
-            bold={galleryMode === 'NSFW'}
-            onClick={() => setGalleryMode('NSFW')}
+            bold={galleryMode === "NSFW"}
+            onClick={() => setGalleryMode("NSFW")}
             textAlign="center"
             minWidth="60px"
           >

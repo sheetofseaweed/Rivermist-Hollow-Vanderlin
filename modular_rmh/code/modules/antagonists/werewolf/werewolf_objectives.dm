@@ -322,3 +322,35 @@
 /datum/objective/werewolf_counter/trap/update_explanation_text()
 	..()
 	explanation_text = "Throw [target_amount] different player[werewolf_plural_suffix(target_amount)] into my moon pit. Progress: [get_progress()]/[target_amount]."
+
+// ------------- Moonkissed (lesser werewolf) pack objectives -------------
+
+/datum/objective/werewolf/pack_elder
+	name = "pack elder"
+	explanation_text = "Follow the pack: at least one elder of my pack must survive."
+	triumph_count = 2
+
+/datum/objective/werewolf/pack_elder/check_completion()
+	for(var/datum/mind/wolf_mind as anything in SSmapping.retainer.werewolves)
+		var/datum/antagonist/werewolf/wolf = wolf_mind?.has_antag_datum(/datum/antagonist/werewolf)
+		if(!wolf || istype(wolf, /datum/antagonist/werewolf/lesser))
+			continue
+		if(considered_alive(wolf_mind))
+			return TRUE
+	return FALSE
+
+/datum/objective/werewolf_counter/embrace_gift
+	name = "embrace"
+	triumph_count = 2
+	target_minimum = 3
+	target_maximum = 5
+
+/datum/objective/werewolf_counter/embrace_gift/get_progress()
+	var/datum/antagonist/werewolf/lesser/wolfkin = get_werewolf_antag()
+	if(!istype(wolfkin))
+		return 0
+	return wolfkin.times_shifted
+
+/datum/objective/werewolf_counter/embrace_gift/update_explanation_text()
+	..()
+	explanation_text = "Embrace the moon's gift: take my moonkissed form [target_amount] time[werewolf_plural_suffix(target_amount)]. Progress: [get_progress()]/[target_amount]."

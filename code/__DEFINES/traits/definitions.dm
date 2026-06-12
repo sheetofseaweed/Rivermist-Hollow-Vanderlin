@@ -605,3 +605,17 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NO_SELF_MAGIC 	"noselfmagic"
 
 #define TRAIT_PONYGIRL_RIDEABLE "Mount" //riding
+
+// RMH Hubs
+#define TRAIT_VMANSION			"Vampire Mansion"
+#define TRAIT_WEREWOLFDEN		"Werewolf Den"
+#define TRAIT_BLISSARBASE		"Blissar Base"
+#define TRAIT_GNOLLHUB			"Gnolls Hub"
+#define TRAIT_AVERNUS			"Avernus"
+#define TRAIT_HAG				"Hag Tree"
+#define TRAIT_DRAGONDEN			"Dragon Cave"
+#define TRAIT_THIEFBASE			"Thiefs Base"
+#define TRAIT_RATHOLE			"Rat Hole"
+#define TRAIT_TADPOLECAVE		"Tadpole Cave"
+#define TRAIT_TENTACLECAVE		"Tentacle Cave"
+#define TRAIT_GHOSTHUB			"Ghost Hub"

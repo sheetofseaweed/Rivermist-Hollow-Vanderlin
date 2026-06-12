@@ -33,7 +33,7 @@
 /datum/component/storage/concrete/grid/coin_pouch
 	screen_max_rows = 4
 	screen_max_columns = 2
-	max_w_class = WEIGHT_CLASS_NORMAL
+	max_w_class = WEIGHT_CLASS_SMALL
 	not_while_equipped = FALSE
 
 /datum/component/storage/concrete/grid/coin_pouch/cloth

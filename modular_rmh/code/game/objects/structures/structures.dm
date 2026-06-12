@@ -28,3 +28,9 @@
 	opacity = 0
 	max_integrity = 150
 	obj_broken = 1
+
+/obj/structure/fluff/railing/stonewall
+	name = "stone wall"
+	icon = 'modular_rmh/icons/obj/structures/cobble_fence.dmi'
+	icon_state = "stonewall"
+	blade_dulling = DULLING_BASHCHOP

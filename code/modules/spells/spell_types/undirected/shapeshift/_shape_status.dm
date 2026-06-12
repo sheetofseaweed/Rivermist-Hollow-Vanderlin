@@ -14,6 +14,8 @@
 	var/already_restored = FALSE
 	/// Do we keep the caster's skill levels and experience for the mob?
 	var/keep_skills = TRUE
+	/// If TRUE, the shapeshifted mob keeps the attribute holder it was created with - nothing is copied from the caster.
+	var/preserve_own_attributes = FALSE
 	var/datum/attribute_holder/stored_holder
 
 /datum/status_effect/shapechange_mob/on_creation(mob/living/new_owner, mob/living/caster, keep_skills = TRUE)
@@ -37,18 +39,20 @@
 	. = ..()
 	owner.gender = caster_mob.gender
 
-	if(!keep_skills)
-		stored_holder = caster_mob.attributes
-		owner.attributes = new /datum/attribute_holder(owner)
-		var/list/stat_values = list()
-		for(var/attr in stored_holder.attribute_list)
-			if(!ispath(attr, STAT))
-				continue
-			stat_values[attr] = stored_holder.attribute_list[attr] - ATTRIBUTE_DEFAULT
-		owner.set_stat_modifier("stored_stats", stat_values)
-	else
-		owner.attributes.copy_holder(caster_mob.attributes)
-
+	if(!preserve_own_attributes)
+		if(!keep_skills)
+			stored_holder = caster_mob.attributes
+			// The owner's own holder is being replaced wholesale - destroy it so it can't leak.
+			qdel(owner.attributes)
+			owner.attributes = new /datum/attribute_holder(owner)
+			var/list/stat_values = list()
+			for(var/attr in stored_holder.attribute_list)
+				if(!ispath(attr, STAT))
+					continue
+				stat_values[attr] = stored_holder.attribute_list[attr] - ATTRIBUTE_DEFAULT
+			owner.set_stat_modifier("stored_stats", stat_values)
+		else
+			owner.attributes.copy_holder(caster_mob.attributes)
 
 	owner.regenerate_icons()
 
@@ -117,7 +121,7 @@
 	caster_mob.remove_status_effect(/datum/status_effect/grouped/stasis, STASIS_SHAPECHANGE_EFFECT)
 
 	// We aren't keeping skills, so trash the owner's skills. Don't qdel in case we're caching the owner's skill holder for some reason.
-	if(!keep_skills)
+	if(!keep_skills && !preserve_own_attributes)
 		qdel(owner.attributes)
 		owner.attributes = stored_holder
 		stored_holder = null
@@ -283,6 +287,8 @@
 /datum/status_effect/shapechange_mob/die_with_form
 	id = "shapeshift_die_with_form"
 	alert_type = null
+	// The werewolf beast body keeps its own species statline; skills are copied separately by the antag datum.
+	preserve_own_attributes = TRUE
 
 /datum/status_effect/shapechange_mob/die_with_form/on_shape_death(datum/source, gibbed)
 	// gibbed = deleted = nothing to restore

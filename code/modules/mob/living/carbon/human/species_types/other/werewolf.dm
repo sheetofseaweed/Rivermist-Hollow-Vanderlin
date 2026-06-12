@@ -13,12 +13,6 @@
 	ambushable = FALSE
 	base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB)
 
-/mob/living/carbon/human/species/werewolf/death(gibbed, nocutscene)
-	. = ..()
-	if(stored_mob)
-		var/datum/antagonist/werewolf/ww = mind.has_antag_datum(/datum/antagonist/werewolf)
-		ww.werewolf_untransform(null, TRUE, gibbed)
-
 /mob/living/carbon/human/species/werewolf/male
 	gender = MALE
 

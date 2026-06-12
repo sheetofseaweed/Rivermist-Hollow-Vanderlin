@@ -27,6 +27,10 @@
 	var/last_seen_tod = null
 	/// TRUE once the werewolf has skipped too many nights and must transform as soon as possible.
 	var/forced_transformation_pending = FALSE
+	/// TRUE while the beast-form rage decay penalty is applied to the rage datum.
+	var/transform_rage_decay_active = FALSE
+	/// Whether skipping nights builds transformation pressure. Lesser kin carry too shallow a curse for it.
+	var/subject_to_moon_pressure = TRUE
 
 	var/wolfname = "Werewolf"
 	var/list/datum/action/werewolf_form_powers = list(
@@ -39,14 +43,12 @@
 		/datum/action/cooldown/spell/werewolf_voluntary_bite
 	)
 	COOLDOWN_DECLARE(message_cooldown)
-	COOLDOWN_DECLARE(transformation_cooldown)
 
 	innate_traits = list(
 		TRAIT_STRONGBITE,
 		TRAIT_BESTIALSENSE,
 		TRAIT_BRUSHWALK,
-		TRAIT_BESTIALSENSE,
-		TRAIT_BRUSHWALK
+		TRAIT_WEREWOLFDEN
 	)
 
 /datum/antagonist/werewolf/lesser
@@ -54,6 +56,7 @@
 	antag_hud_type = ANTAG_HUD_WEREWOLF
 	antag_hud_name = "werewolf_lesser"
 	increase_votepwr = FALSE
+	subject_to_moon_pressure = FALSE
 
 /datum/antagonist/werewolf/lesser/roundend_report()
 	return
@@ -74,27 +77,41 @@
 /datum/antagonist/werewolf/on_gain()
 	SSmapping.retainer.werewolves |= owner
 	owner.special_role = name
-	if(increase_votepwr)
-		forge_werewolf_objectives()
+	forge_werewolf_objectives()
 
 	owner.current.grant_language(/datum/language/beast)
+	owner.current.faction.Add("wolves")
+
+	wolfname = "[pick(strings("werewolf_names.json", "wolf_prefixes"))] [pick(strings("werewolf_names.json", "wolf_suffixes"))]"
+	last_seen_tod = GLOB.tod
+	grant_werewolf_powers()
+	return ..()
+
+/// The curse's full kit - beast form, lair, contracts, rage. Lesser kin override this with their shallow gift.
+/datum/antagonist/werewolf/proc/grant_werewolf_powers()
 	owner.current.add_spell(/datum/action/cooldown/spell/undirected/werewolf_form, source = owner)
 	initialize_werewolf_lair_ability()
 	initialize_werewolf_contract_interface()
 
 	var/datum/rage/werewolf/new_rage = new
 	new_rage.grant_to_holder(owner.current)
-	owner.current.faction.Add("wolves")
 
-	wolfname = "[pick(strings("werewolf_names.json", "wolf_prefixes"))] [pick(strings("werewolf_names.json", "wolf_suffixes"))]"
-	last_seen_tod = GLOB.tod
-	return ..()
-
-/datum/antagonist/werewolf/on_removal()
+/// Mirror of grant_werewolf_powers, called on antag removal.
+/datum/antagonist/werewolf/proc/remove_werewolf_powers()
 	remove_werewolf(forced = TRUE)
 	clear_transformation_pressure()
 	cleanup_werewolf_lair()
 	cleanup_werewolf_contract_interface()
+
+	if(owner.current)
+		owner.current.remove_spell(/datum/action/cooldown/spell/undirected/werewolf_form)
+
+	if(ishuman(owner.current))
+		var/mob/living/carbon/human/current_human = owner.current
+		QDEL_NULL(current_human.rage_datum)
+
+/datum/antagonist/werewolf/on_removal()
+	remove_werewolf_powers()
 
 	// owner.current should now be the original human mob, if not something is terribly wrong
 	if(!silent && owner.current)
@@ -102,13 +119,8 @@
 	owner.special_role = null
 
 	if(owner.current)
-		owner.current.remove_spell(/datum/action/cooldown/spell/undirected/werewolf_form)
 		owner.current.remove_language(/datum/language/beast)
-	owner.current.faction.Remove("wolves")
-
-	if(ishuman(owner.current))
-		var/mob/living/carbon/human/current_human = owner.current
-		QDEL_NULL(current_human.rage_datum)
+		owner.current.faction.Remove("wolves")
 
 	return ..()
 
@@ -119,6 +131,8 @@
 	objectives -= O
 
 /datum/antagonist/werewolf/proc/forge_werewolf_objectives()
+	if(!increase_votepwr)
+		return
 	var/list/new_objectives = list(
 		new /datum/objective/werewolf_counter/hunt(),
 		new /datum/objective/werewolf_counter/slay(),
@@ -264,15 +278,12 @@
 /obj/item/weapon/werewolf_claw/Initialize()
 	. = ..()
 	AddElement(/datum/element/walking_stick)
+	ADD_TRAIT(src, TRAIT_NODROP, TRAIT_GENERIC)
+	ADD_TRAIT(src, TRAIT_NOEMBED, TRAIT_GENERIC)
 
 /obj/item/weapon/werewolf_claw/right
 	icon_state = "claw_r"
 
 /obj/item/weapon/werewolf_claw/left
 	icon_state = "claw_l"
-
-/obj/item/weapon/werewolf_claw/Initialize()
-	. = ..()
-	ADD_TRAIT(src, TRAIT_NODROP, TRAIT_GENERIC)
-	ADD_TRAIT(src, TRAIT_NOEMBED, TRAIT_GENERIC)
 

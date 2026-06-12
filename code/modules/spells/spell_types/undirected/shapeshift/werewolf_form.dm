@@ -24,16 +24,6 @@
 		return
 	return ..()
 
-/datum/action/cooldown/spell/undirected/werewolf_form/proc/set_external_cooldown(override_cooldown_time)
-	var/real_time = cooldown_time
-	if(isnum(override_cooldown_time))
-		real_time = override_cooldown_time
-
-	next_use_time = world.time + real_time
-	schedule_cooldown_end(real_time)
-	build_all_button_icons(UPDATE_BUTTON_STATUS)
-	START_PROCESSING(SSfastprocess, src)
-
 /datum/action/cooldown/spell/undirected/werewolf_form/can_cast_spell(feedback)
 	. = ..()
 	if(!.)

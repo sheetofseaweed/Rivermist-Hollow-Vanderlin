@@ -372,51 +372,238 @@ function draw_debug() {
   }
   document.getElementById("statcontent").appendChild(table3);
 }
+
+var statusNodes = [];
+var statusTable = null;
+var lastStatusUpdateTime = 0;
+var STATUS_UPDATE_INTERVAL = 1000;
+
+function statusRowSignature(part) {
+	if (!Array.isArray(part)) {
+		return part.trim() == "" ? "break" : "text";
+	}
+
+	var partType = part[0] == null ? "" : String(part[0]).trim();
+	if (partType == "") {
+		return "break";
+	}
+	if (partType == "same_line") {
+		return "same_line";
+	}
+	if (partType == "tod") {
+		return "tod";
+	}
+	if (partType == "load") {
+		return part[3] !== undefined ? "load_with_span" : "load";
+	}
+	return part[2] ? "default_link" : "default";
+}
+
+function createTextStatusRow() {
+	var node = document.createElement("div");
+
+	return {
+		node: node,
+		update: function (part) {
+			node.textContent = part;
+		},
+	};
+}
+
+function createBreakStatusRow() {
+	return {
+		node: document.createElement("br"),
+		update: function () {},
+	};
+}
+
+function createTodStatusRow() {
+	var node = document.createElement("div");
+	var before = document.createTextNode("");
+	var span = document.createElement("span");
+	var after = document.createTextNode("");
+
+	node.appendChild(before);
+	node.appendChild(span);
+	node.appendChild(after);
+
+	return {
+		node: node,
+		update: function (part) {
+			var todName = part[1] || "";
+			var todWord = todName.charAt(0).toUpperCase() + todName.slice(1);
+			var todText = part[2] || "";
+			var todIdx = todText.indexOf(todWord);
+
+			span.className = "tod-" + todName;
+			if (todIdx === -1) {
+				before.textContent = todText;
+				span.textContent = "";
+				after.textContent = "";
+				return;
+			}
+
+			before.textContent = todText.slice(0, todIdx);
+			span.textContent = todWord;
+			after.textContent = todText.slice(todIdx + todWord.length);
+		},
+	};
+}
+
+function createLoadStatusRow(hasSpan) {
+	var node = document.createElement("div");
+
+	if (hasSpan) {
+		var text = document.createTextNode("");
+		var span = document.createElement("span");
+
+		node.appendChild(text);
+		node.appendChild(span);
+
+		return {
+			node: node,
+			update: function (part) {
+				text.textContent = part[2] || "";
+				span.className = "load-" + part[1];
+				span.textContent = part[3] || "";
+			},
+		};
+	}
+
+	return {
+		node: node,
+		update: function (part) {
+			node.className = "load-" + part[1];
+			node.textContent = part[2] || "";
+		},
+	};
+}
+
+function createSameLineStatusRow() {
+	var node = document.createElement("div");
+	var a = document.createElement("a");
+
+	node.appendChild(a);
+
+	return {
+		node: node,
+		update: function (part) {
+			a.href = "byond://?" + part[2];
+			a.textContent = part[1] || "";
+		},
+	};
+}
+
+function createDefaultStatusRow(hasLink) {
+	var node = document.createElement("div");
+
+	if (hasLink) {
+		var text = document.createTextNode("");
+		var a = document.createElement("a");
+
+		node.appendChild(text);
+		node.appendChild(a);
+
+		return {
+			node: node,
+			update: function (part) {
+				text.textContent = part[0] || "";
+				a.href = "byond://?" + part[2];
+				a.textContent = part[1] || "";
+			},
+		};
+	}
+
+	return {
+		node: node,
+		update: function (part) {
+			node.textContent = part[0] || "";
+		},
+	};
+}
+
+function createStatusRow(part) {
+	var signature = statusRowSignature(part);
+	var row;
+
+	if (signature == "text") {
+		row = createTextStatusRow();
+	} else if (signature == "break") {
+		row = createBreakStatusRow();
+	} else if (signature == "tod") {
+		row = createTodStatusRow();
+	} else if (signature == "load_with_span") {
+		row = createLoadStatusRow(true);
+	} else if (signature == "load") {
+		row = createLoadStatusRow(false);
+	} else if (signature == "same_line") {
+		row = createSameLineStatusRow();
+	} else {
+		row = createDefaultStatusRow(signature == "default_link");
+	}
+
+	row.signature = signature;
+	return row;
+}
+
+function needsStatusDomRebuild() {
+	if (!statusTable || statusTable.parentNode !== statcontentdiv || statusNodes.length !== status_tab_parts.length) {
+		return true;
+	}
+
+	for (var i = 0; i < status_tab_parts.length; i++) {
+		if (statusNodes[i].signature != statusRowSignature(status_tab_parts[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function createStatusDom() {
+	statusNodes = [];
+	statusTable = document.createElement("table");
+
+	for (var i = 0; i < status_tab_parts.length; i++) {
+		var row = createStatusRow(status_tab_parts[i]);
+
+		statusNodes.push(row);
+		statusTable.appendChild(row.node);
+	}
+
+	statcontentdiv.textContent = "";
+	statcontentdiv.appendChild(statusTable);
+}
+
+function updateStatusDom(force) {
+	var now = Date.now();
+
+	if (!force && now - lastStatusUpdateTime < STATUS_UPDATE_INTERVAL) {
+		return;
+	}
+
+	lastStatusUpdateTime = now;
+	for (var i = 0; i < status_tab_parts.length; i++) {
+		statusNodes[i].update(status_tab_parts[i]);
+	}
+}
+
 function draw_status() {
-  if (!document.getElementById("Status")) {
-    createStatusTab("Status");
-    current_tab = "Status";
-  }
-  statcontentdiv.textContent = "";
-  var table = document.createElement("table");
-  for (var i = 0; i < status_tab_parts.length; i++) {
-    var part = status_tab_parts[i];
-    if (!Array.isArray(part)) {
-      var div = document.createElement("div");
-      if (part.trim() == "") {
-        table.appendChild(document.createElement("br"));
-      } else {
-        div.textContent = part;
-        table.appendChild(div);
-      }
-    } else {
-      var div;
-      if (part[0].trim() == "same_line") {
-        var a = document.createElement("a");
-        a.href = "byond://?" + part[2];
-        a.textContent = part[1];
-        div.appendChild(a);
-      } else {
-        div = document.createElement("div");
-        if (part[0].trim() == "") {
-          table.appendChild(document.createElement("br"));
-        } else {
-          div.textContent = part[0];
-          if (part[2]) {
-            var a = document.createElement("a");
-            a.href = "byond://?" + part[2];
-            a.textContent = part[1];
-            div.appendChild(a);
-          }
-          table.appendChild(div);
-        }
-      }
-    }
-  }
-  document.getElementById("statcontent").appendChild(table);
-  if (verb_tabs.length == 0 || !verbs) {
-    update_verbs()
-  }
+	if (!document.getElementById("Status")) {
+		createStatusTab("Status");
+		current_tab = "Status";
+	}
+
+	if (needsStatusDomRebuild()) {
+		createStatusDom();
+		updateStatusDom(true);
+	} else {
+		updateStatusDom(false);
+	}
+
+	if (verb_tabs.length == 0 || !verbs) {
+		update_verbs()
+	}
 }
 
 function draw_mc() {

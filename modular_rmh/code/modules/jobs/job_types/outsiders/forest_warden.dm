@@ -84,7 +84,7 @@
 	gloves = /obj/item/clothing/gloves/leather
 	pants = /obj/item/clothing/pants/platelegs
 	shoes = /obj/item/clothing/shoes/boots
-	backr = /obj/item/weapon/polearm/halberd/bardiche/warcutter
+	backr = /obj/item/weapon/greataxe
 	backl = /obj/item/storage/backpack/backpack/longhike
 	belt = /obj/item/storage/belt/leather/fgarrison
 	beltl = /obj/item/weapon/axe/iron
