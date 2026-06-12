@@ -41,6 +41,11 @@
 	)
 	forced_taur = TRUE
 	allowed_taur_types = list(
+		/obj/item/bodypart/taur/tentacle,
+		/obj/item/bodypart/taur/mermaid,
+		/obj/item/bodypart/taur/lamiastriped,
+		/obj/item/bodypart/taur/fatlamia,
+		/obj/item/bodypart/taur/lamia,
 		/obj/item/bodypart/taur/otie,
 		/obj/item/bodypart/taur/canine,
 		/obj/item/bodypart/taur/venard,

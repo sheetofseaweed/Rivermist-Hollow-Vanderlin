@@ -36,6 +36,10 @@
 
 /obj/machinery/light/fueled/seton(s)
 	. = ..()
+	// BUGFIX (fuel): re-add ourselves to SSmachines whenever the fire is turned on,
+	// otherwise fueluse stops draining after the first burn_out()
+	if(on)
+		START_PROCESSING(SSmachines, src)
 	if(temperature_change)
 		propagate_temp_change(temperature_change, temperature_weight, temperature_falloff)
 
@@ -95,6 +99,7 @@
 	if(!on && ((fueluse > 0) || (initial(fueluse) == 0)))
 		playsound(src, 'sound/items/firelight.ogg', 100)
 		on = TRUE
+		START_PROCESSING(SSmachines, src) // BUGFIX (fuel): resume draining fueluse after a relight
 		update()
 		update_appearance(UPDATE_ICON_STATE)
 		if(soundloop)

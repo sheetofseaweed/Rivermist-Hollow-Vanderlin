@@ -3968,6 +3968,7 @@
 #include "modular_rmh\code\datums\stress\negative_events.dm"
 #include "modular_rmh\code\datums\stress\positive_events.dm"
 #include "modular_rmh\code\game\modules\crafting\lewd\dildo_crafting.dm"
+#include "modular_rmh\code\game\modules\effects\spawners\traveltile_spawners.dm"
 #include "modular_rmh\code\game\modules\mapgen\rmh_bog.dm"
 #include "modular_rmh\code\game\modules\mapgen\rmh_deserts.dm"
 #include "modular_rmh\code\game\modules\mapgen\rmh_mountains.dm"

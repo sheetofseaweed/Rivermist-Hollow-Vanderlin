@@ -48,6 +48,7 @@
 		TRAIT_STRONGBITE,
 		TRAIT_BESTIALSENSE,
 		TRAIT_BRUSHWALK,
+		TRAIT_WEREWOLFDEN
 	)
 
 /datum/antagonist/werewolf/lesser

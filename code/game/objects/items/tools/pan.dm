@@ -36,7 +36,7 @@
 	if(!istype(loc, /obj/machinery/light/fueled))
 		return FALSE
 	var/obj/machinery/light/fueled/fueled = loc
-	if(!fueled.fueluse)
+	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - food kept burning on a snuffed fire
 		return FALSE
 	return TRUE
 

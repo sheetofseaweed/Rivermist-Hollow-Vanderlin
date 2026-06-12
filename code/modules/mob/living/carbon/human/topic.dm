@@ -6,9 +6,14 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 	if(href_list["task"] == "view_flavor_text")// && (isobserver(usr) || usr.can_perform_action(src, NEED_LIGHT)))
 		if(!ismob(usr))
 			return
-		var/datum/examine_panel/mob_examine_panel = new(src)
-		mob_examine_panel.holder = src
-		mob_examine_panel.viewing = usr
+		// Reuse the panel for this viewer if their window is still open, so
+		// spam clicking "Examine Closer" refocuses it instead of stacking windows
+		var/datum/examine_panel/mob_examine_panel = LAZYACCESS(examine_panels, REF(usr))
+		if(!mob_examine_panel)
+			mob_examine_panel = new(src)
+			mob_examine_panel.holder = src
+			mob_examine_panel.viewing = usr
+			LAZYSET(examine_panels, REF(usr), mob_examine_panel)
 		mob_examine_panel.ui_interact(usr)
 		return
 
