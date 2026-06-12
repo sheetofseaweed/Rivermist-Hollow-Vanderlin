@@ -11,6 +11,7 @@
 	var/antimagic_flags = MAGIC_RESISTANCE
 	/// determines the drain cost on the antimagic item
 	var/antimagic_charge_cost = 1
+	guard_deflectable = TRUE
 
 /obj/projectile/magic/prehit_pierce(mob/living/target)
 	. = ..()
@@ -47,6 +48,7 @@
 	damage = 0
 	damage_type = OXY
 	nodamage = TRUE
+	guard_deflectable = FALSE // friendly utility bolt: don't let a guard eat it
 
 /obj/projectile/magic/resurrection/on_hit(mob/living/carbon/target)
 	. = ..()
@@ -91,6 +93,7 @@
 	damage = 0
 	damage_type = OXY
 	nodamage = TRUE
+	guard_deflectable = FALSE // friendly utility bolt: don't let a guard eat it
 
 /obj/projectile/magic/safety/on_hit(atom/target)
 	. = ..()

@@ -10,7 +10,7 @@
 	sellprice = 10
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_SIDE_LEATHER
 
 /obj/item/clothing/shoes/boots/apply_components()
 	. = ..()
@@ -25,8 +25,8 @@
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_TWIST)
 	color = null
 	blocksound = PLATEHIT
-	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 80, "fire" = 0, "acid" = 0)
-	max_integrity = INTEGRITY_STRONGEST
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_BSTEEL, "fire" = DR_NONE, "acid" = DR_NONE)
+	max_integrity = ARMOR_INT_SIDE_STEEL
 	armor_class = AC_HEAVY
 	clothing_flags = CANT_SLEEP_IN
 	anvilrepair = /datum/attribute/skill/craft/armor_repair
@@ -46,7 +46,7 @@
 	item_state = "soldierboots"
 	desc = "Lightly armored boots made from iron offering protection against both melee and ranged attacks."
 	armor = ARMOR_BRIGANDINE
-	max_integrity = INTEGRITY_STRONG + 50
+	max_integrity = ARMOR_INT_SIDE_IRON
 	armor_class = AC_MEDIUM
 	sellprice = 20
 	item_weight = 1.4 KILOGRAMS
@@ -57,7 +57,7 @@
 	item_state = "mailleboots"
 	desc = "Chainmail boots made from iron and cured leather, they offer a good protection for their cheap cost."
 	armor = ARMOR_MAILLE_IRON
-	max_integrity = 200 //meant to be weaker than iron plated boots, better options are out there waiting at the smith
+	max_integrity = ARMOR_INT_SIDE_DECREPIT //meant to be weaker than iron plated boots, better options are out there waiting at the smith
 	armor_class = AC_LIGHT
 	sellprice = VALUE_IRON_ARMOR
 	item_weight = 2.7 KILOGRAMS
@@ -77,7 +77,7 @@
 	melt_amount = 100
 	sellprice = VALUE_IRON_ARMOR/2
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_SIDE_DECREPIT
 
 /obj/item/clothing/shoes/boots/armor/blkknight
 	name = "blacksteel boots"
@@ -109,7 +109,7 @@
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
 	item_weight = 1.4 KILOGRAMS
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_SIDE_LEATHER
 	wetable = FALSE
 
 //THE ARMOUR VALUES OF ADVANCED AND MASTERWORK BOOTS ARE INTENDED
@@ -118,9 +118,9 @@
 /obj/item/clothing/shoes/boots/leather/advanced
 	name = "hardened leather boots"
 	desc = "Sturdy, durable, flexible. A marvel of the dark ages that exists solely to protect your toes."
-	max_integrity = INTEGRITY_STANDARD + 50
+	max_integrity = ARMOR_INT_SIDE_HARDLEATHER
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
-	armor = list("blunt" = 50, "slash" = 40, "stab" = 20, "piercing" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_HEAVY, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/shoes/boots/leather/advanced/watch
 	name = "watch boots"
@@ -136,9 +136,9 @@
 /obj/item/clothing/shoes/boots/leather/masterwork
 	name = "masterwork leather boots"
 	desc = "These boots are a craftsmanship marvel. Made with the finest leather. Strong, nimble, reliable."
-	max_integrity = INTEGRITY_STANDARD + 100
+	max_integrity = ARMOR_INT_SIDE_STEEL // masterwork leather = steel-grade integrity, intended
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_CHOP) //we're adding chop here!
-	armor = list("blunt" = 80, "slash" = 60, "stab" = 40, "piercing" = 0,"fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/shoes/boots/leather/masterwork/Initialize()
 	. = ..()
@@ -151,7 +151,7 @@
 	icon_state = "furlinedboots"
 	item_state = "furlinedboots"
 	sewrepair = /datum/attribute/skill/craft/tanning/patching
-	armor = list("blunt" = 30, "slash" = 10, "stab" = 20,  "piercing" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_LIGHT, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 	salvage_result = /obj/item/natural/fur
 	salvage_amount = 1
 	item_weight = 0.9 KILOGRAMS
@@ -165,7 +165,7 @@
 	icon_state = "furlinedanklets"
 	item_state = "furlinedanklets"
 	sewrepair = /datum/attribute/skill/craft/tanning/patching
-	armor = list("blunt" = 30, "slash" = 10, "stab" = 20,  "piercing" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_LIGHT, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 	is_barefoot = TRUE
 	salvage_amount = 1
 	salvage_result = /obj/item/natural/fur

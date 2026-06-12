@@ -75,10 +75,13 @@
 		var/protection_tier = normalize_armor_rating(d_type, protection)
 		if(protection_tier > ARMOR_TIER_NONE && (d_type in ARMOR_DR_PIERCE_TYPES))
 			intdamage = get_armor_blocked_damage(d_type, protection, armor_penetration, damage)
+		// Blunt-rated armor fully absorbs the blow for the wearer but bruises at 1.6x;
+		// unrated armor (tier 0) doesn't absorb, so it skips the multiplier by design.
 		else if(protection_tier > ARMOR_TIER_NONE && (d_type in ARMOR_DR_ABSORB_TYPES))
-			intdamage = intdamage / (1 + (0.2 * protection_tier))
+			intdamage = (intdamage * BLUNT_ARMOR_INTEGRITY_MULT) / (1 + (0.2 * protection_tier))
 		if(intdamfactor != 1)
 			intdamage *= intdamfactor
+		intdamage *= get_tempo_bonus(TEMPO_TAG_ARMOR_INTEGFACTOR)
 		var/old_integrity = used.get_integrity()
 		var/armor_damage_dealt = used.take_damage(intdamage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
 		if(armor_damage_dealt > 0)
@@ -167,6 +170,10 @@
 		dna.species.on_hit(P, src)
 
 /mob/living/carbon/human/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
+	// Duplicated from /mob/living/bullet_act so deflection outranks species/martial-art/reflect handling; safe to run twice.
+	if(guard_deflect_projectile(P))
+		return BULLET_ACT_BLOCK
+
 	if(dna && dna.species)
 		var/spec_return = dna.species.bullet_act(P, src, def_zone)
 		if(spec_return)

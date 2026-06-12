@@ -47,24 +47,35 @@
 		return ARMOR_TIER_HEAVY
 	return ARMOR_TIER_BSTEEL
 
-/proc/get_pen_info(mob/living/attacker, obj/item/used_weapon, datum/intent/used_intent)
-	var/pen_info = 1
+/proc/get_pen_info(mob/living/attacker, obj/item/used_weapon, datum/intent/used_intent, armor_penetration = PEN_NONE, armor_rating = 0)
+	// TA-style: passthrough dots = legacy-scale (pen - protection) + stat bonus,
+	// adjusted by sharpness, clamped 1..PEN_PASSTHROUGH_CAP. The result is only
+	// consumed on the penetrating DBLOCK path, hence the clamp floor of 1.
+	var/pen_total = 1
+	if(isnum(armor_penetration) && isnum(armor_rating))
+		// 10 legacy armor points per extra passthrough dot; +1 = baseline dot for penetrating at all
+		pen_total = round((armor_penetration - armor_rating) / 10) + 1
+	var/balance_bonus = 0
+	var/sharpness_bonus = 0
 	if(attacker && used_weapon)
-		var/strength_bonus = max(GET_MOB_ATTRIBUTE_VALUE(attacker, STAT_STRENGTH) - 10, 0)
-		var/speed_bonus = max(GET_MOB_ATTRIBUTE_VALUE(attacker, STAT_SPEED) - 10, 0)
 		if(used_weapon.wbalance >= HARD_TO_DODGE)
-			pen_info += speed_bonus
+			balance_bonus = max(GET_MOB_ATTRIBUTE_VALUE(attacker, STAT_SPEED) - 10, 0)
 		else
-			pen_info += strength_bonus
+			balance_bonus = max(GET_MOB_ATTRIBUTE_VALUE(attacker, STAT_STRENGTH) - 10, 0)
 		if(used_weapon.max_blade_int && used_weapon.sharpness != IS_BLUNT)
 			var/dullness_ratio = used_weapon.blade_int / used_weapon.max_blade_int
 			if(dullness_ratio <= SHARPNESS_TIER2_THRESHOLD)
-				pen_info -= 2
+				sharpness_bonus = -2
 			else if(dullness_ratio < SHARPNESS_TIER1_THRESHOLD)
-				pen_info -= 1
+				sharpness_bonus = -1
 	if(used_intent?.damfactor > 1)
-		pen_info += round((used_intent.damfactor - 1) * 2)
-	return CLAMP(pen_info, 1, PEN_PASSTHROUGH_CAP)
+		pen_total += round((used_intent.damfactor - 1) * 2)
+	// Don't let a dull blade penalize us below what raw stats would give (TA edge-case rule)
+	if(sharpness_bonus < 0 && balance_bonus >= 0 && abs(balance_bonus) <= abs(sharpness_bonus))
+		balance_bonus = 0
+		sharpness_bonus = 0
+	pen_total += balance_bonus + sharpness_bonus
+	return CLAMP(pen_total, 1, PEN_PASSTHROUGH_CAP)
 
 /proc/get_armor_blocked_damage(attack_flag, armor_rating, armor_penetration = PEN_NONE, damage, pen_info)
 	attack_flag = normalize_armor_attack_flag(attack_flag)
@@ -94,7 +105,7 @@
 /mob/living/proc/run_armor_check(def_zone = null, attack_flag = "blunt", absorb_text = null, soften_text = null, armor_penetration = PEN_NONE, penetrated_text, damage, blade_dulling, intdamfactor = 1, used_weapon, pen_info, mob/living/attacker, datum/intent/used_intent)
 	attack_flag = normalize_armor_attack_flag(attack_flag)
 	var/armor = getarmor(def_zone, attack_flag, damage, armor_penetration, blade_dulling, intdamfactor, used_weapon, attacker)
-	var/blocked = get_armor_blocked_damage(attack_flag, armor, armor_penetration, damage, isnull(pen_info) ? get_pen_info(attacker, used_weapon, used_intent) : pen_info)
+	var/blocked = get_armor_blocked_damage(attack_flag, armor, armor_penetration, damage, isnull(pen_info) ? get_pen_info(attacker, used_weapon, used_intent, armor_penetration, armor) : pen_info)
 	var/block_damage = damage || 999
 
 	if(alpha <= 100 || rogue_sneaking)
@@ -148,7 +159,31 @@
 /mob/living/proc/on_hit(obj/projectile/P)
 	return BULLET_ACT_HIT
 
+/// Guard (clash) or parry-buffer spell counterplay: deflect marked projectiles.
+/// Returns TRUE if deflected (caller should return early).
+/mob/living/proc/guard_deflect_projectile(obj/projectile/P)
+	if(!P.guard_deflectable)
+		return FALSE
+	var/datum/status_effect/buff/clash/guard = has_status_effect(/datum/status_effect/buff/clash)
+	if(guard)
+		if(P.on_guard_deflect(src))
+			apply_status_effect(/datum/status_effect/buff/parry_buffer)
+			guard.deflected_spell = TRUE
+			remove_status_effect(/datum/status_effect/buff/clash)
+			return TRUE
+		return FALSE
+	if(has_status_effect(/datum/status_effect/buff/parry_buffer))
+		// silent: the fanfare already played on the initial deflect.
+		// Deliberately not refreshed - the volley window can't be chained indefinitely.
+		return P.on_guard_deflect(src, silent = TRUE)
+	return FALSE
+
 /mob/living/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
+	// Also hooked in /mob/living/carbon/human/bullet_act so deflection outranks
+	// species/martial-art/reflect handling there; safe to run twice.
+	if(guard_deflect_projectile(P))
+		return BULLET_ACT_BLOCK
+
 	if(!prob(P.accuracy + P.bonus_accuracy)) //if your accuracy check fails, you wont hit your intended target
 		def_zone = ran_zone(BODY_ZONE_CHEST, 65)//Hits a random part of the body, geared towards the chest
 
@@ -411,7 +446,9 @@
 
 	var/cached_intent = M.used_intent
 
-	sleep(M.used_intent?.swingdelay)
+	if(!M.do_swing_windup(M.used_intent))
+		M.swinging = FALSE
+		return FALSE
 	M.swinging = FALSE
 	if(M.a_intent != cached_intent)
 		return FALSE

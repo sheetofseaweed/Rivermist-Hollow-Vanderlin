@@ -40,3 +40,10 @@
 // Blocked-damage ratios for projectile-style armor overmatch.
 #define PEN_PROJECTILE_EQUAL_BLOCK_RATIO 0.8
 #define PEN_PROJECTILE_OVERMATCH_BLOCK_RATIO 0.2
+
+// Blunt hits multiply armor integrity damage (armor absorbs the blow but bruises).
+#define BLUNT_ARMOR_INTEGRITY_MULT 1.6
+
+// Armor integrity failure threshold (fraction of max_integrity at which armor enters broken state).
+// Mirrors the TA value; clothing base already sets integrity_failure = 0.1 so this is a named constant.
+#define ARMOR_INTEG_FAILURE 0.1

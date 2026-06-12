@@ -487,3 +487,47 @@ GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(
 #define CRIT_MOD_CHANCE "crit_mod"
 /// Specifically knockout modifier for head crits
 #define CRIT_MOD_KNOCKOUT_CHANCE "knockout_mod"
+
+// Swingdelay behavior types (TA port). Applied while an intent's swingdelay winds up.
+#define SWINGDELAY_NORMAL 1     // No penalties, we just swing.
+#define SWINGDELAY_PENALTY 2    // Reserved: defensive penalty when struck mid-swing. NOT yet implemented - currently behaves as NORMAL; deferred.
+#define SWINGDELAY_CANCEL 3     // No defense during it; interrupted if struck.
+#define SWINGDELAY_CANCELSLOW 4 // Same as CANCEL but movement is also crippled.
+
+// Defense cooldown bounds (deciseconds). setparrytime/dodgetime default to
+// DEFENSE_CD_DEFAULT and are mutated by combat events via changeNext_def().
+#define DEFENSE_CD_DEFAULT 12
+#define DEFENSE_CD_MIN 4
+#define DEFENSE_CD_MAX 30
+#define DEFENSE_CD_BUILDUP 2	// added per consecutive successful dodge
+
+// Tempo: escalating defensive buffs while engaged by multiple attackers. TRAIT_TEMPO gated.
+#define TEMPO_CULL_DELAY 12 SECONDS
+// How long an attacker stays "in memory"; shrinks as the crowd grows.
+#define TEMPO_DELAY_ONE 30 SECONDS
+#define TEMPO_DELAY_TWO 15 SECONDS
+#define TEMPO_DELAY_MAX 8 SECONDS
+// Attacker-count thresholds: tier one at 2 attackers, tier two at 3, tier three at 4+; list hard-capped at 7.
+#define TEMPO_CAP 7
+#define TEMPO_MAX 4
+#define TEMPO_TWO 3
+#define TEMPO_ONE 2
+
+// get_tempo_bonus() tag semantics:
+#define TEMPO_TAG_STAMLOSS_PARRY "parry"		// flat stamina off parry drain
+#define TEMPO_TAG_STAMLOSS_DODGE "dodge"		// flat stamina off dodge drain
+#define TEMPO_TAG_ARMOR_INTEGFACTOR "integ"		// multiplier on armor integrity damage taken (1 = neutral)
+#define TEMPO_TAG_NOLOS_PARRY "nolosparry"		// bool: parry without seeing the attacker
+#define TEMPO_TAG_NOLOS_DODGE "nolosdodge"		// bool: dodge ignores the no-LOS penalty
+#define TEMPO_TAG_PARRYCD_BONUS "parrycd"		// deciseconds off the parry cooldown
+#define TEMPO_TAG_BINDABLE "defbindable"		// bool: reserved for the vulnerable-strike bind path (not the parry bind)
+
+// Weapon bind: matching aim subzones lets a skilled defender lock the attacker's weapon.
+#define BIND_CD 15 SECONDS
+#define BIND_HEAD "bind_head"
+#define BIND_HAND_L "bind_hand_l"
+#define BIND_HAND_R "bind_hand_r"
+#define BIND_FOOT_L "bind_foot_l"
+#define BIND_FOOT_R "bind_foot_r"
+#define BIND_TORSO "bind_torso"
+#define BIND_NECK "bind_neck"

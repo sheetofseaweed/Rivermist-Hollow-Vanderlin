@@ -14,7 +14,7 @@
 	armor = ARMOR_PLATE
 	body_parts_covered = COVERAGE_TORSO
 	prevent_crits = ALL_EXCEPT_BLUNT
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 	item_weight = 7 KILOGRAMS
 
 //................ Grenzelhoft Cuirass ............... //
@@ -55,7 +55,7 @@
 
 	armor = ARMOR_PLATE_BAD
 	body_parts_covered = COVERAGE_VEST
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_IRON
 	item_weight = 7 KILOGRAMS
 
 //................ Rusted Breastplate ............... //
@@ -69,7 +69,7 @@
 	item_state = "rustcuriass"
 	sellprice = VALUE_IRON_ARMOR/2
 
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_DECREPIT
 
 //................ Scourge Breastplate ............... //
 /obj/item/clothing/armor/cuirass/iron/shadowplate
@@ -110,7 +110,7 @@
 	name = "fencer's cuirass"
 	desc = "An expertly smithed form-fitting steel cuirass that is much lighter and agile, but breaks with much more ease. It's thinner, but backed with silk and leather."	// Experimental.
 	armor_class = AC_LIGHT
-	max_integrity = 300
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 	melt_amount = 75
 	icon_state = "fencercuirass"
 	item_state = "fencercuirass"
@@ -128,7 +128,7 @@
 	desc = "A sturdy steel cuirass with tassets. Supposedly protective, though maybe not against crossbow bolts."
 
 	body_parts_covered = CHEST | VITALS | LEGS
-	max_integrity = 300
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 
 /obj/item/clothing/armor/cuirass/ornate
 	name = "exotic cuirass"

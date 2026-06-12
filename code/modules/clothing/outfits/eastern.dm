@@ -308,7 +308,7 @@
 	resistance_flags = FIRE_PROOF
 	icon_state = "easttats"
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
-	armor = list("blunt" = 30, "slash" = 30, "stab" = 30, "piercing" = 20, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT)
 	body_parts_covered = COVERAGE_FULL
 	icon = 'icons/roguetown/clothing/shirts.dmi'

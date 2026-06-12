@@ -300,6 +300,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_HANDS_BLOCK_PROJECTILES "hands_block_projectiles"
 /// Shows extra floating combat information.
 #define TRAIT_COMBAT_AWARE "combat_aware"
+/// Grants tempo: escalating defensive buffs while fighting multiple opponents.
+#define TRAIT_TEMPO "tempo_capable"
 /// The mob always dodges melee attacks
 #define TRAIT_ENHANCED_MELEE_DODGE "enhanced_melee_dodge"
 /// The mob can easily swim and jump very far.

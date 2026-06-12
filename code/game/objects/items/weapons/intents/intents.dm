@@ -42,6 +42,8 @@
 	var/charging_slowdown = 0
 	var/warnoffset = 0
 	var/swingdelay = 0
+	/// How this intent's swingdelay behaves when the swinger is struck mid-windup. See SWINGDELAY_* defines.
+	var/swingdelay_type = SWINGDELAY_NORMAL
 	var/no_attack = FALSE //causes a return in /attack() but still allows to be used in attackby(
 	var/reach = 1 //In tiles, how far this weapon can reach; 1 for adjacent, which is default
 	var/miss_text //THESE ARE FOR UNARMED MISSING ATTACKS
@@ -407,7 +409,7 @@
 	blade_class = BCLASS_BLUNT
 	hitsound = "punch_hard"
 	chargetime = 0
-	penfactor = 13
+	penfactor = PEN_LIGHT	// blunt: preserve tier (was 13 = light tier)
 	swingdelay = 0
 	candodge = TRUE
 	canparry = TRUE
@@ -423,7 +425,7 @@
 	blade_class = BCLASS_BLUNT
 	hitsound = "punch_hard"
 	chargetime = 0
-	penfactor = 13
+	penfactor = PEN_LIGHT	// blunt: preserve tier (was 13 = light tier)
 	swingdelay = 0
 	candodge = TRUE
 	canparry = TRUE
@@ -439,7 +441,7 @@
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 5
+	penfactor = PEN_NONE
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
@@ -454,7 +456,7 @@
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 2
+	penfactor = PEN_NONE
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
@@ -469,7 +471,7 @@
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 0
+	penfactor = PEN_NONE
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
@@ -485,7 +487,7 @@
 	blade_class = null
 	hitsound = "punch_hard"
 	chargetime = 0
-	penfactor = 25
+	penfactor = PEN_MEDIUM	// value preserved from legacy 25
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
@@ -497,7 +499,7 @@
 	animname = "claw"
 	blade_class = BCLASS_CUT
 	hitsound = "smallslash"
-	penfactor = 20
+	penfactor = PEN_LIGHT	// creature natural weapon (TA: light tier)
 	candodge = TRUE
 	canparry = TRUE
 	miss_text = "claws the air!"
@@ -516,7 +518,7 @@
 	animname = "claw"
 	blade_class = BCLASS_CHOP
 	hitsound = "genslash"
-	penfactor = 131
+	penfactor = PEN_BSTEEL	// godlike attack: beyond all tiers, capped at bsteel
 	damfactor = 40
 	candodge = TRUE
 	canparry = TRUE
@@ -532,7 +534,7 @@
 	blade_class = BCLASS_STAB
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 1
+	penfactor = PEN_NONE
 	swingdelay = 0
 	candodge = FALSE
 	canparry = FALSE
@@ -547,7 +549,7 @@
 	blade_class = BCLASS_CHOP
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 20
+	penfactor = PEN_LIGHT	// chop archetype (TA: light tier)
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
@@ -563,7 +565,7 @@
 	blade_class = BCLASS_STAB
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 25
+	penfactor = PEN_MEDIUM
 	swingdelay = 1
 	candodge = TRUE
 	canparry = TRUE
@@ -578,7 +580,7 @@
 	blade_class = BCLASS_CUT
 	hitsound = list("genchop", "genslash")
 	chargetime = 0
-	penfactor = 0
+	penfactor = PEN_NONE
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
@@ -592,7 +594,7 @@
 	blade_class = BCLASS_CUT
 	hitsound = list("genthrust", "genstab")
 	chargetime = 0
-	penfactor = 0
+	penfactor = PEN_NONE
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
@@ -606,7 +608,7 @@
 	blade_class = BCLASS_CHOP
 	hitsound = "genslash"
 	chargetime = 0
-	penfactor = 10
+	penfactor = PEN_LIGHT	// chop archetype (TA: light tier)
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE
@@ -622,7 +624,7 @@
 	blade_class = BCLASS_BITE
 	hitsound = "smallslash"
 	chargetime = 0
-	penfactor = 30
+	penfactor = PEN_MEDIUM	// bite -> blunt armor path: preserve tier (was 30 = medium)
 	swingdelay = 3
 	candodge = TRUE
 	canparry = TRUE

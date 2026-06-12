@@ -1565,7 +1565,8 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 //				user.do_attack_animation(target, ATTACK_EFFECT_PUNCH)
 
 		var/cached_intent = user.used_intent
-		sleep(user.used_intent.swingdelay)
+		if(!user.do_swing_windup(cached_intent))
+			return FALSE
 		if(user.a_intent != cached_intent)
 			return FALSE
 		if(!target.Adjacent(user))

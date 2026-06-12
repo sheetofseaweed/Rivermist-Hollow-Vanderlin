@@ -285,8 +285,18 @@
 		if(user.used_intent.no_attack) //BYE!!!
 			return TRUE
 
+	// Feed the defender's tempo: being attacked builds their defensive rhythm.
+	// Fires before the windup, so even cancelled swings pressure the target.
+	if(ishuman(M))
+		var/mob/living/carbon/human/tempo_target = M
+		tempo_target.process_tempo_attack(user)
+
 	var/datum/intent/cached_intent = user.used_intent
-	if(user.used_intent.swingdelay)
+	if(isliving(user))
+		var/mob/living/living_user = user
+		if(!living_user.do_swing_windup(cached_intent))
+			return
+	else if(user.used_intent.swingdelay)
 		sleep(user.used_intent.swingdelay)
 	if(user.a_intent != cached_intent)
 		return
