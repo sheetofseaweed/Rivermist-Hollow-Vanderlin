@@ -2824,7 +2824,7 @@
 	light_inner_range = 1;
 	light_outer_range = 8;
 	light_power = 2;
-	alpha = 0;
+	alpha = 255;
 	icon_state = "portal";
 	icon = 'modular_rmh/icons/obj/structures/48x48.dmi';
 	desc = "Portal to another dimension";
