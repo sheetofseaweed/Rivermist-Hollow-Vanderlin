@@ -490,6 +490,10 @@
 		to_chat(src, span_warning("I can't jump while floating."))
 		return
 
+	if(HAS_TRAIT(src, TRAIT_DEFEAT_NO_JUMP))
+		to_chat(src, span_warning("My injured leg won't let me jump."))
+		return
+
 	if(A == src || A == loc)
 		return
 

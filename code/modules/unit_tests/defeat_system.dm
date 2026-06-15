@@ -1,5 +1,5 @@
-/proc/defeat_unit_place_adjacent(mob/living/first, mob/living/second)
-	var/turf/first_turf = get_step(run_loc_floor_bottom_left, EAST)
+/proc/defeat_unit_place_adjacent(mob/living/first, mob/living/second, turf/base_turf)
+	var/turf/first_turf = get_step(base_turf, EAST)
 	var/turf/second_turf = get_step(first_turf, EAST)
 	first.forceMove(first_turf)
 	second.forceMove(second_turf)
@@ -248,7 +248,7 @@
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
-	defeat_unit_place_adjacent(victim, helper)
+	defeat_unit_place_adjacent(victim, helper, run_loc_floor_bottom_left)
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
@@ -262,7 +262,7 @@
 /datum/unit_test/defeat_rescue_allows_inactive_recent_attacker/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human)
-	defeat_unit_place_adjacent(victim, attacker)
+	defeat_unit_place_adjacent(victim, attacker, run_loc_floor_bottom_left)
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL, attacker)
@@ -277,7 +277,7 @@
 /datum/unit_test/defeat_rescue_blocks_active_harm/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human)
-	defeat_unit_place_adjacent(victim, attacker)
+	defeat_unit_place_adjacent(victim, attacker, run_loc_floor_bottom_left)
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL, attacker)
@@ -297,7 +297,7 @@
 /datum/unit_test/defeat_auto_rescue_from_healing_threshold/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
-	defeat_unit_place_adjacent(victim, helper)
+	defeat_unit_place_adjacent(victim, helper, run_loc_floor_bottom_left)
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
@@ -506,6 +506,7 @@
 	grabber.pulling = victim
 	grabber.grab_state = GRAB_AGGRESSIVE
 	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
+	monitor.horny_defeat_climax_threshold = 1
 
 	monitor.on_climax(victim, null, victim, grabber, grabber)
 	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Hostile grab climax metadata should trigger horny defeat when the threshold is met.")
@@ -543,3 +544,372 @@
 
 	opt_in.UnregisterFromParent()
 	TEST_ASSERT(!ai_body.defeat_system_ai_opt_in, "Removing the opt-in component should restore the previous opt-in flag.")
+
+/datum/unit_test/defeat_threshold_quirk_modifier
+
+/datum/unit_test/defeat_threshold_quirk_modifier/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_damage_threshold = 200
+	TEST_ASSERT_EQUAL(test_human.get_effective_defeat_threshold(), 200, "With no fragility quirks the effective threshold should equal the base.")
+
+	var/datum/quirk/vice/frail/frail_quirk = new()
+	test_human.quirks += frail_quirk
+	TEST_ASSERT_EQUAL(test_human.get_effective_defeat_threshold(), round(200 * 0.6), "A fragility quirk should lower the effective defeat threshold.")
+
+	test_human.quirks -= frail_quirk
+	qdel(frail_quirk)
+	TEST_ASSERT_EQUAL(test_human.get_effective_defeat_threshold(), 200, "Removing the quirk should restore the base threshold.")
+
+/datum/unit_test/defeat_rune_charge_cost_ladder
+
+/datum/unit_test/defeat_rune_charge_cost_ladder/Run()
+	var/list/full = defeat_rune_charge_cost(5)
+	TEST_ASSERT_EQUAL(full["coin"], 1, "Spending from a full five charges should cost one coin.")
+	TEST_ASSERT_EQUAL(full["blood"], 100, "Spending from a full five charges should cost 100 blood.")
+
+	var/list/last = defeat_rune_charge_cost(1)
+	TEST_ASSERT_EQUAL(last["coin"], 30, "Spending the final charge should cost thirty coin.")
+	TEST_ASSERT_EQUAL(last["blood"], DEFEAT_RUNE_BLOOD_FRACTION_SENTINEL, "The final charge should bill a fraction of current blood, flagged by sentinel.")
+
+	var/list/none = defeat_rune_charge_cost(0)
+	TEST_ASSERT_EQUAL(none["coin"], 0, "With no charges available there is no charge cost.")
+
+/datum/unit_test/defeat_collect_blood_tax_drains_blood
+
+/datum/unit_test/defeat_collect_blood_tax_drains_blood/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.blood_volume = 500
+
+	var/drawn = test_human.collect_blood_tax(120)
+	TEST_ASSERT_EQUAL(drawn, 120, "Collecting a blood tax should report the blood drawn.")
+	TEST_ASSERT_EQUAL(test_human.blood_volume, 380, "The blood tax should be removed from the mob's blood volume.")
+
+	var/overdraw = test_human.collect_blood_tax(99999)
+	TEST_ASSERT_EQUAL(overdraw, 380, "A blood tax larger than available blood should draw only what remains.")
+	TEST_ASSERT_EQUAL(test_human.blood_volume, 0, "Over-drawing blood should leave the mob empty, not negative.")
+
+/datum/unit_test/defeat_openspace_is_immediate_hazard
+
+/datum/unit_test/defeat_openspace_is_immediate_hazard/Run()
+	var/turf/original_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/original_turf_type = original_turf.type
+	var/list/original_baseturfs = original_turf.baseturfs
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human, original_turf)
+
+	TEST_ASSERT(!test_human.defeat_is_immediate_hazard(), "A normal floor should not count as an immediate defeat hazard.")
+
+	var/turf/open/openspace/pit = original_turf.ChangeTurf(/turf/open/openspace)
+	test_human.forceMove(pit)
+	TEST_ASSERT(test_human.defeat_is_immediate_hazard(), "Open space (a pit/chasm) should count as an immediate defeat hazard.")
+
+	pit.ChangeTurf(original_turf_type, original_baseturfs)
+
+/datum/unit_test/defeat_injury_profiles_match_design
+
+/datum/unit_test/defeat_injury_profiles_match_design/Run()
+	var/mob/living/carbon/human/concussion_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/concussion_effect = concussion_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/concussion, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_EQUAL(concussion_effect.effectedstats[STAT_PERCEPTION], -3, "Concussion should drop perception by 3 at normal severity.")
+	TEST_ASSERT_EQUAL(concussion_effect.effectedstats[STAT_INTELLIGENCE], -2, "Concussion should drop intelligence by 2 at normal severity.")
+	TEST_ASSERT_EQUAL(concussion_effect.effectedstats[STAT_FORTUNE], -2, "Concussion should drop fortune by 2 at normal severity.")
+
+	var/mob/living/carbon/human/body_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/body_effect = body_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/body, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_EQUAL(body_effect.effectedstats[STAT_CONSTITUTION], -3, "Internal bruising should drop constitution by 3 at normal severity.")
+	TEST_ASSERT_EQUAL(body_effect.effectedstats[STAT_STRENGTH], -2, "Internal bruising should drop strength by 2 at normal severity.")
+
+	var/mob/living/carbon/human/leg_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/leg_effect = leg_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/leg, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_EQUAL(leg_effect.effectedstats[STAT_SPEED], -4, "A leg injury should drop speed by 4 at normal severity.")
+
+	var/mob/living/carbon/human/arm_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/arm_effect = arm_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/arm, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_EQUAL(arm_effect.effectedstats[STAT_STRENGTH], -4, "An arm injury should drop strength by 4 at normal severity.")
+
+	var/mob/living/carbon/human/mana_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/mana_effect = mana_patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_EQUAL(mana_effect.effectedstats[STAT_INTELLIGENCE], -4, "Mana-backlash should drop intelligence by 4 at normal severity.")
+
+	var/mob/living/carbon/human/severe_patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/severe_effect = severe_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/concussion, null, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(severe_effect.effectedstats[STAT_PERCEPTION], -5, "Severe concussion should scale perception up to -5.")
+
+/datum/unit_test/defeat_leg_injury_blocks_jump
+
+/datum/unit_test/defeat_leg_injury_blocks_jump/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/leg, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT(HAS_TRAIT(patient, TRAIT_DEFEAT_NO_JUMP), "A leg injury should block jumping while active.")
+	patient.remove_status_effect(/datum/status_effect/debuff/defeat/physical/leg)
+	TEST_ASSERT(!HAS_TRAIT(patient, TRAIT_DEFEAT_NO_JUMP), "Clearing the leg injury should restore jumping.")
+
+/datum/unit_test/defeat_limb_zone_injuries_map_to_limb_trauma
+
+/datum/unit_test/defeat_limb_zone_injuries_map_to_limb_trauma/Run()
+	var/mob/living/carbon/human/arm_patient = allocate(/mob/living/carbon/human)
+	arm_patient.defeat_system_ai_opt_in = TRUE
+	var/obj/item/bodypart/arm = arm_patient.get_bodypart(BODY_ZONE_R_ARM)
+	arm.create_injury(WOUND_BLUNT, 45, TRUE)
+	arm_patient.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	arm_patient.apply_defeat_snapshot_debuffs()
+	TEST_ASSERT_NOTNULL(arm_patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/arm), "Arm-zone injuries should produce arm trauma.")
+
+	var/mob/living/carbon/human/leg_patient = allocate(/mob/living/carbon/human)
+	leg_patient.defeat_system_ai_opt_in = TRUE
+	var/obj/item/bodypart/leg = leg_patient.get_bodypart(BODY_ZONE_L_LEG)
+	leg.create_injury(WOUND_BLUNT, 45, TRUE)
+	leg_patient.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	leg_patient.apply_defeat_snapshot_debuffs()
+	TEST_ASSERT_NOTNULL(leg_patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/leg), "Leg-zone injuries should produce leg trauma.")
+
+/datum/unit_test/defeat_vision_clamp_safe_without_client
+
+/datum/unit_test/defeat_vision_clamp_safe_without_client/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/defeat_knockout/knockout = test_human.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NOTNULL(knockout, "Knockout should apply.")
+	TEST_ASSERT(!knockout.defeat_view_clamped, "A clientless body has no viewport, so the vision clamp should stay inactive.")
+	test_human.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Knockout should clear without runtime even with no view clamped.")
+
+/datum/unit_test/defeat_horny_debuff_variants_are_valid
+
+/datum/unit_test/defeat_horny_debuff_variants_are_valid/Run()
+	// Loop so the random variant pick is exercised across multiple draws.
+	for(var/i in 1 to 12)
+		var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+		patient.defeat_system_ai_opt_in = TRUE
+		patient.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL)
+		patient.apply_defeat_snapshot_debuffs()
+		var/datum/status_effect/debuff/defeat/horny/trauma = patient.has_status_effect(/datum/status_effect/debuff/defeat/horny)
+		TEST_ASSERT_NOTNULL(trauma, "A horny defeat should always produce a horny trauma variant.")
+		TEST_ASSERT(length(trauma.effectedstats) > 0, "Each horny debuff variant should carry a stat profile.")
+
+/datum/unit_test/defeat_horny_threshold_is_randomized
+
+/datum/unit_test/defeat_horny_threshold_is_randomized/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.pulledby = grabber
+	grabber.pulling = victim
+	grabber.grab_state = GRAB_AGGRESSIVE
+	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
+
+	monitor.on_climax(victim, null, victim, grabber, grabber)
+	TEST_ASSERT(monitor.horny_defeat_climax_threshold >= 10 && monitor.horny_defeat_climax_threshold <= 20, "Horny defeat threshold should roll within the 10-20 design band.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A single climax should not reach the randomized horny knockout threshold.")
+
+/datum/unit_test/defeat_potion_feed_rescues_downed_victim
+
+/datum/unit_test/defeat_potion_feed_rescues_downed_victim/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/healer = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, healer, run_loc_floor_bottom_left)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	var/obj/item/reagent_containers/glass/bottle/vial/curative = allocate(/obj/item/reagent_containers/glass/bottle/vial, run_loc_floor_bottom_left)
+	curative.reagents.add_reagent(/datum/reagent/medicine/herbal/symphitum_tea, 20)
+	TEST_ASSERT(curative.defeat_try_potion_rescue(victim, healer), "Feeding a downed victim a curative drink should rescue them.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Potion rescue should clear the knockout.")
+
+	var/mob/living/carbon/human/loner = allocate(/mob/living/carbon/human)
+	loner.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(!curative.defeat_try_potion_rescue(loner, loner), "A victim cannot revive themselves with their own drink.")
+	TEST_ASSERT_NOTNULL(loner.has_status_effect(/datum/status_effect/defeat_knockout), "Self-administered drinks must leave the knockout in place.")
+
+	var/mob/living/carbon/human/thirsty = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/water_bearer = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(thirsty, water_bearer, run_loc_floor_bottom_left)
+	thirsty.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/obj/item/reagent_containers/glass/bottle/vial/plain = allocate(/obj/item/reagent_containers/glass/bottle/vial, run_loc_floor_bottom_left)
+	plain.reagents.add_reagent(/datum/reagent/water, 20)
+	TEST_ASSERT(!plain.defeat_try_potion_rescue(thirsty, water_bearer), "Plain water is not curative and should not rescue.")
+	TEST_ASSERT_NOTNULL(thirsty.has_status_effect(/datum/status_effect/defeat_knockout), "A non-curative drink must leave the knockout in place.")
+
+/datum/unit_test/defeat_treatment_requires_zone
+
+/datum/unit_test/defeat_treatment_requires_zone/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	TEST_ASSERT(!patient.defeat_treatment_zone_ok(DEFEAT_TREATMENT_MEDICAL), "Medical defeat cures should require a clinic zone (the test reservation is neither).")
+	TEST_ASSERT(!patient.defeat_treatment_zone_ok(DEFEAT_TREATMENT_SPIRITUAL), "Spiritual defeat cures should require a church zone.")
+	TEST_ASSERT(patient.defeat_treatment_zone_ok(DEFEAT_TREATMENT_UNIVERSAL), "The expensive universal cure should bypass the zone requirement.")
+
+/obj/effect/landmark/kidnap/entrance/unit_test
+	lair_tag = "unit_test_kidnap_lair"
+
+/obj/effect/landmark/kidnap/escape/unit_test
+	lair_tag = "unit_test_kidnap_lair"
+
+/datum/unit_test/defeat_kidnap_to_lair_and_escape
+
+/datum/unit_test/defeat_kidnap_to_lair_and_escape/Run()
+	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/turf/escape_turf = get_step(lair_turf, EAST)
+	allocate(/obj/effect/landmark/kidnap/entrance/unit_test, lair_turf)
+	var/obj/effect/landmark/kidnap/escape/unit_test/escape_marker = allocate(/obj/effect/landmark/kidnap/escape/unit_test, escape_turf)
+
+	TEST_ASSERT(("unit_test_kidnap_lair" in GLOB.kidnap_entrance_markers), "Entrance markers should register under their lair tag.")
+
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	TEST_ASSERT(victim.kidnap_to_lair("unit_test_kidnap_lair"), "Kidnap should succeed when a lair entrance exists for the tag.")
+	TEST_ASSERT_EQUAL(get_turf(victim), lair_turf, "Kidnap should move the victim onto a lair entrance marker.")
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	TEST_ASSERT_NOTNULL(captivity, "Kidnap should attach the captivity component.")
+
+	captivity.release_from_knockout()
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Captivity release should clear the knockout state.")
+	TEST_ASSERT(HAS_TRAIT_FROM(victim, TRAIT_PACIFISM, KIDNAP_TRAIT), "A released captive should be held in captive pacifism.")
+
+	escape_marker.Crossed(victim)
+	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Reaching an escape marker should end captivity.")
+	TEST_ASSERT(!HAS_TRAIT_FROM(victim, TRAIT_PACIFISM, KIDNAP_TRAIT), "Escaping should strip the captive pacifism.")
+
+/datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey
+
+/datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey/Run()
+	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
+	allocate(/obj/effect/landmark/kidnap/entrance/unit_test, lair_turf)
+
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, captor, run_loc_floor_bottom_left)
+
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+
+	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "A mob with no lair tag cannot kidnap.")
+	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
+	TEST_ASSERT(captor.can_kidnap_defeated_prey(victim), "A faction captor beside prey it just defeated should be able to kidnap.")
+
+	TEST_ASSERT(captor.try_kidnap_defeated_prey(victim), "The kidnap attempt should succeed.")
+	TEST_ASSERT_NOTNULL(victim.GetComponent(/datum/component/kidnap_captivity), "The kidnapped victim should be in captivity.")
+	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "An already-captive victim cannot be kidnapped again.")
+
+/datum/unit_test/defeat_kidnap_blocked_when_outnumbered
+
+/datum/unit_test/defeat_kidnap_blocked_when_outnumbered/Run()
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/rescuer_one = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/rescuer_two = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, captor, run_loc_floor_bottom_left)
+	rescuer_one.forceMove(get_turf(captor))
+	rescuer_two.forceMove(get_turf(captor))
+
+	captor.faction = list("kidnap_unit_test_captor")
+	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+
+	TEST_ASSERT(captor.kidnap_is_outnumbered(victim), "Two nearby rescuers against a lone captor should count as outnumbered.")
+	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "An outnumbered captor should not be able to drag prey off.")
+
+/datum/unit_test/defeat_distress_npc_spawns_and_rewards
+
+/datum/unit_test/defeat_distress_npc_spawns_and_rewards/Run()
+	var/turf/spot = get_step(run_loc_floor_bottom_left, EAST)
+	var/mob/living/carbon/human/npc_in_distress/captive = allocate(/mob/living/carbon/human/npc_in_distress, spot)
+	var/datum/component/npc_in_distress/distress = captive.GetComponent(/datum/component/npc_in_distress)
+	TEST_ASSERT_NOTNULL(distress, "An ambient distress NPC should carry the distress component.")
+
+	var/mob/living/carbon/human/rescuer = allocate(/mob/living/carbon/human)
+	distress.complete_rescue(rescuer)
+	var/coins = 0
+	for(var/obj/item/coin/silver/coin in spot)
+		coins++
+	TEST_ASSERT(coins >= NPC_DISTRESS_REWARD_MIN && coins <= NPC_DISTRESS_REWARD_MAX, "Rescue should drop the silver reward on the ground.")
+	TEST_ASSERT(QDELETED(captive), "A rescued distress NPC should be removed (taken by the Rune).")
+	for(var/obj/item/coin/silver/coin in spot)
+		qdel(coin)
+
+/datum/unit_test/defeat_distress_drop_carried_clears_hands
+
+/datum/unit_test/defeat_distress_drop_carried_clears_hands/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/obj/item/coin/silver/trinket = allocate(/obj/item/coin/silver, get_turf(victim))
+	victim.put_in_hands(trinket)
+	TEST_ASSERT((trinket in victim.held_items), "Setup: the trinket should start in hand.")
+	victim.npc_in_distress_drop_carried()
+	TEST_ASSERT(!(trinket in victim.held_items), "Surrender should drop carried items out of the hands.")
+
+/datum/unit_test/defeat_kidnap_remembers_captor_faction
+
+/datum/unit_test/defeat_kidnap_remembers_captor_faction/Run()
+	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
+	allocate(/obj/effect/landmark/kidnap/entrance/unit_test, lair_turf)
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, captor, run_loc_floor_bottom_left)
+	captor.faction = list("greenskin_unit_test")
+	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+
+	TEST_ASSERT(captor.try_kidnap_defeated_prey(victim), "Kidnap should succeed.")
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	TEST_ASSERT_NOTNULL(captivity, "Captivity should be attached after a kidnap.")
+	TEST_ASSERT(("greenskin_unit_test" in captivity.captor_faction), "Captivity should remember the captor's faction so a surrendered captive shares it.")
+
+/datum/unit_test/defeat_kidnap_climaxes_offer_surrender
+
+/datum/unit_test/defeat_kidnap_climaxes_offer_surrender/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/datum/component/kidnap_captivity/captivity = victim.AddComponent(/datum/component/kidnap_captivity, "unit_test_kidnap_lair")
+	TEST_ASSERT_NOTNULL(captivity, "Captivity component should attach.")
+	TEST_ASSERT(!captivity.surrender_available, "Surrender should not be offered before enough climaxes.")
+
+	for(var/i in 1 to KIDNAP_SURRENDER_CLIMAXES)
+		captivity.on_captive_climax(victim, null, victim, null, null)
+	TEST_ASSERT(captivity.surrender_available, "Enough climaxes endured in captivity should offer surrender early.")
+
+/datum/unit_test/defeat_healing_spring_rescues
+
+/datum/unit_test/defeat_healing_spring_rescues/Run()
+	var/turf/spring_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/structure/well/fountain/healing/spring = allocate(/obj/structure/well/fountain/healing, spring_turf)
+	var/turf/victim_turf = get_step(spring_turf, EAST)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, victim_turf)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	spring.process(1)
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A healing spring should free a defeated mob lingering beside it.")
+
+/datum/unit_test/defeat_holy_communion_rescues_downed
+
+/datum/unit_test/defeat_holy_communion_rescues_downed/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/saint = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, saint, run_loc_floor_bottom_left)
+	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	ADD_TRAIT(saint, TRAIT_HOLY, TRAIT_GENERIC)
+
+	monitor.on_climax(victim, null, victim, saint, saint)
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A holy character's communion should free a downed victim.")
+
+	var/mob/living/carbon/human/victim_two = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/layperson = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim_two, layperson, run_loc_floor_bottom_left)
+	var/datum/component/defeat_monitor/monitor_two = victim_two.AddComponent(/datum/component/defeat_monitor)
+	victim_two.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	monitor_two.on_climax(victim_two, null, victim_two, layperson, layperson)
+	TEST_ASSERT_NOTNULL(victim_two.has_status_effect(/datum/status_effect/defeat_knockout), "A non-holy partner's climax should not free the victim.")
+
+/datum/unit_test/defeat_pet_rescues_downed_ally
+
+/datum/unit_test/defeat_pet_rescues_downed_ally/Run()
+	var/mob/living/carbon/human/pet = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/fallen = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(fallen, pet, run_loc_floor_bottom_left)
+	fallen.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	TEST_ASSERT(pet.try_rescue_downed_ally(fallen), "A pet beside a downed ally should free them.")
+	TEST_ASSERT_NULL(fallen.has_status_effect(/datum/status_effect/defeat_knockout), "Pet rescue should clear the ally's knockout.")
+
+	var/mob/living/carbon/human/standing = allocate(/mob/living/carbon/human)
+	standing.forceMove(get_turf(pet))
+	TEST_ASSERT(!pet.try_rescue_downed_ally(standing), "A pet cannot 'rescue' someone who is not defeated.")

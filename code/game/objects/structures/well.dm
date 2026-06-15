@@ -79,6 +79,31 @@
 	reagents.trans_to(user, reagents.total_volume, transfered_by = user, method = INGEST)
 	playsound(user,pick('sound/items/drink_gen (1).ogg','sound/items/drink_gen (2).ogg','sound/items/drink_gen (3).ogg'), 100, TRUE)
 
+// Healing spring: a fountain that gently mends those who linger by it, and frees the defeated
+// (an environmental rescue source from the Defeat system - see DEFEAT_SYSTEM_SPEC_ADDENDUM.md section 3).
+/obj/structure/well/fountain/healing
+	name = "healing spring"
+	desc = "Warm, clear water wells up with a soft glow. Linger by it and your hurts ease - it has even been known to rouse the fallen."
+	color = "#9fe0ff"
+
+/obj/structure/well/fountain/healing/Initialize(mapload)
+	. = ..()
+	START_PROCESSING(SSobj, src)
+
+/obj/structure/well/fountain/healing/Destroy()
+	STOP_PROCESSING(SSobj, src)
+	return ..()
+
+/obj/structure/well/fountain/healing/process(seconds_per_tick)
+	for(var/mob/living/bather in range(1, src))
+		if(bather.stat == DEAD)
+			continue
+		bather.adjustBruteLoss(-3)
+		bather.adjustFireLoss(-3)
+		bather.adjustToxLoss(-2)
+		if(bather.has_status_effect(/datum/status_effect/defeat_knockout))
+			bather.defeat_environmental_rescue("healing spring")
+
 /obj/structure/well/attackby(obj/item/I, mob/user, list/modifiers)
 	if(istype(I, /obj/item/reagent_containers/glass/bucket))
 		var/obj/item/reagent_containers/glass/bucket/W = I

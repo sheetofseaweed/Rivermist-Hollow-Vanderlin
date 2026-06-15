@@ -231,16 +231,15 @@
 /datum/container_craft/cooking/herbal_tea/mercy_draught
 	name = "Mercy Draught"
 	created_reagent = /datum/reagent/medicine/herbal/mercy_draught
+	// One of each healing herb (kept at 1 so the single-herb teas are not a subset of this recipe
+	// and cannot collide with it), plus BOTH precious dusts to make it a costly, deliberate brew.
 	requirements = list(
-		/obj/item/alch/herb/symphitum = 2,
-		/obj/item/alch/herb/hypericum = 2,
+		/obj/item/alch/herb/symphitum = 1,
+		/obj/item/alch/herb/hypericum = 1,
 		/obj/item/alch/herb/rosa = 1,
 		/obj/item/alch/silverdust = 1,
-	)
-	optional_requirements = list(
 		/obj/item/alch/golddust = 1,
 	)
-	max_optionals = 1
 	crafting_time = 30 SECONDS
 	finished_smell = /datum/pollutant/food/herb
 	complete_message = "The mercy draught settles into a pale, steady glow."

@@ -360,6 +360,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_STINKY "Natural Stench"
 #define TRAIT_ZJUMP "High Jumping"
 #define TRAIT_FLIP_JUMP TRAIT_ZJUMP
+/// A defeat leg injury that prevents jumping (see the Defeat system / DEFEAT_SYSTEM_SPEC_ADDENDUM.md).
+#define TRAIT_DEFEAT_NO_JUMP "defeat_no_jump"
 #define TRAIT_KNOW_ROUS_DOORS "Knows Rous Doors"
 #define TRAIT_JESTERPHOBIA "Jesterphobic"
 #define TRAIT_XENOPHOBIC "Xenophobic"

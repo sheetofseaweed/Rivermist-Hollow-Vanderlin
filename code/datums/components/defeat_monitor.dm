@@ -6,6 +6,9 @@
 	var/shock_warning_last_at = 0
 	/// Valid hostile climax events accumulated toward horny defeat.
 	var/horny_defeat_climax_count = 0
+	/// Climaxes needed for horny defeat this encounter. Rolled lazily (rand 10-20) on the first
+	/// valid hostile-grab climax, per the design - separate from the legacy hostile_grab threshold.
+	var/horny_defeat_climax_threshold = 0
 
 /datum/component/defeat_monitor/Initialize(...)
 	if(!isliving(parent))
@@ -39,7 +42,7 @@
 	if(carbon_parent.defeat_is_immediate_rune_hazard())
 		return carbon_parent.enter_defeat(DEFEAT_REASON_HAZARD, DEFEAT_SEVERITY_SEVERE)
 
-	var/selected_threshold = carbon_parent.defeat_damage_threshold || DEFEAT_DAMAGE_THRESHOLD_DEFAULT
+	var/selected_threshold = carbon_parent.get_effective_defeat_threshold()
 	if(max(carbon_parent.getBruteLoss(), carbon_parent.getFireLoss(), carbon_parent.getToxLoss(), carbon_parent.getOxyLoss(), carbon_parent.getCloneLoss()) >= selected_threshold)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
 
@@ -104,7 +107,27 @@
 
 /datum/component/defeat_monitor/proc/on_climax(datum/source, datum/sex_action/action, mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
 	SIGNAL_HANDLER
+	if(try_holy_communion_rescue(action_receiver, action_partner, action_performer))
+		return
 	return check_horny_defeat_climax(source, action_receiver, action_partner, action_performer)
+
+/// A holy character (TRAIT_HOLY) bringing a downed victim to climax frees them - the design's
+/// "ERP with the saints" rescue (section 3.1). A holy one who is actively harming the victim
+/// (aggressive grab / recent attacker) is blocked by defeat_can_be_rescued_by, so only a tender act frees.
+/datum/component/defeat_monitor/proc/try_holy_communion_rescue(mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
+	var/mob/living/carbon/victim = parent
+	if(!istype(victim))
+		return FALSE
+	if(action_receiver != victim)
+		return FALSE
+	if(!victim.has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	var/mob/living/holy_one = action_performer || action_partner
+	if(!holy_one || holy_one == victim)
+		return FALSE
+	if(!HAS_TRAIT(holy_one, TRAIT_HOLY))
+		return FALSE
+	return victim.defeat_rescue(holy_one, "holy communion")
 
 /datum/component/defeat_monitor/proc/check_horny_defeat_climax(datum/source, mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
 	var/mob/living/carbon/carbon_parent = parent
@@ -128,8 +151,11 @@
 	if(action_partner.grab_state < GRAB_AGGRESSIVE)
 		return FALSE
 
+	// Roll this encounter's threshold once, on the first valid hostile climax (10-20 per design).
+	if(horny_defeat_climax_threshold <= 0)
+		horny_defeat_climax_threshold = rand(10, 20)
 	horny_defeat_climax_count++
-	if(horny_defeat_climax_count < max(1, carbon_parent.hostile_grab_horny_climax_threshold))
+	if(horny_defeat_climax_count < horny_defeat_climax_threshold)
 		return FALSE
 
 	horny_defeat_climax_count = 0

@@ -71,6 +71,8 @@
 
 /// From /mob/living/proc/defeat_rescue(): (mob/living/helper, rescue_source)
 #define COMSIG_LIVING_DEFEAT_RESCUED "living_defeat_rescued"
+/// Sent when a mob is knocked into the defeat state (defeat_knockout applied): ()
+#define COMSIG_LIVING_DEFEATED "living_defeated"
 /// From /mob/living/proc/defeat_treat_trauma(): (mob/living/helper, treatment_type)
 #define COMSIG_LIVING_DEFEAT_TREATED "living_defeat_treated"
 #define COMSIG_LIVING_TRY_ENTER_AFTERLIFE "try_enter_afterlife"

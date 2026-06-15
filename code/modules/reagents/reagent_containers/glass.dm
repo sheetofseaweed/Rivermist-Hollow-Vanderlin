@@ -169,6 +169,7 @@
 			M.visible_message(span_danger("[user] feeds [M] something."), \
 						span_danger("[user] feeds you something."))
 			log_combat(user, M, "fed", reagents.log_list())
+			defeat_try_potion_rescue(M, user)
 		else
 			// check to see if we're a noble drinking soup
 			if(ishuman(user) && istype(src, /obj/item/reagent_containers/glass/bowl))

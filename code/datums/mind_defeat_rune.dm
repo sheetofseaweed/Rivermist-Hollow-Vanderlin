@@ -56,3 +56,19 @@
 
 /datum/mind/proc/get_defeat_rune_emergency_result()
 	return list(DEFEAT_RUNE_SPEND_KIND = DEFEAT_RUNE_SPEND_EMERGENCY, DEFEAT_RUNE_CHARGES_REMAINING = max(defeat_rune_charges, 0))
+
+/// Coin tithe + blood tax owed for spending a charge, keyed by how many charges were available BEFORE the spend.
+/// "blood" of DEFEAT_RUNE_BLOOD_FRACTION_SENTINEL means "bill a fraction of current blood" (see the last-charge tier).
+/proc/defeat_rune_charge_cost(charges_before)
+	switch(charges_before)
+		if(5)
+			return list("coin" = 1, "blood" = 100)
+		if(4)
+			return list("coin" = 3, "blood" = 300)
+		if(3)
+			return list("coin" = 5, "blood" = 500)
+		if(2)
+			return list("coin" = 10, "blood" = 800)
+		if(1)
+			return list("coin" = 30, "blood" = DEFEAT_RUNE_BLOOD_FRACTION_SENTINEL)
+	return list("coin" = 0, "blood" = 0)

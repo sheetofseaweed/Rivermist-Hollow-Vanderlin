@@ -571,6 +571,7 @@
 	name = "Atrophy"
 	desc = "When growing up I could barely feed myself. This has left my body weak and fragile."
 	point_value = 6
+	defeat_threshold_mult = 0.6
 
 /datum/quirk/vice/atrophy/on_spawn()
 	var/mob/living/carbon/human/H = owner
@@ -654,6 +655,7 @@
 	name = "Frail"
 	desc = "My bones are like sticks."
 	point_value = 4
+	defeat_threshold_mult = 0.6
 	gain_text = span_danger("I feel frail.")
 	lose_text = span_notice("I feel sturdy again.")
 

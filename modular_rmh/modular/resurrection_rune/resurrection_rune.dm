@@ -880,6 +880,12 @@
 		update_linked_user_rescue_state(user)
 		return FALSE
 
+	var/spend_kind = rune_charge_result[DEFEAT_RUNE_SPEND_KIND]
+	if(spend_kind == DEFEAT_RUNE_SPEND_FIRST_FREE)
+		to_chat(user, span_blue("The rune answers freely - this once."))
+	else if(spend_kind == DEFEAT_RUNE_SPEND_CHARGED && rune_charge_result[DEFEAT_RUNE_CHARGES_REMAINING] <= 0)
+		to_chat(user, span_userdanger("That was your final rune charge. The next time you fall, no rune will answer until your charges return - sit tight and stay safe."))
+
 	queue_revival(user, voluntary = TRUE, allow_outlaw_redirect = FALSE, rune_charge_result = rune_charge_result)
 	return TRUE
 
@@ -942,6 +948,7 @@
 	body.grab_ghost(TRUE)
 	body.flash_act()
 	apply_revival_debuffs(body, voluntary, rune_charge_result)
+	apply_defeat_rune_cost(body, rune_charge_result)
 	apply_revival_side_effects(body, voluntary, return_turf)
 	addtimer(CALLBACK(src, PROC_REF(clear_resurrection_lockout), body), RUNE_REVIVE_LOCKOUT)
 	playsound(destination_turf, 'sound/misc/vampirespell.ogg', 100, FALSE, -1)
@@ -1023,6 +1030,34 @@
 	target.remove_status_effect(/datum/status_effect/debuff/revived/rune)
 	target.remove_status_effect(/datum/status_effect/debuff/revived/rune/rough)
 	target.remove_status_effect(/datum/status_effect/debuff/revived/rune/light)
+
+/// Bills the defeat-rune return: a best-effort coin tithe plus the always-drawn blood tax (D1).
+/// First-free and emergency (depleted) returns cost nothing.
+/datum/resurrection_rune_controller/proc/apply_defeat_rune_cost(mob/living/carbon/user, list/rune_charge_result)
+	if(!user || !rune_charge_result)
+		return FALSE
+	if(rune_charge_result[DEFEAT_RUNE_SPEND_KIND] != DEFEAT_RUNE_SPEND_CHARGED)
+		return FALSE
+
+	var/charges_before = rune_charge_result[DEFEAT_RUNE_CHARGES_REMAINING] + 1
+	var/list/cost = defeat_rune_charge_cost(charges_before)
+
+	// Coin tithe - the townsfolk pay the vampires their due. Best-effort: only what they have.
+	var/coin = cost["coin"]
+	if(coin > 0 && (user in SStreasury.bank_accounts))
+		var/paid = min(SStreasury.bank_accounts[user], coin)
+		if(paid > 0)
+			SStreasury.bank_accounts[user] -= paid
+			SStreasury.treasury_value += paid
+			SStreasury.log_entries += "+[paid] to treasury (rune defeat tithe from [user.real_name])"
+
+	// Blood tax - literal blood drawn to power the rune (and later the vampire blood bank).
+	var/blood = cost["blood"]
+	if(blood == DEFEAT_RUNE_BLOOD_FRACTION_SENTINEL)
+		blood = round(user.blood_volume * DEFEAT_RUNE_LAST_CHARGE_BLOOD_FRACTION)
+	if(blood > 0)
+		user.collect_blood_tax(blood)
+	return TRUE
 
 /datum/resurrection_rune_controller/proc/apply_revival_side_effects(mob/living/carbon/target, voluntary = FALSE, turf/return_turf = null)
 	charge_revival_tithe(target)
