@@ -29,3 +29,37 @@
 #define DUNGEON_RUN_STRETCH_LENGTH 5
 /// A run force-collapses after this long with no client-bearing occupant
 #define DUNGEON_RUN_ABANDON_TIMEOUT (30 MINUTES)
+
+// -- Roguelike crawler additions --
+
+// Additional room kinds
+#define DUNGEON_ROOM_BOSS "boss"
+#define DUNGEON_ROOM_DESCENT "descent"
+
+// Additional gate role
+#define DUNGEON_GATE_DESCENT "descent"
+
+// Path types (branching risk/reward)
+#define DUNGEON_PATH_COMBAT "combat"
+#define DUNGEON_PATH_TREASURE "treasure"
+#define DUNGEON_PATH_HAZARD "hazard"
+#define DUNGEON_PATH_ELITE "elite"
+#define DUNGEON_PATH_SHORTCUT "shortcut"
+
+/// Highest floor the floor-config registry guarantees a hand-authored config for;
+/// beyond this, the deepest config is reused with a rising tier.
+#define DUNGEON_MAX_DESIGNED_FLOOR 5
+
+// -- Party & raid management --
+
+// Join approval threshold for outsiders petitioning an at-rest party
+#define DUNGEON_JOIN_APPROVAL_ANY "any"          // any single present member approves
+#define DUNGEON_JOIN_APPROVAL_MAJORITY "majority"// >half of present members
+#define DUNGEON_JOIN_APPROVAL_LEADER "leader"    // party leader only
+/// Active approval mode
+#define DUNGEON_JOIN_APPROVAL_MODE DUNGEON_JOIN_APPROVAL_ANY
+
+/// A muster auto-resolves (leader/threshold force-advance) after this long waiting
+#define DUNGEON_MUSTER_TIMEOUT (45 SECONDS)
+/// Grace after which a disconnected member stops gating a muster
+#define DUNGEON_MUSTER_SSD_GRACE (20 SECONDS)

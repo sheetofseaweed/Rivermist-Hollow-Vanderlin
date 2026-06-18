@@ -54,7 +54,11 @@
 
 	for(var/turf/current_turf as anything in affected_turfs)
 		for(var/obj/effect/landmark/dungeon/guardian/guardian_marker in current_turf)
-			var/mob/living/spawned = guardian_marker.spawn_guardian(current_turf)
+			var/mob/living/spawned
+			if(istype(guardian_marker, /obj/effect/landmark/dungeon/guardian/boss))
+				spawned = spawn_floor_boss(guardian_marker, current_turf)
+			else
+				spawned = guardian_marker.spawn_guardian(current_turf)
 			if(spawned)
 				mobs_to_register += spawned
 			qdel(guardian_marker)
@@ -81,6 +85,19 @@
 
 	if(!length(guardian_refs))
 		on_cleared(silent = TRUE)
+
+/datum/pocket_dimension/dungeon/proc/spawn_floor_boss(obj/effect/landmark/dungeon/guardian/boss/boss_marker, turf/spawn_turf)
+	var/boss_type
+	if(boss_marker.use_floor_boss_pool && owning_run?.floor_config && length(owning_run.floor_config.boss_pool))
+		boss_type = pickweight(owning_run.floor_config.boss_pool.Copy())
+	else if(length(boss_marker.mob_pool))
+		boss_type = pickweight(boss_marker.mob_pool.Copy())
+	if(!ispath(boss_type, /mob/living))
+		return null
+	var/mob/living/simple_animal/hostile/boss/dungeon/boss = new boss_type(spawn_turf)
+	if(istype(boss) && owning_run)
+		scale_dungeon_boss(boss, owning_run.floor)
+	return boss
 
 /datum/pocket_dimension/dungeon/proc/register_guardian(mob/living/guardian)
 	if(QDELETED(guardian) || guardian.stat == DEAD || guardian.mind || guardian.client)

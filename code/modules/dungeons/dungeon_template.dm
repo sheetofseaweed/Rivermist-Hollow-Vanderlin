@@ -79,3 +79,19 @@
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_COMBAT
 	loot_table_type = /datum/loot_table/debug
+
+/datum/map_template/pocket/dungeon/test_descent
+	name = "Test Descent Room"
+	id = "dungeon_test_descent"
+	mappath = "_maps/templates/dungeons/dungeon_test_break.dmm" // reuse break layout (entry+exit+gates)
+	theme = DUNGEON_THEME_TEST
+	room_kind = DUNGEON_ROOM_DESCENT
+
+/datum/map_template/pocket/dungeon/test_boss
+	name = "Test Boss Room"
+	id = "dungeon_test_boss"
+	mappath = "_maps/templates/dungeons/dungeon_test_boss.dmm"
+	theme = DUNGEON_THEME_TEST
+	room_kind = DUNGEON_ROOM_BOSS
+	loot_table_type = /datum/loot_table/debug
+	gate_hint = "Something vast breathes in the dark ahead."

@@ -110,7 +110,9 @@
 	TEST_ASSERT(!next_gate.sealed, "Forward gates should unseal on clear.")
 	TEST_ASSERT_EQUAL(run.depth, 1, "Run depth should increment per cleared combat room.")
 	TEST_ASSERT_NOTNULL(next_gate.pre_rolled_template, "Cleared combat room's forward gate should have a template.")
-	TEST_ASSERT_EQUAL(next_gate.pre_rolled_template.room_kind, DUNGEON_ROOM_BREAK, "With stretch_length 1, the next room should be a break room.")
+	// Stretch-end now caps with a boss room (Slice 3); this test exercises the
+	// despawn-behind-party mechanic, so force the next room to a plain break room.
+	next_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_break")
 
 	TEST_ASSERT(next_gate.use_gate(delver), "Cleared forward gate should transfer the delver onward.")
 	var/datum/pocket_dimension/dungeon/second_break = run.current_break_room
@@ -125,3 +127,135 @@
 	TEST_ASSERT(entrance.is_dormant(), "Entrance should go dormant after its run ends.")
 	TEST_ASSERT(QDELETED(second_break), "Run teardown should delete remaining rooms.")
 	TEST_ASSERT_EQUAL(get_turf(delver), get_turf(entrance), "Run teardown should eject the delver to the entrance.")
+
+/datum/unit_test/dungeon_floor_descent/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+
+	TEST_ASSERT(entrance.try_enter(delver), "Infinite entrance should accept a delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT_NOTNULL(run, "Run should be created.")
+	TEST_ASSERT_EQUAL(run.floor, 1, "Run should start on floor 1.")
+
+	var/datum/pocket_dimension/dungeon/first_break = run.current_break_room
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in first_break.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(forward_gate, "Break room should have a forward gate.")
+
+	// Force the next room to be a descent room so we can test the floor advance.
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_descent")
+	forward_gate.gate_role = DUNGEON_GATE_DESCENT
+	forward_gate.sealed = FALSE
+
+	TEST_ASSERT(forward_gate.use_gate(delver), "Descent gate should transfer the delver.")
+	TEST_ASSERT_EQUAL(run.floor, 2, "Crossing a descent room should advance to floor 2.")
+	TEST_ASSERT(QDELETED(first_break), "The previous floor's break room should despawn on descent.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_solo_still_works/Run()
+	// Guards the foundation behavior: a lone, partyless delver can still run.
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "A partyless delver should still be able to enter.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT_NOTNULL(run, "Solo entry should create a run.")
+	TEST_ASSERT_NULL(run.get_party(), "Solo run should have no bound party.")
+
+	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "A solo delver should muster trivially and advance.")
+	TEST_ASSERT(forward_gate.destination_room.contains_turf(get_turf(delver)), "Solo delver should have moved through.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_at_rest_state/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Delver should enter.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT(run.is_at_rest(), "A run sitting in its starting break room should report at rest.")
+
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Advance into the combat stretch.")
+	TEST_ASSERT(!run.is_at_rest(), "With a live combat stretch room, the run should not be at rest.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_present_set/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Delver should enter.")
+	var/datum/dungeon_run/run = entrance.active_run
+	// Clientless test mob has no ckey, so present_ckeys stays empty by design;
+	// assert the occupant-based present-member query finds the delver instead.
+	var/list/present = run.get_present_members()
+	TEST_ASSERT(length(present) >= 1, "The delver should be counted among present members of the run.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_boss_room/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	run.floor = 2 // so we can assert boss scaling
+	run.floor_config = get_dungeon_floor_config(2)
+
+	var/datum/pocket_dimension/dungeon/first_break = run.current_break_room
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in first_break.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(forward_gate, "Break room should have a forward gate.")
+
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_boss")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer into the boss room.")
+
+	var/datum/pocket_dimension/dungeon/boss_room = forward_gate.destination_room
+	TEST_ASSERT_NOTNULL(boss_room, "Boss room should instantiate.")
+	TEST_ASSERT(!boss_room.cleared, "Boss room should not start cleared.")
+
+	var/mob/living/simple_animal/hostile/boss/dungeon/boss
+	for(var/boss_ref in boss_room.guardian_refs)
+		var/datum/weakref/ref = boss_room.guardian_refs[boss_ref]
+		boss = ref.resolve()
+	TEST_ASSERT_NOTNULL(boss, "Boss should be spawned and tracked as a guardian.")
+	TEST_ASSERT(boss.maxHealth > initial(boss.maxHealth), "Boss should be scaled up on floor 2.")
+
+	var/obj/structure/dungeon_gate/onward
+	for(var/obj/structure/dungeon_gate/gate as anything in boss_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			onward = gate
+			break
+	TEST_ASSERT_NOTNULL(onward, "Boss room should have a forward gate.")
+	TEST_ASSERT(onward.sealed, "Boss room forward gate should be sealed while the boss lives.")
+
+	boss.death()
+	TEST_ASSERT(boss_room.cleared, "Killing the boss should clear the room.")
+	TEST_ASSERT_EQUAL(onward.gate_role, DUNGEON_GATE_DESCENT, "Boss death should convert the forward gate to a descent gate.")
+	TEST_ASSERT(!onward.sealed, "Descent gate should be open after the boss dies.")
+
+	qdel(run)

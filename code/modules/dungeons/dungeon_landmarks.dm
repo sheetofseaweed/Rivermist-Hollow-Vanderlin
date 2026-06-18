@@ -24,6 +24,17 @@
 	name = "test dungeon guardian marker"
 	mob_pool = list(/mob/living/simple_animal/hostile/retaliate/wolf = 10)
 
+/obj/effect/landmark/dungeon/guardian/boss
+	name = "dungeon boss marker"
+	/// When TRUE, the room pulls its boss from the run's floor config boss_pool
+	/// instead of this marker's mob_pool.
+	var/use_floor_boss_pool = TRUE
+
+/obj/effect/landmark/dungeon/guardian/boss/test
+	name = "test boss marker"
+	use_floor_boss_pool = FALSE
+	mob_pool = list(/mob/living/simple_animal/hostile/boss/dungeon/test = 10)
+
 // -- Loot point: replaced by a sealed reward cache on dungeon load --
 
 /obj/effect/landmark/dungeon/loot

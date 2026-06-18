@@ -7,6 +7,16 @@
 	var/stretch_length = DUNGEON_RUN_STRETCH_LENGTH
 	/// Optional DUNGEON_THEME_* lock from the entrance
 	var/theme
+	/// Current floor (1-based); rises on boss/descent
+	var/floor = 1
+	/// Active floor config (themes, tier, stretch length, boss pool)
+	var/datum/dungeon_floor_config/floor_config
+	/// The party this run belongs to (the roster). May be null for a lone delver.
+	var/datum/weakref/party_ref
+	/// ckeys of members physically inside the run right now
+	var/list/present_ckeys = list()
+	/// weakrefs of outsiders waiting at the entrance to join at the next rest area
+	var/list/waiting_petitioners = list()
 	/// The break room the party last secured; the only place with an overworld exit
 	var/datum/pocket_dimension/dungeon/current_break_room
 	/// Combat rooms instantiated since the last break room
@@ -56,7 +66,10 @@
 	return rooms
 
 /datum/dungeon_run/proc/start()
-	var/datum/map_template/pocket/dungeon/break_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, theme)
+	floor = 1
+	floor_config = get_dungeon_floor_config(floor)
+	stretch_length = floor_config.stretch_length
+	var/datum/map_template/pocket/dungeon/break_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
 	if(!break_template)
 		return FALSE
 	current_break_room = create_room_instance(break_template, 0)
@@ -64,6 +77,11 @@
 		return FALSE
 	build_room_gates(current_break_room, null)
 	return TRUE
+
+/datum/dungeon_run/proc/pick_floor_theme()
+	if(floor_config && length(floor_config.themes))
+		return pick(floor_config.themes)
+	return theme
 
 /// Creates a dungeon room instance with depth/run wired up BEFORE activate(),
 /// which get_or_create_instance cannot do; mirrors its registration steps.
@@ -104,13 +122,35 @@
 /// if the stretch would be complete, otherwise a combat room in the depth's tier band.
 /datum/dungeon_run/proc/roll_next_room_template(datum/pocket_dimension/dungeon/room)
 	var/next_position = room.stretch_position + 1
+	var/theme_to_use = pick_floor_theme()
 	if(next_position > stretch_length)
-		return pick_dungeon_template(DUNGEON_ROOM_BREAK, theme)
+		// End of stretch: a boss caps the floor's final stretch, else a break room.
+		if(is_final_stretch())
+			var/datum/map_template/pocket/dungeon/boss_room = pick_dungeon_template(DUNGEON_ROOM_BOSS, theme_to_use)
+			if(boss_room)
+				return boss_room
+		return pick_dungeon_template(DUNGEON_ROOM_BREAK, theme_to_use)
 	var/target_tier = get_target_tier()
-	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme, max(1, target_tier - 1), target_tier + 1)
+	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, max(1, target_tier - 1), target_tier + 1)
+
+/// Whether the current stretch should end in a boss. For the starter build every
+/// floor's stretch ends in a boss; tune later (e.g. boss only on the last stretch).
+/datum/dungeon_run/proc/is_final_stretch()
+	return TRUE
 
 /datum/dungeon_run/proc/get_target_tier()
-	return clamp(1 + round(depth / 3), 1, 5)
+	var/floor_tier = get_dungeon_floor_tier(floor)
+	// small in-floor nudge as depth rises within the floor
+	return clamp(floor_tier + round(stretch_position_estimate() / 3), 1, 10)
+
+/// Rough progress within the current stretch, for the in-floor tier nudge.
+/datum/dungeon_run/proc/stretch_position_estimate()
+	var/highest = 0
+	for(var/datum/pocket_dimension/dungeon/room as anything in stretch_rooms)
+		if(QDELETED(room))
+			continue
+		highest = max(highest, room.stretch_position)
+	return highest
 
 /// Called by a forward gate the first time it is used.
 /datum/dungeon_run/proc/instantiate_room_for_gate(obj/structure/dungeon_gate/gate)
@@ -119,7 +159,8 @@
 	var/datum/pocket_dimension/dungeon/room = create_room_instance(gate.pre_rolled_template, depth + 1)
 	if(!room)
 		return null
-	if(gate.pre_rolled_template.room_kind == DUNGEON_ROOM_BREAK)
+	var/new_room_kind = gate.pre_rolled_template.room_kind
+	if(new_room_kind == DUNGEON_ROOM_BREAK || new_room_kind == DUNGEON_ROOM_DESCENT)
 		room.stretch_position = 0
 	else
 		room.stretch_position = gate.source_room.stretch_position + 1
@@ -134,11 +175,23 @@
 	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
 	if(dungeon_template?.room_kind == DUNGEON_ROOM_COMBAT)
 		depth++
+	var/is_boss_room = dungeon_template?.room_kind == DUNGEON_ROOM_BOSS
 	for(var/obj/structure/dungeon_gate/gate as anything in room.gates)
 		if(QDELETED(gate))
 			continue
-		if(gate.gate_role == DUNGEON_GATE_FORWARD)
-			gate.sealed = FALSE
+		if(gate.gate_role != DUNGEON_GATE_FORWARD)
+			continue
+		gate.sealed = FALSE
+		if(is_boss_room)
+			// Boss death turns the way onward into a descent to the next floor.
+			gate.gate_role = DUNGEON_GATE_DESCENT
+			gate.pre_rolled_template = pick_dungeon_template(DUNGEON_ROOM_DESCENT, pick_floor_theme()) || pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
+	if(is_boss_room)
+		on_boss_killed(room)
+
+/datum/dungeon_run/proc/on_boss_killed(datum/pocket_dimension/dungeon/room)
+	for(var/mob/occupant as anything in room.get_occupants())
+		to_chat(occupant, span_nicegreen("The floor's guardian falls! A way down has opened."))
 
 /// Called by gates after moving someone; advances the run when a fresh
 /// break room is reached, despawning the finished stretch behind the party.
@@ -146,9 +199,26 @@
 	if(ending)
 		return
 	last_seen_occupied = world.time
+	mark_present(user)
 	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
-	if(dungeon_template?.room_kind == DUNGEON_ROOM_BREAK && room != current_break_room)
-		advance_to_break_room(room)
+	if(!dungeon_template)
+		return
+	switch(dungeon_template.room_kind)
+		if(DUNGEON_ROOM_BREAK)
+			if(room != current_break_room)
+				advance_to_break_room(room)
+		if(DUNGEON_ROOM_DESCENT)
+			if(room != current_break_room)
+				advance_floor(room)
+
+/datum/dungeon_run/proc/advance_floor(datum/pocket_dimension/dungeon/new_floor_room)
+	floor++
+	floor_config = get_dungeon_floor_config(floor)
+	stretch_length = floor_config.stretch_length
+	// Reaching a descent room is also a break-room moment: despawn the old floor.
+	advance_to_break_room(new_floor_room)
+	for(var/mob/occupant as anything in new_floor_room.get_occupants())
+		to_chat(occupant, span_notice("<b>[floor_config.floor_name]</b> — I have descended to floor [floor]."))
 
 /datum/dungeon_run/proc/advance_to_break_room(datum/pocket_dimension/dungeon/new_break_room)
 	var/list/doomed = list()
@@ -164,6 +234,9 @@
 	for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
 		room.owning_run = null // no re-entrant run callbacks from the teardown
 		SSpocket_dimensions.delete_instance(room, "The passages behind grind shut and crumble away!", eject_target)
+
+	// Reaching a fresh rest area lets waiting outsiders petition to join.
+	notify_waiting_petitioners()
 
 /datum/dungeon_run/proc/has_client_occupants()
 	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())

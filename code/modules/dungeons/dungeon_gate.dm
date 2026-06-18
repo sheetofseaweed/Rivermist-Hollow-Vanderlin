@@ -32,6 +32,8 @@
 		. += span_warning("It is sealed shut. The hostile presence in this room holds it closed.")
 	else if(gate_role == DUNGEON_GATE_BACK)
 		. += span_notice("It leads back the way I came.")
+	else if(gate_role == DUNGEON_GATE_DESCENT)
+		. += span_notice("A stairway plunges deeper. The air below is colder, hungrier.")
 	else if(pre_rolled_template)
 		. += span_notice(pre_rolled_template.gate_hint)
 
@@ -57,17 +59,31 @@
 	if(!owning_run || QDELETED(owning_run))
 		to_chat(user, span_warning("The passage leads nowhere. The dungeon has lost interest."))
 		return FALSE
-	var/datum/pocket_dimension/dungeon/target_room = resolve_destination()
-	if(!target_room)
-		to_chat(user, span_warning("The passage twists shut before me."))
-		return FALSE
-	return transfer_through(user, target_room)
+	if(gate_role == DUNGEON_GATE_BACK)
+		// Backtracking is free: any present member may step back alone.
+		var/datum/pocket_dimension/dungeon/back_room = resolve_destination()
+		if(!back_room)
+			to_chat(user, span_warning("The way back has crumbled."))
+			return FALSE
+		return transfer_through(user, back_room)
+	// Forward / descent gates move the whole present party together (muster).
+	return owning_run.muster_advance(src, user)
+
+/obj/structure/dungeon_gate/attack_hand_secondary(mob/user, list/modifiers)
+	if(gate_role == DUNGEON_GATE_BACK || sealed || !owning_run || QDELETED(owning_run))
+		return ..()
+	var/datum/party/party = owning_run.get_party()
+	if(party && !party.is_leader(user?.ckey))
+		to_chat(user, span_warning("Only the party leader can force the way open."))
+		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+	owning_run.muster_advance(src, user, force = TRUE)
+	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/structure/dungeon_gate/proc/resolve_destination()
 	if(destination_room && !QDELETED(destination_room))
 		return destination_room
 	destination_room = null
-	if(gate_role != DUNGEON_GATE_FORWARD || !pre_rolled_template)
+	if((gate_role != DUNGEON_GATE_FORWARD && gate_role != DUNGEON_GATE_DESCENT) || !pre_rolled_template)
 		return null
 	destination_room = owning_run.instantiate_room_for_gate(src)
 	return destination_room

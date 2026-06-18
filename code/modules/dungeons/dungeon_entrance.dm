@@ -53,6 +53,19 @@
 /obj/structure/dungeon_entrance/attack_paw(mob/user, list/modifiers)
 	try_enter(user)
 
+/obj/structure/dungeon_entrance/AltClick(mob/user, list/modifiers)
+	. = ..()
+	if(!iscarbon(user) || !user.Adjacent(src))
+		return
+	var/mob/living/carbon/carbon_user = user
+	if(entrance_kind != DUNGEON_ENTRANCE_INFINITE)
+		try_enter(carbon_user)
+		return
+	if(active_run && !active_run.is_party_member(carbon_user))
+		petition_to_join(carbon_user)
+		return
+	open_assembly_menu(carbon_user)
+
 /obj/structure/dungeon_entrance/attackby(obj/item/attacking_item, mob/living/user, list/modifiers)
 	if(istype(attacking_item, /obj/item/grabbing))
 		var/obj/item/grabbing/grab_item = attacking_item
@@ -67,8 +80,18 @@
 		return null
 
 	if(entrance_kind == DUNGEON_ENTRANCE_INFINITE)
+		if(active_run && !active_run.is_party_member(user))
+			if(iscarbon(user))
+				var/mob/living/carbon/carbon_petitioner = user
+				petition_to_join(carbon_petitioner)
+			return null
 		if(!active_run)
 			var/datum/dungeon_run/new_run = new(src, theme_filter)
+			var/datum/party/user_party
+			if(iscarbon(user))
+				var/mob/living/carbon/carbon_user = user
+				user_party = carbon_user.current_party
+			new_run.bind_party(user_party) // null is fine (solo)
 			if(!new_run.start())
 				qdel(new_run)
 				to_chat(user, span_warning("The depths refuse to take shape. Nothing answers."))
@@ -92,7 +115,10 @@
 	if(!room)
 		return FALSE
 	to_chat(user, span_notice("I slip down into the dark."))
-	return room.enter_mob(user, get_turf(src), src)
+	. = room.enter_mob(user, get_turf(src), src)
+	if(. && active_run)
+		active_run.mark_present(user)
+	return .
 
 /obj/structure/dungeon_entrance/proc/handle_grabbed_entry(mob/living/user, obj/item/grabbing/grab_item)
 	if(!istype(user) || !istype(grab_item))
