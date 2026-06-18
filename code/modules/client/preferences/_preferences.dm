@@ -82,8 +82,13 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	/// The type of voice soundpack the mob should use.
 	var/voice_type = VOICE_TYPE_MASC
 
+	/// Optional emote voicepack override. Default lets species, voice type, and role-specific packs decide.
+	var/voice_pack = VOICE_PACK_DEFAULT
+
 	/// The type of moans the mob should use.
 	var/moan_selection = MOANPACK_TYPE_DEF	//RMH EDIT: choose moanpack
+	COOLDOWN_DECLARE(voice_previewing)
+	COOLDOWN_DECLARE(moan_previewing)
 
 	/// Age of character.
 	var/age = AGE_ADULT
@@ -858,6 +863,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			if('domhand' in data) updateField('char-domhand', data.domhand || '');
 			if('pronouns' in data) updateField('char-pronouns', data.pronouns || '');
 			if('voicetype' in data) updateField('char-voicetype', data.voicetype || '');
+			if('voicepack' in data) updateField('char-voicepack', data.voicepack || 'Default');
 			if('accent' in data) updateField('char-accent', data.accent || '');
 			if('moan' in data) updateField('char-moan', data.moan || '');
 			if('triumphs' in data) updateField('char-triumphs', data.triumphs || '0');
@@ -1005,15 +1011,17 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	<div class="ui-label" style="top:144px; left:8px; width:26px;">Voice</div>
 	<div class="ui-label" style="top:150px; left:10px; width:24px;">Type</div>
-	<a href='?_src_=prefs;preference=voicetype;task=input'><div class="sprite" style="top:159px; left:10px; width:46px; height:9px; background-image: url('voice_type.png');">
-		<div id="char-voicetype" class="clickable-text auto-shrink" style="width:46px; height:9px;">[voice_type]</div>
+	<a href='?_src_=prefs;preference=voicetype;task=input'><div class="sprite" style="top:159px; left:10px; width:27px; height:9px; background-image: url('voice_type.png');">
+		<div id="char-voicetype" class="clickable-text auto-shrink" style="width:27px; height:9px;">[voice_type]</div>
 	</div></a>
-	<div class="pixel-button preview-placeholder sprite-placeholder" style="top:159px; left:61px; width:42px;">Preview</div>
+	<div class="ui-label" style="top:153px; left:43px; width:24px;">Pack</div>
+	<a href='?_src_=prefs;preference=voicepack;task=input'><div id="char-voicepack" class="pixel-button preview-placeholder sprite-placeholder auto-shrink" style="top:159px; left:40px; width:36px;">[voice_pack || VOICE_PACK_DEFAULT]</div></a>
+	<a href='?_src_=prefs;preference=voicepreview;task=input'><div class="pixel-button preview-placeholder sprite-placeholder" style="top:159px; left:78px; width:25px;">Prev</div></a>
 	<div class="ui-label" style="top:178px; left:11px; width:32px;">Moans</div>
 	<a href='?_src_=prefs;preference=moanselection;task=input'><div class="sprite" style="top:186px; left:10px; width:46px; height:9px; background-image: url('voice_moans.png');">
 		<div id="char-moan" class="clickable-text auto-shrink" style="width:42px; height:9px;">[moan_selection]</div>
 	</div></a>
-	<div class="pixel-button preview-placeholder sprite-placeholder" style="top:186px; left:61px; width:42px;">Preview</div>
+	<a href='?_src_=prefs;preference=moanpreview;task=input'><div class="pixel-button preview-placeholder sprite-placeholder" style="top:186px; left:61px; width:42px;">Preview</div></a>
 
 	<a href='?_src_=prefs;preference=loadout_item;task=input'><div class="sprite" style="top:226px; left:10px; width:51px; height:9px; background-image: url('loadout_item1.png');">
 		<div id="char-loadout1" class="clickable-text auto-shrink" style="width:51px; height:9px;">Open Loadout Menu</div>
@@ -1119,6 +1127,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		params["gender"] = gender == MALE ? "Masc" : "Fem"
 	if(update_all || ("voicetype" in fields_to_update))
 		params["voicetype"] = voice_type
+	if(update_all || ("voicepack" in fields_to_update))
+		params["voicepack"] = voice_pack || VOICE_PACK_DEFAULT
 	if(update_all || ("accent" in fields_to_update))
 		params["accent"] = selected_accent
 	if(update_all || ("moan" in fields_to_update))
@@ -2074,8 +2084,65 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 						if(voicetype_input == VOICE_TYPE_ANDRO)
 							to_chat(user, span_warning("This will use the feminine voicepack pitched down a bit to achieve a more androgynous sound."))
 						to_chat(user, span_warning("Your character will now vocalize with a [lowertext(voice_type)] affect."))
+				if("voicepack")
+					var/voicepack_input = tgui_input_list(user, "CHOOSE YOUR HERO'S EMOTE VOICE PACK", "VOICE PACK", GLOB.voice_packs_list, voice_pack || VOICE_PACK_DEFAULT)
+					if(voicepack_input)
+						voice_pack = voicepack_input
+						if(voice_pack == VOICE_PACK_DEFAULT)
+							to_chat(user, span_warning("Your character will use their voice identity, species, and role-specific voicepacks."))
+						else
+							to_chat(user, span_warning("Your character will now audibly emote with a [lowertext(voice_pack)] voicepack. This overrides species and role-specific voicepacks."))
+				if("voicepreview")
+					if(SSticker.current_state == GAME_STATE_STARTUP)
+						to_chat(user, span_warning("Voice previews can't play during initialization."))
+						return
+					if(!COOLDOWN_FINISHED(src, voice_previewing))
+						return
+					if(!parent?.mob)
+						return
+					COOLDOWN_START(src, voice_previewing, 3 SECONDS)
+
+					var/datum/voicepack/preview_pack
+					if(voice_pack == VOICE_PACK_DEFAULT)
+						var/default_voicepack_type
+						if(voice_type == VOICE_TYPE_MASC)
+							default_voicepack_type = pref_species.soundpack_m || /datum/voicepack/male
+						else
+							default_voicepack_type = pref_species.soundpack_f || pref_species.soundpack_m || /datum/voicepack/female
+						preview_pack = new default_voicepack_type()
+					else
+						var/voicepack_type = GLOB.voice_packs_list[voice_pack]
+						if(voicepack_type)
+							preview_pack = new voicepack_type()
+
+					if(!preview_pack)
+						to_chat(user, span_warning("No voicepack selected."))
+						return
+
+					var/list/voice_preview_keys = list("laugh", "chuckle", "sigh", "gasp", "hmm", "huh")
+					var/soundin
+					while(length(voice_preview_keys) && !soundin)
+						var/possible_sounds = preview_pack.get_sound(pick_n_take(voice_preview_keys), null)
+						if(islist(possible_sounds))
+							if(length(possible_sounds))
+								soundin = pick(possible_sounds)
+						else if(possible_sounds)
+							soundin = possible_sounds
+
+					if(!soundin)
+						to_chat(user, span_warning("This voicepack does not have preview sounds."))
+						qdel(preview_pack)
+						return
+
+					var/preview_frequency = 1
+					if(voice_type == VOICE_TYPE_ANDRO)
+						preview_frequency *= 0.92
+					var/sound/preview_sound = sound(get_sfx(soundin))
+					preview_sound.frequency = preview_frequency
+					parent.mob.playsound_local(get_turf(parent.mob), null, 70, FALSE, pressure_affected = FALSE, S = preview_sound)
+					qdel(preview_pack)
 				if ("moanselection")
-					to_chat(user, "<font color='yellow'>This option allws you to customize your character's moanpack, dependant on the voice type. Leave it on 'default' or click 'cancel' to automatically use your voice type and species' moanpack.</font>")
+					to_chat(user, "<font color='yellow'>This option allows you to customize your character's moanpack, dependent on the voice type. Leave it on 'default' or click 'cancel' to automatically use your voice type and species' moanpack.</font>")
 					/*var moanpack_type_input = input(user, "Choose your character's moanpack type", "Moanpack Type") as null|anything in list(MOANPACK_TYPE_DEF, "Custom")
 					generate_selectable_moanpacks()
 					if(moanpack_type_input)
@@ -2083,22 +2150,54 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 							moan_selection = MOANPACK_TYPE_DEF
 							to_chat(user, "<font color='red'>You will use your default species' moanpack.</font>")
 						else if(moanpack_type_input == "Custom")*/
-					if (user.client.prefs.voice_type == VOICE_TYPE_MASC)
-						generate_selectable_moanpacks()
-						var/moanpack_sel_input = tgui_input_list(user, "Choose your character's moanpack", "Moanpack", GLOB.selectable_moanpacks_male)
-						if(moanpack_sel_input)
-							moan_selection = moanpack_sel_input
-							to_chat(user, "<font color='red'>Your character will now use the '[lowertext(moanpack_sel_input)]' moanpack.</font>")
-						else
-							moan_selection = MOANPACK_TYPE_DEF
+					generate_selectable_moanpacks()
+					var/list/available_moanpacks
+					if(voice_type == VOICE_TYPE_MASC)
+						available_moanpacks = GLOB.selectable_moanpacks_male
+					else if(voice_type == VOICE_TYPE_FEM)
+						available_moanpacks = GLOB.selectable_moanpacks_female
 					else
-						generate_selectable_moanpacks()
-						var/moanpack_sel_input = tgui_input_list(user, "Choose your character's moanpack", "Moanpack", GLOB.selectable_moanpacks_female)
-						if(moanpack_sel_input)
-							moan_selection = moanpack_sel_input
-							to_chat(user, "<font color='red'>Your character will now use the '[lowertext(moanpack_sel_input)]' moanpack.</font>")
+						available_moanpacks = GLOB.selectable_moanpacks
+
+					var/moanpack_sel_input = tgui_input_list(user, "Choose your character's moanpack", "Moanpack", available_moanpacks)
+					if(moanpack_sel_input)
+						moan_selection = moanpack_sel_input
+						to_chat(user, "<font color='red'>Your character will now use the '[lowertext(moanpack_sel_input)]' moanpack.</font>")
+					else
+						moan_selection = MOANPACK_TYPE_DEF
+				if("moanpreview")
+					if(SSticker.current_state == GAME_STATE_STARTUP)
+						to_chat(user, span_warning("Moan previews can't play during initialization."))
+						return
+					if(!COOLDOWN_FINISHED(src, moan_previewing))
+						return
+					if(!parent?.mob)
+						return
+					COOLDOWN_START(src, moan_previewing, 3 SECONDS)
+
+					generate_selectable_moanpacks()
+					var/datum/moan_pack/preview_pack
+					if(moan_selection == MOANPACK_TYPE_DEF)
+						if(voice_type == VOICE_TYPE_MASC)
+							preview_pack = new /datum/moan_pack/male
 						else
-							moan_selection = MOANPACK_TYPE_DEF
+							preview_pack = new /datum/moan_pack/female
+					else
+						var/moanpack_type = GLOB.selectable_moanpacks[moan_selection]
+						if(moanpack_type)
+							preview_pack = new moanpack_type
+
+					if(!preview_pack)
+						to_chat(user, span_warning("No moanpack selected."))
+						return
+
+					var/static/list/moan_preview_keys = list("sexmoanlight", "sexmoanmed", "sexmoanhvy")
+					var/soundin = preview_pack.get_moans(pick(moan_preview_keys))
+					if(soundin)
+						parent.mob.playsound_local(get_turf(parent.mob), soundin, 70, FALSE, pressure_affected = FALSE)
+					else
+						to_chat(user, span_warning("This moanpack does not have preview sounds."))
+					qdel(preview_pack)
 				if("faith")
 					var/list/faiths_named = list()
 					for(var/datum/faith/faith as anything in GLOB.faith_list)
