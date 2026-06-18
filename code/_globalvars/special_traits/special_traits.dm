@@ -47,6 +47,7 @@ GLOBAL_LIST_INIT(special_traits, build_special_traits())
 	if(!player)
 		player = character.client
 	apply_prefs_special(character, player)
+	apply_voicepacks(character, player)
 
 /proc/apply_prefs_special(mob/living/carbon/human/character, client/player)
 	if(!player)
@@ -78,6 +79,19 @@ GLOBAL_LIST_INIT(special_traits, build_special_traits())
 	log_game("SPECIALS: Applied [trait_type] for [key_name(character)] ([character.get_role_title()])")
 	apply_special_trait(character, trait_type)
 	return TRUE
+
+/proc/apply_voicepacks(mob/living/carbon/human/character, client/player)
+	if(!player)
+		player = character.client
+	if(!player?.prefs || !character?.dna?.species)
+		return
+	if(player.prefs.voice_pack == VOICE_PACK_DEFAULT)
+		return
+	var/voicepack_type = GLOB.voice_packs_list[player.prefs.voice_pack]
+	if(!voicepack_type)
+		return
+	character.dna.species.soundpack_m = new voicepack_type()
+	character.dna.species.soundpack_f = new voicepack_type()
 
 /// Applies random special trait IF the client has specials enabled in prefs
 /proc/apply_random_special_trait(mob/living/carbon/human/character, client/player)

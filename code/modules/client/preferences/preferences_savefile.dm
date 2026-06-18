@@ -589,6 +589,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	S["pronouns"] >> pronouns
 	S["voice_type"] >> voice_type
+	S["voice_pack"] >> voice_pack
 	S["moan_selection"]	>> moan_selection 	//RMH edit
 
 	//Load flavor text
@@ -653,6 +654,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	voice_color = voice_color
 	pronouns = sanitize_text(pronouns, THEY_THEM)
 	voice_type = sanitize_text(voice_type, VOICE_TYPE_MASC)
+	voice_pack = sanitize_inlist(voice_pack, GLOB.voice_packs_list, VOICE_PACK_DEFAULT)
 	moan_selection = sanitize_text(moan_selection, MOANPACK_TYPE_DEF)	//RMH edit
 	skin_tone = skin_tone
 	selected_accent ||= ACCENT_DEFAULT
@@ -723,6 +725,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["randomise"]		, randomise)
 	WRITE_FILE(S["pronouns"]		, pronouns)
 	WRITE_FILE(S["voice_type"]		, voice_type)
+	WRITE_FILE(S["voice_pack"]		, voice_pack)
 	WRITE_FILE(S["moan_selection"] , moan_selection)	//RMH edit
 	WRITE_FILE(S["combat_music"], combat_music.type)
 	WRITE_FILE(S["species"]			, pref_species.id)
