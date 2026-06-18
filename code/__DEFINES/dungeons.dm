@@ -63,3 +63,16 @@
 #define DUNGEON_MUSTER_TIMEOUT (45 SECONDS)
 /// Grace after which a disconnected member stops gating a muster
 #define DUNGEON_MUSTER_SSD_GRACE (20 SECONDS)
+
+// -- In-run currency (motes) & meta-currency (echoes) --
+
+/// Base motes a normal guardian drops on death
+#define DUNGEON_MOTE_GUARDIAN_BASE 10
+/// Extra motes per floor
+#define DUNGEON_MOTE_FLOOR_BONUS 5
+/// Elite guardian mote multiplier
+#define DUNGEON_MOTE_ELITE_MULT 3
+/// Fraction of unspent motes that converts to echoes when a run is banked
+#define DUNGEON_ECHO_CONVERSION 0.25
+/// Save-manager file name for per-ckey dungeon meta progression
+#define DUNGEON_SAVE_FILE "dungeon"

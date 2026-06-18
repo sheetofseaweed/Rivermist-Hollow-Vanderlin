@@ -17,6 +17,12 @@
 	var/list/present_ckeys = list()
 	/// weakrefs of outsiders waiting at the entrance to join at the next rest area
 	var/list/waiting_petitioners = list()
+	/// Shared in-run currency pool
+	var/motes = 0
+	/// Active /datum/dungeon_boon instances, applied to all roster members
+	var/list/active_boons = list()
+	/// Multiplier on mote drops from boons like Greed
+	var/mote_multiplier = 1
 	/// The break room the party last secured; the only place with an overworld exit
 	var/datum/pocket_dimension/dungeon/current_break_room
 	/// Combat rooms instantiated since the last break room
@@ -27,25 +33,61 @@
 	var/last_seen_occupied = 0
 	/// Reentrancy guard for teardown
 	var/ending = FALSE
+	/// Becomes TRUE once the party progresses past the starting break room
+	var/run_was_meaningful = FALSE
+	/// Snapshot of the founding player's purchased unlock ids (read on start())
+	var/list/run_unlocks = list()
+
+GLOBAL_LIST_EMPTY(active_dungeon_runs)
+
+/proc/get_active_dungeon_runs()
+	return GLOB.active_dungeon_runs
 
 /datum/dungeon_run/New(obj/structure/dungeon_entrance/entrance, theme = null)
 	..()
 	entrance_ref = WEAKREF(entrance)
 	src.theme = theme
 	last_seen_occupied = world.time
+	GLOB.active_dungeon_runs += src
 
 /datum/dungeon_run/Destroy(force)
 	ending = TRUE
+	GLOB.active_dungeon_runs -= src
 	var/obj/structure/dungeon_entrance/entrance = get_entrance()
 	var/atom/eject_target = entrance ? get_turf(entrance) : null
 	var/list/doomed = get_all_rooms()
 	current_break_room = null
 	stretch_rooms = null
+	// Strip run boons from everyone still inside (sandbox guarantee).
+	for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
+		if(QDELETED(room))
+			continue
+		for(var/mob/living/occupant as anything in room.get_occupants())
+			strip_boons_from(occupant)
+	// Bank a share of unspent motes as echoes for present clients on a real run.
+	if(run_was_meaningful && motes > 0)
+		var/list/mob/banking_clients = list()
+		for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
+			if(QDELETED(room))
+				continue
+			for(var/mob/occupant as anything in room.get_occupants())
+				if(occupant.client && occupant.ckey)
+					banking_clients += occupant
+		if(length(banking_clients))
+			var/share = round((motes * DUNGEON_ECHO_CONVERSION) / length(banking_clients))
+			for(var/mob/banker as anything in banking_clients)
+				var/datum/dungeon_progress/progress = get_dungeon_progress(banker.ckey)
+				progress?.add_echoes(share)
+				progress?.record_run_complete(floor, share)
+				to_chat(banker, span_info("<b>Dungeon run complete.</b> Reached floor [floor]. Banked [share] echoes."))
+		motes = 0
 	for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
 		if(QDELETED(room))
 			continue
 		room.owning_run = null
 		SSpocket_dimensions.delete_instance(room, "The dungeon convulses and spits everything back out!", eject_target)
+	QDEL_LIST(active_boons)
+	active_boons = null
 	entrance?.on_run_ended(src)
 	entrance_ref = null
 	return ..()
@@ -65,10 +107,21 @@
 			rooms |= room
 	return rooms
 
+/datum/dungeon_run/proc/seed_from_progress(datum/dungeon_progress/progress)
+	if(!progress)
+		return
+	run_unlocks = progress.purchased_unlocks?.Copy() || list()
+
 /datum/dungeon_run/proc/start()
 	floor = 1
 	floor_config = get_dungeon_floor_config(floor)
 	stretch_length = floor_config.stretch_length
+	if(run_unlocks["deep_start"])
+		floor = 2
+		floor_config = get_dungeon_floor_config(floor)
+		stretch_length = floor_config.stretch_length
+	if(run_unlocks["starting_motes"])
+		motes += 50
 	var/datum/map_template/pocket/dungeon/break_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
 	if(!break_template)
 		return FALSE
@@ -76,6 +129,11 @@
 	if(!current_break_room)
 		return FALSE
 	build_room_gates(current_break_room, null)
+	build_room_shrines(current_break_room)
+	if(run_unlocks["start_boon"])
+		var/list/datum/dungeon_boon/choices = get_dungeon_boon_choices(src, 1)
+		if(length(choices))
+			add_boon(choices[1])
 	return TRUE
 
 /datum/dungeon_run/proc/pick_floor_theme()
@@ -83,13 +141,75 @@
 		return pick(floor_config.themes)
 	return theme
 
+/datum/dungeon_run/proc/award_motes(amount, atom/source)
+	amount = round(amount * mote_multiplier)
+	if(amount <= 0)
+		return
+	motes += amount
+	if(source)
+		var/turf/source_turf = get_turf(source)
+		if(source_turf)
+			source_turf.visible_message(span_nicegreen("[amount] motes of dungeon-light scatter loose!"))
+	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
+		for(var/mob/occupant as anything in room.get_occupants())
+			if(occupant.client)
+				to_chat(occupant, span_small("Motes: [motes] (+[amount])"))
+
+/datum/dungeon_run/proc/spend_motes(amount)
+	if(amount <= 0 || motes < amount)
+		return FALSE
+	motes -= amount
+	return TRUE
+
+/datum/dungeon_run/proc/add_boon(datum/dungeon_boon/boon)
+	if(!istype(boon))
+		return
+	active_boons += boon
+	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
+		for(var/mob/living/occupant as anything in room.get_occupants())
+			if(occupant.client || occupant.mind)
+				boon.apply(src, occupant)
+
+/datum/dungeon_run/proc/apply_boons_to(mob/living/target)
+	if(!istype(target))
+		return
+	for(var/datum/dungeon_boon/boon as anything in active_boons)
+		boon.apply(src, target)
+
+/datum/dungeon_run/proc/strip_boons_from(mob/living/target)
+	if(!istype(target))
+		return
+	for(var/datum/dungeon_boon/boon as anything in active_boons)
+		boon.remove(src, target)
+
+/// Crystallizes a user's run motes into persistent echoes at a shrine.
+/datum/dungeon_run/proc/bank_motes_now(mob/user)
+	if(!istype(user) || !user.ckey)
+		return
+	if(motes <= 0)
+		to_chat(user, span_warning("There are no motes to bank."))
+		return
+	var/converted = round(motes * DUNGEON_ECHO_CONVERSION)
+	motes = 0
+	if(converted <= 0)
+		to_chat(user, span_warning("Too few motes to crystallize into an echo."))
+		return
+	var/datum/dungeon_progress/progress = get_dungeon_progress(user.ckey)
+	if(!progress)
+		return
+	progress.add_echoes(converted)
+	to_chat(user, span_nicegreen("You crystallize [converted] echoes from the run's light."))
+
 /// Creates a dungeon room instance with depth/run wired up BEFORE activate(),
 /// which get_or_create_instance cannot do; mirrors its registration steps.
-/datum/dungeon_run/proc/create_room_instance(datum/map_template/pocket/dungeon/room_template, room_depth)
+/datum/dungeon_run/proc/create_room_instance(datum/map_template/pocket/dungeon/room_template, room_depth, incoming_path = DUNGEON_PATH_COMBAT)
 	var/instance_key = "dungeon_run::[REF(src)]::room[++room_serial]"
 	var/datum/pocket_dimension/dungeon/room = new(room_template, instance_key, SSpocket_dimensions.next_instance_id++, POCKET_LIFECYCLE_COLLAPSE, DUNGEON_DEFAULT_IDLE_TIMEOUT, get_entrance())
 	room.depth = room_depth
 	room.owning_run = src
+	// Set before activate(): setup_dungeon_contents spawns guardians during
+	// activation and reads incoming_path_type to decide elite spawns.
+	room.incoming_path_type = incoming_path
 	if(!room.activate())
 		qdel(room)
 		return null
@@ -105,6 +225,9 @@
 			continue
 		var/obj/structure/dungeon_gate/gate = new(gate_turf)
 		gate.gate_role = info["role"]
+		gate.path_type = info["path"] || DUNGEON_PATH_COMBAT
+		gate.requires_key = info["requires_key"]
+		gate.key_id = info["key_id"] || "default"
 		gate.owning_run = src
 		gate.source_room = room
 		room.gates += gate
@@ -112,11 +235,36 @@
 		room.native_movables[gate] = TRUE
 		if(gate.gate_role == DUNGEON_GATE_FORWARD)
 			gate.sealed = !room.cleared
-			gate.pre_rolled_template = roll_next_room_template(room)
+			gate.pre_rolled_template = roll_path_room_template(room, gate.path_type)
 		else
 			gate.sealed = FALSE
 			gate.destination_room = predecessor
 	room.gate_landmark_info.Cut()
+
+/// Builds shrines on the turfs recorded from a room's shrine landmarks.
+/datum/dungeon_run/proc/build_room_shrines(datum/pocket_dimension/dungeon/room)
+	for(var/turf/shrine_turf as anything in room.shrine_turfs)
+		if(QDELETED(shrine_turf) || !room.contains_turf(shrine_turf))
+			continue
+		var/obj/structure/dungeon_shrine/shrine = new(shrine_turf)
+		shrine.owning_run = src
+		room.native_movables[shrine] = TRUE
+	room.shrine_turfs.Cut()
+
+/// Picks a forward room template biased by the gate's path type. Falls back to
+/// the generic stretch roll (which handles boss/break at stretch end).
+/datum/dungeon_run/proc/roll_path_room_template(datum/pocket_dimension/dungeon/room, path_type)
+	var/next_position = room.stretch_position + 1
+	if(next_position > stretch_length)
+		return roll_next_room_template(room)
+	var/theme_to_use = pick_floor_theme()
+	var/target_tier = get_target_tier()
+	switch(path_type)
+		if(DUNGEON_PATH_TREASURE, DUNGEON_PATH_SHORTCUT)
+			return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, 1, target_tier)
+		if(DUNGEON_PATH_HAZARD, DUNGEON_PATH_ELITE)
+			return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, target_tier, target_tier + 2)
+	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, max(1, target_tier - 1), target_tier + 1)
 
 /// Picks the template behind a forward gate of the given room: a break room
 /// if the stretch would be complete, otherwise a combat room in the depth's tier band.
@@ -156,7 +304,7 @@
 /datum/dungeon_run/proc/instantiate_room_for_gate(obj/structure/dungeon_gate/gate)
 	if(ending || !gate?.pre_rolled_template || QDELETED(gate.source_room))
 		return null
-	var/datum/pocket_dimension/dungeon/room = create_room_instance(gate.pre_rolled_template, depth + 1)
+	var/datum/pocket_dimension/dungeon/room = create_room_instance(gate.pre_rolled_template, depth + 1, gate.path_type)
 	if(!room)
 		return null
 	var/new_room_kind = gate.pre_rolled_template.room_kind
@@ -166,6 +314,7 @@
 		room.stretch_position = gate.source_room.stretch_position + 1
 		stretch_rooms += room
 	build_room_gates(room, gate.source_room)
+	build_room_shrines(room)
 	return room
 
 /// Called by the dungeon instance when its last guardian dies.
@@ -192,6 +341,10 @@
 /datum/dungeon_run/proc/on_boss_killed(datum/pocket_dimension/dungeon/room)
 	for(var/mob/occupant as anything in room.get_occupants())
 		to_chat(occupant, span_nicegreen("The floor's guardian falls! A way down has opened."))
+		if(occupant.client && occupant.ckey)
+			var/datum/dungeon_progress/progress = get_dungeon_progress(occupant.ckey)
+			progress?.record_boss_kill()
+			progress?.record_floor(floor)
 
 /// Called by gates after moving someone; advances the run when a fresh
 /// break room is reached, despawning the finished stretch behind the party.
@@ -200,6 +353,7 @@
 		return
 	last_seen_occupied = world.time
 	mark_present(user)
+	apply_boons_to(user)
 	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
 	if(!dungeon_template)
 		return
@@ -207,11 +361,13 @@
 		if(DUNGEON_ROOM_BREAK)
 			if(room != current_break_room)
 				advance_to_break_room(room)
+				INVOKE_ASYNC(src, PROC_REF(offer_break_room_boon), user)
 		if(DUNGEON_ROOM_DESCENT)
 			if(room != current_break_room)
 				advance_floor(room)
 
 /datum/dungeon_run/proc/advance_floor(datum/pocket_dimension/dungeon/new_floor_room)
+	run_was_meaningful = TRUE
 	floor++
 	floor_config = get_dungeon_floor_config(floor)
 	stretch_length = floor_config.stretch_length
@@ -221,6 +377,7 @@
 		to_chat(occupant, span_notice("<b>[floor_config.floor_name]</b> — I have descended to floor [floor]."))
 
 /datum/dungeon_run/proc/advance_to_break_room(datum/pocket_dimension/dungeon/new_break_room)
+	run_was_meaningful = TRUE
 	var/list/doomed = list()
 	if(current_break_room && current_break_room != new_break_room && !QDELETED(current_break_room))
 		doomed += current_break_room

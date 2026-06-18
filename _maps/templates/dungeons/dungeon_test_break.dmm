@@ -17,6 +17,10 @@
 /obj/effect/landmark/dungeon/gate,
 /turf/open/floor/wood,
 /area/pocket_dimension/dungeon)
+"s" = (
+/obj/effect/landmark/dungeon/shrine,
+/turf/open/floor/wood,
+/area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 a
@@ -50,7 +54,7 @@ a
 d
 b
 c
-b
+s
 b
 a
 "}

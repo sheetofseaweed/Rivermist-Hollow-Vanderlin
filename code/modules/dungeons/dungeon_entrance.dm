@@ -66,6 +66,97 @@
 		return
 	open_assembly_menu(carbon_user)
 
+/obj/structure/dungeon_entrance/attack_hand_secondary(mob/user, list/modifiers)
+	open_meta_menu(user)
+	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+
+/obj/structure/dungeon_entrance/proc/open_meta_menu(mob/living/user)
+	if(!istype(user) || !user.client || !user.ckey)
+		return
+	var/category = tgui_input_list(user, "The Delver's Ledger:", "Delver's Ledger", list("Unlocks", "Cosmetics", "Set Title"))
+	switch(category)
+		if("Unlocks")
+			meta_menu_unlocks(user)
+		if("Cosmetics")
+			meta_menu_cosmetics(user)
+		if("Set Title")
+			meta_menu_set_title(user)
+
+/obj/structure/dungeon_entrance/proc/meta_menu_unlocks(mob/living/user)
+	if(!istype(user) || !user.client || !user.ckey)
+		return
+	var/datum/dungeon_progress/progress = get_dungeon_progress(user.ckey)
+	if(!progress)
+		return
+	var/list/catalogue = get_dungeon_unlock_catalogue()
+	var/list/by_label = list()
+	for(var/datum/dungeon_unlock/unlock as anything in catalogue)
+		var/owned = progress.has_unlock(unlock.id)
+		by_label["[unlock.name] — [unlock.desc] [owned ? "(owned)" : "([unlock.echo_cost] echoes)"]"] = unlock
+	var/picked = tgui_input_list(user, "Spend echoes (you have [progress.echoes]):", "Delver's Ledger", by_label)
+	var/datum/dungeon_unlock/chosen = by_label[picked]
+	for(var/datum/dungeon_unlock/unlock as anything in catalogue)
+		if(unlock != chosen)
+			qdel(unlock)
+	if(!chosen)
+		return
+	if(progress.has_unlock(chosen.id))
+		to_chat(user, span_warning("You already own [chosen.name]."))
+		qdel(chosen)
+		return
+	if(!progress.spend_echoes(chosen.echo_cost))
+		to_chat(user, span_warning("Not enough echoes."))
+		qdel(chosen)
+		return
+	progress.grant_unlock(chosen.id)
+	to_chat(user, span_nicegreen("Unlocked: [chosen.name]."))
+	qdel(chosen)
+
+/obj/structure/dungeon_entrance/proc/meta_menu_cosmetics(mob/living/user)
+	var/datum/dungeon_progress/progress = get_dungeon_progress(user.ckey)
+	if(!progress)
+		return
+	var/list/catalogue = get_dungeon_cosmetic_catalogue()
+	var/list/by_label = list()
+	for(var/datum/dungeon_cosmetic/cosmetic as anything in catalogue)
+		var/owned = progress.has_cosmetic(cosmetic.id)
+		by_label["[cosmetic.name] — [cosmetic.desc] [owned ? "(owned)" : "([cosmetic.echo_cost] echoes)"]"] = cosmetic
+	var/picked = tgui_input_list(user, "Cosmetics (echoes: [progress.echoes]):", "Cosmetics", by_label)
+	var/datum/dungeon_cosmetic/chosen = by_label[picked]
+	for(var/datum/dungeon_cosmetic/cosmetic as anything in catalogue)
+		if(cosmetic != chosen)
+			qdel(cosmetic)
+	if(!chosen)
+		return
+	if(progress.has_cosmetic(chosen.id))
+		to_chat(user, span_warning("Already owned."))
+		qdel(chosen)
+		return
+	if(!progress.spend_echoes(chosen.echo_cost))
+		to_chat(user, span_warning("Not enough echoes."))
+		qdel(chosen)
+		return
+	progress.grant_cosmetic(chosen.id)
+	to_chat(user, span_nicegreen("Acquired cosmetic: [chosen.name]."))
+	qdel(chosen)
+
+/obj/structure/dungeon_entrance/proc/meta_menu_set_title(mob/living/user)
+	var/datum/dungeon_progress/progress = get_dungeon_progress(user.ckey)
+	if(!progress)
+		return
+	var/list/by_label = list("None" = "none")
+	for(var/cosmetic_id in progress.purchased_cosmetics)
+		var/datum/dungeon_cosmetic/cosmetic = get_dungeon_cosmetic_by_id(cosmetic_id)
+		if(cosmetic?.cosmetic_kind == "title")
+			by_label["[cosmetic.title_text]"] = cosmetic_id
+		qdel(cosmetic)
+	var/picked = tgui_input_list(user, "Choose your title:", "Set Title", by_label)
+	if(isnull(picked))
+		return
+	progress.selected_title = (by_label[picked] == "none") ? null : by_label[picked]
+	progress.save_progress()
+	to_chat(user, span_nicegreen("Title updated."))
+
 /obj/structure/dungeon_entrance/attackby(obj/item/attacking_item, mob/living/user, list/modifiers)
 	if(istype(attacking_item, /obj/item/grabbing))
 		var/obj/item/grabbing/grab_item = attacking_item
@@ -92,6 +183,7 @@
 				var/mob/living/carbon/carbon_user = user
 				user_party = carbon_user.current_party
 			new_run.bind_party(user_party) // null is fine (solo)
+			new_run.seed_from_progress(get_dungeon_progress(user.ckey))
 			if(!new_run.start())
 				qdel(new_run)
 				to_chat(user, span_warning("The depths refuse to take shape. Nothing answers."))

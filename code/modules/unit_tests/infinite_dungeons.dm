@@ -259,3 +259,201 @@
 	TEST_ASSERT(!onward.sealed, "Descent gate should be open after the boss dies.")
 
 	qdel(run)
+
+/datum/unit_test/dungeon_elite_path/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/datum/pocket_dimension/dungeon/first_break = run.current_break_room
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in first_break.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.path_type = DUNGEON_PATH_ELITE
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Elite gate should transfer the delver.")
+
+	var/datum/pocket_dimension/dungeon/elite_room = forward_gate.destination_room
+	TEST_ASSERT_EQUAL(elite_room.incoming_path_type, DUNGEON_PATH_ELITE, "Room should record the elite path type.")
+	var/mob/living/guardian
+	for(var/g_ref in elite_room.guardian_refs)
+		var/datum/weakref/ref = elite_room.guardian_refs[g_ref]
+		guardian = ref.resolve()
+	TEST_ASSERT_NOTNULL(guardian, "Elite room should have a guardian.")
+	TEST_ASSERT(findtext(guardian.name, "Champion"), "Elite guardian should be named a Champion.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_motes/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT_EQUAL(run.motes, 0, "Run should start with no motes.")
+
+	var/datum/pocket_dimension/dungeon/first_break = run.current_break_room
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in first_break.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer to combat room.")
+	var/datum/pocket_dimension/dungeon/combat_room = forward_gate.destination_room
+
+	var/mob/living/guardian
+	for(var/g_ref in combat_room.guardian_refs)
+		var/datum/weakref/ref = combat_room.guardian_refs[g_ref]
+		guardian = ref.resolve()
+	TEST_ASSERT_NOTNULL(guardian, "Combat room should have a guardian.")
+	guardian.death()
+	TEST_ASSERT(run.motes > 0, "Killing a guardian should award motes to the run pool.")
+
+	TEST_ASSERT(run.spend_motes(run.motes), "Should be able to spend all motes.")
+	TEST_ASSERT_EQUAL(run.motes, 0, "Spending should empty the pool.")
+	TEST_ASSERT(!run.spend_motes(1), "Spending more than the pool should fail.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_boons/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/starting_health = delver.maxHealth
+	var/datum/dungeon_boon/vigor/vigor = new
+	run.add_boon(vigor)
+	TEST_ASSERT_EQUAL(delver.maxHealth, starting_health + 25, "Vigor boon should raise max health for roster members in the dungeon.")
+
+	// Greed boon multiplies mote drops.
+	var/datum/dungeon_boon/greed/greed = new
+	run.add_boon(greed)
+	TEST_ASSERT(run.mote_multiplier > 1, "Greed boon should set a mote multiplier.")
+
+	qdel(run)
+	TEST_ASSERT_EQUAL(delver.maxHealth, starting_health, "Run teardown should strip boons and restore max health (sandbox guarantee).")
+
+/datum/unit_test/dungeon_shrine/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	run.motes = 100
+
+	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
+	var/obj/structure/dungeon_shrine/shrine
+	for(var/turf/room_turf as anything in break_room.affected_turfs)
+		for(var/obj/structure/dungeon_shrine/found in room_turf)
+			shrine = found
+			break
+		if(shrine)
+			break
+	TEST_ASSERT_NOTNULL(shrine, "Break room with a shrine landmark should build a shrine structure.")
+	TEST_ASSERT_EQUAL(shrine.owning_run, run, "Shrine should know its run.")
+
+	shrine.apply_shrine_offer("cache", delver)
+	TEST_ASSERT(run.spend_motes(40), "Run should still have motes after a free apply (spend path tested separately).")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_key_gate/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
+
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(forward_gate, "Break room should have a forward gate.")
+	forward_gate.requires_key = TRUE
+	forward_gate.key_id = "vault"
+	forward_gate.sealed = FALSE
+
+	TEST_ASSERT(!forward_gate.use_gate(delver), "Locked gate should refuse passage without a key.")
+
+	var/obj/item/dungeon_key/wrong = new(get_turf(delver))
+	wrong.key_id = "other"
+	forward_gate.attackby(wrong, delver)
+	TEST_ASSERT(!forward_gate.key_unlocked, "Wrong key should not unlock the gate.")
+
+	var/obj/item/dungeon_key/right = new(get_turf(delver))
+	right.key_id = "vault"
+	forward_gate.attackby(right, delver)
+	TEST_ASSERT(forward_gate.key_unlocked, "Matching key should unlock the gate.")
+	TEST_ASSERT(QDELETED(right), "Used key should be consumed.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_progress_persistence/Run()
+	var/test_ckey = "dungeontestckey"
+	var/datum/dungeon_progress/progress = get_dungeon_progress(test_ckey)
+	TEST_ASSERT_NOTNULL(progress, "Should create a progress datum for a ckey.")
+	var/before = progress.echoes
+	progress.add_echoes(500)
+	TEST_ASSERT_EQUAL(progress.echoes, before + 500, "add_echoes should raise the balance.")
+
+	progress.grant_unlock("start_boon")
+	TEST_ASSERT(progress.has_unlock("start_boon"), "Unlock should be recorded.")
+
+	// Force a reload from disk via a fresh datum.
+	GLOB.player_dungeon_progress -= ckey(test_ckey)
+	var/datum/dungeon_progress/reloaded = get_dungeon_progress(test_ckey)
+	TEST_ASSERT_EQUAL(reloaded.echoes, before + 500, "Echoes should persist across a reload.")
+	TEST_ASSERT(reloaded.has_unlock("start_boon"), "Unlocks should persist across a reload.")
+
+	// Cleanup the test save so reruns are deterministic.
+	reloaded.echoes = before
+	reloaded.purchased_unlocks = list()
+	reloaded.save_progress()
+
+/datum/unit_test/dungeon_start_unlocks/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+
+	var/datum/dungeon_progress/progress = get_dungeon_progress(delver.ckey || "fallbackckey")
+	progress.purchased_unlocks = list("starting_motes" = TRUE, "deep_start" = TRUE)
+
+	// Manually seed + start a run to read the unlocks.
+	var/datum/dungeon_run/run = new(entrance, null)
+	run.seed_from_progress(progress)
+	TEST_ASSERT(run.start(), "Run should start.")
+	TEST_ASSERT_EQUAL(run.floor, 2, "deep_start unlock should begin the run on floor 2.")
+	TEST_ASSERT_EQUAL(run.motes, 50, "starting_motes unlock should grant 50 motes.")
+
+	qdel(run)
+	progress.purchased_unlocks = list()
+	progress.save_progress()
+
+/datum/unit_test/dungeon_cosmetic_title/Run()
+	var/test_ckey = "cosmeticstestckey"
+	var/datum/dungeon_progress/progress = get_dungeon_progress(test_ckey)
+	progress.grant_cosmetic("title_delver")
+	progress.selected_title = "title_delver"
+	progress.save_progress()
+	TEST_ASSERT(progress.has_cosmetic("title_delver"), "Cosmetic should be recorded.")
+
+	var/datum/dungeon_cosmetic/cosmetic = get_dungeon_cosmetic_by_id("title_delver")
+	TEST_ASSERT_NOTNULL(cosmetic, "Should resolve a cosmetic by id.")
+	TEST_ASSERT_EQUAL(cosmetic.title_text, "Delver of the Deep", "Title text should match.")
+	qdel(cosmetic)
+
+	// Cleanup
+	progress.purchased_cosmetics = list()
+	progress.selected_title = null
+	progress.save_progress()

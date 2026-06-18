@@ -67,3 +67,8 @@ SUBSYSTEM_DEF(mobs)
 	if(!affix_system)
 		affix_system = new()
 	affix_system.enhance_mob(mob, delve_level - 1)
+
+/datum/controller/subsystem/mobs/proc/enhance_mob_elite(mob/living/mob, delve_level = 1, bonus_affixes = 0)
+	if(!affix_system)
+		affix_system = new()
+	affix_system.enhance_mob(mob, max(0, delve_level - 1), bonus_affixes)

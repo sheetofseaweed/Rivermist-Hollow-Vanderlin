@@ -5,10 +5,16 @@
 	var/depth = 0
 	/// How many combat rooms into the current stretch this room sits; 0 for break rooms
 	var/stretch_position = 0
+	/// DUNGEON_PATH_* of the gate that leads into this room; drives elite spawns
+	var/incoming_path_type = DUNGEON_PATH_COMBAT
 	/// REF text -> weakref of living guardians that must die for the room to clear
 	var/list/guardian_refs = list()
 	/// REF text -> TRUE for mobs that belong to the dungeon; qdel'd on collapse instead of ejected
 	var/list/native_mob_refs = list()
+	/// REF text -> TRUE for guardians flagged elite (bigger mote drop)
+	var/list/elite_guardian_refs = list()
+	/// REF text -> key_id for guardians that drop a key on death
+	var/list/keyholder_drops = list()
 	/// Owning infinite-dungeon run, if any
 	var/datum/dungeon_run/owning_run
 	/// Reward caches to unlock on clear
@@ -17,6 +23,8 @@
 	var/list/obj/structure/dungeon_gate/gates = list()
 	/// list(list("turf" = T, "role" = DUNGEON_GATE_*)) collected from gate landmarks
 	var/list/gate_landmark_info = list()
+	/// Turfs where shrines should be built (break rooms)
+	var/list/shrine_turfs = list()
 	var/contents_setup_done = FALSE
 
 /datum/pocket_dimension/dungeon/Destroy(force)
@@ -24,9 +32,12 @@
 	owning_run = null
 	guardian_refs = null
 	native_mob_refs = null
+	elite_guardian_refs = null
+	keyholder_drops = null
 	loot_caches = null
 	QDEL_LIST(gates)
 	gate_landmark_info = null
+	shrine_turfs = null
 	. = ..()
 	if(istype(entrance))
 		entrance.on_dungeon_collapsed(src)
@@ -51,6 +62,8 @@
 
 /datum/pocket_dimension/dungeon/proc/setup_dungeon_contents()
 	var/list/mobs_to_register = list()
+	var/list/forced_elites = list()
+	var/list/shrine_landmark_turfs = list()
 
 	for(var/turf/current_turf as anything in affected_turfs)
 		for(var/obj/effect/landmark/dungeon/guardian/guardian_marker in current_turf)
@@ -61,6 +74,11 @@
 				spawned = guardian_marker.spawn_guardian(current_turf)
 			if(spawned)
 				mobs_to_register += spawned
+				if(guardian_marker.force_elite)
+					forced_elites[spawned] = TRUE
+				if(istype(guardian_marker, /obj/effect/landmark/dungeon/guardian/keyholder))
+					var/obj/effect/landmark/dungeon/guardian/keyholder/kh = guardian_marker
+					keyholder_drops["[REF(spawned)]"] = kh.key_id
 			qdel(guardian_marker)
 
 		for(var/obj/effect/landmark/dungeon/loot/loot_marker in current_turf)
@@ -73,15 +91,22 @@
 			qdel(loot_marker)
 
 		for(var/obj/effect/landmark/dungeon/gate/gate_marker in current_turf)
-			gate_landmark_info += list(list("turf" = current_turf, "role" = gate_marker.gate_role))
+			gate_landmark_info += list(list("turf" = current_turf, "role" = gate_marker.gate_role, "path" = gate_marker.path_type, "requires_key" = gate_marker.requires_key, "key_id" = gate_marker.key_id))
 			qdel(gate_marker)
+
+		for(var/obj/effect/landmark/dungeon/shrine/shrine_marker in current_turf)
+			shrine_landmark_turfs += current_turf
+			qdel(shrine_marker)
 
 		// Hostile mobs mapped directly into the .dmm count as guardians too.
 		for(var/mob/living/simple_animal/hostile/mapped_mob in current_turf)
 			mobs_to_register |= mapped_mob
 
+	shrine_turfs = shrine_landmark_turfs
+
 	for(var/mob/living/guardian as anything in mobs_to_register)
-		register_guardian(guardian)
+		var/is_elite = forced_elites[guardian] || (incoming_path_type == DUNGEON_PATH_ELITE)
+		register_guardian(guardian, is_elite)
 
 	if(!length(guardian_refs))
 		on_cleared(silent = TRUE)
@@ -99,19 +124,47 @@
 		scale_dungeon_boss(boss, owning_run.floor)
 	return boss
 
-/datum/pocket_dimension/dungeon/proc/register_guardian(mob/living/guardian)
+/datum/pocket_dimension/dungeon/proc/register_guardian(mob/living/guardian, elite = FALSE)
 	if(QDELETED(guardian) || guardian.stat == DEAD || guardian.mind || guardian.client)
 		return
 	native_mob_refs["[REF(guardian)]"] = TRUE
 	guardian_refs["[REF(guardian)]"] = WEAKREF(guardian)
-	if(depth > 0)
-		SSmobs.enhance_mob(guardian, depth)
+	if(depth > 0 || elite)
+		SSmobs.enhance_mob_elite(guardian, depth, elite ? 2 : 0)
+	if(elite)
+		elite_guardian_refs["[REF(guardian)]"] = TRUE
+		guardian.add_atom_colour("#ffcc33", TEMPORARY_COLOUR_PRIORITY)
+		guardian.name = "Champion [guardian.name]"
+	// Party scaling: a bigger present party makes guardians tougher.
+	var/party_size = owning_run ? max(1, length(owning_run.present_ckeys)) : 1
+	if(party_size > 1 && istype(guardian, /mob/living/simple_animal))
+		var/party_factor = 1 + min(party_size - 1, 4) * 0.4 // +40% hp per extra member, capped at 5
+		guardian.maxHealth = round(guardian.maxHealth * party_factor)
+		guardian.health = guardian.maxHealth
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
 
 /datum/pocket_dimension/dungeon/proc/on_guardian_death(mob/living/source)
 	SIGNAL_HANDLER
 	UnregisterSignal(source, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING))
-	guardian_refs -= "[REF(source)]"
+	var/source_ref = "[REF(source)]"
+	if(keyholder_drops[source_ref])
+		var/turf/drop_turf = get_turf(source)
+		if(drop_turf)
+			var/obj/item/dungeon_key/key = new(drop_turf)
+			key.key_id = keyholder_drops[source_ref]
+			native_movables[key] = TRUE
+		keyholder_drops -= source_ref
+	if(owning_run)
+		var/floor_for_drops = owning_run.floor
+		var/drop = DUNGEON_MOTE_GUARDIAN_BASE + (floor_for_drops - 1) * DUNGEON_MOTE_FLOOR_BONUS
+		if(istype(source, /mob/living/simple_animal/hostile/boss/dungeon))
+			var/mob/living/simple_animal/hostile/boss/dungeon/boss = source
+			drop = boss.mote_bounty + (floor_for_drops - 1) * DUNGEON_MOTE_FLOOR_BONUS * 5
+		else if(elite_guardian_refs[source_ref])
+			drop *= DUNGEON_MOTE_ELITE_MULT
+		owning_run.award_motes(drop, source)
+	elite_guardian_refs -= source_ref
+	guardian_refs -= source_ref
 	if(!cleared && !length(guardian_refs))
 		on_cleared()
 
@@ -152,6 +205,8 @@
 	return TRUE
 
 /datum/pocket_dimension/dungeon/exit_mob(mob/user)
+	if(owning_run && isliving(user))
+		owning_run.strip_boons_from(user)
 	. = ..()
 	if(. && owning_run)
 		owning_run.note_possible_run_end()

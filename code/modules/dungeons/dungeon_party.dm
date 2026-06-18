@@ -183,6 +183,7 @@
 	if(!active_run)
 		var/datum/dungeon_run/new_run = new(src, theme_filter)
 		new_run.bind_party(party)
+		new_run.seed_from_progress(get_dungeon_progress(leader.ckey))
 		if(!new_run.start())
 			qdel(new_run)
 			to_chat(leader, span_warning("The depths refuse to take shape."))

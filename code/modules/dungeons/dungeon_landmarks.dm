@@ -11,6 +11,8 @@
 	var/list/mob_pool = list()
 	/// Chance this marker spawns anything at all
 	var/spawn_chance = 100
+	/// Always spawn this guardian as an elite (extra affixes + champion aura)
+	var/force_elite = FALSE
 
 /obj/effect/landmark/dungeon/guardian/proc/spawn_guardian(turf/spawn_turf)
 	if(!length(mob_pool) || !prob(spawn_chance))
@@ -35,6 +37,14 @@
 	use_floor_boss_pool = FALSE
 	mob_pool = list(/mob/living/simple_animal/hostile/boss/dungeon/test = 10)
 
+/obj/effect/landmark/dungeon/guardian/keyholder
+	name = "dungeon keyholder marker"
+	/// Key id the dropped key carries; must match a gate in the room
+	var/key_id = "default"
+
+/obj/effect/landmark/dungeon/guardian/keyholder/test
+	mob_pool = list(/mob/living/simple_animal/hostile/retaliate/wolf = 10)
+
 // -- Loot point: replaced by a sealed reward cache on dungeon load --
 
 /obj/effect/landmark/dungeon/loot
@@ -47,6 +57,8 @@
 	if(dungeon_template?.loot_table_type)
 		cache.loot = new dungeon_template.loot_table_type
 	cache.delve_level = max(1, owner?.depth)
+	if(owner?.owning_run?.run_unlocks?["extra_cache"])
+		cache.max_takers += 1
 	return cache
 
 // -- Gate point: recorded by the instance, built by the run controller --
@@ -54,10 +66,32 @@
 /obj/effect/landmark/dungeon/gate
 	name = "dungeon gate marker"
 	var/gate_role = DUNGEON_GATE_FORWARD
+	/// DUNGEON_PATH_* — what kind of room this forward gate should lead to
+	var/path_type = DUNGEON_PATH_COMBAT
+	/// When TRUE, the built gate stays locked until a matching key is delivered
+	var/requires_key = FALSE
+	/// Key id this gate accepts (matches a keyholder marker's key_id)
+	var/key_id = "default"
 
 /obj/effect/landmark/dungeon/gate/back
 	name = "dungeon back gate marker"
 	gate_role = DUNGEON_GATE_BACK
+
+/obj/effect/landmark/dungeon/shrine
+	name = "dungeon shrine marker"
+	var/shrine_type = /obj/structure/dungeon_shrine
+
+/obj/effect/landmark/dungeon/gate/treasure
+	name = "dungeon treasure gate marker"
+	path_type = DUNGEON_PATH_TREASURE
+
+/obj/effect/landmark/dungeon/gate/elite
+	name = "dungeon elite gate marker"
+	path_type = DUNGEON_PATH_ELITE
+
+/obj/effect/landmark/dungeon/gate/hazard
+	name = "dungeon hazard gate marker"
+	path_type = DUNGEON_PATH_HAZARD
 
 // -- Reward cache: sealed until the room is cleared --
 

@@ -18,6 +18,14 @@
 	var/datum/map_template/pocket/dungeon/pre_rolled_template
 	/// Forward gates stay sealed until the room is cleared
 	var/sealed = FALSE
+	/// DUNGEON_PATH_* — risk/reward flavor of the room beyond
+	var/path_type = DUNGEON_PATH_COMBAT
+	/// When set, this gate stays locked until a matching key is applied
+	var/requires_key = FALSE
+	/// Key id this gate accepts
+	var/key_id = "default"
+	/// Whether the key lock has been opened
+	var/key_unlocked = FALSE
 
 /obj/structure/dungeon_gate/Destroy()
 	owning_run = null
@@ -28,6 +36,8 @@
 
 /obj/structure/dungeon_gate/examine(mob/user)
 	. = ..()
+	if(requires_key && !key_unlocked)
+		. += span_warning("It is locked. A key lies somewhere in this room.")
 	if(sealed)
 		. += span_warning("It is sealed shut. The hostile presence in this room holds it closed.")
 	else if(gate_role == DUNGEON_GATE_BACK)
@@ -36,6 +46,31 @@
 		. += span_notice("A stairway plunges deeper. The air below is colder, hungrier.")
 	else if(pre_rolled_template)
 		. += span_notice(pre_rolled_template.gate_hint)
+		. += span_notice("Danger: [get_path_danger_text()] — Reward: [get_path_reward_text()].")
+
+/obj/structure/dungeon_gate/proc/get_path_danger_text()
+	switch(path_type)
+		if(DUNGEON_PATH_TREASURE)
+			return "low"
+		if(DUNGEON_PATH_SHORTCUT)
+			return "low"
+		if(DUNGEON_PATH_HAZARD)
+			return "high"
+		if(DUNGEON_PATH_ELITE)
+			return "very high"
+	return "moderate"
+
+/obj/structure/dungeon_gate/proc/get_path_reward_text()
+	switch(path_type)
+		if(DUNGEON_PATH_TREASURE)
+			return "high"
+		if(DUNGEON_PATH_ELITE)
+			return "very high"
+		if(DUNGEON_PATH_HAZARD)
+			return "high"
+		if(DUNGEON_PATH_SHORTCUT)
+			return "low"
+	return "moderate"
 
 /obj/structure/dungeon_gate/attack_hand(mob/user, list/modifiers)
 	. = ..()
@@ -46,6 +81,18 @@
 
 /obj/structure/dungeon_gate/attack_paw(mob/user, list/modifiers)
 	use_gate(user)
+
+/obj/structure/dungeon_gate/attackby(obj/item/attacking_item, mob/living/user, list/modifiers)
+	if(requires_key && !key_unlocked && istype(attacking_item, /obj/item/dungeon_key))
+		var/obj/item/dungeon_key/key = attacking_item
+		if(key.key_id != key_id)
+			to_chat(user, span_warning("This key does not fit this passage."))
+			return TRUE
+		key_unlocked = TRUE
+		qdel(key)
+		visible_message(span_nicegreen("[src] grinds open as the key dissolves into light!"))
+		return TRUE
+	return ..()
 
 /obj/structure/dungeon_gate/proc/use_gate(mob/living/user)
 	if(!istype(user))
@@ -58,6 +105,9 @@
 		return FALSE
 	if(!owning_run || QDELETED(owning_run))
 		to_chat(user, span_warning("The passage leads nowhere. The dungeon has lost interest."))
+		return FALSE
+	if(requires_key && !key_unlocked)
+		to_chat(user, span_warning("This passage is locked. It needs a key found within this room."))
 		return FALSE
 	if(gate_role == DUNGEON_GATE_BACK)
 		// Backtracking is free: any present member may step back alone.
