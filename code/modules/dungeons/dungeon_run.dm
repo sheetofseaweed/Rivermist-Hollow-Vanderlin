@@ -79,6 +79,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 				var/datum/dungeon_progress/progress = get_dungeon_progress(banker.ckey)
 				progress?.add_echoes(share)
 				progress?.record_run_complete(floor, share)
+				grant_dungeon_milestones(banker, floor, FALSE)
 				to_chat(banker, span_info("<b>Dungeon run complete.</b> Reached floor [floor]. Banked [share] echoes."))
 		motes = 0
 	for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
@@ -345,6 +346,18 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 			var/datum/dungeon_progress/progress = get_dungeon_progress(occupant.ckey)
 			progress?.record_boss_kill()
 			progress?.record_floor(floor)
+			grant_dungeon_milestones(occupant, floor, TRUE)
+
+/// Grants milestone achievements to a client-bearing mob based on progress.
+/datum/dungeon_run/proc/grant_dungeon_milestones(mob/user, milestone_floor, boss_killed)
+	if(!user?.client)
+		return
+	if(boss_killed)
+		user.client.give_award(/datum/award/achievement/dungeon/first_boss, user)
+	if(milestone_floor >= 5)
+		user.client.give_award(/datum/award/achievement/dungeon/floor_five, user)
+	if(milestone_floor >= 10)
+		user.client.give_award(/datum/award/achievement/dungeon/floor_ten, user)
 
 /// Called by gates after moving someone; advances the run when a fresh
 /// break room is reached, despawning the finished stretch behind the party.

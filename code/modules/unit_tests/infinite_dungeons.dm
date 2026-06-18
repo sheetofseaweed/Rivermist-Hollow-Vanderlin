@@ -457,3 +457,18 @@
 	progress.purchased_cosmetics = list()
 	progress.selected_title = null
 	progress.save_progress()
+
+/datum/unit_test/dungeon_achievements/Run()
+	// Awards auto-register in SSachievements from /datum/award/achievement subtypes.
+	var/datum/award/first_boss = SSachievements.awards[/datum/award/achievement/dungeon/first_boss]
+	TEST_ASSERT_NOTNULL(first_boss, "First-boss dungeon award should be registered.")
+	TEST_ASSERT(first_boss.name, "Registered award should have a name.")
+	var/datum/award/floor_ten = SSachievements.awards[/datum/award/achievement/dungeon/floor_ten]
+	TEST_ASSERT_NOTNULL(floor_ten, "Floor-ten dungeon award should be registered.")
+
+	// Granting to a clientless mob must be a safe no-op (the real grant needs a client).
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/datum/dungeon_run/dummy = new(null, null)
+	dummy.grant_dungeon_milestones(delver, 10, TRUE)
+	TEST_ASSERT(TRUE, "Granting milestones to a clientless mob should not runtime.")
+	qdel(dummy)

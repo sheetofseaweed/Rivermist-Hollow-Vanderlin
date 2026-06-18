@@ -630,6 +630,7 @@
 #include "code\datums\achievements\_awards.dm"
 #include "code\datums\achievements\boss_achievements.dm"
 #include "code\datums\achievements\boss_scores.dm"
+#include "code\datums\achievements\dungeon_awards.dm"
 #include "code\datums\achievements\misc_achievements.dm"
 #include "code\datums\achievements\progress_awards.dm"
 #include "code\datums\achievements\toast.dm"
