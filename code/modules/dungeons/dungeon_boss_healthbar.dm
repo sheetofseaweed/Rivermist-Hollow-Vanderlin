@@ -1,0 +1,59 @@
+/// A floating boss healthbar everyone in the room sees. Adds a maptext overlay
+/// above the parent mob, refreshed on health change, removed on death/qdel.
+/datum/component/dungeon_boss_healthbar
+	var/image/bar
+	var/boss_title = "Boss"
+
+/datum/component/dungeon_boss_healthbar/Initialize(boss_title = "Boss")
+	if(!isliving(parent))
+		return COMPONENT_INCOMPATIBLE
+	src.boss_title = boss_title
+
+/datum/component/dungeon_boss_healthbar/RegisterWithParent()
+	RegisterSignal(parent, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(refresh))
+	RegisterSignal(parent, COMSIG_LIVING_DEATH, PROC_REF(on_death))
+	build_bar()
+
+/datum/component/dungeon_boss_healthbar/UnregisterFromParent()
+	UnregisterSignal(parent, list(COMSIG_LIVING_HEALTH_UPDATE, COMSIG_LIVING_DEATH))
+	clear_bar()
+
+/datum/component/dungeon_boss_healthbar/Destroy(force)
+	clear_bar()
+	return ..()
+
+/datum/component/dungeon_boss_healthbar/proc/build_bar()
+	var/atom/movable/owner = parent
+	bar = image(null, owner)
+	bar.plane = ABOVE_HUD_PLANE
+	bar.appearance_flags = RESET_COLOR | RESET_TRANSFORM | KEEP_APART
+	bar.pixel_y = ICON_SIZE_Y
+	bar.maptext_width = 96
+	bar.maptext_x = -32
+	owner.add_overlay(bar)
+	refresh()
+
+/datum/component/dungeon_boss_healthbar/proc/refresh()
+	SIGNAL_HANDLER
+	var/mob/living/owner = parent
+	if(QDELETED(owner) || !bar)
+		return
+	owner.cut_overlay(bar)
+	var/ratio = owner.maxHealth > 0 ? clamp(owner.health / owner.maxHealth, 0, 1) : 0
+	var/filled = round(ratio * 10)
+	var/bar_str = ""
+	for(var/i in 1 to 10)
+		bar_str += (i <= filled) ? "█" : "░"
+	var/color = ratio > 0.5 ? "#5fbf5f" : (ratio > 0.25 ? "#d8b84a" : "#c0392b")
+	bar.maptext = "<span style='font-size:6pt;color:#e7d8be'>[boss_title]<br><span style='color:[color]'>[bar_str]</span></span>"
+	owner.add_overlay(bar)
+
+/datum/component/dungeon_boss_healthbar/proc/on_death()
+	SIGNAL_HANDLER
+	clear_bar()
+
+/datum/component/dungeon_boss_healthbar/proc/clear_bar()
+	var/atom/movable/owner = parent
+	if(owner && bar)
+		owner.cut_overlay(bar)
+	bar = null

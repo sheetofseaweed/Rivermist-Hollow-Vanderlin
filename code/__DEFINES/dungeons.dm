@@ -76,3 +76,12 @@
 #define DUNGEON_ECHO_CONVERSION 0.25
 /// Save-manager file name for per-ckey dungeon meta progression
 #define DUNGEON_SAVE_FILE "dungeon"
+
+// -- Encounter director: combat styles for spawn-entry tagging --
+
+#define DUNGEON_STYLE_MELEE "melee"
+#define DUNGEON_STYLE_RANGED "ranged"
+#define DUNGEON_STYLE_CASTER "caster"
+
+/// % chance a trait-eligible room rolls a room trait
+#define DUNGEON_ROOM_TRAIT_CHANCE 50

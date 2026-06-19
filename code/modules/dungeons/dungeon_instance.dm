@@ -7,12 +7,20 @@
 	var/stretch_position = 0
 	/// DUNGEON_PATH_* of the gate that leads into this room; drives elite spawns
 	var/incoming_path_type = DUNGEON_PATH_COMBAT
+	/// Set by a room trait before scatter: restrict scattered mobs to this style
+	var/scatter_style_override = null
+	/// Set by a room trait before scatter: add this many mobs to the scatter count
+	var/scatter_count_bonus = 0
+	/// The room's rolled trait, if any (Slice 4)
+	var/datum/dungeon_room_trait/current_trait
 	/// REF text -> weakref of living guardians that must die for the room to clear
 	var/list/guardian_refs = list()
 	/// REF text -> TRUE for mobs that belong to the dungeon; qdel'd on collapse instead of ejected
 	var/list/native_mob_refs = list()
 	/// REF text -> TRUE for guardians flagged elite (bigger mote drop)
 	var/list/elite_guardian_refs = list()
+	/// REF text -> mote bounty for promoted bosses in this room
+	var/list/boss_bounties = list()
 	/// REF text -> key_id for guardians that drop a key on death
 	var/list/keyholder_drops = list()
 	/// Owning infinite-dungeon run, if any
@@ -33,7 +41,9 @@
 	guardian_refs = null
 	native_mob_refs = null
 	elite_guardian_refs = null
+	boss_bounties = null
 	keyholder_drops = null
+	QDEL_NULL(current_trait)
 	loot_caches = null
 	QDEL_LIST(gates)
 	gate_landmark_info = null
@@ -60,10 +70,38 @@
 		return null
 	return ..()
 
+/// Rolls a room trait (50%) and lets it reshape the plan before scatter.
+/datum/pocket_dimension/dungeon/proc/roll_room_trait()
+	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
+	if(!dungeon_template)
+		return
+	if(!prob(DUNGEON_ROOM_TRAIT_CHANCE))
+		return
+	var/list/pool = get_dungeon_room_traits(src, dungeon_template.room_kind)
+	if(!length(pool))
+		return
+	current_trait = pickweight(pool)
+	for(var/datum/dungeon_room_trait/trait as anything in pool)
+		if(trait != current_trait)
+			qdel(trait)
+	current_trait.modify_plan(src)
+
+/// Applies the rolled trait's post-spawn effects and announces it.
+/datum/pocket_dimension/dungeon/proc/apply_room_trait_effects()
+	if(!current_trait)
+		return
+	current_trait.apply_to_room(src)
+	for(var/mob/occupant as anything in get_occupants())
+		if(occupant.client && current_trait.announce)
+			to_chat(occupant, span_warning(current_trait.announce))
+
 /datum/pocket_dimension/dungeon/proc/setup_dungeon_contents()
 	var/list/mobs_to_register = list()
 	var/list/forced_elites = list()
 	var/list/shrine_landmark_turfs = list()
+	var/want_scatter = FALSE
+	var/scatter_density_override = 0
+	var/scatter_marker_style = null
 
 	for(var/turf/current_turf as anything in affected_turfs)
 		for(var/obj/effect/landmark/dungeon/guardian/guardian_marker in current_turf)
@@ -71,7 +109,7 @@
 			if(istype(guardian_marker, /obj/effect/landmark/dungeon/guardian/boss))
 				spawned = spawn_floor_boss(guardian_marker, current_turf)
 			else
-				spawned = guardian_marker.spawn_guardian(current_turf)
+				spawned = spawn_guardian_from_marker(guardian_marker, current_turf)
 			if(spawned)
 				mobs_to_register += spawned
 				if(guardian_marker.force_elite)
@@ -98,18 +136,74 @@
 			shrine_landmark_turfs += current_turf
 			qdel(shrine_marker)
 
+		for(var/obj/effect/landmark/dungeon/encounter/encounter_marker in current_turf)
+			want_scatter = TRUE
+			scatter_density_override = max(scatter_density_override, encounter_marker.density_override)
+			if(encounter_marker.style_filter)
+				scatter_marker_style = encounter_marker.style_filter
+			qdel(encounter_marker)
+
 		// Hostile mobs mapped directly into the .dmm count as guardians too.
 		for(var/mob/living/simple_animal/hostile/mapped_mob in current_turf)
 			mobs_to_register |= mapped_mob
 
 	shrine_turfs = shrine_landmark_turfs
 
+	// Let a room trait reshape the plan (sets scatter_style_override / scatter_count_bonus).
+	roll_room_trait()
+
+	// Scatter random mobs from the floor pool, if this room requested an encounter.
+	if(want_scatter && owning_run?.floor_config)
+		var/datum/dungeon_floor_config/cfg = owning_run.floor_config
+		var/count = scatter_density_override > 0 ? scatter_density_override : rand(cfg.density_min, cfg.density_max)
+		var/party_size = max(1, length(owning_run.present_ckeys))
+		count = min(count + (party_size - 1) + scatter_count_bonus, cfg.density_max + scatter_count_bonus + 4)
+		var/use_style = scatter_style_override || scatter_marker_style
+		var/list/turf/open = get_open_dungeon_turfs()
+		for(var/i in 1 to count)
+			if(!length(open))
+				break
+			var/turf/spot = pick(open)
+			open -= spot
+			var/datum/dungeon_spawn_entry/entry = pick_floor_spawn_entry(cfg, use_style, owning_run.get_target_tier())
+			if(entry && ispath(entry.mob_type, /mob/living))
+				mobs_to_register += new entry.mob_type(spot)
+
+	var/datum/dungeon_floor_config/reg_cfg = owning_run?.floor_config
+	var/elite_chance = reg_cfg ? reg_cfg.elite_chance : 0
+	var/enhance_chance = reg_cfg ? reg_cfg.enhance_chance : 0
 	for(var/mob/living/guardian as anything in mobs_to_register)
-		var/is_elite = forced_elites[guardian] || (incoming_path_type == DUNGEON_PATH_ELITE)
-		register_guardian(guardian, is_elite)
+		var/is_elite = forced_elites[guardian] || (incoming_path_type == DUNGEON_PATH_ELITE) || prob(elite_chance)
+		var/force_enhance = prob(enhance_chance)
+		register_guardian(guardian, is_elite, force_enhance)
+
+	apply_room_trait_effects()
 
 	if(!length(guardian_refs))
 		on_cleared(silent = TRUE)
+
+/datum/pocket_dimension/dungeon/proc/get_open_dungeon_turfs()
+	var/list/turf/open = list()
+	for(var/turf/current_turf as anything in affected_turfs)
+		if(is_valid_drop_turf(current_turf, null))
+			open += current_turf
+	return open
+
+/// Spawns a guardian from a marker's own pool, or — if empty, or the marker is
+/// the /random subtype — from the run's floor combat pool.
+/datum/pocket_dimension/dungeon/proc/spawn_guardian_from_marker(obj/effect/landmark/dungeon/guardian/marker, turf/spawn_turf)
+	if(length(marker.mob_pool))
+		return marker.spawn_guardian(spawn_turf)
+	if(!owning_run?.floor_config)
+		return null
+	var/style_filter = null
+	if(istype(marker, /obj/effect/landmark/dungeon/guardian/random))
+		var/obj/effect/landmark/dungeon/guardian/random/random_marker = marker
+		style_filter = random_marker.style_filter
+	var/datum/dungeon_spawn_entry/entry = pick_floor_spawn_entry(owning_run.floor_config, style_filter, owning_run.get_target_tier())
+	if(!entry || !ispath(entry.mob_type, /mob/living))
+		return null
+	return new entry.mob_type(spawn_turf)
 
 /datum/pocket_dimension/dungeon/proc/spawn_floor_boss(obj/effect/landmark/dungeon/guardian/boss/boss_marker, turf/spawn_turf)
 	var/boss_type
@@ -119,17 +213,19 @@
 		boss_type = pickweight(boss_marker.mob_pool.Copy())
 	if(!ispath(boss_type, /mob/living))
 		return null
-	var/mob/living/simple_animal/hostile/boss/dungeon/boss = new boss_type(spawn_turf)
-	if(istype(boss) && owning_run)
-		scale_dungeon_boss(boss, owning_run.floor)
+	var/mob/living/boss = new boss_type(spawn_turf)
+	var/run_floor = owning_run ? owning_run.floor : 1
+	var/run_tier = owning_run ? owning_run.get_target_tier() : 1
+	var/bounty = make_dungeon_boss(boss, run_floor, run_tier)
+	boss_bounties["[REF(boss)]"] = bounty
 	return boss
 
-/datum/pocket_dimension/dungeon/proc/register_guardian(mob/living/guardian, elite = FALSE)
+/datum/pocket_dimension/dungeon/proc/register_guardian(mob/living/guardian, elite = FALSE, force_enhance = FALSE)
 	if(QDELETED(guardian) || guardian.stat == DEAD || guardian.mind || guardian.client)
 		return
 	native_mob_refs["[REF(guardian)]"] = TRUE
 	guardian_refs["[REF(guardian)]"] = WEAKREF(guardian)
-	if(depth > 0 || elite)
+	if(depth > 0 || elite || force_enhance)
 		SSmobs.enhance_mob_elite(guardian, depth, elite ? 2 : 0)
 	if(elite)
 		elite_guardian_refs["[REF(guardian)]"] = TRUE
@@ -157,12 +253,12 @@
 	if(owning_run)
 		var/floor_for_drops = owning_run.floor
 		var/drop = DUNGEON_MOTE_GUARDIAN_BASE + (floor_for_drops - 1) * DUNGEON_MOTE_FLOOR_BONUS
-		if(istype(source, /mob/living/simple_animal/hostile/boss/dungeon))
-			var/mob/living/simple_animal/hostile/boss/dungeon/boss = source
-			drop = boss.mote_bounty + (floor_for_drops - 1) * DUNGEON_MOTE_FLOOR_BONUS * 5
+		if(boss_bounties[source_ref])
+			drop = boss_bounties[source_ref] + (floor_for_drops - 1) * DUNGEON_MOTE_FLOOR_BONUS * 5
 		else if(elite_guardian_refs[source_ref])
 			drop *= DUNGEON_MOTE_ELITE_MULT
 		owning_run.award_motes(drop, source)
+	boss_bounties -= source_ref
 	elite_guardian_refs -= source_ref
 	guardian_refs -= source_ref
 	if(!cleared && !length(guardian_refs))
@@ -203,6 +299,13 @@
 			to_chat(user, span_warning("The dungeon's grip is too strong here. I can only leave from a place of respite."))
 		return FALSE
 	return TRUE
+
+/datum/pocket_dimension/dungeon/enter_mob(mob/user, turf/new_return_turf, atom/new_return_anchor = null)
+	. = ..()
+	if(. && current_trait?.announce && ismob(user))
+		var/mob/entrant = user
+		if(entrant.client)
+			to_chat(entrant, span_warning(current_trait.announce))
 
 /datum/pocket_dimension/dungeon/exit_mob(mob/user)
 	if(owning_run && isliving(user))

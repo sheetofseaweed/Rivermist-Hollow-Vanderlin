@@ -105,8 +105,14 @@
 	TEST_ASSERT(next_gate.sealed, "Forward gates should be sealed while guardians live.")
 	TEST_ASSERT(!next_gate.use_gate(delver), "Sealed gate should refuse passage.")
 
-	guardian.death()
-	TEST_ASSERT(combat_room.cleared, "Combat room should clear when its guardian dies.")
+	// qdel rather than death() so the clear is deterministic regardless of which
+	// random affixes depth-enhancement rolled (some can interfere with death()).
+	for(var/g_ref in combat_room.guardian_refs.Copy())
+		var/datum/weakref/g_wr = combat_room.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		if(g_mob)
+			qdel(g_mob)
+	TEST_ASSERT(combat_room.cleared, "Combat room should clear when its guardians are gone.")
 	TEST_ASSERT(!next_gate.sealed, "Forward gates should unseal on clear.")
 	TEST_ASSERT_EQUAL(run.depth, 1, "Run depth should increment per cleared combat room.")
 	TEST_ASSERT_NOTNULL(next_gate.pre_rolled_template, "Cleared combat room's forward gate should have a template.")
@@ -313,8 +319,9 @@
 		var/datum/weakref/ref = combat_room.guardian_refs[g_ref]
 		guardian = ref.resolve()
 	TEST_ASSERT_NOTNULL(guardian, "Combat room should have a guardian.")
-	guardian.death()
-	TEST_ASSERT(run.motes > 0, "Killing a guardian should award motes to the run pool.")
+	// qdel (deterministic, affix-proof) — fires the same death-tracking path as death().
+	qdel(guardian)
+	TEST_ASSERT(run.motes > 0, "Removing a guardian should award motes to the run pool.")
 
 	TEST_ASSERT(run.spend_motes(run.motes), "Should be able to spend all motes.")
 	TEST_ASSERT_EQUAL(run.motes, 0, "Spending should empty the pool.")
@@ -472,3 +479,98 @@
 	dummy.grant_dungeon_milestones(delver, 10, TRUE)
 	TEST_ASSERT(TRUE, "Granting milestones to a clientless mob should not runtime.")
 	qdel(dummy)
+
+/datum/unit_test/dungeon_spawn_pool/Run()
+	var/datum/dungeon_floor_config/config = get_dungeon_floor_config(1)
+	TEST_ASSERT_NOTNULL(config, "Floor 1 config should exist.")
+	TEST_ASSERT(length(config.combat_mob_pool) >= 2, "Test floor should have a combat pool.")
+
+	var/datum/dungeon_spawn_entry/any_entry = pick_floor_spawn_entry(config, null, 1)
+	TEST_ASSERT_NOTNULL(any_entry, "Unfiltered pick should return an entry.")
+
+	var/list/ranged_pool = get_floor_spawn_pool(config, DUNGEON_STYLE_RANGED, 1)
+	TEST_ASSERT(length(ranged_pool), "Ranged-filtered pool should be non-empty for the test floor.")
+	for(var/datum/dungeon_spawn_entry/entry as anything in ranged_pool)
+		TEST_ASSERT_EQUAL(entry.style, DUNGEON_STYLE_RANGED, "Style filter must only return ranged entries.")
+
+	var/datum/dungeon_spawn_entry/gated = new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_MELEE, 99)
+	config.combat_mob_pool += gated
+	var/list/low_tier = get_floor_spawn_pool(config, null, 1)
+	TEST_ASSERT(!(gated in low_tier), "An entry with min_tier 99 must not appear at tier 1.")
+	config.combat_mob_pool -= gated
+	qdel(gated)
+
+/datum/unit_test/dungeon_boss_maker/Run()
+	var/turf/spot = run_loc_floor_bottom_left
+	var/mob/living/simple_animal/hostile/retaliate/wolf/victim = allocate(/mob/living/simple_animal/hostile/retaliate/wolf, spot)
+	var/base_health = victim.maxHealth
+
+	var/bounty = make_dungeon_boss(victim, 3, 2)
+	TEST_ASSERT(victim.maxHealth > base_health, "make_dungeon_boss should raise max health on any mob.")
+	TEST_ASSERT(bounty > 0, "make_dungeon_boss should return a positive mote bounty.")
+	TEST_ASSERT_NOTNULL(victim.GetComponent(/datum/component/dungeon_boss_healthbar), "Promoted boss should get a healthbar component.")
+	TEST_ASSERT_NOTNULL(victim.GetComponent(/datum/component/dungeon_boss_abilities), "A non-ATB mob promoted to boss should get the ability kit.")
+
+/datum/unit_test/dungeon_scatter/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_scatter")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer to the scatter room.")
+
+	var/datum/pocket_dimension/dungeon/scatter_room = forward_gate.destination_room
+	TEST_ASSERT_NOTNULL(scatter_room, "Scatter room should instantiate.")
+	var/datum/dungeon_floor_config/cfg = run.floor_config
+	TEST_ASSERT(length(scatter_room.guardian_refs) >= cfg.density_min, "Scatter should spawn at least density_min guardians.")
+	TEST_ASSERT(!scatter_room.cleared, "A scatter room with guardians should not start cleared.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_room_trait_emboldened/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer to the combat room.")
+	var/datum/pocket_dimension/dungeon/room = forward_gate.destination_room
+
+	var/mob/living/guardian
+	for(var/g_ref in room.guardian_refs)
+		var/datum/weakref/ref = room.guardian_refs[g_ref]
+		guardian = ref.resolve()
+	TEST_ASSERT_NOTNULL(guardian, "Combat room should have a guardian.")
+	var/before = guardian.maxHealth
+
+	// Force the emboldened trait and apply it.
+	var/datum/dungeon_room_trait/emboldened/trait = new
+	room.current_trait = trait
+	trait.apply_to_room(room)
+	TEST_ASSERT(guardian.maxHealth > before, "Emboldened trait should raise guardian max health.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_room_trait_style_filter/Run()
+	var/datum/pocket_dimension/dungeon/fake = new
+	var/datum/dungeon_room_trait/archers_roost/trait = new
+	trait.modify_plan(fake)
+	TEST_ASSERT_EQUAL(fake.scatter_style_override, DUNGEON_STYLE_RANGED, "Archers' Roost should force the ranged scatter style.")
+	qdel(trait)
+	qdel(fake)

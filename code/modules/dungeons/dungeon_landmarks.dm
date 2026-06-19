@@ -26,6 +26,18 @@
 	name = "test dungeon guardian marker"
 	mob_pool = list(/mob/living/simple_animal/hostile/retaliate/wolf = 10)
 
+/obj/effect/landmark/dungeon/guardian/random
+	name = "random dungeon guardian marker"
+	/// Optional style restriction for the floor-pool pick (null = any)
+	var/style_filter = null
+
+/obj/effect/landmark/dungeon/encounter
+	name = "dungeon encounter marker"
+	/// 0 = use the floor config's density_min/max; >0 overrides the count
+	var/density_override = 0
+	/// Optional style restriction for scattered mobs (null = any)
+	var/style_filter = null
+
 /obj/effect/landmark/dungeon/guardian/boss
 	name = "dungeon boss marker"
 	/// When TRUE, the room pulls its boss from the run's floor config boss_pool

@@ -13,6 +13,15 @@
 	var/stretch_length = DUNGEON_RUN_STRETCH_LENGTH
 	/// Boss mob typepaths (weighted) that can cap this floor
 	var/list/boss_pool = list()
+	/// list of /datum/dungeon_spawn_entry — the floor's combat roster
+	var/list/combat_mob_pool = list()
+	/// Baseline guardian count for a scatter room
+	var/density_min = 2
+	var/density_max = 4
+	/// % chance per spawned mob to receive affixes (when depth > 0)
+	var/enhance_chance = 25
+	/// % chance per spawned mob to become an elite champion
+	var/elite_chance = 8
 
 /datum/dungeon_floor_config/test
 	floor = 1
@@ -21,6 +30,20 @@
 	tier = 1
 	stretch_length = DUNGEON_RUN_STRETCH_LENGTH
 	boss_pool = list(/mob/living/simple_animal/hostile/boss/dungeon/test = 10)
+
+// Deterministic chances on the test floor so foundation unit tests aren't subject
+// to random elite/affix variance. Production floors set real values. The random
+// elite path is covered deterministically by /datum/unit_test/dungeon_elite_path.
+/datum/dungeon_floor_config/test
+	enhance_chance = 0
+	elite_chance = 0
+
+/datum/dungeon_floor_config/test/New()
+	. = ..()
+	combat_mob_pool = list(
+		new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_MELEE),
+		new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_RANGED),
+	)
 
 GLOBAL_LIST_EMPTY(dungeon_floor_configs) // assoc floor number (as text) -> /datum/dungeon_floor_config instance
 

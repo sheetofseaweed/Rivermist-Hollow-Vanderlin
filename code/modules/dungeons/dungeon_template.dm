@@ -95,3 +95,11 @@
 	room_kind = DUNGEON_ROOM_BOSS
 	loot_table_type = /datum/loot_table/debug
 	gate_hint = "Something vast breathes in the dark ahead."
+
+/datum/map_template/pocket/dungeon/test_scatter
+	name = "Test Scatter Room"
+	id = "dungeon_test_scatter"
+	mappath = "_maps/templates/dungeons/dungeon_test_scatter.dmm"
+	theme = DUNGEON_THEME_TEST
+	room_kind = DUNGEON_ROOM_COMBAT
+	loot_table_type = /datum/loot_table/debug

@@ -122,6 +122,8 @@
 			dragged |= grab_item.grabbed
 	member.forceMove(entry_turf)
 	mark_present(member)
+	if(target.current_trait?.announce && member.client)
+		to_chat(member, span_warning(target.current_trait.announce))
 	for(var/atom/movable/cargo as anything in dragged)
 		var/turf/drop_turf = target.get_drop_turf(cargo) || entry_turf
 		cargo.forceMove(drop_turf)
