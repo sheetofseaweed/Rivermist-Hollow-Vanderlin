@@ -34,12 +34,11 @@
 	return preview_mob.get_examine_preview(preview_dir)
 
 // -------------------------------------------------------------------------
-// Mob-level preview cache.
-// Flattened previews are stored on the human itself, so any number of viewers
-// opening/closing/spamming the examine panel share the same icons. The cache
-// is invalidated whenever the mob's overlays change (clothes, limbs, wounds,
-// blood - everything funnels through apply_overlay/remove_overlay), and
-// rebuilds are throttled to at most once per second per mob.
+// Mob-level preview cache (SNAPSHOT MODEL).
+// Flattened doll previews are stored on the human itself, keyed by direction.
+// They are built on demand when a viewer examines the mob, reused for the life
+// of that examine session, and wiped on a fresh examine (reset_examine_preview)
+// so re-examining reflects the mob's current state. No live/per-tick updating.
 // -------------------------------------------------------------------------
 
 /// Throwaway render proxy for flattening examine previews, mirroring the
@@ -49,30 +48,17 @@
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	anchored = TRUE
 
-/mob/living/carbon/human
+/mob
 	/// Open examine panels for this mob, indexed by REF of the viewing mob.
 	/// Lets repeat "Examine Closer" clicks refocus the existing window.
+	/// Lives on /mob (not /mob/living/carbon/human) because the examine panel
+	/// can be opened on a /mob/dead/new_player for the lobby character preview.
 	var/list/examine_panels
-	/// Cached base64 examine previews, indexed by "[dir]"
+
+/mob/living/carbon/human
+	/// Cached base64 examine preview snapshots, indexed by "[dir]". Wiped on a
+	/// fresh examine (reset_examine_preview) so re-examining shows current state.
 	var/list/examine_preview_cache
-	/// Whether the cached previews no longer match our current appearance
-	var/examine_preview_dirty = TRUE
-	/// world.time of the last cache wipe, for rebuild throttling
-	var/examine_preview_last_wipe = 0
-
-/// Marks the cached examine previews as stale. Cheap - safe to call often.
-/mob/living/carbon/human/proc/dirty_examine_preview()
-	examine_preview_dirty = TRUE
-
-// Every visual change (equipment, bodyparts, wounds, blood overlays...)
-// goes through these two procs, making them a perfect invalidation funnel.
-/mob/living/carbon/human/apply_overlay(cache_index)
-	. = ..()
-	dirty_examine_preview()
-
-/mob/living/carbon/human/remove_overlay(cache_index)
-	dirty_examine_preview()
-	return ..()
 
 /**
  * Returns a base64 data URL of this human flattened via getFlatIcon in the wanted direction.
@@ -89,26 +75,31 @@
 /// how far blood splatter or held items stretch the flattened bounding box.
 #define EXAMINE_PREVIEW_CANVAS 96
 
+/**
+ * Builds a base64 PNG snapshot of this human flattened in wanted_dir and caches
+ * it per direction. SNAPSHOT MODEL: there is no live updating - the preview
+ * reflects the moment the viewer examined the mob. The cache is reused for the
+ * life of the open panel; a fresh examine (reopen) wipes it via
+ * reset_examine_preview() and rebuilds. Rotation builds the new direction on
+ * demand and caches it too.
+ *
+ * getFlatIcon is expensive (dozens of blends for a geared character), but here
+ * it runs only on explicit examine/rotate - never on a poll - so it never
+ * touches the SStgui tick.
+ */
 /mob/living/carbon/human/proc/get_examine_preview(wanted_dir = SOUTH)
-	if(examine_preview_dirty && world.time >= examine_preview_last_wipe + 1 SECONDS)
-		examine_preview_cache = null
-		examine_preview_dirty = FALSE
-		examine_preview_last_wipe = world.time
 	if(!examine_preview_cache)
 		examine_preview_cache = list()
 	var/dir_key = "[wanted_dir]"
 	if(examine_preview_cache[dir_key])
 		return examine_preview_cache[dir_key]
-	// Flatten through a throwaway obj proxy (same recipe as the contract
-	// ledger's target previews) rather than the mob or an appearance copy:
-	// - the proxy's dir is fully ours, so the preview doesn't follow the
-	//   mob's in-game facing and the rotate buttons work for all four sides
-	//   (getFlatIcon lets a non-SOUTH appearance dir override defdir);
+	// Flatten through a throwaway obj proxy (same recipe as the contract ledger's
+	// target previews) rather than the mob or an appearance copy:
+	// - the proxy's dir is fully ours, so the preview doesn't follow the mob's
+	//   in-game facing and the rotate buttons work for all four sides;
 	// - /mutable_appearance/New() stomps plane to FLOAT_PLANE, which made
-	//   getFlatIcon's plane filter skip every overlay carrying an explicit
-	//   plane (hands, head) - an obj keeps a real plane like the mob does;
-	// - transform is deliberately not copied, stripping resize/height
-	//   scaling and lying rotation from the doll.
+	//   getFlatIcon's plane filter skip overlays with an explicit plane;
+	// - transform is deliberately not copied, stripping resize/height scaling.
 	var/obj/effect/abstract/examine_preview_proxy/render_proxy = new()
 	render_proxy.icon = icon
 	render_proxy.icon_state = icon_state
@@ -123,8 +114,7 @@
 	qdel(render_proxy)
 	if(!flat_icon)
 		return ""
-	// Normalize to a fixed, centered canvas so the doll renders at the same
-	// scale regardless of how overlays stretched the flattened bounding box.
+	// Normalize to a fixed, centered canvas so the doll renders at a constant scale.
 	var/flat_width = flat_icon.Width()
 	var/flat_height = flat_icon.Height()
 	if(flat_width != EXAMINE_PREVIEW_CANVAS || flat_height != EXAMINE_PREVIEW_CANVAS)
@@ -137,7 +127,182 @@
 	examine_preview_cache[dir_key] = "data:image/png;base64,[encoded]"
 	return examine_preview_cache[dir_key]
 
+/// Wipes the cached doll snapshots so the next examine rebuilds them fresh.
+/mob/living/carbon/human/proc/reset_examine_preview()
+	examine_preview_cache = null
+
 #undef EXAMINE_PREVIEW_CANVAS
+
+// -------------------------------------------------------------------------
+// Worn equipment slots shown around the character preview.
+// Mirrors exactly what Examine prints to chat: get_unobscured_items()
+// (so armor/cloaks hiding a slot hide it here too) plus held items.
+// -------------------------------------------------------------------------
+
+/// Item sprites encoded once per icon+state+color, shared server-wide
+GLOBAL_LIST_EMPTY(examine_item_icon_cache)
+
+/proc/examine_item_icon_b64(obj/item/item)
+	// Use the item's ground/world sprite (icon + icon_state), NOT any worn
+	// mob_overlay or in-hand icon. These vars already hold the on-floor sprite.
+	var/ground_icon = item.icon
+	var/ground_state = item.icon_state
+	if(!ground_icon || !ground_state)
+		return ""
+	var/cache_key = "[ground_icon]-[ground_state]-[item.color]"
+	if(GLOB.examine_item_icon_cache[cache_key])
+		return GLOB.examine_item_icon_cache[cache_key]
+	var/icon/item_icon = icon(ground_icon, ground_state, SOUTH, 1)
+	if(!item_icon)
+		return ""
+	if(istext(item.color))
+		item_icon.Blend(item.color, ICON_MULTIPLY)
+	var/encoded = icon2base64(item_icon)
+	if(!encoded)
+		return ""
+	GLOB.examine_item_icon_cache[cache_key] = "data:image/png;base64,[encoded]"
+	return GLOB.examine_item_icon_cache[cache_key]
+
+/// Fixed slot layout: ordered list of (UI position id -> slot flag + label).
+/// The UI renders these at fixed coordinates; order here is just for iteration.
+GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
+	// left column, top->bottom
+	"head"     = list("flag" = ITEM_SLOT_HEAD,   "label" = "Head"),
+	"shirt"    = list("flag" = ITEM_SLOT_SHIRT,  "label" = "Shirt"),
+	"gloves"   = list("flag" = ITEM_SLOT_GLOVES, "label" = "Hands"),
+	"belt"     = list("flag" = ITEM_SLOT_BELT,   "label" = "Belt"),
+	"pants"    = list("flag" = ITEM_SLOT_PANTS,  "label" = "Pants"),
+	"shoes"    = list("flag" = ITEM_SLOT_SHOES,  "label" = "Shoes"),
+	// right column, top->bottom
+	"mouth"    = list("flag" = ITEM_SLOT_MOUTH,  "label" = "Mouth"),
+	"mask"     = list("flag" = ITEM_SLOT_MASK,   "label" = "Face"),
+	"armor"    = list("flag" = ITEM_SLOT_ARMOR,  "label" = "Armor"),
+	"neck"     = list("flag" = ITEM_SLOT_NECK,   "label" = "Neck"),
+	"cloak"    = list("flag" = ITEM_SLOT_CLOAK,  "label" = "Cape"),
+	"ring"     = list("flag" = ITEM_SLOT_RING,   "label" = "Finger"),
+	"wrists"   = list("flag" = ITEM_SLOT_WRISTS, "label" = "Wrists"),
+	// bottom corners
+	"backr"    = list("flag" = ITEM_SLOT_BACK_R, "label" = "Right shoulder"),
+	"beltr"    = list("flag" = ITEM_SLOT_BELT_R, "label" = "Right hip"),
+	"beltl"    = list("flag" = ITEM_SLOT_BELT_L, "label" = "Left hip"),
+	"backl"    = list("flag" = ITEM_SLOT_BACK_L, "label" = "Left shoulder"),
+))
+
+/**
+ * Normalizes an item's stamped quality tier (base craft scale, QUALITY_LEVEL_*:
+ * -10 ruined .. 8 masterwork) into a 0..6 frame index the UI maps to a color.
+ * Null tier (item never crafted through the quality system) returns -1 = no
+ * special frame, so spawned/admin items just get the neutral default border.
+ */
+/datum/examine_panel/proc/quality_frame_index(obj/item/item)
+	var/tier = item.examine_quality_tier
+	if(isnull(tier))
+		return -1
+	switch(tier)
+		if(-INFINITY to -6)
+			return 0 // ruined
+		if(-5 to -3)
+			return 1 // awful
+		if(-2 to -1)
+			return 2 // crude/rough
+		if(0 to 1)
+			return 3 // competent
+		if(2 to 4)
+			return 4 // fine
+		if(5 to 7)
+			return 5 // flawless
+		else
+			return 6 // masterwork / legendary
+
+/// Strips real HTML tags (not just the < > chars) and collapses the runs of
+/// newlines that span macros like span_info() leave behind, so dynamic descs
+/// (keyrings, anything using update_desc with markup) render as clean text.
+/datum/examine_panel/proc/sanitize_examine_text(text)
+	if(!text)
+		return ""
+	// GLOB.html_tags = regex(@"<.*?>", "g") - removes whole <...> tags, unlike
+	// STRIP_HTML_SIMPLE which only deletes the angle brackets and leaves the
+	// "span class='info'" guts behind.
+	var/clean = GLOB.html_tags.Replace("[text]", "")
+	// collapse 3+ newlines to a single break, trim edges
+	clean = replacetext(clean, "\n\n\n", "\n")
+	return trim(clean)
+
+/// Packs one item into the UI payload shape (sanitized so chat markup in descs
+/// like keyrings' "<span class=...>" never leaks into the tooltip).
+/datum/examine_panel/proc/pack_examine_item(obj/item/item)
+	return list(
+		"name" = sanitize_examine_text(item.name),
+		"desc" = sanitize_examine_text(item.desc),
+		"icon" = examine_item_icon_b64(item),
+		"quality" = quality_frame_index(item),
+	)
+
+/**
+ * Builds the fixed-slot equipment payload for the examine panel.
+ * Every layout slot is always returned with a status so the UI can draw it at a
+ * fixed position:
+ *   "item"   - occupied and visible to examine (full data + quality frame)
+ *   "hidden" - occupied but obscured (armor/cloak hides it) -> hatched frame
+ *   "empty"  - nothing equipped -> hatched/dim frame
+ * Held items are returned separately for the two hand slots under the doll.
+ */
+/datum/examine_panel/proc/get_worn_items_data()
+	var/list/slots = list()
+	var/list/hands = list()
+	var/mob/living/carbon/human/human_holder = holder
+	if(!ishuman(human_holder))
+		return list("slots" = slots, "hands" = hands)
+
+	// Items examine is willing to show (obscured ones are absent from this list)
+	var/list/unobscured = human_holder.get_unobscured_items(FALSE)
+
+	for(var/slot_id in GLOB.examine_panel_slot_layout)
+		var/list/layout = GLOB.examine_panel_slot_layout[slot_id]
+		var/slot_flag = layout["flag"]
+		var/obj/item/equipped = human_holder.get_item_by_slot(slot_flag)
+		var/list/entry = list("label" = layout["label"])
+		if(!equipped || (equipped.item_flags & ABSTRACT))
+			entry["status"] = "empty"
+		else if(equipped in unobscured)
+			entry["status"] = "item"
+			entry["item"] = pack_examine_item(equipped)
+		else
+			// worn but examine won't reveal it (hidden under other gear)
+			entry["status"] = "hidden"
+		slots[slot_id] = entry
+
+	// held_items: odd index = left hand, even index = right hand.
+	// get_held_items_for_side returns the item (or null) for that side.
+	// NOTE: a `for(var/obj/item in list(a, b))` loop silently drops null
+	// entries, which shifts a one-handed item into the wrong slot - so build
+	// the list by explicit index instead.
+	var/obj/item/left_item = human_holder.get_held_items_for_side(LEFT_HANDS)
+	var/obj/item/right_item = human_holder.get_held_items_for_side(RIGHT_HANDS)
+	// hands[1] = LEFT slot, hands[2] = RIGHT slot (frame order swapped per design)
+	hands = list(pack_hand_item(left_item), pack_hand_item(right_item))
+
+	return list("slots" = slots, "hands" = hands)
+
+/// Packs a held item for a hand slot, or null for an empty/abstract hand.
+/datum/examine_panel/proc/pack_hand_item(obj/item/item)
+	if(!item || (item.item_flags & ABSTRACT))
+		return null
+	var/list/packed = pack_examine_item(item)
+	packed["wielded"] = item.is_wielded()
+	return packed
+
+/// Whether the viewer is still close enough to inspect gear, like in-world examine
+/datum/examine_panel/proc/viewer_in_range()
+	if(!viewing || !holder)
+		return FALSE
+	if(isobserver(viewing) || IsAdminGhost(viewing))
+		return TRUE
+	if(viewing == holder)
+		return TRUE
+	if(viewing.z != holder.z)
+		return FALSE
+	return get_dist(viewing, holder) <= 4
 
 /datum/examine_panel/ui_state(mob/user)
 	return GLOB.always_state
@@ -149,9 +314,32 @@
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "ExaminePanel")
+		// Snapshot model: the panel is NOT autoupdated. Everything (text, doll,
+		// gear) is gathered once on open and re-gathered only when the player
+		// examines again (reopen). This means an open panel costs the server
+		// nothing while idle - no per-tick polling, no signature compares.
+		ui.set_autoupdate(FALSE)
 		ui.open()
 
+/**
+ * With autoupdate disabled this runs only on open and on explicit user actions
+ * (rotate, or a fresh examine that reopens the panel). It returns the doll
+ * snapshot for the current direction plus the worn-item slots as seen right now.
+ */
 /datum/examine_panel/ui_data(mob/user)
+	. = list()
+	if(!preview_requested || !ishuman(holder))
+		return
+	var/mob/living/carbon/human/human_holder = holder
+	.["preview_image"] = human_holder.get_examine_preview(preview_dir)
+	.["worn_items"] = viewer_in_range() ? get_worn_items_data() : list("slots" = list(), "hands" = list())
+
+/datum/examine_panel/ui_static_data(mob/user)
+	return collect_examine_data(user)
+
+/// Collects the STATIC examine payload (text, headshots). Heavy markdown parsing
+/// runs here, but only on open / explicit static refresh - never per tick.
+/datum/examine_panel/proc/collect_examine_data(mob/user)
 
 	var/flavor_text = ""
 	var/flavor_text_nsfw = ""
@@ -243,7 +431,6 @@
 		"is_naked" = is_naked,
 		"has_headshot" = has_headshot,
 		"has_nsfw_headshot" = has_nsfw_headshot,
-		"preview_image" = preview_requested ? get_preview_image() : "",
 	)
 	return data
 
@@ -255,12 +442,18 @@
 
 	if(action == "generate_preview")
 		preview_requested = TRUE
+		// Snapshot model: ui_data builds the doll on demand (cached per dir).
+		// update_uis triggers a one-off ui_data refresh with no Loading flash.
+		SStgui.update_uis(src)
 		return TRUE
 
 	if(action == "rotate")
 		preview_requested = TRUE
 		// turn() with a positive angle is counterclockwise in BYOND
 		preview_dir = turn(preview_dir, params["clockwise"] ? -90 : 90)
+		// get_examine_preview() in the resulting ui_data builds+caches this dir
+		// on demand (one flatten per direction, per examine session).
+		SStgui.update_uis(src)
 		return TRUE
 
 	if(!viewing)
@@ -320,3 +513,4 @@
 		"headshot_background.png" = 'icons/tgui/headshot_background.png',
 		"headshot_red.png" = 'icons/tgui/headshot_red.png',
 		)
+

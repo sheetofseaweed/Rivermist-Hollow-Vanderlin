@@ -1,3 +1,18 @@
+//RMH EDITED START
+// Ported & adapted from Azure (Twilight-Axis) "navigator" into Vanderlin's
+// /obj/item/fake_machine/merchant beacon. Simplified: no market-saturation
+// mechanics (Vanderlin has none). Every cycle the beacon airlifts goods dropped
+// on the 8 surrounding pads, splits the value into a 50% merchant-guild levy
+// (paid into the merchant's GOLDFACE budget) and the Lord's export tax (paid
+// into the realm treasury), then drops the remainder to the seller as coins.
+
+/// Max number of recent sales kept for the beacon's history panel.
+#define SALE_HISTORY_MAX 15
+
+/// Tracks every GOLDFACE/SILVERFACE vendor so the beacon can locate the
+/// merchant's own till to deposit the guild levy into.
+GLOBAL_LIST_EMPTY(goldface_vendors)
+
 /obj/item/fake_machine/merchant
 	name = "SKY HANDLER"
 	desc = "A machine that attracts the attention of trading balloons."
@@ -8,6 +23,12 @@
 	var/next_airlift
 	anchored = TRUE
 	w_class = WEIGHT_CLASS_GIGANTIC
+	/// Merchant guild levy taken from every sale (0.5 = 50%). Paid to the merchant's GOLDFACE.
+	var/merchant_levy = 0.5
+	/// Tagline shown at the top of the TGUI window.
+	var/motto = "MERCHANT'S GUILD - Your goods, airborne."
+	/// Recent sales, oldest first: list of list("name", "value").
+	var/list/sale_history = list()
 
 /obj/structure/fake_machine/balloon_pad
 	name = ""
@@ -18,29 +39,11 @@
 	layer = BELOW_OBJ_LAYER
 	anchored = TRUE
 
-/obj/item/fake_machine/merchant/attack_hand(mob/living/user)
-	if(!anchored)
-		return ..()
-	user.changeNext_move(CLICK_CD_MELEE)
-
-	var/contents
-
-	contents += "<center>MERCHANT'S GUILD<BR>"
-	contents += "--------------<BR>"
-	//contents += "Guild's Tax: [SStreasury.queens_tax*100]%<BR>"
-	contents += "Next Balloon: [time2text((next_airlift - world.time), "mm:ss")]</center><BR>"
-
-	if(!user.can_read(src, TRUE))
-		contents = stars(contents)
-	var/datum/browser/popup = new(user, "VENDORTHING", "", 370, 220)
-	popup.set_content(contents)
-	popup.open()
-
 /obj/item/fake_machine/merchant/Initialize()
 	. = ..()
 	if(anchored)
 		START_PROCESSING(SSroguemachine, src)
-	set_light(2, 2, 2, l_color =  "#1b7bf1")
+	set_light(2, 2, 2, l_color = "#1b7bf1")
 	for(var/X in GLOB.alldirs)
 		var/T = get_step(src, X)
 		if(!T)
@@ -52,42 +55,147 @@
 	set_light(0)
 	return ..()
 
+/obj/item/fake_machine/merchant/attack_hand(mob/living/user)
+	if(!anchored)
+		return ..()
+	if(!ishuman(user))
+		return ..()
+	user.changeNext_move(CLICK_CD_MELEE)
+	playsound(src, 'sound/misc/beep.ogg', 100, FALSE, -1)
+	ui_interact(user)
+
+/obj/item/fake_machine/merchant/ui_state(mob/user)
+	return GLOB.physical_state
+
+/obj/item/fake_machine/merchant/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "Navigator", name, 460, 600)
+		ui.open()
+
+/obj/item/fake_machine/merchant/ui_data(mob/user)
+	var/list/data = list()
+	data["motto"] = motto
+	data["can_read"] = user.can_read(src, TRUE) ? TRUE : FALSE
+	data["next_airlift_seconds"] = max(0, round((next_airlift - world.time) / 10))
+	data["guild_tax_percent"] = round(merchant_levy * 100)
+	data["lord_tax_percent"] = round(SStreasury.tax_value * 100)
+	data["total_tax_percent"] = round((merchant_levy + SStreasury.tax_value) * 100)
+	// TRUE if the viewer themselves is a guild member exempt from the guild levy.
+	data["viewer_exempt"] = is_guild_member(user) ? TRUE : FALSE
+	// Build the history newest-first for display.
+	var/list/hist = list()
+	for(var/i = length(sale_history) to 1 step -1)
+		hist += list(sale_history[i])
+	data["history"] = hist
+	return data
+
+/// Finds the merchant's own (non-public) GOLDFACE till to receive the guild levy.
+/obj/item/fake_machine/merchant/proc/get_merchant_goldface()
+	for(var/obj/structure/fake_machine/merchantvend/G in GLOB.goldface_vendors)
+		if(!G.is_public)
+			return G
+	return null
+
+/// Records one sold item into the rolling history buffer (drops the oldest).
+/obj/item/fake_machine/merchant/proc/add_sale_history(item_name, value)
+	sale_history += list(list("name" = item_name, "value" = value))
+	if(length(sale_history) > SALE_HISTORY_MAX)
+		sale_history.Cut(1, 2)
+
+/// TRUE if this human holds a Waterdeep Guild role that is exempt from the
+/// guild levy (Merchant, Banker, Guild Assistant). They still pay the Lord's tax.
+/obj/item/fake_machine/merchant/proc/is_guild_member(mob/living/carbon/human/H)
+	if(!istype(H) || !H.job)
+		return FALSE
+	var/datum/job/J = SSjob.GetJob(H.job)
+	if(!J)
+		return FALSE
+	return istype(J, /datum/job/waterdeep_merchant) || istype(J, /datum/job/waterdeep_banker) || istype(J, /datum/job/waterdeep_guild_assistant)
+
+/// TRUE if such a guild member is standing on or next to the beacon (within the
+/// pad ring) at airlift time, which waives the guild levy for that cycle.
+/obj/item/fake_machine/merchant/proc/guild_exempt_present()
+	for(var/mob/living/carbon/human/H in range(1, src))
+		if(H.stat == DEAD)
+			continue
+		if(is_guild_member(H))
+			return TRUE
+	return FALSE
+
+/// Splits a tile's gross sale value into guild levy, Lord's tax and seller payout.
+/// When guild_exempt is set the merchant/banker/assistant pays no guild levy.
+/obj/item/fake_machine/merchant/proc/settle_export(gross, obj/structure/fake_machine/balloon_pad/pad, guild_exempt = FALSE)
+	var/guild_levy = guild_exempt ? 0 : round(gross * merchant_levy)
+	var/lord_tax = round(gross * SStreasury.tax_value)
+	var/producer_net = gross - guild_levy - lord_tax
+	if(producer_net < 0)
+		producer_net = 0
+	// Guild levy -> the merchant's GOLDFACE till (fallback to treasury if none exists).
+	if(guild_levy > 0)
+		var/obj/structure/fake_machine/merchantvend/till = get_merchant_goldface()
+		if(till)
+			till.budget += guild_levy
+		else
+			SStreasury.give_money_treasury(guild_levy, "Waterdeep's levy")
+	// Lord's export tax -> realm treasury.
+	if(lord_tax > 0)
+		SStreasury.give_money_treasury(lord_tax, "sky handler export tax")
+		record_round_statistic(STATS_TAXES_COLLECTED, lord_tax)
+	record_round_statistic(STATS_TRADE_VALUE_EXPORTED, gross)
+	// Remainder paid to the seller as coins on the pad tile.
+	if(producer_net > 0)
+		pad.budget2change(producer_net)
+	visible_message(span_info("[src] chimes: \"[gross] gross, [guild_levy] guild, [lord_tax] lords, [producer_net] to the seller.\""))
+
 /obj/item/fake_machine/merchant/process()
-	if(world.time > next_airlift)
-		next_airlift = world.time + rand(2 MINUTES, 3 MINUTES)
+	if(world.time <= next_airlift)
+		return
+	next_airlift = world.time + rand(2 MINUTES, 3 MINUTES)
 #ifdef TESTSERVER
-		next_airlift = world.time + 5 SECONDS
+	next_airlift = world.time + 5 SECONDS
 #endif
-		var/play_sound = FALSE
-		for(var/D in GLOB.alldirs)
-			var/budgie = 0
-			var/turf/T = get_step(src, D)
-			if(!T)
+	var/play_sound = FALSE
+	var/sold_any = FALSE
+	// Spare the guild levy if a Merchant/Banker/Guild Assistant is working the beacon.
+	var/guild_exempt = guild_exempt_present()
+	for(var/D in GLOB.alldirs)
+		var/turf/T = get_step(src, D)
+		if(!T)
+			continue
+		var/obj/structure/fake_machine/balloon_pad/E = locate() in T
+		if(!E)
+			continue
+		var/gross = 0
+		for(var/obj/I in T)
+			if(I.anchored)
 				continue
-			var/obj/structure/fake_machine/balloon_pad/E = locate() in T
-			if(!E)
+			if(!isturf(I.loc))
 				continue
-			for(var/obj/I in T)
-				var/prize
-				if(I.anchored)
-					continue
-				if(!isturf(I.loc))
-					continue
-				if (istype(I, /obj/item/coin))
-					continue
-				prize = I.get_real_price()// - (I.get_real_price() * SStreasury.queens_tax)
-				if(prize >= 1)
-					play_sound=TRUE
-					budgie += prize
-					I.visible_message("<span class='warning'>[I] is sucked into the air!</span>")
-					qdel(I)
-			budgie = round(budgie)
-			if(budgie > 0)
-				play_sound=TRUE
-				E.budget2change(budgie)
-				budgie = 0
-		if(play_sound)
-			playsound(src, 'sound/misc/hiss.ogg', 100, FALSE, -1)
+			// Never airlift currency. This is the coin-resale fix: a naive Azure
+			// port excludes /obj/item/roguecoin (which does not exist in Vanderlin),
+			// so the beacon would keep selling coins - including its own change.
+			if(istype(I, /obj/item/coin))
+				continue
+			var/prize = I.get_real_price()
+			if(prize >= 1)
+				gross += prize
+				add_sale_history(I.name, round(prize))
+				I.visible_message(span_warning("[I] is sucked into the air!"))
+				qdel(I)
+				play_sound = TRUE
+		gross = round(gross)
+		if(gross > 0)
+			settle_export(gross, E, guild_exempt)
+			sold_any = TRUE
+	if(play_sound)
+		playsound(src, 'sound/misc/hiss.ogg', 100, FALSE, -1)
+	if(sold_any)
+		SStgui.update_uis(src)
+
+#undef SALE_HISTORY_MAX
+//RMH EDITED END
+
 
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -141,6 +249,7 @@
 
 /obj/structure/fake_machine/merchantvend/Initialize()
 	. = ..()
+	GLOB.goldface_vendors += src //RMH EDITED
 	set_light(1, 1, 1, l_color =  "#1b7bf1")
 
 /obj/structure/fake_machine/merchantvend/atom_break(damage_flag)
@@ -154,6 +263,7 @@
 
 /obj/structure/fake_machine/merchantvend/Destroy()
 	. = ..()
+	GLOB.goldface_vendors -= src //RMH EDITED
 	budget2change(budget)
 	set_light(0)
 
