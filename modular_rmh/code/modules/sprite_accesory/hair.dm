@@ -2,7 +2,7 @@
 
 
 /datum/sprite_accessory/hair/head/azur
-	abstract_type = /datum/sprite_accessory/hair/head
+	abstract_type = /datum/sprite_accessory/hair/head/azur
 	icon = 'modular_rmh/icons/mob/sprite_accessory/head/hair/human_hair.dmi'
 	gender = list(NEUTER, MALE, FEMALE)
 	specuse = ALL_RACES_LIST
