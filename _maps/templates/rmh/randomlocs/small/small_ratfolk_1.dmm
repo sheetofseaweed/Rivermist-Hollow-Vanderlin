@@ -1,0 +1,513 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"bh" = (
+/obj/structure/bed/shit,
+/turf/open/floor/naturalstone,
+/area)
+"bi" = (
+/turf/open/floor/cobblerock,
+/area)
+"cu" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area)
+"cx" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/rock,
+/turf/open/floor/cobblerock,
+/area)
+"dF" = (
+/obj/structure/vine,
+/turf/closed/mineral/bedrock,
+/area)
+"ei" = (
+/obj/structure/bed/shit,
+/turf/open/floor/dirt/road,
+/area)
+"en" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/cobblerock,
+/area)
+"fG" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area)
+"gf" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/naturalstone,
+/area)
+"hl" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area)
+"hp" = (
+/turf/closed/wall/mineral/wood,
+/area)
+"jb" = (
+/turf/closed/mineral/bedrock,
+/area)
+"jV" = (
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/dirt/road,
+/area)
+"kM" = (
+/obj/structure/roguetent,
+/turf/open/floor/dirt/road,
+/area)
+"ld" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/debris/wood,
+/obj/item/natural/rock,
+/turf/open/floor/naturalstone,
+/area)
+"lg" = (
+/obj/effect/landmark/hammer/dev_text{
+	name = "RATFOLK ENTER"
+	},
+/turf/open/floor/grass,
+/area)
+"lv" = (
+/obj/effect/decal/cleanable/food/egg_smudge,
+/turf/open/floor/cobblerock,
+/area)
+"lA" = (
+/obj/structure/roguetent,
+/turf/open/floor/cobblerock,
+/area)
+"nK" = (
+/turf/open/floor/grass,
+/area)
+"nO" = (
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/dirt,
+/area)
+"nU" = (
+/turf/open/floor/naturalstone,
+/area)
+"nW" = (
+/obj/structure/vine,
+/turf/open/floor/sand,
+/area)
+"oR" = (
+/turf/open/floor/dirt,
+/area)
+"oZ" = (
+/obj/machinery/light/fueled/campfire/densefire,
+/turf/open/floor/cobblerock,
+/area)
+"pf" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/stalagmite,
+/turf/open/floor/cobblerock,
+/area)
+"um" = (
+/turf/open/floor/dirt/road,
+/area)
+"uy" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/dirt,
+/area)
+"uO" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/dirt/road,
+/area)
+"vq" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/mineral/bedrock,
+/area)
+"wi" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/dirt/road,
+/area)
+"xn" = (
+/obj/item/natural/rock,
+/turf/open/floor/naturalstone,
+/area)
+"xp" = (
+/obj/structure/vine,
+/turf/closed/wall/mineral/stone/moss,
+/area)
+"xF" = (
+/obj/structure/tent_wall,
+/turf/open/floor/cobblerock,
+/area)
+"xI" = (
+/obj/structure/table/wood/plain/alt,
+/turf/open/floor/cobblerock,
+/area)
+"yK" = (
+/turf/open/water/clean/dirt,
+/area)
+"Az" = (
+/obj/machinery/light/fueled/torchholder/c,
+/turf/open/floor/cobblerock,
+/area)
+"BJ" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/naturalstone,
+/area)
+"BK" = (
+/obj/structure/flora/grass,
+/turf/open/floor/grass,
+/area)
+"CJ" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/stone/moss,
+/area)
+"Eo" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/dirt/road,
+/area)
+"EF" = (
+/obj/effect/decal/cleanable/debris/wood,
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/cobblerock,
+/area)
+"EP" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/dirt,
+/area)
+"FE" = (
+/obj/effect/decal/cleanable/food/mess/soup,
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/cobblerock,
+/area)
+"FX" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/naturalstone,
+/area)
+"Gh" = (
+/obj/structure/tent_wall{
+	dir = 4
+	},
+/turf/open/floor/cobblerock,
+/area)
+"GP" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/turf/open/floor/cobblerock,
+/area)
+"GX" = (
+/obj/machinery/tanningrack,
+/turf/open/floor/dirt/road,
+/area)
+"Hq" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/cobblerock,
+/area)
+"JK" = (
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area)
+"Lm" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt,
+/area)
+"No" = (
+/obj/structure/closet/crate/chest/wicker,
+/turf/open/floor/dirt,
+/area)
+"NH" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/cobblerock,
+/area)
+"Ol" = (
+/obj/structure/bed/shit,
+/turf/open/floor/dirt,
+/area)
+"Px" = (
+/obj/structure/stalagmite,
+/turf/open/floor/cobblerock,
+/area)
+"Ro" = (
+/obj/structure/flora/grass/bush,
+/turf/open/floor/dirt,
+/area)
+"Vp" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/naturalstone,
+/area)
+"Vv" = (
+/obj/structure/closet/crate/chest/old_crate,
+/turf/open/floor/naturalstone,
+/area)
+"WH" = (
+/turf/closed/wall/mineral/stone/moss,
+/area)
+"WJ" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt/road,
+/area)
+"Xp" = (
+/turf/open/floor/sand,
+/area)
+"Yk" = (
+/obj/item/natural/rock,
+/turf/open/floor/cobblerock,
+/area)
+
+(1,1,1) = {"
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+jb
+"}
+(2,1,1) = {"
+jb
+jb
+jb
+dF
+xp
+GP
+FX
+nU
+lA
+bi
+bi
+cu
+WH
+jb
+jb
+"}
+(3,1,1) = {"
+jb
+WH
+xp
+oR
+Ol
+en
+FX
+Vv
+jb
+CJ
+en
+Lm
+yK
+yK
+jb
+"}
+(4,1,1) = {"
+jb
+WH
+uy
+oR
+lv
+cx
+BJ
+dF
+jb
+CJ
+NH
+pf
+Xp
+yK
+jb
+"}
+(5,1,1) = {"
+jb
+Px
+en
+oZ
+bi
+uO
+uO
+dF
+jb
+bi
+hl
+Xp
+nW
+jb
+jb
+"}
+(6,1,1) = {"
+jb
+bh
+bi
+bi
+bi
+um
+GX
+WH
+WH
+jV
+jb
+vq
+vq
+jb
+jb
+"}
+(7,1,1) = {"
+jb
+FX
+Vp
+gf
+FX
+ei
+dF
+WH
+WJ
+um
+kM
+um
+nK
+BK
+jb
+"}
+(8,1,1) = {"
+dF
+Hq
+bh
+Vp
+BJ
+Eo
+dF
+jb
+WJ
+wi
+kM
+um
+um
+lg
+jb
+"}
+(9,1,1) = {"
+dF
+xI
+nU
+xp
+um
+um
+jb
+dF
+um
+wi
+WH
+WH
+xn
+nK
+jb
+"}
+(10,1,1) = {"
+jb
+EF
+FE
+WH
+jb
+lA
+Gh
+dF
+nU
+uO
+nU
+dF
+dF
+dF
+jb
+"}
+(11,1,1) = {"
+jb
+nO
+en
+xF
+jb
+Yk
+en
+BJ
+BJ
+BJ
+nU
+nU
+Px
+jb
+jb
+"}
+(12,1,1) = {"
+jb
+oR
+No
+xF
+fG
+bi
+Vp
+Vp
+ld
+Vp
+hp
+Az
+bi
+Ro
+jb
+"}
+(13,1,1) = {"
+jb
+jb
+WH
+xF
+fG
+fG
+nU
+JK
+oR
+hl
+hl
+hl
+oR
+cu
+jb
+"}
+(14,1,1) = {"
+jb
+jb
+WH
+WH
+WH
+EP
+oR
+cu
+oR
+Ro
+WH
+xp
+dF
+oR
+jb
+"}
+(15,1,1) = {"
+jb
+jb
+jb
+jb
+jb
+jb
+dF
+dF
+dF
+jb
+jb
+jb
+jb
+jb
+jb
+"}

@@ -1,0 +1,448 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"c" = (
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"e" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/rock,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"f" = (
+/obj/effect/decal/remains/human,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"h" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"i" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"j" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass,
+/obj/structure/flora/new_shroom/cyan,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"k" = (
+/obj/effect/decal/remains/saiga,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"l" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"m" = (
+/obj/structure/flora/new_shroom/purplef,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"n" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"o" = (
+/obj/effect/decal/cleanable/blood/old,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"p" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/rock,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"q" = (
+/obj/effect/decal/remains/saiga,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"r" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/purple,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"s" = (
+/obj/effect/decal/remains/fox,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"u" = (
+/obj/item/alch/bone,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"v" = (
+/obj/structure/flora/new_shroom/purplesmall,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"w" = (
+/obj/item/alch/bone,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"x" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"y" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"z" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"A" = (
+/obj/item/natural/rock,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"B" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/cyanf,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"D" = (
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"E" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"F" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"H" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"I" = (
+/obj/effect/landmark/hammer/dev_text{
+	name = "WOLF ENTER"
+	},
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"J" = (
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"K" = (
+/obj/effect/decal/remains/bigrat,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"L" = (
+/obj/effect/decal/remains/mole,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"M" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"N" = (
+/obj/structure/vine,
+/turf/closed/mineral/bedrock,
+/area/under/rmh_bogforest_caves/wolf)
+"O" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"P" = (
+/obj/item/alch/bone,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"Q" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"R" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"S" = (
+/obj/effect/decal/cleanable/blood/old,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"T" = (
+/turf/closed/mineral/bedrock,
+/area/under/rmh_bogforest_caves/wolf)
+"U" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"V" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/cyan,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"Y" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+
+(1,1,1) = {"
+T
+T
+T
+N
+N
+T
+T
+T
+T
+T
+T
+T
+T
+T
+T
+"}
+(2,1,1) = {"
+T
+T
+T
+V
+M
+y
+T
+T
+T
+T
+N
+O
+H
+e
+T
+"}
+(3,1,1) = {"
+T
+j
+Q
+B
+c
+z
+N
+T
+T
+i
+i
+R
+I
+H
+T
+"}
+(4,1,1) = {"
+T
+T
+w
+c
+Y
+s
+N
+T
+T
+n
+J
+J
+E
+T
+T
+"}
+(5,1,1) = {"
+T
+T
+Q
+c
+o
+o
+a
+T
+T
+w
+z
+J
+T
+T
+T
+"}
+(6,1,1) = {"
+T
+T
+N
+Y
+c
+z
+z
+N
+N
+T
+y
+J
+N
+T
+T
+"}
+(7,1,1) = {"
+T
+T
+N
+c
+J
+z
+p
+z
+T
+N
+c
+S
+J
+T
+T
+"}
+(8,1,1) = {"
+T
+u
+F
+D
+J
+z
+z
+H
+H
+c
+c
+J
+m
+N
+T
+"}
+(9,1,1) = {"
+T
+i
+i
+K
+c
+D
+J
+c
+H
+J
+J
+v
+r
+N
+T
+"}
+(10,1,1) = {"
+T
+i
+Y
+c
+c
+J
+J
+z
+z
+J
+m
+h
+y
+M
+T
+"}
+(11,1,1) = {"
+T
+T
+c
+A
+J
+J
+L
+J
+J
+S
+k
+J
+F
+M
+T
+"}
+(12,1,1) = {"
+T
+N
+H
+f
+S
+h
+J
+c
+H
+e
+J
+J
+a
+N
+T
+"}
+(13,1,1) = {"
+T
+T
+x
+H
+y
+J
+o
+H
+H
+q
+E
+P
+a
+N
+T
+"}
+(14,1,1) = {"
+T
+T
+N
+M
+M
+l
+T
+N
+N
+U
+E
+R
+T
+T
+T
+"}
+(15,1,1) = {"
+T
+T
+T
+N
+N
+T
+T
+T
+T
+T
+T
+T
+T
+T
+T
+"}

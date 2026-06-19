@@ -1,0 +1,417 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"c" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"d" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/item/natural/rock,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"g" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/purplef,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"h" = (
+/obj/effect/decal/cleanable/blood/old,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"j" = (
+/obj/effect/decal/remains/mole,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"l" = (
+/obj/effect/decal/cleanable/blood/old,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"m" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"n" = (
+/obj/effect/decal/remains/bigrat,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"o" = (
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"p" = (
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"q" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"v" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"w" = (
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"y" = (
+/turf/open/water/marsh,
+/area/under/rmh_bogforest_caves/wolf)
+"z" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"A" = (
+/obj/effect/decal/cleanable/blood/old,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"B" = (
+/obj/structure/vine,
+/turf/closed/mineral/bedrock,
+/area/under/rmh_bogforest_caves/wolf)
+"E" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"F" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/driftwood,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"H" = (
+/obj/item/fertilizer/bone_meal,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"I" = (
+/obj/structure/stalagmite,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"J" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"K" = (
+/obj/item/natural/rock,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"L" = (
+/obj/structure/flora/driftwood,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"M" = (
+/turf/closed/mineral/bedrock,
+/area/under/rmh_bogforest_caves/wolf)
+"N" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"O" = (
+/obj/structure/flora/new_shroom/purplesmall,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"P" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"Q" = (
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"R" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"T" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"U" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/wolf)
+"V" = (
+/obj/effect/landmark/hammer/dev_text{
+	name = "BEAR ENTER"
+	},
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"W" = (
+/obj/structure/flora/new_shroom/purplesmall,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+"Y" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/wolf)
+"Z" = (
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
+
+(1,1,1) = {"
+M
+M
+M
+M
+B
+B
+M
+M
+M
+M
+M
+M
+M
+M
+M
+"}
+(2,1,1) = {"
+M
+M
+M
+U
+F
+H
+J
+B
+M
+M
+B
+z
+d
+M
+M
+"}
+(3,1,1) = {"
+M
+Y
+Y
+T
+Q
+T
+O
+J
+M
+M
+B
+w
+w
+a
+B
+"}
+(4,1,1) = {"
+M
+M
+U
+J
+E
+Q
+J
+J
+M
+M
+J
+o
+V
+o
+B
+"}
+(5,1,1) = {"
+M
+M
+F
+K
+Q
+w
+L
+B
+M
+U
+N
+o
+o
+Z
+M
+"}
+(6,1,1) = {"
+M
+M
+B
+p
+q
+a
+a
+B
+M
+B
+v
+o
+W
+M
+M
+"}
+(7,1,1) = {"
+M
+M
+B
+c
+w
+a
+Y
+Y
+M
+M
+w
+A
+R
+M
+M
+"}
+(8,1,1) = {"
+M
+M
+J
+R
+o
+a
+Y
+M
+M
+M
+w
+q
+R
+B
+M
+"}
+(9,1,1) = {"
+M
+I
+Q
+n
+o
+o
+B
+M
+M
+R
+w
+w
+a
+B
+M
+"}
+(10,1,1) = {"
+B
+K
+p
+Q
+Z
+o
+w
+B
+N
+R
+q
+w
+T
+g
+M
+"}
+(11,1,1) = {"
+B
+y
+y
+J
+R
+o
+j
+w
+w
+A
+Z
+K
+J
+U
+M
+"}
+(12,1,1) = {"
+M
+y
+y
+y
+l
+R
+q
+K
+T
+T
+y
+y
+J
+B
+M
+"}
+(13,1,1) = {"
+M
+M
+y
+y
+y
+P
+h
+m
+T
+O
+y
+y
+y
+B
+M
+"}
+(14,1,1) = {"
+M
+M
+B
+y
+y
+a
+M
+B
+B
+y
+y
+y
+M
+M
+M
+"}
+(15,1,1) = {"
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+"}
