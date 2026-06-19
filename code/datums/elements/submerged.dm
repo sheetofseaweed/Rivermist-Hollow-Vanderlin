@@ -11,6 +11,7 @@
 		return ELEMENT_INCOMPATIBLE
 
 	ADD_TRAIT(target, TRAIT_SUBMERGED, ELEMENT_TRAIT(type))
+	RegisterSignal(target, COMSIG_MOVABLE_MOVED, PROC_REF(check_submerged_turf))
 	RegisterSignal(target, COMSIG_LIVING_SWIM, PROC_REF(handle_swim))
 	RegisterSignal(target, COMSIG_MOB_EQUIPPED_ITEM, PROC_REF(check_sinking))
 	RegisterSignal(target, COMSIG_MOB_UNEQUIPPED_ITEM, PROC_REF(check_sinking))
@@ -20,9 +21,18 @@
 	REMOVE_TRAIT(source, TRAIT_SINKING, ELEMENT_TRAIT(type))
 	REMOVE_TRAIT(source, TRAIT_MOVE_SWIMMING, ELEMENT_TRAIT(type))
 	REMOVE_TRAIT(source, TRAIT_SUBMERGED, ELEMENT_TRAIT(type))
-	UnregisterSignal(source, list(COMSIG_LIVING_SWIM, COMSIG_MOB_EQUIPPED_ITEM, COMSIG_MOB_UNEQUIPPED_ITEM))
+	UnregisterSignal(source, list(COMSIG_MOVABLE_MOVED, COMSIG_LIVING_SWIM, COMSIG_MOB_EQUIPPED_ITEM, COMSIG_MOB_UNEQUIPPED_ITEM))
 
 	return ..()
+
+/datum/element/submerged/proc/check_submerged_turf(mob/living/target)
+	SIGNAL_HANDLER
+	if(!HAS_TRAIT(target, TRAIT_SUBMERGED))
+		return
+	var/turf/open/water/current_water = get_turf(target)
+	if(istype(current_water) && current_water.water_volume >= 10 && (current_water.water_height == WATER_HEIGHT_FULL || current_water.open_bottom || current_water.fake_bottomless))
+		return
+	target.RemoveElement(/datum/element/submerged)
 
 /datum/element/submerged/proc/handle_swim(mob/living/target, swimming)
 	SIGNAL_HANDLER

@@ -448,9 +448,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 #define APPEARANCE_CATEGORY_COLUMN "<td valign='top' width='14%'>"
 #define MAX_MUTANT_ROWS 4
-#define PREFERENCE_BODY_COLOR_MIN_LIGHTNESS 0.2
-#define PREFERENCE_BODY_COLOR_MAX_LIGHTNESS 0.65
-#define PREFERENCE_BODY_COLOR_MAX_SATURATION 0.65
+#define PREFERENCE_BODY_COLOR_MIN_LIGHTNESS 0
+#define PREFERENCE_BODY_COLOR_MAX_LIGHTNESS 1
+#define PREFERENCE_BODY_COLOR_MAX_SATURATION 1
 
 /datum/preferences/proc/show_choices(mob/user, tabchoice)
 	if(!user || !user.client)
