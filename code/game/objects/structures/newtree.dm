@@ -381,7 +381,7 @@
 	var/underlay_base = "center-leaf"
 	var/num_underlay_icons = 2
 	layer = BELOW_MOB_LAYER
-	plane = GAME_PLANE
+	plane = GAME_PLANE_UPPER
 
 /obj/structure/flora/newbranch/Initialize(mapload, ...)
 	. = ..()

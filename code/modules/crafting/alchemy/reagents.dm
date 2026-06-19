@@ -145,7 +145,7 @@
 	metabolization_rate = REAGENTS_METABOLISM * 5
 	alpha = 173
 
-/datum/reagent/medicine/gender_potion/on_mob_life(mob/living/carbon/M, efficiency)
+/datum/reagent/medicine/gender_potion/reaction_mob(mob/living/M, method, reac_volume, show_message, touch_protection, target_zone)
 	if(!M.get_erp_pref(/datum/erp_preference/boolean/allow_gender_bender))
 		to_chat(M, span_warning("Your body refuses the potion!"))
 		return
@@ -164,7 +164,9 @@
 		old_gender = FEMALE
 		M.gender = MALE
 		M.visible_message(span_boldnotice("[M] suddenly looks more masculine!"), span_boldwarning("You suddenly feel more masculine!"))
-	M.dna?.species?.on_gender_update(M, old_gender)
+	if(iscarbon(M))
+		var/mob/living/carbon/C = M
+		C.dna?.species?.on_gender_update(C, old_gender)
 	M.apply_gender_potion_genital_change(old_gender)
 	M.regenerate_icons()
 	..()
