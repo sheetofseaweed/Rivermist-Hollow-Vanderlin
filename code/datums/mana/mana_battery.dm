@@ -38,7 +38,7 @@
 		if(!user.is_holding(src))
 			return
 		var/mana_to_draw = input(user, "How much mana do you want to draw from the battery? Soft Cap (You will lose mana when above this!): [user.mana_pool.get_softcap()]", "Draw Mana") as num
-		mana_to_draw = CLAMP(mana_to_draw, mana_pool.maximum_mana_capacity, 0)
+		mana_to_draw = CLAMP(mana_to_draw, 0, mana_pool.maximum_mana_capacity)
 		if(!mana_to_draw || QDELETED(user) || QDELETED(src) || !user.is_holding(src))
 			return
 		var/drawn_mana = mana_to_draw
@@ -59,7 +59,7 @@
 	if(!user.is_holding(src))
 		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 	var/mana_to_send = input(user, "How much mana do you want to send to the battery? Max Capacity: [mana_pool.maximum_mana_capacity]", "Send Mana") as num
-	mana_to_send = CLAMP(mana_to_send, mana_pool.maximum_mana_capacity, 0)
+	mana_to_send = CLAMP(mana_to_send, 0, mana_pool.maximum_mana_capacity)
 	if(!mana_to_send || QDELETED(user) || QDELETED(src) || !user.is_holding(src))
 		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 	var/sent_mana = mana_to_send
@@ -177,7 +177,7 @@
 		if(!user.is_holding(src))
 			return
 		var/mana_to_draw = input(user, "How much mana do you want to draw from the battery? Soft Cap (You will lose mana when above this!): [user.mana_pool.get_softcap()]", "Draw Mana") as num|null
-		mana_to_draw = CLAMP(mana_to_draw, mana_pool.maximum_mana_capacity, 0)
+		mana_to_draw = CLAMP(mana_to_draw, 0, mana_pool.maximum_mana_capacity)
 		if(!mana_to_draw || QDELETED(user) || QDELETED(src) || !user.is_holding(src))
 			return
 		var/drawn_mana = mana_to_draw

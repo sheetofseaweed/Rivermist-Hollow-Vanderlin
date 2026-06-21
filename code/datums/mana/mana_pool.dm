@@ -384,8 +384,12 @@
 		return amount
 
 	var/result = clamp(src.amount + amount, 0, maximum_mana_capacity)
-	. = result - src.amount // Return the amount that was used
+	var/amount_used = result - src.amount // delta must be captured before src.amount is overwritten
+	. = amount_used // Return the amount that was used
 	src.amount = result
+	// Fire before the HUD block: the early return below must not swallow this signal.
+	if(parent)
+		SEND_SIGNAL(parent, COMSIG_MANA_POOL_ADJUSTED, amount_used)
 	if(parent && ismob(parent))
 		var/mob/holder = parent
 		SEND_SIGNAL(holder, COMSIG_LIVING_MANA_CHANGED, amount)
@@ -396,8 +400,6 @@
 				return
 			filled = clamp(filled, 0, 120)
 			hud_used.mana.icon_state = "mana[filled]"
-	if(parent)
-		SEND_SIGNAL(parent, COMSIG_MANA_POOL_ADJUSTED, result - src.amount)
 
 ///this takes a string and adds it to our halters creates the list if it doesn't exist
 /datum/mana_pool/proc/halt_mana_disperse(string)
