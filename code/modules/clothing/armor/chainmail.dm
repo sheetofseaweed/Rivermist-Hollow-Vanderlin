@@ -16,7 +16,7 @@
 	armor = ARMOR_MAILLE
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
 	prevent_crits = ALL_EXCEPT_BLUNT
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 	item_weight = 13 KILOGRAMS
 
 	material_category = ARMOR_MAT_CHAINMAIL
@@ -32,7 +32,7 @@
 
 	armor = ARMOR_MAILLE_IRON
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_IRON
 	item_weight = 13 KILOGRAMS
 
 //................ Hauberk ............... //
@@ -64,6 +64,6 @@
 	sellprice = VALUE_IRON_ARMOR_UNUSUAL
 
 	armor = ARMOR_MAILLE_IRON
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_IRON
 	item_weight = 11 KILOGRAMS
 

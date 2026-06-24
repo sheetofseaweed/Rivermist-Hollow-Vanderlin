@@ -7,7 +7,7 @@
 	melting_material = /datum/material/steel
 	armor_class = AC_MEDIUM
 	armor = ARMOR_SCALE
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_SCALE
 	clothing_flags = CANT_SLEEP_IN
 	prevent_crits = ALL_EXCEPT_STAB
 	abstract_type = /obj/item/clothing/armor/medium
@@ -20,7 +20,7 @@
 
 	body_parts_covered = COVERAGE_ALL_BUT_ARMS
 	prevent_crits = ALL_CRITICAL_HITS
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 	item_weight = 7
 
 /obj/item/clothing/armor/medium/scale/steppe
@@ -74,7 +74,7 @@
 	icon_state = "inqcoat"
 	item_state = "inqcoat"
 	sleevetype = "shirt"
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	melt_amount = 75
 	melting_material = /datum/material/steel
@@ -110,9 +110,9 @@
 	icon_state = "inqcoata"
 	item_state = "inqcoata"
 	equip_delay_self = 4 SECONDS
-	max_integrity = 300
+	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
 	armor_class = AC_MEDIUM
-	armor = list("blunt" = 40, "slash" = 100, "stab" = 80, "piercing" = 40, "fire" = 0, "acid" = 0)
+	armor = ARMOR_CUIRASS
 	melt_amount = 150
 	melting_material =  /datum/material/steel
 	blocksound = PLATEHIT

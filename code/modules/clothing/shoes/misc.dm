@@ -155,7 +155,7 @@
 	icon_state = "grenzelboots"
 	item_state = "grenzelboots"
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/stonekeep_merc.dmi'
-	armor = list("blunt" = 25, "slash" = 25, "stab" = 25,  "piercing" = 15, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 	sellprice = 20
 	wetable = FALSE
 
@@ -167,7 +167,7 @@
 	item_state = "fencerboots"
 	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_TWIST)
 	blocksound = SOFTHIT
-	max_integrity = 200
+	max_integrity = ARMOR_INT_SIDE_LEATHER
 	armor = ARMOR_LEATHER_GOOD
 	wetable = FALSE
 
@@ -180,7 +180,7 @@
 //Luskanian Duelist Merc - On par with grenzelhoftian's stats.
 /obj/item/clothing/shoes/nobleboot/duelboots
 	desc = "Boots custom fit for a Luskanian Duelist. Footwork is paramount in a duel, so good boots are a must."
-	armor = list("blunt" = 25, "slash" = 25, "stab" = 25,  "piercing" = 15, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/shoes/psydonboots
 	name = "enduring boots"

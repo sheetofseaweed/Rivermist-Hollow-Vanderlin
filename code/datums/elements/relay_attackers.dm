@@ -48,6 +48,10 @@
 		return
 	if(!ismob(hit_projectile.firer))
 		return
+	if(isliving(target))
+		var/mob/living/living_target = target
+		living_target.ai_controller?.set_blackboard_key(BB_LAST_RANGED_HIT_TIME, world.time)
+		living_target.ai_controller?.set_blackboard_key(BB_LAST_RANGED_ATTACKER, hit_projectile.firer)
 	relay_attacker(target, hit_projectile.firer, hit_projectile.damage)
 
 /datum/element/relay_attackers/proc/on_hitby(atom/target, atom/movable/hit_atom, skipcatch = FALSE, hitpush = TRUE, blocked = FALSE, datum/thrownthing/throwingdatum)

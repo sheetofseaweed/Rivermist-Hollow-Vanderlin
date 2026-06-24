@@ -81,7 +81,7 @@
 
 /datum/intent/rend/reach
 	name = "long rend"
-	penfactor = AP_POLEARM_CHOP - 5
+	penfactor = PEN_LIGHT	// polearm chop archetype; ±5 variance collapsed to tier
 	misscost = 10
 	reach = 2
 	clickcd = 18

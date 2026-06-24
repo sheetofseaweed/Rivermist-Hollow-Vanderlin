@@ -251,8 +251,11 @@
 
 	var/dodgecd = FALSE
 
-	var/setparrytime = 12
-	var/dodgetime = 12
+	/// TRUE while a swingdelay windup is live and uninterrupted. Cleared by disrupt-type interruption.
+	var/swing_state = FALSE
+
+	var/setparrytime = DEFENSE_CD_DEFAULT
+	var/dodgetime = DEFENSE_CD_DEFAULT
 
 	var/last_dodge = 0
 	var/last_parry = 0

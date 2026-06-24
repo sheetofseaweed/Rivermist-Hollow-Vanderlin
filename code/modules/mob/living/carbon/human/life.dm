@@ -37,6 +37,10 @@
 	if (QDELETED(src))
 		return 0
 
+	if(next_tempo_cull && world.time > next_tempo_cull && length(tempo_attackers))
+		cull_tempo_list()
+		next_tempo_cull = length(tempo_attackers) ? (world.time + TEMPO_CULL_DELAY) : 0
+
 	if(advsetup)
 		Stun(50)
 

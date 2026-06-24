@@ -7,6 +7,11 @@
 #define BALLOON_TEXT_CHAR_LIFETIME_INCREASE_MULT (0.05)
 /// The amount of characters needed before this increase takes into effect
 #define BALLOON_TEXT_CHAR_LIFETIME_INCREASE_MIN 10
+#define BALLOON_STACK_MAX 5
+#define BALLOON_STACK_SPACING 8
+
+/client
+	var/list/active_balloon_slots
 
 /**
  * Creates text that will float from the atom upwards to the viewer.
@@ -15,14 +20,14 @@
  * * mob/viewer: The mob the text will be shown to. Nullable (But only in the form of it won't runtime).
  * * text: The text to be shown to viewer. Must not be null.
  */
-/atom/proc/balloon_alert(mob/viewer, text, balloon_flag)
+/atom/proc/balloon_alert(mob/viewer, text, balloon_flag, x_offset = 0, y_offset = 0)
 	SHOULD_NOT_SLEEP(TRUE)
 
-	INVOKE_ASYNC(src, PROC_REF(balloon_alert_perform), viewer, text, balloon_flag)
+	INVOKE_ASYNC(src, PROC_REF(balloon_alert_perform), viewer, text, balloon_flag, x_offset, y_offset)
 
 /// Create balloon alerts (text that floats up) to everything within range.
 /// Will only display to people who can see.
-/atom/proc/balloon_alert_to_viewers(message, self_message, vision_distance = DEFAULT_MESSAGE_RANGE, list/ignored_mobs, balloon_flag)
+/atom/proc/balloon_alert_to_viewers(message, self_message, vision_distance = DEFAULT_MESSAGE_RANGE, list/ignored_mobs, balloon_flag, x_offset = 0, y_offset = 0)
 	SHOULD_NOT_SLEEP(TRUE)
 
 	var/list/hearers = get_hearers_in_view(vision_distance, src, RECURSIVE_CONTENTS_CLIENT_MOBS)
@@ -32,13 +37,13 @@
 		if(hearer.is_blind())
 			continue
 
-		balloon_alert(hearer, (hearer == src && self_message) || message)
+		balloon_alert(hearer, (hearer == src && self_message) || message, balloon_flag, x_offset, y_offset)
 
 // Do not use.
 // MeasureText blocks. I have no idea for how long.
 // I would've made the maptext_height update on its own, but I don't know
 // if this would look bad on laggy clients.
-/atom/proc/balloon_alert_perform(mob/viewer, text, balloon_flag)
+/atom/proc/balloon_alert_perform(mob/viewer, text, balloon_flag, x_offset = 0, y_offset = 0)
 	var/client/viewer_client = viewer?.client
 	if(isnull(viewer_client))
 		return
@@ -50,22 +55,39 @@
 		to_chat(viewer, span_emote("[name]: [text]"))
 		return
 
+	LAZYINITLIST(viewer_client.active_balloon_slots)
+	if(length(viewer_client.active_balloon_slots) >= BALLOON_STACK_MAX)
+		return
+
+	var/stack_slot
+	for(var/slot in 1 to BALLOON_STACK_MAX)
+		if(!(slot in viewer_client.active_balloon_slots))
+			stack_slot = slot
+			break
+	if(!stack_slot)
+		return
+
+	viewer_client.active_balloon_slots += stack_slot
+	var/stack_offset = (stack_slot - 1) * BALLOON_STACK_SPACING
+
 	var/image/balloon_alert = image(loc = isturf(src) ? src : get_atom_on_turf(src), layer = ABOVE_MOB_LAYER)
 	balloon_alert.plane = BALLOON_CHAT_PLANE
 	balloon_alert.alpha = 0
 	balloon_alert.appearance_flags = RESET_ALPHA|RESET_COLOR|RESET_TRANSFORM
-	balloon_alert.maptext = MAPTEXT_CENTER("<span style='-dm-text-outline: 1px #0005'>[text]</span>")
-	balloon_alert.maptext_x = (BALLOON_TEXT_WIDTH - world.icon_size) * -0.5 - base_pixel_x
+	balloon_alert.maptext = MAPTEXT_CENTER("<span style='font-size: 8pt; line-height: 1.05; -dm-text-outline: 1px #0005'>[text]</span>")
+	balloon_alert.maptext_x = (BALLOON_TEXT_WIDTH - world.icon_size) * -0.5 - base_pixel_x + x_offset
 	WXH_TO_HEIGHT(viewer_client?.MeasureText(text, null, BALLOON_TEXT_WIDTH), balloon_alert.maptext_height)
 	balloon_alert.maptext_width = BALLOON_TEXT_WIDTH
 
 	viewer_client?.images += balloon_alert
 
 	var/length_mult = 1 + max(0, length(strip_html_full(text)) - BALLOON_TEXT_CHAR_LIFETIME_INCREASE_MIN) * BALLOON_TEXT_CHAR_LIFETIME_INCREASE_MULT
+	var/base_y = y_offset + stack_offset
 
+	balloon_alert.pixel_y = base_y
 	animate(
 		balloon_alert,
-		pixel_y = world.icon_size * 1.2,
+		pixel_y = base_y + world.icon_size * 1.2,
 		time = BALLOON_TEXT_TOTAL_LIFETIME(length_mult),
 		easing = SINE_EASING | EASE_OUT,
 	)
@@ -83,7 +105,28 @@
 		easing = CUBIC_EASING | EASE_IN,
 	)
 
-	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(remove_image_from_client), balloon_alert, viewer_client), BALLOON_TEXT_TOTAL_LIFETIME(length_mult))
+	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(remove_balloon_from_client), balloon_alert, viewer_client, stack_slot), BALLOON_TEXT_TOTAL_LIFETIME(length_mult))
+
+/// Removes a balloon alert from the viewer and frees a stack slot.
+/proc/remove_balloon_from_client(image/image, client/remove_from, stack_slot)
+	remove_image_from_client(image, remove_from)
+	if(remove_from && stack_slot)
+		LAZYREMOVE(remove_from.active_balloon_slots, stack_slot)
+
+/// Creates a balloon alert visible only to viewers with a specific trait.
+/atom/proc/filtered_balloon_alert(trait, text, balloon_flag = DISABLE_BALLOON_COMBAT, x_offset = 0, y_offset = 0, show_self = TRUE)
+	if(!trait)
+		return
+
+	var/list/viewers = get_hearers_in_view(DEFAULT_MESSAGE_RANGE, src, RECURSIVE_CONTENTS_CLIENT_MOBS)
+	var/list/ignored_mobs = viewers.Copy()
+	for(var/mob/living/viewer in viewers)
+		if(!show_self && viewer == src)
+			continue
+		if(HAS_TRAIT(viewer, trait))
+			ignored_mobs -= viewer
+
+	balloon_alert_to_viewers(text, null, DEFAULT_MESSAGE_RANGE, ignored_mobs, balloon_flag, x_offset, y_offset)
 
 #undef BALLOON_TEXT_FADE_TIME
 #undef BALLOON_TEXT_FULLY_VISIBLE_TIME
@@ -92,3 +135,5 @@
 #undef BALLOON_TEXT_WIDTH
 #undef BALLOON_TEXT_CHAR_LIFETIME_INCREASE_MULT
 #undef BALLOON_TEXT_CHAR_LIFETIME_INCREASE_MIN
+#undef BALLOON_STACK_MAX
+#undef BALLOON_STACK_SPACING

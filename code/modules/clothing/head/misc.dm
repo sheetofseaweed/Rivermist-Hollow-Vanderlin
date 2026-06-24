@@ -136,7 +136,7 @@
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/64x64/head.dmi'
 	worn_x_dimension = 64
 	worn_y_dimension = 64
-	armor = list("blunt" = 60, "slash" = 40, "stab" = 45,  "piercing" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_HEAVY, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 	flags_inv = HIDEEARS|HIDEFACE
 	flags_cover = HEADCOVERSEYES
 	body_parts_covered = HEAD|EARS|HAIR|NOSE|EYES
@@ -386,7 +386,7 @@
 	body_parts_covered = NECK | HEAD | HAIR
 	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
-	armor = list("blunt" = 70, "slash" = 70, "stab" = 50, "piercing" = 30, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_SUPER, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	dynamic_hair_suffix = ""
 	edelay_type = 1
 	adjustable = CAN_CADJUST
@@ -429,7 +429,7 @@
 	body_parts_covered = NECK | HEAD | HAIR
 	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_MASK
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
-	armor = list("blunt" = 70, "slash" = 70, "stab" = 50, "piercing" = 30, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_SUPER, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	dynamic_hair_suffix = ""
 	edelay_type = 1
 	adjustable = CAN_CADJUST

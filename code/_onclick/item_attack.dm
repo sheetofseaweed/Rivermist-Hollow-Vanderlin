@@ -285,8 +285,18 @@
 		if(user.used_intent.no_attack) //BYE!!!
 			return TRUE
 
+	// Feed the defender's tempo: being attacked builds their defensive rhythm.
+	// Fires before the windup, so even cancelled swings pressure the target.
+	if(ishuman(M))
+		var/mob/living/carbon/human/tempo_target = M
+		tempo_target.process_tempo_attack(user)
+
 	var/datum/intent/cached_intent = user.used_intent
-	if(user.used_intent.swingdelay)
+	if(isliving(user))
+		var/mob/living/living_user = user
+		if(!living_user.do_swing_windup(cached_intent))
+			return
+	else if(user.used_intent.swingdelay)
 		sleep(user.used_intent.swingdelay)
 	if(user.a_intent != cached_intent)
 		return
@@ -689,16 +699,21 @@
 	var/hitlim = simple_limb_hit(user.zone_selected)
 	I.funny_attack_effects(src, user)
 	var/newforce = get_complex_damage(I, user)
-	var/haha = user.used_intent.blade_class
-	var/armor = run_armor_check(null, haha, armor_penetration = I.armor_penetration, damage = newforce)
+	var/haha = user.used_intent?.item_damage_type || user.used_intent?.blade_class || BLUNT
+	var/armor_penetration = I.armor_penetration
+	if(user.used_intent?.penfactor)
+		armor_penetration += user.used_intent.penfactor
+	var/armor = run_armor_check(null, haha, armor_penetration = armor_penetration, damage = newforce, used_weapon = I, attacker = user, used_intent = user.used_intent)
 	var/nodmg = FALSE
 	next_attack_msg.Cut()
 	var/from_behind = FALSE
 	if(user && (src.dir == turn(get_dir(src,user), 180)))
 		from_behind = TRUE
-	if(armor > 0)
+	if(armor >= newforce && newforce > 0)
 		nodmg = TRUE
 		next_attack_msg += span_warning("Armor stops the damage.")
+	else if(armor > 0)
+		next_attack_msg += span_warning("Armor softens the damage.")
 	if(user.used_intent)
 		var/tempsound = user.used_intent.hitsound
 		if(tempsound)
@@ -721,7 +736,8 @@
 				to_chat(src, span_userdanger("SNEAK ATTACK!!!"))
 				to_chat(user, span_userdanger("SNEAK ATTACK!!!"))
 				user.adjust_experience(/datum/skill/misc/sneaking, user.STAINT * 5, FALSE)
-	apply_damage(newforce, I.damtype, hitlim, armor)
+	if(!apply_damage(newforce, I.damtype, hitlim, armor))
+		nodmg = TRUE
 	I.remove_bintegrity(1)
 	if(I.damtype == BRUTE && !nodmg)
 		if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))
@@ -745,14 +761,14 @@
 	I.do_special_attack_effect(user, null, null, src, null)
 
 
-/mob/living/simple_animal/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, peeldivisor, intdamfactor = 1, used_weapon)
+/mob/living/simple_animal/getarmor(def_zone, type, damage, armor_penetration, blade_dulling, intdamfactor = 1, used_weapon, mob/living/attacker)
 	if(!type)
 		return 0
 	var/armorval = 0
 	if(HAS_TRAIT(src, TRAIT_ANIMAL_NATURAL_ARMOR) && genetics)
 		var/natural = genetics.get_natural_armor_for_type(type)
 		if(natural)
-			armorval += max(0, natural - armor_penetration)
+			armorval += natural
 
 	if(bbarding && !bbarding.obj_broken)
 		armorval = bbarding.armor.getRating(type)

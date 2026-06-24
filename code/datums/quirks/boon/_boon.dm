@@ -325,6 +325,36 @@
 		return
 	REMOVE_TRAIT(owner, TRAIT_BEAUTIFUL, "[type]")
 
+/datum/quirk/boon/combat_aware
+	name = "Combat Aware"
+	desc = "I can read the shape of a fight and spot important combat details as they happen - armor wear, penetration, openings."
+	point_value = -3
+
+/datum/quirk/boon/combat_aware/on_spawn()
+	if(!ishuman(owner))
+		return
+	ADD_TRAIT(owner, TRAIT_COMBAT_AWARE, "[type]")
+
+/datum/quirk/boon/combat_aware/on_remove()
+	if(!ishuman(owner))
+		return
+	REMOVE_TRAIT(owner, TRAIT_COMBAT_AWARE, "[type]")
+
+/datum/quirk/boon/tempo
+	name = "Sense of Tempo"
+	desc = "I can keep up with multiple opponents at once. Fighting outnumbered, I find a rhythm - my defenses grow cheaper and faster the more foes press me."
+	point_value = -3
+
+/datum/quirk/boon/tempo/on_spawn()
+	if(!ishuman(owner))
+		return
+	ADD_TRAIT(owner, TRAIT_TEMPO, "[type]")
+
+/datum/quirk/boon/tempo/on_remove()
+	if(!ishuman(owner))
+		return
+	REMOVE_TRAIT(owner, TRAIT_TEMPO, "[type]")
+
 //prosthetic boons, since those limbs provide more resillience than normal.
 //iron is worst, steel is heavy punching and resillient, bronze is most durable by integrity and close to steel in damage, gold is just stylish and nearly just as bad as iron.
 /datum/quirk/boon/iron_arm_right
