@@ -23,6 +23,7 @@
 	additional_blocker = "underwear"
 	bloatable = TRUE
 	stretchable = FALSE
+	drips_as_drops = TRUE
 	// Passive egg production is enabled by a mob trait; these vars only tune the output.
 	var/oviposition_egg_production_type = null // Null keeps the default safe egg type.
 	var/oviposition_egg_production_interval = 20 MINUTES

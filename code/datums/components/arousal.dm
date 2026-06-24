@@ -657,6 +657,33 @@
 				if(vag.reagents)
 					var/femcum_to_take = min(2, vag.reagents.total_volume*0.3)
 					route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer)
+
+		if(ORGASM_LOCATION_CONTAINER)
+			var/obj/item/container = action?.get_climax_container(user, target, action_initiator, action_target, action_performer)
+			if(!container || !container.reagents)
+				// container is gone (dropped/swapped/full-removed); don't silently eat the climax, spill it like SELF.
+				var/turf/turf = get_turf(user)
+				if(testes?.reagents)
+					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5), 1, testes.reagents.total_volume)
+					route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer)
+				if(vag?.reagents)
+					var/femcum_to_take = min(2, vag.reagents.total_volume*0.3)
+					route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer)
+			else
+				log_combat(user, user, "Ejaculated into [container]")
+				playsound(container, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
+				var/free_space = container.reagents.maximum_volume - container.reagents.total_volume
+				if(testes?.reagents && free_space > 0)
+					var/cum_to_take = min(max(testes.reagents.maximum_volume / 3, 1), testes.reagents.total_volume, free_space)
+					if(cum_to_take > 0 && route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, container, INJECT, action_initiator, action_target, action_performer) > 0)
+						climax_fluid_transferred = TRUE
+						free_space = container.reagents.maximum_volume - container.reagents.total_volume
+				if(vag?.reagents && free_space > 0)
+					var/femcum_to_take = min(8, vag.reagents.total_volume * 0.3, free_space)
+					if(femcum_to_take > 0 && route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, container, INJECT, action_initiator, action_target, action_performer) > 0)
+						climax_fluid_transferred = TRUE
+				if(!climax_fluid_transferred)
+					to_chat(user, span_warning("Nothing comes out into \the [container]."))
 	if(testes)
 		if(testes.reagents)
 			if(testes.reagents.total_volume <= testes.reagents.maximum_volume / 4)

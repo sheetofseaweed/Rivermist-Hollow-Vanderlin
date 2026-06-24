@@ -306,6 +306,7 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define ORGASM_LOCATION_ONTO "onto"
 #define ORGASM_LOCATION_ORAL "oral"
 #define ORGASM_LOCATION_SELF "self"
+#define ORGASM_LOCATION_CONTAINER "container"
 
 /proc/build_sex_actions()
 	. = list()

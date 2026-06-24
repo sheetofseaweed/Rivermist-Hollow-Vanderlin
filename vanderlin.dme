@@ -1569,6 +1569,7 @@
 #include "code\datums\sex\actions\npc\npc_vaginal_ride_sex.dm"
 #include "code\datums\sex\actions\npc\npc_vaginal_sex.dm"
 #include "code\datums\sex\actions\object\base.dm"
+#include "code\datums\sex\actions\object\collect_fluid.dm"
 #include "code\datums\sex\actions\object\object_anal.dm"
 #include "code\datums\sex\actions\object\object_anal_other.dm"
 #include "code\datums\sex\actions\object\object_vaginal.dm"
