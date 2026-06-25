@@ -46,7 +46,7 @@
 	// Arousal and pain logic
 	var/arousal_amt = 1.2 + (force * 0.5)
 	var/pain_amt = 2 * force
-	sex_session.perform_sex_action(user, target, arousal_amt, pain_amt, arousal_amt, src)
+	sex_session.perform_sex_action(target, user, arousal_amt, pain_amt, arousal_amt, src)
 	sex_session.handle_passive_ejaculation(target)
 
 	// Soreness messaging depending on force
