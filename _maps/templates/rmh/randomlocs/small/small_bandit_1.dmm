@@ -1,0 +1,565 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"aS" = (
+/obj/structure/closet/crate/chest/wicker,
+/turf/open/floor/twig,
+/area)
+"bh" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/structure/mannequin,
+/turf/open/floor/cobblerock,
+/area)
+"ew" = (
+/obj/effect/decal/cleanable/dirt/cobweb{
+	icon_state = "cobweb2"
+	},
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/cobblerock,
+/area)
+"eO" = (
+/obj/machinery/light/fueled/torchholder/c,
+/turf/open/floor/naturalstone,
+/area)
+"fo" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/structure/closet/crate/chest/wicker,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"fr" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/cobblerock,
+/area)
+"fJ" = (
+/obj/structure/table/wood/plain,
+/obj/item/recipe_book/survival,
+/turf/open/floor/cobblerock,
+/area)
+"gd" = (
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/naturalstone,
+/area)
+"hC" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/ruinedwood/darker,
+/area)
+"ip" = (
+/turf/open/floor/cobblerock,
+/area)
+"iI" = (
+/obj/structure/stairs,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"iJ" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/ruinedwood/darker,
+/area)
+"iT" = (
+/obj/structure/table/wood/plain,
+/obj/item/reagent_containers/glass/cup/skull,
+/turf/open/floor/twig,
+/area)
+"kg" = (
+/obj/machinery/tanningrack,
+/obj/effect/decal/cleanable/dirt/cobweb,
+/turf/open/floor/naturalstone,
+/area)
+"kp" = (
+/obj/effect/landmark/hammer/dev_text{
+	name = "BANDIT ENTER"
+	},
+/turf/open/floor/naturalstone,
+/area)
+"lV" = (
+/obj/structure/chair/stool,
+/turf/open/floor/ruinedwood/darker,
+/area)
+"mq" = (
+/obj/structure/chair/stool,
+/turf/open/floor/naturalstone,
+/area)
+"nu" = (
+/obj/structure/fermentation_keg/water,
+/turf/open/floor/naturalstone,
+/area)
+"oV" = (
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"pw" = (
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/ruinedwood/darker,
+/area)
+"pG" = (
+/obj/structure/chair/stool,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"pN" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/structure/rack/shelf/biggest,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"sp" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/machinery/anvil/crafted,
+/obj/item/weapon/hammer/iron,
+/turf/open/floor/cobblerock,
+/area)
+"su" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area)
+"sN" = (
+/turf/open/floor/ruinedwood/darker,
+/area)
+"tf" = (
+/turf/closed/mineral/bedrock,
+/area)
+"tg" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/structure/bed/hay,
+/turf/open/floor/twig,
+/area)
+"tq" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/naturalstone,
+/area)
+"ud" = (
+/turf/closed/wall/mineral/wood,
+/area)
+"ux" = (
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"xj" = (
+/obj/structure/table/wood/plain,
+/obj/item/candle/skull/lit{
+	pixel_y = 4;
+	pixel_x = 3
+	},
+/turf/open/floor/twig,
+/area)
+"xI" = (
+/obj/structure/table/wood/plain,
+/obj/item/candle/tin/lit,
+/turf/open/floor/twig,
+/area)
+"ya" = (
+/obj/structure/door/driftwood{
+	color = "#a6a6a6"
+	},
+/turf/open/floor/naturalstone,
+/area)
+"yy" = (
+/turf/open/floor/twig,
+/area)
+"zK" = (
+/turf/closed/wall/mineral/stone/moss,
+/area)
+"Ah" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/cobblerock,
+/area)
+"AA" = (
+/obj/structure/fluff/statue/tdummy,
+/turf/open/floor/cobblerock,
+/area)
+"Bk" = (
+/obj/structure/closet/crate/chest/neu,
+/turf/open/floor/cobblerock,
+/area)
+"BE" = (
+/obj/machinery/light/fueled/hearth,
+/obj/item/reagent_containers/glass/bucket/pot/stone,
+/turf/open/floor/cobblerock,
+/area)
+"BG" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"CU" = (
+/obj/structure/rack/shelf/biggest,
+/obj/item/kitchen/spoon/pewter,
+/turf/open/floor/twig,
+/area)
+"GG" = (
+/obj/structure/fluff/railing/wood,
+/turf/open/floor/cobblerock,
+/area)
+"Hs" = (
+/obj/structure/chair/stool,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/twig,
+/area)
+"If" = (
+/obj/structure/table/wood/plain,
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_x = -7;
+	pixel_y = -5
+	},
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_y = 10;
+	pixel_x = 10
+	},
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"Jl" = (
+/obj/structure/rack/shelf/biggest,
+/obj/item/rope,
+/turf/open/floor/cobblerock,
+/area)
+"KE" = (
+/obj/structure/bed/hay,
+/turf/open/floor/twig,
+/area)
+"KN" = (
+/obj/effect/decal/cleanable/debris/wood,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/twig,
+/area)
+"Ln" = (
+/obj/structure/giantfur{
+	layer = 2;
+	pixel_x = -16
+	},
+/turf/open/floor/cobblerock,
+/area)
+"Me" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/structure/fluff/railing/wood/east,
+/obj/structure/fluff/railing/wood,
+/obj/structure/closet/crate/chest/neu,
+/turf/open/floor/cobblerock,
+/area)
+"MZ" = (
+/obj/structure/chair/stool,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"Nj" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/twig,
+/area)
+"Oy" = (
+/turf/open/floor/naturalstone,
+/area)
+"Pm" = (
+/obj/structure/chair/stool,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/ruinedwood/darker,
+/area)
+"QC" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/cobblerock,
+/area)
+"Rd" = (
+/obj/item/bin/water,
+/turf/open/floor/cobblerock,
+/area)
+"RR" = (
+/obj/machinery/light/fueled/torchholder/c,
+/obj/structure/grindwheel,
+/turf/open/floor/naturalstone,
+/area)
+"Tb" = (
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/cobblerock,
+/area)
+"TG" = (
+/obj/item/bin/water,
+/turf/open/floor/twig,
+/area)
+"Us" = (
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/twig,
+/area)
+"UA" = (
+/obj/structure/rack/shelf/biggest,
+/obj/effect/decal/cleanable/dirt/cobweb{
+	pixel_y = -2;
+	pixel_x = 1;
+	dir = 8
+	},
+/turf/open/floor/twig,
+/area)
+"XD" = (
+/obj/structure/table/wood/plain,
+/obj/item/reagent_containers/glass/cup{
+	pixel_x = -6
+	},
+/obj/item/candle/tin/lit{
+	pixel_x = 14;
+	pixel_y = 8
+	},
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"XI" = (
+/obj/machinery/light/fueled/torchholder/c,
+/obj/effect/decal/cleanable/dirt,
+/turf/open/floor/naturalstone,
+/area)
+"XM" = (
+/obj/machinery/light/fueled/torchholder/r,
+/obj/structure/stairs,
+/turf/open/floor/ruinedwood/turned/darker,
+/area)
+"Yq" = (
+/obj/effect/decal/cleanable/debris/wood,
+/turf/open/floor/naturalstone,
+/area)
+
+(1,1,1) = {"
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+"}
+(2,1,1) = {"
+tf
+zK
+zK
+kg
+Oy
+Oy
+Oy
+Oy
+Rd
+GG
+hC
+BG
+tf
+tf
+tf
+"}
+(3,1,1) = {"
+tf
+nu
+Oy
+gd
+gd
+ud
+eO
+sp
+su
+GG
+pw
+pG
+ux
+zK
+tf
+"}
+(4,1,1) = {"
+tf
+CU
+ip
+BE
+gd
+Tb
+QC
+su
+Tb
+Me
+pG
+XD
+ux
+fo
+tf
+"}
+(5,1,1) = {"
+tf
+Us
+su
+ip
+ip
+Tb
+ip
+ip
+ip
+iI
+MZ
+If
+Pm
+oV
+tf
+"}
+(6,1,1) = {"
+tf
+tg
+Hs
+xI
+iT
+fr
+ip
+ip
+fr
+XM
+iJ
+lV
+sN
+zK
+tf
+"}
+(7,1,1) = {"
+tf
+tf
+aS
+ud
+TG
+yy
+ip
+AA
+Nj
+ud
+ux
+sN
+pw
+zK
+tf
+"}
+(8,1,1) = {"
+tf
+tf
+tf
+zK
+zK
+fr
+Tb
+Tb
+yy
+Oy
+Oy
+hC
+oV
+pN
+tf
+"}
+(9,1,1) = {"
+tf
+tf
+tf
+zK
+Jl
+QC
+Tb
+mq
+Oy
+Oy
+Oy
+tq
+su
+ip
+tf
+"}
+(10,1,1) = {"
+tf
+tf
+KE
+yy
+ip
+ip
+ud
+RR
+Oy
+Oy
+tf
+tf
+ew
+tf
+tf
+"}
+(11,1,1) = {"
+tf
+Hs
+KN
+ip
+Ah
+Ln
+su
+su
+Oy
+ya
+Oy
+tf
+tf
+tf
+tf
+"}
+(12,1,1) = {"
+tf
+fJ
+QC
+su
+ip
+ip
+QC
+Tb
+tf
+Oy
+Yq
+Oy
+ip
+fr
+tf
+"}
+(13,1,1) = {"
+tf
+zK
+bh
+su
+Nj
+Us
+Us
+yy
+zK
+zK
+Oy
+Yq
+kp
+Oy
+tf
+"}
+(14,1,1) = {"
+tf
+zK
+Bk
+KE
+yy
+xj
+KE
+yy
+UA
+tf
+ud
+XI
+gd
+tf
+tf
+"}
+(15,1,1) = {"
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+tf
+"}

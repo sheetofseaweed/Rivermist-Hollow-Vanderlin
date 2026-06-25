@@ -32,7 +32,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -137,7 +137,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -158,7 +158,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE | HIDEFACIALHAIR | HIDEHAIR
 	body_parts_covered = FACE
@@ -179,7 +179,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -200,7 +200,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -221,7 +221,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -242,7 +242,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -263,7 +263,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -284,7 +284,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -305,7 +305,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -326,7 +326,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE | HIDEFACIALHAIR | HIDEHAIR
 	body_parts_covered = FACE
@@ -347,7 +347,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -368,7 +368,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -389,7 +389,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -410,7 +410,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -431,7 +431,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -452,7 +452,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 80, "slash" = 80, "stab" = 80,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_TWIST, BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_STAB)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
@@ -496,7 +496,7 @@
 /obj/item/clothing/face/facemask/steel
 	name = "steel mask"
 	icon_state = "smask"
-	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 80, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_BSTEEL, "fire" = DR_NONE, "acid" = DR_NONE)
 	desc = "A knightly steel mask that both conceals and protects the face. Usually paired with a bascinet."
 	max_integrity = 300
 	smeltresult = /obj/item/ingot/steel
@@ -519,7 +519,7 @@
 	icon = 'icons/roguetown/clothing/special/adept.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/adept.dmi'
 	icon_state = "silvermask"
-	armor = list("blunt" = 100, "slash" = 100, "stab" = 100,  "piercing" = 85, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_BSTEEL, "fire" = DR_NONE, "acid" = DR_NONE)
 	desc = "A custom-made silver penance mask, created especially for the Adepts of the Inquisitorial Lodge."
 	max_integrity = 300
 	smeltresult = /obj/item/ingot/silver
@@ -656,7 +656,7 @@
 	blocksound = PLATEHIT
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/armor_drop.ogg'
-	armor = list("blunt" = 50, "slash" = 50, "stab" = 50,  "piercing" = 50, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_HEAVY, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_MEDIUM, "fire" = DR_NONE, "acid" = DR_NONE)
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE
 	block2add = FOV_BEHIND
@@ -694,7 +694,7 @@
 	break_sound = 'sound/foley/breaksound.ogg'
 	drop_sound = 'sound/foley/dropsound/gen_drop.ogg'
 	resistance_flags = FIRE_PROOF
-	armor = list("blunt" = 10, "slash" = 40, "stab" = 40,  "piercing" = 8, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_LIGHT, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = null
 	flags_inv = HIDEFACE
 	body_parts_covered = FACE

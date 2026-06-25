@@ -62,7 +62,7 @@
 /obj/projectile/bullet/reusable/bolt/on_hit(atom/target, blocked = FALSE)
 	if(can_inject && iscarbon(target))
 		var/mob/living/carbon/M = target
-		var/armor = M.run_armor_check(def_zone, flag, "", "",armor_penetration, damage)
+		var/armor = M.run_armor_check(def_zone, flag, "", "", armor_penetration, damage = damage)
 		var/armor_real_check = max(0, armor - damage)
 		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
@@ -308,7 +308,7 @@
 /obj/projectile/bullet/reusable/arrow/on_hit(atom/target, blocked = FALSE)
 	if(can_inject && iscarbon(target))
 		var/mob/living/carbon/M = target
-		var/armor = M.run_armor_check(def_zone, flag, "", "",armor_penetration, damage)
+		var/armor = M.run_armor_check(def_zone, flag, "", "", armor_penetration, damage = damage)
 		var/armor_real_check = max(0, armor - damage)
 		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
@@ -658,7 +658,7 @@
 /obj/projectile/bullet/reusable/dart/on_hit(atom/target, blocked = FALSE)
 	if(iscarbon(target))
 		var/mob/living/carbon/M = target
-		var/armor = M.run_armor_check(def_zone, flag, "", "",armor_penetration, damage)
+		var/armor = M.run_armor_check(def_zone, flag, "", "", armor_penetration, damage = damage)
 		var/armor_real_check = max(0, armor - damage)
 		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.

@@ -1,0 +1,404 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/obj/item/grown/log/tree/stick,
+/turf/open/floor/grass,
+/area)
+"b" = (
+/obj/item/natural/rock,
+/turf/open/floor/sand,
+/area)
+"c" = (
+/obj/effect/landmark/hammer/dev_text{
+	name = "SPIDER ENTER"
+	},
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/grass,
+/area)
+"d" = (
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area)
+"e" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area)
+"f" = (
+/obj/structure/spider/cocoon,
+/turf/open/floor/dirt,
+/area)
+"g" = (
+/obj/structure/spider/stickyweb,
+/turf/open/floor/grass,
+/area)
+"h" = (
+/obj/structure/spider/nest,
+/turf/open/floor/grass,
+/area)
+"i" = (
+/obj/structure/spider/stickyweb,
+/turf/open/floor/sand,
+/area)
+"j" = (
+/obj/structure/spider/stickyweb,
+/obj/item/grown/log/tree/stick,
+/turf/open/floor/dirt,
+/area)
+"k" = (
+/obj/item/grown/log/tree/stick,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area)
+"l" = (
+/turf/open/floor/cobblerock,
+/area)
+"m" = (
+/obj/structure/spider/cocoon,
+/obj/structure/spider/stickyweb,
+/turf/open/floor/dirt,
+/area)
+"p" = (
+/obj/structure/spider/stickyweb,
+/turf/open/floor/cobblerock,
+/area)
+"r" = (
+/turf/open/floor/dirt,
+/area)
+"t" = (
+/obj/structure/spider/stickyweb/solo,
+/turf/open/floor/cobblerock,
+/area)
+"x" = (
+/obj/structure/spider/cocoon,
+/turf/open/floor/grass,
+/area)
+"z" = (
+/obj/structure/spider/cocoon,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt,
+/area)
+"B" = (
+/obj/structure/spider/stickyweb,
+/turf/open/floor/naturalstone,
+/area)
+"C" = (
+/obj/item/grown/log/tree/stick,
+/turf/open/floor/sand,
+/area)
+"D" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/sand,
+/area)
+"E" = (
+/obj/structure/spider/stickyweb/solo,
+/turf/open/floor/sand,
+/area)
+"H" = (
+/obj/structure/spider/stickyweb/solo,
+/turf/open/floor/grass,
+/area)
+"I" = (
+/turf/open/floor/sand,
+/area)
+"J" = (
+/obj/structure/spider/cocoon,
+/obj/structure/spider/stickyweb/solo,
+/turf/open/floor/dirt,
+/area)
+"K" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt,
+/area)
+"L" = (
+/turf/open/floor/naturalstone,
+/area)
+"M" = (
+/obj/structure/spider/cocoon,
+/turf/open/floor/cobblerock,
+/area)
+"N" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/grass,
+/area)
+"O" = (
+/obj/structure/spider/stickyweb,
+/turf/open/floor/dirt,
+/area)
+"Q" = (
+/obj/structure/spider/nest,
+/turf/open/floor/naturalstone,
+/area)
+"R" = (
+/obj/structure/spider/stickyweb/solo,
+/turf/open/floor/dirt,
+/area)
+"T" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt,
+/area)
+"V" = (
+/obj/item/grown/log/tree/stick,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/grass,
+/area)
+"W" = (
+/turf/open/floor/grass,
+/area)
+"Y" = (
+/turf/closed/mineral/bedrock,
+/area)
+
+(1,1,1) = {"
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+"}
+(2,1,1) = {"
+Y
+Y
+Y
+B
+g
+H
+Y
+Y
+O
+m
+a
+W
+g
+f
+Y
+"}
+(3,1,1) = {"
+Y
+Y
+Q
+L
+N
+V
+O
+Y
+Y
+N
+N
+J
+O
+O
+Y
+"}
+(4,1,1) = {"
+Y
+H
+N
+d
+Y
+r
+O
+O
+Y
+Y
+O
+O
+Y
+Y
+Y
+"}
+(5,1,1) = {"
+Y
+Y
+g
+B
+Y
+Y
+O
+O
+Y
+r
+O
+Y
+Y
+E
+Y
+"}
+(6,1,1) = {"
+Y
+Y
+Y
+O
+R
+Y
+E
+b
+Y
+t
+T
+Y
+C
+D
+Y
+"}
+(7,1,1) = {"
+Y
+Y
+Y
+Y
+Y
+Y
+I
+D
+Y
+p
+k
+i
+i
+g
+Y
+"}
+(8,1,1) = {"
+Y
+Y
+Y
+O
+H
+i
+C
+e
+e
+l
+D
+i
+g
+h
+Y
+"}
+(9,1,1) = {"
+Y
+Y
+R
+O
+r
+i
+I
+p
+Y
+Y
+Y
+Y
+R
+T
+Y
+"}
+(10,1,1) = {"
+Y
+Y
+g
+V
+Y
+O
+O
+p
+t
+p
+p
+Y
+Y
+T
+Y
+"}
+(11,1,1) = {"
+Y
+Y
+Y
+Y
+Y
+K
+T
+Y
+Y
+p
+p
+Y
+Y
+Y
+Y
+"}
+(12,1,1) = {"
+Y
+Y
+Y
+Y
+O
+j
+R
+Y
+x
+H
+p
+Y
+Y
+M
+Y
+"}
+(13,1,1) = {"
+Y
+N
+c
+l
+p
+Y
+Y
+Y
+N
+V
+a
+r
+t
+p
+Y
+"}
+(14,1,1) = {"
+Y
+Y
+N
+V
+Y
+Y
+O
+O
+f
+g
+g
+z
+O
+O
+Y
+"}
+(15,1,1) = {"
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+Y
+"}

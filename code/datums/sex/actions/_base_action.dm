@@ -480,6 +480,10 @@
 /datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE) //must_flip is for handling partner's message
 	return
 
+/// Returns the reagent container an ORGASM_LOCATION_CONTAINER climax should be routed into, or null. Overridden by collect-fluid actions.
+/datum/sex_action/proc/get_climax_container(mob/living/user, mob/living/target, mob/living/action_initiator, mob/living/action_target, mob/living/action_performer)
+	return null
+
 /datum/sex_action/proc/check_sex_lock(mob/locked, organ_slot, obj/item/item, obj/item/storage_item)
 	if(!organ_slot && !item)
 		return FALSE

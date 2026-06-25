@@ -253,7 +253,8 @@
 					do_attack_animation(M, visual_effect_icon = ATTACK_EFFECT_KICK, used_item = FALSE, atom_bounce = TRUE)
 					playsound(src, pick(PUNCHWOOSH), 100, FALSE, -1)
 
-					sleep(src.used_intent.swingdelay)
+					if(!do_swing_windup(src.used_intent))
+						return
 					if(QDELETED(src) || QDELETED(M))
 						return
 					if(!M.Adjacent(src))

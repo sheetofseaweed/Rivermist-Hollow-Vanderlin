@@ -5,7 +5,7 @@
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	blade_dulling = DULLING_CUT
 	max_integrity = 200
-	integrity_failure = 0.1
+	integrity_failure = ARMOR_INTEG_FAILURE
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 
 	//Here we have salvage vars!
@@ -626,15 +626,16 @@ BLIND     // can't see anything
 
 	var/text
 	var/sound
+	var/armor_name = capitalize(name)
 
 	if(ratio <= 0.75 && ratio_old > 0.75)
-		text = "Armor <br><font color = '#8aaa4d'>marred</font>"
+		text = "[armor_name]<br><font color = '#8aaa4d'>marred</font>"
 		sound = pick_damage_sound(1)
 	if(ratio <= 0.5 && ratio_old > 0.5)
-		text = "Armor <br><font color = '#d4d36c'>damaged</font>"
+		text = "[armor_name]<br><font color = '#d4d36c'>damaged</font>"
 		sound = pick_damage_sound(2)
 	if(ratio <= 0.25 && ratio_old > 0.25)
-		text = "Armor <br><font color = '#a8705a'>sundered</font>"
+		text = "[armor_name]<br><font color = '#a8705a'>sundered</font>"
 		sound = pick_damage_sound(3)
 
 	if(sound)

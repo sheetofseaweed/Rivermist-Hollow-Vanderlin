@@ -62,9 +62,11 @@
 //Keep this sorted alphabetically
 
 // BEGIN_INCLUDE
+#include "ai_combat_flow.dm"
 #include "ai_idle_detection.dm"
 #include "alchemy_medicine.dm"
 #include "anchored_mobs.dm"
+#include "armor_damage.dm"
 #include "belly_fullness.dm"
 #include "bellyriding.dm"
 #include "blueprint_mode.dm"
@@ -78,10 +80,12 @@
 #include "craftable_turfs.dm"
 #include "create_and_destroy.dm"
 #include "defeat_system.dm"
+#include "defense_cooldowns.dm"
 #include "dye_bin.dm"
 #include "faction_supply_packs.dm"
 #include "fall_damage.dm"
 #include "focus_only_tests.dm"
+#include "guard_deflect.dm"
 #include "hostile_ai_grab.dm"
 #include "leeches.dm"
 #include "load_map_security.dm"
@@ -117,10 +121,13 @@
 #include "spell_shapeshift.dm"
 #include "subsystem_init.dm"
 #include "surgeries.dm"
+#include "swingdelay.dm"
+#include "tempo.dm"
 #include "thermal_vision_sight.dm"
 #include "timer_sanity.dm"
 #include "unit_test.dm"
 #include "visible_message_fov.dm"
+#include "weapon_bind.dm"
 #include "weapon_icons.dm"
 // END_INCLUDE
 

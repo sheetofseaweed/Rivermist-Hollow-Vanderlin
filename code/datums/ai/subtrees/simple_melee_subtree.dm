@@ -3,6 +3,12 @@
 	/// Is this the last thing we do? (if we set a movement target, this will usually be yes)
 	var/end_planning = TRUE
 
+/datum/ai_behavior/basic_melee_attack/agile
+	sidesteps_after = TRUE
+
+/datum/ai_planning_subtree/basic_melee_attack_subtree/agile
+	melee_attack_behavior = /datum/ai_behavior/basic_melee_attack/agile
+
 /datum/ai_planning_subtree/basic_melee_attack_subtree/SelectBehaviors(datum/ai_controller/controller, delta_time)
 	. = ..()
 	var/atom/target = controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET]

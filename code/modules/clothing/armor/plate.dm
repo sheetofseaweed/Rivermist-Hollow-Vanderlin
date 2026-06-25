@@ -17,7 +17,7 @@
 	armor = ARMOR_PLATE
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS //Has shoulder guards, and nothing else to suggest leg protection
 	prevent_crits = ALL_EXCEPT_BLUNT
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	stand_speed_reduction = 1.2
 
 /obj/item/clothing/armor/plate/Initialize()
@@ -33,7 +33,7 @@
 	melting_material = /datum/material/iron
 	sellprice = VALUE_IRON_ARMOR
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_PLATE_IRON
 
 //................ Full Plate Armor ............... //
 /obj/item/clothing/armor/plate/full
@@ -59,7 +59,7 @@
 	melting_material = /datum/material/iron
 
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_PLATE_IRON
 	item_weight = 17 KILOGRAMS
 
 //................ Rusted Half-plate ............... //
@@ -75,7 +75,7 @@
 	melting_material = /datum/material/iron
 	sellprice = VALUE_IRON_ARMOR/2
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_CHEST_PLATE_DECREPIT
 	item_weight = 8.75 KILOGRAMS
 
 
@@ -94,6 +94,7 @@
 	item_weight = 20.45 KILOGRAMS
 	sellprice = VALUE_SILVER_ITEM * 6
 	stand_speed_reduction = 1.05
+	max_integrity = ARMOR_INT_CHEST_PLATE_BLACKSTEEL
 
 //................ Deccorated Half-plate ............... //
 
@@ -178,7 +179,7 @@
 			Favored by both the Oratorium Throni Vacui and the Aonic Silver Order. It smells of the madness of an enduring God."
 	icon_state = "ornatehalfplate"
 
-	max_integrity = 400
+	max_integrity = ARMOR_INT_CHEST_PLATE_PSYDON
 	melt_amount = 150
 	melting_material = /datum/material/silver
 	armor = ARMOR_PLATE // overall worse because of the endurance buff //Changed to Plate armor

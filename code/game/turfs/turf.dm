@@ -157,10 +157,34 @@
 	return
 
 /turf/attack_hand(mob/user)
+	if(can_lick_fluids(user)) //bite intent + empty hand: lick the puddle on this tile
+		var/datum/reagents/puddle = get_lickable_liquids()
+		if(puddle)
+			handle_fluid_lick(user, puddle, src, "the puddle", FALSE)
+			return TRUE
 	. = ..()
 	if(.)
 		return
 	user.Move_Pulled(src)
+
+/turf/attack_hand_secondary(mob/user, list/modifiers)
+	. = ..()
+	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
+		return
+	if(can_lick_fluids(user)) //bite intent + empty hand: drink the puddle on this tile
+		var/datum/reagents/puddle = get_lickable_liquids()
+		if(puddle)
+			handle_fluid_lick(user, puddle, src, "the puddle", TRUE)
+			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+
+/// Returns the reagent holder of a drinkable liquid puddle on this turf, or null.
+/turf/proc/get_lickable_liquids()
+	if(QDELETED(liquids))
+		return null
+	var/datum/reagents/holder = liquids.liquid_group?.reagents
+	if(!holder || holder.total_volume <= 0)
+		return null
+	return holder
 
 /turf/proc/multiz_turf_del(turf/T, dir)
 	SEND_SIGNAL(src, COMSIG_TURF_MULTIZ_DEL, T, dir)

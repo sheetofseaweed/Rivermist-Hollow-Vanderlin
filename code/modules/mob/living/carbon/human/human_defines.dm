@@ -173,6 +173,11 @@
 
 	fovangle = FOV_DEFAULT // our fov
 
+	/// Tempo: assoc list of attacker REF -> expiry world.time. Only populated with TRAIT_TEMPO.
+	var/list/tempo_attackers = list()
+	/// Next world.time we cull stale tempo attackers.
+	var/next_tempo_cull = 0
+
 //Checking the highest armor class worn
 //Limb armors use the second highest armor class
 /mob/living/carbon/human/proc/check_armor_class()

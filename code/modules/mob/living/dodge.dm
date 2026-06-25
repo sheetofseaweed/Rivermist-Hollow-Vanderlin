@@ -130,6 +130,7 @@
 			return FALSE
 
 		drained = max(drained, 5)
+		drained = max(drained - get_tempo_bonus(TEMPO_TAG_STAMLOSS_DODGE), 1)
 
 		if(stamina + drained >= maximum_stamina)
 			to_chat(src, span_warning("I'm too tired to dodge!"))
@@ -182,6 +183,7 @@
 		to_chat(src, span_notice("A perfectly timed dodge!"))
 
 	last_dodge = world.time
+	changeNext_def(dodgetime + DEFENSE_CD_BUILDUP) // consecutive dodges get slower (TA buildup)
 	return TRUE
 
 /**

@@ -20,14 +20,16 @@
 	reach = 2
 	clickcd = 16
 	swingdelay = 2
+	swingdelay_type = SWINGDELAY_CANCEL
 	misscost = 10
 	item_damage_type = "slash"
 
 /datum/intent/axe/chop/greataxe //Essentially a better polearm chop, this weapon is made to chop people limbs off.
-	penfactor = AP_GREATAXE_CHOP  // Same AP as the polearm CHOP
+	penfactor = AP_GREATAXE_CHOP  // PEN_MEDIUM: longsword/greataxe chop tier
 	clickcd = 16
 	reach = 2
 	swingdelay = 2
+	swingdelay_type = SWINGDELAY_CANCELSLOW
 	damfactor = 1.2
 	misscost = 15
 
@@ -36,6 +38,7 @@
 	clickcd = 18
 	reach = 2
 	swingdelay = 2.5
+	swingdelay_type = SWINGDELAY_CANCELSLOW
 	damfactor = 1.3 // Stronger
 	misscost = 18 // Costs more if you miss
 

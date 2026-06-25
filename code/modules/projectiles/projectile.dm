@@ -150,8 +150,19 @@
 	///projectile crit reduce chance since more dmg increases the crit chance it can get absurdly high, 0 for nothing.
 	var/reduce_crit_chance = 0
 
+	/// Can a clash guard deflect this projectile? Set TRUE on magic bolts for spell counterplay.
+	var/guard_deflectable = FALSE
+
 /obj/projectile/proc/handle_drop()
 	return
+
+/// Called when a guard or parry buffer deflects this projectile. Returns TRUE if handled.
+/obj/projectile/proc/on_guard_deflect(mob/living/deflector, silent = FALSE)
+	if(!silent)
+		deflector.visible_message(span_boldwarning("[deflector] deflects [src]!"))
+		playsound(deflector, 'sound/combat/clash_struck.ogg', 100, TRUE)
+	qdel(src)
+	return TRUE
 
 /obj/projectile/Initialize(mapload, ...)
 	. = ..()

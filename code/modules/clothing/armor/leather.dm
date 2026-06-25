@@ -17,7 +17,7 @@
 	armor = ARMOR_LEATHER_BAD
 	body_parts_covered = COVERAGE_TORSO
 	prevent_crits = ALL_EXCEPT_CHOP_AND_STAB
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_CHEST_LIGHT_BASE
 	salvage_result = /obj/item/natural/hide/cured
 	item_weight = 3.2 KILOGRAMS
 
@@ -29,17 +29,17 @@
 /obj/item/clothing/armor/leather/advanced
 	name = "hardened leather armor"
 	desc = "Sturdy, durable, flexible. Will keep you alive."
-	max_integrity = INTEGRITY_STANDARD + 50
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MEDIUM
 	body_parts_covered = CHEST|GROIN|VITALS|LEGS|ARMS
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
-	armor = list("blunt" = 75, "slash" = 60, "stab" = 30, "piercing" = 10, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_SUPER, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/armor/leather/masterwork
 	name = "masterwork leather armor"
 	desc = "This leather armor is a craftsmanship marvel. Made with the finest leather. Strong, nimble, reliable."
-	max_integrity = INTEGRITY_STANDARD + 100
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_CHOP) //we're adding chop here!
-	armor = list("blunt" = 100, "slash" = 70, "stab" = 40, "piercing" = 10, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/armor/leather/masterwork/Initialize()
 	. = ..()
@@ -63,7 +63,7 @@
 
 	armor = ARMOR_LEATHER_GOOD
 	body_parts_covered = COVERAGE_FULL
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	item_weight = 4.5 KILOGRAMS
 
 //................ Splint Mail ............... //
@@ -75,7 +75,7 @@
 
 	armor = ARMOR_LEATHER_GOOD
 	prevent_crits = ALL_EXCEPT_STAB
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	item_weight = 6.7 KILOGRAMS
 
 //................ Leather Vest ............... //	- has no sleeves.  - can be worn in armor OR shirt slot
@@ -302,7 +302,7 @@
 	sleeved = 'icons/roguetown/clothing/onmob/helpers/sleeves_armor.dmi'
 	armor = ARMOR_LEATHER
 	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_BLUNT, BCLASS_CHOP, BCLASS_SMASH)
-	max_integrity = 250
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MEDIUM
 
 /obj/item/clothing/armor/leather/jacket/leathercoat/black
 	name = "black leather coat"

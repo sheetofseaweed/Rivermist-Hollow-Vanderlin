@@ -6,7 +6,7 @@
 	hitsound = list('sound/combat/hits/blunt/flailhit.ogg')
 	swingdelay = 2
 	clickcd = 14
-	penfactor = 5
+	penfactor = PEN_NONE
 	reach = 2
 	misscost = 7
 	icon_state = "inlash"
@@ -17,13 +17,13 @@
 /datum/intent/whip/lash/metal
 	clickcd = 18
 	hitsound = list('sound/combat/hits/blunt/flailhit.ogg')
-	penfactor = 15
+	penfactor = PEN_LIGHT
 
 /datum/intent/whip/lash/cane
 	attack_verb = list("lashes", "canes")
 	chargetime = 20
 	no_early_release = TRUE
-	penfactor = 0
+	penfactor = PEN_NONE
 	reach = 1 //no added range
 	misscost = 10
 	icon_state = "inlash"
@@ -38,7 +38,7 @@
 	hitsound = list('sound/combat/hits/bladed/genslash (1).ogg', 'sound/combat/hits/bladed/genslash (2).ogg', 'sound/combat/hits/bladed/genslash (3).ogg')
 	clickcd = 18
 	swingdelay = 1
-	penfactor = 5
+	penfactor = PEN_NONE
 	reach = 2
 	misscost = 7
 	icon_state = "incut"
@@ -51,11 +51,10 @@
 	blade_class = BCLASS_BLUNT
 	attack_verb = list("cracks", "strikes") //something something dwarf fotresss
 	hitsound = list('sound/combat/hits/blunt/flailhit.ogg')
-	penfactor = 10
+	penfactor = PEN_LIGHT	// blunt: preserve tier (was 10 = light tier)
 	icon_state = "incrack"
 	canparry = TRUE
 	item_damage_type = "slash"
 	acc_bonus = 12
 
 /datum/intent/whip/crack/metal
-	penfactor = 20

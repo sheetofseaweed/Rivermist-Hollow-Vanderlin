@@ -306,6 +306,10 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define ORGASM_LOCATION_ONTO "onto"
 #define ORGASM_LOCATION_ORAL "oral"
 #define ORGASM_LOCATION_SELF "self"
+#define ORGASM_LOCATION_CONTAINER "container"
+
+/// Units of fluid a female climax adds into the vagina (instead of spawning a puddle); the organ's drip system leaks it out.
+#define FEMCUM_ORGASM_VOLUME 10
 
 /proc/build_sex_actions()
 	. = list()
