@@ -155,13 +155,12 @@
 
 /obj/item/plate/examine(mob/user)
 	. = ..()
-	desc = initial(desc)
 	if(dirty)
-		desc += span_boldwarning("\nThis platter is filthy... absolutely disgusting.")
+		. += span_boldwarning("This platter is filthy... absolutely disgusting.")
 	else if(cleaned)
-		desc += span_notice("\nThis platter was cleaned recently!")
+		. += span_notice("This platter was cleaned recently!")
 	else
-		desc += "\nThis platter looks properly stored and clean enough."
+		. += "This platter looks properly stored and clean enough."
 
 /obj/item/plate/clay
 	item_weight = 400 GRAMS

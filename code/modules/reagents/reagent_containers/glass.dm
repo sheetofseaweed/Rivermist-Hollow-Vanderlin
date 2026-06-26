@@ -179,14 +179,15 @@
 				else if(istype(bowl_check.reagents, /datum/reagent/consumable/soup))
 					var/datum/reagent/consumable/soup/soup_check = bowl_check.reagents
 					soup_check.taste_mult +=1
-				if(bowl_check.reagents.get_reagent_amount(/datum/reagent/water) != bowl_check.reagents.total_volume)
+				// Only count a usage once the bowl is fully emptied (this gulp finishes it), and only for actual food (not plain water).
+				if(bowl_check.reagents.total_volume <= bowl_check.amount_per_transfer_from_this && bowl_check.reagents.get_reagent_amount(/datum/reagent/water) != bowl_check.reagents.total_volume)
 					bowl_check.usages += 1
-				if(bowl_check.usages >= bowl_check.max_usages && !bowl_check.dirty)
-					bowl_check.dirty = TRUE
-					var/datum/component/particle_spewer = bowl_check.GetComponent(/datum/component/particle_spewer/sparkle)
-					if(particle_spewer)
-						qdel(particle_spewer)
-					bowl_check.update_appearance(UPDATE_OVERLAYS)
+					if(bowl_check.usages >= bowl_check.max_usages && !bowl_check.dirty)
+						bowl_check.dirty = TRUE
+						var/datum/component/particle_spewer = bowl_check.GetComponent(/datum/component/particle_spewer/sparkle)
+						if(particle_spewer)
+							qdel(particle_spewer)
+						bowl_check.update_appearance(UPDATE_OVERLAYS)
 				if(human_user.is_noble()) // egads we're an unmannered SLOB
 					human_user.add_stress(/datum/stress_event/noble_bad_manners)
 					if(prob(25))
