@@ -306,6 +306,10 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	var/icon_angle = 50 // most of our icons are angled
 	///the processing quality we have
 	var/recipe_quality = 1
+	/// Named quality tier from the craft quality system (one of QUALITY_LEVEL_*),
+	/// stamped by apply_quality_to_item. Drives the examine-preview slot frame color.
+	/// Null = never went through the quality system (plain/spawned item).
+	var/examine_quality_tier = null
 
 	// Lock related
 
