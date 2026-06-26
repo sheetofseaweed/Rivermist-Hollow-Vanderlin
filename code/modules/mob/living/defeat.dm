@@ -174,6 +174,19 @@
 		return TRUE
 	return FALSE
 
+/// This fork's actual lethal conditions, so the defeat net catches every death path - not just the
+/// health floor (tox/oxy/face-burn), but also bleed-out and brain death (how brute/burn really kill).
+/mob/living/proc/defeat_is_near_death()
+	if(health <= HEALTH_THRESHOLD_DEAD)
+		return TRUE
+	if(blood_volume <= BLOOD_VOLUME_SURVIVE && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
+		return TRUE
+	if(iscarbon(src))
+		var/mob/living/carbon/carbon_src = src
+		if(carbon_src.getOrganLoss(ORGAN_SLOT_BRAIN) >= BRAIN_DAMAGE_DEATH)
+			return TRUE
+	return FALSE
+
 /// Damage threshold for defeat after fragility quirks (e.g. Frail, Atrophy) are applied.
 /mob/living/proc/get_effective_defeat_threshold()
 	var/threshold = defeat_damage_threshold || DEFEAT_DAMAGE_THRESHOLD_DEFAULT
@@ -211,9 +224,10 @@
 	for(var/datum/status_effect/debuff/defeat/existing_trauma as anything in status_effects)
 		if(existing_trauma.id != status_id)
 			continue
-		if(defeat_severity_rank(existing_trauma.severity) >= new_rank)
-			existing_trauma.refresh(src, null, existing_trauma.severity)
-			return existing_trauma
+		// Already carrying this trauma untreated -> it festers and escalates one stage past the worse
+		// of the two, capped at severe. Keep getting defeated without treatment and it only worsens.
+		var/escalated_rank = min(max(defeat_severity_rank(existing_trauma.severity), new_rank) + 1, defeat_severity_rank(DEFEAT_SEVERITY_SEVERE))
+		severity = defeat_severity_from_rank(escalated_rank)
 		qdel(existing_trauma)
 		break
 	return apply_status_effect(debuff_type, null, severity)
@@ -615,7 +629,8 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 // --- Captor side: faction mobs dragging defeated prey to their lair ---
 
 /// Which lair this mob hauls defeated prey to. Null = this mob cannot kidnap.
-/mob/living/var/kidnap_lair_tag
+/mob/living
+	var/kidnap_lair_tag
 
 /// Can this mob drag the given freshly-defeated victim back to its lair right now?
 /mob/living/proc/can_kidnap_defeated_prey(mob/living/victim)
@@ -675,6 +690,15 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 
 /mob/living/simple_animal/hostile/retaliate/wolf
 	kidnap_lair_tag = "wolfden_lair"
+
+/mob/living/carbon/human/species/human/northern/highwayman
+	kidnap_lair_tag = "bandit_lair"
+
+/mob/living/carbon/human/species/human/northern/thief
+	kidnap_lair_tag = "bandit_lair"
+
+/mob/living/carbon/human/species/human/northern/searaider
+	kidnap_lair_tag = "bandit_lair"
 
 // Friendly summoned/tamed wolves never kidnap.
 /mob/living/simple_animal/hostile/retaliate/wolf/companion
@@ -968,6 +992,23 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 			return 3
 	return 2
 
+/proc/defeat_severity_from_rank(rank)
+	switch(rank)
+		if(1)
+			return DEFEAT_SEVERITY_LIGHT
+		if(3)
+			return DEFEAT_SEVERITY_SEVERE
+	return DEFEAT_SEVERITY_NORMAL
+
+/// Player-facing severity word for alerts/UI.
+/proc/defeat_severity_label(severity)
+	switch(severity)
+		if(DEFEAT_SEVERITY_LIGHT)
+			return "Light"
+		if(DEFEAT_SEVERITY_SEVERE)
+			return "Severe"
+	return "Moderate"
+
 /datum/defeat_snapshot/proc/capture_worst_injury(mob/living/carbon/target)
 	for(var/datum/injury/injury as anything in target.all_injuries)
 		if(!injury || injury.damage < worst_injury_damage)
@@ -979,3 +1020,27 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 		if(bodypart)
 			worst_body_zone = bodypart.body_zone
 			worst_bodypart_name = bodypart.name
+
+/obj/effect/landmark/kidnap/escape/bandit
+	lair_tag = "bandit_lair"
+
+/obj/effect/landmark/kidnap/entrance/bandit
+	lair_tag = "bandit_lair"
+
+/obj/effect/landmark/kidnap/escape/greenskin
+	lair_tag = "greenskinlair"
+
+/obj/effect/landmark/kidnap/entrance/greenskin
+	lair_tag = "greenskinlair"
+
+/obj/effect/landmark/kidnap/escape/wolfden
+	lair_tag = "wolfden_lair"
+
+/obj/effect/landmark/kidnap/entrance/wolfden
+	lair_tag = "wolfden_lair"
+
+/obj/effect/landmark/kidnap/escape/bandit
+	lair_tag = "bandit_lair"
+
+/obj/effect/landmark/kidnap/entrance/bandit
+	lair_tag = "bandit_lair"

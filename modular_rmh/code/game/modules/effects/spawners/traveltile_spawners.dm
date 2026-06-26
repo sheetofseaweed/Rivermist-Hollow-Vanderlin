@@ -36,24 +36,24 @@
 /obj/effect/spawner/traveltile_spawner/rmh/vertical/werewolf
 	travel_tile = /obj/structure/fluff/traveltile/rmh_cc/werewolf
 
-//BLISSAR BASE
-/obj/structure/fluff/traveltile/rmh_cc/exit_blissarbase
-	aportalid = "blissarbasein"
-	aportalgoesto = "blissarbaseexit"
+//BLISSARA BASE
+/obj/structure/fluff/traveltile/rmh_cc/exit_blissarabase
+	aportalid = "blissarabasein"
+	aportalgoesto = "blissarabaseexit"
 
-/obj/structure/fluff/traveltile/rmh_cc/blissarbase
-	aportalid = "blissarbaseexit"
-	aportalgoesto = "blissarbasein"
-	required_trait = TRAIT_BLISSARBASE
+/obj/structure/fluff/traveltile/rmh_cc/blissarabase
+	aportalid = "blissarabaseexit"
+	aportalgoesto = "blissarabasein"
+	required_trait = TRAIT_BLISSARABASE
 	can_gain_with_sight = TRUE
 	can_gain_by_walking = TRUE
 	check_other_side = TRUE
 
-/obj/effect/spawner/traveltile_spawner/rmh/horizontal/blissarbase
-	travel_tile = /obj/structure/fluff/traveltile/rmh_cc/blissarbase
+/obj/effect/spawner/traveltile_spawner/rmh/horizontal/blissarabase
+	travel_tile = /obj/structure/fluff/traveltile/rmh_cc/blissarabase
 
-/obj/effect/spawner/traveltile_spawner/rmh/vertical/blissarbase
-	travel_tile = /obj/structure/fluff/traveltile/rmh_cc/blissarbase
+/obj/effect/spawner/traveltile_spawner/rmh/vertical/blissarabase
+	travel_tile = /obj/structure/fluff/traveltile/rmh_cc/blissarabase
 
 //GNOLLS HUB
 /obj/structure/fluff/traveltile/rmh_cc/exit_gnollhub

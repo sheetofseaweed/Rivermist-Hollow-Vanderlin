@@ -4,6 +4,8 @@
 	var/shock_defeat_started_at = 0
 	/// Last warning tick while pain shock is approaching defeat.
 	var/shock_warning_last_at = 0
+	/// Last warning tick while damage/blood loss is approaching defeat.
+	var/damage_warning_last_at = 0
 	/// Valid hostile climax events accumulated toward horny defeat.
 	var/horny_defeat_climax_count = 0
 	/// Climaxes needed for horny defeat this encounter. Rolled lazily (rand 10-20) on the first
@@ -43,10 +45,14 @@
 		return carbon_parent.enter_defeat(DEFEAT_REASON_HAZARD, DEFEAT_SEVERITY_SEVERE)
 
 	var/selected_threshold = carbon_parent.get_effective_defeat_threshold()
-	if(max(carbon_parent.getBruteLoss(), carbon_parent.getFireLoss(), carbon_parent.getToxLoss(), carbon_parent.getOxyLoss(), carbon_parent.getCloneLoss()) >= selected_threshold)
+	// Total damage across all pools (not the single biggest) - predictable: you fall at roughly
+	// maxHealth - threshold, regardless of how the damage is split across brute/burn/tox/etc.
+	var/total_damage = carbon_parent.getBruteLoss() + carbon_parent.getFireLoss() + carbon_parent.getToxLoss() + carbon_parent.getOxyLoss() + carbon_parent.getCloneLoss()
+	maybe_warn_damage_defeat(carbon_parent, total_damage, selected_threshold)
+	if(total_damage >= selected_threshold)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
 
-	if(carbon_parent.health <= HEALTH_THRESHOLD_DEAD)
+	if(carbon_parent.defeat_is_near_death())
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
 
 	var/current_shock_stage = carbon_parent.getShockStage()
@@ -81,6 +87,20 @@
 		return FALSE
 	shock_warning_last_at = world.time
 	to_chat(carbon_parent, span_warning("Pain is pulling you toward defeat. You need help soon."))
+	carbon_parent.flash_fullscreen("redflash1")
+	return TRUE
+
+/// Warn the player as their wounds (or blood loss) approach the point of defeat, throttled.
+/datum/component/defeat_monitor/proc/maybe_warn_damage_defeat(mob/living/carbon/carbon_parent, total_damage, threshold)
+	var/nearly_beaten = (threshold > 0 && total_damage >= threshold * DEFEAT_DAMAGE_WARNING_FRACTION && total_damage < threshold)
+	var/bleeding_out = (carbon_parent.blood_volume <= BLOOD_VOLUME_BAD && carbon_parent.blood_volume > BLOOD_VOLUME_SURVIVE && !HAS_TRAIT(carbon_parent, TRAIT_BLOODLOSS_IMMUNE))
+	if(!nearly_beaten && !bleeding_out)
+		damage_warning_last_at = 0
+		return FALSE
+	if(damage_warning_last_at && world.time - damage_warning_last_at < DEFEAT_SHOCK_WARNING_COOLDOWN)
+		return FALSE
+	damage_warning_last_at = world.time
+	to_chat(carbon_parent, span_warning(bleeding_out ? "You're bleeding badly - stay on your feet or you'll fall." : "You're battered to the brink - one more blow and you'll go down."))
 	carbon_parent.flash_fullscreen("redflash1")
 	return TRUE
 

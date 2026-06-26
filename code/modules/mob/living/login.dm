@@ -4,6 +4,9 @@
 	//Mind updates
 	sync_mind()
 	refresh_erp_preference_cache()
+	// Prefs are applied to the body BEFORE the client/mind is attached, so the spawn-time
+	// ensure_defeat_monitor() bailed on the eligibility check. Attach it now that we're in control.
+	ensure_defeat_monitor()
 	mind.show_memory(src, FALSE)
 
 	update_a_intents()

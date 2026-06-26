@@ -113,6 +113,33 @@
 	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.tox_loss, 200, "The snapshot should retain the threshold-crossing damage.")
 	TEST_ASSERT_EQUAL(test_human.getToxLoss(), 0, "Live toxin damage should be stabilized after defeat.")
 
+/datum/unit_test/defeat_damage_threshold_uses_total_damage
+
+/datum/unit_test/defeat_damage_threshold_uses_total_damage/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_system_ai_opt_in = TRUE
+	test_human.defeat_damage_threshold = 150
+	var/datum/component/defeat_monitor/monitor = test_human.AddComponent(/datum/component/defeat_monitor)
+
+	// Neither pool reaches 150 on its own (so the old max-pool rule would NOT fire), but together
+	// they total 160 - the threshold is now total damage, so defeat should trigger.
+	test_human.setBruteLoss(100, FALSE, TRUE)
+	test_human.setFireLoss(60, FALSE, TRUE)
+	test_human.updatehealth()
+	monitor.check_defeat_triggers()
+	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Combined damage across pools should trigger defeat even when no single pool hits the threshold.")
+	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.reason, DEFEAT_REASON_DAMAGE, "Total-damage defeat should be recorded as a damage defeat, not death.")
+
+/datum/unit_test/defeat_near_death_covers_blood_loss
+
+/datum/unit_test/defeat_near_death_covers_blood_loss/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	TEST_ASSERT(!test_human.defeat_is_near_death(), "A healthy mob should not read as near death.")
+	test_human.blood_volume = BLOOD_VOLUME_SURVIVE
+	TEST_ASSERT(test_human.defeat_is_near_death(), "Bleeding to the survive floor should read as near death (the real brute/burn death path).")
+	test_human.blood_volume = BLOOD_VOLUME_NORMAL
+	TEST_ASSERT(!test_human.defeat_is_near_death(), "Restored blood should clear the near-death state.")
+
 /datum/unit_test/defeat_shock_sustain_and_hard_stage
 
 /datum/unit_test/defeat_shock_sustain_and_hard_stage/Run()
@@ -495,6 +522,27 @@
 	var/datum/status_effect/debuff/defeat/pain/pain_trauma = patient.has_status_effect(/datum/status_effect/debuff/defeat/pain)
 	TEST_ASSERT_EQUAL(pain_trauma.severity, DEFEAT_SEVERITY_SEVERE, "Repeated lighter trauma should not downgrade an existing severe defeat trauma.")
 
+/datum/unit_test/defeat_trauma_escalates_on_repeat_defeat
+
+/datum/unit_test/defeat_trauma_escalates_on_repeat_defeat/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/pain, DEFEAT_SEVERITY_LIGHT)
+	var/datum/status_effect/debuff/defeat/first = patient.has_status_effect(/datum/status_effect/debuff/defeat/pain)
+	TEST_ASSERT_EQUAL(first.severity, DEFEAT_SEVERITY_LIGHT, "A first defeat should apply at the rolled severity.")
+
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/pain, DEFEAT_SEVERITY_LIGHT)
+	var/datum/status_effect/debuff/defeat/second = patient.has_status_effect(/datum/status_effect/debuff/defeat/pain)
+	TEST_ASSERT_EQUAL(second.severity, DEFEAT_SEVERITY_NORMAL, "An untreated repeat defeat should escalate one stage (light -> moderate).")
+
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/pain, DEFEAT_SEVERITY_LIGHT)
+	var/datum/status_effect/debuff/defeat/third = patient.has_status_effect(/datum/status_effect/debuff/defeat/pain)
+	TEST_ASSERT_EQUAL(third.severity, DEFEAT_SEVERITY_SEVERE, "A third untreated defeat should escalate to severe.")
+
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/pain, DEFEAT_SEVERITY_LIGHT)
+	var/datum/status_effect/debuff/defeat/fourth = patient.has_status_effect(/datum/status_effect/debuff/defeat/pain)
+	TEST_ASSERT_EQUAL(fourth.severity, DEFEAT_SEVERITY_SEVERE, "Severe trauma should cap and not overflow on further defeats.")
+
 /datum/unit_test/defeat_horny_requires_valid_hostile_source
 
 /datum/unit_test/defeat_horny_requires_valid_hostile_source/Run()
@@ -662,15 +710,16 @@
 	leg_patient.apply_defeat_snapshot_debuffs()
 	TEST_ASSERT_NOTNULL(leg_patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/leg), "Leg-zone injuries should produce leg trauma.")
 
-/datum/unit_test/defeat_vision_clamp_safe_without_client
+/datum/unit_test/defeat_knockout_applies_and_clears_cleanly
 
-/datum/unit_test/defeat_vision_clamp_safe_without_client/Run()
+/datum/unit_test/defeat_knockout_applies_and_clears_cleanly/Run()
 	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
 	var/datum/status_effect/defeat_knockout/knockout = test_human.apply_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT_NOTNULL(knockout, "Knockout should apply.")
-	TEST_ASSERT(!knockout.defeat_view_clamped, "A clientless body has no viewport, so the vision clamp should stay inactive.")
+	TEST_ASSERT(HAS_TRAIT(test_human, TRAIT_PACIFISM), "Knockout should pacify the victim.")
 	test_human.remove_status_effect(/datum/status_effect/defeat_knockout)
-	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Knockout should clear without runtime even with no view clamped.")
+	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Knockout should clear without runtime.")
+	TEST_ASSERT(!HAS_TRAIT(test_human, TRAIT_PACIFISM), "Clearing knockout should drop its pacifism.")
 
 /datum/unit_test/defeat_horny_debuff_variants_are_valid
 
@@ -898,6 +947,24 @@
 
 	monitor_two.on_climax(victim_two, null, victim_two, layperson, layperson)
 	TEST_ASSERT_NOTNULL(victim_two.has_status_effect(/datum/status_effect/defeat_knockout), "A non-holy partner's climax should not free the victim.")
+
+/datum/unit_test/defeat_monitor_attaches_once_controlled
+
+/datum/unit_test/defeat_monitor_attaches_once_controlled/Run()
+	var/mob/living/carbon/human/player = allocate(/mob/living/carbon/human)
+	player.defeat_mode = DEFEAT_MODE_KO_RUNE
+	// Mirrors apply_prefs_to running before the client/mind is attached: not yet eligible -> no monitor.
+	player.ensure_defeat_monitor()
+	TEST_ASSERT_NULL(player.GetComponent(/datum/component/defeat_monitor), "Without a client or mind, the monitor must not attach (the spawn-time pref-cache case).")
+
+	// Once the player actually controls the body (as at Login), it must attach.
+	player.mind = allocate(/datum/mind, "defeat-monitor-attach-test")
+	player.mind.current = player
+	player.ensure_defeat_monitor()
+	TEST_ASSERT_NOTNULL(player.GetComponent(/datum/component/defeat_monitor), "With a mind present, ensure_defeat_monitor must attach the defeat monitor.")
+
+	player.mind.current = null
+	player.mind = null
 
 /datum/unit_test/defeat_pet_rescues_downed_ally
 

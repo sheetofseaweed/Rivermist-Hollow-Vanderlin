@@ -23,8 +23,6 @@
 #define DEFEAT_RUNE_BLOOD_FRACTION_SENTINEL -1
 /// Fraction of current blood drawn as the blood tax when spending the final charge.
 #define DEFEAT_RUNE_LAST_CHARGE_BLOOD_FRACTION (2/3)
-/// View size (tiles across, so ~4 tile radius) a knocked-out victim is clamped to while down.
-#define DEFEAT_KNOCKOUT_VIEW_SIZE 9
 
 // --- Kidnapping (section 6) ---
 /// Trait source for the pacifism held over a captive after their knockout is released.
@@ -60,5 +58,7 @@
 #define DEFEAT_SHOCK_HARD_STAGE SHOCK_STAGE_8
 #define DEFEAT_SHOCK_SUSTAIN_DURATION (3 SECONDS)
 #define DEFEAT_SHOCK_WARNING_COOLDOWN (10 SECONDS)
+/// Warn the player once total damage reaches this fraction of their defeat threshold.
+#define DEFEAT_DAMAGE_WARNING_FRACTION 0.7
 #define DEFEAT_ACTIVE_HARM_WINDOW (3 SECONDS)
 #define DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD 10

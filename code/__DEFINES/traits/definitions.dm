@@ -615,7 +615,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 // RMH Hubs
 #define TRAIT_VMANSION			"Vampire Mansion"
 #define TRAIT_WEREWOLFDEN		"Werewolf Den"
-#define TRAIT_BLISSARBASE		"Blissar Base"
+#define TRAIT_BLISSARABASE		"Blissara Base"
 #define TRAIT_GNOLLHUB			"Gnolls Hub"
 #define TRAIT_AVERNUS			"Avernus"
 #define TRAIT_HAG				"Hag Tree"

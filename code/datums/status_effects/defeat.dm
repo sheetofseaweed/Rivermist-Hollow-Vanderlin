@@ -3,11 +3,6 @@
 	duration = STATUS_EFFECT_PERMANENT
 	alert_type = /atom/movable/screen/alert/status_effect/defeat_knockout
 	remove_on_fullheal = FALSE
-	/// TRUE while we are actively holding the victim's view narrowed (so we know to restore it).
-	var/defeat_view_clamped = FALSE
-	/// The view_size offsets the victim had before we clamped them, restored on wake.
-	var/defeat_saved_view_width = 0
-	var/defeat_saved_view_height = 0
 
 /datum/status_effect/defeat_knockout/on_apply()
 	. = ..()
@@ -21,17 +16,19 @@
 	ADD_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
 	ADD_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
 	owner.cmode = FALSE
-	owner.overlay_fullscreen("defeat", /atom/movable/screen/fullscreen/defeat)
-	apply_defeat_vision_clamp()
-	to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but you can barely see past arm's reach."))
+	// Severity is required: overlay_fullscreen builds the icon_state as "[base][severity]", and only the
+	// numbered "oxydamageoverlay[4-10]" states exist. 8 = heavy tunnel vision, see only right around you.
+	owner.overlay_fullscreen("defeat", /atom/movable/screen/fullscreen/defeat, 8)
+	to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."))
 	to_chat(owner, span_notice("Another can bring you back: a curative potion fed to you, a healer's or holy hand, or other aid - but never your own doing. If the rune is yours to call, it may answer too."))
 	SEND_SIGNAL(owner, COMSIG_LIVING_DEFEATED)
+	owner.visible_message(span_userdanger("[owner] collapses to the ground, defeated!"))
+	owner.balloon_alert_to_viewers("defeated!")
 
 /datum/status_effect/defeat_knockout/on_remove()
 	if(!owner || QDELETED(owner))
 		return
 	owner.clear_fullscreen("defeat", FALSE)
-	remove_defeat_vision_clamp()
 	to_chat(owner, span_notice("You can move again, but the defeat still clings to you."))
 	if(ishuman(owner))
 		var/mob/living/carbon/human/human_owner = owner
@@ -46,40 +43,23 @@
 	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
 	return ..()
 
-/// Narrows the victim's view to a tight radius while they are down (design section 2.2).
-/// No-ops for clientless bodies (e.g. opted-in AI) since they have no viewport.
-/datum/status_effect/defeat_knockout/proc/apply_defeat_vision_clamp()
-	if(defeat_view_clamped)
-		return
-	var/client/victim_client = owner?.client
-	if(!victim_client || !victim_client.view_size)
-		return
-	var/list/default_size = getviewsize(victim_client.view_size.default)
-	defeat_saved_view_width = victim_client.view_size.width
-	defeat_saved_view_height = victim_client.view_size.height
-	defeat_view_clamped = TRUE
-	victim_client.view_size.setBoth(DEFEAT_KNOCKOUT_VIEW_SIZE - default_size[1], DEFEAT_KNOCKOUT_VIEW_SIZE - default_size[2])
-
-/// Restores whatever view offsets the victim had before we clamped them.
-/datum/status_effect/defeat_knockout/proc/remove_defeat_vision_clamp()
-	if(!defeat_view_clamped)
-		return
-	defeat_view_clamped = FALSE
-	var/client/victim_client = owner?.client
-	if(!victim_client || !victim_client.view_size)
-		return
-	victim_client.view_size.setBoth(defeat_saved_view_width, defeat_saved_view_height)
-
 /atom/movable/screen/alert/status_effect/defeat_knockout
 	name = "Defeated"
 	desc = "You are defeated. You can speak, emote, call for help, or call the rune if available."
 	icon_state = "paralysis"
 
+/atom/movable/screen/alert/status_effect/debuff/defeat_trauma
+	name = "Defeat Trauma"
+	desc = "Lingering harm from a recent defeat. A town healer, priest, or potent remedy can mend it - and it festers worse each time you are defeated untreated."
+	icon_state = "muscles"
+
 /datum/status_effect/debuff/defeat
 	id = "defeat_trauma"
 	duration = 30 MINUTES
 	status_type = STATUS_EFFECT_REPLACE
-	alert_type = null
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma
+	/// Player-facing label shown on the status alert; subtypes override per injury.
+	var/trauma_label = "Defeat Trauma"
 	var/severity = DEFEAT_SEVERITY_NORMAL
 	var/next_feedback_at = 0
 
@@ -94,7 +74,9 @@
 	var/penalty = defeat_penalty_for_severity(severity)
 	if(penalty)
 		effectedstats = defeat_stat_penalties(penalty)
-	return ..()
+	. = ..()
+	if(. && linked_alert)
+		linked_alert.name = "[trauma_label] ([defeat_severity_label(severity)])"
 
 /datum/status_effect/debuff/defeat/tick()
 	if(!owner || world.time < next_feedback_at)
@@ -156,6 +138,7 @@
 
 /datum/status_effect/debuff/defeat/physical
 	id = "defeat_physical_trauma"
+	trauma_label = "Battered Body"
 
 /datum/status_effect/debuff/defeat/physical/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -2, STAT_SPEED = -1)
@@ -168,6 +151,7 @@
 
 /datum/status_effect/debuff/defeat/physical/wound
 	id = "defeat_wound_trauma"
+	trauma_label = "Open Wounds"
 
 /datum/status_effect/debuff/defeat/physical/wound/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_SPEED = -2, STAT_STRENGTH = -1)
@@ -180,6 +164,7 @@
 
 /datum/status_effect/debuff/defeat/physical/burn
 	id = "defeat_burn_trauma"
+	trauma_label = "Searing Burns"
 
 /datum/status_effect/debuff/defeat/physical/burn/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_CONSTITUTION = -2)
@@ -192,6 +177,7 @@
 
 /datum/status_effect/debuff/defeat/physical/body
 	id = "defeat_body_trauma"
+	trauma_label = "Internal Bruising"
 
 // Internal Bruising (Chest Injury) - section 4 of the spec.
 /datum/status_effect/debuff/defeat/physical/body/defeat_base_profile()
@@ -205,6 +191,7 @@
 
 /datum/status_effect/debuff/defeat/physical/concussion
 	id = "defeat_concussion_trauma"
+	trauma_label = "Concussion"
 
 // Concussion (Head Trauma) - section 4 of the spec.
 /datum/status_effect/debuff/defeat/physical/concussion/defeat_base_profile()
@@ -219,6 +206,7 @@
 // Sprained/Torn Knee or Ankle (Leg Injury) - random falls, can't jump. Section 4.
 /datum/status_effect/debuff/defeat/physical/leg
 	id = "defeat_leg_trauma"
+	trauma_label = "Wrenched Leg"
 
 /datum/status_effect/debuff/defeat/physical/leg/defeat_base_profile()
 	return list(STAT_ENDURANCE = -3, STAT_STRENGTH = -2, STAT_SPEED = -4, STAT_FORTUNE = -1)
@@ -242,6 +230,7 @@
 // Dislocated Shoulder or Fractured Arm (Arm Injury) - random item drops. Section 4.
 /datum/status_effect/debuff/defeat/physical/arm
 	id = "defeat_arm_trauma"
+	trauma_label = "Wrenched Arm"
 
 /datum/status_effect/debuff/defeat/physical/arm/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -4, STAT_PERCEPTION = -1, STAT_SPEED = -2)
@@ -256,6 +245,7 @@
 
 /datum/status_effect/debuff/defeat/pain
 	id = "defeat_pain_trauma"
+	trauma_label = "Lingering Pain"
 
 /datum/status_effect/debuff/defeat/pain/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_PERCEPTION = -2)
@@ -268,6 +258,7 @@
 
 /datum/status_effect/debuff/defeat/rune
 	id = "defeat_rune_trauma"
+	trauma_label = "Mana Backlash"
 
 // Mana-Backlash Exhaustion - the toll of being yanked back by the rune. Section 4.
 /datum/status_effect/debuff/defeat/rune/defeat_base_profile()
@@ -287,6 +278,7 @@
 
 /datum/status_effect/debuff/defeat/horny
 	id = "defeat_horny_trauma"
+	trauma_label = "Lewd Exhaustion"
 
 /datum/status_effect/debuff/defeat/horny/defeat_base_profile()
 	return list(STAT_PERCEPTION = -2, STAT_FORTUNE = -2)
