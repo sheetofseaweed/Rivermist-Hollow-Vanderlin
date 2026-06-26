@@ -22,7 +22,7 @@
 
 /datum/intent/mace/strike/shovel
 	hitsound = list('sound/combat/hits/blunt/shovel_hit.ogg', 'sound/combat/hits/blunt/shovel_hit2.ogg', 'sound/combat/hits/blunt/shovel_hit3.ogg')
-	penfactor = 10
+	penfactor = PEN_LIGHT
 	icon_state = "instrike"
 
 // MACE SMASH INTENTS //
@@ -35,6 +35,7 @@
 	damfactor = 1.1
 	clickcd = 14
 	swingdelay = 3
+	swingdelay_type = SWINGDELAY_CANCEL
 	icon_state = "insmash"
 	misscost = 10
 	item_damage_type = "blunt"
@@ -48,6 +49,7 @@
 	damfactor = 1.2
 	clickcd = 16
 	swingdelay = 3
+	swingdelay_type = SWINGDELAY_CANCELSLOW
 	misscost = 22
 	warnie = "mobwarning"
 
@@ -61,7 +63,7 @@
 	clickcd = 16
 	warnie = "mobwarning"
 	hitsound = list('sound/combat/hits/bladed/genstab (1).ogg', 'sound/combat/hits/bladed/genstab (2).ogg', 'sound/combat/hits/bladed/genstab (3).ogg')
-	penfactor = 40
+	penfactor = PEN_HEAVY	// spiked mace thrust (TA: heavy tier)
 	swingdelay = 1
 	misscost = 15
 	item_damage_type = "stab"
@@ -74,7 +76,7 @@
 	attack_verb = list("thrusts", "stabs")
 	animname = "stab"
 	hitsound = list('sound/combat/hits/bladed/genstab (1).ogg', 'sound/combat/hits/bladed/genstab (2).ogg', 'sound/combat/hits/bladed/genstab (3).ogg')
-	penfactor = 20
+	penfactor = PEN_MEDIUM	// warhammer point stab (TA: mace pick tier)
 	damfactor = 0.8
 	misscost = 5
 	item_damage_type = "stab"
@@ -89,7 +91,7 @@
 	hitsound = list('sound/combat/hits/bladed/genstab (1).ogg', 'sound/combat/hits/bladed/genstab (2).ogg', 'sound/combat/hits/bladed/genstab (3).ogg')
 	clickcd = 20
 	misscost = 8
-	penfactor = 80
+	penfactor = PEN_BSTEEL	// warhammer pick: anti-armor special (TA: bsteel tier)
 	damfactor = 0.9
 	item_damage_type = "stab"
 	acc_bonus = 12
@@ -124,6 +126,7 @@
 	attack_verb = list("smashes")
 	damfactor = 1.2
 	penfactor = AP_FLAIL_SMASH
+	swingdelay_type = SWINGDELAY_CANCELSLOW
 	item_damage_type = "slash"
 	knockback = TRUE
 

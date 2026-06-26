@@ -124,6 +124,7 @@
 
 	// Update highest threat mob
 	update_highest_threat(victim)
+	victim.ai_controller.recalculate_idle()
 
 /// Periodically decays threat levels
 /datum/component/ai_aggro_system/process()

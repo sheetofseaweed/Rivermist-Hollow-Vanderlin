@@ -44,7 +44,7 @@
 				controller.clear_blackboard_key(BB_HIGHEST_THREAT_MOB)
 				current_target = null
 
-			if(current_target && get_dist(living_mob, living_target) > maintain_range)
+			if(current_target && get_dist(living_mob, living_target) > maintain_range && !controller.is_hot_pursuit_target(current_target))
 				controller.clear_blackboard_key(BB_HIGHEST_THREAT_MOB)
 				current_target = null
 

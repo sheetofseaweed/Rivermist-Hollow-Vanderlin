@@ -40,11 +40,12 @@
 		return FALSE
 	if(has_status_effect(/datum/status_effect/debuff/vulnerable))
 		return FALSE
-	if(world.time < last_parry + setparrytime && !istype(rmb_intent, /datum/rmb_intent/riposte))
+	if(world.time < last_parry + max(setparrytime - get_tempo_bonus(TEMPO_TAG_PARRYCD_BONUS), DEFENSE_CD_MIN) && !istype(rmb_intent, /datum/rmb_intent/riposte))
 		return FALSE
 	last_parry = world.time
 
 	var/drained = user.defdrain
+	drained = max(drained - get_tempo_bonus(TEMPO_TAG_STAMLOSS_PARRY), 1)
 	var/weapon_parry = FALSE
 	var/obj/item/mainhand = get_active_held_item()
 	var/obj/item/offhand = get_inactive_held_item()
@@ -293,6 +294,10 @@
 		var/intdam = used_weapon.max_blade_int ? INTEG_PARRY_DECAY : INTEG_PARRY_DECAY_NOSHARP
 		used_weapon.take_damage(intdam, BRUTE, used_weapon.damage_type)
 		used_weapon.remove_bintegrity(SHARPNESS_ONHIT_DECAY, user)
+
+	// Reading the attacker's exact aim while parrying earns a weapon bind.
+	if(U && used_weapon)
+		H.try_bind(used_weapon, U)
 
 /**
  * Handle parrying attacks with a weapon

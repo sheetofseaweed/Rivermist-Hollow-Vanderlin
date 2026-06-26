@@ -539,27 +539,37 @@
 			return FALSE
 	return TRUE
 
-/datum/sex_session/proc/perform_sex_action(mob/living/action_initiator, mob/living/action_target, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
+/**
+ * Applies one "tick" of a sex action's stimulation.
+ *
+ * `pleasure_receiver` is the participant who actually RECEIVES the arousal, pain and orgasm progress (and the
+ * COMSIG_SEX_RECEIVE_ACTION signal that can trigger their climax). `partner` is the other participant, read for
+ * edging-the-other and good-lover bonuses but not stimulated by this call.
+ *
+ * To stimulate BOTH participants in one action, call this once per side with the first two arguments swapped
+ * (see the penetrative "other" actions, e.g. "Ride them anally", for examples).
+ */
+/datum/sex_session/proc/perform_sex_action(mob/living/pleasure_receiver, mob/living/partner, arousal_amt, pain_amt, orgasm_prog_amt, datum/sex_action/sex_act)
+	var/list/arousal_data_partner = list()
+	SEND_SIGNAL(partner, COMSIG_SEX_GET_AROUSAL, arousal_data_partner)
 
-	var/list/arousal_data_target = list()
-	SEND_SIGNAL(action_target, COMSIG_SEX_GET_AROUSAL, arousal_data_target)
-
-
-	if(HAS_TRAIT(user, TRAIT_GOODLOVER) && user != action_initiator)
+	// A skilled lover stimulating someone else makes it feel better for the one receiving it.
+	if(HAS_TRAIT(user, TRAIT_GOODLOVER) && user != pleasure_receiver)
 		arousal_amt *= 1.5
 		orgasm_prog_amt *= 1.5
-		if(prob(10)) //10 perc chance each action to emit the message so they know who the fuckin' wituser.
+		if(prob(10))
 			var/lovermessage = pick("This feels so good!","I am in nirvana!","This is too good to be possible!","By the Gods!","I can't stop, too good!~")
-			to_chat(action_target, span_love(lovermessage))
+			to_chat(partner, span_love(lovermessage))
 
-	if(action_target != user && edging_other)
-		if(arousal_data_target["arousal"] >= AROUSAL_EDGING_THRESHOLD + 15)
+	// edging_other: the session owner tries to hold their partner back from the edge.
+	if(partner != user && edging_other)
+		if(arousal_data_partner["arousal"] >= AROUSAL_EDGING_THRESHOLD + 15)
 			var/succes_chance = 100
 			if(prob(5))
 				to_chat(user, span_love("I try to match my movements so that they don't climax too soon..."))
 			if(speed > SEX_SPEED_MID || force > SEX_FORCE_MID)
 				succes_chance *= 0.5
-			if(action_target.has_status_effect(/datum/status_effect/edging_overstimulation))
+			if(partner.has_status_effect(/datum/status_effect/edging_overstimulation))
 				succes_chance *= 0.3
 				if(prob(10))
 					to_chat(user, span_love("They are just too sensitive for me to control their pleasure..."))
@@ -568,24 +578,16 @@
 				if(prob(10))
 					to_chat(user, span_love("I can't tell if they are close or not..."))
 			if(prob(succes_chance))
-				SEND_SIGNAL(action_target, COMSIG_SEX_EDGED_BY_OTHER_STATE, TRUE) //yeah, feels like a hack, honesytly, but it works
+				SEND_SIGNAL(partner, COMSIG_SEX_EDGED_BY_OTHER_STATE, TRUE)
 
-	var/res_send = RESIST_NONE
-	var/mob/living/action_user_final
-	var/giving = TRUE
+	// "giving" is TRUE when the session owner is the one being pleasured by this call.
+	var/giving = (user == pleasure_receiver)
 
-	if(user == action_initiator) //set proper user
-		action_user_final = user
-	else
-		action_user_final = action_initiator
-		giving = FALSE
+	var/list/arousal_data_receiver = list()
+	SEND_SIGNAL(pleasure_receiver, COMSIG_SEX_GET_AROUSAL, arousal_data_receiver)
+	var/res_send = arousal_data_receiver["resistance_to_pleasure"]
 
-	var/list/arousal_data_user = list()
-	SEND_SIGNAL(action_user_final, COMSIG_SEX_GET_AROUSAL, arousal_data_user)
-	res_send = arousal_data_user["resistance_to_pleasure"]
-
-	var/mob/living/action_partner = action_user_final == action_initiator ? action_target : action_initiator
-	var/datum/sex_action_effect_context/effect_context = new(action_user_final, action_partner, sex_act, action_initiator, action_target, giving)
+	var/datum/sex_action_effect_context/effect_context = new(pleasure_receiver, partner, sex_act, pleasure_receiver, partner, giving)
 	effect_context.session = src
 	effect_context.action_performer = user
 	effect_context.arousal_amt = arousal_amt
@@ -598,7 +600,7 @@
 	for(var/datum/sex_action_effect/effect as anything in effects)
 		effect.modify_action(effect_context)
 
-	SEND_SIGNAL(action_user_final, COMSIG_SEX_RECEIVE_ACTION, sex_act, action_initiator, action_target, effect_context.arousal_amt, effect_context.pain_amt, effect_context.orgasm_prog_amt, giving, force, speed, res_send, user)
+	SEND_SIGNAL(pleasure_receiver, COMSIG_SEX_RECEIVE_ACTION, sex_act, pleasure_receiver, partner, effect_context.arousal_amt, effect_context.pain_amt, effect_context.orgasm_prog_amt, giving, force, speed, res_send, user)
 
 	for(var/datum/sex_action_effect/effect as anything in effects)
 		effect.after_action(effect_context)

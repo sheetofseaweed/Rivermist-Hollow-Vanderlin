@@ -41,7 +41,9 @@
 		return
 	affecting_mobs[source] -= user
 
-	user.mana_pool?.set_max_mana(user.mana_pool.maximum_mana_capacity - hardcap_increase)
+	// change_softcap must mirror on_equip (FALSE), or every equip/drop cycle
+	// sinks the softcap by hardcap_increase -> negative thousands.
+	user.mana_pool?.set_max_mana(user.mana_pool.maximum_mana_capacity - hardcap_increase, change_softcap = FALSE)
 	user.mana_overload_threshold -= hardcap_increase
 
 /datum/enchantment/mana_capacity/Destroy(force, ...)
@@ -52,7 +54,7 @@
 		for(var/mob/living/carbon/user as anything in source_mobs)
 			if(QDELETED(user))
 				continue
-			user.mana_pool?.set_max_mana(user.mana_pool.maximum_mana_capacity - hardcap_increase)
+			user.mana_pool?.set_max_mana(user.mana_pool.maximum_mana_capacity - hardcap_increase, change_softcap = FALSE)
 			user.mana_overload_threshold -= hardcap_increase
 	affecting_mobs = null
 	return ..()

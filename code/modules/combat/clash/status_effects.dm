@@ -4,6 +4,8 @@
 	alert_type = /atom/movable/screen/alert/status_effect/buff/clash
 	/// Reference to the overlay to remove it
 	var/mutable_appearance/clash_overlay
+	/// Set TRUE when a spell projectile was deflected; suppresses clashcd on removal
+	var/deflected_spell = FALSE
 
 	/// Signals that cancel the clash
 	var/static/list/interrupt_signals = list(
@@ -59,7 +61,8 @@
 	owner.cut_overlay(clash_overlay)
 	clash_overlay = null
 
-	owner.apply_status_effect(/datum/status_effect/debuff/clashcd)
+	if(!deflected_spell)
+		owner.apply_status_effect(/datum/status_effect/debuff/clashcd)
 
 /datum/status_effect/buff/clash/tick()
 	if(QDELETED(src))
@@ -125,3 +128,24 @@
 	name = "Ready to Clash"
 	desc = span_notice("I am on guard, and ready to clash. If I am hit, I will successfully defend. Attacking will make me lose my focus.")
 	icon_state = "clash"
+
+// Short grace window after deflecting: follow-up projectiles from the same
+// volley are also deflected without needing a fresh guard.
+/datum/status_effect/buff/parry_buffer
+	id = "parry_buffer"
+	duration = 1 SECONDS
+	alert_type = null
+
+/// Marker for a successful weapon bind — no consumer yet; the attacker penalties are applied directly in try_bind().
+/datum/status_effect/buff/weapon_binded
+	id = "weapon_binded"
+	duration = 10 SECONDS
+	status_type = STATUS_EFFECT_REFRESH
+	alert_type = null
+
+/// Lockout so binds can't chain.
+/datum/status_effect/debuff/bindcd
+	id = "bindcd"
+	duration = BIND_CD
+	status_type = STATUS_EFFECT_REFRESH
+	alert_type = null

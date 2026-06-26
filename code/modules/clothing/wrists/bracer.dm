@@ -16,7 +16,7 @@
 	smeltresult = /obj/item/ingot/iron //no 1 to 1 conversion
 	melting_material = /datum/material/iron
 	melt_amount = 100
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_SIDE_STEEL
 
 /obj/item/clothing/wrists/bracers/naledi
 	item_weight = 125 GRAMS
@@ -41,7 +41,7 @@
 	icon_state = "ibracers"
 	item_state = "ibracers"
 	armor = ARMOR_MAILLE
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_SIDE_IRON
 
 
 /obj/item/clothing/wrists/bracers/jackchain
@@ -51,7 +51,7 @@
 	item_state = "jackchain"
 
 	armor = ARMOR_MAILLE
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_SIDE_STEEL
 	prevent_crits = CUT_AND_MINOR_CRITS
 	smeltresult = /obj/item/fertilizer/ash
 	melting_material = /datum/material/steel
@@ -65,7 +65,7 @@
 
 	armor_class = AC_MEDIUM
 	armor = ARMOR_MAILLE
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_SIDE_IRON
 	prevent_crits = CUT_AND_MINOR_CRITS
 	smeltresult = /obj/item/fertilizer/ash //we avoid melting one piece for one bar
 	melting_material = /datum/material/iron // we get one bar per two pieces of the item recovered and smelted
@@ -78,7 +78,7 @@
 	icon_state = "lbracers"
 	item_state = "lbracers"
 	armor_class = AC_LIGHT
-	armor = list("blunt" = 30, "slash" = 30, "stab" = 30,  "piercing" = 15, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_LASHING, BCLASS_BITE, BCLASS_CUT)
 	resistance_flags = null
 	blocksound = SOFTHIT
@@ -89,7 +89,7 @@
 	anvilrepair = null
 	sewrepair = /datum/attribute/skill/craft/tanning/patching
 	salvage_result = null
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_SIDE_LEATHER
 
 //THE ARMOUR VALUES OF ADVANCED AND MASTERWORK BRACERS ARE INTENDED
 //KEEP THIS IN MIND
@@ -98,16 +98,16 @@
 /obj/item/clothing/wrists/bracers/leather/advanced
 	name = "hardened leather bracers"
 	desc = "Hardened leather braces that will keep your wrists safe from bludgeoning."
-	armor = list("blunt" = 60, "slash" = 40, "stab" = 20, "piercing" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_HEAVY, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_LIGHT, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST) //We're losing stab here
-	max_integrity = INTEGRITY_STANDARD + 50
+	max_integrity = ARMOR_INT_SIDE_HARDLEATHER
 
 /obj/item/clothing/wrists/bracers/leather/masterwork
 	name = "masterwork leather bracers"
 	desc = "These bracers are a craftsmanship marvel. Made with the finest leather. Strong, nimble, reliable."
-	armor = list("blunt" = 80, "slash" = 60, "stab" = 40, "piercing" = 0, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_CUT, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_TWIST) //We're getting chop here
-	max_integrity = INTEGRITY_STANDARD + 100
+	max_integrity = ARMOR_INT_SIDE_STEEL // masterwork leather = steel-grade integrity, intended
 
 /obj/item/clothing/wrists/bracers/leather/masterwork/Initialize()
 	. = ..()
@@ -134,11 +134,11 @@
 	icon_state = "psybarbs"
 	item_state = "psybarbs"
 	armor_class = AC_MEDIUM
-	armor = list("blunt" = 80, "slash" = 100, "stab" = 90, "piercing" = 80, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_BSTEEL, "piercing" = DBLOCK_BSTEEL, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_SMASH, BCLASS_TWIST, BCLASS_PICK)
 	blocksound = PLATEHIT
 	resistance_flags = FIRE_PROOF
-	max_integrity = 400
+	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
 	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	sewrepair = null
 	alternate_worn_layer = WRISTS_LAYER

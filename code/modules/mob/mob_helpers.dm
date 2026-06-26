@@ -55,6 +55,34 @@
 
 	return zone
 
+/// Collapse an aim zone into its bind group (matching groups = bindable attack).
+/// Returns a BIND_* string, or FALSE if unrecognized.
+/proc/check_bind_subzone(zone_def)
+	if(!zone_def)
+		return FALSE
+	switch(zone_def)
+		if(BODY_ZONE_HEAD, BODY_ZONE_PRECISE_SKULL, BODY_ZONE_PRECISE_EARS, BODY_ZONE_PRECISE_R_EYE, BODY_ZONE_PRECISE_L_EYE, BODY_ZONE_PRECISE_NOSE, BODY_ZONE_PRECISE_MOUTH)
+			return BIND_HEAD
+		if(BODY_ZONE_PRECISE_NECK)
+			return BIND_NECK
+		if(BODY_ZONE_PRECISE_L_HAND, BODY_ZONE_PRECISE_L_INHAND, BODY_ZONE_L_ARM)
+			return BIND_HAND_L
+		if(BODY_ZONE_PRECISE_R_HAND, BODY_ZONE_PRECISE_R_INHAND, BODY_ZONE_R_ARM)
+			return BIND_HAND_R
+		if(BODY_ZONE_PRECISE_L_FOOT, BODY_ZONE_L_LEG)
+			return BIND_FOOT_L
+		if(BODY_ZONE_PRECISE_R_FOOT, BODY_ZONE_R_LEG)
+			return BIND_FOOT_R
+		if(BODY_ZONE_CHEST, BODY_ZONE_PRECISE_GROIN, BODY_ZONE_PRECISE_STOMACH)
+			return BIND_TORSO
+	return FALSE
+
+/// Returns TRUE if the defender's bind subzone matches the attacker's aim zone.
+/proc/check_bind(bindzone, attzone)
+	if(!bindzone || !attzone)
+		return FALSE
+	return bindzone == check_bind_subzone(attzone)
+
 ///Returns a TRUE / FALSE if the zone is a FACE coverage subzone. Used mainly by accuracy_check & bait.
 /proc/check_face_subzone(zone)
 	if(!zone)
@@ -684,6 +712,10 @@
 	if(L.IsSleeping() || L.surrendering)
 		if(cmode)
 			cmode = FALSE
+			L.reset_defense_cooldowns()
+			if(ishuman(L))
+				var/mob/living/carbon/human/H = L
+				H.clear_tempo_all()
 		refresh_looping_ambience()
 		hud_used?.cmode_button?.update_appearance(UPDATE_ICON_STATE)
 		return
@@ -691,12 +723,17 @@
 	if(cmode)
 		playsound_local(src, 'sound/misc/comboff.ogg', 100)
 		cmode = FALSE
+		L.reset_defense_cooldowns()
+		if(ishuman(L))
+			var/mob/living/carbon/human/H = L
+			H.clear_tempo_all()
 		if(client && HAS_TRAIT(src, TRAIT_SCHIZO_AMBIENCE) && !HAS_TRAIT(src, TRAIT_SCREENSHAKE))
 			animate(client, pixel_y) // stops screenshake if you're not on 4th wonder yet.
 		cmode_timer = addtimer(TRAIT_CALLBACK_REMOVE(src, TRAIT_BLOCKED_DIAGONAL, "combat"), 10 SECONDS, TIMER_STOPPABLE | TIMER_OVERRIDE | TIMER_UNIQUE)
 	else
 		cmode = TRUE
 		playsound_local(src, 'sound/misc/combon.ogg', 100)
+		L.reset_defense_cooldowns()
 		ADD_TRAIT(src, TRAIT_BLOCKED_DIAGONAL, "combat")
 		if(cmode_timer)
 			deltimer(cmode_timer)

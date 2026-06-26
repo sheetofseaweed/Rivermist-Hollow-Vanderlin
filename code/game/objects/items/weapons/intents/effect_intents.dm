@@ -18,7 +18,7 @@
 	animname = "strike"
 	blade_class = BCLASS_BLUNT
 	hitsound = list('sound/combat/hits/blunt/daze_hit.ogg')
-	penfactor = 45
+	penfactor = PEN_HEAVY	// blunt: preserve tier; DR-absorb path ignores pen but tier kept for consistency
 	swingdelay = 6
 	damfactor = 0.5
 	acc_bonus = 15

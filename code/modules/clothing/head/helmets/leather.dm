@@ -16,7 +16,7 @@
 	armor = ARMOR_LEATHER_BAD
 	body_parts_covered = HEAD|HAIR|EARS|NOSE
 	prevent_crits = CUT_AND_MINOR_CRITS
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_HELMET_LEATHER
 	salvage_amount = 1
 	salvage_result = /obj/item/natural/hide/cured
 	item_weight = 1.6 KILOGRAMS
@@ -29,18 +29,18 @@
 /obj/item/clothing/head/helmet/leather/advanced
 	name = "hardened leather helmet"
 	desc = "Sturdy, durable, flexible. A comfortable and reliable hood made of hardened leather."
-	max_integrity = INTEGRITY_STANDARD + 50
+	max_integrity = ARMOR_INT_HELMET_HARDLEATHER
 	body_parts_covered = HEAD|EARS|HAIR|NOSE|EYES|MOUTH
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST)
-	armor = list("blunt" = 70, "slash" = 60, "stab" = 30, "piercing" = 20, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_SUPER, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/head/helmet/leather/masterwork
 	name = "masterwork leather helmet"
 	desc = "This helmet is a craftsmanship marvel. Made with the finest leather. Strong, nimble, reliable."
-	max_integrity = INTEGRITY_STANDARD + 100
+	max_integrity = ARMOR_INT_HELMET_STEEL // masterwork leather = steel-grade integrity, intended
 	body_parts_covered = HEAD|EARS|HAIR|NOSE|EYES|MOUTH
 	prevent_crits = list(BCLASS_CUT, BCLASS_BLUNT, BCLASS_TWIST, BCLASS_CHOP) //we're adding chop here!
-	armor = list("blunt" = 100, "slash" = 70, "stab" = 40, "piercing" = 10, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_HEAVY, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_LIGHT, "fire" = DR_NONE, "acid" = DR_NONE)
 
 /obj/item/clothing/head/helmet/leather/masterwork/Initialize()
 	. = ..()

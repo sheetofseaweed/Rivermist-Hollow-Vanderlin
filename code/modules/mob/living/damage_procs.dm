@@ -428,6 +428,22 @@
 			break
 	. -= amount //if there's leftover healing, remove it from what we return
 
+/// TA-style defense-cooldown mutator: combat events push/pull the cooldown of the
+/// currently selected defensive intent. Clamped so events can't lock defense out entirely.
+/// The ceiling respects compiled baselines above DEFENSE_CD_MAX (elite NPCs ship with
+/// dodgetime 40-60 by design — buildup must never *lower* those).
+/mob/living/proc/changeNext_def(num)
+	switch(d_intent)
+		if(INTENT_DODGE)
+			dodgetime = CLAMP(num, DEFENSE_CD_MIN, max(DEFENSE_CD_MAX, initial(dodgetime)))
+		if(INTENT_PARRY)
+			setparrytime = CLAMP(num, DEFENSE_CD_MIN, max(DEFENSE_CD_MAX, initial(setparrytime)))
+
+/// Restore defense cooldowns to this mob type's compiled baseline; called on combat-mode transitions.
+/mob/living/proc/reset_defense_cooldowns()
+	dodgetime = initial(dodgetime)
+	setparrytime = initial(setparrytime)
+
 /**
  * Check if defense is possible against an attack
  * @param datum/intent/intenty The intent used for the attack
@@ -435,6 +451,13 @@
  * @return TRUE if defense successful, FALSE otherwise
  */
 /mob/living/proc/checkdefense(datum/intent/intenty, mob/living/user)
+	// Struck mid disruptable windup: the swing dies instead of any defense roll. (TA parity)
+	var/datum/status_effect/swingdelay/disrupt/SW = has_status_effect(/datum/status_effect/swingdelay/disrupt)
+	if(SW && !SW.is_disrupted && swing_state)
+		SW.attacked()
+		swing_state = FALSE
+		return FALSE
+
 	if(!cmode || stat || (!canparry && !candodge) || user == src || HAS_TRAIT(src, TRAIT_IMMOBILIZED))
 		return FALSE
 	if(client && used_intent && client.charging && used_intent.tranged && !used_intent.tshield)
@@ -446,9 +469,10 @@
 		prob2defend = 0
 
 	if(!can_see_cone(user)) //for future, if you can't see the attacker, parrying will be useless, unless you're on dodge intent. this also affect being blinded?
-		if(d_intent == INTENT_PARRY && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING))
+		if(d_intent == INTENT_PARRY && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !get_tempo_bonus(TEMPO_TAG_NOLOS_PARRY))
 			return FALSE
-		can_dodge_see = FALSE
+		if(!get_tempo_bonus(TEMPO_TAG_NOLOS_DODGE)) // high tempo: dodge without seeing the attacker
+			can_dodge_see = FALSE
 		prob2defend = max(prob2defend - 15, 0)
 
 	if(m_intent == MOVE_INTENT_RUN)

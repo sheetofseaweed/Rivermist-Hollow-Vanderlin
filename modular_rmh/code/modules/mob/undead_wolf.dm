@@ -193,7 +193,7 @@
 
 	planning_subtrees = list(
 		/datum/ai_planning_subtree/simple_find_target/closest,
-		/datum/ai_planning_subtree/basic_melee_attack_subtree,
+		/datum/ai_planning_subtree/basic_melee_attack_subtree/agile,
 	)
 
 	idle_behavior = /datum/idle_behavior/idle_random_walk

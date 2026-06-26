@@ -47,20 +47,17 @@
 	acc_bonus = 15
 
 /datum/intent/sword/thrust/curved
-	penfactor = AP_SWORD_THRUST-2
 
 /datum/intent/sword/thrust/short
 	clickcd = 10
-	penfactor = AP_SWORD_THRUST+2
 	acc_bonus = 20
 
 /datum/intent/sword/thrust/rapier
-	penfactor = AP_SWORD_THRUST+5
 	acc_bonus = 20
 
 /datum/intent/sword/thrust/estoc
 	name = "thrust"
-	penfactor = AP_SWORD_THRUST+10 //30 total
+	penfactor = PEN_HEAVY	// estoc: anti-armor thrust (TA: heavy tier)
 	acc_bonus = 20
 
 /datum/intent/sword/thrust/zwei
@@ -182,7 +179,7 @@
 	hitsound = list('sound/combat/hits/bladed/genstab (1).ogg', 'sound/combat/hits/bladed/genstab (2).ogg', 'sound/combat/hits/bladed/genstab (3).ogg')
 	reach = 2
 	misscost = 10
-	penfactor = AP_SWORD_THRUST+30 //50 total
+	penfactor = PEN_BSTEEL	// lunge: anti-armor special
 	clickcd = 18
 	acc_bonus = 15
 
@@ -208,7 +205,7 @@
 	hitsound = list('sound/combat/hits/bladed/genslash (1).ogg', 'sound/combat/hits/bladed/genslash (2).ogg', 'sound/combat/hits/bladed/genslash (3).ogg')
 	item_damage_type = "slash"
 	damfactor = 1.2
-	penfactor = AP_SWORD_THRUST+5
+	penfactor = PEN_MEDIUM
 	no_early_release = TRUE
 	swingdelay = 3
 	chargetime = 3

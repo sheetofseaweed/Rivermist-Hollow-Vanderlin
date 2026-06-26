@@ -15,7 +15,15 @@
 		controller.set_blackboard_key(BB_HUMAN_NPC_HARASS_RETREATING, FALSE)
 		return
 
-	var/health_frac = pawn.health / pawn.maxHealth //idk if this does anything for humans
+	var/datum/targetting_datum/td = controller.blackboard[BB_TARGETTING_DATUM]
+	if(!td || !td.can_attack(pawn, target))
+		controller.set_blackboard_key(BB_HUMAN_NPC_HARASS_MODE, FALSE)
+		controller.set_blackboard_key(BB_HUMAN_NPC_HARASS_RETREATING, FALSE)
+		return
+	if(controller.blackboard[BB_HUMAN_NPC_COMMITTED_SWING_TOKEN])
+		return
+
+	var/health_frac = pawn.maxHealth ? (pawn.health / pawn.maxHealth) : 1
 	// Stamina threshold scales down as health drops - the more hurt we are the easier tiredness triggers harass
 	var/effective_stamina_thresh = HARASS_STAMINA_THRESHOLD * health_frac
 	var/should_harass = (health_frac < HARASS_HEALTH_THRESHOLD) || (pawn.stamina > effective_stamina_thresh)
@@ -34,6 +42,8 @@
 		controller.queue_behavior(/datum/ai_behavior/human_npc_harass_retreat, BB_BASIC_MOB_CURRENT_TARGET)
 		return SUBTREE_RETURN_FINISH_PLANNING
 
+	if(!currently_harassing)
+		pawn.balloon_alert_to_viewers("<font color='#c7c6c6'>paces out</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -8)
 	controller.set_blackboard_key(BB_HUMAN_NPC_HARASS_MODE, TRUE)
 
 	if(controller.blackboard[BB_HUMAN_NPC_HARASS_RETREATING])
@@ -88,7 +98,7 @@
 	var/mob/living/target = controller.blackboard[target_key]
 	var/datum/targetting_datum/td = controller.blackboard[targetting_datum_key]
 
-	if(!target || QDELETED(target) || !td.can_attack(pawn, target))
+	if(!target || QDELETED(target) || !td || !td.can_attack(pawn, target))
 		finish_action(controller, FALSE)
 		return
 
@@ -108,7 +118,7 @@
 		pawn.a_intent = pick(possible_intents)
 		pawn.used_intent = pawn.a_intent
 
-	if(!pawn.CanReach(target))
+	if(!pawn.CanReach(target, pawn.get_active_held_item()))
 		finish_action(controller, FALSE)
 		return
 
@@ -125,6 +135,7 @@
 	cooldown *= lerp(1.5, 1.0, health_frac) // up to 50% longer cooldown at 0 health
 	controller.set_blackboard_key(BB_HUMAN_NPC_HARASS_RETREATING, TRUE)
 	controller.set_blackboard_key(BB_HUMAN_NPC_HARASS_COOLDOWN, world.time + cooldown)
+	pawn.balloon_alert_to_viewers("<font color='#c7c6c6'>backs off</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -8)
 	finish_action(controller, TRUE)
 
 /datum/ai_behavior/human_npc_harass_retreat
@@ -155,7 +166,7 @@
 	var/turf/move_target = controller.current_movement_target
 	if(!move_target || get_dist(pawn, move_target) <= 1)
 		finish_action(controller, TRUE)
-		return.
+		return
 
 #undef HARASS_HEALTH_THRESHOLD
 #undef HARASS_STAMINA_THRESHOLD
