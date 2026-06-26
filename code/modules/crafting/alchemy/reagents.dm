@@ -463,9 +463,6 @@ If you want to expand on poisons theres tons of fun effects TG chemistry has tha
 	var/tox = 2
 
 /datum/reagent/berrypoison/on_mob_life(mob/living/carbon/M, efficiency)
-	if(HAS_TRAIT(M, TRAIT_NASTY_EATER)) //RMH EDITED - NASTY_EATER grants berry-poison immunity, per the trait define ("can eat ... poison berries")
-		M.remove_reagent(/datum/reagent/berrypoison, volume)
-		return ..()
 	if(volume > 0.09)
 		if(HAS_TRAIT(M, TRAIT_POISON_RESILIENCE))
 			M.add_nausea((tox/3) * efficiency)
@@ -684,10 +681,8 @@ If you want to expand on poisons theres tons of fun effects TG chemistry has tha
 	scent_description = "freezing dust"
 	metabolization_rate = REAGENTS_SLOW_METABOLISM
 
-/datum/reagent/killersice/on_mob_life(mob/living/carbon/M, efficiency) //RMH EDITED - Killer's Ice is a poison, not in the NASTY_EATER list; it should hurt everyone
-	if(HAS_TRAIT(M, TRAIT_POISON_RESILIENCE))
-		M.adjustToxLoss(2.5 * efficiency)
-	else
+/datum/reagent/killersice/on_mob_life(mob/living/carbon/M, efficiency)
+	if(!HAS_TRAIT(M, TRAIT_NASTY_EATER) && !HAS_TRAIT(M, TRAIT_ORGAN_EATER))
 		M.adjustToxLoss(5 * efficiency)
 	return ..()
 
