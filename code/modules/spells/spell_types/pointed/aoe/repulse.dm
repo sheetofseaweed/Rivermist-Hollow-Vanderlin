@@ -34,7 +34,13 @@
 /datum/action/cooldown/spell/aoe/repulse/is_valid_target(atom/cast_on)
 	return ismovable(cast_on)
 
+/datum/action/cooldown/spell/aoe/repulse/PreActivate(atom/target)
+	return ..(owner)
+
 /datum/action/cooldown/spell/aoe/repulse/cast_on_thing_in_aoe(atom/movable/victim, atom/caster)
+	if(victim.anchored || victim.move_resist == INFINITY || (repulse_force < (victim.move_resist * MOVE_FORCE_THROW_RATIO)))
+		return
+
 	if(ismob(victim))
 		var/mob/victim_mob = victim
 		if(victim_mob.can_block_magic(antimagic_flags))
