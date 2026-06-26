@@ -180,13 +180,20 @@
 	if(isnull(value))
 		return null
 	if(islist(value))
+		var/list/list_value = value
 		var/list/normalized = list()
-		for(var/key in value)
-			var/normalized_value = normalize_preview_fingerprint_value(value[key])
-			if(isnum(key))
-				normalized += list(normalized_value)
+		for(var/index in 1 to length(list_value))
+			var/element = list_value[index]
+			// Associative entries store a non-null value under the element key. Plain/ordered
+			// elements (including datums and objects) return null here, so normalize them directly
+			// instead of dropping their contents - this is what carries eye colors etc. in customizer_entries.
+			var/element_value = null
+			if(!isnull(element) && !isnum(element))
+				element_value = list_value[element]
+			if(isnull(element_value))
+				normalized += list(normalize_preview_fingerprint_value(element))
 			else
-				normalized["[normalize_preview_fingerprint_value(key)]"] = normalized_value
+				normalized["[normalize_preview_fingerprint_value(element)]"] = normalize_preview_fingerprint_value(element_value)
 		return normalized
 	if(ispath(value))
 		return "[value]"
@@ -212,7 +219,8 @@
 		"gender" = gender,
 		"age" = age,
 		"skin_tone" = skin_tone,
-		"eye_color" = eye_color,
+		"eye_color" = get_eye_color(RIGHT_SIDE),
+		"eye_color_left" = get_eye_color(LEFT_SIDE),
 		"detail" = detail,
 		"detail_color" = detail_color,
 		"taur_type" = taur_type ? "[taur_type]" : null,
