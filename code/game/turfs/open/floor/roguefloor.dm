@@ -760,7 +760,7 @@
 	icon_state = "church-gold_marble"
 
 /turf/open/floor/churchrough/gold
-	icon_state = "church-gold_marble"
+	icon_state = "church-gold_rough" //RMH FIXED
 
 // Green - Dendor shrines.
 /turf/open/floor/church/green
