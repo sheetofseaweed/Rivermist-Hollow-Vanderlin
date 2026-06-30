@@ -83,6 +83,10 @@
 	},
 /turf/open/floor/carpet/purple,
 /area/indoors/town/rmh/manor)
+"az" = (
+/mob/living/carbon/human/species/human/northern/highwayman,
+/turf/open/floor/naturalstone,
+/area/outdoors/woods_safe)
 "aB" = (
 /obj/structure/table/wood/fancy/red,
 /obj/item/clothing/head/helmet/orc,
@@ -470,6 +474,10 @@
 /obj/structure/closet/crate/coffin/vampire,
 /turf/open/floor/carpet/red,
 /area/indoors/town/rmh/manor)
+"cb" = (
+/obj/effect/landmark/kidnap/entrance/greenskin,
+/turf/open/floor/cobblerock,
+/area/outdoors/woods_safe)
 "cc" = (
 /obj/structure/flora/ausbushes/lavendergrass,
 /obj/structure/flora/grass,
@@ -581,10 +589,6 @@
 /obj/structure/carpet/red,
 /turf/open/floor/desert/deserttile/tilegreyblu,
 /area/indoors/town/rmh/manor)
-"cB" = (
-/mob/living/carbon/human/species/human/northern/highwayman,
-/turf/open/floor/naturalstone,
-/area/outdoors/woods_safe)
 "cE" = (
 /obj/structure/table/wood/large/corner_new{
 	dir = 9
@@ -1033,6 +1037,11 @@
 /obj/effect/decal/cleanable/blood,
 /turf/open/floor/cobble/alt,
 /area/outdoors/woods_safe)
+"eH" = (
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/werewolf)
 "eJ" = (
 /obj/effect/decal/edge_corner{
 	dir = 4;
@@ -1339,10 +1348,6 @@
 "fW" = (
 /turf/open/floor/church/rust,
 /area/indoors/town/rmh/manor)
-"fX" = (
-/mob/living/carbon/human/species/human/northern/highwayman,
-/turf/open/floor/mushroom,
-/area/outdoors/woods_safe)
 "fY" = (
 /obj/structure/flora/grass/herb/rosa,
 /obj/structure/flora/grass/herb/rosa{
@@ -1427,6 +1432,10 @@
 /obj/structure/door,
 /turf/open/floor/tile,
 /area/indoors)
+"gn" = (
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/werewolf)
 "go" = (
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/cobble,
@@ -2538,10 +2547,6 @@
 	},
 /turf/open/floor/wood,
 /area/indoors)
-"lv" = (
-/obj/effect/landmark/kidnap/escape/greenskin,
-/turf/open/floor/cobblerock,
-/area/outdoors/woods_safe)
 "lz" = (
 /obj/machinery/light/fueled/hearth{
 	pixel_y = 4
@@ -2621,10 +2626,6 @@
 /obj/item/natural/cloth,
 /turf/open/water/bath,
 /area/indoors/town/rmh/manor/bath)
-"lY" = (
-/mob/living/carbon/human/species/orc/npc/footsoldier,
-/turf/open/floor/naturalstone,
-/area/outdoors/woods_safe)
 "lZ" = (
 /obj/structure/bridge_stakes{
 	dir = 8
@@ -2708,6 +2709,10 @@
 /obj/effect/decal/cleanable/dirt/paper,
 /turf/open/floor/desert/deserttile/tilegreyblu,
 /area/indoors/town/rmh/manor)
+"mo" = (
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/werewolf)
 "mp" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/item/plate/pewter,
@@ -2781,11 +2786,6 @@
 /obj/item/flashlight/flare/torch/lantern,
 /obj/item/clothing/face/shepherd/rag,
 /turf/open/floor/ruinedwood/turned/darker,
-/area/outdoors/woods_safe)
-"mC" = (
-/obj/structure/hotspring/border/two,
-/mob/living/carbon/human/species/human/northern/highwayman,
-/turf/open/floor/naturalstone,
 /area/outdoors/woods_safe)
 "mE" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing{
@@ -3184,10 +3184,6 @@
 /obj/item/clothing/head/bardhat,
 /turf/open/floor/wood,
 /area/indoors)
-"os" = (
-/obj/effect/landmark/kidnap/entrance/bandit,
-/turf/open/floor/naturalstone,
-/area/outdoors/woods_safe)
 "ot" = (
 /obj/machinery/light/fueled/smelter,
 /obj/machinery/light/fueled/torchholder/c,
@@ -3284,6 +3280,10 @@
 	},
 /turf/open/floor/dirt/road,
 /area/outdoors)
+"oX" = (
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/dirt/road,
+/area/under/rmh_bogforest_caves/werewolf)
 "oY" = (
 /obj/structure/table/wood/fancy/black,
 /obj/item/clothing/ring/gold/protection{
@@ -4097,10 +4097,6 @@
 /obj/machinery/light/fueled/torchholder/l,
 /turf/open/floor/tile/checker_green,
 /area/indoors)
-"sd" = (
-/mob/living/carbon/human/species/goblin/npc/ambush,
-/turf/open/floor/naturalstone,
-/area/outdoors/woods_safe)
 "se" = (
 /obj/structure/fake_machine/scomm,
 /turf/open/floor/church/violet,
@@ -5198,10 +5194,6 @@
 	dir = 8
 	},
 /area/indoors/town/rmh/manor)
-"wD" = (
-/mob/living/carbon/human/species/halforc/base/skilled/naked,
-/turf/open/floor/naturalstone,
-/area/outdoors/woods_safe)
 "wE" = (
 /obj/structure/chair/wood/alt{
 	dir = 4
@@ -5628,8 +5620,9 @@
 /turf/open/water/bath,
 /area/indoors/town/rmh/manor/bath)
 "yb" = (
-/obj/effect/landmark/kidnap/escape/bandit,
-/turf/open/floor/cobblerock,
+/obj/structure/hotspring/border/two,
+/mob/living/carbon/human/species/human/northern/highwayman,
+/turf/open/floor/naturalstone,
 /area/outdoors/woods_safe)
 "ye" = (
 /obj/effect/decal/cleanable/blood/tracks{
@@ -8478,6 +8471,10 @@
 "KM" = (
 /turf/closed/mineral/bedrock,
 /area)
+"KN" = (
+/mob/living/carbon/human/species/orc/npc/footsoldier,
+/turf/open/floor/naturalstone,
+/area/outdoors/woods_safe)
 "KO" = (
 /obj/effect/mapping_helpers/access/keyset/manor/lord{
 	accesses = list("mansionvampire");
@@ -8554,6 +8551,11 @@
 /obj/item/weapon/axe/iron,
 /turf/open/floor/cobble,
 /area/indoors)
+"KW" = (
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/cobblerock,
+/area/under/rmh_bogforest_caves/werewolf)
 "KX" = (
 /obj/effect/decal/edge_corner{
 	dir = 2;
@@ -8600,6 +8602,10 @@
 "Li" = (
 /obj/effect/decal/cleanable/blood/tracks,
 /turf/open/floor/cobble/alt,
+/area/outdoors/woods_safe)
+"Lj" = (
+/obj/effect/landmark/kidnap/entrance/bandit,
+/turf/open/floor/naturalstone,
 /area/outdoors/woods_safe)
 "Lk" = (
 /obj/structure/stairs{
@@ -8792,6 +8798,11 @@
 	},
 /turf/open/floor/cobble,
 /area/outdoors/exposed/rmh/manorgarri)
+"LY" = (
+/obj/item/natural/rock,
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/werewolf)
 "Ma" = (
 /obj/structure/table/wood/reinforced,
 /obj/item/coin/copper/pile,
@@ -9191,6 +9202,10 @@
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/manor/basement)
+"NR" = (
+/mob/living/carbon/human/species/goblin/npc/ambush,
+/turf/open/floor/naturalstone,
+/area/outdoors/woods_safe)
 "NS" = (
 /obj/structure/flora/grass,
 /obj/structure/flora/ausbushes/ywflowers,
@@ -9251,6 +9266,10 @@
 /obj/structure/fluff/statue/knight/interior/r,
 /turf/open/floor/herringbone,
 /area/overlord_lair)
+"Od" = (
+/obj/effect/landmark/kidnap/escape/greenskin,
+/turf/open/floor/cobblerock,
+/area/outdoors/woods_safe)
 "Oj" = (
 /obj/structure/stairs/maskstairs{
 	dir = 1
@@ -9680,6 +9699,10 @@
 /obj/structure/carpet,
 /turf/open/floor/tile/bfloorz,
 /area/indoors/town/rmh/manor/bath)
+"PM" = (
+/mob/living/carbon/human/species/halforc/base/skilled/naked,
+/turf/open/floor/naturalstone,
+/area/outdoors/woods_safe)
 "PN" = (
 /obj/effect/decal/edge{
 	dir = 2;
@@ -10820,6 +10843,10 @@
 "TN" = (
 /turf/open/floor/blocks,
 /area/under/rmh_dungeon/catacombs_church)
+"TP" = (
+/obj/effect/landmark/kidnap/escape/bandit,
+/turf/open/floor/cobblerock,
+/area/outdoors/woods_safe)
 "TS" = (
 /obj/structure/table/map{
 	dir = 5
@@ -10884,10 +10911,6 @@
 /obj/structure/table/wood/fancy/royalblue,
 /turf/open/floor/carpet,
 /area/indoors)
-"Ue" = (
-/obj/effect/landmark/kidnap/entrance/greenskin,
-/turf/open/floor/cobblerock,
-/area/outdoors/woods_safe)
 "Uf" = (
 /obj/structure/chair/bench/coucha/r,
 /obj/structure/carpet/red,
@@ -11196,6 +11219,10 @@
 	},
 /turf/open/floor/carpet/lord/right,
 /area/indoors/town/rmh/manor/basement)
+"VM" = (
+/mob/living/carbon/human/species/human/northern/highwayman,
+/turf/open/floor/mushroom,
+/area/outdoors/woods_safe)
 "VN" = (
 /obj/structure/table/wood/reinf_long{
 	dir = 8
@@ -23581,7 +23608,7 @@ Zi
 Zi
 Lp
 Yu
-Lp
+mo
 tg
 Lp
 By
@@ -23783,7 +23810,7 @@ RC
 Zi
 Lp
 xc
-rq
+gn
 Lp
 bj
 dE
@@ -23984,9 +24011,9 @@ ph
 rq
 MB
 rq
-FG
+LY
 rq
-Zi
+KW
 Zi
 KM
 KM
@@ -24187,7 +24214,7 @@ rq
 rq
 rq
 uV
-uV
+eH
 rq
 Lp
 aD
@@ -24391,7 +24418,7 @@ VF
 Js
 SS
 rq
-aD
+oX
 aD
 oc
 fT
@@ -30836,11 +30863,11 @@ dB
 CB
 dI
 ZW
-lY
+KN
 aS
 dm
 aS
-Ue
+cb
 Jz
 FS
 Nn
@@ -31041,7 +31068,7 @@ ZW
 ZR
 hW
 dB
-sd
+NR
 od
 Qm
 FS
@@ -31242,7 +31269,7 @@ dI
 eb
 SJ
 dB
-sd
+NR
 pF
 ka
 FS
@@ -31646,7 +31673,7 @@ dI
 dI
 ZW
 zd
-wD
+PM
 JD
 FS
 FS
@@ -33264,7 +33291,7 @@ CB
 dI
 gH
 dB
-lv
+Od
 Jz
 FS
 Nn
@@ -35297,9 +35324,9 @@ dB
 CB
 dI
 ZW
-cB
+az
 aS
-fX
+VM
 aS
 od
 Jz
@@ -35702,8 +35729,8 @@ CB
 dI
 eb
 SJ
-os
-cB
+Lj
+az
 pF
 ka
 FS
@@ -36105,9 +36132,9 @@ dI
 dI
 dI
 dI
-mC
+yb
 zd
-cB
+az
 JD
 FS
 FS
@@ -37725,7 +37752,7 @@ CB
 dI
 gH
 dB
-yb
+TP
 Jz
 FS
 "}
