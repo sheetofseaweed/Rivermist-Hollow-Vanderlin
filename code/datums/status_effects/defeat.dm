@@ -19,16 +19,28 @@
 	// Severity is required: overlay_fullscreen builds the icon_state as "[base][severity]", and only the
 	// numbered "oxydamageoverlay[4-10]" states exist. 8 = heavy tunnel vision, see only right around you.
 	owner.overlay_fullscreen("defeat", /atom/movable/screen/fullscreen/defeat, 8)
-	to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."))
+	var/horny_defeat = owner.last_defeat_snapshot?.reason == DEFEAT_REASON_HORNY
+	if(horny_defeat)
+		// A horny defeat reads differently: the dark vignette stays, but the pink arousal wash (the
+		// existing "lovehud" overlay) floods over it, so it never looks like a plain beatdown.
+		owner.overlay_fullscreen("defeat_horny", /atom/movable/screen/fullscreen/love, 10)
+		to_chat(owner, span_userdanger("Your body finally gives out, overwhelmed - you sink down, flushed and spent, too weak to resist."))
+	else
+		to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."))
 	to_chat(owner, span_notice("Another can bring you back: a curative potion fed to you, a healer's or holy hand, or other aid - but never your own doing. If the rune is yours to call, it may answer too."))
 	SEND_SIGNAL(owner, COMSIG_LIVING_DEFEATED)
-	owner.visible_message(span_userdanger("[owner] collapses to the ground, defeated!"))
-	owner.balloon_alert_to_viewers("defeated!")
+	if(horny_defeat)
+		owner.visible_message(span_userdanger("[owner] sinks down, overwhelmed and spent!"))
+		owner.balloon_alert_to_viewers("overwhelmed!")
+	else
+		owner.visible_message(span_userdanger("[owner] collapses to the ground, defeated!"))
+		owner.balloon_alert_to_viewers("defeated!")
 
 /datum/status_effect/defeat_knockout/on_remove()
 	if(!owner || QDELETED(owner))
 		return
 	owner.clear_fullscreen("defeat", FALSE)
+	owner.clear_fullscreen("defeat_horny")
 	to_chat(owner, span_notice("You can move again, but the defeat still clings to you."))
 	if(ishuman(owner))
 		var/mob/living/carbon/human/human_owner = owner

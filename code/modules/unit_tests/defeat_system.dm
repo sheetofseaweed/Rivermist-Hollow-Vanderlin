@@ -749,6 +749,31 @@
 	TEST_ASSERT(monitor.horny_defeat_climax_threshold >= 10 && monitor.horny_defeat_climax_threshold <= 20, "Horny defeat threshold should roll within the 10-20 design band.")
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A single climax should not reach the randomized horny knockout threshold.")
 
+/datum/unit_test/defeat_horny_instigator_combat_mode_gate
+
+/datum/unit_test/defeat_horny_instigator_combat_mode_gate/Run()
+	// NPC / AI instigators (not player-controlled) always count, combat mode or not.
+	TEST_ASSERT(horny_defeat_instigator_counts(FALSE, FALSE), "A non-player instigator should count regardless of combat mode.")
+	TEST_ASSERT(horny_defeat_instigator_counts(FALSE, TRUE), "A non-player instigator should count regardless of combat mode.")
+	// A player instigator only counts while in combat mode.
+	TEST_ASSERT(horny_defeat_instigator_counts(TRUE, TRUE), "A player instigator in combat mode should count.")
+	TEST_ASSERT(!horny_defeat_instigator_counts(TRUE, FALSE), "A player instigator out of combat mode (consensual) should not count.")
+
+/datum/unit_test/defeat_horny_warning_stage_escalates
+
+/datum/unit_test/defeat_horny_warning_stage_escalates/Run()
+	// No warning before the design's opening climax count.
+	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(1, 15), 0, "Warnings should not fire before the second climax.")
+	// Warnings always open at DEFEAT_HORNY_WARNING_START, even for a low rolled threshold.
+	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(2, 15), 1, "The second climax should open the faint warning.")
+	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(2, 10), 1, "Even a low threshold opens at the second climax.")
+	// Mid-encounter the warning builds (>= 60% of threshold).
+	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(9, 15), 2, "Past 60% of the threshold the warning should build.")
+	// The climax right before collapse is the imminent warning.
+	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(14, 15), 3, "The climax before the threshold should warn of imminent collapse.")
+	// A never-rolled threshold yields no warning.
+	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(5, 0), 0, "An unrolled threshold should produce no warning.")
+
 /datum/unit_test/defeat_potion_feed_rescues_downed_victim
 
 /datum/unit_test/defeat_potion_feed_rescues_downed_victim/Run()
@@ -828,6 +853,9 @@
 
 	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+	// Kidnapping only claims horny-defeated prey, so stamp the snapshot the gate checks.
+	victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
 
 	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "A mob with no lair tag cannot kidnap.")
 	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
@@ -836,6 +864,48 @@
 	TEST_ASSERT(captor.try_kidnap_defeated_prey(victim), "The kidnap attempt should succeed.")
 	TEST_ASSERT_NOTNULL(victim.GetComponent(/datum/component/kidnap_captivity), "The kidnapped victim should be in captivity.")
 	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "An already-captive victim cannot be kidnapped again.")
+
+/datum/unit_test/defeat_kidnap_only_claims_horny_prey
+
+/datum/unit_test/defeat_kidnap_only_claims_horny_prey/Run()
+	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
+	allocate(/obj/effect/landmark/kidnap/entrance/unit_test, lair_turf)
+
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, captor, run_loc_floor_bottom_left)
+	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
+
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+	// A plain beatdown defeat - the lighthearted gate must refuse to drag them off.
+	victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_DAMAGE
+	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "A regular (non-horny) defeat should never be kidnappable.")
+
+	// Switch the same victim's defeat to a horny one and now they can be claimed.
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
+	TEST_ASSERT(captor.can_kidnap_defeated_prey(victim), "A horny defeat beside its captor should be kidnappable.")
+
+/datum/unit_test/defeat_kidnap_candidate_ignores_distance
+
+/datum/unit_test/defeat_kidnap_candidate_ignores_distance/Run()
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+	victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
+
+	// The AI candidate check holds without adjacency, so a captor can path toward distant prey...
+	TEST_ASSERT(captor.is_kidnap_candidate(victim), "A horny-defeated victim should be a kidnap candidate regardless of distance.")
+	// ...while a non-horny defeat is never a candidate, and a mob with no lair never kidnaps.
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_DAMAGE
+	TEST_ASSERT(!captor.is_kidnap_candidate(victim), "A non-horny defeat is never a kidnap candidate.")
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
+	captor.kidnap_lair_tag = null
+	TEST_ASSERT(!captor.is_kidnap_candidate(victim), "A mob with no lair tag is never a kidnap candidate.")
 
 /datum/unit_test/defeat_kidnap_blocked_when_outnumbered
 
@@ -852,6 +922,9 @@
 	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
 	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+	// Kidnapping only claims horny-defeated prey, so stamp the snapshot the gate checks.
+	victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
 
 	TEST_ASSERT(captor.kidnap_is_outnumbered(victim), "Two nearby rescuers against a lone captor should count as outnumbered.")
 	TEST_ASSERT(!captor.can_kidnap_defeated_prey(victim), "An outnumbered captor should not be able to drag prey off.")
@@ -896,6 +969,9 @@
 	captor.kidnap_lair_tag = "unit_test_kidnap_lair"
 	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 	victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+	// Kidnapping only claims horny-defeated prey, so stamp the snapshot the gate checks.
+	victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
 
 	TEST_ASSERT(captor.try_kidnap_defeated_prey(victim), "Kidnap should succeed.")
 	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
@@ -980,3 +1056,18 @@
 	var/mob/living/carbon/human/standing = allocate(/mob/living/carbon/human)
 	standing.forceMove(get_turf(pet))
 	TEST_ASSERT(!pet.try_rescue_downed_ally(standing), "A pet cannot 'rescue' someone who is not defeated.")
+
+/datum/unit_test/defeat_revive_time_scales_with_medicine
+
+/datum/unit_test/defeat_revive_time_scales_with_medicine/Run()
+	var/mob/living/carbon/human/medic = allocate(/mob/living/carbon/human)
+
+	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_NONE, TRUE)
+	TEST_ASSERT_EQUAL(medic.defeat_revive_time(), DEFEAT_REVIVE_TIME_MAX, "No medical skill should take the longest to revive.")
+
+	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_LEGENDARY, TRUE)
+	TEST_ASSERT_EQUAL(medic.defeat_revive_time(), DEFEAT_REVIVE_TIME_MIN, "Legendary medicine should revive fastest.")
+
+	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_JOURNEYMAN, TRUE)
+	var/mid = medic.defeat_revive_time()
+	TEST_ASSERT(mid > DEFEAT_REVIVE_TIME_MIN && mid < DEFEAT_REVIVE_TIME_MAX, "Middling medicine should land between the extremes.")

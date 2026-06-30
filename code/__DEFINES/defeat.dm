@@ -62,3 +62,10 @@
 #define DEFEAT_DAMAGE_WARNING_FRACTION 0.7
 #define DEFEAT_ACTIVE_HARM_WINDOW (3 SECONDS)
 #define DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD 10
+/// Empty-handed revive channel: longest (no medical skill) and shortest (legendary). Scales by rank.
+#define DEFEAT_REVIVE_TIME_MAX (150 SECONDS)
+#define DEFEAT_REVIVE_TIME_MIN (45 SECONDS)
+/// Climax count at which the gradual "you are nearing a horny defeat" warnings begin.
+#define DEFEAT_HORNY_WARNING_START 2
+/// Fraction of the (hidden) horny-defeat threshold at which the warning escalates to stage 2.
+#define DEFEAT_HORNY_WARNING_BUILD_FRACTION 0.6

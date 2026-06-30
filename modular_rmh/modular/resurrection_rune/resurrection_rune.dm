@@ -142,6 +142,16 @@
 
 	var/mob/living/carbon/carbon_owner = owner
 	if(rune_controller.can_offer_defeat_rune_return(carbon_owner))
+		// Spell out the price before they spend a charge - the return is powerful but far from free.
+		var/confirm = tgui_alert(carbon_owner, "Calling the rune will haul you to safety and mend your wounds - but it is not free:\n\n\
+			- You are torn from where you fell and wake beside the rune, far away (a compass points back to where you were taken).\n\
+			- The violent pull may rip away your worn clothing and armor - your underwear and bags are spared.\n\
+			- A mana backlash burns away half your mana and leaves you with lingering rune-weariness on top of the injuries of your defeat.\n\
+			- The rune takes its due: a tithe of coin and a tax of your blood, both growing heavier as your charges run low.\n\
+			- This spends one of your limited rune charges. They return slowly over time; spend your last and no rune will answer until they recharge.",
+			"Answer the rune's call?", list("Call the Rune", "Wait"))
+		if(confirm != "Call the Rune")
+			return
 		rune_controller.trigger_defeat_rune_return(carbon_owner)
 		return
 
@@ -954,6 +964,11 @@
 	playsound(destination_turf, 'sound/misc/vampirespell.ogg', 100, FALSE, -1)
 	to_chat(body, span_blue("Despite everything, you are back to life..."))
 	to_chat(body, span_red("...But you remember the gnashing horror of what brought you here in minute detail - and you are terrified of repeating it."))
+	if(had_defeat_knockout)
+		// A hover-tooltip primer on the rune (like the trauma-alert tooltips): short visible line,
+		// full mechanics revealed on hover, so a rescued player can learn the system without spam.
+		var/rune_primer = "The rune runs on a handful of charges that return slowly over time. Each call after the first costs more of your coin and blood, and spending your last leaves the rune silent until it recharges. The rune-weariness and wounds it left behind can be mended by a town healer or at a shrine."
+		to_chat(body, span_notice("Steady yourself - and remember how [span_tooltip(rune_primer, "the rune that saved you")] works, lest your next fall be your last."))
 	apply_resurrection_trauma(body)
 
 /datum/resurrection_rune_controller/proc/body_has_rot(mob/living/carbon/target)

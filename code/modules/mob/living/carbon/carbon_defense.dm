@@ -437,6 +437,14 @@
 		return
 
 	if(has_status_effect(/datum/status_effect/defeat_knockout))
+		if(!defeat_can_be_rescued_by(M))
+			to_chat(M, span_warning("I can't safely rescue [src] right now."))
+			return
+		var/revive_time = M.defeat_revive_time()
+		M.visible_message(span_notice("[M] kneels and works to bring [src] back from defeat..."), span_notice("I begin carefully bringing [src] back from defeat..."))
+		if(!do_after(M, revive_time, target = src))
+			to_chat(M, span_warning("I stop tending to [src]."))
+			return
 		if(defeat_rescue(M, "help_shake"))
 			M.visible_message(span_notice("[M] helps [src] back from defeat."), span_notice("I help [src] back from defeat."))
 			return

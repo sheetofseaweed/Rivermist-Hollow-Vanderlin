@@ -11,6 +11,8 @@
 	/// Climaxes needed for horny defeat this encounter. Rolled lazily (rand 10-20) on the first
 	/// valid hostile-grab climax, per the design - separate from the legacy hostile_grab threshold.
 	var/horny_defeat_climax_threshold = 0
+	/// Highest gradual-warning stage already shown this encounter, so each beat fires only once.
+	var/horny_defeat_warned_stage = 0
 
 /datum/component/defeat_monitor/Initialize(...)
 	if(!isliving(parent))
@@ -155,6 +157,7 @@
 		return FALSE
 	if(!is_defeat_eligible())
 		horny_defeat_climax_count = 0
+		horny_defeat_warned_stage = 0
 		return FALSE
 	if(carbon_parent.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
@@ -162,13 +165,16 @@
 		return FALSE
 	if(action_receiver != carbon_parent)
 		return FALSE
-	if(!action_partner || !action_performer || action_partner != action_performer)
+	// Another mob has to be the one driving the climax - that is the whole anti-self-farm / anti-magic
+	// guard (a solo or self-cast climax has no external instigator). We deliberately do NOT require a
+	// maintained aggressive grab/pull anymore: horny mobs rarely hold their prey the whole encounter,
+	// and a second attacker performing while the first one pulls broke the old `pulledby` check outright.
+	var/mob/living/instigator = action_performer || action_partner
+	if(!instigator || instigator == carbon_parent)
 		return FALSE
-	if(action_partner == carbon_parent)
-		return FALSE
-	if(carbon_parent.pulledby != action_partner)
-		return FALSE
-	if(action_partner.grab_state < GRAB_AGGRESSIVE)
+	// A player instigator only forces a horny defeat while in combat mode - a consensual encounter
+	// (cmode off) never pushes the loss. NPC / AI mobs have no such switch, so they always count.
+	if(!horny_defeat_instigator_counts(!!instigator.client, instigator.cmode))
 		return FALSE
 
 	// Roll this encounter's threshold once, on the first valid hostile climax (10-20 per design).
@@ -176,10 +182,47 @@
 		horny_defeat_climax_threshold = rand(10, 20)
 	horny_defeat_climax_count++
 	if(horny_defeat_climax_count < horny_defeat_climax_threshold)
+		maybe_warn_horny_defeat(carbon_parent)
 		return FALSE
 
 	horny_defeat_climax_count = 0
+	horny_defeat_warned_stage = 0
 	return carbon_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
+
+/// Emits the gradual "you are nearing a horny defeat" warning, but only the first time each escalating
+/// stage is reached this encounter (climaxes are discrete, so this yields three rising beats, not spam).
+/datum/component/defeat_monitor/proc/maybe_warn_horny_defeat(mob/living/victim)
+	var/stage = horny_defeat_warning_stage(horny_defeat_climax_count, horny_defeat_climax_threshold)
+	if(stage <= horny_defeat_warned_stage)
+		return
+	horny_defeat_warned_stage = stage
+	switch(stage)
+		if(1)
+			to_chat(victim, span_warning("A pleasant heat clouds your thoughts - harder to shake off each time."))
+		if(2)
+			to_chat(victim, span_warning("A pleasured weakness spreads through your limbs - you can feel yourself starting to slip."))
+			victim.flash_fullscreen("redflash1")
+		if(3)
+			to_chat(victim, span_userdanger("Your body is at its limit - one more peak and you'll give out completely!"))
+			victim.flash_fullscreen("redflash2")
+
+/// Whether a horny-climax instigator pushes the victim toward defeat. Player-controlled instigators
+/// only count while in combat mode (consensual play, cmode off, never forces a loss); NPC / AI mobs
+/// always count. Pure so the cmode/player matrix is unit-testable without a live client.
+/proc/horny_defeat_instigator_counts(player_controlled, combat_mode)
+	return !player_controlled || combat_mode
+
+/// Pure mapping of climax-count vs the hidden threshold to a warning stage (0 = none .. 3 = imminent).
+/// Kept threshold-relative so the warning intensifies as collapse nears, but always opens at the
+/// DEFEAT_HORNY_WARNING_START-th climax even for a low rolled threshold.
+/proc/horny_defeat_warning_stage(count, threshold)
+	if(threshold <= 0 || count < DEFEAT_HORNY_WARNING_START)
+		return 0
+	if(count >= threshold - 1)
+		return 3
+	if(count >= threshold * DEFEAT_HORNY_WARNING_BUILD_FRACTION)
+		return 2
+	return 1
 
 /datum/component/defeat_ai_opt_in
 	dupe_mode = COMPONENT_DUPE_UNIQUE

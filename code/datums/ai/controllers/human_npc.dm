@@ -36,6 +36,7 @@
 		/datum/ai_planning_subtree/generic_resist,
 		/datum/ai_planning_subtree/generic_stand,
 		/datum/ai_planning_subtree/flee_target,
+		/datum/ai_planning_subtree/kidnap_defeated_prey,
 		/datum/ai_planning_subtree/simple_find_horny,
 		/datum/ai_planning_subtree/horny,
 

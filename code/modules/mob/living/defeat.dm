@@ -82,6 +82,12 @@
 	SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_RESCUED, helper, rescue_source)
 	return TRUE
 
+/// Empty-handed revive channel length, scaled by the reviver's medicine skill: no skill takes the
+/// longest (DEFEAT_REVIVE_TIME_MAX), legendary the shortest (DEFEAT_REVIVE_TIME_MIN).
+/mob/living/proc/defeat_revive_time()
+	var/rank = clamp(get_skill_level(/datum/skill/misc/medicine), SKILL_RANK_NONE, SKILL_RANK_LEGENDARY)
+	return round(DEFEAT_REVIVE_TIME_MAX - (rank / SKILL_RANK_LEGENDARY) * (DEFEAT_REVIVE_TIME_MAX - DEFEAT_REVIVE_TIME_MIN))
+
 /// A loyal pet/ally beside a downed friend frees them - the rescuer is a valid non-hostile mob, so
 /// this is the testable core of the pet-rescue behaviour (and a reusable primitive for other helpers).
 /mob/living/proc/try_rescue_downed_ally(mob/living/fallen)
@@ -506,7 +512,9 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		return FALSE
 	forceMove(destination_turf)
 	AddComponent(/datum/component/kidnap_captivity, lair_tag, captor_faction)
-	to_chat(src, span_userdanger("You are dragged off into a lair, far from any help..."))
+	// Anyone already in the lair sees the fresh captive hauled in; the victim gets their own line.
+	visible_message(span_userdanger("[src] is dragged in and dumped on the ground, freshly captured!"), \
+		span_userdanger("You are dragged off into a lair, far from any help..."))
 	return TRUE
 
 /// Frees a captive: dump them in the wilds and tear down the captivity state.
@@ -633,19 +641,30 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	var/kidnap_lair_tag
 
 /// Can this mob drag the given freshly-defeated victim back to its lair right now?
-/mob/living/proc/can_kidnap_defeated_prey(mob/living/victim)
+/// Everything that makes a downed victim claimable EXCEPT proximity/outnumbering, so the AI can spot
+/// a candidate across the room and path toward it. can_kidnap_defeated_prey adds the here-and-now gates.
+/mob/living/proc/is_kidnap_candidate(mob/living/victim)
 	if(!kidnap_lair_tag)
 		return FALSE
 	if(!istype(victim) || victim == src)
 		return FALSE
 	if(!victim.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
-	if(victim.GetComponent(/datum/component/kidnap_captivity))
+	// Kept lighthearted: only a *horny* defeat gets someone hauled off to a lair. A plain beatdown
+	// leaves them downed where they fell - no being dragged away just to be mauled again.
+	if(victim.last_defeat_snapshot?.reason != DEFEAT_REASON_HORNY)
 		return FALSE
-	if(!Adjacent(victim))
+	if(victim.GetComponent(/datum/component/kidnap_captivity))
 		return FALSE
 	// Only the mob that actually put them down gets to claim the prize.
 	if(!victim.defeat_recent_source_is(src))
+		return FALSE
+	return TRUE
+
+/mob/living/proc/can_kidnap_defeated_prey(mob/living/victim)
+	if(!is_kidnap_candidate(victim))
+		return FALSE
+	if(!Adjacent(victim))
 		return FALSE
 	// Won't risk hauling prey off with rescuers about - hold the body instead.
 	if(kidnap_is_outnumbered(victim))
@@ -682,6 +701,53 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	victim.emote("scream")
 	visible_message(span_danger("[src] hauls [victim] away toward its lair!"), span_danger("I haul [victim] off to the lair..."))
 	return victim.kidnap_to_lair(kidnap_lair_tag, faction)
+
+// --- AI wiring ---------------------------------------------------------------------------------
+// Simple hostile mobs claim prey straight from AttackingTarget (hostile.dm). Carbon NPCs (goblins,
+// bandits) attack through the human_npc committed-swing flow instead, which never calls that hook -
+// so they need this planning subtree to notice a horny-defeated victim and go haul it off.
+
+/datum/ai_planning_subtree/kidnap_defeated_prey
+
+/datum/ai_planning_subtree/kidnap_defeated_prey/SelectBehaviors(datum/ai_controller/controller, delta_time)
+	var/mob/living/living_pawn = controller.pawn
+	if(!istype(living_pawn) || !living_pawn.kidnap_lair_tag)
+		return
+	var/mob/living/target = controller.blackboard[BB_KIDNAP_TARGET]
+	if(target && (QDELETED(target) || !living_pawn.is_kidnap_candidate(target)))
+		controller.clear_blackboard_key(BB_KIDNAP_TARGET)
+		target = null
+	if(!target)
+		for(var/mob/living/candidate in view(KIDNAP_GUARD_VIEW, living_pawn))
+			if(!living_pawn.is_kidnap_candidate(candidate))
+				continue
+			target = candidate
+			controller.set_blackboard_key(BB_KIDNAP_TARGET, candidate)
+			break
+	if(!target)
+		return
+	controller.queue_behavior(/datum/ai_behavior/kidnap_defeated_prey, BB_KIDNAP_TARGET)
+	return SUBTREE_RETURN_FINISH_PLANNING
+
+/datum/ai_behavior/kidnap_defeated_prey
+	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM
+	required_distance = 1
+
+/datum/ai_behavior/kidnap_defeated_prey/perform(seconds_per_tick, datum/ai_controller/controller, target_key)
+	. = ..()
+	var/mob/living/pawn = controller.pawn
+	var/mob/living/victim = controller.blackboard[target_key]
+	if(!isliving(pawn) || !isturf(pawn.loc) || QDELETED(victim) || !pawn.is_kidnap_candidate(victim))
+		finish_action(controller, FALSE, target_key)
+		return
+	set_movement_target(controller, victim)
+	if(pawn.Adjacent(victim))
+		pawn.try_kidnap_defeated_prey(victim)
+		finish_action(controller, TRUE, target_key)
+
+/datum/ai_behavior/kidnap_defeated_prey/finish_action(datum/ai_controller/controller, succeeded, target_key)
+	. = ..()
+	controller.clear_blackboard_key(target_key)
 
 // Faction mobs that drag defeated prey to their lairs. Mappers place entrance + escape markers
 // tagged with the matching lair_tag ("greenskin_lair" for orcs/goblins, "wolfden_lair" for canines).
@@ -1028,10 +1094,10 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	lair_tag = "bandit_lair"
 
 /obj/effect/landmark/kidnap/escape/greenskin
-	lair_tag = "greenskinlair"
+	lair_tag = "greenskin_lair"
 
 /obj/effect/landmark/kidnap/entrance/greenskin
-	lair_tag = "greenskinlair"
+	lair_tag = "greenskin_lair"
 
 /obj/effect/landmark/kidnap/escape/wolfden
 	lair_tag = "wolfden_lair"
