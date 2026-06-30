@@ -481,13 +481,6 @@ All foods are distributed among various categories. Use common sense.
 					M.add_stress(/datum/stress_event/dirty_platter)
 				else if(faretype != FARE_LAVISH && !plate_check.dirty)
 					faretype += 1
-				plate_check.fork_usages +=1
-				if(plate_check.fork_usages >= plate_check.max_fork_usages && !plate_check.dirty)
-					plate_check.dirty = TRUE
-					var/datum/component/particle_spewer = plate_check.GetComponent(/datum/component/particle_spewer/sparkle)
-					if(particle_spewer)
-						qdel(particle_spewer)
-					plate_check.update_appearance(UPDATE_OVERLAYS)
 
 		if(M == user)
 			switch(M.nutrition)
@@ -557,8 +550,18 @@ All foods are distributed among various categories. Use common sense.
 				bitecount++
 				on_consume(M)
 				checkLiked(fraction, M)
-				if(bitecount >= bitesize && !QDELETED(src))
-					qdel(src)
+				if(bitecount >= bitesize)
+					// The food is finished: count one usage against the plate (per finished dish, not per bite).
+					if(fork_check && plate_check && !plate_check.dirty)
+						plate_check.fork_usages += 1
+						if(plate_check.fork_usages >= plate_check.max_fork_usages)
+							plate_check.dirty = TRUE
+							var/datum/component/particle_spewer = plate_check.GetComponent(/datum/component/particle_spewer/sparkle)
+							if(particle_spewer)
+								qdel(particle_spewer)
+							plate_check.update_appearance(UPDATE_OVERLAYS)
+					if(!QDELETED(src))
+						qdel(src)
 				return TRUE
 		playsound(M,'sound/misc/eat.ogg', rand(30,60), TRUE)
 		qdel(src)

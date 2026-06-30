@@ -19,4 +19,25 @@ export type ExaminePanelData = {
   has_headshot: boolean;
   has_nsfw_headshot: boolean;
   preview_image: string;
+  worn_items: WornItemsData;
+};
+
+export type ExamineItem = {
+  name: string;
+  desc: string;
+  icon: string;
+  quality: number;
+};
+
+export type WornSlot = {
+  label: string;
+  status: "item" | "hidden" | "empty";
+  item?: ExamineItem;
+};
+
+export type HeldItem = ExamineItem & { wielded: boolean };
+
+export type WornItemsData = {
+  slots: Record<string, WornSlot>;
+  hands: HeldItem[];
 };

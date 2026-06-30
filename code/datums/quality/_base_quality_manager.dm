@@ -79,6 +79,9 @@
 	var/modifier = quality_data["modifier"]
 	var/name_prefix = quality_data["name_prefix"]
 
+	// Record the tier so the examine preview can color this item's slot frame
+	target.examine_quality_tier = get_quality_tier(final_quality)
+
 	// Apply name prefix
 	if(name_prefix && name_prefix != "")
 		target.name = "[name_prefix] [target.name]"

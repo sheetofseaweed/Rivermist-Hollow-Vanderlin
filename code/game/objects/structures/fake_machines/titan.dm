@@ -142,15 +142,28 @@ GLOBAL_LIST_EMPTY(roundstart_court_agents)
 /// Return mode to NONE
 /obj/structure/fake_machine/titan/proc/reset_mode()
 	mode = MODE_NONE
-	var/obj/structure/throne/throne = throne_weakref.resolve()
+	var/obj/structure/throne/throne = get_throne() //RMH EDITED: was throne_weakref.resolve(), crashed when weakref was null
 	if(!throne)
 		return
 	throne.remove_filters_glow()
 	throne.throat_mode = mode
 
+//RMH EDITED START
+/// Resolves the linked throne, lazily re-locating it if the weakref was never
+/// set at LateInitialize (e.g. map/init ordering). Prevents a null-deref crash
+/// in reset_mode()/switch_mode() when no throne was cached.
+/obj/structure/fake_machine/titan/proc/get_throne()
+	var/obj/structure/throne/throne = throne_weakref?.resolve()
+	if(!throne)
+		throne = locate(/obj/structure/throne) in loc
+		if(throne)
+			throne_weakref = WEAKREF(throne)
+	return throne
+//RMH EDITED END
+
 /obj/structure/fake_machine/titan/proc/switch_mode(mode_to_switch_to)
 	mode = mode_to_switch_to
-	var/obj/structure/throne/throne = throne_weakref.resolve()
+	var/obj/structure/throne/throne = get_throne() //RMH EDITED: was throne_weakref.resolve(), crashed when weakref was null
 	if(!throne)
 		return
 
@@ -457,6 +470,166 @@ GLOBAL_LIST_EMPTY(roundstart_court_agents)
 		else if(prob(10))
 			pleb.emote("scream")
 		pleb.set_silence(10 SECONDS)
+
+//RMH EDITED START
+// TGUI layer over the spoken command flow. The GUI is a parallel path to the
+// voice commands (which keep working). Every action re-runs the SAME permission
+// checks the spoken flow used (perform_check / is_valid_mob) so the GUI cannot
+// bypass them. Text commands also make the character speak the text, matching
+// the original "say it aloud" behaviour.
+
+/obj/structure/fake_machine/titan/ui_state(mob/user)
+	return GLOB.physical_state
+
+/obj/structure/fake_machine/titan/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "Throne", "DUCAL COURT", 880, 720)
+		// No live timer here; refresh only on actions to spare the server.
+		ui.set_autoupdate(FALSE)
+		ui.open()
+
+/// Silent crown check for the UI (the spoken has_crown() is noisy).
+/obj/structure/fake_machine/titan/proc/wears_crown(mob/living/carbon/human/H)
+	return ishuman(H) && H.head && istype(H.head, /obj/item/clothing/head/crown/serpcrown)
+
+/obj/structure/fake_machine/titan/ui_data(mob/user)
+	var/list/data = list()
+	var/mob/living/carbon/human/H = user
+	var/wearing_crown = wears_crown(H)
+	var/is_ruler = (SSticker.rulermob == H)
+	var/is_regent = (SSticker.regent_mob == H)
+	var/worthy = (is_ruler || is_regent)
+	data["wearing_crown"] = wearing_crown ? TRUE : FALSE
+	data["is_ruler"] = is_ruler ? TRUE : FALSE
+	data["is_regent"] = is_regent ? TRUE : FALSE
+	data["worthy"] = worthy ? TRUE : FALSE
+	data["cooldown_ok"] = SScommunications.can_announce(user) ? TRUE : FALSE
+	// Ruler-only commands need crown + worthy; announcements/summon-key need only the crown.
+	data["can_command"] = (wearing_crown && worthy) ? TRUE : FALSE
+	data["can_announce"] = (wearing_crown) ? TRUE : FALSE
+	data["ruler_name"] = SSticker.rulermob ? SSticker.rulermob.real_name : "None"
+	data["regent_name"] = SSticker.regent_mob ? SSticker.regent_mob.real_name : "None"
+	data["tax_percent"] = round(SStreasury.tax_value * 100)
+	// Heraldry preview (the custom flag uses these lord colours).
+	data["lord_primary"] = GLOB.lordprimary ? GLOB.lordprimary : null
+	data["lord_secondary"] = GLOB.lordsecondary ? GLOB.lordsecondary : null
+	data["flag_icon"] = /obj/structure/fluff/walldeco::icon
+	data["flag_state"] = /obj/structure/fluff/walldeco/customflag::icon_state
+	data["laws"] = GLOB.laws_of_the_land ? GLOB.laws_of_the_land.Copy() : list()
+	data["decrees"] = GLOB.lord_decrees ? GLOB.lord_decrees.Copy() : list()
+	data["outlaws"] = GLOB.outlawed_players ? GLOB.outlawed_players.Copy() : list()
+	return data
+
+/obj/structure/fake_machine/titan/ui_act(action, list/params)
+	. = ..()
+	if(.)
+		return
+	if(!ishuman(usr))
+		return
+	var/mob/living/carbon/human/user = usr
+	switch(action)
+		if("help")
+			help()
+			return TRUE
+		if("summon_crown")
+			if(is_valid_mob(user))
+				summon_crown(user)
+			return TRUE
+		if("summon_key")
+			if(perform_check(user, FALSE))
+				summon_key(user)
+			return TRUE
+		if("make_announcement")
+			var/message = trim(params["text"])
+			if(!message)
+				return TRUE
+			if(!perform_check(user, FALSE))
+				return TRUE
+			user.say(message)			// character speaks it, as in the voice flow
+			make_announcement(user, message)
+			return TRUE
+		if("make_decree")
+			var/message = trim(params["text"])
+			if(!message)
+				return TRUE
+			if(!perform_check(user))
+				return TRUE
+			user.say(message)
+			make_decree(user, message)
+			return TRUE
+		if("make_law")
+			var/message = trim(params["text"])
+			if(!message)
+				return TRUE
+			if(!perform_check(user))
+				return TRUE
+			user.say(message)
+			make_law(user, message)
+			return TRUE
+		if("remove_law")
+			if(!perform_check(user))
+				return TRUE
+			var/idx = text2num(params["index"])
+			if(idx)
+				remove_law("remove law [idx]")
+			return TRUE
+		if("remove_decree")
+			if(!perform_check(user))
+				return TRUE
+			var/idx = text2num(params["index"])
+			if(idx)
+				remove_decree("remove decree [idx]")
+			return TRUE
+		if("purge_laws")
+			if(!perform_check(user))
+				return TRUE
+			purge_laws()
+			return TRUE
+		if("declare_outlaw")
+			var/name = trim(params["name"])
+			if(!name)
+				return TRUE
+			if(!perform_check(user))
+				return TRUE
+			declare_outlaw(user, name)
+			return TRUE
+		if("pardon_outlaw")
+			var/name = trim(params["name"])
+			if(!name)
+				return TRUE
+			if(!perform_check(user))
+				return TRUE
+			pardon_outlaw(user, name)
+			return TRUE
+		if("set_taxes")
+			if(!perform_check(user))
+				return TRUE
+			set_taxes(user)				// opens its own numeric prompt
+			return TRUE
+		if("change_position")
+			if(!perform_check(user))
+				return TRUE
+			change_position(user)		// opens its own target/role prompts
+			return TRUE
+		if("appoint_regent")
+			if(!perform_check(user))
+				return TRUE
+			appoint_regent(user)
+			return TRUE
+		if("silence")
+			if(!perform_check(user))
+				return TRUE
+			silence_plebs(user)
+			return TRUE
+		if("change_colors")
+			// Reuses the exact Burgomaster heraldry flow (opens its own colour
+			// pickers and fires COMSIG_LORD_COLORS_SET). Ruler/Regent + crown only.
+			if(!perform_check(user))
+				return TRUE
+			user.lord_color_choice()
+			return TRUE
+//RMH EDITED END
 
 
 /obj/structure/fake_machine/titan/Hear(message, atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, list/spans, list/message_mods = list(), original_message)

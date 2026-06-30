@@ -179,13 +179,12 @@
 
 /obj/item/reagent_containers/glass/bowl/examine(mob/user)
 	. = ..()
-	desc = initial(desc)
 	if(dirty)
-		desc += span_boldwarning("\nThis bowl is filthy... absolutely disgusting.")
+		. += span_boldwarning("This bowl is filthy... absolutely disgusting.")
 	else if(cleaned)
-		desc += span_notice("\nThis bowl was cleaned recently!")
+		. += span_notice("This bowl was cleaned recently!")
 	else
-		desc += "\nThis bowl looks properly stored and clean enough."
+		. += "This bowl looks properly stored and clean enough."
 
 /obj/item/reagent_containers/glass/bowl/update_overlays()
 	. = ..()
@@ -255,14 +254,15 @@
 		if(istype(reagents, /datum/reagent/consumable/soup))
 			var/datum/reagent/consumable/soup/soup_check = reagents
 			soup_check.taste_mult +=1
-	if(reagents.get_reagent_amount(/datum/reagent/water) != reagents.total_volume)
-		usages +=1
-	if(usages >= max_usages && !dirty)
-		dirty = TRUE
-		var/datum/component/particle_spewer = GetComponent(/datum/component/particle_spewer/sparkle)
-		if(particle_spewer)
-			qdel(particle_spewer)
-		update_appearance(UPDATE_OVERLAYS)
+	// Only count a usage once the bowl is fully emptied (this gulp finishes it), and only for actual food (not plain water).
+	if(reagents.total_volume <= amount_per_transfer_from_this && reagents.get_reagent_amount(/datum/reagent/water) != reagents.total_volume)
+		usages += 1
+		if(usages >= max_usages && !dirty)
+			dirty = TRUE
+			var/datum/component/particle_spewer = GetComponent(/datum/component/particle_spewer/sparkle)
+			if(particle_spewer)
+				qdel(particle_spewer)
+			update_appearance(UPDATE_OVERLAYS)
 	playsound(src, 'sound/misc/eat.ogg', rand(30, 60), TRUE)
 	user.visible_message(span_info("[user] eats from [src]."), \
 			span_notice("I swallow a gulp of [src]."))
