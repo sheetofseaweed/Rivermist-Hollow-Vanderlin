@@ -30,7 +30,7 @@
 	var/absorbing = FALSE //absorbs liquids within slowly. Wont absorb reagent_to_make type, refilling and hungerhelp are irrelevant to this.
 	var/absorbrate = 1 //refilling and hungerhelp are irrelevant to this, each life tick. NO LESS THAN 1 DIGESTS RIGHT.
 	var/absorbmult = 1 //free gains
-	var/driprate = 0.1
+	var/driprate = 0.2
 	var/spiller = FALSE //toggles if it will spill its stored_items when not plugged.
 	var/blocker = ITEM_SLOT_SHIRT //pick an item slot
 	var/additional_blocker
@@ -142,7 +142,8 @@
 	if(amount <= 0)
 		return
 
-	if(!drips_as_drops || amount > LIQUID_DRIP_MAX_UNITS) //big dribble or non-dropping organ: pool as liquid like before.
+	//big dribble, a non-dropping organ, or an owner whose quirk forces raw puddles: pool as liquid, skipping the decal.
+	if(!drips_as_drops || amount > LIQUID_DRIP_MAX_UNITS || owner?.has_quirk(/datum/quirk/peculiarity/free_flowing))
 		target.add_liquid_from_reagents(reagents, amount = amount)
 		reagents.remove_all(amount)
 		return
@@ -669,6 +670,8 @@
 	icon_state = "drip1"
 	random_icon_states = list("drip1", "drip2", "drip3", "drip4", "drip5")
 	alpha = 200
+	/// Once the drop is ~halfway to becoming a puddle it swaps to a larger "fem" splatter sprite, chosen once.
+	var/grown_to_fem = FALSE
 
 /obj/effect/decal/cleanable/liquid_drip/Initialize(mapload)
 	. = ..()
@@ -677,14 +680,33 @@
 	pixel_x = base_pixel_x + rand(-5, 5)
 	pixel_y = base_pixel_y + rand(-3, 3)
 
-/// Pulls `amount` units out of `source` into our reagents, then tints to match the held fluid. The sprites are
-/// greyscale, so a plain colour multiply reproduces the liquid colour faithfully. Must go through add_atom_colour:
-/// assigning `color` directly is overwritten by the atom-colour priority system on the next update_atom_colour().
+/// Pulls `amount` units out of `source` into our reagents, then tints to match the held fluid and mirrors its
+/// translucency. Sprites are greyscale so a plain colour multiply reproduces the fluid colour faithfully; colour must
+/// go through add_atom_colour or the atom-colour priority system overwrites a direct `color =` on the next update.
 /obj/effect/decal/cleanable/liquid_drip/proc/absorb_drip(datum/reagents/source, amount)
 	if(source && amount > 0 && reagents)
 		source.trans_to(src, amount)
-	if(reagents?.total_volume)
-		add_atom_colour(mix_color_from_reagents(reagents.reagent_list), FIXED_COLOUR_PRIORITY)
+	if(!reagents?.total_volume)
+		return
+	add_atom_colour(mix_color_from_reagents(reagents.reagent_list), FIXED_COLOUR_PRIORITY)
+	// translucent liquids leave translucent drops: route the fluid's opacity to our alpha.
+	alpha = get_mixed_opacity()
+	// halfway to a puddle: grow into a larger, random "fem" splatter.
+	if(!grown_to_fem && reagents.total_volume >= (LIQUID_DRIP_MAX_UNITS * 0.5))
+		grown_to_fem = TRUE
+		icon = 'modular_rmh/icons/obj/genitals/cum_effects.dmi'
+		icon_state = "fem[rand(1, 10)]"
+
+/// Volume-weighted average opacity (0-255) of our held reagents. For a single fluid this is just its own opacity,
+/// so a pure femcum/cum drop takes that reagent's opacity 1:1. (The liquid-turf formula's +1/max floors distort
+/// the sub-unit volumes a drip deals in, so we use a straight weighted average instead.)
+/obj/effect/decal/cleanable/liquid_drip/proc/get_mixed_opacity()
+	if(!reagents?.total_volume)
+		return alpha
+	var/weighted_opacity = 0
+	for(var/datum/reagent/reagent as anything in reagents.reagent_list)
+		weighted_opacity += reagent.opacity * reagent.volume
+	return clamp(round(weighted_opacity / reagents.total_volume), 0, 255)
 
 #undef LIQUID_DRIP_MAX_UNITS
 #undef DRIP_PRESSURE_THRESHOLD
