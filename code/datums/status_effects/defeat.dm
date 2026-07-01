@@ -3,6 +3,8 @@
 	duration = STATUS_EFFECT_PERMANENT
 	alert_type = /atom/movable/screen/alert/status_effect/defeat_knockout
 	remove_on_fullheal = FALSE
+	/// Timer that lets a horny knockout wear off on its own (the light case); null for other defeats.
+	var/self_recover_timer
 
 /datum/status_effect/defeat_knockout/on_apply()
 	. = ..()
@@ -25,6 +27,8 @@
 		// existing "lovehud" overlay) floods over it, so it never looks like a plain beatdown.
 		owner.overlay_fullscreen("defeat_horny", /atom/movable/screen/fullscreen/love, 10)
 		to_chat(owner, span_userdanger("Your body finally gives out, overwhelmed - you sink down, flushed and spent, too weak to resist."))
+		// The light case: a horny knockout wears off on its own after a short while (unless kidnapped).
+		self_recover_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_horny_self_recover)), DEFEAT_HORNY_SELF_RECOVER_TIME, TIMER_STOPPABLE)
 	else
 		to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."))
 	to_chat(owner, span_notice("Another can bring you back: a curative potion fed to you, a healer's or holy hand, or other aid - but never your own doing. If the rune is yours to call, it may answer too."))
@@ -37,6 +41,9 @@
 		owner.balloon_alert_to_viewers("defeated!")
 
 /datum/status_effect/defeat_knockout/on_remove()
+	if(self_recover_timer)
+		deltimer(self_recover_timer)
+		self_recover_timer = null
 	if(!owner || QDELETED(owner))
 		return
 	owner.clear_fullscreen("defeat", FALSE)

@@ -58,7 +58,27 @@
 
 	last_defeat_snapshot = snapshot
 	apply_status_effect(/datum/status_effect/defeat_knockout)
+	defeat_ensure_emergency_rune_link()
 	defeat_stabilize_from_snapshot(snapshot)
+	return TRUE
+
+/// Safeguard for KO+Rune players who fall with no working rune link (never linked, or their rune was
+/// destroyed): forge an emergency bond to the public city rune on the spot, so the rune-return path
+/// can still reach them instead of leaving them stranded as if they were KO Only. No-op for other modes.
+/mob/living/proc/defeat_ensure_emergency_rune_link()
+	if(defeat_mode != DEFEAT_MODE_KO_RUNE)
+		return FALSE
+	if(!ishuman(src) || !mind)
+		return FALSE
+	// Already tied to a live rune - nothing to do.
+	if(get_resurrection_rune_controller_for_user(src))
+		return FALSE
+	var/obj/structure/resurrection_rune/emergency_rune = get_emergency_resurrection_rune()
+	if(!emergency_rune?.resrunecontroler)
+		return FALSE
+	if(!emergency_rune.resrunecontroler.add_user(src))
+		return FALSE
+	to_chat(src, span_blue("As you fall, a distant rune flickers alight and seizes your fading thread - an emergency bond, forged in the nick of time."))
 	return TRUE
 
 /mob/living/proc/defeat_rescue(mob/living/helper, rescue_source = "help")
@@ -81,6 +101,17 @@
 	apply_defeat_snapshot_debuffs()
 	SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_RESCUED, helper, rescue_source)
 	return TRUE
+
+/// A horny knockout is the light case: after DEFEAT_HORNY_SELF_RECOVER_TIME the victim picks themselves
+/// back up unaided (still keeping the Lewd Exhaustion aftermath). Suppressed once kidnapped - captivity
+/// runs on its own KO-release clock, so a captive can't wriggle free just by waiting out this timer.
+/mob/living/proc/defeat_horny_self_recover()
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(GetComponent(/datum/component/kidnap_captivity))
+		return FALSE
+	to_chat(src, span_notice("The haze of exhaustion lifts - your strength trickles back, and you pull yourself together."))
+	return perform_defeat_rescue(null, "self-recovery")
 
 /// Empty-handed revive channel length, scaled by the reviver's medicine skill: no skill takes the
 /// longest (DEFEAT_REVIVE_TIME_MAX), legendary the shortest (DEFEAT_REVIVE_TIME_MIN).
@@ -173,11 +204,14 @@
 
 /mob/living/proc/defeat_is_immediate_hazard()
 	var/turf/current_turf = get_turf(src)
-	if(istype(current_turf, /turf/open/lava) || istype(current_turf, /turf/open/lava/acid))
-		return TRUE
-	// Pits/chasms (open space) gib on the fall, which the design treats as "unfair" and rune-worthy.
-	if(istype(current_turf, /turf/open/openspace))
-		return TRUE
+	if(!current_turf)
+		return FALSE
+	// Only lava/acid and open chasms are "unfair instant death" turfs worth an auto-rune - but only
+	// if the turf would actually claim us *right now*. can_traverse_safely already excludes anyone
+	// merely passing over: flying, floating, mid-jump (thrown), or phasing/shadow-walking. So a jump
+	// across a lava channel no longer triggers the rune - only genuinely standing in it does.
+	if(islava(current_turf) || istype(current_turf, /turf/open/openspace))
+		return !current_turf.can_traverse_safely(src)
 	return FALSE
 
 /// This fork's actual lethal conditions, so the defeat net catches every death path - not just the

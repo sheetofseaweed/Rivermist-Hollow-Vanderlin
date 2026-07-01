@@ -223,6 +223,38 @@
 	TEST_ASSERT_EQUAL(defeat_reason, DEFEAT_REASON_HAZARD, "Immediate rune hazards should preserve the hazard defeat reason.")
 	TEST_ASSERT(queued_for_resurrection, "Immediate hazards should queue emergency rune rescue even for KO Only users.")
 
+/datum/unit_test/defeat_unlinked_ko_rune_gets_emergency_link
+
+/datum/unit_test/defeat_unlinked_ko_rune_gets_emergency_link/Run()
+	var/turf/rune_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/structure/resurrection_rune/city_rune = allocate(/obj/structure/resurrection_rune, rune_turf)
+	city_rune.rune_tag = RUNE_LINK_CITY
+
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_mode = DEFEAT_MODE_KO_RUNE
+	test_human.rune_linked = RUNE_LINK_NONE
+	test_human.mind = allocate(/datum/mind, "defeat-emergency-link-user")
+	test_human.mind.current = test_human
+
+	TEST_ASSERT_NULL(get_resurrection_rune_controller_for_user(test_human), "Setup: the user should start with no rune link.")
+	TEST_ASSERT(test_human.defeat_ensure_emergency_rune_link(), "An unlinked KO+Rune user should receive an emergency link on defeat.")
+	TEST_ASSERT_NOTNULL(get_resurrection_rune_controller_for_user(test_human), "After the emergency link the user should resolve to a live rune controller.")
+	TEST_ASSERT_EQUAL(test_human.rune_linked, RUNE_LINK_CITY, "The emergency bond should link to the public city rune.")
+	TEST_ASSERT(!test_human.defeat_ensure_emergency_rune_link(), "A user already tied to a rune should not be re-linked.")
+
+	// KO Only users opted out of the rune entirely - they never get an emergency bond.
+	var/mob/living/carbon/human/ko_only = allocate(/mob/living/carbon/human)
+	ko_only.defeat_mode = DEFEAT_MODE_KO_ONLY
+	ko_only.rune_linked = RUNE_LINK_NONE
+	ko_only.mind = allocate(/datum/mind, "defeat-emergency-link-koonly")
+	ko_only.mind.current = ko_only
+	TEST_ASSERT(!ko_only.defeat_ensure_emergency_rune_link(), "A KO Only user should never receive an emergency rune bond.")
+
+	test_human.mind.current = null
+	test_human.mind = null
+	ko_only.mind.current = null
+	ko_only.mind = null
+
 /datum/unit_test/defeat_knockout_traits_are_custom
 
 /datum/unit_test/defeat_knockout_traits_are_custom/Run()
@@ -636,21 +668,32 @@
 	TEST_ASSERT_EQUAL(overdraw, 380, "A blood tax larger than available blood should draw only what remains.")
 	TEST_ASSERT_EQUAL(test_human.blood_volume, 0, "Over-drawing blood should leave the mob empty, not negative.")
 
-/datum/unit_test/defeat_openspace_is_immediate_hazard
+/datum/unit_test/defeat_hazard_only_when_not_passing_over
 
-/datum/unit_test/defeat_openspace_is_immediate_hazard/Run()
+/datum/unit_test/defeat_hazard_only_when_not_passing_over/Run()
 	var/turf/original_turf = get_step(run_loc_floor_bottom_left, EAST)
 	var/original_turf_type = original_turf.type
-	var/list/original_baseturfs = original_turf.baseturfs
 	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human, original_turf)
 
 	TEST_ASSERT(!test_human.defeat_is_immediate_hazard(), "A normal floor should not count as an immediate defeat hazard.")
 
-	var/turf/open/openspace/pit = original_turf.ChangeTurf(/turf/open/openspace)
-	test_human.forceMove(pit)
-	TEST_ASSERT(test_human.defeat_is_immediate_hazard(), "Open space (a pit/chasm) should count as an immediate defeat hazard.")
+	var/turf/open/lava/lava = original_turf.ChangeTurf(/turf/open/lava)
+	test_human.forceMove(lava)
+	TEST_ASSERT(test_human.defeat_is_immediate_hazard(), "Standing in lava should count as an immediate defeat hazard.")
 
-	pit.ChangeTurf(original_turf_type, original_baseturfs)
+	// Flying over the lava is not a hazard - you are not actually in it.
+	test_human.movement_type |= FLYING
+	TEST_ASSERT(!test_human.defeat_is_immediate_hazard(), "Flying over lava should not count as a defeat hazard.")
+	test_human.movement_type &= ~FLYING
+	TEST_ASSERT(test_human.defeat_is_immediate_hazard(), "Landing back in the lava should count as a hazard again.")
+
+	// Mid-jump (thrown) across the lava is likewise safe.
+	test_human.throwing = TRUE
+	TEST_ASSERT(!test_human.defeat_is_immediate_hazard(), "Jumping over lava should not count as a defeat hazard.")
+	test_human.throwing = FALSE
+
+	// Leave the test tile as we found it.
+	lava.ChangeTurf(original_turf_type)
 
 /datum/unit_test/defeat_injury_profiles_match_design
 
@@ -773,6 +816,28 @@
 	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(14, 15), 3, "The climax before the threshold should warn of imminent collapse.")
 	// A never-rolled threshold yields no warning.
 	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(5, 0), 0, "An unrolled threshold should produce no warning.")
+
+/datum/unit_test/defeat_horny_self_recovery
+
+/datum/unit_test/defeat_horny_self_recovery/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.defeat_system_ai_opt_in = TRUE
+	patient.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "Setup: the horny defeat should apply a knockout.")
+
+	// Fire the self-recovery the timer would eventually call.
+	TEST_ASSERT(patient.defeat_horny_self_recover(), "A horny knockout should self-recover on its own.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "Self-recovery should clear the knockout.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/horny), "Self-recovery should still leave the Lewd Exhaustion aftermath.")
+	TEST_ASSERT(!patient.defeat_horny_self_recover(), "Self-recovery is a no-op once the knockout is gone.")
+
+	// A kidnapped victim cannot self-recover - captivity governs their release instead.
+	var/mob/living/carbon/human/captive = allocate(/mob/living/carbon/human)
+	captive.defeat_system_ai_opt_in = TRUE
+	captive.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL)
+	captive.AddComponent(/datum/component/kidnap_captivity, "unit_test_kidnap_lair")
+	TEST_ASSERT(!captive.defeat_horny_self_recover(), "A kidnapped victim should not self-recover.")
+	TEST_ASSERT_NOTNULL(captive.has_status_effect(/datum/status_effect/defeat_knockout), "A kidnapped victim should stay knocked out despite the self-recover window.")
 
 /datum/unit_test/defeat_potion_feed_rescues_downed_victim
 

@@ -42,6 +42,22 @@
 
 	return pick(tagged_markers)
 
+/// The rune an unlinked-but-should-be-linked mob falls back to (the defeat-system emergency bond).
+/// Prefers the public city rune, then any ordinary sub-rune, and only the master rune as a last resort.
+/proc/get_emergency_resurrection_rune()
+	var/obj/structure/resurrection_rune/city_rune = find_resurrection_rune_by_tag(RUNE_LINK_CITY)
+	if(city_rune?.resrunecontroler)
+		return city_rune
+	var/obj/structure/resurrection_rune/main_fallback
+	for(var/obj/structure/resurrection_rune/rune as anything in GLOB.global_resurrunes)
+		if(!rune.resrunecontroler)
+			continue
+		if(rune.is_main)
+			main_fallback = rune
+			continue
+		return rune
+	return main_fallback
+
 /proc/get_resurrection_rune_controller_for_user(mob/living/carbon/user)
 	if(!ishuman(user))
 		return null

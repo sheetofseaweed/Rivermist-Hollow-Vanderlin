@@ -67,5 +67,7 @@
 #define DEFEAT_REVIVE_TIME_MIN (45 SECONDS)
 /// Climax count at which the gradual "you are nearing a horny defeat" warnings begin.
 #define DEFEAT_HORNY_WARNING_START 2
+/// How long a horny knockout lasts before the victim picks themselves back up unaided (the light case).
+#define DEFEAT_HORNY_SELF_RECOVER_TIME (2 MINUTES)
 /// Fraction of the (hidden) horny-defeat threshold at which the warning escalates to stage 2.
 #define DEFEAT_HORNY_WARNING_BUILD_FRACTION 0.6
