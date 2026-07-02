@@ -740,8 +740,9 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		if((slot in optional_organ_slots) && !C.dna.organ_dna[slot])
 			should_have = FALSE
 
+		var/keep_body_storage_organ = isnull(pref_load) && oldorgan?.is_body_storage_organ()
 		var/list/transfer_items
-		if(oldorgan && (!should_have || replace_current) && !(oldorgan.zone in excluded_zones))
+		if(oldorgan && (!should_have || replace_current) && !(oldorgan.zone in excluded_zones) && !keep_body_storage_organ)
 			if(slot == ORGAN_SLOT_BRAIN)
 				var/obj/item/organ/brain/brain = oldorgan
 				if(!brain.decoy_override)//"Just keep it if it's fake" - confucius, probably

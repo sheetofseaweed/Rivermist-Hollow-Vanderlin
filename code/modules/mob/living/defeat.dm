@@ -590,14 +590,34 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 				spots += spot
 	return length(spots) ? pick(spots) : null
 
+/// Toggle handed to a released captive: steel yourself and horny mobs leave you be. Granted on
+/// release_from_knockout, torn down when captivity ends (escape / rune / surrender), so it never
+/// follows the player out of the lair.
+/datum/action/innate/defeat_refuse_advances
+	name = "Refuse Advances"
+	desc = "Steel yourself and rebuff the lair - its denizens will leave you be. Toggle again to relent."
+	button_icon_state = "shieldsparkles"
+
+/datum/action/innate/defeat_refuse_advances/Activate()
+	if(!isliving(owner))
+		return
+	if(HAS_TRAIT(owner, TRAIT_DEFEAT_REFUSE_ADVANCES))
+		REMOVE_TRAIT(owner, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
+		to_chat(owner, span_notice("You relent, lowering your guard to the lair's attentions once more."))
+	else
+		ADD_TRAIT(owner, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
+		to_chat(owner, span_notice("You steel yourself and rebuff the lair - its denizens will leave you be."))
+
 /datum/component/kidnap_captivity
 	dupe_mode = COMPONENT_DUPE_UNIQUE
 	var/lair_tag
 	/// The captor's faction, handed to a surrendered captive so the lair won't attack the new NPC.
 	var/list/captor_faction
 	var/captive_since = 0
-	/// TRUE once the knockout has been swapped for captive pacifism.
+	/// TRUE once the knockout has worn off and the captive has their agency back.
 	var/released = FALSE
+	/// The "Refuse Advances" opt-out action granted on release; cleared when captivity ends.
+	var/datum/action/innate/defeat_refuse_advances/refuse_action
 	/// TRUE once the captive may give up (the Surrender verb becomes usable).
 	var/surrender_available = FALSE
 	/// Climaxes endured in captivity; enough of them offers surrender early.
@@ -621,6 +641,13 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	deltimer(ko_release_timer)
 	deltimer(surrender_timer)
 	UnregisterSignal(parent, COMSIG_SEX_CLIMAX)
+	// The opt-out never leaves the lair with the captive - strip trait + action on any teardown path.
+	var/mob/living/victim = parent
+	if(victim)
+		REMOVE_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
+	if(refuse_action)
+		refuse_action.Remove(victim)
+		QDEL_NULL(refuse_action)
 
 /// After the hold time: KO+Rune captives get their rune-return option (and stay down to use it);
 /// everyone else trades knockout for captive pacifism so they can crawl to an escape marker.
@@ -633,9 +660,17 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		to_chat(victim, span_blue("Your captors' hold is all that keeps you - if the rune is yours to call, wrench yourself free now."))
 		return
 	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
-	ADD_TRAIT(victim, TRAIT_PACIFISM, KIDNAP_TRAIT)
-	to_chat(victim, span_warning("The grip of defeat loosens - you can move again, but a captive's dread keeps you from raising a hand."))
+	grant_refuse_advances(victim)
+	to_chat(victim, span_warning("The grip of defeat loosens - you can move, fight, and flee again."))
 	to_chat(victim, span_warning("No rune will answer here. Seek the edges of this place - a way out may wait there."))
+	to_chat(victim, span_notice("If the lair's attentions become too much, use <b>Refuse Advances</b> to rebuff them while you find your way out."))
+
+/// Hands the released captive the "Refuse Advances" opt-out toggle (once).
+/datum/component/kidnap_captivity/proc/grant_refuse_advances(mob/living/victim)
+	if(refuse_action || !victim)
+		return
+	refuse_action = new(victim)
+	refuse_action.Grant(victim)
 
 /// Once the window passes, the captive may give up via the Surrender verb.
 /datum/component/kidnap_captivity/proc/offer_surrender()
@@ -661,11 +696,8 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	qdel(src)
 	return TRUE
 
-/// Tears down captivity state and strips the captive pacifism.
+/// Tears down captivity state (qdel routes through UnregisterFromParent, which strips the opt-out).
 /datum/component/kidnap_captivity/proc/end_captivity()
-	var/mob/living/victim = parent
-	if(victim)
-		REMOVE_TRAIT(victim, TRAIT_PACIFISM, KIDNAP_TRAIT)
 	qdel(src)
 
 // --- Captor side: faction mobs dragging defeated prey to their lair ---

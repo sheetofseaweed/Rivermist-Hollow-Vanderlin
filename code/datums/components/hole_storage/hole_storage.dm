@@ -490,6 +490,12 @@
 		if(the_mob)
 			SEND_SIGNAL(the_mob, COMSIG_LIVING_ORGAN_CHANGED, src, location || slot, TRUE)
 
+/// TRUE if this organ carries a body-storage "hole" (genitals, guts, etc.). Such organs never take
+/// damage but DO hold items - plugs, oviposition eggs, pregnancy holders - so a heal must not
+/// regenerate them out from under their contents.
+/obj/item/organ/proc/is_body_storage_organ()
+	return !isnull(GetComponent(/datum/component/body_storage))
+
 /obj/item/organ/proc/extract_body_storage_contents_for_regeneration()
 	var/datum/component/body_storage/storage = GetComponent(/datum/component/body_storage)
 	if(!storage)

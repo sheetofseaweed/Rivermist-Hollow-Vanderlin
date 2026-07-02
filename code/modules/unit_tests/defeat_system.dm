@@ -900,11 +900,22 @@
 
 	captivity.release_from_knockout()
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Captivity release should clear the knockout state.")
-	TEST_ASSERT(HAS_TRAIT_FROM(victim, TRAIT_PACIFISM, KIDNAP_TRAIT), "A released captive should be held in captive pacifism.")
+	// Release now hands over agency (no pacifism) plus the Refuse Advances opt-out toggle.
+	TEST_ASSERT(!HAS_TRAIT(victim, TRAIT_PACIFISM), "A released captive should no longer be pacified - the path is a lighthearted one.")
+	var/datum/action/innate/defeat_refuse_advances/refuse = locate(/datum/action/innate/defeat_refuse_advances) in victim.actions
+	TEST_ASSERT_NOTNULL(refuse, "A released captive should be granted the Refuse Advances opt-out.")
+
+	// Toggling it makes horny mobs ignore the captive.
+	refuse.Activate()
+	TEST_ASSERT(HAS_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES), "Activating Refuse Advances should set the opt-out trait.")
+	var/mob/living/carbon/human/would_be_suitor = allocate(/mob/living/carbon/human)
+	var/datum/targetting_datum/basic/td = new()
+	TEST_ASSERT(!td.can_horny(would_be_suitor, victim), "A refusing captive should not be a valid horny target.")
 
 	escape_marker.Crossed(victim)
 	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Reaching an escape marker should end captivity.")
-	TEST_ASSERT(!HAS_TRAIT_FROM(victim, TRAIT_PACIFISM, KIDNAP_TRAIT), "Escaping should strip the captive pacifism.")
+	TEST_ASSERT(!HAS_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES), "Escaping should strip the opt-out trait.")
+	TEST_ASSERT(!(locate(/datum/action/innate/defeat_refuse_advances) in victim.actions), "Escaping should remove the Refuse Advances action from the captive.")
 
 /datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey
 

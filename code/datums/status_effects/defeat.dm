@@ -79,6 +79,8 @@
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma
 	/// Player-facing label shown on the status alert; subtypes override per injury.
 	var/trauma_label = "Defeat Trauma"
+	/// Unique alert description per injury, so no two defeat traumas read alike. Subtypes override.
+	var/trauma_desc = "Lingering harm from a recent defeat. A town healer, a priest, or a potent remedy can mend it - and it festers worse each time you are defeated untreated."
 	var/severity = DEFEAT_SEVERITY_NORMAL
 	var/next_feedback_at = 0
 
@@ -96,6 +98,7 @@
 	. = ..()
 	if(. && linked_alert)
 		linked_alert.name = "[trauma_label] ([defeat_severity_label(severity)])"
+		linked_alert.desc = trauma_desc
 
 /datum/status_effect/debuff/defeat/tick()
 	if(!owner || world.time < next_feedback_at)
@@ -158,6 +161,7 @@
 /datum/status_effect/debuff/defeat/physical
 	id = "defeat_physical_trauma"
 	trauma_label = "Battered Body"
+	trauma_desc = "A whole-body beating - deep bruises and strained muscles that protest every hard motion. A town healer or a potent remedy will mend it."
 
 /datum/status_effect/debuff/defeat/physical/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -2, STAT_SPEED = -1)
@@ -171,6 +175,7 @@
 /datum/status_effect/debuff/defeat/physical/wound
 	id = "defeat_wound_trauma"
 	trauma_label = "Open Wounds"
+	trauma_desc = "Gashes and cuts that reopen with exertion, flaring old pain and slowing you down. A town healer or a potent remedy will close them."
 
 /datum/status_effect/debuff/defeat/physical/wound/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_SPEED = -2, STAT_STRENGTH = -1)
@@ -184,6 +189,7 @@
 /datum/status_effect/debuff/defeat/physical/burn
 	id = "defeat_burn_trauma"
 	trauma_label = "Searing Burns"
+	trauma_desc = "Raw, blistered skin that prickles with heat at every move, sapping your endurance and toughness. A town healer or a potent remedy will soothe it."
 
 /datum/status_effect/debuff/defeat/physical/burn/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_CONSTITUTION = -2)
@@ -197,6 +203,7 @@
 /datum/status_effect/debuff/defeat/physical/body
 	id = "defeat_body_trauma"
 	trauma_label = "Internal Bruising"
+	trauma_desc = "Battered ribs and bruised innards - your chest strains under any effort, draining strength and vigor. A town healer or a potent remedy will ease it."
 
 // Internal Bruising (Chest Injury) - section 4 of the spec.
 /datum/status_effect/debuff/defeat/physical/body/defeat_base_profile()
@@ -211,6 +218,7 @@
 /datum/status_effect/debuff/defeat/physical/concussion
 	id = "defeat_concussion_trauma"
 	trauma_label = "Concussion"
+	trauma_desc = "A rattled skull - thoughts swim, the world tilts, and your wits and aim are dulled. A town healer or a potent remedy will clear your head."
 
 // Concussion (Head Trauma) - section 4 of the spec.
 /datum/status_effect/debuff/defeat/physical/concussion/defeat_base_profile()
@@ -226,6 +234,7 @@
 /datum/status_effect/debuff/defeat/physical/leg
 	id = "defeat_leg_trauma"
 	trauma_label = "Wrenched Leg"
+	trauma_desc = "A wrenched knee or ankle that buckles without warning and cannot bear a jump. A town healer or a potent remedy will set it right."
 
 /datum/status_effect/debuff/defeat/physical/leg/defeat_base_profile()
 	return list(STAT_ENDURANCE = -3, STAT_STRENGTH = -2, STAT_SPEED = -4, STAT_FORTUNE = -1)
@@ -250,6 +259,7 @@
 /datum/status_effect/debuff/defeat/physical/arm
 	id = "defeat_arm_trauma"
 	trauma_label = "Wrenched Arm"
+	trauma_desc = "A dislocated shoulder or fractured arm - your grip fails and things slip from your hand. A town healer or a potent remedy will mend it."
 
 /datum/status_effect/debuff/defeat/physical/arm/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -4, STAT_PERCEPTION = -1, STAT_SPEED = -2)
@@ -265,6 +275,7 @@
 /datum/status_effect/debuff/defeat/pain
 	id = "defeat_pain_trauma"
 	trauma_label = "Lingering Pain"
+	trauma_desc = "Phantom aches roll back through you in waves, fraying nerve and focus. A town healer or a potent remedy will quiet them."
 
 /datum/status_effect/debuff/defeat/pain/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_PERCEPTION = -2)
@@ -278,6 +289,7 @@
 /datum/status_effect/debuff/defeat/rune
 	id = "defeat_rune_trauma"
 	trauma_label = "Mana Backlash"
+	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. Only a priest's rite or a potent remedy soothes it."
 
 // Mana-Backlash Exhaustion - the toll of being yanked back by the rune. Section 4.
 /datum/status_effect/debuff/defeat/rune/defeat_base_profile()
@@ -298,6 +310,7 @@
 /datum/status_effect/debuff/defeat/horny
 	id = "defeat_horny_trauma"
 	trauma_label = "Lewd Exhaustion"
+	trauma_desc = "A wrung-out, trembling afterglow that will not fade, letting focus and luck slip through your fingers. A healer, a priest, or a potent remedy restores you."
 
 /datum/status_effect/debuff/defeat/horny/defeat_base_profile()
 	return list(STAT_PERCEPTION = -2, STAT_FORTUNE = -2)
@@ -311,6 +324,10 @@
 // cleared the same way (lifting/time/priest); they differ only in stat profile and special effects.
 
 // Post-Climax Brain-Fog ("Can't Think Straight")
+/datum/status_effect/debuff/defeat/horny/brainfog
+	trauma_label = "Afterglow Haze"
+	trauma_desc = "Your head swims in a thick, pleasured fog - thought comes slow and scattered. A healer, priest, or potent remedy will clear it."
+
 /datum/status_effect/debuff/defeat/horny/brainfog/defeat_base_profile()
 	return list(STAT_PERCEPTION = -3, STAT_INTELLIGENCE = -4, STAT_CONSTITUTION = -3)
 
@@ -320,6 +337,10 @@
 		owner.adjust_confusion(2 SECONDS)
 
 // Over-Sensitive Skin & Throbbing Heat ("Body on Fire")
+/datum/status_effect/debuff/defeat/horny/oversensitive
+	trauma_label = "Oversensitive Skin"
+	trauma_desc = "Raw, over-sensitive skin where every brush of cloth is far too much, sapping your strength and vigor. A healer, priest, or potent remedy will settle it."
+
 /datum/status_effect/debuff/defeat/horny/oversensitive/defeat_base_profile()
 	return list(STAT_ENDURANCE = -3, STAT_STRENGTH = -2, STAT_CONSTITUTION = -4, STAT_SPEED = -2)
 
@@ -327,6 +348,10 @@
 	to_chat(owner, span_warning("My skin burns - every brush of cloth is far too much."))
 
 // Rubbery Legs / Aroused Wobble ("Can't Walk Straight") - random falls, can't jump.
+/datum/status_effect/debuff/defeat/horny/wobble
+	trauma_label = "Rubbery Legs"
+	trauma_desc = "Aroused, trembling legs that wobble and give out without warning - and cannot manage a jump. A healer, priest, or potent remedy will steady them."
+
 /datum/status_effect/debuff/defeat/horny/wobble/defeat_base_profile()
 	return list(STAT_ENDURANCE = -3, STAT_STRENGTH = -3, STAT_SPEED = -4, STAT_FORTUNE = -2)
 
@@ -347,6 +372,10 @@
 		owner.Knockdown(severity == DEFEAT_SEVERITY_SEVERE ? 3 SECONDS : 1.5 SECONDS)
 
 // Trembling Hands & Weak Grip ("Can't Hold On") - random item drops.
+/datum/status_effect/debuff/defeat/horny/trembling
+	trauma_label = "Trembling Hands"
+	trauma_desc = "Weak, shaking hands with a failing grip - things slip from your fingers. A healer, priest, or potent remedy will still them."
+
 /datum/status_effect/debuff/defeat/horny/trembling/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -4, STAT_PERCEPTION = -1, STAT_SPEED = -2)
 
@@ -359,6 +388,10 @@
 			to_chat(owner, span_warning("[dropped] slips from my trembling fingers!"))
 
 // Panting & Breathless Craving ("Can't Breathe Right")
+/datum/status_effect/debuff/defeat/horny/breathless
+	trauma_label = "Breathless Craving"
+	trauma_desc = "Chest heaving, unable to catch your breath - your stamina drains fast. A healer, priest, or potent remedy will calm it."
+
 /datum/status_effect/debuff/defeat/horny/breathless/defeat_base_profile()
 	return list(STAT_ENDURANCE = -5, STAT_SPEED = -2, STAT_CONSTITUTION = -3)
 
@@ -366,6 +399,10 @@
 	to_chat(owner, span_warning("I can't catch my breath, chest heaving uselessly."))
 
 // Lust-Mana Overcharge ("Horny Magic Burn") - one-time mana burn like the rune backlash.
+/datum/status_effect/debuff/defeat/horny/overcharge
+	trauma_label = "Lust-Burned Mana"
+	trauma_desc = "Lust-scorched magic crackles uselessly through you - your wits are dulled and your mana half-spent. A healer, priest, or potent remedy will mend it."
+
 /datum/status_effect/debuff/defeat/horny/overcharge/defeat_base_profile()
 	return list(STAT_INTELLIGENCE = -4, STAT_CONSTITUTION = -3, STAT_FORTUNE = -2)
 

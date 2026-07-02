@@ -27,8 +27,8 @@
 // --- Kidnapping (section 6) ---
 /// Trait source for the pacifism held over a captive after their knockout is released.
 #define KIDNAP_TRAIT "kidnap_captivity"
-/// How long after being kidnapped the knockout is swapped for captive pacifism.
-#define KIDNAP_KO_RELEASE (5 MINUTES)
+/// How long after being kidnapped the knockout wears off, handing the captive their agency back.
+#define KIDNAP_KO_RELEASE (1 MINUTES)
 /// How long a captive has before the surrender option is offered.
 #define KIDNAP_SURRENDER_WINDOW (15 MINUTES)
 /// How many climaxes endured in captivity offer the surrender option early.
