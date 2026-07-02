@@ -5,6 +5,11 @@
 	remove_on_fullheal = FALSE
 	/// Timer that lets a horny knockout wear off on its own (the light case); null for other defeats.
 	var/self_recover_timer
+	/// KO Only anti-softlock: timer that offers the "Struggle to Your Feet" action, the auto safety-net
+	/// timer, and the granted action itself. All null unless this is a KO Only (no-rune) knockout.
+	var/struggle_offer_timer
+	var/struggle_auto_timer
+	var/datum/action/innate/defeat_struggle_up/struggle_action
 
 /datum/status_effect/defeat_knockout/on_apply()
 	. = ..()
@@ -31,6 +36,8 @@
 		self_recover_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_horny_self_recover)), DEFEAT_HORNY_SELF_RECOVER_TIME, TIMER_STOPPABLE)
 	else
 		to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."))
+		// The self-rescue (Struggle to Your Feet) is armed later, from enter_defeat, once the rune logic
+		// has settled - so it only fires when no rune can answer (KO Only, or a depleted KO+Rune).
 	to_chat(owner, span_notice("Another can bring you back: a curative potion fed to you, a healer's or holy hand, or other aid - but never your own doing. If the rune is yours to call, it may answer too."))
 	SEND_SIGNAL(owner, COMSIG_LIVING_DEFEATED)
 	if(horny_defeat)
@@ -40,10 +47,37 @@
 		owner.visible_message(span_userdanger("[owner] collapses to the ground, defeated!"))
 		owner.balloon_alert_to_viewers("defeated!")
 
+/// Arms the KO Only anti-softlock self-rescue: the "Struggle to Your Feet" action shortly, and an auto
+/// safety-net a little later. Called from enter_defeat only when no rune can answer, so a rune-saved
+/// player never gets it. Idempotent.
+/datum/status_effect/defeat_knockout/proc/arm_struggle_up()
+	if(struggle_offer_timer || struggle_auto_timer || struggle_action)
+		return
+	struggle_offer_timer = addtimer(CALLBACK(src, PROC_REF(offer_struggle_up)), DEFEAT_KO_ONLY_STRUGGLE_DELAY, TIMER_STOPPABLE)
+	struggle_auto_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_ko_only_self_recover)), DEFEAT_KO_ONLY_AUTO_RECOVER, TIMER_STOPPABLE)
+
+/datum/status_effect/defeat_knockout/proc/offer_struggle_up()
+	struggle_offer_timer = null
+	if(!owner || QDELETED(owner) || struggle_action)
+		return
+	struggle_action = new(owner)
+	struggle_action.Grant(owner)
+	to_chat(owner, span_warning("No one is coming. You could yet drag yourself up - but your body will pay dearly for it. Use <b>Struggle to Your Feet</b> when you are ready to try."))
+
 /datum/status_effect/defeat_knockout/on_remove()
 	if(self_recover_timer)
 		deltimer(self_recover_timer)
 		self_recover_timer = null
+	if(struggle_offer_timer)
+		deltimer(struggle_offer_timer)
+		struggle_offer_timer = null
+	if(struggle_auto_timer)
+		deltimer(struggle_auto_timer)
+		struggle_auto_timer = null
+	if(struggle_action)
+		if(owner)
+			struggle_action.Remove(owner)
+		QDEL_NULL(struggle_action)
 	if(!owner || QDELETED(owner))
 		return
 	owner.clear_fullscreen("defeat", FALSE)
@@ -415,3 +449,58 @@
 
 /datum/status_effect/debuff/defeat/horny/overcharge/defeat_apply_feedback()
 	to_chat(owner, span_warning("Lust-burned magic crackles uselessly through me."))
+
+// --- KO Only anti-softlock: struggle up unaided, at the price of grievous wounds ---
+
+/datum/action/innate/defeat_struggle_up
+	name = "Struggle to Your Feet"
+	desc = "Drag yourself up from defeat by sheer will. You will be gravely wounded - too broken to fight and barely able to walk - and must limp to the town clinic to be made whole."
+	button_icon_state = "shieldsparkles"
+
+/datum/action/innate/defeat_struggle_up/Activate()
+	if(!isliving(owner))
+		return
+	var/mob/living/living_owner = owner
+	living_owner.defeat_ko_only_self_recover()
+
+// A guaranteed, harsh trauma laid on top of the usual injury when a KO Only victim rescues themselves.
+// Town-clinic care only (remove_on_fullheal FALSE + not in the universal/spiritual cure lists), so the
+// journey home is the point. Festers on re-defeat like any trauma. Applied at severe by design.
+/atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
+	name = "Grievous Wounds"
+	icon_state = "paralysis"
+
+/datum/status_effect/debuff/defeat/grievous
+	id = "defeat_grievous_trauma"
+	trauma_label = "Grievous Wounds"
+	trauma_desc = "You clawed your way up from a defeat with no one to help. Barely able to stand, far too broken to fight, and slowed to a crawl - only a healer at the town clinic can truly set you right."
+	remove_on_fullheal = FALSE
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
+
+/// Never decays on its own - the town clinic cure is the only way out (design choice).
+/datum/status_effect/debuff/defeat/grievous/defeat_duration_for_severity(defeat_severity)
+	return STATUS_EFFECT_PERMANENT
+
+/datum/status_effect/debuff/defeat/grievous/defeat_base_profile()
+	return list(STAT_ENDURANCE = -4, STAT_STRENGTH = -3, STAT_SPEED = -4, STAT_CONSTITUTION = -3, STAT_PERCEPTION = -2)
+
+/datum/status_effect/debuff/defeat/grievous/on_apply()
+	. = ..()
+	if(!.)
+		return
+	// Too broken to fight, and slowed to a limp until treated.
+	ADD_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
+	owner.cmode = FALSE
+	owner.add_movespeed_modifier(MOVESPEED_ID_STATUS_EFFECT(id), multiplicative_slowdown = (severity == DEFEAT_SEVERITY_SEVERE ? 2.5 : 1.8))
+
+/datum/status_effect/debuff/defeat/grievous/on_remove()
+	if(owner)
+		REMOVE_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
+		owner.remove_movespeed_modifier(MOVESPEED_ID_STATUS_EFFECT(id))
+	return ..()
+
+/datum/status_effect/debuff/defeat/grievous/defeat_apply_feedback()
+	to_chat(owner, span_warning("Your wounds scream - you can barely keep your feet under you."))
+	if(iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		carbon_owner.adjustPainLoss(severity == DEFEAT_SEVERITY_SEVERE ? 4 : 2)

@@ -839,6 +839,53 @@
 	TEST_ASSERT(!captive.defeat_horny_self_recover(), "A kidnapped victim should not self-recover.")
 	TEST_ASSERT_NOTNULL(captive.has_status_effect(/datum/status_effect/defeat_knockout), "A kidnapped victim should stay knocked out despite the self-recover window.")
 
+/datum/unit_test/defeat_ko_only_struggle_up_grievous
+
+/datum/unit_test/defeat_ko_only_struggle_up_grievous/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.defeat_system_ai_opt_in = TRUE
+	patient.defeat_mode = DEFEAT_MODE_KO_ONLY
+	patient.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "Setup: a KO Only damage defeat should knock the victim out.")
+
+	// Fire the self-rescue the Struggle-Up action / auto safety-net would call.
+	TEST_ASSERT(patient.defeat_ko_only_self_recover(), "A KO Only victim should be able to struggle up unaided.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "Struggling up should clear the knockout.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Struggling up should inflict Grievous Wounds.")
+	TEST_ASSERT(HAS_TRAIT(patient, TRAIT_PACIFISM), "Grievous Wounds should lock the victim out of fighting.")
+	TEST_ASSERT(!patient.defeat_ko_only_self_recover(), "Self-rescue is a no-op once the knockout is gone.")
+
+	// Town-clinic-only cure: a full field heal must NOT clear Grievous Wounds.
+	patient.fully_heal(HEAL_ALL)
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A field full-heal must not cure Grievous Wounds - only town care does.")
+
+	// A skilled medic (the clinic cure path) clears it.
+	var/mob/living/carbon/human/medic = allocate(/mob/living/carbon/human)
+	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_EXPERT, TRUE)
+	TEST_ASSERT(patient.defeat_treat_trauma(medic, DEFEAT_TREATMENT_MEDICAL), "Medical care should treat Grievous Wounds.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Medical care should clear Grievous Wounds.")
+
+/datum/unit_test/defeat_depleted_rune_arms_struggle_up
+
+/datum/unit_test/defeat_depleted_rune_arms_struggle_up/Run()
+	// KO Only never has a rune to fall back on.
+	var/mob/living/carbon/human/ko_only = allocate(/mob/living/carbon/human)
+	ko_only.defeat_mode = DEFEAT_MODE_KO_ONLY
+	TEST_ASSERT(!ko_only.defeat_has_rune_safety_net(), "KO Only should never report a rune safety net.")
+
+	// A KO+Rune player whose rune cannot answer (unlinked / depleted) is treated the same.
+	var/mob/living/carbon/human/rune_user = allocate(/mob/living/carbon/human)
+	rune_user.defeat_mode = DEFEAT_MODE_KO_RUNE
+	rune_user.rune_linked = RUNE_LINK_NONE
+	TEST_ASSERT(!rune_user.defeat_has_rune_safety_net(), "A KO+Rune player with no callable rune should have no safety net.")
+
+	// Entering defeat with no rune to answer arms the self-rescue for the KO+Rune player too.
+	rune_user.defeat_system_ai_opt_in = TRUE
+	rune_user.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	var/datum/status_effect/defeat_knockout/knockout = rune_user.has_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NOTNULL(knockout, "Setup: the depleted-rune user should be knocked out.")
+	TEST_ASSERT_NOTNULL(knockout.struggle_offer_timer, "A depleted/uncallable-rune KO+Rune victim should have the struggle-up self-rescue armed.")
+
 /datum/unit_test/defeat_potion_feed_rescues_downed_victim
 
 /datum/unit_test/defeat_potion_feed_rescues_downed_victim/Run()

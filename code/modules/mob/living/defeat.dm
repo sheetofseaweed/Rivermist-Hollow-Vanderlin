@@ -59,8 +59,30 @@
 	last_defeat_snapshot = snapshot
 	apply_status_effect(/datum/status_effect/defeat_knockout)
 	defeat_ensure_emergency_rune_link()
+	defeat_maybe_arm_struggle_up()
 	defeat_stabilize_from_snapshot(snapshot)
 	return TRUE
+
+/// Arms the KO Only self-rescue (§8 anti-softlock) when nothing else can save the victim - i.e. a
+/// non-horny defeat with no rune that can answer (KO Only always; a KO+Rune player whose rune is
+/// depleted / uncallable, checked *after* the emergency-link attempt). Horny defeats self-recover light.
+/mob/living/proc/defeat_maybe_arm_struggle_up()
+	var/datum/status_effect/defeat_knockout/knockout = has_status_effect(/datum/status_effect/defeat_knockout)
+	if(!knockout)
+		return
+	if(last_defeat_snapshot?.reason == DEFEAT_REASON_HORNY)
+		return
+	if(defeat_has_rune_safety_net())
+		return
+	knockout.arm_struggle_up()
+
+/// TRUE when a linked rune can actually pull this KO+Rune victim back right now (a spendable charge).
+/// A depleted or uncallable rune returns FALSE, so the victim is treated like KO Only for self-rescue.
+/mob/living/proc/defeat_has_rune_safety_net()
+	if(defeat_mode != DEFEAT_MODE_KO_RUNE)
+		return FALSE
+	var/datum/resurrection_rune_controller/controller = get_resurrection_rune_controller_for_user(src)
+	return controller?.can_offer_defeat_rune_return(src)
 
 /// Safeguard for KO+Rune players who fall with no working rune link (never linked, or their rune was
 /// destroyed): forge an emergency bond to the public city rune on the spot, so the rune-return path
@@ -112,6 +134,19 @@
 		return FALSE
 	to_chat(src, span_notice("The haze of exhaustion lifts - your strength trickles back, and you pull yourself together."))
 	return perform_defeat_rescue(null, "self-recovery")
+
+/// KO Only anti-softlock: with no rune and no rescuer, a downed victim can drag themselves up on their
+/// own (the "Struggle to Your Feet" action, or the auto safety-net). The price is Grievous Wounds, on
+/// top of the usual injury - so being rescued by another stays strictly better. Suppressed once kidnapped.
+/mob/living/proc/defeat_ko_only_self_recover()
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(GetComponent(/datum/component/kidnap_captivity))
+		return FALSE
+	to_chat(src, span_userdanger("Gritting your teeth, you drag yourself up from defeat - broken, but alive. You will have to limp to the town clinic to be made whole."))
+	perform_defeat_rescue(null, "struggle")
+	apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/grievous, DEFEAT_SEVERITY_SEVERE)
+	return TRUE
 
 /// Empty-handed revive channel length, scaled by the reviver's medicine skill: no skill takes the
 /// longest (DEFEAT_REVIVE_TIME_MAX), legendary the shortest (DEFEAT_REVIVE_TIME_MIN).
@@ -290,6 +325,7 @@
 				/datum/status_effect/debuff/defeat/physical/leg,
 				/datum/status_effect/debuff/defeat/physical/arm,
 				/datum/status_effect/debuff/defeat/pain,
+				/datum/status_effect/debuff/defeat/grievous, // self-rescue "Grievous Wounds" - clinic-only cure
 			), treatment_type)
 		if(DEFEAT_TREATMENT_SPIRITUAL)
 			if(!helper.defeat_can_do_spiritual_treatment())
