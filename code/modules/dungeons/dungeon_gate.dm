@@ -20,6 +20,8 @@
 	var/sealed = FALSE
 	/// DUNGEON_PATH_* — risk/reward flavor of the room beyond
 	var/path_type = DUNGEON_PATH_COMBAT
+	/// DUNGEON_REWARD_* this door promises for clearing the room beyond
+	var/reward_type = DUNGEON_REWARD_MOTES
 	/// When set, this gate stays locked until a matching key is applied
 	var/requires_key = FALSE
 	/// Key id this gate accepts
@@ -46,7 +48,20 @@
 		. += span_notice("A stairway plunges deeper. The air below is colder, hungrier.")
 	else if(pre_rolled_template)
 		. += span_notice(pre_rolled_template.gate_hint)
-		. += span_notice("Danger: [get_path_danger_text()] — Reward: [get_path_reward_text()].")
+		. += span_notice(get_reward_promise_text())
+		. += span_notice("Danger: [get_path_danger_text()].")
+
+/obj/structure/dungeon_gate/proc/get_reward_promise_text()
+	switch(reward_type)
+		if(DUNGEON_REWARD_BOON)
+			return "Beyond this passage, a blessing awaits."
+		if(DUNGEON_REWARD_LOOT)
+			return "The smell of old gold seeps through."
+		if(DUNGEON_REWARD_VAULT)
+			return "Something locked and heavy with treasure waits beyond."
+		if(DUNGEON_REWARD_HEAL)
+			return "Warm, clean air drifts from beyond."
+	return "You hear the faint chime of motes beyond."
 
 /obj/structure/dungeon_gate/proc/get_path_danger_text()
 	switch(path_type)
@@ -60,17 +75,6 @@
 			return "very high"
 	return "moderate"
 
-/obj/structure/dungeon_gate/proc/get_path_reward_text()
-	switch(path_type)
-		if(DUNGEON_PATH_TREASURE)
-			return "high"
-		if(DUNGEON_PATH_ELITE)
-			return "very high"
-		if(DUNGEON_PATH_HAZARD)
-			return "high"
-		if(DUNGEON_PATH_SHORTCUT)
-			return "low"
-	return "moderate"
 
 /obj/structure/dungeon_gate/attack_hand(mob/user, list/modifiers)
 	. = ..()

@@ -27,7 +27,7 @@
 /// Returns an assoc list of template datum -> weight for all dungeon templates
 /// matching the given filters. Templates are the cached datums registered in
 /// SSpocket_dimensions.templates_by_id (built from SSmapping.map_templates).
-/proc/get_dungeon_template_pool(room_kind, theme = null, min_tier = 0, max_tier = INFINITY)
+/proc/get_dungeon_template_pool(room_kind, theme = null, min_tier = 0, max_tier = INFINITY, list/exclude_ids)
 	var/list/pool = list()
 	for(var/template_id in SSpocket_dimensions.templates_by_id)
 		var/datum/map_template/pocket/dungeon/template = SSpocket_dimensions.templates_by_id[template_id]
@@ -39,13 +39,18 @@
 			continue
 		if(template.difficulty_tier < min_tier || template.difficulty_tier > max_tier)
 			continue
+		if(exclude_ids && (template.id in exclude_ids))
+			continue
 		pool[template] = max(1, template.dungeon_weight)
 	return pool
 
-/// Weighted-picks a dungeon template, relaxing tier and then theme filters
-/// before giving up, so a sparse template library still yields something.
-/proc/pick_dungeon_template(room_kind, theme = null, min_tier = 0, max_tier = INFINITY)
-	var/list/pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier)
+/// Weighted-picks a dungeon template, relaxing the anti-repeat exclusion, then
+/// tier, then theme filters before giving up, so a sparse template library
+/// still yields something.
+/proc/pick_dungeon_template(room_kind, theme = null, min_tier = 0, max_tier = INFINITY, list/exclude_ids)
+	var/list/pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier, exclude_ids)
+	if(!length(pool))
+		pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier)
 	if(!length(pool))
 		pool = get_dungeon_template_pool(room_kind, theme)
 	if(!length(pool))

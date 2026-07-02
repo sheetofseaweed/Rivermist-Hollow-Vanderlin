@@ -68,7 +68,10 @@
 	var/mob/living/boss = parent
 	if(QDELETED(boss) || boss.stat >= UNCONSCIOUS)
 		return
-	var/atom/target = boss.vars["target"]   // simple_animal hostiles track .target
+	var/atom/target
+	if(istype(boss, /mob/living/simple_animal/hostile))
+		var/mob/living/simple_animal/hostile/hostile_boss = boss
+		target = hostile_boss.target
 	if(!target)
 		return
 	for(var/datum/dungeon_boss_ability/ability as anything in abilities)

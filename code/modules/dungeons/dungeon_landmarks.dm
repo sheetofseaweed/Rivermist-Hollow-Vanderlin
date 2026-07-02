@@ -115,6 +115,8 @@
 	density = TRUE
 	anchored = TRUE
 	var/locked = TRUE
+	/// When set, a matching /obj/item/dungeon_key unseals this cache (vault rewards)
+	var/key_id
 	/// Loot table datum instance; rolled once per taker
 	var/datum/loot_table/loot
 	/// Delve level passed into the loot table for quantity/rarity scaling
@@ -149,6 +151,17 @@
 /obj/structure/dungeon_loot_cache/attack_hand(mob/user, list/modifiers)
 	. = ..()
 	try_loot(user)
+
+/obj/structure/dungeon_loot_cache/attackby(obj/item/attacking_item, mob/living/user, list/modifiers)
+	if(locked && key_id && istype(attacking_item, /obj/item/dungeon_key))
+		var/obj/item/dungeon_key/key = attacking_item
+		if(key.key_id != key_id)
+			to_chat(user, span_warning("This key does not fit this cache."))
+			return TRUE
+		qdel(key)
+		unseal()
+		return TRUE
+	return ..()
 
 /obj/structure/dungeon_loot_cache/proc/try_loot(mob/living/user)
 	if(!istype(user))

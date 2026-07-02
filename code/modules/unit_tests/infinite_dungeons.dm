@@ -574,3 +574,247 @@
 	TEST_ASSERT_EQUAL(fake.scatter_style_override, DUNGEON_STYLE_RANGED, "Archers' Roost should force the ranged scatter style.")
 	qdel(trait)
 	qdel(fake)
+
+/datum/unit_test/dungeon_stretch_deck/Run()
+	var/datum/dungeon_run/run = new(null, null)
+	run.stretch_length = 5
+	run.build_stretch_deck()
+
+	TEST_ASSERT(length(run.stretch_deck) >= 10, "Deck should be sized to the stretch (>= stretch_length * 2).")
+	var/boons = 0
+	var/treasures = 0
+	var/vaults = 0
+	for(var/reward in run.stretch_deck)
+		if(reward == DUNGEON_REWARD_BOON)
+			boons++
+		if(reward == DUNGEON_REWARD_LOOT || reward == DUNGEON_REWARD_VAULT)
+			treasures++
+		if(reward == DUNGEON_REWARD_VAULT)
+			vaults++
+	TEST_ASSERT(boons >= 1, "Deck must guarantee at least one boon door.")
+	TEST_ASSERT(treasures >= 1, "Deck must guarantee at least one loot/vault door.")
+	TEST_ASSERT(vaults <= 1, "Deck must cap vault doors at one.")
+
+	// Draws deplete the deck, then fall back to weighted re-rolls.
+	var/deck_size = length(run.stretch_deck)
+	for(var/i in 1 to deck_size)
+		run.draw_door_reward()
+	TEST_ASSERT_EQUAL(length(run.stretch_deck), 0, "Draws should deplete the deck.")
+	var/fallback = run.draw_door_reward()
+	TEST_ASSERT_NOTNULL(fallback, "An exhausted deck should still deal rewards.")
+	TEST_ASSERT(fallback != DUNGEON_REWARD_VAULT, "Fallback deals must never be vaults.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_anti_repeat/Run()
+	// Exclusion filters the pool; graceful fallback when it would empty it.
+	var/list/excluded = list("dungeon_test_combat", "dungeon_test_scatter")
+	var/list/pool = get_dungeon_template_pool(DUNGEON_ROOM_COMBAT, DUNGEON_THEME_TEST, 0, INFINITY, excluded)
+	for(var/datum/map_template/pocket/dungeon/template as anything in pool)
+		TEST_ASSERT(!(template.id in excluded), "Excluded template ids must not appear in the pool.")
+	// pick falls back rather than returning null when exclusion empties everything.
+	var/datum/map_template/pocket/dungeon/picked = pick_dungeon_template(DUNGEON_ROOM_COMBAT, DUNGEON_THEME_TEST, 0, INFINITY, excluded)
+	TEST_ASSERT_NOTNULL(picked, "pick_dungeon_template should relax the exclusion instead of failing.")
+
+	// remember_template keeps a bounded ring.
+	var/datum/dungeon_run/run = new(null, null)
+	run.remember_template("a")
+	run.remember_template("b")
+	run.remember_template("c")
+	run.remember_template("d")
+	TEST_ASSERT_EQUAL(length(run.recent_template_ids), DUNGEON_RECENT_TEMPLATE_MEMORY, "Template memory should trim to the ring size.")
+	TEST_ASSERT(!("a" in run.recent_template_ids), "Oldest remembered template should fall out of the ring.")
+	qdel(run)
+
+/datum/unit_test/dungeon_pacing_knob/Run()
+	var/datum/dungeon_run/run = new(null, null)
+	run.floor_config = get_dungeon_floor_config(1)
+	run.floor_config.stretches_per_floor = 2
+	run.stretches_completed_this_floor = 0
+	TEST_ASSERT(!run.is_final_stretch(), "First stretch of a two-stretch floor should not be final.")
+	run.stretches_completed_this_floor = 1
+	TEST_ASSERT(run.is_final_stretch(), "Second stretch of a two-stretch floor should be final.")
+	run.floor_config.stretches_per_floor = 1 // restore the shared test config
+	qdel(run)
+
+/datum/unit_test/dungeon_door_rewards/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	// -- LOOT door: clearing spawns a bonus cache --
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.reward_type = DUNGEON_REWARD_LOOT
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer to the loot-door room.")
+	var/datum/pocket_dimension/dungeon/loot_room = forward_gate.destination_room
+	TEST_ASSERT_EQUAL(loot_room.promised_reward, DUNGEON_REWARD_LOOT, "Room should inherit the gate's reward promise.")
+	var/caches_before = length(loot_room.loot_caches)
+	for(var/g_ref in loot_room.guardian_refs.Copy())
+		var/datum/weakref/g_wr = loot_room.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		if(g_mob)
+			qdel(g_mob)
+	TEST_ASSERT(loot_room.cleared, "Loot-door room should clear.")
+	TEST_ASSERT(length(loot_room.loot_caches) > caches_before, "Clearing a LOOT door should spawn a bonus cache.")
+
+	// -- HEAL door: clearing heals present members --
+	var/obj/structure/dungeon_gate/next_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in loot_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			next_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(next_gate, "Loot room should have a forward gate.")
+	next_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	next_gate.reward_type = DUNGEON_REWARD_HEAL
+	next_gate.sealed = FALSE
+	TEST_ASSERT(next_gate.use_gate(delver), "Gate should transfer to the heal-door room.")
+	var/datum/pocket_dimension/dungeon/heal_room = next_gate.destination_room
+	delver.adjustBruteLoss(50)
+	var/damage_before = delver.getBruteLoss()
+	TEST_ASSERT(damage_before > 0, "Delver should be damaged before the heal payout.")
+	for(var/g_ref in heal_room.guardian_refs.Copy())
+		var/datum/weakref/g_wr = heal_room.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		if(g_mob)
+			qdel(g_mob)
+	TEST_ASSERT(heal_room.cleared, "Heal-door room should clear.")
+	TEST_ASSERT(delver.getBruteLoss() < damage_before, "Clearing a HEAL door should heal present members.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_vault_reward/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.reward_type = DUNGEON_REWARD_VAULT
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer to the vault room.")
+	var/datum/pocket_dimension/dungeon/vault_room = forward_gate.destination_room
+	TEST_ASSERT_NOTNULL(vault_room.vault_key_id, "A vault room should mint a key id.")
+	TEST_ASSERT(length(vault_room.keyholder_drops), "A vault room should mark a keyholder guardian.")
+
+	// Remove the guardians; the keyholder drops the vault key, the locked cache
+	// appears. qdel is affix-proof and QDELETING fires while the mob still has
+	// a turf, so the key drop lands correctly.
+	for(var/g_ref in vault_room.guardian_refs.Copy())
+		var/datum/weakref/g_wr = vault_room.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		if(g_mob)
+			qdel(g_mob)
+	TEST_ASSERT(vault_room.cleared, "Vault room should clear.")
+
+	var/obj/structure/dungeon_loot_cache/vault_cache
+	var/obj/item/dungeon_key/vault_key
+	for(var/turf/room_turf as anything in vault_room.affected_turfs)
+		for(var/obj/structure/dungeon_loot_cache/found_cache in room_turf)
+			if(found_cache.key_id == vault_room.vault_key_id)
+				vault_cache = found_cache
+		for(var/obj/item/dungeon_key/found_key in room_turf)
+			vault_key = found_key
+	TEST_ASSERT_NOTNULL(vault_cache, "Vault clear should spawn a key-locked cache.")
+	TEST_ASSERT(vault_cache.locked, "Vault cache should stay sealed until keyed open.")
+	TEST_ASSERT_NOTNULL(vault_key, "The keyholder should drop the vault key on death.")
+	TEST_ASSERT_EQUAL(vault_key.key_id, vault_room.vault_key_id, "Dropped key should match the vault cache.")
+
+	vault_cache.attackby(vault_key, delver)
+	TEST_ASSERT(!vault_cache.locked, "The matching key should unseal the vault cache.")
+	TEST_ASSERT(QDELETED(vault_key), "The vault key should be consumed.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_watching_gods/Run()
+	var/mob/living/carbon/human/worshipper = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+
+	// Without any worshippers: evil gods must not appear; base weights only.
+	var/list/base_weights = get_watching_god_weights(list(worshipper))
+	for(var/datum/dungeon_god_profile/profile as anything in base_weights)
+		TEST_ASSERT(!ispath(profile.patron_type, /datum/patron/faerun/evil_gods), "Evil gods must not watch a party with no worshipper of theirs.")
+		TEST_ASSERT_EQUAL(base_weights[profile], 10, "Godless parties should produce base weights only.")
+
+	// A Tempus worshipper boosts Tempus's weight.
+	worshipper.patron = GLOB.patron_list[/datum/patron/faerun/neutral_gods/Tempus]
+	TEST_ASSERT_NOTNULL(worshipper.patron, "Tempus should exist in the patron list.")
+	var/list/tempus_weights = get_watching_god_weights(list(worshipper))
+	var/found_tempus_boost = FALSE
+	for(var/datum/dungeon_god_profile/profile as anything in tempus_weights)
+		if(profile.patron_type == /datum/patron/faerun/neutral_gods/Tempus)
+			TEST_ASSERT_EQUAL(tempus_weights[profile], 50, "A worshipper should add +40 weight to their god.")
+			found_tempus_boost = TRUE
+	TEST_ASSERT(found_tempus_boost, "Tempus should be in the watching pool.")
+
+	// A Lolth worshipper unlocks Lolth's gaze.
+	worshipper.patron = GLOB.patron_list[/datum/patron/faerun/evil_gods/Lolth]
+	TEST_ASSERT_NOTNULL(worshipper.patron, "Lolth should exist in the patron list.")
+	var/list/lolth_weights = get_watching_god_weights(list(worshipper))
+	var/found_lolth = FALSE
+	for(var/datum/dungeon_god_profile/profile as anything in lolth_weights)
+		if(profile.patron_type == /datum/patron/faerun/evil_gods/Lolth)
+			found_lolth = TRUE
+	TEST_ASSERT(found_lolth, "An evil god should watch when its worshipper descends.")
+
+	// The roll returns three distinct gods.
+	var/list/rolled = roll_watching_gods(list(worshipper))
+	TEST_ASSERT_EQUAL(length(rolled), 3, "The gaze should settle three gods.")
+	worshipper.patron = null
+
+/datum/unit_test/dungeon_boon_offer/Run()
+	var/datum/dungeon_run/run = new(null, null)
+	run.watching_god_types = list(/datum/patron/faerun/neutral_gods/Tempus)
+
+	// Pity at maximum forces an epic and resets.
+	run.epic_pity = 100
+	var/rarity = run.roll_boon_rarity()
+	TEST_ASSERT_EQUAL(rarity, DUNGEON_BOON_EPIC, "Maxed pity should force an epic rarity.")
+	TEST_ASSERT_EQUAL(run.epic_pity, 0, "An epic roll should reset the pity counter.")
+	TEST_ASSERT_EQUAL(run.get_rarity_magnitude(DUNGEON_BOON_EPIC), 2.25, "Epic magnitude should be 2.25x.")
+
+	// The offer builds branded, rarity-stamped cards.
+	var/list/datum/dungeon_boon/cards = build_boon_offer(run, 3)
+	TEST_ASSERT_EQUAL(length(cards), 3, "The offer should hold three cards.")
+	for(var/datum/dungeon_boon/card as anything in cards)
+		TEST_ASSERT_NOTNULL(card.rarity, "Every card should carry a rarity.")
+		TEST_ASSERT(card.magnitude >= 1, "Every card should carry a magnitude.")
+		qdel(card)
+
+	// Holding both prerequisites summons the synergy card.
+	var/datum/dungeon_boon/edge/edge = new
+	var/datum/dungeon_boon/fortune/fortune = new
+	run.add_boon(edge)
+	run.add_boon(fortune)
+	TEST_ASSERT_EQUAL(get_available_synergy(run), /datum/dungeon_boon/battle_luck, "Edge + Fortune should unlock Battle Luck.")
+	var/list/datum/dungeon_boon/synergy_cards = build_boon_offer(run, 3)
+	var/datum/dungeon_boon/last_card = synergy_cards[length(synergy_cards)]
+	TEST_ASSERT(istype(last_card, /datum/dungeon_boon/battle_luck), "The synergy should claim the last card slot.")
+	TEST_ASSERT(findtext(last_card.name, "Synergy"), "The synergy card should be labeled.")
+	for(var/datum/dungeon_boon/card as anything in synergy_cards)
+		qdel(card)
+
+	qdel(run)
+
+/datum/unit_test/dungeon_mote_batching/Run()
+	var/datum/dungeon_run/run = new(null, null)
+	run.award_motes(10, null)
+	run.award_motes(15, null)
+	TEST_ASSERT_EQUAL(run.motes, 25, "Both awards should land in the pool immediately.")
+	TEST_ASSERT_EQUAL(run.pending_mote_announce, 25, "Announcements should buffer instead of firing per award.")
+	TEST_ASSERT(run.mote_announce_scheduled, "A flush should be scheduled after the first award.")
+	run.flush_mote_announce()
+	TEST_ASSERT_EQUAL(run.pending_mote_announce, 0, "Flush should clear the buffer.")
+	qdel(run)

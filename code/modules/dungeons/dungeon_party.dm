@@ -122,6 +122,7 @@
 			dragged |= grab_item.grabbed
 	member.forceMove(entry_turf)
 	mark_present(member)
+	apply_boons_to(member) // mustered members share the run's active boons
 	if(target.current_trait?.announce && member.client)
 		to_chat(member, span_warning(target.current_trait.announce))
 	for(var/atom/movable/cargo as anything in dragged)
@@ -266,6 +267,7 @@
 	if(entry_turf)
 		petitioner.forceMove(entry_turf)
 		mark_present(petitioner)
+		apply_boons_to(petitioner) // late joiners share the run's active boons
 		to_chat(petitioner, span_nicegreen("The party admits you. You descend to join them."))
 		for(var/mob/living/member as anything in get_present_members())
 			if(member != petitioner)

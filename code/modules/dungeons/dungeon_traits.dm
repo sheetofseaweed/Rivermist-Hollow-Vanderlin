@@ -1,5 +1,8 @@
 /// An "affix for rooms": modifies a combat room's encounter at spawn.
+/// Traits are stateless shared singletons (see GLOB.dungeon_room_trait_singletons);
+/// per-room state lives on the room, never on the trait.
 /datum/dungeon_room_trait
+	abstract_type = /datum/dungeon_room_trait
 	var/name = "Trait"
 	var/desc = ""
 	/// Shown to occupants when they enter a room with this trait
@@ -58,17 +61,7 @@
 	announce = "A glint of hoarded wealth catches your eye."
 
 /datum/dungeon_room_trait/treasure_laden/apply_to_room(datum/pocket_dimension/dungeon/room)
-	var/turf/spot = room.get_drop_turf(null)
-	if(!spot)
-		return
-	var/obj/structure/dungeon_loot_cache/cache = new(spot)
-	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
-	if(dungeon_template?.loot_table_type)
-		cache.loot = new dungeon_template.loot_table_type
-	cache.delve_level = max(1, room.depth)
-	cache.unseal() // bonus cache is already open
-	room.loot_caches += cache
-	room.native_movables[cache] = TRUE
+	room.spawn_bonus_loot_cache(sealed = FALSE)
 
 // -- Pre-spawn selection traits (need style tags from Slice 1) --
 
@@ -101,22 +94,27 @@
 		guardian.maxHealth = round(max(1, guardian.maxHealth * 0.6))
 		guardian.health = guardian.maxHealth
 
-/// Builds a weighted pool of trait instances eligible for a given room.
-/proc/get_dungeon_room_traits(datum/pocket_dimension/dungeon/room, room_kind)
-	var/list/pool = list()
-	for(var/trait_type in subtypesof(/datum/dungeon_room_trait))
-		var/datum/dungeon_room_trait/trait = new trait_type
-		if(!trait.name || trait.name == "Trait")
-			qdel(trait)
+GLOBAL_LIST_EMPTY(dungeon_room_trait_singletons)
+
+/proc/build_dungeon_room_trait_singletons()
+	GLOB.dungeon_room_trait_singletons = list()
+	for(var/datum/dungeon_room_trait/trait_type as anything in subtypesof(/datum/dungeon_room_trait))
+		if(IS_ABSTRACT(trait_type))
 			continue
+		GLOB.dungeon_room_trait_singletons += new trait_type
+
+/// Builds a weighted pool of eligible trait singletons for a given room.
+/// Instances are shared — rooms must never qdel them.
+/proc/get_dungeon_room_traits(datum/pocket_dimension/dungeon/room, room_kind)
+	if(!length(GLOB.dungeon_room_trait_singletons))
+		build_dungeon_room_trait_singletons()
+	var/list/pool = list()
+	for(var/datum/dungeon_room_trait/trait as anything in GLOB.dungeon_room_trait_singletons)
 		if(!(room_kind in trait.room_kinds))
-			qdel(trait)
 			continue
 		if((room.owning_run ? room.owning_run.floor : 1) < trait.min_floor)
-			qdel(trait)
 			continue
 		if(!trait.can_apply(room))
-			qdel(trait)
 			continue
 		pool[trait] = max(1, trait.weight)
 	return pool

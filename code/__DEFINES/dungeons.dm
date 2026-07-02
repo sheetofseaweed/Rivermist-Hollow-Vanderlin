@@ -85,3 +85,24 @@
 
 /// % chance a trait-eligible room rolls a room trait
 #define DUNGEON_ROOM_TRAIT_CHANCE 50
+
+// -- Roguelike Heart: door rewards & stretch deck --
+
+/// What a forward gate promises for clearing the room beyond it
+#define DUNGEON_REWARD_BOON "boon"
+#define DUNGEON_REWARD_MOTES "motes"
+#define DUNGEON_REWARD_LOOT "loot"
+#define DUNGEON_REWARD_HEAL "heal"
+#define DUNGEON_REWARD_VAULT "vault"
+
+/// Weighted remainder of the stretch deck after guarantees (VAULT is guarantee-only)
+#define DUNGEON_DECK_REMAINDER_WEIGHTS list(DUNGEON_REWARD_MOTES = 40, DUNGEON_REWARD_HEAL = 25, DUNGEON_REWARD_LOOT = 20, DUNGEON_REWARD_BOON = 15)
+
+/// How many recent combat templates a run remembers and avoids repeating
+#define DUNGEON_RECENT_TEMPLATE_MEMORY 3
+
+// -- Roguelike Heart: boon rarity --
+
+#define DUNGEON_BOON_COMMON "common"
+#define DUNGEON_BOON_RARE "rare"
+#define DUNGEON_BOON_EPIC "epic"

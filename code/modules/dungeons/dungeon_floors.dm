@@ -22,6 +22,10 @@
 	var/enhance_chance = 25
 	/// % chance per spawned mob to become an elite champion
 	var/elite_chance = 8
+	/// Stretches (break-room intervals) before this floor's boss caps a stretch
+	var/stretches_per_floor = 1
+	/// % chance a combat room on this floor rolls a room trait
+	var/trait_chance = DUNGEON_ROOM_TRAIT_CHANCE
 
 /datum/dungeon_floor_config/test
 	floor = 1
@@ -37,6 +41,7 @@
 /datum/dungeon_floor_config/test
 	enhance_chance = 0
 	elite_chance = 0
+	trait_chance = 0 // traits are forced directly in their own unit tests
 
 /datum/dungeon_floor_config/test/New()
 	. = ..()

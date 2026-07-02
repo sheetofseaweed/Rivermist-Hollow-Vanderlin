@@ -25,7 +25,9 @@
 /datum/component/dungeon_boss_healthbar/proc/build_bar()
 	var/atom/movable/owner = parent
 	bar = image(null, owner)
-	bar.plane = ABOVE_HUD_PLANE
+	// In-world overlay: keep it on the game plane at a high layer. HUD planes
+	// are for screen objects and misrender when inherited by world overlays.
+	bar.layer = ABOVE_ALL_MOB_LAYER
 	bar.appearance_flags = RESET_COLOR | RESET_TRANSFORM | KEEP_APART
 	bar.pixel_y = ICON_SIZE_Y
 	bar.maptext_width = 96

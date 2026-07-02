@@ -2860,6 +2860,7 @@
 #include "code\modules\dungeons\dungeon_entrance.dm"
 #include "code\modules\dungeons\dungeon_floors.dm"
 #include "code\modules\dungeons\dungeon_gate.dm"
+#include "code\modules\dungeons\dungeon_gods.dm"
 #include "code\modules\dungeons\dungeon_instance.dm"
 #include "code\modules\dungeons\dungeon_keys.dm"
 #include "code\modules\dungeons\dungeon_landmarks.dm"

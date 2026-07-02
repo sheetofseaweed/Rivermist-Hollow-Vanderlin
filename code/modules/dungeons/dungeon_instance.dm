@@ -7,6 +7,10 @@
 	var/stretch_position = 0
 	/// DUNGEON_PATH_* of the gate that leads into this room; drives elite spawns
 	var/incoming_path_type = DUNGEON_PATH_COMBAT
+	/// DUNGEON_REWARD_* promised by the gate that led here; delivered on clear
+	var/promised_reward = DUNGEON_REWARD_MOTES
+	/// Key id for a VAULT room's keyholder + locked cache pair
+	var/vault_key_id
 	/// Set by a room trait before scatter: restrict scattered mobs to this style
 	var/scatter_style_override = null
 	/// Set by a room trait before scatter: add this many mobs to the scatter count
@@ -43,7 +47,7 @@
 	elite_guardian_refs = null
 	boss_bounties = null
 	keyholder_drops = null
-	QDEL_NULL(current_trait)
+	current_trait = null // shared singleton - never qdel
 	loot_caches = null
 	QDEL_LIST(gates)
 	gate_landmark_info = null
@@ -75,15 +79,14 @@
 	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
 	if(!dungeon_template)
 		return
-	if(!prob(DUNGEON_ROOM_TRAIT_CHANCE))
+	var/trait_chance = owning_run?.floor_config ? owning_run.floor_config.trait_chance : DUNGEON_ROOM_TRAIT_CHANCE
+	if(!prob(trait_chance))
 		return
 	var/list/pool = get_dungeon_room_traits(src, dungeon_template.room_kind)
 	if(!length(pool))
 		return
+	// Traits are shared singletons - pick one, never qdel any.
 	current_trait = pickweight(pool)
-	for(var/datum/dungeon_room_trait/trait as anything in pool)
-		if(trait != current_trait)
-			qdel(trait)
 	current_trait.modify_plan(src)
 
 /// Applies the rolled trait's post-spawn effects and announces it.
@@ -177,10 +180,36 @@
 		var/force_enhance = prob(enhance_chance)
 		register_guardian(guardian, is_elite, force_enhance)
 
+	// A VAULT-promised room hides its treasure behind a key: one guardian
+	// becomes the keyholder, and the clear reward is a matching locked cache.
+	if(promised_reward == DUNGEON_REWARD_VAULT && length(guardian_refs))
+		vault_key_id = "vault_[REF(src)]"
+		var/keyholder_ref = pick(guardian_refs)
+		keyholder_drops[keyholder_ref] = vault_key_id
+
 	apply_room_trait_effects()
 
 	if(!length(guardian_refs))
 		on_cleared(silent = TRUE)
+
+/// Spawns a bonus loot cache on a drop turf. Used by door rewards and the
+/// Treasure-laden trait. Returns the cache, or null without a valid turf.
+/datum/pocket_dimension/dungeon/proc/spawn_bonus_loot_cache(sealed = FALSE, bonus_delve = 0, cache_key_id = null)
+	var/turf/spot = get_drop_turf(null)
+	if(!spot)
+		return null
+	var/obj/structure/dungeon_loot_cache/cache = new(spot)
+	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
+	if(dungeon_template?.loot_table_type)
+		cache.loot = new dungeon_template.loot_table_type
+	cache.delve_level = max(1, depth + bonus_delve)
+	if(cache_key_id)
+		cache.key_id = cache_key_id
+	if(!sealed)
+		cache.unseal()
+	loot_caches += cache
+	native_movables[cache] = TRUE
+	return cache
 
 /datum/pocket_dimension/dungeon/proc/get_open_dungeon_turfs()
 	var/list/turf/open = list()
