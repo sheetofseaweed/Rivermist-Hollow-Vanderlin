@@ -252,3 +252,8 @@
 	name = "abyssal delve mouth"
 	desc = "A stairway descending into dark that swallows torchlight. The steps are never quite where they were yesterday."
 	entrance_kind = DUNGEON_ENTRANCE_INFINITE
+
+/obj/structure/dungeon_entrance/infinite/swampgob
+	name = "sunken warren mouth"
+	desc = "A root-torn pit breathing marsh-rot and faint goblin chatter. The dark below is wet and it is listening."
+	theme_filter = DUNGEON_THEME_SWAMPGOB

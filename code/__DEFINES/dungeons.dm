@@ -9,6 +9,7 @@
 #define DUNGEON_THEME_BANDIT "bandit"
 #define DUNGEON_THEME_WOLF "wolf"
 #define DUNGEON_THEME_TENTACLE "tentacle"
+#define DUNGEON_THEME_SWAMPGOB "swampgob"
 #define DUNGEON_THEME_TEST "test"
 
 // Gate roles

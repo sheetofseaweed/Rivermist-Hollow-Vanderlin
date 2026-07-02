@@ -49,6 +49,15 @@
 	use_floor_boss_pool = FALSE
 	mob_pool = list(/mob/living/simple_animal/hostile/boss/dungeon/test = 10)
 
+/obj/effect/landmark/dungeon/guardian/swampgob
+	name = "swamp goblin guardian marker"
+	mob_pool = list(
+		/mob/living/carbon/human/species/goblin/npc/ambush = 12,
+		/mob/living/carbon/human/species/goblin/npc = 8,
+		/mob/living/simple_animal/hostile/retaliate/bogbug = 5,
+		/mob/living/simple_animal/hostile/retaliate/frog = 3,
+	)
+
 /obj/effect/landmark/dungeon/guardian/keyholder
 	name = "dungeon keyholder marker"
 	/// Key id the dropped key carries; must match a gate in the room

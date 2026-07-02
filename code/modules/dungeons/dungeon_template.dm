@@ -64,7 +64,7 @@
 /datum/map_template/pocket/dungeon/test_onebite
 	name = "Test One-Bite Dungeon"
 	id = "dungeon_test_onebite"
-	mappath = "_maps/templates/dungeons/dungeon_test_onebite.dmm"
+	mappath = "_maps/templates/dungeons/_test/dungeon_test_onebite.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_ONESHOT
 	loot_table_type = /datum/loot_table/debug
@@ -73,14 +73,14 @@
 /datum/map_template/pocket/dungeon/test_break
 	name = "Test Break Room"
 	id = "dungeon_test_break"
-	mappath = "_maps/templates/dungeons/dungeon_test_break.dmm"
+	mappath = "_maps/templates/dungeons/_test/dungeon_test_break.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_BREAK
 
 /datum/map_template/pocket/dungeon/test_combat
 	name = "Test Combat Room"
 	id = "dungeon_test_combat"
-	mappath = "_maps/templates/dungeons/dungeon_test_combat.dmm"
+	mappath = "_maps/templates/dungeons/_test/dungeon_test_combat.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_COMBAT
 	loot_table_type = /datum/loot_table/debug
@@ -88,14 +88,14 @@
 /datum/map_template/pocket/dungeon/test_descent
 	name = "Test Descent Room"
 	id = "dungeon_test_descent"
-	mappath = "_maps/templates/dungeons/dungeon_test_break.dmm" // reuse break layout (entry+exit+gates)
+	mappath = "_maps/templates/dungeons/_test/dungeon_test_break.dmm" // reuse break layout (entry+exit+gates)
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_DESCENT
 
 /datum/map_template/pocket/dungeon/test_boss
 	name = "Test Boss Room"
 	id = "dungeon_test_boss"
-	mappath = "_maps/templates/dungeons/dungeon_test_boss.dmm"
+	mappath = "_maps/templates/dungeons/_test/dungeon_test_boss.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_BOSS
 	loot_table_type = /datum/loot_table/debug
@@ -104,7 +104,67 @@
 /datum/map_template/pocket/dungeon/test_scatter
 	name = "Test Scatter Room"
 	id = "dungeon_test_scatter"
-	mappath = "_maps/templates/dungeons/dungeon_test_scatter.dmm"
+	mappath = "_maps/templates/dungeons/_test/dungeon_test_scatter.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_COMBAT
 	loot_table_type = /datum/loot_table/debug
+
+// -- The Sunken Warrens: underground swamp goblin starter set --
+
+/datum/map_template/pocket/dungeon/swampgob
+	name = "_swampgob_base"
+	id = "_swampgob_base"
+	theme = DUNGEON_THEME_SWAMPGOB
+	loot_table_type = /datum/loot_table/mining_cache
+
+/datum/map_template/pocket/dungeon/swampgob/break_hollow
+	name = "Root-Choked Hollow"
+	id = "swampgob_break_hollow"
+	mappath = "_maps/templates/dungeons/swampgob/break_hollow.dmm"
+	room_kind = DUNGEON_ROOM_BREAK
+
+/datum/map_template/pocket/dungeon/swampgob/descent_sinkhole
+	name = "Sinkhole Landing"
+	id = "swampgob_descent_sinkhole"
+	mappath = "_maps/templates/dungeons/swampgob/descent_sinkhole.dmm"
+	room_kind = DUNGEON_ROOM_DESCENT
+
+/datum/map_template/pocket/dungeon/swampgob/combat_mireway
+	name = "The Mireway"
+	id = "swampgob_combat_mireway"
+	mappath = "_maps/templates/dungeons/swampgob/combat_mireway.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 1
+	gate_hint = "Marsh-stink and goblin chatter drift through."
+
+/datum/map_template/pocket/dungeon/swampgob/combat_shroomcave
+	name = "Shroom-Lit Cave"
+	id = "swampgob_combat_shroomcave"
+	mappath = "_maps/templates/dungeons/swampgob/combat_shroomcave.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 1
+	gate_hint = "A pale fungal glow seeps around the frame."
+
+/datum/map_template/pocket/dungeon/swampgob/combat_leechpools
+	name = "The Leech Pools"
+	id = "swampgob_combat_leechpools"
+	mappath = "_maps/templates/dungeons/swampgob/combat_leechpools.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 2
+	gate_hint = "Still black water laps at something beyond."
+
+/datum/map_template/pocket/dungeon/swampgob/combat_gobwarren
+	name = "Goblin Warren"
+	id = "swampgob_combat_gobwarren"
+	mappath = "_maps/templates/dungeons/swampgob/combat_gobwarren.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 2
+	gate_hint = "Skull-totems and squabbling voices. A warren."
+
+/datum/map_template/pocket/dungeon/swampgob/boss_kingshall
+	name = "The Bog-King's Hall"
+	id = "swampgob_boss_kingshall"
+	mappath = "_maps/templates/dungeons/swampgob/boss_kingshall.dmm"
+	room_kind = DUNGEON_ROOM_BOSS
+	difficulty_tier = 2
+	gate_hint = "Drums. Torchlight. Something vast squats on a throne of mud."

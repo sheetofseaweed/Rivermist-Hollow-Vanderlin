@@ -1,0 +1,178 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"b" = (
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"w" = (
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"c" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"l" = (
+/obj/effect/landmark/dungeon/loot,
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+b
+b
+b
+G
+b
+b
+b
+b
+b
+a
+"}
+(3,1,1) = {"
+a
+w
+w
+b
+b
+c
+b
+F
+w
+w
+a
+"}
+(4,1,1) = {"
+a
+w
+w
+b
+w
+w
+w
+b
+w
+w
+a
+"}
+(5,1,1) = {"
+a
+b
+b
+b
+w
+l
+w
+b
+b
+b
+a
+"}
+(6,1,1) = {"
+a
+b
+E
+b
+b
+b
+b
+b
+E
+b
+a
+"}
+(7,1,1) = {"
+a
+b
+b
+b
+w
+w
+w
+b
+b
+b
+a
+"}
+(8,1,1) = {"
+a
+w
+w
+b
+w
+w
+w
+b
+w
+w
+a
+"}
+(9,1,1) = {"
+a
+w
+w
+b
+b
+E
+b
+b
+w
+w
+a
+"}
+(10,1,1) = {"
+a
+b
+b
+h
+b
+b
+b
+h
+b
+b
+a
+"}
+(11,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}

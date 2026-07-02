@@ -1,0 +1,201 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"x" = (
+/turf/closed/wall/mineral/wood,
+/area/pocket_dimension/dungeon)
+"b" = (
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"c" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"V" = (
+/obj/effect/landmark/dungeon/gate{
+	path_type = "treasure";
+	requires_key = 1;
+	key_id = "warren"
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"K" = (
+/obj/effect/landmark/dungeon/guardian/keyholder{
+	key_id = "warren";
+	mob_pool = list(/mob/living/carbon/human/species/goblin/npc = 10)
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"n" = (
+/obj/structure/fluff/nest,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"k" = (
+/obj/structure/fluff/walldeco/skullspike,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"S" = (
+/obj/structure/table/wood/treestump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"m" = (
+/obj/machinery/light/fueled/campfire/longlived,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+n
+b
+G
+b
+b
+b
+S
+a
+"}
+(3,1,1) = {"
+a
+b
+b
+b
+x
+b
+e
+b
+a
+"}
+(4,1,1) = {"
+a
+x
+x
+b
+x
+b
+b
+b
+a
+"}
+(5,1,1) = {"
+a
+b
+b
+b
+b
+b
+x
+b
+a
+"}
+(6,1,1) = {"
+a
+b
+e
+b
+K
+b
+m
+b
+a
+"}
+(7,1,1) = {"
+a
+b
+b
+b
+b
+b
+x
+b
+a
+"}
+(8,1,1) = {"
+a
+x
+x
+b
+b
+b
+b
+b
+a
+"}
+(9,1,1) = {"
+a
+b
+b
+b
+x
+x
+b
+k
+a
+"}
+(10,1,1) = {"
+a
+b
+b
+e
+b
+V
+b
+b
+a
+"}
+(11,1,1) = {"
+a
+n
+b
+b
+b
+x
+b
+b
+a
+"}
+(12,1,1) = {"
+a
+b
+b
+h
+b
+b
+b
+h
+a
+"}
+(13,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}

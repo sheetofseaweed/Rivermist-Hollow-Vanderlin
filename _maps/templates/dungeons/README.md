@@ -6,8 +6,15 @@ overworld entrance, clear it, loot it, leave, it collapses) and **infinite dunge
 
 You do two things to add content:
 
-1. **Draw a room** as a `.dmm` map template in `_maps/templates/dungeons/`.
+1. **Draw a room** as a `.dmm` map template in `_maps/templates/dungeons/<theme>/`.
 2. **Register it** as a `/datum/map_template/pocket/dungeon` subtype in `code/modules/dungeons/dungeon_template.dm`.
+
+**Folder convention: one folder per theme/set, `<kind>_<name>.dmm` inside it.** Rooms in a
+theme are authored and re-skinned together, so they live together; the room kind goes in the
+filename prefix (`break_`, `combat_`, `boss_`, `descent_`, `oneshot_`). Harness fixtures live in
+`_test/` — never put content there. **`swampgob/` (The Sunken Warrens) is the reference set**:
+seven rooms + floor configs + a themed entrance, showing every marker in real use, including a
+key-locked treasure gate wired to a keyholder (see `combat_gobwarren.dmm`).
 
 Everything else (loading, collapsing, mob tracking, loot, currency, party logic) is automatic.
 
