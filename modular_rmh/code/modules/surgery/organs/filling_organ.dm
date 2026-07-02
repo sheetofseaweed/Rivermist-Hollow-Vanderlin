@@ -1,4 +1,12 @@
 //By Vide Noir https://github.com/EaglePhntm.
+
+/// Dribbles at or below this many units form a drop decal; once a drop gathers more than this it becomes a real puddle.
+#define LIQUID_DRIP_MAX_UNITS 5
+/// Fill ratio at which a full organ starts leaking faster; below this the drip rate is unchanged.
+#define DRIP_PRESSURE_THRESHOLD 0.6
+/// Drip rate multiplier reached (and capped at) when the organ is full or overfull.
+#define DRIP_PRESSURE_MAX_MULT 6
+
 //container organ that can refill self through nutrients etc.
 /obj/item/organ/genitals/filling_organ
 	name = "self filling organ"
@@ -22,7 +30,7 @@
 	var/absorbing = FALSE //absorbs liquids within slowly. Wont absorb reagent_to_make type, refilling and hungerhelp are irrelevant to this.
 	var/absorbrate = 1 //refilling and hungerhelp are irrelevant to this, each life tick. NO LESS THAN 1 DIGESTS RIGHT.
 	var/absorbmult = 1 //free gains
-	var/driprate = 0.1
+	var/driprate = 0.2
 	var/spiller = FALSE //toggles if it will spill its stored_items when not plugged.
 	var/blocker = ITEM_SLOT_SHIRT //pick an item slot
 	var/additional_blocker
@@ -44,6 +52,8 @@
 	//misc
 	var/last_size_alert = 0
 	var/last_damagespill_alert = 0
+	/// If TRUE, small dribbles (<= LIQUID_DRIP_MAX_UNITS) form a colored drop decal instead of pooling as a liquid puddle.
+	var/drips_as_drops = FALSE
 
 	COOLDOWN_DECLARE(liquidcd)
 
@@ -99,8 +109,6 @@
 		for(var/obj/item/thing as anything in contents)
 			if(thing.type != /obj/item/dildo/plug) //plugs wont take space as they are especially for this.
 				captarget -= thing.w_class * 10
-	if(damage)
-		captarget = max(0, captarget - damage * 10)
 	return max(0, captarget)
 
 /obj/item/organ/genitals/filling_organ/proc/spill_reagents(amount)
@@ -125,6 +133,30 @@
 		return 0
 	return spill_reagents(excess_amount)
 
+/// Drips `amount` units of our reagents onto `target`. For organs flagged [drips_as_drops], small dribbles form a
+/// colored drop decal that grows and eventually pools into a real puddle; everything else pools immediately.
+/obj/item/organ/genitals/filling_organ/proc/drip_to_turf(turf/target, amount)
+	if(!target || !reagents || amount <= 0)
+		return
+	amount = min(amount, reagents.total_volume)
+	if(amount <= 0)
+		return
+
+	//big dribble, a non-dropping organ, or an owner whose quirk forces raw puddles: pool as liquid, skipping the decal.
+	if(!drips_as_drops || amount > LIQUID_DRIP_MAX_UNITS || owner?.has_quirk(/datum/quirk/peculiarity/free_flowing))
+		target.add_liquid_from_reagents(reagents, amount = amount)
+		reagents.remove_all(amount)
+		return
+
+	var/obj/effect/decal/cleanable/liquid_drip/drop = locate() in target
+	if(!drop)
+		drop = new(target)
+	drop.absorb_drip(reagents, amount)
+	//once enough fluid has gathered in one spot, collapse the drop into a real liquid puddle.
+	if(drop.reagents?.total_volume > LIQUID_DRIP_MAX_UNITS)
+		target.add_liquid_from_reagents(drop.reagents, amount = drop.reagents.total_volume)
+		qdel(drop)
+
 /obj/item/organ/genitals/filling_organ/on_life()
 	var/mob/living/carbon/human/H = owner
 
@@ -133,73 +165,11 @@
 	//get arousal data
 	var/list/arousal_data = list()
 	SEND_SIGNAL(H, COMSIG_SEX_GET_AROUSAL, arousal_data)
-	//updates size caps
-	var/captarget
-	if(!isanimal(H))
-		captarget = get_reagent_capacity()
-		if(captarget != reagents.maximum_volume)
-			if(!(reagents.has_reagent(/datum/reagent/consumable/femcum) && (reagents.get_reagent_amount(/datum/reagent/consumable/femcum) > captarget*0.8))) //so that vaginas don't spam messages
-				reagents.maximum_volume = captarget
-				if(H.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && world.time > last_size_alert + 12 SECONDS)
-					last_size_alert = world.time
-					to_chat(H, span_blue("My [pick(altnames)] hold a different amount now."))
 
-	//debuff checks
-	if(bloatable) //its bloatable, we wont make removals because other organs may be conflicting and shit.
-		if(reagents.total_volume > (reagents.maximum_volume/3) && !owner.has_status_effect(/datum/status_effect/debuff/bloattwo)) //more than 1/3 full, light bloat.
-			owner.apply_status_effect(/datum/status_effect/debuff/bloatone)
-		if(reagents.total_volume > (reagents.maximum_volume/2)) //more than half full, heavy bloat.
-			owner.apply_status_effect(/datum/status_effect/debuff/bloattwo)
-
-	if(damage > low_threshold)
-		if(prob(3))
-			to_chat(H, span_warning("My [pick(altnames)] aches..."))
-
-	if(reagents.maximum_volume < reagents.total_volume) //overflow
-		if(world.time > last_damagespill_alert + 30 SECONDS)
-			last_damagespill_alert = world.time
-			owner.visible_message(span_info("[owner]'s [pick(altnames)] can not hold all of the liquids in anymore and spill some of it's contents!"),span_info("My [pick(altnames)] can not hold all of the liquids in anymore and spill some of it's contents!!"),span_unconscious("I hear a splash."))
-		var/overflow_amount = reagents.total_volume - reagents.maximum_volume
-		var/spill_amount = min(reagents.total_volume, overflow_amount + 15)
-		spill_reagents(spill_amount)
-
-	// modify nutrition to generate reagents
-	if(istype(src, /obj/item/organ/genitals/filling_organ/vagina)) //generate lube from arousal
-		if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
-			refilling = TRUE
-		else
-			refilling = FALSE
-		var/check_volume = 0
-		if(reagent_to_make in reagents.reagent_list)
-			check_volume = reagents.reagent_list[reagent_to_make].volume
-		else
-			check_volume = reagents.total_volume
-		if((check_volume < max_femcum) && refilling)
-			var/max_restore = reagent_generate_rate * 2
-			var/restore_amount = min(max_restore, reagents.maximum_volume - max_femcum)
-			reagents.add_reagent(reagent_to_make, restore_amount)
-		var/obj/item/organ/genitals/filling_organ/vagina/vagina_organ = src
-		vagina_organ.try_generate_oviposition_egg()
-	else
-		if(!damage) //cant regen or consume while damaged.
-			if(!HAS_TRAIT(src, TRAIT_NOHUNGER)) //if not nohunger
-				if(owner.nutrition < (NUTRITION_LEVEL_HUNGRY - 25) && hungerhelp) //consumes if hungry and uses nutrient, putting below the limit so person dont get stress message spam.
-					var/remove_amount = min(reagent_generate_rate, reagents.total_volume)
-					if(uses_nutrient) //add nutrient
-						owner.adjust_nutrition(remove_amount) //since hunger factor is so tiny compared to the nutrition levels it has to fill
-					reagents.remove_reagent(reagent_to_make, (remove_amount*4)) //we consume our own reagents for food less efficently, allowing running out (may undo this multiplier later.)
-				else
-					if((reagents.total_volume < reagents.maximum_volume) && refilling && owner.nutrition > (NUTRITION_LEVEL_FED + 25)) //if organ is not full.
-						var/max_restore = owner.nutrition > (NUTRITION_LEVEL_WELL_FED) ? reagent_generate_rate * 2 : reagent_generate_rate
-						var/restore_amount = min(max_restore, reagents.maximum_volume - reagents.total_volume) // amount restored if fed, capped by reagents.maximum_volume
-						if(uses_nutrient) //consume nutrient
-							owner.adjust_nutrition(-restore_amount)
-						reagents.add_reagent(reagent_to_make, restore_amount)
-			else //if nohunger, should just regenerate stuff for free no matter what, if refilling.
-				if((reagents.total_volume < reagents.maximum_volume) && refilling)
-					var/max_restore = reagent_generate_rate * 2
-					var/restore_amount = min(max_restore, reagents.maximum_volume - reagents.total_volume)
-					reagents.add_reagent(reagent_to_make, restore_amount)
+	update_reagent_capacity(H)
+	handle_bloat()
+	handle_overflow()
+	regenerate_reagents(H, arousal_data)
 
 	if(!COOLDOWN_FINISHED(src, liquidcd))
 		return
@@ -207,23 +177,15 @@
 		reagents.trans_to(owner, absorbrate, absorbmult, TRUE, FALSE)
 	if(!length(contents)) //if nothing is plugging the hole, stuff will drip out.
 		var/tempdriprate = driprate
+		//the fuller the organ, the faster it leaks: ramps from base rate at DRIP_PRESSURE_THRESHOLD up to DRIP_PRESSURE_MAX_MULT when full.
+		var/fullness = reagents.maximum_volume ? (reagents.total_volume / reagents.maximum_volume) : 0
+		var/pressure = clamp((fullness - DRIP_PRESSURE_THRESHOLD) / (1 - DRIP_PRESSURE_THRESHOLD), 0, 1)
+		tempdriprate *= 1 + (pressure * (DRIP_PRESSURE_MAX_MULT - 1))
 		if((reagents.total_volume && spiller) || (reagents.total_volume > reagents.maximum_volume)) //spiller or above it's capacity to leak.
 			var/obj/item/clothing/blockingitem = H.mob_slot_wearing(blocker)
 			if(!isnull(additional_blocker))
 				if(H.underwear)
 					blockingitem = H.underwear
-			/*if(blockingitem && !blockingitem.genital_access) //we aint dripping a drop.
-				tempdriprate = 0.1 //if worn slot cover it, drip nearly nothing.
-				if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
-					if(prob(5))
-						if(!MOBTIMER_FINISHED(H, "organ_drip", rand(20,120)))
-							return
-
-						MOBTIMER_SET(H, "organ_drip")
-						to_chat(H, pick(span_info("A little bit of [english_list(reagents.reagent_list)] drips from my [pick(altnames)] to my [blockingitem.name]..."),
-							span_info("Some liquid drips from my [pick(altnames)] to my [blockingitem.name]."),
-							span_info("My [pick(altnames)] spills some liquid to my [blockingitem.name]."),
-							span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)] to my [blockingitem.name].")))*/
 			if(!(blockingitem && !blockingitem.genital_access)) //we drippin
 				if(prob(5)) //with selfawaregeni quirk you got some chance to see what type of liquid is dripping from you.
 					if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
@@ -246,8 +208,7 @@
 				if(!the_bottle) //no bottle so just spill
 					var/turf/ownerloc = get_turf(owner)
 					if(ownerloc)
-						ownerloc.add_liquid_from_reagents(reagents, amount = tempdriprate)
-						reagents.remove_all(tempdriprate)
+						drip_to_turf(ownerloc, tempdriprate)
 				else
 					tempdriprate *= 50 //since default values are basically decimals.
 					reagents.trans_to(the_bottle, min(tempdriprate))
@@ -265,6 +226,75 @@
 					reagents.trans_to(contentitem, rand(4,8))
 
 	COOLDOWN_START(src, liquidcd, processspeed)
+
+/// Recalculates and applies the reagent capacity, alerting self-aware owners when it shifts.
+/obj/item/organ/genitals/filling_organ/proc/update_reagent_capacity(mob/living/carbon/human/H)
+	if(isanimal(H))
+		return
+	var/captarget = get_reagent_capacity()
+	if(captarget == reagents.maximum_volume)
+		return
+	//so that vaginas don't spam messages
+	if(reagents.has_reagent(/datum/reagent/consumable/femcum) && (reagents.get_reagent_amount(/datum/reagent/consumable/femcum) > captarget * 0.8))
+		return
+	reagents.maximum_volume = captarget
+	if(H.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && world.time > last_size_alert + 12 SECONDS)
+		last_size_alert = world.time
+		to_chat(H, span_blue("My [pick(altnames)] hold a different amount now."))
+
+/// Applies bloat debuffs when bloatable and sufficiently full.
+/obj/item/organ/genitals/filling_organ/proc/handle_bloat()
+	if(!bloatable) //we wont make removals because other organs may be conflicting and shit.
+		return
+	if(reagents.total_volume > (reagents.maximum_volume / 3) && !owner.has_status_effect(/datum/status_effect/debuff/bloattwo)) //more than 1/3 full, light bloat.
+		owner.apply_status_effect(/datum/status_effect/debuff/bloatone)
+	if(reagents.total_volume > (reagents.maximum_volume / 2)) //more than half full, heavy bloat.
+		owner.apply_status_effect(/datum/status_effect/debuff/bloattwo)
+
+/// Spills reagents that no longer fit once the capacity has dropped below the stored volume.
+/obj/item/organ/genitals/filling_organ/proc/handle_overflow()
+	if(reagents.maximum_volume >= reagents.total_volume)
+		return
+	if(world.time > last_damagespill_alert + 30 SECONDS)
+		last_damagespill_alert = world.time
+		owner.visible_message(span_info("[owner]'s [pick(altnames)] can not hold all of the liquids in anymore and spill some of it's contents!"), span_info("My [pick(altnames)] can not hold all of the liquids in anymore and spill some of it's contents!!"), span_unconscious("I hear a splash."))
+	var/overflow_amount = reagents.total_volume - reagents.maximum_volume
+	var/spill_amount = min(reagents.total_volume, overflow_amount + 15)
+	spill_reagents(spill_amount)
+
+/// Generates or consumes the organ's reagent based on nutrition. Vagina overrides this for arousal-driven lube.
+/obj/item/organ/genitals/filling_organ/proc/regenerate_reagents(mob/living/carbon/human/H, list/arousal_data)
+	if(!HAS_TRAIT(src, TRAIT_NOHUNGER)) //if not nohunger
+		if(owner.nutrition < (NUTRITION_LEVEL_HUNGRY - 25) && hungerhelp) //consumes if hungry and uses nutrient, putting below the limit so person dont get stress message spam.
+			var/remove_amount = min(reagent_generate_rate, reagents.total_volume)
+			if(uses_nutrient) //add nutrient
+				owner.adjust_nutrition(remove_amount) //since hunger factor is so tiny compared to the nutrition levels it has to fill
+			reagents.remove_reagent(reagent_to_make, (remove_amount * 4)) //we consume our own reagents for food less efficently, allowing running out (may undo this multiplier later.)
+		else if((reagents.total_volume < reagents.maximum_volume) && refilling && owner.nutrition > (NUTRITION_LEVEL_FED + 25)) //if organ is not full.
+			var/max_restore = owner.nutrition > (NUTRITION_LEVEL_WELL_FED) ? reagent_generate_rate * 2 : reagent_generate_rate
+			var/restore_amount = min(max_restore, reagents.maximum_volume - reagents.total_volume) // amount restored if fed, capped by reagents.maximum_volume
+			if(uses_nutrient) //consume nutrient
+				owner.adjust_nutrition(-restore_amount)
+			reagents.add_reagent(reagent_to_make, restore_amount)
+	else //if nohunger, should just regenerate stuff for free no matter what, if refilling.
+		if((reagents.total_volume < reagents.maximum_volume) && refilling)
+			var/max_restore = reagent_generate_rate * 2
+			var/restore_amount = min(max_restore, reagents.maximum_volume - reagents.total_volume)
+			reagents.add_reagent(reagent_to_make, restore_amount)
+
+/// Vagina generates lube from arousal instead of nutrition, and may grow oviposition eggs.
+/obj/item/organ/genitals/filling_organ/vagina/regenerate_reagents(mob/living/carbon/human/H, list/arousal_data)
+	refilling = (arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
+	var/check_volume = 0
+	if(reagent_to_make in reagents.reagent_list)
+		check_volume = reagents.reagent_list[reagent_to_make].volume
+	else
+		check_volume = reagents.total_volume
+	if((check_volume < max_femcum) && refilling)
+		var/max_restore = reagent_generate_rate * 2
+		var/restore_amount = min(max_restore, reagents.maximum_volume - max_femcum)
+		reagents.add_reagent(reagent_to_make, restore_amount)
+	try_generate_oviposition_egg()
 
 /obj/item/organ/genitals/filling_organ/proc/organ_jumped()
 	var/mob/living/carbon/human/H = owner
@@ -631,3 +661,53 @@
 		//try increase organ size (code later)
 	stretched_coefficient = CLAMP(stretched_coefficient, 1, 3)
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_UPDATE_SIZE)
+
+/// A small puddle's worth of dripped fluid. Uses greyscale drop sprites tinted to whatever liquid it holds.
+/obj/effect/decal/cleanable/liquid_drip
+	name = "drips of liquid"
+	desc = ""
+	icon = 'modular_rmh/icons/obj/genitals/effects.dmi'
+	icon_state = "drip1"
+	random_icon_states = list("drip1", "drip2", "drip3", "drip4", "drip5")
+	alpha = 200
+	/// Once the drop is ~halfway to becoming a puddle it swaps to a larger "fem" splatter sprite, chosen once.
+	var/grown_to_fem = FALSE
+
+/obj/effect/decal/cleanable/liquid_drip/Initialize(mapload)
+	. = ..()
+	if(. == INITIALIZE_HINT_QDEL)
+		return .
+	pixel_x = base_pixel_x + rand(-5, 5)
+	pixel_y = base_pixel_y + rand(-3, 3)
+
+/// Pulls `amount` units out of `source` into our reagents, then tints to match the held fluid and mirrors its
+/// translucency. Sprites are greyscale so a plain colour multiply reproduces the fluid colour faithfully; colour must
+/// go through add_atom_colour or the atom-colour priority system overwrites a direct `color =` on the next update.
+/obj/effect/decal/cleanable/liquid_drip/proc/absorb_drip(datum/reagents/source, amount)
+	if(source && amount > 0 && reagents)
+		source.trans_to(src, amount)
+	if(!reagents?.total_volume)
+		return
+	add_atom_colour(mix_color_from_reagents(reagents.reagent_list), FIXED_COLOUR_PRIORITY)
+	// translucent liquids leave translucent drops: route the fluid's opacity to our alpha.
+	alpha = get_mixed_opacity()
+	// halfway to a puddle: grow into a larger, random "fem" splatter.
+	if(!grown_to_fem && reagents.total_volume >= (LIQUID_DRIP_MAX_UNITS * 0.5))
+		grown_to_fem = TRUE
+		icon = 'modular_rmh/icons/obj/genitals/cum_effects.dmi'
+		icon_state = "fem[rand(1, 10)]"
+
+/// Volume-weighted average opacity (0-255) of our held reagents. For a single fluid this is just its own opacity,
+/// so a pure femcum/cum drop takes that reagent's opacity 1:1. (The liquid-turf formula's +1/max floors distort
+/// the sub-unit volumes a drip deals in, so we use a straight weighted average instead.)
+/obj/effect/decal/cleanable/liquid_drip/proc/get_mixed_opacity()
+	if(!reagents?.total_volume)
+		return alpha
+	var/weighted_opacity = 0
+	for(var/datum/reagent/reagent as anything in reagents.reagent_list)
+		weighted_opacity += reagent.opacity * reagent.volume
+	return clamp(round(weighted_opacity / reagents.total_volume), 0, 255)
+
+#undef LIQUID_DRIP_MAX_UNITS
+#undef DRIP_PRESSURE_THRESHOLD
+#undef DRIP_PRESSURE_MAX_MULT

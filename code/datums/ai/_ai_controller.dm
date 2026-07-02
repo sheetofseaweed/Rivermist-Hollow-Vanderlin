@@ -201,6 +201,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	RegisterSignal(pawn, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(on_changed_z_level))
 	RegisterSignal(pawn, COMSIG_MOB_LOGIN, PROC_REF(on_sentience_gained))
 	RegisterSignal(pawn, COMSIG_MOB_STATCHANGE, PROC_REF(on_stat_changed))
+	RegisterSignal(pawn, COMSIG_ATOM_WAS_ATTACKED, PROC_REF(on_pawn_attacked))
 
 	our_cells = new(interesting_dist, interesting_dist, 1)
 	set_new_cells()
@@ -272,6 +273,11 @@ have ways of interacting with a specific atom and control it. They posses a blac
 /datum/ai_controller/proc/should_idle()
 	if(!can_idle)
 		return FALSE
+	if((blackboard[BB_AI_ALERT_MODE_UNTIL] || 0) > world.time)
+		return FALSE
+	var/list/aggro_table = blackboard[BB_MOB_AGGRO_TABLE]
+	if(length(aggro_table))
+		return FALSE
 	for(var/datum/spatial_grid_cell/grid as anything in our_cells.member_cells)
 		if(length(grid.client_contents))
 			return FALSE
@@ -287,11 +293,22 @@ have ways of interacting with a specific atom and control it. They posses a blac
 
 /datum/ai_controller/proc/on_client_enter(datum/source, atom/target)
 	SIGNAL_HANDLER
+	set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + AI_ALERT_ON_CLIENT_TIME)
 	reset_ai_status()
 
 /datum/ai_controller/proc/on_client_exit(datum/source, datum/exited)
 	SIGNAL_HANDLER
 	reset_ai_status()
+
+/datum/ai_controller/proc/on_pawn_attacked(atom/source, atom/attacker, damage)
+	SIGNAL_HANDLER
+	if(attacker == pawn || QDELETED(attacker))
+		return
+	set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + AI_ALERT_ON_ATTACK_TIME)
+	if(ai_status == AI_STATUS_IDLE)
+		set_ai_status(AI_STATUS_ON)
+	else
+		reset_ai_status()
 
 /datum/ai_controller/proc/get_current_turf()
 	var/mob/living/mob_pawn = pawn
@@ -320,7 +337,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 
 ///Proc for deinitializing the pawn to the old controller
 /datum/ai_controller/proc/UnpossessPawn(destroy)
-	UnregisterSignal(pawn, list(COMSIG_MOVABLE_Z_CHANGED, COMSIG_MOB_LOGIN, COMSIG_MOB_LOGOUT, COMSIG_MOB_STATCHANGE))
+	UnregisterSignal(pawn, list(COMSIG_MOVABLE_Z_CHANGED, COMSIG_MOB_LOGIN, COMSIG_MOB_LOGOUT, COMSIG_MOB_STATCHANGE, COMSIG_ATOM_WAS_ATTACKED))
 	var/turf/pawn_turf = get_turf(pawn)
 	if(pawn_turf)
 		GLOB.ai_controllers_by_zlevel[pawn_turf.z] -= src
@@ -397,6 +414,14 @@ have ways of interacting with a specific atom and control it. They posses a blac
 		return FALSE
 	return TRUE
 
+/datum/ai_controller/proc/is_hot_pursuit_target(atom/target)
+	if(!target || QDELETED(target))
+		return FALSE
+	if(blackboard[BB_LAST_RANGED_ATTACKER] != target)
+		return FALSE
+	var/last_ranged_hit_time = blackboard[BB_LAST_RANGED_HIT_TIME] || 0
+	return world.time - last_ranged_hit_time <= AI_RANGED_HOT_PURSUIT_TIME
+
 /// Generates a plan and see if our existing one is still valid.
 /datum/ai_controller/process(delta_time)
 	if(!able_to_run())
@@ -417,8 +442,9 @@ have ways of interacting with a specific atom and control it. They posses a blac
 			return
 
 		if(get_dist_3d(pawn, current_movement_target) > max_target_distance) //The distance is out of range
-			CancelActions()
-			return
+			if(!is_hot_pursuit_target(current_movement_target))
+				CancelActions()
+				return
 
 	SEND_SIGNAL(src, COMSIG_AI_CONTROLLER_PICKED_BEHAVIORS, current_behaviors, planned_behaviors)
 
@@ -444,7 +470,14 @@ have ways of interacting with a specific atom and control it. They posses a blac
 
 			///Stops pawns from performing such actions that should require the target to be adjacent.
 			var/mob/living/moving_pawn = pawn
-			var/can_reach = !(current_behavior.behavior_flags & AI_BEHAVIOR_REQUIRE_REACH) || moving_pawn.CanReach(current_movement_target)
+			var/obj/item/reach_tool
+			if(iscarbon(moving_pawn))
+				var/mob/living/carbon/carbon_pawn = moving_pawn
+				reach_tool = carbon_pawn.get_active_held_item()
+			var/can_reach = !(current_behavior.behavior_flags & AI_BEHAVIOR_REQUIRE_REACH) || moving_pawn.CanReach(current_movement_target, reach_tool)
+			var/effective_required_distance = current_behavior.required_distance
+			if((current_behavior.behavior_flags & AI_BEHAVIOR_REQUIRE_REACH) && moving_pawn.used_intent)
+				effective_required_distance = max(effective_required_distance, moving_pawn.used_intent.reach)
 
 			if(isliving(current_movement_target))
 				var/mob/living/living_pawn = pawn
@@ -458,7 +491,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 			if(prob(8))
 				moving_pawn.emote("cidle")
 
-			if(((can_reach && current_behavior.required_distance >= get_dist(moving_pawn, current_movement_target))) || failed_sneak_check > 4) ///Are we close
+			if(((can_reach && effective_required_distance >= get_dist(moving_pawn, current_movement_target))) || failed_sneak_check > 4) ///Are we close
 				if(ai_movement.moving_controllers[src] == current_movement_target) //We are close enough, if we're moving stop.
 					ai_movement.stop_moving_towards(src)
 

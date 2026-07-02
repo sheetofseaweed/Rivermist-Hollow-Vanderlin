@@ -14,6 +14,10 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 			mob_examine_panel.holder = src
 			mob_examine_panel.viewing = usr
 			LAZYSET(examine_panels, REF(usr), mob_examine_panel)
+		else
+			// Snapshot model: re-examining refreshes the doll to the mob's current
+			// state. Wipe the cached snapshots so the panel rebuilds them.
+			reset_examine_preview()
 		mob_examine_panel.ui_interact(usr)
 		return
 

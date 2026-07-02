@@ -68,13 +68,46 @@
  * Attempt to craft all possible recipes - try normal priority first, then fallbacks
  */
 /datum/component/container_craft/proc/attempt_crafts(datum/source, mob/user)
-	var/list/stored_items = list()
 	var/obj/item/host = parent
 	if(!length(host.contents))
 		return
 
 	if(!istype(user))
 		user = get_mob_by_ckey(host.fingerprintslast)
+
+	//RMH EDITED START
+	// BUGFIX (cooking): the old code returned after the first successful craft, so a
+	// pan holding several different foods (e.g. mince + sausage + meat) only started
+	// one recipe per craft trigger and the rest waited for the next signal - they
+	// cooked one type at a time. Now every viable recipe is tried in a single pass,
+	// then fallbacks, so all distinct foods start cooking together. Quantity of a
+	// single food type is still handled by the craft multiplier, so each recipe only
+	// needs to start once here.
+	var/list/stored_items = get_unreserved_items(host)
+
+	for(var/datum/container_craft/recipe as anything in viable_recipe_types)
+		var/datum/container_craft/singleton = GLOB.container_craft_to_singleton[recipe]
+		if(!singleton)
+			continue
+		if(singleton.try_craft(host, stored_items.Copy(), user, on_craft_start, on_craft_failed))
+			stored_items = get_unreserved_items(host)
+
+	for(var/datum/container_craft/recipe as anything in fallback_recipe_types)
+		var/datum/container_craft/singleton = GLOB.container_craft_to_singleton[recipe]
+		if(!singleton)
+			continue
+		if(singleton.try_craft(host, stored_items.Copy(), user, on_craft_start, on_craft_failed))
+			stored_items = get_unreserved_items(host)
+	//RMH EDITED END
+
+//RMH EDITED START
+/**
+ * Returns a type -> count list of items in the container that are not already
+ * reserved by an active crafting operation. Used so multiple recipes can start in
+ * one attempt_crafts pass without two recipes claiming the same physical item.
+ */
+/datum/component/container_craft/proc/get_unreserved_items(obj/item/host)
+	var/list/stored_items = list()
 
 	// Build list of all items in container by type
 	for(var/obj/item/item in host.contents)
@@ -85,8 +118,6 @@
 	for(var/datum/container_craft_operation/op in GLOB.active_container_crafts)
 		if(op.crafter != host)
 			continue
-
-		// op.stored_items is now a list of item references, convert to type counts
 		for(var/obj/item/reserved_item in op.stored_items)
 			if(QDELETED(reserved_item))
 				continue
@@ -96,20 +127,5 @@
 				if(stored_items[item_type] <= 0)
 					stored_items -= item_type
 
-	// First try normal priority recipes
-	for(var/datum/container_craft/recipe as anything in viable_recipe_types)
-		var/datum/container_craft/singleton = GLOB.container_craft_to_singleton[recipe]
-		if(!singleton)
-			continue
-		// Try to start the craft
-		if(singleton.try_craft(host, stored_items.Copy(), user, on_craft_start, on_craft_failed))
-			return  // Success! Stop here
-
-	// If no normal priority recipes worked, try fallback recipes
-	for(var/datum/container_craft/recipe as anything in fallback_recipe_types)
-		var/datum/container_craft/singleton = GLOB.container_craft_to_singleton[recipe]
-		if(!singleton)
-			continue
-		// Try to start the craft
-		if(singleton.try_craft(host, stored_items.Copy(), user, on_craft_start, on_craft_failed))
-			return  // Success! Stop here
+	return stored_items
+//RMH EDITED END

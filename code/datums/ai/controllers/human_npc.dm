@@ -20,6 +20,8 @@
 		BB_HUMAN_NPC_HARASS_RETREATING = FALSE,// TRUE when in the back-off phase of harass
 		BB_HUMAN_NPC_HARASS_COOLDOWN = 0,      // world.time before we can dart in again
 		BB_HUMAN_NPC_JUKE_COOLDOWN = 0,        // world.time before we can juke again
+		BB_HUMAN_NPC_COMMITTED_SWING_TOKEN = null, // token guarding delayed committed swings
+		BB_HUMAN_NPC_COMBAT_BARK_COOLDOWN = 0, // world.time before another combat state balloon
 	)
 	planning_subtrees = list(
 		/datum/ai_planning_subtree/pet_planning,
@@ -41,7 +43,9 @@
 		/datum/ai_planning_subtree/archer_base,
 		/datum/ai_planning_subtree/ranged_attack_subtree,
 		/datum/ai_planning_subtree/aggro_find_target,
+		/datum/ai_planning_subtree/wounded_harass,
 		/datum/ai_planning_subtree/squad_flank,
+		/datum/ai_planning_subtree/human_npc_gap_close,
 		/datum/ai_planning_subtree/basic_melee_attack_subtree/human_npc,
 		/datum/ai_planning_subtree/find_weapon,
 		/datum/ai_planning_subtree/equip_item,

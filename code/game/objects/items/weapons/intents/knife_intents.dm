@@ -10,14 +10,14 @@
 	animname = "cut"
 	blade_class = BCLASS_CUT
 	hitsound = list('sound/combat/hits/bladed/smallslash (1).ogg', 'sound/combat/hits/bladed/smallslash (2).ogg', 'sound/combat/hits/bladed/smallslash (3).ogg')
-	penfactor = 10
+	penfactor = PEN_LIGHT
 	swingdelay = 1
 	clickcd = 10	// between normal and fast
 	item_damage_type = "slash"
 	acc_bonus = 12
 
 /datum/intent/dagger/cut/stiletto
-	penfactor = 5
+	penfactor = PEN_NONE
 
 /datum/intent/dagger/thrust
 	name = "stab"
@@ -26,13 +26,13 @@
 	animname = "stab"
 	blade_class = BCLASS_STAB
 	hitsound = list('sound/combat/hits/bladed/genstab (1).ogg', 'sound/combat/hits/bladed/genstab (2).ogg', 'sound/combat/hits/bladed/genstab (3).ogg')
-	penfactor = 30
+	penfactor = PEN_MEDIUM	// dagger thrust (TA: medium tier, sword-thrust class)
 	clickcd = CLICK_CD_FAST
 	swingdelay = 1
 	item_damage_type = "stab"
 
 /datum/intent/dagger/thrust/stiletto
-	penfactor = 35
+	penfactor = PEN_HEAVY	// stiletto thrust (TA: heavy tier, estoc/anti-armor class)
 
 /datum/intent/peculate
 	name = "peculate"
@@ -47,7 +47,7 @@
 	animname = "chop"
 	blade_class = BCLASS_CHOP
 	hitsound = list('sound/combat/hits/bladed/smallslash (1).ogg', 'sound/combat/hits/bladed/smallslash (2).ogg', 'sound/combat/hits/bladed/smallslash (3).ogg')
-	penfactor = 10
+	penfactor = PEN_LIGHT
 	damfactor = 1.5
 	swingdelay = 1
 	clickcd = CLICK_CD_MELEE

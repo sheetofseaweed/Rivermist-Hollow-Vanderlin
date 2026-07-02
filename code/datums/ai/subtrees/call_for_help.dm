@@ -34,6 +34,10 @@
 	var/mob/living/living_pawn = controller.pawn
 	living_pawn.emote("scream")
 	var/atom/current_target = controller.blackboard[target_key]
+	var/share_ranged_memory = FALSE
+	var/last_ranged_hit_time = controller.blackboard[BB_LAST_RANGED_HIT_TIME] || 0
+	if(controller.blackboard[BB_LAST_RANGED_ATTACKER] == current_target && world.time - last_ranged_hit_time <= AI_RANGED_HOT_PURSUIT_TIME)
+		share_ranged_memory = TRUE
 
 	for(var/mob/living/carbon/human/ally in range(controller.max_target_distance - 1, living_pawn))
 		if(ally == living_pawn)
@@ -54,11 +58,16 @@
 			aggro_comp.add_threat_to_mob(current_target, 3)
 
 		ally_ctrl.set_blackboard_key(BB_HIGHEST_THREAT_MOB, current_target)
+		if(share_ranged_memory)
+			ally_ctrl.set_blackboard_key(BB_LAST_RANGED_HIT_TIME, last_ranged_hit_time)
+			ally_ctrl.set_blackboard_key(BB_LAST_RANGED_ATTACKER, current_target)
 
 		var/datum/proximity_monitor/field = ally_ctrl.blackboard[BB_FIND_TARGETS_FIELD(/datum/ai_behavior/find_aggro_targets)]
 		if(field)
 			qdel(field)
 
 		ally_ctrl.CancelActions()
+		ally_ctrl.set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + AI_ALERT_ON_ATTACK_TIME)
+		ally_ctrl.recalculate_idle()
 
 	finish_action(controller, TRUE, target_key)

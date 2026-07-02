@@ -42,23 +42,27 @@
 #define DAMAGE_WHIP 20
 
 // ===== AP DEFINES =======
-#define AP_AXE_CUT 5
-#define AP_AXE_CHOP 10
-#define AP_HEAVYAXE_CHOP 25
-#define AP_HEAVYAXE_STAB 30
-#define AP_FLAIL_STRIKE 5
-#define AP_CLUB_STRIKE 25
-#define AP_CLUB_HEAVY_STRIKE 35
-#define AP_FLAIL_SMASH 60
-#define AP_CLUB_SMASH 30
-#define AP_HEAVY_SMASH 40
-#define AP_SPEAR_THRUST 20
-#define AP_POLEARM_THRUST 40
-#define AP_POLEARM_BASH 10
-#define AP_POLEARM_CHOP 15
-#define AP_GREATAXE_CHOP 20
-#define AP_SWORD_THRUST 20
-#define AP_SWORD_CHOP 5
+// Pen values are legacy-scale but tier-aligned: always equal to a PEN_* constant
+// from armor_defines.dm so normalize_penetration() yields the designed tier.
+// Tier design (from Twilight Axis): NONE=training/base cuts, LIGHT=axe chop,
+// MEDIUM=sword thrust/longsword chop, HEAVY=spear/estoc, BSTEEL=halfsword/dagger pick.
+#define AP_AXE_CUT PEN_NONE
+#define AP_AXE_CHOP PEN_LIGHT
+#define AP_HEAVYAXE_CHOP PEN_MEDIUM
+#define AP_HEAVYAXE_STAB PEN_MEDIUM
+#define AP_FLAIL_STRIKE PEN_NONE		// blunt: pen unused by DR-absorb path
+#define AP_CLUB_STRIKE PEN_MEDIUM		// blunt: pen unused by DR-absorb path; tier kept from legacy 25
+#define AP_CLUB_HEAVY_STRIKE PEN_HEAVY
+#define AP_FLAIL_SMASH PEN_BSTEEL
+#define AP_CLUB_SMASH PEN_MEDIUM
+#define AP_HEAVY_SMASH PEN_HEAVY
+#define AP_SPEAR_THRUST PEN_HEAVY
+#define AP_POLEARM_THRUST PEN_HEAVY
+#define AP_POLEARM_BASH PEN_LIGHT
+#define AP_POLEARM_CHOP PEN_LIGHT
+#define AP_GREATAXE_CHOP PEN_MEDIUM
+#define AP_SWORD_THRUST PEN_MEDIUM
+#define AP_SWORD_CHOP PEN_NONE
 
 //wdefense defines
 #define TERRIBLE_PARRY -1

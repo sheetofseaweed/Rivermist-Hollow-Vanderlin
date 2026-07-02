@@ -30,6 +30,13 @@
 	RegisterSignal(parent, COMSIG_PARENT_EXAMINE, PROC_REF(on_examine))
 	RegisterSignal(parent, COMSIG_STORAGE_REMOVED, PROC_REF(on_item_removed))
 	RegisterSignal(parent, COMSIG_CONTAINER_CRAFT_COMPLETE, PROC_REF(on_craft_complete))
+	//RMH EDITED START
+	// BUGFIX (cooking): previously food was only tracked for burning when it was the
+	// OUTPUT of a craft (on_craft_complete) or registered manually. Food simply placed
+	// into the pan/oven - including an already-cooked dish - was never tracked and so
+	// could never burn. Track any food item the moment it enters the container.
+	RegisterSignal(parent, COMSIG_ATOM_ENTERED, PROC_REF(on_item_entered))
+	//RMH EDITED END
 
 /**
  * Clean up when component is removed
@@ -147,6 +154,22 @@
  */
 /datum/component/food_burner/proc/on_item_removed(datum/source, obj/item/removed_item)
 	tracked_foods -= removed_item
+
+//RMH EDITED START
+/**
+ * BUGFIX (cooking): track any food item the moment it enters the container so that
+ * food placed into a hot pan/oven (including already-cooked dishes) can burn, not
+ * just food produced by a craft. register_food() dedupes against tracked_foods, so
+ * craft outputs (which also fire COMSIG_CONTAINER_CRAFT_COMPLETE) aren't double-added.
+ * Raw ingredients are consumed by their craft long before burn_time and get untracked
+ * on removal, so this does not interfere with normal cooking.
+ */
+/datum/component/food_burner/proc/on_item_entered(datum/source, atom/movable/arrived, atom/old_loc)
+	SIGNAL_HANDLER
+	if(!is_food_item(arrived))
+		return
+	register_food(arrived)
+//RMH EDITED END
 
 /**
  * Hook for tracking newly crafted food items

@@ -19,6 +19,7 @@
 	var/triggers_embryo_pregnancy = FALSE
 	var/vitilty_factor = 1
 	evaporation_rate = 0.2
+	opacity = 130
 
 /datum/reagent/consumable/cum/proc/sync_parent_data(mob/living/parent)
 	if(!parent)
@@ -165,6 +166,7 @@
 	glass_desc = ""
 	nutriment_factor = 0.1 * REAGENTS_METABOLISM
 	evaporation_rate = 0.2
+	opacity = 100
 
 #undef CUM_DATA_PARENT_REF
 #undef CUM_DATA_PARENT_NAME

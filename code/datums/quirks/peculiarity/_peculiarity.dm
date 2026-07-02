@@ -248,3 +248,9 @@
 	desc = "I can tell more about my private bits."
 	desc_hint = "May be spammy, exact liquid information and alerts e.t.c."
 	point_value = 0
+
+/datum/quirk/peculiarity/free_flowing
+	name = "Free-Flowing"
+	desc = "My fluids pool into proper puddles on the ground instead of scattering as stray drops."
+	desc_hint = "Genital fluids form liquid puddles directly, bypassing the drip decals."
+	point_value = 0

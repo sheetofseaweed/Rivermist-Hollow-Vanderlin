@@ -17,7 +17,7 @@
 
 		/datum/ai_planning_subtree/simple_self_recovery,
 		/datum/ai_planning_subtree/find_food,
-		/datum/ai_planning_subtree/basic_melee_attack_subtree,
+		/datum/ai_planning_subtree/basic_melee_attack_subtree/agile,
 		/datum/ai_planning_subtree/being_a_minion/mirespider
 	)
 

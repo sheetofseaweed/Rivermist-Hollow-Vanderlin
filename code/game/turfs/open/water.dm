@@ -356,20 +356,24 @@
 
 /turf/open/water/Exited(atom/movable/gone, atom/new_loc)
 	. = ..()
+	var/blocked_z_out_down = FALSE
 	for(var/obj/structure/S in src)
 		if(S.obj_flags & BLOCK_Z_OUT_DOWN)
-			return
+			blocked_z_out_down = TRUE
+			break
 
 	if(isliving(gone) && !gone.throwing)
 		var/mob/living/living = gone
 		if(HAS_TRAIT(living, TRAIT_SUBMERGED))
 			if(istype(new_loc, /turf/open/water))
 				var/turf/open/water/nextwater = new_loc
-				if(nextwater.water_height < WATER_HEIGHT_DEEP)
+				if(nextwater.water_volume < 10 || (nextwater.water_height != WATER_HEIGHT_FULL && !nextwater.open_bottom && !nextwater.fake_bottomless))
 					living.RemoveElement(/datum/element/submerged)
 			else
 				living.RemoveElement(/datum/element/submerged)
 			living.adjust_experience(GET_MOB_SKILL_VALUE_OLD(living, /datum/attribute/skill/misc/swimming), (GET_MOB_ATTRIBUTE_VALUE(living, STAT_INTELLIGENCE) * 0.3))
+		if(blocked_z_out_down)
+			return
 		if(water_overlay)
 			if((get_dir(src, new_loc) == SOUTH))
 				water_overlay.layer = BELOW_MOB_LAYER
@@ -468,7 +472,12 @@
 					adjust_originate_watervolume(-10)
 
 				else
-					C.reagents.add_reagent(water_reagent, 100)
+					//RMH EDITED START
+					// BUGFIX: a fixed 100 only half-fills containers larger than 100
+					// (e.g. the 200-volume iron pot). Fill to the container's remaining
+					// capacity instead (add_reagent clamps to the holder maximum).
+					C.reagents.add_reagent(water_reagent, C.reagents.maximum_volume - C.reagents.total_volume)
+					//RMH EDITED END
 				to_chat(user, "<span class='notice'>I fill [C] from [src].</span>")
 			return
 	if(user.used_intent.type == /datum/intent/food)

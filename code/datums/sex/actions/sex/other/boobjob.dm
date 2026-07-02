@@ -35,17 +35,17 @@
 
 /datum/sex_action/sex/other/boobjob/on_start(mob/living/user, mob/living/target)
 	. = ..()
-	target.visible_message(span_warning("[target] shoves [user]'s cock between [user.p_their()] tits!"))
+	user.visible_message(span_warning("[user] presses [target]'s cock between [user.p_their()] tits!"))
 
 /datum/sex_action/sex/other/boobjob/on_perform(mob/living/user, mob/living/target)
 	. = ..()
 	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		target.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s tits."))
+		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s cock with [user.p_their()] tits."))
 	playsound(target, 'sound/misc/mat/fingering.ogg', 20, TRUE, -2, ignore_walls = FALSE)
 
 	sex_session.perform_sex_action(target, user, 2, 4, 2, src)
 
 /datum/sex_action/sex/other/boobjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] pulls [user]'s cock out from inbetween [user.p_their()] tits."))
+	user.visible_message(span_warning("[user] pulls [target]'s cock out from between [user.p_their()] tits."))

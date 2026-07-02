@@ -9,7 +9,7 @@
 
 
 	body_parts_covered = COVERAGE_NASAL
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 2.3 KILOGRAMS
 
 
@@ -25,7 +25,7 @@
 	melt_amount = 75
 
 
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 2.5 KILOGRAMS
 
 //................ Coppergate ............... //
@@ -40,7 +40,7 @@
 
 
 	body_parts_covered = COVERAGE_NASAL
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 3.12 KILOGRAMS
 
 //................ Decorative Coppergate ............... //
@@ -55,7 +55,7 @@
 
 
 	body_parts_covered = COVERAGE_NASAL
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 3.12 KILOGRAMS
 
 //................ Skull Cap ............... //
@@ -68,7 +68,7 @@
 	melting_material = /datum/material/iron
 	melt_amount = 75
 
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	item_weight = 2.5 KILOGRAMS
 
 //............... Grenzelhoft Plume Hat ............... // - worn over a skullcap
@@ -135,7 +135,7 @@
 	worn_y_dimension = 64
 	flags_inv = HIDEEARS
 	sellprice = VALUE_CHEAP_STEEL_HELMET
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	smeltresult = /obj/item/fertilizer/ash
 	melting_material = /datum/material/steel
 	melt_amount = 75
@@ -150,7 +150,7 @@
 	item_state = "ikettle"
 	sellprice = VALUE_CHEAP_IRON_HELMET
 	armor = ARMOR_SCALE
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	item_weight = 2.2 KILOGRAMS
 	melting_material = /datum/material/iron
 	melt_amount = 75
@@ -170,7 +170,7 @@
 	item_state = "islitkettle"
 	sellprice = VALUE_CHEAP_IRON_HELMET
 	armor = ARMOR_SCALE
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	item_weight = 2.2 KILOGRAMS
 
 //................ Iron Pot Helmet ............... //
@@ -194,7 +194,7 @@
 	armor = ARMOR_SCALE
 	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	body_parts_covered = COVERAGE_HEAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	item_weight = 1.4 KILOGRAMS
 
 //................ Copper Lamellar Cap ............... //
@@ -262,7 +262,7 @@
 
 	armor =  ARMOR_PLATE
 	body_parts_covered = COVERAGE_HEAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 3.1 KILOGRAMS
 
 /obj/item/clothing/head/helmet/sallet/iron
@@ -275,7 +275,7 @@
 	sellprice = VALUE_IRON_HELMET
 
 	armor =  ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	item_weight = 3.1 KILOGRAMS
 
 //................ Elf Sallet ............... //
@@ -310,7 +310,7 @@
 	sellprice = VALUE_STEEL_HELMET
 
 	body_parts_covered = COVERAGE_HEAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 3.25 KILOGRAMS
 
 /obj/item/clothing/head/helmet/bascinet/steppe
@@ -388,7 +388,7 @@
 	melting_material = /datum/material/iron
 	sellprice = VALUE_IRON_HELMET+BONUS_VALUE_TINY
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 
 //............... Hounskull ............... //
 /obj/item/clothing/head/helmet/visored/hounskull
@@ -430,7 +430,7 @@
 	sellprice = VALUE_IRON_HELMET+BONUS_VALUE_TINY
 
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 
 //................. Royal Knight's helmet .............. //
 /obj/item/clothing/head/helmet/visored/royalknight
@@ -458,7 +458,7 @@
 	body_parts_covered = COVERAGE_HEAD_NOSE
 	flags_inv = HIDEEARS|HIDEHAIR
 	block2add = FOV_BEHIND
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_HIP
 	smeltresult = /obj/item/ingot/iron
 	melting_material = /datum/material/iron
@@ -485,7 +485,7 @@
 	body_parts_covered = COVERAGE_HEAD_NOSE
 	flags_inv = HIDEEARS|HIDEHAIR
 	block2add = FOV_BEHIND
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_IRON
 	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_HIP
 	smeltresult = /obj/item/ingot/iron
 	melting_material = /datum/material/iron
@@ -505,7 +505,7 @@
 	body_parts_covered = COVERAGE_HEAD_NOSE
 	flags_inv = HIDEEARS|HIDEHAIR
 	block2add = FOV_BEHIND
-	max_integrity = INTEGRITY_STRONG//slighly more integrity
+	max_integrity = ARMOR_INT_HELMET_STEEL
 	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_HIP
 	smeltresult = /obj/item/ingot/iron
 	melting_material = /datum/material/iron
@@ -601,10 +601,10 @@
 	item_state = "bkhelm"
 	flags_inv = HIDEEARS|HIDEFACE
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH
-	armor = list("blunt" = 90, "slash" = 100, "stab" = 80,  "piercing" = 100, "fire" = 0, "acid" = 0)
+	armor = list("blunt" = DR_ULTRA, "slash" = DBLOCK_BSTEEL, "stab" = DBLOCK_HEAVY, "piercing" = DBLOCK_BSTEEL, "fire" = DR_NONE, "acid" = DR_NONE)
 	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_CHOP, BCLASS_BLUNT, BCLASS_SMASH, BCLASS_TWIST, BCLASS_PICK)
 	block2add = FOV_RIGHT|FOV_LEFT
-	max_integrity = 425
+	max_integrity = 425 // bespoke integrity: intentional (special item)
 	anvilrepair = /datum/attribute/skill/craft/blacksmithing
 	smeltresult = /obj/item/ingot/blacksteel
 	melting_material = /datum/material/blacksteel

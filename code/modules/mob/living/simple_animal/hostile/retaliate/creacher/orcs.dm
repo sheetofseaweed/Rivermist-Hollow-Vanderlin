@@ -13,8 +13,8 @@
 	base_constitution = 9
 	base_strength = 14
 	base_speed = 13
-	maxHealth = 200
-	health = 200
+	maxHealth = 100
+	health = 100
 	harm_intent_damage = 15
 	melee_damage_lower = 25
 	melee_damage_upper = 30

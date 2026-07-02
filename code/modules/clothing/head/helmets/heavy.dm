@@ -16,7 +16,7 @@
 	armor = ARMOR_PLATE
 	body_parts_covered = FULL_HEAD
 	prevent_crits = ALL_EXCEPT_STAB
-	max_integrity = INTEGRITY_STRONGEST // no moving parts, steel
+	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL
 	abstract_type = /obj/item/clothing/head/helmet/heavy
 
 /obj/item/clothing/head/helmet/heavy/necked		// includes a coif or gorget part to cover neck. Why? So templars can wear their cross on their neck basically, also special thing for Temple
@@ -55,7 +55,7 @@
 	block2add = FOV_BEHIND
 
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STRONG //isn't the same as a steel helmet but is better than a skullcap, costs 2 bars and protects the mouth
+	max_integrity = ARMOR_INT_HELMET_HEAVY_IRON
 	item_weight = 3.5 KILOGRAMS
 
 //............... Rusted Barbute ............... //
@@ -71,7 +71,7 @@
 	melting_material = /datum/material/iron
 	sellprice = VALUE_IRON_ARMOR/2
 	armor = ARMOR_PLATE_BAD
-	max_integrity = INTEGRITY_STANDARD
+	max_integrity = ARMOR_INT_HELMET_HEAVY_DECREPIT
 	item_weight = 2.4 KILOGRAMS
 
 //............... Great Helm ............... //
@@ -97,7 +97,7 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 
 	prevent_crits = ALL_CRITICAL_HITS_VAMP
-	max_integrity = INTEGRITY_STRONGEST // steel
+	max_integrity = INTEGRITY_STRONGEST // bespoke integrity: intentional (vampire relic)
 	body_parts_covered = HEAD_NECK
 	block2add = FOV_BEHIND
 
@@ -125,6 +125,7 @@
 	armor_class = AC_MEDIUM
 	armor = ARMOR_PLATE_GOOD
 	prevent_crits = ALL_CRITICAL_HITS
+	max_integrity = ARMOR_INT_HELMET_BLACKSTEEL
 	item_weight = 7.2 KILOGRAMS
 	sellprice = VALUE_SILVER_ITEM * 2
 
@@ -216,7 +217,7 @@
 	prevent_crits = ALL_CRITICAL_HITS
 	item_weight = 2.6 KILOGRAMS
 	clothing_flags = CANT_SLEEP_IN
-	max_integrity = INTEGRITY_STRONGEST
+	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL
 	block2add = FOV_BEHIND
 
 //............... Temple heavy helmets ......................//
@@ -376,7 +377,7 @@
 	desc = "A lavish hounskull which allows a crest to be mounted on top."
 	icon_state = "decorated_hounskull"
 	armor = ARMOR_PLATE_GOOD
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL
 	prevent_crits = ALL_CRITICAL_HITS
 	item_weight = 4.45 KILOGRAMS
 
@@ -490,7 +491,7 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	adjustable = CAN_CADJUST
 	block2add = FOV_BEHIND
-	max_integrity = 350
+	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL - ARMOR_INT_HELMET_HEAVY_ADJUSTABLE_PENALTY
 	var/plumed = FALSE
 
 /obj/item/clothing/head/helmet/heavy/ordinatorhelm/attackby(obj/item/W, mob/living/user, params)
@@ -524,7 +525,7 @@
 	emote_environment = 3
 	block2add = null
 	body_parts_covered = FULL_HEAD|NECK
-	max_integrity = 450 // Worst vision. Yes.
+	max_integrity = 450 // bespoke integrity: intentional (special item)
 	worn_x_dimension = 64
 	worn_y_dimension = 64
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/64x64/head.dmi'
@@ -540,7 +541,7 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	adjustable = CAN_CADJUST
 	block2add = FOV_BEHIND
-	max_integrity = 400
+	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL
 
 /obj/item/clothing/head/helmet/heavy/psysallet
 	name = "exotic sallet"
@@ -550,4 +551,4 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	adjustable = CAN_CADJUST
 	block2add = FOV_BEHIND
-	max_integrity = 400
+	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL

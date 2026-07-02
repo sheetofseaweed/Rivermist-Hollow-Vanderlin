@@ -34,6 +34,19 @@
 	. = ..()
 	. += span_notice("The current mode is [throat_mode].")
 
+//RMH EDITED START
+// Clicking the throne opens the co-located TITAN's command interface. Sitting
+// is done by dragging a mob onto the throne (MouseDrop), so attack_hand is free
+// and this does not interfere with buckling.
+/obj/structure/throne/attack_hand(mob/living/user)
+	if(ishuman(user))
+		var/obj/structure/fake_machine/titan/titan = locate(/obj/structure/fake_machine/titan) in loc
+		if(titan)
+			titan.ui_interact(user)
+			return TRUE
+	return ..()
+//RMH EDITED END
+
 /obj/structure/throne/proc/do_filters_glow()
 	filters = filter(type = "rays", size = 80, color = "#a38c2e")
 

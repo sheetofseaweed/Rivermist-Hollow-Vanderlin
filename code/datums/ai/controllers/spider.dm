@@ -24,7 +24,7 @@
 
 		/datum/ai_planning_subtree/simple_find_target/spider,
 		/datum/ai_planning_subtree/find_food/spider,
-		/datum/ai_planning_subtree/basic_melee_attack_subtree,
+		/datum/ai_planning_subtree/basic_melee_attack_subtree/agile,
 
 		/datum/ai_planning_subtree/find_dead_bodies,
 		/datum/ai_planning_subtree/eat_dead_body,

@@ -21,6 +21,7 @@
 	armor = ARMOR_PADDED
 	body_parts_covered = COVERAGE_FULL
 	prevent_crits = ALL_EXCEPT_CHOP_AND_STAB
+	max_integrity = ARMOR_INT_CHEST_LIGHT_BASE
 
 	material_category = ARMOR_MAT_FABRIC
 
@@ -52,6 +53,7 @@
 	desc = "Thick, padded, this will help a little even against arrows. A wise man carried steel as well, but it will do in a pinch."
 	icon_state = "gambesonp"
 	sellprice = VALUE_HEAVY_GAMBESSON
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MEDIUM
 
 	armor = ARMOR_PADDED_GOOD
 
@@ -65,7 +67,7 @@
 	name = "robed jupon"
 	desc = "A thick, quilted jupon with an iron heart protector. It's great for the southern desert's heat and northern tundra's cold."
 	icon_state = "lakkarijupon"
-	max_integrity = INTEGRITY_STRONG
+	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	sewrepair = /datum/attribute/skill/misc/sewing/mending
