@@ -316,28 +316,29 @@
 		if(DEFEAT_TREATMENT_MEDICAL)
 			if(!helper.defeat_can_do_medical_treatment())
 				return FALSE
-			treated = defeat_clear_matching_trauma(helper, list(
-				/datum/status_effect/debuff/defeat/physical,
-				/datum/status_effect/debuff/defeat/physical/wound,
-				/datum/status_effect/debuff/defeat/physical/burn,
-				/datum/status_effect/debuff/defeat/physical/body,
-				/datum/status_effect/debuff/defeat/physical/concussion,
-				/datum/status_effect/debuff/defeat/physical/leg,
-				/datum/status_effect/debuff/defeat/physical/arm,
-				/datum/status_effect/debuff/defeat/pain,
-				/datum/status_effect/debuff/defeat/grievous, // self-rescue "Grievous Wounds" - clinic-only cure
-			), treatment_type)
+			treated = defeat_clear_trauma_class(helper, treatment_type)
 		if(DEFEAT_TREATMENT_SPIRITUAL)
 			if(!helper.defeat_can_do_spiritual_treatment())
 				return FALSE
-			treated = defeat_clear_matching_trauma(helper, list(
-				/datum/status_effect/debuff/defeat/rune,
-				/datum/status_effect/debuff/defeat/horny,
-			), treatment_type)
+			treated = defeat_clear_trauma_class(helper, treatment_type)
 		if(DEFEAT_TREATMENT_UNIVERSAL)
 			treated = defeat_clear_one_trauma()
 			if(treated)
 				SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
+	return treated
+
+/// Clears every defeat trauma whose treatment_class matches. Traumas self-register their cure via
+/// that var (medical/clinic by default, spiritual for rune and horny), so a new trauma subtype is
+/// curable the moment it exists - no hand-maintained type list to forget it from.
+/mob/living/proc/defeat_clear_trauma_class(mob/living/helper, treatment_type)
+	var/treated = FALSE
+	for(var/datum/status_effect/debuff/defeat/trauma in status_effects)
+		if(trauma.treatment_class != treatment_type)
+			continue
+		qdel(trauma)
+		treated = TRUE
+	if(treated)
+		SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
 	return treated
 
 /mob/living/proc/defeat_clear_matching_trauma(mob/living/helper, list/trauma_types, treatment_type = DEFEAT_TREATMENT_MEDICAL)

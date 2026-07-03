@@ -13,6 +13,8 @@
 	var/horny_defeat_climax_threshold = 0
 	/// Highest gradual-warning stage already shown this encounter, so each beat fires only once.
 	var/horny_defeat_warned_stage = 0
+	/// world.time of the last climax that counted toward horny defeat
+	var/horny_defeat_last_climax_at = 0
 
 /datum/component/defeat_monitor/Initialize(...)
 	if(!isliving(parent))
@@ -102,7 +104,10 @@
 	if(damage_warning_last_at && world.time - damage_warning_last_at < DEFEAT_SHOCK_WARNING_COOLDOWN)
 		return FALSE
 	damage_warning_last_at = world.time
-	to_chat(carbon_parent, span_warning(bleeding_out ? "You're bleeding badly - stay on your feet or you'll fall." : "You're battered to the brink - one more blow and you'll go down."))
+	// Kept out of the span macro: span_warning() expands to string concatenation, and DM's `+` binds
+	// tighter than `?:`, so an inline ternary becomes ("<span...>" + condition) - a runtime when it's 0.
+	var/warning_text = bleeding_out ? "You're bleeding badly - stay on your feet or you'll fall." : "You're battered to the brink - one more blow and you'll go down."
+	to_chat(carbon_parent, span_warning(warning_text))
 	carbon_parent.flash_fullscreen("redflash1")
 	return TRUE
 
@@ -156,9 +161,12 @@
 	if(!istype(carbon_parent))
 		return FALSE
 	if(!is_defeat_eligible())
-		horny_defeat_climax_count = 0
-		horny_defeat_warned_stage = 0
+		reset_horny_defeat_encounter()
 		return FALSE
+	// A lull long enough means the encounter is over: stale climaxes from earlier dalliances
+	// must never stack with a fresh encounter hours later.
+	if(horny_defeat_last_climax_at && world.time - horny_defeat_last_climax_at > DEFEAT_HORNY_ENCOUNTER_TIMEOUT)
+		reset_horny_defeat_encounter()
 	if(carbon_parent.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
 	if(source != carbon_parent)
@@ -181,13 +189,21 @@
 	if(horny_defeat_climax_threshold <= 0)
 		horny_defeat_climax_threshold = rand(10, 20)
 	horny_defeat_climax_count++
+	horny_defeat_last_climax_at = world.time
 	if(horny_defeat_climax_count < horny_defeat_climax_threshold)
 		maybe_warn_horny_defeat(carbon_parent)
 		return FALSE
 
-	horny_defeat_climax_count = 0
-	horny_defeat_warned_stage = 0
+	reset_horny_defeat_encounter()
 	return carbon_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
+
+/// Ends the current horny-defeat "encounter": count, rolled threshold, warning stage and the
+/// last-climax stamp all reset, so the next encounter starts clean with a fresh 10-20 roll.
+/datum/component/defeat_monitor/proc/reset_horny_defeat_encounter()
+	horny_defeat_climax_count = 0
+	horny_defeat_climax_threshold = 0
+	horny_defeat_warned_stage = 0
+	horny_defeat_last_climax_at = 0
 
 /// Emits the gradual "you are nearing a horny defeat" warning, but only the first time each escalating
 /// stage is reached this encounter (climaxes are discrete, so this yields three rising beats, not spam).

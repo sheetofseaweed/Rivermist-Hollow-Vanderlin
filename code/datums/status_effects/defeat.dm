@@ -83,10 +83,6 @@
 	owner.clear_fullscreen("defeat", FALSE)
 	owner.clear_fullscreen("defeat_horny")
 	to_chat(owner, span_notice("You can move again, but the defeat still clings to you."))
-	if(ishuman(owner))
-		var/mob/living/carbon/human/human_owner = owner
-		if(!human_owner.physiology)
-			return
 	REMOVE_TRAIT(owner, TRAIT_NODEATH, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_NOSOFTCRIT, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_NOHARDCRIT, TRAIT_STATUS_EFFECT(id))
@@ -115,6 +111,10 @@
 	var/trauma_label = "Defeat Trauma"
 	/// Unique alert description per injury, so no two defeat traumas read alike. Subtypes override.
 	var/trauma_desc = "Lingering harm from a recent defeat. A town healer, a priest, or a potent remedy can mend it - and it festers worse each time you are defeated untreated."
+	/// Which skilled treatment cures this trauma (DEFEAT_TREATMENT_MEDICAL or _SPIRITUAL). Each trauma
+	/// registers itself here - defeat_treat_trauma matches on this, so new subtypes need no list edits.
+	/// (The universal path - potion or healing spell - clears any trauma regardless of class.)
+	var/treatment_class = DEFEAT_TREATMENT_MEDICAL
 	var/severity = DEFEAT_SEVERITY_NORMAL
 	var/next_feedback_at = 0
 
@@ -324,6 +324,7 @@
 	id = "defeat_rune_trauma"
 	trauma_label = "Mana Backlash"
 	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. Only a priest's rite or a potent remedy soothes it."
+	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
 
 // Mana-Backlash Exhaustion - the toll of being yanked back by the rune. Section 4.
 /datum/status_effect/debuff/defeat/rune/defeat_base_profile()
@@ -345,6 +346,7 @@
 	id = "defeat_horny_trauma"
 	trauma_label = "Lewd Exhaustion"
 	trauma_desc = "A wrung-out, trembling afterglow that will not fade, letting focus and luck slip through your fingers. A healer, a priest, or a potent remedy restores you."
+	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
 
 /datum/status_effect/debuff/defeat/horny/defeat_base_profile()
 	return list(STAT_PERCEPTION = -2, STAT_FORTUNE = -2)

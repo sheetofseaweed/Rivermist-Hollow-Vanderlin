@@ -792,6 +792,73 @@
 	TEST_ASSERT(monitor.horny_defeat_climax_threshold >= 10 && monitor.horny_defeat_climax_threshold <= 20, "Horny defeat threshold should roll within the 10-20 design band.")
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A single climax should not reach the randomized horny knockout threshold.")
 
+/datum/unit_test/defeat_horny_encounter_decays_and_rerolls
+
+/datum/unit_test/defeat_horny_encounter_decays_and_rerolls/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
+
+	// A stale encounter one climax from collapse, whose last counted climax was too long ago.
+	monitor.horny_defeat_climax_count = 9
+	monitor.horny_defeat_climax_threshold = 10
+	monitor.horny_defeat_warned_stage = 3
+	monitor.horny_defeat_last_climax_at = world.time - DEFEAT_HORNY_ENCOUNTER_TIMEOUT - 1 SECONDS
+
+	// The next climax must open a FRESH encounter, not land as the stale 10th.
+	monitor.on_climax(victim, null, victim, grabber, grabber)
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Climaxes from a long-expired encounter must not stack into a surprise horny defeat.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 1, "After the encounter lull, the climax count should restart at one.")
+	TEST_ASSERT(monitor.horny_defeat_climax_threshold >= 10 && monitor.horny_defeat_climax_threshold <= 20, "The expired encounter's threshold should be re-rolled within the design band.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_warned_stage, 0, "Warning beats should reset with the expired encounter.")
+
+	// A defeat ends the encounter outright: the threshold clears so the next one re-rolls.
+	monitor.horny_defeat_climax_count = 0
+	monitor.horny_defeat_climax_threshold = 1
+	monitor.on_climax(victim, null, victim, grabber, grabber)
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Reaching the threshold should still trigger the horny defeat.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 0, "A horny defeat should clear the rolled threshold so the next encounter re-rolls it.")
+
+/datum/unit_test/defeat_knockout_clears_traits_without_physiology
+
+/datum/unit_test/defeat_knockout_clears_traits_without_physiology/Run()
+	// Regression: on_remove once early-returned before its trait cleanup when a human owner had no
+	// physiology, leaving NODEATH/PACIFISM/IMMOBILIZED/FLOORED stuck forever. The traits do not touch
+	// physiology, so their removal must not depend on it.
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(HAS_TRAIT(test_human, TRAIT_FLOORED), "Knockout should floor the victim.")
+	QDEL_NULL(test_human.physiology)
+	test_human.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(!HAS_TRAIT(test_human, TRAIT_FLOORED), "Clearing knockout must drop its traits even with no physiology.")
+	TEST_ASSERT(!HAS_TRAIT(test_human, TRAIT_NODEATH), "Clearing knockout must drop NODEATH even with no physiology.")
+	TEST_ASSERT(!HAS_TRAIT(test_human, TRAIT_PACIFISM), "Clearing knockout must drop pacifism even with no physiology.")
+
+/datum/unit_test/defeat_trauma_treatment_classes_are_registered
+
+/datum/unit_test/defeat_trauma_treatment_classes_are_registered/Run()
+	// Every trauma self-registers its cure via treatment_class - a subtype outside the two skilled
+	// classes would be curable only by the universal path, which is never intended silently.
+	for(var/datum/status_effect/debuff/defeat/trauma_type as anything in typesof(/datum/status_effect/debuff/defeat))
+		var/cure_class = initial(trauma_type.treatment_class)
+		TEST_ASSERT(cure_class == DEFEAT_TREATMENT_MEDICAL || cure_class == DEFEAT_TREATMENT_SPIRITUAL, "[trauma_type] must register a medical or spiritual treatment_class.")
+
+	// The class-driven cure sorts mixed traumas to the right healer with no hand-kept lists.
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/priest = allocate(/mob/living/carbon/human)
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	ADD_TRAIT(priest, TRAIT_HOLY, TRAIT_GENERIC)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_NORMAL)
+
+	TEST_ASSERT(patient.defeat_treat_trauma(doctor, DEFEAT_TREATMENT_MEDICAL), "Medical treatment should clear medical-class traumas.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Grievous Wounds registers as medical and should be cleared by the clinic.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/horny), "Medical treatment must not clear spiritual-class horny trauma.")
+	TEST_ASSERT(patient.defeat_treat_trauma(priest, DEFEAT_TREATMENT_SPIRITUAL), "Spiritual treatment should clear spiritual-class traumas.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/horny), "Horny trauma variants register as spiritual and should be cleared by the priest.")
+
 /datum/unit_test/defeat_horny_instigator_combat_mode_gate
 
 /datum/unit_test/defeat_horny_instigator_combat_mode_gate/Run()

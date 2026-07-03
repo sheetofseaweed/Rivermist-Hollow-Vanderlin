@@ -71,6 +71,8 @@
 #define DEFEAT_HORNY_SELF_RECOVER_TIME (2 MINUTES)
 /// Fraction of the (hidden) horny-defeat threshold at which the warning escalates to stage 2.
 #define DEFEAT_HORNY_WARNING_BUILD_FRACTION 0.6
+/// An "encounter" ends after this long without a counted hostile climax
+#define DEFEAT_HORNY_ENCOUNTER_TIMEOUT (5 MINUTES)
 /// KO Only anti-softlock: when the "Struggle to Your Feet" action is offered, and the auto safety-net
 /// timeout after which a still-downed KO Only victim picks themselves up unaided (grievously wounded).
 #define DEFEAT_KO_ONLY_STRUGGLE_DELAY (2 MINUTES)
