@@ -255,6 +255,47 @@
 	ko_only.mind.current = null
 	ko_only.mind = null
 
+/datum/unit_test/defeat_ko_only_pref_severs_roundstart_rune_link
+
+/datum/unit_test/defeat_ko_only_pref_severs_roundstart_rune_link/Run()
+	var/turf/rune_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/structure/resurrection_rune/city_rune = allocate(/obj/structure/resurrection_rune, rune_turf)
+	city_rune.rune_tag = RUNE_LINK_CITY
+
+	// A KO Only character who got auto-linked anyway - the job link runs on its own path, so
+	// pref/link ordering at roundstart is unreliable and the enforcement must clean up after it.
+	var/mob/living/carbon/human/ko_only = allocate(/mob/living/carbon/human)
+	ko_only.defeat_mode = DEFEAT_MODE_KO_ONLY
+	ko_only.mind = allocate(/datum/mind, "defeat-ko-only-unlink")
+	ko_only.mind.current = ko_only
+	TEST_ASSERT(city_rune.resrunecontroler.add_user(ko_only), "Setup: the rune should accept the user like a roundstart auto-link would.")
+	TEST_ASSERT_NOTNULL(get_resurrection_rune_controller_for_user(ko_only), "Setup: the user should resolve to the rune controller while linked.")
+
+	TEST_ASSERT(ko_only.defeat_enforce_ko_only_rune_optout(), "KO Only enforcement should sever an existing rune link.")
+	TEST_ASSERT_NULL(get_resurrection_rune_controller_for_user(ko_only), "After enforcement the user must not resolve to any rune controller.")
+	TEST_ASSERT_EQUAL(ko_only.rune_linked, RUNE_LINK_NONE, "After enforcement the rune tag must be cleared.")
+	TEST_ASSERT(!(ko_only.mind in city_rune.resrunecontroler.linked_users_minds), "After enforcement the mind must not remain in the controller's user list.")
+	TEST_ASSERT(!ko_only.defeat_has_rune_safety_net(), "A severed KO Only user must not count as rune-protected.")
+
+	// The job auto-link itself now refuses KO Only characters outright.
+	var/datum/job/generic_job = allocate(/datum/job)
+	TEST_ASSERT(!generic_job.try_auto_link_resurrection_rune(ko_only), "The job auto-link must skip KO Only characters.")
+	TEST_ASSERT_NULL(get_resurrection_rune_controller_for_user(ko_only), "The refused auto-link must leave the user unlinked.")
+
+	// Other modes pass through the enforcement untouched.
+	var/mob/living/carbon/human/rune_user = allocate(/mob/living/carbon/human)
+	rune_user.defeat_mode = DEFEAT_MODE_KO_RUNE
+	rune_user.mind = allocate(/datum/mind, "defeat-ko-rune-keeps-link")
+	rune_user.mind.current = rune_user
+	TEST_ASSERT(city_rune.resrunecontroler.add_user(rune_user), "Setup: a KO+Rune user should link normally.")
+	TEST_ASSERT(!rune_user.defeat_enforce_ko_only_rune_optout(), "Enforcement must be a no-op for KO+Rune users.")
+	TEST_ASSERT_NOTNULL(get_resurrection_rune_controller_for_user(rune_user), "A KO+Rune user must keep their link.")
+
+	ko_only.mind.current = null
+	ko_only.mind = null
+	rune_user.mind.current = null
+	rune_user.mind = null
+
 /datum/unit_test/defeat_knockout_traits_are_custom
 
 /datum/unit_test/defeat_knockout_traits_are_custom/Run()
@@ -285,6 +326,30 @@
 
 	test_human.remove_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT_NULL(test_human.screens["defeat"], "Removing defeat KO should clear the fullscreen overlay.")
+
+/datum/unit_test/defeat_collapse_texts_differ_per_track
+
+/datum/unit_test/defeat_collapse_texts_differ_per_track/Run()
+	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
+	test_human.defeat_system_ai_opt_in = TRUE
+	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat.")
+	var/datum/status_effect/defeat_knockout/knockout = test_human.has_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NOTNULL(knockout, "Defeat should apply the custom KO status.")
+
+	// Every track must produce a complete, unique moment-of-collapse message set.
+	var/list/seen_self_texts = list()
+	for(var/reason in list(DEFEAT_REASON_DAMAGE, DEFEAT_REASON_PAIN, DEFEAT_REASON_HAZARD, DEFEAT_REASON_DEATH, DEFEAT_REASON_HORNY))
+		var/list/texts = knockout.defeat_collapse_texts(reason)
+		TEST_ASSERT(length(texts["self"]) && length(texts["visible"]) && length(texts["balloon"]), "Track [reason] must fill self/visible/balloon collapse texts.")
+		TEST_ASSERT(!(texts["self"] in seen_self_texts), "Track [reason] must not reuse another track's collapse text.")
+		seen_self_texts += texts["self"]
+
+	// The near-death track tells its sub-causes apart from the body's live state: bleeding out
+	// (blood at the survival floor) must read differently from the plain health-floor collapse.
+	var/fading_text = knockout.defeat_collapse_texts(DEFEAT_REASON_DEATH)["self"]
+	test_human.blood_volume = BLOOD_VOLUME_SURVIVE
+	var/bled_text = knockout.defeat_collapse_texts(DEFEAT_REASON_DEATH)["self"]
+	TEST_ASSERT(bled_text != fading_text, "A bleed-out collapse must read differently from a plain near-death collapse.")
 
 /datum/unit_test/defeat_shock_warning_feedback_is_throttled
 

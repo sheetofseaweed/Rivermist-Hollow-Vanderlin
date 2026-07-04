@@ -13,7 +13,27 @@
 		return
 	defeat_mode = prefs.get_defeat_mode()
 	defeat_damage_threshold = prefs.get_defeat_damage_threshold()
+	defeat_enforce_ko_only_rune_optout()
 	ensure_defeat_monitor()
+
+/// Knockout Only means no rune: sever any bond that roundstart auto-linking (a separate path from
+/// prefs, so ordering between the two is unreliable) may have forged, so the player never gets the
+/// rune's Call offer layered over their chosen self-rescue. Enforced whenever prefs land on a body;
+/// walking up to a rune and linking by hand afterwards still works - that choice is theirs.
+/mob/living/proc/defeat_enforce_ko_only_rune_optout()
+	if(defeat_mode != DEFEAT_MODE_KO_ONLY)
+		return FALSE
+	if(!ishuman(src))
+		return FALSE
+	// Strip the mind from every rune controller (clears linked body, rescue offers, ghost return).
+	if(mind)
+		unlink_mind_from_other_resurrection_runes(mind, null)
+	// And clear a dangling tag left by any tag-only or mindless edge, so the controller lookup
+	// (which resolves through rune_linked) can never surface a rescue for this body.
+	var/mob/living/carbon/human/human_owner = src
+	if(human_owner.rune_linked != RUNE_LINK_NONE)
+		human_owner.rune_linked = RUNE_LINK_NONE
+	return TRUE
 
 /mob/living/proc/ensure_defeat_monitor()
 	if(defeat_mode == DEFEAT_MODE_NO_RETURN)

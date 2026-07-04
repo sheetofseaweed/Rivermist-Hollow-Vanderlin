@@ -26,26 +26,78 @@
 	// Severity is required: overlay_fullscreen builds the icon_state as "[base][severity]", and only the
 	// numbered "oxydamageoverlay[4-10]" states exist. 8 = heavy tunnel vision, see only right around you.
 	owner.overlay_fullscreen("defeat", /atom/movable/screen/fullscreen/defeat, 8)
-	var/horny_defeat = owner.last_defeat_snapshot?.reason == DEFEAT_REASON_HORNY
+	var/reason = owner.last_defeat_snapshot?.reason
+	var/horny_defeat = reason == DEFEAT_REASON_HORNY
+	// Every defeat track reads differently at the moment of collapse - players kept mistaking a
+	// bleed-out or a pain shock for "the damage threshold acting up", because all four doors
+	// printed the same line. The texts are picked before stabilization, so live blood/brain state
+	// can still tell the near-death sub-causes apart.
+	var/list/collapse_texts = defeat_collapse_texts(reason)
 	if(horny_defeat)
 		// A horny defeat reads differently: the dark vignette stays, but the pink arousal wash (the
 		// existing "lovehud" overlay) floods over it, so it never looks like a plain beatdown.
 		owner.overlay_fullscreen("defeat_horny", /atom/movable/screen/fullscreen/love, 10)
-		to_chat(owner, span_userdanger("Your body finally gives out, overwhelmed - you sink down, flushed and spent, too weak to resist."))
 		// The light case: a horny knockout wears off on its own after a short while (unless kidnapped).
 		self_recover_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_horny_self_recover)), DEFEAT_HORNY_SELF_RECOVER_TIME, TIMER_STOPPABLE)
 	else
-		to_chat(owner, span_userdanger("You are defeated. You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."))
 		// The self-rescue (Struggle to Your Feet) is armed later, from enter_defeat, once the rune logic
 		// has settled - so it only fires when no rune can answer (KO Only, or a depleted KO+Rune).
+		collapse_texts["self"] += " You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."
+	to_chat(owner, span_userdanger(collapse_texts["self"]))
 	to_chat(owner, span_notice("Another can bring you back: a curative potion fed to you, a healer's or holy hand, or other aid - but never your own doing. If the rune is yours to call, it may answer too."))
 	SEND_SIGNAL(owner, COMSIG_LIVING_DEFEATED)
-	if(horny_defeat)
-		owner.visible_message(span_userdanger("[owner] sinks down, overwhelmed and spent!"))
-		owner.balloon_alert_to_viewers("overwhelmed!")
-	else
-		owner.visible_message(span_userdanger("[owner] collapses to the ground, defeated!"))
-		owner.balloon_alert_to_viewers("defeated!")
+	owner.visible_message(span_userdanger(collapse_texts["visible"]))
+	owner.balloon_alert_to_viewers(collapse_texts["balloon"])
+
+/// The moment-of-collapse feedback per defeat track (self line / visible line / balloon), so a pain
+/// shock, a bleed-out or a hazard never masquerades as an ordinary beatdown. The near-death track
+/// splits further by what is actually killing the victim - blood, head, or the health floor - read
+/// from the body's live state (stabilization runs after these messages fire).
+/datum/status_effect/defeat_knockout/proc/defeat_collapse_texts(reason)
+	switch(reason)
+		if(DEFEAT_REASON_HORNY)
+			return list(
+				"self" = "Your body finally gives out, overwhelmed - you sink down, flushed and spent, too weak to resist.",
+				"visible" = "[owner] sinks down, overwhelmed and spent!",
+				"balloon" = "overwhelmed!",
+			)
+		if(DEFEAT_REASON_PAIN)
+			return list(
+				"self" = "The pain whites out everything else - your body simply refuses to go on, and you sink down where you stand.",
+				"visible" = "[owner] goes rigid with agony and folds up, felled by sheer pain!",
+				"balloon" = "felled by pain!",
+			)
+		if(DEFEAT_REASON_HAZARD)
+			return list(
+				"self" = "The deadly ground swallows you whole - your body gives out in an instant, your thread pulled taut.",
+				"visible" = "[owner] is swallowed by the deadly ground, instantly overcome!",
+				"balloon" = "swallowed!",
+			)
+		if(DEFEAT_REASON_DEATH)
+			if(owner.blood_volume <= BLOOD_VOLUME_SURVIVE && !HAS_TRAIT(owner, TRAIT_BLOODLOSS_IMMUNE))
+				return list(
+					"self" = "Cold creeps in from your fingertips - too much of your blood is outside of you to keep standing.",
+					"visible" = "[owner] sways, white as chalk, and collapses into a spreading red pool!",
+					"balloon" = "bled white!",
+				)
+			var/mob/living/carbon/carbon_owner = owner
+			if(istype(carbon_owner) && carbon_owner.getOrganLoss(ORGAN_SLOT_BRAIN) >= BRAIN_DAMAGE_DEATH)
+				return list(
+					"self" = "The world rings, doubles, and slides sideways - something in your head has given out.",
+					"visible" = "[owner]'s eyes roll back - [owner] drops, struck senseless!",
+					"balloon" = "struck senseless!",
+				)
+			return list(
+				"self" = "Your strength runs out all at once - the world dims as you slip down, barely clinging on.",
+				"visible" = "[owner] slips to the ground, at death's very door!",
+				"balloon" = "at death's door!",
+			)
+	// DEFEAT_REASON_DAMAGE and any future/unknown reason: the ordinary beatdown.
+	return list(
+		"self" = "Battered past your body's limit, you crumple - too broken to fight on.",
+		"visible" = "[owner] crumples under the punishment, defeated!",
+		"balloon" = "beaten down!",
+	)
 
 /// Arms the KO Only anti-softlock self-rescue: the "Struggle to Your Feet" action shortly, and an auto
 /// safety-net a little later. Called from enter_defeat only when no rune can answer, so a rune-saved
