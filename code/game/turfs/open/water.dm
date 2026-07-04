@@ -472,7 +472,12 @@
 					adjust_originate_watervolume(-10)
 
 				else
-					C.reagents.add_reagent(water_reagent, 100)
+					//RMH EDITED START
+					// BUGFIX: a fixed 100 only half-fills containers larger than 100
+					// (e.g. the 200-volume iron pot). Fill to the container's remaining
+					// capacity instead (add_reagent clamps to the holder maximum).
+					C.reagents.add_reagent(water_reagent, C.reagents.maximum_volume - C.reagents.total_volume)
+					//RMH EDITED END
 				to_chat(user, "<span class='notice'>I fill [C] from [src].</span>")
 			return
 	if(user.used_intent.type == /datum/intent/food)

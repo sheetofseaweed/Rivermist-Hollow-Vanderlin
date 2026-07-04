@@ -124,33 +124,43 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 	if(length(fake_wildcards))
 		for(var/wildcard in fake_wildcards)
 			var/needed = fake_wildcards[wildcard]
-			var/found = 0
-
-			// Find items that match this wildcard
+			//RMH EDITED START
+			// BUGFIX (cooking): the old loop broke as soon as it gathered `needed`
+			// matching items, so the multiplier for wildcard recipes was always 1.
+			// That made e.g. 4 steaks in a pan cook one-at-a-time (one per craft
+			// trigger) instead of all at once, unlike exact requirements which
+			// already scale via FLOOR(available / needed). Count the FULL available
+			// stock for the multiplier, then consume only one craft's worth for the
+			// isolation_craft leftover check (matching the exact-requirement path).
+			var/total_available = 0
 			for(var/obj/item/path as anything in available_items)
 				if(!ispath(path, wildcard))
 					continue
-
-				var/can_use = min(available_items[path], needed - found)
-				found += can_use
-				available_items[path] -= can_use
-
-				if(available_items[path] <= 0)
-					available_items -= path
-
-				if(found >= needed)
-					break
-
-			// Check if we found enough items for this wildcard
-			if(found < needed)
+				total_available += available_items[path]
+			// Check if we found enough items for at least one craft
+			if(total_available < needed)
 				return FALSE
-
-			// Calculate multiplier based on what we found
-			var/potential_multiplier = FLOOR(found / fake_wildcards[wildcard], 1)
+			// Calculate multiplier based on everything available so the whole
+			// batch cooks in a single operation
+			var/potential_multiplier = FLOOR(total_available / needed, 1)
 			if(!highest_multiplier)
 				highest_multiplier = potential_multiplier
 			else if(potential_multiplier < highest_multiplier)
 				highest_multiplier = potential_multiplier
+
+			// Consume one craft's worth for the isolation leftover bookkeeping
+			var/to_consume = needed
+			for(var/obj/item/path as anything in available_items)
+				if(!ispath(path, wildcard))
+					continue
+				var/can_use = min(available_items[path], to_consume)
+				available_items[path] -= can_use
+				to_consume -= can_use
+				if(available_items[path] <= 0)
+					available_items -= path
+				if(to_consume <= 0)
+					break
+			//RMH EDITED END
 
 	if(isolation_craft && length(available_items))
 		return FALSE
