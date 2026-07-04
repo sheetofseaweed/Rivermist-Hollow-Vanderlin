@@ -40,6 +40,8 @@
 /mob/living/carbon/human/species/goblin/npc
 	ai_controller = /datum/ai_controller/human_npc
 	flee_in_pain = TRUE
+	// Greenskins haul horny-defeated prey back to their warren (same lair tag as the simple-mob orcs).
+	kidnap_lair_tag = "greenskin_lair"
 
 	wander = FALSE
 

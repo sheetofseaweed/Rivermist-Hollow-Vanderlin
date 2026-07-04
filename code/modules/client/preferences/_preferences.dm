@@ -90,6 +90,11 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	COOLDOWN_DECLARE(voice_previewing)
 	COOLDOWN_DECLARE(moan_previewing)
 
+	/// Defeat system routing preference for this character.
+	var/defeat_mode = DEFEAT_MODE_DEFAULT
+	/// Major damage category threshold used by the defeat system.
+	var/defeat_damage_threshold = DEFEAT_DAMAGE_THRESHOLD_DEFAULT
+
 	/// Age of character.
 	var/age = AGE_ADULT
 
@@ -2253,6 +2258,22 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 							to_chat(user, span_info("Song name: <b>[combat_music.credits]</b>"))
 					show_misc_pref_ui(user)
 
+				if("defeat_mode")
+					var/list/defeat_mode_choices = defeat_mode_choice_map()
+					var/selected_defeat_mode = tgui_input_list(user, "Choose how defeat should be routed for this character.", "Defeat Mode", defeat_mode_choices, defeat_mode_display_name(defeat_mode))
+					if(selected_defeat_mode)
+						set_defeat_mode(defeat_mode_choices[selected_defeat_mode])
+						to_chat(user, span_notice("Defeat mode set to [defeat_mode_display_name(defeat_mode)]."))
+						show_misc_pref_ui(user)
+
+				if("defeat_threshold")
+					var/list/threshold_choices = defeat_threshold_choice_map()
+					var/selected_label = tgui_input_list(user, "Choose how much punishment you endure before falling into defeat.", "Defeat Threshold", threshold_choices, defeat_threshold_display_label(get_defeat_damage_threshold()))
+					if(selected_label && threshold_choices[selected_label])
+						set_defeat_damage_threshold(threshold_choices[selected_label])
+						to_chat(user, span_notice("Defeat damage threshold set to [get_defeat_damage_threshold()]."))
+						show_misc_pref_ui(user)
+
 				if("voice")
 					var/new_voice = tgui_color_picker(user, "SELECT YOUR HERO'S VOICE COLOR", "THE THROAT", "#[voice_color]")
 					if(new_voice)
@@ -3624,6 +3645,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	dat += "<div class='section-title'>Personal</div>"
 	dat += "<a class='option-row' href='?_src_=prefs;preference=culinary;task=menu'>Food Preferences<small>Change favored foods and culinary preferences.</small></a>"
 	dat += "<a class='option-row' href='?_src_=prefs;preference=combat_music;task=input'>Combat Music<small>[musicname]</small></a>"
+	dat += "<a class='option-row' href='?_src_=prefs;preference=defeat_mode;task=input'>Defeat Mode<small>[defeat_mode_display_name(get_defeat_mode())]</small></a>"
+	dat += "<a class='option-row' href='?_src_=prefs;preference=defeat_threshold;task=input'>Defeat Damage Threshold<small>[get_defeat_damage_threshold()] major damage in one category</small></a>"
 
 	dat += "<div class='section-title'>Expression</div>"
 	dat += "<a class='option-row' href='?_src_=prefs;preference=rumour;task=input'>Rumours<small>Set what others may hear about this character.</small></a>"
@@ -3685,6 +3708,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	if(QDELETED(character) || !ishuman(character))
 		return
 	character.cache_erp_preferences_from_prefs(src)
+	character.cache_defeat_preferences_from_prefs(src)
 	character.age = age
 	character.gender = gender
 	character.dna.features = features.Copy()

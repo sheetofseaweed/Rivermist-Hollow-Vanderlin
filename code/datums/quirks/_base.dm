@@ -52,6 +52,8 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 	abstract_type = /datum/quirk
 	///this is basically our apply order, if 0 we don't care, higher is better
 	var/apply_order = 0
+	/// Multiplier applied to the holder's defeat damage threshold (see the Defeat system). Below 1 means they are defeated sooner.
+	var/defeat_threshold_mult = 1
 
 	/// The quirk's name shown to players
 	var/name = "Quirk"

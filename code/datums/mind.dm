@@ -142,6 +142,14 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 
 /datum/mind/Destroy()
 	SSticker.minds -= src
+	if(current)
+		UnregisterSignal(current, COMSIG_MOB_DEATH)
+		if(current.mind == src)
+			current.mind = null
+		if(iscarbon(current))
+			var/mob/living/carbon/body = current
+			if(body.last_mind == src)
+				body.last_mind = null
 	remove_all_uis()
 	QDEL_LIST_ASSOC_VAL(active_uis)
 	active_uis = null

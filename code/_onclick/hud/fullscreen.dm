@@ -138,6 +138,12 @@
 	layer = 20.51
 	plane = FULLSCREEN_PLANE
 
+/atom/movable/screen/fullscreen/defeat
+	icon_state = "oxydamageoverlay" // becomes "oxydamageoverlay[severity]" - the dark closing-in vignette (same art crit/vision uses)
+	layer = 20.51
+	plane = FULLSCREEN_PLANE
+	alpha = 240 // darkness crowds in while you are down
+
 /atom/movable/screen/fullscreen/crit/uncon
 	icon_state = "uncon"
 	layer = 20.511

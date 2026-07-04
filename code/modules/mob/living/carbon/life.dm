@@ -36,6 +36,7 @@
 
 		handle_shock(delta_time, times_fired)
 		handle_shock_stage(delta_time, times_fired)
+		handle_defeat_life_update()
 
 		if((blood_volume > BLOOD_VOLUME_SURVIVE) || HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
 			if(!heart_attacking)

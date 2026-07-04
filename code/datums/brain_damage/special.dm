@@ -55,6 +55,14 @@
 	lose_text = "<span class='warning'>I feel more substantial again.</span>"
 	var/obj/effect/abstract/sync_holder/veil/veil
 	var/next_crisis = 0
+	/// id of the pending fade_in timer, so it can be cancelled if we fade in early or get deleted
+	var/fade_in_timer_id
+
+/datum/brain_trauma/special/existential_crisis/Destroy()
+	if(fade_in_timer_id)
+		deltimer(fade_in_timer_id)
+		fade_in_timer_id = null
+	return ..()
 
 /datum/brain_trauma/special/existential_crisis/on_life()
 	..()
@@ -84,14 +92,28 @@
 	for(var/atom/movable/AM as anything in owner)
 		SEND_SIGNAL(AM, COMSIG_MOVABLE_SECLUDED_LOCATION)
 	next_crisis = world.time + 600
-	addtimer(CALLBACK(src, PROC_REF(fade_in)), duration)
+	fade_in_timer_id = addtimer(CALLBACK(src, PROC_REF(fade_in)), duration, TIMER_STOPPABLE)
 
 /datum/brain_trauma/special/existential_crisis/proc/fade_in()
+	if(fade_in_timer_id)
+		deltimer(fade_in_timer_id)
+		fade_in_timer_id = null
+	if(!veil)
+		return
+	if(QDELETED(veil)) // the veil is already being destroyed (we may be deleting from inside its Destroy chain), don't qdel it again
+		veil = null
+		return
 	QDEL_NULL(veil)
 	to_chat(owner, "<span class='notice'>I fade back into reality.</span>")
 	next_crisis = world.time + 600
 
-//base sync holder is in desynchronizer.dm
 /obj/effect/abstract/sync_holder/veil
 	name = "non-existence"
 	desc = ""
+
+/obj/effect/abstract/sync_holder/veil/Destroy()
+	// drop anyone hidden inside back into reality, or deleting the veil deletes them with it
+	var/atom/drop_loc = drop_location()
+	for(var/atom/movable/AM as anything in contents.Copy())
+		AM.forceMove(drop_loc)
+	return ..()

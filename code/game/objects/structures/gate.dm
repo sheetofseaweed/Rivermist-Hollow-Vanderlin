@@ -96,7 +96,9 @@ GLOBAL_LIST_EMPTY(biggates)
 	turfsy.Cut()
 	if(attached_to)
 		var/obj/structure/winch/W = attached_to
-		W.attached_gate = null
+		if(istype(W) && W.attached_gate == src)
+			W.attached_gate = null
+		attached_to = null
 	return ..()
 
 /obj/structure/gate/update_icon_state()
@@ -188,11 +190,13 @@ GLOBAL_LIST_EMPTY(biggates)
 			GLOB.biggates -= G
 			attached_gate = G
 			G.attached_to = src
+			break
 
 /obj/structure/winch/Destroy()
 	if(attached_gate)
-		var/obj/structure/gate/W = attached_gate
-		W.attached_to = null
+		if(attached_gate.attached_to == src)
+			attached_gate.attached_to = null
+		attached_gate = null
 	return ..()
 
 /obj/structure/winch/attack_hand(mob/user)

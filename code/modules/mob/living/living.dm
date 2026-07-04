@@ -1031,9 +1031,10 @@
 		// You dont have any blood and your not bloodloss immune? Dead.
 		if(blood_volume <= 0)
 			set_health(NONE)
-	update_stat()
 	update_pain()
 	update_shock()
+	handle_defeat_health_update()
+	update_stat()
 	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE, amount)
 
 /// Updates pain value

@@ -223,6 +223,8 @@
 	user.dropItemToGround(src)
 	affecting.try_bandage(src)
 	H.update_damage_overlays()
+	H.defeat_try_auto_rescue_from_healing(user, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD, "bandage")
+	H.defeat_treat_tool_physical_trauma(user, list(/datum/status_effect/debuff/defeat/physical/wound))
 
 	if(M == user)
 		user.visible_message("<span class='notice'>[user] bandages [user.p_their()] [affecting].</span>", "<span class='notice'>I bandage my [affecting].</span>")

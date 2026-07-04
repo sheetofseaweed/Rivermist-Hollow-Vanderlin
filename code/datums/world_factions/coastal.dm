@@ -217,7 +217,9 @@
 		/datum/supply_pack/seeds/mangosteen,
 		/datum/supply_pack/seeds/dragonfruit,
 		/datum/supply_pack/seeds/poppy,
-		/datum/supply_pack/medicine/antipregpot
+		/datum/supply_pack/medicine/antipregpot,
+		// Rare restorative - the cure for lingering defeat trauma
+		/datum/supply_pack/tools/medical/mercydraught
 	)
 	exotic_pool = list(
 		/datum/supply_pack/food/drinks/elfred,

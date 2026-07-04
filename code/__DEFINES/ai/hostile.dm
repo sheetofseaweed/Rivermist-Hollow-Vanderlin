@@ -44,6 +44,8 @@
 #define BB_BASIC_MOB_PRIORITY_TARGETS "BB_basic_priority_targets"
 #define BB_BASIC_MOB_CURRENT_TARGET "BB_basic_current_target"
 #define BB_BASIC_MOB_CURRENT_TARGET_HIDING_LOCATION "BB_basic_current_target_hiding_location"
+/// A defeated victim this mob is moving to haul off to its lair (defeat kidnapping).
+#define BB_KIDNAP_TARGET "BB_kidnap_target"
 #define BB_TARGETTING_DATUM "targetting_datum"
 #define BB_BASIC_MOB_FOOD_TARGET "BB_basic_food_target"
 #define BB_TARGETTING_DATUM_EQUIPMENT "equip_targetting_datum"
