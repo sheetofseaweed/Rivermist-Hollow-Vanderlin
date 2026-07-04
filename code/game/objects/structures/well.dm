@@ -111,7 +111,12 @@
 			to_chat(user, "<span class='warning'>[W] is full.</span>")
 			return
 		if(do_after(user, 6 SECONDS, src))
-			var/list/waterl = list(/datum/reagent/water = 100)
+			//RMH EDITED START
+			// BUGFIX: filled a fixed 100 units, which only half-fills containers whose
+			// volume is above 100 (e.g. the 200-volume iron pot). add_reagent clamps to
+			// the holder's maximum, so request the full remaining capacity to top it off.
+			var/list/waterl = list(/datum/reagent/water = W.reagents.maximum_volume - W.reagents.total_volume)
+			//RMH EDITED END
 			W.reagents.add_reagent_list(waterl)
 			to_chat(user, "<span class='notice'>I fill [W] from [src].</span>")
 			playsound(user, pick('sound/foley/waterwash (1).ogg','sound/foley/waterwash (2).ogg'), 80, FALSE)

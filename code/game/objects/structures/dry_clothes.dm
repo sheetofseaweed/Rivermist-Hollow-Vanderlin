@@ -1,8 +1,8 @@
 /obj/structure/dryclothes
 	name = "clothline"
 	desc = "This seems like a nice place to dry some clothes."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "dryrack"
+	icon = 'modular_rmh/icons/obj/structures/clothline.dmi' // RMH EDITED
+	icon_state = "clothline"
 	max_integrity = 200
 	density = TRUE
 	climbable = TRUE
