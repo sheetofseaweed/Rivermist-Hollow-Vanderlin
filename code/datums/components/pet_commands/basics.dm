@@ -412,3 +412,73 @@
 	if(controller.blackboard_key_exists(BB_CURRENT_PET_TARGET))
 		controller.queue_behavior(/datum/ai_behavior/truffle_sniff, BB_CURRENT_PET_TARGET)
 	return SUBTREE_RETURN_FINISH_PLANNING
+
+/**
+ * # Pet Command: Rescue Ally
+ * A loyal companion rushes to a fallen friend and frees them from the defeat state.
+ * Hidden + autonomous (modeled on protect_owner): it triggers off a friend being knocked down,
+ * so a downed owner is saved without needing to issue a command. A reusable base for future
+ * "react to a friend's state" pet behaviours.
+ */
+/datum/pet_command/rescue_owner
+	command_name = "Rescue ally"
+	command_desc = "Your pet will rush to a fallen friend and pull them back up."
+	hidden = TRUE
+	command_feedback = "perks up sharply"
+	/// How close a fallen friend must be for the pet to notice and respond.
+	var/rescue_range = 9
+	var/rescue_behavior = /datum/ai_behavior/pet_rescue_downed
+
+/datum/pet_command/rescue_owner/add_new_friend(mob/living/tamer)
+	RegisterSignal(tamer, COMSIG_LIVING_DEFEATED, PROC_REF(on_friend_defeated))
+
+/datum/pet_command/rescue_owner/remove_friend(mob/living/unfriended)
+	UnregisterSignal(unfriended, COMSIG_LIVING_DEFEATED)
+
+/// A friend just went down nearby - rush to their aid.
+/datum/pet_command/rescue_owner/proc/on_friend_defeated(mob/living/fallen)
+	SIGNAL_HANDLER
+	var/mob/living/parent = weak_parent.resolve()
+	if(isnull(parent) || parent == fallen)
+		return
+	if(!can_see(parent, fallen, rescue_range))
+		return
+	// set_command_active can sleep (it emotes); we are a signal handler, so defer it off the signal.
+	INVOKE_ASYNC(src, PROC_REF(set_command_active), parent, fallen)
+
+/datum/pet_command/rescue_owner/set_command_active(mob/living/parent, mob/living/fallen)
+	. = ..()
+	set_command_target(parent, fallen)
+
+/datum/pet_command/rescue_owner/execute_action(datum/ai_controller/controller)
+	var/mob/living/fallen = controller.blackboard[BB_CURRENT_PET_TARGET]
+	if(QDELETED(fallen) || !isliving(fallen) || !fallen.has_status_effect(/datum/status_effect/defeat_knockout))
+		controller.clear_blackboard_key(BB_ACTIVE_PET_COMMAND)
+		return
+	controller.queue_behavior(rescue_behavior)
+	return SUBTREE_RETURN_FINISH_PLANNING
+
+/datum/pet_command/rescue_owner/retrieve_command_text(atom/living_pet, atom/target)
+	return isnull(target) ? null : "rushes to [target]'s aid!"
+
+/// AI behavior: approach a fallen friend and free them from the defeat state.
+/datum/ai_behavior/pet_rescue_downed
+	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM
+	required_distance = 1
+
+/datum/ai_behavior/pet_rescue_downed/perform(seconds_per_tick, datum/ai_controller/controller)
+	. = ..()
+	var/mob/living/pawn = controller.pawn
+	var/mob/living/fallen = controller.blackboard[BB_CURRENT_PET_TARGET]
+	if(!isliving(pawn) || !isturf(pawn.loc) || QDELETED(fallen) || !isliving(fallen) || !fallen.has_status_effect(/datum/status_effect/defeat_knockout))
+		finish_action(controller, FALSE)
+		return
+	set_movement_target(controller, fallen)
+	if(pawn.Adjacent(fallen))
+		pawn.try_rescue_downed_ally(fallen)
+		finish_action(controller, TRUE)
+
+/datum/ai_behavior/pet_rescue_downed/finish_action(datum/ai_controller/controller, succeeded)
+	. = ..()
+	controller.clear_blackboard_key(BB_ACTIVE_PET_COMMAND)
+	controller.clear_blackboard_key(BB_CURRENT_PET_TARGET)

@@ -99,6 +99,14 @@
 	else
 		target.heal_bodypart_damage(urhealedamt_brute, urhealedamt_burn, required_status = BODYPART_ORGANIC)
 	SEND_SIGNAL(user, COMSIG_LIVING_HEALED_OTHER, urhealedamt_brute + urhealedamt_burn)
+	target.defeat_try_auto_rescue_from_healing(user, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD, "surgery")
+	target.defeat_treat_tool_physical_trauma(user, list(
+		/datum/status_effect/debuff/defeat/physical,
+		/datum/status_effect/debuff/defeat/physical/burn,
+		/datum/status_effect/debuff/defeat/physical/body,
+		/datum/status_effect/debuff/defeat/physical/concussion,
+		/datum/status_effect/debuff/defeat/pain,
+	))
 	display_results(user, target, "<span class='notice'>[umsg].</span>",
 		"[tmsg].",
 		"[tmsg].")

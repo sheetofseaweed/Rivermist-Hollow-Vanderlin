@@ -66,6 +66,7 @@
 		/datum/pet_command/attack,
 		/datum/pet_command/fetch,
 		/datum/pet_command/protect_owner,
+		/datum/pet_command/rescue_owner,
 		/datum/pet_command/aggressive,
 		/datum/pet_command/calm,
 	)

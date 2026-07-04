@@ -342,6 +342,9 @@
 /datum/targetting_datum/basic/can_horny(mob/living/living_mob, atom/the_target)
 	if(isturf(the_target) || !the_target) // bail out on invalids
 		return FALSE
+	// A captive who has steeled themselves (the "Refuse Advances" opt-out) is off-limits to horny mobs.
+	if(HAS_TRAIT(the_target, TRAIT_DEFEAT_REFUSE_ADVANCES))
+		return FALSE
 	if(issimple(living_mob))
 		var/mob/living/simple_animal/attacker = living_mob
 		if(attacker.binded == TRUE)

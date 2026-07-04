@@ -78,6 +78,10 @@
 /obj/item/reagent_containers/glass/bottle/vial/lucpot
 	list_reagents = list(/datum/reagent/buff/fortune = 25)
 
+/obj/item/reagent_containers/glass/bottle/vial/mercydraught
+	name = "Mercy Draught"
+	list_reagents = list(/datum/reagent/medicine/herbal/mercy_draught = 25)
+
 /obj/item/reagent_containers/glass/bottle/vial/genderpot
 	list_reagents = list(/datum/reagent/medicine/gender_potion = 5)
 

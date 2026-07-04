@@ -247,6 +247,11 @@
 		return FALSE
 
 	var/mob/living/carbon/human/human_spawned = spawned
+	// Knockout Only opted out of the rune: the job's automatic bond must respect that, or the
+	// player still gets the rune's Call offer over their chosen self-rescue. They can always walk
+	// up to a rune and link by hand later - only the auto-link honors the preference.
+	if(human_spawned.defeat_mode == DEFEAT_MODE_KO_ONLY)
+		return FALSE
 	var/obj/structure/resurrection_rune/current_rune = find_resurrection_rune_by_mind(human_spawned.mind)
 	if(current_rune?.rune_tag == rune_linked)
 		GLOB.rune_roundstart_mobs |= human_spawned

@@ -364,6 +364,10 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_STINKY "Natural Stench"
 #define TRAIT_ZJUMP "High Jumping"
 #define TRAIT_FLIP_JUMP TRAIT_ZJUMP
+/// A defeat leg injury that prevents jumping (see the Defeat system / DEFEAT_SYSTEM_SPEC_ADDENDUM.md).
+#define TRAIT_DEFEAT_NO_JUMP "defeat_no_jump"
+/// A kidnapped captive who toggled "Refuse Advances" - horny mobs leave them be (see the Defeat system).
+#define TRAIT_DEFEAT_REFUSE_ADVANCES "defeat_refuse_advances"
 #define TRAIT_KNOW_ROUS_DOORS "Knows Rous Doors"
 #define TRAIT_JESTERPHOBIA "Jesterphobic"
 #define TRAIT_XENOPHOBIC "Xenophobic"
@@ -613,7 +617,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 // RMH Hubs
 #define TRAIT_VMANSION			"Vampire Mansion"
 #define TRAIT_WEREWOLFDEN		"Werewolf Den"
-#define TRAIT_BLISSARBASE		"Blissar Base"
+#define TRAIT_BLISSARABASE		"Blissara Base"
 #define TRAIT_GNOLLHUB			"Gnolls Hub"
 #define TRAIT_AVERNUS			"Avernus"
 #define TRAIT_HAG				"Hag Tree"

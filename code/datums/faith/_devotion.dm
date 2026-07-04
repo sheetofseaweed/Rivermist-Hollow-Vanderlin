@@ -149,6 +149,7 @@
 	miracles_extra += list(
 		/datum/action/cooldown/spell/undirected/touch/orison,
 		/datum/action/cooldown/spell/cure_rot,
+		/datum/action/cooldown/spell/defeat_absolution,
 	)
 
 /datum/devotion/proc/make_templar()

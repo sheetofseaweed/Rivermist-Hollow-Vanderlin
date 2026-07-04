@@ -591,6 +591,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["voice_type"] >> voice_type
 	S["voice_pack"] >> voice_pack
 	S["moan_selection"]	>> moan_selection 	//RMH edit
+	S["defeat_mode"] >> defeat_mode
+	defeat_mode = sanitize_defeat_mode(defeat_mode)
+	S["defeat_damage_threshold"] >> defeat_damage_threshold
+	defeat_damage_threshold = sanitize_defeat_damage_threshold(defeat_damage_threshold)
 
 	//Load flavor text
 	S["flavortext"] >> flavortext
@@ -727,6 +731,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["voice_type"]		, voice_type)
 	WRITE_FILE(S["voice_pack"]		, voice_pack)
 	WRITE_FILE(S["moan_selection"] , moan_selection)	//RMH edit
+	WRITE_FILE(S["defeat_mode"], defeat_mode)
+	WRITE_FILE(S["defeat_damage_threshold"], defeat_damage_threshold)
 	WRITE_FILE(S["combat_music"], combat_music.type)
 	WRITE_FILE(S["species"]			, pref_species.id)
 	WRITE_FILE(S["selected_title"]		, selected_title)
