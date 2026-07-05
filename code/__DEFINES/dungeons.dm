@@ -87,6 +87,11 @@
 /// % chance a trait-eligible room rolls a room trait
 #define DUNGEON_ROOM_TRAIT_CHANCE 50
 
+/// Faction shared by every dungeon-native guardian (prevents infighting)
+#define FACTION_DUNGEON "dungeon"
+/// Channel time to work a dungeon gate open (players only)
+#define DUNGEON_GATE_TRAVERSE_TIME (2 SECONDS)
+
 // -- Roguelike Heart: door rewards & stretch deck --
 
 /// What a forward gate promises for clearing the room beyond it

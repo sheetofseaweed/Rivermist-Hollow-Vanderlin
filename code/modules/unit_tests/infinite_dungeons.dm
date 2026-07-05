@@ -473,11 +473,11 @@
 	var/datum/award/floor_ten = SSachievements.awards[/datum/award/achievement/dungeon/floor_ten]
 	TEST_ASSERT_NOTNULL(floor_ten, "Floor-ten dungeon award should be registered.")
 
-	// Granting to a clientless mob must be a safe no-op (the real grant needs a client).
+	// Granting to a clientless mob must be a safe no-op (the real grant needs a
+	// client). The call itself is the test: the harness fails on any runtime.
 	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
 	var/datum/dungeon_run/dummy = new(null, null)
 	dummy.grant_dungeon_milestones(delver, 10, TRUE)
-	TEST_ASSERT(TRUE, "Granting milestones to a clientless mob should not runtime.")
 	qdel(dummy)
 
 /datum/unit_test/dungeon_spawn_pool/Run()
@@ -805,6 +805,95 @@
 	TEST_ASSERT(findtext(last_card.name, "Synergy"), "The synergy card should be labeled.")
 	for(var/datum/dungeon_boon/card as anything in synergy_cards)
 		qdel(card)
+
+	qdel(run)
+
+/datum/unit_test/dungeon_boon_no_restack/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/base_health = delver.maxHealth
+	var/datum/dungeon_boon/vigor/vigor = new
+	run.add_boon(vigor)
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_health + 25, "Vigor should apply once on grant.")
+
+	// Cross a gate: entry-path boon application must not stack the bonus again.
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	forward_gate.sealed = FALSE
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer the delver.")
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_health + 25, "Room transitions must not re-apply additive boons.")
+
+	qdel(run)
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_health, "Teardown should strip the stack exactly once.")
+
+/datum/unit_test/dungeon_presence_reconciliation/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/base_health = delver.maxHealth
+	var/datum/dungeon_boon/vigor/vigor = new
+	run.add_boon(vigor)
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_health + 25, "Vigor should be active inside the run.")
+
+	// Simulate an extraction that bypasses exit_mob (defeat-rune return, kidnap,
+	// admin teleport): the presence sweep must strip the leaked boons.
+	delver.forceMove(get_turf(entrance))
+	run.last_presence_validation = 0
+	run.validate_presence()
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_health, "Extraction that bypasses exit_mob must not leak boons outside the dungeon.")
+
+	// Walking back in restores the stack through the normal entry path.
+	TEST_ASSERT(entrance.try_enter(delver), "Re-entry should be allowed.")
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_health + 25, "Re-entering should re-apply the run's boon stack once.")
+
+	qdel(run)
+
+/datum/unit_test/dungeon_forsaken_paths/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
+
+	var/list/forward_gates = list()
+	for(var/obj/structure/dungeon_gate/gate as anything in break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gates += gate
+	TEST_ASSERT(length(forward_gates) >= 2, "The test break room should offer at least two forward doors.")
+
+	var/obj/structure/dungeon_gate/chosen = forward_gates[1]
+	var/obj/structure/dungeon_gate/spurned = forward_gates[2]
+	chosen.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
+	chosen.sealed = FALSE
+	TEST_ASSERT(chosen.use_gate(delver), "The chosen door should carry the delver through.")
+
+	TEST_ASSERT(spurned.forsaken, "Choosing one door should fuse its siblings shut.")
+	TEST_ASSERT(!chosen.forsaken, "The taken door itself must stay open.")
+
+	// Backtrack and try the spurned door: refused.
+	var/datum/pocket_dimension/dungeon/combat_room = chosen.destination_room
+	var/obj/structure/dungeon_gate/back_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in combat_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_BACK)
+			back_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(back_gate, "Combat room should have a back gate.")
+	TEST_ASSERT(back_gate.use_gate(delver), "Backtracking should still work.")
+	TEST_ASSERT(!spurned.use_gate(delver), "A forsaken door must refuse passage.")
+	// The originally chosen door still re-traverses to its existing room.
+	TEST_ASSERT(chosen.use_gate(delver), "The chosen door should remain re-traversable.")
 
 	qdel(run)
 

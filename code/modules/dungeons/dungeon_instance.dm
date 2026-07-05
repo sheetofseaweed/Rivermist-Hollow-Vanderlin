@@ -17,6 +17,9 @@
 	var/scatter_count_bonus = 0
 	/// The room's rolled trait, if any (Slice 4)
 	var/datum/dungeon_room_trait/current_trait
+	/// When TRUE (infinite-run rooms), collapse deletes loose foreign items and
+	/// decals instead of ejecting them - didn't pick it up, don't get to keep it.
+	var/delete_foreign_on_collapse = FALSE
 	/// REF text -> weakref of living guardians that must die for the room to clear
 	var/list/guardian_refs = list()
 	/// REF text -> TRUE for mobs that belong to the dungeon; qdel'd on collapse instead of ejected
@@ -266,12 +269,34 @@
 		var/party_factor = 1 + min(party_size - 1, 4) * 0.4 // +40% hp per extra member, capped at 5
 		guardian.maxHealth = round(guardian.maxHealth * party_factor)
 		guardian.health = guardian.maxHealth
+	// One shared faction so goblins, bogbugs and wolves never brawl each other.
+	guardian.faction = list(FACTION_DUNGEON)
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
+	// Dungeon natives must not haul defeated players out of the pocket dimension
+	// to some overworld lair. Stripped until runs get their own larder space.
+	guardian.kidnap_lair_tag = null
+	if(iscarbon(guardian))
+		// Carbons never reach "dead" cleanly in a brawl - pain/shock thresholds drop
+		// them into crit long before health runs out, and their AI flees in pain.
+		// Dungeon guardians fight to the fall: no fleeing, and a downed carbon
+		// counts as defeated so the room clears.
+		if("flee_in_pain" in guardian.vars)
+			guardian.vars["flee_in_pain"] = FALSE
+		RegisterSignal(guardian, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(on_carbon_guardian_health))
+
+/// A carbon guardian knocked into crit counts as defeated (see register_guardian).
+/datum/pocket_dimension/dungeon/proc/on_carbon_guardian_health(mob/living/source)
+	SIGNAL_HANDLER
+	if(source.stat < UNCONSCIOUS)
+		return
+	on_guardian_death(source)
 
 /datum/pocket_dimension/dungeon/proc/on_guardian_death(mob/living/source)
 	SIGNAL_HANDLER
-	UnregisterSignal(source, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING))
 	var/source_ref = "[REF(source)]"
+	if(!guardian_refs || !guardian_refs[source_ref])
+		return // already counted (e.g. downed into crit, then killed)
+	UnregisterSignal(source, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING, COMSIG_LIVING_HEALTH_UPDATE))
 	if(keyholder_drops[source_ref])
 		var/turf/drop_turf = get_turf(source)
 		if(drop_turf)
@@ -311,6 +336,17 @@
 		return FALSE
 	return !!native_mob_refs?["[REF(subject)]"]
 
+// Infinite-run rooms swallow whatever was left on the floor; standalone
+// one-shot dungeons keep the base behavior (dropped items eject to the entrance).
+/datum/pocket_dimension/dungeon/eject_foreign_movables(items_only = FALSE, atom/override_destination = null)
+	if(!delete_foreign_on_collapse)
+		return ..()
+	for(var/atom/movable/movable as anything in get_preservable_foreign_movables(items_only))
+		qdel(movable)
+	QDEL_LIST_ASSOC_VAL(hibernated_foreign_movables)
+	if(storage && !length(storage.contents))
+		QDEL_NULL(storage)
+
 // Native dungeon mobs die with the dungeon instead of being dumped outside.
 /datum/pocket_dimension/dungeon/eject_occupants(message = null, atom/override_destination = null)
 	for(var/mob/occupant as anything in get_occupants())
@@ -339,6 +375,7 @@
 /datum/pocket_dimension/dungeon/exit_mob(mob/user)
 	if(owning_run && isliving(user))
 		owning_run.strip_boons_from(user)
+		owning_run.mark_absent(user)
 	. = ..()
 	if(. && owning_run)
 		owning_run.note_possible_run_end()

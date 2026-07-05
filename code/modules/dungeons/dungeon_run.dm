@@ -17,10 +17,18 @@
 	var/list/present_ckeys = list()
 	/// weakrefs of outsiders waiting at the entrance to join at the next rest area
 	var/list/waiting_petitioners = list()
+	/// DUNGEON_JOIN_APPROVAL_* — how many present members must approve a petitioner
+	var/join_approval_mode = DUNGEON_JOIN_APPROVAL_MODE
 	/// Shared in-run currency pool
 	var/motes = 0
 	/// Active /datum/dungeon_boon instances, applied to all roster members
 	var/list/active_boons = list()
+	/// REF text -> TRUE for mobs currently carrying the run's boon stack.
+	/// Guards against re-applying on every room entry (additive boons would
+	/// stack) and against double-stripping (additive removes would drain).
+	var/list/boon_carriers = list()
+	/// world.time of the last presence sweep (throttles validate_presence)
+	var/last_presence_validation = 0
 	/// Multiplier on mote drops from boons like Greed
 	var/mote_multiplier = 1
 	/// The stretch's shuffled door-reward deck (DUNGEON_REWARD_* strings)
@@ -107,6 +115,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		SSpocket_dimensions.delete_instance(room, "The dungeon convulses and spits everything back out!", eject_target)
 	QDEL_LIST(active_boons)
 	active_boons = null
+	boon_carriers = null
 	entrance?.on_run_ended(src)
 	entrance_ref = null
 	return ..()
@@ -290,12 +299,20 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/apply_boons_to(mob/living/target)
 	if(!istype(target))
 		return
+	var/carrier_key = "[REF(target)]"
+	if(boon_carriers[carrier_key])
+		return // already carrying the stack - never re-apply per room entry
+	boon_carriers[carrier_key] = TRUE
 	for(var/datum/dungeon_boon/boon as anything in active_boons)
 		boon.apply(src, target)
 
 /datum/dungeon_run/proc/strip_boons_from(mob/living/target)
 	if(!istype(target))
 		return
+	var/carrier_key = "[REF(target)]"
+	if(!boon_carriers[carrier_key])
+		return // never applied (or already stripped) - don't drain twice
+	boon_carriers -= carrier_key
 	for(var/datum/dungeon_boon/boon as anything in active_boons)
 		boon.remove(src, target)
 
@@ -328,6 +345,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	// activation and reads incoming_path_type (elites) and promised_reward (vaults).
 	room.incoming_path_type = incoming_path
 	room.promised_reward = promised_reward
+	room.delete_foreign_on_collapse = TRUE // run rooms swallow what's left behind
 	if(!room.activate())
 		qdel(room)
 		return null
@@ -580,10 +598,39 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	if(!has_client_occupants())
 		qdel(src)
 
+/// Anyone carrying the run's boon stack who is no longer inside any run room
+/// was extracted by something that bypassed exit_mob - a defeat-rune return,
+/// a kidnap haul, an admin teleport. Strip their boons so nothing ever leaks
+/// outside the dungeon (the sandbox guarantee), and mark them absent.
+/// Walking back in re-applies the stack through the normal entry path.
+/datum/dungeon_run/proc/validate_presence()
+	if(ending || !length(boon_carriers))
+		return
+	if(world.time < last_presence_validation + 5 SECONDS)
+		return
+	last_presence_validation = world.time
+	var/list/rooms = get_all_rooms()
+	for(var/carrier_key in boon_carriers.Copy())
+		var/mob/living/carrier = locate(carrier_key)
+		if(!istype(carrier) || QDELETED(carrier))
+			boon_carriers -= carrier_key
+			continue
+		var/turf/carrier_turf = get_turf(carrier)
+		var/inside = FALSE
+		for(var/datum/pocket_dimension/dungeon/room as anything in rooms)
+			if(room.contains_turf(carrier_turf))
+				inside = TRUE
+				break
+		if(inside)
+			continue
+		strip_boons_from(carrier)
+		mark_absent(carrier)
+
 /// Ticked from room process_pocket(); collapses an abandoned run.
 /datum/dungeon_run/proc/check_abandonment()
 	if(ending)
 		return
+	validate_presence()
 	if(has_client_occupants())
 		last_seen_occupied = world.time
 		return

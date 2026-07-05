@@ -28,6 +28,9 @@
 	var/key_id = "default"
 	/// Whether the key lock has been opened
 	var/key_unlocked = FALSE
+	/// TRUE once a sibling door was chosen instead - the path is committed,
+	/// this passage never opens again
+	var/forsaken = FALSE
 
 /obj/structure/dungeon_gate/Destroy()
 	owning_run = null
@@ -38,6 +41,9 @@
 
 /obj/structure/dungeon_gate/examine(mob/user)
 	. = ..()
+	if(forsaken)
+		. += span_warning("It has fused into dead stone. The party chose another path - this one is gone forever.")
+		return
 	if(requires_key && !key_unlocked)
 		. += span_warning("It is locked. A key lies somewhere in this room.")
 	if(sealed)
@@ -78,7 +84,69 @@
 
 /obj/structure/dungeon_gate/attack_hand(mob/user, list/modifiers)
 	. = ..()
+	// Players get the full gate panel; anything mindless falls through to nothing.
+	if(user.client)
+		ui_interact(user)
+		return
 	use_gate(user)
+
+/obj/structure/dungeon_gate/ui_state(mob/user)
+	return GLOB.physical_state
+
+/obj/structure/dungeon_gate/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "DungeonGate")
+		ui.open()
+
+/obj/structure/dungeon_gate/ui_data(mob/user)
+	var/list/data = list()
+	data["role"] = gate_role
+	data["sealed"] = sealed
+	data["forsaken"] = forsaken
+	data["locked"] = (requires_key && !key_unlocked)
+	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK) ? null : get_reward_promise_text()
+	data["danger_text"] = (gate_role == DUNGEON_GATE_BACK) ? null : get_path_danger_text()
+	data["hint"] = pre_rolled_template?.gate_hint
+	data["back_available"] = (gate_role == DUNGEON_GATE_BACK) ? (destination_room && !QDELETED(destination_room)) : TRUE
+
+	var/list/missing = list()
+	var/is_leader = FALSE
+	if(owning_run && !QDELETED(owning_run))
+		if(gate_role != DUNGEON_GATE_BACK && !QDELETED(source_room))
+			missing = owning_run.get_muster_missing(source_room)
+		var/datum/party/party = owning_run.get_party()
+		is_leader = !party || party.is_leader(user?.ckey)
+	data["muster_missing"] = missing
+	data["is_leader"] = is_leader
+	return data
+
+/obj/structure/dungeon_gate/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+	. = ..()
+	if(.)
+		return
+	var/mob/living/user = usr
+	if(!isliving(user))
+		return
+	switch(action)
+		if("traverse")
+			ui.close()
+			use_gate(user)
+			return TRUE
+		if("force")
+			if(!owning_run || QDELETED(owning_run) || sealed || forsaken || gate_role == DUNGEON_GATE_BACK)
+				return
+			var/datum/party/party = owning_run.get_party()
+			if(party && !party.is_leader(user.ckey))
+				to_chat(user, span_warning("Only the party leader can force the way open."))
+				return
+			ui.close()
+			if(user.client)
+				user.visible_message(span_notice("[user] begins working the passage open..."), span_notice("I begin working the passage open..."))
+				if(!do_after(user, DUNGEON_GATE_TRAVERSE_TIME, src))
+					return TRUE
+			owning_run.muster_advance(src, user, force = TRUE)
+			return TRUE
 
 /obj/structure/dungeon_gate/attack_animal(mob/user, list/modifiers)
 	use_gate(user)
@@ -104,6 +172,9 @@
 	// Dungeon natives don't get to wander the run.
 	if(!user.mind && !user.client)
 		return FALSE
+	if(forsaken)
+		to_chat(user, span_warning("The passage is dead stone. The path was chosen, and it was not this one."))
+		return FALSE
 	if(sealed)
 		to_chat(user, span_warning("The passage is sealed. Whatever guards this room holds it shut."))
 		return FALSE
@@ -113,6 +184,12 @@
 	if(requires_key && !key_unlocked)
 		to_chat(user, span_warning("This passage is locked. It needs a key found within this room."))
 		return FALSE
+	// Working a passage open takes a moment (players only; the harness and any
+	// odd mob paths stay instant).
+	if(user.client)
+		user.visible_message(span_notice("[user] begins working the passage open..."), span_notice("I begin working the passage open..."))
+		if(!do_after(user, DUNGEON_GATE_TRAVERSE_TIME, src))
+			return FALSE
 	if(gate_role == DUNGEON_GATE_BACK)
 		// Backtracking is free: any present member may step back alone.
 		var/datum/pocket_dimension/dungeon/back_room = resolve_destination()

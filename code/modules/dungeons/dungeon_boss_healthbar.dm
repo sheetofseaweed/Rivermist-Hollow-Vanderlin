@@ -42,6 +42,10 @@
 		return
 	owner.cut_overlay(bar)
 	var/ratio = owner.maxHealth > 0 ? clamp(owner.health / owner.maxHealth, 0, 1) : 0
+	// Carbons collapse via crit/shock long before raw health empties - a downed
+	// boss reads as beaten, so empty the bar the moment it drops.
+	if(owner.stat >= UNCONSCIOUS)
+		ratio = 0
 	var/filled = round(ratio * 10)
 	var/bar_str = ""
 	for(var/i in 1 to 10)

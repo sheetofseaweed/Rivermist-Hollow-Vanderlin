@@ -210,6 +210,7 @@
 	. = room.enter_mob(user, get_turf(src), src)
 	if(. && active_run)
 		active_run.mark_present(user)
+		active_run.apply_boons_to(user)
 	return .
 
 /obj/structure/dungeon_entrance/proc/handle_grabbed_entry(mob/living/user, obj/item/grabbing/grab_item)

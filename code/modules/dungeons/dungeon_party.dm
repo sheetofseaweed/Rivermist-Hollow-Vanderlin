@@ -91,6 +91,14 @@
 			continue
 		move_member_through(member, target)
 
+	// The path is chosen: sibling onward passages fuse shut for good. Only the
+	// taken door stays open for backtracking.
+	for(var/obj/structure/dungeon_gate/sibling as anything in source_room.gates)
+		if(sibling == gate || QDELETED(sibling))
+			continue
+		if(sibling.gate_role == DUNGEON_GATE_FORWARD || sibling.gate_role == DUNGEON_GATE_DESCENT)
+			sibling.forsaken = TRUE
+
 	target.touch()
 	source_room.touch()
 	on_room_entered(target, initiator)
@@ -98,16 +106,7 @@
 
 /// TRUE when every present, conscious, connected member is in source_room.
 /datum/dungeon_run/proc/is_mustered(datum/pocket_dimension/dungeon/source_room)
-	for(var/mob/living/member as anything in get_present_members())
-		if(QDELETED(member))
-			continue
-		if(!member.client) // SSD/clientless are carried, not gating
-			continue
-		if(member.stat >= UNCONSCIOUS) // downed are carried, not gating
-			continue
-		if(!source_room.contains_turf(get_turf(member)))
-			return FALSE
-	return TRUE
+	return !length(get_muster_missing(source_room))
 
 /// Moves a single member to a target room's entry turf, dragging pulled cargo.
 /datum/dungeon_run/proc/move_member_through(mob/living/member, datum/pocket_dimension/dungeon/target)
@@ -130,14 +129,24 @@
 		cargo.forceMove(drop_turf)
 	return TRUE
 
-/// Tells the initiator who still needs to gather before the party can advance.
-/datum/dungeon_run/proc/announce_muster_gap(datum/pocket_dimension/dungeon/source_room, mob/living/initiator)
+/// Names of present members who still gate a muster from this room (conscious,
+/// connected, not defeat-knocked-out, and standing somewhere else).
+/datum/dungeon_run/proc/get_muster_missing(datum/pocket_dimension/dungeon/source_room)
 	var/list/missing = list()
+	if(QDELETED(source_room))
+		return missing
 	for(var/mob/living/member as anything in get_present_members())
 		if(QDELETED(member) || !member.client || member.stat >= UNCONSCIOUS)
 			continue
+		if(member.has_status_effect(/datum/status_effect/defeat_knockout))
+			continue // defeated members are carried, not waited on
 		if(!source_room.contains_turf(get_turf(member)))
-			missing += member.real_name || member.name
+			missing += (member.real_name || member.name)
+	return missing
+
+/// Tells the initiator who still needs to gather before the party can advance.
+/datum/dungeon_run/proc/announce_muster_gap(datum/pocket_dimension/dungeon/source_room, mob/living/initiator)
+	var/list/missing = get_muster_missing(source_room)
 	if(length(missing))
 		to_chat(initiator, span_warning("The passage will not open until the party gathers. Still scattered: [english_list(missing)]."))
 	else
@@ -202,6 +211,7 @@
 			continue
 		if(break_room.enter_mob(member, get_turf(src), src))
 			active_run.mark_present(member)
+			active_run.apply_boons_to(member)
 			descended++
 	if(!descended)
 		to_chat(leader, span_warning("No one was close enough to descend."))
@@ -236,7 +246,7 @@
 	var/approvals = 0
 	var/needed = get_join_approvals_needed(length(voters), party)
 	for(var/mob/living/voter as anything in voters)
-		if(DUNGEON_JOIN_APPROVAL_MODE == DUNGEON_JOIN_APPROVAL_LEADER && party && !party.is_leader(voter.ckey))
+		if(join_approval_mode == DUNGEON_JOIN_APPROVAL_LEADER && party && !party.is_leader(voter.ckey))
 			continue
 		var/yes = tgui_alert(voter, "[petitioner.real_name] petitions to join your expedition. Allow it?", "A Petitioner", list("Allow", "Deny"))
 		if(yes == "Allow")
@@ -249,7 +259,7 @@
 		to_chat(petitioner, span_warning("The party turns you away."))
 
 /datum/dungeon_run/proc/get_join_approvals_needed(voter_count, datum/party/party)
-	switch(DUNGEON_JOIN_APPROVAL_MODE)
+	switch(join_approval_mode)
 		if(DUNGEON_JOIN_APPROVAL_MAJORITY)
 			return FLOOR(voter_count / 2, 1) + 1
 		if(DUNGEON_JOIN_APPROVAL_LEADER)
