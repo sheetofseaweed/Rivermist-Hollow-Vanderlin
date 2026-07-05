@@ -7,6 +7,9 @@
 	var/defeat_system_ai_opt_in = FALSE
 	/// Most recent defeat snapshot captured before stabilization/rune routing.
 	var/datum/defeat_snapshot/last_defeat_snapshot
+	/// Multiplier on the KO Only struggle-up timers (content hooks may shorten
+	/// them - e.g. a dungeon boon). 1 = the standard delays.
+	var/defeat_struggle_delay_mult = 1
 
 /mob/living/proc/cache_defeat_preferences_from_prefs(datum/preferences/prefs)
 	if(!prefs)
@@ -609,10 +612,12 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	return TRUE
 
 /// Frees a captive: dump them in the wilds and tear down the captivity state.
+/// Content modules may override the destination (e.g. dungeon larders release
+/// to the run's break room instead of the overworld).
 /mob/living/proc/kidnap_escape_to_wilds(datum/component/kidnap_captivity/captivity)
 	if(!captivity)
 		return FALSE
-	var/turf/destination = get_random_kidnap_wilds_turf()
+	var/turf/destination = get_kidnap_escape_override() || get_random_kidnap_wilds_turf()
 	if(destination)
 		forceMove(destination)
 	captivity.end_captivity()

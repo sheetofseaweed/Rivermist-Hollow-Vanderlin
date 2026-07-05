@@ -22,12 +22,19 @@
 	return (ckey(user.ckey) in party.members)
 
 /datum/dungeon_run/proc/mark_present(mob/living/user)
-	if(user?.ckey)
+	if(!istype(user))
+		return
+	if(user.ckey)
 		present_ckeys |= ckey(user.ckey)
+	// Fall notification + wipe detection (override: re-entry re-marks freely).
+	RegisterSignal(user, COMSIG_LIVING_DEFEATED, PROC_REF(on_member_defeated), override = TRUE)
 
 /datum/dungeon_run/proc/mark_absent(mob/living/user)
-	if(user?.ckey)
+	if(!istype(user))
+		return
+	if(user.ckey)
 		present_ckeys -= ckey(user.ckey)
+	UnregisterSignal(user, COMSIG_LIVING_DEFEATED)
 
 /// Player-controlled or minded mobs currently inside a given room.
 /datum/dungeon_run/proc/get_members_in_room(datum/pocket_dimension/dungeon/room)

@@ -59,6 +59,12 @@
 	var/last_seen_occupied = 0
 	/// Reentrancy guard for teardown
 	var/ending = FALSE
+	/// TRUE when the run ended in a full party wipe (skips mote banking)
+	var/wiped = FALSE
+	/// Armed wipe-grace timer id, null when the party stands
+	var/wipe_timer
+	/// Message rooms use when the run tears down (wipe uses a darker one)
+	var/teardown_message = "The dungeon convulses and spits everything back out!"
 	/// Becomes TRUE once the party progresses past the starting break room
 	var/run_was_meaningful = FALSE
 	/// Snapshot of the founding player's purchased unlock ids (read on start())
@@ -79,6 +85,9 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/Destroy(force)
 	ending = TRUE
 	GLOB.active_dungeon_runs -= src
+	if(wipe_timer)
+		deltimer(wipe_timer)
+		wipe_timer = null
 	var/obj/structure/dungeon_entrance/entrance = get_entrance()
 	var/atom/eject_target = entrance ? get_turf(entrance) : null
 	var/list/doomed = get_all_rooms()
@@ -91,7 +100,8 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		for(var/mob/living/occupant as anything in room.get_occupants())
 			strip_boons_from(occupant)
 	// Bank a share of unspent motes as echoes for present clients on a real run.
-	if(run_was_meaningful && motes > 0)
+	// A full party wipe forfeits everything unbanked - that is the contract.
+	if(run_was_meaningful && motes > 0 && !wiped)
 		var/list/mob/banking_clients = list()
 		for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
 			if(QDELETED(room))
@@ -112,7 +122,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		if(QDELETED(room))
 			continue
 		room.owning_run = null
-		SSpocket_dimensions.delete_instance(room, "The dungeon convulses and spits everything back out!", eject_target)
+		SSpocket_dimensions.delete_instance(room, teardown_message, eject_target)
 	QDEL_LIST(active_boons)
 	active_boons = null
 	boon_carriers = null
@@ -626,11 +636,77 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		strip_boons_from(carrier)
 		mark_absent(carrier)
 
+/// The run's unique kidnap-lair tag (see the larder landmark).
+/datum/dungeon_run/proc/get_larder_tag()
+	return "dungeon_[REF(src)]"
+
+/// The larder tag when a live larder exists somewhere in the run, else null.
+/// Guardians tagged with a dead larder can't haul anyway (no entrance markers),
+/// but null keeps their AI from even trying.
+/datum/dungeon_run/proc/get_live_larder_tag()
+	var/run_tag = get_larder_tag()
+	return length(GLOB.kidnap_entrance_markers[run_tag]) ? run_tag : null
+
+/// One line to every present client in the run.
+/datum/dungeon_run/proc/notify_roster(message, span_proc = "warning")
+	for(var/mob/living/member as anything in get_present_members())
+		if(!member.client)
+			continue
+		switch(span_proc)
+			if("nicegreen")
+				to_chat(member, span_nicegreen(message))
+			if("userdanger")
+				to_chat(member, span_userdanger(message))
+			else
+				to_chat(member, span_warning(message))
+
+/// A present member has been defeat-knocked-out: tell the party, check the wipe.
+/datum/dungeon_run/proc/on_member_defeated(mob/living/source)
+	SIGNAL_HANDLER
+	if(ending)
+		return
+	notify_roster("[source.real_name || source.name] has fallen! Stabilize them, or press on and leave them to the dark.")
+	maybe_arm_wipe()
+
+/// TRUE when every present client member is dead or defeat-knocked-out.
+/// No client members at all is not a wipe - abandonment owns that case.
+/datum/dungeon_run/proc/is_party_wiped()
+	var/any_client = FALSE
+	for(var/mob/living/member as anything in get_present_members())
+		if(!member.client)
+			continue
+		any_client = TRUE
+		if(member.stat != DEAD && !member.has_status_effect(/datum/status_effect/defeat_knockout))
+			return FALSE
+	return any_client
+
+/// Arms the wipe grace when the whole party is down. Anyone recovering before
+/// it expires (revive, struggle-up, rune) grants a reprieve.
+/datum/dungeon_run/proc/maybe_arm_wipe()
+	if(ending || wipe_timer)
+		return
+	if(!is_party_wiped())
+		return
+	notify_roster("The whole party is down! The walls begin to grind inward - someone must rise, or the dungeon claims this run.", "userdanger")
+	wipe_timer = addtimer(CALLBACK(src, PROC_REF(resolve_wipe)), DUNGEON_WIPE_GRACE, TIMER_STOPPABLE)
+
+/datum/dungeon_run/proc/resolve_wipe()
+	wipe_timer = null
+	if(ending)
+		return
+	if(!is_party_wiped())
+		notify_roster("The grinding stops. The dungeon, disappointed, lets the run continue.", "nicegreen")
+		return
+	wiped = TRUE
+	teardown_message = "The dungeon closes over the fallen and spits out what is left of them!"
+	qdel(src)
+
 /// Ticked from room process_pocket(); collapses an abandoned run.
 /datum/dungeon_run/proc/check_abandonment()
 	if(ending)
 		return
 	validate_presence()
+	maybe_arm_wipe() // covers deaths and disconnects the defeat signal misses
 	if(has_client_occupants())
 		last_seen_occupied = world.time
 		return

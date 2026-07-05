@@ -105,8 +105,8 @@
 /datum/status_effect/defeat_knockout/proc/arm_struggle_up()
 	if(struggle_offer_timer || struggle_auto_timer || struggle_action)
 		return
-	struggle_offer_timer = addtimer(CALLBACK(src, PROC_REF(offer_struggle_up)), DEFEAT_KO_ONLY_STRUGGLE_DELAY, TIMER_STOPPABLE)
-	struggle_auto_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_ko_only_self_recover)), DEFEAT_KO_ONLY_AUTO_RECOVER, TIMER_STOPPABLE)
+	struggle_offer_timer = addtimer(CALLBACK(src, PROC_REF(offer_struggle_up)), DEFEAT_KO_ONLY_STRUGGLE_DELAY * owner.defeat_struggle_delay_mult, TIMER_STOPPABLE)
+	struggle_auto_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_ko_only_self_recover)), DEFEAT_KO_ONLY_AUTO_RECOVER * owner.defeat_struggle_delay_mult, TIMER_STOPPABLE)
 
 /datum/status_effect/defeat_knockout/proc/offer_struggle_up()
 	struggle_offer_timer = null

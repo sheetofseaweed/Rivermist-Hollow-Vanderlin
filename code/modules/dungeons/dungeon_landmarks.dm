@@ -102,6 +102,12 @@
 	name = "dungeon shrine marker"
 	var/shrine_type = /obj/structure/dungeon_shrine
 
+/// Marks where a run builds its larder: the in-dungeon lair that native captors
+/// haul horny-defeated victims to. Becomes a real kidnap entrance (run-tagged)
+/// plus an adjacent escape tile at room setup.
+/obj/effect/landmark/dungeon/larder
+	name = "dungeon larder marker"
+
 /obj/effect/landmark/dungeon/gate/treasure
 	name = "dungeon treasure gate marker"
 	path_type = DUNGEON_PATH_TREASURE

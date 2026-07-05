@@ -61,6 +61,21 @@
 		member.adjustBruteLoss(-round(10 * magnitude))
 		member.adjustFireLoss(-round(10 * magnitude))
 
+/datum/dungeon_boon/stubborn_heart
+	name = "Stubborn Heart"
+	desc = "You refuse to stay down. (faster self-recovery when defeated)"
+	domains = list("life")
+
+/datum/dungeon_boon/stubborn_heart/apply(datum/dungeon_run/run, mob/living/target)
+	if(!istype(target))
+		return
+	target.defeat_struggle_delay_mult = 1 / (1 + magnitude)
+
+/datum/dungeon_boon/stubborn_heart/remove(datum/dungeon_run/run, mob/living/target)
+	if(!istype(target))
+		return
+	target.defeat_struggle_delay_mult = 1
+
 // -- Luck --
 
 /datum/dungeon_boon/fortune

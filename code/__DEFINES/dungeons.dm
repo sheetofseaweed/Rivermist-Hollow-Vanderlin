@@ -91,6 +91,8 @@
 #define FACTION_DUNGEON "dungeon"
 /// Channel time to work a dungeon gate open (players only)
 #define DUNGEON_GATE_TRAVERSE_TIME (2 SECONDS)
+/// Grace after a full party wipe before the dungeon ends the run
+#define DUNGEON_WIPE_GRACE (30 SECONDS)
 
 // -- Roguelike Heart: door rewards & stretch deck --
 

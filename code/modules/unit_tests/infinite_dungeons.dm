@@ -808,6 +808,99 @@
 
 	qdel(run)
 
+/datum/unit_test/dungeon_wipe_logic/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	// Clientless members never count toward a wipe (abandonment owns that case).
+	TEST_ASSERT(!run.is_party_wiped(), "A run with only clientless members must never read as wiped.")
+	run.maybe_arm_wipe()
+	TEST_ASSERT_NULL(run.wipe_timer, "The wipe grace must not arm without a wiped client party.")
+
+	// A knocked-out member doesn't gate the muster.
+	delver.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(delver.has_status_effect(/datum/status_effect/defeat_knockout), "Knockout should apply to the test delver.")
+	TEST_ASSERT_EQUAL(length(run.get_muster_missing(run.current_break_room)), 0, "Defeated members are carried, never counted as scattered.")
+	delver.remove_status_effect(/datum/status_effect/defeat_knockout)
+
+	// resolve_wipe with a standing party grants the reprieve, not the end.
+	run.resolve_wipe()
+	TEST_ASSERT(!run.wiped, "resolve_wipe must not end a run whose party stands.")
+	TEST_ASSERT(!QDELETED(run), "A reprieved run keeps going.")
+
+	// A wiped run skips banking (flag check on the teardown path).
+	run.motes = 500
+	run.run_was_meaningful = TRUE
+	run.wiped = TRUE
+	qdel(run)
+	TEST_ASSERT_NULL(entrance.active_run, "Wipe teardown should clear the entrance's run.")
+
+/datum/unit_test/dungeon_larder/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	// No larder yet: natives get no lair tag.
+	TEST_ASSERT_NULL(run.get_live_larder_tag(), "A run without a larder must report no live tag.")
+
+	// Build one by hand in the break room and check registration.
+	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
+	var/turf/spot = break_room.get_drop_turf(null)
+	TEST_ASSERT_NOTNULL(spot, "Break room should offer an open turf.")
+	break_room.build_larder(spot)
+	var/run_tag = run.get_larder_tag()
+	TEST_ASSERT(length(GLOB.kidnap_entrance_markers[run_tag]), "The larder should register a run-tagged kidnap entrance.")
+	TEST_ASSERT_EQUAL(run.get_live_larder_tag(), run_tag, "A live larder should surface the run tag for guardians.")
+
+	// A knocked-out victim can be hauled there, and escapes to the break room.
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	victim.mind_initialize()
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(victim.kidnap_to_lair(run_tag), "A knocked-out victim should be haulable to the run larder.")
+	TEST_ASSERT(break_room.contains_turf(get_turf(victim)), "The larder drop should be inside the run.")
+	var/turf/escape_override = victim.get_kidnap_escape_override()
+	TEST_ASSERT_NOTNULL(escape_override, "A captive inside a run should escape to the break room, not the wilds.")
+	TEST_ASSERT(break_room.contains_turf(escape_override), "The escape override must point inside the run's break room.")
+
+	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
+	qdel(run)
+	TEST_ASSERT(!length(GLOB.kidnap_entrance_markers[run_tag]), "Run teardown must deregister the larder markers.")
+
+/datum/unit_test/dungeon_captives_and_stubborn_heart/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
+
+	// Captives trait spawns distress NPCs in the room.
+	var/datum/dungeon_room_trait/captives/trait = new
+	trait.apply_to_room(break_room)
+	var/found_captive = FALSE
+	for(var/turf/room_turf as anything in break_room.affected_turfs)
+		for(var/mob/living/carbon/human/possible in room_turf)
+			if(possible.GetComponent(/datum/component/npc_in_distress))
+				found_captive = TRUE
+				break
+		if(found_captive)
+			break
+	TEST_ASSERT(found_captive, "The Captives trait should spawn a distress NPC in the room.")
+	qdel(trait)
+
+	// Stubborn Heart halves the struggle timers and strips clean.
+	TEST_ASSERT_EQUAL(delver.defeat_struggle_delay_mult, 1, "Baseline struggle multiplier should be 1.")
+	var/datum/dungeon_boon/stubborn_heart/boon = new
+	run.add_boon(boon)
+	TEST_ASSERT_EQUAL(delver.defeat_struggle_delay_mult, 0.5, "Stubborn Heart at common magnitude should halve the struggle delays.")
+	qdel(run)
+	TEST_ASSERT_EQUAL(delver.defeat_struggle_delay_mult, 1, "Run teardown should restore the struggle multiplier (sandbox).")
+
 /datum/unit_test/dungeon_boon_no_restack/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
 	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)

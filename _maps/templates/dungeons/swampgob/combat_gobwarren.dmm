@@ -43,6 +43,11 @@
 /obj/structure/fluff/nest,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
+"P" = (
+/obj/effect/landmark/dungeon/larder,
+/obj/structure/fluff/nest,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
 "k" = (
 /obj/structure/fluff/walldeco/skullspike,
 /turf/open/floor/dirt,
@@ -69,7 +74,7 @@ a
 "}
 (2,1,1) = {"
 a
-n
+P
 b
 G
 b

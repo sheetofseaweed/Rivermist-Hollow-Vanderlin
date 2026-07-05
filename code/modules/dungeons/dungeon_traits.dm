@@ -94,6 +94,42 @@
 		guardian.maxHealth = round(max(1, guardian.maxHealth * 0.6))
 		guardian.health = guardian.maxHealth
 
+/datum/dungeon_room_trait/captives
+	name = "Captives"
+	desc = "Someone is chained up in here."
+	announce = "A muffled voice pleads from somewhere in the room - captives!"
+	weight = 6
+
+/datum/dungeon_room_trait/captives/apply_to_room(datum/pocket_dimension/dungeon/room)
+	var/list/turf/open = room.get_open_dungeon_turfs()
+	var/count = rand(1, 2)
+	for(var/i in 1 to count)
+		if(!length(open))
+			break
+		var/turf/spot = pick(open)
+		open -= spot
+		var/mob/living/carbon/human/captive = new(spot)
+		captive.name = "bound captive"
+		captive.real_name = captive.name
+		captive.AddComponent(/datum/component/npc_in_distress/dungeon)
+
+/// Distress captive found inside a dungeon: the stock coin reward plus a mote
+/// bonus paid to the run that freed them.
+/datum/component/npc_in_distress/dungeon
+
+/datum/component/npc_in_distress/dungeon/complete_rescue(mob/living/rescuer)
+	. = ..()
+	var/turf/here = get_turf(parent)
+	if(!here)
+		return
+	for(var/datum/dungeon_run/run as anything in get_active_dungeon_runs())
+		if(run.ending)
+			continue
+		for(var/datum/pocket_dimension/dungeon/room as anything in run.get_all_rooms())
+			if(room.contains_turf(here))
+				run.award_motes(15 + (run.floor - 1) * 5, parent)
+				return
+
 GLOBAL_LIST_EMPTY(dungeon_room_trait_singletons)
 
 /proc/build_dungeon_room_trait_singletons()

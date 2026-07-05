@@ -52,6 +52,10 @@
 	keyholder_drops = null
 	current_trait = null // shared singleton - never qdel
 	loot_caches = null
+	for(var/atom/movable/native as anything in native_movables)
+		if(QDELETED(native) || ismob(native))
+			continue
+		qdel(native)
 	QDEL_LIST(gates)
 	gate_landmark_info = null
 	shrine_turfs = null
@@ -105,6 +109,7 @@
 	var/list/mobs_to_register = list()
 	var/list/forced_elites = list()
 	var/list/shrine_landmark_turfs = list()
+	var/list/larder_turfs = list()
 	var/want_scatter = FALSE
 	var/scatter_density_override = 0
 	var/scatter_marker_style = null
@@ -149,11 +154,20 @@
 				scatter_marker_style = encounter_marker.style_filter
 			qdel(encounter_marker)
 
+		for(var/obj/effect/landmark/dungeon/larder/larder_marker in current_turf)
+			larder_turfs += current_turf
+			qdel(larder_marker)
+
 		// Hostile mobs mapped directly into the .dmm count as guardians too.
 		for(var/mob/living/simple_animal/hostile/mapped_mob in current_turf)
 			mobs_to_register |= mapped_mob
 
 	shrine_turfs = shrine_landmark_turfs
+
+	// Build the larder before guardians register, so natives can be tagged to it.
+	if(length(larder_turfs) && owning_run)
+		for(var/turf/larder_turf as anything in larder_turfs)
+			build_larder(larder_turf)
 
 	// Let a room trait reshape the plan (sets scatter_style_override / scatter_count_bonus).
 	roll_room_trait()
@@ -214,6 +228,38 @@
 	native_movables[cache] = TRUE
 	return cache
 
+/mob/living/proc/get_kidnap_escape_override()
+	var/turf/here = get_turf(src)
+	if(!here)
+		return null
+	for(var/datum/dungeon_run/run as anything in get_active_dungeon_runs())
+		if(run.ending || QDELETED(run.current_break_room))
+			continue
+		for(var/datum/pocket_dimension/dungeon/room as anything in run.get_all_rooms())
+			if(room.contains_turf(here))
+				return run.current_break_room.get_entry_turf()
+	return null
+
+/datum/pocket_dimension/dungeon/proc/build_larder(turf/larder_turf)
+	if(QDELETED(larder_turf) || !owning_run)
+		return
+	var/run_tag = owning_run.get_larder_tag()
+	var/obj/effect/landmark/kidnap/entrance/lair_entrance = new(larder_turf)
+	lair_entrance.lair_tag = run_tag
+	LAZYADDASSOCLIST(GLOB.kidnap_entrance_markers, run_tag, lair_entrance)
+	LAZYREMOVEASSOC(GLOB.kidnap_entrance_markers, "default", lair_entrance)
+	native_movables[lair_entrance] = TRUE
+	// Escape tile beside it, so a released captive can crawl out.
+	for(var/turf/adjacent as anything in RANGE_TURFS(1, larder_turf))
+		if(adjacent == larder_turf || !is_valid_drop_turf(adjacent, null))
+			continue
+		var/obj/effect/landmark/kidnap/escape/lair_escape = new(adjacent)
+		lair_escape.lair_tag = run_tag
+		LAZYADDASSOCLIST(GLOB.kidnap_escape_markers, run_tag, lair_escape)
+		LAZYREMOVEASSOC(GLOB.kidnap_escape_markers, "default", lair_escape)
+		native_movables[lair_escape] = TRUE
+		break
+
 /datum/pocket_dimension/dungeon/proc/get_open_dungeon_turfs()
 	var/list/turf/open = list()
 	for(var/turf/current_turf as anything in affected_turfs)
@@ -272,9 +318,9 @@
 	// One shared faction so goblins, bogbugs and wolves never brawl each other.
 	guardian.faction = list(FACTION_DUNGEON)
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
-	// Dungeon natives must not haul defeated players out of the pocket dimension
-	// to some overworld lair. Stripped until runs get their own larder space.
-	guardian.kidnap_lair_tag = null
+	// Dungeon natives haul defeated prey to the run's own larder if one stands;
+	// never to an overworld lair (that would teleport players out of the run).
+	guardian.kidnap_lair_tag = owning_run?.get_live_larder_tag()
 	if(iscarbon(guardian))
 		// Carbons never reach "dead" cleanly in a brawl - pain/shock thresholds drop
 		// them into crit long before health runs out, and their AI flees in pain.
@@ -348,12 +394,19 @@
 		QDEL_NULL(storage)
 
 // Native dungeon mobs die with the dungeon instead of being dumped outside.
+// Captives held in this room's larder are released before the eject moves them.
 /datum/pocket_dimension/dungeon/eject_occupants(message = null, atom/override_destination = null)
+	var/run_tag = owning_run?.get_larder_tag()
 	for(var/mob/occupant as anything in get_occupants())
 		if(QDELETED(occupant))
 			continue
 		if(is_native_dungeon_mob(occupant))
 			qdel(occupant)
+			continue
+		if(run_tag)
+			var/datum/component/kidnap_captivity/captivity = occupant.GetComponent(/datum/component/kidnap_captivity)
+			if(captivity?.lair_tag == run_tag)
+				captivity.end_captivity()
 	return ..()
 
 // Only break rooms (and standalone one-bite dungeons) allow stepping back out.
