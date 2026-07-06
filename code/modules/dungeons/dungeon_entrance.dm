@@ -20,6 +20,10 @@
 	var/dormant_until = 0
 	/// Live infinite run, if entrance_kind is infinite
 	var/datum/dungeon_run/active_run
+	/// Heat dial ranks staged at assembly (assoc dial id -> rank); copied onto
+	/// the next run created here, then cleared. Requires the leader to own the
+	/// Grim Covenant unlock.
+	var/list/pending_heat_ranks = list()
 
 /obj/structure/dungeon_entrance/Destroy()
 	if(active_run)
@@ -184,6 +188,7 @@
 				user_party = carbon_user.current_party
 			new_run.bind_party(user_party) // null is fine (solo)
 			new_run.seed_from_progress(get_dungeon_progress(user.ckey))
+			new_run.heat_ranks = consume_pending_heat(user)
 			if(!new_run.start())
 				qdel(new_run)
 				to_chat(user, span_warning("The depths refuse to take shape. Nothing answers."))
@@ -199,6 +204,18 @@
 			return null
 		instance = SSpocket_dimensions.get_or_create_instance(get_instance_key(), rolled, POCKET_LIFECYCLE_COLLAPSE, DUNGEON_DEFAULT_IDLE_TIMEOUT, src)
 	return instance
+
+/// Hands the staged heat ranks to a new run - only if the initiating player
+/// still owns the covenant (the dials are also gated, this is the backstop).
+/obj/structure/dungeon_entrance/proc/consume_pending_heat(mob/living/initiator)
+	var/list/staged = pending_heat_ranks
+	pending_heat_ranks = list()
+	if(!length(staged))
+		return list()
+	var/datum/dungeon_progress/progress = initiator?.ckey ? get_dungeon_progress(initiator.ckey) : null
+	if(!progress?.has_unlock("grim_covenant"))
+		return list()
+	return staged
 
 /obj/structure/dungeon_entrance/proc/try_enter(mob/living/user)
 	if(!istype(user))

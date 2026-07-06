@@ -164,35 +164,117 @@
 /obj/structure/dungeon_entrance/proc/open_assembly_menu(mob/living/carbon/user)
 	if(!istype(user) || !user.client)
 		return
-	var/datum/party/party = user.current_party
-	if(!party)
-		var/make = tgui_alert(user, "You need a party to mount an expedition. Form one now?", "Assemble Your Party", list("Create Party", "Cancel"))
-		if(make != "Create Party")
-			return
-		party = create_party(user, "[user.real_name]'s Expedition")
-		if(!party)
-			return
-	var/list/roster_lines = list()
-	for(var/member_ckey in party.members)
-		var/mob/living/member = get_mob_by_ckey(member_ckey)
-		var/member_name = member ? (member.real_name || member.name) : member_ckey
-		var/rank = get_player_rank(member_ckey)
-		var/here = (member && member.Adjacent(src)) ? "present" : "away"
-		roster_lines += "[member_name] — [rank] ([here])"
-	var/list/actions = list("Descend (leader)", "Invite someone", "Refresh", "Close")
-	var/header = "Party: [party.party_name]\nLeader: [get_mob_by_ckey(party.party_leader_ckey)]\n\n[roster_lines.Join("\n")]\n\n(Echo ledger appears here once unlocked.)"
-	var/choice = tgui_alert(user, header, "Assemble Your Party", actions)
-	switch(choice)
-		if("Descend (leader)")
+	ui_interact(user)
+
+/obj/structure/dungeon_entrance/ui_state(mob/user)
+	return GLOB.physical_state
+
+/obj/structure/dungeon_entrance/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "DungeonAssembly")
+		ui.open()
+
+/obj/structure/dungeon_entrance/ui_data(mob/user)
+	var/list/data = list()
+	var/datum/party/party = null
+	if(iscarbon(user))
+		var/mob/living/carbon/carbon_user = user
+		party = carbon_user.current_party
+	data["has_party"] = !!party
+	data["party_name"] = party?.party_name
+	data["is_leader"] = party ? party.is_leader(user?.ckey) : FALSE
+	data["run_active"] = !!active_run
+	data["dormant"] = is_dormant()
+
+	var/list/roster = list()
+	var/leader_name
+	if(party)
+		for(var/member_ckey in party.members)
+			var/mob/living/member = get_mob_by_ckey(member_ckey)
+			var/member_name = member ? (member.real_name || member.name) : member_ckey
+			if(party.is_leader(member_ckey))
+				leader_name = member_name
+			roster += list(list(
+				"name" = member_name,
+				"rank" = get_player_rank(member_ckey),
+				"ready" = !!(member && member.Adjacent(src)),
+				"leader" = party.is_leader(member_ckey),
+			))
+	data["leader_name"] = leader_name
+	data["roster"] = roster
+
+	var/datum/dungeon_progress/progress = user?.ckey ? get_dungeon_progress(user.ckey) : null
+	data["echoes"] = progress ? progress.echoes : 0
+
+	var/covenant_owned = !!progress?.has_unlock("grim_covenant")
+	data["covenant_owned"] = covenant_owned
+	data["heat_locked"] = !!active_run
+	var/list/dials = list()
+	var/total_heat = 0
+	if(covenant_owned)
+		for(var/datum/dungeon_heat_dial/dial as anything in get_dungeon_heat_dials())
+			var/rank = pending_heat_ranks[dial.id] || 0
+			total_heat += rank
+			dials += list(list(
+				"id" = dial.id,
+				"name" = dial.name,
+				"desc" = dial.desc,
+				"rank" = rank,
+				"max_rank" = dial.max_rank,
+			))
+	data["dials"] = dials
+	data["total_heat"] = total_heat
+	data["echo_bonus_percent"] = total_heat * DUNGEON_HEAT_ECHO_BONUS * 100
+	return data
+
+/obj/structure/dungeon_entrance/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+	. = ..()
+	if(.)
+		return
+	var/mob/living/carbon/user = usr
+	if(!iscarbon(user))
+		return
+	switch(action)
+		if("create_party")
+			if(user.current_party)
+				return
+			create_party(user, "[user.real_name]'s Expedition")
+			return TRUE
+		if("invite")
+			INVOKE_ASYNC(user, TYPE_VERB_REF(/mob/living/carbon, invite_to_party))
+			return TRUE
+		if("descend")
+			var/datum/party/party = user.current_party
+			if(!party)
+				return
 			if(!party.is_leader(user.ckey))
 				to_chat(user, span_warning("Only the leader may give the order to descend."))
 				return
-			descend_with_party(user, party)
-		if("Invite someone")
-			user.invite_to_party()
-			open_assembly_menu(user)
-		if("Refresh")
-			open_assembly_menu(user)
+			ui.close()
+			INVOKE_ASYNC(src, PROC_REF(descend_with_party), user, party)
+			return TRUE
+		if("set_dial")
+			if(active_run)
+				to_chat(user, span_warning("The pact is sealed for the run already underway."))
+				return
+			var/datum/party/party = user.current_party
+			if(party && !party.is_leader(user.ckey))
+				to_chat(user, span_warning("Only the leader may bargain with the covenant."))
+				return
+			var/datum/dungeon_progress/progress = user.ckey ? get_dungeon_progress(user.ckey) : null
+			if(!progress?.has_unlock("grim_covenant"))
+				return
+			var/dial_id = params["id"]
+			var/rank = clamp(text2num(params["rank"]) || 0, 0, 5)
+			for(var/datum/dungeon_heat_dial/dial as anything in get_dungeon_heat_dials())
+				if(dial.id != dial_id)
+					continue
+				pending_heat_ranks[dial.id] = clamp(rank, 0, dial.max_rank)
+				if(!pending_heat_ranks[dial.id])
+					pending_heat_ranks -= dial.id
+				return TRUE
+			return
 
 /// Starts the run (if needed) and moves every present, adjacent party member in.
 /obj/structure/dungeon_entrance/proc/descend_with_party(mob/living/carbon/leader, datum/party/party)
@@ -203,6 +285,7 @@
 		var/datum/dungeon_run/new_run = new(src, theme_filter)
 		new_run.bind_party(party)
 		new_run.seed_from_progress(get_dungeon_progress(leader.ckey))
+		new_run.heat_ranks = consume_pending_heat(leader)
 		if(!new_run.start())
 			qdel(new_run)
 			to_chat(leader, span_warning("The depths refuse to take shape."))

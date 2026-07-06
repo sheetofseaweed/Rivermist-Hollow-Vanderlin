@@ -27,6 +27,8 @@
 	/// Guards against re-applying on every room entry (additive boons would
 	/// stack) and against double-stripping (additive removes would drain).
 	var/list/boon_carriers = list()
+	/// Open /datum/dungeon_boon_offer sessions (unanswered pick windows)
+	var/list/open_boon_offers = list()
 	/// world.time of the last presence sweep (throttles validate_presence)
 	var/last_presence_validation = 0
 	/// Multiplier on mote drops from boons like Greed
@@ -69,6 +71,14 @@
 	var/run_was_meaningful = FALSE
 	/// Snapshot of the founding player's purchased unlock ids (read on start())
 	var/list/run_unlocks = list()
+	/// Heat dial ranks chosen at assembly (assoc dial id -> rank); immutable once the run exists
+	var/list/heat_ranks = list()
+	/// Cursed rooms still owed from dark bargains; each new combat room pays one down
+	var/cursed_rooms_owed = 0
+	/// Stretch position (1-based) of this stretch's special room, 0 = none
+	var/special_room_position = 0
+	/// DUNGEON_POP_* kind of the special room; null once built
+	var/special_room_kind
 
 GLOBAL_LIST_EMPTY(active_dungeon_runs)
 
@@ -110,7 +120,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 				if(occupant.client && occupant.ckey)
 					banking_clients += occupant
 		if(length(banking_clients))
-			var/share = round((motes * (DUNGEON_ECHO_CONVERSION + echo_conversion_bonus)) / length(banking_clients))
+			var/share = round((motes * get_echo_conversion()) / length(banking_clients))
 			for(var/mob/banker as anything in banking_clients)
 				var/datum/dungeon_progress/progress = get_dungeon_progress(banker.ckey)
 				progress?.add_echoes(share)
@@ -123,6 +133,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 			continue
 		room.owning_run = null
 		SSpocket_dimensions.delete_instance(room, teardown_message, eject_target)
+	QDEL_LIST(open_boon_offers)
 	QDEL_LIST(active_boons)
 	active_boons = null
 	boon_carriers = null
@@ -153,11 +164,11 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/start()
 	floor = 1
 	floor_config = get_dungeon_floor_config(floor)
-	stretch_length = floor_config.stretch_length
+	stretch_length = floor_config.stretch_length + get_heat_rank(DUNGEON_HEAT_FORCED_MARCH)
 	if(run_unlocks["deep_start"])
 		floor = 2
 		floor_config = get_dungeon_floor_config(floor)
-		stretch_length = floor_config.stretch_length
+		stretch_length = floor_config.stretch_length + get_heat_rank(DUNGEON_HEAT_FORCED_MARCH)
 	if(run_unlocks["starting_motes"])
 		motes += 50
 	var/datum/map_template/pocket/dungeon/break_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
@@ -189,10 +200,24 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	stretch_deck += DUNGEON_REWARD_BOON
 	stretch_deck += prob(50) ? DUNGEON_REWARD_VAULT : DUNGEON_REWARD_LOOT
 	var/expected = max(4, stretch_length * 2)
-	var/list/remainder_weights = DUNGEON_DECK_REMAINDER_WEIGHTS
+	var/list/remainder_weights = get_deck_remainder_weights()
 	while(length(stretch_deck) < expected)
 		stretch_deck += pickweight(remainder_weights.Copy())
 	shuffle_inplace(stretch_deck)
+	// One mid-stretch room may be special: never the first door, never the
+	// stretch-capping one.
+	special_room_position = 0
+	special_room_kind = null
+	if(stretch_length >= 3 && prob(DUNGEON_SPECIAL_ROOM_CHANCE))
+		special_room_position = rand(2, stretch_length - 1)
+		special_room_kind = pickweight(list(DUNGEON_POP_TRADER = 40, DUNGEON_POP_MYSTERY = 35, DUNGEON_POP_WAVES = 25))
+
+/// Weighted remainder for deck fills; Sealed Mercy strips HEAL doors entirely.
+/datum/dungeon_run/proc/get_deck_remainder_weights()
+	var/list/weights = DUNGEON_DECK_REMAINDER_WEIGHTS
+	if(get_heat_rank(DUNGEON_HEAT_SEALED_MERCY))
+		weights -= DUNGEON_REWARD_HEAL
+	return weights
 
 /// Draws the next door reward; an exhausted deck re-rolls from the weighted
 /// remainder (no more guarantees, no vaults).
@@ -201,7 +226,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		var/reward = stretch_deck[1]
 		stretch_deck.Cut(1, 2)
 		return reward
-	var/list/remainder_weights = DUNGEON_DECK_REMAINDER_WEIGHTS
+	var/list/remainder_weights = get_deck_remainder_weights()
 	return pickweight(remainder_weights.Copy())
 
 /// Rolls the three gods whose gaze follows this run. Worship in the descending
@@ -333,7 +358,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	if(motes <= 0)
 		to_chat(user, span_warning("There are no motes to bank."))
 		return
-	var/converted = round(motes * (DUNGEON_ECHO_CONVERSION + echo_conversion_bonus))
+	var/converted = round(motes * get_echo_conversion())
 	motes = 0
 	if(converted <= 0)
 		to_chat(user, span_warning("Too few motes to crystallize into an echo."))
@@ -346,7 +371,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 
 /// Creates a dungeon room instance with depth/run wired up BEFORE activate(),
 /// which get_or_create_instance cannot do; mirrors its registration steps.
-/datum/dungeon_run/proc/create_room_instance(datum/map_template/pocket/dungeon/room_template, room_depth, incoming_path = DUNGEON_PATH_COMBAT, promised_reward = DUNGEON_REWARD_MOTES)
+/datum/dungeon_run/proc/create_room_instance(datum/map_template/pocket/dungeon/room_template, room_depth, incoming_path = DUNGEON_PATH_COMBAT, promised_reward = DUNGEON_REWARD_MOTES, population_mode = DUNGEON_POP_COMBAT)
 	var/instance_key = "dungeon_run::[REF(src)]::room[++room_serial]"
 	var/datum/pocket_dimension/dungeon/room = new(room_template, instance_key, SSpocket_dimensions.next_instance_id++, POCKET_LIFECYCLE_COLLAPSE, DUNGEON_DEFAULT_IDLE_TIMEOUT, get_entrance())
 	room.depth = room_depth
@@ -355,6 +380,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	// activation and reads incoming_path_type (elites) and promised_reward (vaults).
 	room.incoming_path_type = incoming_path
 	room.promised_reward = promised_reward
+	room.population_mode = population_mode
 	room.delete_foreign_on_collapse = TRUE // run rooms swallow what's left behind
 	if(!room.activate())
 		qdel(room)
@@ -364,7 +390,10 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 
 /// Builds gates on the turfs recorded from the room's gate landmarks.
 /// predecessor is the room the party came from; back gates lead there.
+/// Forward-gate reward draws are deferred so a special door never consumes a
+/// deck card (its telegraph replaces the promise).
 /datum/dungeon_run/proc/build_room_gates(datum/pocket_dimension/dungeon/room, datum/pocket_dimension/dungeon/predecessor)
+	var/list/obj/structure/dungeon_gate/forward_gates = list()
 	for(var/list/info as anything in room.gate_landmark_info)
 		var/turf/gate_turf = info["turf"]
 		if(QDELETED(gate_turf) || !room.contains_turf(gate_turf))
@@ -382,11 +411,24 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		if(gate.gate_role == DUNGEON_GATE_FORWARD)
 			gate.sealed = !room.cleared
 			gate.pre_rolled_template = roll_path_room_template(room, gate.path_type)
-			gate.reward_type = draw_door_reward()
+			forward_gates += gate
 		else
 			gate.sealed = FALSE
 			gate.destination_room = predecessor
 	room.gate_landmark_info.Cut()
+
+	if(!length(forward_gates))
+		return
+	// One door per stretch may lead somewhere other than a fight. It replaces
+	// its reward promise with a telegraph of what waits beyond; skipping it
+	// forsakes it like any other unchosen door.
+	if(special_room_kind && room.stretch_position + 1 == special_room_position)
+		var/obj/structure/dungeon_gate/special_gate = pick(forward_gates)
+		special_gate.special_kind = special_room_kind
+		special_gate.reward_type = null
+		forward_gates -= special_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in forward_gates)
+		gate.reward_type = draw_door_reward()
 
 /// Builds shrines on the turfs recorded from a room's shrine landmarks.
 /datum/dungeon_run/proc/build_room_shrines(datum/pocket_dimension/dungeon/room)
@@ -397,6 +439,17 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		shrine.owning_run = src
 		room.native_movables[shrine] = TRUE
 	room.shrine_turfs.Cut()
+
+/// Grows a dark bargain altar on an open turf. Returns the altar (tests force it).
+/datum/dungeon_run/proc/spawn_bargain_altar(datum/pocket_dimension/dungeon/room)
+	var/list/turf/open = room.get_open_dungeon_turfs()
+	if(!length(open))
+		return null
+	var/obj/structure/dungeon_bargain_altar/altar = new(pick(open))
+	altar.owning_run = src
+	altar.build_offers()
+	room.native_movables[altar] = TRUE
+	return altar
 
 /// Picks a forward room template biased by the gate's path type. Falls back to
 /// the generic stretch roll (which handles boss/break at stretch end).
@@ -452,7 +505,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/instantiate_room_for_gate(obj/structure/dungeon_gate/gate)
 	if(ending || !gate?.pre_rolled_template || QDELETED(gate.source_room))
 		return null
-	var/datum/pocket_dimension/dungeon/room = create_room_instance(gate.pre_rolled_template, depth + 1, gate.path_type, gate.reward_type)
+	var/datum/pocket_dimension/dungeon/room = create_room_instance(gate.pre_rolled_template, depth + 1, gate.path_type, gate.special_kind ? null : gate.reward_type, gate.special_kind || DUNGEON_POP_COMBAT)
 	if(!room)
 		return null
 	var/new_room_kind = gate.pre_rolled_template.room_kind
@@ -464,6 +517,10 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		remember_template(gate.pre_rolled_template.id)
 	build_room_gates(room, gate.source_room)
 	build_room_shrines(room)
+	if(new_room_kind == DUNGEON_ROOM_BREAK && floor >= DUNGEON_BARGAIN_MIN_FLOOR && prob(DUNGEON_BARGAIN_ALTAR_CHANCE))
+		spawn_bargain_altar(room)
+	if(gate.special_kind)
+		special_room_kind = null // consumed; unchosen siblings are forsaken anyway
 	return room
 
 /// Called by the dungeon instance when its last guardian dies.
@@ -472,10 +529,21 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		return
 	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
 	if(dungeon_template?.room_kind == DUNGEON_ROOM_COMBAT)
-		depth++
-		deliver_door_reward(room)
-		for(var/datum/dungeon_boon/boon as anything in active_boons)
-			boon.on_room_cleared(src, room)
+		switch(room.population_mode)
+			if(DUNGEON_POP_COMBAT)
+				depth++
+				deliver_door_reward(room)
+				var/datum/dungeon_room_trait/cleared_trait = room.current_trait
+				cleared_trait?.on_room_cleared(src, room)
+				for(var/datum/dungeon_boon/boon as anything in active_boons)
+					boon.on_room_cleared(src, room)
+			if(DUNGEON_POP_WAVES)
+				depth++
+				award_motes(DUNGEON_WAVE_PAYOUT_BASE + (floor - 1) * DUNGEON_WAVE_PAYOUT_FLOOR, null)
+				room.spawn_bonus_loot_cache(sealed = FALSE)
+				for(var/datum/dungeon_boon/boon as anything in active_boons)
+					boon.on_room_cleared(src, room)
+			// Trader/mystery rooms are freebies: no depth, no door reward.
 	var/is_boss_room = dungeon_template?.room_kind == DUNGEON_ROOM_BOSS
 	for(var/obj/structure/dungeon_gate/gate as anything in room.gates)
 		if(QDELETED(gate))
@@ -550,6 +618,8 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	mark_present(user)
 	apply_boons_to(user)
 	announce_gaze(user)
+	var/datum/dungeon_room_trait/room_trait = room.current_trait
+	room_trait?.on_mob_entered(room, user)
 	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
 	if(!dungeon_template)
 		return
@@ -566,7 +636,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	run_was_meaningful = TRUE
 	floor++
 	floor_config = get_dungeon_floor_config(floor)
-	stretch_length = floor_config.stretch_length
+	stretch_length = floor_config.stretch_length + get_heat_rank(DUNGEON_HEAT_FORCED_MARCH)
 	stretches_completed_this_floor = -1 // advance_to_break_room below counts it back to 0
 	// Reaching a descent room is also a break-room moment: despawn the old floor.
 	advance_to_break_room(new_floor_room)
@@ -688,7 +758,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	if(!is_party_wiped())
 		return
 	notify_roster("The whole party is down! The walls begin to grind inward - someone must rise, or the dungeon claims this run.", "userdanger")
-	wipe_timer = addtimer(CALLBACK(src, PROC_REF(resolve_wipe)), DUNGEON_WIPE_GRACE, TIMER_STOPPABLE)
+	wipe_timer = addtimer(CALLBACK(src, PROC_REF(resolve_wipe)), get_wipe_grace(), TIMER_STOPPABLE)
 
 /datum/dungeon_run/proc/resolve_wipe()
 	wipe_timer = null

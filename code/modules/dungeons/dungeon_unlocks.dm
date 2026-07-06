@@ -30,6 +30,12 @@
 	desc = "Begin runs on floor 2 (harder, richer)."
 	echo_cost = 250
 
+/datum/dungeon_unlock/grim_covenant
+	id = "grim_covenant"
+	name = "The Grim Covenant"
+	desc = "Unseals the heat dials at assembly: harsher runs, richer echoes."
+	echo_cost = DUNGEON_COVENANT_COST
+
 /proc/get_dungeon_unlock_catalogue()
 	var/list/catalogue = list()
 	for(var/unlock_type in subtypesof(/datum/dungeon_unlock))

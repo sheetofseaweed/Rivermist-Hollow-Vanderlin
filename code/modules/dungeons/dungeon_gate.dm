@@ -31,6 +31,9 @@
 	/// TRUE once a sibling door was chosen instead - the path is committed,
 	/// this passage never opens again
 	var/forsaken = FALSE
+	/// DUNGEON_POP_* - set when this door leads to a special (non-combat) room;
+	/// replaces the reward promise with a telegraph of what waits beyond
+	var/special_kind
 
 /obj/structure/dungeon_gate/Destroy()
 	owning_run = null
@@ -54,8 +57,11 @@
 		. += span_notice("A stairway plunges deeper. The air below is colder, hungrier.")
 	else if(pre_rolled_template)
 		. += span_notice(pre_rolled_template.gate_hint)
-		. += span_notice(get_reward_promise_text())
-		. += span_notice("Danger: [get_path_danger_text()].")
+		if(special_kind)
+			. += span_boldnotice(get_special_kind_text())
+		else
+			. += span_notice(get_reward_promise_text())
+			. += span_notice("Danger: [get_path_danger_text()].")
 
 /obj/structure/dungeon_gate/proc/get_reward_promise_text()
 	switch(reward_type)
@@ -81,6 +87,16 @@
 			return "very high"
 	return "moderate"
 
+/obj/structure/dungeon_gate/proc/get_special_kind_text()
+	switch(special_kind)
+		if(DUNGEON_POP_TRADER)
+			return "A haggling voice drifts through the stone."
+		if(DUNGEON_POP_MYSTERY)
+			return "A strange, watchful stillness waits beyond."
+		if(DUNGEON_POP_WAVES)
+			return "War-drums beat somewhere past this arch."
+	return null
+
 
 /obj/structure/dungeon_gate/attack_hand(mob/user, list/modifiers)
 	. = ..()
@@ -105,8 +121,9 @@
 	data["sealed"] = sealed
 	data["forsaken"] = forsaken
 	data["locked"] = (requires_key && !key_unlocked)
-	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK) ? null : get_reward_promise_text()
+	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK || special_kind) ? null : get_reward_promise_text()
 	data["danger_text"] = (gate_role == DUNGEON_GATE_BACK) ? null : get_path_danger_text()
+	data["special_text"] = special_kind ? get_special_kind_text() : null
 	data["hint"] = pre_rolled_template?.gate_hint
 	data["back_available"] = (gate_role == DUNGEON_GATE_BACK) ? (destination_room && !QDELETED(destination_room)) : TRUE
 
@@ -233,6 +250,8 @@
 			dragged |= grab_item.grabbed
 
 	user.forceMove(entry_turf)
+	if(source_room && !QDELETED(source_room) && source_room.current_trait)
+		source_room.current_trait.on_mob_exited(source_room, user)
 	for(var/atom/movable/cargo as anything in dragged)
 		var/turf/drop_turf = target_room.get_drop_turf(cargo) || entry_turf
 		cargo.forceMove(drop_turf)

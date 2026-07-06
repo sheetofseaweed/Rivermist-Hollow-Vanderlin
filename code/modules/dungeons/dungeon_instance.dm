@@ -41,6 +41,16 @@
 	/// Turfs where shrines should be built (break rooms)
 	var/list/shrine_turfs = list()
 	var/contents_setup_done = FALSE
+	/// DUNGEON_POP_* - what populates this room (set before activate())
+	var/population_mode = DUNGEON_POP_COMBAT
+	/// Wave-challenge rooms: waves left after the current one
+	var/pending_waves = 0
+	/// Current wave number (1-based)
+	var/wave_number = 0
+	/// Baseline scatter count, reused for wave escalation
+	var/wave_count_base = 0
+	/// Style filter carried across waves
+	var/wave_style
 
 /datum/pocket_dimension/dungeon/Destroy(force)
 	var/obj/structure/dungeon_entrance/entrance = get_pocket_holder()
@@ -83,10 +93,20 @@
 
 /// Rolls a room trait (50%) and lets it reshape the plan before scatter.
 /datum/pocket_dimension/dungeon/proc/roll_room_trait()
+	if(population_mode != DUNGEON_POP_COMBAT)
+		return // special rooms carry no traits (and pay no curse debt)
 	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
 	if(!dungeon_template)
 		return
-	var/trait_chance = owning_run?.floor_config ? owning_run.floor_config.trait_chance : DUNGEON_ROOM_TRAIT_CHANCE
+	// Dark-bargain debt: owed curses pre-empt the normal roll on combat rooms.
+	if(owning_run?.cursed_rooms_owed > 0 && dungeon_template.room_kind == DUNGEON_ROOM_COMBAT)
+		var/datum/dungeon_room_trait/cursed = get_dungeon_room_trait_singleton(/datum/dungeon_room_trait/cursed)
+		if(cursed)
+			owning_run.cursed_rooms_owed--
+			current_trait = cursed
+			current_trait.modify_plan(src)
+			return
+	var/trait_chance = owning_run ? owning_run.get_trait_chance() : DUNGEON_ROOM_TRAIT_CHANCE
 	if(!prob(trait_chance))
 		return
 	var/list/pool = get_dungeon_room_traits(src, dungeon_template.room_kind)
@@ -105,6 +125,23 @@
 		if(occupant.client && current_trait.announce)
 			to_chat(occupant, span_warning(current_trait.announce))
 
+/// Spawns count floor-pool guardians on random open turfs; returns them unregistered.
+/datum/pocket_dimension/dungeon/proc/scatter_guardians(count, style)
+	var/list/mob/living/spawned = list()
+	if(!owning_run?.floor_config)
+		return spawned
+	var/datum/dungeon_floor_config/cfg = owning_run.floor_config
+	var/list/turf/open = get_open_dungeon_turfs()
+	for(var/i in 1 to count)
+		if(!length(open))
+			break
+		var/turf/spot = pick(open)
+		open -= spot
+		var/datum/dungeon_spawn_entry/entry = pick_floor_spawn_entry(cfg, style, owning_run.get_target_tier())
+		if(entry && ispath(entry.mob_type, /mob/living))
+			spawned += new entry.mob_type(spot)
+	return spawned
+
 /datum/pocket_dimension/dungeon/proc/setup_dungeon_contents()
 	var/list/mobs_to_register = list()
 	var/list/forced_elites = list()
@@ -116,6 +153,9 @@
 
 	for(var/turf/current_turf as anything in affected_turfs)
 		for(var/obj/effect/landmark/dungeon/guardian/guardian_marker in current_turf)
+			if(population_mode == DUNGEON_POP_TRADER || population_mode == DUNGEON_POP_MYSTERY)
+				qdel(guardian_marker) // peaceful rooms spawn no guardians
+				continue
 			var/mob/living/spawned
 			if(istype(guardian_marker, /obj/effect/landmark/dungeon/guardian/boss))
 				spawned = spawn_floor_boss(guardian_marker, current_turf)
@@ -160,6 +200,9 @@
 
 		// Hostile mobs mapped directly into the .dmm count as guardians too.
 		for(var/mob/living/simple_animal/hostile/mapped_mob in current_turf)
+			if(population_mode == DUNGEON_POP_TRADER || population_mode == DUNGEON_POP_MYSTERY)
+				qdel(mapped_mob)
+				continue
 			mobs_to_register |= mapped_mob
 
 	shrine_turfs = shrine_landmark_turfs
@@ -172,25 +215,26 @@
 	// Let a room trait reshape the plan (sets scatter_style_override / scatter_count_bonus).
 	roll_room_trait()
 
+	// Wave rooms always run the scatter director, encounter marker or not -
+	// any combat template can host a wave challenge.
+	if(population_mode == DUNGEON_POP_WAVES)
+		want_scatter = TRUE
+
 	// Scatter random mobs from the floor pool, if this room requested an encounter.
-	if(want_scatter && owning_run?.floor_config)
+	if(want_scatter && owning_run?.floor_config && population_mode != DUNGEON_POP_TRADER && population_mode != DUNGEON_POP_MYSTERY)
 		var/datum/dungeon_floor_config/cfg = owning_run.floor_config
 		var/count = scatter_density_override > 0 ? scatter_density_override : rand(cfg.density_min, cfg.density_max)
 		var/party_size = max(1, length(owning_run.present_ckeys))
 		count = min(count + (party_size - 1) + scatter_count_bonus, cfg.density_max + scatter_count_bonus + 4)
-		var/use_style = scatter_style_override || scatter_marker_style
-		var/list/turf/open = get_open_dungeon_turfs()
-		for(var/i in 1 to count)
-			if(!length(open))
-				break
-			var/turf/spot = pick(open)
-			open -= spot
-			var/datum/dungeon_spawn_entry/entry = pick_floor_spawn_entry(cfg, use_style, owning_run.get_target_tier())
-			if(entry && ispath(entry.mob_type, /mob/living))
-				mobs_to_register += new entry.mob_type(spot)
+		wave_style = scatter_style_override || scatter_marker_style
+		wave_count_base = count
+		mobs_to_register += scatter_guardians(count, wave_style)
+		if(population_mode == DUNGEON_POP_WAVES)
+			pending_waves = DUNGEON_WAVE_COUNT - 1
+			wave_number = 1
 
 	var/datum/dungeon_floor_config/reg_cfg = owning_run?.floor_config
-	var/elite_chance = reg_cfg ? reg_cfg.elite_chance : 0
+	var/elite_chance = reg_cfg ? (reg_cfg.elite_chance + owning_run.get_heat_elite_bonus()) : 0
 	var/enhance_chance = reg_cfg ? reg_cfg.enhance_chance : 0
 	for(var/mob/living/guardian as anything in mobs_to_register)
 		var/is_elite = forced_elites[guardian] || (incoming_path_type == DUNGEON_PATH_ELITE) || prob(elite_chance)
@@ -203,6 +247,11 @@
 		vault_key_id = "vault_[REF(src)]"
 		var/keyholder_ref = pick(guardian_refs)
 		keyholder_drops[keyholder_ref] = vault_key_id
+
+	if(population_mode == DUNGEON_POP_TRADER)
+		spawn_trader_den()
+	else if(population_mode == DUNGEON_POP_MYSTERY)
+		spawn_mystery_event()
 
 	apply_room_trait_effects()
 
@@ -315,6 +364,11 @@
 		var/party_factor = 1 + min(party_size - 1, 4) * 0.4 // +40% hp per extra member, capped at 5
 		guardian.maxHealth = round(guardian.maxHealth * party_factor)
 		guardian.health = guardian.maxHealth
+	// Heat: Hardened Foes inflates every guardian's health.
+	var/heat_hp_mult = owning_run ? owning_run.get_heat_hp_mult() : 1
+	if(heat_hp_mult > 1)
+		guardian.maxHealth = round(guardian.maxHealth * heat_hp_mult)
+		guardian.health = guardian.maxHealth
 	// One shared faction so goblins, bogbugs and wolves never brawl each other.
 	guardian.faction = list(FACTION_DUNGEON)
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
@@ -362,7 +416,32 @@
 	elite_guardian_refs -= source_ref
 	guardian_refs -= source_ref
 	if(!cleared && !length(guardian_refs))
+		if(pending_waves > 0)
+			spawn_next_wave()
+		else
+			on_cleared()
+
+/// Wave rooms hold their clear until every wave has fallen; each wave is one
+/// mob bigger than the last. Spawns synchronously so tests stay deterministic.
+/datum/pocket_dimension/dungeon/proc/spawn_next_wave()
+	if(cleared || pending_waves <= 0)
+		return
+	pending_waves--
+	wave_number++
+	var/list/mob/living/spawned = scatter_guardians(wave_count_base + (wave_number - 1), wave_style)
+	if(!length(spawned))
+		// Nowhere left to spawn (or an empty pool): never softlock the room.
+		pending_waves = 0
 		on_cleared()
+		return
+	var/datum/dungeon_floor_config/reg_cfg = owning_run?.floor_config
+	var/elite_chance = reg_cfg ? (reg_cfg.elite_chance + owning_run.get_heat_elite_bonus()) : 0
+	var/enhance_chance = reg_cfg ? reg_cfg.enhance_chance : 0
+	for(var/mob/living/guardian as anything in spawned)
+		register_guardian(guardian, prob(elite_chance), prob(enhance_chance))
+	for(var/mob/occupant as anything in get_occupants())
+		if(occupant.client)
+			to_chat(occupant, span_userdanger("The dark disgorges another wave!"))
 
 /datum/pocket_dimension/dungeon/proc/on_cleared(silent = FALSE)
 	if(cleared)
@@ -400,6 +479,8 @@
 	for(var/mob/occupant as anything in get_occupants())
 		if(QDELETED(occupant))
 			continue
+		if(current_trait && isliving(occupant))
+			current_trait.on_mob_exited(src, occupant)
 		if(is_native_dungeon_mob(occupant))
 			qdel(occupant)
 			continue
@@ -420,13 +501,17 @@
 
 /datum/pocket_dimension/dungeon/enter_mob(mob/user, turf/new_return_turf, atom/new_return_anchor = null)
 	. = ..()
-	if(. && current_trait?.announce && ismob(user))
-		var/mob/entrant = user
-		if(entrant.client)
-			to_chat(entrant, span_warning(current_trait.announce))
+	if(!. || !current_trait || !ismob(user))
+		return
+	var/mob/entrant = user
+	if(entrant.client && current_trait.announce)
+		to_chat(entrant, span_warning(current_trait.announce))
+	if(isliving(entrant))
+		current_trait.on_mob_entered(src, entrant)
 
 /datum/pocket_dimension/dungeon/exit_mob(mob/user)
 	if(owning_run && isliving(user))
+		current_trait?.on_mob_exited(src, user)
 		owning_run.strip_boons_from(user)
 		owning_run.mark_absent(user)
 	. = ..()

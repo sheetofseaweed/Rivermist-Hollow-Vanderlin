@@ -114,3 +114,49 @@
 #define DUNGEON_BOON_COMMON "common"
 #define DUNGEON_BOON_RARE "rare"
 #define DUNGEON_BOON_EPIC "epic"
+
+// -- Roguelike Tail: heat (The Grim Covenant) --
+
+/// Echo cost of the Grim Covenant unlock (enables heat dials)
+#define DUNGEON_COVENANT_COST 30
+/// Extra echo conversion per total heat rank
+#define DUNGEON_HEAT_ECHO_BONUS 0.05
+/// Wipe grace with Iron Contract engaged
+#define DUNGEON_WIPE_GRACE_IRON (10 SECONDS)
+
+// Heat dial ids
+#define DUNGEON_HEAT_HARDENED "hardened_foes"
+#define DUNGEON_HEAT_ELITES "elite_presence"
+#define DUNGEON_HEAT_CRUEL "cruel_architecture"
+#define DUNGEON_HEAT_FORCED_MARCH "forced_march"
+#define DUNGEON_HEAT_IRON_CONTRACT "iron_contract"
+#define DUNGEON_HEAT_SEALED_MERCY "sealed_mercy"
+
+// -- Roguelike Tail: dark bargains --
+
+/// % chance a floor-2+ break room grows a bargain altar
+#define DUNGEON_BARGAIN_ALTAR_CHANCE 30
+/// Bargain altars appear from this floor onward
+#define DUNGEON_BARGAIN_MIN_FLOOR 2
+/// Fraction of max health the Price of Flesh takes from every roster member
+#define DUNGEON_BARGAIN_FLESH_CUT 0.15
+/// Cursed rooms owed per curse-priced bargain
+#define DUNGEON_BARGAIN_CURSE_ROOMS 2
+/// Cursed-room clear compensation, in multiples of a base guardian mote drop
+#define DUNGEON_CURSED_MOTE_BONUS 3
+
+// -- Roguelike Tail: non-combat rooms --
+
+/// % chance per stretch that one mid-stretch room is special (non-combat)
+#define DUNGEON_SPECIAL_ROOM_CHANCE 40
+/// Waves a wave-challenge room spawns in total
+#define DUNGEON_WAVE_COUNT 3
+/// Wave-challenge clear payout: base + per-floor motes
+#define DUNGEON_WAVE_PAYOUT_BASE 90
+#define DUNGEON_WAVE_PAYOUT_FLOOR 30
+
+// Room population modes (what fills a room besides/instead of a normal fight)
+#define DUNGEON_POP_COMBAT "combat"
+#define DUNGEON_POP_TRADER "trader"
+#define DUNGEON_POP_MYSTERY "mystery"
+#define DUNGEON_POP_WAVES "waves"

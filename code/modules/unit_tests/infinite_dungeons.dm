@@ -802,7 +802,7 @@
 	var/list/datum/dungeon_boon/synergy_cards = build_boon_offer(run, 3)
 	var/datum/dungeon_boon/last_card = synergy_cards[length(synergy_cards)]
 	TEST_ASSERT(istype(last_card, /datum/dungeon_boon/battle_luck), "The synergy should claim the last card slot.")
-	TEST_ASSERT(findtext(last_card.name, "Synergy"), "The synergy card should be labeled.")
+	TEST_ASSERT(findtext(last_card.get_display_name(), "Synergy"), "The synergy card should be labeled.")
 	for(var/datum/dungeon_boon/card as anything in synergy_cards)
 		qdel(card)
 
@@ -999,4 +999,314 @@
 	TEST_ASSERT(run.mote_announce_scheduled, "A flush should be scheduled after the first award.")
 	run.flush_mote_announce()
 	TEST_ASSERT_EQUAL(run.pending_mote_announce, 0, "Flush should clear the buffer.")
+	qdel(run)
+
+/datum/unit_test/dungeon_boon_offer_session/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT_NOTNULL(run, "Run should exist.")
+
+	// Sessions are built directly (test mobs are clientless; offer_boon requires a client).
+	var/list/datum/dungeon_boon/cards = build_boon_offer(run, 3)
+	TEST_ASSERT_EQUAL(length(cards), 3, "Offer should build three cards.")
+	var/datum/dungeon_boon/unpicked_a = cards[1]
+	var/datum/dungeon_boon/picked = cards[2]
+	var/datum/dungeon_boon_offer/offer = new(run, delver, cards)
+	run.open_boon_offers += offer
+
+	TEST_ASSERT(!offer.resolve_pick(0), "Out-of-range pick must be rejected.")
+	TEST_ASSERT(!offer.resolve_pick(4), "Out-of-range pick must be rejected.")
+	TEST_ASSERT(offer.resolve_pick(2), "Valid pick should resolve.")
+	TEST_ASSERT_EQUAL(length(run.active_boons), 1, "Exactly one boon should be active after the pick.")
+	TEST_ASSERT_EQUAL(run.active_boons[1], picked, "The picked card should be the active boon.")
+	TEST_ASSERT(QDELETED(offer), "Resolved session should be deleted.")
+	TEST_ASSERT(QDELETED(unpicked_a), "Unpicked cards should be deleted with the session.")
+	TEST_ASSERT(!QDELETED(picked), "The applied boon must survive the session.")
+	TEST_ASSERT_EQUAL(length(run.open_boon_offers), 0, "Session should deregister from the run.")
+
+	// An unanswered session dies with the run.
+	var/list/datum/dungeon_boon/cards2 = build_boon_offer(run, 3)
+	var/datum/dungeon_boon_offer/hanging = new(run, delver, cards2)
+	run.open_boon_offers += hanging
+	qdel(run)
+	TEST_ASSERT(QDELETED(hanging), "Run teardown should delete open offer sessions.")
+
+/datum/unit_test/dungeon_assembly_ui_data/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	var/list/data = entrance.ui_data(delver)
+	TEST_ASSERT_NOTNULL(data, "Assembly ui_data should return a list.")
+	TEST_ASSERT(!data["has_party"], "Partyless delver should read has_party = FALSE.")
+	TEST_ASSERT(islist(data["roster"]), "Roster should always be a list.")
+	TEST_ASSERT(isnum(data["echoes"]), "Echoes should always be a number.")
+	TEST_ASSERT(!data["run_active"], "No run should be active yet.")
+
+/datum/unit_test/dungeon_heat_dials/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT_NOTNULL(run, "Run should exist.")
+
+	// Zero heat: everything reads baseline.
+	TEST_ASSERT_EQUAL(run.get_total_heat(), 0, "Fresh run should have zero heat.")
+	TEST_ASSERT_EQUAL(run.get_heat_hp_mult(), 1, "Zero heat should not scale guardian health.")
+	TEST_ASSERT_EQUAL(run.get_wipe_grace(), DUNGEON_WIPE_GRACE, "Zero heat should keep the base wipe grace.")
+	TEST_ASSERT_EQUAL(run.get_echo_conversion(), DUNGEON_ECHO_CONVERSION, "Zero heat should keep the base echo conversion.")
+
+	// Crank every dial and re-read each knob.
+	run.heat_ranks = list(
+		DUNGEON_HEAT_HARDENED = 2,
+		DUNGEON_HEAT_ELITES = 2,
+		DUNGEON_HEAT_CRUEL = 2,
+		DUNGEON_HEAT_FORCED_MARCH = 2,
+		DUNGEON_HEAT_IRON_CONTRACT = 1,
+		DUNGEON_HEAT_SEALED_MERCY = 1,
+	)
+	TEST_ASSERT_EQUAL(run.get_total_heat(), 10, "Max heat should total 10.")
+	TEST_ASSERT_EQUAL(run.get_heat_hp_mult(), 1.5, "Hardened Foes 2 should read x1.5 health.")
+	TEST_ASSERT_EQUAL(run.get_heat_elite_bonus(), 20, "Elite Presence 2 should add +20 elite chance.")
+	TEST_ASSERT_EQUAL(run.get_trait_chance(), 100, "Cruel Architecture 2 should force traits to 100%.")
+	TEST_ASSERT_EQUAL(run.get_wipe_grace(), DUNGEON_WIPE_GRACE_IRON, "Iron Contract should shorten the wipe grace.")
+	TEST_ASSERT_EQUAL(run.get_echo_conversion(), DUNGEON_ECHO_CONVERSION + 10 * DUNGEON_HEAT_ECHO_BONUS, "Heat should raise echo conversion.")
+
+	// Forced March lengthens future floors' stretches.
+	run.advance_floor(run.current_break_room)
+	TEST_ASSERT_EQUAL(run.stretch_length, run.floor_config.stretch_length + 2, "Forced March 2 should add two rooms per stretch.")
+
+	// Sealed Mercy strips HEAL from every deck build and fallback draw.
+	run.build_stretch_deck()
+	TEST_ASSERT(!(DUNGEON_REWARD_HEAL in run.stretch_deck), "Sealed Mercy deck must contain no HEAL doors.")
+	for(var/i in 1 to 25)
+		TEST_ASSERT(run.draw_door_reward() != DUNGEON_REWARD_HEAL, "Sealed Mercy fallback draws must never yield HEAL.")
+	qdel(run)
+
+/datum/unit_test/dungeon_heat_gating/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	// Staged heat without the covenant unlock must not survive run creation.
+	entrance.pending_heat_ranks = list(DUNGEON_HEAT_HARDENED = 2)
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	TEST_ASSERT_NOTNULL(run, "Run should exist.")
+	TEST_ASSERT_EQUAL(run.get_total_heat(), 0, "Heat staged without the covenant must be discarded.")
+	TEST_ASSERT_EQUAL(length(entrance.pending_heat_ranks), 0, "Pending heat should be consumed either way.")
+	qdel(run)
+
+/datum/unit_test/dungeon_dark_bargain/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	// Dark boons never surface in normal offers.
+	for(var/i in 1 to 5)
+		var/list/datum/dungeon_boon/choices = get_dungeon_boon_choices(run, 20)
+		for(var/datum/dungeon_boon/choice as anything in choices)
+			TEST_ASSERT(!choice.dark_bargain_only, "Dark boon [choice.type] must never appear in a normal offer.")
+			qdel(choice)
+
+	// The altar builds two priced offers.
+	var/obj/structure/dungeon_bargain_altar/altar = run.spawn_bargain_altar(run.current_break_room)
+	TEST_ASSERT_NOTNULL(altar, "Bargain altar should spawn on a break-room turf.")
+	TEST_ASSERT_EQUAL(length(altar.offers), 2, "Altar should hold two offers.")
+	for(var/list/offer as anything in altar.offers)
+		TEST_ASSERT((offer["price"] in list("flesh", "curse")), "Offer price must be flesh or curse.")
+		var/datum/dungeon_boon/boon = offer["boon"]
+		TEST_ASSERT_EQUAL(boon.rarity, DUNGEON_BOON_EPIC, "Bargain boons are always epic.")
+
+	// Price of Flesh: cuts on apply, restores exactly on run teardown.
+	var/base_max = delver.maxHealth
+	run.add_boon(new /datum/dungeon_boon/dark_price/flesh)
+	var/expected_cut = min(max(1, round(base_max * DUNGEON_BARGAIN_FLESH_CUT)), base_max - 1)
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_max - expected_cut, "Price of Flesh should cut max health.")
+	qdel(run)
+	TEST_ASSERT_EQUAL(delver.maxHealth, base_max, "Run teardown must restore the flesh price exactly.")
+
+/datum/unit_test/dungeon_cursed_debt/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	run.stretch_length = 3
+
+	// Owed curses force the trait despite the test config's trait_chance = 0.
+	run.cursed_rooms_owed = 2
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(forward_gate, "Break room should have a forward gate.")
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer the delver.")
+	var/datum/pocket_dimension/dungeon/combat_room = forward_gate.destination_room
+	TEST_ASSERT_NOTNULL(combat_room, "Combat room should exist.")
+	TEST_ASSERT(istype(combat_room.current_trait, /datum/dungeon_room_trait/cursed), "Owed curse should force the Cursed trait.")
+	TEST_ASSERT_EQUAL(run.cursed_rooms_owed, 1, "Building the cursed room should pay one curse down.")
+
+	// The modifier lifecycle is idempotent both ways.
+	var/datum/dungeon_room_trait/cursed = combat_room.current_trait
+	cursed.on_mob_entered(combat_room, delver)
+	cursed.on_mob_entered(combat_room, delver)
+	cursed.on_mob_exited(combat_room, delver)
+	cursed.on_mob_exited(combat_room, delver)
+
+	// Clearing a cursed room pays compensation.
+	var/motes_before = run.motes
+	for(var/g_ref in combat_room.guardian_refs.Copy())
+		var/datum/weakref/g_wr = combat_room.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		if(g_mob)
+			qdel(g_mob)
+	TEST_ASSERT(combat_room.cleared, "Cursed room should still clear normally.")
+	TEST_ASSERT(run.motes > motes_before, "Breaking a cursed room should pay bonus motes.")
+	qdel(run)
+
+/datum/unit_test/dungeon_special_room_selection/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	// Force the special slot at position 2, then walk one room forward: the
+	// combat room's forward gates (leading to position 2) must carry it.
+	run.special_room_position = 2
+	run.special_room_kind = DUNGEON_POP_TRADER
+	var/obj/structure/dungeon_gate/first_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			first_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(first_gate, "Break room should have a forward gate.")
+	TEST_ASSERT_NULL(first_gate.special_kind, "Position-1 doors must not be special (slot is at 2).")
+	TEST_ASSERT(first_gate.use_gate(delver), "Gate should transfer the delver.")
+	var/datum/pocket_dimension/dungeon/room_one = first_gate.destination_room
+	TEST_ASSERT_NOTNULL(room_one, "First combat room should exist.")
+
+	var/special_gates = 0
+	var/obj/structure/dungeon_gate/special_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in room_one.gates)
+		if(gate.gate_role != DUNGEON_GATE_FORWARD)
+			continue
+		if(gate.special_kind)
+			special_gates++
+			special_gate = gate
+			TEST_ASSERT_NULL(gate.reward_type, "A special door must not carry a deck reward.")
+		else
+			TEST_ASSERT_NOTNULL(gate.reward_type, "Normal doors must still draw rewards.")
+	TEST_ASSERT_EQUAL(special_gates, 1, "Exactly one door to position 2 should be special.")
+
+	// Clear room one, walk the special door: a trader room.
+	for(var/g_ref in room_one.guardian_refs.Copy())
+		var/datum/weakref/g_wr = room_one.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		if(g_mob)
+			qdel(g_mob)
+	TEST_ASSERT(room_one.cleared, "Room one should clear.")
+	var/depth_before = run.depth
+	TEST_ASSERT(special_gate.use_gate(delver), "Special gate should transfer the delver.")
+	var/datum/pocket_dimension/dungeon/trader_room = special_gate.destination_room
+	TEST_ASSERT_NOTNULL(trader_room, "Trader room should exist.")
+	TEST_ASSERT_EQUAL(trader_room.population_mode, DUNGEON_POP_TRADER, "Special room should carry the trader mode.")
+	TEST_ASSERT(trader_room.cleared, "A trader room should start cleared.")
+	TEST_ASSERT_EQUAL(run.depth, depth_before, "Freebie rooms must not advance depth.")
+	TEST_ASSERT_NULL(run.special_room_kind, "The special slot should be consumed on build.")
+	var/found_trader = FALSE
+	for(var/turf/room_turf as anything in trader_room.affected_turfs)
+		if(locate(/obj/structure/dungeon_trader) in room_turf)
+			found_trader = TRUE
+			break
+	TEST_ASSERT(found_trader, "Trader room should contain a peddler stall.")
+	qdel(run)
+
+/datum/unit_test/dungeon_wave_room/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/obj/structure/dungeon_gate/forward_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in run.current_break_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			forward_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(forward_gate, "Break room should have a forward gate.")
+	forward_gate.special_kind = DUNGEON_POP_WAVES
+	forward_gate.reward_type = null
+	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer the delver.")
+	var/datum/pocket_dimension/dungeon/wave_room = forward_gate.destination_room
+	TEST_ASSERT_NOTNULL(wave_room, "Wave room should exist.")
+	TEST_ASSERT_EQUAL(wave_room.population_mode, DUNGEON_POP_WAVES, "Room should carry the waves mode.")
+	TEST_ASSERT(!wave_room.cleared, "Wave room must not start cleared.")
+	TEST_ASSERT(length(wave_room.guardian_refs), "Wave one should have spawned guardians.")
+	TEST_ASSERT_EQUAL(wave_room.pending_waves, DUNGEON_WAVE_COUNT - 1, "Two waves should wait after wave one.")
+
+	// Kill through every wave; the room must hold its clear until the last.
+	var/motes_before = run.motes
+	var/caches_before = length(wave_room.loot_caches)
+	var/safety = 10
+	while(!wave_room.cleared && safety > 0)
+		safety--
+		var/had_guardians = length(wave_room.guardian_refs)
+		TEST_ASSERT(had_guardians, "An uncleared wave room must always have live guardians.")
+		for(var/g_ref in wave_room.guardian_refs.Copy())
+			var/datum/weakref/g_wr = wave_room.guardian_refs[g_ref]
+			var/mob/living/g_mob = g_wr?.resolve()
+			if(g_mob)
+				qdel(g_mob)
+	TEST_ASSERT(wave_room.cleared, "Wave room should clear after the final wave.")
+	TEST_ASSERT_EQUAL(wave_room.pending_waves, 0, "No waves should remain after the clear.")
+	TEST_ASSERT_EQUAL(run.depth, 1, "A finished wave room counts as one depth.")
+	TEST_ASSERT(run.motes > motes_before, "Wave clear should pay a mote bounty.")
+	TEST_ASSERT(length(wave_room.loot_caches) > caches_before, "Wave clear should spawn a loot cache.")
+	qdel(run)
+
+/datum/unit_test/dungeon_mystery_events/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	var/datum/pocket_dimension/dungeon/room = run.current_break_room
+
+	// Every event type places its structure without runtimes.
+	room.spawn_mystery_event(/datum/dungeon_mystery_event/fountain)
+	room.spawn_mystery_event(/datum/dungeon_mystery_event/gamble)
+	room.spawn_mystery_event(/datum/dungeon_mystery_event/trapped_chest)
+	room.spawn_mystery_event(/datum/dungeon_mystery_event/riddle)
+	var/obj/structure/dungeon_mote_fountain/fountain
+	for(var/turf/room_turf as anything in room.affected_turfs)
+		if(!fountain)
+			fountain = locate(/obj/structure/dungeon_mote_fountain) in room_turf
+	TEST_ASSERT_NOTNULL(fountain, "Fountain event should place a fountain.")
+
+	// The fountain pays out once per delver. (The heal is the same adjust call
+	// the shrine's proven Mend uses; motes are the deterministic probe here -
+	// test-dummy carbons don't take bare adjustBruteLoss damage cleanly.)
+	fountain.owning_run = run
+	var/motes_before = run.motes
+	fountain.attack_hand(delver)
+	TEST_ASSERT(run.motes > motes_before, "Fountain should pay motes on the first sip.")
+	var/motes_after_first = run.motes
+	fountain.attack_hand(delver)
+	TEST_ASSERT_EQUAL(run.motes, motes_after_first, "Fountain must refuse a second sip.")
 	qdel(run)

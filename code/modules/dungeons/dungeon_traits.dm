@@ -22,6 +22,21 @@
 /datum/dungeon_room_trait/proc/apply_to_room(datum/pocket_dimension/dungeon/room)
 	return
 
+/// Called when a living player-ish mob enters a room bearing this trait.
+/// MUST be idempotent - entry fires from multiple paths (entrance walk-in,
+/// gate transfer, re-entry).
+/datum/dungeon_room_trait/proc/on_mob_entered(datum/pocket_dimension/dungeon/room, mob/living/target)
+	return
+
+/// Idempotent counterpart to on_mob_entered; also fired as a failsafe when the
+/// room ejects or tears down.
+/datum/dungeon_room_trait/proc/on_mob_exited(datum/pocket_dimension/dungeon/room, mob/living/target)
+	return
+
+/// Called when the run clears a combat room bearing this trait.
+/datum/dungeon_room_trait/proc/on_room_cleared(datum/dungeon_run/run, datum/pocket_dimension/dungeon/room)
+	return
+
 /// Helper: every currently-tracked guardian mob in the room.
 /datum/dungeon_room_trait/proc/get_room_guardians(datum/pocket_dimension/dungeon/room)
 	var/list/mob/living/guardians = list()
@@ -130,6 +145,31 @@
 				run.award_motes(15 + (run.floor - 1) * 5, parent)
 				return
 
+/datum/dungeon_room_trait/cursed
+	name = "Cursed"
+	desc = "A dark power's mark lies on this room."
+	announce = "Cold dread crawls up your spine - this room is cursed."
+	weight = 4
+	min_floor = 3
+
+/datum/dungeon_room_trait/cursed/proc/get_mod_id(datum/pocket_dimension/dungeon/room)
+	return "dungeon_cursed_[REF(room)]"
+
+/datum/dungeon_room_trait/cursed/on_mob_entered(datum/pocket_dimension/dungeon/room, mob/living/target)
+	if(!target.client && !target.mind)
+		return
+	target.set_stat_modifier(get_mod_id(room), list(STAT_ENDURANCE = -2, STAT_FORTUNE = -10))
+
+/datum/dungeon_room_trait/cursed/on_mob_exited(datum/pocket_dimension/dungeon/room, mob/living/target)
+	target.remove_stat_modifier(get_mod_id(room))
+
+/datum/dungeon_room_trait/cursed/on_room_cleared(datum/dungeon_run/run, datum/pocket_dimension/dungeon/room)
+	// Compensation: a cursed room bleeds extra light when broken.
+	run.award_motes(round((DUNGEON_MOTE_GUARDIAN_BASE + (run.floor - 1) * DUNGEON_MOTE_FLOOR_BONUS) * DUNGEON_CURSED_MOTE_BONUS), null)
+	for(var/mob/occupant as anything in room.get_occupants())
+		if(occupant.client)
+			to_chat(occupant, span_nicegreen("The curse breaks, and its hoarded gilt scatters loose!"))
+
 GLOBAL_LIST_EMPTY(dungeon_room_trait_singletons)
 
 /proc/build_dungeon_room_trait_singletons()
@@ -138,6 +178,14 @@ GLOBAL_LIST_EMPTY(dungeon_room_trait_singletons)
 		if(IS_ABSTRACT(trait_type))
 			continue
 		GLOB.dungeon_room_trait_singletons += new trait_type
+
+/proc/get_dungeon_room_trait_singleton(trait_type)
+	if(!length(GLOB.dungeon_room_trait_singletons))
+		build_dungeon_room_trait_singletons()
+	for(var/datum/dungeon_room_trait/trait as anything in GLOB.dungeon_room_trait_singletons)
+		if(trait.type == trait_type)
+			return trait
+	return null
 
 /// Builds a weighted pool of eligible trait singletons for a given room.
 /// Instances are shared — rooms must never qdel them.

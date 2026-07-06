@@ -15,6 +15,7 @@ type Data = {
   locked: 0 | 1;
   reward_text: string | null;
   danger_text: string | null;
+  special_text: string | null;
   hint: string | null;
   back_available: 0 | 1;
   muster_missing: string[];
@@ -36,6 +37,7 @@ export function DungeonGate(props) {
     locked,
     reward_text,
     danger_text,
+    special_text,
     hint,
     back_available,
     muster_missing = [],
@@ -91,6 +93,11 @@ export function DungeonGate(props) {
               )}
               {!isBack && (
                 <LabeledList>
+                  {special_text && (
+                    <LabeledList.Item label="Beyond" color="purple">
+                      {special_text}
+                    </LabeledList.Item>
+                  )}
                   {reward_text && (
                     <LabeledList.Item label="Promise" color="good">
                       {reward_text}
