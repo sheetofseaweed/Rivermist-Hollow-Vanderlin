@@ -1588,6 +1588,7 @@
 #include "code\datums\sex\actions\oral\suck_balls.dm"
 #include "code\datums\sex\actions\oral\suck_nipples.dm"
 #include "code\datums\sex\actions\other\facesitting.dm"
+#include "code\datums\sex\actions\other\foot_tail.dm"
 #include "code\datums\sex\actions\other\frotting.dm"
 #include "code\datums\sex\actions\other\rub_body.dm"
 #include "code\datums\sex\actions\other\spanking.dm"
