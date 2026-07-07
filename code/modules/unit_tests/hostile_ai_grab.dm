@@ -22,6 +22,9 @@
 	focus = TRUE
 #endif
 
+/datum/targetting_datum/basic/unit_test_allow_clientless_horny/can_use_horny_ai_target(mob/living/living_mob, mob/living/carbon/human/human_target)
+	return TRUE
+
 /datum/unit_test/hostile_ai_retargets_to_grabber/Run()
 	var/mob/living/simple_animal/hostile/simple_hostile = allocate(/mob/living/simple_animal/hostile)
 	assert_grab_retarget(simple_hostile, "simple hostile")
@@ -99,3 +102,6 @@
 		/datum/erp_preference/bitflag/horny_mobs = HORNY_MOBS_TAG_MALES,
 		/datum/erp_preference/bitflag/horny_mob_types = HORNY_MOB_TYPE_HUMANOIDS,
 	))
+	var/datum/ai_controller/controller = hostile_mob.ai_controller
+	if(controller)
+		controller.set_blackboard_key(BB_TARGETTING_DATUM, allocate(/datum/targetting_datum/basic/unit_test_allow_clientless_horny))

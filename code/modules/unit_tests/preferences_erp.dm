@@ -98,6 +98,32 @@
 	target.mind = null
 	target_mind.current = null
 
+/datum/unit_test/erp_preferences_clientless_targets_are_not_horny_ai_targets
+#ifdef FOCUS_ERP_PREFERENCES_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/erp_preferences_clientless_targets_are_not_horny_ai_targets/Run()
+	var/turf/test_turf = get_turf(run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/species/goblin/npc/actor = allocate(/mob/living/carbon/human/species/goblin/npc, test_turf)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human, test_turf)
+	actor.gender = MALE
+	target.set_cached_erp_preferences(list(
+		/datum/erp_preference/bitflag/horny_mobs = HORNY_MOBS_TAG_MALES,
+		/datum/erp_preference/bitflag/horny_mob_types = HORNY_MOB_TYPE_HUMANOIDS,
+		/datum/erp_preference/boolean/nonmatching_horny_mobs_are_nonlethal = TRUE,
+	))
+
+	var/datum/targetting_datum/basic/targetting_datum = actor.ai_controller.blackboard[BB_TARGETTING_DATUM]
+	var/datum/targetting_datum/basic/not_friends/pet_targetting_datum = actor.ai_controller.blackboard[BB_PET_TARGETING_DATUM]
+	actor.ai_controller.set_blackboard_key(BB_FRIENDS_LIST, list())
+
+	TEST_ASSERT_NULL(target.client, "Unit test target should be clientless.")
+	TEST_ASSERT(!targetting_datum.is_selected_horny_target(actor, target), "Clientless human targets should not be selected as horny AI targets even when cached prefs match.")
+	TEST_ASSERT(!targetting_datum.can_horny(actor, target), "Clientless human targets should not be valid horny AI targets.")
+	TEST_ASSERT(!targetting_datum.should_use_nonlethal_mob_erp_handling(actor, target), "Clientless human targets should not fall through into nonlethal mob ERP handling.")
+	TEST_ASSERT(pet_targetting_datum.can_attack(actor, target), "Clientless human targets should still be attackable through the normal pet attack targeting datum.")
+
 /datum/unit_test/erp_preferences_mind_transfer_preserves_cached_consent
 #ifdef FOCUS_ERP_PREFERENCES_TEST
 	focus = TRUE

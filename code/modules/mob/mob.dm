@@ -1088,6 +1088,68 @@ GLOBAL_VAR_INIT(mobids, 1)
 	var/list/faction2use = target.faction.Copy()
 	faction2use += target.name
 	return faction_check(faction, faction2use, FALSE)
+
+/mob/living/proc/ai_targeting_ally_check(mob/living/target)
+	if(!target)
+		return FALSE
+	if(faction_check_mob(target, exact_match = FALSE))
+		return TRUE
+	if(ai_targeting_related_faction_check(target))
+		return TRUE
+	if(ai_targeting_same_job_group(target))
+		return TRUE
+	if(ai_targeting_same_family(target))
+		return TRUE
+	return FALSE
+
+/mob/living/proc/ai_targeting_related_faction_check(mob/living/target)
+	if(!target)
+		return FALSE
+	return ai_faction_relation_check(faction, target.faction)
+
+/mob/living/proc/get_ai_targeting_job_group()
+	var/datum/job/role = mind?.assigned_role
+	if(!role)
+		return null
+
+	var/datum/job/group_role = role.parent_job || role
+	if(!group_role.faction || group_role.faction == FACTION_NONE || group_role.faction == FACTION_NEUTRAL)
+		return null
+
+	if(group_role.department_flag)
+		return group_role.department_flag
+
+	return group_role.type
+
+/mob/living/proc/ai_targeting_same_job_group(mob/living/target)
+	if(!target)
+		return FALSE
+	var/source_job_group = get_ai_targeting_job_group()
+	return source_job_group && source_job_group == target.get_ai_targeting_job_group()
+
+/mob/living/proc/ai_targeting_same_family(mob/living/target)
+	if(!ishuman(src) || !ishuman(target))
+		return FALSE
+
+	var/mob/living/carbon/human/source_human = src
+	var/mob/living/carbon/human/target_human = target
+	return source_human.family_datum && source_human.family_datum == target_human.family_datum
+
+/proc/ai_faction_relation_check(list/source_factions, list/target_factions)
+	if(!LAZYLEN(source_factions) || !LAZYLEN(target_factions))
+		return FALSE
+
+	for(var/source_faction in source_factions)
+		var/list/source_allies = GLOB.ai_faction_allies[source_faction]
+		if(LAZYLEN(source_allies) && LAZYLEN(source_allies & target_factions))
+			return TRUE
+
+	for(var/target_faction in target_factions)
+		var/list/target_allies = GLOB.ai_faction_allies[target_faction]
+		if(LAZYLEN(target_allies) && LAZYLEN(target_allies & source_factions))
+			return TRUE
+
+	return FALSE
 /*
  * Compare two lists of factions, returning true if any match
  *

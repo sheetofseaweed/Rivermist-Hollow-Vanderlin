@@ -64,6 +64,7 @@
 // BEGIN_INCLUDE
 #include "ai_combat_flow.dm"
 #include "ai_idle_detection.dm"
+#include "ai_targeting_allegiances.dm"
 #include "alchemy_medicine.dm"
 #include "anchored_mobs.dm"
 #include "armor_damage.dm"
