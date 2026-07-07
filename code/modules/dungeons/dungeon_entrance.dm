@@ -49,7 +49,19 @@
 
 /obj/structure/dungeon_entrance/attack_hand(mob/user, list/modifiers)
 	. = ..()
-	try_enter(user)
+	// Infinite entrances lead with the assembly screen; only mid-run members
+	// drop straight back down. One-shot holes stay touch-to-descend.
+	if(entrance_kind != DUNGEON_ENTRANCE_INFINITE || !iscarbon(user) || !user.client)
+		try_enter(user)
+		return
+	var/mob/living/carbon/carbon_user = user
+	if(active_run)
+		if(active_run.is_party_member(carbon_user))
+			try_enter(carbon_user)
+		else
+			petition_to_join(carbon_user)
+		return
+	open_assembly_menu(carbon_user)
 
 /obj/structure/dungeon_entrance/attack_animal(mob/user, list/modifiers)
 	try_enter(user)
@@ -275,3 +287,5 @@
 	name = "sunken warren mouth"
 	desc = "A root-torn pit breathing marsh-rot and faint goblin chatter. The dark below is wet and it is listening."
 	theme_filter = DUNGEON_THEME_SWAMPGOB
+	icon = 'icons/roguetown/misc/portal.dmi'
+	icon_state = "portal"

@@ -241,6 +241,12 @@
 				return
 			create_party(user, "[user.real_name]'s Expedition")
 			return TRUE
+		if("descend_solo")
+			if(user.current_party)
+				return
+			ui.close()
+			INVOKE_ASYNC(src, PROC_REF(try_enter), user)
+			return TRUE
 		if("invite")
 			INVOKE_ASYNC(user, TYPE_VERB_REF(/mob/living/carbon, invite_to_party))
 			return TRUE

@@ -169,10 +169,21 @@ export function DungeonAssembly(props) {
             ) : (
               <Section fill title="No Party">
                 <Box color="label" mb={1}>
-                  You need a party to mount an expedition.
+                  A party shares its motes, blessings, and fate. Or descend
+                  alone — the dark does not insist on company.
                 </Box>
                 <Button fluid icon="users" onClick={() => act('create_party')}>
                   Form an Expedition
+                </Button>
+                <Button
+                  fluid
+                  mt={0.5}
+                  icon="person-walking-arrow-right"
+                  color="average"
+                  disabled={!!dormant}
+                  onClick={() => act('descend_solo')}
+                >
+                  Descend Alone
                 </Button>
               </Section>
             )}

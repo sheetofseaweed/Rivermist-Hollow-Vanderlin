@@ -83,11 +83,14 @@
 		contents_setup_done = TRUE
 		setup_dungeon_contents()
 
-// Combat rooms in a run must not get the automatic fallback exit seam -
-// the only way out of a stretch is forward or back through gates.
+// Combat rooms in a run must not get an exit seam at all - not the automatic
+// fallback, and not a mapped one either (a seam that only answers "the
+// dungeon's grip is too strong" is a trap for the player). The only way out
+// of a stretch is forward or back through gates. Standalone one-bite dungeons
+// keep their mapped exits.
 /datum/pocket_dimension/dungeon/create_exit_object(obj/effect/landmark/pocket_dimension/exit/exit_marker, turf/current_turf)
 	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
-	if(!exit_marker && dungeon_template?.room_kind == DUNGEON_ROOM_COMBAT)
+	if(dungeon_template?.room_kind == DUNGEON_ROOM_COMBAT && (!exit_marker || owning_run))
 		return null
 	return ..()
 
