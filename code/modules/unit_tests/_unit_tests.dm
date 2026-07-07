@@ -72,6 +72,7 @@
 #include "blueprint_mode.dm"
 #include "body_storage.dm"
 #include "buildmode_search.dm"
+#include "character_menu.dm"
 #include "component_tests.dm"
 #include "connect_loc.dm"
 #include "container_collision.dm"
