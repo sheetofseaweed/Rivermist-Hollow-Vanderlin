@@ -37,6 +37,10 @@
 /datum/targetting_datum/proc/is_selected_horny_target(mob/living/living_mob, atom/target)
 	if(!should_prioritize_horny_targets(living_mob))
 		return FALSE
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		if(!can_use_horny_ai_target(living_mob, human_target))
+			return FALSE
 	return is_horny_pref_target(living_mob, target)
 
 /datum/targetting_datum/proc/can_engage_target(mob/living/living_mob, atom/target)
@@ -66,8 +70,15 @@
 /datum/targetting_datum/proc/has_any_horny_mob_pref_enabled(mob/living/carbon/human/human_target)
 	return !!get_horny_mob_pref_flags(human_target)
 
+/datum/targetting_datum/proc/can_use_horny_ai_target(mob/living/living_mob, mob/living/carbon/human/human_target)
+	if(!living_mob || !human_target)
+		return FALSE
+	return !!human_target.client
+
 /datum/targetting_datum/proc/should_use_nonlethal_mob_erp_handling(mob/living/living_mob, mob/living/carbon/human/human_target)
 	if(!living_mob || !human_target)
+		return FALSE
+	if(!can_use_horny_ai_target(living_mob, human_target))
 		return FALSE
 	if(!should_apply_mob_erp_target_pref(living_mob, human_target))
 		return FALSE
@@ -389,9 +400,11 @@
 	return (((mobs_flags & HORNY_MOBS_TAG_MALES) && living_mob.gender == MALE) || ((mobs_flags & HORNY_MOBS_TAG_FEMALES) && living_mob.gender == FEMALE))
 
 /datum/targetting_datum/basic/proc/faction_check(mob/living/living_mob, mob/living/the_target)
+	if(!living_mob || !the_target)
+		return FALSE
 	if((living_mob in SSmatthios_mobs.matthios_mobs) && (the_target in SSmatthios_mobs.matthios_mobs))
 		return TRUE
-	return living_mob.faction_check_mob(the_target, exact_match = FALSE)
+	return living_mob.ai_targeting_ally_check(the_target)
 
 /// Subtype which doesn't care about faction
 /// Mobs which retaliate but don't otherwise target seek should just attack anything which annoys them

@@ -51,6 +51,7 @@
 	FACTION_ORCS, \
 	FACTION_BUMS, \
 	FACTION_VIKINGS, \
+	FACTION_MINOTAURS, \
 	FACTION_MATTHIOS \
 )
 
@@ -69,6 +70,7 @@
 #define FACTION_BUMS		"Bums"
 #define FACTION_MATTHIOS	"Matthios"
 #define FACTION_VIKINGS     "Vikings"
+#define FACTION_MINOTAURS	"Minotaurs"
 
 #define LORDS			(1<<0)	//For the Vampire Lords and Ladies
 #define KEEP			(1<<1)	//For the Vampire Keep servants and guards
