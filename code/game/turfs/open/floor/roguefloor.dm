@@ -301,6 +301,7 @@
 	smoothing_list = SMOOTH_GROUP_FLOOR_DIRT_ROAD + SMOOTH_GROUP_FLOOR_GRASS + SMOOTH_GROUP_FLOOR_STONE
 	neighborlay = "dirtedge"
 	spread_chance = 1.1
+	max_integrity = 200
 
 	var/muddy = FALSE
 	var/bloodiness = 20
@@ -1059,6 +1060,7 @@
 /turf/open/floor/naturalstone
 	icon = 'icons/turf/natural/stones.dmi'
 	icon_state = "digstone"
+	max_integrity = 500
 	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT

@@ -276,6 +276,8 @@
 #define FLAIL_THRESH		/datum/intent/flailthresh
 #define SHOVEL_IRRIGATE		/datum/intent/irrigate
 #define SHOVEL_SCOOP		/datum/intent/shovelscoop
+#define PICK_TUNNEL_DOWN	/datum/intent/tunneldown
+#define PICK_TUNNEL_UP		/datum/intent/tunnelup
 
 #define ROD_CAST			/datum/intent/cast
 #define ROD_AUTO			/datum/intent/auto
