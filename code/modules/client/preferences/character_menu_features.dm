@@ -77,6 +77,7 @@
 	out += list(list("task" = "right_eye_color", "label" = "Right Eye Color", "kind" = "color", "value" = eyes_entry.right_eye_color))
 	if(allows_heterochromia)
 		out += list(list("task" = "left_eye_color", "label" = "Left Eye Color", "kind" = "color", "value" = eyes_entry.left_eye_color))
+	out += list(list("task" = "eye_glowing", "label" = "Glowing", "kind" = "text", "value" = eyes_entry.eye_glowing ? "Yes" : "No"))
 	return out
 
 /datum/customizer_choice/organ/genitals/penis/character_setup_tgui_extras(datum/preferences/prefs, datum/customizer_entry/entry)

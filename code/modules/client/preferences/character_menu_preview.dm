@@ -189,6 +189,15 @@
 		hover_entry.accessory_type = hover_old_acc
 		hover_entry.accessory_colors = hover_old_colors
 		hover_entry.disabled = hover_old_disabled
+	// Emissive eye glow renders as a flat white blob in the lit portrait; the RMH
+	// user_glowing_pref switch suppresses the emissive overlay at its source.
+	var/suppressed_eye_glow = FALSE
+	for(var/obj/item/organ/eyes/preview_eyes in body.internal_organs)
+		if(preview_eyes.glows && preview_eyes.user_glowing_pref)
+			preview_eyes.user_glowing_pref = FALSE
+			suppressed_eye_glow = TRUE
+	if(suppressed_eye_glow)
+		body.update_body_parts()
 	if(!character_setup_preview_underwear)
 		// Smallclothes are worn items living in inventory slots here, not strings.
 		QDEL_NULL(body.underwear)
@@ -259,6 +268,9 @@
 		for (var/i in 1 to length(process)) { \
 			var/image/current = process[i]; \
 			if (!current) { \
+				continue; \
+			} \
+			if (current.plane == EMISSIVE_PLANE) { \
 				continue; \
 			} \
 			if (current.plane != FLOAT_PLANE && current.plane != appearance.plane) { \
