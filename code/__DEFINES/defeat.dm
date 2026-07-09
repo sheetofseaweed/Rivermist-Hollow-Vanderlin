@@ -53,6 +53,10 @@
 #define DEFEAT_RUNE_SPEND_EMERGENCY "emergency"
 
 #define DEFEAT_DAMAGE_THRESHOLD_DEFAULT 200
+/// Oxygen loss is kept out of the pooled defeat threshold: a fall from a higher z-level dumps a big
+/// oxy spike that would otherwise KO almost instantly, which isn't fun. Instead oxy only puts you down
+/// on its own once it reaches this near-lethal amount (roughly the kill limit).
+#define DEFEAT_OXY_THRESHOLD 100
 #define DEFEAT_SHOCK_WARNING_STAGE SHOCK_STAGE_4
 #define DEFEAT_SHOCK_DEFEAT_STAGE SHOCK_STAGE_6
 #define DEFEAT_SHOCK_HARD_STAGE SHOCK_STAGE_8

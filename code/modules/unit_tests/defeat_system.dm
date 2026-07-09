@@ -130,6 +130,32 @@
 	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Combined damage across pools should trigger defeat even when no single pool hits the threshold.")
 	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.reason, DEFEAT_REASON_DAMAGE, "Total-damage defeat should be recorded as a damage defeat, not death.")
 
+/datum/unit_test/defeat_oxygen_has_separate_threshold
+
+/datum/unit_test/defeat_oxygen_has_separate_threshold/Run()
+	// Oxygen is excluded from the pooled beatdown threshold: a fall's oxy spike alongside minor damage
+	// must not tap you out. Brute 40 + oxy 90 would have summed to 130 >= 100 under the old pooled rule.
+	var/mob/living/carbon/human/faller = allocate(/mob/living/carbon/human)
+	faller.defeat_system_ai_opt_in = TRUE
+	faller.defeat_damage_threshold = 100
+	var/datum/component/defeat_monitor/faller_monitor = faller.AddComponent(/datum/component/defeat_monitor)
+	faller.setBruteLoss(40, FALSE, TRUE)
+	faller.setOxyLoss(90, FALSE, TRUE)
+	faller.updatehealth()
+	faller_monitor.check_defeat_triggers()
+	TEST_ASSERT_NULL(faller.has_status_effect(/datum/status_effect/defeat_knockout), "Oxygen below its own bar must not count toward the pooled threshold, so a survivable fall does not KO.")
+
+	// At the near-lethal oxygen bar it downs you on its own, even though the pooled damage is nowhere near.
+	var/mob/living/carbon/human/suffocator = allocate(/mob/living/carbon/human)
+	suffocator.defeat_system_ai_opt_in = TRUE
+	suffocator.defeat_damage_threshold = 200
+	var/datum/component/defeat_monitor/suffocator_monitor = suffocator.AddComponent(/datum/component/defeat_monitor)
+	suffocator.setOxyLoss(DEFEAT_OXY_THRESHOLD, FALSE, TRUE)
+	suffocator.updatehealth()
+	suffocator_monitor.check_defeat_triggers()
+	TEST_ASSERT_NOTNULL(suffocator.has_status_effect(/datum/status_effect/defeat_knockout), "Oxygen at the kill-limit bar should trigger defeat on its own.")
+	TEST_ASSERT_EQUAL(suffocator.last_defeat_snapshot.reason, DEFEAT_REASON_DEATH, "An oxygen defeat is recorded as a death-class defeat.")
+
 /datum/unit_test/defeat_near_death_covers_blood_loss
 
 /datum/unit_test/defeat_near_death_covers_blood_loss/Run()
@@ -1408,6 +1434,7 @@
 
 	caster.remove_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT(spell.can_cast_spell(FALSE), "Clearing the knockout should restore spellcasting.")
+
 
 
 

@@ -448,7 +448,7 @@
 	if(!owner)
 		CRASH("[type] - can_cast_spell called on a spell without an owner!")
 
-\	if(isliving(owner))
+	if(isliving(owner))
 		var/mob/living/living_owner = owner
 		if(living_owner.has_status_effect(/datum/status_effect/defeat_knockout))
 			if(feedback)
