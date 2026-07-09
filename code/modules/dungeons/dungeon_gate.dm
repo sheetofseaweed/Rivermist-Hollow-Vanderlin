@@ -218,13 +218,11 @@
 	return owning_run.muster_advance(src, user)
 
 /obj/structure/dungeon_gate/attack_hand_secondary(mob/user, list/modifiers)
-	if(gate_role == DUNGEON_GATE_BACK || sealed || !owning_run || QDELETED(owning_run))
-		return ..()
-	var/datum/party/party = owning_run.get_party()
-	if(party && !party.is_leader(user?.ckey))
-		to_chat(user, span_warning("Only the party leader can force the way open."))
-		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
-	owning_run.muster_advance(src, user, force = TRUE)
+	// Right-click no longer force-opens the room instantly - it funnels through
+	// the same panel as left-click. The panel's leader-gated Force button is the
+	// only way to force a march, and it runs the do_after and the muster checks.
+	if(user.client)
+		ui_interact(user)
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/structure/dungeon_gate/proc/resolve_destination()

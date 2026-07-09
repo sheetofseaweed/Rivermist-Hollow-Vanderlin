@@ -74,6 +74,16 @@
 /datum/dungeon_run/proc/muster_advance(obj/structure/dungeon_gate/gate, mob/living/initiator, force = FALSE)
 	if(ending || QDELETED(gate))
 		return FALSE
+	// Anti-branching backstop: this is the single chokepoint every forward/descent
+	// opener funnels through (use_gate, the panel's Traverse/Force, right-click).
+	// Guarding here means no pathway can ever reopen a committed sibling, even
+	// one that skipped use_gate's own forsaken/sealed checks.
+	if(gate.forsaken)
+		to_chat(initiator, span_warning("That passage is dead stone. The path was already chosen, and it was not this one."))
+		return FALSE
+	if(gate.sealed)
+		to_chat(initiator, span_warning("The passage is sealed. Whatever guards this room holds it shut."))
+		return FALSE
 	var/datum/pocket_dimension/dungeon/source_room = gate.source_room
 	if(QDELETED(source_room))
 		return FALSE

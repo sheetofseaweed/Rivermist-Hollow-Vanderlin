@@ -985,6 +985,9 @@
 	TEST_ASSERT_NOTNULL(back_gate, "Combat room should have a back gate.")
 	TEST_ASSERT(back_gate.use_gate(delver), "Backtracking should still work.")
 	TEST_ASSERT(!spurned.use_gate(delver), "A forsaken door must refuse passage.")
+	// Force-advance (the right-click / panel Force path) must also refuse a
+	// forsaken door - muster_advance is the anti-branching backstop.
+	TEST_ASSERT(!run.muster_advance(spurned, delver, force = TRUE), "Force-advancing a forsaken gate must be refused.")
 	// The originally chosen door still re-traverses to its existing room.
 	TEST_ASSERT(chosen.use_gate(delver), "The chosen door should remain re-traversable.")
 
