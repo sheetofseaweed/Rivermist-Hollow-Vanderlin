@@ -14,6 +14,19 @@
 	if(.)
 		M.updatehealth()
 
+/// Instantly knits shut any torn arteries. Used by lifeblood elixirs so even a trace amount fixes arterial bleeding.
+/datum/reagent/medicine/proc/mend_torn_arteries(mob/living/carbon/M)
+	if(!iscarbon(M))
+		return
+	var/mended = FALSE
+	for(var/obj/item/organ/artery/artery in M.getorganslotlist(ORGAN_SLOT_ARTERY))
+		if(artery.damage <= 0)
+			continue
+		artery.heal_bleeding()
+		mended = TRUE
+	if(mended)
+		to_chat(M, span_notice("My torn arteries knit themselves shut as the elixir courses through me."))
+
 /datum/reagent/medicine/healthpot
 	name = "Health Potion"
 	description = "Gradually regenerates all types of damage."
@@ -41,6 +54,7 @@
 	L.remove_chem_effect(CE_STABLE, "[type]")
 
 /datum/reagent/medicine/healthpot/on_mob_life(mob/living/carbon/M, efficiency)
+	mend_torn_arteries(M) //any amount of lifeblood elixir fixes arterial bleeding
 	if(volume >= 60)
 		M.remove_reagent(/datum/reagent/medicine/healthpot, 2) //No overhealing.
 	var/list/wCount = M.get_wounds()
@@ -84,6 +98,7 @@
 	L.remove_chem_effect(CE_BRAIN_REGEN, "[type]")
 
 /datum/reagent/medicine/stronghealth/on_mob_life(mob/living/carbon/M, efficiency)
+	mend_torn_arteries(M) //any amount of lifeblood elixir fixes arterial bleeding
 	if(volume >= 60)
 		M.remove_reagent(/datum/reagent/medicine/stronghealth, 2) //No overhealing.
 	if(M.blood_volume < BLOOD_VOLUME_NORMAL)

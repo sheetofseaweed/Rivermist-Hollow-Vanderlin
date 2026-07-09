@@ -1326,3 +1326,88 @@
 	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_JOURNEYMAN, TRUE)
 	var/mid = medic.defeat_revive_time()
 	TEST_ASSERT(mid > DEFEAT_REVIVE_TIME_MIN && mid < DEFEAT_REVIVE_TIME_MAX, "Middling medicine should land between the extremes.")
+
+/datum/unit_test/defeat_rescue_clears_lethal_conditions
+
+/datum/unit_test/defeat_rescue_clears_lethal_conditions/Run()
+	// A defeat driven by the non-pool lethal conditions (brain-death organ damage + heavy blood loss)
+	// must not leave the victim near-death after a non-rune rescue, or they instantly re-collapse.
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setOrganLoss(ORGAN_SLOT_BRAIN, BRAIN_DAMAGE_DEATH)
+	victim.blood_volume = BLOOD_VOLUME_SURVIVE
+	TEST_ASSERT(victim.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE), "Setup: brain/blood death should enter defeat.")
+	// Stabilization deliberately leaves these two conditions in place while knocked out.
+	TEST_ASSERT_EQUAL(victim.getOrganLoss(ORGAN_SLOT_BRAIN), BRAIN_DAMAGE_DEATH, "Setup: brain damage persists through stabilization.")
+
+	victim.perform_defeat_rescue(null, "unit-test")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "The rescue clears the knockout.")
+	TEST_ASSERT(victim.getOrganLoss(ORGAN_SLOT_BRAIN) < BRAIN_DAMAGE_DEATH, "The rescue clears brain-death organ damage.")
+	TEST_ASSERT(victim.blood_volume > BLOOD_VOLUME_SURVIVE, "The rescue restores blood above the survival floor.")
+	TEST_ASSERT(!victim.defeat_is_near_death(), "A rescued victim is no longer near-death, so it will not instantly re-trigger defeat.")
+
+/datum/unit_test/defeat_admin_heal_clears_ko_and_traumas
+
+/datum/unit_test/defeat_admin_heal_clears_ko_and_traumas/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.apply_status_effect(/datum/status_effect/defeat_knockout)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
+
+	// A clinic/potion full-heal (HEAL_ALL excludes HEAL_ADMIN) must leave the defeat state intact -
+	// traumas are meant to fester through ordinary healing.
+	patient.fully_heal(HEAL_ALL)
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "A non-admin full heal keeps the knockout.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical), "A non-admin full heal keeps physical trauma.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A non-admin full heal keeps grievous wounds.")
+
+	// An admin full-heal is a clean reset: knockout and every trauma are wiped.
+	patient.fully_heal(ADMIN_HEAL_ALL)
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "Admin heal removes the knockout.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical), "Admin heal removes physical trauma.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Admin heal removes grievous wounds.")
+
+/datum/unit_test/defeat_rune_heal_preserves_defeat_state
+
+/datum/unit_test/defeat_rune_heal_preserves_defeat_state/Run()
+	// The rune sets defeat_suppress_heal_cleanup around its own ADMIN_HEAL_ALL revive so it can run its
+	// own teardown (manual KO removal + escalating aftermath trauma). While the flag is up, an admin-flag
+	// heal must NOT auto-wipe the defeat state; with it down, it must.
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.apply_status_effect(/datum/status_effect/defeat_knockout)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical, null, DEFEAT_SEVERITY_NORMAL)
+
+	patient.defeat_suppress_heal_cleanup = TRUE
+	patient.fully_heal(ADMIN_HEAL_ALL)
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "A suppressed admin heal (rune path) keeps the knockout for the rune's own teardown.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical), "A suppressed admin heal keeps the prior trauma so the rune's aftermath can escalate it.")
+
+	patient.defeat_suppress_heal_cleanup = FALSE
+	patient.fully_heal(ADMIN_HEAL_ALL)
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/defeat_knockout), "Once suppression is lifted, an admin heal resets the knockout.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical), "Once suppression is lifted, an admin heal resets traumas.")
+
+// A requirement-free, spellblock-ignoring test spell, so the only thing that can block it in the test
+// below is the defeat knockout itself. Nameless + INVOCATION_NONE, so it is skipped by the spell name
+// and invocation validators.
+/datum/action/cooldown/spell/defeat_ko_cast_test
+	charge_required = FALSE
+	spell_requirements = NONE
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+
+/datum/unit_test/defeat_knockout_blocks_spellcasting
+
+/datum/unit_test/defeat_knockout_blocks_spellcasting/Run()
+	var/mob/living/carbon/human/caster = allocate(/mob/living/carbon/human)
+	var/datum/action/cooldown/spell/defeat_ko_cast_test/spell = allocate(/datum/action/cooldown/spell/defeat_ko_cast_test)
+	spell.Grant(caster)
+	TEST_ASSERT(spell.can_cast_spell(FALSE), "Baseline: a requirement-free spell should be castable before defeat.")
+
+	caster.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(!spell.can_cast_spell(FALSE), "A defeat knockout must block spellcasting, even for a spell that ignores spellblock.")
+
+	caster.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(spell.can_cast_spell(FALSE), "Clearing the knockout should restore spellcasting.")
+
+
+
