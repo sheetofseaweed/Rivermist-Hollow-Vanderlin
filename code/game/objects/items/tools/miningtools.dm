@@ -48,7 +48,7 @@
 				return list("shrink" = 0.3,"sx" = -2,"sy" = -5,"nx" = 4,"ny" = -5,"wx" = 0,"wy" = -5,"ex" = 2,"ey" = -5,"nturn" = 0,"sturn" = 0,"wturn" = 0,"eturn" = 0,"nflip" = 0,"sflip" = 0,"wflip" = 0,"eflip" = 0,"northabove" = 0,"southabove" = 1,"eastabove" = 1,"westabove" = 0)
 
 /proc/is_excavatable_floor(turf/T)
-	return istype(T, /turf/open/floor/naturalstone) || istype(T, /turf/open/floor/dirt)
+	return istype(T, /turf/open/floor/naturalstone) || istype(T, /turf/open/floor/dirt) || istype(T, /turf/open/floor/sand) || istype(T, /turf/open/floor/sandstone)
 
 /obj/item/weapon/pick/attack_atom(atom/attacked_atom, mob/living/user)
 	if(user.used_intent.type == PICK_TUNNEL_DOWN)
@@ -123,12 +123,21 @@
 		return
 	dig_swing(GET_TURF_ABOVE(get_turf(user)), user, UP)
 
+/// Excavation is deliberately slower than wall combat mining: weakest floor is dirt
+/// at 200 integrity, and the strongest realistic swing (drill, mining 6) is 182,
+/// so a healthy floor always takes at least two swings.
+/obj/item/weapon/pick/proc/get_dig_force(mob/living/user)
+	var/mineskill = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/labor/mining)
+	return force * (4 + (mineskill * 0.6)) * pickmult
+
 /obj/item/weapon/pick/proc/dig_swing(turf/victim, mob/living/user, direction)
 	if(!user.check_stamina(15))
 		to_chat(user, span_warning("I'm too tired to swing."))
 		return
+	if(direction == DOWN && victim == get_turf(user) && victim.get_integrity() >= victim.max_integrity)
+		to_chat(user, span_warning("I'm digging out the ground right under my own feet — it will give way beneath me!"))
 	var/mineskill = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/labor/mining)
-	var/swing_force = force * (8 + (mineskill * 1.5)) * pickmult
+	var/swing_force = get_dig_force(user)
 	playsound(victim, pick(list('sound/combat/hits/onrock/onrock (1).ogg', 'sound/combat/hits/onrock/onrock (2).ogg', 'sound/combat/hits/onrock/onrock (3).ogg', 'sound/combat/hits/onrock/onrock (4).ogg')), 100, TRUE)
 	user.adjust_stamina(max(30 - (mineskill * 2), 10))
 	user.adjust_experience(/datum/attribute/skill/labor/mining, GET_MOB_ATTRIBUTE_VALUE(user, STAT_INTELLIGENCE) * 0.2)
@@ -144,7 +153,13 @@
 		else
 			breakthrough_up(victim, user)
 	else
+		var/was_above_half = victim.get_integrity() > (victim.max_integrity / 2)
 		victim.take_damage(swing_force, BRUTE, "blunt", FALSE)
+		var/remaining = victim.get_integrity()
+		if(remaining <= swing_force)
+			to_chat(user, span_notice("It's about to give way!"))
+		else if(was_above_half && remaining <= (victim.max_integrity / 2))
+			to_chat(user, span_notice("I'm about halfway through."))
 
 /obj/item/weapon/pick/proc/breakthrough_down(turf/target, mob/living/user)
 	var/turf/below = GET_TURF_BELOW(target)

@@ -45,6 +45,28 @@
 		TEST_ASSERT(!P.can_dig_up(digger), "can_dig_up must refuse when no turf exists above.")
 	T.ChangeTurf(old_type)
 
+/// Excavation swing force must give multi-swing progression — never one-shot a healthy floor.
+/// Weakest floor is dirt at 200. Max realistic force (drill, skill 6) = 16 * (4 + 3.6) * 1.5 = 182 < 200.
+/datum/unit_test/excavation_swing_force_tuning/Run()
+	var/mob/living/carbon/human/digger = allocate(/mob/living/carbon/human)
+	var/list/picks = list(
+		allocate(/obj/item/weapon/pick),
+		allocate(/obj/item/weapon/pick/copper),
+		allocate(/obj/item/weapon/pick/steel),
+		allocate(/obj/item/weapon/pick/stone),
+		allocate(/obj/item/weapon/pick/drill),
+	)
+	for(var/obj/item/weapon/pick/P as anything in picks)
+		var/swing = P.get_dig_force(digger)
+		TEST_ASSERT(swing > 0, "[P.type] should have a positive dig force.")
+		TEST_ASSERT(swing < 200, "[P.type] dig force ([swing]) at skill 0 must not one-shot a 200-integrity dirt floor.")
+	// Fresh test humans have a small non-zero baseline mining skill, so compute the
+	// expectation from the mob's actual skill — this verifies force/pickmult wiring.
+	var/obj/item/weapon/pick/base_pick = picks[1]
+	var/mineskill = GET_MOB_SKILL_VALUE_OLD(digger, /datum/attribute/skill/labor/mining)
+	var/expected = base_pick.force * (4 + (mineskill * 0.6)) * base_pick.pickmult
+	TEST_ASSERT_EQUAL(base_pick.get_dig_force(digger), expected, "Base iron pick dig force should follow force x (4 + skill x 0.6) x pickmult.")
+
 /// Floor integrity values from the spec.
 /datum/unit_test/excavation_floor_integrity/Run()
 	var/turf/open/floor/naturalstone/stone_path = /turf/open/floor/naturalstone

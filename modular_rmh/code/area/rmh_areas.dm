@@ -339,8 +339,6 @@
 	droning_index_night = DRONING_BASEMENT
 	ambient_index = AMBIENCE_DUNGEON
 	ambient_index_night = AMBIENCE_DUNGEON
-	//spookysounds = SPOOKY_DUNGEON
-	//spookynight = SPOOKY_DUNGEON
 	background_track = 'sound/music/area/catacombs.ogg'
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
@@ -356,8 +354,6 @@
 	droning_index_night = DRONING_BASEMENT
 	ambient_index = AMBIENCE_DUNGEON
 	ambient_index_night = AMBIENCE_DUNGEON
-	//spookysounds = SPOOKY_DUNGEON
-	//spookynight = SPOOKY_DUNGEON
 	background_track = 'sound/music/area/catacombs.ogg'
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
@@ -417,7 +413,6 @@
 	//ambientrain = RAIN_SEWER
 	soundenv = 21
 	converted_type = /area/outdoors/exposed/under/rmh/sewer
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/sewer
 	name = "Rivermist Hollow Sewers"
@@ -433,7 +428,6 @@
 	//ambientrain = RAIN_SEWER
 	soundenv = 21
 	converted_type = /area/outdoors/exposed/under/rmh/sewer
-	ceiling_protected = TRUE
 
 /area/outdoors/exposed/under/rmh/sewer
 	name = "Rivermist Hollow Sewers"
@@ -800,7 +794,6 @@
 	background_track = 'sound/music/area/dungeon2.ogg'
 	background_track_dusk = 'sound/music/area/dungeon2.ogg'
 	background_track_night = 'sound/music/area/dungeon2.ogg'
-	ceiling_protected = TRUE
 
 /area/under/rmh_dungeon/jergal
 	name = "jergal dungeon"
@@ -827,7 +820,6 @@
 	background_track = 'sound/music/area/dungeon2.ogg'
 	background_track_dusk = 'sound/music/area/dungeon2.ogg'
 	background_track_night = 'sound/music/area/dungeon2.ogg'
-	ceiling_protected = TRUE
 
 /area/under/rmh_dungeon/catacombs_town
 	name = "town's catacombs"
@@ -836,7 +828,6 @@
 	background_track = 'sound/music/area/dungeon2.ogg'
 	background_track_dusk = 'sound/music/area/dungeon2.ogg'
 	background_track_night = 'sound/music/area/dungeon2.ogg'
-	ceiling_protected = TRUE
 
 // - - - - - -
 //CAVES
@@ -864,19 +855,15 @@
 	first_time_text = "ABANDONED MINES"
 	icon = 'modular_rmh/icons/turf/areas.dmi'
 	icon_state = "mine"
-	//deathsight_message = "a dark mine"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/to_underdark
 	name = "UNDERDARK DESCENT"
 	first_time_text = "UNDERDARK DESCENT"
 	icon_state = "underworld"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/safezone
 	name = "Safe zone - Mine"
 	first_time_text = "CALM PLACE"
-	ceiling_protected = TRUE
 	background_track_dawn = 'modular_rmh/sound/music/area/safe_zone_mines.ogg'
 	background_track = 'modular_rmh/sound/music/area/safe_zone_mines.ogg'
 	background_track_dusk = 'modular_rmh/sound/music/area/safe_zone_mines.ogg'
@@ -913,32 +900,26 @@
 /area/indoors/cave/rmh_cave/west
 	name = "Western Caves"
 	first_time_text = "Western Caves"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/east
 	name = "Eastern Caves"
 	first_time_text = "Eastern Caves"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/central
 	name = "Central Caves"
 	first_time_text = "Central Caves"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/northern
 	name = "Northern Caves"
 	first_time_text = "Northern Caves"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/southern
 	name = "Southern Caves"
 	first_time_text = "Southern Caves"
-	ceiling_protected = TRUE
 
 /area/indoors/cave/rmh_cave/southern
 	name = "Southern Caves"
 	first_time_text = "Southern Caves"
-	ceiling_protected = TRUE
 	ambush_times = null
 	ambush_types = null
 	ambush_mobs = null
@@ -946,7 +927,6 @@
 /area/indoors/cave/rmh_cave/cave_druid
 	name = "Druid's Caves"
 	first_time_text = "Druid's Caves"
-	ceiling_protected = TRUE
 	ambush_times = null
 	ambush_types = null
 	ambush_mobs = null
@@ -954,7 +934,6 @@
 /area/indoors/cave/rmh_cave/cave_leshiy
 	name = "Warrior's Caves"
 	first_time_text = "Hidden Cave"
-	ceiling_protected = TRUE
 	ambush_times = null
 	ambush_types = null
 	ambush_mobs = null
@@ -976,7 +955,6 @@
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
 	converted_type = /area/outdoors/exposed/rmh/under/basement
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/mages
 	name = "mage's basement"
@@ -989,7 +967,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/tavern
 	name = "tavern's basement"
@@ -1002,7 +979,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/merchant
 	name = "shop's basement"
@@ -1015,7 +991,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/bank
 	name = "banks's basement"
@@ -1028,7 +1003,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/church
 	name = "church's basement"
@@ -1041,7 +1015,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/townhall
 	name = "townhall's basement"
@@ -1054,7 +1027,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/artificer
 	name = "artificer's basement"
@@ -1067,7 +1039,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/blacksmith
 	name = "blacksmith's basement"
@@ -1080,7 +1051,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/farm
 	name = "farm's basement"
@@ -1093,7 +1063,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/bdsm
 	name = "bdsm's dungeon"
@@ -1106,7 +1075,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/basement
 	name = "basement"
@@ -1119,7 +1087,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/pump
 	name = "water pump"
@@ -1132,7 +1099,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/lab
 	name = "clinic's lab"
@@ -1145,7 +1111,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/indoors/town/rmh/chapel/basement
 	name = "The Ancient Crypt"

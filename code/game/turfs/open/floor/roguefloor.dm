@@ -1057,6 +1057,18 @@
 /turf/open/floor/carpet/green
 	icon_state = "carpet_inn"
 
+/turf/open/floor/examine(mob/user)
+	. = ..()
+	if(!is_excavatable_floor(src))
+		return
+	var/ratio = get_integrity() / max_integrity
+	if(ratio >= 1)
+		return
+	if(ratio > 0.5)
+		. += span_notice("It's scarred by digging.")
+	else
+		. += span_warning("It's deeply gouged — not much is holding it together.")
+
 /turf/open/floor/naturalstone
 	icon = 'icons/turf/natural/stones.dmi'
 	icon_state = "digstone"
