@@ -60,10 +60,9 @@
 	create_reagents(50, NO_REACT)
 
 /obj/projectile/bullet/reusable/bolt/on_hit(atom/target, blocked = FALSE)
-	if(can_inject && iscarbon(target))
+	if(blocked != 100 && can_inject && iscarbon(target)) // fully blocked (e.g. shield deflection): don't inject or run the armor-integrity check
 		var/mob/living/carbon/M = target
-		var/armor = M.run_armor_check(def_zone, flag, "", "", armor_penetration, damage = damage)
-		var/armor_real_check = max(0, armor - damage)
+		var/armor_real_check = max(0, blocked - damage)
 		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
 				..()
@@ -306,10 +305,9 @@
 	create_reagents(50, NO_REACT)
 
 /obj/projectile/bullet/reusable/arrow/on_hit(atom/target, blocked = FALSE)
-	if(can_inject && iscarbon(target))
+	if(blocked != 100 && can_inject && iscarbon(target)) // fully blocked (e.g. shield deflection): don't inject or run the armor-integrity check
 		var/mob/living/carbon/M = target
-		var/armor = M.run_armor_check(def_zone, flag, "", "", armor_penetration, damage = damage)
-		var/armor_real_check = max(0, armor - damage)
+		var/armor_real_check = max(0, blocked - damage)
 		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
 				..()
@@ -656,10 +654,9 @@
 	create_reagents(50, NO_REACT)
 
 /obj/projectile/bullet/reusable/dart/on_hit(atom/target, blocked = FALSE)
-	if(iscarbon(target))
+	if(blocked != 100 && iscarbon(target)) // fully blocked (e.g. shield deflection): don't inject or run the armor-integrity check
 		var/mob/living/carbon/M = target
-		var/armor = M.run_armor_check(def_zone, flag, "", "", armor_penetration, damage = damage)
-		var/armor_real_check = max(0, armor - damage)
+		var/armor_real_check = max(0, blocked - damage)
 		if(armor_real_check == 0)
 			if(M.can_inject(null, FALSE, def_zone, piercing)) // Pass the hit zone to see if it can inject by whether it hit the head or the body.
 				..()
