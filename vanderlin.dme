@@ -2034,6 +2034,7 @@
 #include "code\game\objects\structures\bridge.dm"
 #include "code\game\objects\structures\bush_dummy.dm"
 #include "code\game\objects\structures\carpets.dm"
+#include "code\game\objects\structures\climbable_ledge.dm"
 #include "code\game\objects\structures\curtain.dm"
 #include "code\game\objects\structures\deer_trophy.dm"
 #include "code\game\objects\structures\divine.dm"

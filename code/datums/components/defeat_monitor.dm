@@ -49,12 +49,18 @@
 		return carbon_parent.enter_defeat(DEFEAT_REASON_HAZARD, DEFEAT_SEVERITY_SEVERE)
 
 	var/selected_threshold = carbon_parent.get_effective_defeat_threshold()
-	// Total damage across all pools (not the single biggest) - predictable: you fall at roughly
-	// maxHealth - threshold, regardless of how the damage is split across brute/burn/tox/etc.
-	var/total_damage = carbon_parent.getBruteLoss() + carbon_parent.getFireLoss() + carbon_parent.getToxLoss() + carbon_parent.getOxyLoss() + carbon_parent.getCloneLoss()
+	// Total damage across the beatdown pools (not the single biggest) - predictable: you fall at roughly
+	// maxHealth - threshold, regardless of how the damage is split across brute/burn/tox/clone. Oxygen is
+	// deliberately excluded - a fall from a higher z-level spikes oxy hard and would otherwise KO you
+	// almost instantly. It gets its own near-lethal bar below instead.
+	var/total_damage = carbon_parent.getBruteLoss() + carbon_parent.getFireLoss() + carbon_parent.getToxLoss() + carbon_parent.getCloneLoss()
 	maybe_warn_damage_defeat(carbon_parent, total_damage, selected_threshold)
 	if(total_damage >= selected_threshold)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+
+	// Oxygen on its own only downs you at the kill limit, so a survivable fall no longer taps you out.
+	if(carbon_parent.getOxyLoss() >= DEFEAT_OXY_THRESHOLD)
+		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
 
 	if(carbon_parent.defeat_is_near_death())
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)

@@ -144,6 +144,12 @@
 	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
 	return ..()
 
+/datum/status_effect/defeat_knockout/remove_effect_on_heal(datum/source, heal_flags)
+	if((heal_flags & HEAL_ADMIN) && !owner.defeat_suppress_heal_cleanup)
+		qdel(src)
+		return
+	return ..()
+
 /atom/movable/screen/alert/status_effect/defeat_knockout
 	name = "Defeated"
 	desc = "You are defeated. You can speak, emote, call for help, or call the rune if available."
@@ -175,6 +181,12 @@
 		severity = severity_override
 	if(!duration_override)
 		duration_override = defeat_duration_for_severity(severity)
+	return ..()
+
+/datum/status_effect/debuff/defeat/remove_effect_on_heal(datum/source, heal_flags)
+	if((heal_flags & HEAL_ADMIN) && !owner.defeat_suppress_heal_cleanup)
+		qdel(src)
+		return
 	return ..()
 
 /datum/status_effect/debuff/defeat/on_apply()

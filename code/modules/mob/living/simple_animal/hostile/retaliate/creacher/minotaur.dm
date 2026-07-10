@@ -13,7 +13,7 @@
 	base_intents = list(/datum/intent/simple/minotaur_unarmed)
 	butcher_results = list(/obj/item/reagent_containers/food/snacks/meat/steak = 10,
 						/obj/item/natural/hide = 10, /obj/item/natural/bundle/bone/full = 2)
-	faction = list("caves")
+	faction = list(FACTION_MINOTAURS)
 	mob_biotypes = MOB_ORGANIC|MOB_BEAST
 	health = 600
 	maxHealth = 600
@@ -197,7 +197,7 @@
 		return
 
 	for(var/mob/living/L in get_turf(src))
-		if(L.faction.Find("caves"))
+		if(L.faction.Find(FACTION_MINOTAURS))
 			continue
 
 		L.adjustFireLoss(damage_per_tick)

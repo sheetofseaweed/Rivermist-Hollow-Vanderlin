@@ -958,7 +958,9 @@
 	body.ExtinguishMob()
 	maybe_strip_revival_clothes(body, voluntary)
 	body.forceMove(destination_turf)
+	body.defeat_suppress_heal_cleanup = TRUE
 	body.revive(ADMIN_HEAL_ALL, force_grab_ghost = TRUE)
+	body.defeat_suppress_heal_cleanup = FALSE
 	body.remove_status_effect(/datum/status_effect/defeat_knockout)
 	if(had_defeat_knockout)
 		body.apply_defeat_snapshot_debuffs()

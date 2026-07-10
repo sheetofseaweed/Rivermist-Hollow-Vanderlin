@@ -301,6 +301,7 @@
 	smoothing_list = SMOOTH_GROUP_FLOOR_DIRT_ROAD + SMOOTH_GROUP_FLOOR_GRASS + SMOOTH_GROUP_FLOOR_STONE
 	neighborlay = "dirtedge"
 	spread_chance = 1.1
+	max_integrity = 200
 
 	var/muddy = FALSE
 	var/bloodiness = 20
@@ -1056,9 +1057,22 @@
 /turf/open/floor/carpet/green
 	icon_state = "carpet_inn"
 
+/turf/open/floor/examine(mob/user)
+	. = ..()
+	if(!is_excavatable_floor(src))
+		return
+	var/ratio = get_integrity() / max_integrity
+	if(ratio >= 1)
+		return
+	if(ratio > 0.5)
+		. += span_notice("It's scarred by digging.")
+	else
+		. += span_warning("It's deeply gouged — not much is holding it together.")
+
 /turf/open/floor/naturalstone
 	icon = 'icons/turf/natural/stones.dmi'
 	icon_state = "digstone"
+	max_integrity = 500
 	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
 	barefootstep = FOOTSTEP_HARD_BAREFOOT

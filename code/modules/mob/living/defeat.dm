@@ -7,6 +7,10 @@
 	var/defeat_system_ai_opt_in = FALSE
 	/// Most recent defeat snapshot captured before stabilization/rune routing.
 	var/datum/defeat_snapshot/last_defeat_snapshot
+	/// Set by the resurrection rune around its own ADMIN_HEAL_ALL revive so that heal does NOT auto-wipe
+	/// the defeat KO/traumas - the rune runs its own defeat teardown (manual KO removal + trauma
+	/// escalation). Every other HEAL_ADMIN heal (the admin verb) still resets defeat state. Transient.
+	var/tmp/defeat_suppress_heal_cleanup = FALSE
 
 /mob/living/proc/cache_defeat_preferences_from_prefs(datum/preferences/prefs)
 	if(!prefs)
@@ -137,12 +141,30 @@
 		return FALSE
 	return perform_defeat_rescue(null, rescue_source)
 
-/// Shared rescue body: clear the knockout, apply the aftermath trauma, and announce it.
+/// Shared rescue body: clear the knockout, pull the victim out of any still-lethal state, apply the
+/// aftermath trauma, and announce it.
 /mob/living/proc/perform_defeat_rescue(mob/living/helper, rescue_source)
 	remove_status_effect(/datum/status_effect/defeat_knockout)
+	defeat_clear_lethal_conditions()
 	apply_defeat_snapshot_debuffs()
 	SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_RESCUED, helper, rescue_source)
 	return TRUE
+
+/// A non-rune rescue (potion, hands, spring, pet, horny self-recovery, struggle-up) lifts the knockout
+/// but never runs a full heal - so the two lethal conditions defeat stabilization leaves untouched,
+/// heavy blood loss and brain-death organ damage, would drop the victim straight back into a near-death
+/// defeat the instant they stand up (or kill them outright if they have gone defeat-ineligible). Clear
+/// exactly those here - the mirror of defeat_is_near_death's non-pool checks (the health floor is already
+/// handled by the damage-pool stabilization). The lingering harm is carried by the aftermath trauma, not
+/// by leaving the victim one tick from collapse. The rune path skips this: it runs a full ADMIN_HEAL_ALL.
+/mob/living/proc/defeat_clear_lethal_conditions()
+	if(blood_volume < BLOOD_VOLUME_OKAY && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
+		blood_volume = BLOOD_VOLUME_OKAY
+	if(iscarbon(src))
+		var/mob/living/carbon/carbon_src = src
+		if(carbon_src.getOrganLoss(ORGAN_SLOT_BRAIN) >= BRAIN_DAMAGE_DEATH)
+			carbon_src.setOrganLoss(ORGAN_SLOT_BRAIN, 0)
+	updatehealth()
 
 /// A horny knockout is the light case: after DEFEAT_HORNY_SELF_RECOVER_TIME the victim picks themselves
 /// back up unaided (still keeping the Lewd Exhaustion aftermath). Suppressed once kidnapped - captivity

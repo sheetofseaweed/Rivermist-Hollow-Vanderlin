@@ -213,8 +213,6 @@
 	droning_index = DRONING_CAVE_GENERIC
 	ambient_index = AMBIENCE_CAVE
 	soundenv = 8
-	//deathsight_message = "a dark cave"
-	ceiling_protected = TRUE
 	threat_region = THREAT_REGION_RMH_BOG
 
 /area/under/rmh_bogforest_caves/moistcaves
@@ -340,7 +338,6 @@
 	background_track_dusk = 'sound/music/area/catacombs.ogg'
 	background_track_night = 'sound/music/area/catacombs.ogg'
 	soundenv = 5
-	ceiling_protected = TRUE
 
 /area/under/town/rmh/basement/bogforest/normal
 	name = "Dark Forest Basement"
