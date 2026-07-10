@@ -53,7 +53,8 @@
 			user.adjustFireLoss(-40)
 			to_chat(user, span_nicegreen("The peddler daubs something foul-smelling on your wounds. It works."))
 		if("cache")
-			var/datum/loot_table/debug/table = new
+			var/table_type = get_dungeon_loot_table_type_for_floor(owning_run.floor)
+			var/datum/loot_table/table = new table_type
 			table.spawn_loot(user, owning_run.floor, user.return_item_rarity())
 			qdel(table)
 			to_chat(user, span_nicegreen("The peddler slides a bundle across the stall."))

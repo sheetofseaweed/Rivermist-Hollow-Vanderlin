@@ -1127,6 +1127,7 @@
 #include "code\datums\components\loot_spawner\trap_springer.dm"
 #include "code\datums\components\loot_spawner\loot_tables\_loot_table.dm"
 #include "code\datums\components\loot_spawner\loot_tables\debug.dm"
+#include "code\datums\components\loot_spawner\loot_tables\dungeon.dm"
 #include "code\datums\components\loot_spawner\loot_tables\fish_barrel.dm"
 #include "code\datums\components\loot_spawner\loot_tables\generics.dm"
 #include "code\datums\components\loot_spawner\loot_tables\grain_barrel.dm"

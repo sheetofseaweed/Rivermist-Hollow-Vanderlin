@@ -1,0 +1,161 @@
+// -- Infinite dungeon cache tables ---------------------------------------------
+// A tier ladder for dungeon reward caches. Tables compose themselves in New()
+// by absorbing donor tables' entries (same build-in-New pattern as
+// potion_ingredient), so the generic pools stay the single source of truth.
+// Donors must be plain-sublist tables; stat/skill veins are authored here to
+// avoid assoc-key collisions between donors.
+
+/datum/loot_table/dungeon
+	abstract_type = /datum/loot_table/dungeon
+	/// Plain-sublist loot tables whose entries this table absorbs on creation
+	var/list/donor_types = list()
+
+/datum/loot_table/dungeon/New()
+	for(var/donor_type in donor_types)
+		var/datum/loot_table/donor = new donor_type
+		loot_table += donor.loot_table
+		qdel(donor)
+	..()
+
+/// Cache table for a run floor: shallow, mid, deep. Shrines and traders roll
+/// through this; room templates pin their own tier by hand.
+/proc/get_dungeon_loot_table_type_for_floor(floor)
+	switch(floor)
+		if(1 to 2)
+			return /datum/loot_table/dungeon/tier1
+		if(3 to 4)
+			return /datum/loot_table/dungeon/tier2
+	return /datum/loot_table/dungeon/tier3
+
+/// Floors 1-2: travel rations, copper arms, small coin. Enough to feel paid,
+/// never enough to skip the surface economy.
+/datum/loot_table/dungeon/tier1
+	name = "dungeon spoils (shallow)"
+	donor_types = list(
+		/datum/loot_table/food,
+		/datum/loot_table/coin/low,
+		/datum/loot_table/potion_vitals,
+	)
+	loot_table = list(
+		list(
+			/obj/item/weapon/knife/copper = 10,
+			/obj/item/weapon/axe/copper = 8,
+			/obj/item/weapon/knife/hunting = 8,
+			/obj/item/clothing/armor/leather = 8,
+			/obj/item/clothing/head/helmet/coppercap = 6,
+			/obj/item/clothing/wrists/bracers/copper = 6,
+			/obj/item/lockpick = 4,
+			/obj/item/gem/green = 3,
+		),
+		STAT_FORTUNE = list(
+			/obj/item/coin/silver = 10,
+			/obj/item/gem/blue = 4,
+		),
+	)
+	base_min = 2
+	base_max = 3
+	scaling_factor = 0.2
+
+/// Floors 3-4: iron gear, silver, stat draughts. The dungeon starts paying
+/// like a profession.
+/datum/loot_table/dungeon/tier2
+	name = "dungeon spoils (mid)"
+	donor_types = list(
+		/datum/loot_table/medium,
+		/datum/loot_table/coin/med,
+		/datum/loot_table/potion_vitals,
+		/datum/loot_table/potion_stats,
+	)
+	loot_table = list(
+		list(
+			/obj/item/weapon/sword/short/iron = 8,
+			/obj/item/weapon/axe/iron = 8,
+			/obj/item/clothing/armor/chainmail/iron = 6,
+			/obj/item/clothing/pants/chainlegs/iron = 6,
+			/obj/item/alch/herb/salvia = 5,
+			/obj/item/alch/herb/valeriana = 5,
+		),
+		/datum/attribute/skill/misc/stealing = list(
+			/obj/item/gem/green = 6,
+			/obj/item/gem/blue = 6,
+			/obj/item/lockpick = 8,
+		),
+		STAT_FORTUNE = list(
+			/obj/item/coin/gold = 8,
+			/obj/item/gem = 4,
+		),
+	)
+	base_min = 2
+	base_max = 4
+	scaling_factor = 0.2
+
+/// Floor 5+ / bosses / vaults: the rare pool, gold, and a thin seam of true
+/// magic. The ceiling of what the dark pays out.
+/datum/loot_table/dungeon/tier3
+	name = "dungeon spoils (deep)"
+	donor_types = list(
+		/datum/loot_table/rare,
+		/datum/loot_table/coin/high,
+		/datum/loot_table/potion_stats,
+	)
+	loot_table = list(
+		list(
+			/obj/item/weapon/sword/long/greatsword = 5,
+			/obj/item/clothing/armor/plate = 5,
+			/obj/item/reagent_containers/glass/bottle/stronghealthpot = 6,
+			/obj/item/reagent_containers/glass/bottle/strongmanapot = 6,
+			// The thin magic seam: low weights, and delve scaling is what
+			// makes them findable at all (rare weights scale x1.3^delve).
+			/obj/item/clothing/ring/active/nomag = 3,
+			/obj/item/clothing/ring/gold/protection = 2,
+			/obj/item/clothing/neck/talkstone = 2,
+			/obj/item/clothing/head/crown/circlet/stink = 1,
+		),
+		STAT_FORTUNE = list(
+			/obj/item/coin/gold/pile = 6,
+			/obj/item/gem = 6,
+		),
+	)
+	base_min = 3
+	base_max = 4
+	scaling_factor = 0.2
+
+/// The Sunken Warrens' own spoils: goblin crudework, bog herbs, and the ore
+/// veins the warrens are dug through (the old mining flavor kept as a vein).
+/datum/loot_table/dungeon/swampgob
+	name = "sunken warren spoils"
+	donor_types = list(
+		/datum/loot_table/coin/low,
+		/datum/loot_table/potion_vitals,
+	)
+	loot_table = list(
+		list(
+			/obj/item/weapon/knife/dagger/bronze = 10,
+			/obj/item/weapon/mace/bronze = 8,
+			/obj/item/weapon/axe/bronze = 8,
+			/obj/item/weapon/polearm/spear/stone/copper = 8,
+			/obj/item/clothing/armor/leather = 8,
+			/obj/item/clothing/face/facemask/copper = 5,
+			/obj/item/alch/herb/atropa = 5,
+			/obj/item/alch/herb/urtica = 5,
+			/obj/item/alch/herb/artemisia = 5,
+			/obj/item/reagent_containers/food/snacks/hardtack = 5,
+			/obj/item/statue/bronze/totem = 3,
+			/obj/item/statue/bronze/figurine = 3,
+		),
+		/datum/attribute/skill/labor/mining = list(
+			/obj/item/ore/coal = 10,
+			/obj/item/ore/iron = 8,
+			/obj/item/ore/tin = 6,
+			3, // requires level 3 mining, same gate as the surface mining caches
+			/obj/item/ore/gold = 6,
+			/obj/item/gem = 4,
+		),
+		STAT_FORTUNE = list(
+			/obj/item/coin/silver = 10,
+			/obj/item/gem/green = 5,
+		),
+	)
+	base_min = 2
+	base_max = 3
+	scaling_factor = 0.2

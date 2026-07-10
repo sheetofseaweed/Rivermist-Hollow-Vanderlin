@@ -115,7 +115,7 @@
 	name = "_swampgob_base"
 	id = "_swampgob_base"
 	theme = DUNGEON_THEME_SWAMPGOB
-	loot_table_type = /datum/loot_table/mining_cache
+	loot_table_type = /datum/loot_table/dungeon/swampgob
 
 /datum/map_template/pocket/dungeon/swampgob/break_hollow
 	name = "Root-Choked Hollow"
@@ -151,6 +151,7 @@
 	mappath = "_maps/templates/dungeons/swampgob/combat_leechpools.dmm"
 	room_kind = DUNGEON_ROOM_COMBAT
 	difficulty_tier = 2
+	loot_table_type = /datum/loot_table/dungeon/tier2
 	gate_hint = "Still black water laps at something beyond."
 
 /datum/map_template/pocket/dungeon/swampgob/combat_gobwarren
@@ -159,6 +160,7 @@
 	mappath = "_maps/templates/dungeons/swampgob/combat_gobwarren.dmm"
 	room_kind = DUNGEON_ROOM_COMBAT
 	difficulty_tier = 2
+	loot_table_type = /datum/loot_table/dungeon/tier2
 	gate_hint = "Skull-totems and squabbling voices. A warren."
 
 /datum/map_template/pocket/dungeon/swampgob/boss_kingshall
@@ -167,4 +169,5 @@
 	mappath = "_maps/templates/dungeons/swampgob/boss_kingshall.dmm"
 	room_kind = DUNGEON_ROOM_BOSS
 	difficulty_tier = 2
+	loot_table_type = /datum/loot_table/dungeon/tier3
 	gate_hint = "Drums. Torchlight. Something vast squats on a throne of mud."
