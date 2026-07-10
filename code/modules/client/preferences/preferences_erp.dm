@@ -275,8 +275,6 @@
 				kink_data["notes"] = new_notes
 	mark_erp_preferences_dirty()
 
-	show_erp_preferences(user) // Refresh the UI
-
 /datum/preferences/proc/apply_character_kinks(mob/living/carbon/human/character)
 	if(!length(erp_preferences))
 		setup_default_erp_preferences()
