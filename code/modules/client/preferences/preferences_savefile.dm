@@ -243,6 +243,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	//ROGUETOWN
 	parallax = PARALLAX_INSANE
 
+	character_setup_load_menu_prefs(S)
+
 	return TRUE
 
 /datum/preferences/proc/save_preferences()
@@ -309,6 +311,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["multi_ready_slots"], multi_ready_slots)
 	WRITE_FILE(S["player_language"], player_language)
 	save_erp_preferences(S)
+	character_setup_save_menu_prefs(S)
 	return TRUE
 
 /datum/preferences/proc/_load_species(S)
