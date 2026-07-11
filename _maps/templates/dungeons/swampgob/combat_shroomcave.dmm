@@ -5,49 +5,108 @@
 "b" = (
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
+"c" = (
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"f" = (
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
 "g" = (
 /turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"l" = (
+/obj/structure/flora/grass,
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"n" = (
+/obj/structure/fluff/nest,
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/obj/structure/flora/tinymushrooms,
+/obj/effect/decal/cleanable/sexfluid/cumdrip,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"q" = (
+/obj/structure/flora/new_shroom/purplef,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"r" = (
+/obj/structure/flora/grass/mushroom,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"s" = (
+/obj/structure/flora/shroom_tree/happy/mushroom5,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"v" = (
+/obj/structure/flora/grass,
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "w" = (
 /turf/open/water/swamp,
 /area/pocket_dimension/dungeon)
-"c" = (
-/obj/effect/landmark/pocket_dimension/entry,
+"x" = (
+/obj/structure/flora/mushroomcluster,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"z" = (
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/effect/decal/cobble/mossy,
+/obj/machinery/light/fueled/torchholder/metal_torch/east,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/structure/wild_plant/nospread/mushroom,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/structure/flora/grass,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "G" = (
 /obj/effect/landmark/dungeon/gate/back,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"h" = (
-/obj/effect/landmark/dungeon/gate,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"e" = (
-/obj/effect/landmark/dungeon/guardian/swampgob,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"l" = (
+"N" = (
 /obj/effect/landmark/dungeon/loot,
+/obj/effect/decal/cobble/mossy,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"n" = (
-/obj/structure/fluff/nest,
-/turf/open/floor/dirt,
+"O" = (
+/obj/structure/flora/shroom_tree/happy/mushroom2,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
-"F" = (
-/obj/structure/flora/grass,
-/turf/open/floor/dirt,
+"V" = (
+/obj/structure/flora/new_shroom/redwall,
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"X" = (
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 a
+c
+c
 a
 a
-a
-a
-a
-a
+c
+c
 a
 a
 a
@@ -55,94 +114,94 @@ a
 "}
 (2,1,1) = {"
 a
-F
-b
-b
 G
+l
 b
-b
-b
-F
-b
+w
+w
+O
+E
+c
+a
 a
 "}
 (3,1,1) = {"
 a
-b
-e
-b
-b
-c
-b
-e
+v
 b
 b
+b
+b
+b
+B
+N
+a
 a
 "}
 (4,1,1) = {"
 a
-b
-b
-w
-w
-b
-b
-b
+V
 b
 g
+g
+b
+e
+b
+F
+x
 a
 "}
 (5,1,1) = {"
-a
+c
+w
+w
+b
 g
-b
-w
-b
-b
+X
 n
+e
 b
-w
-b
+g
 a
 "}
 (6,1,1) = {"
 a
-b
-b
+c
+r
 b
 b
 F
+X
+g
 b
-b
-w
 b
 a
 "}
 (7,1,1) = {"
 a
-F
+a
+a
+s
 b
-e
 b
 b
 b
-l
 b
 F
 a
 "}
 (8,1,1) = {"
 a
-b
-b
-b
-b
-h
-b
-b
-b
-h
 a
+c
+a
+z
+h
+f
+h
+q
+h
+c
 "}
 (9,1,1) = {"
 a
@@ -150,10 +209,10 @@ a
 a
 a
 a
+c
+c
 a
 a
-a
-a
-a
+c
 a
 "}

@@ -5,8 +5,38 @@
 "b" = (
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
+"c" = (
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"d" = (
+/obj/effect/landmark/pocket_dimension/exit,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/structure/flora/grass,
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
 "g" = (
 /turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/decal/cobble/mossy,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"m" = (
+/obj/effect/landmark/dungeon/gate,
+/obj/effect/decal/cobble/mossy,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"o" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/twig,
+/area/pocket_dimension/dungeon)
+"p" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/twig,
 /area/pocket_dimension/dungeon)
 "t" = (
 /turf/open/floor/twig,
@@ -14,32 +44,25 @@
 "w" = (
 /turf/open/water/swamp,
 /area/pocket_dimension/dungeon)
-"c" = (
-/obj/effect/landmark/pocket_dimension/entry,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"d" = (
-/obj/effect/landmark/pocket_dimension/exit,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"h" = (
-/obj/effect/landmark/dungeon/gate,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"m" = (
-/obj/machinery/light/fueled/campfire/longlived,
-/turf/open/floor/dirt,
+"x" = (
+/obj/machinery/light/fueled/firebowl/stumpb,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "F" = (
 /obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"I" = (
+/obj/effect/decal/cobble/mossy,
+/obj/machinery/light/fueled/firebowl/stumpb,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 a
 a
-a
-a
+c
+c
 a
 a
 a
@@ -48,79 +71,79 @@ a
 "}
 (2,1,1) = {"
 a
-b
-b
-d
-b
-b
+m
+h
 g
 b
+b
+a
+c
 a
 "}
 (3,1,1) = {"
+c
+I
+b
+w
+w
+g
+g
 a
-F
-w
-w
-w
-b
-b
-b
 a
 "}
 (4,1,1) = {"
 a
-b
+F
+g
 w
+o
+t
+g
 b
-b
-b
-w
-m
-a
+c
 "}
 (5,1,1) = {"
 a
-b
-b
-c
+m
+g
 b
 t
-w
-b
+t
+p
+d
 a
 "}
 (6,1,1) = {"
-a
+c
+b
 b
 w
-b
-b
-b
+o
+t
 b
 b
 a
 "}
 (7,1,1) = {"
-a
+c
+x
+b
+w
+w
 g
-w
-w
-w
 b
-b
-F
+e
 a
 "}
 (8,1,1) = {"
 a
-b
-b
+m
 h
-b
-b
 h
-b
+a
+a
+a
+a
 a
 "}
 (9,1,1) = {"

@@ -2,22 +2,94 @@
 "a" = (
 /turf/closed/mineral,
 /area/pocket_dimension/dungeon)
-"x" = (
-/turf/closed/wall/mineral/wood,
-/area/pocket_dimension/dungeon)
 "b" = (
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "c" = (
-/obj/effect/landmark/pocket_dimension/entry,
+/obj/structure/tent_wall,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"k" = (
+/obj/structure/fluff/walldeco/skullspike,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"m" = (
+/obj/machinery/light/fueled/campfire/longlived,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"n" = (
+/obj/structure/fluff/nest,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"p" = (
+/obj/machinery/light/fueled/torchholder/metal_torch,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"q" = (
+/obj/structure/table/wood/treestump,
+/obj/structure/fluff/walldeco/skullspike,
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"r" = (
+/obj/structure/table/wood/treestump,
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"w" = (
+/obj/structure/table/wood/treestump,
+/obj/machinery/light/fueled/torchholder/metal_torch/east,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"x" = (
+/turf/closed/wall/mineral/wood,
+/area/pocket_dimension/dungeon)
+"y" = (
+/obj/structure/fluff/walldeco/skullspike,
+/obj/machinery/light/fueled/torchholder/r,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"A" = (
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"C" = (
+/obj/effect/landmark/dungeon/larder,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "G" = (
 /obj/effect/landmark/dungeon/gate/back,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"h" = (
-/obj/effect/landmark/dungeon/gate,
+"J" = (
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"K" = (
+/obj/effect/landmark/dungeon/guardian/keyholder{
+	key_id = "warren";
+	mob_pool = list(/mob/living/carbon/human/species/goblin/npc = 10)
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"P" = (
+/obj/structure/fluff/nest,
+/obj/effect/landmark/dungeon/guardian/swampgob,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"R" = (
+/obj/structure/tent_wall,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"S" = (
+/obj/structure/table/wood/treestump,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "V" = (
@@ -28,179 +100,151 @@
 	},
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"K" = (
-/obj/effect/landmark/dungeon/guardian/keyholder{
-	key_id = "warren";
-	mob_pool = list(/mob/living/carbon/human/species/goblin/npc = 10)
-	},
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"e" = (
-/obj/effect/landmark/dungeon/guardian/swampgob,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"n" = (
-/obj/structure/fluff/nest,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"P" = (
-/obj/effect/landmark/dungeon/larder,
-/obj/structure/fluff/nest,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"k" = (
-/obj/structure/fluff/walldeco/skullspike,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"S" = (
-/obj/structure/table/wood/treestump,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"m" = (
-/obj/machinery/light/fueled/campfire/longlived,
-/turf/open/floor/dirt,
+"Z" = (
+/obj/machinery/light/fueled/torchholder,
+/turf/closed/wall/mineral/wood,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
+c
+c
+c
+A
 a
-a
-a
-a
-a
-a
-a
-a
-a
+c
+c
+c
+c
 "}
 (2,1,1) = {"
-a
+c
 P
-b
+R
 G
 b
-b
-b
-S
-a
+R
+e
+w
+c
 "}
 (3,1,1) = {"
-a
+c
+b
+R
+b
+J
 b
 b
-b
-x
-b
-e
-b
-a
+n
+c
 "}
 (4,1,1) = {"
-a
-x
-x
-b
-x
+c
 b
 b
 b
-a
+J
+b
+R
+R
+c
 "}
 (5,1,1) = {"
-a
+p
 b
 b
 b
+J
 b
 b
-x
 b
 a
 "}
 (6,1,1) = {"
-a
+A
 b
-e
 b
-K
+J
+b
 b
 m
-b
+S
 a
 "}
 (7,1,1) = {"
-a
+A
 b
 b
 b
 b
 b
-x
+b
 b
 a
 "}
 (8,1,1) = {"
-a
-x
-x
+A
+r
+m
 b
+J
 b
-b
-b
+e
 b
 a
 "}
 (9,1,1) = {"
 a
+y
+q
+b
+J
+J
 b
 b
-b
-x
-x
-b
-k
-a
+A
 "}
 (10,1,1) = {"
-a
+x
+x
+x
 b
 b
-e
-b
-V
+J
 b
 b
-a
+A
 "}
 (11,1,1) = {"
-a
+Z
 n
 b
 b
 b
-x
+J
 b
 b
 a
 "}
 (12,1,1) = {"
-a
-b
-b
+x
+C
+K
+k
+h
+V
 h
 b
-b
-b
-h
 a
 "}
 (13,1,1) = {"
+x
+x
+x
+x
 a
 a
-a
-a
-a
-a
-a
-a
+A
+A
 a
 "}

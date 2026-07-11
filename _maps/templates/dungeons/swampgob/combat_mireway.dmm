@@ -5,31 +5,38 @@
 "b" = (
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"g" = (
-/turf/open/floor/grass,
-/area/pocket_dimension/dungeon)
-"w" = (
-/turf/open/water/swamp,
-/area/pocket_dimension/dungeon)
 "c" = (
 /obj/effect/landmark/pocket_dimension/entry,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"G" = (
-/obj/effect/landmark/dungeon/gate/back,
-/turf/open/floor/dirt,
+"e" = (
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"g" = (
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "h" = (
 /obj/effect/landmark/dungeon/gate,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"T" = (
-/obj/effect/landmark/dungeon/gate/treasure,
-/turf/open/floor/dirt,
+"k" = (
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
-"e" = (
+"w" = (
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"y" = (
+/turf/open/floor/cobble/mossy,
+/area/pocket_dimension/dungeon)
+"A" = (
 /obj/effect/landmark/dungeon/guardian/swampgob,
-/turf/open/floor/dirt,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/item/clothing/face/facemask/goldmask,
+/turf/open/floor/cobble/mossy,
 /area/pocket_dimension/dungeon)
 "E" = (
 /obj/effect/landmark/dungeon/encounter,
@@ -37,14 +44,20 @@
 /area/pocket_dimension/dungeon)
 "F" = (
 /obj/structure/flora/grass,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"T" = (
+/obj/effect/landmark/dungeon/gate/treasure,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 a
-a
-a
-a
+e
 a
 a
 a
@@ -53,65 +66,53 @@ a
 "}
 (2,1,1) = {"
 a
-b
-g
 G
-b
+c
 F
-b
-b
+a
+a
 a
 "}
 (3,1,1) = {"
 a
 b
 b
-b
-b
-b
-b
-e
+w
+a
+a
 a
 "}
 (4,1,1) = {"
-a
+e
+b
+b
+g
 w
-b
-c
-b
-w
-b
-b
+e
 a
 "}
 (5,1,1) = {"
-a
-w
-w
+e
+k
 b
-E
+g
 w
 w
-b
 a
 "}
 (6,1,1) = {"
 a
+a
+E
 b
-w
-w
-b
-b
-w
+g
 w
 a
 "}
 (7,1,1) = {"
 a
-b
-b
-w
-w
+a
+a
 b
 b
 w
@@ -119,44 +120,81 @@ a
 "}
 (8,1,1) = {"
 a
-b
-e
-b
-b
-E
+y
+a
 b
 b
+g
 a
 "}
 (9,1,1) = {"
 a
-F
-b
-b
-b
+B
+e
 b
 g
-b
+A
 a
 "}
 (10,1,1) = {"
 a
+a
+a
 b
 b
-h
-b
-T
-b
-b
+a
 a
 "}
 (11,1,1) = {"
 a
 a
+w
+b
+b
+a
+a
+"}
+(12,1,1) = {"
+e
+w
+g
+b
+e
+a
+a
+"}
+(13,1,1) = {"
+a
+a
+E
+b
 a
 a
 a
+"}
+(14,1,1) = {"
 a
+a
+b
+b
+b
+a
+a
+"}
+(15,1,1) = {"
+a
+h
+g
+T
+g
+h
+a
+"}
+(16,1,1) = {"
+a
+a
+a
+e
 a
 a
 a
