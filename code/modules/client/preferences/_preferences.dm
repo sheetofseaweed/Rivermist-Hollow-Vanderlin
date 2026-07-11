@@ -419,6 +419,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	menuoptions = list()
 
 /datum/preferences/Destroy()
+	character_setup_teardown_view(null)
+	character_setup_ui_heavy_cache = null
 	parent = null
 	selected_patron = null
 	combat_music = null
@@ -464,703 +466,30 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		load_character(default_slot)
 		slot_randomized = FALSE
 
-	send_character_ui_resources(user)
+	character_setup_preferences_initial_tab = (tabchoice == 1) ? "game" : "identity"
+	character_setup_preferences_open_sequence++
 	build_and_show_menu(user)
 
 /datum/preferences/proc/build_and_show_menu(mob/user)
-	var/list/dat = list()
-	var/datum/faith/selected_faith = GLOB.faith_list[selected_patron.associated_faith]
-	var/preview_sheet = ""
-	var/datum/job/high_job
-	for(var/job_type in job_preferences)
-		if(job_preferences[job_type] != JP_HIGH)
-			continue
-		high_job = job_type
-		break
+	if(!user?.client)
+		return
+	user.client.acquire_dpi()
+	winshow(user, "stonekeep_prefwin", FALSE)
+	user.client.clear_character_previews()
+	user << browse(null, "window=preferences_browser")
+	validate_customizer_entries()
+	character_setup_static_sig = "[pref_species?.type]-[gender]"
+	ui_interact(user)
 
-	user?.client.acquire_dpi()
-
-	dat += {"
-<html lang="en">
-<head>
-	<style>
-		html {
-			height: 100%;
-			width: 100%;
-			overflow: hidden;
-		}
-		body {
-			background-color: #1a1a1a;
-			height: 100%;
-			width: 100%;
-			margin: 0;
-			overflow: hidden;
-			image-rendering: pixelated;
-			position: relative;
-		}
-		.ui-container {
-			position: absolute;
-			width: 272px;
-			height: 315px;
-			background-image: url('Charsheet_BG.1.png');
-			background-size: cover;
-			transform-origin: top left;
-		}
-		.sprite { position: absolute; background-repeat: no-repeat; cursor: pointer; }
-		.sprite-placeholder { cursor: default; }
-		.sprite-button:hover { filter: brightness(1.15); }
-
-		.header-bg   { top: 5px;   left: 6px;   width: 260px; height: 52px; background-image: url('0_header_bg.png'); }
-		.preview-bg  { top: 50px;  left: 8px;   width: 99px;  height: 83px; background-image: url('charpreview_bg.png'); }
-		.body-bg     { top: 58px;  left: 110px; width: 118px; height: 75px; background-image: url('0_body_bg.png'); }
-		.voice-bg    { top: 137px; left: 2px;   width: 107px; height: 72px; background-image: url('0_voice_bg.png'); }
-		.flavour-bg  { top: 137px; left: 201px; width: 65px;  height: 95px; background-image: url('0_flavour_bg.png'); }
-		.loadout-bg  { top: 213px; left: 3px;   width: 64px;  height: 74px; background-image: url('0_loadout_bg.png'); }
-		.stats-bg    { top: 213px; left: 71px;  width: 39px;  height: 74px; background-image: url('0_stats_bg.png'); }
-		.headshot-bg { top: 137px; left: 114px; width: 86px;  height: 74px; background-image: url('headshot_bg.png'); }
-		.nsfw-headshot-bg { top: 213px; left: 114px; width: 86px;  height: 76px; background-image: url('nsfw_headshot_bg.png'); }
-		.ooc-bg      { top: 236px; left: 201px; width: 54px;  height: 66px; background-image: url('0_ooc_bg.png'); }
-
-		.features-bg { top: 60px; left: 231px; width: 36px; height: 48px; background-image: url('0_features_bg.png'); }
-		#silhouette  { top: 3px;  left: 10px;  width: 15px; height: 28px; background-image: url('features_bodytype_f.png'); }
-		.f-btn       { top: 95px; left: 232px; width: 34px; height: 10px; background-image: url('features_button.png'); z-index: 3; }
-		.f-btn:hover { background-image: url('features_button_hover.png'); }
-		.f-random    { top: 110px; left: 232px; width: 34px; height: 25px; background-image: url('features_random.png'); }
-		.f-random:hover { background-image: url('features_random_hover.png'); }
-
-		.flav-desc { top: 174px; left: 207px; width: 49px; height: 10px; background-image: url('flavour_descriptors.png'); }
-		.flav-desc:hover { background-image: url('flavour_descriptors_hover.png'); }
-		.flav-text { top: 192px; left: 207px; width: 53px; height: 10px; background-image: url('flavour_text.png'); }
-		.flav-text:hover { background-image: url('flavour_text_hover.png'); }
-		.flav-misc { top: 210px; left: 207px; width: 50px; height: 10px; background-image: url('flavour_misc.png'); }
-		.flav-misc:hover { background-image: url('flavour_misc_hover.png'); }
-		.flav-prev { top: 226px; left: 215px; width: 34px; height: 10px; background-image: url('flavour_preview.png'); }
-		.flav-prev:hover { background-image: url('flavour_preview_hover.png'); }
-
-		.ooc-notes { top: 252px; left: 207px; width: 41px; height: 10px; background-image: url('ooc_notes.png'); }
-		.ooc-notes:hover { background-image: url('ooc_notes_hover.png'); }
-		.ooc-extra { top: 270px; left: 207px; width: 40px; height: 10px; background-image: url('ooc_extra.png'); }
-		.ooc-extra:hover { background-image: url('ooc_extra_hover.png'); }
-		.ooc-erp { top: 288px; left: 207px; width: 40px; height: 10px; background-image: url('ooc_erp.png'); }
-		.ooc-erp:hover { background-image: url('ooc_erp_hover.png'); }
-
-		.ui-label {
-			position: absolute;
-			font-weight: bold;
-			font-size: 7px;
-			line-height: 7px;
-			color: #161418;
-			text-transform: uppercase;
-			pointer-events: none;
-			overflow: hidden;
-			white-space: nowrap;
-		}
-
-		.field-box {
-			position: absolute;
-			height: 9px;
-			background-color: #503f34;
-			overflow: hidden;
-		}
-
-		.pixel-button {
-			position: absolute;
-			height: 10px;
-			background-color: #1f1e1b;
-			border: 1px solid #6f5c4d;
-			box-sizing: border-box;
-			color: #d8cf9f;
-			font-weight: bold;
-			font-size: 7px;
-			line-height: 8px;
-			text-align: center;
-			text-transform: uppercase;
-			overflow: hidden;
-			white-space: nowrap;
-		}
-
-		.pixel-button:hover {
-			color: #f1e78b;
-			border-color: #8a715d;
-		}
-
-		.preview-placeholder {
-			color: #c9bd91;
-			opacity: 0.75;
-		}
-
-		.stats-title {
-
-			width: 31px;
-			height: 14px;
-			color: #161418;
-			font-size: 10px;
-			line-height: 14px;
-			text-align: center;
-		}
-
-		.clickable-text {
-			font-weight: bold;
-			position: absolute;
-			background: transparent;
-			border: none;
-			outline: none;
-			font-size: 8px;
-			color: #161418;
-			text-align: left;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			justify-content: flex-start;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			padding: 0 2px;
-		}
-
-		.clickable-text:hover {
-			text-decoration: underline;
-		}
-
-		.auto-shrink {
-			font-size: 8px;
-		}
-
-		@media (max-width: 100px) {
-			.auto-shrink { font-size: 7px; }
-		}
-
-		.menu-ready  { top: 258px; left: 4px;   width: 88px; height: 10px; background-image: url('ready_order.png'); }
-		.menu-ready:hover { background-image: url('ready_order_hover.png'); }
-		.menu-change { top: 269px; left: 4px;   width: 69px; height: 10px; background-image: url('change_character.png'); }
-		.menu-change:hover { background-image: url('change_character_hover.png'); }
-		.menu-save   { top: 280px; left: 4px;   width: 21px; height: 10px; background-image: url('save.png'); }
-		.menu-save:hover { background-image: url('save_hover.png'); }
-		.menu-undo   { top: 280px; left: 26px;  width: 21px; height: 10px; background-image: url('undo.png'); }
-		.menu-undo:hover { background-image: url('undo_hover.png'); }
-		.menu-done   { top: 280px; left: 48px;  width: 20px; height: 10px; background-image: url('done.png'); }
-		.menu-done:hover { background-image: url('done_hover.png'); }
-
-		.v-color-box { top: 136px; left: 34px; width: 48px; height: 15px; background-image: url('voice_colour.png'); }
-		.v-blob      { top: 4px;   left: 35px; width: 8px;  height: 7px;
-					background-image: url('voice_colour_blob.png');
-					background-blend-mode: multiply; }
-
-		.menu-keybinds {
-			top: 280px;
-			left: 73px;
-			width: 39px;
-			height: 10px;
-			background-image: url('keybinds.png');
-		}
-		.menu-keybinds:hover {
-			background-image: url('keybinds_hover.png');
-		}
-
-		.menu-toggles {
-			top: 269px;
-			left: 78px;
-			width: 34px;
-			height: 10px;
-			background-image: url('toggles.png');
-		}
-		.menu-toggles:hover {
-			background-image: url('toggles_hover.png');
-		}
-
-		.preview-grid {
-			position: absolute;
-			top: 52px;
-			left: 10px;
-			width: 94px;
-			height: 79px;
-			background-color: #000;
-			display: flex;
-			flex-wrap: wrap;
-			overflow: hidden;
-		}
-
-		.preview-slot {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 47px;
-			height: 39px;
-			overflow: visible;
-		}
-
-		.preview-image {
-			width: 32px;
-			height: 32px;
-			transform-origin: center center;
-			image-rendering: pixelated;
-			pointer-events: none;
-			background-repeat: no-repeat;
-			background-size: 64px 64px;
-		}
-
-		.preview-north { background-position: 0 0; }
-		.preview-south { background-position: -32px 0; }
-		.preview-east  { background-position: 0 -32px; }
-		.preview-west  { background-position: -32px -32px; }
-	</style>
-	<script>
-		function getViewportWidth() {
-			return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth || 816;
-		}
-
-		function getViewportHeight() {
-			return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight || 950;
-		}
-
-		function decodeOutputValue(value) {
-			try {
-				return decodeURIComponent(value);
-			} catch (error) {
-				return value;
-			}
-		}
-
-		function applyLayoutScale() {
-			var container = document.getElementById('ui-container');
-			if(!container) {
-				return;
-			}
-
-			var viewportWidth = getViewportWidth();
-			var viewportHeight = getViewportHeight();
-			var scale = Math.min(3, (viewportWidth - 8) / 272, (viewportHeight - 8) / 315);
-
-			if(!isFinite(scale) || scale <= 0) {
-				scale = 1;
-			}
-
-			container.style.transform = 'scale(' + scale + ')';
-			container.style.left = Math.max(0, Math.floor((viewportWidth - (272 * scale)) / 2)) + 'px';
-			container.style.top = Math.max(0, Math.floor((viewportHeight - (315 * scale)) / 2)) + 'px';
-		}
-
-		function shrinkText(element) {
-			// Reset to default size first
-			element.style.fontSize = '8px';
-
-			// Force a reflow to ensure scrollWidth is accurate
-			element.offsetHeight;
-
-			const maxWidth = element.offsetWidth - 4;
-			let fontSize = 8;
-
-			// Only shrink if text is actually overflowing
-			while (element.scrollWidth > maxWidth && fontSize > 5) {
-				fontSize -= 0.5;
-				element.style.fontSize = fontSize + 'px';
-				// Force reflow after each change
-				element.offsetHeight;
-			}
-		}
-
-		function updateField(fieldId, value) {
-			var elem = document.getElementById(fieldId);
-			if(elem) {
-				elem.textContent = value;
-				if(elem.classList.contains('auto-shrink')) {
-					shrinkText(elem);
-				}
-			}
-		}
-
-		function updateImagePreview(imageId, url) {
-			var img = document.getElementById(imageId);
-			if(img) {
-				img.src = url || '';
-				img.style.display = url ? 'block' : 'none';
-			}
-		}
-
-		function updateBeSpecial(isActive) {
-			var elem = document.getElementById('bespecial');
-			if(elem) {
-				if(isActive) {
-					elem.classList.add('yes');
-				} else {
-					elem.classList.remove('yes');
-				}
-			}
-		}
-
-		function setPreviewSheet(value, loadToken) {
-			var previewIds = \['preview-north', 'preview-south', 'preview-east', 'preview-west'\];
-			for(var i = 0; i < previewIds.length; i++) {
-				var elem = document.getElementById(previewIds\[i\]);
-				if(!elem || elem.previewLoadToken !== loadToken) {
-					continue;
-				}
-				elem.style.backgroundImage = value ? "url('" + value + "')" : '';
-			}
-		}
-
-		function tryApplyPreviewSheet(value, loadToken, attempt) {
-			if(window.previewLoadToken !== loadToken) {
-				return;
-			}
-
-			var preloader = new Image();
-			preloader.onload = function() {
-				if(window.previewLoadToken !== loadToken) {
-					return;
-				}
-				setPreviewSheet(value, loadToken);
-			};
-			preloader.onerror = function() {
-				if(window.previewLoadToken !== loadToken) {
-					return;
-				}
-				if(attempt >= 5) {
-					return;
-				}
-				setTimeout(function() {
-					tryApplyPreviewSheet(value, loadToken, attempt + 1);
-				}, 50 * (attempt + 1));
-			};
-			preloader.src = value;
-		}
-
-		function updatePreviewSheet(value) {
-			var previewIds = \['preview-north', 'preview-south', 'preview-east', 'preview-west'\];
-			var loadToken = String(Date.now()) + Math.random();
-			window.previewLoadToken = loadToken;
-			for(var i = 0; i < previewIds.length; i++) {
-				var elem = document.getElementById(previewIds\[i\]);
-				if(elem) {
-					elem.previewLoadToken = loadToken;
-				}
-			}
-			if(!value) {
-				setPreviewSheet('', loadToken);
-				return;
-			}
-			tryApplyPreviewSheet(value, loadToken, 0);
-		}
-
-		function updateCharacterData() {
-			// BYOND's list2params() with output() sends arguments in pairs
-			// Arguments come as: arg0, arg1, arg2, arg3... where each pair is key=value so we can't just do update(data)
-			var data = {};
-
-			// Process all arguments - they come as strings like "key=value"
-			for(var i = 0; i < arguments.length; i++) {
-				var arg = arguments\[i\];
-				if(typeof arg === 'string' && arg.indexOf('=') !== -1) {
-					var parts = arg.split('=');
-					var key = parts\[0\];
-					var value = decodeOutputValue(parts.slice(1).join('=')); // In case value contains '='
-					data\[key\] = value;
-				}
-			}
-
-			// Update fields only if they exist in data
-			if('name' in data) updateField('char-name', data.name || '');
-			if('job' in data) updateField('char-job', data.job || 'None');
-			if('faith' in data) updateField('char-faith', data.faith || '');
-			if('species' in data) updateField('char-species', data.species || '');
-			if('patron' in data) updateField('char-patron', data.patron || '');
-			if('age' in data) updateField('char-age', data.age || '');
-			if('domhand' in data) updateField('char-domhand', data.domhand || '');
-			if('pronouns' in data) updateField('char-pronouns', data.pronouns || '');
-			if('voicetype' in data) updateField('char-voicetype', data.voicetype || '');
-			if('voicepack' in data) updateField('char-voicepack', data.voicepack || 'Default');
-			if('accent' in data) updateField('char-accent', data.accent || '');
-			if('moan' in data) updateField('char-moan', data.moan || '');
-			if('triumphs' in data) updateField('char-triumphs', data.triumphs || '0');
-			if('culture' in data) updateField('char-culture', data.culture || 'None');
-
-			if('headshot' in data) updateImagePreview('headshot-img', data.headshot);
-			if('nsfw_headshot' in data) updateImagePreview('nsfw-headshot-img', data.nsfw_headshot);
-			if('bespecial' in data) updateBeSpecial(data.bespecial === '1');
-			if('preview_sheet' in data) updatePreviewSheet(data.preview_sheet);
-
-
-			if('gender' in data) {
-				updateField('char-gender', data.gender || '');
-				var silhouette = document.getElementById('silhouette');
-				var bodyTypeSuffix = data.gender;
-				if (data.gender === "Fem" || data.gender === "F") bodyTypeSuffix = "f";
-				if (data.gender === "Masc" || data.gender === "M") bodyTypeSuffix = "m";
-				silhouette.style.backgroundImage = "url('features_bodytype_" + bodyTypeSuffix + ".png')";
-				if (bodyTypeSuffix === "f") silhouette.style.width = "15px";
-				if (bodyTypeSuffix === "m") silhouette.style.width = "18px";
-			}
-
-			// Update voice color blob
-			if('voice_color' in data) {
-				var blob = document.getElementById('voice-blob');
-				if(blob && data.voice_color) {
-					blob.style.backgroundColor = data.voice_color;
-				}
-			}
-		}
-
-		window.addEventListener('load', function() {
-			applyLayoutScale();
-			document.querySelectorAll('.auto-shrink').forEach(shrinkText);
-		});
-		window.addEventListener('resize', applyLayoutScale);
-	</script>
-</head>
-<body>
-<div id="ui-container" class="ui-container">
-	<div class="sprite header-bg"></div>
-	<div class="sprite preview-bg"></div>
-	<div class="preview-grid">
-		<div class="preview-slot"><div id="preview-north" class="preview-image preview-north" style="background-image: url('[preview_sheet]');"></div></div>
-		<div class="preview-slot"><div id="preview-south" class="preview-image preview-south" style="background-image: url('[preview_sheet]');"></div></div>
-		<div class="preview-slot"><div id="preview-east" class="preview-image preview-east" style="background-image: url('[preview_sheet]');"></div></div>
-		<div class="preview-slot"><div id="preview-west" class="preview-image preview-west" style="background-image: url('[preview_sheet]');"></div></div>
-	</div>
-	<div class="sprite body-bg"></div>
-	<div class="sprite voice-bg"></div>
-	<div class="sprite flavour-bg"></div>
-	<div class="sprite loadout-bg"></div>
-	<div class="sprite stats-bg sprite-placeholder"></div>
-	<div class="sprite headshot-bg" style="padding: 14px 3px 3px; box-sizing: border-box;">
-		<a href='?_src_=prefs;preference=headshot;task=input' style="display: block; width: 100%; height: 100%;">
-			<img id="headshot-img" src="[headshot_link || ""]"
-				style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; image-rendering: auto;"
-				onerror="this.style.display='none';">
-		</a>
-	</div>
-	<div class="sprite nsfw-headshot-bg" style="padding: 14px 3px 3px; box-sizing: border-box;">
-		<a href='?_src_=prefs;preference=nsfw_headshot;task=input' style="display: block; width: 100%; height: 100%;">
-			<img id="nsfw-headshot-img" src="[nsfw_headshot_link || ""]"
-				style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; image-rendering: auto;"
-				onerror="this.style.display='none';">
-		</a>
-	</div>
-	<div class="sprite ooc-bg"></div>
-
-	<div class="ui-label" style="top:15px; left:23px; width:39px;">Pronouns</div>
-	<div class="ui-label" style="top:15px; left:63px; width:50px; text-align:right;">Name</div>
-	<div class="field-box" style="top:26px; left:23px; width:37px;">
-		<a href='?_src_=prefs;preference=pronouns;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-pronouns" class="clickable-text auto-shrink" style="width:37px; height:9px;">[pronouns]</div>
-		</a>
-	</div>
-	<div class="field-box" style="top:26px; left:62px; width:53px;">
-		<a href='?_src_=prefs;preference=name;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-name" class="clickable-text auto-shrink" style="width:53px; height:9px;">[real_name]</div>
-		</a>
-	</div>
-	<div class="ui-label" style="top:15px; left:122px; width:35px; text-align:left;">Class</div>
-	<div class="ui-label" style="top:15px; left:185px; width:35px; text-align:left;">View</div>
-	<div class="ui-label" style="top:34px; left:122px; width:35px; text-align:left;">Race</div>
-	<div class="ui-label" style="top:34px; left:185px; width:35px; text-align:left;">Patron</div>
-	<div class="field-box" style="top:12px; left:147px; width:35px;">
-		<a href='?_src_=prefs;preference=job;task=menu' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-job" class="clickable-text auto-shrink" style="width:35px; height:9px;">[high_job || "None"]</div>
-		</a>
-	</div>
-	<div class="field-box" style="top:12px; left:215px; width:35px;">
-		<a href='?_src_=prefs;preference=faith;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-faith" class="clickable-text auto-shrink" style="width:35px; height:9px;">[selected_faith?.name || ""]</div>
-		</a>
-	</div>
-	<div class="field-box" style="top:31px; left:147px; width:35px;">
-		<a href='?_src_=prefs;preference=species;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-species" class="clickable-text auto-shrink" style="width:35px; height:9px;">[pref_species.name]</div>
-		</a>
-	</div>
-	<div class="field-box" style="top:32px; left:215px; width:35px;">
-		<a href='?_src_=prefs;preference=patron;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-patron" class="clickable-text auto-shrink" style="width:35px; height:8px; text-align:center">[selected_patron.name]</div>
-		</a>
-	</div>
-
-	<div class="ui-label" style="top:72px; left:140px; width:24px; text-align:right;">Age</div>
-	<div class="ui-label" style="top:72px; left:193px; width:28px; text-align:right;">Quirks</div>
-	<div class="ui-label" style="top:91px; left:120px; width:44px; text-align:right;">Dominance</div>
-	<div class="ui-label" style="top:91px; left:168px; width:53px; text-align:right;">Skin Tone</div>
-	<div class="ui-label" style="top:110px; left:119px; width:46px; text-align:right;">Form</div>
-	<div class="ui-label" style="top:110px; left:169px; width:53px; text-align:right;">Body Type</div>
-	<div class="sprite" style="top:78px; left:118px; width:46px; height:9px; background-image: url('body_age.png');">
-		<a href='?_src_=prefs;preference=age;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-age" class="clickable-text auto-shrink" style="width:46px; height:9px;">[age]</div>
-		</a>
-	</div>
-	<div class="sprite" style="top:78px; left:168px; width:53px; height:9px; background-image: url('body_flaw.png');">
-		<a href='?_src_=prefs;preference=select_quirks' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div class="clickable-text auto-shrink" style="width:53px; height:9px;">Select Quirks</div>
-		</a>
-	</div>
-	<div class="sprite" style="top:97px; left:119px; width:46px; height:9px; background-image: url('body_dominanthand.png');">
-		<a href='?_src_=prefs;preference=domhand' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div id="char-domhand" class="clickable-text auto-shrink" style="width:46px; height:9px;">[domhand == 1 ? "Left" : "Right"] Handed</div>
-		</a>
-	</div>
-	<div class="sprite" style="top:97px; left:168px; width:53px; height:9px; background-image: url('body_ancestry.png');">
-		<a href='?_src_=prefs;preference=s_tone;task=input' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div class="clickable-text auto-shrink" style="width:53px; height:9px;">Change</div>
-		</a>
-	</div>
-	<div class="sprite" style="top:116px; left:119px; width:46px; height:9px; background-image: url('body_customize.png');">
-		<a href='?_src_=prefs;preference=body_customize;task=menu' style="text-decoration: none; display: block; width: 100%; height: 100%;">
-			<div class="clickable-text auto-shrink" style="width:46px; height:9px;">Customize</div>
-		</a>
-	</div>
-	<a href='?_src_=prefs;preference=gender'><div class="sprite" style="top:116px; left:169px; width:53px; height:9px; background-image: url('body_bodytype.png');">
-		<div id="char-gender" class="clickable-text auto-shrink" style="width:53px; height:9px;">[gender == MALE ? "Masc" : "Fem"]</div>
-	</div></a>
-
-	<a href='?_src_=prefs;preference=culture;task=input'><div class="sprite" style="top:150px; left:207px; width:51px; height:9px; background-image: url('flavour_culture.png');">
-		<div id="char-culture" class="clickable-text auto-shrink" style="width:51px; height:9px;">[culture ? culture::name : "None"]</div>
-	</div></a>
-
-	<div class="ui-label" style="top:144px; left:8px; width:26px;">Voice</div>
-	<div class="ui-label" style="top:150px; left:10px; width:24px;">Type</div>
-	<a href='?_src_=prefs;preference=voicetype;task=input'><div class="sprite" style="top:159px; left:10px; width:27px; height:9px; background-image: url('voice_type.png');">
-		<div id="char-voicetype" class="clickable-text auto-shrink" style="width:27px; height:9px;">[voice_type]</div>
-	</div></a>
-	<div class="ui-label" style="top:153px; left:43px; width:24px;">Pack</div>
-	<a href='?_src_=prefs;preference=voicepack;task=input'><div id="char-voicepack" class="pixel-button preview-placeholder sprite-placeholder auto-shrink" style="top:159px; left:40px; width:36px;">[voice_pack || VOICE_PACK_DEFAULT]</div></a>
-	<a href='?_src_=prefs;preference=voicepreview;task=input'><div class="pixel-button preview-placeholder sprite-placeholder" style="top:159px; left:78px; width:25px;">Prev</div></a>
-	<div class="ui-label" style="top:178px; left:11px; width:32px;">Moans</div>
-	<a href='?_src_=prefs;preference=moanselection;task=input'><div class="sprite" style="top:186px; left:10px; width:46px; height:9px; background-image: url('voice_moans.png');">
-		<div id="char-moan" class="clickable-text auto-shrink" style="width:42px; height:9px;">[moan_selection]</div>
-	</div></a>
-	<a href='?_src_=prefs;preference=moanpreview;task=input'><div class="pixel-button preview-placeholder sprite-placeholder" style="top:186px; left:61px; width:42px;">Preview</div></a>
-
-	<a href='?_src_=prefs;preference=loadout_item;task=input'><div class="sprite" style="top:226px; left:10px; width:51px; height:9px; background-image: url('loadout_item1.png');">
-		<div id="char-loadout1" class="clickable-text auto-shrink" style="width:51px; height:9px;">Open Loadout Menu</div>
-	</div></a>
-	<div class="ui-label stats-title"style="top: 216px; left: 75px;">Stats</div>
-	<a href='?_src_=prefs;preference=stat_config;task=input'><div class="sprite" style="top:236px; left:76px; width:28px; height:28px; background-image: url('loadout_item1.png');">
-		<div id="char-classes" class="clickable-text auto-shrink" style="width:28px; height:9px;">Configure</div>
-	</div></a>
-	<a href='?_src_=prefs;preference=gallery;task=menu;tab=regular'><div class="pixel-button sprite-button" style="top:293px; left:130px; width:54px;">Gallery</div></a>
-
-	<a href='?_src_=prefs;preference=descriptors;task=menu'><div class="sprite flav-desc"></div></a>
-	<a href='?_src_=prefs;preference=flavortext;task=input'><div class="sprite flav-text"></div></a>
-	<a href='?_src_=prefs;preference=misc;task=menu'><div class="sprite flav-misc"></div></a>
-	<a href='?_src_=prefs;preference=ooc_preview;task=input'><div class="sprite flav-prev"></div></a>
-	<a href='?_src_=prefs;preference=ooc_notes;task=input'><div class="sprite ooc-notes"></div></a>
-	<a href='?_src_=prefs;preference=ooc_extra;task=input'><div class="sprite ooc-extra"></div></a>
-	<a href='?_src_=prefs;preference=erp;task=menu'><div class="sprite ooc-erp"></div></a>
-	<a href='?_src_=prefs;preference=customizers;task=menu'><div class="sprite f-btn"></div></a>
-	<a href='?_src_=prefs;preference=randomiseappearanceprefs;'><div class="sprite f-random"></div></a>
-
-	<div class="sprite features-bg"><div id="silhouette" class="sprite" style="width:[gender == MALE ? 18 : 15]px; background-image: url('features_bodytype_[gender == MALE ? "m" : "f"].png');"></div></div>
-
-	<div class="sprite v-color-box">
-		<a href='?_src_=prefs;preference=voice;task=input' style="display: block; width: 100%; height: 100%;">
-			<div id="voice-blob" class="sprite v-blob" style="background-color: [voice_color];"></div>
-		</a>
-	</div>
-	<a href='?_src_=prefs;preference=multi;task=menu'><div class="sprite menu-ready"></div></a>
-	<a href='?_src_=prefs;preference=changeslot;'><div class="sprite menu-change"></div></a>
-	<a href='?_src_=prefs;preference=keybinds;task=menu'><div class="sprite menu-keybinds"></div></a>
-	<a href='?_src_=prefs;preference=toggles'><div class="sprite menu-toggles"></div></a>
-	<a href='?_src_=prefs;preference=save'><div class="sprite menu-save"></div></a>
-	<a href='?_src_=prefs;preference=load'><div class="sprite menu-undo"></div></a>
-	<a href='?_src_=prefs;preference=finished'><div class="sprite menu-done"></div></a>
-</div>
-</body>
-</html>
-"}
-
-	winshow(user, "stonekeep_prefwin", TRUE)
-	user.client?.clear_character_previews()
-	winshow(user, "stonekeep_prefwin.character_preview_map", FALSE)
-	// This should really be a browser datum
-	user << browse(dat.Join(), "window=preferences_browser;size=816x950")
-	preview_browser_fingerprint = null
-	if(SStimer?.initialized)
-		addtimer(CALLBACK(src, PROC_REF(request_preview_update), TRUE), 1)
-	else
-		spawn(world.tick_lag)
-			request_preview_update(TRUE)
-	onclose(user, "stonekeep_prefwin", src)
-
-/datum/preferences/proc/fields_affect_character_preview(list/fields_to_update)
-	if(!fields_to_update || !length(fields_to_update))
-		return TRUE
-	var/static/list/preview_fields = list(
-		"age",
-		"gender",
-		"job",
-		"species",
-	)
-	for(var/field_name in fields_to_update)
-		if(field_name in preview_fields)
-			return TRUE
-	return FALSE
 
 /datum/preferences/proc/update_menu_data(mob/user, list/fields_to_update)
-	if(!winexists(user, "preferences_browser"))
-		return
-
-	var/datum/faith/selected_faith = GLOB.faith_list[selected_patron.associated_faith]
-	var/datum/job/high_job
-	for(var/job_type in job_preferences)
-		if(job_preferences[job_type] != JP_HIGH)
-			continue
-		high_job = job_type
-		break
-
-	var/list/params = list()
-
-	// If no specific fields specified, update all
-	var/update_all = !fields_to_update || !length(fields_to_update)
-
-	if(update_all || ("name" in fields_to_update))
-		params["name"] = real_name
-	if(update_all || ("job" in fields_to_update))
-		params["job"] = high_job || "None"
-	if(update_all || ("faith" in fields_to_update))
-		params["faith"] = selected_faith?.name || ""
-	if(update_all || ("species" in fields_to_update))
-		params["species"] = pref_species.name
-	if(update_all || ("patron" in fields_to_update))
-		params["patron"] = selected_patron.name
-	if(update_all || ("pq" in fields_to_update))
-		params["pq"] = "[get_playerquality(user.ckey, text = TRUE)]"
-	if(update_all || ("age" in fields_to_update))
-		params["age"] = age
-	if(update_all || ("domhand" in fields_to_update))
-		params["domhand"] = domhand == 1 ? "Left" : "Right"
-	if(update_all || ("pronouns" in fields_to_update))
-		params["pronouns"] = pronouns
-	if(update_all || ("gender" in fields_to_update))
-		params["gender"] = gender == MALE ? "Masc" : "Fem"
-	if(update_all || ("voicetype" in fields_to_update))
-		params["voicetype"] = voice_type
-	if(update_all || ("voicepack" in fields_to_update))
-		params["voicepack"] = voice_pack || VOICE_PACK_DEFAULT
-	if(update_all || ("accent" in fields_to_update))
-		params["accent"] = selected_accent
-	if(update_all || ("moan" in fields_to_update))
-		params["moan"] = moan_selection
-	if(update_all || ("loadout1" in fields_to_update))
-		params["loadout1"] = loadout1 ? loadout1.name : "None"
-	if(update_all || ("loadout2" in fields_to_update))
-		params["loadout2"] = loadout2 ? loadout2.name : "None"
-	if(update_all || ("loadout3" in fields_to_update))
-		params["loadout3"] = loadout3 ? loadout3.name : "None"
-	if(update_all || ("triumphs" in fields_to_update))
-		params["triumphs"] = user.get_triumphs() ? "\Roman [user.get_triumphs()]" : "0"
-	if(update_all || ("headshot" in fields_to_update))
-		params["headshot"] = headshot_link || ""
-	if(update_all || ("nsfw_headshot" in fields_to_update))
-		params["nsfw_headshot"] = nsfw_headshot_link || ""
-	if(update_all || ("voice_color" in fields_to_update))
-		params["voice_color"] = voice_color
-	if(update_all || ("bespecial" in fields_to_update))
-		params["bespecial"] = next_special_trait ? "1" : "0"
-	if(update_all || ("culture" in fields_to_update))
-		params["culture"] = culture::name
-
-	// Use list2params as BYOND expects for browser output
-	user << output(list2params(params), "preferences_browser:updateCharacterData")
-	if(fields_affect_character_preview(fields_to_update))
-		request_preview_update()
+	character_setup_ui_heavy_sig = null
+	var/new_static_sig = "[pref_species?.type]-[gender]"
+	if(new_static_sig != character_setup_static_sig)
+		character_setup_static_sig = new_static_sig
+		update_static_data(user)
+	character_setup_update_view()
+	SStgui.update_uis(src)
 
 
 /datum/preferences/proc/set_ui_theme(new_theme)
@@ -1726,7 +1055,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		switch(href_list["task"])
 			if("close")
 				user << browse(null, "window=mob_occupation")
-				show_choices(user,4)
+				update_menu_data(user)
 			if("reset")
 				reset_jobs(user, TRUE)
 
@@ -1957,12 +1286,182 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			else if(toggle_type == "Maptext Toggles")
 				toggles_maptext = new_toggles
 
+	// TGUI character setup menu actions (see character_menu_tgui.dm / character_menu_preview.dm)
+	else if(href_list["preference"] == "character_setup_select_species")
+		return character_setup_apply_species(user, href_list["species_id"])
+	else if(href_list["preference"] == "character_setup_select_faith")
+		return character_setup_apply_faith(user, href_list["faith_id"])
+	else if(href_list["preference"] == "character_setup_select_patron")
+		return character_setup_apply_patron(user, href_list["patron_id"])
+	else if(href_list["preference"] == "character_setup_select_ancestry")
+		return character_setup_apply_ancestry(user, href_list["ancestry"])
+	else if(href_list["preference"] == "character_setup_round_action")
+		return character_setup_round_action(user)
+	else if(href_list["preference"] == "character_setup_preferences_fullscreen")
+		character_setup_preferences_fullscreen = !character_setup_preferences_fullscreen
+		SStgui.update_uis(src)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_preferences_scale")
+		character_setup_preferences_scale = character_setup_sanitize_preferences_scale(href_list["scale"])
+		save_preferences()
+		return TRUE
+	else if(href_list["preference"] == "character_setup_report_geometry")
+		character_setup_apply_reported_zoom(user, text2num(href_list["zoom_main"]), text2num(href_list["zoom_mini"]))
+		return TRUE
+	else if(href_list["preference"] == "character_setup_customizer")
+		validate_customizer_entries()
+		if(!character_setup_handle_color_task(user, href_list))
+			handle_customizer_topic(user, href_list)
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_set_choice")
+		var/setup_customizer_type = text2path(href_list["key"])
+		var/setup_choice_type = text2path(href_list["choice_type"])
+		if(!setup_customizer_type || !setup_choice_type)
+			return TRUE
+		var/datum/customizer_entry/setup_entry = get_customizer_entry_for_customizer_type(setup_customizer_type)
+		var/datum/customizer/setup_customizer = CUSTOMIZER(setup_customizer_type)
+		if(!setup_entry || !setup_customizer)
+			return TRUE
+		if(!(setup_choice_type in setup_customizer.customizer_choices) || setup_choice_type == setup_entry.customizer_choice_type)
+			return TRUE
+		customizer_entries -= setup_entry
+		qdel(setup_entry)
+		customizer_entries += setup_customizer.create_customizer_entry(src, setup_choice_type)
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_preview_layer")
+		switch(href_list["layer"])
+			if("underwear")
+				character_setup_preview_underwear = !character_setup_preview_underwear
+			if("clothes")
+				character_setup_preview_clothes = !character_setup_preview_clothes
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_preview_rotate")
+		var/list/dir_cycle = list(SOUTH, WEST, NORTH, EAST)
+		var/idx = dir_cycle.Find(character_setup_preview_dir) || 1
+		if(href_list["rotate"] == "left")
+			idx = (idx <= 1) ? length(dir_cycle) : (idx - 1)
+		else
+			idx = (idx >= length(dir_cycle)) ? 1 : (idx + 1)
+		character_setup_preview_dir = dir_cycle[idx]
+		if(character_setup_view && character_setup_body)
+			character_setup_measure_body(character_setup_preview_dir)
+			character_setup_apply_to_view(character_setup_view, character_setup_body, character_setup_preview_dir)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_preview_background")
+		var/bg_choice = href_list["bg"]
+		character_setup_preview_background = (bg_choice == "none") ? null : bg_choice
+		character_setup_apply_map_background(user)
+		save_character()
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_toggle_genital_set")
+		toggle_genital_set()
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_mutant_color")
+		var/mutant_slot = clamp(text2num(href_list["slot"]) || 1, 1, 3)
+		pick_mutant_color(user, mutant_slot)
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_smallclothes_set")
+		var/list/smallclothes_category = character_setup_smallclothes_category(href_list["category"])
+		if(!smallclothes_category)
+			return TRUE
+		var/new_smallclothes_type = href_list["value"] ? text2path(href_list["value"]) : null
+		if(new_smallclothes_type && (!ispath(new_smallclothes_type, smallclothes_category["base"]) || !(new_smallclothes_type in smallclothes_category["options"])))
+			return TRUE
+		smallclothes_preferences[smallclothes_category["pref"]] = new_smallclothes_type
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_smallclothes_color")
+		var/list/smallclothes_category = character_setup_smallclothes_category(href_list["category"])
+		if(!smallclothes_category)
+			return TRUE
+		var/color_pref_key = smallclothes_category["color_pref"]
+		var/color_choice = input(user, "Choose a color.", "[smallclothes_category["name"]] Colour") as null|anything in GLOB.colorlist
+		if(color_choice)
+			if(GLOB.colorlist[color_choice] == "CUSTOM_RGB")
+				var/current_color = smallclothes_preferences[color_pref_key] || "#FFFFFF"
+				var/new_color = input(user, "Select color:", "Custom Color", current_color) as color|null
+				if(new_color)
+					smallclothes_preferences[color_pref_key] = sanitize_hexcolor(new_color, include_crunch = 1)
+			else
+				smallclothes_preferences[color_pref_key] = GLOB.colorlist[color_choice]
+		else
+			smallclothes_preferences[color_pref_key] = null
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_smallclothes_random")
+		smallclothes_preferences[SMALCLOTHES_RANDOM_PREFERENCES] = !smallclothes_preferences[SMALCLOTHES_RANDOM_PREFERENCES]
+		validate_smallclothes_preferences()
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_taur_body")
+		if(!pref_species?.forced_taur || !LAZYLEN(pref_species.allowed_taur_types))
+			return TRUE
+		var/list/taur_choices = list()
+		for(var/obj/item/bodypart/taur/taur_type_path as anything in pref_species.allowed_taur_types)
+			taur_choices[taur_type_path::name] = taur_type_path
+		var/obj/item/bodypart/taur/current_taur = taur_type
+		var/taur_choice = tgui_input_list(user, "Choose your taur body:", "Taur Body", taur_choices, ispath(current_taur) ? current_taur::name : null)
+		if(taur_choice)
+			taur_type = taur_choices[taur_choice]
+			save_character()
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_taur_color")
+		var/which_taur_color = href_list["which"]
+		var/current_taur_color = taur_color
+		switch(which_taur_color)
+			if("markings")
+				current_taur_color = taur_markings
+			if("tertiary")
+				current_taur_color = taur_tertiary
+		var/new_taur_color = tgui_color_picker(user, "Choose your character's taur [which_taur_color == "base" ? "" : "[which_taur_color] "]color:", "Character Preference", "#[current_taur_color]")
+		if(new_taur_color && is_body_color_picker_choice_valid(user, new_taur_color))
+			switch(which_taur_color)
+				if("markings")
+					taur_markings = sanitize_hexcolor(new_taur_color)
+				if("tertiary")
+					taur_tertiary = sanitize_hexcolor(new_taur_color)
+				else
+					taur_color = sanitize_hexcolor(new_taur_color)
+			save_character()
+		update_menu_data(user)
+		return TRUE
+	else if(href_list["preference"] == "character_setup_hover")
+		var/new_acc = href_list["acc"]
+		var/new_customizer = href_list["customizer"]
+		if(!new_acc || !new_customizer)
+			if(!character_setup_hover_acc)
+				return TRUE
+			character_setup_hover_acc = null
+			character_setup_hover_color = null
+			character_setup_hover_customizer = null
+			character_setup_render_main_only = TRUE
+			character_setup_update_view()
+			return TRUE
+		if(new_acc == character_setup_hover_acc && href_list["color"] == character_setup_hover_color && new_customizer == character_setup_hover_customizer)
+			return TRUE
+		if(!text2path(new_acc) || !text2path(new_customizer))
+			return TRUE
+		character_setup_hover_acc = new_acc
+		character_setup_hover_color = href_list["color"]
+		character_setup_hover_customizer = new_customizer
+		character_setup_render_main_only = TRUE
+		character_setup_update_view()
+		return TRUE
+
 	var/return_to_body_customize = href_list["return"] == "body_customize"
 	switch(href_list["task"])
 		if("erp_pref")
 			handle_erp_pref_topic(user, href_list)
-			show_choices(user)
-			show_erp_preferences(user)
+			update_menu_data(user)
+			if(!href_list["native"])
+				show_erp_preferences(user)
 			return
 		if("change_customizer")
 			handle_customizer_topic(user, href_list)
@@ -2291,7 +1790,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 						return
 					if(new_headshot_link == "")
 						headshot_link = null
-						show_choices(user)
+						update_menu_data(user)
 						return
 					var/is_valid_link = is_valid_headshot_link(user, new_headshot_link, FALSE)
 					if(!is_valid_link)
@@ -3101,6 +2600,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 								if(!name)
 									name = "Slot[i]"
 								choices[name] = i
+					if(!length(choices))
+						to_chat(user, span_warning("No character slots available. Guest accounts cannot save characters — log in with a BYOND account to use slots."))
+						return
 					var/choice = tgui_input_list(user, "WHO IS YOUR HERO?", "NECRA AWAITS", choices, real_name)
 					if(choice)
 						choice = choices[choice]

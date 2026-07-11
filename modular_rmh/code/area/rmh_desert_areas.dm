@@ -230,4 +230,3 @@
 	background_track = 'sound/music/area/spidercave.ogg'
 	background_track_dusk = 'sound/silence.ogg'
 	background_track_night = 'sound/silence.ogg'
-	ceiling_protected = TRUE

@@ -25,6 +25,8 @@
 	var/blood_flow = ARTERIAL_BLOOD_FLOW
 	/// If torn, this is basically the time until we gush again
 	COOLDOWN_DECLARE(next_squirt)
+	/// Time until we knit ourselves shut on our own after being torn
+	COOLDOWN_DECLARE(self_heal)
 	/// Minimum time until we squirt again
 	var/squirt_delay_min_seconds = 4
 	/// Maximum time until we squirt again
@@ -40,6 +42,11 @@
 	if(!iscarbon(owner))
 		return
 	var/mob/living/carbon/carbon_owner = owner
+	// Given enough time, a torn artery clots and knits itself shut on its own
+	if(damage > 0 && COOLDOWN_FINISHED(src, self_heal))
+		to_chat(carbon_owner, span_notice("The bleeding in my [name] finally stops."))
+		heal_bleeding()
+		return
 	// Dead, pulseless or cryosleep people do not pump blood
 	if(!(is_bruised() || is_failing()) || !carbon_owner.pulse || (carbon_owner.bodytemperature <= -15))
 		return
@@ -80,6 +87,7 @@
 	applyOrganDamage(maxHealth * 0.5)
 	var/cd_time = rand(squirt_delay_min_seconds, squirt_delay_max_seconds) SECONDS
 	COOLDOWN_START(src, next_squirt, cd_time)
+	COOLDOWN_START(src, self_heal, ARTERY_SELF_HEAL_TIME)
 
 /obj/item/organ/artery/dissect()
 	if(!owner)
@@ -91,11 +99,16 @@
 	applyOrganDamage(maxHealth)
 	var/cd_time = rand(squirt_delay_min_seconds, squirt_delay_max_seconds) SECONDS
 	COOLDOWN_START(src, next_squirt, cd_time)
+	COOLDOWN_START(src, self_heal, ARTERY_SELF_HEAL_TIME)
 
 /obj/item/organ/artery/applyOrganDamage(amount, maximum = maxHealth, silent = FALSE)
 	. = ..()
 	if(damage <= 0)
 		mend()
+
+/// Fully repairs the tear, stopping the bleeding. Blood storage refills on its own afterwards.
+/obj/item/organ/artery/proc/heal_bleeding()
+	setOrganDamage(0)
 
 /obj/item/organ/artery/proc/squirt(amount = 1, force = FALSE)
 	if(!iscarbon(owner))
