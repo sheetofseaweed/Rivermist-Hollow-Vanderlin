@@ -38,3 +38,37 @@
 		character_setup_chargen_record_ooc("Spam", "msg [i]")
 	TEST_ASSERT(length(GLOB.character_setup_chargen_ooc_messages) <= 40, "OOC buffer should cap at 40")
 	GLOB.character_setup_chargen_ooc_messages.Cut()
+
+/datum/unit_test/character_menu_loadout_data/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	var/list/slots = prefs.character_setup_loadout_slots_data()
+	TEST_ASSERT_EQUAL(length(slots), 10, "Loadout slots data should cover 10 slots")
+	var/list/first = slots[1]
+	TEST_ASSERT_EQUAL(first["slot"], 1, "First slot entry should be slot 1")
+	TEST_ASSERT_NULL(first["typepath"], "Fresh prefs should have an empty slot 1")
+
+	var/list/points = prefs.character_setup_loadout_points_data()
+	TEST_ASSERT_EQUAL(points["total"], prefs.get_base_points(), "Points total should match base points")
+	TEST_ASSERT_EQUAL(points["remaining"], points["total"] - points["spent"], "Points math should be consistent")
+
+	var/list/presets = prefs.character_setup_loadout_presets_data()
+	TEST_ASSERT_EQUAL(length(presets), 3, "Presets data should cover 3 preset slots")
+
+/datum/unit_test/character_menu_loadout_catalog/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	var/mob/living/carbon/human/dummy = allocate(/mob/living/carbon/human)
+	var/list/catalog = prefs.character_setup_loadout_static(dummy)
+	TEST_ASSERT(length(catalog), "Loadout catalog should not be empty (GLOB.loadout_items fills at world init)")
+	var/list/entry = catalog[1]
+	TEST_ASSERT(entry["name"], "Catalog entry needs a name")
+	TEST_ASSERT(entry["typepath"], "Catalog entry needs a typepath")
+	TEST_ASSERT(entry["icon"], "Catalog entry needs a spritesheet css class")
+
+/datum/unit_test/character_menu_loadout_color/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	TEST_ASSERT(prefs.character_setup_apply_loadout_color(3, "Red"), "Applying a dye-list color should succeed")
+	TEST_ASSERT_EQUAL(prefs.loadout_3_hex, GLOB.colorlist["Red"], "Named dye choice must store its hex value")
+	TEST_ASSERT(prefs.character_setup_apply_loadout_color(3, "None"), "Choosing None should succeed")
+	TEST_ASSERT_NULL(prefs.loadout_3_hex, "None should clear the stored hex")
+	TEST_ASSERT(!prefs.character_setup_apply_loadout_color(3, "Custom"), "The Custom sentinel must never be stored directly")
+	TEST_ASSERT(!prefs.character_setup_apply_loadout_color(99, "Red"), "Out-of-range slot should fail")

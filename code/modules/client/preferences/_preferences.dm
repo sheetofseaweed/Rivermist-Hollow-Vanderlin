@@ -243,9 +243,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	var/list/descriptor_entries = list()
 	var/list/custom_descriptors = list()
 
-	var/datum/loadout_menu/loadout_menu
-
-
 	var/datum/loadout_item/loadout1
 	var/datum/loadout_item/loadout2
 	var/datum/loadout_item/loadout3
@@ -296,12 +293,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	var/list/loadout_preset_1
 	var/list/loadout_preset_2
 	var/list/loadout_preset_3
-	// Temporary storage for loadout item selection (per-user to prevent race conditions)
-	var/list/temp_loadout_selection
-
-	// History tracking for character customization undo
-	var/list/customization_history = list()
-	var/current_loadout_slot = 1
 
 	var/taur_type = null
 	var/taur_color = "F2F2F2"
@@ -435,14 +426,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	for(var/i in 1 to 10)
 		QDEL_NULL(vars["loadout[i]"])
-
-	if(customization_history)
-		for(var/list/snapshot as anything in customization_history)
-			for(var/i in 1 to 10)
-				var/datum/loadout_item/loadout_item = snapshot["loadout[i]"]
-				if(loadout_item)
-					qdel(loadout_item)
-		customization_history.Cut()
 
 	return ..()
 
@@ -1399,6 +1382,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		validate_smallclothes_preferences()
 		update_menu_data(user)
 		return TRUE
+	else if(href_list["preference"] == "character_setup_loadout")
+		return character_setup_handle_loadout_link(user, href_list)
 	else if(href_list["preference"] == "character_setup_taur_body")
 		if(!pref_species?.forced_taur || !LAZYLEN(pref_species.allowed_taur_types))
 			return TRUE
@@ -1476,10 +1461,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		if("change_smallclothes_preferences")
 			handle_undies_topic(user, href_list)
 			show_smallclothes_ui(user)
-			return
-		if("change_loadout_preferences")
-			handle_loadout_topic(user, href_list)
-			open_loadout_menu_selection(user)
 			return
 		if("change_descriptor")
 			handle_descriptors_topic(user, href_list)
@@ -1829,36 +1810,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					var/datum/browser/popup = new(user, "skin_color_ref", "<div align='center'>Skin colors</div>", width = 400, height = 450)
 					popup.set_content(dat.Join())
 					popup.open(FALSE)
-				if("loadout1hex")
-					var/choice = tgui_input_list(user, "Choose a color.", "Loadout Item One Colour", GLOB.colorlist)
-					if (choice && GLOB.colorlist[choice])
-						loadout_1_hex = GLOB.colorlist[choice]
-						if (loadout1)
-							to_chat(user, "The colour for your [loadout1::name] has been set to <b>[choice]</b>.")
-					else
-						loadout_1_hex = null
-						to_chat(user, "The colour for your <b>first</b> loadout item has been cleared.")
-				if("loadout2hex")
-					var/choice = tgui_input_list(user, "Choose a color.", "Loadout Item Two Colour", GLOB.colorlist)
-					if (choice && GLOB.colorlist[choice])
-						loadout_2_hex = GLOB.colorlist[choice]
-						if (loadout2)
-							to_chat(user, "The colour for your [loadout2::name] has been set to <b>[choice]</b>.")
-					else
-						loadout_2_hex = null
-						to_chat(user, "The colour for your <b>second</b> loadout item has been cleared.")
-				if("loadout3hex")
-					var/choice = tgui_input_list(user, "Choose a color.", "Loadout Item Three Colour", GLOB.colorlist)
-					if (choice && GLOB.colorlist[choice])
-						loadout_3_hex = GLOB.colorlist[choice]
-						if (loadout3)
-							to_chat(user, "The colour for your [loadout3::name] has been set to <b>[choice]</b>.")
-					else
-						loadout_3_hex = null
-						to_chat(user, "The colour for your <b>third</b> loadout item has been cleared.")
-				if("loadout_item")
-					open_loadout_menu(user)
-
 				if("species")
 					selected_accent = ACCENT_DEFAULT
 
