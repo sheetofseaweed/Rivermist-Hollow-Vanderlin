@@ -16,6 +16,7 @@ type Data = {
   reward_text: string | null;
   danger_text: string | null;
   special_text: string | null;
+  boss_ahead: 0 | 1;
   hint: string | null;
   back_available: 0 | 1;
   muster_missing: string[];
@@ -38,6 +39,7 @@ export function DungeonGate(props) {
     reward_text,
     danger_text,
     special_text,
+    boss_ahead,
     hint,
     back_available,
     muster_missing = [],
@@ -90,6 +92,12 @@ export function DungeonGate(props) {
                 <i>{hint}</i>
               ) : (
                 isBack && <i>It leads back the way you came.</i>
+              )}
+              {!isBack && !!boss_ahead && (
+                <NoticeBox danger>
+                  War-drums and a vast presence — the floor&apos;s master waits
+                  beyond this passage.
+                </NoticeBox>
               )}
               {!isBack && (
                 <LabeledList>

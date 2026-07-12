@@ -3,8 +3,8 @@
 /obj/structure/dungeon_bargain_altar
 	name = "black-veined altar"
 	desc = "An altar of dark stone, warm to the touch. Something on the far side of it is listening."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	icon = 'icons/roguetown/misc/altar.dmi'
+	icon_state = "combined"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF

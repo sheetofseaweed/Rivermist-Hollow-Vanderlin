@@ -39,6 +39,9 @@
 	var/list/recent_template_ids = list()
 	/// Break rooms reached on the current floor (drives is_final_stretch)
 	var/stretches_completed_this_floor = 0
+	/// TRUE once this floor's boss has fallen; the post-boss break room's
+	/// forward door then leads to the stairway down instead of more combat
+	var/boss_defeated_this_floor = FALSE
 	/// Motes accumulated since the last buffered announce
 	var/pending_mote_announce = 0
 	/// Whether a mote announce flush is already scheduled
@@ -171,12 +174,14 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		stretch_length = floor_config.stretch_length + get_heat_rank(DUNGEON_HEAT_FORCED_MARCH)
 	if(run_unlocks["starting_motes"])
 		motes += 50
-	var/datum/map_template/pocket/dungeon/break_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
-	if(!break_template)
+	// The run opens on a descent landing - the floor's threshold. The first
+	// true exit is the break room won from the floor's boss.
+	var/datum/map_template/pocket/dungeon/entry_template = pick_dungeon_template(DUNGEON_ROOM_DESCENT, pick_floor_theme()) || pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
+	if(!entry_template)
 		return FALSE
 	roll_run_watching_gods()
 	build_stretch_deck()
-	current_break_room = create_room_instance(break_template, 0)
+	current_break_room = create_room_instance(entry_template, 0)
 	if(!current_break_room)
 		return FALSE
 	build_room_gates(current_break_room, null)
@@ -394,6 +399,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /// deck card (its telegraph replaces the promise).
 /datum/dungeon_run/proc/build_room_gates(datum/pocket_dimension/dungeon/room, datum/pocket_dimension/dungeon/predecessor)
 	var/list/obj/structure/dungeon_gate/forward_gates = list()
+	var/list/rolled_sibling_ids = list()
 	for(var/list/info as anything in room.gate_landmark_info)
 		var/turf/gate_turf = info["turf"]
 		if(QDELETED(gate_turf) || !room.contains_turf(gate_turf))
@@ -410,8 +416,16 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		room.native_movables[gate] = TRUE
 		if(gate.gate_role == DUNGEON_GATE_FORWARD)
 			gate.sealed = !room.cleared
-			gate.pre_rolled_template = roll_path_room_template(room, gate.path_type)
-			forward_gates += gate
+			gate.pre_rolled_template = roll_path_room_template(room, gate.path_type, rolled_sibling_ids)
+			// Doors to boss/break/descent rooms promise nothing from the deck -
+			// what waits beyond is telegraphed instead (and never rolls special).
+			var/datum/map_template/pocket/dungeon/rolled_template = gate.pre_rolled_template
+			if(rolled_template)
+				rolled_sibling_ids |= rolled_template.id // siblings offer different rooms
+			if(rolled_template && rolled_template.room_kind != DUNGEON_ROOM_COMBAT)
+				gate.reward_type = null
+			else
+				forward_gates += gate
 		else
 			gate.sealed = FALSE
 			gate.destination_room = predecessor
@@ -452,25 +466,41 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	return altar
 
 /// Picks a forward room template biased by the gate's path type. Falls back to
-/// the generic stretch roll (which handles boss/break at stretch end).
-/datum/dungeon_run/proc/roll_path_room_template(datum/pocket_dimension/dungeon/room, path_type)
+/// the generic stretch roll (which handles boss/break/descent transitions).
+/// sibling_exclude carries the ids already rolled for this room's other doors,
+/// so branching choices offer different rooms whenever the library allows.
+/datum/dungeon_run/proc/roll_path_room_template(datum/pocket_dimension/dungeon/room, path_type, list/sibling_exclude)
+	// Break, descent and boss rooms don't branch-flavor their doors.
+	var/datum/map_template/pocket/dungeon/source_template = room.get_dungeon_template()
+	if(source_template && source_template.room_kind != DUNGEON_ROOM_COMBAT)
+		return roll_next_room_template(room, sibling_exclude)
 	var/next_position = room.stretch_position + 1
 	if(next_position > stretch_length)
-		return roll_next_room_template(room)
+		return roll_next_room_template(room, sibling_exclude)
 	var/theme_to_use = pick_floor_theme()
 	var/target_tier = get_target_tier()
+	var/list/exclude = recent_template_ids.Copy()
+	if(sibling_exclude)
+		exclude |= sibling_exclude
+	// Hard rule: never the same room twice in a row.
+	var/source_id = source_template?.id
 	switch(path_type)
 		if(DUNGEON_PATH_TREASURE, DUNGEON_PATH_SHORTCUT)
-			return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, 1, target_tier, recent_template_ids)
+			return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, 1, target_tier, exclude, source_id)
 		if(DUNGEON_PATH_HAZARD, DUNGEON_PATH_ELITE)
-			return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, target_tier, target_tier + 2, recent_template_ids)
-	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, max(1, target_tier - 1), target_tier + 1, recent_template_ids)
+			return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, target_tier, target_tier + 2, exclude, source_id)
+	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, max(1, target_tier - 1), target_tier + 1, exclude, source_id)
 
-/// Picks the template behind a forward gate of the given room: a break room
-/// if the stretch would be complete, otherwise a combat room in the depth's tier band.
-/datum/dungeon_run/proc/roll_next_room_template(datum/pocket_dimension/dungeon/room)
-	var/next_position = room.stretch_position + 1
+/// Picks the template behind a forward gate of the given room. The floor loop:
+/// descent landing -> combat stretch -> boss -> break room (the exit) ->
+/// descent -> next floor. Mid-floor breaks (multi-stretch floors) resume combat.
+/datum/dungeon_run/proc/roll_next_room_template(datum/pocket_dimension/dungeon/room, list/sibling_exclude)
 	var/theme_to_use = pick_floor_theme()
+	// The post-boss break room opens onto the stairway down.
+	var/datum/map_template/pocket/dungeon/source_template = room.get_dungeon_template()
+	if(source_template?.room_kind == DUNGEON_ROOM_BREAK && boss_defeated_this_floor)
+		return pick_dungeon_template(DUNGEON_ROOM_DESCENT, theme_to_use) || pick_dungeon_template(DUNGEON_ROOM_BREAK, theme_to_use)
+	var/next_position = room.stretch_position + 1
 	if(next_position > stretch_length)
 		// End of stretch: a boss caps the floor's final stretch, else a break room.
 		if(is_final_stretch())
@@ -479,7 +509,12 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 				return boss_room
 		return pick_dungeon_template(DUNGEON_ROOM_BREAK, theme_to_use)
 	var/target_tier = get_target_tier()
-	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, max(1, target_tier - 1), target_tier + 1, recent_template_ids)
+	var/list/exclude = recent_template_ids.Copy()
+	if(sibling_exclude)
+		exclude |= sibling_exclude
+	// Hard rule: never the same combat room twice in a row.
+	var/source_id = (source_template?.room_kind == DUNGEON_ROOM_COMBAT) ? source_template.id : null
+	return pick_dungeon_template(DUNGEON_ROOM_COMBAT, theme_to_use, max(1, target_tier - 1), target_tier + 1, exclude, source_id)
 
 /// Whether the current stretch is the floor's last (its end rolls the boss).
 /// Earlier stretches end in ordinary break rooms.
@@ -552,10 +587,12 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 			continue
 		gate.sealed = FALSE
 		if(is_boss_room)
-			// Boss death turns the way onward into a descent to the next floor.
-			gate.gate_role = DUNGEON_GATE_DESCENT
-			gate.pre_rolled_template = pick_dungeon_template(DUNGEON_ROOM_DESCENT, pick_floor_theme()) || pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme())
+			// Boss death opens the way to the floor's true rest: a break room
+			// with an exit. Its far door leads to the stairway down.
+			gate.pre_rolled_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme()) || pick_dungeon_template(DUNGEON_ROOM_DESCENT, pick_floor_theme())
+			gate.reward_type = null
 	if(is_boss_room)
+		boss_defeated_this_floor = TRUE
 		on_boss_killed(room)
 
 /// Pays out the reward the door into this room promised.
@@ -591,7 +628,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 
 /datum/dungeon_run/proc/on_boss_killed(datum/pocket_dimension/dungeon/room)
 	for(var/mob/occupant as anything in room.get_occupants())
-		to_chat(occupant, span_nicegreen("The floor's guardian falls! A way down has opened."))
+		to_chat(occupant, span_nicegreen("The floor's guardian falls! Beyond waits a place of true respite - and the way back to the surface."))
 		if(occupant.client && occupant.ckey)
 			var/datum/dungeon_progress/progress = get_dungeon_progress(occupant.ckey)
 			progress?.record_boss_kill()
@@ -638,6 +675,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	floor_config = get_dungeon_floor_config(floor)
 	stretch_length = floor_config.stretch_length + get_heat_rank(DUNGEON_HEAT_FORCED_MARCH)
 	stretches_completed_this_floor = -1 // advance_to_break_room below counts it back to 0
+	boss_defeated_this_floor = FALSE // the new floor's boss still stands
 	// Reaching a descent room is also a break-room moment: despawn the old floor.
 	advance_to_break_room(new_floor_room)
 	for(var/mob/occupant as anything in new_floor_room.get_occupants())

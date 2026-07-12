@@ -55,7 +55,7 @@
 		/mob/living/carbon/human/species/goblin/npc/ambush = 12,
 		/mob/living/carbon/human/species/goblin/npc = 8,
 		/mob/living/simple_animal/hostile/retaliate/bogbug = 5,
-		/mob/living/simple_animal/hostile/retaliate/frog = 3,
+		/mob/living/simple_animal/hostile/retaliate/spider = 3,
 	)
 
 /obj/effect/landmark/dungeon/guardian/keyholder
@@ -78,6 +78,9 @@
 	if(dungeon_template?.loot_table_type)
 		cache.loot = new dungeon_template.loot_table_type
 	cache.delve_level = max(1, owner?.depth)
+	// Every present member deserves a share; each taker rolls the table
+	// independently, so this scales reward with party size, not per-share size.
+	cache.max_takers = max(cache.max_takers, length(owner?.owning_run?.present_ckeys))
 	if(owner?.owning_run?.run_unlocks?["extra_cache"])
 		cache.max_takers += 1
 	return cache
@@ -124,9 +127,9 @@
 
 /obj/structure/dungeon_loot_cache
 	name = "sealed cache"
-	desc = "A heavy stone cache, shut tight by some lingering will. Perhaps it opens when the danger passes."
+	desc = "A heavy iron-bound cache, shut tight by some lingering will. Perhaps it opens when the danger passes."
 	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	icon_state = "chestiron_neu"
 	density = TRUE
 	anchored = TRUE
 	var/locked = TRUE

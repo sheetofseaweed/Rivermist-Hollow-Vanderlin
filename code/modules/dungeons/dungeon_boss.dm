@@ -35,9 +35,8 @@ GLOBAL_LIST_INIT(dungeon_boss_titles, list("the Alpha", "the Devourer", "the War
 	if("obj_damage" in boss.vars)
 		boss.vars["obj_damage"] = round(boss.vars["obj_damage"] * factor)
 
-	// Presence: name + aura + bigger sprite.
+	// Presence: name + bigger sprite (no tint - it muddied every boss's palette).
 	boss.name = "[pick(GLOB.dungeon_boss_prefixes)] [boss.name] [pick(GLOB.dungeon_boss_titles)]"
-	boss.add_atom_colour("#7a1f1f", TEMPORARY_COLOUR_PRIORITY)
 	var/matrix/scale = matrix(boss.transform)
 	scale.Scale(1.3)
 	boss.transform = scale

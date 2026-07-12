@@ -9,6 +9,11 @@
 /obj/effect/landmark/pocket_dimension/entry,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
+"f" = (
+/obj/structure/fluff/walldeco/skullspike,
+/obj/structure/fluff/walldeco/vinez/r,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
 "g" = (
 /turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
@@ -16,40 +21,27 @@
 /obj/effect/landmark/dungeon/gate,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"j" = (
-/obj/structure/fluff/walldeco/vinez/l,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
 "k" = (
-/obj/structure/kneestingers,
-/turf/closed/mineral,
+/obj/effect/landmark/dungeon/loot,
+/turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
 "l" = (
-/obj/structure/fluff/walldeco/vinez/r,
-/turf/open/floor/dirt,
+/obj/structure/kneestingers,
+/turf/closed/mineral,
 /area/pocket_dimension/dungeon)
 "m" = (
 /turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
-"n" = (
+"p" = (
 /obj/machinery/light/fueled/firebowl/stump,
-/turf/open/floor/cobblerock/alt,
-/area/pocket_dimension/dungeon)
-"r" = (
-/obj/structure/fluff/walldeco/skullspike,
 /turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
-"u" = (
-/obj/structure/fluff/walldeco/skullspike,
-/obj/structure/fluff/walldeco/vinez/r,
-/turf/open/floor/grass,
+"s" = (
+/obj/structure/fluff/walldeco/vinez/l,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "w" = (
 /turf/open/water/swamp,
-/area/pocket_dimension/dungeon)
-"z" = (
-/obj/machinery/light/fueled/firebowl/stump,
-/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "B" = (
 /obj/effect/landmark/dungeon/guardian/boss,
@@ -59,24 +51,32 @@
 /obj/effect/landmark/dungeon/gate/back,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"N" = (
-/obj/structure/fluff/walldeco/vinez/offset,
-/turf/open/water/swamp,
-/area/pocket_dimension/dungeon)
-"U" = (
-/obj/effect/landmark/dungeon/loot,
+"H" = (
+/obj/machinery/light/fueled/firebowl/stump,
 /turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
-"Z" = (
+"J" = (
 /obj/machinery/light/fueled/firebowl/stump,
 /turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"O" = (
+/obj/structure/fluff/walldeco/skullspike,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"T" = (
+/obj/structure/fluff/walldeco/vinez/r,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"V" = (
+/obj/structure/fluff/walldeco/vinez/offset,
+/turf/open/water/swamp,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 a
 a
 a
-k
+l
 a
 a
 a
@@ -87,13 +87,13 @@ a
 "}
 (2,1,1) = {"
 a
-k
+l
 a
-j
-b
+s
+c
 G
 b
-j
+s
 b
 a
 a
@@ -101,13 +101,13 @@ a
 (3,1,1) = {"
 a
 g
-z
+p
 g
 b
-c
+b
 b
 g
-Z
+J
 a
 a
 "}
@@ -139,7 +139,7 @@ a
 "}
 (6,1,1) = {"
 a
-N
+V
 b
 b
 m
@@ -151,8 +151,8 @@ w
 a
 "}
 (7,1,1) = {"
-k
-N
+l
+V
 b
 b
 m
@@ -161,11 +161,11 @@ m
 g
 b
 w
-k
+l
 "}
 (8,1,1) = {"
 a
-N
+V
 b
 b
 m
@@ -205,14 +205,14 @@ a
 (11,1,1) = {"
 a
 a
-z
-r
+p
+O
 b
 g
 b
 g
 b
-n
+H
 a
 "}
 (12,1,1) = {"
@@ -220,13 +220,13 @@ a
 a
 a
 a
-l
+T
 h
 b
-u
+f
 m
-U
 k
+l
 "}
 (13,1,1) = {"
 a
@@ -237,7 +237,7 @@ a
 a
 a
 a
-k
-k
+l
+l
 a
 "}

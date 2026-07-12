@@ -123,10 +123,17 @@
 			break
 		var/turf/spot = pick(open)
 		open -= spot
-		var/mob/living/carbon/human/captive = new(spot)
-		captive.name = "bound captive"
-		captive.real_name = captive.name
-		captive.AddComponent(/datum/component/npc_in_distress/dungeon)
+		new /mob/living/carbon/human/npc_in_distress/dungeon(spot)
+
+/// A dungeon captive: the ambient-captive mob (randomized species, so it
+/// renders properly) sharing the guardians' faction so they don't maul their
+/// own prize - the same convention as lair distress spawners.
+/mob/living/carbon/human/npc_in_distress/dungeon
+	distress_component_type = /datum/component/npc_in_distress/dungeon
+
+/mob/living/carbon/human/npc_in_distress/dungeon/Initialize(mapload)
+	. = ..()
+	faction = list(FACTION_DUNGEON)
 
 /// Distress captive found inside a dungeon: the stock coin reward plus a mote
 /// bonus paid to the run that freed them.

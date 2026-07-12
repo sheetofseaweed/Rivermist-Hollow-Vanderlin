@@ -10,8 +10,12 @@
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "d" = (
-/obj/structure/wild_plant/nospread/swampweed,
-/turf/open/water/swamp,
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/structure/table/wood/treestump,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "f" = (
 /obj/machinery/light/fueled/firebowl/stump,
@@ -21,16 +25,16 @@
 /turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "h" = (
-/obj/structure/kneestingers,
-/turf/closed/mineral,
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
 "i" = (
-/obj/structure/flora/rock/pile,
-/turf/open/floor/dirt,
+/obj/structure/flora/rock,
+/turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
-"l" = (
-/obj/structure/table/wood/treestump,
-/turf/open/floor/grass,
+"k" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "m" = (
 /obj/machinery/light/fueled/campfire/longlived,
@@ -40,116 +44,112 @@
 /obj/effect/landmark/dungeon/shrine,
 /turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
-"p" = (
-/obj/structure/flora/rock,
-/turf/open/floor/cobblerock/alt,
+"q" = (
+/turf/closed/wall/mineral/decostone/moss/long,
 /area/pocket_dimension/dungeon)
 "s" = (
-/obj/effect/landmark/dungeon/gate/elite,
 /turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
 "w" = (
 /turf/open/water/swamp,
 /area/pocket_dimension/dungeon)
-"D" = (
-/obj/machinery/light/fueled/firebowl/stumpg,
-/turf/open/floor/cobblerock/alt,
+"C" = (
+/obj/structure/flora/rock/pile,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "F" = (
 /obj/structure/flora/grass,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"H" = (
-/obj/structure/flora/hotspring_rocks/grassy,
-/turf/open/floor/cobblerock/alt,
+"G" = (
+/obj/effect/landmark/pocket_dimension/exit,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
-"K" = (
-/obj/effect/landmark/dungeon/gate,
-/turf/open/floor/cobblerock/alt,
-/area/pocket_dimension/dungeon)
-"L" = (
-/turf/open/floor/cobblerock/alt,
-/area/pocket_dimension/dungeon)
-"N" = (
-/turf/closed/wall/mineral/decostone/moss/long,
-/area/pocket_dimension/dungeon)
-"O" = (
+"I" = (
 /obj/structure/kneestingers,
 /turf/closed/wall/mineral/decostone/moss/long,
+/area/pocket_dimension/dungeon)
+"L" = (
+/obj/structure/wild_plant/nospread/swampweed,
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"N" = (
+/obj/structure/table/wood/treestump/shroomstump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"P" = (
+/obj/effect/landmark/dungeon/gate/elite,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"Q" = (
+/obj/machinery/light/fueled/firebowl/stumpg,
+/turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
 "S" = (
 /obj/structure/table/wood/treestump,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "T" = (
-/obj/effect/landmark/pocket_dimension/exit,
-/turf/open/floor/grass,
-/area/pocket_dimension/dungeon)
-"W" = (
-/obj/item/natural/rock,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"Z" = (
-/obj/structure/table/wood/treestump/shroomstump,
-/turf/open/floor/dirt,
+/obj/structure/flora/hotspring_rocks/grassy,
+/turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
-N
-N
-N
-h
+q
+q
+q
+d
 a
 a
 a
 a
-h
+d
 a
 a
 "}
 (2,1,1) = {"
-N
-D
-L
+q
+Q
+s
 g
 a
 a
-h
+d
 b
 b
-T
+G
 a
 "}
 (3,1,1) = {"
-O
+I
 o
-L
+s
 F
 b
-h
+d
 b
 b
 c
-h
+d
 a
 "}
 (4,1,1) = {"
-N
-D
-L
+q
+Q
+s
 b
 b
 b
 b
 b
-h
+d
 a
 a
 "}
 (5,1,1) = {"
-N
+q
 w
-d
+L
 b
 b
 S
@@ -160,21 +160,21 @@ a
 a
 "}
 (6,1,1) = {"
-h
+d
 w
 w
 b
-l
+e
 m
 S
 b
 b
-Z
+N
 a
 "}
 (7,1,1) = {"
 a
-d
+L
 b
 b
 b
@@ -188,7 +188,7 @@ a
 (8,1,1) = {"
 a
 w
-W
+k
 f
 b
 b
@@ -196,33 +196,33 @@ g
 g
 b
 b
-a
+d
 "}
 (9,1,1) = {"
 a
 w
 w
 b
-i
-L
-L
-L
-L
-L
+C
+s
+s
+s
+s
+s
 a
 "}
 (10,1,1) = {"
 a
-d
+L
 w
 w
+L
+h
+T
+P
+i
+P
 d
-K
-H
-s
-p
-s
-a
 "}
 (11,1,1) = {"
 a
@@ -230,10 +230,10 @@ a
 a
 a
 a
+d
 a
+d
 a
-a
-a
-a
-a
+d
+d
 "}

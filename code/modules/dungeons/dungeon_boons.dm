@@ -331,11 +331,15 @@
 			continue
 		if(active_types[boon_type])
 			continue
-		if(initial(boon_type.requires)) // synergies never roll normally
-			continue
 		if(initial(boon_type.dark_bargain_only)) // altar-exclusive
 			continue
-		pool += new boon_type
+		// initial() cannot read list vars (returns null), so the synergy check
+		// must happen on a live instance or synergies leak into normal offers.
+		var/datum/dungeon_boon/candidate = new boon_type
+		if(length(candidate.requires)) // synergies never roll normally
+			qdel(candidate)
+			continue
+		pool += candidate
 	var/list/chosen = list()
 	while(length(pool) && length(chosen) < count)
 		var/datum/dungeon_boon/picked = pick(pool)
@@ -353,8 +357,11 @@
 	for(var/datum/dungeon_boon/boon_type as anything in subtypesof(/datum/dungeon_boon))
 		if(IS_ABSTRACT(boon_type) || active_types[boon_type])
 			continue
-		var/list/needs = initial(boon_type.requires)
-		if(!needs)
+		// Live instance: initial() returns null for list vars like requires.
+		var/datum/dungeon_boon/candidate = new boon_type
+		var/list/needs = candidate.requires?.Copy()
+		qdel(candidate)
+		if(!length(needs))
 			continue
 		var/satisfied = TRUE
 		for(var/required_type in needs)

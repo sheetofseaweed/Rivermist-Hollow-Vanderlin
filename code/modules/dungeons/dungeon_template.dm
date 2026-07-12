@@ -44,15 +44,23 @@
 		pool[template] = max(1, template.dungeon_weight)
 	return pool
 
-/// Weighted-picks a dungeon template, relaxing the anti-repeat exclusion, then
-/// tier, then theme filters before giving up, so a sparse template library
-/// still yields something.
-/proc/pick_dungeon_template(room_kind, theme = null, min_tier = 0, max_tier = INFINITY, list/exclude_ids)
-	var/list/pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier, exclude_ids)
+/// Weighted-picks a dungeon template. Soft excludes (the anti-repeat memory)
+/// relax first, then tier, then theme - but hard_exclude_id (the template of
+/// the room the party is standing in) survives every stage except the absolute
+/// last resort, so the same room never chains twice in a row unless it is
+/// literally the only template of its kind.
+/proc/pick_dungeon_template(room_kind, theme = null, min_tier = 0, max_tier = INFINITY, list/exclude_ids, hard_exclude_id)
+	var/list/full_exclude = exclude_ids ? exclude_ids.Copy() : list()
+	if(hard_exclude_id)
+		full_exclude |= hard_exclude_id
+	var/list/hard_only = hard_exclude_id ? list(hard_exclude_id) : null
+	var/list/pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier, full_exclude)
 	if(!length(pool))
-		pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier)
+		pool = get_dungeon_template_pool(room_kind, theme, min_tier, max_tier, hard_only)
 	if(!length(pool))
-		pool = get_dungeon_template_pool(room_kind, theme)
+		pool = get_dungeon_template_pool(room_kind, theme, exclude_ids = hard_only)
+	if(!length(pool))
+		pool = get_dungeon_template_pool(room_kind, exclude_ids = hard_only)
 	if(!length(pool))
 		pool = get_dungeon_template_pool(room_kind)
 	if(!length(pool))

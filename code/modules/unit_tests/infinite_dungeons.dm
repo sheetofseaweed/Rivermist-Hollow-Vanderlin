@@ -261,8 +261,41 @@
 
 	boss.death()
 	TEST_ASSERT(boss_room.cleared, "Killing the boss should clear the room.")
-	TEST_ASSERT_EQUAL(onward.gate_role, DUNGEON_GATE_DESCENT, "Boss death should convert the forward gate to a descent gate.")
-	TEST_ASSERT(!onward.sealed, "Descent gate should be open after the boss dies.")
+	TEST_ASSERT_EQUAL(onward.gate_role, DUNGEON_GATE_FORWARD, "The way onward stays a forward passage - to respite, not straight down.")
+	TEST_ASSERT(!onward.sealed, "The onward gate should be open after the boss dies.")
+	TEST_ASSERT(run.boss_defeated_this_floor, "The run should remember the floor's boss has fallen.")
+	var/datum/map_template/pocket/dungeon/onward_template = onward.pre_rolled_template
+	TEST_ASSERT_NOTNULL(onward_template, "The onward gate should have a template after the kill.")
+	TEST_ASSERT_EQUAL(onward_template.room_kind, DUNGEON_ROOM_BREAK, "The boss guards the floor's break room.")
+	TEST_ASSERT_NULL(onward.reward_type, "The door to respite promises no deck reward.")
+
+	// Walk the full post-boss loop: break room (the floor's exit), then the
+	// stairway down, which advances the floor.
+	TEST_ASSERT(onward.use_gate(delver), "Onward gate should transfer into the break room.")
+	// Entering the break room despawns the stretch (and the onward gate with
+	// it), so read the new anchor from the run, not the dead gate.
+	var/datum/pocket_dimension/dungeon/rest_room = run.current_break_room
+	TEST_ASSERT_NOTNULL(rest_room, "Post-boss break room should exist.")
+	TEST_ASSERT(rest_room.contains_turf(get_turf(delver)), "Delver should stand in the post-boss break room.")
+	var/datum/map_template/pocket/dungeon/rest_template = rest_room.get_dungeon_template()
+	TEST_ASSERT_NOTNULL(rest_template, "The rest anchor should have a template.")
+	TEST_ASSERT_EQUAL(rest_template.room_kind, DUNGEON_ROOM_BREAK, "The post-boss rest anchor should be a break room.")
+	TEST_ASSERT(QDELETED(boss_room), "The boss room should despawn behind the party.")
+	var/obj/structure/dungeon_gate/down_gate
+	for(var/obj/structure/dungeon_gate/gate as anything in rest_room.gates)
+		if(gate.gate_role == DUNGEON_GATE_FORWARD)
+			down_gate = gate
+			break
+	TEST_ASSERT_NOTNULL(down_gate, "Post-boss break room should have a forward gate.")
+	var/datum/map_template/pocket/dungeon/down_template = down_gate.pre_rolled_template
+	TEST_ASSERT_NOTNULL(down_template, "The break room's forward gate should have a template.")
+	TEST_ASSERT_EQUAL(down_template.room_kind, DUNGEON_ROOM_DESCENT, "The post-boss break room opens onto the stairway down.")
+	var/floor_before = run.floor
+	var/datum/pocket_dimension/dungeon/stairway_probe = down_gate.resolve_destination()
+	TEST_ASSERT_NOTNULL(stairway_probe, "Stairway gate should resolve a destination (template=[down_template.id], sealed=[down_gate.sealed], forsaken=[down_gate.forsaken], run_ending=[run.ending]).")
+	TEST_ASSERT(down_gate.use_gate(delver), "The stairway gate should transfer the delver (sealed=[down_gate.sealed], forsaken=[down_gate.forsaken], locked=[down_gate.requires_key && !down_gate.key_unlocked]).")
+	TEST_ASSERT_EQUAL(run.floor, floor_before + 1, "Crossing the stairway should advance the floor.")
+	TEST_ASSERT(!run.boss_defeated_this_floor, "A fresh floor's boss stands again.")
 
 	qdel(run)
 
@@ -1312,4 +1345,33 @@
 	var/motes_after_first = run.motes
 	fountain.attack_hand(delver)
 	TEST_ASSERT_EQUAL(run.motes, motes_after_first, "Fountain must refuse a second sip.")
+	qdel(run)
+
+/datum/unit_test/dungeon_synergy_gating/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	// Synergies must never surface without their prerequisites. (initial()
+	// cannot read list vars, so this guards the live-instance requires check.)
+	for(var/i in 1 to 10)
+		var/list/datum/dungeon_boon/cards = build_boon_offer(run, 3)
+		for(var/datum/dungeon_boon/card as anything in cards)
+			TEST_ASSERT(!length(card.requires), "Synergy [card.type] surfaced in an offer without its prerequisites.")
+			qdel(card)
+
+	// With prerequisites held, the dedicated last slot must carry the synergy.
+	run.add_boon(new /datum/dungeon_boon/edge)
+	run.add_boon(new /datum/dungeon_boon/fortune)
+	TEST_ASSERT_EQUAL(get_available_synergy(run), /datum/dungeon_boon/battle_luck, "Battle Luck should become available once Edge and Fortune are held.")
+	var/found_synergy = FALSE
+	var/list/datum/dungeon_boon/offer_cards = build_boon_offer(run, 3)
+	for(var/datum/dungeon_boon/card as anything in offer_cards)
+		if(card.type == /datum/dungeon_boon/battle_luck)
+			found_synergy = TRUE
+		qdel(card)
+	TEST_ASSERT(found_synergy, "A satisfied synergy should claim a slot in the offer.")
 	qdel(run)

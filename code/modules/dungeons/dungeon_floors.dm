@@ -31,6 +31,14 @@
 	/// % chance a combat room on this floor rolls a room trait
 	var/trait_chance = DUNGEON_ROOM_TRAIT_CHANCE
 
+/datum/dungeon_floor_config/New()
+	. = ..()
+	// Configs without an explicit pool inherit their themes' rosters
+	// (see get_dungeon_theme_mob_entries), so themes own their generic mobs.
+	if(!length(combat_mob_pool))
+		for(var/theme_tag in themes)
+			combat_mob_pool += get_dungeon_theme_mob_entries(theme_tag)
+
 // -- The Sunken Warrens: underground swamp goblin floors (starter content) --
 
 /datum/dungeon_floor_config/swampgob
@@ -40,15 +48,6 @@
 	tier = 1
 	stretch_length = 4
 	boss_pool = list(/mob/living/carbon/human/species/goblin/npc/ambush = 10)
-
-/datum/dungeon_floor_config/swampgob/New()
-	. = ..()
-	combat_mob_pool = list(
-		new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/goblin/npc/ambush, 12, DUNGEON_STYLE_MELEE),
-		new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/goblin/npc, 8, DUNGEON_STYLE_MELEE),
-		new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/bogbug, 5, DUNGEON_STYLE_MELEE),
-		new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/frog, 3, DUNGEON_STYLE_MELEE),
-	)
 
 /datum/dungeon_floor_config/swampgob/deep
 	floor = 2
@@ -74,13 +73,6 @@
 	enhance_chance = 0
 	elite_chance = 0
 	trait_chance = 0
-
-/datum/dungeon_floor_config/test/New()
-	. = ..()
-	combat_mob_pool = list(
-		new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_MELEE),
-		new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_RANGED),
-	)
 #endif
 
 GLOBAL_LIST_EMPTY(dungeon_floor_configs) // assoc floor number (as text) -> /datum/dungeon_floor_config instance

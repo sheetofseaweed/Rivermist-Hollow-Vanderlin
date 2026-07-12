@@ -47,7 +47,7 @@ All are placed in the map editor like any `/obj/effect/landmark`. They are invis
 | Landmark | Purpose | Required in |
 |---|---|---|
 | `/obj/effect/landmark/pocket_dimension/entry` | Where mobs arrive when they enter/are dropped in | **Every room** (falls back to room center if missing) |
-| `/obj/effect/landmark/pocket_dimension/exit` | Becomes the return seam back to the overworld | One-shot rooms, break rooms, descent rooms. **Never** in combat/boss rooms |
+| `/obj/effect/landmark/pocket_dimension/exit` | Becomes the return seam back to the overworld | One-shot rooms and break rooms. In a run, **only break rooms** get a working seam — the loader strips it from every other kind (combat/boss/descent) |
 | `/obj/effect/landmark/pocket_dimension/drop_spot` | Preferred tile where shoved/dragged-in things land | Optional |
 
 ### Dungeon-specific
@@ -55,7 +55,7 @@ All are placed in the map editor like any `/obj/effect/landmark`. They are invis
 | Landmark | Becomes | Notes |
 |---|---|---|
 | `/obj/effect/landmark/dungeon/guardian` | A hostile mob from `mob_pool` | Set `mob_pool` (weighted list), `spawn_chance`, `force_elite`. Dying guardians are tracked; room "clears" when all are dead |
-| `/obj/effect/landmark/dungeon/guardian/boss` | A floor boss | Pulls from the run's **floor config** boss pool by default (`use_floor_boss_pool = TRUE`), or its own `mob_pool` if FALSE. Boss death opens the descent |
+| `/obj/effect/landmark/dungeon/guardian/boss` | A floor boss | Pulls from the run's **floor config** boss pool by default (`use_floor_boss_pool = TRUE`), or its own `mob_pool` if FALSE. Boss death opens the way to the floor's break room |
 | `/obj/effect/landmark/dungeon/guardian/keyholder` | A guardian that drops a `dungeon_key` on death | Set `key_id` to match a key-locked gate in the same room |
 | `/obj/effect/landmark/dungeon/loot` | A sealed reward cache | Unlocks when the room is cleared. Uses the template's `loot_table_type` |
 | `/obj/effect/landmark/dungeon/gate` | A forward passage to the next room | Default `path_type = combat`. See gate variants below |
@@ -131,9 +131,11 @@ Self-contained. Player enters, clears guardians, loots, leaves via the exit seam
 - ❌ no gates needed
 
 ### `BREAK` — a safe room (infinite dungeon)
-The only place players can leave an infinite run, and where they regroup.
+The only place players can leave an infinite run, and where they regroup. In the
+floor loop it sits **after the boss**: descent landing → combat stretch → boss →
+break room (the exit) → descent → next floor.
 - ✅ `entry` landmark
-- ✅ `exit` landmark (overworld return — only break/descent rooms have working exits)
+- ✅ `exit` landmark (overworld return — the run's only working exits)
 - ✅ **2–3 forward `gate` markers** (the branching choice). Mix variants for risk/reward
 - ✅ optional `shrine` marker
 - ❌ no guardians (break rooms auto-clear)
@@ -150,13 +152,16 @@ The only place players can leave an infinite run, and where they regroup.
 - ✅ `entry` landmark
 - ✅ a `gate/back` marker
 - ✅ a `guardian/boss` marker
-- ✅ **one forward `gate`** — it becomes the **descent** to the next floor when the boss dies
+- ✅ **one forward `gate`** — when the boss dies it opens onto the floor's **break room**
 - ✅ optional `loot`
 - ❌ no exit landmark
 
-### `DESCENT` — the room you arrive in on the next floor
-Treat it like a break room (entry + exit + forward gates). Crossing into it raises the floor and
-despawns the floor behind you. The starter build reuses the break-room layout for this.
+### `DESCENT` — a floor's landing
+The room a run **starts in**, and the room beyond every post-boss break room.
+Crossing into one raises the floor and despawns everything behind you. Lay it
+out like a break room (entry + forward gates, optional shrine) — an `exit`
+landmark is tolerated but stripped (no overworld return from a landing). The
+starter build reuses the break-room layout for this.
 
 ---
 

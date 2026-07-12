@@ -1,8 +1,8 @@
 /obj/structure/dungeon_shrine
 	name = "shrine of respite"
 	desc = "A worn altar that trades the dungeon's own light for small mercies."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	icon = 'icons/roguetown/misc/tallstructure.dmi'
+	icon_state = "subduedstatue_hasring"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF

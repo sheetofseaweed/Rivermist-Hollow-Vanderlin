@@ -1034,6 +1034,8 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 
 /// Ambient captive: a random downtrodden race, no gear, crying for rescue.
 /mob/living/carbon/human/npc_in_distress
+	/// Distress component this mob binds on spawn (subtypes may pay extra bounties)
+	var/distress_component_type = /datum/component/npc_in_distress
 
 /mob/living/carbon/human/npc_in_distress/Initialize(mapload)
 	. = ..()
@@ -1050,7 +1052,7 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	var/datum/species/our_species = dna?.species
 	var/new_name = our_species ? our_species.random_name(gender) : random_unique_name(gender)
 	fully_replace_character_name(real_name, new_name)
-	AddComponent(/datum/component/npc_in_distress, FALSE)
+	AddComponent(distress_component_type, FALSE)
 
 /// Mapper landmark that spawns one ambient captive where placed.
 /obj/effect/landmark/distress_spawner

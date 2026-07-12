@@ -196,6 +196,7 @@
 	data["is_leader"] = party ? party.is_leader(user?.ckey) : FALSE
 	data["run_active"] = !!active_run
 	data["dormant"] = is_dormant()
+	data["reopens_in"] = is_dormant() ? round((dormant_until - world.time) / 10) : 0
 
 	var/list/roster = list()
 	var/leader_name
@@ -216,6 +217,33 @@
 
 	var/datum/dungeon_progress/progress = user?.ckey ? get_dungeon_progress(user.ckey) : null
 	data["echoes"] = progress ? progress.echoes : 0
+
+	// Delver's Ledger tab: the echo shop and titles.
+	var/list/unlock_data = list()
+	var/list/title_data = list()
+	if(progress)
+		for(var/datum/dungeon_unlock/unlock as anything in get_dungeon_unlock_catalogue())
+			unlock_data += list(list(
+				"id" = unlock.id,
+				"name" = unlock.name,
+				"desc" = unlock.desc,
+				"cost" = unlock.echo_cost,
+				"owned" = progress.has_unlock(unlock.id),
+			))
+			qdel(unlock)
+		for(var/datum/dungeon_cosmetic/cosmetic as anything in get_dungeon_cosmetic_catalogue())
+			title_data += list(list(
+				"id" = cosmetic.id,
+				"name" = cosmetic.name,
+				"desc" = cosmetic.desc,
+				"cost" = cosmetic.echo_cost,
+				"owned" = progress.has_cosmetic(cosmetic.id),
+				"title_text" = cosmetic.title_text,
+			))
+			qdel(cosmetic)
+	data["unlocks"] = unlock_data
+	data["titles"] = title_data
+	data["selected_title"] = progress?.selected_title
 
 	var/covenant_owned = !!progress?.has_unlock("grim_covenant")
 	data["covenant_owned"] = covenant_owned
@@ -256,6 +284,59 @@
 				return
 			ui.close()
 			INVOKE_ASYNC(src, PROC_REF(try_enter), user)
+			return TRUE
+		if("buy_unlock")
+			var/datum/dungeon_progress/progress = user.ckey ? get_dungeon_progress(user.ckey) : null
+			if(!progress)
+				return
+			var/datum/dungeon_unlock/target
+			for(var/datum/dungeon_unlock/unlock as anything in get_dungeon_unlock_catalogue())
+				if(unlock.id == params["id"])
+					target = unlock
+				else
+					qdel(unlock)
+			if(!target)
+				return
+			if(!progress.has_unlock(target.id))
+				if(progress.spend_echoes(target.echo_cost))
+					progress.grant_unlock(target.id)
+					to_chat(user, span_nicegreen("Unlocked: [target.name]."))
+				else
+					to_chat(user, span_warning("Not enough echoes."))
+			qdel(target)
+			return TRUE
+		if("buy_title")
+			var/datum/dungeon_progress/progress = user.ckey ? get_dungeon_progress(user.ckey) : null
+			if(!progress)
+				return
+			var/datum/dungeon_cosmetic/target
+			for(var/datum/dungeon_cosmetic/cosmetic as anything in get_dungeon_cosmetic_catalogue())
+				if(cosmetic.id == params["id"])
+					target = cosmetic
+				else
+					qdel(cosmetic)
+			if(!target)
+				return
+			if(!progress.has_cosmetic(target.id))
+				if(progress.spend_echoes(target.echo_cost))
+					progress.grant_cosmetic(target.id)
+					to_chat(user, span_nicegreen("Acquired: [target.name]."))
+				else
+					to_chat(user, span_warning("Not enough echoes."))
+			qdel(target)
+			return TRUE
+		if("set_title")
+			var/datum/dungeon_progress/progress = user.ckey ? get_dungeon_progress(user.ckey) : null
+			if(!progress)
+				return
+			var/title_id = params["id"]
+			if(title_id == "none")
+				progress.selected_title = null
+			else if(progress.has_cosmetic(title_id))
+				progress.selected_title = title_id
+			else
+				return
+			progress.save_progress()
 			return TRUE
 		if("invite")
 			INVOKE_ASYNC(user, TYPE_VERB_REF(/mob/living/carbon, invite_to_party))

@@ -4,8 +4,8 @@
 /obj/structure/dungeon_trader
 	name = "wandering peddler's stall"
 	desc = "A hunched figure behind a cloth-draped stall. How it got down here is not a polite question."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	icon = 'icons/roguetown/misc/machines.dmi'
+	icon_state = "streetvendor1"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
@@ -136,9 +136,9 @@
 
 /obj/structure/dungeon_mote_fountain
 	name = "glimmering fountain"
-	desc = "Light pools in a cracked stone basin. It looks drinkable, in the way dares are doable."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	desc = "Light pools around a humming crystal spire. It looks drinkable, in the way dares are doable."
+	icon = 'icons/roguetown/misc/mana_pylon.dmi'
+	icon_state = "pylon"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
@@ -167,9 +167,9 @@
 
 /obj/structure/dungeon_gamble_altar
 	name = "wager stone"
-	desc = "A flat stone scored with a circle. Something beneath it enjoys a bet."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	desc = "A grinning stone gargoyle with an upturned palm. Something inside it enjoys a bet."
+	icon = 'icons/roguetown/misc/tallstructure.dmi'
+	icon_state = "gargoyle"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
@@ -200,7 +200,7 @@
 	name = "gilded chest"
 	desc = "Unlocked, unguarded, gleaming. Absolutely nothing about this is suspicious."
 	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	icon_state = "chestfancy_neu"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
@@ -226,9 +226,9 @@
 
 /obj/structure/dungeon_riddle_shrine
 	name = "whispering shrine"
-	desc = "A shrine that murmurs a question to anyone who comes close."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "closet3"
+	desc = "A candle-crowned gargoyle that murmurs a question to anyone who comes close."
+	icon = 'icons/roguetown/misc/tallstructure.dmi'
+	icon_state = "gargoyle_candles"
 	density = TRUE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF

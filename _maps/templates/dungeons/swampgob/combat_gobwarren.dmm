@@ -6,12 +6,16 @@
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "c" = (
-/obj/structure/tent_wall,
-/turf/closed/mineral,
+/obj/effect/landmark/dungeon/larder,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "e" = (
 /obj/effect/landmark/dungeon/guardian/swampgob,
 /turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"g" = (
+/obj/structure/tent_wall,
+/turf/closed/mineral,
 /area/pocket_dimension/dungeon)
 "h" = (
 /obj/effect/landmark/dungeon/gate,
@@ -29,22 +33,11 @@
 /obj/structure/fluff/nest,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"p" = (
-/obj/machinery/light/fueled/torchholder/metal_torch,
-/turf/closed/mineral,
+"u" = (
+/obj/machinery/light/fueled/torchholder,
+/turf/closed/wall/mineral/wood,
 /area/pocket_dimension/dungeon)
-"q" = (
-/obj/structure/table/wood/treestump,
-/obj/structure/fluff/walldeco/skullspike,
-/obj/effect/landmark/dungeon/guardian/swampgob,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"r" = (
-/obj/structure/table/wood/treestump,
-/obj/effect/landmark/dungeon/guardian/swampgob,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"w" = (
+"v" = (
 /obj/structure/table/wood/treestump,
 /obj/machinery/light/fueled/torchholder/metal_torch/east,
 /turf/open/floor/dirt,
@@ -52,25 +45,17 @@
 "x" = (
 /turf/closed/wall/mineral/wood,
 /area/pocket_dimension/dungeon)
-"y" = (
-/obj/structure/fluff/walldeco/skullspike,
-/obj/machinery/light/fueled/torchholder/r,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
-"A" = (
-/obj/structure/kneestingers,
+"D" = (
+/obj/machinery/light/fueled/torchholder/metal_torch,
 /turf/closed/mineral,
-/area/pocket_dimension/dungeon)
-"C" = (
-/obj/effect/landmark/dungeon/larder,
-/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "G" = (
 /obj/effect/landmark/dungeon/gate/back,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"J" = (
-/turf/open/floor/grass,
+"I" = (
+/obj/structure/kneestingers,
+/turf/closed/mineral,
 /area/pocket_dimension/dungeon)
 "K" = (
 /obj/effect/landmark/dungeon/guardian/keyholder{
@@ -79,17 +64,25 @@
 	},
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
+"L" = (
+/obj/structure/table/wood/treestump,
+/obj/structure/fluff/walldeco/skullspike,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"N" = (
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
 "P" = (
 /obj/structure/fluff/nest,
 /obj/effect/landmark/dungeon/guardian/swampgob,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"R" = (
-/obj/structure/tent_wall,
-/turf/open/floor/dirt,
-/area/pocket_dimension/dungeon)
 "S" = (
 /obj/structure/table/wood/treestump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"U" = (
+/obj/structure/tent_wall,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "V" = (
@@ -100,71 +93,72 @@
 	},
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
-"Z" = (
-/obj/machinery/light/fueled/torchholder,
-/turf/closed/wall/mineral/wood,
+"X" = (
+/obj/structure/fluff/walldeco/skullspike,
+/obj/machinery/light/fueled/torchholder/r,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
-c
-c
-c
-A
+g
+g
+g
+I
 a
-c
-c
-c
-c
+g
+g
+g
+g
 "}
 (2,1,1) = {"
-c
+g
 P
-R
+U
 G
 b
-R
+U
 e
-w
-c
+v
+g
 "}
 (3,1,1) = {"
-c
+g
 b
-R
+U
 b
-J
+N
 b
 b
 n
-c
+g
 "}
 (4,1,1) = {"
-c
+g
 b
 b
 b
-J
+N
 b
-R
-R
-c
+U
+U
+g
 "}
 (5,1,1) = {"
-p
+D
 b
 b
 b
-J
+N
 b
 b
 b
 a
 "}
 (6,1,1) = {"
-A
+I
 b
 b
-J
+N
 b
 b
 m
@@ -172,8 +166,8 @@ S
 a
 "}
 (7,1,1) = {"
-A
-b
+I
+e
 b
 b
 b
@@ -183,11 +177,11 @@ b
 a
 "}
 (8,1,1) = {"
-A
-r
+I
+S
 m
 b
-J
+N
 b
 e
 b
@@ -195,14 +189,14 @@ a
 "}
 (9,1,1) = {"
 a
-y
-q
+X
+L
+e
+N
+N
 b
-J
-J
 b
-b
-A
+I
 "}
 (10,1,1) = {"
 x
@@ -210,25 +204,25 @@ x
 x
 b
 b
-J
+N
 b
 b
-A
+I
 "}
 (11,1,1) = {"
-Z
+u
 n
 b
 b
 b
-J
+N
 b
 b
 a
 "}
 (12,1,1) = {"
 x
-C
+c
 K
 k
 h
@@ -244,7 +238,7 @@ x
 x
 a
 a
-A
-A
+I
+I
 a
 "}

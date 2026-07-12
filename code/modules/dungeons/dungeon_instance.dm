@@ -90,7 +90,11 @@
 // keep their mapped exits.
 /datum/pocket_dimension/dungeon/create_exit_object(obj/effect/landmark/pocket_dimension/exit/exit_marker, turf/current_turf)
 	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
-	if(dungeon_template?.room_kind == DUNGEON_ROOM_COMBAT && (!exit_marker || owning_run))
+	// Run-owned rooms only ever exit through a break room - a seam anywhere
+	// else (combat, boss, descent) just teases and refuses.
+	if(owning_run && dungeon_template && dungeon_template.room_kind != DUNGEON_ROOM_BREAK)
+		return null
+	if(!exit_marker && dungeon_template?.room_kind == DUNGEON_ROOM_COMBAT)
 		return null
 	return ..()
 
@@ -272,8 +276,12 @@
 	if(dungeon_template?.loot_table_type)
 		cache.loot = new dungeon_template.loot_table_type
 	cache.delve_level = max(1, depth + bonus_delve)
+	cache.max_takers = max(cache.max_takers, length(owning_run?.present_ckeys))
+	if(owning_run?.run_unlocks?["extra_cache"])
+		cache.max_takers += 1
 	if(cache_key_id)
 		cache.key_id = cache_key_id
+		cache.icon_state = "chestweird1" // vault caches look the part
 	if(!sealed)
 		cache.unseal()
 	loot_caches += cache
@@ -374,6 +382,10 @@
 		guardian.health = guardian.maxHealth
 	// One shared faction so goblins, bogbugs and wolves never brawl each other.
 	guardian.faction = list(FACTION_DUNGEON)
+	// Some carbon NPCs (goblins et al) finish their setup on a delayed
+	// after_creation timer that stomps faction back to their overworld one.
+	// Re-assert ours after any such timer has fired.
+	addtimer(CALLBACK(src, PROC_REF(assert_guardian_faction), WEAKREF(guardian)), 2 SECONDS)
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
 	// Dungeon natives haul defeated prey to the run's own larder if one stands;
 	// never to an overworld lair (that would teleport players out of the run).
@@ -386,6 +398,16 @@
 		if("flee_in_pain" in guardian.vars)
 			guardian.vars["flee_in_pain"] = FALSE
 		RegisterSignal(guardian, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(on_carbon_guardian_health))
+
+/// Late faction re-assert: beats deferred NPC setup (goblin after_creation and
+/// kin) that would otherwise return a registered guardian to its overworld
+/// faction and start dungeon infighting.
+/datum/pocket_dimension/dungeon/proc/assert_guardian_faction(datum/weakref/guardian_ref)
+	var/mob/living/guardian = guardian_ref?.resolve()
+	if(QDELETED(guardian) || !guardian_refs || !guardian_refs["[REF(guardian)]"])
+		return
+	guardian.faction = list(FACTION_DUNGEON)
+	guardian.kidnap_lair_tag = owning_run?.get_live_larder_tag()
 
 /// A carbon guardian knocked into crit counts as defeated (see register_guardian).
 /datum/pocket_dimension/dungeon/proc/on_carbon_guardian_health(mob/living/source)

@@ -1,8 +1,8 @@
 /obj/structure/dungeon_gate
 	name = "shifting passage"
 	desc = "An archway of stone that was not there a moment ago. The space beyond refuses to settle."
-	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "ladder01"
+	icon = 'icons/roguetown/misc/doors.dmi'
+	icon_state = "wcv"
 	density = FALSE
 	anchored = TRUE
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
@@ -57,11 +57,18 @@
 		. += span_notice("A stairway plunges deeper. The air below is colder, hungrier.")
 	else if(pre_rolled_template)
 		. += span_notice(pre_rolled_template.gate_hint)
-		if(special_kind)
+		if(leads_to_boss())
+			. += span_boldwarning("Beyond this passage, something vast is waiting. The floor's master.")
+		else if(special_kind)
 			. += span_boldnotice(get_special_kind_text())
-		else
+		else if(reward_type)
 			. += span_notice(get_reward_promise_text())
 			. += span_notice("Danger: [get_path_danger_text()].")
+
+/// TRUE when this door's pre-rolled destination is the floor's boss room.
+/obj/structure/dungeon_gate/proc/leads_to_boss()
+	var/datum/map_template/pocket/dungeon/next_template = pre_rolled_template
+	return !!(next_template && next_template.room_kind == DUNGEON_ROOM_BOSS)
 
 /obj/structure/dungeon_gate/proc/get_reward_promise_text()
 	switch(reward_type)
@@ -121,8 +128,10 @@
 	data["sealed"] = sealed
 	data["forsaken"] = forsaken
 	data["locked"] = (requires_key && !key_unlocked)
-	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK || special_kind) ? null : get_reward_promise_text()
-	data["danger_text"] = (gate_role == DUNGEON_GATE_BACK) ? null : get_path_danger_text()
+	var/boss_ahead = leads_to_boss()
+	data["boss_ahead"] = boss_ahead
+	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK || special_kind || boss_ahead || !reward_type) ? null : get_reward_promise_text()
+	data["danger_text"] = (gate_role == DUNGEON_GATE_BACK || boss_ahead) ? null : get_path_danger_text()
 	data["special_text"] = special_kind ? get_special_kind_text() : null
 	data["hint"] = pre_rolled_template?.gate_hint
 	data["back_available"] = (gate_role == DUNGEON_GATE_BACK) ? (destination_room && !QDELETED(destination_room)) : TRUE

@@ -30,6 +30,28 @@
 		pool[entry] = max(1, entry.weight)
 	return pool
 
+// -- Theme rosters -------------------------------------------------------------
+// Reusable generic-mob lists keyed by DUNGEON_THEME_*. Floor configs without an
+// explicit combat_mob_pool inherit their themes' rosters, so a future volcano
+// floor never inherits swamp frogs.
+
+/proc/get_dungeon_theme_mob_entries(theme)
+	switch(theme)
+		if(DUNGEON_THEME_SWAMPGOB)
+			return list(
+				new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/goblin/npc/ambush, 12, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/goblin/npc, 8, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/bogbug, 5, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/spider, 3, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/spider/mutated, 2, DUNGEON_STYLE_MELEE, 2),
+			)
+		if(DUNGEON_THEME_TEST)
+			return list(
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/wolf, 10, DUNGEON_STYLE_RANGED),
+			)
+	return list()
+
 /// Weighted-picks a spawn entry, relaxing the style filter (then the tier gate)
 /// before giving up, so a sparse pool still yields something.
 /proc/pick_floor_spawn_entry(datum/dungeon_floor_config/config, style_filter = null, tier = 1)
