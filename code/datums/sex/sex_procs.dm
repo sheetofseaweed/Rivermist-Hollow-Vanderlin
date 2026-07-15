@@ -269,7 +269,8 @@
 	var/last_character = copytext(summary_text, length(summary_text), length(summary_text) + 1)
 	if(!(last_character in list(".", "!", "?")))
 		summary_text += "."
-	return "<div>...[html_encode("[summary_text]")]</div>"
+	// Plain text: the tgui session window renders these as its own list rows.
+	return summary_text
 
 /mob/living/proc/get_general_sex_state_summary()
 	var/datum/component/arousal/arousal_component = GetComponent(/datum/component/arousal)

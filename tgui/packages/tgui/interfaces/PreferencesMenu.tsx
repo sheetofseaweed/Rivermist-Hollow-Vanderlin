@@ -621,6 +621,10 @@ export const PreferencesMenu = () => {
     null,
   );
   const [loadoutSearch, setLoadoutSearch] = useState('');
+  const [styleSearch, setStyleSearch] = useState('');
+  useEffect(() => {
+    setStyleSearch('');
+  }, [activeFeature]);
   const [speciesFilter, setSpeciesFilter] = useState<
     'all' | 'available' | 'locked'
   >('all');
@@ -1545,6 +1549,17 @@ export const PreferencesMenu = () => {
     );
   };
 
+  const filteredAccessoryOptions = (feature: FeatureEntry) => {
+    const options = feature.accessory_options || [];
+    const lowered = styleSearch.trim().toLowerCase();
+    if (!lowered) {
+      return options;
+    }
+    return options.filter((option) =>
+      option.name.toLowerCase().includes(lowered),
+    );
+  };
+
   const renderFeatureBody = (feature: FeatureEntry, skipColors?: boolean) => {
     const extraControls = renderFeatureExtras(feature);
 
@@ -1576,9 +1591,22 @@ export const PreferencesMenu = () => {
                 <Box color="label">Style</Box>
               </Stack.Item>
               {extraControls ? <Stack.Item grow>{extraControls}</Stack.Item> : null}
+              {feature.accessory_options.length > 12 ? (
+                <Stack.Item grow={extraControls ? undefined : 1} textAlign="right">
+                  <Input
+                    value={styleSearch}
+                    onChange={setStyleSearch}
+                    placeholder="Search styles..."
+                    width="140px"
+                  />
+                </Stack.Item>
+              ) : null}
             </Stack>
+            {!filteredAccessoryOptions(feature).length ? (
+              <Box color="label">No styles match your search.</Box>
+            ) : null}
             <OptionGrid
-              options={feature.accessory_options}
+              options={filteredAccessoryOptions(feature)}
               selected={feature.accessory_value}
               onSelect={(value) =>
                 customizerAct(feature.key, 'select_acc', { acc_type: value })

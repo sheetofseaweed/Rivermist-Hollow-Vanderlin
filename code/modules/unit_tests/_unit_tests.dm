@@ -113,6 +113,7 @@
 #include "rogue_inhands.dm"
 #include "roguetown_clothing.dm"
 #include "runtime_gc_regressions.dm"
+#include "sex_session_tgui.dm"
 #include "runtime_regressions.dm"
 #include "spawn_humans.dm"
 #include "spawn_mobs.dm"
