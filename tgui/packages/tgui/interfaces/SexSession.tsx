@@ -1311,7 +1311,7 @@ export const SexSession = () => {
   };
 
   return (
-    <Window title="Sate Desire" width={712} height={466} theme="vanderlin">
+    <Window title="Sate Desire" width={725} height={470} theme="vanderlin">
       <Window.Content>
         <Stack fill vertical>
           <Stack.Item>{renderHeader()}</Stack.Item>

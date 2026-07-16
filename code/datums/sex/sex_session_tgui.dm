@@ -4,7 +4,7 @@
 /datum/sex_session/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "SexSession", "Sate Desire", 712, 456)
+		ui = new(user, src, "SexSession", "Sate Desire", 725, 470)
 		ui.set_autoupdate(FALSE)
 		ui.open()
 
