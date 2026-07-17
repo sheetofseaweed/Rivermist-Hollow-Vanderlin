@@ -67,6 +67,7 @@
 #include "ai_targeting_allegiances.dm"
 #include "alchemy_medicine.dm"
 #include "anchored_mobs.dm"
+#include "antag_contracts.dm"
 #include "armor_damage.dm"
 #include "belly_fullness.dm"
 #include "bellyriding.dm"

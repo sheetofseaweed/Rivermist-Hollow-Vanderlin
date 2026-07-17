@@ -39,6 +39,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 	typecache_datum_blacklist = typecacheof(typecache_datum_blacklist)
 
 /datum/antagonist/Destroy()
+	teardown_contracts()
 	GLOB.antagonists -= src
 	if(owner)
 		LAZYREMOVE(owner.antag_datums, src)
@@ -128,6 +129,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 			replace_banned_player()
 		else if(owner.current.client?.holder && (CONFIG_GET(flag/auto_deadmin_antagonists) || owner.current.client.prefs?.toggles & DEADMIN_ANTAGONIST))
 			owner.current.client.holder.auto_deadmin()
+		setup_contracts()
 
 /datum/antagonist/proc/is_banned(mob/M)
 	if(!M)
@@ -149,6 +151,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 		owner.current.key = C.key
 
 /datum/antagonist/proc/on_removal()
+	teardown_contracts()
 	remove_innate_effects()
 	clear_antag_stress()
 	remove_antag_hud(antag_hud_type, antag_hud_name)
@@ -204,6 +207,10 @@ GLOBAL_LIST_EMPTY(antagonists)
 				objectives_complete = FALSE
 				break
 
+	var/contract_report = contract_roundend_ledger()
+	if(contract_report)
+		report += contract_report
+
 	if(objectives.len == 0 || objectives_complete)
 		report += "<span class='greentext big'>The [name] was successful!</span>"
 	else
@@ -255,6 +262,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 // List if ["Command"] = CALLBACK(), user will be appeneded to callback arguments on execution
 /datum/antagonist/proc/get_admin_commands()
 	. = list()
+	add_contract_admin_commands(.)
 
 /datum/antagonist/Topic(href,href_list)
 	if(!check_rights(R_ADMIN))
