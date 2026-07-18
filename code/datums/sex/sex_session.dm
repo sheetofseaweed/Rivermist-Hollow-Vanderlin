@@ -85,6 +85,11 @@
 		qdel(effect)
 
 /proc/apply_sex_action_climax_effects(mob/living/climaxer, mob/living/target, datum/sex_action/action, climax_type, datum/reagents/source_reagents, amount, atom/climax_destination, climax_method, mob/living/action_initiator, mob/living/action_target, mob/living/action_performer)
+	// Succubus essence harvest: a partner's climax feeds a succubus. (spec 2026-07-17 §2)
+	if(target && climaxer != target)
+		var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(target)
+		if(succubus_antag)
+			succubus_antag.harvest_from_climax(climaxer)
 	if(!source_reagents || amount <= 0)
 		return amount
 	var/datum/sex_action_effect_context/context = new(climaxer, target, action, action_initiator ? action_initiator : climaxer, action_target ? action_target : target, TRUE)
