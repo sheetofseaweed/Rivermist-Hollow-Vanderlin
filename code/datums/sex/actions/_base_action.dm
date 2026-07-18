@@ -251,7 +251,7 @@
 		return null
 	return user.getorganslot(ORGAN_SLOT_PENIS)
 
-/datum/sex_action/proc/try_store_in_hole(mob/living/user, mob/living/target)
+/datum/sex_action/proc/try_store_in_hole(mob/living/user, mob/living/target, datum/sex_session/session)
 	if(!requires_hole_storage || !hole_id || !stored_item_type)
 		return TRUE
 
@@ -268,7 +268,6 @@
 	var/obj/item/item_to_store
 
 	var/self = (user == target)
-	var/datum/sex_session/session = get_sex_session(user, target)
 	if(!session)
 		return FALSE
 	var/force = FALSE
@@ -403,11 +402,12 @@
 	if(gags_target)
 		target.mouth_blocked = TRUE
 	if(requires_hole_storage && !issimple(target)) //simple mobs dont have anything so skip.
+		var/datum/sex_session/session = get_sex_session(user, target)
 		if(flipped)
-			if(!try_store_in_hole(target, user))
+			if(!try_store_in_hole(target, user, session))
 				return FALSE
 		else
-			if(!try_store_in_hole(user, target))
+			if(!try_store_in_hole(user, target, session))
 				return FALSE
 	lock_sex_object(user, target)
 	sex_volume = initial(sex_volume)
