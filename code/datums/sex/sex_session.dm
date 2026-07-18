@@ -134,6 +134,9 @@
 	///have we just climaxed?
 	var/just_climaxed = FALSE
 
+	var/static/sex_id = 0
+	var/our_sex_id = 0
+
 	/// Level of pleasure resistance
 	var/resistance_to_pleasure = RESIST_NONE
 	/// Level of edging others
@@ -152,6 +155,8 @@
 /datum/sex_session/New(mob/living/session_user, mob/living/session_target)
 	user = session_user
 	target = session_target
+	sex_id++
+	our_sex_id = sex_id
 	assign_to_collective()
 
 	RegisterSignal(user, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))

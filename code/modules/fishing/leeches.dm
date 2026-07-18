@@ -8,6 +8,7 @@
 #define LEECH_LACTATION_CAP 2
 #define LEECH_EGG_INTERVAL (4 MINUTES)
 #define LEECH_SEX_DRAIN_AMOUNT 10
+#define LEECH_BLOOD_STOP_THRESHOLD (BLOOD_VOLUME_NORMAL * 0.5)
 
 /proc/leech_body_storage_success(fit_result)
 	return fit_result in list(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
@@ -160,14 +161,20 @@
 				user.simple_remove_embedded_object(src)
 			return TRUE
 	else
+		if(user.blood_volume <= LEECH_BLOOD_STOP_THRESHOLD)
+			if(bodypart)
+				bodypart.remove_embedded_object(src)
+			else
+				user.simple_remove_embedded_object(src)
+			return TRUE
 		var/modifier = bodypart?.get_incision() ? 1.5 : 1
 		user.adjustToxLoss(-1 * toxin_healing * modifier)
-		var/blood_extracted = min(blood_maximum - blood_storage, user.blood_volume, blood_sucking) * modifier
+		var/blood_extracted = min(blood_maximum - blood_storage, user.blood_volume - LEECH_BLOOD_STOP_THRESHOLD, blood_sucking * modifier)
 		if(HAS_TRAIT(user, TRAIT_LEECHIMMUNE))
 			blood_extracted *= 0.05
 		user.adjust_bloodvolume(-blood_extracted)
 		blood_storage += blood_extracted
-		if((blood_storage >= blood_maximum) || (user.blood_volume <= BLOOD_VOLUME_BAD))
+		if((blood_storage >= blood_maximum) || (user.blood_volume <= LEECH_BLOOD_STOP_THRESHOLD))
 			if(bodypart)
 				bodypart.remove_embedded_object(src)
 			else
@@ -925,6 +932,7 @@
 		return 0
 	return leech.consume_climax_fluids(context, source_reagents, amount)
 
+#undef LEECH_BLOOD_STOP_THRESHOLD
 #undef LEECH_SEX_DRAIN_AMOUNT
 #undef LEECH_EGG_INTERVAL
 #undef LEECH_LACTATION_CAP
