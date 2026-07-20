@@ -34,20 +34,18 @@
 
 /datum/sex_action/spanking/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
-	var/force = sex_session.force
 	var/sound = pick('sound/foley/slap.ogg', 'sound/foley/smackspecial.ogg')
 	playsound(target, sound, 50, TRUE, -2, ignore_walls = FALSE)
 
-	var/msg = "[user] [sex_session.get_generic_force_adjective()] spanks [target]'s butt."
+	var/msg = "[user] [get_generic_force_adjective()] spanks [target]'s butt."
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force(msg))
+		user.visible_message(spanify_force(msg))
 
 	// Arousal and pain logic
 	var/arousal_amt = 1.2 + (force * 0.5)
 	var/pain_amt = 2 * force
-	sex_session.perform_sex_action(target, user, arousal_amt, pain_amt, arousal_amt, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, arousal_amt, pain_amt, arousal_amt)
+	handle_passive_ejaculation(target)
 
 	// Soreness messaging depending on force
 	if(force >= SEX_FORCE_HIGH)

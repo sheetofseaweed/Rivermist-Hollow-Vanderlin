@@ -3,6 +3,11 @@
 	stamina_cost = 0
 	check_same_tile = FALSE
 	hole_id = ORGAN_SLOT_VAGINA
+	scene_interaction = SEX_SCENE_INTERACTION_PENETRATION
+	scene_user_role = SEX_SCENE_ROLE_GIVER
+	scene_user_slot = ORGAN_SLOT_PENIS
+	scene_target_role = SEX_SCENE_ROLE_RECEIVER
+	scene_target_slot = ORGAN_SLOT_VAGINA
 
 /datum/sex_action/npc/npc_vaginal_sex/shows_on_menu(mob/living/user, mob/living/target)
 	return FALSE
@@ -33,23 +38,22 @@
 
 
 /datum/sex_action/npc/npc_vaginal_sex/on_perform(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s pussy."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s pussy."))
 	var/used_sex_volume = sex_volume
-	playsound(target, sex_session.get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
+	playsound(target, get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
 
 	//if(user.has_kink(KINK_ONOMATOPOEIA))
 	//	do_onomatopoeia(user)
 
-	sex_session.perform_sex_action(user, target, 2, 0, 2, src)
+	perform_sex_action(user, target, 2, 0, 2)
 
-	if(sex_session.considered_limp(user))
-		sex_session.perform_sex_action(target, user, 1.2, 4, 1.2, src)
+	if(considered_limp(user))
+		perform_sex_action(target, user, 1.2, 4, 1.2)
 	else
-		sex_session.perform_sex_action(target, user, 2.4, 9, 2.4, src)
-	sex_session.handle_passive_ejaculation(target)
+		perform_sex_action(target, user, 2.4, 9, 2.4)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/npc/npc_vaginal_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
@@ -66,3 +70,7 @@
 /datum/sex_action/npc/npc_vaginal_sex/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] pulls [user.p_their()] cock out of [target]'s pussy."))
+
+/datum/sex_action/npc/npc_vaginal_sex/lock_sex_object(mob/living/user, mob/living/target)
+	add_sex_lock(user, ORGAN_SLOT_PENIS)
+	add_sex_lock(target, ORGAN_SLOT_VAGINA, null, FALSE)

@@ -40,23 +40,22 @@
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
 
 /datum/sex_action/sex/other/vagina/on_perform(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rides [target]."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rides [target]."))
 	var/used_sex_volume = sex_volume
-	playsound(target, sex_session.get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
+	playsound(target, get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
 
 	if(user.has_kink(KINK_ONOMATOPOEIA))
 		do_onomatopoeia(user)
 
-	if(sex_session.considered_limp(target))
-		sex_session.perform_sex_action(target, user, 1.2, 3, 3, src)
+	if(considered_limp(target))
+		perform_sex_action(target, user, 1.2, 3, 3)
 	else
-		sex_session.perform_sex_action(target, user, 2.4, 7, 2, src)
-	sex_session.handle_passive_ejaculation(target)
+		perform_sex_action(target, user, 2.4, 7, 2)
+	handle_passive_ejaculation(target)
 
-	sex_session.perform_sex_action(user, target, 2, 4, 3, src)
+	perform_sex_action(user, target, 2, 4, 3)
 
 /datum/sex_action/sex/other/vagina/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)

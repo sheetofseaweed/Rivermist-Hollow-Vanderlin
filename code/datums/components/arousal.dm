@@ -245,11 +245,6 @@
 		orgasm_prog_amt = 0
 	var/applied_resist = RESIST_NONE
 	var/applied_force = SEX_FORCE_MID
-	var/datum/sex_session/s_session = get_sex_session(action_target, action_target)
-
-	if(s_session)
-		applied_resist = s_session.get_current_resist()
-		applied_force = s_session.get_current_force()
 
 	var/isnymph = FALSE
 	if(HAS_TRAIT(user, TRAIT_NYMPHO_CURSE) || user.has_quirk(/datum/quirk/vice/lovefiend))
@@ -483,15 +478,7 @@
 /datum/component/arousal/proc/ejaculate(datum/sex_action/s_action, mob/living/action_initiator, mob/living/action_target, giving = FALSE, mob/living/action_performer)
 
 	var/mob/living/mob = parent
-	var/list/parent_sessions = return_sessions_with_user(parent)
-	var/datum/sex_session/highest_priority = return_highest_priority_action(parent_sessions, parent)
-	var/datum/sex_action/action
-
-	if(s_action)
-		action = s_action
-
-	else if(highest_priority)
-		action = highest_priority.get_highest_priority_action_for(parent)
+	var/datum/sex_action/action = s_action
 
 	if(!action_initiator)
 		action_initiator = parent
@@ -505,6 +492,7 @@
 		target = action_initiator
 	var/must_flip = !giving
 
+	mob.sex_scene?.handle_pattern_climax(mob, action)
 	playsound(parent, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
 	// Special cases for when the user has a penis but no testicles & for eunuchs
 	if((!mob.getorganslot(ORGAN_SLOT_TESTICLES) && mob.getorganslot(ORGAN_SLOT_PENIS)) || (!mob.getorganslot(ORGAN_SLOT_TESTICLES) && !mob.getorganslot(ORGAN_SLOT_VAGINA)))

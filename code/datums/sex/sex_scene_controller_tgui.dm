@@ -1,22 +1,26 @@
-/// TGUI port of the sex session window. Data builders + ui_act live here;
-/// domain logic stays in sex_session.dm.
+/// Scene-facing TGUI data and actions for one actor's controller.
 
-/datum/sex_session/ui_interact(mob/user, datum/tgui/ui)
+/datum/sex_scene_controller/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "SexSession", "Sate Desire", 725, 470)
+		ui = new(user, src, "SexScene", "Sate Desire", 900, 560)
 		ui.set_autoupdate(FALSE)
 		ui.open()
 
-/datum/sex_session/ui_state(mob/user)
-	// Session procs do their own distance/consciousness checks per action;
+/datum/sex_scene_controller/ui_state(mob/user)
+	// Runtime actions do their own distance/consciousness checks;
 	// the window must stay usable while lying down or grabbed.
 	return GLOB.always_state
 
-/datum/sex_session/ui_data(mob/viewer)
+/datum/sex_scene_controller/ui_data(mob/viewer)
 	var/list/data = list()
+	sync_ui_selected_participant()
 	data["target_name"] = target?.name
 	data["is_self"] = (user == target)
+	data["scene_name"] = scene?.display_name
+	data["scene_participants"] = get_scene_participants_ui_data()
+	data["scene_connections"] = get_scene_connections_ui_data()
+	data["scene_claims"] = get_scene_claims_ui_data()
 
 	var/list/status_lines = list()
 	for(var/line in user.return_character_information())
@@ -37,13 +41,88 @@
 	)
 	data["zone_options"] = get_zone_options_ui_data()
 	data["actions"] = get_actions_ui_data()
+	data["scene_patterns"] = get_scene_patterns_ui_data()
 	data["bellyriding"] = get_bellyriding_ui_data()
 	data["custom"] = get_custom_actions_ui_data()
 	data["intimacy"] = get_intimacy_ui_data()
 	data["notes"] = get_notes_ui_data()
 	return data
 
-/datum/sex_session/proc/get_arousal_ui_data()
+/datum/sex_scene_controller/proc/sync_ui_selected_participant()
+	if(!scene || QDELETED(scene))
+		return FALSE
+	if(!ui_selected_participant || QDELETED(ui_selected_participant) || !(ui_selected_participant in scene.participants))
+		ui_selected_participant = target
+	if(ui_selected_participant != target)
+		return set_target(ui_selected_participant)
+	return TRUE
+
+/datum/sex_scene_controller/proc/select_ui_participant(participant_ref)
+	if(!scene || QDELETED(scene))
+		return FALSE
+	var/mob/living/selected_participant
+	for(var/mob/living/participant as anything in scene.participants)
+		if(REF(participant) == participant_ref)
+			selected_participant = participant
+			break
+	if(!selected_participant)
+		return FALSE
+
+	if(!set_target(selected_participant))
+		return FALSE
+	SStgui.update_uis(src)
+	return TRUE
+
+/datum/sex_scene_controller/proc/get_scene_participants_ui_data()
+	var/list/participants_out = list()
+	for(var/mob/living/participant as anything in scene?.participants)
+		if(!participant || QDELETED(participant))
+			continue
+		var/list/status_lines = list()
+		for(var/line in participant.return_character_information())
+			if(line)
+				status_lines += line
+		participants_out += list(list(
+			"ref" = REF(participant),
+			"name" = participant.name,
+			"is_self" = (participant == user),
+			"selected" = (participant == ui_selected_participant),
+			"action_count" = length(scene.get_actions_involving(participant)),
+			"status_lines" = status_lines,
+		))
+	return participants_out
+
+/datum/sex_scene_controller/proc/get_scene_connections_ui_data()
+	var/list/connections_out = list()
+	for(var/datum/sex_action/action as anything in scene?.active_actions)
+		if(!action || QDELETED(action))
+			continue
+		connections_out += list(list(
+			"ref" = REF(action),
+			"name" = action.name,
+			"actor_name" = action.action_user?.name,
+			"target_name" = action.action_target?.name,
+			"speed" = action.speed,
+			"force" = action.force,
+			"can_stop" = (action.action_user == user),
+		))
+	return connections_out
+
+/datum/sex_scene_controller/proc/get_scene_claims_ui_data()
+	var/list/claims_out = list()
+	for(var/datum/sex_scene_resource_claim/claim as anything in scene?.resource_claims)
+		if(!claim || QDELETED(claim))
+			continue
+		var/resource_name = claim.locked_item?.name || claim.locked_organ_slot || "resource"
+		claims_out += list(list(
+			"action_name" = claim.owner?.name,
+			"host_name" = claim.locked_host?.name,
+			"resource_name" = resource_name,
+			"hard" = claim.hard_lock,
+		))
+	return claims_out
+
+/datum/sex_scene_controller/proc/get_arousal_ui_data()
 	var/list/arousal_data = list()
 	SEND_SIGNAL(user, COMSIG_SEX_GET_AROUSAL, arousal_data)
 	var/current_arousal = arousal_data["arousal"] || 0
@@ -54,7 +133,7 @@
 		"pain_pct" = 0,
 	)
 
-/datum/sex_session/proc/get_zone_options_ui_data()
+/datum/sex_scene_controller/proc/get_zone_options_ui_data()
 	var/list/options = list()
 	for(var/filter_label in action_zone_filter_options)
 		options += list(list(
@@ -63,9 +142,9 @@
 		))
 	return options
 
-/datum/sex_session/proc/get_actions_ui_data()
+/datum/sex_scene_controller/proc/get_actions_ui_data()
 	var/list/actions_out = list()
-	for(var/datum/sex_action/action as anything in active_actions)
+	for(var/datum/sex_action/action as anything in get_active_actions())
 		actions_out += list(list(
 			"key" = action.get_menu_action_key(),
 			"name" = action.name,
@@ -74,22 +153,39 @@
 			"user_zones" = action.user_menu_zone_mask,
 			"target_zones" = action.target_menu_zone_mask,
 		))
-	for(var/datum/sex_action/action as anything in get_all_menu_actions())
-		if(!action.shows_on_menu(user, target))
+	for(var/datum/sex_action/action_template as anything in get_all_menu_actions())
+		if(is_action_active(action_template))
 			continue
-		if(is_action_active(action))
+		var/datum/sex_action_proposal/proposal = create_action_proposal(action_template, "player")
+		var/datum/sex_action/action = proposal?.action
+		if(!action || !action.shows_on_menu(user, target))
+			qdel(proposal)
 			continue
+		var/can_start = proposal?.can_start()
 		actions_out += list(list(
 			"key" = action.get_menu_action_key(),
 			"name" = action.name,
 			"active" = FALSE,
-			"can_perform" = can_perform_action(action),
+			"can_perform" = can_start,
 			"user_zones" = action.user_menu_zone_mask,
 			"target_zones" = action.target_menu_zone_mask,
 		))
+		qdel(proposal)
 	return actions_out
 
-/datum/sex_session/proc/get_bellyriding_ui_data()
+/datum/sex_scene_controller/proc/get_scene_patterns_ui_data()
+	var/list/patterns_out = list()
+	for(var/datum/sex_scene_pattern_match/pattern_match as anything in scene?.get_pattern_matches(null, user))
+		patterns_out += list(list(
+			"key" = pattern_match.match_key,
+			"id" = pattern_match.pattern_id,
+			"name" = pattern_match.display_name,
+			"focus_name" = pattern_match.focus?.name,
+			"is_focus" = (pattern_match.focus == user),
+		))
+	return patterns_out
+
+/datum/sex_scene_controller/proc/get_bellyriding_ui_data()
 	var/datum/component/bellyriding/belly_comp = get_bellyriding_component()
 	if(!belly_comp)
 		return null
@@ -104,18 +200,21 @@
 		var/datum/sex_action/action = SEX_ACTION(action_type)
 		if(!action)
 			continue
+		var/datum/sex_action_proposal/proposal = create_action_proposal(action, "player")
+		var/can_start = proposal?.can_start()
+		qdel(proposal)
 		actions_out += list(list(
 			"key" = "[action_type]",
 			"name" = action.name,
 			"selected" = (belly_comp.selected_action_type == action_type),
-			"can_perform" = can_perform_action(action),
+			"can_perform" = can_start,
 		))
 	return list(
 		"enabled" = belly_comp.enable_interactions,
 		"actions" = actions_out,
 	)
 
-/datum/sex_session/proc/get_intimacy_ui_data()
+/datum/sex_scene_controller/proc/get_intimacy_ui_data()
 	var/list/out = list(
 		"lock_reason" = null,
 		"yours" = list(),
@@ -150,20 +249,20 @@
 		out["their_kinks"] = categories_out
 	return out
 
-/datum/sex_session/proc/get_notes_ui_data()
+/datum/sex_scene_controller/proc/get_notes_ui_data()
 	var/list/yours_out = list()
 	var/list/theirs_out = list()
-	if(user?.ckey)
-		var/list/self_notes = get_player_notes_about(user.ckey, user.ckey, get_character_slot(user))
-		for(var/note_title in self_notes)
-			yours_out += list(build_note_ui_entry(note_title, self_notes[note_title]))
+	if(user?.ckey && target?.ckey)
+		var/list/partner_notes = get_player_notes_about(user.ckey, target.ckey, get_character_slot(user))
+		for(var/note_title in partner_notes)
+			yours_out += list(build_note_ui_entry(note_title, partner_notes[note_title]))
 	if(target != user && target?.ckey)
 		var/list/target_self_notes = get_player_notes_about(target.ckey, target.ckey, get_character_slot(target))
 		for(var/note_title in target_self_notes)
 			theirs_out += list(build_note_ui_entry(note_title, target_self_notes[note_title]))
 	return list("yours" = yours_out, "theirs" = theirs_out)
 
-/datum/sex_session/proc/build_note_ui_entry(note_title, list/note_data)
+/datum/sex_scene_controller/proc/build_note_ui_entry(note_title, list/note_data)
 	var/created_time = note_data["created"]
 	var/modified_time = note_data["last_modified"]
 	var/meta = "Created: [time2text(created_time, "MM/DD/YY hh:mm")]"
@@ -175,11 +274,17 @@
 		"meta" = meta,
 	)
 
-/datum/sex_session/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+/datum/sex_scene_controller/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
 	if(.)
 		return
 	if(ui.user != user)
+		return FALSE
+
+	if(action == "select_participant")
+		return select_ui_participant("[params["ref"]]")
+
+	if(!sync_ui_selected_participant())
 		return FALSE
 
 	switch(action)
@@ -189,8 +294,15 @@
 			try_start_action(params["key"])
 			return TRUE
 		if("stop")
-			try_stop_current_action(params["key"])
+			try_stop_action(params["key"])
 			return TRUE
+		if("stop_scene_action")
+			for(var/datum/sex_action/scene_action as anything in scene?.active_actions)
+				if(REF(scene_action) != "[params["ref"]]" || scene_action.action_user != user)
+					continue
+				scene?.stop_action(scene_action)
+				return TRUE
+			return FALSE
 		if("set_speed")
 			var/value = text2num("[params["value"]]")
 			if(isnull(value) || value < SEX_SPEED_MIN || value > SEX_SPEED_MAX)
@@ -217,7 +329,7 @@
 			SEND_SIGNAL(user, COMSIG_SET_ERECT_STATE, manual_arousal > 2)
 			return TRUE
 		if("toggle_finished")
-			do_until_finished = !do_until_finished
+			set_stop_on_climax(!do_until_finished)
 			return TRUE
 		if("toggle_edging")
 			edging_other = !edging_other
@@ -269,13 +381,13 @@
 				return TRUE
 			note_title = copytext(note_title, 1, 129)
 			var/character_slot = get_character_slot(user)
-			var/list/existing_notes = get_player_notes_about(user.ckey, user.ckey, character_slot)
+			if(!target?.ckey)
+				return FALSE
+			var/list/existing_notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
 			if(existing_notes[note_title])
 				to_chat(user, span_warning("A note with that title already exists. Please choose a different title."))
 				return TRUE
-			// Old HTML code wrote this under target.ckey by mistake, so fresh
-			// self-notes never appeared in the list; write under our own key.
-			if(set_player_note_about(user.ckey, user.ckey, note_title, note_content, character_slot))
+			if(set_player_note_about(user.ckey, target.ckey, note_title, note_content, character_slot))
 				to_chat(user, span_notice("Note '[note_title]' saved."))
 			else
 				to_chat(user, span_warning("Failed to save note."))
@@ -286,11 +398,13 @@
 			if(!length(note_title) || !length(note_content))
 				return FALSE
 			var/character_slot = get_character_slot(user)
-			var/list/notes = get_player_notes_about(user.ckey, user.ckey, character_slot)
+			if(!target?.ckey)
+				return FALSE
+			var/list/notes = get_player_notes_about(user.ckey, target.ckey, character_slot)
 			if(!notes[note_title])
 				to_chat(user, span_warning("Note not found."))
 				return TRUE
-			set_player_note_about(user.ckey, user.ckey, note_title, note_content, character_slot)
+			set_player_note_about(user.ckey, target.ckey, note_title, note_content, character_slot)
 			return TRUE
 		if("note_remove")
 			var/note_title = "[params["title"]]"
@@ -302,7 +416,9 @@
 				return FALSE
 			var/save_name = "character_[character_slot]_notes"
 			var/list/all_notes = note_save_manager.get_data(save_name, "partner_notes", list())
-			var/list/own_notes = all_notes[ckey(user.ckey)]
+			if(!target?.ckey)
+				return FALSE
+			var/list/own_notes = all_notes[ckey(target.ckey)]
 			if(!islist(own_notes) || !own_notes[note_title])
 				to_chat(user, span_warning("Note not found."))
 				return TRUE

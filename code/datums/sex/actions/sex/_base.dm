@@ -7,14 +7,39 @@
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	knot_on_finish = TRUE
 	can_knot = TRUE
-	user_priority = 100
-	target_priority = 0
 
 /datum/sex_action/sex/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
 	return TRUE
+
+/datum/sex_action/sex/get_scene_interaction()
+	if(hole_id == BODY_ZONE_PRECISE_MOUTH)
+		return SEX_SCENE_INTERACTION_ORAL
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return SEX_SCENE_INTERACTION_PENETRATION
+	return ..()
+
+/datum/sex_action/sex/get_scene_user_role()
+	if(hole_id == BODY_ZONE_PRECISE_MOUTH)
+		return SEX_SCENE_ROLE_RECEIVER
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return SEX_SCENE_ROLE_GIVER
+	return ..()
+
+/datum/sex_action/sex/get_scene_user_slot()
+	return ORGAN_SLOT_PENIS
+
+/datum/sex_action/sex/get_scene_target_role()
+	if(hole_id == BODY_ZONE_PRECISE_MOUTH)
+		return SEX_SCENE_ROLE_GIVER
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return SEX_SCENE_ROLE_RECEIVER
+	return ..()
+
+/datum/sex_action/sex/get_scene_target_slot()
+	return hole_id
 
 /datum/sex_action/sex/lock_sex_object(mob/living/user, mob/living/target)
 	add_sex_lock(user, ORGAN_SLOT_PENIS)

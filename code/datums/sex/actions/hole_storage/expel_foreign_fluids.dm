@@ -11,8 +11,6 @@
 	continous = FALSE
 	do_time = FOREIGN_FLUID_EXPULSION_TIME
 	stamina_cost = 0
-	user_priority = 0
-	target_priority = 0
 	var/cavity_name = "cavity"
 
 /datum/sex_action/hole_storage/expel_foreign_fluids/shows_on_menu(mob/living/user, mob/living/target)
