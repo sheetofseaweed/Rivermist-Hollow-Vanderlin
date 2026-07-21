@@ -294,7 +294,19 @@
 		var/max_restore = reagent_generate_rate * 2
 		var/restore_amount = min(max_restore, reagents.maximum_volume - max_femcum)
 		reagents.add_reagent(reagent_to_make, restore_amount)
+	tag_femcum_donor()
 	try_generate_oviposition_egg()
+
+/// Stamp held femcum with its producer each tick, so the donor survives transfer out of the
+/// organ. All femcum self-fills land here first, so one site covers everything.
+/obj/item/organ/genitals/filling_organ/vagina/proc/tag_femcum_donor()
+	if(!owner || !reagents)
+		return
+	if(!(reagent_to_make in reagents.reagent_list))
+		return
+	var/datum/reagent/consumable/femcum/nectar = reagents.reagent_list[reagent_to_make]
+	if(istype(nectar))
+		nectar.sync_femcum_parent(owner)
 
 /obj/item/organ/genitals/filling_organ/proc/organ_jumped()
 	var/mob/living/carbon/human/H = owner

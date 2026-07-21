@@ -5,14 +5,19 @@
 	roundend_category = "Other Villains"
 	antagpanel_category = "Villain"
 	job_rank = ROLE_SUCCUBUS
+	innate_traits = list(
+		TRAIT_IDENTITY_SHIFTING,
+		TRAIT_LUSTFUL_STAMINA
+	)
 	var/essence = 0
 	var/essence_cap = SUCCUBUS_ESSENCE_CAP_BASE
-	/// mind -> number of climaxes harvested from that partner (novelty decay input)
+	/// mind -> climaxes harvested (novelty decay input)
 	var/list/partner_harvests = list()
-	/// Same-tick harvest dedupe: the climax pipeline runs once per producing organ,
-	/// so a multi-organ partner's single climax would otherwise harvest twice
+	/// Same-tick dedupe: the climax pipeline fires once per producing organ
 	var/datum/mind/last_harvest_mind
 	var/last_harvest_time = -1
+	/// mind -> fluid units absorbed (per-originator decay input)
+	var/list/reagent_units_absorbed = list()
 
 /datum/antagonist/succubus/greet()
 	to_chat(owner.current, span_userdanger("I hunger, and this town is a banquet. I must feed on their lust — carefully, sweetly, unseen."))
@@ -24,6 +29,9 @@
 	grant_succubus_powers()
 
 /datum/antagonist/succubus/on_removal()
+	// Revert first so the mind is moved back to the human before the antag detaches
+	if(true_form_active)
+		leave_true_form()
 	remove_succubus_powers()
 	return ..()
 
@@ -32,13 +40,20 @@
 	QDEL_LIST_ASSOC_VAL(stolen_forms)
 	partner_harvests = null
 	last_harvest_mind = null
+	reagent_units_absorbed = null
+	// Team persists for roundend/thralls; just drop our reference
+	harem = null
 	return ..()
 
-// grant_succubus_powers() / remove_succubus_powers() are defined in succubus_camouflage.dm
-// (Task 4), which composes in the T1/T2 ability kit from succubus_abilities.dm (Task 5).
+// grant_succubus_powers()/remove_succubus_powers() live in succubus_camouflage.dm
 
 /datum/antagonist/succubus/proc/adjust_essence(amount)
 	essence = clamp(essence + amount, 0, essence_cap)
+
+/// COMSIG_MOB_GET_STATUS_TAB_ITEMS handler: essence readout in the Status tab
+/datum/antagonist/succubus/proc/on_status_tab(datum/source, list/items)
+	SIGNAL_HANDLER
+	items += "Essence: [essence] / [essence_cap]"
 
 /// Called from the climax pipeline when someone climaxes with the succubus as partner.
 /datum/antagonist/succubus/proc/harvest_from_climax(mob/living/carbon/human/partner)
@@ -59,7 +74,19 @@
 	adjust_essence(gained)
 	if(owner?.current)
 		to_chat(owner.current, span_love("Their release feeds me. (+[gained] essence, [essence]/[essence_cap])"))
-	store_partner_form(partner) // defined in succubus_camouflage.dm (Task 4)
+	store_partner_form(partner)
+
+/// Trickle essence from absorbed cum/femcum; decay compounds per originator so
+/// one donor can't be farmed as a bottomless keg.
+/datum/antagonist/succubus/proc/harvest_from_reagent(datum/mind/donor, volume)
+	if(volume <= 0)
+		return
+	var/decay = SUCCUBUS_NOVELTY_FLOOR // untraceable fluid is stale fluid
+	if(donor)
+		var/absorbed = reagent_units_absorbed[donor] || 0
+		decay = max(SUCCUBUS_NOVELTY_FLOOR, SUCCUBUS_REAGENT_DECAY ** (absorbed / SUCCUBUS_REAGENT_DECAY_UNIT))
+		reagent_units_absorbed[donor] = absorbed + volume
+	adjust_essence(round(SUCCUBUS_ESSENCE_PER_REAGENT_UNIT * volume * decay, 0.1))
 
 /datum/antagonist/succubus/proc/get_corruption_multiplier(mob/living/carbon/human/partner)
 	if(partner.mind?.assigned_role?.title in GLOB.succubus_clergy_roles)

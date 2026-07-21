@@ -194,6 +194,9 @@
 	// Roll this encounter's threshold once, on the first valid hostile climax (10-20 per design).
 	if(horny_defeat_climax_threshold <= 0)
 		horny_defeat_climax_threshold = rand(10, 20)
+		// Lust-fed beings (succubi) are nearly bottomless: heroic to tire out, not immune
+		if(HAS_TRAIT(carbon_parent, TRAIT_LUSTFUL_STAMINA))
+			horny_defeat_climax_threshold *= SUCCUBUS_HORNY_KO_MULT
 	horny_defeat_climax_count++
 	horny_defeat_last_climax_at = world.time
 	if(horny_defeat_climax_count < horny_defeat_climax_threshold)

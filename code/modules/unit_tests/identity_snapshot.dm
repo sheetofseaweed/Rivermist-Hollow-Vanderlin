@@ -6,11 +6,13 @@
 	alice.gender = FEMALE
 	alice.honorary = "Dame"
 	alice.voice_color = "ff00ff"
+	alice.skin_tone = SKIN_TONE_BLACK3 // real values from GLOB.skin_tones (__HELPERS/mobs.dm)
 	alice.set_hair_color("#ff0000", FALSE)
 	alice.set_eye_color("#00ff00", "#0000ff", FALSE)
 
 	bob.real_name = "Bob Snapshot Test"
 	bob.gender = MALE
+	bob.skin_tone = SKIN_TONE_PALE
 	bob.set_hair_color("#123456", FALSE)
 
 	var/datum/identity_snapshot/bob_base = new
@@ -19,12 +21,14 @@
 	alice_snap.capture(alice)
 
 	TEST_ASSERT_EQUAL(alice_snap.real_name, "Alice Snapshot Test", "capture must record real_name")
+	TEST_ASSERT_EQUAL(alice_snap.skin_tone, SKIN_TONE_BLACK3, "capture must record skin tone")
 	TEST_ASSERT_EQUAL(alice_snap.hair_color, "#ff0000", "capture must record hair color")
 	TEST_ASSERT_EQUAL(alice_snap.eye_color_right, "#00ff00", "capture must record right eye color")
 	TEST_ASSERT_EQUAL(alice_snap.eye_color_left, "#0000ff", "capture must record left eye color")
 
 	TEST_ASSERT(alice_snap.apply(bob), "apply must succeed on a valid human")
 	TEST_ASSERT_EQUAL(bob.real_name, "Alice Snapshot Test", "apply must set real_name")
+	TEST_ASSERT_EQUAL(bob.skin_tone, SKIN_TONE_BLACK3, "apply must carry skin tone")
 	TEST_ASSERT_EQUAL(bob.get_hair_color(), "#ff0000", "apply must set hair color")
 	TEST_ASSERT_EQUAL(bob.get_eye_color(RIGHT_SIDE), "#00ff00", "apply must set right eye color")
 	TEST_ASSERT_EQUAL(bob.gender, FEMALE, "apply must set gender")
@@ -33,6 +37,7 @@
 
 	TEST_ASSERT(bob_base.apply(bob), "restoring the base snapshot must succeed")
 	TEST_ASSERT_EQUAL(bob.real_name, "Bob Snapshot Test", "restore must return real_name")
+	TEST_ASSERT_EQUAL(bob.skin_tone, SKIN_TONE_PALE, "restore must return bob's own skin tone")
 	TEST_ASSERT_EQUAL(bob.get_hair_color(), "#123456", "restore must return hair color")
 	TEST_ASSERT_EQUAL(bob.gender, MALE, "restore must return gender")
 

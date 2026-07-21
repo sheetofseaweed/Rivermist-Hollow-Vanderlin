@@ -3066,7 +3066,11 @@
 		return
 
 	hostile_grab_horny_climax_count++
-	if(hostile_grab_horny_climax_count < hostile_grab_horny_climax_threshold)
+	var/effective_threshold = hostile_grab_horny_climax_threshold
+	// Lust-fed beings (succubi) are nearly bottomless: heroic to tire out, not immune
+	if(HAS_TRAIT(src, TRAIT_LUSTFUL_STAMINA))
+		effective_threshold *= SUCCUBUS_HORNY_KO_MULT
+	if(hostile_grab_horny_climax_count < effective_threshold)
 		return
 
 	knockout_from_hostile_grab_horny_climax(grabber)

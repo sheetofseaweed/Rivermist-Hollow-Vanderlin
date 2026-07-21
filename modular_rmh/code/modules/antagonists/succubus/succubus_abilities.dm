@@ -1,26 +1,9 @@
-// Succubus antagonist core — T1/T2 abilities: Detect Desire, Lust, Allure, Aphrodisiac Kiss (Task 5)
-// See docs/superpowers/plans/2026-07-17-succubus-core.md
-//
-// Base API pinned from code/modules/antagonists/villain/werewolf/werewolf_spells.dm and
-// code/modules/spells/spell.dm (read before writing this file, per the plan's Task 4/5 recon
-// requirement): /datum/action/cooldown/spell is the cast chain (before_cast -> spell_feedback ->
-// cast -> StartCooldown -> after_cast); pointed spells (Detect Desire, Lust) use the base type
-// directly the way code/modules/spells/spell_types/pointed/woundlick.dm and the modular lewd spells
-// enrapture.dm/forced_orgasm.dm do (self_cast_possible = FALSE, cast_range, is_valid_target
-// override, cast(mob/living/carbon/human/cast_on)); self-cast abilities (Allure, Aphrodisiac Kiss)
-// use /datum/action/cooldown/spell/undirected (click_to_activate = FALSE), same as werewolf's
-// howl/claws. Granted/removed via mob/living/proc/add_spell(path, source = owner) /
-// remove_spell(path) - exact mirror of grant_werewolf_powers()/remove_werewolf_powers().
-//
-// None of these set spell_cost/spell_type: the base engine's cost system (mana/stamina/blood/rage)
-// is for the CASTER's own resource pools and is not succubus essence. Essence is charged entirely
-// by hand against the antag datum (IS_SUCCUBUS(owner).essence), so spell_cost is left at its
-// default of 0, which makes the base check_cost() a no-op and avoids double-charging anything.
+// Succubus abilities. Pointed spells use /datum/action/cooldown/spell; self-cast ones use the
+// /undirected subtype. Essence is charged by hand against the antag datum (base spell_cost is
+// left 0), and every lewd-lane ability gates on can_target_lewd() before any effect.
 
-/// The diegetic "am I allowed to affect this person with lust magic" gate (spec §8, §12). Every
-/// ability that can touch another mob's body/mind funnels through this one proc so the pref check
-/// can never drift out of sync between abilities - and so Task 7's tests can assert against it
-/// directly by name.
+/// The single "may I affect this person with lust magic" pref gate — every lewd ability
+/// funnels through it so the check can't drift between abilities.
 /datum/antagonist/succubus/proc/can_target_lewd(mob/living/target)
 	if(!ishuman(target))
 		return FALSE
@@ -46,10 +29,8 @@
 		return FALSE
 	return ishuman(cast_on)
 
-// The diegetic pref reader (spec §8) is gated in before_cast, not cast(): a SPELL_CANCEL_CAST
-// return here skips spell_feedback() (the base class's casting sound/invocation) entirely, so a
-// warded target never picks up so much as the ambient sound of a doomed cast - NO effect, message,
-// or sound ever reaches them, only the caster gets the warded-soul line.
+// Gate in before_cast, not cast(): a SPELL_CANCEL_CAST here skips spell_feedback() (casting
+// sound/invocation), so a warded target gets no effect, message, or sound at all.
 /datum/action/cooldown/spell/succubus_detect_desire/before_cast(atom/cast_on)
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
@@ -70,8 +51,7 @@
 	if(!succubus_antag)
 		return
 
-	// can_target_lewd() already passed in before_cast (otherwise SPELL_CANCEL_CAST would have
-	// stopped the chain before cast() was ever reached), so no need to re-check it here.
+	// can_target_lewd() already passed in before_cast
 	var/list/lines = list()
 	lines += "This soul lies open to my arts."
 	lines += cast_on.has_erp_pref(/datum/erp_preference/boolean/enthrallable) ? "Their will could be bound to mine, in time." : "Their will is anchored; thralldom is beyond reach."
@@ -99,11 +79,8 @@
 		return FALSE
 	return ishuman(cast_on)
 
-// Gated hard in before_cast, same reasoning as Detect Desire: an opted-out target must never
-// receive any effect, message, or sound, and a SPELL_CANCEL_CAST return here means spell_feedback()
-// (casting sound/invocation) never runs, on top of no essence being spent and no cooldown starting.
-// The pref check runs before the essence check so the caster always gets the warded-soul message
-// regardless of how much essence is on hand.
+// Gated in before_cast like Detect Desire. Pref check before the essence check, so the caster
+// always gets the warded-soul line regardless of essence.
 /datum/action/cooldown/spell/succubus_lust/before_cast(atom/cast_on)
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
@@ -129,25 +106,15 @@
 	if(!succubus_antag)
 		return
 
-	// can_target_lewd() and the essence check already passed in before_cast.
+	// gates already passed in before_cast
 	succubus_antag.adjust_essence(-SUCCUBUS_COST_LUST)
-	// Arousal increase goes through the signal the arousal component itself listens for
-	// (code/datums/components/arousal.dm RegisterWithParent -> COMSIG_SEX_ADJUST_AROUSAL ->
-	// adjust_arousal()), same as the modular lewd spells enrapture.dm/forced_orgasm.dm - this
-	// respects arousal_frozen internally, so no separate check is needed here.
+	// COMSIG_SEX_ADJUST_AROUSAL: the arousal component handles arousal_frozen internally
 	SEND_SIGNAL(cast_on, COMSIG_SEX_ADJUST_AROUSAL, 15)
 	to_chat(cast_on, span_love("A wave of unbidden heat rolls through me..."))
 	to_chat(owner, span_love("Desire kindles within [cast_on.real_name]."))
 
 // --- Allure: toggled aura, no cost, slow pulse ----------------------------------------------------
-// /datum/action/cooldown/spell has no built-in "toggle + periodic tick while active" shape of its
-// own (its only process() is the charge-up mechanic, not applicable here - charge_required is
-// FALSE on every succubus ability). The closest supported shape already used in this codebase for
-// a self-buff spell is: the spell's cast() toggles state and applies/removes a status effect, and
-// the status effect itself does the periodic tick via its own tick_interval (see
-// code/modules/spells/spell_types/undirected/bloodrage.dm applying /datum/status_effect/buff/bloodrage,
-// and code/datums/status_effects/buffs.dm's duration=-1/tick_interval pattern, e.g. sword_spin). That
-// shape is mirrored here instead of inventing new action-level processing.
+// cast() toggles a standing status effect; the effect's own tick_interval drives the pulse.
 
 /datum/action/cooldown/spell/undirected/succubus_allure
 	name = "Allure"
@@ -194,8 +161,7 @@
 	tick_interval = 4 SECONDS
 	alert_type = null
 
-/// Nearby (range 3) humans who pass the lust-magic pref get a small arousal tick. Opted-out
-/// humans are silently skipped - can_target_lewd() is the same gate every other ability uses.
+/// Nearby humans who pass the pref gate get a small arousal tick; opted-out ones are skipped.
 /datum/status_effect/succubus_allure_aura/tick()
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
 	if(!succubus_antag)
@@ -208,14 +174,7 @@
 		SEND_SIGNAL(target, COMSIG_SEX_ADJUST_AROUSAL, 2)
 
 // --- Aphrodisiac Kiss: self-buff, essence cost, delivered on the next kiss -----------------------
-// Delivery ladder per the plan: (1) a dedicated kissing-action hook - kissing.dm
-// (code/datums/sex/actions/oral/kissing.dm) exposes none, it just calls
-// datum/sex_session/proc/perform_sex_action() like every other sex action; (2) COMSIG_SEX_RECEIVE_ACTION
-// - this IS a clean hook: perform_sex_action sends it once per participant
-// (code/datums/sex/sex_session.dm ~line 577: SEND_SIGNAL(pleasure_receiver, COMSIG_SEX_RECEIVE_ACTION,
-// sex_act, pleasure_receiver, partner, ...)), so filtering by istype(s_action, /datum/sex_action/kissing)
-// on a listener registered on the succubus's own mob identifies the kiss partner via the
-// action_target arg. Landed on rung 2 - no touch-based downgrade needed.
+// Delivered via a COMSIG_SEX_RECEIVE_ACTION listener filtered to /datum/sex_action/kissing.
 
 /datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss
 	name = "Aphrodisiac Kiss"
@@ -229,8 +188,6 @@
 	/// Timer for the venom expiring unused
 	var/venom_timer
 
-// Essence check gated in before_cast, consistent with Lust/Detect Desire and with this codebase's
-// convention that before_cast is where cost gating belongs (ai_navigation/spell_signal_map.md).
 /datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss/before_cast(mob/living/cast_on)
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
@@ -293,8 +250,120 @@
 		UnregisterSignal(remove_from, COMSIG_SEX_RECEIVE_ACTION)
 	return ..()
 
-// --- Grant / remove wiring (composed into succubus_camouflage.dm's grant_succubus_powers/
-// remove_succubus_powers, which are the single definitions of those two proc names) --------------
+// --- Whisper: telepathic flirtation at range -----------------------------------------------------
+
+/datum/action/cooldown/spell/succubus_whisper
+	name = "Whisper"
+	desc = "Slip a few words directly into a target's mind, sweet and unbidden."
+	has_visual_effects = FALSE
+	antimagic_flags = NONE
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+	associated_skill = null
+	self_cast_possible = FALSE
+	cast_range = 7
+	charge_required = FALSE
+	cooldown_time = 6 SECONDS
+	/// Text captured in before_cast so a cancelled prompt refunds the cooldown; consumed in cast().
+	var/pending_whisper
+
+/datum/action/cooldown/spell/succubus_whisper/is_valid_target(atom/cast_on)
+	. = ..()
+	if(!.)
+		return FALSE
+	return ishuman(cast_on)
+
+/datum/action/cooldown/spell/succubus_whisper/before_cast(atom/cast_on)
+	. = ..()
+	if(. & SPELL_CANCEL_CAST)
+		return
+	var/mob/living/carbon/human/target = cast_on
+	if(!istype(target))
+		return
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag)
+		return . | SPELL_CANCEL_CAST
+	if(!succubus_antag.can_target_lewd(target))
+		to_chat(owner, span_notice("Their mind is sealed against my voice."))
+		return . | SPELL_CANCEL_CAST
+	if(succubus_antag.essence < SUCCUBUS_COST_WHISPER)
+		to_chat(owner, span_warning("I lack the essence to reach their mind."))
+		return . | SPELL_CANCEL_CAST
+	// Prompt here, not in cast(): only a before_cast cancel refunds the cooldown. Essence is
+	// still spent in cast(), on words actually sent.
+	var/text = tgui_input_text(owner, "What shall I whisper into their mind?", "Whisper", max_length = 200)
+	if(!text)
+		return . | SPELL_CANCEL_CAST
+	// Re-validate after the input gap
+	if(QDELETED(target) || succubus_antag.essence < SUCCUBUS_COST_WHISPER)
+		return . | SPELL_CANCEL_CAST
+	pending_whisper = text
+
+/datum/action/cooldown/spell/succubus_whisper/cast(mob/living/carbon/human/cast_on)
+	. = ..()
+	var/text = pending_whisper
+	pending_whisper = null
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag || !istype(cast_on) || !text)
+		return
+	if(succubus_antag.essence < SUCCUBUS_COST_WHISPER)
+		return
+	succubus_antag.adjust_essence(-SUCCUBUS_COST_WHISPER)
+	to_chat(cast_on, span_love("A sultry voice caresses my mind: \"[text]\""))
+	to_chat(owner, span_love("I pour the words into [cast_on.real_name]'s mind: \"[text]\""))
+	log_game("SUCCUBUS WHISPER: [key_name(owner)] to [key_name(cast_on)]: [text]")
+
+// --- Charm: a warm disposition nudge -------------------------------------------------------------
+
+/datum/stress_event/succubus_charm
+	stress_change = -6
+	desc = span_green("A warm fondness settles over me like perfume...")
+	timer = 10 MINUTES
+
+/datum/action/cooldown/spell/succubus_charm
+	name = "Charm"
+	desc = "Wrap a target's heart in warmth toward you. A nudge of disposition, nothing more - the rest is craft."
+	has_visual_effects = FALSE
+	antimagic_flags = NONE
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+	associated_skill = null
+	self_cast_possible = FALSE
+	cast_range = 3
+	charge_required = FALSE
+	cooldown_time = SUCCUBUS_CHARM_COOLDOWN
+
+/datum/action/cooldown/spell/succubus_charm/is_valid_target(atom/cast_on)
+	. = ..()
+	if(!.)
+		return FALSE
+	return ishuman(cast_on)
+
+/datum/action/cooldown/spell/succubus_charm/before_cast(atom/cast_on)
+	. = ..()
+	if(. & SPELL_CANCEL_CAST)
+		return
+	var/mob/living/carbon/human/target = cast_on
+	if(!istype(target))
+		return
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag)
+		return . | SPELL_CANCEL_CAST
+	if(!succubus_antag.can_target_lewd(target))
+		to_chat(owner, span_notice("Their heart is barred against me."))
+		return . | SPELL_CANCEL_CAST
+	if(succubus_antag.essence < SUCCUBUS_COST_CHARM)
+		to_chat(owner, span_warning("I lack the essence to warm their heart."))
+		return . | SPELL_CANCEL_CAST
+
+/datum/action/cooldown/spell/succubus_charm/cast(mob/living/carbon/human/cast_on)
+	. = ..()
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag || !istype(cast_on))
+		return
+	succubus_antag.adjust_essence(-SUCCUBUS_COST_CHARM)
+	cast_on.add_stress(/datum/stress_event/succubus_charm)
+	var/mob/living/caster = owner
+	to_chat(cast_on, span_love("A warm fondness for [caster.real_name] settles over me like perfume."))
+	to_chat(owner, span_love("[cast_on.real_name]'s heart softens toward me."))
 
 /datum/antagonist/succubus/proc/grant_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
@@ -304,6 +373,9 @@
 	current_mob.add_spell(/datum/action/cooldown/spell/succubus_lust, source = owner)
 	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_allure, source = owner)
 	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss, source = owner)
+	current_mob.add_spell(/datum/action/cooldown/spell/succubus_whisper, source = owner)
+	current_mob.add_spell(/datum/action/cooldown/spell/succubus_charm, source = owner)
+	current_mob.add_spell(/datum/action/cooldown/spell/succubus_enthrall, source = owner)
 
 /datum/antagonist/succubus/proc/remove_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
@@ -313,7 +385,9 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_lust)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_allure)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss)
-	// Defensive: Allure's toggle applies a standing aura status effect that outlives the spell
-	// action itself (they're separate datums) if the antag is stripped mid-pulse.
+	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_whisper)
+	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_charm)
+	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_enthrall)
+	// Allure's aura is a separate datum that outlives the spell if stripped mid-pulse
 	if(current_mob.has_status_effect(/datum/status_effect/succubus_allure_aura))
 		current_mob.remove_status_effect(/datum/status_effect/succubus_allure_aura)

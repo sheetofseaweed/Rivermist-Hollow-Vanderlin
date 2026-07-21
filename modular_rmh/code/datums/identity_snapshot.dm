@@ -1,18 +1,16 @@
 /**
- * A portable copy of a human's visible identity: everything another player can
- * see or hear that says "this is who I am". Capture from a live human, apply to
- * any human, keep as long as needed — holds no references to the source mob.
- *
- * Foundation for changeling-style disguises (succubus camouflage); the vampire
- * Mask of a Thousand Faces predates this and can be retrofitted onto it.
- * apply() works on any fully populated snapshot, captured or hand-built.
+ * A portable copy of a human's visible identity. Capture from a live human, apply to any
+ * human, keep as long as needed — holds no references to the source mob. Powers
+ * changeling-style disguises; apply() works on any populated snapshot, captured or hand-built.
  */
 /datum/identity_snapshot
-	/// Deep copy of the source's DNA (species, features, markings, blood, name) — never a live reference
+	/// Deep copy of the source's DNA — never a live reference
 	var/datum/dna/dna
 	var/real_name
 	var/gender
 	var/age
+	/// A mob var, not DNA-encoded, so it must be carried explicitly
+	var/skin_tone
 	var/voice_type
 	var/voice_color
 	var/honorary
@@ -39,6 +37,7 @@
 	real_name = source.real_name
 	gender = source.gender
 	age = source.age
+	skin_tone = source.skin_tone
 	voice_type = source.voice_type
 	voice_color = source.voice_color
 	honorary = source.honorary
@@ -60,6 +59,7 @@
 	dna.transfer_identity(target)
 	target.real_name = real_name
 	target.age = age
+	target.skin_tone = skin_tone
 	target.voice_type = voice_type
 	target.voice_color = voice_color
 	target.honorary = honorary
@@ -69,9 +69,12 @@
 	target.set_facial_hair_color(facial_hair_color, FALSE)
 	target.set_facial_hair_style(facial_hair_style_type, FALSE)
 	target.set_eye_color(eye_color_right, eye_color_left, FALSE)
-	// updateappearance() re-derives .gender from dna.unique_identity's encoded gender block,
-	// clobbering any earlier assignment — so gender must be (re)applied after it, not before.
+	// Organ sprites cache their colors from skin tone at build time; rebuild after the swap
+	target.update_organ_colors()
+	// updateappearance() re-derives gender from the DNA block, so gender is (re)applied AFTER it
 	target.updateappearance(mutcolor_update = TRUE)
+	// Visible organ overlays are outside the limb render key, so force a redraw to repaint genitals
+	target.update_body_parts(TRUE)
 	target.gender = gender
 	target.name = target.get_visible_name()
 	return TRUE

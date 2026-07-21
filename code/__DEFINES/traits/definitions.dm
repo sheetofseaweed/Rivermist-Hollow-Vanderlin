@@ -395,6 +395,10 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_CRITICAL_RESISTANCE "Critical Resistance"
 #define TRAIT_CRITICAL_WEAKNESS	"Critical Weakness"
 #define TRAIT_MANIAC_AWOKEN	"Awoken"
+/// Species changes are disguise shifts, not growth — suppresses species_stat_pick() on gain
+#define TRAIT_IDENTITY_SHIFTING "Identity Shifting"
+/// Multiplies horny-knockout thresholds by SUCCUBUS_HORNY_KO_MULT (heroic to tire out, not immune)
+#define TRAIT_LUSTFUL_STAMINA "Lustful Stamina"
 /// Doesn't consume stamina
 #define TRAIT_NOSTAMINA	"Indefatigable"
 /// Can't fall asleep

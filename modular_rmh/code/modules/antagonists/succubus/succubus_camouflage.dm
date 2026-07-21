@@ -1,7 +1,5 @@
-// Succubus antagonist core — camouflage wardrobe, form state, integrity breaks (Task 4)
-// See docs/superpowers/plans/2026-07-17-succubus-core.md
+// Camouflage: wardrobe, form state, integrity breaks, disguise actions.
 
-// Camouflage wardrobe + form state, on the antag datum
 /datum/antagonist/succubus
 	/// mind -> /datum/identity_snapshot of sampled partners (capped)
 	var/list/stolen_forms = list()
@@ -29,6 +27,9 @@
 	var/mob/living/carbon/human/body = owner?.current
 	if(!ishuman(body) || !snap)
 		return FALSE
+	if(true_form_active)
+		to_chat(body, span_warning("This shape wears no masks."))
+		return FALSE
 	if(essence < SUCCUBUS_COST_CAMOUFLAGE)
 		to_chat(body, span_warning("I lack the essence to reshape my flesh."))
 		return FALSE
@@ -52,34 +53,26 @@
 		body.visible_message(span_boldwarning("[body]'s borrowed face TEARS away — for a moment, something with a tail and wings shows through!"), span_userdanger("My mask shatters!"))
 	return TRUE
 
-// --- Camouflage integrity: heavy damage or death rips the disguise (spec §3) -----------------
-// Signals are registered in grant_succubus_powers() / unregistered in remove_succubus_powers()
-// (below), directly on owner.current — mirrors code/modules/antagonists/villain/lich/lich.dm's
-// on_gain/on_removal COMSIG_LIVING_DEATH registration pattern.
-//
-// COMSIG_MOB_APPLY_DAMAGE fires at the TOP of /mob/living/proc/apply_damage(), before the health
-// pools are actually adjusted (code/modules/mob/living/damage_procs.dm:111) — so it can't answer
-// "is health below X% right now". COMSIG_LIVING_HEALTH_UPDATE fires from carbon/human's own
-// updatehealth() *after* the health value is recalculated, and code/datums/components/defeat_monitor.dm
-// is a real, in-repo listener that already reacts to post-update health/threshold state the same
-// way this needs to — so that signal is mirrored here instead, per the plan's own allowance to use
-// "a different health-change signal" if the codebase's real precedent points there.
-
+// --- Camouflage integrity: heavy damage, KO, or death rips the disguise --------------------------
+// All body-homed succubus signals (integrity + status tab) share this register/unregister pair,
+// so grant/remove/body-transfer each re-home them in one call. Health uses HEALTH_UPDATE (fires
+// after the recalc) rather than APPLY_DAMAGE (fires before), so the threshold check is accurate.
 /datum/antagonist/succubus/proc/register_camouflage_integrity_signals(mob/living/body)
 	body = body || owner?.current
 	if(!body)
 		return
 	RegisterSignal(body, COMSIG_LIVING_DEATH, PROC_REF(on_camouflage_death))
 	RegisterSignal(body, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(on_camouflage_health_update))
+	RegisterSignal(body, COMSIG_MOB_STATCHANGE, PROC_REF(on_camouflage_stat_change))
+	RegisterSignal(body, COMSIG_MOB_GET_STATUS_TAB_ITEMS, PROC_REF(on_status_tab))
 
 /datum/antagonist/succubus/proc/unregister_camouflage_integrity_signals(mob/living/body)
 	body = body || owner?.current
 	if(!body)
 		return
-	UnregisterSignal(body, list(COMSIG_LIVING_DEATH, COMSIG_LIVING_HEALTH_UPDATE))
+	UnregisterSignal(body, list(COMSIG_LIVING_DEATH, COMSIG_LIVING_HEALTH_UPDATE, COMSIG_MOB_STATCHANGE, COMSIG_MOB_GET_STATUS_TAB_ITEMS))
 
-// Integrity listeners are hand-registered on the body, so they must follow mind
-// transfers; spells granted with the mind as source already re-home themselves.
+// Hand-registered listeners must follow mind transfers (spells with a mind source re-home themselves)
 /datum/antagonist/succubus/on_body_transfer(mob/living/old_body, mob/living/new_body)
 	if(old_body)
 		unregister_camouflage_integrity_signals(old_body)
@@ -103,16 +96,17 @@
 	if(body.health < body.maxHealth * SUCCUBUS_FORM_BREAK_HEALTH_FRACTION)
 		revert_form(forced = TRUE)
 
+/// COMSIG_MOB_STATCHANGE (new_stat, old_stat): a knocked-out succubus can't hold the weave.
+/// DEAD excluded to avoid double-firing with COMSIG_LIVING_DEATH above.
+/datum/antagonist/succubus/proc/on_camouflage_stat_change(datum/source, new_stat, old_stat)
+	SIGNAL_HANDLER
+	if(isnull(current_form_key))
+		return
+	if(new_stat < UNCONSCIOUS || new_stat == DEAD)
+		return
+	revert_form(forced = TRUE)
+
 // --- Player-facing camouflage actions ----------------------------------------------------------
-// Base API pinned from code/modules/antagonists/villain/werewolf/werewolf_spells.dm (howl/claws)
-// and code/modules/spells/spell.dm: /datum/action/cooldown/spell, undirected subtype for
-// self-targeting (click_to_activate = FALSE), before_cast()/cast() cast chain, granted via
-// mob/living/proc/add_spell(path, source = owner) and removed via remove_spell(path) — exact
-// mirror of werewolf's grant_werewolf_powers()/remove_werewolf_powers().
-//
-// Weave Disguise needs a "pick one of N stored faces" prompt; before_cast() is where howl.dm
-// itself blocks on a player prompt (browser_input_text) before continuing the cast chain, so the
-// same shape is used here with tgui_input_list (code/modules/tgui_input/list.dm).
 
 /datum/action/cooldown/spell/undirected/succubus_weave_disguise
 	name = "Weave Disguise"
@@ -137,11 +131,8 @@
 		to_chat(owner, span_warning("I have no stolen faces to wear."))
 		return . | SPELL_CANCEL_CAST
 
-	// Build a locally-deduplicated display name -> mind map. tgui_input_list() stringifies and
-	// echoes back whatever is in the `items` list it's given (code/modules/tgui_input/list.dm) -
-	// passing our own pre-built string keys means the value handed back is guaranteed to be one of
-	// our keys, so we can look the mind back up ourselves without depending on its internal
-	// dedup/keying scheme.
+	// Deduplicated display-name -> mind map; the picker echoes our own string keys back,
+	// so the mind is looked up locally rather than relying on its internal keying.
 	var/list/name_to_mind = list()
 	for(var/datum/mind/stored_mind as anything in succubus_antag.stolen_forms)
 		var/datum/identity_snapshot/snap = succubus_antag.stolen_forms[stored_mind]
@@ -191,10 +182,8 @@
 		to_chat(owner, span_warning("I already wear my own face."))
 
 // --- Grant / remove wiring ----------------------------------------------------------------------
-// Replaces the Task 3 stubs of the same name (removed from succubus.dm). Camouflage actions +
-// integrity signals live here; the T1/T2 ability kit is composed in via
-// grant_succubus_abilities()/remove_succubus_abilities() (succubus_abilities.dm, Task 5) so each
-// file only defines the procs for its own responsibility slice.
+// Camouflage actions + integrity signals here; the ability kit composes in via
+// grant_succubus_abilities()/remove_succubus_abilities() (succubus_abilities.dm).
 
 /datum/antagonist/succubus/proc/grant_succubus_powers()
 	var/mob/living/current_mob = owner?.current
@@ -202,6 +191,7 @@
 		return
 	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_weave_disguise, source = owner)
 	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_shed_disguise, source = owner)
+	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, source = owner)
 	register_camouflage_integrity_signals()
 	grant_succubus_abilities()
 
@@ -213,3 +203,4 @@
 		return
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_weave_disguise)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_shed_disguise)
+	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
