@@ -699,6 +699,17 @@
 	give_gender_potion_genitals_for_gender(gender)
 	return TRUE
 
+/// Forces the gendered genital slots to match the current gender.
+/// NPCs that randomize gender in after_creation (after organs were already built)
+/// otherwise keep the wrong set, or gain both once arousal adds the matching one.
+/mob/living/proc/resync_genitals_to_gender()
+	if(!iscarbon(src))
+		return FALSE
+	if(gender != MALE && gender != FEMALE)
+		return FALSE
+	clear_gender_potion_genitals()
+	return give_gender_potion_genitals_for_gender(gender)
+
 /mob/living/Initialize()
 	. = ..()
 	refresh_erp_preference_cache()

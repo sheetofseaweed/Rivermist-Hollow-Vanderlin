@@ -87,6 +87,7 @@ GLOBAL_LIST_INIT(hedgeknight_aggro, world.file2list("strings/rt/hedgeknightaggro
 			SEND_SIGNAL(src, COMSIG_MOB_MODIFY_AGGRO_LINES, GLOB.hedgeknight_aggro, TRUE)
 
 	gender = pick(MALE,FEMALE)
+	resync_genitals_to_gender()
 	regenerate_icons()
 
 	var/obj/item/organ/eyes/organ_eyes = getorgan(/obj/item/organ/eyes)

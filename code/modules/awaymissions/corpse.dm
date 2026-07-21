@@ -78,6 +78,7 @@
 		if(!mob_gender)
 			mob_gender = pick(MALE, FEMALE)
 		M.gender = mob_gender
+		M.resync_genitals_to_gender()
 	if(faction)
 		M.faction = list(faction)
 	if(death)

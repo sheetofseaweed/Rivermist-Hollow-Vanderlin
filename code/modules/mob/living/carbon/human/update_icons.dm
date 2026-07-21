@@ -2159,6 +2159,12 @@ generate/load female uniform sprites matching all previously decided variables
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "husk"
+
+	for(var/obj/item/organ/ears/ears in getorganslotlist(ORGAN_SLOT_EARS))
+		if(ears.is_flicking)
+			. += "earflick"
+			break
+
 	return jointext(., "-")
 
 /mob/living/carbon/human/load_limb_from_cache()

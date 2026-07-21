@@ -35,6 +35,8 @@
 	var/last_orgasm_strain_decay_time = 0
 	/// Are we edged by partner
 	var/is_edged = FALSE
+	/// Last time high arousal auto-flicked the mob's ears
+	var/last_ear_flick_time = 0
 
 /datum/component/arousal/Initialize(...)
 	. = ..()
@@ -94,6 +96,19 @@
 	handle_statuses()
 	handle_passive_orgasm()
 	handle_orgasm_cooling()
+	handle_ear_flick()
+
+/// High arousal makes flickable ears twitch on a fixed interval.
+/datum/component/arousal/proc/handle_ear_flick()
+	if(arousal <= 200)
+		return
+	if(last_ear_flick_time + 5 SECONDS > world.time)
+		return
+	if(!isliving(parent))
+		return
+	var/mob/living/user = parent
+	last_ear_flick_time = world.time
+	user.try_ear_flick()
 
 /datum/component/arousal/proc/handle_orgasm_count()
 	if(!recent_orgasm_count)
@@ -794,6 +809,8 @@
 			user.emote("sexmoangag_org", forced = TRUE)
 		else
 			user.emote("sexmoanhvy", forced = TRUE)
+
+	user.try_ear_flick()
 
 	charge = max(0, charge - CHARGE_FOR_CLIMAX)
 

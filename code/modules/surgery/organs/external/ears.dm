@@ -36,6 +36,8 @@
 	var/bang_protect = 0
 	// Multiplier for both long term and short term ear damage
 	var/ear_damage_multiplier = 1
+	/// Currently mid ear-flick animation. Swaps the accessory to its `_flick` state while TRUE.
+	var/is_flicking = FALSE
 
 /obj/item/organ/ears/Insert(mob/living/carbon/M, special, drop_if_replaced, new_zone = null)
 	. = ..()
@@ -98,6 +100,14 @@
 	var/obj/item/organ/ears/ears = getorgan(/obj/item/organ/ears)
 	if(ears)
 		ears.minimumDeafTicks(value)
+
+/// Plays an ear flick if this mob has flickable ears and isn't already mid-flick. Safe no-op otherwise.
+/mob/living/proc/try_ear_flick()
+	return
+
+/mob/living/carbon/human/try_ear_flick()
+	if(dna?.species?.can_flick_ears(src))
+		dna.species.perform_flick_ears(src)
 
 /obj/item/organ/ears/cat
 	name = "cat ears"

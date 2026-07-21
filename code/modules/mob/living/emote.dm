@@ -620,6 +620,7 @@
 	if(ishuman(target))
 		var/mob/living/carbon/human/H = target
 		playsound(target, pick('sound/vo/hug.ogg'), 100, FALSE, -1)
+		H.try_ear_flick()
 		if(israkshari(H))
 			if(prob(10))
 				H.emote("purr")
