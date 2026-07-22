@@ -3,6 +3,11 @@
 	user_menu_zone_mask = SEX_UI_ZONE_MOUTH
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	gags_user = TRUE
+	scene_interaction = SEX_SCENE_INTERACTION_ORAL
+	scene_user_role = SEX_SCENE_ROLE_GIVER
+	scene_user_slot = BODY_ZONE_PRECISE_MOUTH
+	scene_target_role = SEX_SCENE_ROLE_RECEIVER
+	scene_target_slot = ORGAN_SLOT_ANUS
 
 /datum/sex_action/rimming/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
@@ -31,14 +36,13 @@
 
 /datum/sex_action/rimming/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rims [target]'s butt..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rims [target]'s butt..."))
 	user.make_sucking_noise()
 	do_thrust_animate(user, target)
 
-	sex_session.perform_sex_action(target, user, 2, 0, 1.5, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 2, 0, 1.5)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/rimming/on_finish(mob/living/user, mob/living/target)
 	. = ..()

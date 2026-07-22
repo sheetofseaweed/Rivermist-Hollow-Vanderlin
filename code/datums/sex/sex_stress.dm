@@ -34,6 +34,39 @@
 	stress_change = -2
 	desc = "<span class='green'>I was caught.</span>"
 
+/datum/stress_event/sex_scene_airtight
+	timer = 10 MINUTES
+
+/datum/stress_event/sex_scene_airtight/focus
+	stress_change = -4
+	desc = "<span class='green'>I climaxed while completely surrounded and filled.</span>"
+
+/datum/stress_event/sex_scene_airtight/participant
+	stress_change = -2
+	desc = "<span class='green'>I climaxed as part of an airtight arrangement.</span>"
+
+/datum/stress_event/sex_scene_double_penetration
+	timer = 10 MINUTES
+
+/datum/stress_event/sex_scene_double_penetration/focus
+	stress_change = -3
+	desc = "<span class='green'>I climaxed while being taken by two partners at once.</span>"
+
+/datum/stress_event/sex_scene_double_penetration/participant
+	stress_change = -2
+	desc = "<span class='green'>I climaxed during a double penetration.</span>"
+
+/datum/stress_event/sex_scene_spitroast
+	timer = 10 MINUTES
+
+/datum/stress_event/sex_scene_spitroast/focus
+	stress_change = -3
+	desc = "<span class='green'>I climaxed in the middle of a spit-roast.</span>"
+
+/datum/stress_event/sex_scene_spitroast/participant
+	stress_change = -2
+	desc = "<span class='green'>I climaxed while spit-roasting someone.</span>"
+
 /datum/status_effect/knot_tied
 	id = "knot_tied"
 	status_type = STATUS_EFFECT_UNIQUE

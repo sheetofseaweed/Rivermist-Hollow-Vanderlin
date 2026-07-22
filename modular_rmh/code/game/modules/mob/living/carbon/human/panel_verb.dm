@@ -17,7 +17,7 @@
 
 
 	if(LAZYLEN(possible_mobs))
-		var/mob/living/choice = browser_input_list(src, "Who do you wish to interact with?", "Sex Session", possible_mobs, null)
+		var/mob/living/choice = browser_input_list(src, "Who do you wish to interact with?", "Sex Scene", possible_mobs, null)
 		if(choice)
-			if(!start_sex_session(choice))
-				to_chat(src, span_info("Could not start the session with [choice]!"))
+			if(!open_sex_scene(choice))
+				to_chat(src, span_info("Could not join a scene with [choice]!"))

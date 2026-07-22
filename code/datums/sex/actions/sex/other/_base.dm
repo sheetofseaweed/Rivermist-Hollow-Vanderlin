@@ -1,7 +1,5 @@
 /datum/sex_action/sex/other
 	abstract_type = /datum/sex_action/sex/other
-	target_priority = 100
-	user_priority = 0
 	flipped = TRUE
 
 /datum/sex_action/sex/other/try_knot_on_climax(mob/living/user, mob/living/target)
@@ -10,16 +8,33 @@
 	if(!can_knot)
 		return FALSE
 
-	var/datum/sex_session/session = get_sex_session(user, target)
-	if(!session)
-		return FALSE
-	return SEND_SIGNAL(target, COMSIG_SEX_TRY_KNOT, user, session.force)
+	return SEND_SIGNAL(target, COMSIG_SEX_TRY_KNOT, user, force)
 
 /datum/sex_action/sex/other/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
 	return TRUE
+
+/datum/sex_action/sex/other/get_scene_user_role()
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return SEX_SCENE_ROLE_RECEIVER
+	return ..()
+
+/datum/sex_action/sex/other/get_scene_user_slot()
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return hole_id
+	return ..()
+
+/datum/sex_action/sex/other/get_scene_target_role()
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return SEX_SCENE_ROLE_GIVER
+	return ..()
+
+/datum/sex_action/sex/other/get_scene_target_slot()
+	if(hole_id in list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS))
+		return ORGAN_SLOT_PENIS
+	return ..()
 
 /datum/sex_action/sex/other/lock_sex_object(mob/living/user, mob/living/target)
 	add_sex_lock(target, ORGAN_SLOT_PENIS)

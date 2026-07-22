@@ -1,7 +1,7 @@
 /datum/sex_remote_context
 	var/datum/weakref/caster_ref
 	var/datum/weakref/target_ref
-	var/datum/sex_session/session
+	var/datum/sex_scene/scene
 	var/expires_at = 0
 	var/range = 7
 	var/requires_range = TRUE
@@ -25,6 +25,8 @@
 
 /datum/sex_remote_context/Destroy(force, ...)
 	clear_all_overlays()
+	if(scene && !QDELETED(scene))
+		scene.remove_remote_context(src)
 	var/mob/living/caster = get_caster()
 	if(caster)
 		UnregisterSignal(caster, COMSIG_LIVING_DEATH)
@@ -33,7 +35,7 @@
 		UnregisterSignal(target, COMSIG_LIVING_DEATH)
 	caster_ref = null
 	target_ref = null
-	session = null
+	scene = null
 	return ..()
 
 /datum/sex_remote_context/proc/get_caster()
@@ -42,8 +44,8 @@
 /datum/sex_remote_context/proc/get_target()
 	return target_ref?.resolve()
 
-/datum/sex_remote_context/proc/is_valid(datum/sex_session/owning_session)
-	if(owning_session && session && owning_session != session)
+/datum/sex_remote_context/proc/is_valid(datum/sex_scene/owning_scene)
+	if(owning_scene && scene && owning_scene != scene)
 		return FALSE
 	var/mob/living/caster = get_caster()
 	var/mob/living/remote_target = get_target()
@@ -51,7 +53,7 @@
 		return FALSE
 	if(!caster.loc || !remote_target.loc)
 		return FALSE
-	if(owning_session && (owning_session.user != caster || owning_session.target != remote_target))
+	if(owning_scene && (!(caster in owning_scene.participants) || !(remote_target in owning_scene.participants)))
 		return FALSE
 	if(caster.stat != CONSCIOUS)
 		return FALSE
@@ -100,21 +102,19 @@
 /datum/sex_remote_context/proc/check_validity()
 	if(QDELETED(src))
 		return
-	if(!is_valid(session))
-		clear_from_session()
+	if(!is_valid(scene))
+		clear_from_scene()
 		return
 	addtimer(CALLBACK(src, PROC_REF(check_validity)), check_interval)
 
-/datum/sex_remote_context/proc/clear_from_session()
-	var/datum/sex_session/owning_session = session
-	if(owning_session && !QDELETED(owning_session) && owning_session.remote_context == src)
-		owning_session.clear_remote_context()
-		return
+/datum/sex_remote_context/proc/clear_from_scene()
+	if(scene && !QDELETED(scene))
+		scene.remove_remote_context(src)
 	qdel(src)
 
 /datum/sex_remote_context/proc/on_participant_invalidated()
 	SIGNAL_HANDLER
-	clear_from_session()
+	clear_from_scene()
 
 /datum/sex_remote_context/mage_hand
 	var/list/active_overlay_counts = list()
@@ -125,7 +125,7 @@
 	return !!action?.mage_hand_allowed
 
 /datum/sex_remote_context/mage_hand/show_action_message(datum/sex_action/action, message_stage)
-	if(!action || !is_valid(session))
+	if(!action || !is_valid(scene))
 		return FALSE
 	var/mob/living/caster = get_caster()
 	var/mob/living/remote_target = get_target()
@@ -135,17 +135,15 @@
 	if(message_stage == MAGE_HAND_ACTION_MESSAGE_PERFORM)
 		if(world.time < action.next_message_time)
 			return FALSE
-		var/speed_time = 40
-		if(session)
-			speed_time = rand(10, 100 - session.get_current_speed() * 10)
+		var/speed_time = rand(10, 100 - action.speed * 10)
 		action.next_message_time = world.time + speed_time
 
 	var/caster_message = sanitize_action_message(get_action_message(action, message_stage, FALSE), caster)
 	var/target_message = sanitize_action_message(get_action_message(action, message_stage, TRUE), caster)
 	if(caster_message)
-		to_chat(caster, format_action_message(caster_message))
+		to_chat(caster, format_action_message(caster_message, action))
 	if(target_message && remote_target != caster)
-		to_chat(remote_target, format_action_message(target_message))
+		to_chat(remote_target, format_action_message(target_message, action))
 	return TRUE
 
 /datum/sex_remote_context/mage_hand/proc/get_action_message(datum/sex_action/action, message_stage, target_perspective = FALSE)
@@ -207,11 +205,11 @@
 		return "[copytext(verb, 1, length(verb))]ing"
 	return "[verb]ing"
 
-/datum/sex_remote_context/mage_hand/proc/format_action_message(message)
+/datum/sex_remote_context/mage_hand/proc/format_action_message(message, datum/sex_action/action)
 	if(!message)
 		return null
-	if(session)
-		return session.spanify_force(message)
+	if(action)
+		return action.spanify_force(message)
 	return span_notice(message)
 
 /datum/sex_remote_context/mage_hand/proc/sanitize_action_message(message, mob/living/source)
@@ -235,7 +233,7 @@
 	return sanitized_message
 
 /datum/sex_remote_context/mage_hand/show_action_overlay(datum/sex_action/action)
-	if(!action || !is_valid(session))
+	if(!action || !is_valid(scene))
 		return FALSE
 	var/mob/living/remote_target = get_target()
 	if(!ishuman(remote_target))
@@ -328,10 +326,10 @@
 /proc/clear_mage_hand_tethers_for(mob/living/caster)
 	if(!caster)
 		return
-	for(var/datum/sex_session/session as anything in return_sessions_with_user(caster))
-		if(!istype(session.remote_context, /datum/sex_remote_context/mage_hand))
+	var/list/contexts_to_clear = caster.sex_scene?.remote_contexts?.Copy()
+	for(var/datum/sex_remote_context/mage_hand/context as anything in contexts_to_clear)
+		if(!istype(context))
 			continue
-		var/datum/sex_remote_context/mage_hand/context = session.remote_context
 		if(context.get_caster() != caster)
 			continue
-		session.clear_remote_context()
+		qdel(context)
