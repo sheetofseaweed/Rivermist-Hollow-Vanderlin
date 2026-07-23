@@ -13,6 +13,12 @@
 	var/self = FALSE
 	var/obj/item/organ/genitals/target_organ
 
+// These actions are singletons, so target_organ is scratch state - clearing it on finish keeps the
+// singleton from pinning a partner's organ (and its whole mob) alive after the action ends.
+/datum/sex_action/hole_storage/on_finish(mob/living/user, mob/living/target)
+	target_organ = null
+	return ..()
+
 /datum/sex_action/hole_storage/can_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)

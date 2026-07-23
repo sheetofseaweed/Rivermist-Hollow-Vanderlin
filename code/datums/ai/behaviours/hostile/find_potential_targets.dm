@@ -167,6 +167,9 @@ GLOBAL_LIST_INIT(target_interested_atoms, typecacheof(list(/mob)))
 		qdel(field) // autoclears so it's fine
 		controller.CancelActions() // On retarget cancel any further queued actions so that they will setup again with new target
 		controller.modify_cooldown(src, world.time + get_cooldown(controller))
+		// Just acquired a target (via scan or the detection field firing on FOV entry). Wake now so we
+		// engage at full planning speed instead of idling until the next slow idle plan.
+		controller.recalculate_idle()
 
 /// Returns the desired final target from the filtered list of targets
 /datum/ai_behavior/find_potential_targets/proc/pick_final_target(datum/ai_controller/controller, list/filtered_targets)

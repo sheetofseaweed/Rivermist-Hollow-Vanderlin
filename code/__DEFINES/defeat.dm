@@ -81,3 +81,14 @@
 /// timeout after which a still-downed KO Only victim picks themselves up unaided (grievously wounded).
 #define DEFEAT_KO_ONLY_STRUGGLE_DELAY (2 MINUTES)
 #define DEFEAT_KO_ONLY_AUTO_RECOVER (3 MINUTES)
+
+// --- Mob horny-defeat KO (clientless mobs) ---
+/// How long a clientless mob stays KO'd from a horny defeat before the cleanup check runs.
+#define DEFEAT_MOB_HORNY_KO_DURATION (10 MINUTES)
+/// While players remain nearby, how often the KO'd mob re-checks before it may be cleaned up.
+#define DEFEAT_MOB_HORNY_KO_RECHECK (30 SECONDS)
+/// Climaxes needed to horny-KO a clientless mob, rolled once per encounter (far fewer than a player's 10-20).
+#define DEFEAT_MOB_HORNY_CLIMAX_MIN 1
+#define DEFEAT_MOB_HORNY_CLIMAX_MAX 3
+/// How far the KO cleanup looks for a watching player before it deletes a lone mob.
+#define DEFEAT_MOB_HORNY_CLEANUP_VIEW 7

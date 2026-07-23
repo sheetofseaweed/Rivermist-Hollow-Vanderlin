@@ -22,6 +22,9 @@
 	controller.set_blackboard_key("ai_combat_flow_non_reach_probe_fired", TRUE)
 
 /datum/unit_test/ai_combat_alert_prevents_idle
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_alert_prevents_idle/Run()
 	var/mob/living/simple_animal/hostile/hostile_mob = allocate(/mob/living/simple_animal/hostile)
@@ -36,6 +39,9 @@
 	TEST_ASSERT_EQUAL(controller.ai_status, AI_STATUS_ON, "AI with a live combat-alert timer should not remain idle just because no client is in its watched cells.")
 
 /datum/unit_test/ai_combat_aggro_prevents_idle_and_preserves_horny_target
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_aggro_prevents_idle_and_preserves_horny_target/Run()
 	var/mob/living/simple_animal/hostile/hostile_mob = allocate(/mob/living/simple_animal/hostile)
@@ -56,6 +62,9 @@
 	TEST_ASSERT_EQUAL(controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET], horny_target, "Combat wake checks must not clear the horny target pipeline.")
 
 /datum/unit_test/ai_combat_attack_signal_wakes_idle_ai_and_preserves_horny_target
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_attack_signal_wakes_idle_ai_and_preserves_horny_target/Run()
 	var/mob/living/simple_animal/hostile/hostile_mob = allocate(/mob/living/simple_animal/hostile)
@@ -74,6 +83,9 @@
 	TEST_ASSERT_EQUAL(controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET], horny_target, "Attack wake must not clear the horny target pipeline.")
 
 /datum/unit_test/ai_combat_projectile_hit_records_ranged_attacker
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_projectile_hit_records_ranged_attacker/Run()
 	var/mob/living/simple_animal/hostile/hostile_mob = allocate(/mob/living/simple_animal/hostile)
@@ -92,6 +104,9 @@
 	TEST_ASSERT_EQUAL(controller.blackboard[BB_LAST_RANGED_HIT_TIME], world.time, "Projectile hits should record the ranged hit time on the victim AI controller.")
 
 /datum/unit_test/ai_combat_hot_pursuit_keeps_recent_ranged_threat
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_hot_pursuit_keeps_recent_ranged_threat/Run()
 	var/mob/living/simple_animal/hostile/hostile_mob = allocate(/mob/living/simple_animal/hostile)
@@ -114,6 +129,9 @@
 	TEST_ASSERT_EQUAL(controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET], shooter, "A recent ranged attacker should be preserved as the active target during hot-pursuit grace, even beyond maintain range.")
 
 /datum/unit_test/ai_combat_call_for_help_wakes_idle_ally
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_call_for_help_wakes_idle_ally/Run()
 	var/mob/living/carbon/human/calling_mob = allocate(/mob/living/carbon/human)
@@ -140,6 +158,9 @@
 	TEST_ASSERT_EQUAL(ally_controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET], target, "Call-for-help should still assign the caller's combat target to the ally.")
 
 /datum/unit_test/ai_combat_added_threat_wakes_idle_ai
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_added_threat_wakes_idle_ai/Run()
 	var/mob/living/simple_animal/hostile/hostile_mob = allocate(/mob/living/simple_animal/hostile)
@@ -160,6 +181,9 @@
 	TEST_ASSERT_EQUAL(controller.ai_status, AI_STATUS_ON, "Adding threat through the aggro system should wake an idle AI without requiring a later idle recalculation.")
 
 /datum/unit_test/ai_combat_non_reach_movement_ignores_intent_reach_distance
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_non_reach_movement_ignores_intent_reach_distance/Run()
 	var/mob/living/carbon/human/pawn = allocate(/mob/living/carbon/human)
@@ -184,6 +208,9 @@
 	TEST_ASSERT(!controller.blackboard["ai_combat_flow_non_reach_probe_fired"], "Movement behaviors without AI_BEHAVIOR_REQUIRE_REACH should not use combat intent reach to satisfy required_distance.")
 
 /datum/unit_test/ai_combat_human_gap_close_is_before_basic_melee_and_after_horny
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_human_gap_close_is_before_basic_melee_and_after_horny/Run()
 	var/mob/living/carbon/human/pawn = allocate(/mob/living/carbon/human)
@@ -205,6 +232,9 @@
 	TEST_ASSERT(gap_close_index < basic_melee_index, "Gap-close planning should get a chance before direct human NPC melee.")
 
 /datum/unit_test/ai_combat_agile_simple_mobs_use_agile_melee_behavior
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_agile_simple_mobs_use_agile_melee_behavior/Run()
 	var/agile_subtree = text2path("/datum/ai_planning_subtree/basic_melee_attack_subtree/agile")
@@ -238,6 +268,9 @@
 		TEST_ASSERT(!heavy_controller.get_subtree_index(agile_subtree), "[controller_type] should not opt into agile sidestepping melee.")
 
 /datum/unit_test/ai_combat_human_npc_has_sparse_combat_bark_cooldown_state
+#ifdef FOCUS_AI_IDLE_DETECTION_TEST
+	focus = TRUE
+#endif
 
 /datum/unit_test/ai_combat_human_npc_has_sparse_combat_bark_cooldown_state/Run()
 	var/mob/living/carbon/human/pawn = allocate(/mob/living/carbon/human)

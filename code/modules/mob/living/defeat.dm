@@ -40,6 +40,10 @@
 	return TRUE
 
 /mob/living/proc/ensure_defeat_monitor()
+	// Clientless mobs opted into horny-KO get the monitor regardless of carbon defeat eligibility.
+	if(mob_horny_defeat_enabled && !client)
+		AddComponent(/datum/component/defeat_monitor)
+		return
 	if(defeat_mode == DEFEAT_MODE_NO_RETURN)
 		return
 	if(!defeat_system_is_eligible())
@@ -55,6 +59,24 @@
 		return TRUE
 	if(client || mind)
 		return TRUE
+	return FALSE
+
+/// Eligibility for the horny-defeat mechanic specifically. Clientless mobs flagged for mob-KO qualify on
+/// their own; everyone else falls back to the full carbon defeat eligibility. Kept separate so the mob
+/// path never drags a mob into the player damage/pain/hazard defeat flow.
+/mob/living/proc/horny_defeat_is_eligible()
+	if(mob_horny_defeat_enabled && !client)
+		return TRUE
+	return defeat_system_is_eligible()
+
+/// TRUE when a client-controlled mob can currently see this mob. Used to decide whether a horny-KO'd mob
+/// lingers (someone is watching) or is quietly cleaned up (no one around).
+/mob/living/proc/mob_horny_ko_players_nearby()
+	for(var/mob/living/nearby in viewers(DEFEAT_MOB_HORNY_CLEANUP_VIEW, src))
+		if(nearby == src)
+			continue
+		if(nearby.client)
+			return TRUE
 	return FALSE
 
 /mob/living/proc/handle_defeat_health_update()
@@ -85,6 +107,18 @@
 	defeat_ensure_emergency_rune_link()
 	defeat_maybe_arm_struggle_up()
 	defeat_stabilize_from_snapshot(snapshot)
+	return TRUE
+
+/// The clientless-mob counterpart of enter_defeat's horny branch. No snapshot, no trauma, no carbon
+/// injury stabilization - just the long mob KO. Guarded so it only ever touches an enabled clientless mob.
+/mob/living/proc/enter_mob_horny_defeat(mob/living/source)
+	if(!mob_horny_defeat_enabled || client)
+		return FALSE
+	if(stat == DEAD)
+		return FALSE
+	if(has_status_effect(/datum/status_effect/mob_horny_knockout))
+		return FALSE
+	apply_status_effect(/datum/status_effect/mob_horny_knockout)
 	return TRUE
 
 /// Arms the KO Only self-rescue (§8 anti-softlock) when nothing else can save the victim - i.e. a

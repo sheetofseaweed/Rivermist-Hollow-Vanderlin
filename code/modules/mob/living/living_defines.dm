@@ -89,6 +89,9 @@
 	var/hostile_grab_horny_climax_threshold = 2
 	/// How long aggressive AI is knocked out after losing the horny grab contest.
 	var/hostile_grab_horny_climax_knockout_duration = 10 MINUTES
+	/// When TRUE on a clientless mob, the horny-defeat mechanic can knock it out (mob-KO path, not the
+	/// player defeat flow). Set lazily when a clientless mob gains an arousal component. Players ignore it.
+	var/mob_horny_defeat_enabled = FALSE
 	var/timeofdeath = 0
 
 	//Allows mobs to move through dense areas without restriction. For instance, in space or out of holder objects.

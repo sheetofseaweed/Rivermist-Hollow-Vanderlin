@@ -155,6 +155,50 @@
 	desc = "You are defeated. You can speak, emote, call for help, or call the rune if available."
 	icon_state = "paralysis"
 
+/// Long KO for a clientless mob brought down by horny defeat. Immobilizes and pauses the AI, then after
+/// DEFEAT_MOB_HORNY_KO_DURATION deletes the mob if no player is watching, or holds the KO and re-checks
+/// while players remain. Deliberately does NOT add TRAIT_NODEATH: a downed mob can still be finished off.
+/datum/status_effect/mob_horny_knockout
+	id = "mob_horny_knockout"
+	duration = STATUS_EFFECT_PERMANENT
+	remove_on_fullheal = FALSE
+	var/cleanup_timer
+
+/datum/status_effect/mob_horny_knockout/on_apply()
+	. = ..()
+	if(!.)
+		return
+	ADD_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
+	ADD_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
+	ADD_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
+	ADD_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
+	owner.ai_controller?.set_ai_status(AI_STATUS_OFF)
+	owner.visible_message(span_userdanger("[owner] sinks down, overwhelmed and spent!"))
+	cleanup_timer = addtimer(CALLBACK(src, PROC_REF(mob_horny_ko_cleanup_check)), DEFEAT_MOB_HORNY_KO_DURATION, TIMER_STOPPABLE)
+
+/// End of the KO window: delete the mob if it is alone, else keep it down and look again shortly.
+/datum/status_effect/mob_horny_knockout/proc/mob_horny_ko_cleanup_check()
+	cleanup_timer = null
+	if(!owner || QDELETED(owner))
+		return
+	if(owner.mob_horny_ko_players_nearby())
+		cleanup_timer = addtimer(CALLBACK(src, PROC_REF(mob_horny_ko_cleanup_check)), DEFEAT_MOB_HORNY_KO_RECHECK, TIMER_STOPPABLE)
+		return
+	qdel(owner)
+
+/datum/status_effect/mob_horny_knockout/on_remove()
+	if(cleanup_timer)
+		deltimer(cleanup_timer)
+		cleanup_timer = null
+	if(!owner || QDELETED(owner))
+		return
+	REMOVE_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
+	owner.ai_controller?.set_ai_status(owner.ai_controller.get_expected_ai_status())
+	return ..()
+
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma
 	name = "Defeat Trauma"
 	desc = "Lingering harm from a recent defeat. A town healer, priest, or potent remedy can mend it - and it festers worse each time you are defeated untreated."
