@@ -35,13 +35,12 @@
 
 /datum/sex_action/suck_nipples/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] sucks [target]'s nipples..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] sucks [target]'s nipples..."))
 	user.make_sucking_noise()
 
-	sex_session.perform_sex_action(target, user, 1, 3, 0.1, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 1, 3, 0.1)
+	handle_passive_ejaculation(target)
 
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = target.getorganslot(ORGAN_SLOT_BREASTS)
 	if(!breasts || !breasts.refilling || !breasts.reagents || !user.reagents)
@@ -62,5 +61,5 @@
 	user.visible_message(span_warning("[user] stops sucking [target]'s nipples ..."))
 
 /datum/sex_action/suck_nipples/lock_sex_object(mob/living/user, mob/living/target)
-	sex_locks |= new /datum/sex_session_lock(user, BODY_ZONE_PRECISE_MOUTH)
+	add_sex_lock(user, BODY_ZONE_PRECISE_MOUTH)
 

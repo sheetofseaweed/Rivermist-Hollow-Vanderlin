@@ -8,11 +8,7 @@
 	var/turf/turf = get_turf(target)
 	var/outside = turf.outdoor_effect?.weatherproof
 	var/seen_by_people = FALSE
-	var/list/participants = list()
-	for(var/datum/sex_session/session in GLOB.sex_sessions)
-		if(session.user == target || session.target == target)
-			participants |= session.user
-			participants |= session.target
+	var/list/participants = target.sex_scene?.participants || list(target)
 
 	for(var/mob/living/viewer in view(5, target))
 		if(viewer in participants)

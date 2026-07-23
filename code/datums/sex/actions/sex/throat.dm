@@ -36,27 +36,26 @@
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
 
 /datum/sex_action/sex/throat/on_perform(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s throat."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s throat."))
 	playsound(target, 'sound/misc/mat/segso.ogg', 50, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
 
-	sex_session.perform_sex_action(user, target, 2, 0, 2.5, src)
+	perform_sex_action(user, target, 2, 0, 2.5)
 
-	if(sex_session.considered_limp(user))
-		sex_session.perform_sex_action(target, user, 0.2, 2, 0.2, src)
+	if(considered_limp(user))
+		perform_sex_action(target, user, 0.2, 2, 0.2)
 	else
 		var/oxyloss = 1.3
-		sex_session.perform_sex_action(target, user, 0.5, 7, 0.5, src)
-		sex_session.perform_deepthroat_oxyloss(target, oxyloss)
-		if(sex_session.get_current_force() >= SEX_FORCE_HIGH)
+		perform_sex_action(target, user, 0.5, 7, 0.5)
+		perform_deepthroat_oxyloss(target, oxyloss)
+		if(force >= SEX_FORCE_HIGH)
 			var/choker_snap_chance = 5
-			if(sex_session.get_current_force() >= SEX_FORCE_EXTREME)
+			if(force >= SEX_FORCE_EXTREME)
 				choker_snap_chance = 15
 			if(prob(choker_snap_chance))
 				target.snap_worn_choker(user)
-	sex_session.handle_passive_ejaculation()
+	handle_passive_ejaculation()
 
 /datum/sex_action/sex/throat/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)

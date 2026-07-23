@@ -106,13 +106,11 @@
 	if(!target_living)
 		return null
 
-	for(var/datum/sex_session/session as anything in return_sessions_with_user(target_living))
-		if(QDELETED(session))
-			continue
-		if(!session.current_action && !length(session.active_actions))
+	for(var/datum/sex_action/action as anything in target_living.sex_scene?.get_actions_involving(target_living))
+		if(QDELETED(action))
 			continue
 
-		var/mob/living/other_participant = session.user == target_living ? session.target : session.user
+		var/mob/living/other_participant = action.action_user == target_living ? action.action_target : action.action_user
 		if(!other_participant || QDELETED(other_participant))
 			continue
 		if(other_participant == target_living || other_participant == excluded_participant)

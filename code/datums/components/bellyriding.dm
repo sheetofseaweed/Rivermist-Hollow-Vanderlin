@@ -318,7 +318,7 @@
 	if(!wearer.getorganslot(ORGAN_SLOT_PENIS))
 		return
 
-	if(!ensure_sex_session())
+	if(!ensure_sex_scene_controller())
 		return
 
 	if(selected_action_type)
@@ -371,17 +371,12 @@
 	if(chosen_action)
 		ASYNC chosen_action.on_perform(wearer, current_victim)
 
-/datum/component/bellyriding/proc/ensure_sex_session()
+/datum/component/bellyriding/proc/ensure_sex_scene_controller()
 	if(!current_victim)
 		return null
 
-	var/datum/sex_session/session = get_sex_session(parent, current_victim)
-	if(!session)
-		session = get_sex_session(current_victim, parent)
-	if(!session)
-		var/mob/living/carbon/human/wearer = parent
-		session = wearer.start_sex_session(current_victim, FALSE)
-	return session
+	var/mob/living/wearer = parent
+	return wearer.open_sex_scene(current_victim, FALSE)
 
 /datum/component/bellyriding/proc/on_any_unbuckle(datum/source, atom/movable/M, force)
 	if(M == current_victim)

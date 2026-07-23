@@ -3,6 +3,11 @@
 	user_menu_zone_mask = SEX_UI_ZONE_GENITALS | SEX_UI_ZONE_MISC
 	target_menu_zone_mask = SEX_UI_ZONE_MOUTH
 	gags_target = TRUE
+	scene_interaction = SEX_SCENE_INTERACTION_ORAL
+	scene_user_role = SEX_SCENE_ROLE_RECEIVER
+	scene_user_slot = ORGAN_SLOT_ANUS
+	scene_target_role = SEX_SCENE_ROLE_GIVER
+	scene_target_slot = BODY_ZONE_PRECISE_MOUTH
 
 /datum/sex_action/facesitting/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
@@ -37,18 +42,17 @@
 
 /datum/sex_action/facesitting/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/verbstring = pick(list("rubs", "smushes", "forces"))
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] [verbstring] [user.p_their()] butt against [target] face."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] [verbstring] [user.p_their()] butt against [target] face."))
 	target.make_sucking_noise()
 	do_thrust_animate(user, target)
 
-	sex_session.perform_sex_action(user, target, 1, 3, 1, src)
-	sex_session.handle_passive_ejaculation()
+	perform_sex_action(user, target, 1, 3, 1)
+	handle_passive_ejaculation()
 
-	sex_session.perform_sex_action(target, user, 0.5, 2, 0, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 0.5, 2, 0)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/facesitting/on_finish(mob/living/user, mob/living/target)
 	. = ..()

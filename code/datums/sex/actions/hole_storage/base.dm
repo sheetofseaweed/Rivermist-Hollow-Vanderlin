@@ -8,14 +8,10 @@
 	hole_id = ORGAN_SLOT_VAGINA
 	stored_item_type = /obj/item
 	continous = TRUE
-	user_priority = 1
-	target_priority = 1
 	var/self = FALSE
 	var/obj/item/organ/genitals/target_organ
 
-// These actions are singletons, so target_organ is scratch state - clearing it on finish keeps the
-// singleton from pinning a partner's organ (and its whole mob) alive after the action ends.
-/datum/sex_action/hole_storage/on_finish(mob/living/user, mob/living/target)
+/datum/sex_action/hole_storage/Destroy()
 	target_organ = null
 	return ..()
 

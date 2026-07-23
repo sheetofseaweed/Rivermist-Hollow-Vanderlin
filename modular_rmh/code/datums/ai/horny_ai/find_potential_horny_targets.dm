@@ -101,7 +101,7 @@
 		finish_action(controller, succeeded = FALSE)
 		return
 
-	var/atom/target = pick_final_target(controller, accepted_targets)
+	var/atom/target = pick_final_target(controller, accepted_targets, portal_targets)
 	controller.set_blackboard_key(target_key, target)
 	if(portal_targets[target])
 		controller.set_blackboard_key(BB_HORNY_PORTAL_LIGHT, portal_targets[target])
@@ -124,8 +124,46 @@
 		controller.modify_cooldown(src, world.time + get_cooldown(controller))
 
 /// Returns the desired final target from the filtered list of targets
-/datum/ai_behavior/find_potential_horny_targets/proc/pick_final_target(datum/ai_controller/controller, list/filtered_targets)
-	return pick(filtered_targets)
+/datum/ai_behavior/find_potential_horny_targets/proc/pick_final_target(datum/ai_controller/controller, list/filtered_targets, list/portal_targets)
+	var/mob/living/living_mob = controller.pawn
+	var/list/weighted_targets = build_pattern_weighted_targets(living_mob, filtered_targets, portal_targets)
+	return pick(weighted_targets)
+
+/datum/ai_behavior/find_potential_horny_targets/proc/build_pattern_weighted_targets(mob/living/living_mob, list/filtered_targets, list/portal_targets)
+	var/list/weighted_targets = filtered_targets.Copy()
+	for(var/mob/living/target_living as anything in filtered_targets)
+		var/obj/item/portallight/portal_light = portal_targets ? portal_targets[target_living] : null
+		var/pattern_desirability = get_target_pattern_desirability(living_mob, target_living, portal_light)
+		if(pattern_desirability > 0)
+			add_weighted_horny_ai_choice(weighted_targets, target_living, pattern_desirability)
+	return weighted_targets
+
+/datum/ai_behavior/find_potential_horny_targets/proc/get_target_pattern_desirability(mob/living/living_mob, mob/living/target_living, obj/item/portallight/portal_light)
+	var/datum/sex_scene/target_scene = target_living?.sex_scene
+	if(!target_scene || QDELETED(target_scene))
+		return 0
+
+	var/list/weighted_actions = list()
+	if(portal_light)
+		add_portal_horny_ai_actions(weighted_actions, living_mob, target_living)
+	else
+		add_local_horny_ai_actions(weighted_actions, living_mob, target_living)
+
+	var/best_desirability = 0
+	var/list/scored_action_types = list()
+	for(var/action_type as anything in weighted_actions)
+		if(action_type in scored_action_types)
+			continue
+		scored_action_types += action_type
+		var/datum/sex_action/action = SEX_ACTION(action_type)
+		var/pattern_desirability = target_scene.get_action_pattern_desirability(
+			action,
+			living_mob,
+			target_living,
+			allow_new_participant = TRUE,
+		)
+		best_desirability = max(best_desirability, pattern_desirability)
+	return best_desirability
 
 /datum/ai_behavior/find_potential_horny_targets/proc/get_portal_horny_target(mob/living/living_mob, datum/targetting_datum/strategy, atom/maybe_portal)
 	if(!istype(maybe_portal, /obj/item/portallight))
