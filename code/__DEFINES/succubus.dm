@@ -3,15 +3,23 @@
 #define IS_SUCCUBUS(mob) (mob?.mind?.has_antag_datum(/datum/antagonist/succubus))
 
 /// Base essence from a first-time partner's climax, before multipliers
-#define SUCCUBUS_ESSENCE_BASE_HARVEST 100
+#define SUCCUBUS_ESSENCE_BASE_HARVEST 50
 /// Each repeat harvest from the same partner multiplies by this...
 #define SUCCUBUS_NOVELTY_DECAY 0.4
 /// ...but never below this floor
 #define SUCCUBUS_NOVELTY_FLOOR 0.1
+/// Arousal adds at most 50% to a climax harvest
+#define SUCCUBUS_AROUSAL_BONUS_DIVISOR 500
+#define SUCCUBUS_AROUSAL_BONUS_MAX 0.5
 /// Starting essence cap
-#define SUCCUBUS_ESSENCE_CAP_BASE 500
+#define SUCCUBUS_ESSENCE_CAP_BASE 300
+#define SUCCUBUS_ESSENCE_CAP_TIER_2 350
+#define SUCCUBUS_ESSENCE_CAP_TIER_3 400
+#define SUCCUBUS_ESSENCE_CAP_TIER_4 500
+#define SUCCUBUS_CONTRACT_TIER_MAX 4
+#define SUCCUBUS_CONTRACT_HIGH_AROUSAL 250
 /// Corruption multipliers (married/virgin wired but inert until detection exists)
-#define SUCCUBUS_CORRUPTION_CLERGY 5
+#define SUCCUBUS_CORRUPTION_CLERGY 3
 #define SUCCUBUS_CORRUPTION_MARRIED 1
 #define SUCCUBUS_CORRUPTION_VIRGIN 1
 /// Max stored identity snapshots in the camouflage wardrobe
@@ -24,7 +32,7 @@
 /// tiring out a succubus in bed should be a heroic feat, not an afternoon
 #define SUCCUBUS_HORNY_KO_MULT 10
 /// Essence per unit of absorbed sexual fluid, before decay
-#define SUCCUBUS_ESSENCE_PER_REAGENT_UNIT 2
+#define SUCCUBUS_ESSENCE_PER_REAGENT_UNIT 1
 /// Per-originator decay: multiplier compounds per SUCCUBUS_REAGENT_DECAY_UNIT units absorbed
 #define SUCCUBUS_REAGENT_DECAY 0.5
 #define SUCCUBUS_REAGENT_DECAY_UNIT 20
@@ -32,11 +40,13 @@
 #define SUCCUBUS_FORM_BREAK_HEALTH_FRACTION 0.4
 #define SUCCUBUS_FORM_REVEAL_TIME 4 SECONDS
 /// True form
-#define SUCCUBUS_COST_TRUE_FORM 50
+#define SUCCUBUS_COST_TRUE_FORM 100
 #define SUCCUBUS_TRUE_FORM_COOLDOWN 5 MINUTES
 /// Enthrall
-#define SUCCUBUS_COST_ENTHRALL 100
+#define SUCCUBUS_COST_ENTHRALL 150
 #define SUCCUBUS_THRALL_CAP 3
+#define SUCCUBUS_ENTHRALL_PROMPT_TIMEOUT 30 SECONDS
+#define SUCCUBUS_THRALL_UPKEEP_PER_CYCLE 15
 /// Harvests from a partner before their will can be bound
 #define SUCCUBUS_ENTHRALL_MIN_HARVESTS 3
 /// Whisper / Charm

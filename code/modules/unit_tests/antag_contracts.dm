@@ -24,6 +24,13 @@
 /datum/contract_goal/test_state/get_state_progress()
 	return fake_progress
 
+/datum/antagonist/test_contract_cycle_hook
+	var/cycles_closed = 0
+
+/datum/antagonist/test_contract_cycle_hook/on_contract_cycle_closed(datum/antag_contract/contract)
+	. = ..()
+	cycles_closed++
+
 /datum/unit_test/contract_pool_rolling/Run()
 	var/datum/antagonist/antag = allocate(/datum/antagonist)
 	var/datum/contract_pool/pool = allocate(/datum/contract_pool)
@@ -85,7 +92,7 @@
 	TEST_ASSERT(goal.completed, "STATE goal must complete when evaluated at/above target")
 
 /datum/unit_test/contract_boundary_math/Run()
-	var/datum/antagonist/antag = allocate(/datum/antagonist)
+	var/datum/antagonist/test_contract_cycle_hook/antag = allocate(/datum/antagonist/test_contract_cycle_hook)
 	antag.contract_pool = new /datum/contract_pool
 	antag.contract_pool.goal_templates = list(/datum/contract_goal/test_counter)
 	antag.contract_pool.goals_per_contract_min = 1
@@ -101,6 +108,7 @@
 	TEST_ASSERT_EQUAL(antag.current_contract.cycle_number, 2, "closing must issue the next cycle")
 	TEST_ASSERT_EQUAL(antag.current_contract.deadline, antag.contract_created_at + 2 * cycle_length, "cycle 2 deadline must sit on the second fixed boundary, no drift")
 	TEST_ASSERT_EQUAL(length(antag.contract_history), 1, "closed contract must be archived")
+	TEST_ASSERT_EQUAL(antag.cycles_closed, 1, "the all-grade cycle-close hook must fire exactly once")
 	var/datum/antag_contract/first_contract = antag.contract_history[1]
 	TEST_ASSERT_EQUAL(first_contract.grade, CONTRACT_GRADE_FAIL, "unprogressed contract must grade FAIL")
 

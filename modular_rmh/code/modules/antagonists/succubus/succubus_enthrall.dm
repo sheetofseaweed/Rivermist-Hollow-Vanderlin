@@ -47,14 +47,15 @@
 /datum/antagonist/succubus_thrall/on_gain()
 	var/datum/objective/serve = new
 	serve.owner = owner
-	serve.explanation_text = "Serve and protect my mistress. Her nature must stay hidden."
+	serve.explanation_text = "Aid and protect my mistress, preserve her secrets, and further her plans. I retain my own agency; preferences and server rules still bind every command."
 	objectives += serve
 	return ..()
 
 /datum/antagonist/succubus_thrall/greet()
-	to_chat(owner.current, span_userdanger("My will is no longer my own. I serve my mistress — her desires are mine, her secrets are sacred."))
+	to_chat(owner.current, span_userdanger("A sweet bond bends my loyalty toward my mistress. Her secrets are sacred, but my choices remain my own."))
 	if(mistress_mind?.current)
 		to_chat(owner.current, span_love("My mistress is [mistress_mind.current.real_name]. I must aid her, cover for her, and bring her what she hungers for."))
+	to_chat(owner.current, span_boldnotice("Enthrallment does not waive my ERP preferences, remove my character agency, or require me to follow rule-breaking or preference-violating orders."))
 	owner.announce_objectives()
 	return ..()
 
@@ -104,14 +105,14 @@
 	if(!istype(target))
 		return FALSE
 	var/mistress_name = owner?.current?.real_name || "the demoness"
-	var/choice = tgui_alert(target, "[mistress_name]'s essence coils through my veins, sweet and heavy, coaxing my will to kneel. Do I surrender it?", "Surrender", list("Surrender", "Resist"), WW_CONVERSION_PROMPT_TIMEOUT)
+	var/choice = tgui_alert(target, "[mistress_name]'s essence coils through my veins, offering a supernatural bond.\n\nAccepting makes me a loyal thrall, but I keep full control of my character. The bond cannot override my ERP preferences, server rules, or my right to refuse preference-violating play.", "Accept Enthrallment", list("Accept the Bond", "Refuse"), SUCCUBUS_ENTHRALL_PROMPT_TIMEOUT)
 	// Clear the flag only while target is still valid (writing it on a hard-deleted target runtimes)
 	if(!QDELETED(target))
 		target.succubus_enthrall_prompt_pending = FALSE
 
 	if(QDELETED(target) || QDELETED(src))
 		return FALSE
-	if(choice != "Surrender")
+	if(choice != "Accept the Bond")
 		to_chat(target, span_notice("I hold fast against the sweet pressure."))
 		if(owner?.current)
 			to_chat(owner.current, span_warning("[target.real_name] resists my binding. Stubborn thing."))
@@ -131,8 +132,9 @@
 	harem.add_member(target.mind)
 	target.mind.add_antag_datum(thrall_datum)
 	adjust_essence(-SUCCUBUS_COST_ENTHRALL)
+	record_contract_progress(/datum/contract_goal/succubus/accepted_bond)
 	if(owner?.current)
-		to_chat(owner.current, span_love("[target.real_name]'s will folds into mine. My harem grows."))
+		to_chat(owner.current, span_love("[target.real_name] accepts my bond. My harem grows."))
 	return TRUE
 
 /// Release a thrall. keep_memories = TRUE is the exorcism path: the freed thrall
@@ -145,7 +147,7 @@
 	thrall_mind.remove_antag_datum(/datum/antagonist/succubus_thrall)
 	if(freed)
 		if(keep_memories)
-			to_chat(freed, span_boldwarning("The fog lifts — and I remember EVERYTHING. Her faces. Her hungers. What she made me do."))
+			to_chat(freed, span_boldwarning("The fog lifts — and I remember EVERYTHING. Her faces. Her hungers. What I did in her service."))
 		else
 			to_chat(freed, span_warning("The fog lifts, taking its secrets with it. What... was I doing?"))
 	return TRUE
@@ -154,7 +156,7 @@
 
 /datum/action/cooldown/spell/succubus_enthrall
 	name = "Enthrall"
-	desc = "Bind a lover's will to your own. They must be steeped in your essence — and they must, in the end, choose to kneel."
+	desc = "Offer a lover a supernatural bond. They must be steeped in your essence, and they must freely accept."
 	has_visual_effects = FALSE
 	antimagic_flags = NONE
 	spell_flags = SPELL_IGNORE_SPELLBLOCK

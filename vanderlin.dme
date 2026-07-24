@@ -4075,6 +4075,7 @@
 #include "modular_rmh\code\modules\antagonists\succubus\succubus.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_abilities.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_camouflage.dm"
+#include "modular_rmh\code\modules\antagonists\succubus\succubus_contracts.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_enthrall.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_event.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_true_form.dm"

@@ -103,6 +103,7 @@
 		if(CONTRACT_GRADE_EXCUSED)
 			notify_contract(contract_pool.excused_text)
 		// PARTIAL: goal triumphs were already paid live; no bonus, no penalty
+	on_contract_cycle_closed(contract)
 	contract_history += contract
 	current_contract = null
 	issue_next_contract()
@@ -113,6 +114,10 @@
 
 /// Antag-specific penance hook — override per antag
 /datum/antagonist/proc/on_contract_failed(datum/antag_contract/contract)
+	return
+
+/// Antag-specific all-grade cycle consequence hook (upkeep, recurring costs, etc.)
+/datum/antagonist/proc/on_contract_cycle_closed(datum/antag_contract/contract)
 	return
 
 /datum/antagonist/proc/notify_contract(text)

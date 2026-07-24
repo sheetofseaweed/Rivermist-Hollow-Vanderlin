@@ -54,6 +54,7 @@
 /datum/antagonist/succubus/proc/on_status_tab(datum/source, list/items)
 	SIGNAL_HANDLER
 	items += "Essence: [essence] / [essence_cap]"
+	items += "Infernal Favor: Tier [get_succubus_contract_tier()]"
 
 /// Called from the climax pipeline when someone climaxes with the succubus as partner.
 /datum/antagonist/succubus/proc/harvest_from_climax(mob/living/carbon/human/partner)
@@ -64,10 +65,13 @@
 	var/harvest_count = partner_harvests[partner.mind] || 0
 	var/novelty = max(SUCCUBUS_NOVELTY_FLOOR, SUCCUBUS_NOVELTY_DECAY ** harvest_count)
 	var/arousal_mult = 1
+	var/partner_arousal = 0
 	var/datum/component/arousal/arousal_comp = partner.GetComponent(/datum/component/arousal)
 	if(arousal_comp)
-		arousal_mult = 1 + (arousal_comp.arousal / 200)
-	var/gained = round(SUCCUBUS_ESSENCE_BASE_HARVEST * novelty * arousal_mult * get_corruption_multiplier(partner))
+		partner_arousal = arousal_comp.arousal
+		arousal_mult += min(partner_arousal / SUCCUBUS_AROUSAL_BONUS_DIVISOR, SUCCUBUS_AROUSAL_BONUS_MAX)
+	var/corruption_mult = get_corruption_multiplier(partner)
+	var/gained = round(SUCCUBUS_ESSENCE_BASE_HARVEST * novelty * arousal_mult * corruption_mult)
 	partner_harvests[partner.mind] = harvest_count + 1
 	last_harvest_mind = partner.mind
 	last_harvest_time = world.time
@@ -75,6 +79,20 @@
 	if(owner?.current)
 		to_chat(owner.current, span_love("Their release feeds me. (+[gained] essence, [essence]/[essence_cap])"))
 	store_partner_form(partner)
+	if(!partner.mind.key)
+		return
+	record_contract_progress(/datum/contract_goal/succubus/infernal_tithe, gained)
+	if(current_contract)
+		for(var/datum/contract_goal/succubus/varied_appetite/variety_goal in current_contract.goals)
+			variety_goal.record_partner(partner.mind.key)
+	if(partner_arousal >= SUCCUBUS_CONTRACT_HIGH_AROUSAL)
+		record_contract_progress(/datum/contract_goal/succubus/heightened_desire)
+	if(!isnull(current_form_key))
+		record_contract_progress(/datum/contract_goal/succubus/masked_feast)
+	if(corruption_mult > 1)
+		record_contract_progress(/datum/contract_goal/succubus/sacred_corruption)
+	if(true_form_active)
+		record_contract_progress(/datum/contract_goal/succubus/unmasked_hunger)
 
 /// Trickle essence from absorbed cum/femcum; decay compounds per originator so
 /// one donor can't be farmed as a bottomless keg.
