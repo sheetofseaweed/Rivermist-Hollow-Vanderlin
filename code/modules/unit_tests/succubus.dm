@@ -242,16 +242,23 @@
 
 /datum/unit_test/succubus_contract_progression_upkeep/Run()
 	var/datum/antagonist/succubus/test_contract_upkeep/antag = allocate(/datum/antagonist/succubus/test_contract_upkeep)
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human)
+	succubus.mind_initialize()
+	antag.owner = succubus.mind
 
 	antag.contracts_completed_full = 0
 	antag.refresh_succubus_contract_progression()
 	TEST_ASSERT_EQUAL(antag.get_succubus_contract_tier(), 1, "zero full contracts must remain tier 1")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_BASE, "tier 1 cap must be the base cap")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), "tier 1 must not grant Beguiling Doubles")
 
 	antag.contracts_completed_full = 1
 	TEST_ASSERT(antag.refresh_succubus_contract_progression(), "first full contract must change the cap")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_TIER_2, "one full contract must grant the tier 2 cap")
+	var/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/doubles = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE)
+	TEST_ASSERT_NOTNULL(doubles, "tier 2 must grant Beguiling Doubles")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing the same tier must be idempotent")
+	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), doubles, "refreshing tier 2 must not replace Beguiling Doubles")
 
 	antag.contracts_completed_full = 2
 	antag.refresh_succubus_contract_progression()
@@ -276,6 +283,8 @@
 	antag.on_contract_cycle_closed(null)
 	TEST_ASSERT_EQUAL(antag.essence, 0, "insufficient upkeep must clamp essence at zero")
 	TEST_ASSERT_EQUAL(antag.test_thrall_count, 2, "unpaid upkeep must leave the harem unchanged")
+
+	antag.owner = null
 
 /datum/unit_test/succubus_harem_team/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)

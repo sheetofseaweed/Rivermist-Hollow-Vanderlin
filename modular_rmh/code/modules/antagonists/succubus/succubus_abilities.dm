@@ -365,6 +365,84 @@
 	to_chat(cast_on, span_love("A warm fondness for [caster.real_name] settles over me like perfume."))
 	to_chat(owner, span_love("[cast_on.real_name]'s heart softens toward me."))
 
+// --- Beguiling Doubles: tier-2 visual misdirection ----------------------------------------------
+
+/obj/effect/temp_visual/decoy/fading/succubus_double
+	anchored = FALSE
+	duration = SUCCUBUS_BEGUILING_DOUBLE_DURATION
+	var/steps_remaining = SUCCUBUS_BEGUILING_DOUBLE_STEPS
+	var/movement_timer
+
+/obj/effect/temp_visual/decoy/fading/succubus_double/Initialize(mapload, atom/mimiced_atom)
+	. = ..()
+	movement_timer = addtimer(CALLBACK(src, PROC_REF(take_step)), SUCCUBUS_BEGUILING_DOUBLE_STEP_DELAY, TIMER_LOOP | TIMER_STOPPABLE)
+
+/obj/effect/temp_visual/decoy/fading/succubus_double/Destroy()
+	if(movement_timer)
+		deltimer(movement_timer)
+		movement_timer = null
+	return ..()
+
+/obj/effect/temp_visual/decoy/fading/succubus_double/proc/take_step()
+	steps_remaining--
+	if(!step(src, dir))
+		for(var/alternate_direction in shuffle(list(turn(dir, 90), turn(dir, -90))))
+			if(step(src, alternate_direction))
+				break
+
+	if(steps_remaining <= 0)
+		deltimer(movement_timer)
+		movement_timer = null
+
+/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles
+	name = "Beguiling Doubles"
+	desc = "Fracture your current appearance into a handful of short-lived, fading doubles."
+	has_visual_effects = FALSE
+	antimagic_flags = NONE
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+	associated_skill = null
+	charge_required = FALSE
+	cooldown_time = SUCCUBUS_BEGUILING_DOUBLES_COOLDOWN
+
+/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/before_cast(mob/living/cast_on)
+	. = ..()
+	if(. & SPELL_CANCEL_CAST)
+		return
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 2)
+		return . | SPELL_CANCEL_CAST
+	if(succubus_antag.essence < SUCCUBUS_COST_BEGUILING_DOUBLES)
+		to_chat(owner, span_warning("I lack the essence to split my image."))
+		return . | SPELL_CANCEL_CAST
+
+/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/cast(mob/living/cast_on)
+	. = ..()
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 2)
+		return
+	if(succubus_antag.essence < SUCCUBUS_COST_BEGUILING_DOUBLES)
+		return
+
+	var/turf/origin = get_turf(cast_on)
+	if(!origin)
+		return
+
+	succubus_antag.adjust_essence(-SUCCUBUS_COST_BEGUILING_DOUBLES)
+	var/list/turf/decoy_turfs = list(origin)
+	for(var/turf/adjacent_turf as anything in shuffle(get_adjacent_open_turfs(origin)))
+		if(adjacent_turf.is_blocked_turf(exclude_mobs = TRUE))
+			continue
+		decoy_turfs += adjacent_turf
+		if(length(decoy_turfs) >= SUCCUBUS_BEGUILING_DOUBLE_COUNT)
+			break
+
+	for(var/turf/decoy_turf as anything in decoy_turfs)
+		var/obj/effect/temp_visual/decoy/fading/succubus_double/double = new(decoy_turf, cast_on)
+		var/outward_direction = get_dir(origin, decoy_turf)
+		double.setDir(outward_direction || cast_on.dir)
+
+	to_chat(owner, span_love("My image fractures into a beguiling host."))
+
 /datum/antagonist/succubus/proc/grant_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
 	if(!current_mob)
@@ -376,6 +454,16 @@
 	current_mob.add_spell(/datum/action/cooldown/spell/succubus_whisper, source = owner)
 	current_mob.add_spell(/datum/action/cooldown/spell/succubus_charm, source = owner)
 	current_mob.add_spell(/datum/action/cooldown/spell/succubus_enthrall, source = owner)
+	refresh_succubus_tier_abilities()
+
+/datum/antagonist/succubus/proc/refresh_succubus_tier_abilities()
+	var/mob/living/current_mob = owner?.current
+	if(!current_mob)
+		return
+	if(get_succubus_contract_tier() >= 2)
+		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, source = owner)
+	else
+		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
 
 /datum/antagonist/succubus/proc/remove_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
@@ -388,6 +476,7 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_whisper)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_charm)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_enthrall)
+	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
 	// Allure's aura is a separate datum that outlives the spell if stripped mid-pulse
 	if(current_mob.has_status_effect(/datum/status_effect/succubus_allure_aura))
 		current_mob.remove_status_effect(/datum/status_effect/succubus_allure_aura)

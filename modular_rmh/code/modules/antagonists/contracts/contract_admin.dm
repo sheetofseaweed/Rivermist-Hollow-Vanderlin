@@ -3,6 +3,7 @@
 		return
 	commands["Contract: View"] = CALLBACK(src, PROC_REF(admin_view_contract))
 	commands["Contract: Reroll"] = CALLBACK(src, PROC_REF(admin_reroll_contract))
+	commands["Contract: Force Full Completion"] = CALLBACK(src, PROC_REF(admin_force_full_contract))
 	commands["Contract: Warp To Deadline"] = CALLBACK(src, PROC_REF(admin_warp_cycle))
 	commands["Contract: Extend Deadline"] = CALLBACK(src, PROC_REF(admin_extend_deadline))
 
@@ -22,6 +23,22 @@
 		current_contract = null
 	issue_next_contract()
 	message_admins("[key_name_admin(admin)] rerolled [key_name_admin(owner)]'s contract.")
+
+/datum/antagonist/proc/admin_force_full_contract(mob/admin)
+	var/datum/antag_contract/contract = current_contract
+	if(!contract || !length(contract.goals))
+		to_chat(admin, span_notice("No active contract goals to complete."))
+		return
+	// Place completion at the boundary so this test tool does not also grant the
+	// separate early-completion tier-ceiling bonus to the next contract.
+	contract.deadline = world.time
+	for(var/datum/contract_goal/goal as anything in contract.goals)
+		if(goal.completed)
+			continue
+		goal.progress = goal.target_amount
+		goal.complete()
+	close_contract_cycle()
+	message_admins("[key_name_admin(admin)] forced full completion of [key_name_admin(owner)]'s contract cycle.")
 
 /datum/antagonist/proc/admin_warp_cycle(mob/admin)
 	if(!current_contract)

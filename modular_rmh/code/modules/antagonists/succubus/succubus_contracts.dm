@@ -81,7 +81,7 @@
 	return count_available_partners(succubus_antag) >= target_amount
 
 /datum/contract_goal/succubus/varied_appetite/proc/record_partner(partner_key)
-	if(completed || !partner_key || partner_key in partner_keys)
+	if(completed || !partner_key || (partner_key in partner_keys))
 		return
 	partner_keys += partner_key
 	add_progress()
@@ -184,6 +184,7 @@
 	var/old_cap = essence_cap
 	essence_cap = essence_caps[get_succubus_contract_tier()]
 	essence = clamp(essence, 0, essence_cap)
+	refresh_succubus_tier_abilities()
 	if(old_cap == essence_cap)
 		return FALSE
 	if(owner?.current)
