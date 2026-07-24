@@ -8,9 +8,10 @@
 	var/damage_warning_last_at = 0
 	/// Valid hostile climax events accumulated toward horny defeat.
 	var/horny_defeat_climax_count = 0
-	/// Climaxes needed for horny defeat this encounter. Rolled lazily (rand 10-20) on the first
-	/// valid hostile-grab climax, per the design - separate from the legacy hostile_grab threshold.
+	/// Climaxes needed for horny defeat this encounter. Resolved and cached on the first valid climax.
 	var/horny_defeat_climax_threshold = 0
+	/// Player-facing explanation of the cached threshold's source.
+	var/horny_defeat_climax_threshold_source
 	/// Highest gradual-warning stage already shown this encounter, so each beat fires only once.
 	var/horny_defeat_warned_stage = 0
 	/// world.time of the last climax that counted toward horny defeat
@@ -23,12 +24,11 @@
 
 /datum/component/defeat_monitor/RegisterWithParent()
 	RegisterSignal(parent, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(on_health_update))
-	RegisterSignal(parent, COMSIG_LIVING_LIFE, PROC_REF(on_life))
-	RegisterSignal(parent, COMSIG_LIVING_DEATH, PROC_REF(on_death))
 	RegisterSignal(parent, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
+	RegisterSignal(parent, COMSIG_LIVING_DEFEAT_RESCUED, PROC_REF(on_defeat_rescued))
 
 /datum/component/defeat_monitor/UnregisterFromParent()
-	UnregisterSignal(parent, list(COMSIG_LIVING_HEALTH_UPDATE, COMSIG_LIVING_LIFE, COMSIG_LIVING_DEATH, COMSIG_SEX_CLIMAX))
+	UnregisterSignal(parent, list(COMSIG_LIVING_HEALTH_UPDATE, COMSIG_SEX_CLIMAX, COMSIG_LIVING_DEFEAT_RESCUED))
 
 /datum/component/defeat_monitor/proc/is_defeat_eligible()
 	var/mob/living/living_parent = parent
@@ -51,6 +51,10 @@
 
 	if(carbon_parent.defeat_is_immediate_rune_hazard())
 		return carbon_parent.enter_defeat(DEFEAT_REASON_HAZARD, DEFEAT_SEVERITY_SEVERE)
+	// Lethal health, blood, and brain states take precedence over an overlapping ordinary damage
+	// threshold so the snapshot and collapse feedback preserve why this update would have killed them.
+	if(carbon_parent.defeat_is_near_death())
+		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
 
 	var/selected_threshold = carbon_parent.get_effective_defeat_threshold()
 	// Total damage across the beatdown pools (not the single biggest) - predictable: you fall at roughly
@@ -64,9 +68,6 @@
 
 	// Oxygen on its own only downs you at the kill limit, so a survivable fall no longer taps you out.
 	if(carbon_parent.getOxyLoss() >= DEFEAT_OXY_THRESHOLD)
-		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
-
-	if(carbon_parent.defeat_is_near_death())
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
 
 	var/current_shock_stage = carbon_parent.getShockStage()
@@ -125,10 +126,8 @@
 	SIGNAL_HANDLER
 	return check_defeat_triggers()
 
-/datum/component/defeat_monitor/proc/on_life(datum/source, ...)
-	SIGNAL_HANDLER
-	return check_defeat_triggers()
-
+// Kept as a direct-call compatibility shim for the narrow rune-hazard regression test. It is not
+// registered as a normal death signal: health recomputation is the authoritative defeat path.
 /datum/component/defeat_monitor/proc/on_death(datum/source, ...)
 	SIGNAL_HANDLER
 	var/mob/living/carbon/carbon_parent = parent
@@ -148,6 +147,10 @@
 		return
 	return check_horny_defeat_climax(source, action_receiver, action_partner, action_performer)
 
+/datum/component/defeat_monitor/proc/on_defeat_rescued(datum/source, ...)
+	SIGNAL_HANDLER
+	reset_horny_defeat_encounter()
+
 /// A holy character (TRAIT_HOLY) bringing a downed victim to climax frees them - the design's
 /// "ERP with the saints" rescue (section 3.1). A holy one who is actively harming the victim
 /// (aggressive grab / recent attacker) is blocked by defeat_can_be_rescued_by, so only a tender act frees.
@@ -164,14 +167,13 @@
 		return FALSE
 	if(!HAS_TRAIT(holy_one, TRAIT_HOLY))
 		return FALSE
-	return victim.defeat_rescue(holy_one, "holy communion")
+	return victim.defeat_try_prepared_recovery(holy_one, "holy communion")
 
 /datum/component/defeat_monitor/proc/check_horny_defeat_climax(datum/source, mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
 	var/mob/living/living_parent = parent
 	if(!istype(living_parent))
 		return FALSE
 	if(!living_parent.horny_defeat_is_eligible())
-		reset_horny_defeat_encounter()
 		return FALSE
 	// A lull long enough means the encounter is over: stale climaxes from earlier dalliances
 	// must never stack with a fresh encounter hours later.
@@ -197,29 +199,36 @@
 	if(!horny_defeat_instigator_counts(!!instigator.client, instigator.cmode))
 		return FALSE
 
-	// Clientless mobs take the lighter mob-KO path; players keep the full carbon defeat flow.
-	var/mob_ko_path = !living_parent.client
-	// Roll this encounter's threshold once, on the first valid hostile climax.
+	// Player-owned bodies retain the player formula and full defeat path while temporarily disconnected.
+	var/mob_ko_path = !living_parent.horny_defeat_uses_player_stats()
 	if(horny_defeat_climax_threshold <= 0)
-		horny_defeat_climax_threshold = mob_ko_path ? rand(DEFEAT_MOB_HORNY_CLIMAX_MIN, DEFEAT_MOB_HORNY_CLIMAX_MAX) : rand(10, 20)
-	horny_defeat_climax_count++
+		var/list/resolved_threshold = living_parent.resolve_horny_defeat_threshold()
+		horny_defeat_climax_threshold = resolved_threshold[DEFEAT_HORNY_THRESHOLD_VALUE]
+		horny_defeat_climax_threshold_source = resolved_threshold[DEFEAT_HORNY_THRESHOLD_SOURCE]
+	else if(!horny_defeat_climax_threshold_source)
+		horny_defeat_climax_threshold_source = "Threshold source: explicitly cached for this encounter."
+	horny_defeat_climax_count = min(horny_defeat_climax_count + 1, horny_defeat_climax_threshold)
 	horny_defeat_last_climax_at = world.time
+	show_horny_defeat_progress(living_parent)
 	if(horny_defeat_climax_count < horny_defeat_climax_threshold)
 		maybe_warn_horny_defeat(living_parent)
 		return FALSE
 
-	reset_horny_defeat_encounter()
 	if(mob_ko_path)
 		return living_parent.enter_mob_horny_defeat(action_performer)
 	return living_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
 
-/// Ends the current horny-defeat "encounter": count, rolled threshold, warning stage and the
-/// last-climax stamp all reset, so the next encounter starts clean with a fresh 10-20 roll.
+/// Ends the current horny-defeat encounter. Recovery, timeout, and explicit callers own this reset.
 /datum/component/defeat_monitor/proc/reset_horny_defeat_encounter()
 	horny_defeat_climax_count = 0
 	horny_defeat_climax_threshold = 0
+	horny_defeat_climax_threshold_source = null
 	horny_defeat_warned_stage = 0
 	horny_defeat_last_climax_at = 0
+
+/// Gives the victim exact private progress without leaking it to observers.
+/datum/component/defeat_monitor/proc/show_horny_defeat_progress(mob/living/victim)
+	to_chat(victim, span_notice(horny_defeat_progress_text(horny_defeat_climax_count, horny_defeat_climax_threshold, horny_defeat_climax_threshold_source)))
 
 /// Emits the gradual "you are nearing a horny defeat" warning, but only the first time each escalating
 /// stage is reached this encounter (climaxes are discrete, so this yields three rising beats, not spam).
@@ -244,9 +253,9 @@
 /proc/horny_defeat_instigator_counts(player_controlled, combat_mode)
 	return !player_controlled || combat_mode
 
-/// Pure mapping of climax-count vs the hidden threshold to a warning stage (0 = none .. 3 = imminent).
+/// Pure mapping of climax-count vs the threshold to a warning stage (0 = none .. 3 = imminent).
 /// Kept threshold-relative so the warning intensifies as collapse nears, but always opens at the
-/// DEFEAT_HORNY_WARNING_START-th climax even for a low rolled threshold.
+/// DEFEAT_HORNY_WARNING_START-th climax even for a low threshold.
 /proc/horny_defeat_warning_stage(count, threshold)
 	if(threshold <= 0 || count < DEFEAT_HORNY_WARNING_START)
 		return 0
@@ -255,6 +264,51 @@
 	if(count >= threshold * DEFEAT_HORNY_WARNING_BUILD_FRACTION)
 		return 2
 	return 1
+
+/// Pure threshold formula shared by production and focused tests. Explicit creature profiles win.
+/proc/horny_defeat_threshold_for_stats(explicit_override, player_owned, constitution, endurance)
+	if(explicit_override > 0)
+		return clamp(round(explicit_override), DEFEAT_HORNY_MOB_THRESHOLD_MIN, DEFEAT_HORNY_MOB_THRESHOLD_MAX)
+	if(player_owned)
+		return clamp(round((constitution + endurance) / 2), DEFEAT_HORNY_PLAYER_THRESHOLD_MIN, DEFEAT_HORNY_PLAYER_THRESHOLD_MAX)
+	return clamp(round((constitution + endurance) / 10), DEFEAT_HORNY_MOB_THRESHOLD_MIN, DEFEAT_HORNY_MOB_THRESHOLD_MAX)
+
+/// Player-owned includes disconnected bodies whose mind is still attached.
+/mob/living/proc/horny_defeat_uses_player_stats()
+	return !!(client || mind)
+
+/// Resolves the first valid climax's threshold and a stable explanation for exact personal progress.
+/mob/living/proc/resolve_horny_defeat_threshold()
+	if(horny_defeat_threshold_override > 0)
+		var/override_value = horny_defeat_threshold_for_stats(horny_defeat_threshold_override, FALSE, 0, 0)
+		return list(
+			DEFEAT_HORNY_THRESHOLD_VALUE = override_value,
+			DEFEAT_HORNY_THRESHOLD_SOURCE = "Threshold source: explicit creature profile ([override_value]).",
+		)
+	if(horny_defeat_uses_player_stats())
+		var/player_constitution = GET_MOB_ATTRIBUTE_VALUE(src, STAT_CONSTITUTION)
+		var/player_endurance = GET_MOB_ATTRIBUTE_VALUE(src, STAT_ENDURANCE)
+		return list(
+			DEFEAT_HORNY_THRESHOLD_VALUE = horny_defeat_threshold_for_stats(0, TRUE, player_constitution, player_endurance),
+			DEFEAT_HORNY_THRESHOLD_SOURCE = "Threshold source: encounter-start stats (CON [player_constitution], END [player_endurance]).",
+		)
+	var/starting_constitution = initial(base_constitution)
+	var/starting_endurance = initial(base_endurance)
+	return list(
+		DEFEAT_HORNY_THRESHOLD_VALUE = horny_defeat_threshold_for_stats(0, FALSE, starting_constitution, starting_endurance),
+		DEFEAT_HORNY_THRESHOLD_SOURCE = "Threshold source: creature base stats (CON [starting_constitution], END [starting_endurance]).",
+	)
+
+/// Exact private progress text. Kept pure so the displayed values are regression-testable.
+/proc/horny_defeat_progress_text(count, threshold, threshold_source)
+	var/remaining = max(threshold - count, 0)
+	var/climax_word = remaining == 1 ? "climax" : "climaxes"
+	return "Horny defeat progress: [count]/[threshold]. [remaining] [climax_word] remaining. [threshold_source]"
+
+/// Shared explicit/recovery cleanup entry point for both full defeat and the lighter mob KO.
+/mob/living/proc/reset_horny_defeat_progress()
+	var/datum/component/defeat_monitor/monitor = GetComponent(/datum/component/defeat_monitor)
+	monitor?.reset_horny_defeat_encounter()
 
 /datum/component/defeat_ai_opt_in
 	dupe_mode = COMPONENT_DUPE_UNIQUE

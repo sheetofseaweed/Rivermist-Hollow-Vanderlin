@@ -17,6 +17,21 @@
 #define DEFEAT_TREATMENT_SPIRITUAL "spiritual"
 #define DEFEAT_TREATMENT_UNIVERSAL "universal"
 
+#define DEFEAT_TRAUMA_CATEGORY_PHYSICAL "physical"
+#define DEFEAT_TRAUMA_CATEGORY_SPIRITUAL "spiritual"
+
+#define DEFEAT_TRAUMA_PROVIDER_MEDICAL "medical_provider"
+#define DEFEAT_TRAUMA_PROVIDER_SHRINE "shrine_provider"
+#define DEFEAT_TRAUMA_PROVIDER_UNIVERSAL "universal_provider"
+
+#define DEFEAT_RECOVERY_MANUAL "manual"
+#define DEFEAT_RECOVERY_PREPARED "prepared"
+#define DEFEAT_RECOVERY_CAMPFIRE "campfire"
+#define DEFEAT_RECOVERY_SELF "self"
+#define DEFEAT_RECOVERY_ENVIRONMENTAL "environmental"
+#define DEFEAT_RECOVERY_RUNE "rune"
+#define DEFEAT_RECOVERY_INTERACTION_KEY "defeat_recovery"
+
 #define DEFEAT_RUNE_MAX_CHARGES 5
 #define DEFEAT_RUNE_RECHARGE_TIME (60 MINUTES)
 /// Sentinel in the cost table meaning "bill a fraction of current blood" instead of a flat amount.
@@ -29,6 +44,9 @@
 #define KIDNAP_TRAIT "kidnap_captivity"
 /// How long after being kidnapped the knockout wears off, handing the captive their agency back.
 #define KIDNAP_KO_RELEASE (1 MINUTES)
+/// A surfaced rune choice cannot become a permanent softlock if its action/controller disappears.
+/// When this one-shot window closes, captivity uses ordinary bounded recovery with Defeat trauma.
+#define KIDNAP_RUNE_DECISION_FALLBACK (2 MINUTES)
 /// How long a captive has before the surrender option is offered.
 #define KIDNAP_SURRENDER_WINDOW (15 MINUTES)
 /// How many climaxes endured in captivity offer the surrender option early.
@@ -37,6 +55,21 @@
 #define KIDNAP_NPC_DECAY (30 MINUTES)
 /// How far a would-be captor looks for rescuers/allies when deciding whether it dares drag prey off.
 #define KIDNAP_GUARD_VIEW 6
+/// Failed admission (most commonly a full profile) backs the captor off instead of retrying every
+/// AI planning cycle and spamming the victim/nearby players.
+#define KIDNAP_RETRY_COOLDOWN (30 SECONDS)
+/// Captivity pocket ownership. Shared profiles key by a stable lair id, carrier profiles by the
+/// captor reference, and per-captive profiles by the captive reference.
+#define DEFEAT_CAPTIVITY_SHARED "shared"
+#define DEFEAT_CAPTIVITY_CARRIER "carrier"
+#define DEFEAT_CAPTIVITY_CAPTIVE "captive"
+/// Profile access rules. These are deliberately data on the profile rather than behavior inferred
+/// from the pocket template, so future lairs can expose different entrances without changing core.
+#define DEFEAT_CAPTIVITY_ACCESS_RELEASED "released_captive"
+#define DEFEAT_CAPTIVITY_ACCESS_CAPTOR "captor"
+#define DEFEAT_CAPTIVITY_ACCESS_SEALED "sealed"
+/// Namespaced instance keys keep captivity pockets separate from every other pocket-dimension user.
+#define DEFEAT_CAPTIVITY_INSTANCE_PREFIX "defeat_captivity"
 
 // --- NPC-in-distress (rescue NPCs) ---
 /// do_after time to free a distress NPC.
@@ -57,6 +90,17 @@
 /// oxy spike that would otherwise KO almost instantly, which isn't fun. Instead oxy only puts you down
 /// on its own once it reaches this near-lethal amount (roughly the kill limit).
 #define DEFEAT_OXY_THRESHOLD 100
+#define DEFEAT_BLOOD_VOLUME_MINIMUM BLOOD_VOLUME_OKAY
+/// Recovery leaves this much room below the organ's death boundary so a following life tick cannot
+/// immediately kill the victim again. The damage itself is still carried as aftermath.
+#define DEFEAT_BRAIN_DAMAGE_MAX (BRAIN_DAMAGE_DEATH - 40)
+/// Damage is clamped below both the selected Defeat threshold and the normal death boundary.
+#define DEFEAT_DAMAGE_SAFETY_MARGIN 25
+/// A single non-oxygen pool is never allowed to consume more than half of a normal health bar after
+/// bounded stabilization. The aggregate cap is calculated from the selected threshold at runtime.
+#define DEFEAT_DAMAGE_POOL_CAP_FRACTION 0.5
+/// Oxygen has its own near-lethal threshold and therefore gets its own post-stabilization ceiling.
+#define DEFEAT_OXY_DAMAGE_CAP (DEFEAT_OXY_THRESHOLD - DEFEAT_DAMAGE_SAFETY_MARGIN)
 #define DEFEAT_SHOCK_WARNING_STAGE SHOCK_STAGE_4
 #define DEFEAT_SHOCK_DEFEAT_STAGE SHOCK_STAGE_6
 #define DEFEAT_SHOCK_HARD_STAGE SHOCK_STAGE_8
@@ -65,10 +109,14 @@
 /// Warn the player once total damage reaches this fraction of their defeat threshold.
 #define DEFEAT_DAMAGE_WARNING_FRACTION 0.7
 #define DEFEAT_ACTIVE_HARM_WINDOW (3 SECONDS)
-#define DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD 10
+#define DEFEAT_PREPARED_MEDICINE_MINIMUM 5
 /// Empty-handed revive channel: longest (no medical skill) and shortest (legendary). Scales by rank.
 #define DEFEAT_REVIVE_TIME_MAX (150 SECONDS)
 #define DEFEAT_REVIVE_TIME_MIN (45 SECONDS)
+/// Empty-handed recovery is exhausting even when it succeeds.
+#define DEFEAT_MANUAL_HELPER_STAMINA_COST 35
+#define DEFEAT_CAMPFIRE_PASSIVE_RECOVERY_TIME (3 MINUTES)
+#define DEFEAT_CAMPFIRE_TENDED_RECOVERY_TIME (45 SECONDS)
 /// Climax count at which the gradual "you are nearing a horny defeat" warnings begin.
 #define DEFEAT_HORNY_WARNING_START 2
 /// How long a horny knockout lasts before the victim picks themselves back up unaided (the light case).
@@ -77,6 +125,14 @@
 #define DEFEAT_HORNY_WARNING_BUILD_FRACTION 0.6
 /// An "encounter" ends after this long without a counted hostile climax
 #define DEFEAT_HORNY_ENCOUNTER_TIMEOUT (5 MINUTES)
+/// Deterministic player thresholds snapshot current Constitution and Endurance on the first valid
+/// hostile climax. Creature thresholds use immutable type defaults instead.
+#define DEFEAT_HORNY_PLAYER_THRESHOLD_MIN 10
+#define DEFEAT_HORNY_PLAYER_THRESHOLD_MAX 20
+#define DEFEAT_HORNY_MOB_THRESHOLD_MIN 1
+#define DEFEAT_HORNY_MOB_THRESHOLD_MAX 3
+#define DEFEAT_HORNY_THRESHOLD_VALUE "value"
+#define DEFEAT_HORNY_THRESHOLD_SOURCE "source"
 /// KO Only anti-softlock: when the "Struggle to Your Feet" action is offered, and the auto safety-net
 /// timeout after which a still-downed KO Only victim picks themselves up unaided (grievously wounded).
 #define DEFEAT_KO_ONLY_STRUGGLE_DELAY (2 MINUTES)
@@ -87,8 +143,5 @@
 #define DEFEAT_MOB_HORNY_KO_DURATION (10 MINUTES)
 /// While players remain nearby, how often the KO'd mob re-checks before it may be cleaned up.
 #define DEFEAT_MOB_HORNY_KO_RECHECK (30 SECONDS)
-/// Climaxes needed to horny-KO a clientless mob, rolled once per encounter (far fewer than a player's 10-20).
-#define DEFEAT_MOB_HORNY_CLIMAX_MIN 1
-#define DEFEAT_MOB_HORNY_CLIMAX_MAX 3
 /// How far the KO cleanup looks for a watching player before it deletes a lone mob.
 #define DEFEAT_MOB_HORNY_CLEANUP_VIEW 7

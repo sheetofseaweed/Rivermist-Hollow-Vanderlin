@@ -39,6 +39,7 @@
 /mob/living/Destroy()
 	clear_hostile_grab_resist_timer()
 	clear_hostile_grab_horny_hostility_timer()
+	QDEL_NULL(defeat_recovery_channel)
 	if(FACTION_MATTHIOS in faction)
 		SSmatthios_mobs.unregister_mob(src)
 	if(cached_island_id)
@@ -1033,9 +1034,10 @@
 			set_health(NONE)
 	update_pain()
 	update_shock()
-	handle_defeat_health_update()
-	update_stat()
 	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE, amount)
+	// The defeat monitor is the single normal health-path entry point. It runs before update_stat()
+	// so lethal recomputations can become a bounded Defeat KO instead of finalizing ordinary death.
+	update_stat()
 
 /// Updates pain value
 /mob/living/proc/update_pain()
@@ -3014,21 +3016,15 @@
 	if(targetting_datum.is_horny_target_now_hostile(src, grabber))
 		return
 
-	hostile_grab_horny_climax_count = 0
-	RegisterSignal(src, COMSIG_SEX_CLIMAX, PROC_REF(on_hostile_grab_horny_climax))
 	hostile_grab_horny_hostility_timer = addtimer(CALLBACK(src, PROC_REF(trigger_hostile_grab_horny_hostility), WEAKREF(grabber)), hostile_grab_horny_hostility_delay, TIMER_STOPPABLE)
 
 /mob/living/proc/clear_hostile_grab_horny_hostility_timer()
 	if(hostile_grab_horny_hostility_timer)
 		deltimer(hostile_grab_horny_hostility_timer)
 	hostile_grab_horny_hostility_timer = null
-	hostile_grab_horny_climax_count = 0
-	UnregisterSignal(src, COMSIG_SEX_CLIMAX)
 
 /mob/living/proc/trigger_hostile_grab_horny_hostility(datum/weakref/grabber_ref)
 	hostile_grab_horny_hostility_timer = null
-	hostile_grab_horny_climax_count = 0
-	UnregisterSignal(src, COMSIG_SEX_CLIMAX)
 	var/mob/living/grabber = grabber_ref?.resolve()
 	if(!grabber || pulledby != grabber || stat >= UNCONSCIOUS)
 		return
@@ -3050,35 +3046,6 @@
 	ai_controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_HORNY_TARGET)
 	ai_controller.clear_blackboard_key(BB_HORNY_PORTAL_LIGHT)
 	ai_controller.CancelActions()
-	return TRUE
-
-/mob/living/proc/on_hostile_grab_horny_climax(mob/living/source, datum/sex_action/action, mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
-	SIGNAL_HANDLER
-	if(source != src || !hostile_grab_horny_hostility_timer)
-		return
-	if(!pulledby || pulledby == src || !isliving(pulledby))
-		return
-
-	var/mob/living/grabber = pulledby
-	if(action_receiver != src || action_partner != grabber || action_performer != grabber)
-		return
-	if(!can_hostile_ai_react_to_grabber(grabber))
-		return
-
-	hostile_grab_horny_climax_count++
-	if(hostile_grab_horny_climax_count < hostile_grab_horny_climax_threshold)
-		return
-
-	knockout_from_hostile_grab_horny_climax(grabber)
-
-/mob/living/proc/knockout_from_hostile_grab_horny_climax(mob/living/grabber)
-	if(!can_hostile_ai_react_to_grabber(grabber))
-		return FALSE
-
-	visible_message(span_warning("[src] goes limp from overstimulation!"))
-	clear_hostile_grab_horny_hostility_timer()
-	clear_hostile_grab_resist_timer()
-	Unconscious(hostile_grab_horny_climax_knockout_duration, ignore_canstun = TRUE)
 	return TRUE
 
 /mob/living/proc/try_hostile_grab_resist()

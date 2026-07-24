@@ -1313,18 +1313,16 @@
 	if(used_damage < total_oxy)
 		used_damage = total_oxy
 	set_health(round(maxHealth - used_damage, DAMAGE_PRECISION))
-	update_stat()
 	update_pain()
 	update_shock()
-	handle_defeat_health_update()
+	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
+	// The monitor must get first refusal on lethal health before ordinary death finalization.
 	update_stat()
 
 	if(stat == SOFT_CRIT)
 		add_movespeed_modifier(MOVESPEED_ID_CARBON_SOFTCRIT, TRUE, multiplicative_slowdown = SOFTCRIT_ADD_SLOWDOWN)
 	else
 		remove_movespeed_modifier(MOVESPEED_ID_CARBON_SOFTCRIT, TRUE)
-	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
-
 	dna?.species.spec_updatehealth(src)
 	if(HAS_TRAIT(src, TRAIT_IGNOREDAMAGESLOWDOWN))
 		remove_movespeed_modifier(MOVESPEED_ID_DAMAGE_SLOWDOWN)

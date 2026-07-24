@@ -1,0 +1,210 @@
+/datum/map_template/pocket/defeat_captivity/unit_test
+	name = "Defeat Captivity Test Chamber"
+	id = "pocket_defeat_captivity_test"
+	mappath = "_maps/templates/pockets/pocket_test_chamber.dmm"
+
+/datum/defeat_captivity_profile/shared/unit_test
+	stable_key = "unit_test_shared"
+	template_type = /datum/map_template/pocket/defeat_captivity/unit_test
+
+/datum/defeat_captivity_profile/shared/unit_test/single
+	stable_key = "unit_test_capacity"
+	capacity = 1
+
+/datum/defeat_captivity_profile/carrier/unit_test
+	template_type = /datum/map_template/pocket/defeat_captivity/unit_test
+
+/datum/defeat_captivity_profile/per_captive/unit_test
+	template_type = /datum/map_template/pocket/defeat_captivity/unit_test
+	var/turf/unit_test_wilds
+
+/datum/defeat_captivity_profile/per_captive/unit_test/get_wilds_destination(datum/component/kidnap_captivity/captivity)
+	return unit_test_wilds || ..()
+
+/datum/unit_test/defeat_captivity_shared_reuse_and_exit/Run()
+	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
+	var/turf/first_origin = get_turf(first)
+	first.apply_status_effect(/datum/status_effect/defeat_knockout)
+	second.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	TEST_ASSERT(first.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test, null, null, "unit_test_shared"), "The first shared-lair captive should be admitted.")
+	TEST_ASSERT(second.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test, null, null, "unit_test_shared"), "The second shared-lair captive should reuse the active lair.")
+	var/datum/component/kidnap_captivity/first_captivity = first.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/component/kidnap_captivity/second_captivity = second.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/shared_instance = first_captivity.resolve_instance()
+	TEST_ASSERT_EQUAL(second_captivity.resolve_instance(), shared_instance, "Shared profiles should reuse one stable-key instance.")
+	TEST_ASSERT(!shared_instance.can_exit_mob(first, null, FALSE), "An unreleased captive should not use the pocket exit.")
+	first_captivity.released = TRUE
+	TEST_ASSERT(shared_instance.can_exit_mob(first, null, FALSE), "A released shared-lair captive should be allowed to use the exit.")
+	TEST_ASSERT(shared_instance.exit_mob(first), "The shared-lair exit should route through contextual release.")
+	TEST_ASSERT_NULL(first.GetComponent(/datum/component/kidnap_captivity), "Contextual exit should remove captivity state.")
+	TEST_ASSERT_EQUAL(get_turf(first), first_origin, "A shared lair without a configured exterior should return to the saved capture turf first.")
+	SSpocket_dimensions.delete_instance(shared_instance)
+
+/datum/unit_test/defeat_captivity_capacity/Run()
+	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
+	first.apply_status_effect(/datum/status_effect/defeat_knockout)
+	second.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(first.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test/single, null, null, "unit_test_capacity"), "The first captive should fill the one-person pocket.")
+	TEST_ASSERT(!second.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test/single, null, null, "unit_test_capacity"), "Admission should fail cleanly when profile capacity is full.")
+	var/datum/component/kidnap_captivity/captivity = first.GetComponent(/datum/component/kidnap_captivity)
+	qdel(second)
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/retry_victim = allocate(/mob/living/carbon/human, get_step(run_loc_floor_bottom_left, EAST))
+	captor.kidnap_lair_tag = "unit_test_capacity"
+	captor.kidnap_captivity_profile = /datum/defeat_captivity_profile/shared/unit_test/single
+	retry_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	retry_victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	retry_victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
+	retry_victim.recent_damage_source_attacker_weakref = WEAKREF(captor)
+	TEST_ASSERT(!captor.try_kidnap_defeated_prey(retry_victim), "A full profile should reject the AI captor's admission attempt.")
+	TEST_ASSERT(captor.kidnap_retry_after > world.time, "A failed admission should arm a bounded per-captor retry cooldown.")
+	TEST_ASSERT(!captor.is_kidnap_candidate(retry_victim), "The cooldown should keep a full pocket from hot-looping the same candidate.")
+	SSpocket_dimensions.delete_instance(captivity.resolve_instance())
+
+/datum/unit_test/defeat_captivity_carrier_keys_and_owner_teardown/Run()
+	var/turf/carrier_turf = run_loc_floor_bottom_left
+	var/mob/living/carbon/human/first_carrier = allocate(/mob/living/carbon/human, carrier_turf)
+	var/mob/living/carbon/human/second_carrier = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
+	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
+	var/mob/living/carbon/human/isolated = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
+	first.apply_status_effect(/datum/status_effect/defeat_knockout)
+	second.apply_status_effect(/datum/status_effect/defeat_knockout)
+	isolated.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(first.kidnap_to_pocket(/datum/defeat_captivity_profile/carrier/unit_test, first_carrier), "The carrier should create its first pocket.")
+	TEST_ASSERT(second.kidnap_to_pocket(/datum/defeat_captivity_profile/carrier/unit_test, first_carrier), "The same carrier should reuse its active pocket.")
+	TEST_ASSERT(isolated.kidnap_to_pocket(/datum/defeat_captivity_profile/carrier/unit_test, second_carrier), "A different carrier should create an isolated pocket.")
+	var/datum/component/kidnap_captivity/first_captivity = first.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/component/kidnap_captivity/second_captivity = second.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/component/kidnap_captivity/isolated_captivity = isolated.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/carrier_instance = first_captivity.resolve_instance()
+	TEST_ASSERT_EQUAL(first_captivity.resolve_instance(), second_captivity.resolve_instance(), "One carrier should own one reusable instance.")
+	TEST_ASSERT_NOTEQUAL(first_captivity.resolve_instance(), isolated_captivity.resolve_instance(), "Different carriers should never share a carrier instance.")
+	TEST_ASSERT(carrier_instance.can_exit_mob(first_carrier, null, FALSE), "A carrier-profile pocket should recognize its owning carrier through the profile access rule.")
+	TEST_ASSERT(!carrier_instance.can_exit_mob(second_carrier, null, FALSE), "A carrier-profile pocket should deny unrelated non-captive occupants instead of falling through to permissive base access.")
+	qdel(first_carrier)
+	TEST_ASSERT_NULL(first.GetComponent(/datum/component/kidnap_captivity), "Carrier destruction should clear the first captive's state.")
+	TEST_ASSERT_NULL(second.GetComponent(/datum/component/kidnap_captivity), "Carrier destruction should clear every member's state.")
+	TEST_ASSERT_EQUAL(get_turf(first), carrier_turf, "Carrier teardown should eject captives at the carrier's destruction turf.")
+	SSpocket_dimensions.delete_instance(isolated_captivity.resolve_instance())
+
+/datum/unit_test/defeat_captivity_per_captive_and_delete_paths/Run()
+	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
+	first.apply_status_effect(/datum/status_effect/defeat_knockout)
+	second.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(first.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The first per-captive pocket should admit its owner.")
+	TEST_ASSERT(second.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The second per-captive pocket should admit its owner.")
+	var/datum/component/kidnap_captivity/first_captivity = first.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/component/kidnap_captivity/second_captivity = second.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/first_instance = first_captivity.resolve_instance()
+	var/datum/pocket_dimension/defeat_captivity/second_instance = second_captivity.resolve_instance()
+	var/turf/first_pocket_turf = get_turf(first)
+	TEST_ASSERT_NOTEQUAL(first_instance, second_instance, "Per-captive profiles should isolate every victim.")
+	first_captivity.released = TRUE
+	TEST_ASSERT(!first_instance.can_exit_mob(first, null, FALSE), "A sealed per-captive profile should deny its captive even after waking.")
+	TEST_ASSERT(!first_instance.can_exit_mob(second, null, FALSE), "A sealed per-captive profile should deny unrelated occupants too.")
+	qdel(first_instance)
+	TEST_ASSERT_NULL(first.GetComponent(/datum/component/kidnap_captivity), "Direct qdel should contextually eject and clear captivity.")
+	TEST_ASSERT_NOTEQUAL(get_turf(first), first_pocket_turf, "Direct qdel must not leave the captive in deleted pocket turf.")
+	TEST_ASSERT(SSpocket_dimensions.delete_instance(second_instance), "Subsystem deletion should tear down the second isolated pocket.")
+	TEST_ASSERT_NULL(second.GetComponent(/datum/component/kidnap_captivity), "Subsystem deletion should clear captivity exactly like direct qdel.")
+
+/datum/unit_test/defeat_captivity_wilds_first_and_forced_move_cleanup/Run()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/turf/test_wilds = run_loc_floor_top_right
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, origin)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The isolated test pocket should admit its captive.")
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/defeat_captivity_profile/per_captive/unit_test/profile = captivity.profile
+	profile.unit_test_wilds = test_wilds
+	TEST_ASSERT(captivity.release_to_context(), "Contextual per-captive release should succeed.")
+	TEST_ASSERT_EQUAL(get_turf(victim), test_wilds, "Per-captive release should prefer a valid wilds destination over the saved origin.")
+	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Wilds release should clear captivity state.")
+
+	var/mob/living/carbon/human/moved_victim = allocate(/mob/living/carbon/human, origin)
+	moved_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(moved_victim.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test, null, null, "unit_test_forced_move"), "The movement cleanup pocket should admit its captive.")
+	var/datum/component/kidnap_captivity/moved_captivity = moved_victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/moved_instance = moved_captivity.resolve_instance()
+	var/moved_instance_key = moved_instance.instance_key
+	moved_victim.forceMove(origin)
+	TEST_ASSERT_NULL(moved_victim.GetComponent(/datum/component/kidnap_captivity), "A forced move out of the pocket should remove stale captivity state.")
+	TEST_ASSERT_NULL(SSpocket_dimensions.get_instance(moved_instance_key), "The emptied shared pocket should be torn down after forced movement cleanup.")
+
+/datum/unit_test/defeat_captivity_rune_cleanup_and_rejection_aftermath/Run()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/turf/test_wilds = run_loc_floor_top_right
+	var/mob/living/carbon/human/rejecting_victim = allocate(/mob/living/carbon/human, origin)
+	rejecting_victim.defeat_system_ai_opt_in = TRUE
+	TEST_ASSERT(rejecting_victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "The rejection victim should enter Defeat with a snapshot.")
+	TEST_ASSERT(rejecting_victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The rejection victim should enter an isolated pocket.")
+	var/datum/component/kidnap_captivity/rejecting_captivity = rejecting_victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/defeat_captivity_profile/per_captive/unit_test/rejecting_profile = rejecting_captivity.profile
+	rejecting_profile.unit_test_wilds = test_wilds
+	rejecting_captivity.released = TRUE
+	TEST_ASSERT(rejecting_captivity.reject_rune_and_wake(), "Reject Rune and Wake should eject and run bounded recovery.")
+	TEST_ASSERT_NULL(rejecting_victim.GetComponent(/datum/component/kidnap_captivity), "Rune rejection should clear captivity before the victim wakes.")
+	TEST_ASSERT(!rejecting_victim.has_status_effect(/datum/status_effect/defeat_knockout), "Rune rejection should remove the Defeat knockout.")
+	TEST_ASSERT(rejecting_victim.has_any_defeat_trauma(), "Rune rejection should retain ordinary Defeat trauma.")
+	TEST_ASSERT_EQUAL(get_turf(rejecting_victim), test_wilds, "Rune rejection from a per-captive pocket should use wilds-first ejection.")
+
+	var/mob/living/carbon/human/calling_victim = allocate(/mob/living/carbon/human, origin)
+	calling_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(calling_victim.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test, null, null, "unit_test_rune_prepare"), "The rune-return cleanup victim should enter a shared pocket.")
+	var/datum/component/kidnap_captivity/calling_captivity = calling_victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/calling_instance = calling_captivity.resolve_instance()
+	var/calling_instance_key = calling_instance.instance_key
+	TEST_ASSERT_EQUAL(calling_captivity.prepare_rune_return(), origin, "Rune preparation should preserve the original capture turf for return guidance.")
+	TEST_ASSERT_NULL(calling_victim.GetComponent(/datum/component/kidnap_captivity), "Call-rune preparation should clear captivity state before relocation.")
+	TEST_ASSERT_NULL(SSpocket_dimensions.get_instance(calling_instance_key), "Call-rune preparation should not leave an empty shared pocket registered.")
+
+	var/mob/living/carbon/human/fallback_victim = allocate(/mob/living/carbon/human, origin)
+	fallback_victim.defeat_system_ai_opt_in = TRUE
+	TEST_ASSERT(fallback_victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "The lost-rune fallback victim should enter Defeat with aftermath context.")
+	TEST_ASSERT(fallback_victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The lost-rune fallback victim should enter captivity.")
+	var/datum/component/kidnap_captivity/fallback_captivity = fallback_victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/defeat_captivity_profile/per_captive/unit_test/fallback_profile = fallback_captivity.profile
+	fallback_profile.unit_test_wilds = test_wilds
+	fallback_captivity.released = TRUE
+	TEST_ASSERT(!(locate(/datum/action/innate/resurrection_rune_call) in fallback_victim.actions), "The fallback case should have no surviving rune call action.")
+	TEST_ASSERT(fallback_captivity.resolve_rune_choice_fallback(), "The component-owned last resort should resolve a lost rune choice without polling.")
+	TEST_ASSERT_NULL(fallback_victim.GetComponent(/datum/component/kidnap_captivity), "The lost-rune fallback should clear captivity.")
+	TEST_ASSERT(!fallback_victim.has_status_effect(/datum/status_effect/defeat_knockout), "The lost-rune fallback should wake the victim through bounded recovery.")
+	TEST_ASSERT(fallback_victim.has_any_defeat_trauma(), "The lost-rune fallback should apply ordinary Defeat trauma.")
+
+/datum/unit_test/defeat_captivity_rune_queue_cancels_fallback/Run()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/obj/structure/resurrection_rune/test_rune = allocate(/obj/structure/resurrection_rune, origin)
+	var/datum/resurrection_rune_controller/controller = test_rune.resrunecontroler
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, origin)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_mode = DEFEAT_MODE_KO_RUNE
+	victim.mind = allocate(/datum/mind, "captivity-rune-queue-test")
+	victim.mind.current = victim
+	controller.linked_users += victim
+	TEST_ASSERT(victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "The queued-rune victim should enter Defeat.")
+	TEST_ASSERT(victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The queued-rune victim should enter captivity.")
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	captivity.released = TRUE
+	captivity.rune_fallback_timer = addtimer(CALLBACK(captivity, TYPE_PROC_REF(/datum/component/kidnap_captivity, resolve_rune_choice_fallback)), 1 MINUTES, TIMER_STOPPABLE)
+
+	TEST_ASSERT(controller.trigger_defeat_rune_return(victim), "Calling the rune should queue the captive for revival.")
+	TEST_ASSERT_NULL(captivity.rune_fallback_timer, "A successfully queued rune return must cancel the automatic rejection fallback immediately.")
+
+	victim.mind.current = null
+	victim.mind = null
+
+#ifdef FOCUS_DEFEAT_CAPTIVITY_TEST
+TEST_FOCUS(/datum/unit_test/defeat_captivity_shared_reuse_and_exit)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_capacity)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_carrier_keys_and_owner_teardown)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_per_captive_and_delete_paths)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_wilds_first_and_forced_move_cleanup)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_rune_cleanup_and_rejection_aftermath)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_rune_queue_cancels_fallback)
+#endif

@@ -14,14 +14,6 @@
 	focus = TRUE
 #endif
 
-/datum/unit_test/hostile_ai_horny_grab_knocks_out_after_two_grabber_climaxes
-	procs_tested = list(/mob/living/set_pulledby)
-
-#ifdef FOCUS_HOSTILE_AI_GRAB_TEST
-/datum/unit_test/hostile_ai_horny_grab_knocks_out_after_two_grabber_climaxes
-	focus = TRUE
-#endif
-
 /datum/targetting_datum/basic/unit_test_allow_clientless_horny/can_use_horny_ai_target(mob/living/living_mob, mob/living/carbon/human/human_target)
 	return TRUE
 
@@ -75,26 +67,6 @@
 	TEST_ASSERT(hostile_targets && !isnull(hostile_targets[grabber]), "Holding a hostile horny AI for long enough should mark the grabber horny-hostile.")
 	TEST_ASSERT_EQUAL(controller.blackboard[BB_HORNY_AGGRO_TARGET], grabber, "The long-held grabber should become the horny aggro target.")
 	TEST_ASSERT_NULL(controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET], "Turning hostile should clear the current horny target so aggro planning can take over.")
-
-/datum/unit_test/hostile_ai_horny_grab_knocks_out_after_two_grabber_climaxes/Run()
-	var/mob/living/carbon/human/species/goblin/npc/goblin_npc = allocate(/mob/living/carbon/human/species/goblin/npc)
-	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
-	var/mob/living/carbon/human/other_actor = allocate(/mob/living/carbon/human)
-
-	prepare_horny_grab_test_pair(goblin_npc, grabber)
-	goblin_npc.set_pulledby(grabber)
-
-	SEND_SIGNAL(goblin_npc, COMSIG_SEX_CLIMAX, null, goblin_npc, grabber, other_actor)
-	SEND_SIGNAL(goblin_npc, COMSIG_SEX_CLIMAX, null, goblin_npc, other_actor, grabber)
-	TEST_ASSERT(!goblin_npc.IsUnconscious(), "Climaxes not initiated by the grabber against the grabbed mob should not count.")
-
-	SEND_SIGNAL(goblin_npc, COMSIG_SEX_CLIMAX, null, goblin_npc, grabber, grabber)
-	TEST_ASSERT(!goblin_npc.IsUnconscious(), "The first grabber-initiated climax should not knock out the grabbed mob.")
-
-	SEND_SIGNAL(goblin_npc, COMSIG_SEX_CLIMAX, null, goblin_npc, grabber, grabber)
-	TEST_ASSERT(goblin_npc.IsUnconscious(), "The second grabber-initiated climax during the horny grab window should knock out the grabbed mob.")
-	TEST_ASSERT(goblin_npc.AmountUnconscious() >= 2 MINUTES - 1, "The grabbed mob should be knocked out for roughly two minutes.")
-	TEST_ASSERT_NULL(goblin_npc.hostile_grab_horny_hostility_timer, "Sex-combat knockout should end the horny grab hostility window.")
 
 /datum/unit_test/proc/prepare_horny_grab_test_pair(mob/living/hostile_mob, mob/living/carbon/human/grabber)
 	hostile_mob.gender = MALE

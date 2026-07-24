@@ -12,7 +12,8 @@
 	return DEFEAT_DAMAGE_THRESHOLD_DEFAULT
 
 /// Labelled threshold choices so the numbers mean something to the player in the pref menu.
-/// The number is total wound damage (brute+burn+tox+oxy) endured before you tap out into defeat.
+/// The number is pooled brute, burn, toxin, and clone damage endured before you tap out into defeat.
+/// Oxygen, blood loss, brain danger, shock, and immediate rune hazards use their own safety checks.
 /// Lower = fall sooner (safer); higher = soak more punishment first.
 /proc/defeat_threshold_choice_map()
 	return list(
@@ -47,6 +48,12 @@
 		"Knockout Only" = DEFEAT_MODE_KO_ONLY,
 		"No Return" = DEFEAT_MODE_NO_RETURN,
 	)
+
+/proc/defeat_mode_help_text()
+	return "Defeat stabilizes lethal bleeding and brain danger without erasing ordinary injuries. Allies can wake you manually, with prepared care, or at a player-built campfire; waking leaves configured aftermath trauma. Knockout + Rune also offers the rune route during captivity, Knockout Only relies on in-world recovery, and No Return keeps ordinary death final."
+
+/proc/defeat_threshold_help_text()
+	return "This is the pooled total of brute, burn, toxin, and clone damage needed to trigger Defeat. Lower values make you fall sooner. Stabilization makes you safe from an immediate bleed/brain death loop, but it does not wake you or fully heal you. Horny Defeat uses a separate deterministic stat-based resistance; your exact progress and remaining climaxes are shown only to you during an active encounter."
 
 /datum/preferences/proc/get_defeat_mode()
 	defeat_mode = sanitize_defeat_mode(defeat_mode)

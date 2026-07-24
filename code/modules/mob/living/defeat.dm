@@ -1,7 +1,7 @@
 /mob/living
 	/// Player-facing defeat routing preference cached from character preferences.
 	var/defeat_mode = DEFEAT_MODE_DEFAULT
-	/// Major damage category threshold that can convert normal defeat into the defeat system.
+	/// Pooled brute, burn, toxin, and clone damage threshold that can enter the defeat system.
 	var/defeat_damage_threshold = DEFEAT_DAMAGE_THRESHOLD_DEFAULT
 	/// Explicit opt-in gate for AI bodies. Player-controlled bodies are evaluated separately.
 	var/defeat_system_ai_opt_in = FALSE
@@ -11,6 +11,8 @@
 	/// the defeat KO/traumas - the rune runs its own defeat teardown (manual KO removal + trauma
 	/// escalation). Every other HEAL_ADMIN heal (the admin verb) still resets defeat state. Transient.
 	var/tmp/defeat_suppress_heal_cleanup = FALSE
+	/// The one recovery action currently being performed on this victim.
+	var/datum/defeat_recovery_channel/defeat_recovery_channel
 
 /mob/living/proc/cache_defeat_preferences_from_prefs(datum/preferences/prefs)
 	if(!prefs)
@@ -79,16 +81,10 @@
 			return TRUE
 	return FALSE
 
-/mob/living/proc/handle_defeat_health_update()
-	var/datum/component/defeat_monitor/monitor = GetComponent(/datum/component/defeat_monitor)
-	return monitor?.check_defeat_triggers()
-
-/mob/living/proc/handle_defeat_life_update()
-	var/datum/component/defeat_monitor/monitor = GetComponent(/datum/component/defeat_monitor)
-	return monitor?.check_defeat_triggers()
-
 /mob/living/proc/enter_defeat(reason = DEFEAT_REASON_DAMAGE, severity = DEFEAT_SEVERITY_NORMAL, mob/living/source)
 	if(!defeat_system_is_eligible())
+		return FALSE
+	if(stat == DEAD)
 		return FALSE
 	if(has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
@@ -166,23 +162,108 @@
 		return FALSE
 	if(!defeat_can_be_rescued_by(helper))
 		return FALSE
-	return perform_defeat_rescue(helper, rescue_source)
+	return begin_defeat_recovery(/datum/defeat_recovery_profile/manual, helper, rescue_source)
 
 /// Rescue with no helper, for environmental sources (a healing spring, a holy site...) that the
 /// design allows as an exception to the "another player / non-hostile mob" source rule.
 /mob/living/proc/defeat_environmental_rescue(rescue_source = "spring")
 	if(!has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
-	return perform_defeat_rescue(null, rescue_source)
+	return perform_defeat_rescue(null, rescue_source, /datum/defeat_recovery_profile/environmental)
 
-/// Shared rescue body: clear the knockout, pull the victim out of any still-lethal state, apply the
-/// aftermath trauma, and announce it.
-/mob/living/proc/perform_defeat_rescue(mob/living/helper, rescue_source)
+/// Compatibility entrypoint for sources which already completed their own interaction. New sources
+/// should name a profile explicitly; only this finalizer removes the knockout and emits recovery.
+/mob/living/proc/perform_defeat_rescue(mob/living/helper, rescue_source, profile_spec = /datum/defeat_recovery_profile/environmental, datum/source)
+	var/datum/defeat_recovery_profile/profile
+	if(ispath(profile_spec, /datum/defeat_recovery_profile))
+		profile = new profile_spec
+	else if(istype(profile_spec, /datum/defeat_recovery_profile))
+		profile = profile_spec
+	else
+		return FALSE
+	var/datum/defeat_recovery_channel/channel = new(profile, src, helper, rescue_source, source)
+	if(!profile.can_recover(channel))
+		qdel(channel)
+		return FALSE
+	if(!profile.reserve_resources(channel))
+		qdel(channel)
+		return FALSE
+	channel.resources_reserved = TRUE
+	// Completed one-shot recovery has priority over an unfinished channel. Its own reservation is
+	// secured first; only then is the old reservation rolled back and its channel replaced.
+	if(defeat_recovery_channel)
+		defeat_recovery_channel.cancel()
+		QDEL_NULL(defeat_recovery_channel)
+	channel.active = TRUE
+	defeat_recovery_channel = channel
+	var/succeeded = complete_defeat_recovery(channel)
+	qdel(channel)
+	return succeeded
+
+/// Starts a profile-owned interruptible recovery. Zero-duration profiles complete immediately; the
+/// manual profile runs its long medicine-scaled do_after inside the channel.
+/mob/living/proc/begin_defeat_recovery(datum/defeat_recovery_profile/profile_type, mob/living/helper, rescue_source = "recovery", datum/source)
+	if(!ispath(profile_type, /datum/defeat_recovery_profile))
+		return FALSE
+	if(defeat_recovery_channel)
+		return FALSE
+	var/datum/defeat_recovery_profile/profile = new profile_type
+	var/datum/defeat_recovery_channel/channel = new(profile, src, helper, rescue_source, source)
+	defeat_recovery_channel = channel
+	var/succeeded = channel.execute()
+	if(succeeded && channel.profile?.uses_passive_timer && channel.active)
+		return TRUE
+	qdel(channel)
+	return succeeded
+
+/mob/living/proc/cancel_defeat_recovery()
+	return defeat_recovery_channel?.cancel()
+
+/// The only wake-up finalizer. It revalidates after any channel, applies the bounded safety pass,
+/// consumes the profile's reserved resources, removes KO, applies one aftermath, and signals once.
+/mob/living/proc/complete_defeat_recovery(datum/defeat_recovery_channel/channel)
+	if(!channel || channel != defeat_recovery_channel || !channel.is_valid())
+		return FALSE
+	if(!channel.resources_reserved || !channel.profile.consume_resources(channel))
+		return FALSE
+	channel.resources_consumed = TRUE
+	channel.resources_reserved = FALSE
+	var/mob/living/helper = channel.resolve_helper()
+	defeat_recovery_safety_pass()
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
 	remove_status_effect(/datum/status_effect/defeat_knockout)
-	defeat_clear_lethal_conditions()
-	apply_defeat_snapshot_debuffs()
-	SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_RESCUED, helper, rescue_source)
+	channel.profile.apply_aftermath(channel)
+	channel.profile.apply_helper_cost(channel)
+	channel.active = FALSE
+	SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_RESCUED, helper, channel.rescue_source)
 	return TRUE
+
+/mob/living/proc/defeat_recovery_safety_pass()
+	defeat_stabilize_live_damage(FALSE)
+	defeat_clear_lethal_conditions()
+	return !defeat_is_near_death()
+
+/// Healing which only stabilizes a downed victim, such as a bandage, must never wake them.
+/mob/living/proc/defeat_stabilize_from_healing(mob/living/helper, rescue_source = "healing")
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(helper && helper != src && !defeat_can_be_rescued_by(helper))
+		return FALSE
+	return defeat_recovery_safety_pass()
+
+/// Prepared sources have already completed and paid for their own tool, spell, surgery, or feeding
+/// interaction. They explicitly select the safer prepared profile instead of relying on heal amount.
+/mob/living/proc/defeat_try_prepared_recovery(mob/living/helper, rescue_source = "prepared care", datum/source)
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	return perform_defeat_rescue(helper, rescue_source, /datum/defeat_recovery_profile/prepared, source)
+
+/mob/living/proc/defeat_begin_campfire_recovery(obj/machinery/light/fueled/campfire/campfire, mob/living/helper)
+	if(!campfire)
+		return FALSE
+	var/profile_type = helper ? /datum/defeat_recovery_profile/campfire/tended : /datum/defeat_recovery_profile/campfire
+	return begin_defeat_recovery(profile_type, helper, helper ? "campfire tending" : "campfire rest", campfire)
 
 /// A non-rune rescue (potion, hands, spring, pet, horny self-recovery, struggle-up) lifts the knockout
 /// but never runs a full heal - so the two lethal conditions defeat stabilization leaves untouched,
@@ -192,12 +273,12 @@
 /// handled by the damage-pool stabilization). The lingering harm is carried by the aftermath trauma, not
 /// by leaving the victim one tick from collapse. The rune path skips this: it runs a full ADMIN_HEAL_ALL.
 /mob/living/proc/defeat_clear_lethal_conditions()
-	if(blood_volume < BLOOD_VOLUME_OKAY && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
-		blood_volume = BLOOD_VOLUME_OKAY
+	if(blood_volume < DEFEAT_BLOOD_VOLUME_MINIMUM && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
+		blood_volume = DEFEAT_BLOOD_VOLUME_MINIMUM
 	if(iscarbon(src))
 		var/mob/living/carbon/carbon_src = src
-		if(carbon_src.getOrganLoss(ORGAN_SLOT_BRAIN) >= BRAIN_DAMAGE_DEATH)
-			carbon_src.setOrganLoss(ORGAN_SLOT_BRAIN, 0)
+		if(carbon_src.getOrganLoss(ORGAN_SLOT_BRAIN) > DEFEAT_BRAIN_DAMAGE_MAX)
+			carbon_src.setOrganLoss(ORGAN_SLOT_BRAIN, DEFEAT_BRAIN_DAMAGE_MAX)
 	updatehealth()
 
 /// A horny knockout is the light case: after DEFEAT_HORNY_SELF_RECOVER_TIME the victim picks themselves
@@ -208,8 +289,10 @@
 		return FALSE
 	if(GetComponent(/datum/component/kidnap_captivity))
 		return FALSE
+	if(!perform_defeat_rescue(null, "self-recovery", /datum/defeat_recovery_profile/self_recovery))
+		return FALSE
 	to_chat(src, span_notice("The haze of exhaustion lifts - your strength trickles back, and you pull yourself together."))
-	return perform_defeat_rescue(null, "self-recovery")
+	return TRUE
 
 /// KO Only anti-softlock: with no rune and no rescuer, a downed victim can drag themselves up on their
 /// own (the "Struggle to Your Feet" action, or the auto safety-net). The price is Grievous Wounds, on
@@ -219,9 +302,9 @@
 		return FALSE
 	if(GetComponent(/datum/component/kidnap_captivity))
 		return FALSE
+	if(!perform_defeat_rescue(null, "struggle", /datum/defeat_recovery_profile/self_recovery/ko_only))
+		return FALSE
 	to_chat(src, span_userdanger("Gritting your teeth, you drag yourself up from defeat - broken, but alive. You will have to limp to the town clinic to be made whole."))
-	perform_defeat_rescue(null, "struggle")
-	apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/grievous, DEFEAT_SEVERITY_SEVERE)
 	return TRUE
 
 /// Empty-handed revive channel length, scaled by the reviver's medicine skill: no skill takes the
@@ -265,29 +348,17 @@
 		return TRUE
 	return FALSE
 
-/mob/living/proc/defeat_try_auto_rescue_from_healing(mob/living/helper, amount = 0, rescue_source = "healing")
-	if(!has_status_effect(/datum/status_effect/defeat_knockout))
-		return FALSE
-	if(amount < DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD)
-		return FALSE
-	return defeat_rescue(helper, rescue_source)
-
 /// A helper feeding a downed victim a drink holding enough curative reagent rescues them from
 /// knockout (design section 3.1: "a potion can revive you - but only another's, never your own").
 /// Self-administered drinks never reach here (the feed path requires feeder != target).
-/obj/item/reagent_containers/proc/defeat_try_potion_rescue(mob/living/target, mob/living/feeder)
+/obj/item/reagent_containers/proc/defeat_try_potion_rescue(mob/living/target, mob/living/feeder, medicine_transferred)
 	if(!isliving(target) || !isliving(feeder) || target == feeder)
 		return FALSE
 	if(!target.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
-	if(!reagents)
+	if(medicine_transferred < DEFEAT_PREPARED_MEDICINE_MINIMUM)
 		return FALSE
-	var/healing_volume = 0
-	for(var/datum/reagent/medicine/medicine in reagents.reagent_list)
-		healing_volume += medicine.volume
-	if(healing_volume < DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD)
-		return FALSE
-	return target.defeat_try_auto_rescue_from_healing(feeder, healing_volume, "potion")
+	return target.defeat_try_prepared_recovery(feeder, "potion", src)
 
 /mob/living/proc/defeat_recent_source_is(mob/living/helper)
 	if(!helper)
@@ -359,14 +430,14 @@
 	blood_volume = max(0, blood_volume - drawn)
 	return drawn
 
-/mob/living/proc/apply_defeat_snapshot_debuffs()
+/mob/living/proc/apply_defeat_snapshot_debuffs(severity_override)
 	var/datum/defeat_snapshot/snapshot = last_defeat_snapshot
 	if(!snapshot)
 		return FALSE
 	var/debuff_type = snapshot.defeat_debuff_type()
 	if(!debuff_type)
 		return FALSE
-	apply_defeat_trauma_status(debuff_type, snapshot.severity)
+	apply_defeat_trauma_status(debuff_type, severity_override || snapshot.severity)
 	return TRUE
 
 /mob/living/proc/apply_defeat_trauma_status(datum/status_effect/debuff/defeat/debuff_type, severity = DEFEAT_SEVERITY_NORMAL)
@@ -383,72 +454,91 @@
 		break
 	return apply_status_effect(debuff_type, null, severity)
 
-/mob/living/proc/defeat_treat_trauma(mob/living/helper, treatment_type = DEFEAT_TREATMENT_MEDICAL)
+/mob/living/proc/defeat_treat_trauma(mob/living/helper, treatment_type = DEFEAT_TREATMENT_MEDICAL, datum/status_effect/debuff/defeat/exact_target)
 	if(!helper || helper.stat == DEAD)
 		return FALSE
 
-	var/treated = FALSE
+	var/provider_type
 	switch(treatment_type)
 		if(DEFEAT_TREATMENT_MEDICAL)
-			if(!helper.defeat_can_do_medical_treatment())
-				return FALSE
-			treated = defeat_clear_trauma_class(helper, treatment_type)
+			provider_type = /datum/defeat_trauma_provider/medical/compatibility
 		if(DEFEAT_TREATMENT_SPIRITUAL)
-			if(!helper.defeat_can_do_spiritual_treatment())
-				return FALSE
-			treated = defeat_clear_trauma_class(helper, treatment_type)
+			provider_type = /datum/defeat_trauma_provider/shrine/compatibility
 		if(DEFEAT_TREATMENT_UNIVERSAL)
-			treated = defeat_clear_one_trauma()
-			if(treated)
-				SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
+			provider_type = /datum/defeat_trauma_provider/universal
+	if(!provider_type)
+		return FALSE
+	var/datum/defeat_trauma_provider/provider = new provider_type
+	var/treated = provider.treat(src, helper, exact_target, interactive = FALSE, skip_delay = TRUE)
+	qdel(provider)
 	return treated
 
-/// Clears every defeat trauma whose treatment_class matches. Traumas self-register their cure via
-/// that var (medical/clinic by default, spiritual for rune and horny), so a new trauma subtype is
-/// curable the moment it exists - no hand-maintained type list to forget it from.
+/// Compatibility wrapper retained for older callers. Provider selection deliberately clears one exact
+/// trauma at a time; callers must invoke another treatment to address another injury.
 /mob/living/proc/defeat_clear_trauma_class(mob/living/helper, treatment_type)
-	var/treated = FALSE
-	for(var/datum/status_effect/debuff/defeat/trauma in status_effects)
-		if(trauma.treatment_class != treatment_type)
-			continue
-		qdel(trauma)
-		treated = TRUE
-	if(treated)
-		SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
-	return treated
+	return defeat_treat_trauma(helper, treatment_type)
 
 /mob/living/proc/defeat_clear_matching_trauma(mob/living/helper, list/trauma_types, treatment_type = DEFEAT_TREATMENT_MEDICAL)
-	var/treated = FALSE
-	for(var/trauma_type in trauma_types)
-		treated = remove_status_effect(trauma_type) || treated
-	if(treated)
-		SEND_SIGNAL(src, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
+	var/provider_type = treatment_type == DEFEAT_TREATMENT_SPIRITUAL \
+		? /datum/defeat_trauma_provider/shrine/compatibility \
+		: /datum/defeat_trauma_provider/medical/tool
+	var/datum/defeat_trauma_provider/provider = new provider_type
+	provider.allowed_trauma_types = trauma_types?.Copy()
+	var/treated = provider.treat(src, helper, interactive = FALSE, skip_delay = TRUE)
+	qdel(provider)
 	return treated
 
 /mob/living/proc/defeat_treat_tool_physical_trauma(mob/living/helper, list/trauma_types)
 	if(!helper || helper.stat == DEAD)
 		return FALSE
-	if(!helper.defeat_can_do_medical_treatment())
-		return FALSE
 	return defeat_clear_matching_trauma(helper, trauma_types, DEFEAT_TREATMENT_MEDICAL)
 
 /mob/living/proc/defeat_attempt_adjacent_treatment(mob/living/helper, treatment_type = DEFEAT_TREATMENT_MEDICAL)
-	if(!helper || helper == src)
+	if(!helper || QDELETED(helper) || helper == src || QDELETED(src))
 		return FALSE
 	if(stat == DEAD || helper.stat == DEAD)
 		return FALSE
-	if(!helper.Adjacent(src))
+	var/obj/item/offering = helper.get_active_held_item()
+	if(QDELETED(offering))
 		return FALSE
-	if(!defeat_treatment_zone_ok(treatment_type))
-		var/zone_warning = (treatment_type == DEFEAT_TREATMENT_SPIRITUAL) ? "This rite can only be performed within a church." : "This kind of care can only be given within a clinic."
-		to_chat(helper, span_warning(zone_warning))
+	var/list/provider_options = list()
+	var/list/provider_label_counts = list()
+	if(treatment_type == DEFEAT_TREATMENT_SPIRITUAL)
+		for(var/obj/structure/defeat_trauma_shrine/shrine in view(1, src))
+			var/datum/defeat_trauma_provider/shrine/structure/provider = shrine.treatment_provider
+			if(QDELETED(provider) || !length(provider.usable_diagnoses(src, helper, offering)))
+				continue
+			var/base_label = provider.provider_location_text()
+			provider_label_counts[base_label] = (provider_label_counts[base_label] || 0) + 1
+			var/option_label = provider_label_counts[base_label] == 1 ? base_label : "[base_label] ([provider_label_counts[base_label]])"
+			provider_options[option_label] = provider
+	else
+		for(var/obj/machinery/defeat_medical_machine/machine in view(1, src))
+			var/datum/defeat_trauma_provider/medical/machine/provider = machine.treatment_provider
+			if(QDELETED(provider) || !length(provider.usable_diagnoses(src, helper, offering)))
+				continue
+			var/base_label = provider.provider_location_text()
+			provider_label_counts[base_label] = (provider_label_counts[base_label] || 0) + 1
+			var/option_label = provider_label_counts[base_label] == 1 ? base_label : "[base_label] ([provider_label_counts[base_label]])"
+			provider_options[option_label] = provider
+	if(!length(provider_options))
+		var/provider_name = treatment_type == DEFEAT_TREATMENT_SPIRITUAL ? "shrine of solace" : "trauma treatment apparatus"
+		to_chat(helper, span_warning("No adjacent [provider_name] can treat this patient with my current training and held offering."))
 		return FALSE
-
-	var/treatment_time = defeat_treatment_time(helper, treatment_type)
-	if(!do_after(helper, treatment_time, target = src))
+	var/datum/defeat_trauma_provider/provider
+	if(length(provider_options) == 1)
+		provider = provider_options[provider_options[1]]
+	else
+		var/provider_choice = input(helper, "Choose a treatment provider.", "Defeat trauma treatment") as null|anything in provider_options
+		if(QDELETED(src) || QDELETED(helper) || QDELETED(offering))
+			return FALSE
+		provider = provider_options[provider_choice]
+	if(QDELETED(provider) || !length(provider.usable_diagnoses(src, helper, offering)))
+		to_chat(helper, span_warning("That provider is no longer able to begin treatment."))
 		return FALSE
-	if(!defeat_treat_trauma(helper, treatment_type))
-		to_chat(helper, span_warning("There is no matching defeat trauma I can treat."))
+	var/treated = provider.treat(src, helper, interactive = TRUE, reserved_resource = offering)
+	if(!treated)
+		to_chat(helper, span_warning("I cannot complete that trauma treatment. I must keep the required offering in my active hand."))
 		return FALSE
 	helper.visible_message(span_notice("[helper] treats the lingering defeat trauma in [src]."), span_notice("I treat the lingering defeat trauma in [src]."))
 	return TRUE
@@ -494,23 +584,8 @@
 			return istype(get_area(src), /area/indoors/town/church)
 	return TRUE
 
-/mob/living/proc/defeat_clear_one_trauma()
-	var/list/trauma_types = list(
-		/datum/status_effect/debuff/defeat/physical,
-		/datum/status_effect/debuff/defeat/physical/wound,
-		/datum/status_effect/debuff/defeat/physical/burn,
-		/datum/status_effect/debuff/defeat/physical/body,
-		/datum/status_effect/debuff/defeat/physical/concussion,
-		/datum/status_effect/debuff/defeat/physical/leg,
-		/datum/status_effect/debuff/defeat/physical/arm,
-		/datum/status_effect/debuff/defeat/pain,
-		/datum/status_effect/debuff/defeat/rune,
-		/datum/status_effect/debuff/defeat/horny,
-	)
-	for(var/trauma_type in trauma_types)
-		if(remove_status_effect(trauma_type))
-			return TRUE
-	return FALSE
+/mob/living/proc/defeat_clear_one_trauma(mob/living/helper = src, datum/status_effect/debuff/defeat/exact_target)
+	return defeat_treat_trauma(helper, DEFEAT_TREATMENT_UNIVERSAL, exact_target)
 
 /mob/living/proc/has_any_defeat_trauma()
 	for(var/datum/status_effect/debuff/defeat/trauma as anything in status_effects)
@@ -533,53 +608,106 @@
 		var/mob/living/carbon/carbon_target = src
 		carbon_target.defeat_stabilize_active_injuries()
 
+
+/// Returns the aggregate major-damage ceiling used by bounded defeat stabilization. It is always
+/// below both the user's selected defeat threshold and the ordinary lethal health boundary.
+/mob/living/proc/defeat_damage_safety_cap()
+	var/threshold_cap = get_effective_defeat_threshold() - DEFEAT_DAMAGE_SAFETY_MARGIN
+	var/death_cap = maxHealth - HEALTH_THRESHOLD_DEAD - DEFEAT_DAMAGE_SAFETY_MARGIN
+	return max(0, min(threshold_cap, death_cap))
+
+/// Reduce ordinary carbon injuries without deleting their datums. Keeping the injury records means
+/// the victim wakes with meaningful, treatable wounds instead of a hidden full heal.
+/mob/living/carbon/proc/defeat_cap_injury_damage(target_damage)
+	var/current_damage = getBruteLoss() + getFireLoss()
+	if(current_damage <= target_damage)
+		return FALSE
+
+	var/reduction_remaining = current_damage - target_damage
+	var/reduced_anything = FALSE
+	var/list/injuries_to_cap = all_injuries?.Copy()
+	for(var/datum/injury/injury as anything in injuries_to_cap)
+		if(!injury || QDELETED(injury) || injury.damage <= 0 || reduction_remaining <= 0)
+			continue
+		// Leave a small positive remainder so bounded stabilization cannot silently qdel the injury.
+		var/minimum_damage = min(injury.damage, 0.1)
+		var/reduction = min(reduction_remaining, max(0, injury.damage - minimum_damage))
+		if(!reduction)
+			continue
+		injury.damage -= reduction
+		injury.init_stage(injury.damage)
+		injury.bleed_timer = 0
+		injury.bandage_injury()
+		reduction_remaining -= reduction
+		reduced_anything = TRUE
+
+	for(var/obj/item/bodypart/bodypart as anything in bodyparts)
+		bodypart.update_damages()
+		bodypart.update_bodypart_damage_state()
+	return reduced_anything
+
 /mob/living/proc/defeat_stabilize_live_damage(run_update = TRUE)
-	setBruteLoss(0, FALSE, TRUE)
-	setFireLoss(0, FALSE, TRUE)
-	setToxLoss(0, FALSE, TRUE)
-	setOxyLoss(0, FALSE, TRUE)
-	setCloneLoss(0, FALSE, TRUE)
+	// These are entry invariants, not wake-up bonuses. A defeated victim must already be safe from
+	// passive bleed-out and brain death while waiting for rescue.
+	if(blood_volume < DEFEAT_BLOOD_VOLUME_MINIMUM && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
+		blood_volume = DEFEAT_BLOOD_VOLUME_MINIMUM
+	var/major_damage_cap = defeat_damage_safety_cap()
+	if(iscarbon(src))
+		var/mob/living/carbon/carbon_target = src
+		if(carbon_target.getOrganLoss(ORGAN_SLOT_BRAIN) > DEFEAT_BRAIN_DAMAGE_MAX)
+			carbon_target.setOrganLoss(ORGAN_SLOT_BRAIN, DEFEAT_BRAIN_DAMAGE_MAX)
+		carbon_target.defeat_stabilize_active_injuries(FALSE)
+		// Toxin and clone loss are scalar pools; preserve a bounded amount before reducing ordinary
+		// bodypart injuries to fit the aggregate ceiling.
+		carbon_target.setToxLoss(min(carbon_target.getToxLoss(), major_damage_cap * DEFEAT_DAMAGE_POOL_CAP_FRACTION), FALSE, TRUE)
+		carbon_target.setCloneLoss(min(carbon_target.getCloneLoss(), major_damage_cap * DEFEAT_DAMAGE_POOL_CAP_FRACTION), FALSE, TRUE)
+		var/injury_damage_cap = max(0, major_damage_cap - carbon_target.getToxLoss() - carbon_target.getCloneLoss())
+		carbon_target.defeat_cap_injury_damage(injury_damage_cap)
+		carbon_target.setOxyLoss(min(carbon_target.getOxyLoss(), DEFEAT_OXY_DAMAGE_CAP), FALSE, TRUE)
+	else
+		setBruteLoss(min(getBruteLoss(), major_damage_cap * DEFEAT_DAMAGE_POOL_CAP_FRACTION), FALSE, TRUE)
+		setFireLoss(min(getFireLoss(), major_damage_cap * DEFEAT_DAMAGE_POOL_CAP_FRACTION), FALSE, TRUE)
+		setToxLoss(min(getToxLoss(), major_damage_cap * DEFEAT_DAMAGE_POOL_CAP_FRACTION), FALSE, TRUE)
+		setCloneLoss(min(getCloneLoss(), major_damage_cap * DEFEAT_DAMAGE_POOL_CAP_FRACTION), FALSE, TRUE)
+		setOxyLoss(min(getOxyLoss(), DEFEAT_OXY_DAMAGE_CAP), FALSE, TRUE)
 	setPainLoss(0, FALSE, TRUE)
 	setShockStage(0, FALSE, TRUE)
 	if(run_update)
 		updatehealth()
 
 /mob/living/carbon/proc/defeat_stabilize_active_injuries(run_update = TRUE)
-	var/cleared_anything = FALSE
+	var/changed_anything = FALSE
 
 	for(var/obj/item/bodypart/bodypart as anything in bodyparts)
 		if(!bodypart)
 			continue
+		for(var/obj/item/organ/artery/artery as anything in bodypart.getorganslotlist(ORGAN_SLOT_ARTERY))
+			if(artery.damage > 0)
+				artery.heal_bleeding()
+				changed_anything = TRUE
+		for(var/datum/wound/wound as anything in bodypart.wounds)
+			if(wound?.bleed_rate)
+				// Keep the wound datum and its damage, but suppress active blood loss until proper care.
+				wound.bleed_rate = 0
+				changed_anything = TRUE
 		if(length(bodypart.embedded_objects))
 			var/list/embedded_to_clear = bodypart.embedded_objects.Copy()
 			for(var/obj/item/embedded_item as anything in embedded_to_clear)
 				if(bodypart.remove_embedded_object(embedded_item))
-					cleared_anything = TRUE
+					changed_anything = TRUE
 
 	if(length(simple_embedded_objects))
 		var/list/simple_embedded_to_clear = simple_embedded_objects.Copy()
 		for(var/obj/item/embedded_item as anything in simple_embedded_to_clear)
 			if(simple_remove_embedded_object(embedded_item))
-				cleared_anything = TRUE
+				changed_anything = TRUE
 
-	if(length(all_injuries))
-		var/list/injuries_to_clear = all_injuries.Copy()
-		for(var/datum/injury/injury as anything in injuries_to_clear)
-			if(!injury || QDELETED(injury))
-				continue
-			var/obj/item/bodypart/injured_bodypart = injury.parent_bodypart
-			if(length(injury.embedded_objects))
-				var/list/injury_embedded_to_clear = injury.embedded_objects.Copy()
-				for(var/obj/item/embedded_item as anything in injury_embedded_to_clear)
-					if(injured_bodypart?.remove_embedded_object(embedded_item))
-						cleared_anything = TRUE
-					else if(simple_remove_embedded_object(embedded_item))
-						cleared_anything = TRUE
-			if(injury.damage > 0)
-				injury.heal_damage(injury.damage)
-			if(!QDELETED(injury))
-				qdel(injury)
-			cleared_anything = TRUE
+	for(var/datum/injury/injury as anything in all_injuries)
+		if(!injury || QDELETED(injury) || !injury.is_bleeding())
+			continue
+		injury.bleed_timer = 0
+		injury.bandage_injury()
+		changed_anything = TRUE
 
 	for(var/obj/item/bodypart/bodypart as anything in bodyparts)
 		bodypart.update_damages()
@@ -588,14 +716,13 @@
 	if(run_update)
 		update_damage_overlays()
 		updatehealth()
-	return cleared_anything
+	return changed_anything
 
 //////////////////////////////////////////////////
-// KIDNAPPING (DEFEAT_SYSTEM_SPEC_ADDENDUM.md section 6)
-// Mob lairs live off-map (the "Centcomm" z). Mappers place entrance + escape markers, both keyed by
-// a shared lair_tag. Kidnapping a downed victim teleports them to an entrance marker; reaching an
-// escape marker flings them back out into the wilds. Trigger wiring + surrender/NPC-in-distress are
-// a later chunk - this is the captivity core.
+// LEGACY KIDNAPPING LANDMARKS
+// Existing maps still contain these keyed markers during migration. New kidnappings are admitted to
+// profile-owned pocket instances in defeat_captivity.dm; no gameplay path teleports into these static
+// rooms anymore, so damage to a live captivity pocket disappears when that instance is torn down.
 //////////////////////////////////////////////////
 
 /// lair_tag -> list of /obj/effect/landmark/kidnap/entrance
@@ -644,37 +771,6 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		return
 	victim.kidnap_escape_to_wilds(captivity)
 
-/// Teleports a downed victim into a lair (a random entrance marker for lair_tag) and begins captivity.
-/mob/living/proc/kidnap_to_lair(lair_tag, list/captor_faction = null)
-	if(!has_status_effect(/datum/status_effect/defeat_knockout))
-		return FALSE
-	if(GetComponent(/datum/component/kidnap_captivity))
-		return FALSE
-	var/list/entrances = GLOB.kidnap_entrance_markers[lair_tag]
-	if(!LAZYLEN(entrances))
-		return FALSE
-	var/obj/effect/landmark/kidnap/entrance/destination = pick(entrances)
-	var/turf/destination_turf = get_turf(destination)
-	if(!destination_turf)
-		return FALSE
-	forceMove(destination_turf)
-	AddComponent(/datum/component/kidnap_captivity, lair_tag, captor_faction)
-	// Anyone already in the lair sees the fresh captive hauled in; the victim gets their own line.
-	visible_message(span_userdanger("[src] is dragged in and dumped on the ground, freshly captured!"), \
-		span_userdanger("You are dragged off into a lair, far from any help..."))
-	return TRUE
-
-/// Frees a captive: dump them in the wilds and tear down the captivity state.
-/mob/living/proc/kidnap_escape_to_wilds(datum/component/kidnap_captivity/captivity)
-	if(!captivity)
-		return FALSE
-	var/turf/destination = get_random_kidnap_wilds_turf()
-	if(destination)
-		forceMove(destination)
-	captivity.end_captivity()
-	to_chat(src, span_notice("You drag yourself past the threshold and the world swallows you whole - free, but lost and far from home."))
-	return TRUE
-
 /// Surfaces the captive's rune-return option, reusing the rune's own eligibility (KO+Rune, charged,
 /// still knocked out). Returns TRUE if the option was actually offered.
 /mob/living/proc/kidnap_surface_rune_return()
@@ -721,109 +817,23 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		ADD_TRAIT(owner, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
 		to_chat(owner, span_notice("You steel yourself and rebuff the lair - its denizens will leave you be."))
 
-/datum/component/kidnap_captivity
-	dupe_mode = COMPONENT_DUPE_UNIQUE
-	var/lair_tag
-	/// The captor's faction, handed to a surrendered captive so the lair won't attack the new NPC.
-	var/list/captor_faction
-	var/captive_since = 0
-	/// TRUE once the knockout has worn off and the captive has their agency back.
-	var/released = FALSE
-	/// The "Refuse Advances" opt-out action granted on release; cleared when captivity ends.
-	var/datum/action/innate/defeat_refuse_advances/refuse_action
-	/// TRUE once the captive may give up (the Surrender verb becomes usable).
-	var/surrender_available = FALSE
-	/// Climaxes endured in captivity; enough of them offers surrender early.
-	var/captivity_climaxes = 0
-	var/ko_release_timer
-	var/surrender_timer
-
-/datum/component/kidnap_captivity/Initialize(lair_tag, list/captor_faction = null)
-	if(!isliving(parent))
-		return COMPONENT_INCOMPATIBLE
-	src.lair_tag = lair_tag
-	src.captor_faction = captor_faction
-	captive_since = world.time
-
-/datum/component/kidnap_captivity/RegisterWithParent()
-	ko_release_timer = addtimer(CALLBACK(src, PROC_REF(release_from_knockout)), KIDNAP_KO_RELEASE, TIMER_STOPPABLE)
-	surrender_timer = addtimer(CALLBACK(src, PROC_REF(offer_surrender)), KIDNAP_SURRENDER_WINDOW, TIMER_STOPPABLE)
-	RegisterSignal(parent, COMSIG_SEX_CLIMAX, PROC_REF(on_captive_climax))
-
-/datum/component/kidnap_captivity/UnregisterFromParent()
-	deltimer(ko_release_timer)
-	deltimer(surrender_timer)
-	UnregisterSignal(parent, COMSIG_SEX_CLIMAX)
-	// The opt-out never leaves the lair with the captive - strip trait + action on any teardown path.
-	var/mob/living/victim = parent
-	if(victim)
-		REMOVE_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
-	if(refuse_action)
-		refuse_action.Remove(victim)
-		QDEL_NULL(refuse_action)
-
-/// After the hold time: KO+Rune captives get their rune-return option (and stay down to use it);
-/// everyone else trades knockout for captive pacifism so they can crawl to an escape marker.
-/datum/component/kidnap_captivity/proc/release_from_knockout()
-	var/mob/living/victim = parent
-	if(!victim || released)
-		return
-	released = TRUE
-	if(victim.defeat_mode == DEFEAT_MODE_KO_RUNE && victim.kidnap_surface_rune_return())
-		to_chat(victim, span_blue("Your captors' hold is all that keeps you - if the rune is yours to call, wrench yourself free now."))
-		return
-	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
-	grant_refuse_advances(victim)
-	to_chat(victim, span_warning("The grip of defeat loosens - you can move, fight, and flee again."))
-	to_chat(victim, span_warning("No rune will answer here. Seek the edges of this place - a way out may wait there."))
-	to_chat(victim, span_notice("If the lair's attentions become too much, use <b>Refuse Advances</b> to rebuff them while you find your way out."))
-
-/// Hands the released captive the "Refuse Advances" opt-out toggle (once).
-/datum/component/kidnap_captivity/proc/grant_refuse_advances(mob/living/victim)
-	if(refuse_action || !victim)
-		return
-	refuse_action = new(victim)
-	refuse_action.Grant(victim)
-
-/// Once the window passes, the captive may give up via the Surrender verb.
-/datum/component/kidnap_captivity/proc/offer_surrender()
-	var/mob/living/victim = parent
-	if(!victim)
-		return
-	surrender_available = TRUE
-	to_chat(victim, span_userdanger("Despair claws at you. If escape will never come, you may give yourself up - use the \"Surrender to Captivity\" verb (IC tab). It cannot be undone."))
-
-/// Each climax endured in captivity wears the captive down; enough of them offers surrender early.
-/datum/component/kidnap_captivity/proc/on_captive_climax(datum/source, datum/sex_action/action, mob/living/receiver, mob/living/partner, mob/living/performer)
-	SIGNAL_HANDLER
-	captivity_climaxes++
-	if(captivity_climaxes >= KIDNAP_SURRENDER_CLIMAXES && !surrender_available)
-		offer_surrender()
-
-/// The captive gives up: their body becomes a wretched NPC-in-distress and the player is sent off.
-/datum/component/kidnap_captivity/proc/do_surrender()
-	var/mob/living/carbon/human/victim = parent
-	if(!ishuman(victim))
-		return FALSE
-	victim.become_npc_in_distress(decays = TRUE, captor_faction = captor_faction)
-	qdel(src)
-	return TRUE
-
-/// Tears down captivity state (qdel routes through UnregisterFromParent, which strips the opt-out).
-/datum/component/kidnap_captivity/proc/end_captivity()
-	qdel(src)
-
 // --- Captor side: faction mobs dragging defeated prey to their lair ---
 
 /// Which lair this mob hauls defeated prey to. Null = this mob cannot kidnap.
 /mob/living
 	var/kidnap_lair_tag
+	/// Explicit pocket profile. Null keeps the lair-tag compatibility resolver for old content.
+	var/kidnap_captivity_profile
+	/// Admission failures are event-local and rare; a per-captor timestamp avoids any global polling.
+	var/tmp/kidnap_retry_after = 0
 
 /// Can this mob drag the given freshly-defeated victim back to its lair right now?
 /// Everything that makes a downed victim claimable EXCEPT proximity/outnumbering, so the AI can spot
 /// a candidate across the room and path toward it. can_kidnap_defeated_prey adds the here-and-now gates.
 /mob/living/proc/is_kidnap_candidate(mob/living/victim)
-	if(!kidnap_lair_tag)
+	if(!kidnap_lair_tag && !kidnap_captivity_profile)
+		return FALSE
+	if(world.time < kidnap_retry_after)
 		return FALSE
 	if(!istype(victim) || victim == src)
 		return FALSE
@@ -875,11 +885,20 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 /mob/living/proc/try_kidnap_defeated_prey(mob/living/victim)
 	if(!can_kidnap_defeated_prey(victim))
 		return FALSE
-	// A cry for help so nearby allies learn their friend was taken, not simply vanished.
-	victim.visible_message(span_userdanger("[victim] screams as [src] seizes [victim.p_them()]!"), span_userdanger("[src] seizes me - I am being dragged off! HELP!"))
+	var/profile_spec = kidnap_captivity_profile || get_defeat_captivity_profile_for_lair(kidnap_lair_tag)
+	if(!victim.kidnap_to_pocket(profile_spec, src, faction, kidnap_lair_tag))
+		kidnap_retry_after = world.time + KIDNAP_RETRY_COOLDOWN
+		return FALSE
+	kidnap_retry_after = 0
+	// Admission is committed before announcing it, so a full/broken profile cannot produce a fake
+	// seizure every planning cycle. Nearby allies hear this from the captor's original location.
+	visible_message(
+		span_userdanger("[victim] screams as [src] seizes [victim.p_them()] and hauls [victim.p_them()] into folded space!"),
+		span_danger("I haul [victim] into the lair..."),
+	)
+	to_chat(victim, span_userdanger("[src] seizes me - I am being dragged off! HELP!"))
 	victim.emote("scream")
-	visible_message(span_danger("[src] hauls [victim] away toward its lair!"), span_danger("I haul [victim] off to the lair..."))
-	return victim.kidnap_to_lair(kidnap_lair_tag, faction)
+	return TRUE
 
 // --- AI wiring ---------------------------------------------------------------------------------
 // Simple hostile mobs claim prey straight from AttackingTarget (hostile.dm). Carbon NPCs (goblins,
@@ -890,7 +909,7 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 
 /datum/ai_planning_subtree/kidnap_defeated_prey/SelectBehaviors(datum/ai_controller/controller, delta_time)
 	var/mob/living/living_pawn = controller.pawn
-	if(!istype(living_pawn) || !living_pawn.kidnap_lair_tag)
+	if(!istype(living_pawn) || (!living_pawn.kidnap_lair_tag && !living_pawn.kidnap_captivity_profile))
 		return
 	var/mob/living/target = controller.blackboard[BB_KIDNAP_TARGET]
 	if(target && (QDELETED(target) || !living_pawn.is_kidnap_candidate(target)))
@@ -921,8 +940,8 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		return
 	set_movement_target(controller, victim)
 	if(pawn.Adjacent(victim))
-		pawn.try_kidnap_defeated_prey(victim)
-		finish_action(controller, TRUE, target_key)
+		var/succeeded = pawn.try_kidnap_defeated_prey(victim)
+		finish_action(controller, succeeded, target_key)
 
 /datum/ai_behavior/kidnap_defeated_prey/finish_action(datum/ai_controller/controller, succeeded, target_key)
 	. = ..()
@@ -932,6 +951,7 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 // tagged with the matching lair_tag ("greenskin_lair" for orcs/goblins, "wolfden_lair" for canines).
 /mob/living/simple_animal/hostile/orc
 	kidnap_lair_tag = "greenskin_lair"
+	kidnap_captivity_profile = /datum/defeat_captivity_profile/shared/greenskin
 
 /mob/living/simple_animal/hostile/retaliate/wolf
 	kidnap_lair_tag = "wolfden_lair"

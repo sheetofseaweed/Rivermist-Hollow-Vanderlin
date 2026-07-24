@@ -132,6 +132,7 @@
 		QDEL_NULL(struggle_action)
 	if(!owner || QDELETED(owner))
 		return
+	owner.reset_horny_defeat_progress()
 	owner.clear_fullscreen("defeat", FALSE)
 	owner.clear_fullscreen("defeat_horny")
 	to_chat(owner, span_notice("You can move again, but the defeat still clings to you."))
@@ -192,6 +193,7 @@
 		cleanup_timer = null
 	if(!owner || QDELETED(owner))
 		return
+	owner.reset_horny_defeat_progress()
 	REMOVE_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
@@ -217,6 +219,15 @@
 	/// registers itself here - defeat_treat_trauma matches on this, so new subtypes need no list edits.
 	/// (The universal path - potion or healing spell - clears any trauma regardless of class.)
 	var/treatment_class = DEFEAT_TREATMENT_MEDICAL
+	/// Provider-driven treatment metadata. Providers diagnose by category/tag, select this exact
+	/// status datum, then revalidate it after the interruptible treatment before paying the cost.
+	var/trauma_category = DEFEAT_TRAUMA_CATEGORY_PHYSICAL
+	var/list/accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	var/treatment_duration = 12 SECONDS
+	var/treatment_skill = /datum/attribute/skill/misc/medicine
+	var/treatment_skill_requirement = SKILL_RANK_APPRENTICE
+	var/treatment_resource_cost = 1
+	var/treatment_description = "Treat the lingering physical harm left by defeat."
 	var/severity = DEFEAT_SEVERITY_NORMAL
 	var/next_feedback_at = 0
 
@@ -433,6 +444,11 @@
 	trauma_label = "Mana Backlash"
 	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. Only a priest's rite or a potent remedy soothes it."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
+	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	treatment_skill = /datum/attribute/skill/magic/holy
+	treatment_skill_requirement = SKILL_RANK_NOVICE
+	treatment_description = "Soothe the spiritual and magical backlash left by the resurrection rune."
 
 // Mana-Backlash Exhaustion - the toll of being yanked back by the rune. Section 4.
 /datum/status_effect/debuff/defeat/rune/defeat_base_profile()
@@ -455,6 +471,13 @@
 	trauma_label = "Lewd Exhaustion"
 	trauma_desc = "A wrung-out, trembling afterglow that will not fade, letting focus and luck slip through your fingers. A healer, a priest, or a potent remedy restores you."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
+	// Intimate defeat is spiritual trauma for routing purposes. Its own subtype and descriptive
+	// metadata still let shrines present it distinctly from rune backlash.
+	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	treatment_skill = /datum/attribute/skill/magic/holy
+	treatment_skill_requirement = SKILL_RANK_NOVICE
+	treatment_description = "Restore composure and spirit after an overwhelming intimate defeat."
 
 /datum/status_effect/debuff/defeat/horny/defeat_base_profile()
 	return list(STAT_PERCEPTION = -2, STAT_FORTUNE = -2)

@@ -4,6 +4,61 @@
 	first.forceMove(first_turf)
 	second.forceMove(second_turf)
 
+/datum/defeat_recovery_profile/manual/unit_test_instant
+
+/datum/defeat_recovery_profile/manual/unit_test_instant/recovery_time(datum/defeat_recovery_channel/channel)
+	return 0
+
+/datum/defeat_recovery_profile/campfire/unit_test_instant
+
+/datum/defeat_recovery_profile/campfire/unit_test_instant/recovery_time(datum/defeat_recovery_channel/channel)
+	return 0
+
+/datum/defeat_recovery_profile/campfire/tended/unit_test_instant
+
+/datum/defeat_recovery_profile/campfire/tended/unit_test_instant/recovery_time(datum/defeat_recovery_channel/channel)
+	return 0
+
+/datum/defeat_trauma_provider/medical/machine/unit_test_interrupted
+
+/datum/defeat_trauma_provider/medical/machine/unit_test_interrupted/perform_treatment_delay(mob/living/patient, mob/living/helper, datum/status_effect/debuff/defeat/target)
+	return FALSE
+
+/datum/defeat_trauma_provider/medical/machine/unit_test_resource_deleted
+
+/datum/defeat_trauma_provider/medical/machine/unit_test_resource_deleted/perform_treatment_delay(mob/living/patient, mob/living/helper, datum/status_effect/debuff/defeat/target)
+	qdel(helper.get_active_held_item())
+	return TRUE
+
+/datum/defeat_recovery_resource_tracker
+	var/reservations = 0
+	var/consumptions = 0
+	var/releases = 0
+
+/datum/defeat_recovery_profile/unit_test_resources
+	apply_snapshot_aftermath = FALSE
+
+/datum/defeat_recovery_profile/unit_test_resources/reserve_resources(datum/defeat_recovery_channel/channel)
+	var/datum/defeat_recovery_resource_tracker/tracker = channel.resolve_source()
+	if(!tracker)
+		return FALSE
+	tracker.reservations++
+	return TRUE
+
+/datum/defeat_recovery_profile/unit_test_resources/consume_resources(datum/defeat_recovery_channel/channel)
+	var/datum/defeat_recovery_resource_tracker/tracker = channel.resolve_source()
+	if(!tracker)
+		return FALSE
+	tracker.consumptions++
+	return TRUE
+
+/datum/defeat_recovery_profile/unit_test_resources/release_resources(datum/defeat_recovery_channel/channel)
+	var/datum/defeat_recovery_resource_tracker/tracker = channel.resolve_source()
+	if(!tracker)
+		return FALSE
+	tracker.releases++
+	return TRUE
+
 /datum/unit_test/defeat_preferences_defaults_and_sanitize
 
 /datum/unit_test/defeat_preferences_defaults_and_sanitize/Run()
@@ -61,25 +116,29 @@
 	TEST_ASSERT_EQUAL(snapshot.worst_body_zone, BODY_ZONE_HEAD, "The snapshot should prefer the highest-damage injury bodypart.")
 	TEST_ASSERT_EQUAL(snapshot.worst_injury_type, WOUND_BLUNT, "The snapshot should preserve the worst injury type for aftermath mapping.")
 
-/datum/unit_test/defeat_stabilization_clears_live_injuries_after_snapshot
+/datum/unit_test/defeat_stabilization_preserves_bounded_injuries_after_snapshot
 
-/datum/unit_test/defeat_stabilization_clears_live_injuries_after_snapshot/Run()
+/datum/unit_test/defeat_stabilization_preserves_bounded_injuries_after_snapshot/Run()
 	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
 	test_human.defeat_system_ai_opt_in = TRUE
 	var/obj/item/bodypart/chest = test_human.get_bodypart(BODY_ZONE_CHEST)
-	chest.create_injury(WOUND_SLASH, 45, TRUE)
-	test_human.setBruteLoss(200, FALSE, TRUE)
+	var/datum/injury/bleeding_cut = chest.create_injury(WOUND_SLASH, 5)
+	bleeding_cut.bleed_timer = 30
 
 	TEST_ASSERT(length(test_human.all_injuries), "The setup should create active injury data before defeat.")
-	TEST_ASSERT(test_human.defeat_stabilize_active_injuries(FALSE), "The dedicated defeat injury stabilizer should report that it cleared active injuries.")
-	TEST_ASSERT(!length(test_human.all_injuries), "The dedicated defeat injury stabilizer should clear live injury datums.")
-	TEST_ASSERT_EQUAL(test_human.get_bleed_rate(), 0, "Cleared defeat injuries should not keep bleeding invisibly.")
+	TEST_ASSERT(bleeding_cut.is_bleeding(), "The setup should make the preserved cut actively bleed.")
+	TEST_ASSERT(test_human.defeat_stabilize_active_injuries(FALSE), "The dedicated defeat injury stabilizer should report that it suppressed active bleeding.")
+	TEST_ASSERT(length(test_human.all_injuries), "Bounded stabilization should preserve ordinary injury datums for later treatment.")
+	TEST_ASSERT_EQUAL(test_human.get_bleed_rate(), 0, "Bounded stabilization must stop active bleeding before recovery.")
 
 	chest.create_injury(WOUND_PIERCE, 50, TRUE)
+	test_human.setToxLoss(250, FALSE, TRUE)
 	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat.")
 	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.worst_injury_type, WOUND_PIERCE, "Defeat should capture the worst injury before stabilizing it.")
-	TEST_ASSERT(!length(test_human.all_injuries), "Defeat stabilization should clear live injury datums after snapshot capture.")
-	TEST_ASSERT_EQUAL(test_human.getBruteLoss(), 0, "Defeat stabilization should still clear live damage.")
+	TEST_ASSERT(length(test_human.all_injuries), "Defeat stabilization should retain live injury datums after snapshot capture.")
+	var/bounded_major_damage = test_human.getBruteLoss() + test_human.getFireLoss() + test_human.getToxLoss() + test_human.getCloneLoss()
+	TEST_ASSERT(bounded_major_damage <= test_human.defeat_damage_safety_cap(), "Defeat stabilization should cap aggregate major damage below the immediate re-defeat boundary.")
+	TEST_ASSERT_EQUAL(test_human.get_bleed_rate(), 0, "Defeat stabilization should keep preserved injuries from bleeding while the victim is down.")
 
 /datum/unit_test/defeat_death_signal_is_conservative_fallback
 
@@ -92,6 +151,34 @@
 	normal_monitor.on_death(normal_dead)
 	TEST_ASSERT_NULL(normal_dead.has_status_effect(/datum/status_effect/defeat_knockout), "Ordinary completed death should not be converted into defeat KO by the death signal fallback.")
 	TEST_ASSERT_NULL(normal_dead.last_defeat_snapshot, "Ordinary completed death should not capture a defeat snapshot in the death signal fallback.")
+
+/datum/unit_test/defeat_health_signal_preempts_death_finalization
+
+/datum/unit_test/defeat_health_signal_preempts_death_finalization/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_damage_threshold = 300
+	victim.AddComponent(/datum/component/defeat_monitor)
+	victim.setToxLoss(victim.maxHealth - HEALTH_THRESHOLD_DEAD, FALSE, TRUE)
+
+	victim.updatehealth()
+	TEST_ASSERT(victim.stat != DEAD, "The health signal must offer lethal damage to Defeat before update_stat() finalizes death.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "The lethal health update should enter Defeat on its authoritative signal path.")
+	TEST_ASSERT_EQUAL(victim.last_defeat_snapshot.reason, DEFEAT_REASON_DEATH, "A lethal health update should preserve the death-class snapshot reason.")
+
+/datum/unit_test/defeat_monitor_uses_only_health_signal_for_damage
+
+/datum/unit_test/defeat_monitor_uses_only_health_signal_for_damage/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_damage_threshold = 100
+	victim.AddComponent(/datum/component/defeat_monitor)
+	victim.setToxLoss(100, FALSE, TRUE)
+
+	SEND_SIGNAL(victim, COMSIG_LIVING_LIFE, SSMOBS_DT, 1)
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Life signals must not duplicate the authoritative damage-defeat check.")
+	SEND_SIGNAL(victim, COMSIG_LIVING_HEALTH_UPDATE)
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "The health signal should be the single normal Defeat evaluation path.")
 
 /datum/unit_test/defeat_damage_threshold_edges
 
@@ -111,7 +198,8 @@
 	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Damage at the selected threshold should trigger defeat.")
 	TEST_ASSERT_NOTNULL(test_human.last_defeat_snapshot, "Damage defeat should capture a snapshot before stabilization.")
 	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.tox_loss, 200, "The snapshot should retain the threshold-crossing damage.")
-	TEST_ASSERT_EQUAL(test_human.getToxLoss(), 0, "Live toxin damage should be stabilized after defeat.")
+	TEST_ASSERT(test_human.getToxLoss() < 200, "Live toxin damage should be bounded rather than fully erased after defeat.")
+	TEST_ASSERT(test_human.getToxLoss() <= test_human.defeat_damage_safety_cap() * DEFEAT_DAMAGE_POOL_CAP_FRACTION, "Each scalar damage pool should remain below its configured safety cap.")
 
 /datum/unit_test/defeat_damage_threshold_uses_total_damage
 
@@ -403,7 +491,7 @@
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
 
-	TEST_ASSERT(victim.defeat_rescue(helper), "A non-hostile adjacent helper should be able to rescue a defeated mob.")
+	TEST_ASSERT(victim.begin_defeat_recovery(/datum/defeat_recovery_profile/manual/unit_test_instant, helper, "manual unit test"), "An eligible helper should complete the manual recovery channel.")
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Rescue should clear the defeat KO status.")
 	TEST_ASSERT(victim.has_any_defeat_physical_trauma(), "Damage defeat should leave physical trauma after rescue.")
 
@@ -419,8 +507,8 @@
 	victim.recent_damage_source_attacker_weakref = WEAKREF(attacker)
 	victim.recent_damage_source_time = world.time - DEFEAT_ACTIVE_HARM_WINDOW - 1
 
-	TEST_ASSERT(victim.defeat_rescue(attacker), "A recent attacker should be able to rescue once active harm has stopped.")
-	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Accepted rescues should clear defeat KO.")
+	TEST_ASSERT(victim.defeat_can_be_rescued_by(attacker), "A recent attacker should become eligible to rescue once active harm has stopped.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Eligibility checks must not bypass the manual recovery channel.")
 
 /datum/unit_test/defeat_rescue_blocks_active_harm
 
@@ -442,9 +530,9 @@
 	attacker.grab_state = GRAB_AGGRESSIVE
 	TEST_ASSERT(!victim.defeat_rescue(attacker), "Active aggressive grabs should block rescues.")
 
-/datum/unit_test/defeat_auto_rescue_from_healing_threshold
+/datum/unit_test/defeat_healing_uses_explicit_recovery_profiles
 
-/datum/unit_test/defeat_auto_rescue_from_healing_threshold/Run()
+/datum/unit_test/defeat_healing_uses_explicit_recovery_profiles/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
 	defeat_unit_place_adjacent(victim, helper, run_loc_floor_bottom_left)
@@ -452,10 +540,10 @@
 	victim.setBruteLoss(200, FALSE, TRUE)
 	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
 
-	TEST_ASSERT(!victim.defeat_try_auto_rescue_from_healing(helper, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD - 1, "small healing"), "Tiny healing should not auto-rescue defeated targets.")
-	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Sub-threshold healing should leave KO in place.")
-	TEST_ASSERT(victim.defeat_try_auto_rescue_from_healing(helper, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD, "meaningful healing"), "Meaningful healing should auto-rescue when the helper is allowed.")
-	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Auto-rescue should clear defeat KO.")
+	TEST_ASSERT(victim.defeat_stabilize_from_healing(helper, "bandage"), "A bandage should run the non-waking stabilization path.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Stabilization alone should leave KO in place.")
+	TEST_ASSERT(victim.defeat_try_prepared_recovery(helper, "prepared medicine"), "A completed prepared treatment should use the prepared recovery profile.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Prepared recovery should clear Defeat KO through the finalizer.")
 
 /datum/unit_test/defeat_treatment_clears_correct_trauma
 
@@ -468,10 +556,12 @@
 	patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_NORMAL)
 
 	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
-	TEST_ASSERT(patient.defeat_treat_trauma(doctor, DEFEAT_TREATMENT_MEDICAL), "A medically trained helper should clear physical and pain trauma.")
-	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical), "Medical treatment should clear physical trauma.")
-	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/pain), "Medical treatment should clear pain trauma.")
+	TEST_ASSERT(patient.defeat_treat_trauma(doctor, DEFEAT_TREATMENT_MEDICAL), "A medically trained helper should clear one physical trauma.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical), "Medical treatment should deterministically clear the first diagnosed physical trauma.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/pain), "One medical treatment must leave a second physical trauma in place.")
 	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/rune), "Medical treatment should not clear rune trauma.")
+	TEST_ASSERT(patient.defeat_treat_trauma(doctor, DEFEAT_TREATMENT_MEDICAL), "A second medical treatment should clear the remaining physical trauma.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/pain), "The second medical treatment should clear the remaining pain trauma.")
 
 	ADD_TRAIT(priest, TRAIT_HOLY, TRAIT_GENERIC)
 	TEST_ASSERT(patient.defeat_treat_trauma(priest, DEFEAT_TREATMENT_SPIRITUAL), "A priestly helper should clear rune trauma.")
@@ -509,6 +599,144 @@
 
 	var/datum/container_craft/cooking/herbal_tea/mercy_draught/recipe = allocate(/datum/container_craft/cooking/herbal_tea/mercy_draught)
 	TEST_ASSERT_EQUAL(recipe.created_reagent, /datum/reagent/medicine/herbal/mercy_draught, "Mercy Draught recipe should create the universal trauma-clearing reagent.")
+
+/datum/unit_test/defeat_trauma_provider_diagnosis_is_deterministic
+
+/datum/unit_test/defeat_trauma_provider_diagnosis_is_deterministic/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/battered = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/status_effect/debuff/defeat/pain = patient.apply_status_effect(/datum/status_effect/debuff/defeat/pain, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/defeat_trauma_provider/medical/provider = allocate(/datum/defeat_trauma_provider/medical/compatibility)
+
+	var/list/diagnosed = provider.diagnose(patient)
+	TEST_ASSERT_EQUAL(length(diagnosed), 2, "Medical diagnosis should return only its two compatible physical traumas.")
+	TEST_ASSERT(diagnosed[1] == battered, "Automatic diagnosis should sort exact trauma datums by their player-facing label.")
+	TEST_ASSERT(provider.select_target(patient, doctor, null, FALSE) == battered, "Noninteractive treatment should deterministically select the first diagnosis.")
+	TEST_ASSERT(provider.select_target(patient, doctor, pain, FALSE) == pain, "An explicitly selected compatible trauma datum should be preserved exactly.")
+
+/datum/unit_test/defeat_trauma_provider_costs_only_on_success
+
+/datum/unit_test/defeat_trauma_provider_costs_only_on_success/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(patient, doctor, run_loc_floor_bottom_left)
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	var/datum/status_effect/debuff/defeat/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_NORMAL)
+	var/obj/item/natural/bundle/cloth/bandage/bandages = allocate(/obj/item/natural/bundle/cloth/bandage/full)
+	doctor.put_in_active_hand(bandages)
+	var/datum/defeat_trauma_provider/medical/machine/provider = allocate(/datum/defeat_trauma_provider/medical/machine)
+
+	TEST_ASSERT_EQUAL(provider.resource_cost_for(trauma), 2, "Normal trauma should cost two treatment resources.")
+	TEST_ASSERT(provider.treat(patient, doctor, trauma, FALSE, TRUE, bandages), "A valid reserved bandage roll should pay for a completed treatment.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/wound), "Successful resource-backed treatment should remove its exact trauma.")
+	TEST_ASSERT_EQUAL(bandages.amount, 2, "A successful normal treatment should consume exactly two bandages from the held roll.")
+
+/datum/unit_test/defeat_trauma_provider_interruption_has_no_cost
+
+/datum/unit_test/defeat_trauma_provider_interruption_has_no_cost/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(patient, doctor, run_loc_floor_bottom_left)
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	var/datum/status_effect/debuff/defeat/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_SEVERE)
+	var/obj/item/natural/bundle/cloth/bandage/bandages = allocate(/obj/item/natural/bundle/cloth/bandage/full)
+	doctor.put_in_active_hand(bandages)
+	var/datum/defeat_trauma_provider/medical/machine/unit_test_interrupted/provider = allocate(/datum/defeat_trauma_provider/medical/machine/unit_test_interrupted)
+
+	TEST_ASSERT_EQUAL(provider.resource_cost_for(trauma), 3, "Severe trauma should cost three treatment resources.")
+	TEST_ASSERT(!provider.treat(patient, doctor, trauma, FALSE, FALSE, bandages), "An interrupted treatment should fail before payment.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/wound), "Interrupted treatment must leave the selected trauma in place.")
+	TEST_ASSERT_EQUAL(bandages.amount, 4, "Interrupted treatment must not consume any reserved bandages.")
+
+/datum/unit_test/defeat_trauma_provider_discloses_full_treatment
+
+/datum/unit_test/defeat_trauma_provider_discloses_full_treatment/Run()
+	var/turf/provider_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/machinery/defeat_medical_machine/machine = allocate(/obj/machinery/defeat_medical_machine, provider_turf)
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human, get_step(provider_turf, EAST))
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human, get_step(provider_turf, NORTH))
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	var/datum/status_effect/debuff/defeat/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_NORMAL)
+	var/summary = machine.treatment_provider.treatment_summary(doctor, trauma)
+
+	TEST_ASSERT(findtext(summary, trauma.trauma_label), "Treatment disclosure should name the exact trauma.")
+	TEST_ASSERT(findtext(summary, defeat_severity_label(trauma.severity)), "Treatment disclosure should show severity.")
+	TEST_ASSERT(findtext(summary, trauma.treatment_description), "Treatment disclosure should include the trauma-specific description.")
+	TEST_ASSERT(findtext(summary, DisplayTimeText(machine.treatment_provider.treatment_time(doctor, trauma))), "Treatment disclosure should show the exact provider-adjusted duration.")
+	TEST_ASSERT(findtext(summary, "2 bandages"), "Treatment disclosure should show the severity-scaled resource cost.")
+	TEST_ASSERT(findtext(summary, machine.name), "Treatment disclosure should identify the selected provider and its location.")
+
+/datum/unit_test/defeat_trauma_provider_prefilters_unusable_candidates
+
+/datum/unit_test/defeat_trauma_provider_prefilters_unusable_candidates/Run()
+	var/turf/provider_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/machinery/defeat_medical_machine/machine = allocate(/obj/machinery/defeat_medical_machine, provider_turf)
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human, get_step(provider_turf, EAST))
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human, get_step(provider_turf, NORTH))
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_NORMAL)
+	var/obj/item/natural/bundle/cloth/bandage/bandages = allocate(/obj/item/natural/bundle/cloth/bandage/full)
+	doctor.put_in_active_hand(bandages)
+
+	TEST_ASSERT_EQUAL(length(machine.treatment_provider.usable_diagnoses(patient, doctor, bandages)), 0, "Provider selection should reject candidates when the helper lacks treatment skill.")
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	TEST_ASSERT_EQUAL(length(machine.treatment_provider.usable_diagnoses(patient, doctor, bandages)), 1, "Provider selection should retain candidates with valid skill, proximity, and held resources.")
+	bandages.amount = 1
+	bandages.update_bundle()
+	TEST_ASSERT_EQUAL(length(machine.treatment_provider.usable_diagnoses(patient, doctor, bandages)), 0, "Provider selection should reject candidates whose held resource cannot pay the selected severity cost.")
+
+/datum/unit_test/defeat_trauma_provider_rejects_deleted_resource_after_delay
+
+/datum/unit_test/defeat_trauma_provider_rejects_deleted_resource_after_delay/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/doctor = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(patient, doctor, run_loc_floor_bottom_left)
+	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	var/datum/status_effect/debuff/defeat/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_LIGHT)
+	var/obj/item/natural/cloth/bandage/bandage = allocate(/obj/item/natural/cloth/bandage)
+	doctor.put_in_active_hand(bandage)
+	var/datum/defeat_trauma_provider/medical/machine/unit_test_resource_deleted/provider = allocate(/datum/defeat_trauma_provider/medical/machine/unit_test_resource_deleted)
+
+	TEST_ASSERT(!provider.treat(patient, doctor, trauma, FALSE, FALSE, bandage), "Treatment should reject a reserved resource deleted during the asynchronous gap.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/physical/wound), "Deleting a reserved resource must leave the exact trauma untreated.")
+
+/datum/unit_test/defeat_trauma_providers_have_blueprint_acquisition
+
+/datum/unit_test/defeat_trauma_providers_have_blueprint_acquisition/Run()
+	var/datum/blueprint_recipe/engineering/defeat_medical_machine/medical_recipe = allocate(/datum/blueprint_recipe/engineering/defeat_medical_machine)
+	var/datum/blueprint_recipe/masonry/defeat_trauma_shrine/shrine_recipe = allocate(/datum/blueprint_recipe/masonry/defeat_trauma_shrine)
+
+	TEST_ASSERT_EQUAL(medical_recipe.result_type, /obj/machinery/defeat_medical_machine, "The construction browser should expose a build path for the medical provider.")
+	TEST_ASSERT_EQUAL(shrine_recipe.result_type, /obj/structure/defeat_trauma_shrine, "The construction browser should expose a build path for the shrine provider.")
+	TEST_ASSERT(!medical_recipe.requires_learning && !shrine_recipe.requires_learning, "Both provider blueprints should be reachable without a special recipe grant.")
+
+/datum/unit_test/defeat_universal_provider_removes_exactly_one_selected_trauma
+
+/datum/unit_test/defeat_universal_provider_removes_exactly_one_selected_trauma/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/physical = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/status_effect/debuff/defeat/rune = patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/defeat_trauma_provider/universal/provider = allocate(/datum/defeat_trauma_provider/universal)
+
+	TEST_ASSERT(provider.treat(patient, patient, rune, FALSE, TRUE), "Universal treatment should accept an exact compatible trauma datum.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/rune), "Universal treatment should remove the selected rune trauma.")
+	TEST_ASSERT(physical in patient.status_effects, "Universal treatment must leave every non-selected trauma in place.")
+
+/datum/unit_test/defeat_shrine_routes_horny_trauma
+
+/datum/unit_test/defeat_shrine_routes_horny_trauma/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/priest = allocate(/mob/living/carbon/human)
+	ADD_TRAIT(priest, TRAIT_HOLY, TRAIT_GENERIC)
+	var/datum/status_effect/debuff/defeat/horny/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_NORMAL)
+	var/datum/defeat_trauma_provider/medical/compatibility/medical = allocate(/datum/defeat_trauma_provider/medical/compatibility)
+	var/datum/defeat_trauma_provider/shrine/compatibility/shrine = allocate(/datum/defeat_trauma_provider/shrine/compatibility)
+
+	TEST_ASSERT_EQUAL(length(medical.diagnose(patient)), 0, "Medical providers must reject horny trauma.")
+	TEST_ASSERT_EQUAL(length(shrine.diagnose(patient)), 1, "Shrines should diagnose horny trauma through spiritual routing.")
+	TEST_ASSERT(shrine.treat(patient, priest, trauma, FALSE, TRUE), "A shrine provider should treat one exact horny trauma.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/horny), "Shrine treatment should remove the chosen horny trauma.")
 
 /datum/unit_test/defeat_debuff_fallback_duration_by_severity
 
@@ -672,7 +900,6 @@
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
 	victim.defeat_system_ai_opt_in = TRUE
-	victim.hostile_grab_horny_climax_threshold = 1
 	victim.pulledby = grabber
 	grabber.pulling = victim
 	grabber.grab_state = GRAB_AGGRESSIVE
@@ -688,14 +915,12 @@
 /datum/unit_test/defeat_horny_rejects_self_farming_and_unopted_ai/Run()
 	var/mob/living/carbon/human/self_target = allocate(/mob/living/carbon/human)
 	self_target.defeat_system_ai_opt_in = TRUE
-	self_target.hostile_grab_horny_climax_threshold = 1
 	var/datum/component/defeat_monitor/self_monitor = self_target.AddComponent(/datum/component/defeat_monitor)
 	self_monitor.on_climax(self_target, null, self_target, self_target, self_target)
 	TEST_ASSERT_NULL(self_target.has_status_effect(/datum/status_effect/defeat_knockout), "Self-generated climax metadata must not farm horny defeat.")
 
 	var/mob/living/carbon/human/unopted_ai = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
-	unopted_ai.hostile_grab_horny_climax_threshold = 1
 	unopted_ai.pulledby = grabber
 	grabber.pulling = unopted_ai
 	grabber.grab_state = GRAB_AGGRESSIVE
@@ -868,27 +1093,35 @@
 		TEST_ASSERT_NOTNULL(trauma, "A horny defeat should always produce a horny trauma variant.")
 		TEST_ASSERT(length(trauma.effectedstats) > 0, "Each horny debuff variant should carry a stat profile.")
 
-/datum/unit_test/defeat_horny_threshold_is_randomized
+/datum/unit_test/defeat_horny_threshold_uses_encounter_start_stats
 
-/datum/unit_test/defeat_horny_threshold_is_randomized/Run()
+/datum/unit_test/defeat_horny_threshold_uses_encounter_start_stats/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
+	victim.mind = allocate(/datum/mind, "legacy-deterministic-threshold-test")
 	victim.defeat_system_ai_opt_in = TRUE
+	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
+	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16
+	victim.attributes.update_attributes()
 	victim.pulledby = grabber
 	grabber.pulling = victim
 	grabber.grab_state = GRAB_AGGRESSIVE
 	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
 
 	monitor.on_climax(victim, null, victim, grabber, grabber)
-	TEST_ASSERT(monitor.horny_defeat_climax_threshold >= 10 && monitor.horny_defeat_climax_threshold <= 20, "Horny defeat threshold should roll within the 10-20 design band.")
-	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A single climax should not reach the randomized horny knockout threshold.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 15, "Horny defeat should cache the exact encounter-start stat average.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A single climax should not reach this deterministic horny knockout threshold.")
 
-/datum/unit_test/defeat_horny_encounter_decays_and_rerolls
+/datum/unit_test/defeat_horny_encounter_decays_and_recalculates
 
-/datum/unit_test/defeat_horny_encounter_decays_and_rerolls/Run()
+/datum/unit_test/defeat_horny_encounter_decays_and_recalculates/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
+	victim.mind = allocate(/datum/mind, "legacy-threshold-timeout-test")
 	victim.defeat_system_ai_opt_in = TRUE
+	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
+	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16
+	victim.attributes.update_attributes()
 	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
 
 	// A stale encounter one climax from collapse, whose last counted climax was too long ago.
@@ -901,15 +1134,19 @@
 	monitor.on_climax(victim, null, victim, grabber, grabber)
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Climaxes from a long-expired encounter must not stack into a surprise horny defeat.")
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 1, "After the encounter lull, the climax count should restart at one.")
-	TEST_ASSERT(monitor.horny_defeat_climax_threshold >= 10 && monitor.horny_defeat_climax_threshold <= 20, "The expired encounter's threshold should be re-rolled within the design band.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 15, "The expired encounter's threshold should be recalculated from current player stats.")
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_warned_stage, 0, "Warning beats should reset with the expired encounter.")
 
-	// A defeat ends the encounter outright: the threshold clears so the next one re-rolls.
+	// Completed progress stays cached through the KO itself and clears only when recovery removes it.
 	monitor.horny_defeat_climax_count = 0
 	monitor.horny_defeat_climax_threshold = 1
 	monitor.on_climax(victim, null, victim, grabber, grabber)
 	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Reaching the threshold should still trigger the horny defeat.")
-	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 0, "A horny defeat should clear the rolled threshold so the next encounter re-rolls it.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 1, "Horny defeat should retain completed progress while the victim remains down.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 1, "Horny defeat should retain its cached threshold while the victim remains down.")
+	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 0, "Recovery should clear completed horny-defeat progress.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 0, "Recovery should clear the cached horny-defeat threshold.")
 
 /datum/unit_test/defeat_knockout_clears_traits_without_physiology
 
@@ -1054,12 +1291,12 @@
 
 	var/obj/item/reagent_containers/glass/bottle/vial/curative = allocate(/obj/item/reagent_containers/glass/bottle/vial, run_loc_floor_bottom_left)
 	curative.reagents.add_reagent(/datum/reagent/medicine/herbal/symphitum_tea, 20)
-	TEST_ASSERT(curative.defeat_try_potion_rescue(victim, healer), "Feeding a downed victim a curative drink should rescue them.")
+	TEST_ASSERT(curative.transfer_feed_reagents(victim, healer), "Actually feeding a full medicinal gulp to a downed victim should rescue them.")
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Potion rescue should clear the knockout.")
 
 	var/mob/living/carbon/human/loner = allocate(/mob/living/carbon/human)
 	loner.apply_status_effect(/datum/status_effect/defeat_knockout)
-	TEST_ASSERT(!curative.defeat_try_potion_rescue(loner, loner), "A victim cannot revive themselves with their own drink.")
+	TEST_ASSERT(!curative.transfer_feed_reagents(loner, loner), "A victim cannot revive themselves with their own drink.")
 	TEST_ASSERT_NOTNULL(loner.has_status_effect(/datum/status_effect/defeat_knockout), "Self-administered drinks must leave the knockout in place.")
 
 	var/mob/living/carbon/human/thirsty = allocate(/mob/living/carbon/human)
@@ -1068,8 +1305,16 @@
 	thirsty.apply_status_effect(/datum/status_effect/defeat_knockout)
 	var/obj/item/reagent_containers/glass/bottle/vial/plain = allocate(/obj/item/reagent_containers/glass/bottle/vial, run_loc_floor_bottom_left)
 	plain.reagents.add_reagent(/datum/reagent/water, 20)
-	TEST_ASSERT(!plain.defeat_try_potion_rescue(thirsty, water_bearer), "Plain water is not curative and should not rescue.")
+	TEST_ASSERT(!plain.transfer_feed_reagents(thirsty, water_bearer), "Plain water is not curative and should not rescue.")
 	TEST_ASSERT_NOTNULL(thirsty.has_status_effect(/datum/status_effect/defeat_knockout), "A non-curative drink must leave the knockout in place.")
+
+	var/mob/living/carbon/human/diluted_patient = allocate(/mob/living/carbon/human)
+	var/obj/item/reagent_containers/glass/bottle/vial/diluted = allocate(/obj/item/reagent_containers/glass/bottle/vial, run_loc_floor_bottom_left)
+	diluted_patient.apply_status_effect(/datum/status_effect/defeat_knockout)
+	diluted.reagents.add_reagent(/datum/reagent/medicine/herbal/symphitum_tea, DEFEAT_PREPARED_MEDICINE_MINIMUM)
+	diluted.reagents.add_reagent(/datum/reagent/water, 15)
+	TEST_ASSERT(!diluted.transfer_feed_reagents(diluted_patient, healer), "Medicine left elsewhere in a diluted container must not count as medicine consumed in this gulp.")
+	TEST_ASSERT_NOTNULL(diluted_patient.has_status_effect(/datum/status_effect/defeat_knockout), "A sub-threshold medicinal gulp must leave Defeat knockout in place.")
 
 /datum/unit_test/defeat_treatment_requires_zone
 
@@ -1091,17 +1336,20 @@
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
 	var/turf/escape_turf = get_step(lair_turf, EAST)
 	allocate(/obj/effect/landmark/kidnap/entrance/unit_test, lair_turf)
-	var/obj/effect/landmark/kidnap/escape/unit_test/escape_marker = allocate(/obj/effect/landmark/kidnap/escape/unit_test, escape_turf)
+	allocate(/obj/effect/landmark/kidnap/escape/unit_test, escape_turf)
 
 	TEST_ASSERT(("unit_test_kidnap_lair" in GLOB.kidnap_entrance_markers), "Entrance markers should register under their lair tag.")
 
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 
-	TEST_ASSERT(victim.kidnap_to_lair("unit_test_kidnap_lair"), "Kidnap should succeed when a lair entrance exists for the tag.")
-	TEST_ASSERT_EQUAL(get_turf(victim), lair_turf, "Kidnap should move the victim onto a lair entrance marker.")
+	TEST_ASSERT(victim.kidnap_to_lair("unit_test_kidnap_lair"), "The compatibility lair tag should resolve to a shared pocket profile.")
 	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
 	TEST_ASSERT_NOTNULL(captivity, "Kidnap should attach the captivity component.")
+	var/datum/pocket_dimension/defeat_captivity/instance = captivity.resolve_instance()
+	TEST_ASSERT_NOTNULL(instance, "Kidnap should attach the captive to an active pocket instance.")
+	TEST_ASSERT(instance.contains_turf(get_turf(victim)), "Kidnap should move the victim into the profile-owned pocket.")
+	TEST_ASSERT_NOTEQUAL(get_turf(victim), lair_turf, "Legacy static entrance markers must no longer receive new captives.")
 
 	captivity.release_from_knockout()
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Captivity release should clear the knockout state.")
@@ -1117,8 +1365,8 @@
 	var/datum/targetting_datum/basic/td = new()
 	TEST_ASSERT(!td.can_horny(would_be_suitor, victim), "A refusing captive should not be a valid horny target.")
 
-	escape_marker.Crossed(victim)
-	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Reaching an escape marker should end captivity.")
+	TEST_ASSERT(instance.exit_mob(victim), "A released shared-lair captive should escape through the pocket exit contract.")
+	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Using the pocket exit should end captivity.")
 	TEST_ASSERT(!HAS_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES), "Escaping should strip the opt-out trait.")
 	TEST_ASSERT(!(locate(/datum/action/innate/defeat_refuse_advances) in victim.actions), "Escaping should remove the Refuse Advances action from the captive.")
 
@@ -1331,8 +1579,8 @@
 	defeat_unit_place_adjacent(fallen, pet, run_loc_floor_bottom_left)
 	fallen.apply_status_effect(/datum/status_effect/defeat_knockout)
 
-	TEST_ASSERT(pet.try_rescue_downed_ally(fallen), "A pet beside a downed ally should free them.")
-	TEST_ASSERT_NULL(fallen.has_status_effect(/datum/status_effect/defeat_knockout), "Pet rescue should clear the ally's knockout.")
+	TEST_ASSERT(fallen.defeat_can_be_rescued_by(pet), "A loyal companion beside a downed ally should qualify for the manual recovery channel.")
+	TEST_ASSERT_NOTNULL(fallen.has_status_effect(/datum/status_effect/defeat_knockout), "Companion eligibility alone must not bypass the manual recovery channel.")
 
 	var/mob/living/carbon/human/standing = allocate(/mob/living/carbon/human)
 	standing.forceMove(get_turf(pet))
@@ -1353,24 +1601,378 @@
 	var/mid = medic.defeat_revive_time()
 	TEST_ASSERT(mid > DEFEAT_REVIVE_TIME_MIN && mid < DEFEAT_REVIVE_TIME_MAX, "Middling medicine should land between the extremes.")
 
+/datum/unit_test/defeat_recovery_profiles_are_explicit
+
+/datum/unit_test/defeat_recovery_profiles_are_explicit/Run()
+	var/datum/defeat_recovery_profile/manual/manual = allocate(/datum/defeat_recovery_profile/manual)
+	var/datum/defeat_recovery_profile/prepared/prepared = allocate(/datum/defeat_recovery_profile/prepared)
+	var/datum/defeat_recovery_profile/campfire/campfire = allocate(/datum/defeat_recovery_profile/campfire)
+	var/datum/defeat_recovery_profile/self_recovery/self_recovery = allocate(/datum/defeat_recovery_profile/self_recovery)
+	var/datum/defeat_recovery_profile/environmental/environmental = allocate(/datum/defeat_recovery_profile/environmental)
+	var/datum/defeat_recovery_profile/rune/rune = allocate(/datum/defeat_recovery_profile/rune)
+
+	TEST_ASSERT_EQUAL(manual.profile_id, DEFEAT_RECOVERY_MANUAL, "Empty-handed rescue should use the universal manual profile.")
+	TEST_ASSERT(manual.requires_helper, "Manual rescue should require another living helper.")
+	TEST_ASSERT(manual.helper_stamina_cost > 0, "Manual rescue should tax the helper's stamina on success.")
+	TEST_ASSERT_EQUAL(manual.aftermath_severity, DEFEAT_SEVERITY_SEVERE, "Manual rescue should leave the harsh aftermath.")
+	TEST_ASSERT_EQUAL(prepared.profile_id, DEFEAT_RECOVERY_PREPARED, "Prepared care should have an explicit profile.")
+	TEST_ASSERT(!prepared.requires_adjacent_helper, "Prepared care should allow range-capable completed treatments to recover a distant victim.")
+	TEST_ASSERT_EQUAL(campfire.profile_id, DEFEAT_RECOVERY_CAMPFIRE, "Campfire recovery should have a reusable profile before its interaction is added.")
+	TEST_ASSERT_EQUAL(self_recovery.profile_id, DEFEAT_RECOVERY_SELF, "Self recovery should have an explicit profile.")
+	TEST_ASSERT_EQUAL(environmental.profile_id, DEFEAT_RECOVERY_ENVIRONMENTAL, "Environmental recovery should have an explicit profile.")
+	TEST_ASSERT_EQUAL(rune.profile_id, DEFEAT_RECOVERY_RUNE, "Rune return should have an explicit profile.")
+
+/datum/unit_test/defeat_prepared_recovery_allows_range
+
+/datum/unit_test/defeat_prepared_recovery_allows_range/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	var/turf/victim_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/turf/helper_turf = get_step(get_step(victim_turf, EAST), EAST)
+	victim.forceMove(victim_turf)
+	helper.forceMove(helper_turf)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setBruteLoss(200, FALSE, TRUE)
+	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+
+	TEST_ASSERT(!victim.defeat_can_be_rescued_by(helper), "The ranged prepared-care test must keep its helper outside manual rescue range.")
+	TEST_ASSERT(victim.begin_defeat_recovery(/datum/defeat_recovery_profile/prepared, helper, "ranged prepared unit test"), "A completed range-capable prepared treatment should recover a non-adjacent victim.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Ranged prepared care should clear Defeat knockout through the shared finalizer.")
+
+/datum/unit_test/defeat_priority_recovery_replaces_active_channel
+
+/datum/unit_test/defeat_priority_recovery_replaces_active_channel/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setBruteLoss(200, FALSE, TRUE)
+	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	var/datum/defeat_recovery_resource_tracker/tracker = allocate(/datum/defeat_recovery_resource_tracker)
+	var/datum/defeat_recovery_profile/unit_test_resources/old_profile = new
+	var/datum/defeat_recovery_channel/old_channel = new(old_profile, victim, null, "old channel", tracker)
+	TEST_ASSERT(old_profile.reserve_resources(old_channel), "Setup: the replaced channel should reserve its resource.")
+	old_channel.resources_reserved = TRUE
+	old_channel.active = TRUE
+	victim.defeat_recovery_channel = old_channel
+
+	var/datum/defeat_recovery_profile/rune/rune_profile = new
+	rune_profile.additional_aftermath_severity = DEFEAT_SEVERITY_LIGHT
+	TEST_ASSERT(victim.perform_defeat_rescue(null, "priority rune unit test", rune_profile), "A one-shot rune recovery should replace an unfinished lower-priority channel.")
+	TEST_ASSERT_EQUAL(tracker.releases, 1, "Replacing a channel must roll back its unconsumed reservation exactly once.")
+	TEST_ASSERT_EQUAL(tracker.consumptions, 0, "A replaced channel must not consume its reservation.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Successful priority recovery must leave the victim awake.")
+	var/datum/status_effect/debuff/defeat/rune/rune_aftermath = victim.has_status_effect(/datum/status_effect/debuff/defeat/rune)
+	TEST_ASSERT_NOTNULL(rune_aftermath, "The rune profile should apply its declared Defeat aftermath.")
+	TEST_ASSERT_EQUAL(rune_aftermath.severity, DEFEAT_SEVERITY_LIGHT, "Rune aftermath severity must come from profile data.")
+	TEST_ASSERT(!victim.perform_defeat_rescue(null, "duplicate rune", /datum/defeat_recovery_profile/rune), "A one-shot recovery must report failure once the victim is already awake.")
+	qdel(old_channel)
+
+/datum/unit_test/defeat_manual_channel_interruption_tax_and_aftermath
+
+/datum/unit_test/defeat_manual_channel_interruption_tax_and_aftermath/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, helper, run_loc_floor_bottom_left)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setBruteLoss(200, FALSE, TRUE)
+	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	var/stamina_before = helper.stamina
+	TEST_ASSERT(victim.begin_defeat_recovery(/datum/defeat_recovery_profile/manual/unit_test_instant, helper, "manual success"), "The zero-time test subtype should exercise the manual channel finalizer without a slow test.")
+	TEST_ASSERT(helper.stamina >= stamina_before + DEFEAT_MANUAL_HELPER_STAMINA_COST, "Successful manual recovery should tax the helper.")
+	var/datum/status_effect/debuff/defeat/manual_aftermath
+	for(var/datum/status_effect/debuff/defeat/trauma as anything in victim.status_effects)
+		if(trauma.trauma_category != DEFEAT_TRAUMA_CATEGORY_PHYSICAL)
+			continue
+		manual_aftermath = trauma
+		break
+	TEST_ASSERT_NOTNULL(manual_aftermath, "Manual recovery should apply one physical Defeat aftermath selected from the snapshot.")
+	TEST_ASSERT_EQUAL(manual_aftermath.severity, DEFEAT_SEVERITY_SEVERE, "Manual recovery should use the profile's severe aftermath.")
+
+	var/mob/living/carbon/human/interrupted_victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/interrupted_helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(interrupted_victim, interrupted_helper, run_loc_floor_bottom_left)
+	interrupted_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/datum/defeat_recovery_profile/manual/unit_test_instant/interrupted_profile = new
+	var/datum/defeat_recovery_channel/interrupted_channel = new(interrupted_profile, interrupted_victim, interrupted_helper, "interrupted manual")
+	interrupted_channel.resources_reserved = TRUE
+	interrupted_channel.active = TRUE
+	interrupted_victim.defeat_recovery_channel = interrupted_channel
+	interrupted_channel.register_interrupt_signals()
+	var/interrupted_stamina_before = interrupted_helper.stamina
+	var/obj/item/manual_attack_weapon = allocate(/obj/item)
+	manual_attack_weapon.force = 10
+	SEND_SIGNAL(interrupted_helper, COMSIG_ATOM_ATTACKBY, manual_attack_weapon, interrupted_victim, list())
+	TEST_ASSERT(!interrupted_channel.active, "Damage to a recovery participant should cancel the manual channel.")
+	TEST_ASSERT_NOTNULL(interrupted_victim.has_status_effect(/datum/status_effect/defeat_knockout), "An interrupted manual channel must leave the victim defeated.")
+	TEST_ASSERT_EQUAL(interrupted_helper.stamina, interrupted_stamina_before, "An interrupted manual channel must not charge the success-only helper tax.")
+	qdel(interrupted_channel)
+
+/datum/unit_test/defeat_recovery_resource_consume_and_rollback
+
+/datum/unit_test/defeat_recovery_resource_consume_and_rollback/Run()
+	var/mob/living/carbon/human/completed_victim = allocate(/mob/living/carbon/human)
+	completed_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/datum/defeat_recovery_resource_tracker/completed_tracker = allocate(/datum/defeat_recovery_resource_tracker)
+	var/datum/defeat_recovery_profile/unit_test_resources/completed_profile = new
+	TEST_ASSERT(completed_victim.perform_defeat_rescue(null, "resource completion", completed_profile, completed_tracker), "A valid resource-backed recovery should complete.")
+	TEST_ASSERT_EQUAL(completed_tracker.reservations, 1, "Successful recovery should reserve its resource once.")
+	TEST_ASSERT_EQUAL(completed_tracker.consumptions, 1, "Successful recovery should consume its resource once.")
+	TEST_ASSERT_EQUAL(completed_tracker.releases, 0, "Consumed resources must not be rolled back during channel destruction.")
+
+	var/mob/living/carbon/human/cancelled_victim = allocate(/mob/living/carbon/human)
+	cancelled_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/datum/defeat_recovery_resource_tracker/cancelled_tracker = allocate(/datum/defeat_recovery_resource_tracker)
+	var/datum/defeat_recovery_profile/unit_test_resources/cancelled_profile = new
+	var/datum/defeat_recovery_channel/cancelled_channel = new(cancelled_profile, cancelled_victim, null, "resource cancellation", cancelled_tracker)
+	TEST_ASSERT(cancelled_profile.reserve_resources(cancelled_channel), "Setup: the cancelled channel should reserve its resource.")
+	cancelled_channel.resources_reserved = TRUE
+	cancelled_channel.active = TRUE
+	cancelled_victim.defeat_recovery_channel = cancelled_channel
+	TEST_ASSERT(cancelled_channel.cancel(), "An active resource-backed recovery should be cancellable.")
+	qdel(cancelled_channel)
+	TEST_ASSERT_EQUAL(cancelled_tracker.reservations, 1, "Cancelled recovery should reserve only once.")
+	TEST_ASSERT_EQUAL(cancelled_tracker.consumptions, 0, "Cancelled recovery must not consume its resource.")
+	TEST_ASSERT_EQUAL(cancelled_tracker.releases, 1, "Cancelled recovery should roll back its reservation exactly once.")
+
+/datum/unit_test/defeat_campfire_requires_crafted_lit_fueled_source
+
+/datum/unit_test/defeat_campfire_requires_crafted_lit_fueled_source/Run()
+	var/turf/fire_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/machinery/light/fueled/campfire/campfire = allocate(/obj/machinery/light/fueled/campfire, fire_turf)
+	var/mob/living/carbon/human/builder = allocate(/mob/living/carbon/human, get_step(fire_turf, NORTH))
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, get_step(fire_turf, EAST))
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/datum/defeat_recovery_profile/campfire/profile = new
+	var/datum/defeat_recovery_channel/channel = new(profile, victim, null, "campfire eligibility", campfire)
+
+	TEST_ASSERT(!profile.can_recover(channel), "A mapped or otherwise non-crafted campfire must not recover defeated characters.")
+	campfire.OnCrafted(null, builder)
+	TEST_ASSERT(!campfire.player_built, "Construction without a player-controlled crafter must not qualify a campfire for recovery.")
+	TEST_ASSERT(campfire.can_damage, "Campfire OnCrafted must preserve the fueled-light parent behavior.")
+	TEST_ASSERT(!campfire.on, "Campfire OnCrafted must preserve the parent's initial burn-out behavior.")
+	builder.mind = allocate(/datum/mind, "campfire-eligibility-builder")
+	builder.mind.current = builder
+	campfire.OnCrafted(null, builder)
+	TEST_ASSERT(campfire.player_built, "OnCrafted should mark a campfire made by a player-controlled living crafter.")
+	campfire.fire_act()
+	TEST_ASSERT(profile.can_recover(channel), "A crafted, lit, fueled campfire should qualify while the victim rests beside it.")
+	campfire.burn_out()
+	TEST_ASSERT(!profile.can_recover(channel), "An extinguished campfire must not qualify for recovery.")
+	qdel(channel)
+
+/datum/unit_test/defeat_campfire_passive_completion_and_tending_speed
+
+/datum/unit_test/defeat_campfire_passive_completion_and_tending_speed/Run()
+	var/turf/fire_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/machinery/light/fueled/campfire/campfire = allocate(/obj/machinery/light/fueled/campfire, fire_turf)
+	var/mob/living/carbon/human/builder = allocate(/mob/living/carbon/human, get_step(fire_turf, NORTH))
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, get_step(fire_turf, EAST))
+	builder.mind = allocate(/datum/mind, "campfire-passive-builder")
+	builder.mind.current = builder
+	campfire.OnCrafted(null, builder)
+	campfire.fire_act()
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	TEST_ASSERT(victim.begin_defeat_recovery(/datum/defeat_recovery_profile/campfire/unit_test_instant, null, "instant passive campfire test", campfire), "The zero-time test profile should complete passive campfire recovery through the shared finalizer.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Completed passive campfire recovery should wake the victim.")
+	TEST_ASSERT_NULL(victim.defeat_recovery_channel, "Completed passive campfire recovery should clean the victim-owned channel.")
+	TEST_ASSERT_NULL(campfire.defeat_recovery_channels, "Completed passive campfire recovery should clean the fire's weak registry.")
+
+	var/mob/living/carbon/human/progress_victim = allocate(/mob/living/carbon/human, get_step(fire_turf, EAST))
+	progress_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(campfire.begin_passive_defeat_recovery(progress_victim), "Passive campfire recovery should start without asking the incapacitated victim to perform a do_after.")
+	TEST_ASSERT_NOTNULL(progress_victim.defeat_recovery_channel?.passive_completion_timer, "Passive progress should be owned by a stoppable recovery-channel timer.")
+	TEST_ASSERT(progress_victim.defeat_recovery_channel.active, "A started passive timer should leave an active victim-owned recovery channel.")
+	progress_victim.cancel_defeat_recovery()
+	QDEL_NULL(progress_victim.defeat_recovery_channel)
+
+	var/datum/defeat_recovery_profile/campfire/passive_profile = allocate(/datum/defeat_recovery_profile/campfire)
+	var/datum/defeat_recovery_profile/campfire/tended/tended_profile = allocate(/datum/defeat_recovery_profile/campfire/tended)
+	var/datum/defeat_recovery_channel/passive_channel = new(passive_profile, victim, null, "passive timing", campfire)
+	var/datum/defeat_recovery_channel/tended_channel = new(tended_profile, victim, builder, "tended timing", campfire)
+	TEST_ASSERT(passive_profile.uses_passive_timer, "Passive campfire recovery must use non-interaction timer semantics.")
+	TEST_ASSERT(!tended_profile.uses_passive_timer, "Tended campfire recovery should use the helper-owned interruptible interaction.")
+	TEST_ASSERT(passive_profile.recovery_time(passive_channel) > tended_profile.recovery_time(tended_channel), "Active ally tending should be substantially faster than passive campfire recovery.")
+	qdel(passive_channel)
+	qdel(tended_channel)
+
+/datum/unit_test/defeat_campfire_channel_interruptions_and_duplicates
+
+/datum/unit_test/defeat_campfire_channel_interruptions_and_duplicates/Run()
+	var/turf/fire_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/machinery/light/fueled/campfire/campfire = allocate(/obj/machinery/light/fueled/campfire, fire_turf)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human, get_step(fire_turf, NORTH))
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, get_step(fire_turf, EAST))
+	helper.mind = allocate(/datum/mind, "campfire-interruption-builder")
+	helper.mind.current = helper
+	campfire.OnCrafted(null, helper)
+	campfire.fire_act()
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	TEST_ASSERT(campfire.begin_passive_defeat_recovery(victim), "Setup: the victim should begin a real timer-backed passive recovery.")
+	var/datum/defeat_recovery_channel/movement_channel = victim.defeat_recovery_channel
+	var/original_passive_timer = movement_channel.passive_completion_timer
+	TEST_ASSERT(!victim.begin_defeat_recovery(/datum/defeat_recovery_profile/campfire/unit_test_instant, null, "duplicate campfire", campfire), "A victim must not start a duplicate campfire recovery channel.")
+	victim.recent_damage_source_attacker_weakref = WEAKREF(helper)
+	victim.recent_damage_source_time = world.time
+	TEST_ASSERT(!campfire.begin_tended_defeat_recovery(victim, helper), "A hostile or otherwise ineligible helper must not replace passive campfire recovery.")
+	TEST_ASSERT(victim.defeat_recovery_channel == movement_channel, "Rejected tending must leave the original passive channel in place.")
+	TEST_ASSERT_EQUAL(movement_channel.passive_completion_timer, original_passive_timer, "Rejected tending must not reset passive recovery progress.")
+	TEST_ASSERT(movement_channel.active, "Rejected tending must leave passive recovery active.")
+	victim.recent_damage_source_attacker_weakref = null
+	victim.recent_damage_source_time = 0
+	victim.forceMove(get_step(get_turf(victim), EAST))
+	TEST_ASSERT_NULL(victim.defeat_recovery_channel, "Movement cancellation should clean the victim-owned channel.")
+
+	victim.forceMove(get_step(fire_turf, EAST))
+	var/datum/defeat_recovery_profile/campfire/tended/damage_profile = new
+	var/datum/defeat_recovery_channel/damage_channel = new(damage_profile, victim, helper, "damage interruption", campfire)
+	damage_channel.resources_reserved = TRUE
+	damage_channel.active = TRUE
+	damage_channel.channel_started = TRUE
+	victim.defeat_recovery_channel = damage_channel
+	damage_profile.on_channel_started(damage_channel)
+	damage_channel.register_interrupt_signals()
+	TEST_ASSERT(HAS_TRAIT(helper, TRAIT_RELAYING_ATTACKER), "An active recovery channel should attach the repository's attack relay to its helper.")
+	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human, get_step(fire_turf, WEST))
+	var/obj/item/test_weapon = allocate(/obj/item)
+	test_weapon.force = 10
+	SEND_SIGNAL(helper, COMSIG_ATOM_ATTACKBY, test_weapon, attacker, list())
+	TEST_ASSERT(!damage_channel.active, "A real relayed hostile attack should interrupt tended campfire recovery.")
+	qdel(damage_channel)
+	TEST_ASSERT(!HAS_TRAIT(helper, TRAIT_RELAYING_ATTACKER), "Recovery cleanup should remove the attack relay it attached.")
+
+	var/datum/defeat_recovery_profile/campfire/fire_profile = new
+	var/datum/defeat_recovery_channel/fire_channel = new(fire_profile, victim, null, "fire interruption", campfire)
+	fire_channel.resources_reserved = TRUE
+	fire_channel.active = TRUE
+	fire_channel.channel_started = TRUE
+	victim.defeat_recovery_channel = fire_channel
+	fire_profile.on_channel_started(fire_channel)
+	campfire.burn_out()
+	TEST_ASSERT_NULL(victim.defeat_recovery_channel, "Extinguishing or exhausting the fire should cancel and clean its registered recovery channel.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Interrupted campfire recovery must leave the victim defeated.")
+
+/datum/unit_test/defeat_campfire_qdel_cleanup
+
+/datum/unit_test/defeat_campfire_qdel_cleanup/Run()
+	var/turf/fire_turf = get_step(run_loc_floor_bottom_left, EAST)
+	var/obj/machinery/light/fueled/campfire/source_fire = allocate(/obj/machinery/light/fueled/campfire, fire_turf)
+	var/mob/living/carbon/human/builder = allocate(/mob/living/carbon/human, get_step(fire_turf, NORTH))
+	var/mob/living/carbon/human/source_victim = allocate(/mob/living/carbon/human, get_step(fire_turf, EAST))
+	builder.mind = allocate(/datum/mind, "campfire-qdel-builder")
+	builder.mind.current = builder
+	source_fire.OnCrafted(null, builder)
+	source_fire.fire_act()
+	source_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/datum/defeat_recovery_profile/campfire/source_profile = new
+	var/datum/defeat_recovery_channel/source_channel = new(source_profile, source_victim, null, "source qdel", source_fire)
+	source_channel.resources_reserved = TRUE
+	source_channel.active = TRUE
+	source_channel.channel_started = TRUE
+	source_victim.defeat_recovery_channel = source_channel
+	source_profile.on_channel_started(source_channel)
+	qdel(source_fire)
+	TEST_ASSERT_NULL(source_victim.defeat_recovery_channel, "Deleting a campfire should clean the victim-owned recovery channel.")
+
+	var/obj/machinery/light/fueled/campfire/target_fire = allocate(/obj/machinery/light/fueled/campfire, fire_turf)
+	var/mob/living/carbon/human/target_victim = allocate(/mob/living/carbon/human, get_step(fire_turf, EAST))
+	target_fire.OnCrafted(null, builder)
+	target_fire.fire_act()
+	target_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/datum/defeat_recovery_profile/campfire/target_profile = new
+	var/datum/defeat_recovery_channel/target_channel = new(target_profile, target_victim, null, "target qdel", target_fire)
+	target_channel.resources_reserved = TRUE
+	target_channel.active = TRUE
+	target_channel.channel_started = TRUE
+	target_victim.defeat_recovery_channel = target_channel
+	target_profile.on_channel_started(target_channel)
+	qdel(target_victim)
+	TEST_ASSERT_NULL(target_fire.defeat_recovery_channels, "Deleting a resting victim should remove its weak channel from the campfire.")
+
+/datum/unit_test/defeat_recovery_finalizer_emits_once
+	var/rescue_signal_count = 0
+
+/datum/unit_test/defeat_recovery_finalizer_emits_once/Destroy()
+	rescue_signal_count = 0
+	return ..()
+
+/datum/unit_test/defeat_recovery_finalizer_emits_once/proc/on_recovered(datum/source, mob/living/helper, rescue_source)
+	SIGNAL_HANDLER
+	rescue_signal_count++
+
+/datum/unit_test/defeat_recovery_finalizer_emits_once/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, helper, run_loc_floor_bottom_left)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.setBruteLoss(200, FALSE, TRUE)
+	victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
+	RegisterSignal(victim, COMSIG_LIVING_DEFEAT_RESCUED, PROC_REF(on_recovered))
+
+	TEST_ASSERT(victim.begin_defeat_recovery(/datum/defeat_recovery_profile/prepared, helper, "prepared unit test"), "Prepared care should complete through the recovery profile entrypoint.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "The shared finalizer should remove Defeat knockout.")
+	TEST_ASSERT_NULL(victim.defeat_recovery_channel, "A completed recovery must release its active channel reference.")
+	TEST_ASSERT_EQUAL(rescue_signal_count, 1, "One successful recovery should emit exactly one rescued signal.")
+	TEST_ASSERT(!victim.begin_defeat_recovery(/datum/defeat_recovery_profile/prepared, helper, "duplicate unit test"), "An awake victim cannot complete the recovery finalizer twice.")
+	TEST_ASSERT_EQUAL(rescue_signal_count, 1, "A rejected duplicate recovery must not emit another rescued signal.")
+	UnregisterSignal(victim, COMSIG_LIVING_DEFEAT_RESCUED)
+
+/datum/unit_test/defeat_bandage_stabilizes_without_waking
+
+/datum/unit_test/defeat_bandage_stabilizes_without_waking/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(victim, helper, run_loc_floor_bottom_left)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.blood_volume = BLOOD_VOLUME_SURVIVE - 1
+	victim.setOrganLoss(ORGAN_SLOT_BRAIN, BRAIN_DAMAGE_DEATH - 1)
+
+	TEST_ASSERT(victim.defeat_stabilize_from_healing(helper, "bandage"), "Bandaging should perform the bounded recovery safety pass while the victim is defeated.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A bandage must not independently wake a defeated victim.")
+	TEST_ASSERT(victim.blood_volume >= DEFEAT_BLOOD_VOLUME_MINIMUM, "Bandage stabilization should restore the safe blood minimum.")
+	TEST_ASSERT(victim.getOrganLoss(ORGAN_SLOT_BRAIN) <= DEFEAT_BRAIN_DAMAGE_MAX, "Bandage stabilization should clear immediate brain danger.")
+
 /datum/unit_test/defeat_rescue_clears_lethal_conditions
 
 /datum/unit_test/defeat_rescue_clears_lethal_conditions/Run()
-	// A defeat driven by the non-pool lethal conditions (brain-death organ damage + heavy blood loss)
-	// must not leave the victim near-death after a non-rune rescue, or they instantly re-collapse.
+	// Brain damage can attempt to kill synchronously from the organ setter, before updatehealth(). The
+	// health-signal preflight must enter Defeat and establish every safety margin immediately.
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	victim.defeat_system_ai_opt_in = TRUE
-	victim.setOrganLoss(ORGAN_SLOT_BRAIN, BRAIN_DAMAGE_DEATH)
+	victim.AddComponent(/datum/component/defeat_monitor)
 	victim.blood_volume = BLOOD_VOLUME_SURVIVE
-	TEST_ASSERT(victim.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE), "Setup: brain/blood death should enter defeat.")
-	// Stabilization deliberately leaves these two conditions in place while knocked out.
-	TEST_ASSERT_EQUAL(victim.getOrganLoss(ORGAN_SLOT_BRAIN), BRAIN_DAMAGE_DEATH, "Setup: brain damage persists through stabilization.")
+	victim.setOrganLoss(ORGAN_SLOT_BRAIN, BRAIN_DAMAGE_DEATH)
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Brain-death organ damage should enter Defeat before owner.death() finalizes.")
+	TEST_ASSERT(victim.stat != DEAD, "The synchronous brain-death path should leave the victim defeated, not dead.")
+	TEST_ASSERT_EQUAL(victim.getOrganLoss(ORGAN_SLOT_BRAIN), DEFEAT_BRAIN_DAMAGE_MAX, "Defeat entry immediately clears brain damage to the configured safety margin.")
+	TEST_ASSERT_EQUAL(victim.blood_volume, DEFEAT_BLOOD_VOLUME_MINIMUM, "Defeat entry immediately restores the configured safe minimum blood volume.")
 
 	victim.perform_defeat_rescue(null, "unit-test")
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "The rescue clears the knockout.")
-	TEST_ASSERT(victim.getOrganLoss(ORGAN_SLOT_BRAIN) < BRAIN_DAMAGE_DEATH, "The rescue clears brain-death organ damage.")
-	TEST_ASSERT(victim.blood_volume > BLOOD_VOLUME_SURVIVE, "The rescue restores blood above the survival floor.")
+	TEST_ASSERT_EQUAL(victim.getOrganLoss(ORGAN_SLOT_BRAIN), DEFEAT_BRAIN_DAMAGE_MAX, "Recovery idempotently preserves the entry brain-damage safety margin.")
+	TEST_ASSERT_EQUAL(victim.blood_volume, DEFEAT_BLOOD_VOLUME_MINIMUM, "Recovery idempotently preserves the entry blood-volume safety margin.")
 	TEST_ASSERT(!victim.defeat_is_near_death(), "A rescued victim is no longer near-death, so it will not instantly re-trigger defeat.")
+
+	// A clean follow-up recomputation must be stable: no death and no immediate fresh Defeat.
+	victim.updatehealth()
+	TEST_ASSERT(victim.stat != DEAD, "One health/life recomputation after recovery must not kill the victim without new harm.")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "One clean recomputation after recovery must not immediately re-enter Defeat.")
+
+/datum/unit_test/defeat_followup_damage_reapplies_bounded_safety
+
+/datum/unit_test/defeat_followup_damage_reapplies_bounded_safety/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_damage_threshold = 100
+	victim.AddComponent(/datum/component/defeat_monitor)
+	victim.setToxLoss(100)
+	var/datum/defeat_snapshot/first_snapshot = victim.last_defeat_snapshot
+	TEST_ASSERT_NOTNULL(first_snapshot, "Setup: threshold damage should enter Defeat.")
+
+	victim.setToxLoss(200)
+	TEST_ASSERT(victim.stat != DEAD, "Follow-up damage while defeated must be clamped before ordinary death finalization.")
+	TEST_ASSERT_EQUAL(victim.last_defeat_snapshot, first_snapshot, "Follow-up damage must not create a second Defeat snapshot or revive loop.")
+	TEST_ASSERT(victim.getToxLoss() <= victim.defeat_damage_safety_cap() * DEFEAT_DAMAGE_POOL_CAP_FRACTION, "Follow-up damage should reapply the bounded scalar-pool cap.")
 
 /datum/unit_test/defeat_admin_heal_clears_ko_and_traumas
 
@@ -1533,6 +2135,73 @@
 /datum/unit_test/mob_horny_defeat_ignores_self_and_missing_instigator
 	focus = TRUE
 /datum/unit_test/arousal_enables_mob_horny_defeat_on_clientless
+	focus = TRUE
+#endif
+
+#ifdef FOCUS_BOUNDED_DEFEAT_TEST
+/datum/unit_test/defeat_stabilization_preserves_bounded_injuries_after_snapshot
+	focus = TRUE
+/datum/unit_test/defeat_health_signal_preempts_death_finalization
+	focus = TRUE
+/datum/unit_test/defeat_monitor_uses_only_health_signal_for_damage
+	focus = TRUE
+/datum/unit_test/defeat_rescue_clears_lethal_conditions
+	focus = TRUE
+/datum/unit_test/defeat_followup_damage_reapplies_bounded_safety
+	focus = TRUE
+#endif
+
+#ifdef FOCUS_DEFEAT_RECOVERY_TEST
+/datum/unit_test/defeat_healing_uses_explicit_recovery_profiles
+	focus = TRUE
+/datum/unit_test/defeat_recovery_profiles_are_explicit
+	focus = TRUE
+/datum/unit_test/defeat_prepared_recovery_allows_range
+	focus = TRUE
+/datum/unit_test/defeat_priority_recovery_replaces_active_channel
+	focus = TRUE
+/datum/unit_test/defeat_manual_channel_interruption_tax_and_aftermath
+	focus = TRUE
+/datum/unit_test/defeat_recovery_resource_consume_and_rollback
+	focus = TRUE
+/datum/unit_test/defeat_potion_feed_rescues_downed_victim
+	focus = TRUE
+/datum/unit_test/defeat_campfire_requires_crafted_lit_fueled_source
+	focus = TRUE
+/datum/unit_test/defeat_campfire_passive_completion_and_tending_speed
+	focus = TRUE
+/datum/unit_test/defeat_campfire_channel_interruptions_and_duplicates
+	focus = TRUE
+/datum/unit_test/defeat_campfire_qdel_cleanup
+	focus = TRUE
+/datum/unit_test/defeat_recovery_finalizer_emits_once
+	focus = TRUE
+/datum/unit_test/defeat_bandage_stabilizes_without_waking
+	focus = TRUE
+#endif
+
+#ifdef FOCUS_DEFEAT_TRAUMA_TREATMENT_TEST
+/datum/unit_test/defeat_treatment_clears_correct_trauma
+	focus = TRUE
+/datum/unit_test/defeat_tool_treatment_clears_matching_trauma_only
+	focus = TRUE
+/datum/unit_test/defeat_trauma_provider_diagnosis_is_deterministic
+	focus = TRUE
+/datum/unit_test/defeat_trauma_provider_costs_only_on_success
+	focus = TRUE
+/datum/unit_test/defeat_trauma_provider_interruption_has_no_cost
+	focus = TRUE
+/datum/unit_test/defeat_trauma_provider_discloses_full_treatment
+	focus = TRUE
+/datum/unit_test/defeat_trauma_provider_prefilters_unusable_candidates
+	focus = TRUE
+/datum/unit_test/defeat_trauma_provider_rejects_deleted_resource_after_delay
+	focus = TRUE
+/datum/unit_test/defeat_trauma_providers_have_blueprint_acquisition
+	focus = TRUE
+/datum/unit_test/defeat_universal_provider_removes_exactly_one_selected_trauma
+	focus = TRUE
+/datum/unit_test/defeat_shrine_routes_horny_trauma
 	focus = TRUE
 #endif
 

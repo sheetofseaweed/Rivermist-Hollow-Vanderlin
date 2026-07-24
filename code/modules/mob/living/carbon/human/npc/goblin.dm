@@ -40,8 +40,10 @@
 /mob/living/carbon/human/species/goblin/npc
 	ai_controller = /datum/ai_controller/human_npc
 	flee_in_pain = TRUE
+	horny_defeat_threshold_override = 1
 	// Greenskins haul horny-defeated prey back to their warren (same lair tag as the simple-mob orcs).
 	kidnap_lair_tag = "greenskin_lair"
+	kidnap_captivity_profile = /datum/defeat_captivity_profile/shared/greenskin
 
 	wander = FALSE
 

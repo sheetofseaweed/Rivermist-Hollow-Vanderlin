@@ -1986,8 +1986,25 @@ export const PreferencesMenu = () => {
 
       <Panel title="Combat & Defeat" icon="skull">
         <PrefRow icon="music" label="Combat Music" value={data.combat_music} onClick={() => doPref('combat_music', 'input')} />
-        <PrefRow icon="skull" label="Defeat Mode" value={data.defeat_mode} onClick={() => doPref('defeat_mode', 'input')} />
-        <PrefRow icon="heart-broken" label="Defeat Threshold" value={data.defeat_threshold} onClick={() => doPref('defeat_threshold', 'input')} />
+        <PrefRow
+          icon="skull"
+          label="Defeat Mode"
+          value={data.defeat_mode}
+          tooltip="Defeat stops lethal bleeding and brain danger without fully healing you. Manual, prepared, and campfire recovery can wake you with aftermath trauma; this setting controls whether rune return is also available."
+          onClick={() => doPref('defeat_mode', 'input')}
+        />
+        <PrefRow
+          icon="heart-broken"
+          label="Defeat Threshold"
+          value={data.defeat_threshold}
+          tooltip="The pooled brute, burn, toxin, and clone damage needed to fall into Defeat. Stabilization makes you safe; waking is a separate recovery step."
+          onClick={() => doPref('defeat_threshold', 'input')}
+        />
+        <Box color="label" fontSize="12px" mt={0.5}>
+          Horny Defeat resistance is deterministic and stat-based. During an
+          active encounter, only you see your exact progress, threshold, and
+          remaining climaxes.
+        </Box>
       </Panel>
 
       {/* Triumphs are disabled for now.

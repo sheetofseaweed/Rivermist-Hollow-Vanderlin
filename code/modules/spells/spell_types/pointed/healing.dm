@@ -224,7 +224,7 @@
 	cast_on.adjustOxyLoss(-amount_healed)
 	cast_on.adjust_bloodvolume(blood_restoration + situational_blood, BLOOD_VOLUME_NORMAL)
 	var/mob/living/healing_owner = owner
-	cast_on.defeat_try_auto_rescue_from_healing(healing_owner, amount_healed, "healing miracle")
+	cast_on.defeat_try_prepared_recovery(healing_owner, "healing miracle", src)
 	if(!iscarbon(cast_on))
 		cast_on.adjustBruteLoss(-amount_healed)
 		cast_on.adjustFireLoss(-amount_healed)

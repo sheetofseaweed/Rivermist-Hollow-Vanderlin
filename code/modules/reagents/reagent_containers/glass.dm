@@ -169,7 +169,6 @@
 			M.visible_message(span_danger("[user] feeds [M] something."), \
 						span_danger("[user] feeds you something."))
 			log_combat(user, M, "fed", reagents.log_list())
-			defeat_try_potion_rescue(M, user)
 		else
 			// check to see if we're a noble drinking soup
 			if(ishuman(user) && istype(src, /obj/item/reagent_containers/glass/bowl))
@@ -194,8 +193,20 @@
 					if(prob(25))
 						to_chat(human_user, span_red("I've got better manners than this..."))
 			to_chat(user, span_notice("I swallow a gulp of [src]."))
-		addtimer(CALLBACK(reagents, TYPE_PROC_REF(/datum/reagents, trans_to), M, min(amount_per_transfer_from_this,5), TRUE, TRUE, FALSE, user, FALSE, INGEST), 5)
+		addtimer(CALLBACK(src, PROC_REF(transfer_feed_reagents), M, user), 5)
 		playsound(M, pick(drinksounds), 100, TRUE)
+
+/obj/item/reagent_containers/glass/proc/transfer_feed_reagents(mob/living/target, mob/living/feeder)
+	if(QDELETED(target) || QDELETED(feeder) || !reagents?.total_volume)
+		return FALSE
+	var/medicine_volume = 0
+	for(var/datum/reagent/medicine/medicine in reagents.reagent_list)
+		medicine_volume += medicine.volume
+	var/medicine_fraction = medicine_volume / reagents.total_volume
+	var/transferred = reagents.trans_to(target, min(amount_per_transfer_from_this, 5), TRUE, TRUE, FALSE, feeder, FALSE, INGEST)
+	if(!transferred)
+		return FALSE
+	return defeat_try_potion_rescue(target, feeder, transferred * medicine_fraction)
 
 /obj/item/reagent_containers/glass/attack_atom(atom/attacked_atom, mob/living/user)
 	if(user.used_intent.type == INTENT_GENERIC)

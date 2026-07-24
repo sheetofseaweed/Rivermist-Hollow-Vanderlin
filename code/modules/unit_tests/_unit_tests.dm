@@ -81,6 +81,8 @@
 #include "craftable_clothes.dm"
 #include "craftable_turfs.dm"
 #include "create_and_destroy.dm"
+#include "defeat_captivity.dm"
+#include "defeat_horny_thresholds.dm"
 #include "defeat_system.dm"
 #include "defense_cooldowns.dm"
 #include "dye_bin.dm"

@@ -223,7 +223,7 @@
 	user.dropItemToGround(src)
 	affecting.try_bandage(src)
 	H.update_damage_overlays()
-	H.defeat_try_auto_rescue_from_healing(user, DEFEAT_AUTO_RESCUE_HEALING_THRESHOLD, "bandage")
+	H.defeat_stabilize_from_healing(user, "bandage")
 	H.defeat_treat_tool_physical_trauma(user, list(/datum/status_effect/debuff/defeat/physical/wound))
 
 	if(M == user)
