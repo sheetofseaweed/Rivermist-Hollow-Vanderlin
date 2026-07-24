@@ -8,10 +8,12 @@
 	hole_id = ORGAN_SLOT_VAGINA
 	stored_item_type = /obj/item
 	continous = TRUE
-	user_priority = 1
-	target_priority = 1
 	var/self = FALSE
 	var/obj/item/organ/genitals/target_organ
+
+/datum/sex_action/hole_storage/Destroy()
+	target_organ = null
+	return ..()
 
 /datum/sex_action/hole_storage/can_perform(mob/living/user, mob/living/target)
 	. = ..()

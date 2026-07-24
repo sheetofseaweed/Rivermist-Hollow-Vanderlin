@@ -16,9 +16,3 @@
 	var/locked = get_hand_lock_slot(user)
 	if(locked)
 		add_sex_lock(user, locked)
-
-/datum/sex_action/masturbate/other/is_finished(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
-	if(sex_session.finished_check())
-		return TRUE
-	return FALSE

@@ -25,6 +25,7 @@
 	ADD_TRAIT(src, TRAIT_BREADY, TRAIT_GENERIC)
 	equipOutfit(new /datum/outfit/job/human/species/human/northern/thief)
 	gender = pick(MALE, FEMALE)
+	resync_genitals_to_gender()
 	regenerate_icons()
 
 	var/obj/item/organ/eyes/organ_eyes = getorgan(/obj/item/organ/eyes)

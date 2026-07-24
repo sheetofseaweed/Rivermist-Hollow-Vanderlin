@@ -38,12 +38,11 @@
 
 /datum/sex_action/sex/boobjob/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s tits."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s tits."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 20, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(user, target, 2, 4, 2, src)
+	perform_sex_action(user, target, 2, 4, 2)
 
 /datum/sex_action/sex/boobjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()

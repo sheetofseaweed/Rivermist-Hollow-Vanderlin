@@ -35,6 +35,8 @@
 	var/last_orgasm_strain_decay_time = 0
 	/// Are we edged by partner
 	var/is_edged = FALSE
+	/// Last time high arousal auto-flicked the mob's ears
+	var/last_ear_flick_time = 0
 
 /datum/component/arousal/Initialize(...)
 	. = ..()
@@ -46,6 +48,12 @@
 
 /datum/component/arousal/RegisterWithParent()
 	. = ..()
+	// A clientless mob that gains arousal (i.e. is in the horny system) becomes horny-KO-able. Scoped to
+	// clientless bodies so players - who also carry arousal - are untouched and keep the full defeat flow.
+	var/mob/living/horny_ko_parent = parent
+	if(istype(horny_ko_parent) && !horny_ko_parent.client)
+		horny_ko_parent.mob_horny_defeat_enabled = TRUE
+		horny_ko_parent.ensure_defeat_monitor()
 	RegisterSignal(parent, COMSIG_SEX_ADJUST_AROUSAL, PROC_REF(adjust_arousal))
 	RegisterSignal(parent, COMSIG_SEX_SET_AROUSAL, PROC_REF(set_arousal))
 	RegisterSignal(parent, COMSIG_SEX_FREEZE_AROUSAL, PROC_REF(freeze_arousal))
@@ -94,6 +102,19 @@
 	handle_statuses()
 	handle_passive_orgasm()
 	handle_orgasm_cooling()
+	handle_ear_flick()
+
+/// High arousal makes flickable ears twitch on a fixed interval.
+/datum/component/arousal/proc/handle_ear_flick()
+	if(arousal <= 200)
+		return
+	if(last_ear_flick_time + 5 SECONDS > world.time)
+		return
+	if(!isliving(parent))
+		return
+	var/mob/living/user = parent
+	last_ear_flick_time = world.time
+	user.try_ear_flick()
 
 /datum/component/arousal/proc/handle_orgasm_count()
 	if(!recent_orgasm_count)
@@ -245,11 +266,6 @@
 		orgasm_prog_amt = 0
 	var/applied_resist = RESIST_NONE
 	var/applied_force = SEX_FORCE_MID
-	var/datum/sex_session/s_session = get_sex_session(action_target, action_target)
-
-	if(s_session)
-		applied_resist = s_session.get_current_resist()
-		applied_force = s_session.get_current_force()
 
 	var/isnymph = FALSE
 	if(HAS_TRAIT(user, TRAIT_NYMPHO_CURSE) || user.has_quirk(/datum/quirk/vice/lovefiend))
@@ -483,15 +499,7 @@
 /datum/component/arousal/proc/ejaculate(datum/sex_action/s_action, mob/living/action_initiator, mob/living/action_target, giving = FALSE, mob/living/action_performer)
 
 	var/mob/living/mob = parent
-	var/list/parent_sessions = return_sessions_with_user(parent)
-	var/datum/sex_session/highest_priority = return_highest_priority_action(parent_sessions, parent)
-	var/datum/sex_action/action
-
-	if(s_action)
-		action = s_action
-
-	else if(highest_priority)
-		action = highest_priority.get_highest_priority_action_for(parent)
+	var/datum/sex_action/action = s_action
 
 	if(!action_initiator)
 		action_initiator = parent
@@ -505,6 +513,7 @@
 		target = action_initiator
 	var/must_flip = !giving
 
+	mob.sex_scene?.handle_pattern_climax(mob, action)
 	playsound(parent, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
 	// Special cases for when the user has a penis but no testicles & for eunuchs
 	if((!mob.getorganslot(ORGAN_SLOT_TESTICLES) && mob.getorganslot(ORGAN_SLOT_PENIS)) || (!mob.getorganslot(ORGAN_SLOT_TESTICLES) && !mob.getorganslot(ORGAN_SLOT_VAGINA)))
@@ -794,6 +803,8 @@
 			user.emote("sexmoangag_org", forced = TRUE)
 		else
 			user.emote("sexmoanhvy", forced = TRUE)
+
+	user.try_ear_flick()
 
 	charge = max(0, charge - CHARGE_FOR_CLIMAX)
 

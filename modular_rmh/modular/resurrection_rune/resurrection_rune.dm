@@ -245,6 +245,8 @@
 	for(var/mob/living/carbon/linked_user as anything in linked_users)
 		clear_linked_user_rescue_state(linked_user)
 		unregister_linked_user_signals(linked_user)
+	for(var/datum/mind/linked_mind as anything in linked_users_minds)
+		UnregisterSignal(linked_mind, COMSIG_PARENT_QDELETING)
 	clear_all_ghost_return_actions()
 
 	control_rune = null
@@ -502,6 +504,7 @@
 	unlink_mind_from_other_resurrection_runes(linked_mind, sub_rune)
 	if(!(linked_mind in linked_users_minds))
 		linked_users_minds += linked_mind
+		RegisterSignal(linked_mind, COMSIG_PARENT_QDELETING, PROC_REF(handle_linked_mind_deletion), override = TRUE)
 	var/mob/living/carbon/current_body = get_current_linkable_body(linked_mind)
 	if(current_body)
 		clear_ghost_return_action(linked_mind)
@@ -520,6 +523,7 @@
 	unregister_linked_body(user)
 
 	if(linked_mind)
+		UnregisterSignal(linked_mind, COMSIG_PARENT_QDELETING)
 		linked_users_minds -= linked_mind
 		linked_body_by_mind.Remove(linked_mind)
 		resurrecting -= linked_mind
@@ -566,6 +570,7 @@
 	if(!linked_mind)
 		return
 
+	UnregisterSignal(linked_mind, COMSIG_PARENT_QDELETING)
 	var/mob/living/carbon/linked_body = linked_body_by_mind[linked_mind]
 	if(linked_body)
 		unregister_linked_body(linked_body)
@@ -645,6 +650,12 @@
 		linked_mind.current = null
 	if(can_auto_remake_deleted_body(linked_mind))
 		queue_body_remake(linked_mind)
+
+/// A linked mind being deleted must be dropped from our lists, or we pin it (a hard-del leak).
+/// Bodies are tracked separately; minds can be deleted without their last body going through us.
+/datum/resurrection_rune_controller/proc/handle_linked_mind_deletion(datum/mind/source)
+	SIGNAL_HANDLER
+	remove_linked_mind(source)
 
 /datum/resurrection_rune_controller/proc/prune_deleted_linked_body_state(datum/mind/linked_mind)
 	if(!linked_mind)

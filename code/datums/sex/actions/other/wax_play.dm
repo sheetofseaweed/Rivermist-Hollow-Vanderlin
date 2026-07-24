@@ -54,14 +54,13 @@
 	return TRUE
 
 /datum/sex_action/wax_play/proc/apply_wax_effects(mob/living/user, mob/living/target, text_target, arousal_base, pain_base)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] drips hot wax over [target]'s [text_target]."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] drips hot wax over [target]'s [text_target]."))
 
-	var/arousal_amt = arousal_base + (sex_session.force * 0.4)
-	var/pain_amt = pain_base + (sex_session.force * 1.5)
-	sex_session.perform_sex_action(target, user, arousal_amt, pain_amt, arousal_amt, src)
-	sex_session.handle_passive_ejaculation(target)
+	var/arousal_amt = arousal_base + (force * 0.4)
+	var/pain_amt = pain_base + (force * 1.5)
+	perform_sex_action(target, user, arousal_amt, pain_amt, arousal_amt)
+	handle_passive_ejaculation(target)
 
 	var/obj/item/candle/candle = get_held_lit_candle(user)
 	if(candle && !candle.infinite && candle.wax > 0)

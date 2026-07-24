@@ -12,6 +12,7 @@ import {
   Stack,
   Tabs,
   TextArea,
+  Tooltip,
 } from 'tgui-core/components';
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
@@ -145,22 +146,60 @@ type IntimacyData = {
 type NoteEntry = { title: string; content: string; meta: string };
 type NotesData = { yours: NoteEntry[]; theirs: NoteEntry[] };
 
+type ScenePatternEntry = {
+  key: string;
+  id: string;
+  name: string;
+  focus_name: string | null;
+  is_focus: Booleanish;
+};
+
+type SceneParticipantEntry = {
+  ref: string;
+  name: string;
+  is_self: Booleanish;
+  selected: Booleanish;
+  action_count: number;
+  status_lines: string[];
+};
+
+type SceneConnectionEntry = {
+  ref: string;
+  name: string;
+  actor_name: string;
+  target_name: string;
+  speed: number;
+  force: number;
+  can_stop: Booleanish;
+};
+
+type SceneClaimEntry = {
+  action_name: string;
+  host_name: string;
+  resource_name: string;
+  hard: Booleanish;
+};
+
 type Data = {
   target_name: string;
   is_self: Booleanish;
+  scene_name: string;
+  scene_participants: SceneParticipantEntry[];
+  scene_connections: SceneConnectionEntry[];
+  scene_claims: SceneClaimEntry[];
   status_lines: string[];
   arousal: ArousalData;
   controls: ControlsData;
   zone_options: ZoneOption[];
   actions: ActionEntry[];
+  scene_patterns: ScenePatternEntry[];
   bellyriding: BellyData;
   custom: CustomData;
   intimacy: IntimacyData;
   notes: NotesData;
 };
 
-const asBool = (value: Booleanish | undefined) =>
-  value === true || value === 1;
+const asBool = (value: Booleanish | undefined) => value === true || value === 1;
 
 const SPEED_LABELS = ['Slow', 'Steady', 'Quick', 'Unrelenting'];
 const FORCE_LABELS = ['Gentle', 'Firm', 'Rough', 'Brutal'];
@@ -234,7 +273,7 @@ const ZoneFilterPanel = (props: {
 const zoneMatches = (mask: number, filter: number) =>
   filter === 0 || (mask & filter) !== 0;
 
-export const SexSession = () => {
+export const SexScene = () => {
   const { act, data } = useBackend<Data>();
 
   const [tab, setTab] = useState('interactions');
@@ -247,28 +286,112 @@ export const SexSession = () => {
   const [noteContent, setNoteContent] = useState('');
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
+  const [claimsOpen, setClaimsOpen] = useState(false);
 
   const controls = data.controls || ({} as ControlsData);
   const arousal = data.arousal || ({} as ArousalData);
+  const scenePatterns = data.scene_patterns ?? [];
   const hasBelly = !!data.bellyriding;
   const activeTab = tab === 'bellyriding' && !hasBelly ? 'interactions' : tab;
+
+  const renderParticipantTooltip = (participant: SceneParticipantEntry) => (
+    <Box>
+      <Box bold>{participant.name}</Box>
+      <Box color="label" mb={0.5}>
+        {asBool(participant.is_self) ? 'You' : 'Scene participant'} ·{' '}
+        {participant.action_count} active interaction
+        {participant.action_count === 1 ? '' : 's'}
+      </Box>
+      {(participant.status_lines ?? []).map((line, index) => (
+        <Box key={`${participant.ref}-${index}`}>...{line}</Box>
+      ))}
+    </Box>
+  );
+
+  const renderParticipantButton = (participant: SceneParticipantEntry) => (
+    <Stack.Item key={participant.ref}>
+      <Tooltip
+        content={renderParticipantTooltip(participant)}
+        position="bottom-start"
+      >
+        <Box>
+          <Button
+            fluid
+            compact
+            selected={asBool(participant.selected)}
+            onClick={() => act('select_participant', { ref: participant.ref })}
+          >
+            <Stack align="center">
+              <Stack.Item grow style={{ minWidth: 0 }}>
+                <Box
+                  bold
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {participant.name}
+                </Box>
+              </Stack.Item>
+              <Stack.Item>
+                <Box as="span" color="label" fontSize="9px">
+                  {participant.action_count}
+                </Box>
+              </Stack.Item>
+            </Stack>
+          </Button>
+        </Box>
+      </Tooltip>
+    </Stack.Item>
+  );
 
   const renderHeader = () => (
     <Section>
       <Stack>
-        <Stack.Item grow>
-          <Box bold fontSize="15px">
+        <Stack.Item basis="18%" shrink={0} style={{ minWidth: 0 }}>
+          <Box bold color="label" fontSize="10px" mb={0.25}>
+            Participants
+          </Box>
+          <Stack vertical maxHeight="9rem" overflowY="auto">
+            {(data.scene_participants ?? []).map(renderParticipantButton)}
+          </Stack>
+        </Stack.Item>
+        <Stack.Item grow style={{ minWidth: 0 }}>
+          <Box bold fontSize="13px">
             {asBool(data.is_self)
               ? 'Interacting with yourself…'
               : `Interacting with ${data.target_name}…`}
           </Box>
-          <Box color="label" fontSize="11px" mt={0.25}>
+          <Box color="label" fontSize="9px">
+            Scene: {data.scene_name || data.target_name}
+          </Box>
+          <Box color="label" fontSize="10px" mt={0.25}>
             {(data.status_lines ?? []).map((line) => (
               <Box key={line}>…{line}</Box>
             ))}
           </Box>
+          {scenePatterns.length ? (
+            <Box color="pink" fontSize="10px" mt={0.5}>
+              <Box as="span" bold>
+                Active scene:{' '}
+              </Box>
+              {scenePatterns.map((pattern, index) => (
+                <Box as="span" key={pattern.key}>
+                  {index ? ', ' : ''}
+                  {pattern.name}
+                  {asBool(pattern.is_focus)
+                    ? ' (centered on you)'
+                    : pattern.focus_name
+                      ? ` (centered on ${pattern.focus_name})`
+                      : ''}
+                </Box>
+              ))}
+            </Box>
+          ) : null}
         </Stack.Item>
-        <Stack.Item basis="45%">
+        <Stack.Item basis="38%">
           <LabeledList>
             <LabeledList.Item label="Orgasm">
               <ProgressBar
@@ -413,6 +536,8 @@ export const SexSession = () => {
         zoneMatches(action.target_zones, targetZone) &&
         (!search || action.name.toLowerCase().includes(search.toLowerCase())),
     );
+    const connections = data.scene_connections ?? [];
+    const claims = data.scene_claims ?? [];
     return (
       <Stack fill vertical>
         <Stack.Item grow>
@@ -427,6 +552,121 @@ export const SexSession = () => {
             </Stack.Item>
             <Stack.Item grow>
               <Section fill scrollable>
+                <Stack align="start" mb={0.75}>
+                  <Stack.Item grow basis={0} style={{ minWidth: 0 }}>
+                    <Section
+                      fitted
+                      title={`Scene Connections (${connections.length})`}
+                      buttons={
+                        <Button
+                          compact
+                          icon={connectionsOpen ? 'chevron-up' : 'chevron-down'}
+                          tooltip={
+                            connectionsOpen
+                              ? 'Collapse scene connections'
+                              : 'Expand scene connections'
+                          }
+                          onClick={() => setConnectionsOpen(!connectionsOpen)}
+                        />
+                      }
+                    >
+                      {connectionsOpen ? (
+                        <Stack vertical maxHeight="8rem" overflowY="auto">
+                          {connections.length ? (
+                            connections.map((connection) => (
+                              <Stack.Item key={connection.ref}>
+                                <Stack align="center">
+                                  <Stack.Item grow style={{ minWidth: 0 }}>
+                                    <Box fontSize="10px">
+                                      <Box as="span" bold>
+                                        {connection.actor_name}
+                                      </Box>{' '}
+                                      → {connection.target_name}:{' '}
+                                      {connection.name}
+                                    </Box>
+                                  </Stack.Item>
+                                  <Stack.Item>
+                                    <Box color="label" fontSize="9px">
+                                      S{connection.speed} / F{connection.force}
+                                    </Box>
+                                  </Stack.Item>
+                                  {asBool(connection.can_stop) ? (
+                                    <Stack.Item>
+                                      <Button
+                                        compact
+                                        icon="times"
+                                        color="bad"
+                                        tooltip="Stop this connection"
+                                        onClick={() =>
+                                          act('stop_scene_action', {
+                                            ref: connection.ref,
+                                          })
+                                        }
+                                      />
+                                    </Stack.Item>
+                                  ) : null}
+                                </Stack>
+                              </Stack.Item>
+                            ))
+                          ) : (
+                            <Stack.Item>
+                              <Box color="label" fontSize="10px" italic>
+                                No active scene connections.
+                              </Box>
+                            </Stack.Item>
+                          )}
+                        </Stack>
+                      ) : null}
+                    </Section>
+                  </Stack.Item>
+                  <Stack.Item grow basis={0} style={{ minWidth: 0 }}>
+                    <Section
+                      fitted
+                      title={`Claimed Resources (${claims.length})`}
+                      buttons={
+                        <Button
+                          compact
+                          icon={claimsOpen ? 'chevron-up' : 'chevron-down'}
+                          tooltip={
+                            claimsOpen
+                              ? 'Collapse claimed resources'
+                              : 'Expand claimed resources'
+                          }
+                          onClick={() => setClaimsOpen(!claimsOpen)}
+                        />
+                      }
+                    >
+                      {claimsOpen ? (
+                        <Stack vertical maxHeight="8rem" overflowY="auto">
+                          {claims.length ? (
+                            claims.map((claim, index) => (
+                              <Stack.Item
+                                key={`${claim.host_name}-${claim.resource_name}-${index}`}
+                              >
+                                <Box
+                                  color={asBool(claim.hard) ? 'bad' : 'average'}
+                                  fontSize="10px"
+                                >
+                                  {claim.host_name}: {claim.resource_name} —{' '}
+                                  {claim.action_name}
+                                  {asBool(claim.hard)
+                                    ? ' (exclusive)'
+                                    : ' (shared)'}
+                                </Box>
+                              </Stack.Item>
+                            ))
+                          ) : (
+                            <Stack.Item>
+                              <Box color="label" fontSize="10px" italic>
+                                No resources are currently claimed.
+                              </Box>
+                            </Stack.Item>
+                          )}
+                        </Stack>
+                      ) : null}
+                    </Section>
+                  </Stack.Item>
+                </Stack>
                 <Input
                   fluid
                   expensive
@@ -501,9 +741,7 @@ export const SexSession = () => {
                   fluid
                   disabled={!asBool(action.can_perform)}
                   selected={asBool(action.selected)}
-                  onClick={() =>
-                    act('bellyriding_action', { key: action.key })
-                  }
+                  onClick={() => act('bellyriding_action', { key: action.key })}
                 >
                   {action.name}
                 </Button>
@@ -657,10 +895,9 @@ export const SexSession = () => {
           ) : null}
         </Stack>
         <Box color="label" fontSize="10px" mb={1}>
-          Message tokens: {'{name}'}, {'{user}'}, {'{target}'},{' '}
-          {'{user_their}'}, {'{target_their}'}, {'{user_them}'},{' '}
-          {'{target_them}'}, {'{force}'}, {'{speed}'}, {'{user_part}'},{' '}
-          {'{target_part}'}.
+          Message tokens: {'{name}'}, {'{user}'}, {'{target}'}, {'{user_their}'}
+          , {'{target_their}'}, {'{user_them}'}, {'{target_them}'}, {'{force}'},{' '}
+          {'{speed}'}, {'{user_part}'}, {'{target_part}'}.
         </Box>
         <Section title="Basics" fitted mb={1}>
           <LabeledList>
@@ -1198,11 +1435,7 @@ export const SexSession = () => {
               </Button>
             </Stack.Item>
             <Stack.Item>
-              <Button
-                compact
-                icon="times"
-                onClick={() => setEditingNote(null)}
-              >
+              <Button compact icon="times" onClick={() => setEditingNote(null)}>
                 Cancel
               </Button>
             </Stack.Item>
@@ -1229,15 +1462,15 @@ export const SexSession = () => {
             selected={notesTab === 'yours'}
             onClick={() => setNotesTab('yours')}
           >
-            Your Notes (Shared)
+            Your Notes About {data.target_name}
           </Tabs.Tab>
           <Tabs.Tab
             selected={notesTab === 'theirs'}
             onClick={() => setNotesTab('theirs')}
           >
             {asBool(data.is_self)
-              ? 'Your Notes'
-              : `${data.target_name}'s Notes`}
+              ? 'Your Shared Notes'
+              : `${data.target_name}'s Shared Notes`}
           </Tabs.Tab>
         </Tabs>
         {notesTab === 'yours' ? (
@@ -1246,7 +1479,7 @@ export const SexSession = () => {
               icon={noteFormOpen ? 'times' : 'plus'}
               onClick={() => setNoteFormOpen(!noteFormOpen)}
             >
-              {noteFormOpen ? 'Cancel' : 'Add Note About Yourself'}
+              {noteFormOpen ? 'Cancel' : `Add Note About ${data.target_name}`}
             </Button>
             {noteFormOpen ? (
               <Section fitted mt={0.5}>
@@ -1285,7 +1518,7 @@ export const SexSession = () => {
         ) : (
           <Box color="label" textAlign="center" p={2} italic>
             {notesTab === 'yours'
-              ? "You haven't written any notes about yourself yet."
+              ? `You haven't written any notes about ${data.target_name} yet.`
               : 'No shared notes yet.'}
           </Box>
         )}
@@ -1311,7 +1544,7 @@ export const SexSession = () => {
   };
 
   return (
-    <Window title="Sate Desire" width={725} height={470} theme="vanderlin">
+    <Window title="Sate Desire" width={900} height={560} theme="vanderlin">
       <Window.Content>
         <Stack fill vertical>
           <Stack.Item>{renderHeader()}</Stack.Item>
@@ -1370,4 +1603,4 @@ export const SexSession = () => {
   );
 };
 
-export default SexSession;
+export default SexScene;

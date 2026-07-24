@@ -1435,6 +1435,105 @@
 	caster.remove_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT(spell.can_cast_spell(FALSE), "Clearing the knockout should restore spellcasting.")
 
+// --- Mob horny-defeat KO (clientless mobs) ---
 
+/datum/unit_test/mob_horny_defeat_eligibility
+
+/datum/unit_test/mob_horny_defeat_eligibility/Run()
+	var/mob/living/simple_animal/hostile/beast = allocate(/mob/living/simple_animal/hostile)
+
+	TEST_ASSERT(!beast.horny_defeat_is_eligible(), "A clientless mob without the flag must not be horny-defeat eligible.")
+
+	beast.mob_horny_defeat_enabled = TRUE
+	TEST_ASSERT(beast.horny_defeat_is_eligible(), "A clientless mob with the flag must be horny-defeat eligible.")
+
+	beast.ensure_defeat_monitor()
+	TEST_ASSERT_NOTNULL(beast.GetComponent(/datum/component/defeat_monitor), "Enabling a clientless mob must let ensure_defeat_monitor attach the monitor.")
+
+/datum/unit_test/mob_horny_ko_cleanup_deletes_when_alone
+
+/datum/unit_test/mob_horny_ko_cleanup_deletes_when_alone/Run()
+	var/mob/living/simple_animal/hostile/beast = allocate(/mob/living/simple_animal/hostile)
+	beast.mob_horny_defeat_enabled = TRUE
+
+	var/datum/status_effect/mob_horny_knockout/ko = beast.apply_status_effect(/datum/status_effect/mob_horny_knockout)
+	TEST_ASSERT_NOTNULL(ko, "Applying the mob horny knockout must return the status effect instance.")
+	TEST_ASSERT(HAS_TRAIT(beast, TRAIT_IMMOBILIZED), "The mob horny knockout must immobilize the mob.")
+
+	// No client mobs exist in the unit-test world, so the mob is 'alone' and cleanup must delete it.
+	ko.mob_horny_ko_cleanup_check()
+	TEST_ASSERT(QDELETED(beast), "With no players nearby the KO cleanup must delete the downed mob.")
+
+/datum/unit_test/enter_mob_horny_defeat_applies_ko
+
+/datum/unit_test/enter_mob_horny_defeat_applies_ko/Run()
+	var/mob/living/simple_animal/hostile/beast = allocate(/mob/living/simple_animal/hostile)
+	var/mob/living/carbon/human/aggressor = allocate(/mob/living/carbon/human)
+
+	beast.mob_horny_defeat_enabled = TRUE
+
+	TEST_ASSERT(beast.enter_mob_horny_defeat(aggressor), "A flagged clientless mob should enter the mob horny KO.")
+	TEST_ASSERT_NOTNULL(beast.has_status_effect(/datum/status_effect/mob_horny_knockout), "Entering mob horny defeat should apply the mob knockout status.")
+
+	TEST_ASSERT(!beast.enter_mob_horny_defeat(aggressor), "A mob already in horny KO should not re-enter it.")
+
+/datum/unit_test/mob_horny_defeat_ko_after_threshold
+
+/datum/unit_test/mob_horny_defeat_ko_after_threshold/Run()
+	var/mob/living/simple_animal/hostile/beast = allocate(/mob/living/simple_animal/hostile)
+	var/mob/living/carbon/human/aggressor = allocate(/mob/living/carbon/human)
+
+	beast.mob_horny_defeat_enabled = TRUE
+	var/datum/component/defeat_monitor/monitor = beast.AddComponent(/datum/component/defeat_monitor)
+	monitor.horny_defeat_climax_threshold = 2 // pin the roll so the test is deterministic
+
+	// action_receiver = beast (the climaxing victim), action_partner/performer = the external aggressor.
+	SEND_SIGNAL(beast, COMSIG_SEX_CLIMAX, null, beast, aggressor, aggressor)
+	TEST_ASSERT_NULL(beast.has_status_effect(/datum/status_effect/mob_horny_knockout), "One climax below the threshold must not KO the mob.")
+
+	SEND_SIGNAL(beast, COMSIG_SEX_CLIMAX, null, beast, aggressor, aggressor)
+	TEST_ASSERT_NOTNULL(beast.has_status_effect(/datum/status_effect/mob_horny_knockout), "Reaching the threshold must horny-KO the mob.")
+
+/datum/unit_test/mob_horny_defeat_ignores_self_and_missing_instigator
+
+/datum/unit_test/mob_horny_defeat_ignores_self_and_missing_instigator/Run()
+	var/mob/living/simple_animal/hostile/beast = allocate(/mob/living/simple_animal/hostile)
+
+	beast.mob_horny_defeat_enabled = TRUE
+	var/datum/component/defeat_monitor/monitor = beast.AddComponent(/datum/component/defeat_monitor)
+	monitor.horny_defeat_climax_threshold = 1
+
+	SEND_SIGNAL(beast, COMSIG_SEX_CLIMAX, null, beast, null, null)
+	TEST_ASSERT_NULL(beast.has_status_effect(/datum/status_effect/mob_horny_knockout), "A climax with no external instigator must not KO the mob.")
+
+	SEND_SIGNAL(beast, COMSIG_SEX_CLIMAX, null, beast, beast, beast)
+	TEST_ASSERT_NULL(beast.has_status_effect(/datum/status_effect/mob_horny_knockout), "A self-driven climax must not KO the mob.")
+
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_clientless
+
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_clientless/Run()
+	var/mob/living/simple_animal/hostile/beast = allocate(/mob/living/simple_animal/hostile)
+
+	beast.AddComponent(/datum/component/arousal)
+
+	TEST_ASSERT(beast.mob_horny_defeat_enabled, "Adding arousal to a clientless mob must enable mob horny defeat.")
+	TEST_ASSERT_NOTNULL(beast.GetComponent(/datum/component/defeat_monitor), "Adding arousal to a clientless mob must attach the defeat monitor.")
+
+// Focused isolation run for just the mob horny-defeat KO tests. Compile with FOCUS_MOB_HORNY_DEFEAT_TEST
+// defined to run only these. Guarded so it is inert (and safe to leave in) on a normal build.
+#ifdef FOCUS_MOB_HORNY_DEFEAT_TEST
+/datum/unit_test/mob_horny_defeat_eligibility
+	focus = TRUE
+/datum/unit_test/mob_horny_ko_cleanup_deletes_when_alone
+	focus = TRUE
+/datum/unit_test/enter_mob_horny_defeat_applies_ko
+	focus = TRUE
+/datum/unit_test/mob_horny_defeat_ko_after_threshold
+	focus = TRUE
+/datum/unit_test/mob_horny_defeat_ignores_self_and_missing_instigator
+	focus = TRUE
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_clientless
+	focus = TRUE
+#endif
 
 

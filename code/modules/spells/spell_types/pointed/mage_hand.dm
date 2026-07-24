@@ -75,16 +75,16 @@
 		return FALSE
 
 	clear_mage_hand_tethers_for(caster)
-	var/datum/sex_session/session = get_or_create_sex_session(caster, target, FALSE)
-	if(!session)
+	var/datum/sex_scene_controller/scene_controller = caster.open_sex_scene(target, FALSE)
+	if(!scene_controller)
 		return FALSE
 
 	var/datum/sex_remote_context/mage_hand/context = new(caster, target, duration, range)
 	context.requires_range = requires_range
 	context.requires_line_of_sight = requires_line_of_sight
-	session.set_remote_context(context)
+	scene_controller.set_remote_context(context)
 	if(show_ui)
-		session.show_ui()
+		scene_controller.show_ui()
 	return TRUE
 
 /proc/can_start_scrying_mage_hand(mob/living/caster, mob/living/target)

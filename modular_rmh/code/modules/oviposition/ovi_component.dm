@@ -146,7 +146,7 @@
 	if(!carrier || eggs_stored <= 0)
 		return FALSE
 
-	var/list/climax_context = get_climax_context()
+	var/list/climax_context = get_climax_context(action)
 	if(climax_context)
 		var/obj/item/organ/receiver = climax_context["receiver"]
 		var/force = climax_context["force"]
@@ -155,26 +155,18 @@
 
 	return lay_egg(get_turf(carrier))
 
-/datum/component/ovipositor/proc/get_climax_context()
-	if(!carrier)
+/datum/component/ovipositor/proc/get_climax_context(datum/sex_action/action)
+	if(!carrier || !action || QDELETED(action))
 		return null
 
-	var/list/sessions = return_sessions_with_user(carrier)
-	var/datum/sex_session/session = return_highest_priority_action(sessions, carrier)
-	if(!session)
-		return null
-
-	var/datum/sex_action/action = session.get_highest_priority_action_for(carrier)
-	if(!action)
-		return null
 	if(!action_allows_internal_oviposition(action))
 		return null
 
-	var/mob/living/insertor = action.get_storage_insertor(session.user, session.target)
+	var/mob/living/insertor = action.get_storage_insertor(action.action_user, action.action_target)
 	if(insertor != carrier)
 		return null
 
-	var/mob/living/receiver_owner = action.get_storage_receiver(session.user, session.target)
+	var/mob/living/receiver_owner = action.get_storage_receiver(action.action_user, action.action_target)
 	if(!receiver_owner)
 		return null
 	if(!target_allows_mob_erp_action(carrier, receiver_owner, /datum/erp_preference/boolean/allow_mob_oviposition))
@@ -186,7 +178,7 @@
 
 	return list(
 		"receiver" = receiver,
-		"force" = session.get_current_force() >= SEX_FORCE_HIGH,
+		"force" = action.force >= SEX_FORCE_HIGH,
 	)
 
 /datum/component/ovipositor/proc/action_allows_internal_oviposition(datum/sex_action/action)

@@ -38,21 +38,20 @@
 
 /datum/sex_action/frotting/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] frots cocks together with [target]."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] frots cocks together with [target]."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 20, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(user, target, 1, 4, 1, src)
-	sex_session.handle_passive_ejaculation()
+	perform_sex_action(user, target, 1, 4, 1)
+	handle_passive_ejaculation()
 
-	sex_session.perform_sex_action(target, user, 1, 4, 1, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 1, 4, 1)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/frotting/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] lets go of both their cocks."))
 
 /datum/sex_action/frotting/lock_sex_object(mob/living/user, mob/living/target)
-	sex_locks |= new /datum/sex_session_lock(user, ORGAN_SLOT_PENIS)
-	sex_locks |= new /datum/sex_session_lock(target, ORGAN_SLOT_PENIS)
+	add_sex_lock(user, ORGAN_SLOT_PENIS)
+	add_sex_lock(target, ORGAN_SLOT_PENIS)

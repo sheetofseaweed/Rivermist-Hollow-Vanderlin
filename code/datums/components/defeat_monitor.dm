@@ -38,6 +38,10 @@
 	var/mob/living/carbon/carbon_parent = parent
 	if(!istype(carbon_parent))
 		return FALSE
+	// The damage/pain/hazard defeat flow is for players and explicitly opted-in test bodies only. A
+	// clientless horny-KO mob body must never fall into the player defeat flow off raw damage.
+	if(!carbon_parent.client && !carbon_parent.defeat_system_ai_opt_in)
+		return FALSE
 	if(!is_defeat_eligible())
 		reset_shock_defeat_window()
 		return FALSE
@@ -163,48 +167,54 @@
 	return victim.defeat_rescue(holy_one, "holy communion")
 
 /datum/component/defeat_monitor/proc/check_horny_defeat_climax(datum/source, mob/living/action_receiver, mob/living/action_partner, mob/living/action_performer)
-	var/mob/living/carbon/carbon_parent = parent
-	if(!istype(carbon_parent))
+	var/mob/living/living_parent = parent
+	if(!istype(living_parent))
 		return FALSE
-	if(!is_defeat_eligible())
+	if(!living_parent.horny_defeat_is_eligible())
 		reset_horny_defeat_encounter()
 		return FALSE
 	// A lull long enough means the encounter is over: stale climaxes from earlier dalliances
 	// must never stack with a fresh encounter hours later.
 	if(horny_defeat_last_climax_at && world.time - horny_defeat_last_climax_at > DEFEAT_HORNY_ENCOUNTER_TIMEOUT)
 		reset_horny_defeat_encounter()
-	if(carbon_parent.has_status_effect(/datum/status_effect/defeat_knockout))
+	if(living_parent.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
-	if(source != carbon_parent)
+	if(living_parent.has_status_effect(/datum/status_effect/mob_horny_knockout))
 		return FALSE
-	if(action_receiver != carbon_parent)
+	if(source != living_parent)
+		return FALSE
+	if(action_receiver != living_parent)
 		return FALSE
 	// Another mob has to be the one driving the climax - that is the whole anti-self-farm / anti-magic
 	// guard (a solo or self-cast climax has no external instigator). We deliberately do NOT require a
 	// maintained aggressive grab/pull anymore: horny mobs rarely hold their prey the whole encounter,
 	// and a second attacker performing while the first one pulls broke the old `pulledby` check outright.
 	var/mob/living/instigator = action_performer || action_partner
-	if(!instigator || instigator == carbon_parent)
+	if(!instigator || instigator == living_parent)
 		return FALSE
 	// A player instigator only forces a horny defeat while in combat mode - a consensual encounter
 	// (cmode off) never pushes the loss. NPC / AI mobs have no such switch, so they always count.
 	if(!horny_defeat_instigator_counts(!!instigator.client, instigator.cmode))
 		return FALSE
 
-	// Roll this encounter's threshold once, on the first valid hostile climax (10-20 per design).
+	// Clientless mobs take the lighter mob-KO path; players keep the full carbon defeat flow.
+	var/mob_ko_path = !living_parent.client
+	// Roll this encounter's threshold once, on the first valid hostile climax.
 	if(horny_defeat_climax_threshold <= 0)
-		horny_defeat_climax_threshold = rand(10, 20)
+		horny_defeat_climax_threshold = mob_ko_path ? rand(DEFEAT_MOB_HORNY_CLIMAX_MIN, DEFEAT_MOB_HORNY_CLIMAX_MAX) : rand(10, 20)
 		// Lust-fed beings (succubi) are nearly bottomless: heroic to tire out, not immune
-		if(HAS_TRAIT(carbon_parent, TRAIT_LUSTFUL_STAMINA))
+		if(HAS_TRAIT(living_parent, TRAIT_LUSTFUL_STAMINA))
 			horny_defeat_climax_threshold *= SUCCUBUS_HORNY_KO_MULT
 	horny_defeat_climax_count++
 	horny_defeat_last_climax_at = world.time
 	if(horny_defeat_climax_count < horny_defeat_climax_threshold)
-		maybe_warn_horny_defeat(carbon_parent)
+		maybe_warn_horny_defeat(living_parent)
 		return FALSE
 
 	reset_horny_defeat_encounter()
-	return carbon_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
+	if(mob_ko_path)
+		return living_parent.enter_mob_horny_defeat(action_performer)
+	return living_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
 
 /// Ends the current horny-defeat "encounter": count, rolled threshold, warning stage and the
 /// last-climax stamp all reset, so the next encounter starts clean with a fresh 10-20 roll.

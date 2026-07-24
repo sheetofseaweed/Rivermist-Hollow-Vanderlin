@@ -1,11 +1,5 @@
 GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 
-GLOBAL_LIST_EMPTY(sex_sessions)
-GLOBAL_LIST_EMPTY(sex_sessions_by_user)
-GLOBAL_LIST_EMPTY(sex_collectives)
-GLOBAL_VAR_INIT(collective_counter, 1)
-GLOBAL_LIST_EMPTY(locked_sex_objects)
-
 #define SEX_ACTION(sex_action_type) GLOB.sex_actions[sex_action_type]
 
 #define ERP_PREFERENCE_EDIT_GRACE_MINUTES 20
@@ -39,7 +33,7 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define COMSIG_SEX_ORGASM "sex_orgasm"									// manual orgasm
 
 // Knotting Component Signals
-/// Attempts to knot a target. Args: (target, force_level)
+/// Attempts to knot a target. Args: (target, force_level, originating_action)
 #define COMSIG_SEX_TRY_KNOT "sex_try_knot"
 /// Removes an existing knot. Args: (forceful_removal, notify, keep_top_status, keep_btm_status)
 #define COMSIG_SEX_REMOVE_KNOT "sex_remove_knot"
@@ -75,6 +69,28 @@ GLOBAL_LIST_EMPTY(locked_sex_objects)
 #define SEX_CUSTOM_PART_THIGHS 9
 #define SEX_CUSTOM_PART_BODY 10
 #define SEX_CUSTOM_PART_ANY_GENITALS 11
+
+/// Scene-level interaction families used by multi-action pattern matching.
+#define SEX_SCENE_INTERACTION_ORAL "oral"
+#define SEX_SCENE_INTERACTION_PENETRATION "penetration"
+
+/// A participant's direction within one scene-level interaction.
+#define SEX_SCENE_ROLE_GIVER "giver"
+#define SEX_SCENE_ROLE_RECEIVER "receiver"
+
+/// Stable identifiers for recognized multi-action configurations.
+#define SEX_SCENE_PATTERN_AIRTIGHT "airtight"
+#define SEX_SCENE_PATTERN_DOUBLE_PENETRATION "double_penetration"
+#define SEX_SCENE_PATTERN_SPITROAST "spitroast"
+
+/// Hard cap for one shared multi-participant scene.
+#define SEX_SCENE_AI_MAX_PARTICIPANTS 8
+#define SEX_SCENE_MAX_PARTICIPANTS 30
+
+/// Sent to a scene and every involved participant when a multi-action pattern begins. Args: (pattern_match)
+#define COMSIG_SEX_SCENE_PATTERN_STARTED "sex_scene_pattern_started"
+/// Sent to a scene and every involved participant when a multi-action pattern ends. Args: (pattern_match)
+#define COMSIG_SEX_SCENE_PATTERN_ENDED "sex_scene_pattern_ended"
 
 
 #define COMSIG_BODYSTORAGE_TRY_INSERT "hole_try_fit"			// (incoming_item, target_layer, force, override)

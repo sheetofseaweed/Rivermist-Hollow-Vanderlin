@@ -28,17 +28,16 @@
 
 /datum/sex_action/crotch_nuzzle/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] nuzzles [target]'s crotch..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] nuzzles [target]'s crotch..."))
 
-	sex_session.perform_sex_action(target, user, 0.8, 0, 0.5, src)
-	sex_session.handle_passive_ejaculation(target)
-	sex_session.perform_sex_action(user, target, 0.4, 0, 0, src)
+	perform_sex_action(target, user, 0.8, 0, 0.5)
+	handle_passive_ejaculation(target)
+	perform_sex_action(user, target, 0.4, 0, 0)
 
 /datum/sex_action/crotch_nuzzle/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops nuzzling [target]'s crotch..."))
 
 /datum/sex_action/crotch_nuzzle/lock_sex_object(mob/living/user, mob/living/target)
-	sex_locks |= new /datum/sex_session_lock(user, BODY_ZONE_PRECISE_MOUTH)
+	add_sex_lock(user, BODY_ZONE_PRECISE_MOUTH)

@@ -1,3 +1,10 @@
+/// Perception a nearby onlooker needs to spot visible extra genitals on examine.
+#define EXTRA_GENITAL_PERCEPTION_MIN 7
+/// Arcane skill to sense summoned-but-covered extra genitals.
+#define EXTRA_GENITAL_ARCANE_HIDDEN SKILL_RANK_JOURNEYMAN
+/// Arcane skill to sense fully-latent (unsummoned) extra genitals.
+#define EXTRA_GENITAL_ARCANE_LATENT SKILL_RANK_EXPERT
+
 /proc/extra_genitals_visible_on_examine(mob/living/carbon/human/human, list/checked_zones)
 	if(!human)
 		return FALSE
@@ -10,6 +17,29 @@
 			if(zone2covered(checked_zone, clothes.body_parts_covered))
 				return FALSE
 	return TRUE
+
+/// Whether an examiner physically notices the extra genitals: self always, else adjacent + keen perception + uncovered.
+/proc/extra_genitals_noticed_physically(mob/user, mob/living/carbon/human/human, list/checked_zones)
+	if(!user || !human)
+		return FALSE
+	if(user == human)
+		return TRUE
+	if(get_dist(user, human) > 1)
+		return FALSE
+	var/mob/living/living_user = user
+	if(!istype(living_user) || living_user.get_stat_level(STATKEY_PER) < EXTRA_GENITAL_PERCEPTION_MIN)
+		return FALSE
+	return extra_genitals_visible_on_examine(human, checked_zones)
+
+/// Whether an examiner arcanely senses the extra genitals at min_rank: self always, else adjacent + arcane skill.
+/proc/extra_genitals_sensed_arcanely(mob/user, mob/living/carbon/human/human, min_rank)
+	if(!user || !human)
+		return FALSE
+	if(user == human)
+		return TRUE
+	if(get_dist(user, human) > 1)
+		return FALSE
+	return user.get_skill_level(/datum/skill/magic/arcane) >= min_rank
 
 /datum/quirk/peculiarity/extra_genitals_base
 	abstract_type = /datum/quirk/peculiarity/extra_genitals_base
@@ -59,7 +89,7 @@
 	if(!has_active_extra_genitals())
 		return
 	var/mob/living/carbon/human/human_owner = owner
-	if(!extra_genitals_visible_on_examine(human_owner))
+	if(!extra_genitals_noticed_physically(user, human_owner))
 		return
 	LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] something extra dangling between [human_owner.p_their()] legs."))
 
@@ -637,12 +667,12 @@
 	var/has_feminine_features = human_owner.getorganslot(ORGAN_SLOT_BREASTS) || human_owner.getorganslot(ORGAN_SLOT_VAGINA)
 
 	if(human_owner.gender == FEMALE && has_masculine_features)
-		if(extra_genitals_visible_on_examine(human_owner, list(BODY_ZONE_PRECISE_GROIN)))
+		if(extra_genitals_noticed_physically(user, human_owner, list(BODY_ZONE_PRECISE_GROIN)))
 			LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] something extra dangling between [human_owner.p_their()] legs."))
 		return
 
 	if(human_owner.gender == MALE && has_feminine_features)
-		if(extra_genitals_visible_on_examine(human_owner, list(BODY_ZONE_CHEST, BODY_ZONE_PRECISE_GROIN)))
+		if(extra_genitals_noticed_physically(user, human_owner, list(BODY_ZONE_CHEST, BODY_ZONE_PRECISE_GROIN)))
 			LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] a second, womanly set of intimate features."))
 
 
@@ -675,13 +705,14 @@
 		return
 	var/mob/living/carbon/human/human_owner = owner
 	if(has_active_extra_genitals())
-		if(extra_genitals_visible_on_examine(human_owner))
+		if(extra_genitals_noticed_physically(user, human_owner))
 			LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] summoned something extra dangling between [human_owner.p_their()] legs."))
-		else
+		else if(extra_genitals_sensed_arcanely(user, human_owner, EXTRA_GENITAL_ARCANE_HIDDEN))
 			LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] the telltale sign of something extra, though it is hidden beneath [human_owner.p_their()] clothing."))
 		return
 
-	LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] the faint sign of something extra waiting beneath [human_owner.p_their()] skin."))
+	if(extra_genitals_sensed_arcanely(user, human_owner, EXTRA_GENITAL_ARCANE_LATENT))
+		LAZYADDASSOCLIST(examine_contents, EXAMINE_SECT_BODY, span_notice("[human_owner.p_they(TRUE)] [human_owner.p_have()] the faint sign of something extra waiting beneath [human_owner.p_their()] skin."))
 
 /datum/action/cooldown/spell/undirected/summon_extra_genitals
 	name = "Extra Genitals"
@@ -704,3 +735,7 @@
 		return FALSE
 	extra_quirk.open_extra_genital_menu(human_owner)
 	return TRUE
+
+#undef EXTRA_GENITAL_PERCEPTION_MIN
+#undef EXTRA_GENITAL_ARCANE_HIDDEN
+#undef EXTRA_GENITAL_ARCANE_LATENT

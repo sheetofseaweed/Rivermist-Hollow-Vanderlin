@@ -1,15 +1,15 @@
-/datum/sex_session
+/datum/sex_scene_controller
 	var/custom_action_editor_mode = null
 	var/custom_action_editor_key = null
 	var/datum/sex_custom_action_data/custom_action_editor_draft = null
 
-/datum/sex_session/proc/get_saved_custom_action_data()
+/datum/sex_scene_controller/proc/get_saved_custom_action_data()
 	return get_player_custom_sex_actions(user.ckey, get_character_slot(user))
 
-/datum/sex_session/proc/save_saved_custom_action_data(list/custom_actions)
+/datum/sex_scene_controller/proc/save_saved_custom_action_data(list/custom_actions)
 	return save_player_custom_sex_actions(user.ckey, custom_actions, get_character_slot(user))
 
-/datum/sex_session/proc/get_all_menu_actions()
+/datum/sex_scene_controller/proc/get_all_menu_actions()
 	var/list/menu_actions = list()
 	for(var/action_type in GLOB.sex_actions)
 		var/datum/sex_action/action = SEX_ACTION(action_type)
@@ -25,15 +25,15 @@
 
 	return menu_actions
 
-/datum/sex_session/proc/is_custom_action_key(action_key)
+/datum/sex_scene_controller/proc/is_custom_action_key(action_key)
 	return istext(action_key) && findtext(action_key, SEX_CUSTOM_ACTION_PREFIX) == 1
 
-/datum/sex_session/proc/extract_custom_action_id(action_key)
+/datum/sex_scene_controller/proc/extract_custom_action_id(action_key)
 	if(!is_custom_action_key(action_key))
 		return null
 	return copytext("[action_key]", findtext("[action_key]", SEX_CUSTOM_ACTION_PREFIX) + length(SEX_CUSTOM_ACTION_PREFIX))
 
-/datum/sex_session/proc/resolve_custom_action_id(action_id, list/custom_actions = null)
+/datum/sex_scene_controller/proc/resolve_custom_action_id(action_id, list/custom_actions = null)
 	if(!length("[action_id]"))
 		return null
 	if(!islist(custom_actions))
@@ -57,7 +57,7 @@
 
 	return null
 
-/datum/sex_session/proc/get_action_key(action_ref)
+/datum/sex_scene_controller/proc/get_action_key(action_ref)
 	if(istype(action_ref, /datum/sex_action))
 		var/datum/sex_action/action = action_ref
 		return action.get_menu_action_key()
@@ -76,7 +76,7 @@
 		return action_key
 	return null
 
-/datum/sex_session/proc/get_action_template(action_ref)
+/datum/sex_scene_controller/proc/get_action_template(action_ref)
 	if(istype(action_ref, /datum/sex_action))
 		return action_ref
 
@@ -103,13 +103,13 @@
 		return null
 	return SEX_ACTION(resolved_action_type)
 
-/datum/sex_session/proc/instantiate_action(action_ref)
+/datum/sex_scene_controller/proc/instantiate_action(action_ref)
 	var/datum/sex_action/action_template = get_action_template(action_ref)
 	if(!action_template)
 		return null
 	return action_template.build_runtime_instance()
 
-/datum/sex_session/proc/get_custom_action_zone_label(part)
+/datum/sex_scene_controller/proc/get_custom_action_zone_label(part)
 	var/zone_mask = get_custom_sex_part_filter_mask(part)
 	switch(zone_mask)
 		if(SEX_UI_ZONE_MOUTH)
@@ -124,7 +124,7 @@
 			return "Body"
 	return "Misc"
 
-/datum/sex_session/proc/load_custom_action_draft_from_template(template_id)
+/datum/sex_scene_controller/proc/load_custom_action_draft_from_template(template_id)
 	var/datum/sex_custom_action_template/template = GLOB.sex_custom_action_templates[template_id]
 	if(!template)
 		return FALSE
@@ -133,7 +133,7 @@
 	custom_action_editor_draft = template.build_draft()
 	return TRUE
 
-/datum/sex_session/proc/load_custom_action_draft_from_saved(action_id)
+/datum/sex_scene_controller/proc/load_custom_action_draft_from_saved(action_id)
 	var/list/custom_actions = get_saved_custom_action_data()
 	action_id = resolve_custom_action_id(action_id, custom_actions)
 	var/datum/sex_custom_action_data/action_data = custom_actions[action_id]
@@ -144,7 +144,7 @@
 	custom_action_editor_draft = action_data.copy()
 	return TRUE
 
-/datum/sex_session/proc/reset_custom_action_draft()
+/datum/sex_scene_controller/proc/reset_custom_action_draft()
 	if(custom_action_editor_mode == "custom" && custom_action_editor_key)
 		return load_custom_action_draft_from_saved(custom_action_editor_key)
 	if(custom_action_editor_mode == "template" && custom_action_editor_key)
@@ -154,7 +154,7 @@
 	custom_action_editor_key = null
 	return TRUE
 
-/datum/sex_session/proc/save_custom_action_draft()
+/datum/sex_scene_controller/proc/save_custom_action_draft()
 	if(!custom_action_editor_draft)
 		return FALSE
 
@@ -184,7 +184,7 @@
 	to_chat(user, span_notice("[is_new_action ? "Saved" : "Updated"] custom action '[custom_action_editor_draft.name]'."))
 	return TRUE
 
-/datum/sex_session/proc/delete_custom_action(action_id)
+/datum/sex_scene_controller/proc/delete_custom_action(action_id)
 	if(!action_id)
 		return FALSE
 	var/list/custom_actions = get_saved_custom_action_data()
@@ -202,13 +202,13 @@
 	to_chat(user, span_notice("Deleted custom action '[deleted_action?.name || action_id]'."))
 	return TRUE
 
-/datum/sex_session/proc/get_custom_scope_options()
+/datum/sex_scene_controller/proc/get_custom_scope_options()
 	return list(
 		"Partner" = SEX_CUSTOM_SCOPE_PARTNER,
 		"Solo" = SEX_CUSTOM_SCOPE_SELF,
 	)
 
-/datum/sex_session/proc/get_custom_part_options()
+/datum/sex_scene_controller/proc/get_custom_part_options()
 	return list(
 		"Unspecified" = SEX_CUSTOM_PART_NONE,
 		"Mouth" = SEX_CUSTOM_PART_MOUTH,
@@ -224,7 +224,7 @@
 		"Any genitals" = SEX_CUSTOM_PART_ANY_GENITALS,
 	)
 
-/datum/sex_session/proc/get_custom_climax_options()
+/datum/sex_scene_controller/proc/get_custom_climax_options()
 	return list(
 		"Default" = null,
 		"On body" = ORGASM_LOCATION_ONTO,
@@ -233,7 +233,7 @@
 		"On self" = ORGASM_LOCATION_SELF,
 	)
 
-/datum/sex_session/proc/get_custom_actions_ui_data()
+/datum/sex_scene_controller/proc/get_custom_actions_ui_data()
 	var/list/templates_out = list()
 	for(var/template_id in GLOB.sex_custom_action_templates)
 		var/datum/sex_custom_action_template/template = GLOB.sex_custom_action_templates[template_id]
@@ -301,7 +301,7 @@
 		"editor" = editor,
 	)
 
-/datum/sex_session/proc/build_custom_option_pairs(list/options)
+/datum/sex_scene_controller/proc/build_custom_option_pairs(list/options)
 	var/list/out = list()
 	for(var/label in options)
 		out += list(list("name" = label, "value" = options[label]))
@@ -309,7 +309,7 @@
 
 /// Applies one client-supplied editor field. Field ids are whitelisted;
 /// normalize() re-clamps every value afterwards, so raw values are safe to assign.
-/datum/sex_session/proc/set_custom_action_field(field_id, value)
+/datum/sex_scene_controller/proc/set_custom_action_field(field_id, value)
 	if(!custom_action_editor_draft)
 		return FALSE
 	var/static/list/text_field_limits = list(

@@ -26,13 +26,12 @@
 
 /datum/sex_action/rub_body/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rubs [target]'s body..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rubs [target]'s body..."))
 	user.make_sucking_noise()
 
-	sex_session.perform_sex_action(target, user, 0.5, 0, 0, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 0.5, 0, 0)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/rub_body/on_finish(mob/living/user, mob/living/target)
 	. = ..()

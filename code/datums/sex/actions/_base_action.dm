@@ -1,23 +1,28 @@
-/datum/sex_session_lock
+/datum/sex_scene_resource_claim
+	var/datum/sex_action/owner
+	var/datum/sex_scene/scene
 	var/mob/living/locked_host
 	var/locked_organ_slot
 	var/obj/item/locked_item
 	var/hard_lock = TRUE
 
-/datum/sex_session_lock/New(mob/_host, _locked_slot, obj/item/_locked_item, _hard_lock = TRUE)
+/datum/sex_scene_resource_claim/New(datum/sex_action/owner, mob/_host, _locked_slot, obj/item/_locked_item, _hard_lock = TRUE)
 	. = ..()
+	src.owner = owner
+	scene = owner?.scene
 	locked_host = _host
 	locked_organ_slot = _locked_slot
 	locked_item = _locked_item
 	hard_lock = _hard_lock
-	LAZYADD(GLOB.locked_sex_objects, src)
+	scene?.add_resource_claim(src)
 
-/datum/sex_session_lock/Destroy(force, ...)
-	. = ..()
-	LAZYREMOVE(GLOB.locked_sex_objects, src)
+/datum/sex_scene_resource_claim/Destroy(force, ...)
+	scene?.remove_resource_claim(src)
+	owner = null
+	scene = null
 	locked_host = null
 	locked_item = null
-	hard_lock = null
+	return ..()
 
 /datum/storage_tracking_entry
 	var/obj/item/stored_item = null
@@ -47,6 +52,36 @@
 	var/name = "Generic Action"
 	///Description for hover
 	var/description = "Generic desc"
+
+	/// Actor controller carried by a pending proposal before acceptance.
+	var/datum/sex_scene_controller/proposal_controller
+	/// Shared scene which indexes this runtime action.
+	var/datum/sex_scene/scene
+	/// Optional remote interaction context captured by the proposal.
+	var/datum/sex_remote_context/remote_context
+	/// The participant performing this action.
+	var/mob/living/action_user
+	/// The participant this action is being performed on.
+	var/mob/living/action_target
+	/// Runtime speed for this individual action.
+	var/speed = SEX_SPEED_MID
+	/// Runtime force for this individual action.
+	var/force = SEX_FORCE_MID
+	/// Whether this runtime action stops when its user climaxes.
+	var/stop_on_climax = TRUE
+	/// Action-owned control settings copied from the accepted proposal.
+	var/resistance_to_pleasure = RESIST_NONE
+	var/edging_other = FALSE
+	/// Whether this action has just caused its stopping climax.
+	var/just_climaxed = FALSE
+	/// Scene-level interaction family exposed to multi-action pattern matching.
+	var/scene_interaction
+	/// Scene role and occupied body slot for the action user.
+	var/scene_user_role
+	var/scene_user_slot
+	/// Scene role and occupied body slot for the action target.
+	var/scene_target_role
+	var/scene_target_slot
 
 	/// Whether this action can continue indefinitely
 	var/continous = TRUE
@@ -78,12 +113,8 @@
 	var/stored_item_name = null
 	/// Storage tracking for this action
 	var/list/datum/storage_tracking_entry/tracked_storage = list()
-	///this is a list of locks we created to prevent penis portal powers
-	var/list/datum/sex_session_lock/sex_locks = list()
-	///this is the priority of our action for the target so when ejaculate messages are looked at its highest priority
-	var/target_priority = 10
-	///this is the priority of our action for the user
-	var/user_priority = 10
+	/// Scene-local body/item claims owned by this action.
+	var/list/datum/sex_scene_resource_claim/resource_claims = list()
 	/// Whether this action supports knotting on climax
 	var/knot_on_finish = FALSE
 	/// Whether this action can trigger knots
@@ -113,14 +144,24 @@
 	var/sex_volume = 50 //volume for plaps
 
 /datum/sex_action/Destroy()
+	if(action_user)
+		UnregisterSignal(action_user, COMSIG_SEX_CLIMAX)
+	if(scene && !QDELETED(scene))
+		scene.forget_action(src)
+	proposal_controller = null
+	scene = null
+	remote_context = null
+	action_user = null
+	action_target = null
+
 	// Clean up any tracked storage entries
 	for(var/datum/storage_tracking_entry/entry in tracked_storage)
 		qdel(entry)
 	tracked_storage.Cut()
 
-	for(var/datum/sex_session_lock/lock in sex_locks)
-		qdel(lock)
-	sex_locks.Cut()
+	for(var/datum/sex_scene_resource_claim/claim as anything in resource_claims)
+		qdel(claim)
+	resource_claims.Cut()
 
 	return ..()
 
@@ -133,6 +174,429 @@
 /datum/sex_action/proc/build_runtime_instance()
 	return new type
 
+/datum/sex_action/proc/get_scene_interaction()
+	return scene_interaction
+
+/datum/sex_action/proc/get_scene_user_role()
+	return scene_user_role
+
+/datum/sex_action/proc/get_scene_user_slot()
+	return scene_user_slot
+
+/datum/sex_action/proc/get_scene_target_role()
+	return scene_target_role
+
+/datum/sex_action/proc/get_scene_target_slot()
+	return scene_target_slot
+
+/datum/sex_action/proc/build_scene_roles()
+	return build_scene_roles_for(action_user, action_target)
+
+/datum/sex_action/proc/build_scene_roles_for(mob/living/user, mob/living/target)
+	var/list/roles = list()
+	var/interaction = get_scene_interaction()
+	if(!interaction || !user || !target)
+		return roles
+
+	var/user_role = get_scene_user_role()
+	if(user_role)
+		roles += new /datum/sex_scene_role(src, user, target, interaction, user_role, get_scene_user_slot())
+
+	var/target_role = get_scene_target_role()
+	if(target_role)
+		roles += new /datum/sex_scene_role(src, target, user, interaction, target_role, get_scene_target_slot())
+	return roles
+
+/datum/sex_action/proc/refresh_scene_roles()
+	return scene?.refresh_action_roles(src)
+
+/datum/sex_action/proc/prepare_proposal(datum/sex_scene_controller/controller)
+	if(!controller || QDELETED(controller) || !controller.scene || QDELETED(controller.scene))
+		return FALSE
+	if(proposal_controller || scene || action_user || action_target)
+		return FALSE
+
+	proposal_controller = controller
+	action_user = controller.user
+	action_target = controller.target
+	speed = controller.speed
+	force = controller.force
+	stop_on_climax = controller.do_until_finished
+	resistance_to_pleasure = controller.resistance_to_pleasure
+	edging_other = controller.edging_other
+	remote_context = controller.scene.get_remote_context(action_user, action_target, src)
+	return TRUE
+
+/datum/sex_action/proc/bind_runtime(datum/sex_scene_controller/controller)
+	if(!controller || QDELETED(controller) || !controller.scene || QDELETED(controller.scene))
+		return FALSE
+	if(scene)
+		return FALSE
+	if(proposal_controller)
+		if(proposal_controller != controller || action_user != controller.user || action_target != controller.target)
+			return FALSE
+	else if(!prepare_proposal(controller))
+		return FALSE
+
+	proposal_controller = null
+	scene = controller.scene
+
+	if(!scene.add_action(src))
+		scene = null
+		remote_context = null
+		action_user = null
+		action_target = null
+		return FALSE
+
+	RegisterSignal(action_user, COMSIG_SEX_CLIMAX, PROC_REF(on_action_user_climax))
+	return TRUE
+
+/datum/sex_action/proc/unbind_runtime()
+	var/datum/sex_scene/action_scene = scene
+
+	if(action_user)
+		UnregisterSignal(action_user, COMSIG_SEX_CLIMAX)
+	if(action_scene && !QDELETED(action_scene))
+		action_scene.remove_action(src)
+
+	proposal_controller = null
+	scene = null
+	remote_context = null
+	action_user = null
+	action_target = null
+
+/datum/sex_action/proc/is_runtime_active()
+	if(!scene || QDELETED(scene))
+		return FALSE
+	if(!action_user || QDELETED(action_user) || !action_target || QDELETED(action_target))
+		return FALSE
+	return src in scene.active_actions
+
+/datum/sex_action/proc/start_runtime()
+	if(!is_runtime_active())
+		return
+	INVOKE_ASYNC(src, PROC_REF(run_runtime))
+
+/datum/sex_action/proc/run_runtime()
+	var/datum/sex_scene/action_scene = scene
+	if(!is_runtime_active() || !can_run(TRUE))
+		action_scene?.stop_action(src)
+		return
+
+	var/suppress_visible_messages = begin_remote_visible_message_suppression()
+	var/start_result = on_start(action_user, action_target)
+	end_remote_visible_message_suppression(suppress_visible_messages)
+	if(start_result == FALSE || !is_runtime_active())
+		if(!QDELETED(action_scene))
+			action_scene.stop_action(src)
+		return
+
+	var/datum/sex_remote_context/action_remote_context = get_valid_remote_context()
+	if(action_remote_context)
+		action_remote_context.show_action_overlay(src)
+		action_remote_context.show_action_message(src, MAGE_HAND_ACTION_MESSAGE_START)
+
+	while(is_runtime_active())
+		var/stamina_cost = src.stamina_cost * get_stamina_cost_multiplier()
+		if(!action_user.adjust_stamina(-stamina_cost))
+			break
+
+		var/current_do_time = do_time / get_speed_multiplier()
+		var/do_after_flags = IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_SLOWDOWNS | IGNORE_USER_DOING | IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE
+		var/interaction_key = "sex_action_[REF(src)]"
+		if(!(action_target in view(1, action_user)) && !can_remote_interact())
+			action_scene.stop_action(src)
+			return
+		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))
+			break
+
+		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
+			break
+		if(!can_run(TRUE))
+			break
+		if(is_finished(action_user, action_target) || stop_requested)
+			break
+
+		suppress_visible_messages = begin_remote_visible_message_suppression()
+		on_perform(action_user, action_target)
+		end_remote_visible_message_suppression(suppress_visible_messages)
+		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
+			break
+
+		action_remote_context = get_valid_remote_context()
+		if(action_remote_context)
+			action_remote_context.show_action_message(src, MAGE_HAND_ACTION_MESSAGE_PERFORM)
+		if(istype(action_user.loc, /obj/structure/closet))
+			var/obj/structure/closet/sex_shack = action_user.loc
+			sex_shack.Shake(1, 3, 15)
+
+		if(action_user.has_kink(KINK_VISUAL_EFFECTS))
+			show_sex_effects(action_user)
+
+		if(is_finished(action_user, action_target) || !continous)
+			break
+
+	if(!QDELETED(action_scene) && scene == action_scene)
+		action_scene.stop_action(src)
+
+/datum/sex_action/proc/can_run(performing = FALSE)
+	if(!action_user || !action_target || QDELETED(action_user) || QDELETED(action_target))
+		return FALSE
+	if(action_user != action_target)
+		if(!action_user.allows_player_erp_while_disconnected())
+			return FALSE
+		if(!action_target.allows_player_erp_while_disconnected())
+			return FALSE
+	if(action_user.stat != CONSCIOUS || action_target.stat == DEAD)
+		return FALSE
+
+	var/remote_interaction = can_remote_interact()
+	if(!remote_interaction && !action_user.adjacent_or_closet(action_target) && check_distance)
+		return FALSE
+	if(check_incapacitated)
+		var/incapacitated_flags = IGNORE_GRAB
+		if(!requires_free_hands)
+			incapacitated_flags |= IGNORE_RESTRAINTS
+		if(action_user.incapacitated(incapacitated_flags))
+			return FALSE
+	if(requires_free_hands && !action_user.has_free_sex_hands())
+		return FALSE
+	if(!remote_interaction && check_same_tile && !action_user.check_closet(action_target))
+		var/same_tile = (get_turf(action_user) == get_turf(action_target))
+		var/grab_bypass = (aggro_grab_instead_same_tile && action_user.get_effective_grab_state_on(action_target) == GRAB_AGGRESSIVE)
+		if(!same_tile && !grab_bypass)
+			return FALSE
+	if(!remote_interaction && require_grab)
+		var/grabstate = action_user.get_effective_grab_state_on(action_target)
+		if(grabstate == null || grabstate < required_grab_state)
+			return FALSE
+	if(!performing && !can_perform(action_user, action_target))
+		return FALSE
+	return TRUE
+
+/datum/sex_action/proc/begin_remote_visible_message_suppression()
+	if(!get_valid_remote_context())
+		return FALSE
+	action_user?.push_visible_message_suppression()
+	if(action_target && action_target != action_user)
+		action_target.push_visible_message_suppression()
+	return TRUE
+
+/datum/sex_action/proc/end_remote_visible_message_suppression(was_suppressed)
+	if(!was_suppressed)
+		return
+	action_user?.pop_visible_message_suppression()
+	if(action_target && action_target != action_user)
+		action_target.pop_visible_message_suppression()
+
+/datum/sex_action/proc/get_speed_multiplier()
+	switch(speed)
+		if(SEX_SPEED_LOW)
+			return 1
+		if(SEX_SPEED_MID)
+			return 1.5
+		if(SEX_SPEED_HIGH)
+			return 2.25
+		if(SEX_SPEED_EXTREME)
+			return 3
+
+/datum/sex_action/proc/get_stamina_cost_multiplier()
+	switch(force)
+		if(SEX_FORCE_LOW)
+			return 1.0
+		if(SEX_FORCE_MID)
+			return 1.5
+		if(SEX_FORCE_HIGH)
+			return 2.0
+		if(SEX_FORCE_EXTREME)
+			return 2.5
+
+/**
+ * Applies one tick of stimulation using an explicit runtime action context.
+ *
+ * Every mechanical input comes from the accepted runtime action.
+ */
+/proc/apply_sex_action_stimulation(
+	datum/sex_action/action,
+	mob/living/action_user,
+	mob/living/pleasure_receiver,
+	mob/living/partner,
+	arousal_amt,
+	pain_amt,
+	orgasm_prog_amt,
+	action_force,
+	action_speed,
+)
+	if(!action || QDELETED(action) || !action.scene || QDELETED(action.scene) || !action_user || !pleasure_receiver || !partner)
+		return FALSE
+
+	var/list/arousal_data_partner = list()
+	SEND_SIGNAL(partner, COMSIG_SEX_GET_AROUSAL, arousal_data_partner)
+
+	if(HAS_TRAIT(action_user, TRAIT_GOODLOVER) && action_user != pleasure_receiver)
+		arousal_amt *= 1.5
+		orgasm_prog_amt *= 1.5
+		if(prob(10))
+			var/lover_message = pick("This feels so good!","I am in nirvana!","This is too good to be possible!","By the Gods!","I can't stop, too good!~")
+			to_chat(partner, span_love(lover_message))
+
+	if(partner != action_user && action.edging_other)
+		if(arousal_data_partner["arousal"] >= AROUSAL_EDGING_THRESHOLD + 15)
+			var/success_chance = 100
+			if(prob(5))
+				to_chat(action_user, span_love("I try to match my movements so that they don't climax too soon..."))
+			if(action_speed > SEX_SPEED_MID || action_force > SEX_FORCE_MID)
+				success_chance *= 0.5
+			if(partner.has_status_effect(/datum/status_effect/edging_overstimulation))
+				success_chance *= 0.3
+				if(prob(10))
+					to_chat(action_user, span_love("They are just too sensitive for me to control their pleasure..."))
+			if(action_user.get_stat_level(STATKEY_PER) < 7)
+				success_chance *= 0.7
+				if(prob(10))
+					to_chat(action_user, span_love("I can't tell if they are close or not..."))
+			if(prob(success_chance))
+				SEND_SIGNAL(partner, COMSIG_SEX_EDGED_BY_OTHER_STATE, TRUE)
+
+	var/giving = (action_user == pleasure_receiver)
+	var/list/arousal_data_receiver = list()
+	SEND_SIGNAL(pleasure_receiver, COMSIG_SEX_GET_AROUSAL, arousal_data_receiver)
+	var/resistance = arousal_data_receiver["resistance_to_pleasure"]
+
+	var/datum/sex_action_effect_context/effect_context = new(
+		pleasure_receiver,
+		partner,
+		action,
+		pleasure_receiver,
+		partner,
+		giving,
+	)
+	effect_context.action_performer = action_user
+	effect_context.arousal_amt = arousal_amt
+	effect_context.pain_amt = pain_amt
+	effect_context.orgasm_prog_amt = orgasm_prog_amt
+	effect_context.force = action_force
+	effect_context.speed = action_speed
+	effect_context.resistance = resistance
+	var/list/effects = collect_sex_action_effects(effect_context)
+	for(var/datum/sex_action_effect/effect as anything in effects)
+		effect.modify_action(effect_context)
+	action.scene.modify_action_effect(effect_context)
+
+	SEND_SIGNAL(pleasure_receiver, COMSIG_SEX_RECEIVE_ACTION, action, pleasure_receiver, partner, effect_context.arousal_amt, effect_context.pain_amt, effect_context.orgasm_prog_amt, giving, action_force, action_speed, resistance, action_user)
+
+	for(var/datum/sex_action_effect/effect as anything in effects)
+		effect.after_action(effect_context)
+	qdel_sex_action_effects(effects)
+	return TRUE
+
+/datum/sex_action/proc/perform_sex_action(mob/living/pleasure_receiver, mob/living/partner, arousal_amt, pain_amt, orgasm_prog_amt)
+	return apply_sex_action_stimulation(
+		src,
+		action_user,
+		pleasure_receiver,
+		partner,
+		arousal_amt,
+		pain_amt,
+		orgasm_prog_amt,
+		force,
+		speed,
+	)
+
+/datum/sex_action/proc/stop_runtime()
+	scene?.stop_action(src)
+
+/datum/sex_action/proc/on_action_user_climax(mob/source, datum/sex_action/climax_action)
+	SIGNAL_HANDLER
+	if(climax_action != src || !stop_on_climax)
+		return
+	just_climaxed = TRUE
+	stop_requested = TRUE
+
+/datum/sex_action/proc/handle_passive_ejaculation(mob/living/handler)
+	if(!handler)
+		handler = action_user
+	if(!handler || !action_user)
+		return
+
+	var/list/arousal_data = list()
+	SEND_SIGNAL(handler, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/arousal_multiplier = arousal_data["arousal_multiplier"]
+	var/arousal_value = arousal_data["arousal"]
+
+	if(arousal_multiplier <= 1.5 || !action_user.check_handholding())
+		return
+	var/mob/living/partner = handler == action_user ? action_target : action_user
+	if(prob(5))
+		SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, src, handler, partner, 3, 0, 1, FALSE, force, speed, RESIST_NONE, action_user)
+	if(arousal_value < 70)
+		SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.2)
+
+	if(!iscarbon(handler))
+		return
+	var/mob/living/carbon/carbon_handler = handler
+	if(!carbon_handler.handcuffed)
+		return
+	if(prob(8))
+		var/chafe_pain = pick(10, 10, 10, 10, 20, 20, 30)
+		SEND_SIGNAL(handler, COMSIG_SEX_RECEIVE_ACTION, src, handler, partner, 3, chafe_pain, 1, FALSE, force, speed, RESIST_NONE, action_user)
+		handler.visible_message(
+			"<span class='love_mid'>[handler] squirms uncomfortably in [handler.p_their()] restraints.</span>",
+			"<span class='love_extreme'>I feel [carbon_handler.handcuffed] rub uncomfortably against my skin.</span>",
+		)
+	if(arousal_value < ACTIVE_EJAC_THRESHOLD)
+		SEND_SIGNAL(handler, COMSIG_SEX_ADJUST_AROUSAL, 0.25)
+
+/datum/sex_action/proc/perform_deepthroat_oxyloss(mob/living/affected_target, oxyloss_amt)
+	var/oxyloss_multiplier = 0
+	switch(force)
+		if(SEX_FORCE_HIGH)
+			oxyloss_multiplier = 0.5
+		if(SEX_FORCE_EXTREME)
+			oxyloss_multiplier = 1.0
+	oxyloss_amt *= oxyloss_multiplier
+	if(oxyloss_amt <= 0 || affected_target.getOxyLoss() > 30)
+		return
+	affected_target.adjustOxyLoss(oxyloss_amt)
+	if(affected_target.oxyloss >= 25 && prob(33))
+		affected_target.emote(pick(list("gag", "choke", "gasp")), forced = TRUE)
+
+/datum/sex_action/proc/considered_limp(mob/living/limper)
+	if(QDELETED(limper))
+		return TRUE
+	var/list/arousal_data = list()
+	SEND_SIGNAL(limper, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	return arousal_data["arousal"] < VISIBLE_AROUSAL_THRESHOLD
+
+/datum/sex_action/proc/get_generic_force_adjective()
+	switch(force)
+		if(SEX_FORCE_LOW)
+			return pick(list("gently", "carefully", "tenderly", "gingerly", "delicately", "lazily"))
+		if(SEX_FORCE_MID)
+			return pick(list("firmly", "vigorously", "eagerly", "steadily", "intently"))
+		if(SEX_FORCE_HIGH)
+			return pick(list("roughly", "carelessly", "forcefully", "fervently", "fiercely"))
+		if(SEX_FORCE_EXTREME)
+			return pick(list("brutally", "violently", "relentlessly", "savagely", "mercilessly"))
+
+/datum/sex_action/proc/spanify_force(string)
+	switch(force)
+		if(SEX_FORCE_LOW)
+			return "<span class='love_low'>[string]</span>"
+		if(SEX_FORCE_MID)
+			return "<span class='love_mid'>[string]</span>"
+		if(SEX_FORCE_HIGH)
+			return "<span class='love_high'>[string]</span>"
+		if(SEX_FORCE_EXTREME)
+			return "<span class='love_extreme'>[string]</span>"
+
+/datum/sex_action/proc/get_force_sound()
+	switch(force)
+		if(SEX_FORCE_LOW, SEX_FORCE_MID)
+			return pick(SEX_SOUNDS_SLOW)
+		if(SEX_FORCE_HIGH, SEX_FORCE_EXTREME)
+			return pick(SEX_SOUNDS_HARD)
+
 /datum/sex_action/proc/can_perform(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
 	if(requires_hole_storage)
@@ -141,19 +605,32 @@
 	return TRUE
 
 /datum/sex_action/proc/can_mage_hand_reach(mob/living/user, mob/living/target)
-	var/datum/sex_session/session = get_sex_session(user, target)
-	return !!session?.can_remote_interact_with_action(src)
+	return user == action_user && target == action_target && can_remote_interact()
+
+/datum/sex_action/proc/get_valid_remote_context()
+	if(!remote_context || QDELETED(remote_context))
+		remote_context = null
+		return null
+	if(!scene && !proposal_controller?.scene)
+		return null
+	var/datum/sex_scene/context_scene = scene || proposal_controller.scene
+	if(!remote_context.is_valid(context_scene))
+		return null
+	if(!remote_context.allows_action(src))
+		return null
+	return remote_context
+
+/datum/sex_action/proc/can_remote_interact()
+	return !!get_valid_remote_context()
 
 /datum/sex_action/proc/try_knot_on_climax(mob/living/user, mob/living/target)
 	if(!knot_on_finish)
 		return FALSE
 	if(!can_knot)
 		return FALSE
-
-	var/datum/sex_session/session = get_sex_session(user, target)
-	if(!session)
+	if(!scene)
 		return FALSE
-	return SEND_SIGNAL(user, COMSIG_SEX_TRY_KNOT, target, session.force)
+	return SEND_SIGNAL(user, COMSIG_SEX_TRY_KNOT, target, force, src)
 
 /datum/sex_action/proc/check_location_accessible(mob/living/user, mob/living/target, location = BODY_ZONE_CHEST, grabs = TRUE, skipundies = TRUE)
 	var/obj/item/bodypart/bodypart = target.get_bodypart(location)
@@ -212,10 +689,7 @@
 	return null
 
 /datum/sex_action/proc/get_hole_storage_force(mob/living/user, mob/living/target)
-	var/datum/sex_session/session = get_sex_session(user, target)
-	if(!session)
-		return FALSE
-	return session.get_current_force() >= SEX_FORCE_HIGH
+	return force >= SEX_FORCE_HIGH
 
 /datum/sex_action/proc/can_fit_item_in_hole(mob/living/storage_owner, hole_slot, obj/item/item_to_check, force = FALSE)
 	if(!storage_owner || !hole_slot || !item_to_check)
@@ -251,7 +725,7 @@
 		return null
 	return user.getorganslot(ORGAN_SLOT_PENIS)
 
-/datum/sex_action/proc/try_store_in_hole(mob/living/user, mob/living/target, datum/sex_session/session)
+/datum/sex_action/proc/try_store_in_hole(mob/living/user, mob/living/target)
 	if(!requires_hole_storage || !hole_id || !stored_item_type)
 		return TRUE
 
@@ -268,11 +742,7 @@
 	var/obj/item/item_to_store
 
 	var/self = (user == target)
-	if(!session)
-		return FALSE
-	var/force = FALSE
-	if(session.get_current_force() >= SEX_FORCE_HIGH)
-		force = TRUE
+	var/use_force = (force >= SEX_FORCE_HIGH)
 	// Handle penis storage specially - create fake variant
 	if(stored_item_type == /obj/item/organ/genitals/penis)
 		var/obj/item/organ/genitals/penis/user_penis = get_users_penis(user)
@@ -289,29 +759,29 @@
 			item_to_store.name = stored_item_name
 
 	// Try to fit it in the hole
-	var/success = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_TRY_INSERT, item_to_store, STORAGE_LAYER_INNER, force)
+	var/success = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_TRY_INSERT, item_to_store, STORAGE_LAYER_INNER, use_force)
 	switch(success)
 		if(INSERT_FEEDBACK_OK_FORCE)
 			if(prob(15))
-				var/stuffed_res = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, STORAGE_LAYER_INNER, STORAGE_LAYER_DEEP, force)
+				var/stuffed_res = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, STORAGE_LAYER_INNER, STORAGE_LAYER_DEEP, use_force)
 				if(stuffed_res == INSERT_FEEDBACK_OK_FORCE || stuffed_res == INSERT_FEEDBACK_OK)
 					if(self)
-						to_chat(user, session.spanify_force("Something inside my [hole_id] slips deeper!"))
+						to_chat(user, spanify_force("Something inside my [hole_id] slips deeper!"))
 					else
-						user.visible_message(session.spanify_force("Something inside [target]'s [hole_id] slips deeper!"))
+						user.visible_message(spanify_force("Something inside [target]'s [hole_id] slips deeper!"))
 		if(INSERT_FEEDBACK_ALMOST_FULL)
 			if(self)
-				to_chat(user, session.spanify_force("I feel like my [hole_id] can just barely fit [item_to_store.name]..."))
+				to_chat(user, spanify_force("I feel like my [hole_id] can just barely fit [item_to_store.name]..."))
 			else
-				user.visible_message(session.spanify_force("I feel like [target]'s [hole_id] can just barely fit my [item_to_store.name]..."))
+				user.visible_message(spanify_force("I feel like [target]'s [hole_id] can just barely fit my [item_to_store.name]..."))
 		if(INSERT_FEEDBACK_STUFFED)
-			if(force && prob(50))
-				var/stuffed_res = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, STORAGE_LAYER_INNER, STORAGE_LAYER_DEEP, force)
+			if(use_force && prob(50))
+				var/stuffed_res = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, STORAGE_LAYER_INNER, STORAGE_LAYER_DEEP, use_force)
 				if(stuffed_res == INSERT_FEEDBACK_OK_FORCE || stuffed_res == INSERT_FEEDBACK_OK)
 					if(self)
-						to_chat(user, session.spanify_force("Something inside my [hole_id] slips deeper!"))
+						to_chat(user, spanify_force("Something inside my [hole_id] slips deeper!"))
 					else
-						user.visible_message(session.spanify_force("Something inside [target]'s [hole_id] slips deeper!"))
+						user.visible_message(spanify_force("Something inside [target]'s [hole_id] slips deeper!"))
 			else
 				to_chat(user, span_warning("[target]'s [hole_id] can't accommodate my [item_to_store.name]!"))
 				SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_FORCE_REMOVE, item_to_store, STORAGE_LAYER_INNER)
@@ -320,9 +790,9 @@
 
 		if(INSERT_FEEDBACK_TRY_FORCE)
 			if(self)
-				to_chat(user, session.spanify_force("I feel like \the [item_to_store.name] might fit in my [hole_id] if I just use more force."))
+				to_chat(user, spanify_force("I feel like \the [item_to_store.name] might fit in my [hole_id] if I just use more force."))
 			else
-				user.visible_message(session.spanify_force("I feel like my [item_to_store.name] might fit in [target]'s [hole_id] if I just use more force."))
+				user.visible_message(spanify_force("I feel like my [item_to_store.name] might fit in [target]'s [hole_id] if I just use more force."))
 			SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_FORCE_REMOVE, item_to_store, STORAGE_LAYER_INNER)
 			addtimer(CALLBACK(src, PROC_REF(qdel), item_to_store), 2)
 			return FALSE
@@ -402,12 +872,11 @@
 	if(gags_target)
 		target.mouth_blocked = TRUE
 	if(requires_hole_storage && !issimple(target)) //simple mobs dont have anything so skip.
-		var/datum/sex_session/session = get_sex_session(user, target)
 		if(flipped)
-			if(!try_store_in_hole(target, user, session))
+			if(!try_store_in_hole(target, user))
 				return FALSE
 		else
-			if(!try_store_in_hole(user, target, session))
+			if(!try_store_in_hole(user, target))
 				return FALSE
 	lock_sex_object(user, target)
 	sex_volume = initial(sex_volume)
@@ -439,8 +908,8 @@
 	return
 
 /datum/sex_action/proc/is_finished(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
-	if(sex_session.finished_check())
+	if(just_climaxed)
+		just_climaxed = FALSE
 		return TRUE
 	return FALSE
 
@@ -449,7 +918,11 @@
 	return FALSE
 
 /datum/sex_action/proc/add_sex_lock(mob/living/locked_host, locked_organ_slot, obj/item/locked_item, hard_lock = TRUE)
-	sex_locks |= new /datum/sex_session_lock(locked_host, locked_organ_slot, locked_item, hard_lock)
+	if(!scene || QDELETED(scene))
+		return null
+	var/datum/sex_scene_resource_claim/claim = new(src, locked_host, locked_organ_slot, locked_item, hard_lock)
+	resource_claims |= claim
+	return claim
 
 /datum/sex_action/proc/find_available_hand(mob/living/user)
 	if(!user || HAS_TRAIT(user, TRAIT_HANDS_BLOCKED))
@@ -473,9 +946,9 @@
 	return selected_hand
 
 /datum/sex_action/proc/unlock_sex_object(mob/living/user, mob/living/target)
-	for(var/datum/sex_session_lock/lock as anything in sex_locks)
-		qdel(lock)
-	sex_locks.Cut()
+	for(var/datum/sex_scene_resource_claim/claim as anything in resource_claims)
+		qdel(claim)
+	resource_claims.Cut()
 
 /datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE) //must_flip is for handling partner's message
 	return
@@ -487,19 +960,9 @@
 /datum/sex_action/proc/check_sex_lock(mob/locked, organ_slot, obj/item/item, obj/item/storage_item)
 	if(!organ_slot && !item)
 		return FALSE
-
-	for(var/datum/sex_session_lock/lock as anything in GLOB.locked_sex_objects)
-		if(lock.locked_host == locked)
-			if(!lock.hard_lock)
-				continue
-			var/item_lock = ((lock.locked_item == item) && lock.locked_item)
-			var/organ_lock = ((lock.locked_organ_slot == organ_slot) && lock.locked_organ_slot)
-			if(!item_lock && !organ_lock)
-				continue
-			if(organ_lock && storage_item && can_fit_item_in_hole(locked, organ_slot, storage_item))
-				continue
-			return TRUE
-	return FALSE
+	var/mob/living/locked_living = locked
+	var/datum/sex_scene/resource_scene = scene || proposal_controller?.scene
+	return resource_scene?.is_resource_claimed(src, locked_living, organ_slot, item, storage_item) || FALSE
 
 
 /datum/sex_action/proc/do_onomatopoeia(mob/living/user)
@@ -519,10 +982,7 @@
 	if(user && (user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)) //stealth sex les go
 		return FALSE
 	if(world.time >= next_message_time)
-		var/datum/sex_session/sex_session = get_sex_session(user, target)
-		var/speed_time = 40
-		if(sex_session)
-			speed_time = rand(10, 100 - sex_session.get_current_speed() * 10)
+		var/speed_time = rand(10, 100 - speed * 10)
 		next_message_time = world.time + speed_time
 		return TRUE
 	return FALSE

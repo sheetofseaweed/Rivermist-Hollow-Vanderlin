@@ -383,16 +383,17 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 	if(command_key == "touch_phrase")
 		H.visible_message(span_danger("<b>[H] starts masturbating uncontrollably!</b>"))
 		H.emote("moan")
-		H.start_sex_session(H, FALSE)
-		var/current_action = /datum/sex_action/masturbate/anus
+		var/datum/sex_scene_controller/scene_controller = H.open_sex_scene(H, FALSE)
+		if(!scene_controller)
+			return FALSE
+		var/action_type = /datum/sex_action/masturbate/anus
 		if(H.getorganslot(ORGAN_SLOT_VAGINA))
-			current_action = /datum/sex_action/masturbate/vagina
+			action_type = /datum/sex_action/masturbate/vagina
 		else if(H.getorganslot(ORGAN_SLOT_PENIS))
-			current_action = /datum/sex_action/masturbate/penis
-		var/datum/sex_session/session = get_sex_session(H, H)
-		session.try_start_action(current_action)
-		session.set_current_force(SEX_FORCE_HIGH)
-		session.set_current_speed(SEX_SPEED_MAX)
+			action_type = /datum/sex_action/masturbate/penis
+		scene_controller.try_start_action(action_type)
+		scene_controller.set_current_force(SEX_FORCE_HIGH)
+		scene_controller.set_current_speed(SEX_SPEED_MAX)
 		return TRUE
 
 	// Orgasm — forced climax.

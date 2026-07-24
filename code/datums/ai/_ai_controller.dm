@@ -278,6 +278,11 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	var/list/aggro_table = blackboard[BB_MOB_AGGRO_TABLE]
 	if(length(aggro_table))
 		return FALSE
+	// An acquired combat target keeps us awake so we act on it at full planning speed instead of
+	// dozing through a 5s idle plan while something we already spotted stands in front of us.
+	var/atom/current_target = blackboard[BB_BASIC_MOB_CURRENT_TARGET]
+	if(current_target && !QDELETED(current_target))
+		return FALSE
 	for(var/datum/spatial_grid_cell/grid as anything in our_cells.member_cells)
 		if(length(grid.client_contents))
 			return FALSE
@@ -291,9 +296,24 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	else if(ai_status == AI_STATUS_IDLE)
 		set_ai_status(AI_STATUS_ON)
 
-/datum/ai_controller/proc/on_client_enter(datum/source, atom/target)
+/// Stamps the alert grace period and schedules a single idle re-check for when it lapses.
+/// Idle status is otherwise only re-evaluated on movement or client cell events, so an alerted
+/// stationary mob with no nearby clients would stay fully active long after the alert expired.
+/datum/ai_controller/proc/enter_alert_mode(duration = AI_ALERT_ON_CLIENT_TIME)
+	set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + duration)
+	addtimer(CALLBACK(src, PROC_REF(recalculate_idle)), duration + 1, TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_NO_HASH_WAIT|TIMER_DELETE_ME)
+
+/datum/ai_controller/proc/on_client_enter(datum/source, list/entered_clients)
 	SIGNAL_HANDLER
-	set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + AI_ALERT_ON_CLIENT_TIME)
+	// The spatial grid hands us the list of client mobs now in the cell, not a single atom.
+	// Only genuinely-close clients arm the grace period. Distant clients crossing our wide tracking
+	// radius must not keep re-arming it and pinning us awake. We stay awake while any client is in
+	// range regardless (see should_idle); the grace only governs lingering after they leave.
+	if(islist(entered_clients))
+		for(var/mob/entered_client as anything in entered_clients)
+			if(get_dist(pawn, entered_client) <= AI_ALERT_ON_CLIENT_DIST)
+				enter_alert_mode(AI_ALERT_ON_CLIENT_TIME)
+				break
 	reset_ai_status()
 
 /datum/ai_controller/proc/on_client_exit(datum/source, datum/exited)
@@ -304,7 +324,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	SIGNAL_HANDLER
 	if(attacker == pawn || QDELETED(attacker))
 		return
-	set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + AI_ALERT_ON_ATTACK_TIME)
+	enter_alert_mode(AI_ALERT_ON_ATTACK_TIME)
 	if(ai_status == AI_STATUS_IDLE)
 		set_ai_status(AI_STATUS_ON)
 	else

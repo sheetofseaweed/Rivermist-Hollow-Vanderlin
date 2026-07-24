@@ -26,13 +26,12 @@
 
 /datum/sex_action/masturbate/clit_rub/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/action_text = "rubs"
 	var/arousal_amt = 2.2
 	var/pain_amt = 0
 	var/orgasm_amt = 2.1
 
-	switch(sex_session.force)
+	switch(force)
 		if(SEX_FORCE_MID)
 			arousal_amt = 2.8
 			pain_amt = 0.4
@@ -49,11 +48,11 @@
 			orgasm_amt = 1.6
 
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [action_text] [user.p_their()] clit..."))
+		user.visible_message(spanify_force("[user] [action_text] [user.p_their()] clit..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(user, user, arousal_amt, pain_amt, orgasm_amt, src)
-	sex_session.handle_passive_ejaculation()
+	perform_sex_action(user, user, arousal_amt, pain_amt, orgasm_amt)
+	handle_passive_ejaculation()
 
 /datum/sex_action/masturbate/clit_rub/on_finish(mob/living/user, mob/living/target)
 	. = ..()
@@ -92,13 +91,12 @@
 
 /datum/sex_action/masturbate/other/clit_rub/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/action_text = "rubs"
 	var/arousal_amt = 2.2
 	var/pain_amt = 0
 	var/orgasm_amt = 2.1
 
-	switch(sex_session.force)
+	switch(force)
 		if(SEX_FORCE_MID)
 			arousal_amt = 2.8
 			pain_amt = 0.4
@@ -115,11 +113,11 @@
 			orgasm_amt = 1.6
 
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [action_text] [target]'s clit..."))
+		user.visible_message(spanify_force("[user] [action_text] [target]'s clit..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(user, target, arousal_amt, pain_amt, orgasm_amt, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(user, target, arousal_amt, pain_amt, orgasm_amt)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/masturbate/other/clit_rub/on_finish(mob/living/user, mob/living/target)
 	. = ..()

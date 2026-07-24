@@ -545,22 +545,68 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 
 /datum/sex_action/custom/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(session.spanify_force(get_custom_message(message_tick, user, target, "{user} keeps {name} going.")))
+		user.visible_message(spanify_force(get_custom_message(message_tick, user, target, "{user} keeps {name} going.")))
 
 	play_custom_feedback(user, target)
 
 	if(target_arousal || target_pain || target_orgasm)
-		session.perform_sex_action(target, user, target_arousal, target_pain, target_orgasm, src)
-		session.handle_passive_ejaculation(target)
+		perform_sex_action(target, user, target_arousal, target_pain, target_orgasm)
+		handle_passive_ejaculation(target)
 	if(user_arousal || user_pain || user_orgasm)
-		session.perform_sex_action(user, target, user_arousal, user_pain, user_orgasm, src)
-		session.handle_passive_ejaculation(user)
+		perform_sex_action(user, target, user_arousal, user_pain, user_orgasm)
+		handle_passive_ejaculation(user)
 
 /datum/sex_action/custom/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning(get_custom_message(message_finish, user, target, "{user} stops {name}.")))
+
+/datum/sex_action/custom/get_scene_interaction()
+	if(required_user_part == SEX_CUSTOM_PART_MOUTH && (required_target_part in list(SEX_CUSTOM_PART_PENIS, SEX_CUSTOM_PART_VAGINA, SEX_CUSTOM_PART_ANUS, SEX_CUSTOM_PART_ANY_GENITALS)))
+		return SEX_SCENE_INTERACTION_ORAL
+	if(required_target_part == SEX_CUSTOM_PART_MOUTH && (required_user_part in list(SEX_CUSTOM_PART_PENIS, SEX_CUSTOM_PART_VAGINA, SEX_CUSTOM_PART_ANUS, SEX_CUSTOM_PART_ANY_GENITALS)))
+		return SEX_SCENE_INTERACTION_ORAL
+	if(required_user_part == SEX_CUSTOM_PART_PENIS && (required_target_part in list(SEX_CUSTOM_PART_VAGINA, SEX_CUSTOM_PART_ANUS)))
+		return SEX_SCENE_INTERACTION_PENETRATION
+	if(required_target_part == SEX_CUSTOM_PART_PENIS && (required_user_part in list(SEX_CUSTOM_PART_VAGINA, SEX_CUSTOM_PART_ANUS)))
+		return SEX_SCENE_INTERACTION_PENETRATION
+	return ..()
+
+/datum/sex_action/custom/get_scene_user_role()
+	var/interaction = get_scene_interaction()
+	if(interaction == SEX_SCENE_INTERACTION_ORAL)
+		return required_user_part == SEX_CUSTOM_PART_MOUTH ? SEX_SCENE_ROLE_GIVER : SEX_SCENE_ROLE_RECEIVER
+	if(interaction == SEX_SCENE_INTERACTION_PENETRATION)
+		return required_user_part == SEX_CUSTOM_PART_PENIS ? SEX_SCENE_ROLE_GIVER : SEX_SCENE_ROLE_RECEIVER
+	return ..()
+
+/datum/sex_action/custom/get_scene_user_slot()
+	return get_scene_slot_for_custom_part(required_user_part)
+
+/datum/sex_action/custom/get_scene_target_role()
+	var/interaction = get_scene_interaction()
+	if(interaction == SEX_SCENE_INTERACTION_ORAL)
+		return required_target_part == SEX_CUSTOM_PART_MOUTH ? SEX_SCENE_ROLE_GIVER : SEX_SCENE_ROLE_RECEIVER
+	if(interaction == SEX_SCENE_INTERACTION_PENETRATION)
+		return required_target_part == SEX_CUSTOM_PART_PENIS ? SEX_SCENE_ROLE_GIVER : SEX_SCENE_ROLE_RECEIVER
+	return ..()
+
+/datum/sex_action/custom/get_scene_target_slot()
+	return get_scene_slot_for_custom_part(required_target_part)
+
+/datum/sex_action/custom/proc/get_scene_slot_for_custom_part(part)
+	switch(part)
+		if(SEX_CUSTOM_PART_MOUTH)
+			return BODY_ZONE_PRECISE_MOUTH
+		if(SEX_CUSTOM_PART_PENIS)
+			return ORGAN_SLOT_PENIS
+		if(SEX_CUSTOM_PART_VAGINA)
+			return ORGAN_SLOT_VAGINA
+		if(SEX_CUSTOM_PART_ANUS)
+			return ORGAN_SLOT_ANUS
+		if(SEX_CUSTOM_PART_BREASTS)
+			return ORGAN_SLOT_BREASTS
+	return part
 
 /datum/sex_action/custom/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	var/message = must_flip ? message_climax_passive : message_climax_active
@@ -665,7 +711,6 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 	if(isnull(message) || !length("[message]"))
 		return "[user] acts."
 
-	var/datum/sex_session/session = get_sex_session(user, target)
 	var/rendered = html_encode("[message]")
 	rendered = replacetext(rendered, "{name}", html_encode(name))
 	rendered = replacetext(rendered, "{user}", html_encode("[user]"))
@@ -680,14 +725,12 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 	rendered = replacetext(rendered, "{target_theirs}", html_encode(target.p_their()))
 	rendered = replacetext(rendered, "{user_part}", html_encode(lowertext(get_custom_sex_part_label(required_user_part))))
 	rendered = replacetext(rendered, "{target_part}", html_encode(lowertext(get_custom_sex_part_label(required_target_part))))
-	rendered = replacetext(rendered, "{force}", html_encode(get_custom_force_word(session)))
-	rendered = replacetext(rendered, "{speed}", html_encode(get_custom_speed_word(session)))
+	rendered = replacetext(rendered, "{force}", html_encode(get_custom_force_word()))
+	rendered = replacetext(rendered, "{speed}", html_encode(get_custom_speed_word()))
 	return rendered
 
-/datum/sex_action/custom/proc/get_custom_force_word(datum/sex_session/session)
-	if(!session)
-		return "steady"
-	switch(session.force)
+/datum/sex_action/custom/proc/get_custom_force_word()
+	switch(force)
 		if(SEX_FORCE_LOW)
 			return "gentle"
 		if(SEX_FORCE_MID)
@@ -698,10 +741,8 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 			return "brutal"
 	return "steady"
 
-/datum/sex_action/custom/proc/get_custom_speed_word(datum/sex_session/session)
-	if(!session)
-		return "steady"
-	switch(session.speed)
+/datum/sex_action/custom/proc/get_custom_speed_word()
+	switch(speed)
 		if(SEX_SPEED_LOW)
 			return "slow"
 		if(SEX_SPEED_MID)
