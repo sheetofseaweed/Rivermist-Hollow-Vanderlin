@@ -117,7 +117,7 @@
 	. = ..()
 	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
 	C.grant_language(/datum/language/beast)
-	C.faction.Add("wolves")
+	C.faction.Add(FACTION_WOLVES)
 
 /datum/species/werewolf/update_damage_overlays(mob/living/carbon/human/H)
 	H.remove_overlay(DAMAGE_LAYER)

@@ -893,7 +893,7 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	// Admission is committed before announcing it, so a full/broken profile cannot produce a fake
 	// seizure every planning cycle. Nearby allies hear this from the captor's original location.
 	visible_message(
-		span_userdanger("[victim] screams as [src] seizes [victim.p_them()] and hauls [victim.p_them()] into folded space!"),
+		span_userdanger("[victim] screams as [src] seizes [victim.p_them()] and hauls [victim.p_them()] into a lair!"),
 		span_danger("I haul [victim] into the lair..."),
 	)
 	to_chat(victim, span_userdanger("[src] seizes me - I am being dragged off! HELP!"))
@@ -1129,7 +1129,7 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 
 /obj/effect/landmark/distress_spawner/wolfden
 	name = "wolfden distress captive spawner"
-	captive_faction = list("wolves")
+	captive_faction = list(FACTION_WOLVES)
 
 /// Converts a (surrendered) human into a wretched NPC-in-distress: keeps look + worn clothes,
 /// drops everything carried, and sends the player off to spectate.

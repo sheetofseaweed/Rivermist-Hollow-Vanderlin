@@ -4,12 +4,27 @@
 /datum/map_template/pocket/defeat_captivity
 	name = "Defeat Captivity"
 	id = "pocket_defeat_captivity"
-	mappath = "_maps/templates/pockets/intimate_dungeon.dmm"
+	mappath = "_maps/templates/pockets/kidnap_lairs/wolf_lair.dmm"
 	lifecycle_policy = POCKET_LIFECYCLE_KEEP_LOADED
 	idle_timeout = 0
 	persistence_mode = POCKET_PERSISTENCE_NONE
 	instance_type = /datum/pocket_dimension/defeat_captivity
 	exit_structure_type = /obj/structure/pocket_dimension_exit/hole
+
+/datum/map_template/pocket/defeat_captivity/wolf
+	name = "Wolf Defeat Captivity"
+	id = "pocket_defeat_captivity_wolf"
+	mappath = "_maps/templates/pockets/kidnap_lairs/wolf_lair.dmm"
+
+/datum/map_template/pocket/defeat_captivity/bandit
+	name = "Bandit Defeat Captivity"
+	id = "pocket_defeat_captivity_bandit"
+	mappath = "_maps/templates/pockets/kidnap_lairs/bandit_lair.dmm"
+
+/datum/map_template/pocket/defeat_captivity/greenskin
+	name = "Greenskin Defeat Captivity"
+	id = "pocket_defeat_captivity_greenskin"
+	mappath = "_maps/templates/pockets/kidnap_lairs/goblin_lair.dmm"
 
 /// Declarative policy for one family of captivity pockets. Content chooses a subtype; the core owns
 /// keying, admission, access, ejection, and lifecycle without trying to infer a fuzzy "encounter".
@@ -136,14 +151,17 @@
 /datum/defeat_captivity_profile/shared/greenskin
 	stable_key = "greenskin_lair"
 	display_name = "greenskin lair"
+	template_type = /datum/map_template/pocket/defeat_captivity/greenskin
 
 /datum/defeat_captivity_profile/shared/wolfden
 	stable_key = "wolfden_lair"
 	display_name = "wolf den"
+	template_type = /datum/map_template/pocket/defeat_captivity/wolf
 
 /datum/defeat_captivity_profile/shared/bandit
 	stable_key = "bandit_lair"
 	display_name = "bandit lair"
+	template_type = /datum/map_template/pocket/defeat_captivity/bandit
 
 /// One carrier owns one active pocket for its entire lifetime. Empty carrier pockets remain ready for
 /// another swallow; deletion of the carrier tears the pocket down at the carrier's last turf.
@@ -323,7 +341,7 @@
 		return FALSE
 	visible_message(
 		span_userdanger("[src] is dragged in and dumped on the ground, freshly captured!"),
-		span_userdanger("You are dragged into folded space, far from any help..."),
+		span_userdanger("You are dragged into a lair, far from any help..."),
 	)
 	return TRUE
 
@@ -332,7 +350,7 @@
 /mob/living/proc/kidnap_escape_to_wilds(datum/component/kidnap_captivity/captivity)
 	if(!captivity || captivity.parent != src)
 		return FALSE
-	return captivity.release_to_context("You force your way through the folded boundary - free, but far from safety.")
+	return captivity.release_to_context("You force your way out - free, but far from safety.")
 
 /// Captivity state and return context. The component owns its profile datum but only weakly refers to
 /// the instance, captor, and origin; the pocket owns no captive strongly, avoiding component cycles.

@@ -69,11 +69,7 @@
 
 /datum/unit_test/horny_defeat_progress_text_is_exact/Run()
 	var/source_text = "Threshold source: encounter-start stats (CON 14, END 16)."
-	TEST_ASSERT_EQUAL(
-		horny_defeat_progress_text(2, 15, source_text),
-		"Horny defeat progress: 2/15. 13 climaxes remaining. [source_text]",
-		"Private progress should expose the exact count, threshold, remaining climaxes, and cached source.",
-	)
+	TEST_ASSERT_EQUAL( horny_defeat_progress_text(2, 15, source_text), "Horny defeat progress: 2/15. 13 climaxes remaining. [source_text]", "Private progress should expose the exact count, threshold, remaining climaxes, and cached source.")
 	TEST_ASSERT_EQUAL(horny_defeat_progress_text(14, 15, source_text), "Horny defeat progress: 14/15. 1 climax remaining. [source_text]", "Singular remaining progress should read naturally.")
 
 /datum/unit_test/horny_defeat_progress_resets_on_both_recovery_paths

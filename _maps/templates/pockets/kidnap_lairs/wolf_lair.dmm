@@ -1,0 +1,675 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"bx" = (
+/obj/structure/stone_tile/block/burnt{
+	dir = 8
+	},
+/turf/open/floor/sand,
+/area/pocket_dimension)
+"bC" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"cp" = (
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"ct" = (
+/obj/structure/table/wood/treestump,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"cS" = (
+/obj/structure/stone_tile/block/cracked,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"dk" = (
+/obj/structure/bed/shit{
+	name = "makeshift bed"
+	},
+/turf/open/floor/hay,
+/area/pocket_dimension)
+"eh" = (
+/obj/structure/wild_plant/nospread/mushroom/borowiki,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"er" = (
+/obj/item/natural/rock,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"eH" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/effect/decal/cleanable/debris/stone,
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"eS" = (
+/obj/structure/stone_tile{
+	dir = 8
+	},
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"eU" = (
+/obj/structure/stone_tile/block{
+	dir = 4
+	},
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"hd" = (
+/obj/structure/wild_plant/nospread/mushroom/waddle,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"hL" = (
+/obj/structure/stalagmite,
+/obj/structure/flora/new_shroom/redwall{
+	pixel_y = 0;
+	pixel_x = -32
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"hW" = (
+/obj/structure/flora/rock/pile/largejungle,
+/obj/structure/flora/crystal,
+/turf/open/water/clean,
+/area/pocket_dimension)
+"jq" = (
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/obj/effect/landmark/pocket_dimension/exit,
+/turf/open/floor/grass/mixyel,
+/area/pocket_dimension)
+"jA" = (
+/obj/structure/vine{
+	icon_state = "Light2d"
+	},
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"ki" = (
+/obj/structure/flora/hotspring_rocks,
+/obj/structure/flora/hotspring_rocks/small/four{
+	pixel_y = 20;
+	pixel_x = 4;
+	layer = 4.8
+	},
+/obj/effect/wisp/prestidigitation{
+	pixel_x = 3;
+	name = "Will-o'-the-wisp";
+	desc = "A small, fiery ball of light made up of mystical energy.";
+	pixel_y = 15
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"kR" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/structure/giantfur{
+	pixel_x = -1;
+	pixel_y = -13
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"lw" = (
+/obj/structure/stone_tile/cracked{
+	dir = 4
+	},
+/turf/open/floor/sand,
+/area/pocket_dimension)
+"nF" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"nQ" = (
+/mob/living/simple_animal/hostile/werewolf,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"nR" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"rF" = (
+/obj/item/natural/rock,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"sJ" = (
+/turf/open/water/clean,
+/area/pocket_dimension)
+"tw" = (
+/obj/structure/flora/hotspring_rocks/small/three,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"tT" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/grass/mixyel,
+/area/pocket_dimension)
+"tU" = (
+/obj/structure/stone_tile/burnt,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"tX" = (
+/obj/structure/wild_plant/nospread/mushroom/borowiki,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"uc" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/grass/mixyel,
+/area/pocket_dimension)
+"uK" = (
+/obj/item/natural/rock,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"uU" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"va" = (
+/obj/structure/stone_tile/block/burnt{
+	dir = 1
+	},
+/turf/open/floor/sand,
+/area/pocket_dimension)
+"vr" = (
+/obj/structure/dye_bin/luxury,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"vP" = (
+/obj/structure/stalagmite,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"vU" = (
+/obj/structure/flora/crystal,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"wx" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/landmark/distress_spawner/wolfden,
+/turf/open/floor/hay,
+/area/pocket_dimension)
+"xh" = (
+/obj/structure/wild_plant/nospread/mushroom/waddle,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"xP" = (
+/turf/open/floor/grass/mixyel,
+/area/pocket_dimension)
+"yx" = (
+/obj/structure/flora/tinymushrooms,
+/obj/structure/stone_tile/surrounding,
+/turf/open/floor/sand,
+/area/pocket_dimension)
+"zE" = (
+/obj/machinery/light/fueled/hearth,
+/obj/item/reagent_containers/glass/bucket/pot/copper,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Ai" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"AS" = (
+/obj/structure/bed/bear{
+	pixel_x = -5;
+	pixel_y = -10
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"BF" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"CS" = (
+/obj/structure/fluff/walldeco/chains{
+	icon_state = "chains5"
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"CU" = (
+/obj/structure/stalagmite,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Dh" = (
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Du" = (
+/obj/structure/flora/crystal,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"EY" = (
+/obj/effect/decal/cleanable/debris/stone,
+/mob/living/simple_animal/hostile/werewolf,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Fk" = (
+/obj/structure/wild_plant/nospread/mushroom/waddle,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Iv" = (
+/obj/structure/werewolf_lair_trap_maw,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"Iz" = (
+/obj/structure/fluff/walldeco/chains{
+	icon_state = "chains8"
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"IZ" = (
+/obj/structure/flora/hotspring_rocks/small/two,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"Ju" = (
+/obj/effect/decal/cleanable/debris/stone,
+/obj/effect/landmark/pocket_dimension/drop_spot,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"JO" = (
+/obj/structure/flora/crystal,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Ku" = (
+/obj/structure/wild_plant/nospread/mushroom/waddle,
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"KL" = (
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Mb" = (
+/obj/structure/flora/grass,
+/obj/effect/landmark/distress_spawner/wolfden,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"MX" = (
+/obj/structure/stone_tile{
+	dir = 1
+	},
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"OM" = (
+/obj/effect/landmark/distress_spawner/wolfden,
+/turf/open/floor/hay,
+/area/pocket_dimension)
+"Sx" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Tc" = (
+/obj/effect/decal/cleanable/debris/stone,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"UH" = (
+/obj/structure/giantfur/small{
+	pixel_x = -24;
+	pixel_y = 3
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"VV" = (
+/obj/structure/flora/crystal,
+/turf/open/water/clean,
+/area/pocket_dimension)
+"XR" = (
+/obj/structure/flora/hotspring_rocks/small,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"XV" = (
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"Yj" = (
+/turf/open/floor/hay,
+/area/pocket_dimension)
+"YP" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"Zz" = (
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"ZO" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"ZV" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"ZY" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+
+(1,1,1) = {"
+Zz
+Zz
+Zz
+Zz
+Zz
+Zz
+jA
+Zz
+Zz
+Zz
+Zz
+Zz
+Zz
+Zz
+Zz
+Zz
+Zz
+"}
+(2,1,1) = {"
+Zz
+Zz
+Zz
+jA
+jA
+Fk
+hL
+jA
+jA
+VV
+sJ
+Zz
+jA
+jA
+Zz
+Zz
+Zz
+"}
+(3,1,1) = {"
+Zz
+Zz
+ZO
+uU
+Dh
+KL
+rF
+sJ
+sJ
+sJ
+sJ
+sJ
+sJ
+sJ
+Zz
+Zz
+Zz
+"}
+(4,1,1) = {"
+jA
+Du
+bC
+Dh
+KL
+KL
+KL
+Iz
+sJ
+sJ
+sJ
+sJ
+hW
+sJ
+uK
+jA
+Zz
+"}
+(5,1,1) = {"
+jA
+BF
+bC
+dk
+kR
+tX
+KL
+uU
+Dh
+er
+sJ
+sJ
+sJ
+sJ
+hd
+vU
+Zz
+"}
+(6,1,1) = {"
+Zz
+hd
+Dh
+wx
+Tc
+Tc
+Dh
+Dh
+EY
+Dh
+Dh
+zE
+KL
+vP
+uU
+cp
+Zz
+"}
+(7,1,1) = {"
+Zz
+Zz
+Dh
+Dh
+KL
+KL
+Sx
+Sx
+IZ
+ct
+bC
+Dh
+Sx
+Sx
+cp
+cp
+Zz
+"}
+(8,1,1) = {"
+Zz
+Zz
+vr
+Sx
+rF
+Dh
+Sx
+lw
+bx
+eS
+Mb
+bC
+Sx
+eh
+nR
+UH
+Zz
+"}
+(9,1,1) = {"
+Zz
+Zz
+jA
+KL
+KL
+nQ
+cp
+va
+yx
+cS
+ZV
+bC
+nQ
+cp
+CS
+XV
+Zz
+"}
+(10,1,1) = {"
+Zz
+Zz
+jA
+KL
+KL
+Dh
+ZV
+MX
+eU
+tU
+Dh
+Dh
+Dh
+cp
+ZY
+Zz
+Zz
+"}
+(11,1,1) = {"
+Zz
+Zz
+jA
+KL
+ki
+Dh
+bC
+bC
+Dh
+XR
+Dh
+uU
+Dh
+YP
+jA
+Zz
+Zz
+"}
+(12,1,1) = {"
+Zz
+Zz
+nF
+KL
+KL
+KL
+tw
+EY
+Dh
+tX
+KL
+Dh
+nR
+Iv
+jA
+Zz
+Zz
+"}
+(13,1,1) = {"
+jA
+Sx
+CU
+KL
+OM
+AS
+KL
+KL
+KL
+rF
+KL
+Ju
+bC
+Zz
+Zz
+Zz
+Zz
+"}
+(14,1,1) = {"
+jA
+eH
+bC
+Dh
+dk
+Yj
+KL
+KL
+KL
+Tc
+Tc
+KL
+Dh
+cp
+Ku
+Zz
+Zz
+"}
+(15,1,1) = {"
+Zz
+jA
+jA
+vU
+bC
+bC
+Sx
+tX
+JO
+Ai
+nF
+KL
+cp
+cp
+tT
+xP
+Zz
+"}
+(16,1,1) = {"
+Zz
+Zz
+Zz
+Zz
+jA
+xh
+Sx
+Sx
+Sx
+jA
+Zz
+Zz
+ZV
+uc
+xP
+jq
+Zz
+"}
+(17,1,1) = {"
+Zz
+Zz
+Zz
+Zz
+Zz
+jA
+jA
+jA
+Zz
+Zz
+Zz
+Zz
+Zz
+jA
+jA
+Zz
+Zz
+"}
