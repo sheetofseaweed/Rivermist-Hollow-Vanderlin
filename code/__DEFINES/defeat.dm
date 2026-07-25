@@ -44,9 +44,10 @@
 #define KIDNAP_TRAIT "kidnap_captivity"
 /// How long after being kidnapped the knockout wears off, handing the captive their agency back.
 #define KIDNAP_KO_RELEASE (1 MINUTES)
-/// A surfaced rune choice cannot become a permanent softlock if its action/controller disappears.
-/// When this one-shot window closes, captivity uses ordinary bounded recovery with Defeat trauma.
-#define KIDNAP_RUNE_DECISION_FALLBACK (2 MINUTES)
+/// How long a captor must remain beside its prey without interruption before the kidnapping commits.
+#define KIDNAP_HAUL_TIME (3 SECONDS)
+/// A released captive cannot be hauled straight back into another lair before they can get clear.
+#define KIDNAP_RECAPTURE_GRACE (2 MINUTES)
 /// How long a captive has before the surrender option is offered.
 #define KIDNAP_SURRENDER_WINDOW (15 MINUTES)
 /// How many climaxes endured in captivity offer the surrender option early.
@@ -68,6 +69,11 @@
 #define DEFEAT_CAPTIVITY_ACCESS_RELEASED "released_captive"
 #define DEFEAT_CAPTIVITY_ACCESS_CAPTOR "captor"
 #define DEFEAT_CAPTIVITY_ACCESS_SEALED "sealed"
+/// Explicit choices shown when a captive's knockout-release timer completes.
+#define KIDNAP_CHOICE_CALL_RUNE "Call the Rune"
+#define KIDNAP_CHOICE_REJECT_RUNE "Reject Rune and Wake"
+#define KIDNAP_CHOICE_RETURN_LOBBY "Abandon Character and Return to Lobby"
+#define KIDNAP_CHOICE_WAIT "Wait in the Lair"
 /// Namespaced instance keys keep captivity pockets separate from every other pocket-dimension user.
 #define DEFEAT_CAPTIVITY_INSTANCE_PREFIX "defeat_captivity"
 

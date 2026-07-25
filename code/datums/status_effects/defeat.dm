@@ -143,6 +143,8 @@
 	REMOVE_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
+	var/datum/component/kidnap_captivity/captivity = owner.GetComponent(/datum/component/kidnap_captivity)
+	captivity?.on_knockout_removed()
 	return ..()
 
 /datum/status_effect/defeat_knockout/remove_effect_on_heal(datum/source, heal_flags)

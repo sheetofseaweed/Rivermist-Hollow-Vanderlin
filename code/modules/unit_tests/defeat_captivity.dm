@@ -34,12 +34,13 @@
 	var/datum/component/kidnap_captivity/second_captivity = second.GetComponent(/datum/component/kidnap_captivity)
 	var/datum/pocket_dimension/defeat_captivity/shared_instance = first_captivity.resolve_instance()
 	TEST_ASSERT_EQUAL(second_captivity.resolve_instance(), shared_instance, "Shared profiles should reuse one stable-key instance.")
-	TEST_ASSERT(!shared_instance.can_exit_mob(first, null, FALSE), "An unreleased captive should not use the pocket exit.")
-	first_captivity.released = TRUE
-	TEST_ASSERT(shared_instance.can_exit_mob(first, null, FALSE), "A released shared-lair captive should be allowed to use the exit.")
+	TEST_ASSERT(shared_instance.can_exit_mob(first, null, FALSE), "The shared-lair exit should not duplicate KO interaction blocking with component state.")
+	first.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(first_captivity.released, "Removing KO outside the captivity timer should reconcile the component to released.")
 	TEST_ASSERT(shared_instance.exit_mob(first), "The shared-lair exit should route through contextual release.")
 	TEST_ASSERT_NULL(first.GetComponent(/datum/component/kidnap_captivity), "Contextual exit should remove captivity state.")
 	TEST_ASSERT_EQUAL(get_turf(first), first_origin, "A shared lair without a configured exterior should return to the saved capture turf first.")
+	TEST_ASSERT(first.kidnap_protected_until > world.time, "Leaving captivity should grant a short recapture grace period.")
 	SSpocket_dimensions.delete_instance(shared_instance)
 
 /datum/unit_test/defeat_captivity_capacity/Run()
@@ -163,41 +164,26 @@
 	TEST_ASSERT_NULL(calling_victim.GetComponent(/datum/component/kidnap_captivity), "Call-rune preparation should clear captivity state before relocation.")
 	TEST_ASSERT_NULL(SSpocket_dimensions.get_instance(calling_instance_key), "Call-rune preparation should not leave an empty shared pocket registered.")
 
-	var/mob/living/carbon/human/fallback_victim = allocate(/mob/living/carbon/human, origin)
-	fallback_victim.defeat_system_ai_opt_in = TRUE
-	TEST_ASSERT(fallback_victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "The lost-rune fallback victim should enter Defeat with aftermath context.")
-	TEST_ASSERT(fallback_victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The lost-rune fallback victim should enter captivity.")
-	var/datum/component/kidnap_captivity/fallback_captivity = fallback_victim.GetComponent(/datum/component/kidnap_captivity)
-	var/datum/defeat_captivity_profile/per_captive/unit_test/fallback_profile = fallback_captivity.profile
-	fallback_profile.unit_test_wilds = test_wilds
-	fallback_captivity.released = TRUE
-	TEST_ASSERT(!(locate(/datum/action/innate/resurrection_rune_call) in fallback_victim.actions), "The fallback case should have no surviving rune call action.")
-	TEST_ASSERT(fallback_captivity.resolve_rune_choice_fallback(), "The component-owned last resort should resolve a lost rune choice without polling.")
-	TEST_ASSERT_NULL(fallback_victim.GetComponent(/datum/component/kidnap_captivity), "The lost-rune fallback should clear captivity.")
-	TEST_ASSERT(!fallback_victim.has_status_effect(/datum/status_effect/defeat_knockout), "The lost-rune fallback should wake the victim through bounded recovery.")
-	TEST_ASSERT(fallback_victim.has_any_defeat_trauma(), "The lost-rune fallback should apply ordinary Defeat trauma.")
+/datum/unit_test/defeat_kidnap_reservation_and_grace/Run()
+	var/mob/living/carbon/human/first_captor = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/second_captor = allocate(/mob/living/carbon/human, get_step(run_loc_floor_bottom_left, NORTH))
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, get_step(run_loc_floor_bottom_left, EAST))
 
-/datum/unit_test/defeat_captivity_rune_queue_cancels_fallback/Run()
-	var/turf/origin = run_loc_floor_bottom_left
-	var/obj/structure/resurrection_rune/test_rune = allocate(/obj/structure/resurrection_rune, origin)
-	var/datum/resurrection_rune_controller/controller = test_rune.resrunecontroler
-	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, origin)
-	victim.defeat_system_ai_opt_in = TRUE
-	victim.defeat_mode = DEFEAT_MODE_KO_RUNE
-	victim.mind = allocate(/datum/mind, "captivity-rune-queue-test")
-	victim.mind.current = victim
-	controller.linked_users += victim
-	TEST_ASSERT(victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "The queued-rune victim should enter Defeat.")
-	TEST_ASSERT(victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The queued-rune victim should enter captivity.")
-	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
-	captivity.released = TRUE
-	captivity.rune_fallback_timer = addtimer(CALLBACK(captivity, TYPE_PROC_REF(/datum/component/kidnap_captivity, resolve_rune_choice_fallback)), 1 MINUTES, TIMER_STOPPABLE)
+	TEST_ASSERT(victim.try_reserve_kidnap(first_captor), "The first captor should reserve an unclaimed victim.")
+	TEST_ASSERT(!victim.try_reserve_kidnap(second_captor), "A second captor must not reserve a victim whose hauling attempt is pending.")
+	TEST_ASSERT_EQUAL(victim.get_kidnap_reserver(), first_captor, "The reservation should retain only the first captor.")
+	TEST_ASSERT(victim.clear_kidnap_reservation(first_captor), "The owning captor should be able to release its reservation.")
+	TEST_ASSERT_NULL(victim.get_kidnap_reserver(), "Releasing a reservation should make the victim claimable again.")
 
-	TEST_ASSERT(controller.trigger_defeat_rune_return(victim), "Calling the rune should queue the captive for revival.")
-	TEST_ASSERT_NULL(captivity.rune_fallback_timer, "A successfully queued rune return must cancel the automatic rejection fallback immediately.")
-
-	victim.mind.current = null
-	victim.mind = null
+	first_captor.kidnap_captivity_profile = /datum/defeat_captivity_profile/shared/unit_test
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	victim.last_defeat_snapshot = new /datum/defeat_snapshot
+	victim.last_defeat_snapshot.reason = DEFEAT_REASON_HORNY
+	victim.recent_damage_source_attacker_weakref = WEAKREF(first_captor)
+	victim.grant_kidnap_release_grace()
+	TEST_ASSERT(!first_captor.is_kidnap_candidate(victim), "Recapture grace should reject an otherwise valid kidnapping candidate.")
+	victim.kidnap_protected_until = world.time
+	TEST_ASSERT(first_captor.is_kidnap_candidate(victim), "The victim should become claimable again when recapture grace expires.")
 
 #ifdef FOCUS_DEFEAT_CAPTIVITY_TEST
 TEST_FOCUS(/datum/unit_test/defeat_captivity_shared_reuse_and_exit)
@@ -206,5 +192,5 @@ TEST_FOCUS(/datum/unit_test/defeat_captivity_carrier_keys_and_owner_teardown)
 TEST_FOCUS(/datum/unit_test/defeat_captivity_per_captive_and_delete_paths)
 TEST_FOCUS(/datum/unit_test/defeat_captivity_wilds_first_and_forced_move_cleanup)
 TEST_FOCUS(/datum/unit_test/defeat_captivity_rune_cleanup_and_rejection_aftermath)
-TEST_FOCUS(/datum/unit_test/defeat_captivity_rune_queue_cancels_fallback)
+TEST_FOCUS(/datum/unit_test/defeat_kidnap_reservation_and_grace)
 #endif

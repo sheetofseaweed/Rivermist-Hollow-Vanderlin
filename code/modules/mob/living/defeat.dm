@@ -817,6 +817,17 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		ADD_TRAIT(owner, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
 		to_chat(owner, span_notice("You steel yourself and rebuff the lair - its denizens will leave you be."))
 
+/datum/action/innate/defeat_captivity_choices
+	name = "Captivity Choices"
+	desc = "Review your available ways forward: rune rescue, waking without it, waiting, or permanently abandoning this character."
+
+/datum/action/innate/defeat_captivity_choices/Activate()
+	if(!isliving(owner))
+		return
+	var/mob/living/victim = owner
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	captivity?.offer_release_choice()
+
 // --- Captor side: faction mobs dragging defeated prey to their lair ---
 
 /// Which lair this mob hauls defeated prey to. Null = this mob cannot kidnap.
@@ -826,16 +837,47 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	var/kidnap_captivity_profile
 	/// Admission failures are event-local and rare; a per-captor timestamp avoids any global polling.
 	var/tmp/kidnap_retry_after = 0
+	/// Weak reservation held while one captor performs its interruptible hauling action.
+	var/tmp/datum/weakref/kidnap_reservation
+	/// Successful release grants a short window in which no captor may immediately haul us away again.
+	var/tmp/kidnap_protected_until = 0
+
+/mob/living/proc/get_kidnap_reserver()
+	var/mob/living/captor = kidnap_reservation?.resolve()
+	if(istype(captor) && !QDELETED(captor))
+		return captor
+	kidnap_reservation = null
+	return null
+
+/mob/living/proc/try_reserve_kidnap(mob/living/captor)
+	if(!istype(captor) || QDELETED(captor) || get_kidnap_reserver())
+		return FALSE
+	kidnap_reservation = WEAKREF(captor)
+	return TRUE
+
+/mob/living/proc/clear_kidnap_reservation(mob/living/captor)
+	if(get_kidnap_reserver() != captor)
+		return FALSE
+	kidnap_reservation = null
+	return TRUE
+
+/mob/living/proc/grant_kidnap_release_grace()
+	kidnap_protected_until = max(kidnap_protected_until, world.time + KIDNAP_RECAPTURE_GRACE)
 
 /// Can this mob drag the given freshly-defeated victim back to its lair right now?
 /// Everything that makes a downed victim claimable EXCEPT proximity/outnumbering, so the AI can spot
 /// a candidate across the room and path toward it. can_kidnap_defeated_prey adds the here-and-now gates.
-/mob/living/proc/is_kidnap_candidate(mob/living/victim)
+/mob/living/proc/is_kidnap_candidate(mob/living/victim, allow_own_reservation = FALSE)
 	if(!kidnap_lair_tag && !kidnap_captivity_profile)
 		return FALSE
 	if(world.time < kidnap_retry_after)
 		return FALSE
 	if(!istype(victim) || victim == src)
+		return FALSE
+	if(world.time < victim.kidnap_protected_until)
+		return FALSE
+	var/mob/living/reserving_captor = victim.get_kidnap_reserver()
+	if(reserving_captor && (!allow_own_reservation || reserving_captor != src))
 		return FALSE
 	if(!victim.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
@@ -850,8 +892,8 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		return FALSE
 	return TRUE
 
-/mob/living/proc/can_kidnap_defeated_prey(mob/living/victim)
-	if(!is_kidnap_candidate(victim))
+/mob/living/proc/can_kidnap_defeated_prey(mob/living/victim, allow_own_reservation = FALSE)
+	if(!is_kidnap_candidate(victim, allow_own_reservation))
 		return FALSE
 	if(!Adjacent(victim))
 		return FALSE
@@ -880,15 +922,53 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 			rescuers++
 	return rescuers > allies
 
-/// Hauls a defeated victim off to this mob's lair. Instant by design - a brief channel is unreliable
-/// for NPCs (their own AI movement cancels do_after), and an instant grab reads cleanly as "seized".
+/// Revalidated by do_after throughout the hauling window. Recent damage means a companion landed a
+/// meaningful interruption; adjacency, KO, reservation, and outnumbering are checked continuously too.
+/mob/living/proc/can_continue_kidnap(mob/living/victim, started_at)
+	if(recent_damage_source_time >= started_at)
+		return FALSE
+	return can_kidnap_defeated_prey(victim, allow_own_reservation = TRUE)
+
+/// Hauls a defeated victim off to this mob's lair after a short, visible, interruptible struggle.
 /mob/living/proc/try_kidnap_defeated_prey(mob/living/victim)
 	if(!can_kidnap_defeated_prey(victim))
 		return FALSE
+	if(!victim.try_reserve_kidnap(src))
+		return FALSE
+
+	var/started_at = world.time
+	ai_controller?.PauseAi(KIDNAP_HAUL_TIME)
+	visible_message(
+		span_userdanger("[src] grabs [victim] and starts hauling [victim.p_them()] away!"),
+		span_danger("I seize [victim] and start hauling [victim.p_them()] away..."),
+	)
+	to_chat(victim, span_userdanger("[src] has seized me and is trying to drag me away! My companions have only moments to intervene!"))
+	victim.emote("scream")
+
+	var/haul_completed = do_after(
+		src,
+		KIDNAP_HAUL_TIME,
+		victim,
+		extra_checks = CALLBACK(src, PROC_REF(can_continue_kidnap), victim, started_at),
+		interaction_key = "defeat_kidnap",
+	)
+	if(QDELETED(victim))
+		return FALSE
+	if(!haul_completed || !can_continue_kidnap(victim, started_at))
+		victim.clear_kidnap_reservation(src)
+		visible_message(
+			span_warning("[src]'s attempt to haul [victim] away is interrupted!"),
+			span_warning("My attempt to haul [victim] away is interrupted!"),
+		)
+		to_chat(victim, span_notice("The attempt to drag me away is broken!"))
+		return FALSE
+
 	var/profile_spec = kidnap_captivity_profile || get_defeat_captivity_profile_for_lair(kidnap_lair_tag)
 	if(!victim.kidnap_to_pocket(profile_spec, src, faction, kidnap_lair_tag))
+		victim.clear_kidnap_reservation(src)
 		kidnap_retry_after = world.time + KIDNAP_RETRY_COOLDOWN
 		return FALSE
+	victim.clear_kidnap_reservation(src)
 	kidnap_retry_after = 0
 	// Admission is committed before announcing it, so a full/broken profile cannot produce a fake
 	// seizure every planning cycle. Nearby allies hear this from the captor's original location.
@@ -896,8 +976,6 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		span_userdanger("[victim] screams as [src] seizes [victim.p_them()] and hauls [victim.p_them()] into a lair!"),
 		span_danger("I haul [victim] into the lair..."),
 	)
-	to_chat(victim, span_userdanger("[src] seizes me - I am being dragged off! HELP!"))
-	victim.emote("scream")
 	return TRUE
 
 // --- AI wiring ---------------------------------------------------------------------------------
@@ -1133,13 +1211,29 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 
 /// Converts a (surrendered) human into a wretched NPC-in-distress: keeps look + worn clothes,
 /// drops everything carried, and sends the player off to spectate.
+/mob/living/carbon/proc/prepare_abandon_character()
+	var/datum/job/assigned_job = SSjob.GetJob(job)
+	if(assigned_job?.parent_job)
+		assigned_job.parent_job.adjust_current_positions(-1)
+		assigned_job.adjust_current_positions(-1)
+	else
+		assigned_job?.adjust_current_positions(-1)
+
+	for(var/obj/structure/resurrection_rune/rune as anything in GLOB.global_resurrunes)
+		var/datum/resurrection_rune_controller/rune_controller = rune.resrunecontroler
+		if(rune_controller && src in rune_controller.linked_users)
+			rune_controller.remove_user(src)
+	GLOB.rune_roundstart_mobs -= src
+	GLOB.chosen_names -= real_name
+
 /mob/living/carbon/human/proc/become_npc_in_distress(decays = TRUE, list/captor_faction = null)
 	npc_in_distress_drop_carried()
 	if(captor_faction)
 		faction = captor_faction.Copy() // share the captors' faction so they won't attack the new captive
 	visible_message(span_warning("[src]'s eyes go vacant - just another wretch lost to the dark."))
-	ghostize(FALSE)
+	var/mob/dead/observer/ghost = ghostize(FALSE)
 	AddComponent(/datum/component/npc_in_distress, decays)
+	return ghost
 
 /// Drops held items and carried containers (back/belt/pouch); leaves worn clothing on.
 /mob/living/carbon/human/proc/npc_in_distress_drop_carried()

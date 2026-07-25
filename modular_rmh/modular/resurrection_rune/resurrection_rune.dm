@@ -159,9 +159,10 @@
 	var/mob/living/carbon/carbon_owner = owner
 	if(rune_controller.can_offer_defeat_rune_return(carbon_owner))
 		var/datum/component/kidnap_captivity/captivity = carbon_owner.GetComponent(/datum/component/kidnap_captivity)
-		var/list/choices = list("Call the Rune", "Wait")
 		if(captivity)
-			choices.Insert(2, "Reject Rune and Wake")
+			captivity.offer_release_choice(rune_controller)
+			return
+		var/list/choices = list(KIDNAP_CHOICE_CALL_RUNE, KIDNAP_CHOICE_WAIT)
 		// Spell out the price before they spend a charge - the return is powerful but far from free.
 		var/confirm = tgui_alert(carbon_owner, "Calling the rune will haul you to safety and mend your wounds - but it is not free:\n\n\
 			- You are torn from where you fell and wake beside the rune, far away (a compass points back to where you were taken).\n\
@@ -170,10 +171,7 @@
 			- The rune takes its due: a tithe of coin and a tax of your blood, both growing heavier as your charges run low.\n\
 			- This spends one of your limited rune charges. They return slowly over time; spend your last and no rune will answer until they recharge.",
 			"Answer the rune's call?", choices)
-		if(confirm == "Reject Rune and Wake")
-			rune_controller.reject_defeat_rune_return(carbon_owner)
-			return
-		if(confirm != "Call the Rune")
+		if(confirm != KIDNAP_CHOICE_CALL_RUNE)
 			return
 		rune_controller.trigger_defeat_rune_return(carbon_owner)
 		return
@@ -934,8 +932,6 @@
 		to_chat(user, span_userdanger("That was your final rune charge. The next time you fall, no rune will answer until your charges return - sit tight and stay safe."))
 
 	queue_revival(user, voluntary = TRUE, allow_outlaw_redirect = FALSE, rune_charge_result = rune_charge_result)
-	var/datum/component/kidnap_captivity/captivity = user.GetComponent(/datum/component/kidnap_captivity)
-	captivity?.cancel_rune_choice_fallback()
 	return TRUE
 
 /datum/resurrection_rune_controller/proc/reject_defeat_rune_return(mob/living/carbon/user)

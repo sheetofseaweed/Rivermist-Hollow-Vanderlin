@@ -86,7 +86,9 @@
 	switch(access_rule)
 		if(DEFEAT_CAPTIVITY_ACCESS_RELEASED)
 			if(captivity)
-				return user == captivity.parent && captivity.released
+				// KO already prevents use_exit() interaction. Do not layer a component-state gate
+				// over it: external recovery must never leave an awake captive trapped by stale state.
+				return user == captivity.parent
 			// Uncaptured rescuers and native inhabitants may leave a shared lair normally.
 			return TRUE
 		if(DEFEAT_CAPTIVITY_ACCESS_CAPTOR)
@@ -367,11 +369,12 @@
 	var/admitted = FALSE
 	var/ending = FALSE
 	var/datum/action/innate/defeat_refuse_advances/refuse_action
+	var/datum/action/innate/defeat_captivity_choices/choices_action
 	var/surrender_available = FALSE
 	var/captivity_climaxes = 0
 	var/ko_release_timer
 	var/surrender_timer
-	var/rune_fallback_timer
+	var/choice_prompt_open = FALSE
 
 /datum/component/kidnap_captivity/Initialize(profile_spec, datum/pocket_dimension/defeat_captivity/instance, mob/living/captor, list/captor_faction = null, stable_key = null)
 	if(!isliving(parent))
@@ -415,10 +418,8 @@
 /datum/component/kidnap_captivity/UnregisterFromParent()
 	deltimer(ko_release_timer)
 	deltimer(surrender_timer)
-	deltimer(rune_fallback_timer)
 	ko_release_timer = null
 	surrender_timer = null
-	rune_fallback_timer = null
 	UnregisterSignal(parent, list(COMSIG_SEX_CLIMAX, COMSIG_MOVABLE_MOVED, COMSIG_PARENT_QDELETING))
 	var/mob/living/victim = parent
 	if(victim)
@@ -426,6 +427,9 @@
 	if(refuse_action)
 		refuse_action.Remove(victim)
 		QDEL_NULL(refuse_action)
+	if(choices_action)
+		choices_action.Remove(victim)
+		QDEL_NULL(choices_action)
 	var/datum/pocket_dimension/defeat_captivity/instance = resolve_instance()
 	instance?.unregister_captive(src, profile?.delete_when_empty)
 	instance_ref = null
@@ -466,6 +470,10 @@
 	if(!instance.send_movable_inside(victim, forced_drop_turf = null))
 		return FALSE
 	admitted = TRUE
+	to_chat(victim, span_userdanger("<b>YOU HAVE BEEN KIDNAPPED.</b><br>\
+		Defeat will hold you helpless for about one minute, but you can still speak, emote, and call for help.<br>\
+		When that hold loosens, a linked rune may offer to pull you to safety at the cost of a charge, coin, blood, and lasting weariness. You may instead reject it and wake with Defeat trauma, wait in the lair, or permanently abandon this character and return to the lobby.<br>\
+		Once awake, you can use the lair exit yourself. If captivity continues, Surrender to Captivity becomes available after fifteen minutes or four climaxes."))
 	return TRUE
 
 /datum/component/kidnap_captivity/proc/on_captive_moved(datum/source, atom/old_loc, direction, forced)
@@ -476,6 +484,8 @@
 	if(instance?.contains_turf(get_turf(parent)))
 		return
 	ending = TRUE
+	var/mob/living/victim = parent
+	victim?.grant_kidnap_release_grace()
 	qdel(src)
 
 /datum/component/kidnap_captivity/proc/on_captive_qdeleting(datum/source)
@@ -494,6 +504,7 @@
 	if(!victim || QDELETED(victim) || !destination)
 		return FALSE
 	ending = TRUE
+	victim.grant_kidnap_release_grace()
 	victim.forceMove(destination)
 	qdel(src)
 	if(message)
@@ -508,6 +519,7 @@
 	if(!victim || QDELETED(victim) || !destination)
 		return FALSE
 	ending = TRUE
+	victim.grant_kidnap_release_grace()
 	victim.forceMove(destination)
 	qdel(src)
 	if(message)
@@ -519,20 +531,11 @@
 /datum/component/kidnap_captivity/proc/prepare_rune_return()
 	var/turf/origin = get_saved_origin()
 	if(!ending)
-		deltimer(rune_fallback_timer)
-		rune_fallback_timer = null
 		ending = TRUE
+		var/mob/living/victim = parent
+		victim?.grant_kidnap_release_grace()
 		qdel(src)
 	return origin
-
-/// A successfully queued rune return owns the captive now. Cancel the unattended-choice fallback
-/// immediately so it cannot reject and wake them during the rune's delayed completion callback.
-/datum/component/kidnap_captivity/proc/cancel_rune_choice_fallback()
-	if(!rune_fallback_timer)
-		return FALSE
-	deltimer(rune_fallback_timer)
-	rune_fallback_timer = null
-	return TRUE
 
 /// Explicitly refusing a surfaced rune ejects first, clears all captivity state, then uses the common
 /// bounded environmental recovery profile. That profile applies ordinary Defeat trauma.
@@ -543,9 +546,8 @@
 	var/turf/destination = get_contextual_destination()
 	if(!victim || QDELETED(victim) || !destination)
 		return FALSE
-	deltimer(rune_fallback_timer)
-	rune_fallback_timer = null
 	ending = TRUE
+	victim.grant_kidnap_release_grace()
 	victim.forceMove(destination)
 	qdel(src)
 	if(!victim.perform_defeat_rescue(null, "rune rejection", /datum/defeat_recovery_profile/environmental))
@@ -559,26 +561,108 @@
 		return
 	released = TRUE
 	if(victim.defeat_mode == DEFEAT_MODE_KO_RUNE && victim.kidnap_surface_rune_return())
-		rune_fallback_timer = addtimer(CALLBACK(src, PROC_REF(resolve_rune_choice_fallback)), KIDNAP_RUNE_DECISION_FALLBACK, TIMER_STOPPABLE)
-		to_chat(victim, span_blue("Your captors' hold is all that keeps you. Call the rune, or reject it and wake with the consequences of defeat."))
+		grant_captivity_choices(victim)
+		to_chat(victim, span_blue("Your captors' hold is all that keeps you. Choose whether to call the rune, reject it, remain, or abandon this character."))
+		INVOKE_ASYNC(src, PROC_REF(offer_release_choice))
 		return
 	if(!victim.perform_defeat_rescue(null, "captivity release", /datum/defeat_recovery_profile/environmental, src))
 		released = FALSE
 		return
 	grant_refuse_advances(victim)
+	grant_captivity_choices(victim)
 	to_chat(victim, span_warning("The grip of defeat loosens - you can move, fight, and seek the profile's way out."))
+	INVOKE_ASYNC(src, PROC_REF(offer_release_choice))
 
-/// One-shot universal last resort for a vanished rune controller/action or an unattended choice.
-/// It is component-owned and stoppable; every normal release path cancels it in teardown.
-/datum/component/kidnap_captivity/proc/resolve_rune_choice_fallback()
-	rune_fallback_timer = null
-	if(ending || !released)
+/// Reconciles external/admin recovery with captivity. Shared exits are permissive as a second line of
+/// defense, but this keeps actions, timers, and the released state internally consistent too.
+/datum/component/kidnap_captivity/proc/on_knockout_removed()
+	if(ending || !admitted)
 		return FALSE
+	var/was_released = released
+	released = TRUE
+	deltimer(ko_release_timer)
+	ko_release_timer = null
 	var/mob/living/victim = parent
-	if(!victim || QDELETED(victim) || !victim.has_status_effect(/datum/status_effect/defeat_knockout))
+	if(!victim || QDELETED(victim))
 		return FALSE
-	to_chat(victim, span_warning("The rune's answer fades. Rather than remain trapped in defeat, you wrench yourself awake without it."))
-	return reject_rune_and_wake()
+	grant_refuse_advances(victim)
+	grant_captivity_choices(victim)
+	if(!was_released)
+		to_chat(victim, span_warning("The grip of defeat is gone. You can move again and use the lair exit whenever you choose."))
+	return TRUE
+
+/datum/component/kidnap_captivity/proc/grant_captivity_choices(mob/living/victim)
+	if(choices_action || !victim)
+		return
+	choices_action = new(victim)
+	choices_action.Grant(victim)
+
+/datum/component/kidnap_captivity/proc/offer_release_choice(datum/resurrection_rune_controller/rune_controller)
+	if(choice_prompt_open || ending || !released)
+		return FALSE
+	var/mob/living/carbon/human/victim = parent
+	if(!ishuman(victim) || QDELETED(victim) || !victim.client)
+		return FALSE
+	if(!rune_controller)
+		rune_controller = get_resurrection_rune_controller_for_user(victim)
+
+	var/list/choices = list()
+	if(rune_controller?.can_offer_defeat_rune_return(victim))
+		choices += KIDNAP_CHOICE_CALL_RUNE
+	if(victim.has_status_effect(/datum/status_effect/defeat_knockout))
+		choices += KIDNAP_CHOICE_REJECT_RUNE
+	choices += KIDNAP_CHOICE_RETURN_LOBBY
+	choices += KIDNAP_CHOICE_WAIT
+
+	choice_prompt_open = TRUE
+	var/choice = tgui_alert(
+		victim,
+		"Your forced wait is over. Calling the rune pulls you to safety and heals you, but spends a limited charge and exacts coin, blood, clothing, mana, and lasting weariness. Rejecting it wakes and ejects you with ordinary Defeat trauma. Waiting leaves you here with these choices still available. Abandoning the character is permanent.",
+		"Captivity",
+		choices,
+	)
+	if(QDELETED(src))
+		return FALSE
+	choice_prompt_open = FALSE
+	if(ending || !released || parent != victim || QDELETED(victim))
+		return FALSE
+
+	switch(choice)
+		if(KIDNAP_CHOICE_CALL_RUNE)
+			rune_controller = get_resurrection_rune_controller_for_user(victim)
+			return rune_controller?.trigger_defeat_rune_return(victim)
+		if(KIDNAP_CHOICE_REJECT_RUNE)
+			if(!victim.has_status_effect(/datum/status_effect/defeat_knockout))
+				to_chat(victim, span_notice("You are already awake. The lair exit is available whenever you are ready."))
+				return FALSE
+			var/rejected = reject_rune_and_wake()
+			if(rejected)
+				rune_controller?.clear_linked_user_rescue_state(victim)
+			return rejected
+		if(KIDNAP_CHOICE_RETURN_LOBBY)
+			return abandon_character()
+	return choice == KIDNAP_CHOICE_WAIT
+
+/datum/component/kidnap_captivity/proc/abandon_character()
+	if(ending)
+		return FALSE
+	var/mob/living/carbon/human/victim = parent
+	if(!ishuman(victim) || QDELETED(victim) || !victim.client)
+		return FALSE
+	if(tgui_alert(victim, "Permanently abandon this character to captivity and return to the lobby? This cannot be undone.", "Abandon Character", list("Abandon Character", "Keep Playing")) != "Abandon Character")
+		return FALSE
+	if(QDELETED(src) || ending || parent != victim || QDELETED(victim) || !victim.client)
+		return FALSE
+
+	ending = TRUE
+	var/list/final_captor_faction = captor_faction?.Copy()
+	qdel(src)
+	victim.prepare_abandon_character()
+	var/mob/dead/observer/ghost = victim.become_npc_in_distress(decays = TRUE, captor_faction = final_captor_faction)
+	if(!ghost || QDELETED(ghost))
+		return FALSE
+	ghost.returntolobby()
+	return TRUE
 
 /datum/component/kidnap_captivity/proc/grant_refuse_advances(mob/living/victim)
 	if(refuse_action || !victim)
