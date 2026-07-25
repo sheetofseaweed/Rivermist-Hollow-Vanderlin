@@ -118,6 +118,9 @@
 	remove_movespeed_modifier(MOVESPEED_ID_BULKY_DRAGGING)
 
 /mob/living/can_zFall(turf/T, levels)
+	// Carried by something airborne: we go where it goes instead of dropping out of its arms.
+	if(buckled?.movement_type & FLYING)
+		return FALSE
 	return ..()
 
 /mob/living/canZMove(dir, turf/target, swimming = FALSE)
