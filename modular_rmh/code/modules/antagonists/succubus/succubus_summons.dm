@@ -7,6 +7,8 @@
 	var/tmp/list/datum/mind/summoned_imp_minds = list()
 	/// Prevents repeated casts while the ghost poll is sleeping.
 	var/tmp/succubus_imp_offer_pending = FALSE
+	/// Living NPC hounds sustained by this succubus.
+	var/tmp/list/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/summoned_lusthounds = list()
 
 /datum/antagonist/succubus/proc/count_summoned_imps()
 	for(var/datum/mind/imp_mind as anything in summoned_imp_minds.Copy())
@@ -14,6 +16,12 @@
 		if(!imp_datum || imp_datum.mistress_mind != owner)
 			summoned_imp_minds -= imp_mind
 	return length(summoned_imp_minds)
+
+/datum/antagonist/succubus/proc/count_summoned_lusthounds()
+	for(var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/hound as anything in summoned_lusthounds.Copy())
+		if(QDELETED(hound) || hound.mistress_mind_ref?.resolve() != owner)
+			summoned_lusthounds -= hound
+	return length(summoned_lusthounds)
 
 // --- Secondary antagonist role -------------------------------------------------------------------
 
@@ -100,6 +108,101 @@
 /mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus/Destroy()
 	mind?.remove_antag_datum(/datum/antagonist/succubus_imp)
 	return ..()
+
+// --- Lustbound hound -----------------------------------------------------------------------------
+
+/datum/pet_command/succubus_lusthound_ravage
+	command_name = "Ravage"
+	command_desc = "Command the hound to sexually pursue a preference-compatible target."
+	radial_icon_state = "breed"
+	requires_pointing = TRUE
+	speech_commands = list("ravage", "mount", "consummate")
+	command_feedback = "snarls eagerly"
+	pointed_reaction = "with hungry intent"
+
+/datum/pet_command/succubus_lusthound_ravage/set_command_active(mob/living/parent, mob/living/commander, radial_command = FALSE)
+	. = ..()
+	parent.ai_controller?.clear_blackboard_key(BB_BASIC_MOB_CURRENT_HORNY_TARGET)
+
+/datum/pet_command/succubus_lusthound_ravage/set_command_target(mob/living/parent, atom/target)
+	if(!isliving(target) || target == parent)
+		parent.visible_message(span_notice("[parent] turns away from [target]."))
+		return FALSE
+
+	var/datum/ai_controller/controller = parent.ai_controller
+	var/datum/targetting_datum/targetting_datum = controller?.blackboard[BB_TARGETTING_DATUM]
+	if(!targetting_datum?.can_horny(parent, target))
+		parent.visible_message(span_notice("[parent] sniffs at [target], then refuses the order."))
+		return FALSE
+
+	controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET)
+	controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET_HIDING_LOCATION)
+	controller.clear_blackboard_key(BB_HORNY_PORTAL_LIGHT)
+	controller.clear_blackboard_key(BB_HORNY_SEEK_COOLDOWN)
+	controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_HORNY_TARGET, target)
+	controller.recalculate_idle()
+	return TRUE
+
+/datum/pet_command/succubus_lusthound_ravage/execute_action(datum/ai_controller/controller)
+	if(!controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET])
+		return SUBTREE_RETURN_FINISH_PLANNING
+	controller.clear_blackboard_key(BB_ACTIVE_PET_COMMAND)
+
+/datum/pet_command/succubus_lusthound_ravage/retrieve_command_text(atom/living_pet, atom/target)
+	return isnull(target) ? null : "directs [living_pet]'s lust toward [target]!"
+
+/datum/ai_controller/summon/succubus_lusthound
+	horny_pref_family_flag = HORNY_MOB_TYPE_BEASTS
+	planning_subtrees = list(
+		/datum/ai_planning_subtree/pet_planning,
+		/datum/ai_planning_subtree/horny,
+		/datum/ai_planning_subtree/simple_find_priority,
+		/datum/ai_planning_subtree/basic_melee_attack_subtree,
+	)
+
+/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound
+	name = "lustbound hound"
+	desc = "A wolf-shaped infernal appetite, bound to obey its summoner."
+	color = "#B84D9B"
+	ai_controller = /datum/ai_controller/summon/succubus_lusthound
+	var/tmp/datum/weakref/mistress_mind_ref
+
+/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/Initialize()
+	. = ..()
+	var/static/list/lusthound_commands = list(
+		/datum/pet_command/idle,
+		/datum/pet_command/free,
+		/datum/pet_command/good_boy,
+		/datum/pet_command/follow,
+		/datum/pet_command/attack,
+		/datum/pet_command/fetch,
+		/datum/pet_command/protect_owner,
+		/datum/pet_command/rescue_owner,
+		/datum/pet_command/aggressive,
+		/datum/pet_command/calm,
+		/datum/pet_command/succubus_lusthound_ravage,
+	)
+	var/datum/component/obeys_commands/default_commands = GetComponent(/datum/component/obeys_commands)
+	qdel(default_commands)
+	AddComponent(/datum/component/obeys_commands, lusthound_commands)
+	gender = MALE
+	QDEL_IN(src, SUCCUBUS_SUMMON_LUSTHOUND_DURATION)
+
+/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/Destroy()
+	var/datum/mind/mistress_mind = mistress_mind_ref?.resolve()
+	var/datum/antagonist/succubus/mistress_datum = mistress_mind?.has_antag_datum(/datum/antagonist/succubus)
+	mistress_datum?.summoned_lusthounds -= src
+	mistress_mind_ref = null
+	return ..()
+
+/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/proc/bind_to(datum/antagonist/succubus/mistress_datum)
+	var/mob/living/mistress = mistress_datum?.owner?.current
+	if(!istype(mistress) || !ai_controller)
+		return FALSE
+	mistress_mind_ref = WEAKREF(mistress_datum.owner)
+	mistress_datum.summoned_lusthounds += src
+	befriend(mistress)
+	return TRUE
 
 // --- Summon spell ---------------------------------------------------------------------------------
 
@@ -213,3 +316,48 @@
 	)
 	log_game("[key_name(new_imp)] became a whispering imp summoned by [key_name(caster)].")
 	message_admins("[key_name_admin(new_imp)] became a whispering imp summoned by [key_name_admin(caster)].")
+
+/datum/action/cooldown/spell/undirected/succubus_summon_lusthound
+	name = "Call Lustbound Hound"
+	desc = "Give temporary form to an infernal hound that obeys ordinary pet commands and preference-gated Ravage orders."
+	has_visual_effects = FALSE
+	antimagic_flags = NONE
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+	associated_skill = null
+	charge_required = FALSE
+	cooldown_time = SUCCUBUS_SUMMON_LUSTHOUND_COOLDOWN
+
+/datum/action/cooldown/spell/undirected/succubus_summon_lusthound/before_cast(mob/living/cast_on)
+	. = ..()
+	if(. & SPELL_CANCEL_CAST)
+		return
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 3)
+		return . | SPELL_CANCEL_CAST
+	if(succubus_antag.count_summoned_lusthounds() >= SUCCUBUS_SUMMON_LUSTHOUND_CAP)
+		to_chat(owner, span_warning("I can bind only one lustbound hound at a time."))
+		return . | SPELL_CANCEL_CAST
+	if(succubus_antag.essence < SUCCUBUS_COST_SUMMON_LUSTHOUND)
+		to_chat(owner, span_warning("I lack the essence to give a lustbound hound form."))
+		return . | SPELL_CANCEL_CAST
+	if(!succubus_antag.get_imp_spawn_turf())
+		to_chat(owner, span_warning("I need clear ground beside me for the hound to manifest."))
+		return . | SPELL_CANCEL_CAST
+
+/datum/action/cooldown/spell/undirected/succubus_summon_lusthound/cast(mob/living/cast_on)
+	. = ..()
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	var/turf/spawn_turf = succubus_antag?.get_imp_spawn_turf()
+	if(!succubus_antag || !spawn_turf)
+		return
+
+	var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/new_hound = new(spawn_turf)
+	if(!new_hound.bind_to(succubus_antag))
+		qdel(new_hound)
+		return
+
+	succubus_antag.adjust_essence(-SUCCUBUS_COST_SUMMON_LUSTHOUND)
+	cast_on.visible_message(
+		span_warning("Rose-coloured smoke pours across the ground beside [cast_on], shaping itself into [new_hound]!"),
+		span_love("I give shape to a loyal appetite from the lower planes."),
+	)

@@ -4081,6 +4081,7 @@
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_enthrall.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_event.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_summons.dm"
+#include "modular_rmh\code\modules\antagonists\succubus\succubus_traps.dm"
 #include "modular_rmh\code\modules\antagonists\succubus\succubus_true_form.dm"
 #include "modular_rmh\code\modules\antagonists\werewolf\werewolf_contract_ledger.dm"
 #include "modular_rmh\code\modules\antagonists\werewolf\werewolf_contract_tracking.dm"

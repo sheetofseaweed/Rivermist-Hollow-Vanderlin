@@ -42,6 +42,10 @@
 			imp_datum.mistress_mind = null
 	summoned_imp_minds = null
 	succubus_imp_offer_pending = FALSE
+	QDEL_LIST(summoned_lusthounds)
+	summoned_lusthounds = null
+	QDEL_LIST(infernal_snares)
+	infernal_snares = null
 	QDEL_NULL(base_form)
 	QDEL_LIST_ASSOC_VAL(stolen_forms)
 	partner_harvests = null

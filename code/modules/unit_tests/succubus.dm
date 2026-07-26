@@ -32,11 +32,22 @@
 	focus = TRUE
 /datum/unit_test/succubus_imp_controller_stays_inert
 	focus = TRUE
+/datum/unit_test/succubus_lusthound_lifecycle
+	focus = TRUE
+/datum/unit_test/succubus_lusthound_command_gates
+	focus = TRUE
+/datum/unit_test/succubus_infernal_snare_lifecycle
+	focus = TRUE
+/datum/unit_test/succubus_infernal_snare_placement_gates
+	focus = TRUE
 /datum/unit_test/succubus_harem_team
 	focus = TRUE
 /datum/unit_test/succubus_true_form_gates
 	focus = TRUE
 #endif
+
+/datum/targetting_datum/basic/succubus_lusthound_unit_test/can_use_horny_ai_target(mob/living/living_mob, mob/living/carbon/human/human_target)
+	return TRUE
 
 /datum/unit_test/succubus_novelty_decay/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
@@ -289,6 +300,8 @@
 	var/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/doubles = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE)
 	TEST_ASSERT_NOTNULL(doubles, "tier 2 must grant Beguiling Doubles")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "tier 2 must not grant Call Whispering Imp")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), "tier 2 must not grant Call Lustbound Hound")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), "tier 2 must not grant Lay Infernal Snare")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing the same tier must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), doubles, "refreshing tier 2 must not replace Beguiling Doubles")
 
@@ -296,13 +309,21 @@
 	antag.refresh_succubus_contract_progression()
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_TIER_3, "two full contracts must grant the tier 3 cap")
 	var/datum/action/cooldown/spell/undirected/succubus_summon_imp/summon_imp = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE)
+	var/datum/action/cooldown/spell/undirected/succubus_summon_lusthound/summon_lusthound = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE)
+	var/datum/action/cooldown/spell/succubus_infernal_snare/infernal_snare = succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE)
 	TEST_ASSERT_NOTNULL(summon_imp, "tier 3 must grant Call Whispering Imp")
+	TEST_ASSERT_NOTNULL(summon_lusthound, "tier 3 must grant Call Lustbound Hound")
+	TEST_ASSERT_NOTNULL(infernal_snare, "tier 3 must grant Lay Infernal Snare")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing tier 3 must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), summon_imp, "refreshing tier 3 must not replace Call Whispering Imp")
+	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), summon_lusthound, "refreshing tier 3 must not replace Call Lustbound Hound")
+	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), infernal_snare, "refreshing tier 3 must not replace Lay Infernal Snare")
 
 	antag.contracts_completed_full = 1
 	antag.refresh_succubus_contract_progression()
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "dropping below tier 3 must remove Call Whispering Imp")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), "dropping below tier 3 must remove Call Lustbound Hound")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), "dropping below tier 3 must remove Lay Infernal Snare")
 
 	antag.contracts_completed_full = 3
 	antag.refresh_succubus_contract_progression()
@@ -364,6 +385,176 @@
 
 	controller.set_ai_status(AI_STATUS_ON)
 	TEST_ASSERT_EQUAL(controller.ai_status, AI_STATUS_OFF, "other AI wake-up paths must not activate a whispering imp")
+
+/datum/unit_test/succubus_lusthound_lifecycle/Run()
+	var/datum/antagonist/succubus/mistress_datum = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/mistress = allocate(/mob/living/carbon/human)
+	mistress.mind_initialize()
+	mistress_datum.owner = mistress.mind
+	mistress_datum.contracts_completed_full = 2
+	mistress_datum.essence = SUCCUBUS_COST_SUMMON_LUSTHOUND * 2
+	LAZYADD(mistress.mind.antag_datums, mistress_datum)
+
+	var/datum/action/cooldown/spell/undirected/succubus_summon_lusthound/summon_spell = allocate(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
+	summon_spell.Grant(mistress)
+	TEST_ASSERT(!(summon_spell.before_cast(mistress) & SPELL_CANCEL_CAST), "tier 3 with essence and clear adjacent ground must pass the hound summon gate")
+	summon_spell.cast(mistress)
+
+	TEST_ASSERT_EQUAL(mistress_datum.count_summoned_lusthounds(), 1, "a successful cast must consume the lustbound hound cap")
+	TEST_ASSERT_EQUAL(mistress_datum.essence, SUCCUBUS_COST_SUMMON_LUSTHOUND, "a successful cast must charge the hound's essence cost")
+	var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/first_hound = mistress_datum.summoned_lusthounds[1]
+	TEST_ASSERT_NOTNULL(first_hound, "a successful cast must create a tracked lustbound hound")
+	TEST_ASSERT(istype(first_hound.ai_controller, /datum/ai_controller/summon/succubus_lusthound), "the hound must receive its command-driven horny controller")
+	TEST_ASSERT(locate(/datum/ai_planning_subtree/horny) in first_hound.ai_controller.planning_subtrees, "the hound controller must retain the existing horny behavior")
+	TEST_ASSERT(!(locate(/datum/ai_planning_subtree/simple_find_horny) in first_hound.ai_controller.planning_subtrees), "the hound must not autonomously search for horny targets")
+	var/datum/component/obeys_commands/commands = first_hound.GetComponent(/datum/component/obeys_commands)
+	TEST_ASSERT_NOTNULL(commands, "the hound must use the existing pet command component")
+	TEST_ASSERT_NOTNULL(commands.available_commands["Ravage"], "the hound must expose the preference-gated Ravage order")
+	TEST_ASSERT(summon_spell.before_cast(mistress) & SPELL_CANCEL_CAST, "the active cap must reject a second lustbound hound")
+
+	qdel(first_hound)
+	TEST_ASSERT_EQUAL(mistress_datum.count_summoned_lusthounds(), 0, "destroying the hound must immediately release its cap entry")
+	summon_spell.cast(mistress)
+	var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/second_hound = mistress_datum.summoned_lusthounds[1]
+	TEST_ASSERT_NOTNULL(second_hound, "the released cap must permit another hound")
+
+	mistress.mind.antag_datums -= mistress_datum
+	qdel(mistress_datum)
+	TEST_ASSERT(QDELETED(second_hound), "removing the succubus datum must delete its owned NPC hound")
+
+/datum/unit_test/succubus_lusthound_command_gates/Run()
+	var/turf/test_turf = get_turf(run_loc_floor_bottom_left)
+	var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/hound = allocate(/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound, test_turf)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human, test_turf)
+	hound.gender = MALE
+	target.set_cached_erp_preferences(list(
+		/datum/erp_preference/bitflag/horny_mobs = HORNY_MOBS_TAG_MALES,
+		/datum/erp_preference/bitflag/horny_mob_types = HORNY_MOB_TYPE_BEASTS,
+	))
+
+	var/datum/ai_controller/controller = hound.ai_controller
+	var/datum/targetting_datum/basic/succubus_lusthound_unit_test/targetting_datum = allocate(/datum/targetting_datum/basic/succubus_lusthound_unit_test)
+	controller.set_blackboard_key(BB_TARGETTING_DATUM, targetting_datum)
+	var/datum/pet_command/succubus_lusthound_ravage/command = allocate(/datum/pet_command/succubus_lusthound_ravage, hound)
+
+	TEST_ASSERT(command.set_command_target(hound, target), "Ravage must accept a matching beast-family and mob-gender preference")
+	TEST_ASSERT_EQUAL(controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET], target, "an accepted Ravage order must feed the existing horny target pipeline")
+	controller.set_blackboard_key(BB_ACTIVE_PET_COMMAND, command)
+	command.execute_action(controller)
+	TEST_ASSERT_NULL(controller.blackboard[BB_ACTIVE_PET_COMMAND], "an accepted Ravage order must release pet planning so the horny subtree can execute")
+
+	controller.clear_blackboard_key(BB_BASIC_MOB_CURRENT_HORNY_TARGET)
+	target.set_cached_erp_preferences(list(
+		/datum/erp_preference/bitflag/horny_mobs = NONE,
+		/datum/erp_preference/bitflag/horny_mob_types = NONE,
+	))
+	TEST_ASSERT(!command.set_command_target(hound, target), "Ravage must refuse a target without compatible horny-mob preferences")
+	TEST_ASSERT_NULL(controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET], "a refused Ravage order must not populate the horny target pipeline")
+
+/datum/unit_test/succubus_infernal_snare_lifecycle/Run()
+	var/datum/antagonist/succubus/mistress_datum = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/mistress = allocate(/mob/living/carbon/human)
+	mistress.mind_initialize()
+	mistress_datum.owner = mistress.mind
+	LAZYADD(mistress.mind.antag_datums, mistress_datum)
+
+	var/obj/structure/succubus_infernal_snare/snare = allocate(/obj/structure/succubus_infernal_snare)
+	TEST_ASSERT(snare.bind_to(mistress_datum), "a snare must bind to a succubus with an owner")
+	TEST_ASSERT_EQUAL(length(mistress_datum.infernal_snares), 1, "binding must consume one owner cap entry")
+
+	snare.Crossed(mistress)
+	TEST_ASSERT(!QDELETED(snare), "the owning succubus must not trigger her snare")
+	TEST_ASSERT_EQUAL(mistress.AmountImmobilized(), 0, "the owning succubus must not be immobilized")
+
+	var/mob/living/carbon/human/thrall = allocate(/mob/living/carbon/human)
+	thrall.mind_initialize()
+	var/datum/antagonist/succubus_thrall/thrall_datum = allocate(/datum/antagonist/succubus_thrall)
+	thrall_datum.owner = thrall.mind
+	thrall_datum.mistress_mind = mistress.mind
+	LAZYADD(thrall.mind.antag_datums, thrall_datum)
+	snare.Crossed(thrall)
+	TEST_ASSERT(!QDELETED(snare), "a linked thrall must not trigger her mistress's snare")
+	TEST_ASSERT_EQUAL(thrall.AmountImmobilized(), 0, "a linked thrall must not be immobilized")
+
+	var/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus/imp = allocate(/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus)
+	imp.mind_initialize()
+	var/datum/antagonist/succubus_imp/imp_datum = allocate(/datum/antagonist/succubus_imp)
+	imp_datum.owner = imp.mind
+	imp_datum.mistress_mind = mistress.mind
+	LAZYADD(imp.mind.antag_datums, imp_datum)
+	snare.Crossed(imp)
+	TEST_ASSERT(!QDELETED(snare), "a linked whispering imp must not trigger its mistress's snare")
+	TEST_ASSERT_EQUAL(imp.AmountImmobilized(), 0, "a linked whispering imp must not be immobilized")
+
+	var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/hound = allocate(/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound)
+	TEST_ASSERT(hound.bind_to(mistress_datum), "a lustbound hound must bind to its summoner")
+	snare.Crossed(hound)
+	TEST_ASSERT(!QDELETED(snare), "an owned lustbound hound must not trigger its mistress's snare")
+	TEST_ASSERT_EQUAL(hound.AmountImmobilized(), 0, "an owned lustbound hound must not be immobilized")
+	qdel(hound)
+
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.mind_initialize()
+	victim.movement_type |= FLYING
+	snare.Crossed(victim)
+	TEST_ASSERT(!QDELETED(snare), "an airborne living target must not trigger the snare")
+	TEST_ASSERT_EQUAL(victim.AmountImmobilized(), 0, "an airborne living target must not be immobilized")
+
+	victim.movement_type &= ~FLYING
+	snare.Crossed(victim)
+	TEST_ASSERT(QDELETED(snare), "the first unrelated grounded living target must consume the snare")
+	TEST_ASSERT(victim.AmountImmobilized() > 0, "a triggered snare must immobilize its victim")
+	TEST_ASSERT(victim.AmountKnockdown() > 0, "a triggered snare must knock down its victim")
+	TEST_ASSERT(istype(victim.legcuffed, /obj/item/rope/chain/infernal), "a triggered snare must bind a carbon victim's legs")
+	TEST_ASSERT_EQUAL(length(mistress_datum.infernal_snares), 0, "triggering must release the owner's cap entry")
+
+	var/obj/structure/succubus_infernal_snare/deleted_snare = allocate(/obj/structure/succubus_infernal_snare)
+	TEST_ASSERT(deleted_snare.bind_to(mistress_datum), "a replacement snare must bind after the first is consumed")
+	qdel(deleted_snare)
+	TEST_ASSERT_EQUAL(length(mistress_datum.infernal_snares), 0, "manual destruction must release the owner's cap entry")
+
+	thrall.mind.antag_datums -= thrall_datum
+	thrall_datum.owner = null
+	qdel(thrall_datum)
+	imp.mind.antag_datums -= imp_datum
+	imp_datum.owner = null
+	qdel(imp_datum)
+	mistress.mind.antag_datums -= mistress_datum
+	mistress_datum.owner = null
+
+/datum/unit_test/succubus_infernal_snare_placement_gates/Run()
+	var/datum/antagonist/succubus/mistress_datum = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/mistress = allocate(/mob/living/carbon/human)
+	mistress.mind_initialize()
+	mistress_datum.owner = mistress.mind
+	mistress_datum.essence = SUCCUBUS_COST_INFERNAL_SNARE * 3
+	LAZYADD(mistress.mind.antag_datums, mistress_datum)
+
+	var/datum/action/cooldown/spell/succubus_infernal_snare/snare_spell = allocate(/datum/action/cooldown/spell/succubus_infernal_snare)
+	snare_spell.Grant(mistress)
+	var/turf/first_turf = get_turf(mistress)
+	var/turf/second_turf = get_step(first_turf, EAST)
+	var/turf/third_turf = get_step(first_turf, NORTH)
+	TEST_ASSERT(isfloorturf(second_turf) && isfloorturf(third_turf), "placement test needs adjacent solid floor turfs")
+
+	mistress_datum.contracts_completed_full = 1
+	TEST_ASSERT(snare_spell.before_cast(first_turf) & SPELL_CANCEL_CAST, "tier 2 must fail the placement gate")
+	mistress_datum.contracts_completed_full = 2
+	TEST_ASSERT(!(snare_spell.before_cast(first_turf) & SPELL_CANCEL_CAST), "tier 3 with essence and clear ground must pass the placement gate")
+
+	var/obj/structure/succubus_infernal_snare/first_snare = allocate(/obj/structure/succubus_infernal_snare, first_turf)
+	TEST_ASSERT(first_snare.bind_to(mistress_datum), "the first placement test snare must bind")
+	TEST_ASSERT(snare_spell.before_cast(first_turf) & SPELL_CANCEL_CAST, "a turf already holding a snare must fail the occupancy gate")
+
+	var/obj/structure/succubus_infernal_snare/second_snare = allocate(/obj/structure/succubus_infernal_snare, second_turf)
+	TEST_ASSERT(second_snare.bind_to(mistress_datum), "the second placement test snare must bind")
+	TEST_ASSERT(snare_spell.before_cast(third_turf) & SPELL_CANCEL_CAST, "the active cap must reject a third snare")
+
+	qdel(second_snare)
+	TEST_ASSERT(!(snare_spell.before_cast(third_turf) & SPELL_CANCEL_CAST), "destroying a snare must immediately reopen the placement cap")
+
+	mistress.mind.antag_datums -= mistress_datum
+	mistress_datum.owner = null
 
 /datum/unit_test/succubus_harem_team/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
