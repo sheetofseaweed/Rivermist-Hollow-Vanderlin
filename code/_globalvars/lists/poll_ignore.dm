@@ -21,6 +21,7 @@
 #define POLL_IGNORE_ACADEMY_WIZARD "academy_wizard"
 #define POLL_IGNORE_NECROMANCER_SKELETON "necromancer_skeleton"
 #define POLL_IGNORE_MAGE_SUMMON "mage_summon"
+#define POLL_IGNORE_SUCCUBUS_SUMMON "succubus_summon"
 #define POLL_IGNORE_STORYTELLERINJECTION "storyteller_injection"
 
 
@@ -46,6 +47,7 @@ GLOBAL_LIST_INIT(poll_ignore_desc, list(
 	POLL_IGNORE_ACADEMY_WIZARD = "Academy Wizard Defender",
 	POLL_IGNORE_NECROMANCER_SKELETON = "Necromancer Skeleton",
 	POLL_IGNORE_MAGE_SUMMON = "Mage Summon",
+	POLL_IGNORE_SUCCUBUS_SUMMON = "Succubus Summon",
 ))
 GLOBAL_LIST_INIT(poll_ignore, init_poll_ignore())
 

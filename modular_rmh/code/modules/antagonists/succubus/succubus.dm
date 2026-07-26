@@ -36,6 +36,12 @@
 	return ..()
 
 /datum/antagonist/succubus/Destroy()
+	for(var/datum/mind/imp_mind as anything in summoned_imp_minds)
+		var/datum/antagonist/succubus_imp/imp_datum = imp_mind?.has_antag_datum(/datum/antagonist/succubus_imp)
+		if(imp_datum?.mistress_mind == owner)
+			imp_datum.mistress_mind = null
+	summoned_imp_minds = null
+	succubus_imp_offer_pending = FALSE
 	QDEL_NULL(base_form)
 	QDEL_LIST_ASSOC_VAL(stolen_forms)
 	partner_harvests = null

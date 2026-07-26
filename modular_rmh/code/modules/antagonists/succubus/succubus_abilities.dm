@@ -464,6 +464,10 @@
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, source = owner)
 	else
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
+	if(get_succubus_contract_tier() >= 3)
+		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, source = owner)
+	else
+		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 
 /datum/antagonist/succubus/proc/remove_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
@@ -477,6 +481,7 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_charm)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_enthrall)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
+	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 	// Allure's aura is a separate datum that outlives the spell if stripped mid-pulse
 	if(current_mob.has_status_effect(/datum/status_effect/succubus_allure_aura))
 		current_mob.remove_status_effect(/datum/status_effect/succubus_allure_aura)

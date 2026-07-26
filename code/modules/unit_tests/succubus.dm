@@ -7,6 +7,37 @@
 /datum/antagonist/succubus/test_contract_upkeep/count_thralls()
 	return test_thrall_count
 
+#ifdef FOCUS_SUCCUBUS_TEST
+/datum/unit_test/succubus_novelty_decay
+	focus = TRUE
+/datum/unit_test/succubus_essence_cap
+	focus = TRUE
+/datum/unit_test/succubus_wardrobe
+	focus = TRUE
+/datum/unit_test/succubus_pref_gating
+	focus = TRUE
+/datum/unit_test/succubus_reagent_harvest
+	focus = TRUE
+/datum/unit_test/succubus_enthrall_gates
+	focus = TRUE
+/datum/unit_test/succubus_contract_pool
+	focus = TRUE
+/datum/unit_test/succubus_contract_harvest_feedthrough
+	focus = TRUE
+/datum/unit_test/succubus_contract_enthrall_feedthrough
+	focus = TRUE
+/datum/unit_test/succubus_contract_progression_upkeep
+	focus = TRUE
+/datum/unit_test/succubus_imp_ownership_lifecycle
+	focus = TRUE
+/datum/unit_test/succubus_imp_controller_stays_inert
+	focus = TRUE
+/datum/unit_test/succubus_harem_team
+	focus = TRUE
+/datum/unit_test/succubus_true_form_gates
+	focus = TRUE
+#endif
+
 /datum/unit_test/succubus_novelty_decay/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
 	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
@@ -257,12 +288,21 @@
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_TIER_2, "one full contract must grant the tier 2 cap")
 	var/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/doubles = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE)
 	TEST_ASSERT_NOTNULL(doubles, "tier 2 must grant Beguiling Doubles")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "tier 2 must not grant Call Whispering Imp")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing the same tier must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), doubles, "refreshing tier 2 must not replace Beguiling Doubles")
 
 	antag.contracts_completed_full = 2
 	antag.refresh_succubus_contract_progression()
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_TIER_3, "two full contracts must grant the tier 3 cap")
+	var/datum/action/cooldown/spell/undirected/succubus_summon_imp/summon_imp = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE)
+	TEST_ASSERT_NOTNULL(summon_imp, "tier 3 must grant Call Whispering Imp")
+	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing tier 3 must be idempotent")
+	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), summon_imp, "refreshing tier 3 must not replace Call Whispering Imp")
+
+	antag.contracts_completed_full = 1
+	antag.refresh_succubus_contract_progression()
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "dropping below tier 3 must remove Call Whispering Imp")
 
 	antag.contracts_completed_full = 3
 	antag.refresh_succubus_contract_progression()
@@ -285,6 +325,45 @@
 	TEST_ASSERT_EQUAL(antag.test_thrall_count, 2, "unpaid upkeep must leave the harem unchanged")
 
 	antag.owner = null
+
+/datum/unit_test/succubus_imp_ownership_lifecycle/Run()
+	var/datum/antagonist/succubus/mistress_datum = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/mistress = allocate(/mob/living/carbon/human)
+	mistress.mind_initialize()
+	mistress_datum.owner = mistress.mind
+
+	var/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus/imp = allocate(/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus)
+	imp.mind_initialize()
+	var/datum/antagonist/succubus_imp/imp_datum = allocate(/datum/antagonist/succubus_imp)
+	imp_datum.owner = imp.mind
+	imp_datum.mistress_mind = mistress.mind
+	LAZYADD(imp.mind.antag_datums, imp_datum)
+	mistress_datum.summoned_imp_minds += imp.mind
+
+	var/mob/living/carbon/human/stale_owner = allocate(/mob/living/carbon/human)
+	stale_owner.mind_initialize()
+	mistress_datum.summoned_imp_minds += stale_owner.mind
+
+	TEST_ASSERT_EQUAL(mistress_datum.count_summoned_imps(), 1, "only a live imp datum linked to this succubus may count toward the cap")
+	TEST_ASSERT(!(stale_owner.mind in mistress_datum.summoned_imp_minds), "counting imps must prune stale mind entries")
+
+	qdel(imp_datum)
+	TEST_ASSERT_EQUAL(mistress_datum.count_summoned_imps(), 0, "destroying the imp datum must release its mistress's cap entry")
+
+	mistress_datum.owner = null
+
+/datum/unit_test/succubus_imp_controller_stays_inert/Run()
+	var/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus/imp = allocate(/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus)
+	var/datum/ai_controller/imp/succubus/controller = imp.ai_controller
+	TEST_ASSERT_NOTNULL(controller, "a whispering imp must receive its dedicated controller")
+	TEST_ASSERT_EQUAL(controller.ai_status, AI_STATUS_OFF, "a clientless whispering imp must initialize inert")
+
+	controller.on_sentience_gained()
+	controller.on_sentience_lost()
+	TEST_ASSERT_EQUAL(controller.ai_status, AI_STATUS_OFF, "a disconnected whispering imp must remain inert")
+
+	controller.set_ai_status(AI_STATUS_ON)
+	TEST_ASSERT_EQUAL(controller.ai_status, AI_STATUS_OFF, "other AI wake-up paths must not activate a whispering imp")
 
 /datum/unit_test/succubus_harem_team/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
