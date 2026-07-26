@@ -29,9 +29,9 @@
 		return
 	var/floor = owning_run.floor
 	var/list/offers = list(
-		list("id" = "heal", "label" = "Mend wounds", "cost" = 20),
-		list("id" = "cache", "label" = "A cache of goods", "cost" = 40 + floor * 10),
-		list("id" = "key", "label" = "A skeleton key (opens locked passages)", "cost" = 60),
+		list("id" = "heal", "label" = "Mend wounds", "cost" = 25),
+		list("id" = "cache", "label" = "A cache of goods", "cost" = 60 + floor * 20),
+		list("id" = "key", "label" = "A skeleton key (opens locked passages)", "cost" = 75),
 		list("id" = "bank", "label" = "Bank motes as echoes now", "cost" = 0),
 	)
 	var/list/by_label = list()
@@ -41,7 +41,7 @@
 	var/list/chosen = by_label[picked]
 	if(!chosen || QDELETED(src) || !owning_run || QDELETED(owning_run))
 		return
-	if(!owning_run.spend_motes(chosen["cost"]))
+	if(!owning_run.try_pay_offer(chosen["cost"]))
 		to_chat(user, span_warning("Not enough motes."))
 		return
 	apply_offer(chosen["id"], user)
@@ -162,7 +162,7 @@
 	var/mob/living/drinker = user
 	drinker.adjustBruteLoss(-25)
 	drinker.adjustFireLoss(-25)
-	owning_run.award_motes(10, src)
+	owning_run.award_motes(8, src)
 	to_chat(user, span_nicegreen("You cup the light and drink. Warmth spreads through you."))
 
 /obj/structure/dungeon_gamble_altar
@@ -260,7 +260,7 @@
 		return
 	answered = TRUE
 	if(picked == riddle["correct"])
-		owning_run.award_motes(40, src)
+		owning_run.award_motes(25, src)
 		visible_message(span_nicegreen("The shrine sighs, satisfied, and light spills from its mouth."))
 	else
 		visible_message(span_warning("The shrine goes cold. Wrong."))

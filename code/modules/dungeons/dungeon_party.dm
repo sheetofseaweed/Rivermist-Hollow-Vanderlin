@@ -36,13 +36,16 @@
 		present_ckeys -= ckey(user.ckey)
 	UnregisterSignal(user, COMSIG_LIVING_DEFEATED)
 
-/// Player-controlled or minded mobs currently inside a given room.
+/// Player-controlled or minded DELVERS currently inside a given room.
+/// Ghosts and other non-corporeal mobs float on the room's turfs and carry
+/// clients, but they are spectators: counting them kept runs from ever
+/// collapsing and could even fake a party wipe once the living had left.
 /datum/dungeon_run/proc/get_members_in_room(datum/pocket_dimension/dungeon/room)
 	var/list/mob/found = list()
 	if(QDELETED(room))
 		return found
 	for(var/mob/occupant as anything in room.get_occupants())
-		if(QDELETED(occupant))
+		if(QDELETED(occupant) || !isliving(occupant))
 			continue
 		if(occupant.mind || occupant.client)
 			found += occupant
@@ -411,6 +414,15 @@
 	if(active_run.is_party_member(user))
 		descend_with_party(user, active_run.get_party())
 		return
+	// Already approved while they were away - honour it without a second vote.
+	if(WEAKREF(user) in active_run.accepted_petitioners)
+		if(active_run.is_at_rest())
+			active_run.admit_petitioner(user)
+			return
+		to_chat(user, span_warning("The party has moved on into the dark. Wait for them to reach the next place of respite."))
+		active_run.accepted_petitioners -= WEAKREF(user)
+		active_run.waiting_petitioners |= WEAKREF(user)
+		return
 	if(!active_run.is_at_rest())
 		to_chat(user, span_warning("The party is deep in the dungeon. The way is sealed until they reach a place of respite. You wait by the entrance."))
 		active_run.waiting_petitioners |= WEAKREF(user)
@@ -459,6 +471,19 @@
 	var/datum/party/party = get_party()
 	if(party && !(ckey(petitioner.ckey) in party.members))
 		join_party(petitioner, party)
+	// Approval can land long after the petition - the petitioner may have
+	// wandered off, or been dragged across the map. Never yank someone into the
+	// dark from wherever they happen to be standing: tell them the way is open
+	// and let them walk back to the mouth themselves.
+	var/obj/structure/dungeon_entrance/entrance = get_entrance()
+	if(entrance && !petitioner.Adjacent(entrance))
+		to_chat(petitioner, span_nicegreen("The expedition has accepted your petition. Return to [entrance] and touch it to descend - the way will hold for you."))
+		accepted_petitioners |= WEAKREF(petitioner)
+		waiting_petitioners -= WEAKREF(petitioner)
+		return
+	// Actually descending consumes any remembered approval, whichever path got
+	// them here.
+	accepted_petitioners -= WEAKREF(petitioner)
 	waiting_petitioners -= WEAKREF(petitioner)
 	var/turf/entry_turf = current_break_room.get_entry_turf()
 	if(entry_turf)

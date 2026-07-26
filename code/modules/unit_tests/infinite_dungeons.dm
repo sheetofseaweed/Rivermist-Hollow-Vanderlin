@@ -718,7 +718,13 @@
 		var/mob/living/g_mob = g_wr?.resolve()
 		if(g_mob)
 			qdel(g_mob)
-	TEST_ASSERT(heal_room.cleared, "Heal-door room should clear.")
+	var/datum/map_template/pocket/dungeon/heal_template = heal_room.get_dungeon_template()
+	var/list/lingering = list()
+	for(var/g_ref in heal_room.guardian_refs)
+		var/datum/weakref/g_wr = heal_room.guardian_refs[g_ref]
+		var/mob/living/g_mob = g_wr?.resolve()
+		lingering += g_mob ? "[g_mob.type](stat=[g_mob.stat])" : "unresolved:[g_ref]"
+	TEST_ASSERT(heal_room.cleared, "Heal-door room should clear (template=[heal_template?.id], pop=[heal_room.population_mode], waves=[heal_room.pending_waves], refs=[length(heal_room.guardian_refs)]: [lingering.Join(", ")]).")
 	TEST_ASSERT(delver.getBruteLoss() < damage_before, "Clearing a HEAL door should heal present members.")
 
 	qdel(run)
@@ -1374,4 +1380,152 @@
 			found_synergy = TRUE
 		qdel(card)
 	TEST_ASSERT(found_synergy, "A satisfied synergy should claim a slot in the offer.")
+	qdel(run)
+
+/datum/unit_test/dungeon_encounter_delve_curve/Run()
+	var/datum/dungeon_run/run = new(null, null)
+
+	// Floor-relative, NOT run-cumulative: piling up cleared rooms must not
+	// raise the delve on its own (that was the runaway affix bug).
+	run.floor = 1
+	run.floor_config = get_dungeon_floor_config(1)
+	var/shallow = run.get_encounter_delve()
+	run.depth = 40
+	TEST_ASSERT_EQUAL(run.get_encounter_delve(), shallow, "Cumulative depth must not raise the encounter delve.")
+
+	// Deeper floors do raise it.
+	run.floor = 3
+	run.floor_config = get_dungeon_floor_config(3)
+	var/deep = run.get_encounter_delve()
+	TEST_ASSERT(deep > shallow, "A deeper floor should raise the encounter delve (floor 1 = [shallow], floor 3 = [deep]).")
+
+	// And it is capped, however far the run descends.
+	run.floor = 60
+	run.floor_config = get_dungeon_floor_config(60)
+	TEST_ASSERT(run.get_encounter_delve() <= DUNGEON_DELVE_MAX, "The encounter delve must stay capped at DUNGEON_DELVE_MAX.")
+	qdel(run)
+
+/datum/unit_test/dungeon_affix_count_capped/Run()
+	var/datum/mob_affix_system/system = new
+	TEST_ASSERT_EQUAL(system.get_max_affixes(1, 0), 1, "A shallow delve should still roll few affixes.")
+	TEST_ASSERT_EQUAL(system.get_max_affixes(50, 5), MOB_AFFIX_MAX_ROLLED, "Affix count must be capped however deep the delve.")
+	qdel(system)
+
+/datum/unit_test/dungeon_loot_donor_budgets/Run()
+	// Donors are normalized to a weight budget, so a many-entry table (food:
+	// 15 entries) can no longer drown the curated gear list.
+	var/datum/loot_table/dungeon/tier1/table = new
+	var/list/weights = table.return_list(null, 1, 1.0)
+	TEST_ASSERT(length(weights), "The tier-1 table should produce a weighted pool.")
+
+	var/total = 0
+	var/food_weight = 0
+	for(var/path in weights)
+		var/weight = weights[path]
+		total += weight
+		if(ispath(path, /obj/item/reagent_containers/food))
+			food_weight += weight
+	TEST_ASSERT(total > 0, "The pool should carry weight.")
+	var/food_share = food_weight / total
+	TEST_ASSERT(food_share < 0.2, "Food should be a garnish, not the meal (share was [round(food_share * 100, 0.1)]%).")
+	qdel(table)
+
+/datum/unit_test/dungeon_free_offers_payable/Run()
+	// Banking is priced at 0 and spend_motes refuses anything <= 0, so every
+	// vendor gate must run through try_pay_offer or banking is unreachable.
+	var/datum/dungeon_run/run = new(null, null)
+	TEST_ASSERT(!run.spend_motes(0), "spend_motes must keep refusing zero (its contract).")
+	TEST_ASSERT(run.try_pay_offer(0), "A free offer must always be payable.")
+	run.motes = 20
+	TEST_ASSERT(!run.try_pay_offer(50), "An unaffordable offer must be refused.")
+	TEST_ASSERT_EQUAL(run.motes, 20, "A refused offer must not spend anything.")
+	TEST_ASSERT(run.try_pay_offer(20), "An affordable offer must be payable.")
+	TEST_ASSERT_EQUAL(run.motes, 0, "A paid offer must deduct its cost.")
+
+	// A pool too small to crystallize must survive instead of vanishing.
+	run.motes = 1
+	run.bank_motes_now(null) // no ckey: bails before conversion, must not clear
+	TEST_ASSERT_EQUAL(run.motes, 1, "Banking without a valid banker must not consume the pool.")
+	qdel(run)
+
+/datum/unit_test/dungeon_ghosts_are_not_delvers/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	var/datum/pocket_dimension/dungeon/room = run.current_break_room
+
+	// A ghost floating in the room is a spectator, not an occupant. (Observers
+	// relocate themselves during Initialize, so place it deliberately.)
+	var/mob/dead/observer/watcher = new(room.get_entry_turf())
+	watcher.forceMove(room.get_entry_turf())
+	TEST_ASSERT(room.contains_turf(get_turf(watcher)), "The ghost should be standing in the room for this test to mean anything.")
+	TEST_ASSERT(room.get_occupants()[watcher], "The base occupant sweep should still see the ghost.")
+	TEST_ASSERT(!(watcher in run.get_members_in_room(room)), "A ghost must not count as a delver in the room.")
+
+	// With the living delver pulled out, only the ghost remains - the run must
+	// read as unoccupied so the abandonment timer can still collapse it.
+	delver.forceMove(run_loc_floor_bottom_left)
+	TEST_ASSERT(!run.has_client_occupants(), "A watching ghost alone must not keep a run alive.")
+	qdel(watcher)
+	qdel(run)
+
+/datum/unit_test/dungeon_petition_no_remote_yank/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	entrance.theme_filter = DUNGEON_THEME_TEST
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+
+	var/mob/living/carbon/human/latecomer = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	latecomer.mind_initialize()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/turf/far_off = locate(origin.x + 5, origin.y, origin.z)
+	TEST_ASSERT_NOTNULL(far_off, "The test area should be wide enough to stand clear of the entrance.")
+	latecomer.forceMove(far_off)
+
+	// Approving someone who walked away must invite them back, never teleport them.
+	run.admit_petitioner(latecomer)
+	TEST_ASSERT_EQUAL(get_turf(latecomer), far_off, "An away petitioner must not be yanked into the dungeon.")
+	TEST_ASSERT((WEAKREF(latecomer) in run.accepted_petitioners), "The approval should be remembered for when they return.")
+
+	// Back at the mouth they are admitted for real, and the remembered approval
+	// is spent. (petition_to_join itself needs a client, which test mobs lack,
+	// so drive the admission path the entrance would call.)
+	latecomer.forceMove(origin)
+	run.admit_petitioner(latecomer)
+	TEST_ASSERT(run.current_break_room.contains_turf(get_turf(latecomer)), "A petitioner at the mouth should be admitted.")
+	TEST_ASSERT(!(WEAKREF(latecomer) in run.accepted_petitioners), "Descending should consume the remembered approval.")
+	qdel(run)
+
+/datum/unit_test/dungeon_shrine_undoes_trauma/Run()
+	var/obj/structure/dungeon_shrine/shrine = allocate(/obj/structure/dungeon_shrine, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/datum/dungeon_run/run = new(null, null)
+	shrine.owning_run = run
+
+	// Priced above mending mere wounds.
+	var/heal_cost = 0
+	var/revive_cost = 0
+	for(var/list/offer as anything in shrine.build_shrine_offers())
+		switch(offer["id"])
+			if("heal")
+				heal_cost = offer["cost"]
+			if("revive")
+				revive_cost = offer["cost"]
+	TEST_ASSERT(revive_cost > 0, "The shrine should offer to undo a defeat trauma.")
+	TEST_ASSERT(revive_cost > heal_cost, "Undoing a trauma should cost more than mending wounds.")
+
+	// Refused (and never charged) when there is nothing to undo.
+	TEST_ASSERT(!shrine.can_buy_offer("revive", patient), "An untraumatized buyer must be refused before payment.")
+
+	// With a trauma carried, it clears exactly that one.
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/physical/leg, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT(patient.has_any_defeat_trauma(), "The test trauma should have applied.")
+	TEST_ASSERT(shrine.can_buy_offer("revive", patient), "A traumatized buyer should be allowed to pay.")
+	shrine.apply_shrine_offer("revive", patient)
+	TEST_ASSERT(!patient.has_any_defeat_trauma(), "Buying the revive should lift the trauma.")
 	qdel(run)

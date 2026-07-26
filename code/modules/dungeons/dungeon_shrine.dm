@@ -33,17 +33,30 @@
 	var/list/chosen = by_label[picked]
 	if(!chosen)
 		return
-	if(!owning_run.spend_motes(chosen["cost"]))
+	// Validate before charging - nothing here refunds.
+	if(!can_buy_offer(chosen["id"], user))
+		return
+	if(!owning_run.try_pay_offer(chosen["cost"]))
 		to_chat(user, span_warning("Not enough motes."))
 		return
 	apply_shrine_offer(chosen["id"], user)
 
+/// Pre-payment gate for offers that can be bought pointlessly.
+/obj/structure/dungeon_shrine/proc/can_buy_offer(id, mob/living/user)
+	if(id != "revive")
+		return TRUE
+	if(!user.has_any_defeat_trauma())
+		to_chat(user, span_warning("The light searches you and finds nothing lingering to undo."))
+		return FALSE
+	return TRUE
+
 /obj/structure/dungeon_shrine/proc/build_shrine_offers()
 	var/floor = owning_run?.floor || 1
 	return list(
-		list("id" = "heal", "label" = "Mend wounds", "cost" = 20),
-		list("id" = "boon", "label" = "Beg a blessing (extra boon)", "cost" = 60),
-		list("id" = "cache", "label" = "Conjure a cache roll", "cost" = 40 + floor * 10),
+		list("id" = "heal", "label" = "Mend wounds", "cost" = 25),
+		list("id" = "revive", "label" = "Undo a lingering hurt (clears one defeat trauma)", "cost" = DUNGEON_SHRINE_TRAUMA_COST),
+		list("id" = "boon", "label" = "Beg a blessing (extra boon)", "cost" = 150),
+		list("id" = "cache", "label" = "Conjure a cache roll", "cost" = 60 + floor * 20),
 		list("id" = "bank", "label" = "Bank motes as echoes now", "cost" = 0),
 	)
 
@@ -53,6 +66,17 @@
 			user.adjustBruteLoss(-40)
 			user.adjustFireLoss(-40)
 			to_chat(user, span_nicegreen("The shrine's light knits your wounds."))
+		if("revive")
+			// The dungeon's own light pays the debt a fall left behind. Routed
+			// through the defeat system's universal treatment so every listener
+			// (logging, achievements) sees a normal cure.
+			if(user.defeat_treat_trauma(user, DEFEAT_TREATMENT_UNIVERSAL))
+				user.visible_message(
+					span_nicegreen("[user] straightens as something long-carried lets go of [user.p_them()]."),
+					span_nicegreen("The shrine's light reaches into an old hurt and undoes it. You stand easier."),
+				)
+			else
+				to_chat(user, span_warning("The light gutters - whatever ails you is beyond this shrine."))
 		if("boon")
 			owning_run.offer_break_room_boon(user)
 		if("cache")

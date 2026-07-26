@@ -17,6 +17,9 @@
 	var/list/present_ckeys = list()
 	/// weakrefs of outsiders waiting at the entrance to join at the next rest area
 	var/list/waiting_petitioners = list()
+	/// weakrefs of petitioners the party already approved while they were away;
+	/// touching the entrance admits them without a second vote
+	var/list/accepted_petitioners = list()
 	/// DUNGEON_JOIN_APPROVAL_* — how many present members must approve a petitioner
 	var/join_approval_mode = DUNGEON_JOIN_APPROVAL_MODE
 	/// Shared in-run currency pool
@@ -327,14 +330,21 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	motes -= amount
 	return TRUE
 
+/// Gate for a priced vendor offer. Free offers (banking) always pass: routing
+/// them through spend_motes made them unreachable, since it refuses any amount
+/// at or below zero.
+/datum/dungeon_run/proc/try_pay_offer(cost)
+	if(cost <= 0)
+		return TRUE
+	return spend_motes(cost)
+
 /datum/dungeon_run/proc/add_boon(datum/dungeon_boon/boon)
 	if(!istype(boon))
 		return
 	active_boons += boon
 	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
-		for(var/mob/living/occupant as anything in room.get_occupants())
-			if(occupant.client || occupant.mind)
-				boon.apply(src, occupant)
+		for(var/mob/living/occupant as anything in get_members_in_room(room))
+			boon.apply(src, occupant)
 
 /datum/dungeon_run/proc/apply_boons_to(mob/living/target)
 	if(!istype(target))
@@ -364,10 +374,11 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		to_chat(user, span_warning("There are no motes to bank."))
 		return
 	var/converted = round(motes * get_echo_conversion())
-	motes = 0
 	if(converted <= 0)
+		// Don't swallow the pool for nothing - leave it to grow.
 		to_chat(user, span_warning("Too few motes to crystallize into an echo."))
 		return
+	motes = 0
 	var/datum/dungeon_progress/progress = get_dungeon_progress(user.ckey)
 	if(!progress)
 		return
@@ -527,6 +538,14 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	// small in-floor nudge as depth rises within the floor
 	return clamp(floor_tier + round(stretch_position_estimate() / 3), 1, 10)
 
+/// Delve level fed to the affix system (and to loot-table scaling). Derived
+/// from the FLOOR, not the run's cumulative room count, so a long run does not
+/// compound guardians into unkillable affix piles - each floor starts its own
+/// curve and the tier carries the growth.
+/datum/dungeon_run/proc/get_encounter_delve()
+	var/floor_base = (get_dungeon_floor_tier(floor) - 1) * DUNGEON_DELVE_PER_TIER
+	return clamp(floor_base + round(stretch_position_estimate() / 2), 0, DUNGEON_DELVE_MAX)
+
 /// Rough progress within the current stretch, for the in-floor tier nudge.
 /datum/dungeon_run/proc/stretch_position_estimate()
 	var/highest = 0
@@ -607,7 +626,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 			if(chooser)
 				INVOKE_ASYNC(src, PROC_REF(offer_break_room_boon), chooser)
 		if(DUNGEON_REWARD_MOTES)
-			award_motes(30 + (floor - 1) * 10, null)
+			award_motes(15 + (floor - 1) * 5, null)
 		if(DUNGEON_REWARD_LOOT)
 			room.spawn_bonus_loot_cache(sealed = FALSE)
 			for(var/mob/occupant as anything in room.get_occupants())
@@ -702,10 +721,12 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	// Reaching a fresh rest area lets waiting outsiders petition to join.
 	notify_waiting_petitioners()
 
+/// A watching ghost is not an occupant - only living, client-bearing delvers
+/// keep a run alive against the abandonment timer.
 /datum/dungeon_run/proc/has_client_occupants()
 	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
 		for(var/mob/occupant as anything in room.get_occupants())
-			if(occupant.client)
+			if(occupant.client && isliving(occupant))
 				return TRUE
 	return FALSE
 

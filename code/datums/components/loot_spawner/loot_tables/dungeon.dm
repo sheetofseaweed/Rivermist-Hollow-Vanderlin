@@ -4,16 +4,43 @@
 // potion_ingredient), so the generic pools stay the single source of truth.
 // Donors must be plain-sublist tables; stat/skill veins are authored here to
 // avoid assoc-key collisions between donors.
+//
+// Donors are NORMALIZED to a weight budget. return_list() unions every sublist
+// into one weighted pool, so a donor's raw mass is what decides its share - the
+// 15-entry food table used to outweigh a curated list three times over. Each
+// donor now contributes exactly its budget, whatever its entry count.
 
 /datum/loot_table/dungeon
 	abstract_type = /datum/loot_table/dungeon
-	/// Plain-sublist loot tables whose entries this table absorbs on creation
+	/// assoc donor loot_table type -> total weight it contributes after scaling.
+	/// Compare against this table's own loot_table weights to read the mix.
 	var/list/donor_types = list()
 
 /datum/loot_table/dungeon/New()
 	for(var/donor_type in donor_types)
 		var/datum/loot_table/donor = new donor_type
-		loot_table += donor.loot_table
+		var/budget = donor_types[donor_type]
+		var/total_weight = 0
+		for(var/list/sublist as anything in donor.loot_table)
+			if(!islist(sublist))
+				continue
+			for(var/entry in sublist)
+				if(isnum(entry)) // skill-gate delimiters carry no weight
+					continue
+				total_weight += sublist[entry]
+		if(total_weight > 0 && budget > 0)
+			var/scale = budget / total_weight
+			for(var/list/sublist as anything in donor.loot_table)
+				if(!islist(sublist))
+					continue
+				var/list/scaled = list()
+				for(var/entry in sublist)
+					if(isnum(entry))
+						continue
+					// Float weights are fine - pickweight and the delve scaler
+					// both work in floats already.
+					scaled[entry] = max(0.05, round(sublist[entry] * scale, 0.01))
+				loot_table += list(scaled)
 		qdel(donor)
 	..()
 
@@ -31,10 +58,11 @@
 /// never enough to skip the surface economy.
 /datum/loot_table/dungeon/tier1
 	name = "dungeon spoils (shallow)"
+	// Curated gear below sums to ~53; these budgets keep it the headline.
 	donor_types = list(
-		/datum/loot_table/food,
-		/datum/loot_table/coin/low,
-		/datum/loot_table/potion_vitals,
+		/datum/loot_table/food = 10,
+		/datum/loot_table/coin/low = 30,
+		/datum/loot_table/potion_vitals = 15,
 	)
 	loot_table = list(
 		list(
@@ -61,10 +89,10 @@
 /datum/loot_table/dungeon/tier2
 	name = "dungeon spoils (mid)"
 	donor_types = list(
-		/datum/loot_table/medium,
-		/datum/loot_table/coin/med,
-		/datum/loot_table/potion_vitals,
-		/datum/loot_table/potion_stats,
+		/datum/loot_table/medium = 35,
+		/datum/loot_table/coin/med = 30,
+		/datum/loot_table/potion_vitals = 12,
+		/datum/loot_table/potion_stats = 12,
 	)
 	loot_table = list(
 		list(
@@ -94,9 +122,9 @@
 /datum/loot_table/dungeon/tier3
 	name = "dungeon spoils (deep)"
 	donor_types = list(
-		/datum/loot_table/rare,
-		/datum/loot_table/coin/high,
-		/datum/loot_table/potion_stats,
+		/datum/loot_table/rare = 40,
+		/datum/loot_table/coin/high = 30,
+		/datum/loot_table/potion_stats = 12,
 	)
 	loot_table = list(
 		list(
@@ -125,8 +153,8 @@
 /datum/loot_table/dungeon/swampgob
 	name = "sunken warren spoils"
 	donor_types = list(
-		/datum/loot_table/coin/low,
-		/datum/loot_table/potion_vitals,
+		/datum/loot_table/coin/low = 25,
+		/datum/loot_table/potion_vitals = 12,
 	)
 	loot_table = list(
 		list(

@@ -149,7 +149,7 @@
 			continue
 		for(var/datum/pocket_dimension/dungeon/room as anything in run.get_all_rooms())
 			if(room.contains_turf(here))
-				run.award_motes(15 + (run.floor - 1) * 5, parent)
+				run.award_motes(10 + (run.floor - 1) * 3, parent)
 				return
 
 /datum/dungeon_room_trait/cursed

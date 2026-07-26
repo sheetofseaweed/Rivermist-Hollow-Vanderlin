@@ -68,13 +68,26 @@
 // -- In-run currency (motes) & meta-currency (echoes) --
 
 /// Base motes a normal guardian drops on death
-#define DUNGEON_MOTE_GUARDIAN_BASE 10
+#define DUNGEON_MOTE_GUARDIAN_BASE 5
 /// Extra motes per floor
-#define DUNGEON_MOTE_FLOOR_BONUS 5
+#define DUNGEON_MOTE_FLOOR_BONUS 3
 /// Elite guardian mote multiplier
 #define DUNGEON_MOTE_ELITE_MULT 3
+
+// -- Encounter difficulty curve --
+// Guardians are enhanced from a FLOOR-relative delve, not the run's cumulative
+// room count: difficulty resets each floor and climbs with the floor tier,
+// instead of compounding without bound across a long run.
+
+/// Delve levels added per floor tier
+#define DUNGEON_DELVE_PER_TIER 2
+/// Hard ceiling on the delve fed to the affix system
+#define DUNGEON_DELVE_MAX 10
 /// Fraction of unspent motes that converts to echoes when a run is banked
 #define DUNGEON_ECHO_CONVERSION 0.25
+/// Shrine price to lift one lingering defeat trauma - dearer than mending
+/// wounds, since it buys back what a fall actually cost you
+#define DUNGEON_SHRINE_TRAUMA_COST 80
 /// Save-manager file name for per-ckey dungeon meta progression
 #define DUNGEON_SAVE_FILE "dungeon"
 
@@ -143,7 +156,7 @@
 /// Cursed rooms owed per curse-priced bargain
 #define DUNGEON_BARGAIN_CURSE_ROOMS 2
 /// Cursed-room clear compensation, in multiples of a base guardian mote drop
-#define DUNGEON_CURSED_MOTE_BONUS 3
+#define DUNGEON_CURSED_MOTE_BONUS 2
 
 // -- Roguelike Tail: non-combat rooms --
 
@@ -152,8 +165,8 @@
 /// Waves a wave-challenge room spawns in total
 #define DUNGEON_WAVE_COUNT 3
 /// Wave-challenge clear payout: base + per-floor motes
-#define DUNGEON_WAVE_PAYOUT_BASE 90
-#define DUNGEON_WAVE_PAYOUT_FLOOR 30
+#define DUNGEON_WAVE_PAYOUT_BASE 45
+#define DUNGEON_WAVE_PAYOUT_FLOOR 15
 
 // Room population modes (what fills a room besides/instead of a normal fight)
 #define DUNGEON_POP_COMBAT "combat"

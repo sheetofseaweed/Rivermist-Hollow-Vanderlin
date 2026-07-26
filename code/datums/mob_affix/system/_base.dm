@@ -1,3 +1,7 @@
+/// Ceiling on affixes rolled from delve/tier alone. Without it the count grows
+/// linearly and without bound, and a deep mob ends up carrying a dozen stacked
+/// modifiers. Elites and other bonus_affixes callers still add on top.
+#define MOB_AFFIX_MAX_ROLLED 4
 
 /datum/mob_affix_system
 	var/list/available_affixes = list()
@@ -18,7 +22,7 @@
 	return multipliers
 
 /datum/mob_affix_system/proc/get_max_affixes(delve_level, mob_tier = 0)
-	return delve_level + mob_tier
+	return min(delve_level + mob_tier, MOB_AFFIX_MAX_ROLLED)
 
 /datum/mob_affix_system/proc/enhance_mob(mob/living/simple_animal/hostile/retaliate/target, delve_level, bonus_affixes = 0)
 	if(!target || !istype(target))

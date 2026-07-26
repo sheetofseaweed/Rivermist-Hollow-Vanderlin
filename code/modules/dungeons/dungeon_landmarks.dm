@@ -77,7 +77,7 @@
 	var/datum/map_template/pocket/dungeon/dungeon_template = owner?.get_dungeon_template()
 	if(dungeon_template?.loot_table_type)
 		cache.loot = new dungeon_template.loot_table_type
-	cache.delve_level = max(1, owner?.depth)
+	cache.delve_level = max(1, owner?.owning_run ? owner.owning_run.get_encounter_delve() : owner?.depth)
 	// Every present member deserves a share; each taker rolls the table
 	// independently, so this scales reward with party size, not per-share size.
 	cache.max_takers = max(cache.max_takers, length(owner?.owning_run?.present_ckeys))

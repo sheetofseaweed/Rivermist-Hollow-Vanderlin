@@ -275,7 +275,9 @@
 	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
 	if(dungeon_template?.loot_table_type)
 		cache.loot = new dungeon_template.loot_table_type
-	cache.delve_level = max(1, depth + bonus_delve)
+	// Floor-relative, matching guardian scaling - cumulative depth inflated
+	// cache quantity by 1.1^depth and rare weights by 1.3^depth.
+	cache.delve_level = max(1, (owning_run ? owning_run.get_encounter_delve() : depth) + bonus_delve)
 	cache.max_takers = max(cache.max_takers, length(owning_run?.present_ckeys))
 	if(owning_run?.run_unlocks?["extra_cache"])
 		cache.max_takers += 1
@@ -364,7 +366,9 @@
 	native_mob_refs["[REF(guardian)]"] = TRUE
 	guardian_refs["[REF(guardian)]"] = WEAKREF(guardian)
 	if(depth > 0 || elite || force_enhance)
-		SSmobs.enhance_mob_elite(guardian, depth, elite ? 2 : 0)
+		// enhance_mob_elite subtracts one, so +1 keeps the run's delve intact.
+		var/encounter_delve = owning_run ? owning_run.get_encounter_delve() + 1 : 1
+		SSmobs.enhance_mob_elite(guardian, encounter_delve, elite ? 2 : 0)
 	if(elite)
 		elite_guardian_refs["[REF(guardian)]"] = TRUE
 		guardian.add_atom_colour("#ffcc33", TEMPORARY_COLOUR_PRIORITY)

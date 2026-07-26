@@ -67,9 +67,15 @@
 	domains = list("life")
 
 /datum/dungeon_boon/second_wind/on_room_cleared(datum/dungeon_run/run, datum/pocket_dimension/dungeon/room)
+	var/heal = round(20 * magnitude)
 	for(var/mob/living/member as anything in run.get_members_in_room(room))
-		member.adjustBruteLoss(-round(10 * magnitude))
-		member.adjustFireLoss(-round(10 * magnitude))
+		// Silent healing reads as a dead boon - only speak up when there was
+		// something to mend, so the player can tell it fired.
+		var/hurt = (member.getBruteLoss() + member.getFireLoss()) > 0
+		member.adjustBruteLoss(-heal)
+		member.adjustFireLoss(-heal)
+		if(hurt && member.client)
+			to_chat(member, span_nicegreen("Second Wind: the victory knits your wounds."))
 
 /datum/dungeon_boon/stubborn_heart
 	name = "Stubborn Heart"
@@ -171,7 +177,7 @@
 	domains = list("shadow", "luck")
 
 /datum/dungeon_boon/mote_magnet/on_room_cleared(datum/dungeon_run/run, datum/pocket_dimension/dungeon/room)
-	run.award_motes(round(8 * magnitude), null)
+	run.award_motes(round(5 * magnitude), null)
 
 // -- Fate --
 

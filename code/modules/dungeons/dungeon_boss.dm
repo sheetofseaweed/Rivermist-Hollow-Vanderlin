@@ -52,7 +52,7 @@ GLOBAL_LIST_INIT(dungeon_boss_titles, list("the Alpha", "the Devourer", "the War
 		boss.AddComponent(/datum/component/dungeon_boss_abilities, null)
 
 	// Mote bounty: bespoke bosses define their own; others scale by floor.
-	var/bounty = 150 + max(0, floor - 1) * 50
+	var/bounty = 80 + max(0, floor - 1) * 25
 	if(istype(boss, /mob/living/simple_animal/hostile/boss/dungeon))
 		var/mob/living/simple_animal/hostile/boss/dungeon/dboss = boss
 		bounty = max(bounty, dboss.mote_bounty)
