@@ -12,16 +12,20 @@
 			var/datum/injury/injury = thing
 			injury.movement_infect(src)
 
+		// Buckled mobs are dragged through Move() by whatever carries them. Sprint intent while mounted
+		// spurs the animal into a gallop rather than moving your own legs, so the fatigue is the mount's.
+		var/sprinting = (m_intent == MOVE_INTENT_RUN) && !buckled
+
 		if(HAS_TRAIT(src, TRAIT_NOHUNGER))
 			set_nutrition(NUTRITION_LEVEL_FED - 1)	//just less than feeling vigorous
 			set_hydration(HYDRATION_LEVEL_START_MAX - 1)	//just less than feeling vigorous
 		else if(stat != DEAD)
 			adjust_nutrition(-(0.05))
 			adjust_hydration(-(0.05))
-			if(m_intent == MOVE_INTENT_RUN)
+			if(sprinting)
 				adjust_nutrition(-(0.1))
 				adjust_hydration(-(0.1))
-		if(m_intent == MOVE_INTENT_RUN) //sprint fatigue add
+		if(sprinting) //sprint fatigue add
 			adjust_stamina(2)
 
 /mob/living/carbon/update_limbless_locomotion()

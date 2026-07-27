@@ -1,13 +1,22 @@
+/// Whether a hunger-driven subtree should stand down for now.
+/// A ridden animal only breaks off for food once its meter is genuinely empty, so it can't wrench the
+/// reins away from its rider over a passing snack. Loose animals forage as soon as they're peckish.
+/datum/ai_planning_subtree/proc/too_fed_to_forage(datum/ai_controller/controller)
+	if(!isliving(controller.pawn))
+		return FALSE
+	var/hunger = SEND_SIGNAL(controller.pawn, COMSIG_MOB_RETURN_HUNGER)
+	if(controller.blackboard[BB_IS_BEING_RIDDEN])
+		return hunger > 0
+	return hunger >= 50
+
 /// similar to finding a target but looks for food types in the // the what?
 /datum/ai_planning_subtree/find_food
 	var/vision_range = 9
 
 /datum/ai_planning_subtree/find_food/SelectBehaviors(datum/ai_controller/controller, seconds_per_tick)
 	. = ..()
-	if(istype(controller.pawn, /mob/living/simple_animal/hostile/retaliate))
-		var/mob/living/simple_animal/hostile/retaliate/mob = controller.pawn
-		if(SEND_SIGNAL(mob, COMSIG_MOB_RETURN_HUNGER) >= 50)
-			return // not hungry
+	if(too_fed_to_forage(controller))
+		return
 
 	var/atom/target = controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET]
 	if(!QDELETED(target))
@@ -27,10 +36,8 @@
 
 /datum/ai_planning_subtree/find_dead_bodies/SelectBehaviors(datum/ai_controller/controller, seconds_per_tick)
 	. = ..()
-	if(istype(controller.pawn, /mob/living/simple_animal))
-		var/mob/living/simple_animal/hostile/retaliate/mob = controller.pawn
-		if(SEND_SIGNAL(mob, COMSIG_MOB_RETURN_HUNGER) >= 50)
-			return // not hungry
+	if(too_fed_to_forage(controller))
+		return
 
 	var/atom/target = controller.blackboard[BB_BASIC_MOB_FOOD_TARGET]
 	if(!QDELETED(target))
@@ -68,10 +75,8 @@
 	behavior = /datum/ai_behavior/find_and_set/dead_bodies/mimic
 
 /datum/ai_planning_subtree/find_food/saiga/SelectBehaviors(datum/ai_controller/controller, seconds_per_tick)
-	if(istype(controller.pawn, /mob/living/simple_animal/hostile/retaliate))
-		var/mob/living/simple_animal/hostile/retaliate/mob = controller.pawn
-		if(SEND_SIGNAL(mob, COMSIG_MOB_RETURN_HUNGER) >= 50)
-			return // not hungry
+	if(too_fed_to_forage(controller))
+		return
 
 	var/atom/target = controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET]
 	if(!QDELETED(target))
