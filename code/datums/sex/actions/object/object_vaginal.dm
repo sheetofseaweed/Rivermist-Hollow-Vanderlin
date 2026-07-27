@@ -85,12 +85,12 @@
 
 
 /datum/sex_action/object_fuck/object_vaginal/handle_climax_message(mob/living/user, mob/living/target, must_flip)
-	user.visible_message(span_love("[target] cream themselves!"))
+	user.visible_message(span_love("[user] creams themselves!"))
 	user.lose_virginity()
 	return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_vaginal/on_finish(mob/living/user, mob/living/target)
+	var/obj/item/dildo = selected_toy || get_sextoy_in_hand(user)
 	. = ..()
-	var/obj/item/dildo = get_sextoy_in_hand(user)
-	user.visible_message(span_warning("[user] pulls \the [dildo] from [target]'s cunt."))
+	user.visible_message(span_warning("[user] pulls \the [dildo] from their cunt."))
 

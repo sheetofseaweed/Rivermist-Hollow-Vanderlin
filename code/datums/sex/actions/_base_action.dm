@@ -370,7 +370,10 @@
 		var/grabstate = action_user.get_effective_grab_state_on(action_target)
 		if(grabstate == null || grabstate < required_grab_state)
 			return FALSE
-	if(!performing && !can_perform(action_user, action_target))
+	if(performing)
+		if(!can_continue(action_user, action_target))
+			return FALSE
+	else if(!can_perform(action_user, action_target))
 		return FALSE
 	return TRUE
 
@@ -602,6 +605,17 @@
 	if(requires_hole_storage)
 		if(!check_hole_storage_available(user, target))
 			return FALSE
+	return TRUE
+
+/**
+ * Re-checked on every loop of an already running action, for the resources the action keeps
+ * borrowing rather than the ones it only needed to start.
+ *
+ * can_perform() cannot be reused here: it is a start-time precondition, and its hole storage check
+ * would fail against the action's own stored item the moment the action gets going.
+ */
+/datum/sex_action/proc/can_continue(mob/living/user, mob/living/target)
+	SHOULD_CALL_PARENT(TRUE)
 	return TRUE
 
 /datum/sex_action/proc/can_mage_hand_reach(mob/living/user, mob/living/target)
@@ -950,7 +964,15 @@
 		qdel(claim)
 	resource_claims.Cut()
 
-/datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE) //must_flip is for handling partner's message
+/**
+ * Announces a climax and returns where the fluid goes, or null to fall back to the generic handling.
+ *
+ * Note the argument names do not mean what they mean everywhere else in this file: `user` is
+ * whoever just climaxed and `target` is the other participant, regardless of who started the
+ * action. Word the message with `user` as its subject. `must_flip` is set when the climaxing
+ * participant is not the one performing the action, so it selects the partner's phrasing.
+ */
+/datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE)
 	return
 
 /// Returns the reagent container an ORGASM_LOCATION_CONTAINER climax should be routed into, or null. Overridden by collect-fluid actions.

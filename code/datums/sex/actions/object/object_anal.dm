@@ -86,7 +86,7 @@
 	return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_anal/on_finish(mob/living/user, mob/living/target)
+	var/obj/item/dildo = selected_toy || get_sextoy_in_hand(user)
 	. = ..()
-	var/obj/item/dildo = get_sextoy_in_hand(user)
 	user.visible_message(span_warning("[user] pulls \the [dildo] from their ass."))
 

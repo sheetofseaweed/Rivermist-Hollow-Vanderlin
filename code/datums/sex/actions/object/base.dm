@@ -37,6 +37,15 @@
 		return FALSE
 	return TRUE
 
+/datum/sex_action/object_fuck/can_continue(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	if(!selected_toy)
+		return FALSE
+	// Dropping the toy ends the action even if it lands on the tile everyone is standing on.
+	return get_storage_check_item(user, target) == selected_toy
+
 /datum/sex_action/object_fuck/on_start(mob/living/user, mob/living/target)
 	selected_toy = get_storage_check_item(user, target)
 	if(!selected_toy)
