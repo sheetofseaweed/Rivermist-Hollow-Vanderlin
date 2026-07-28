@@ -73,6 +73,7 @@
 #include "blueprint_mode.dm"
 #include "body_storage.dm"
 #include "buildmode_search.dm"
+#include "camp_shelters.dm"
 #include "character_menu.dm"
 #include "component_tests.dm"
 #include "connect_loc.dm"
