@@ -4,7 +4,7 @@
 	name = "trauma treatment apparatus"
 	desc = "A compact medical frame for treating one precisely diagnosed defeat injury. It consumes one to three bandages according to the injury's severity."
 	icon = 'icons/roguetown/misc/machines.dmi'
-	icon_state = "Ppress_Clean"
+	icon_state = "lottery"
 	density = TRUE
 	var/datum/defeat_trauma_provider/medical/machine/treatment_provider
 
@@ -39,7 +39,7 @@
 	name = "shrine of solace"
 	desc = "A small shrine that accepts one to three silver coins to soothe one chosen spiritual trauma."
 	icon = 'icons/roguetown/misc/structure.dmi'
-	icon_state = "statue1"
+	icon_state = "elfs"
 	density = TRUE
 	anchored = TRUE
 	var/datum/defeat_trauma_provider/shrine/structure/treatment_provider
