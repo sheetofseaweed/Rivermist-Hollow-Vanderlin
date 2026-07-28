@@ -1221,7 +1221,7 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 
 	for(var/obj/structure/resurrection_rune/rune as anything in GLOB.global_resurrunes)
 		var/datum/resurrection_rune_controller/rune_controller = rune.resrunecontroler
-		if(rune_controller && src in rune_controller.linked_users)
+		if(rune_controller && (src in rune_controller.linked_users))
 			rune_controller.remove_user(src)
 	GLOB.rune_roundstart_mobs -= src
 	GLOB.chosen_names -= real_name

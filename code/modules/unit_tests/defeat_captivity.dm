@@ -6,6 +6,10 @@
 /datum/defeat_captivity_profile/shared/unit_test
 	stable_key = "unit_test_shared"
 	template_type = /datum/map_template/pocket/defeat_captivity/unit_test
+	var/turf/unit_test_wilds
+
+/datum/defeat_captivity_profile/shared/unit_test/get_wilds_destination(datum/component/kidnap_captivity/captivity)
+	return unit_test_wilds || ..()
 
 /datum/defeat_captivity_profile/shared/unit_test/single
 	stable_key = "unit_test_capacity"
@@ -25,6 +29,7 @@
 	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
 	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human, run_loc_floor_top_right)
 	var/turf/first_origin = get_turf(first)
+	var/turf/test_wilds = run_loc_floor_top_right
 	first.apply_status_effect(/datum/status_effect/defeat_knockout)
 	second.apply_status_effect(/datum/status_effect/defeat_knockout)
 
@@ -32,6 +37,8 @@
 	TEST_ASSERT(second.kidnap_to_pocket(/datum/defeat_captivity_profile/shared/unit_test, null, null, "unit_test_shared"), "The second shared-lair captive should reuse the active lair.")
 	var/datum/component/kidnap_captivity/first_captivity = first.GetComponent(/datum/component/kidnap_captivity)
 	var/datum/component/kidnap_captivity/second_captivity = second.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/defeat_captivity_profile/shared/unit_test/first_profile = first_captivity.profile
+	first_profile.unit_test_wilds = test_wilds
 	var/datum/pocket_dimension/defeat_captivity/shared_instance = first_captivity.resolve_instance()
 	TEST_ASSERT_EQUAL(second_captivity.resolve_instance(), shared_instance, "Shared profiles should reuse one stable-key instance.")
 	TEST_ASSERT(shared_instance.can_exit_mob(first, null, FALSE), "The shared-lair exit should not duplicate KO interaction blocking with component state.")
@@ -39,7 +46,8 @@
 	TEST_ASSERT(first_captivity.released, "Removing KO outside the captivity timer should reconcile the component to released.")
 	TEST_ASSERT(shared_instance.exit_mob(first), "The shared-lair exit should route through contextual release.")
 	TEST_ASSERT_NULL(first.GetComponent(/datum/component/kidnap_captivity), "Contextual exit should remove captivity state.")
-	TEST_ASSERT_EQUAL(get_turf(first), first_origin, "A shared lair without a configured exterior should return to the saved capture turf first.")
+	TEST_ASSERT_NOTEQUAL(get_turf(first), first_origin, "A shared lair must not dump an escapee back on the capture turf, in the middle of their captors.")
+	TEST_ASSERT_EQUAL(get_turf(first), test_wilds, "A shared lair without a configured exterior should prefer the wilds over the saved capture turf.")
 	TEST_ASSERT(first.kidnap_protected_until > world.time, "Leaving captivity should grant a short recapture grace period.")
 	SSpocket_dimensions.delete_instance(shared_instance)
 

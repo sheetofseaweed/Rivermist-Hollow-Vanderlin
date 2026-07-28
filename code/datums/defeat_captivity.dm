@@ -127,11 +127,14 @@
 			if(!is_valid_ejection_turf(destination, instance))
 				destination = captivity.get_saved_origin()
 		else
+			// Wilds before the saved capture turf: a shared lair's capture point is usually the middle of
+			// the camp that took you, so returning there hands the escapee straight back to their captors.
+			// A profile with a real exterior anchor still wins; the capture turf is only a last resort.
 			destination = get_configured_exterior(captivity)
 			if(!is_valid_ejection_turf(destination, instance))
-				destination = captivity.get_saved_origin()
-			if(!is_valid_ejection_turf(destination, instance))
 				destination = get_wilds_destination(captivity)
+			if(!is_valid_ejection_turf(destination, instance))
+				destination = captivity.get_saved_origin()
 
 	if(!is_valid_ejection_turf(destination, instance))
 		destination = find_safe_turf()
