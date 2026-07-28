@@ -15,7 +15,24 @@
 		return FALSE
 	return TRUE
 
-/datum/sex_action/object_fuck/object_vaginal_other/other/vagina/on_start(mob/living/user, mob/living/target)
+/datum/sex_action/object_fuck/object_vaginal_other/can_perform(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	var/obj/item/dildo = get_sextoy_in_hand(user)
+	if(user == target)
+		return FALSE
+	if(!dildo)
+		return FALSE
+	if(!target.getorganslot(ORGAN_SLOT_VAGINA))
+		return FALSE
+	if(check_sex_lock(target, ORGAN_SLOT_VAGINA, null, dildo))
+		return FALSE
+	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
+		return FALSE
+	return TRUE
+
+/datum/sex_action/object_fuck/object_vaginal_other/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	if(!.)
 		return FALSE
@@ -27,7 +44,7 @@
 	if(istype(user.get_active_held_item(), /obj/item/reagent_containers/glass))
 		var/obj/item/reagent_containers/glass/contdildo = dildo
 		if(contdildo.spillable)
-			to_chat(user, span_info("\the [contdildo] will likely spill inside me."))
+			to_chat(user, span_info("\the [contdildo] will likely spill inside [target]."))
 			to_chat(user, span_smallred("I can pump it with <bold>speed</bold> for faster success."))
 
 	user.visible_message(span_warning("[user] stuffs \the [dildo] in [target]'s cunt..."))
@@ -73,12 +90,12 @@
 
 /datum/sex_action/object_fuck/object_vaginal_other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
-		target.visible_message(span_love("[user] cream themselves around [target]'s thrusting dildo!"))
-		target.lose_virginity()
+		target.visible_message(span_love("[user] creams themselves around [target]'s thrusting dildo!"))
+		user.lose_virginity()
 		return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_vaginal_other/on_finish(mob/living/user, mob/living/target)
+	var/obj/item/dildo = selected_toy || get_sextoy_in_hand(user)
 	. = ..()
-	var/obj/item/dildo = get_sextoy_in_hand(user)
 	user.visible_message(span_warning("[user] pulls \the [dildo] from [target]'s cunt."))
 

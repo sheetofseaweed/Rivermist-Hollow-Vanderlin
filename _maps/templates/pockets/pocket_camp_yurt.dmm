@@ -1,0 +1,120 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/tent,
+/area/pocket_dimension/camp_yurt)
+"b" = (
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"c" = (
+/obj/structure/bed/wool,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"d" = (
+/obj/effect/landmark/pocket_dimension/exit/camp_shelter,
+/turf/closed/wall/mineral/tent,
+/area/pocket_dimension/camp_yurt)
+"e" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"f" = (
+/obj/structure/closet/crate/crafted_closet,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"g" = (
+/obj/machinery/light/fueled/firebowl,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_yurt)
+"h" = (
+/obj/structure/table/wood/folding,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"i" = (
+/obj/structure/closet/crate/chest,
+/obj/machinery/light/fueled/torchholder/metal_torch/west,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"j" = (
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/camp_yurt)
+"n" = (
+/obj/structure/chair/stool,
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/camp_yurt)
+"B" = (
+/obj/structure/closet/crate/chest,
+/obj/machinery/light/fueled/torchholder/metal_torch/east,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_yurt)
+"Y" = (
+/obj/machinery/light/fueled/hearth/mobilestove,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_yurt)
+"Z" = (
+/obj/effect/landmark/pocket_dimension/drop_spot,
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/camp_yurt)
+
+(1,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+a
+c
+B
+c
+a
+a
+"}
+(3,1,1) = {"
+a
+g
+j
+n
+j
+b
+a
+"}
+(4,1,1) = {"
+a
+Y
+j
+h
+Z
+e
+d
+"}
+(5,1,1) = {"
+a
+g
+j
+n
+j
+f
+a
+"}
+(6,1,1) = {"
+a
+a
+c
+i
+c
+a
+a
+"}
+(7,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+"}

@@ -91,6 +91,10 @@
 		return ..()
 	if(!istype(dragged))
 		return
+	// Hiding under a table (or sitting in a closet) puts you inside it, so your own sprite isn't on
+	// screen to drag - the container is. Dragging what you are inside counts as dragging yourself.
+	if(dragged != user && dragged == user.loc)
+		dragged = user
 	// Need to drag yourself to the target.
 	if(dragged != user)
 		return
@@ -789,12 +793,21 @@
 	virginity = FALSE
 
 /mob/living/proc/adjacent_or_closet(atom/neighbor)
-	if(istype(loc, /obj/structure/closet) || istype(loc, /obj/structure/handcart) || istype(neighbor.loc, /obj/structure/closet) || istype(neighbor.loc, /obj/structure/handcart)) // within container
-		return loc == neighbor.loc
-	return Adjacent(neighbor)
-
-/mob/living/proc/check_closet(atom/neighbor)
-	if(istype(loc, /obj/structure/closet) || istype(loc, /obj/structure/handcart) || istype(neighbor.loc, /obj/structure/closet) || istype(neighbor.loc, /obj/structure/handcart)) // within container
-		return loc == neighbor.loc
-	else
+	if(!neighbor)
 		return FALSE
+	if(loc == neighbor.loc) // same tile, or tucked inside the same thing
+		return TRUE
+	if(Adjacent(neighbor))
+		return TRUE
+	// Adjacent() gives up outright once either loc is not a turf, which locks out anyone inside a
+	// closet, a handcart, or a hiding spot under a table. Reach from the container's own tile.
+	if(isturf(loc) && isturf(neighbor.loc))
+		return FALSE
+	var/turf/our_turf = get_turf(src)
+	if(!our_turf)
+		return FALSE
+	return our_turf.Adjacent(neighbor, target = neighbor, mover = src)
+
+/// TRUE when both of us are tucked inside the same thing, which counts as sharing a tile.
+/mob/living/proc/check_closet(atom/neighbor)
+	return neighbor && !isturf(loc) && (loc == neighbor.loc)

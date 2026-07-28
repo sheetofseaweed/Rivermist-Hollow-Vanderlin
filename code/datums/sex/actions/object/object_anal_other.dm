@@ -83,12 +83,12 @@
 
 /datum/sex_action/object_fuck/object_anal_other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
-		target.visible_message(span_love("[target] cums with their ass due to [user]'s thrusting dildo!"))
-		target.lose_virginity()
+		target.visible_message(span_love("[user] cums with their ass due to [target]'s thrusting dildo!"))
+		user.lose_virginity()
 		return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_anal_other/on_finish(mob/living/user, mob/living/target)
+	var/obj/item/dildo = selected_toy || get_sextoy_in_hand(user)
 	. = ..()
-	var/obj/item/dildo = get_sextoy_in_hand(user)
 	user.visible_message(span_warning("[user] pulls \the [dildo] from [target]'s ass."))
 

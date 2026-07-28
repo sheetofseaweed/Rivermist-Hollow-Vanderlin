@@ -108,6 +108,10 @@
 	if(desc)
 		. += desc
 
+	var/hunger_line = get_hunger_examine()
+	if(hunger_line)
+		. += hunger_line
+
 	if(ssaddle)
 		. += span_notice("This animal is saddled: ([ssaddle.name]).")
 	if(ccaparison)
@@ -120,3 +124,23 @@
 
 	. += "ᛉ ------------ ᛉ</span>"
 	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, user, .)
+
+/// Plain-language read on how much is left in the animal's hunger meter. Null if it tracks no hunger.
+/// Rideable animals also get told what their condition means for a rider, since the slowdown and the
+/// bucking are otherwise unexplained.
+/mob/living/simple_animal/proc/get_hunger_examine()
+	var/datum/component/generic_mob_hunger/fuel = GetComponent(/datum/component/generic_mob_hunger)
+	if(!fuel?.max_hunger)
+		return null
+
+	var/fill = fuel.current_hunger / fuel.max_hunger
+	var/t_He = p_they(TRUE)
+	if(fill <= 0)
+		return span_danger("[t_He] [p_are()] famished.[can_buckle ? " No rider will stay on [p_them()] for long." : ""]")
+	if(fill <= MOUNT_TIRED_THRESHOLD)
+		return span_warning("[t_He] [p_are()] starving.[can_buckle ? " [t_He] would tire under saddle." : ""]")
+	if(fill <= 0.5)
+		return span_notice("[t_He] look[p_s()] hungry.")
+	if(fill <= 0.85)
+		return span_notice("[t_He] look[p_s()] well enough fed.")
+	return span_notice("[t_He] look[p_s()] plump and content.")

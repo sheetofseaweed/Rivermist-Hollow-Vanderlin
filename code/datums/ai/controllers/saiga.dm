@@ -21,13 +21,14 @@
 
 /datum/ai_controller/saiga/TryPossessPawn(atom/new_pawn)
 	. = ..()
-	RegisterSignal(new_pawn, COMSIG_ANIMAL_TAMED, PROC_REF(on_user_tamed))
+	RegisterSignal(new_pawn, COMSIG_LIVING_TAMED, PROC_REF(on_user_tamed))
 
 /datum/ai_controller/saiga/UnpossessPawn(destroy)
-	UnregisterSignal(pawn, COMSIG_ANIMAL_TAMED)
+	UnregisterSignal(pawn, COMSIG_LIVING_TAMED)
 	. = ..()
 
-/datum/ai_controller/saiga/proc/on_user_tamed()
+/datum/ai_controller/saiga/proc/on_user_tamed(datum/source, mob/tamer)
+	SIGNAL_HANDLER
 	movement_delay = 0.3 SECONDS
 	set_blackboard_key(BB_BASIC_MOB_FLEEING, FALSE)
 	idle_behavior = null

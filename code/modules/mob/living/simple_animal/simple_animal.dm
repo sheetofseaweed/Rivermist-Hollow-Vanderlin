@@ -135,6 +135,16 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 	var/footstep_type
 
 	var/food_max = 50
+	/// Hunger drained every Mob Functions tick.
+	var/food_drain = 0.1
+	/// What this animal will drink from. Null means it can't be watered by hand.
+	var/list/drink_type
+	/// Hunger spent per tile while carrying a rider. Zero means riding this animal is free.
+	var/ride_hunger_cost = 0
+	/// Hunger spent per tile while carrying a rider at a gallop.
+	var/ride_gallop_hunger_cost = 0
+	/// Which hunger warning the current rider has already been given.
+	var/mount_hunger_warning = MOUNT_WARNING_NONE
 	var/pooptype = /obj/item/natural/poo/horse
 	var/pooprog = 0
 
@@ -155,6 +165,8 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 
 	var/can_saddle = FALSE
 	var/obj/item/ssaddle
+	/// Icon state for the saddle overlay. The "-above" variant of it is drawn over the rider.
+	var/saddle_overlay_state = "saddle"
 	// A flat percentage bonus to our ability to detect sneaking people only. Use in lieu of giving mobs huge GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) bonuses if you want them to be observant.
 	var/simple_detect_bonus = 0
 
@@ -193,7 +205,7 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 		ADD_TRAIT(src, TRAIT_MOVE_FLYING, ROUNDSTART_TRAIT)
 	if(food_max)
 		var/initial_hunger = food_max * 0.75
-		AddComponent(/datum/component/generic_mob_hunger, food_max, 0.25, starting_hunger = initial_hunger)
+		AddComponent(/datum/component/generic_mob_hunger, food_max, food_drain, starting_hunger = initial_hunger)
 	if(happy_funtime_mob)
 		AddComponent(/datum/component/friendship_container, mob_friends, "friend")
 		AddComponent(/datum/component/happiness_container, 30, list(), list(), food_type)
@@ -280,6 +292,9 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 		. += barding_above_overlay
 
 /mob/living/simple_animal/attackby(obj/item/O, mob/user, list/modifiers)
+	if(is_type_in_list(O, drink_type) && try_drink(O, user))
+		SEND_SIGNAL(src, COMSIG_ATOM_ATTACKBY, O, user, modifiers)
+		return TRUE
 	if(!is_type_in_list(O, food_type))
 		return ..()
 	else
@@ -287,6 +302,22 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 			SEND_SIGNAL(src, COMSIG_ATOM_ATTACKBY, O, user, modifiers) // for udder functionality
 			return TRUE
 	. = ..()
+
+/// Waters the animal from a held container. Unlike feeding this leaves the container intact and
+/// doesn't roll for taming, so a bucket survives the trip to the trough.
+/mob/living/simple_animal/proc/try_drink(obj/item/O, mob/living/user)
+	if(stat)
+		return FALSE
+	// Clean water only: remove_reagent can't match subtypes, so accepting them here would let a
+	// container of brine pass the check and lose nothing.
+	if(!O.reagents?.has_reagent(/datum/reagent/water, MOUNT_DRINK_UNITS))
+		return FALSE
+	user.visible_message(span_info("[user] waters [src] from [O]."), span_notice("I water [src] from [O]."))
+	playsound(src, 'sound/misc/eat.ogg', rand(30, 60), TRUE)
+	O.reagents.remove_reagent(/datum/reagent/water, MOUNT_DRINK_UNITS)
+	SEND_SIGNAL(src, COMSIG_MOB_FEED, O, MOUNT_DRINK_VALUE, user)
+	SEND_SIGNAL(src, COMSIG_FRIENDSHIP_CHANGE, user, 5)
+	return TRUE
 
 /mob/living/simple_animal/proc/try_tame(obj/item/O, mob/living/carbon/human/user)
 	if(!stat)
@@ -342,6 +373,8 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 
 	if(user)
 		owner = user
+	// Fired unconditionally so admin- and map-spawned tames transition the same way a hand-fed one does.
+	SEND_SIGNAL(src, COMSIG_LIVING_TAMED, user)
 	update_appearance()
 
 //mob/living/simple_animal/examine(mob/user)
@@ -978,6 +1011,9 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 					amt = clamp(amt, 0, 4) //higher speed amounts are a little wild. Max amount achieved at expert riding.
 					riding_datum.vehicle_move_delay -= (amt/5 + 1.5)
 					riding_datum.vehicle_move_delay -= 3
+			// Charged after the skill bonus so a tired mount stays slow no matter how good the rider is.
+			if(loc != oldloc && isliving(user) && handle_ride_upkeep(user, user.m_intent == MOVE_INTENT_RUN, riding_datum))
+				return
 			if(loc != oldloc)
 				var/obj/structure/door/MD = locate() in loc
 				if(MD && !MD.ridethrough)
@@ -990,6 +1026,48 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 							L.Stun(50)
 							playsound(L, 'sound/foley/zfall.ogg', 100, FALSE)
 							L.visible_message(span_danger("[L] falls off [src]!"))
+
+/// Spends a ridden tile out of the mount's hunger and applies what an empty meter costs: a tired
+/// mount plods, and a starved one may throw its rider. Returns TRUE if the rider came off.
+/mob/living/simple_animal/proc/handle_ride_upkeep(mob/living/rider, galloping, datum/component/riding/riding_datum)
+	var/cost = galloping ? ride_gallop_hunger_cost : ride_hunger_cost
+	if(!cost)
+		return FALSE
+	var/datum/component/generic_mob_hunger/fuel = GetComponent(/datum/component/generic_mob_hunger)
+	if(!fuel || !fuel.max_hunger)
+		return FALSE
+
+	SEND_SIGNAL(src, COMSIG_MOB_ADJUST_HUNGER, -cost)
+
+	var/spent = fuel.current_hunger <= 0
+	var/tiring = (fuel.current_hunger / fuel.max_hunger) <= MOUNT_TIRED_THRESHOLD
+	warn_rider_of_hunger(rider, spent ? MOUNT_WARNING_SPENT : (tiring ? MOUNT_WARNING_TIRING : MOUNT_WARNING_NONE))
+
+	if(!tiring)
+		return FALSE
+	riding_datum.vehicle_move_delay += MOUNT_TIRED_SLOWDOWN
+
+	if(!spent)
+		return FALSE
+	var/buck_chance = min(MOUNT_BUCK_BASE_CHANCE + (fuel.minutes_empty() * MOUNT_BUCK_CHANCE_PER_MINUTE), MOUNT_BUCK_MAX_CHANCE)
+	if(!prob(buck_chance))
+		return FALSE
+	visible_message(span_danger("[src] buckles from hunger and throws [rider]!"))
+	to_chat(rider, span_userdanger("[src] gives out beneath me. [p_they(TRUE)] [p_are()] starving!"))
+	violent_dismount(rider)
+	return TRUE
+
+/// Tells the rider why the animal under them is flagging. Fires on a change of condition rather than
+/// every tile, so a long hungry ride isn't a wall of text.
+/mob/living/simple_animal/proc/warn_rider_of_hunger(mob/living/rider, level)
+	if(level == mount_hunger_warning)
+		return
+	mount_hunger_warning = level
+	switch(level)
+		if(MOUNT_WARNING_TIRING)
+			to_chat(rider, span_warning("[src] slows to a labored plod. [p_they(TRUE)] need[p_s()] feeding."))
+		if(MOUNT_WARNING_SPENT)
+			to_chat(rider, span_userdanger("[src] is starving and staggers with every step. [p_they(TRUE)] could throw me at any moment!"))
 
 /mob/living/simple_animal/proc/violent_dismount(mob/living/user)
 	if(isliving(user))
@@ -1008,6 +1086,8 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 
 /mob/living/simple_animal/buckle_mob(mob/living/buckled_mob, force = 0, check_loc = 1)
 	. = ..()
+	// A fresh rider hasn't been told anything yet, however much the last one heard.
+	mount_hunger_warning = MOUNT_WARNING_NONE
 	LoadComponent(/datum/component/riding)
 
 /mob/living/simple_animal/Life()

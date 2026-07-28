@@ -7,6 +7,8 @@
 	var/feed_pause_time
 	var/feed_pause_end
 	var/remove_overfed_timer
+	/// world.time the meter last hit empty, so callers can escalate the cost of leaving it there.
+	var/empty_since
 
 /datum/component/generic_mob_hunger/Initialize(max_hunger = 250, hunger_drain = 0.1, feed_pause_time = 1 MINUTES, starting_hunger)
 	. = ..()
@@ -55,11 +57,26 @@
 
 /datum/component/generic_mob_hunger/proc/on_fill_hunger()
 	current_hunger = max_hunger
+	update_empty_since()
 
 /datum/component/generic_mob_hunger/proc/on_drain_hunger(precent)
 	if(!precent)
 		return
 	current_hunger = max(current_hunger - (max_hunger * precent), 0)
+	update_empty_since()
+
+/// Starts the clock when the meter runs dry and stops it the moment anything goes back in.
+/datum/component/generic_mob_hunger/proc/update_empty_since()
+	if(current_hunger > 0)
+		empty_since = null
+	else if(isnull(empty_since))
+		empty_since = world.time
+
+/// How long the meter has sat empty, in minutes. Zero while there is anything left.
+/datum/component/generic_mob_hunger/proc/minutes_empty()
+	if(isnull(empty_since))
+		return 0
+	return (world.time - empty_since) / (1 MINUTES)
 
 /datum/component/generic_mob_hunger/proc/on_feed(datum/source, atom/target, feed_amount, atom/came_from)
 	SIGNAL_HANDLER
@@ -79,6 +96,7 @@
 		return
 
 	current_hunger += feed_amount
+	update_empty_since()
 	SEND_SIGNAL(parent, COMSIG_MOB_EAT_NORMAL, current_hunger)
 	if(feed_pause_time)
 		feed_pause_end = world.time + feed_pause_time
@@ -98,6 +116,7 @@
 
 	if(current_hunger >= hunger_drain)
 		current_hunger -= hunger_drain
+		update_empty_since()
 		SEND_SIGNAL(parent, COMSIG_HUNGER_UPDATED, current_hunger, max_hunger)
 
 		var/hunger_precent = current_hunger / max_hunger
@@ -106,11 +125,17 @@
 			SEND_SIGNAL(parent, COMSIG_MOB_STARVING, hunger_precent)
 	else
 		current_hunger = 0
+		update_empty_since()
 		SEND_SIGNAL(parent, COMSIG_HUNGER_UPDATED, current_hunger, max_hunger)
 		SEND_SIGNAL(parent, COMSIG_MOB_FULLY_STARVING)
 
 /datum/component/generic_mob_hunger/proc/adjust_hunger(datum/source, amount)
-	current_hunger += amount
+	SIGNAL_HANDLER
+	// Overeating is handled by on_feed, which can push past the cap on purpose. This path just nudges
+	// the meter, so it stays inside it rather than running negative.
+	current_hunger = clamp(current_hunger + amount, 0, max_hunger)
+	update_empty_since()
+	SEND_SIGNAL(parent, COMSIG_HUNGER_UPDATED, current_hunger, max_hunger)
 
 /datum/component/generic_mob_hunger/proc/view_hunger(mob/living/source, mob/living/clicker)
 	if(!istype(clicker) || !clicker.client)
