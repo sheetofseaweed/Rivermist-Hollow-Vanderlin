@@ -16,9 +16,34 @@ import { Window } from '../layouts';
 
 type Booleanish = boolean | number;
 
-type LoadoutSlot = {
-  slot: number;
+type LoadoutCatalogEntry = {
   name: string;
+  desc: string;
+  point_cost: number;
+  typepath: string;
+  icon: string;
+  nobility_locked: Booleanish;
+};
+
+type LoadoutSlotData = {
+  slot: number;
+  item_name: string | null;
+  typepath: string | null;
+  point_cost: number;
+  custom_name: string | null;
+  custom_desc: string | null;
+  custom_hex: string | null;
+};
+
+type LoadoutPresetData = {
+  slot: number;
+  summary: string;
+};
+
+type LoadoutPointsData = {
+  total: number;
+  spent: number;
+  remaining: number;
 };
 
 type SpeciesStat = {
@@ -239,7 +264,10 @@ type PrefsData = {
   voice_pack: string;
   moan_selection: string;
   selected_accent: string;
-  loadouts: LoadoutSlot[];
+  loadout_catalog: LoadoutCatalogEntry[];
+  loadout_slots: LoadoutSlotData[];
+  loadout_points: LoadoutPointsData;
+  loadout_presets: LoadoutPresetData[];
   triumphs: number;
   round_start_status: string;
   round_start_seconds: number;
@@ -273,6 +301,7 @@ const charSections = [
   { id: 'identity', label: 'Identity', icon: 'id-card' },
   { id: 'appearance', label: 'Appearance', icon: 'palette' },
   { id: 'gameplay', label: 'Gameplay', icon: 'gamepad' },
+  { id: 'loadout', label: 'Loadout', icon: 'box-open' },
   { id: 'profile', label: 'Character Profile', icon: 'image' },
 ];
 
@@ -588,6 +617,14 @@ export const PreferencesMenu = () => {
 
   const [activeSection, setActiveSection] = useState(mapTab(data.initial_tab));
   const [activeFeature, setActiveFeature] = useState<string>(UNDERWEAR_KEY);
+  const [loadoutCatalogSlot, setLoadoutCatalogSlot] = useState<number | null>(
+    null,
+  );
+  const [loadoutSearch, setLoadoutSearch] = useState('');
+  const [styleSearch, setStyleSearch] = useState('');
+  useEffect(() => {
+    setStyleSearch('');
+  }, [activeFeature]);
   const [speciesFilter, setSpeciesFilter] = useState<
     'all' | 'available' | 'locked'
   >('all');
@@ -1512,6 +1549,17 @@ export const PreferencesMenu = () => {
     );
   };
 
+  const filteredAccessoryOptions = (feature: FeatureEntry) => {
+    const options = feature.accessory_options || [];
+    const lowered = styleSearch.trim().toLowerCase();
+    if (!lowered) {
+      return options;
+    }
+    return options.filter((option) =>
+      option.name.toLowerCase().includes(lowered),
+    );
+  };
+
   const renderFeatureBody = (feature: FeatureEntry, skipColors?: boolean) => {
     const extraControls = renderFeatureExtras(feature);
 
@@ -1543,9 +1591,22 @@ export const PreferencesMenu = () => {
                 <Box color="label">Style</Box>
               </Stack.Item>
               {extraControls ? <Stack.Item grow>{extraControls}</Stack.Item> : null}
+              {feature.accessory_options.length > 12 ? (
+                <Stack.Item grow={extraControls ? undefined : 1} textAlign="right">
+                  <Input
+                    value={styleSearch}
+                    onChange={setStyleSearch}
+                    placeholder="Search styles..."
+                    width="140px"
+                  />
+                </Stack.Item>
+              ) : null}
             </Stack>
+            {!filteredAccessoryOptions(feature).length ? (
+              <Box color="label">No styles match your search.</Box>
+            ) : null}
             <OptionGrid
-              options={feature.accessory_options}
+              options={filteredAccessoryOptions(feature)}
               selected={feature.accessory_value}
               onSelect={(value) =>
                 customizerAct(feature.key, 'select_acc', { acc_type: value })
@@ -1923,14 +1984,27 @@ export const PreferencesMenu = () => {
         <PrefRow icon="list-ol" label="Ready Order" value="Edit" onClick={() => doPref('multi', 'menu')} />
       </Panel>
 
-      <Panel title="Loadout" icon="shopping-bag">
-        <ActionButton icon="box" label="Open Loadout Menu" onClick={() => doPref('loadout_item', 'input')} />
-      </Panel>
-
       <Panel title="Combat & Defeat" icon="skull">
         <PrefRow icon="music" label="Combat Music" value={data.combat_music} onClick={() => doPref('combat_music', 'input')} />
-        <PrefRow icon="skull" label="Defeat Mode" value={data.defeat_mode} onClick={() => doPref('defeat_mode', 'input')} />
-        <PrefRow icon="heart-broken" label="Defeat Threshold" value={data.defeat_threshold} onClick={() => doPref('defeat_threshold', 'input')} />
+        <PrefRow
+          icon="skull"
+          label="Defeat Mode"
+          value={data.defeat_mode}
+          tooltip="Defeat stops lethal bleeding and brain danger without fully healing you. Manual, prepared, and campfire recovery can wake you with aftermath trauma; this setting controls whether rune return is also available."
+          onClick={() => doPref('defeat_mode', 'input')}
+        />
+        <PrefRow
+          icon="heart-broken"
+          label="Defeat Threshold"
+          value={data.defeat_threshold}
+          tooltip="The pooled brute, burn, toxin, and clone damage needed to fall into Defeat. Stabilization makes you safe; waking is a separate recovery step."
+          onClick={() => doPref('defeat_threshold', 'input')}
+        />
+        <Box color="label" fontSize="12px" mt={0.5}>
+          Horny Defeat resistance is deterministic and stat-based. During an
+          active encounter, only you see your exact progress, threshold, and
+          remaining climaxes.
+        </Box>
       </Panel>
 
       {/* Triumphs are disabled for now.
@@ -1942,6 +2016,344 @@ export const PreferencesMenu = () => {
       */}
     </>
   );
+
+  const loadoutAct = (task: string, extra?: Record<string, unknown>) =>
+    doPref('character_setup_loadout', task, extra);
+
+  const renderLoadoutCatalog = (slot: number) => {
+    const slots = data.loadout_slots || [];
+    const points = data.loadout_points || { total: 0, spent: 0, remaining: 0 };
+    const current = slots.find((entry) => entry.slot === slot);
+    const slotBudget = points.remaining + (current?.point_cost || 0);
+    const lowered = loadoutSearch.trim().toLowerCase();
+    const catalog = (data.loadout_catalog || [])
+      .filter((item) => !asBool(item.nobility_locked))
+      .filter(
+        (item) =>
+          !lowered ||
+          item.name.toLowerCase().includes(lowered) ||
+          (item.desc || '').toLowerCase().includes(lowered),
+      );
+
+    return (
+      <Panel
+        title={`Choose Item — Slot ${slot}`}
+        icon="box-open"
+        buttons={
+          <Stack align="center">
+            <Stack.Item>
+              <Input
+                value={loadoutSearch}
+                onChange={setLoadoutSearch}
+                placeholder="Search..."
+              />
+            </Stack.Item>
+            <Stack.Item>
+              <Button icon="times" onClick={() => setLoadoutCatalogSlot(null)}>
+                Close
+              </Button>
+            </Stack.Item>
+          </Stack>
+        }
+      >
+        <Box color="label" mb={1}>
+          Available for this slot: {slotBudget} points ({points.remaining} /{' '}
+          {points.total} unspent overall)
+        </Box>
+        {!catalog.length && (
+          <Box color="label">No loadout items match your search.</Box>
+        )}
+        {catalog.map((item) => {
+          const selectedElsewhere = slots.find(
+            (entry) => entry.slot !== slot && entry.typepath === item.typepath,
+          );
+          const isCurrent = current?.typepath === item.typepath;
+          const tooExpensive = item.point_cost > slotBudget;
+          const disabled = !!selectedElsewhere || tooExpensive;
+          let statusText = 'Click to select';
+          let statusColor = 'good';
+          if (isCurrent) {
+            statusText = 'Currently selected in this slot';
+          } else if (selectedElsewhere) {
+            statusText = `Already selected in slot ${selectedElsewhere.slot}`;
+            statusColor = 'bad';
+          } else if (tooExpensive) {
+            statusText = `Costs ${item.point_cost}, but only ${slotBudget} points fit here`;
+            statusColor = 'average';
+          }
+          return (
+            <Box key={item.typepath} mb={1}>
+              <Button
+                fluid
+                disabled={disabled}
+                selected={isCurrent}
+                tooltip={disabled ? statusText : undefined}
+                onClick={() => {
+                  loadoutAct('select', { slot, typepath: item.typepath });
+                  setLoadoutCatalogSlot(null);
+                }}
+              >
+                <Stack align="center">
+                  <Stack.Item>
+                    <Box
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Box className={item.icon} />
+                    </Box>
+                  </Stack.Item>
+                  <Stack.Item grow>
+                    <Box bold>{item.name}</Box>
+                    <Box color="label">{item.desc || 'No description.'}</Box>
+                    <Box color={statusColor}>{statusText}</Box>
+                  </Stack.Item>
+                  <Stack.Item>
+                    <Box bold>
+                      {item.point_cost} point{item.point_cost === 1 ? '' : 's'}
+                    </Box>
+                  </Stack.Item>
+                </Stack>
+              </Button>
+            </Box>
+          );
+        })}
+      </Panel>
+    );
+  };
+
+  const renderLoadout = () => {
+    const points = data.loadout_points || { total: 0, spent: 0, remaining: 0 };
+    const slots = data.loadout_slots || [];
+    const presets = data.loadout_presets || [];
+    const catalogByPath = new Map(
+      (data.loadout_catalog || []).map((item) => [item.typepath, item]),
+    );
+
+    if (loadoutCatalogSlot !== null) {
+      return renderLoadoutCatalog(loadoutCatalogSlot);
+    }
+
+    return (
+      <>
+        <Panel title="Loadout Points" icon="coins">
+          <Stack>
+            <Stack.Item grow>
+              <InfoRow
+                icon="wallet"
+                label="Available"
+                value={points.remaining}
+                valueColor="good"
+              />
+            </Stack.Item>
+            <Stack.Item grow>
+              <InfoRow
+                icon="shopping-cart"
+                label="Spent"
+                value={points.spent}
+              />
+            </Stack.Item>
+            <Stack.Item grow>
+              <InfoRow icon="layer-group" label="Total" value={points.total} />
+            </Stack.Item>
+          </Stack>
+          <Box color="label" fontSize="11px">
+            Loadout items are modified: armor is set to minor protection and
+            Light class, weapons deal 30% less damage with 50% less weapon
+            defense, and all items sell for 0.
+          </Box>
+        </Panel>
+
+        <Stack wrap>
+          {slots.map((entry) => (
+            <Stack.Item
+              key={entry.slot}
+              basis="49%"
+              grow
+              mr={entry.slot % 2 ? 1 : 0}
+              mb={1}
+            >
+              <Section
+                title={`Slot ${entry.slot}`}
+                buttons={
+                  entry.typepath ? (
+                    <Box bold color="good">
+                      {entry.point_cost} pts
+                    </Box>
+                  ) : undefined
+                }
+              >
+                {entry.typepath ? (
+                  <>
+                    <Stack align="center" mb={0.5}>
+                      {catalogByPath.get(entry.typepath)?.icon ? (
+                        <Stack.Item>
+                          <Box
+                            style={{
+                              width: '40px',
+                              height: '40px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Box
+                              className={catalogByPath.get(entry.typepath)?.icon}
+                            />
+                          </Box>
+                        </Stack.Item>
+                      ) : null}
+                      <Stack.Item grow>
+                        <Box bold>{entry.custom_name || entry.item_name}</Box>
+                        {(entry.custom_name || entry.custom_desc) && (
+                          <Box color="label" fontSize="10px">
+                            ✎ Customized
+                          </Box>
+                        )}
+                      </Stack.Item>
+                    </Stack>
+                    {entry.custom_desc ? (
+                      <Box color="label" mb={0.5}>
+                        {entry.custom_desc}
+                      </Box>
+                    ) : null}
+                    {entry.custom_hex ? (
+                      <Stack align="center" mb={0.5}>
+                        <Stack.Item>
+                          <Box
+                            width="12px"
+                            height="12px"
+                            backgroundColor={entry.custom_hex}
+                            style={{ border: '1px solid rgba(0,0,0,0.6)' }}
+                          />
+                        </Stack.Item>
+                        <Stack.Item>
+                          <Box color="label">{entry.custom_hex}</Box>
+                        </Stack.Item>
+                      </Stack>
+                    ) : null}
+                    <Stack wrap>
+                      <Stack.Item>
+                        <Button
+                          icon="box"
+                          onClick={() => setLoadoutCatalogSlot(entry.slot)}
+                        >
+                          Change
+                        </Button>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <Button
+                          icon="pen"
+                          onClick={() =>
+                            loadoutAct('rename', { slot: entry.slot })
+                          }
+                        >
+                          Rename
+                        </Button>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <Button
+                          icon="align-left"
+                          onClick={() =>
+                            loadoutAct('describe', { slot: entry.slot })
+                          }
+                        >
+                          Describe
+                        </Button>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <Button
+                          icon="palette"
+                          onClick={() =>
+                            loadoutAct('color', { slot: entry.slot })
+                          }
+                        >
+                          Color
+                        </Button>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <Button
+                          icon="trash"
+                          color="bad"
+                          onClick={() =>
+                            loadoutAct('clear', { slot: entry.slot })
+                          }
+                        >
+                          Clear
+                        </Button>
+                      </Stack.Item>
+                    </Stack>
+                  </>
+                ) : (
+                  <Box textAlign="center" py={1}>
+                    <Box color="label" italic mb={0.5}>
+                      Empty Slot
+                    </Box>
+                    <Button
+                      icon="plus"
+                      onClick={() => setLoadoutCatalogSlot(entry.slot)}
+                    >
+                      Select Item
+                    </Button>
+                  </Box>
+                )}
+              </Section>
+            </Stack.Item>
+          ))}
+        </Stack>
+
+        <Panel title="Presets" icon="save">
+          <Stack>
+            {presets.map((preset) => (
+              <Stack.Item key={preset.slot} grow basis={0}>
+                <Section title={`Preset ${preset.slot}`}>
+                  <Box color="label" mb={0.5} minHeight="16px">
+                    {(preset.summary || 'Empty').replace(/^ \| /, '')}
+                  </Box>
+                  <Stack>
+                    <Stack.Item>
+                      <Button
+                        icon="save"
+                        onClick={() =>
+                          loadoutAct('preset_save', { slot: preset.slot })
+                        }
+                      >
+                        Save
+                      </Button>
+                    </Stack.Item>
+                    <Stack.Item>
+                      <Button
+                        icon="folder-open"
+                        onClick={() =>
+                          loadoutAct('preset_load', { slot: preset.slot })
+                        }
+                      >
+                        Load
+                      </Button>
+                    </Stack.Item>
+                    <Stack.Item>
+                      <Button
+                        icon="trash"
+                        onClick={() =>
+                          loadoutAct('preset_clear', { slot: preset.slot })
+                        }
+                      >
+                        Clear
+                      </Button>
+                    </Stack.Item>
+                  </Stack>
+                </Section>
+              </Stack.Item>
+            ))}
+          </Stack>
+        </Panel>
+      </>
+    );
+  };
 
   const renderHeadshotPreview = (src: string | null, label: string) => (
     <Stack.Item grow basis={0}>
@@ -2281,6 +2693,8 @@ export const PreferencesMenu = () => {
         return renderAppearance();
       case 'gameplay':
         return renderGameplay();
+      case 'loadout':
+        return renderLoadout();
       case 'profile':
         return (
           <>

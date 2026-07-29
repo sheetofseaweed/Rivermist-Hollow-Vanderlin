@@ -156,12 +156,12 @@
 	check_distance = FALSE
 	stamina_cost = 0
 
-/datum/unit_test/erp_preferences_disconnected_players_deny_sex_sessions_by_default
+/datum/unit_test/erp_preferences_disconnected_players_deny_sex_scene_controllers_by_default
 #ifdef FOCUS_ERP_PREFERENCES_TEST
 	focus = TRUE
 #endif
 
-/datum/unit_test/erp_preferences_disconnected_players_deny_sex_sessions_by_default/Run()
+/datum/unit_test/erp_preferences_disconnected_players_deny_sex_scene_controllers_by_default/Run()
 	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
 	var/datum/mind/target_mind = allocate(/datum/mind, "erp-pref-disconnected-default-test")
@@ -172,7 +172,7 @@
 	prefs.setup_default_erp_preferences()
 	target.cache_erp_preferences_from_prefs(prefs)
 
-	var/datum/sex_session/session = user.start_sex_session(target, FALSE)
+	var/datum/sex_scene_controller/session = user.open_sex_scene(target, FALSE)
 	if(session)
 		qdel(session)
 	target.mind = null
@@ -181,12 +181,12 @@
 
 	TEST_ASSERT_NULL(session, "Disconnected player bodies should not accept player ERP sessions by default.")
 
-/datum/unit_test/erp_preferences_disconnected_players_allow_sex_sessions_when_enabled
+/datum/unit_test/erp_preferences_disconnected_players_allow_sex_scene_controllers_when_enabled
 #ifdef FOCUS_ERP_PREFERENCES_TEST
 	focus = TRUE
 #endif
 
-/datum/unit_test/erp_preferences_disconnected_players_allow_sex_sessions_when_enabled/Run()
+/datum/unit_test/erp_preferences_disconnected_players_allow_sex_scene_controllers_when_enabled/Run()
 	var/disconnected_pref_type = text2path("/datum/erp_preference/boolean/allow_player_erp_when_disconnected")
 	TEST_ASSERT_NOTNULL(disconnected_pref_type, "The disconnected-player ERP preference should exist.")
 
@@ -202,7 +202,7 @@
 	disconnected_pref.set_value(prefs, TRUE)
 	target.cache_erp_preferences_from_prefs(prefs)
 
-	var/datum/sex_session/session = user.start_sex_session(target, FALSE)
+	var/datum/sex_scene_controller/session = user.open_sex_scene(target, FALSE)
 	var/session_created = !isnull(session)
 	if(session)
 		qdel(session)
@@ -228,51 +228,56 @@
 	prefs.setup_default_erp_preferences()
 	target.cache_erp_preferences_from_prefs(prefs)
 
-	var/datum/sex_session/session = allocate(/datum/sex_session, user, target)
-	var/can_perform = session.can_perform_action(/datum/sex_action/unit_test_disconnected_erp)
+	var/datum/sex_scene_controller/session = allocate(/datum/sex_scene_controller, user, target)
+	var/datum/sex_action_proposal/proposal = session.create_action_proposal(/datum/sex_action/unit_test_disconnected_erp, "unit_test")
+	var/can_perform = proposal.can_start()
+	qdel(proposal)
 	target.mind = null
 	target.last_mind = null
 	target_mind.current = null
 
 	TEST_ASSERT_EQUAL(can_perform, FALSE, "Existing sex sessions should not perform actions with disconnected player bodies that have not opted in.")
 
-/datum/unit_test/erp_preferences_dead_mobs_do_not_start_sex_sessions
+/datum/unit_test/erp_preferences_dead_mobs_do_not_open_sex_scenes
 #ifdef FOCUS_ERP_PREFERENCES_TEST
 	focus = TRUE
 #endif
 
-/datum/unit_test/erp_preferences_dead_mobs_do_not_start_sex_sessions/Run()
+/datum/unit_test/erp_preferences_dead_mobs_do_not_open_sex_scenes/Run()
 	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
 
 	user.death()
-	var/datum/sex_session/dead_user_session = user.start_sex_session(target, FALSE)
+	var/datum/sex_scene_controller/dead_user_session = user.open_sex_scene(target, FALSE)
 	if(dead_user_session)
 		qdel(dead_user_session)
 
 	var/mob/living/carbon/human/second_user = allocate(/mob/living/carbon/human)
 	target.death()
-	var/datum/sex_session/dead_target_session = second_user.start_sex_session(target, FALSE)
-	if(dead_target_session)
-		qdel(dead_target_session)
+	var/datum/sex_scene_controller/dead_target_controller = second_user.open_sex_scene(target, FALSE)
+	if(dead_target_controller)
+		qdel(dead_target_controller)
 
 	TEST_ASSERT_NULL(dead_user_session, "Dead users should not start sex sessions.")
-	TEST_ASSERT_NULL(dead_target_session, "Dead targets should not accept sex sessions.")
+	TEST_ASSERT_NULL(dead_target_controller, "Dead targets should not accept sex scene controllers.")
 
-/datum/unit_test/erp_preferences_death_ends_existing_sex_sessions
+/datum/unit_test/erp_preferences_death_removes_participant_from_existing_sex_scene
 #ifdef FOCUS_ERP_PREFERENCES_TEST
 	focus = TRUE
 #endif
 
-/datum/unit_test/erp_preferences_death_ends_existing_sex_sessions/Run()
+/datum/unit_test/erp_preferences_death_removes_participant_from_existing_sex_scene/Run()
 	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
-	var/datum/sex_session/session = user.start_sex_session(target, FALSE)
-	TEST_ASSERT_NOTNULL(session, "Living participants should be able to start a sex session before the death check.")
+	var/datum/sex_scene_controller/controller = user.open_sex_scene(target, FALSE)
+	TEST_ASSERT_NOTNULL(controller, "Living participants should be able to open a sex scene before the death check.")
 
 	target.death()
 
-	TEST_ASSERT(QDELETED(session), "Sex sessions should end when a participant dies.")
+	TEST_ASSERT(!QDELETED(controller), "Another participant's controller should survive when its target dies.")
+	TEST_ASSERT_NULL(target.sex_scene, "A dead participant should be removed from the sex scene.")
+	TEST_ASSERT_EQUAL(controller.target, user, "The surviving controller should fall back to its own user.")
+	qdel(controller)
 
 /datum/unit_test/erp_preferences_dead_targets_block_existing_sex_actions
 #ifdef FOCUS_ERP_PREFERENCES_TEST
@@ -284,7 +289,9 @@
 	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
 	target.death()
 
-	var/datum/sex_session/session = allocate(/datum/sex_session, user, target)
-	var/can_perform = session.can_perform_action(/datum/sex_action/unit_test_disconnected_erp)
+	var/datum/sex_scene_controller/session = allocate(/datum/sex_scene_controller, user, target)
+	var/datum/sex_action_proposal/proposal = session.create_action_proposal(/datum/sex_action/unit_test_disconnected_erp, "unit_test")
+	var/can_perform = proposal.can_start()
+	qdel(proposal)
 
 	TEST_ASSERT_EQUAL(can_perform, FALSE, "Existing sex sessions should not perform actions with dead targets.")

@@ -21,7 +21,7 @@
 	dextrous = TRUE
 	held_items = list(null, null)
 //	base_intents = list(INTENT_HELP, INTENT_GRAB, /datum/intent/simple/claw/wwolf)
-	faction = list("wolves")
+	faction = list(FACTION_WOLVES)
 	food_type = list(
 		/obj/item/bodypart,
 		/obj/item/organ,

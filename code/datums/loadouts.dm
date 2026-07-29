@@ -359,7 +359,7 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	point_cost = 3
 
 /datum/loadout_item/tri_princess_dress/nobility_check(mob/C)
-	var/datum/preferences/P = C.client.prefs
+	var/datum/preferences/P = C?.client?.prefs
 	if(!P)
 		return FALSE
 	// Check if user selected Nobility virtue
@@ -383,7 +383,7 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	point_cost = 3
 
 /datum/loadout_item/tri_princess_dress/nobility_check(mob/C)
-	var/datum/preferences/P = C.client.prefs
+	var/datum/preferences/P = C?.client?.prefs
 	if(!P)
 		return FALSE
 	// Check if user selected Nobility virtue
@@ -407,7 +407,7 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	point_cost = 3
 
 /datum/loadout_item/tri_lady_cloak/nobility_check(mob/C)
-	var/datum/preferences/P = C.client.prefs
+	var/datum/preferences/P = C?.client?.prefs
 	if(!P)
 		return FALSE
 	// Check if user selected Nobility virtue
@@ -432,7 +432,7 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	point_cost = 3
 
 /datum/loadout_item/tri_circlet/nobility_check(mob/C)
-	var/datum/preferences/P = C.client.prefs
+	var/datum/preferences/P = C?.client?.prefs
 	if(!P)
 		return FALSE
 	// Check if user selected Nobility virtue

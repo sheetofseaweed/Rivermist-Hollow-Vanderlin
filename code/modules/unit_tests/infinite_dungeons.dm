@@ -896,19 +896,26 @@
 	TEST_ASSERT(length(GLOB.kidnap_entrance_markers[run_tag]), "The larder should register a run-tagged kidnap entrance.")
 	TEST_ASSERT_EQUAL(run.get_live_larder_tag(), run_tag, "A live larder should surface the run tag for guardians.")
 
-	// A knocked-out victim can be hauled there, and escapes to the break room.
+	// A knocked-out victim can be hauled off by the dungeon's own captivity
+	// profile, and is released back into the run rather than the overworld.
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
 	victim.mind_initialize()
 	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
-	TEST_ASSERT(victim.kidnap_to_lair(run_tag), "A knocked-out victim should be haulable to the run larder.")
-	TEST_ASSERT(break_room.contains_turf(get_turf(victim)), "The larder drop should be inside the run.")
-	var/turf/escape_override = victim.get_kidnap_escape_override()
-	TEST_ASSERT_NOTNULL(escape_override, "A captive inside a run should escape to the break room, not the wilds.")
-	TEST_ASSERT(break_room.contains_turf(escape_override), "The escape override must point inside the run's break room.")
+	TEST_ASSERT(victim.kidnap_to_pocket(/datum/defeat_captivity_profile/dungeon_larder, null, null, run_tag), "A knocked-out victim should be haulable to the run larder.")
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	TEST_ASSERT_NOTNULL(captivity, "Hauling should attach the captivity component.")
+	TEST_ASSERT_EQUAL(captivity.lair_tag, run_tag, "The captivity should carry the run's larder tag.")
+
+	// The tag is the only thread back to the run once the captive is pocketed.
+	TEST_ASSERT_EQUAL(get_dungeon_run_by_larder_tag(run_tag), run, "The larder tag should resolve back to its run.")
+	var/turf/release_turf = captivity.get_contextual_destination()
+	TEST_ASSERT_NOTNULL(release_turf, "A dungeon captive should have a release destination.")
+	TEST_ASSERT(break_room.contains_turf(release_turf), "A dungeon captive must be released into the run's break room, not the wilds.")
 
 	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
 	qdel(run)
 	TEST_ASSERT(!length(GLOB.kidnap_entrance_markers[run_tag]), "Run teardown must deregister the larder markers.")
+	TEST_ASSERT_NULL(get_dungeon_run_by_larder_tag(run_tag), "A torn-down run should no longer answer to its tag.")
 
 /datum/unit_test/dungeon_captives_and_stubborn_heart/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)

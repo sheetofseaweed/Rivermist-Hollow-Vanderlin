@@ -31,6 +31,7 @@ GLOBAL_LIST_INIT(searaider_aggro, world.file2list("strings/rt/searaideraggroline
 	equipOutfit(new /datum/outfit/job/human/species/human/northern/searaider)
 	SEND_SIGNAL(src, COMSIG_MOB_MODIFY_AGGRO_LINES, GLOB.searaider_aggro, TRUE)
 	gender = pick(MALE, FEMALE)
+	resync_genitals_to_gender()
 	var/obj/item/organ/eyes/organ_eyes = getorgan(/obj/item/organ/eyes)
 	var/obj/item/bodypart/head/head = get_bodypart(BODY_ZONE_HEAD)
 	var/hairf = pick(list(/datum/sprite_accessory/hair/head/barbarian,

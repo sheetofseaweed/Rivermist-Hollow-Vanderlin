@@ -3,6 +3,11 @@
 	stamina_cost = 0
 	check_same_tile = FALSE
 	hole_id = ORGAN_SLOT_VAGINA
+	scene_interaction = SEX_SCENE_INTERACTION_PENETRATION
+	scene_user_role = SEX_SCENE_ROLE_RECEIVER
+	scene_user_slot = ORGAN_SLOT_VAGINA
+	scene_target_role = SEX_SCENE_ROLE_GIVER
+	scene_target_slot = ORGAN_SLOT_PENIS
 
 /datum/sex_action/npc/npc_vaginal_ride_sex/shows_on_menu(mob/living/user, mob/living/target)
 	return FALSE
@@ -32,23 +37,22 @@
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
 
 /datum/sex_action/npc/npc_vaginal_ride_sex/on_perform(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rides [target]."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rides [target]."))
 	var/used_sex_volume = sex_volume
-	playsound(target, sex_session.get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
+	playsound(target, get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
 
 	if(user.has_kink(KINK_ONOMATOPOEIA))
 		do_onomatopoeia(user)
 
-	if(sex_session.considered_limp(target))
-		sex_session.perform_sex_action(target, user, 1.2, 3, 1.2, src)
+	if(considered_limp(target))
+		perform_sex_action(target, user, 1.2, 3, 1.2)
 	else
-		sex_session.perform_sex_action(target, user, 2.4, 7, 2.4, src)
-	sex_session.handle_passive_ejaculation(target)
+		perform_sex_action(target, user, 2.4, 7, 2.4)
+	handle_passive_ejaculation(target)
 
-	sex_session.perform_sex_action(user, target, 2, 4, 3, src)
+	perform_sex_action(user, target, 2, 4, 3)
 
 /datum/sex_action/npc/npc_vaginal_ride_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)

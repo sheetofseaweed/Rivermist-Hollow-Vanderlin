@@ -218,6 +218,8 @@
 
 	init_signals()
 
+	release_dragged()
+
 	if(turf != get_turf(owner))
 		var/matrix/original = owner.transform
 		var/prev_alpha = owner.alpha
@@ -228,13 +230,52 @@
 		owner.pixel_z = prev_pixel_z
 		owner.alpha = prev_alpha
 		owner.forceMove(turf)
+		move_carried_to(turf)
 
 	build_all_button_icons(update_flags = UPDATE_BUTTON_BACKGROUND)
+
+/**
+ * forceMove() leaves buckled riders behind, so flight has to relocate whoever we are carrying by
+ * hand on every z-change. pulledby is stashed across the move because forceMove() clears it, and
+ * losing the pull destroys our grab item, which in turn unbuckles the passenger we just moved.
+ */
+/datum/action/item_action/organ_action/use/flight/proc/move_carried_to(turf/destination)
+	if(!destination || !isliving(owner))
+		return
+	var/mob/living/carrier = owner
+	for(var/mob/living/passenger as anything in carrier.buckled_mobs)
+		var/pulled_along = (carrier.pulling == passenger)
+		if(pulled_along)
+			passenger.set_pulledby(null)
+		passenger.forceMove(destination)
+		if(pulled_along)
+			passenger.set_pulledby(carrier)
+
+/// Someone we are only dragging has nothing to hold onto once we leave the ground, and get_dist()
+/// ignores z so the pull would survive and yank them into the air every step. Let go instead.
+/datum/action/item_action/organ_action/use/flight/proc/release_dragged()
+	if(!isliving(owner))
+		return
+	var/mob/living/carrier = owner
+	var/atom/movable/dragged = carrier.pulling
+	if(!dragged || (dragged in carrier.buckled_mobs))
+		return
+	carrier.stop_pulling()
+	to_chat(carrier, span_warning("I lose my grip on [dragged] as I leave the ground."))
+
+/// A passenger who stops being carried mid-air has nothing holding them up any more.
+/datum/action/item_action/organ_action/use/flight/proc/drop_passenger(datum/source, mob/living/passenger, force)
+	SIGNAL_HANDLER
+
+	var/turf/air = get_turf(passenger)
+	if(isopenspace(air))
+		INVOKE_ASYNC(air, TYPE_PROC_REF(/turf, zFall), passenger)
 
 /datum/action/item_action/organ_action/use/flight/proc/init_signals()
 	RegisterSignal(owner, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(check_damage))
 	RegisterSignal(owner, COMSIG_MOVABLE_MOVED, PROC_REF(check_movement))
 	RegisterSignal(owner, COMSIG_LIVING_SET_BODY_POSITION, PROC_REF(check_laying))
+	RegisterSignal(owner, COMSIG_MOVABLE_UNBUCKLE, PROC_REF(drop_passenger))
 	RegisterSignals(owner, SIGNAL_ADDTRAIT(TRAIT_IMMOBILIZED), PROC_REF(fall))
 
 // Stop flying normally
@@ -256,6 +297,7 @@
 		owner.pixel_z = 156
 		owner.transform = matrix() * 8
 		owner.forceMove(turf)
+		move_carried_to(turf)
 		animate(owner, pixel_z = prev_pixel_z, alpha = prev_alpha, time = 1.2 SECONDS, easing = EASE_IN, flags = ANIMATION_PARALLEL)
 		animate(owner, transform = original, time = 1.2 SECONDS, easing = EASE_IN, flags = ANIMATION_PARALLEL)
 
@@ -277,6 +319,7 @@
 		COMSIG_MOB_APPLY_DAMAGE,
 		COMSIG_MOVABLE_MOVED,
 		COMSIG_LIVING_SET_BODY_POSITION,
+		COMSIG_MOVABLE_UNBUCKLE,
 		SIGNAL_ADDTRAIT(TRAIT_IMMOBILIZED)
 	))
 
@@ -284,6 +327,9 @@
 	var/turf/open = get_turf(owner)
 	if(isopenspace(open))
 		open.zFall(owner)
+		// zFall() only takes the flier, and the trait is already gone so our rider is no longer
+		// exempt from falling. Put them down wherever we ended up.
+		move_carried_to(get_turf(owner))
 
 	if(shadow)
 		QDEL_NULL(shadow)

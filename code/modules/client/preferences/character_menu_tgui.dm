@@ -181,7 +181,10 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return GLOB.always_state
 
 /datum/preferences/ui_assets(mob/user)
-	return list(get_asset_datum(/datum/asset/spritesheet/character_setup_chargen))
+	return list(
+		get_asset_datum(/datum/asset/spritesheet/character_setup_chargen),
+		get_asset_datum(/datum/asset/spritesheet/loadout_items),
+	)
 
 /datum/preferences/ui_static_data(mob/user)
 	var/_t = world.timeofday
@@ -190,6 +193,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	.["thumbs"] = character_setup_thumbnail_catalog()
 	.["species_options"] = character_setup_species_options()
 	.["smallclothes_catalog"] = character_setup_smallclothes_static()
+	.["loadout_catalog"] = character_setup_loadout_static(user)
 	character_setup_log_op("ui_static_data", _t, "thumbs=[length(.["thumbs"])] species=[length(.["species_options"])]")
 
 /datum/preferences/proc/character_setup_handle_color_task(mob/user, list/href_list)
@@ -807,14 +811,6 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	var/display_age = heavy_cache["display_age"]
 	var/list/age_tooltips = heavy_cache["age_tooltips"]
 
-	var/list/loadout_slots = list()
-	for(var/slot_number in 1 to 3)
-		var/datum/loadout_item/loadout_item = vars["loadout[slot_number]"]
-		loadout_slots += list(list(
-			"slot" = slot_number,
-			"name" = loadout_item ? loadout_item.name : "None",
-		))
-
 	data["real_name"] = real_name || "Unnamed"
 	data["initial_tab"] = character_setup_preferences_initial_tab
 	data["open_sequence"] = character_setup_preferences_open_sequence
@@ -888,7 +884,9 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	data["moan_selection"] = moan_selection || MOANPACK_TYPE_DEF
 	data["selected_accent"] = selected_accent || "None"
 
-	data["loadouts"] = loadout_slots
+	data["loadout_slots"] = character_setup_loadout_slots_data()
+	data["loadout_points"] = character_setup_loadout_points_data()
+	data["loadout_presets"] = character_setup_loadout_presets_data()
 	data["triumphs"] = user?.client ? user.get_triumphs() : 0
 
 	var/combat_music_name = combat_music?.shortname ? combat_music.shortname : combat_music?.name

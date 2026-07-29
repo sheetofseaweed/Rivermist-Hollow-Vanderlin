@@ -4,12 +4,17 @@
 	color_key_name = "Ears"
 	relevant_layers = list(BODY_ADJ_LAYER, BODY_FRONT_LAYER)
 	color_key_defaults = list(KEY_SKIN_COLOR)
+	/// Whether this ear can play a flick animation (via the "eflick" emote). Needs `[icon_state]_flick` states.
+	var/can_flick = FALSE
 
 /datum/sprite_accessory/ears/is_visible(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
 	return is_human_part_visible(owner, HIDEEARS)
 
-/datum/sprite_accessory/ears/get_icon_state(obj/item/organ/eyes/eyes, ...)
-	return (eyes.side == RIGHT_SIDE) ? "[icon_state]_right" : "[icon_state]_left"
+/datum/sprite_accessory/ears/get_icon_state(obj/item/organ/ears/ears, ...)
+	var/base_state = icon_state
+	if(can_flick && istype(ears) && ears.is_flicking)
+		base_state = "[icon_state]_flick"
+	return (ears.side == RIGHT_SIDE) ? "[base_state]_right" : "[base_state]_left"
 
 
 /datum/sprite_accessory/ears/adjust_appearance_list(list/appearance_list, obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
@@ -93,10 +98,6 @@
 	icon_state = "eevee"
 	color_keys = 2
 	color_key_names = list("Ears", "Inner")
-
-/datum/sprite_accessory/ears/elf
-	name = "Elf"
-	icon_state = "elf"
 
 /datum/sprite_accessory/ears/elephant
 	name = "Elephant"
@@ -336,6 +337,7 @@
 	icon_state = "elf"
 	specuse = list(SPEC_ID_ELF, SPEC_ID_ELF_W)
 	color_key_defaults = list(KEY_SKIN_COLOR)
+	can_flick = TRUE
 
 /datum/sprite_accessory/ears/elfw
 	icon = 'icons/roguetown/mob/bodies/attachments.dmi'
@@ -343,10 +345,5 @@
 	icon_state = "elfw"
 	specuse = list(SPEC_ID_ELF, SPEC_ID_ELF_W, SPEC_ID_TIEFLING) //tiebs use these
 	color_key_defaults = list(KEY_SKIN_COLOR)
+	can_flick = TRUE
 
-/datum/sprite_accessory/ears/elfh //halfelfs are humens techincally
-	icon = 'icons/roguetown/mob/bodies/attachments.dmi'
-	name = "ElfH"
-	icon_state = "elf"
-	specuse = list(SPEC_ID_HUMEN)
-	color_key_defaults = list(KEY_SKIN_COLOR)

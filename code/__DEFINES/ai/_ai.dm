@@ -154,6 +154,8 @@
 #define BB_LAST_RANGED_ATTACKER "bb_last_ranged_attacker"
 #define AI_ALERT_ON_CLIENT_TIME (30 SECONDS)
 #define AI_ALERT_ON_ATTACK_TIME (30 SECONDS)
+/// Max distance a newly-arrived client may be from the pawn to arm the client alert grace period. Farther passers-by crossing our wide tracking radius must not keep us awake.
+#define AI_ALERT_ON_CLIENT_DIST 7
 #define AI_RANGED_HOT_PURSUIT_TIME (15 SECONDS)
 #define BB_HEALING_SOURCE "healing_source" // Who last healed the mob
 #define BB_SNEAKING "bb_sneaking"

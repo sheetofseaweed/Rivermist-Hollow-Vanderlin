@@ -39,6 +39,10 @@
 	tame_chance = 25
 	bonus_tame_chance = 15
 	pooptype = /obj/item/natural/poo/horse
+	food_max = MOUNT_FOOD_MAX
+	drink_type = list(/obj/item/reagent_containers/glass)
+	ride_hunger_cost = MOUNT_RIDE_COST
+	ride_gallop_hunger_cost = MOUNT_GALLOP_RIDE_COST
 
 	base_intents = list(/datum/intent/simple/hind_kick)
 	attack_sound = list('sound/vo/mobs/saiga/attack (1).ogg','sound/vo/mobs/saiga/attack (2).ogg')
@@ -54,6 +58,7 @@
 	can_buckle = TRUE
 	buckle_lying = FALSE
 	can_saddle = TRUE
+	saddle_overlay_state = "saddle-f"
 	aggressive = TRUE
 	remains_type = /obj/effect/decal/remains/saiga
 
@@ -64,6 +69,8 @@
 	indexed = TRUE
 
 	var/can_breed = TRUE
+	/// Riding component attached on tame. Subtypes whose rider sits elsewhere point this at their own.
+	var/riding_component_type = /datum/component/riding/saiga
 
 	var/static/list/pet_commands = list(
 		/datum/pet_command/idle,
@@ -113,22 +120,22 @@
 		. += body
 		. += underbody
 
-	if(stat <= DEAD)
+	if(stat == DEAD)
 		return
 	if(ssaddle)
-		var/mutable_appearance/saddlet = mutable_appearance(icon, "saddle-f-above", 4.3)
+		var/mutable_appearance/saddlet = mutable_appearance(icon, "[saddle_overlay_state]-above", 4.3)
 		. += saddlet
-		saddlet = mutable_appearance(icon, "saddle-f")
+		saddlet = mutable_appearance(icon, saddle_overlay_state)
 		. += saddlet
 	if(has_buckled_mobs())
-		var/mutable_appearance/mounted = mutable_appearance(icon, "saiga_mounted", 4.3)
+		var/mutable_appearance/mounted = mutable_appearance(icon, "[icon_state]_mounted", 4.3)
 		. += mounted
 
 /mob/living/simple_animal/hostile/retaliate/saiga/tamed(mob/user)
 	. = ..()
 	deaggroprob = 30
 	if(can_buckle)
-		AddComponent(/datum/component/riding/saiga)
+		AddComponent(riding_component_type)
 	if(can_breed)
 		AddComponent(\
 			/datum/component/breed,\
@@ -194,6 +201,10 @@
 					/obj/item/reagent_containers/food/snacks/produce/fruit/jacksberry,
 					/obj/item/reagent_containers/food/snacks/produce/fruit/apple)
 	pooptype = /obj/item/natural/poo/horse
+	food_max = MOUNT_FOOD_MAX
+	drink_type = list(/obj/item/reagent_containers/glass)
+	ride_hunger_cost = MOUNT_RIDE_COST
+	ride_gallop_hunger_cost = MOUNT_GALLOP_RIDE_COST
 
 	gender = MALE
 	base_intents = list(/datum/intent/simple/hind_kick)
@@ -272,15 +283,15 @@
 		. += body
 		. += underbody
 
-	if(stat <= DEAD)
+	if(stat == DEAD)
 		return
 	if(ssaddle)
-		var/mutable_appearance/saddlet = mutable_appearance(icon, "saddle-above", 4.3)
+		var/mutable_appearance/saddlet = mutable_appearance(icon, "[saddle_overlay_state]-above", 4.3)
 		. += saddlet
-		saddlet = mutable_appearance(icon, "saddle")
+		saddlet = mutable_appearance(icon, saddle_overlay_state)
 		. += saddlet
 	if(has_buckled_mobs())
-		var/mutable_appearance/mounted = mutable_appearance(icon, "saiga_mounted", 4.3)
+		var/mutable_appearance/mounted = mutable_appearance(icon, "[icon_state]_mounted", 4.3)
 		. += mounted
 
 /mob/living/simple_animal/hostile/retaliate/saigabuck/get_sound(input)

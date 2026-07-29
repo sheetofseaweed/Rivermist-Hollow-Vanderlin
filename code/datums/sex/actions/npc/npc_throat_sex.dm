@@ -4,6 +4,11 @@
 	check_same_tile = FALSE
 	hole_id = BODY_ZONE_PRECISE_MOUTH
 	gags_target = TRUE
+	scene_interaction = SEX_SCENE_INTERACTION_ORAL
+	scene_user_role = SEX_SCENE_ROLE_RECEIVER
+	scene_user_slot = ORGAN_SLOT_PENIS
+	scene_target_role = SEX_SCENE_ROLE_GIVER
+	scene_target_slot = BODY_ZONE_PRECISE_MOUTH
 
 /datum/sex_action/npc/npc_throat_sex/shows_on_menu(mob/living/user, mob/living/target)
 	return FALSE
@@ -26,25 +31,24 @@
 
 /datum/sex_action/npc/npc_throat_sex/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] fucks [target]'s throat."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s throat."))
 	playsound(target, 'sound/misc/mat/segso.ogg', 50, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
 
-	sex_session.perform_sex_action(user, target, 2, 0, 2, src)
+	perform_sex_action(user, target, 2, 0, 2)
 
-	if(sex_session.considered_limp(user))
-		sex_session.perform_sex_action(target, user, 0, 2, 2, src)
+	if(considered_limp(user))
+		perform_sex_action(target, user, 0, 2, 2)
 	else
-		sex_session.perform_sex_action(target, user, 0, 7, 2, src)
-		if(sex_session.get_current_force() >= SEX_FORCE_HIGH)
+		perform_sex_action(target, user, 0, 7, 2)
+		if(force >= SEX_FORCE_HIGH)
 			var/choker_snap_chance = 5
-			if(sex_session.get_current_force() >= SEX_FORCE_EXTREME)
+			if(force >= SEX_FORCE_EXTREME)
 				choker_snap_chance = 15
 			if(prob(choker_snap_chance))
 				target.snap_worn_choker(user)
-	sex_session.handle_passive_ejaculation()
+	handle_passive_ejaculation()
 
 /datum/sex_action/npc/npc_throat_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
@@ -61,3 +65,6 @@
 	. = ..()
 	user.visible_message(span_warning("[user] pulls [user.p_their()] cock out of [target]'s throat."))
 
+/datum/sex_action/npc/npc_throat_sex/lock_sex_object(mob/living/user, mob/living/target)
+	add_sex_lock(user, ORGAN_SLOT_PENIS)
+	add_sex_lock(target, BODY_ZONE_PRECISE_MOUTH, null, FALSE)

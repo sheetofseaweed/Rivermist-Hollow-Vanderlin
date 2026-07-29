@@ -17,6 +17,8 @@
 	var/mob/living/carbon/knotted_owner = null
 	/// Who received the knot (the one being knotted)
 	var/mob/living/carbon/knotted_recipient = null
+	/// Runtime action which created this knot, if it is still active.
+	var/datum/weakref/knotted_action_ref
 
 /datum/component/knotting/Destroy(force)
 	if(knotted_status)
@@ -45,13 +47,13 @@
 			return TRUE
 	return FALSE
 
-/datum/component/knotting/proc/try_knot(datum/source, mob/living/carbon/human/target, force_level)
+/datum/component/knotting/proc/try_knot(datum/source, mob/living/carbon/human/target, force_level, datum/sex_action/originating_action)
 	var/mob/living/carbon/human/user = parent
 
 	if(!can_knot(user, target))
 		return FALSE
 	handle_existing_knots(user, target)
-	apply_knot(user, target, force_level)
+	apply_knot(user, target, force_level, originating_action)
 	return TRUE
 
 /datum/component/knotting/proc/can_knot(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -100,9 +102,10 @@
 			return potential_knotter
 	return null
 
-/datum/component/knotting/proc/apply_knot(mob/living/carbon/human/user, mob/living/carbon/human/target, force_level)
+/datum/component/knotting/proc/apply_knot(mob/living/carbon/human/user, mob/living/carbon/human/target, force_level, datum/sex_action/originating_action)
 	knotted_owner = user
 	knotted_recipient = target
+	knotted_action_ref = originating_action ? WEAKREF(originating_action) : null
 	knotted_status = KNOTTED_AS_TOP
 	tugging_knot_blocked = FALSE
 
@@ -226,11 +229,11 @@
 	// Fireman carry case
 	if(prob(10) && top.m_intent == MOVE_INTENT_WALK && (btm in top.buckled_mobs))
 		var/obj/item/organ/genitals/penis/penis = top.getorganslot(ORGAN_SLOT_PENIS)
-		var/datum/sex_session/session = get_sex_session(top, btm)
-		if(session)
-			session.perform_sex_action(btm, top, penis?.organ_size > DEFAULT_PENIS_SIZE ? 6.0 : 3.0, 2, 3, null)
+		var/datum/sex_action/action = knotted_action_ref?.resolve()
+		if(action && ((action.action_user == top && action.action_target == btm) || (action.action_user == btm && action.action_target == top)))
+			action.perform_sex_action(btm, top, penis?.organ_size > DEFAULT_PENIS_SIZE ? 6.0 : 3.0, 2, 3)
 			var/datum/component/arousal/btm_arousal = btm.GetComponent(/datum/component/arousal)
-			btm_arousal?.try_ejaculate()
+			btm_arousal?.try_ejaculate(action, action.action_user, action.action_target, action.action_user == btm, top)
 		if(prob(50))
 			to_chat(top, span_love("I feel [btm] tightening over my knot."))
 			to_chat(btm, span_love("I feel [top] rubbing inside."))
@@ -450,6 +453,7 @@
 
 	knotted_owner = null
 	knotted_recipient = null
+	knotted_action_ref = null
 	knotted_status = KNOTTED_NULL
 
 	btm.reset_pull_offsets()

@@ -1,0 +1,1765 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"aa" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 10
+	},
+/obj/item/reagent_containers/glass/bowl{
+	pixel_x = 4;
+	pixel_y = 4
+	},
+/obj/item/kitchen/spoon{
+	pixel_x = 13;
+	pixel_y = 6
+	},
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"ac" = (
+/obj/structure/closet/crate/chest/wicker,
+/obj/item/reagent_containers/food/snacks/bread,
+/obj/item/reagent_containers/food/snacks/bread,
+/obj/item/reagent_containers/food/snacks/bread/raisin,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"ai" = (
+/obj/structure/giantfur{
+	layer = 2;
+	pixel_y = -12;
+	pixel_x = -10
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"an" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"ar" = (
+/obj/machinery/light/fueled/torchholder/r,
+/obj/structure/closet/crate/chest{
+	base_icon_state = "woodchestalt";
+	icon_state = "woodchestalt";
+	name = "meat chest"
+	},
+/obj/item/reagent_containers/food/snacks/meat/salami,
+/obj/item/reagent_containers/food/snacks/meat/salami,
+/obj/item/reagent_containers/food/snacks/cheese,
+/obj/item/reagent_containers/food/snacks/cheese,
+/obj/item/reagent_containers/food/snacks/butter,
+/obj/item/reagent_containers/food/snacks/meat/steak,
+/obj/item/reagent_containers/food/snacks/meat/steak,
+/obj/item/reagent_containers/food/snacks/meat/mince/fish,
+/obj/item/reagent_containers/food/snacks/meat/mince/fish,
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"az" = (
+/obj/structure/closet/crate/chest/neu,
+/obj/item/rope,
+/obj/item/key/bandit,
+/obj/machinery/light/fueled/torchholder/l,
+/obj/item/flashlight/flare/torch/lantern,
+/obj/item/clothing/head/helmet/leather/hood_ominous,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"aS" = (
+/obj/effect/landmark/pocket_dimension/exit,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"bd" = (
+/obj/structure/hotspring,
+/turf/open/water/clean,
+/area/pocket_dimension)
+"bG" = (
+/obj/effect/decal/cleanable/blood/tracks{
+	dir = 4
+	},
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"bO" = (
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"cj" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 10
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"cn" = (
+/obj/machinery/light/fueled/torchholder{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"cs" = (
+/obj/effect/decal/cobbleedge/alt,
+/obj/effect/decal/cobbleedge/alt{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"ct" = (
+/obj/structure/fermentation_keg/random/water,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"cu" = (
+/obj/structure/hotspring/border/eleven,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"cw" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"cB" = (
+/obj/effect/decal/cobblerockedge,
+/obj/structure/flora/new_shroom/redwall{
+	pixel_y = 0;
+	pixel_x = -32
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"cR" = (
+/obj/structure/chair/wood/alt,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"dw" = (
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"eo" = (
+/obj/structure/door/driftwood{
+	color = "#a6a6a6";
+	lock = /datum/lock/key;
+	lockid = "banditcamp"
+	},
+/obj/effect/mapping_helpers/access/locker,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"er" = (
+/obj/structure/hotspring/border/seven,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"eu" = (
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"eA" = (
+/obj/structure/hotspring/border/two,
+/obj/structure/flora/grass/crawlvines,
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"ff" = (
+/obj/structure/hotspring/border/nine,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"fk" = (
+/obj/structure/flora/grass,
+/obj/item/grown/log/tree/stick,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"fq" = (
+/obj/machinery/light/fueled/torchholder/c,
+/obj/structure/closet/crate/chest/wicker,
+/obj/item/reagent_containers/food/snacks/produce/grain/oat,
+/obj/item/reagent_containers/food/snacks/produce/grain/oat,
+/obj/item/reagent_containers/food/snacks/produce/grain/oat,
+/obj/item/reagent_containers/food/snacks/produce/grain/wheat,
+/obj/item/reagent_containers/food/snacks/produce/grain/wheat,
+/obj/item/reagent_containers/food/snacks/produce/grain/wheat,
+/obj/item/reagent_containers/food/snacks/cheese_wedge/aged,
+/obj/item/reagent_containers/food/snacks/cheese_wedge/aged,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/potato,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/potato,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/turnip,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/turnip,
+/obj/item/reagent_containers/food/snacks/produce/vegetable/turnip,
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"fr" = (
+/obj/structure/chair/stool,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"gb" = (
+/obj/structure/closet/crate/chest/old_crate,
+/obj/item/rope/chain,
+/obj/item/rope/chain,
+/obj/item/rope/chain,
+/obj/item/clothing/neck/bellcollar,
+/obj/item/clothing/neck/leathercollar,
+/obj/item/clothing/neck/leathercollar,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"hm" = (
+/obj/structure/closet/crate/chest/neu,
+/obj/item/reagent_containers/powder/spice,
+/obj/item/rope,
+/obj/item/key/bandit,
+/obj/item/flashlight/flare/torch/lantern,
+/obj/item/clothing/face/shepherd/rag,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"hC" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 9
+	},
+/obj/structure/fermentation_keg/random/beer{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = 9
+	},
+/obj/item/reagent_containers/glass/cup/skull{
+	pixel_x = -2;
+	pixel_y = -13
+	},
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"hS" = (
+/obj/structure/hotspring/border/four,
+/obj/structure/mannequin/male{
+	pixel_x = -9
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"hZ" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/item/natural/rock/random_ore,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"ik" = (
+/obj/structure/fluff/walldeco/chains,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"iz" = (
+/obj/structure/flora/new_shroom/cyanf,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"iF" = (
+/obj/structure/closet/crate/chest/neu,
+/obj/item/rope,
+/obj/item/key/bandit,
+/obj/item/flashlight/flare/torch/lantern,
+/obj/item/clothing/face/shepherd/rag,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"kk" = (
+/obj/structure/bed/hay,
+/obj/structure/rack/rogue/shelf/alizeria/shelf1,
+/obj/item/weapon/axe/iron{
+	pixel_y = 33
+	},
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"ku" = (
+/obj/machinery/light/fueled/torchholder/c,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"kA" = (
+/obj/structure/stairs/maskstairs{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"kX" = (
+/obj/structure/hotspring/border/five,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"kY" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"ln" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/obj/structure/flora/new_shroom/redwall{
+	pixel_y = 0;
+	pixel_x = -32
+	},
+/obj/structure/stairs/maskstairs{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"lz" = (
+/obj/structure/fermentation_keg/random/beer,
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"mx" = (
+/obj/structure/table/wood/plain_alt,
+/obj/item/weapon/whip/cane,
+/obj/item/weapon/whip,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"nS" = (
+/obj/structure/hotspring/border/five,
+/obj/structure/flora/grass/crawlvines{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"nU" = (
+/obj/structure/hotspring/border,
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"oq" = (
+/obj/structure/flora/new_shroom/cyan,
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"oQ" = (
+/obj/structure/door/iron/bars{
+	lockid = "banditcamp"
+	},
+/obj/effect/mapping_helpers/access/locker,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"px" = (
+/obj/structure/flora/new_shroom/purplesmall,
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"pC" = (
+/obj/structure/bed/hay,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"qp" = (
+/obj/structure/chair/stool,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"qs" = (
+/obj/structure/fluff/wallclock,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"qP" = (
+/obj/structure/fluff/walldeco/chains{
+	icon_state = "chains3";
+	pixel_y = 0
+	},
+/obj/effect/decal/cleanable/blood/tracks{
+	dir = 9
+	},
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"rt" = (
+/obj/machinery/anvil/crafted{
+	pixel_y = 13
+	},
+/obj/effect/decal/cobblerockedge,
+/obj/item/weapon/hammer/iron,
+/obj/item/weapon/tongs,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"rF" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"so" = (
+/obj/structure/flora/grass/crawlvines,
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"sr" = (
+/obj/effect/decal/cleanable/blood,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"sQ" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"tg" = (
+/obj/effect/landmark/mapGenerator/underdark{
+	startTurfX = 111;
+	endTurfX = 131;
+	endTurfY = 28
+	},
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"tl" = (
+/obj/structure/hotspring/border/two,
+/obj/structure/flora/new_shroom/cyan,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"tu" = (
+/obj/structure/flora/new_shroom/purplef,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"tA" = (
+/obj/structure/chair/stool,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"tP" = (
+/obj/item/natural/stone,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"uI" = (
+/obj/item/natural/rock/random_ore,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"uN" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/obj/structure/closet/crate/chest/neu,
+/obj/item/ore/iron,
+/obj/item/ore/iron,
+/obj/item/ore/iron,
+/obj/item/ore/iron,
+/obj/item/ore/iron,
+/obj/item/mould/ingot,
+/obj/item/mould/ingot,
+/obj/item/storage/crucible,
+/obj/item/storage/crucible,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"uV" = (
+/obj/machinery/light/fueled/torchholder/r,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"vi" = (
+/obj/effect/landmark/pocket_dimension/drop_spot,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"ws" = (
+/obj/effect/decal/cobblerockedge,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"wM" = (
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/obj/item/natural/rock/random_ore,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"wR" = (
+/obj/structure/door/iron/bars{
+	lockid = "banditcamp"
+	},
+/obj/effect/mapping_helpers/access/locker,
+/obj/effect/decal/cleanable/blood/tracks,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"xh" = (
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"xi" = (
+/obj/structure/bars,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"xr" = (
+/obj/effect/decal/cleanable/blood/tracks,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"xG" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"xU" = (
+/obj/structure/closet/crate/chest/old_crate,
+/obj/item/reagent_containers/glass/bowl{
+	pixel_y = -6
+	},
+/obj/item/reagent_containers/glass/bowl{
+	pixel_y = -6
+	},
+/obj/item/reagent_containers/glass/bowl{
+	pixel_y = -6
+	},
+/obj/item/reagent_containers/glass/bowl{
+	pixel_y = -6
+	},
+/obj/item/plate,
+/obj/item/plate,
+/obj/item/plate,
+/obj/item/plate,
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_y = 2
+	},
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_y = 2
+	},
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_y = 2
+	},
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_y = 2
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"yD" = (
+/obj/structure/fermentation_keg/random/water,
+/obj/machinery/light/fueled/torchholder/c,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"zh" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"zi" = (
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"zr" = (
+/obj/structure/bed/hay,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension)
+"zD" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 6
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"zU" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"zZ" = (
+/obj/structure/hotspring/border/six,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"AF" = (
+/turf/open/water/clean/dirt,
+/area/pocket_dimension)
+"AP" = (
+/obj/structure/bed/shit,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"By" = (
+/obj/structure/flora/new_shroom/purple,
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"BK" = (
+/obj/structure/hotspring/border/six,
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"BO" = (
+/obj/structure/hotspring/border/four,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"BP" = (
+/obj/structure/hotspring/border/ten,
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"Cj" = (
+/obj/structure/hotspring/border,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Cl" = (
+/obj/item/natural/rock,
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"CN" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 8
+	},
+/obj/item/reagent_containers/glass/cup/wooden,
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"Dh" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"DO" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Eg" = (
+/obj/effect/landmark/events/testportal{
+	aportalloc = "bandit"
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"EL" = (
+/obj/effect/landmark/hammer/dev_text{
+	name = "Лагерь культистов / бандитов; (возможно отдельно?)"
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"Fk" = (
+/obj/structure/chair/stool,
+/obj/effect/landmark/start/bandit{
+	dir = 8
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"Gc" = (
+/obj/item/weapon/sickle/copper,
+/obj/structure/rack,
+/obj/item/weapon/thresher,
+/obj/item/weapon/shovel/small,
+/obj/item/weapon/hoe,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"GD" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 9
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"GH" = (
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"GU" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 6
+	},
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"GZ" = (
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"Hj" = (
+/obj/item/reagent_containers/glass/bucket/wooden/alter,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"Hr" = (
+/mob/living/carbon/human/species/human/northern/bum/ambush,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Ht" = (
+/obj/structure/table/wood/plain_alt,
+/obj/item/paper,
+/obj/item/paper,
+/obj/item/paper,
+/obj/item/natural/feather,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"Hw" = (
+/obj/structure/closet/crate/chest/neu,
+/obj/item/weapon/shield/wood,
+/obj/item/weapon/shield/wood,
+/obj/item/weapon/mace/cudgel,
+/obj/item/weapon/knife/dagger,
+/obj/item/weapon/sword/short,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Hz" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"HB" = (
+/obj/structure/hotspring/border/two,
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"HD" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/structure/flora/new_shroom/redwall{
+	pixel_y = 0;
+	pixel_x = -32
+	},
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"Ia" = (
+/obj/structure/hotspring/border/two,
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"If" = (
+/obj/machinery/tanningrack,
+/obj/item/reagent_containers/powder/salt{
+	pixel_y = -6;
+	pixel_x = 4
+	},
+/obj/item/reagent_containers/powder/salt{
+	pixel_y = -6;
+	pixel_x = 4
+	},
+/obj/item/reagent_containers/powder/salt{
+	pixel_y = -6;
+	pixel_x = 4
+	},
+/obj/item/storage/sack,
+/obj/effect/decal/cobblerockedge{
+	dir = 8
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"In" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 1
+	},
+/obj/structure/flora/crystal,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Iq" = (
+/obj/structure/flora/crystal,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"It" = (
+/obj/structure/hotspring/border/five,
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"Iy" = (
+/obj/effect/decal/cobbleedge/alt,
+/obj/machinery/light/fueled/firebowl/standing,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"IE" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 5
+	},
+/obj/item/natural/stone,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"IT" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/item/flashlight/flare/torch/lantern,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"IW" = (
+/obj/structure/table/wood/reinforced_alter,
+/obj/item/weapon/knife/stone,
+/obj/item/reagent_containers/food/snacks/veg/turnip_sliced{
+	pixel_y = 11;
+	pixel_x = -7
+	},
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Je" = (
+/obj/structure/table/wood/reinforced_alter,
+/obj/structure/fluff/millstone{
+	pixel_x = -5;
+	pixel_y = 5
+	},
+/obj/item/reagent_containers/powder/flour{
+	pixel_y = 9;
+	pixel_x = 7
+	},
+/obj/item/reagent_containers/glass/bucket/wooden/alter{
+	pixel_y = -11;
+	pixel_x = 10
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Jt" = (
+/obj/structure/wooden_horse/mobile{
+	dir = 4
+	},
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"JF" = (
+/obj/structure/hotspring/border/ten,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"JS" = (
+/obj/structure/chair/stool,
+/obj/effect/landmark/start/bandit{
+	dir = 4
+	},
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"KH" = (
+/obj/structure/rack/rogue/shelf/alizeria/shelf2,
+/obj/item/gun/ballistic/revolver/grenadelauncher/crossbow{
+	pixel_y = 30
+	},
+/obj/item/ammo_holder/quiver/bolts{
+	pixel_y = 32
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"KU" = (
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"Le" = (
+/obj/structure/flora/new_shroom/cyanf,
+/obj/structure/flora/new_shroom/cyanf,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Lh" = (
+/obj/structure/fluff/statue/evil{
+	pixel_y = 4
+	},
+/obj/structure/flora/crystal{
+	pixel_x = -15;
+	pixel_y = 14
+	},
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Lr" = (
+/obj/structure/hotspring/border/two,
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Lu" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 4
+	},
+/obj/item/candle/skull/lit{
+	pixel_x = -14;
+	pixel_y = 5
+	},
+/obj/item/reagent_containers/glass/cup{
+	pixel_x = 3
+	},
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"Lw" = (
+/obj/structure/fluff/walldeco/chains{
+	icon_state = "chains8"
+	},
+/obj/structure/fluff/nest,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"LJ" = (
+/obj/structure/rack/shelf/biggest,
+/obj/item/rope/net,
+/obj/item/rope/net,
+/obj/item/rope/net,
+/obj/item/storage/sack,
+/obj/item/clothing/head/helmet/leather/hood_ominous,
+/obj/item/clothing/neck/coif,
+/obj/item/clothing/head/helmet/leather/volfhelm,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"LL" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Mk" = (
+/turf/closed/wall/mineral/wood,
+/area/pocket_dimension)
+"Mm" = (
+/obj/structure/hotspring/border/twelve,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Mn" = (
+/obj/structure/grindwheel,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"No" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/effect/decal/cobblerockedge{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Oh" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 4
+	},
+/obj/effect/decal/cobblerockedge,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"OL" = (
+/obj/machinery/light/fueled/forge,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"OM" = (
+/obj/machinery/light/fueled/oven/south,
+/obj/structure/table/wood/reinf_long{
+	dir = 4
+	},
+/obj/item/reagent_containers/glass/bowl{
+	pixel_y = 9;
+	pixel_x = 9
+	},
+/obj/item/kitchen/rollingpin,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Pm" = (
+/obj/structure/chair/stool,
+/obj/effect/landmark/start/bandit{
+	dir = 8
+	},
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"PN" = (
+/obj/structure/giantfur/small{
+	layer = 2;
+	pixel_y = 4;
+	pixel_x = -28
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"PO" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"PT" = (
+/obj/effect/decal/cobbleedge/alt,
+/obj/effect/decal/cobbleedge/alt{
+	dir = 8
+	},
+/obj/structure/fermentation_keg/random/water,
+/obj/item/reagent_containers/glass/bucket/wooden/alter,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Qf" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/item/natural/stone,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Qs" = (
+/obj/structure/table/wood/plain_alt,
+/obj/item/paper/scroll{
+	pixel_y = 11
+	},
+/obj/item/paper/scroll{
+	pixel_y = 11
+	},
+/obj/item/paper/scroll{
+	pixel_y = 11
+	},
+/obj/item/paper/scroll{
+	pixel_y = 11
+	},
+/obj/item/natural/feather{
+	pixel_x = -3;
+	pixel_y = 5
+	},
+/obj/item/reagent_containers/food/snacks/produce/dry_westleach{
+	pixel_x = 4;
+	pixel_y = 6
+	},
+/obj/item/reagent_containers/food/snacks/produce/dry_westleach{
+	pixel_x = 7;
+	pixel_y = 7
+	},
+/obj/item/clothing/face/cigarette/pipe{
+	pixel_x = -5;
+	pixel_y = 10
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"Qt" = (
+/obj/structure/hotspring/border/eight,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"QA" = (
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"QD" = (
+/obj/effect/decal/cobblerockedge{
+	dir = 10
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Re" = (
+/obj/machinery/light/fueled/smelter,
+/obj/machinery/light/fueled/torchholder/c,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Rj" = (
+/obj/structure/fake_machine/mail/r,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"RQ" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"RW" = (
+/obj/structure/chair/stool,
+/obj/effect/landmark/start/bandit{
+	dir = 4
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"Sh" = (
+/obj/effect/decal/cobbleedge/alt,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Sw" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 9;
+	pixel_x = -5
+	},
+/obj/item/reagent_containers/glass/bowl{
+	pixel_y = -6
+	},
+/obj/item/kitchen/spoon{
+	pixel_x = 7;
+	pixel_y = -6
+	},
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"SG" = (
+/obj/structure/closet/crate/chest/neu,
+/obj/item/grown/log/tree/small,
+/obj/item/grown/log/tree/small,
+/obj/item/ore/coal/charcoal,
+/obj/item/ore/coal/charcoal,
+/obj/item/ore/coal/charcoal,
+/obj/item/ore/coal/charcoal,
+/obj/item/ore/coal/charcoal,
+/obj/item/flint,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"SP" = (
+/obj/structure/table/wood/plain_alt,
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/obj/item/flashlight/flare/torch/lantern,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"TD" = (
+/turf/closed/wall/mineral/stone/moss,
+/area/pocket_dimension)
+"Ua" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/structure/flora/new_shroom/redwall{
+	dir = 2;
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/obj/item/natural/rock/random_ore,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"UC" = (
+/obj/structure/table/wood/reinf_long{
+	dir = 8
+	},
+/obj/item/cooking/pan,
+/obj/item/reagent_containers/glass/bucket/pot{
+	pixel_y = 7
+	},
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"UJ" = (
+/obj/structure/hotspring/border/two,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"UM" = (
+/obj/machinery/light/fueled/hearth,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Vn" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 8
+	},
+/obj/effect/decal/cobbleedge/alt{
+	dir = 1
+	},
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"VU" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"Wb" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 6;
+	pixel_y = 0
+	},
+/obj/item/paper{
+	pixel_x = -2;
+	pixel_y = 11
+	},
+/obj/item/reagent_containers/glass/cup/wooden{
+	pixel_y = 2
+	},
+/turf/open/floor/twig,
+/area/pocket_dimension)
+"Wg" = (
+/obj/structure/bars,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"WE" = (
+/obj/machinery/light/fueled/firebowl/standing,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
+"WJ" = (
+/obj/structure/chair/wood/alt{
+	dir = 8
+	},
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"WX" = (
+/obj/structure/fluff/nest,
+/turf/open/floor/cobble/alt,
+/area/pocket_dimension)
+"Xb" = (
+/turf/open/floor/dirt,
+/area/pocket_dimension)
+"XW" = (
+/obj/machinery/light/fueled/firebowl/standing,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"XX" = (
+/obj/item/bin/water,
+/obj/machinery/light/fueled/torchholder/l,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
+"Yl" = (
+/turf/open/floor/mushroom,
+/area/pocket_dimension)
+"Yq" = (
+/obj/structure/hotspring/border/three,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
+"Za" = (
+/obj/structure/hotspring,
+/turf/closed/mineral/bedrock,
+/area/pocket_dimension)
+"ZS" = (
+/obj/item/grown/log/tree/stick,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension)
+
+(1,1,1) = {"
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+It
+Za
+Ia
+bO
+bO
+bO
+bO
+bO
+bO
+tg
+"}
+(2,1,1) = {"
+bO
+bO
+bO
+kk
+az
+pC
+lz
+bO
+bO
+TD
+TD
+Re
+SG
+bO
+TD
+XX
+cB
+Qf
+kX
+bd
+Lr
+hZ
+bO
+bO
+bO
+By
+Dh
+bO
+"}
+(3,1,1) = {"
+bO
+TD
+yD
+eu
+ai
+GZ
+KU
+WE
+Mk
+In
+xh
+xh
+xh
+xh
+OL
+xh
+ws
+dw
+GZ
+GZ
+GZ
+Hr
+zh
+HD
+HD
+Yl
+xh
+bO
+"}
+(4,1,1) = {"
+bO
+TD
+qs
+RW
+RW
+JS
+KU
+Qs
+Mk
+uN
+No
+xh
+qp
+xh
+xh
+xh
+rt
+dw
+kX
+bd
+UJ
+dw
+Yl
+Yl
+Yl
+rF
+aS
+bO
+"}
+(5,1,1) = {"
+bO
+pC
+eu
+hC
+CN
+aa
+KU
+cR
+Mk
+IT
+IE
+No
+Mn
+xh
+Oh
+LL
+GU
+dw
+kX
+bd
+UJ
+px
+tP
+dw
+vi
+xh
+sQ
+bO
+"}
+(6,1,1) = {"
+bO
+iF
+KU
+Sw
+Lu
+Wb
+KU
+GZ
+eo
+dw
+dw
+Hz
+LL
+LL
+zD
+tP
+dw
+XW
+kX
+bd
+JF
+Cj
+dw
+dw
+DO
+Ua
+bO
+bO
+"}
+(7,1,1) = {"
+bO
+lz
+KU
+Pm
+Pm
+Fk
+GZ
+GZ
+Mk
+Mk
+LJ
+Hw
+DO
+DO
+hS
+er
+GZ
+er
+Mm
+bd
+bd
+UJ
+tu
+dw
+so
+bO
+bO
+bO
+"}
+(8,1,1) = {"
+bO
+bO
+ku
+GZ
+GZ
+Rj
+GZ
+PN
+zr
+Mk
+xG
+bO
+DO
+BO
+Mm
+bd
+GZ
+bd
+bd
+bd
+bd
+UJ
+uI
+dw
+tu
+bO
+bO
+bO
+"}
+(9,1,1) = {"
+bO
+bO
+KH
+GZ
+ac
+bO
+zr
+eu
+hm
+bO
+bO
+TD
+BO
+Mm
+bd
+bd
+GZ
+Qt
+cu
+bd
+bd
+HB
+Dh
+tP
+tu
+bO
+bO
+bO
+"}
+(10,1,1) = {"
+bO
+bO
+Mk
+eo
+Mk
+bO
+TD
+TD
+TD
+bO
+bO
+DO
+kX
+bd
+bd
+bd
+GZ
+Lh
+nS
+bd
+bd
+HB
+Dh
+Dh
+xh
+sQ
+bO
+bO
+"}
+(11,1,1) = {"
+bO
+bO
+xU
+dw
+tA
+Je
+bO
+bO
+TD
+TD
+xG
+DO
+kX
+bd
+GZ
+GZ
+Eg
+GZ
+Mm
+bd
+bd
+HB
+zh
+Dh
+Yl
+sQ
+bO
+bO
+"}
+(12,1,1) = {"
+bO
+bO
+fq
+an
+QD
+dw
+tP
+ln
+LL
+zD
+dw
+dw
+GZ
+GZ
+GZ
+bd
+bd
+EL
+bd
+bd
+bd
+JF
+nU
+Dh
+Yl
+xh
+sQ
+bO
+"}
+(13,1,1) = {"
+bO
+UC
+xh
+xh
+ws
+dw
+dw
+kA
+zi
+dw
+tP
+dw
+dw
+kX
+bd
+bd
+bd
+GZ
+bd
+ff
+Qt
+cu
+BP
+nU
+Yl
+iz
+iz
+bO
+"}
+(14,1,1) = {"
+bO
+OM
+xh
+xh
+xh
+ar
+If
+bO
+bO
+Iq
+dw
+dw
+wM
+BK
+Qt
+cu
+bd
+GZ
+ff
+Yq
+hZ
+nS
+bd
+tl
+Hr
+Le
+hZ
+bO
+"}
+(15,1,1) = {"
+bO
+bO
+ct
+UM
+IW
+bO
+bO
+bO
+TD
+TD
+oQ
+xi
+bO
+bO
+DO
+zZ
+Qt
+GZ
+Yq
+Qf
+DO
+nS
+bd
+Lr
+dw
+dw
+xh
+bO
+"}
+(16,1,1) = {"
+bO
+bO
+bO
+bO
+TD
+TD
+bO
+Iy
+gb
+dw
+dw
+cn
+bO
+bO
+xG
+Gc
+tP
+dw
+dw
+dw
+xG
+kX
+bd
+eA
+dw
+rF
+aS
+bO
+"}
+(17,1,1) = {"
+bO
+sr
+AP
+bO
+TD
+Wg
+GH
+cs
+cj
+dw
+dw
+GD
+Jt
+bO
+bO
+PO
+Xb
+dw
+dw
+iz
+dw
+kX
+bd
+tl
+dw
+xh
+xh
+bO
+"}
+(18,1,1) = {"
+bO
+Lw
+GH
+GH
+qP
+wR
+xr
+GH
+Sh
+tP
+dw
+RQ
+GH
+Ht
+bO
+zU
+zU
+Hj
+fk
+Hr
+dw
+GZ
+GZ
+GZ
+tP
+xh
+bO
+bO
+"}
+(19,1,1) = {"
+bO
+AP
+GH
+sr
+bG
+WX
+Wg
+fr
+PT
+cw
+cw
+Vn
+GH
+mx
+bO
+AF
+VU
+zU
+Xb
+zU
+QA
+kX
+bd
+UJ
+xG
+bO
+bO
+bO
+"}
+(20,1,1) = {"
+bO
+TD
+ik
+GH
+AP
+GH
+Wg
+TD
+TD
+SP
+WJ
+GH
+uV
+TD
+bO
+bO
+zU
+ZS
+kY
+Cl
+oq
+kX
+bd
+UJ
+bO
+bO
+bO
+bO
+"}
+(21,1,1) = {"
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+bO
+It
+Za
+Ia
+bO
+bO
+bO
+bO
+"}

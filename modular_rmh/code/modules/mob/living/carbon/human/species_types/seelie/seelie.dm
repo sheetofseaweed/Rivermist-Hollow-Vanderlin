@@ -154,8 +154,14 @@
 	if(human.getorganslot(ORGAN_SLOT_WINGS))
 		REMOVE_TRAIT(human, TRAIT_FLOORED, SEELIE_WING_TRAIT)
 		ADD_TRAIT(human, TRAIT_MOVE_FLOATING, "[type]")
+		// A get_up() in progress has to finish on its own. Forcing the position here
+		// fails its rest_checks_callback, killing the do_after before it can clear
+		// lying_angle - which leaves the seelie upright but rotated for good.
+		if(DOING_INTERACTION(human, DOAFTER_SOURCE_GETTING_UP))
+			return
 		if(!HAS_TRAIT(human, TRAIT_FLOORED) && human.body_position == LYING_DOWN && !human.resting)
 			human.set_body_position(STANDING_UP)
+			human.set_lying_angle(0)
 		return
 
 	ADD_TRAIT(human, TRAIT_FLOORED, SEELIE_WING_TRAIT)

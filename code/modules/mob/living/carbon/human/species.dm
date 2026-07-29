@@ -2686,3 +2686,37 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	var/modifier = -distance
 	if(!prob(GET_MOB_ATTRIBUTE_VALUE(src, STAT_ENDURANCE)+skill_modifier+modifier))
 		Knockdown(8)
+
+/// Whether any of the human's ears can play the flick animation and none are already flicking.
+/// Ears are split into two organs (left + right), so we check the whole slot.
+/datum/species/proc/can_flick_ears(mob/living/carbon/human/H)
+	if(!H)
+		return FALSE
+	var/found = FALSE
+	for(var/obj/item/organ/ears/E in H.getorganslotlist(ORGAN_SLOT_EARS))
+		if(E.is_flicking)
+			return FALSE
+		var/datum/sprite_accessory/ears/accessory = SPRITE_ACCESSORY(E.accessory_type)
+		if(istype(accessory) && accessory.can_flick)
+			found = TRUE
+	return found
+
+/// Starts the ear-flick animation on both ear organs and schedules it to stop.
+/datum/species/proc/perform_flick_ears(mob/living/carbon/human/H)
+	if(!H)
+		return
+	var/list/ears = H.getorganslotlist(ORGAN_SLOT_EARS)
+	if(!length(ears))
+		return
+	for(var/obj/item/organ/ears/E in ears)
+		E.is_flicking = TRUE
+	H.update_body_parts(redraw = TRUE)
+	addtimer(CALLBACK(src, PROC_REF(stop_flick_ears), H), 0.5 SECONDS)
+
+/// Ends the ear-flick animation on both ear organs and redraws.
+/datum/species/proc/stop_flick_ears(mob/living/carbon/human/H)
+	if(!H)
+		return
+	for(var/obj/item/organ/ears/E in H.getorganslotlist(ORGAN_SLOT_EARS))
+		E.is_flicking = FALSE
+	H.update_body_parts(redraw = TRUE)

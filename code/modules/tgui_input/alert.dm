@@ -26,7 +26,10 @@
 	// A gentle nudge - you should not be using TGUI alert for anything other than a simple message.
 	if(length(buttons) > 3)
 		log_tgui(user, "Error: TGUI Alert initiated with too many buttons. Use a list.", "TguiAlert")
-		return tgui_input_list(user, message, title, buttons, timeout, autofocus)
+		// Named explicitly: tgui_input_list takes (items, default, timeout, ui_state), so passing our
+		// (timeout, autofocus) pair positionally landed autofocus in timeout and killed the window in
+		// a decisecond. There is no autofocus equivalent here, so it is dropped rather than forwarded.
+		return tgui_input_list(user, message, title, buttons, null, timeout, ui_state)
 	var/datum/tgui_alert/alert = new(user, message, title, buttons, timeout, autofocus, ui_state)
 	alert.ui_interact(user)
 	alert.wait()

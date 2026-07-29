@@ -16,29 +16,3 @@
 		var/current_value = get_value(prefs)
 		set_value(prefs, !current_value)
 
-/datum/erp_preference/boolean/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session, lock_reason = null)
-	var/current_value = get_value(prefs)
-	var/toggle_class = "pref-toggle"
-	var/toggle_text = current_value ? "ENABLED" : "DISABLED"
-
-	if(current_value)
-		toggle_class += " enabled"
-
-	if(editable)
-		return "<button class='[toggle_class]' onclick=\"window.location.href='?src=[REF(session)];task=handle_pref;pref_type=[type];action=toggle;tab=preferences'\">[toggle_text]</button>"
-	toggle_class += " disabled"
-	return wrap_with_tooltip("<button class='[toggle_class]' disabled>[toggle_text]</button>", lock_reason)
-
-/datum/erp_preference/boolean/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
-	if(href_list["action"] != "toggle")
-		return FALSE
-	if(!ensure_editable(user, prefs))
-		return TRUE
-
-	var/current_value = get_value(prefs)
-	set_value(prefs, !current_value)
-	prefs.save_preferences()
-
-	var/status_text = current_value ? "disabled" : "enabled"
-	to_chat(user, "<span class='notice'>[name] [status_text].</span>")
-	return TRUE

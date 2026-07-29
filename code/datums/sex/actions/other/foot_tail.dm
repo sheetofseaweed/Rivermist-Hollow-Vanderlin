@@ -53,13 +53,12 @@
 
 /datum/sex_action/tailjob/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] teases [target]'s [genital_name] with [user.p_their()] tail..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] teases [target]'s [genital_name] with [user.p_their()] tail..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(target, user, 2, 0, 2, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 2, 0, 2)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/tailjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()
@@ -114,15 +113,14 @@
 
 /datum/sex_action/footjob_intimate/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/list/covering = foot_covering_info(user)
 	var/mult = covering["mult"]
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rubs [target]'s [genital_name] with [user.p_their()] [covering["desc"]] feet..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rubs [target]'s [genital_name] with [user.p_their()] [covering["desc"]] feet..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(target, user, 2 * mult, 0, 2 * mult, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 2 * mult, 0, 2 * mult)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/footjob_intimate/on_finish(mob/living/user, mob/living/target)
 	. = ..()
@@ -173,15 +171,14 @@
 
 /datum/sex_action/foot_grind_vagina/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/list/covering = foot_covering_info(user)
 	var/mult = covering["mult"]
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] grinds [user.p_their()] [covering["desc"]] foot against [target]'s pussy..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] grinds [user.p_their()] [covering["desc"]] foot against [target]'s pussy..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(target, user, 2.5 * mult, 1, 2.5 * mult, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 2.5 * mult, 1, 2.5 * mult)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/foot_grind_vagina/on_finish(mob/living/user, mob/living/target)
 	. = ..()
@@ -225,15 +222,14 @@
 
 /datum/sex_action/use_their_feet/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/list/covering = foot_covering_info(target)
 	var/mult = covering["mult"]
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] rubs [user.p_their()] [genital_name] against [target]'s [covering["desc"]] feet..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rubs [user.p_their()] [genital_name] against [target]'s [covering["desc"]] feet..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(user, target, 2 * mult, 0, 2 * mult, src)
-	sex_session.handle_passive_ejaculation(user)
+	perform_sex_action(user, target, 2 * mult, 0, 2 * mult)
+	handle_passive_ejaculation(user)
 
 /datum/sex_action/use_their_feet/on_finish(mob/living/user, mob/living/target)
 	. = ..()

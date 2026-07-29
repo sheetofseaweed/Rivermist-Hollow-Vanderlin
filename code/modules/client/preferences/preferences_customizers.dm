@@ -1,4 +1,7 @@
-/datum/preferences/proc/validate_customizer_entries()
+/// Pass enforce_genital_rules = FALSE to sanitize the entry list without touching which genital
+/// entries are enabled. Only load_customizer_and_quirk_data() needs that, because the rules
+/// depend on quirks that have not been read out of the savefile yet.
+/datum/preferences/proc/validate_customizer_entries(enforce_genital_rules = TRUE)
 	customizer_entries = SANITIZE_LIST(customizer_entries)
 	list_clear_nulls(customizer_entries)
 	var/datum/species/species = pref_species
@@ -38,7 +41,8 @@
 		var/datum/customizer_choice/customizer_choice = CUSTOMIZER_CHOICE(entry.customizer_choice_type)
 		customizer_choice.validate_entry(src, entry)
 
-	enforce_genital_access_rules()
+	if(enforce_genital_rules)
+		enforce_genital_access_rules()
 
 /datum/preferences/proc/print_customizers_page()
 	var/list/dat = list()

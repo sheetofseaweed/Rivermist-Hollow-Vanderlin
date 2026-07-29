@@ -54,65 +54,6 @@
 		return TRUE
 	return FALSE
 
-/datum/erp_preference/bitflag/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session, lock_reason = null)
-	var/current_value = get_value(prefs)
-	var/list/output = list()
-
-	output += "<div class='bitflag-session-pref'>"
-	output += "<b>[html_encode(name)]:</b><br>"
-
-	for(var/flag_name in flags)
-		var/flag_bit = flags[flag_name]
-		var/is_enabled = (current_value & flag_bit)
-		var/toggle_class = "pref-toggle bitflag-toggle"
-		var/toggle_text = is_enabled ? "ON" : "OFF"
-		var/description = flag_descriptions[flag_name] || ""
-		var/title_attr = description ? " title='[escape_html_attribute(description)]'" : ""
-
-		if(is_enabled)
-			toggle_class += " enabled"
-
-		output += "<div class='bitflag-session-option'>"
-		output += "<span class='bitflag-label'[title_attr]>[html_encode(flag_name)]:</span> "
-
-		if(editable)
-			output += "<button class='[toggle_class]' onclick=\"window.location.href='?src=[REF(session)];task=handle_pref;pref_type=[type];action=toggle_flag;flag=[flag_bit];tab=preferences'\">[toggle_text]</button>"
-		else
-			toggle_class += " disabled"
-			output += wrap_with_tooltip("<button class='[toggle_class]' disabled>[toggle_text]</button>", lock_reason)
-
-		output += "</div>"
-
-	output += "</div>"
-	return jointext(output, "")
-
-/datum/erp_preference/bitflag/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
-	if(href_list["action"] != "toggle_flag")
-		return FALSE
-	if(!ensure_editable(user, prefs))
-		return TRUE
-
-	var/flag_bit = text2num(href_list["flag"])
-	if(!flag_bit)
-		return FALSE
-
-	var/current_value = get_value(prefs)
-	var/was_enabled = (current_value & flag_bit)
-	current_value ^= flag_bit // XOR to toggle the specific bit
-	set_value(prefs, current_value)
-	prefs.save_preferences()
-
-	// Find the flag name for the message
-	var/flag_name = "Unknown"
-	for(var/fname in flags)
-		if(flags[fname] == flag_bit)
-			flag_name = fname
-			break
-
-	var/status_text = was_enabled ? "disabled" : "enabled"
-	to_chat(user, "<span class='notice'>[flag_name] [status_text] for [name].</span>")
-	return TRUE
-
 // Helper procs for checking flags
 /datum/erp_preference/bitflag/proc/has_flag(datum/preferences/prefs, flag_bit)
 	var/current_value = get_value(prefs)

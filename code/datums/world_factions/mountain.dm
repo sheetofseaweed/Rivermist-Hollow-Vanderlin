@@ -81,7 +81,9 @@
 		/datum/supply_pack/rawmats/tin,
 		/datum/supply_pack/rawmats/lumber,
 		/datum/supply_pack/rawmats/blocks,
-		/datum/supply_pack/rawmats/ash
+		/datum/supply_pack/rawmats/ash,
+		// Camp shelter
+		/datum/supply_pack/tools/camp_tent
 	)
 	uncommon_pool = list(
 		// Better armor

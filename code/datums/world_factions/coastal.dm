@@ -92,7 +92,9 @@
 		/datum/supply_pack/seeds/pineapple,
 		// Livestock - coastal communities
 		/datum/supply_pack/livestock/chicken,
-		/datum/supply_pack/livestock/cat
+		/datum/supply_pack/livestock/cat,
+		// Camp shelter
+		/datum/supply_pack/tools/camp_tent
 	)
 	uncommon_pool = list(
 		// Refined apparel

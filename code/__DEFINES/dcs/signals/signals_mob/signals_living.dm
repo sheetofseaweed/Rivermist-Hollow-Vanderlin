@@ -140,3 +140,7 @@
 
 /// From [mob/living/MiddleClickOn] before a middle mouse intent is performed
 #define COMSIG_MOB_PRE_SPECIAL_MIDDLE "pre_special_middle"
+
+/// From /mob/living/simple_animal/proc/tamed(), sent to the animal being tamed: (mob/tamer)
+/// COMSIG_ANIMAL_TAMED is the objective-side counterpart and fires on the tamer instead.
+#define COMSIG_LIVING_TAMED "living_tamed"

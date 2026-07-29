@@ -78,7 +78,7 @@
 		var/datum/antagonist/werewolf/W = owner.mind.has_antag_datum(/datum/antagonist/werewolf/)
 		if(W && W.transformed == TRUE)
 			owner.regenerate_icons()
-	if(!LAZYLEN(return_sessions_with_user(owner)))
+	if(!length(owner.sex_scene?.controllers))
 		always_hard = FALSE
 	if(always_hard)
 		erect_state = ERECT_STATE_HARD

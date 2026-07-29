@@ -711,14 +711,14 @@
 	set_health(round(maxHealth - used_damage, DAMAGE_PRECISION))
 	update_pain()
 	update_shock()
-	handle_defeat_health_update()
+	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
+	// Defeat must be evaluated before this can finalize a lethal health value.
 	update_stat()
 
 	if(stat == SOFT_CRIT)
 		add_movespeed_modifier(MOVESPEED_ID_CARBON_SOFTCRIT, TRUE, multiplicative_slowdown = SOFTCRIT_ADD_SLOWDOWN)
 	else
 		remove_movespeed_modifier(MOVESPEED_ID_CARBON_SOFTCRIT, TRUE)
-	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
 
 /mob/living/carbon/var/lightning_flashing = FALSE
 

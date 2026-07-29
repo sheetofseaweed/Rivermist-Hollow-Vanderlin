@@ -53,12 +53,3 @@
 /datum/erp_preference/proc/handle_topic(mob/user, list/href_list, datum/preferences/prefs)
 	return
 
-/datum/erp_preference/proc/show_session_ui(datum/preferences/prefs, editable = FALSE, datum/sex_session/session, lock_reason = null)
-	var/current_value = get_value(prefs)
-	if(editable)
-		return "<div class='pref-toggle enabled'>[current_value]</div>"
-	return wrap_with_tooltip("<div class='pref-toggle disabled'>[current_value]</div>", lock_reason)
-
-/datum/erp_preference/proc/handle_session_topic(mob/user, list/href_list, datum/preferences/prefs, datum/sex_session/session)
-	// Return TRUE if the topic was handled, FALSE otherwise
-	return FALSE

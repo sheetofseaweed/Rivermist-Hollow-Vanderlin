@@ -158,6 +158,11 @@
 
 	var/mob/living/carbon/carbon_owner = owner
 	if(rune_controller.can_offer_defeat_rune_return(carbon_owner))
+		var/datum/component/kidnap_captivity/captivity = carbon_owner.GetComponent(/datum/component/kidnap_captivity)
+		if(captivity)
+			captivity.offer_release_choice(rune_controller)
+			return
+		var/list/choices = list(KIDNAP_CHOICE_CALL_RUNE, KIDNAP_CHOICE_WAIT)
 		// Spell out the price before they spend a charge - the return is powerful but far from free.
 		var/confirm = tgui_alert(carbon_owner, "Calling the rune will haul you to safety and mend your wounds - but it is not free:\n\n\
 			- You are torn from where you fell and wake beside the rune, far away (a compass points back to where you were taken).\n\
@@ -165,8 +170,8 @@
 			- A mana backlash burns away half your mana and leaves you with lingering rune-weariness on top of the injuries of your defeat.\n\
 			- The rune takes its due: a tithe of coin and a tax of your blood, both growing heavier as your charges run low.\n\
 			- This spends one of your limited rune charges. They return slowly over time; spend your last and no rune will answer until they recharge.",
-			"Answer the rune's call?", list("Call the Rune", "Wait"))
-		if(confirm != "Call the Rune")
+			"Answer the rune's call?", choices)
+		if(confirm != KIDNAP_CHOICE_CALL_RUNE)
 			return
 		rune_controller.trigger_defeat_rune_return(carbon_owner)
 		return
@@ -245,6 +250,8 @@
 	for(var/mob/living/carbon/linked_user as anything in linked_users)
 		clear_linked_user_rescue_state(linked_user)
 		unregister_linked_user_signals(linked_user)
+	for(var/datum/mind/linked_mind as anything in linked_users_minds)
+		UnregisterSignal(linked_mind, COMSIG_PARENT_QDELETING)
 	clear_all_ghost_return_actions()
 
 	control_rune = null
@@ -502,6 +509,7 @@
 	unlink_mind_from_other_resurrection_runes(linked_mind, sub_rune)
 	if(!(linked_mind in linked_users_minds))
 		linked_users_minds += linked_mind
+		RegisterSignal(linked_mind, COMSIG_PARENT_QDELETING, PROC_REF(handle_linked_mind_deletion), override = TRUE)
 	var/mob/living/carbon/current_body = get_current_linkable_body(linked_mind)
 	if(current_body)
 		clear_ghost_return_action(linked_mind)
@@ -520,6 +528,7 @@
 	unregister_linked_body(user)
 
 	if(linked_mind)
+		UnregisterSignal(linked_mind, COMSIG_PARENT_QDELETING)
 		linked_users_minds -= linked_mind
 		linked_body_by_mind.Remove(linked_mind)
 		resurrecting -= linked_mind
@@ -566,6 +575,7 @@
 	if(!linked_mind)
 		return
 
+	UnregisterSignal(linked_mind, COMSIG_PARENT_QDELETING)
 	var/mob/living/carbon/linked_body = linked_body_by_mind[linked_mind]
 	if(linked_body)
 		unregister_linked_body(linked_body)
@@ -645,6 +655,12 @@
 		linked_mind.current = null
 	if(can_auto_remake_deleted_body(linked_mind))
 		queue_body_remake(linked_mind)
+
+/// A linked mind being deleted must be dropped from our lists, or we pin it (a hard-del leak).
+/// Bodies are tracked separately; minds can be deleted without their last body going through us.
+/datum/resurrection_rune_controller/proc/handle_linked_mind_deletion(datum/mind/source)
+	SIGNAL_HANDLER
+	remove_linked_mind(source)
 
 /datum/resurrection_rune_controller/proc/prune_deleted_linked_body_state(datum/mind/linked_mind)
 	if(!linked_mind)
@@ -895,6 +911,9 @@
 		return FALSE
 	if(!user.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
+	var/datum/component/kidnap_captivity/captivity = user.GetComponent(/datum/component/kidnap_captivity)
+	if(captivity && !captivity.released)
+		return FALSE
 	return user.mind?.can_spend_defeat_rune_charge()
 
 /datum/resurrection_rune_controller/proc/trigger_defeat_rune_return(mob/living/carbon/user)
@@ -913,6 +932,15 @@
 		to_chat(user, span_userdanger("That was your final rune charge. The next time you fall, no rune will answer until your charges return - sit tight and stay safe."))
 
 	queue_revival(user, voluntary = TRUE, allow_outlaw_redirect = FALSE, rune_charge_result = rune_charge_result)
+	return TRUE
+
+/datum/resurrection_rune_controller/proc/reject_defeat_rune_return(mob/living/carbon/user)
+	if(!can_offer_defeat_rune_return(user))
+		return FALSE
+	var/datum/component/kidnap_captivity/captivity = user.GetComponent(/datum/component/kidnap_captivity)
+	if(!captivity || !captivity.reject_rune_and_wake())
+		return FALSE
+	clear_linked_user_rescue_state(user)
 	return TRUE
 
 /datum/resurrection_rune_controller/proc/queue_revival(mob/living/carbon/user, is_linked = TRUE, voluntary = FALSE, allow_outlaw_redirect = TRUE, list/rune_charge_result = null)
@@ -942,7 +970,8 @@
 		resurrecting -= user
 		return
 	var/turf/destination_turf = sub_rune?.get_resurrection_destination(body, allow_outlaw_redirect = allow_outlaw_redirect)
-	var/turf/return_turf = get_turf(body)
+	var/datum/component/kidnap_captivity/captivity = body?.GetComponent(/datum/component/kidnap_captivity)
+	var/turf/return_turf = captivity?.get_saved_origin() || get_turf(body)
 	if(!body || !destination_turf)
 		if(sub_rune)
 			sub_rune.visible_message(span_blue("The rune flickers, connection to a body suddenly severed."))
@@ -951,6 +980,8 @@
 	if(!(body in linked_users))
 		resurrecting -= user
 		return
+	if(captivity)
+		captivity.prepare_rune_return()
 
 	var/had_defeat_knockout = body.has_status_effect(/datum/status_effect/defeat_knockout)
 	body.visible_message(span_blue("With a loud pop, [body.name] suddenly disappears!"))
@@ -961,9 +992,14 @@
 	body.defeat_suppress_heal_cleanup = TRUE
 	body.revive(ADMIN_HEAL_ALL, force_grab_ghost = TRUE)
 	body.defeat_suppress_heal_cleanup = FALSE
-	body.remove_status_effect(/datum/status_effect/defeat_knockout)
 	if(had_defeat_knockout)
-		body.apply_defeat_snapshot_debuffs()
+		var/datum/defeat_recovery_profile/rune/rune_profile = new
+		rune_profile.additional_aftermath_severity = get_defeat_rune_trauma_severity(rune_charge_result)
+		if(!body.perform_defeat_rescue(null, "rune return", rune_profile, sub_rune))
+			resurrecting -= user
+			return
+	else
+		body.remove_status_effect(/datum/status_effect/defeat_knockout)
 	body.clear_fullscreens()
 	body.reload_fullscreen()
 	body.update_cone_show()
@@ -975,7 +1011,7 @@
 
 	body.grab_ghost(TRUE)
 	body.flash_act()
-	apply_revival_debuffs(body, voluntary, rune_charge_result)
+	apply_revival_debuffs(body, voluntary, rune_charge_result, apply_defeat_trauma = !had_defeat_knockout)
 	apply_defeat_rune_cost(body, rune_charge_result)
 	apply_revival_side_effects(body, voluntary, return_turf)
 	addtimer(CALLBACK(src, PROC_REF(clear_resurrection_lockout), body), RUNE_REVIVE_LOCKOUT)
@@ -1016,11 +1052,12 @@
 	target.update_body()
 	target.visible_message("<span class='notice'>The rot leaves [target]'s body!</span>", "<span class='green'>I feel the rot leave my body!</span>")
 
-/datum/resurrection_rune_controller/proc/apply_revival_debuffs(mob/living/carbon/target, voluntary = FALSE, list/rune_charge_result = null)
+/datum/resurrection_rune_controller/proc/apply_revival_debuffs(mob/living/carbon/target, voluntary = FALSE, list/rune_charge_result = null, apply_defeat_trauma = TRUE)
 	clear_revival_debuffs(target)
 	if(rune_charge_result)
 		target.apply_status_effect(get_revival_debuff_for_defeat_rune_result(rune_charge_result))
-		target.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/rune, get_defeat_rune_trauma_severity(rune_charge_result))
+		if(apply_defeat_trauma)
+			target.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/rune, get_defeat_rune_trauma_severity(rune_charge_result))
 	else if(voluntary)
 		target.apply_status_effect(/datum/status_effect/debuff/revived/rune/light)
 	else if(ishuman(target))

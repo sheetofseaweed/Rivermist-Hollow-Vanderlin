@@ -1,7 +1,6 @@
 /datum/sex_action/masturbate/penis_over
 	name = "Jerk over them"
 	check_same_tile = FALSE
-	user_priority = 20
 	target_menu_zone_mask = SEX_UI_ZONE_MISC
 
 /datum/sex_action/masturbate/penis_over/shows_on_menu(mob/living/user, mob/living/target)
@@ -33,13 +32,12 @@
 
 /datum/sex_action/masturbate/penis_over/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/chosen_verb = pick(list("jerks [user.p_their()] cock", "strokes [user.p_their()] cock", "masturbates", "jerks off"))
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] [chosen_verb] over [target]"))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] [chosen_verb] over [target]"))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	sex_session.perform_sex_action(user, user, 2, 4, 2, src)
+	perform_sex_action(user, user, 2, 4, 2)
 
 /datum/sex_action/masturbate/penis_over/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	user.visible_message(span_love("[user] cums over [target]'s body!"))

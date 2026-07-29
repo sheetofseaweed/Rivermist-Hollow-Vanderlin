@@ -290,17 +290,34 @@
 	native_movables[cache] = TRUE
 	return cache
 
-/mob/living/proc/get_kidnap_escape_override()
-	var/turf/here = get_turf(src)
-	if(!here)
+/// Resolves the run that owns a larder tag (see /datum/dungeon_run/get_larder_tag).
+/// Captivity runs in its own pocket, so the captive's location can't identify
+/// the run - the tag is the only thread back.
+/proc/get_dungeon_run_by_larder_tag(larder_tag)
+	if(!larder_tag)
 		return null
 	for(var/datum/dungeon_run/run as anything in get_active_dungeon_runs())
-		if(run.ending || QDELETED(run.current_break_room))
+		if(run.ending)
 			continue
-		for(var/datum/pocket_dimension/dungeon/room as anything in run.get_all_rooms())
-			if(room.contains_turf(here))
-				return run.current_break_room.get_entry_turf()
+		if(run.get_larder_tag() == larder_tag)
+			return run
 	return null
+
+/// Captivity taken inside a dungeon run. Everything else about a lair stays
+/// stock; only the way out changes - a delver hauled off mid-run is released
+/// into their party's place of respite, never spat into the overworld wilds
+/// halfway across the map.
+/datum/defeat_captivity_profile/dungeon_larder
+	display_name = "dungeon larder"
+
+/datum/defeat_captivity_profile/dungeon_larder/get_ejection_destination(datum/component/kidnap_captivity/captivity, datum/pocket_dimension/defeat_captivity/instance)
+	var/datum/dungeon_run/run = get_dungeon_run_by_larder_tag(captivity?.lair_tag)
+	if(run && !QDELETED(run.current_break_room))
+		var/turf/respite = run.current_break_room.get_entry_turf()
+		if(respite)
+			return respite
+	// Run is gone (collapsed, wiped): fall back to the stock wilds/origin chain.
+	return ..()
 
 /datum/pocket_dimension/dungeon/proc/build_larder(turf/larder_turf)
 	if(QDELETED(larder_turf) || !owning_run)
@@ -391,9 +408,11 @@
 	// Re-assert ours after any such timer has fired.
 	addtimer(CALLBACK(src, PROC_REF(assert_guardian_faction), WEAKREF(guardian)), 2 SECONDS)
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
-	// Dungeon natives haul defeated prey to the run's own larder if one stands;
-	// never to an overworld lair (that would teleport players out of the run).
+	// Dungeon natives haul defeated prey to a larder keyed to this run, and the
+	// dungeon profile releases them back into the party's break room - never to
+	// an overworld lair, which would strand them outside the run.
 	guardian.kidnap_lair_tag = owning_run?.get_live_larder_tag()
+	guardian.kidnap_captivity_profile = guardian.kidnap_lair_tag ? /datum/defeat_captivity_profile/dungeon_larder : null
 	if(iscarbon(guardian))
 		// Carbons never reach "dead" cleanly in a brawl - pain/shock thresholds drop
 		// them into crit long before health runs out, and their AI flees in pain.

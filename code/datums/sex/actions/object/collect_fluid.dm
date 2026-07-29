@@ -16,6 +16,13 @@
 		return container
 	return null
 
+/// Putting the container down ends the collection, wherever it lands.
+/datum/sex_action/collect_fluid/can_continue(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	return !!get_held_container(user)
+
 /datum/sex_action/collect_fluid/get_climax_container(mob/living/user, mob/living/target, mob/living/action_initiator, mob/living/action_target, mob/living/action_performer)
 	// The climaxing mob is passed as `user`; the container may be held by whoever performed the action. Check all candidates.
 	for(var/mob/living/candidate as anything in list(action_performer, action_initiator, user, target))
@@ -27,8 +34,6 @@
 // --- Self ---
 /datum/sex_action/collect_fluid/self
 	name = "Pleasure myself into a container"
-	user_priority = 100
-	target_priority = 1
 
 /datum/sex_action/collect_fluid/self/shows_on_menu(mob/living/user, mob/living/target)
 	if(user != target)
@@ -61,18 +66,17 @@
 
 /datum/sex_action/collect_fluid/self/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	var/obj/item/container = get_held_container(user)
 	if(can_show_action_message(user, target))
 		var/chosen_verb = pick("strokes themselves over \the [container]", "works themselves over \the [container]", "pleasures themselves into \the [container]")
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] [chosen_verb]..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] [chosen_verb]..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
 	if(user.has_kink(KINK_ONOMATOPOEIA))
 		do_onomatopoeia(user)
 
-	sex_session.perform_sex_action(user, user, 2, 0, 2, src)
-	sex_session.handle_passive_ejaculation()
+	perform_sex_action(user, user, 2, 0, 2)
+	handle_passive_ejaculation()
 
 /datum/sex_action/collect_fluid/self/on_finish(mob/living/user, mob/living/target)
 	. = ..()
@@ -91,7 +95,6 @@
 // --- Other ---
 /datum/sex_action/collect_fluid/other
 	name = "Milk them into a container"
-	flipped = TRUE
 	check_same_tile = FALSE
 	mage_hand_allowed = TRUE
 	mage_hand_overlay_zone = MAGE_HAND_ZONE_GROIN
@@ -129,32 +132,29 @@
 
 /datum/sex_action/collect_fluid/other/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
 	if(can_show_action_message(user, target))
-		user.visible_message(sex_session.spanify_force("[user] [sex_session.get_generic_force_adjective()] works [target]'s release toward \the [get_held_container(user)]..."))
+		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] works [target]'s release toward \the [get_held_container(user)]..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
 	if(user.has_kink(KINK_ONOMATOPOEIA))
 		do_onomatopoeia(user)
 
 	// Arouse the partner being milked (perform_sex_action arouses its first arg), so THEY climax into our container.
-	sex_session.perform_sex_action(target, user, 2, 0, 2, src)
-	sex_session.handle_passive_ejaculation(target)
+	perform_sex_action(target, user, 2, 0, 2)
+	handle_passive_ejaculation(target)
 
 /datum/sex_action/collect_fluid/other/on_finish(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] lowers \the [get_held_container(user)]."))
+	var/obj/item/container = get_held_container(user)
+	if(container)
+		user.visible_message(span_warning("[user] lowers \the [container]."))
+	else
+		user.visible_message(span_warning("[user] stops."))
 
 /datum/sex_action/collect_fluid/other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	// `user` is the climaxing partner; `target` is the one holding the container.
 	user.visible_message(span_love("[user] spills their release into the waiting container!"))
 	return ORGASM_LOCATION_CONTAINER
-
-/datum/sex_action/collect_fluid/other/is_finished(mob/living/user, mob/living/target)
-	var/datum/sex_session/sex_session = get_sex_session(user, target)
-	if(sex_session.finished_check())
-		return TRUE
-	return FALSE
 
 /datum/sex_action/collect_fluid/other/lock_sex_object(mob/living/user, mob/living/target)
 	if(target.getorganslot(ORGAN_SLOT_PENIS))

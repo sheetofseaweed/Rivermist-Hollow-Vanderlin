@@ -29,6 +29,33 @@
 	var/mob/living/carbon/human/human_user = user
 	human_user.show_visual_emote_overlay(/datum/bodypart_feature/visual_emote/cry, 12.8 SECONDS)
 
+/datum/emote/living/carbon/human/eflick
+	key = "eflick"
+	key_third_person = "flicks"
+	message = "flicks their ears."
+	emote_type = EMOTE_VISIBLE
+	runechat_msg = FALSE
+	soundping = FALSE
+
+/datum/emote/living/carbon/human/eflick/can_run_emote(mob/user, status_check = TRUE, intentional)
+	if(!..())
+		return FALSE
+	var/mob/living/carbon/human/H = user
+	return H.dna?.species?.can_flick_ears(H)
+
+/datum/emote/living/carbon/human/eflick/run_emote(mob/user, params, type_override, intentional, targetted)
+	. = ..()
+	if(!.)
+		return
+	var/mob/living/carbon/human/H = user
+	H.dna.species.perform_flick_ears(H)
+
+/mob/living/carbon/human/verb/emote_eflick()
+	set name = "Ear Flick"
+	set category = "Emotes.Silent"
+
+	emote("eflick", intentional = TRUE)
+
 /datum/emote/living/carbon/human/eyebrow
 	key = "eyebrow"
 	message = "raises an eyebrow."

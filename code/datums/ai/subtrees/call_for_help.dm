@@ -67,7 +67,7 @@
 			qdel(field)
 
 		ally_ctrl.CancelActions()
-		ally_ctrl.set_blackboard_key(BB_AI_ALERT_MODE_UNTIL, world.time + AI_ALERT_ON_ATTACK_TIME)
+		ally_ctrl.enter_alert_mode(AI_ALERT_ON_ATTACK_TIME)
 		ally_ctrl.recalculate_idle()
 
 	finish_action(controller, TRUE, target_key)

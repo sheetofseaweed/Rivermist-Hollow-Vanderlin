@@ -132,6 +132,7 @@
 		QDEL_NULL(struggle_action)
 	if(!owner || QDELETED(owner))
 		return
+	owner.reset_horny_defeat_progress()
 	owner.clear_fullscreen("defeat", FALSE)
 	owner.clear_fullscreen("defeat_horny")
 	to_chat(owner, span_notice("You can move again, but the defeat still clings to you."))
@@ -142,6 +143,8 @@
 	REMOVE_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
 	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
+	var/datum/component/kidnap_captivity/captivity = owner.GetComponent(/datum/component/kidnap_captivity)
+	captivity?.on_knockout_removed()
 	return ..()
 
 /datum/status_effect/defeat_knockout/remove_effect_on_heal(datum/source, heal_flags)
@@ -154,6 +157,51 @@
 	name = "Defeated"
 	desc = "You are defeated. You can speak, emote, call for help, or call the rune if available."
 	icon_state = "paralysis"
+
+/// Long KO for a clientless mob brought down by horny defeat. Immobilizes and pauses the AI, then after
+/// DEFEAT_MOB_HORNY_KO_DURATION deletes the mob if no player is watching, or holds the KO and re-checks
+/// while players remain. Deliberately does NOT add TRAIT_NODEATH: a downed mob can still be finished off.
+/datum/status_effect/mob_horny_knockout
+	id = "mob_horny_knockout"
+	duration = STATUS_EFFECT_PERMANENT
+	remove_on_fullheal = FALSE
+	var/cleanup_timer
+
+/datum/status_effect/mob_horny_knockout/on_apply()
+	. = ..()
+	if(!.)
+		return
+	ADD_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
+	ADD_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
+	ADD_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
+	ADD_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
+	owner.ai_controller?.set_ai_status(AI_STATUS_OFF)
+	owner.visible_message(span_userdanger("[owner] sinks down, overwhelmed and spent!"))
+	cleanup_timer = addtimer(CALLBACK(src, PROC_REF(mob_horny_ko_cleanup_check)), DEFEAT_MOB_HORNY_KO_DURATION, TIMER_STOPPABLE)
+
+/// End of the KO window: delete the mob if it is alone, else keep it down and look again shortly.
+/datum/status_effect/mob_horny_knockout/proc/mob_horny_ko_cleanup_check()
+	cleanup_timer = null
+	if(!owner || QDELETED(owner))
+		return
+	if(owner.mob_horny_ko_players_nearby())
+		cleanup_timer = addtimer(CALLBACK(src, PROC_REF(mob_horny_ko_cleanup_check)), DEFEAT_MOB_HORNY_KO_RECHECK, TIMER_STOPPABLE)
+		return
+	qdel(owner)
+
+/datum/status_effect/mob_horny_knockout/on_remove()
+	if(cleanup_timer)
+		deltimer(cleanup_timer)
+		cleanup_timer = null
+	if(!owner || QDELETED(owner))
+		return
+	owner.reset_horny_defeat_progress()
+	REMOVE_TRAIT(owner, TRAIT_IMMOBILIZED, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(owner, TRAIT_FLOORED, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
+	REMOVE_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
+	owner.ai_controller?.set_ai_status(owner.ai_controller.get_expected_ai_status())
+	return ..()
 
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma
 	name = "Defeat Trauma"
@@ -173,6 +221,15 @@
 	/// registers itself here - defeat_treat_trauma matches on this, so new subtypes need no list edits.
 	/// (The universal path - potion or healing spell - clears any trauma regardless of class.)
 	var/treatment_class = DEFEAT_TREATMENT_MEDICAL
+	/// Provider-driven treatment metadata. Providers diagnose by category/tag, select this exact
+	/// status datum, then revalidate it after the interruptible treatment before paying the cost.
+	var/trauma_category = DEFEAT_TRAUMA_CATEGORY_PHYSICAL
+	var/list/accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	var/treatment_duration = 12 SECONDS
+	var/treatment_skill = /datum/attribute/skill/misc/medicine
+	var/treatment_skill_requirement = SKILL_RANK_APPRENTICE
+	var/treatment_resource_cost = 1
+	var/treatment_description = "Treat the lingering physical harm left by defeat."
 	var/severity = DEFEAT_SEVERITY_NORMAL
 	var/next_feedback_at = 0
 
@@ -389,6 +446,11 @@
 	trauma_label = "Mana Backlash"
 	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. Only a priest's rite or a potent remedy soothes it."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
+	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	treatment_skill = /datum/attribute/skill/magic/holy
+	treatment_skill_requirement = SKILL_RANK_NOVICE
+	treatment_description = "Soothe the spiritual and magical backlash left by the resurrection rune."
 
 // Mana-Backlash Exhaustion - the toll of being yanked back by the rune. Section 4.
 /datum/status_effect/debuff/defeat/rune/defeat_base_profile()
@@ -411,6 +473,13 @@
 	trauma_label = "Lewd Exhaustion"
 	trauma_desc = "A wrung-out, trembling afterglow that will not fade, letting focus and luck slip through your fingers. A healer, a priest, or a potent remedy restores you."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
+	// Intimate defeat is spiritual trauma for routing purposes. Its own subtype and descriptive
+	// metadata still let shrines present it distinctly from rune backlash.
+	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	treatment_skill = /datum/attribute/skill/magic/holy
+	treatment_skill_requirement = SKILL_RANK_NOVICE
+	treatment_description = "Restore composure and spirit after an overwhelming intimate defeat."
 
 /datum/status_effect/debuff/defeat/horny/defeat_base_profile()
 	return list(STAT_PERCEPTION = -2, STAT_FORTUNE = -2)
