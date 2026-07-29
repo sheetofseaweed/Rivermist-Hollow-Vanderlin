@@ -66,6 +66,7 @@
 	verbage = "assemble"
 	verbage_tp = "assembles"
 	requires_learning = FALSE
+	craftdiff = 3
 
 /datum/blueprint_recipe/structure/camp_shelter/tent
 	name = "Tent Kit"
@@ -89,6 +90,7 @@
 		/obj/item/grown/log/tree = 1,
 	)
 	build_time = 12 SECONDS
+	craftdiff = 4
 
 /datum/blueprint_recipe/structure/camp_shelter/pavilion
 	name = "Pavilion Kit"
@@ -101,6 +103,7 @@
 		/obj/item/grown/log/tree = 2,
 	)
 	build_time = 16 SECONDS
+	craftdiff = 5
 
 ///Merchant stock
 
@@ -116,5 +119,5 @@
 
 /datum/supply_pack/tools/camp_pavilion
 	name = "Pavilion Kit"
-	cost = 140
+	cost = 180
 	contains = /obj/item/camp_shelter/pavilion
