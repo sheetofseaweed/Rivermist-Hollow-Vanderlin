@@ -1,11 +1,23 @@
 /datum/antagonist/proc/add_contract_admin_commands(list/commands)
 	if(!contract_pool)
 		return
+	commands["Contract: Advance Progression Tier"] = CALLBACK(src, PROC_REF(admin_advance_contract_tier))
 	commands["Contract: View"] = CALLBACK(src, PROC_REF(admin_view_contract))
 	commands["Contract: Reroll"] = CALLBACK(src, PROC_REF(admin_reroll_contract))
 	commands["Contract: Force Full Completion"] = CALLBACK(src, PROC_REF(admin_force_full_contract))
 	commands["Contract: Warp To Deadline"] = CALLBACK(src, PROC_REF(admin_warp_cycle))
 	commands["Contract: Extend Deadline"] = CALLBACK(src, PROC_REF(admin_extend_deadline))
+
+/datum/antagonist/proc/admin_advance_contract_tier(mob/admin)
+	var/current_tier = min(contracts_completed_full + 1, contract_pool.max_tier)
+	if(current_tier >= contract_pool.max_tier)
+		to_chat(admin, span_notice("[key_name_admin(owner)] is already at the maximum contract progression tier ([current_tier])."))
+		return
+	contracts_completed_full++
+	on_contract_completed(null)
+	var/new_tier = min(contracts_completed_full + 1, contract_pool.max_tier)
+	to_chat(admin, span_notice("Advanced [key_name_admin(owner)] to contract progression tier [new_tier]. Their active contract was not changed."))
+	message_admins("[key_name_admin(admin)] advanced [key_name_admin(owner)] to contract progression tier [new_tier].")
 
 /datum/antagonist/proc/admin_view_contract(mob/admin)
 	if(!current_contract)

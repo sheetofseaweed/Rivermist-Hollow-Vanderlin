@@ -44,6 +44,8 @@
 	focus = TRUE
 /datum/unit_test/succubus_true_form_gates
 	focus = TRUE
+/datum/unit_test/succubus_sovereign_gaze
+	focus = TRUE
 #endif
 
 /datum/targetting_datum/basic/succubus_lusthound_unit_test/can_use_horny_ai_target(mob/living/living_mob, mob/living/carbon/human/human_target)
@@ -293,17 +295,21 @@
 	TEST_ASSERT_EQUAL(antag.get_succubus_contract_tier(), 1, "zero full contracts must remain tier 1")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_BASE, "tier 1 cap must be the base cap")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), "tier 1 must not grant Beguiling Doubles")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE), "tier 1 must not grant True Form")
 
 	antag.contracts_completed_full = 1
 	TEST_ASSERT(antag.refresh_succubus_contract_progression(), "first full contract must change the cap")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_TIER_2, "one full contract must grant the tier 2 cap")
 	var/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/doubles = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE)
+	var/datum/action/cooldown/spell/undirected/succubus_true_form/true_form = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE)
 	TEST_ASSERT_NOTNULL(doubles, "tier 2 must grant Beguiling Doubles")
+	TEST_ASSERT_NOTNULL(true_form, "tier 2 must grant True Form")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "tier 2 must not grant Call Whispering Imp")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), "tier 2 must not grant Call Lustbound Hound")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), "tier 2 must not grant Lay Infernal Snare")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing the same tier must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), doubles, "refreshing tier 2 must not replace Beguiling Doubles")
+	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE), true_form, "refreshing tier 2 must not replace True Form")
 
 	antag.contracts_completed_full = 2
 	antag.refresh_succubus_contract_progression()
@@ -580,11 +586,106 @@
 	body.mind.current = body
 	antag.essence_cap = 100000
 
+	antag.essence = SUCCUBUS_COST_TRUE_FORM
+	TEST_ASSERT(!antag.can_assume_true_form(TRUE), "true form must remain locked at tier 1")
+	antag.contracts_completed_full = 1
 	antag.essence = 0
 	TEST_ASSERT(!antag.can_assume_true_form(TRUE), "true form must be essence-gated")
 	antag.essence = SUCCUBUS_COST_TRUE_FORM
 	TEST_ASSERT(antag.can_assume_true_form(TRUE), "sufficient essence must open the gate")
+
+	antag.grant_true_form_actions(body)
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "true form must gain Wingbeat")
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus), "true form must gain Tail Sweep")
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze), "true form must gain Sovereign Gaze")
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws), "true form must gain Predatory Claws")
+	antag.remove_true_form_actions(body)
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "leaving true form must remove Wingbeat")
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus), "leaving true form must remove Tail Sweep")
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze), "leaving true form must remove Sovereign Gaze")
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws), "leaving true form must remove Predatory Claws")
+
+	var/mob/living/carbon/human/species/succubus_true/form_body = allocate(/mob/living/carbon/human/species/succubus_true)
+	var/datum/action/cooldown/spell/undirected/succubus_predatory_claws/claw_spell = allocate(/datum/action/cooldown/spell/undirected/succubus_predatory_claws)
+	claw_spell.Grant(form_body)
+	claw_spell.cast(form_body)
+	var/obj/item/weapon/succubus_claw/left/left_claw = form_body.get_item_for_held_index(1)
+	var/obj/item/weapon/succubus_claw/right/right_claw = form_body.get_item_for_held_index(2)
+	TEST_ASSERT_NOTNULL(left_claw, "Predatory Claws must fill the left hand")
+	TEST_ASSERT_NOTNULL(right_claw, "Predatory Claws must fill the right hand")
+	TEST_ASSERT_EQUAL(left_claw.force, DAMAGE_KNIFE, "Predatory Claws must remain below werewolf claw damage")
+	TEST_ASSERT_EQUAL(left_claw.possible_item_intents[1], /datum/intent/simple/succubus_claw, "Predatory Claws must use their bounded natural-weapon intent")
+	TEST_ASSERT(HAS_TRAIT(left_claw, TRAIT_NODROP), "Predatory Claws must not be transferable")
+	claw_spell.Remove(form_body)
+	TEST_ASSERT(QDELETED(left_claw), "removing the form action must delete its left claw")
+	TEST_ASSERT(QDELETED(right_claw), "removing the form action must delete its right claw")
+
+	TEST_ASSERT(antag.is_linked_retinue(body), "the succubus's current body must be recognized as friendly")
+	var/mob/living/carbon/human/stranger = allocate(/mob/living/carbon/human)
+	stranger.mind_initialize()
+	TEST_ASSERT(!antag.is_linked_retinue(stranger), "an unrelated living mob must not be recognized as friendly")
+	var/datum/antagonist/succubus_thrall/thrall_datum = allocate(/datum/antagonist/succubus_thrall)
+	thrall_datum.owner = stranger.mind
+	thrall_datum.mistress_mind = body.mind
+	LAZYADD(stranger.mind.antag_datums, thrall_datum)
+	TEST_ASSERT(antag.is_linked_retinue(stranger), "a linked thrall must be protected from true-form area effects")
+	stranger.mind.antag_datums -= thrall_datum
+	thrall_datum.owner = null
+	qdel(thrall_datum)
+
 	antag.true_form_active = TRUE
 	TEST_ASSERT(!antag.can_assume_true_form(TRUE), "cannot assume while already assumed")
 	antag.true_form_active = FALSE
 	antag.owner = null // hand-set; detach before harness qdel
+
+/datum/unit_test/succubus_sovereign_gaze/Run()
+	var/turf/caster_turf = get_turf(run_loc_floor_bottom_left)
+	var/turf/target_turf = get_step(caster_turf, EAST)
+	var/turf/warded_turf = get_step(caster_turf, NORTH)
+	TEST_ASSERT(isfloorturf(target_turf) && isfloorturf(warded_turf), "Sovereign Gaze test needs adjacent floor turfs")
+
+	var/mob/living/carbon/human/species/succubus_true/caster = allocate(/mob/living/carbon/human/species/succubus_true, caster_turf)
+	caster.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = caster.mind
+	LAZYADD(caster.mind.antag_datums, antag)
+	var/datum/action/cooldown/spell/succubus_sovereign_gaze/gaze = allocate(/datum/action/cooldown/spell/succubus_sovereign_gaze)
+	gaze.Grant(caster)
+
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human, target_turf)
+	caster.setDir(EAST)
+	target.setDir(WEST)
+	TEST_ASSERT(gaze.is_valid_target(target), "a conscious creature meeting the true form's gaze must be valid")
+
+	target.set_eyes_closed(TRUE)
+	TEST_ASSERT(!gaze.is_valid_target(target), "closing one's eyes must counter Sovereign Gaze")
+	target.set_eyes_closed(FALSE)
+	target.setDir(EAST)
+	TEST_ASSERT(!gaze.is_valid_target(target), "turning away must counter Sovereign Gaze")
+	target.setDir(WEST)
+
+	gaze.cast(target)
+	TEST_ASSERT(target.AmountImmobilized() > 0, "an unwarded target must be briefly immobilized")
+	var/datum/status_effect/debuff/mesmerised/mesmerised = target.has_status_effect(/datum/status_effect/debuff/mesmerised)
+	TEST_ASSERT_NOTNULL(mesmerised, "an unwarded target must be mesmerised")
+	TEST_ASSERT_EQUAL(mesmerised.initial_duration, SUCCUBUS_TRUE_FORM_GAZE_MESMERISED_DURATION, "Sovereign Gaze must use its bounded mesmerise duration")
+
+	var/mob/living/carbon/human/warded_target = allocate(/mob/living/carbon/human, warded_turf)
+	caster.setDir(NORTH)
+	warded_target.setDir(SOUTH)
+	warded_target.apply_status_effect(/datum/status_effect/buff/protection_evil_good)
+	TEST_ASSERT(HAS_TRAIT(warded_target, TRAIT_PROTECTION_EVIL_GOOD), "the protection spell must establish its ward trait")
+	TEST_ASSERT(gaze.PreActivate(warded_target), "a warded gaze attempt must still complete its cast")
+	TEST_ASSERT_EQUAL(warded_target.AmountImmobilized(), 0, "Protection from Evil and Good must prevent gaze immobilization")
+	TEST_ASSERT_NULL(warded_target.has_status_effect(/datum/status_effect/debuff/mesmerised), "Protection from Evil and Good must prevent mesmerism")
+	TEST_ASSERT(gaze.next_use_time > world.time, "a divine ward must consume the gaze's full cast and cooldown")
+
+	var/mob/living/carbon/human/antimagic_target = allocate(/mob/living/carbon/human, target_turf)
+	var/datum/component/anti_magic/mind_ward = antimagic_target.AddComponent(/datum/component/anti_magic, MAGIC_RESISTANCE_MIND)
+	TEST_ASSERT_NOTNULL(mind_ward, "mental antimagic test target must receive its ward")
+	gaze.cast(antimagic_target)
+	TEST_ASSERT_EQUAL(antimagic_target.AmountImmobilized(), 0, "mental antimagic must prevent gaze immobilization")
+	TEST_ASSERT_NULL(antimagic_target.has_status_effect(/datum/status_effect/debuff/mesmerised), "mental antimagic must prevent mesmerism")
+
+	caster.mind.antag_datums -= antag
+	antag.owner = null

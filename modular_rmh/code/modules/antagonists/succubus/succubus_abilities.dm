@@ -460,11 +460,16 @@
 	var/mob/living/current_mob = owner?.current
 	if(!current_mob)
 		return
-	if(get_succubus_contract_tier() >= 2)
+	var/current_tier = get_succubus_contract_tier()
+	if(current_tier >= 2)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, source = owner)
 	else
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
-	if(get_succubus_contract_tier() >= 3)
+	if(current_tier >= SUCCUBUS_TRUE_FORM_UNLOCK_TIER)
+		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, source = owner)
+	else
+		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
+	if(current_tier >= 3)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, source = owner)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, source = owner)
 		current_mob.add_spell(/datum/action/cooldown/spell/succubus_infernal_snare, source = owner)
@@ -485,6 +490,7 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_charm)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_enthrall)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
+	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_infernal_snare)

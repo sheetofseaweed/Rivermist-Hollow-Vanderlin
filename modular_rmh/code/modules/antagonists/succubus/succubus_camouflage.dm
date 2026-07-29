@@ -191,7 +191,6 @@
 		return
 	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_weave_disguise, source = owner)
 	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_shed_disguise, source = owner)
-	current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, source = owner)
 	register_camouflage_integrity_signals()
 	grant_succubus_abilities()
 
@@ -203,4 +202,3 @@
 		return
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_weave_disguise)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_shed_disguise)
-	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
