@@ -8,7 +8,7 @@
 	)
 
 /datum/ai_controller/saiga/terrorbird/on_user_tamed(datum/source, mob/tamer)
-	SIGNAL_HANDLER
+	//SIGNAL_HANDLER
 	. = ..()
 	// Clearing BB_BASIC_MOB_FLEEING in the parent also flips the melee subtree off its
 	// hit-and-run behaviour, so a tamed bird commits to the fight.
