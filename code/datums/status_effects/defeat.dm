@@ -599,8 +599,9 @@
 	living_owner.defeat_ko_only_self_recover()
 
 // A guaranteed, harsh trauma laid on top of the usual injury when a KO Only victim rescues themselves.
-// Town-clinic care only (remove_on_fullheal FALSE + not in the universal/spiritual cure lists), so the
-// journey home is the point. Festers on re-defeat like any trauma. Applied at severe by design.
+// Town-clinic care only: no fullheal cure, and medical providers are the only tag it accepts, so the
+// universal potion/spell and the shrine both bounce off it and the journey home is the point.
+// Festers on re-defeat like any trauma. Applied at severe by design.
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
 	name = "Grievous Wounds"
 	icon_state = "paralysis"
@@ -610,6 +611,8 @@
 	trauma_label = "Grievous Wounds"
 	trauma_desc = "You clawed your way up from a defeat with no one to help. Barely able to stand, far too broken to fight, and slowed to a crawl - only a healer at the town clinic can truly set you right."
 	remove_on_fullheal = FALSE
+	// Deliberately narrower than the base list: dropping the universal tag keeps field healing out.
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL)
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
 
 /// Never decays on its own - the town clinic cure is the only way out (design choice).

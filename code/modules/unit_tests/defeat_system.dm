@@ -1252,12 +1252,18 @@
 
 	// Town-clinic-only cure: a full field heal must NOT clear Grievous Wounds.
 	patient.fully_heal(HEAL_ALL)
-	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A field full-heal must not cure Grievous Wounds - only town care does.")
+	var/datum/status_effect/debuff/defeat/grievous/wounds = patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous)
+	TEST_ASSERT_NOTNULL(wounds, "A field full-heal must not cure Grievous Wounds - only town care does.")
 
-	// A skilled medic (the clinic cure path) clears it.
+	// The universal potion/spell path is field healing by another name and must not reach it either.
+	TEST_ASSERT(!patient.defeat_treat_trauma(patient, DEFEAT_TREATMENT_UNIVERSAL, wounds), "The universal cure must not accept Grievous Wounds.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A refused universal cure must leave Grievous Wounds in place.")
+
+	// A skilled medic (the clinic cure path) clears it. The struggle also left the ordinary damage
+	// trauma behind, and a provider treats one exact injury per attempt, so name the target.
 	var/mob/living/carbon/human/medic = allocate(/mob/living/carbon/human)
 	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_EXPERT, TRUE)
-	TEST_ASSERT(patient.defeat_treat_trauma(medic, DEFEAT_TREATMENT_MEDICAL), "Medical care should treat Grievous Wounds.")
+	TEST_ASSERT(patient.defeat_treat_trauma(medic, DEFEAT_TREATMENT_MEDICAL, wounds), "Medical care should treat Grievous Wounds.")
 	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Medical care should clear Grievous Wounds.")
 
 /datum/unit_test/defeat_depleted_rune_arms_struggle_up
