@@ -1535,4 +1535,24 @@
 	TEST_ASSERT(shrine.can_buy_offer("revive", patient), "A traumatized buyer should be allowed to pay.")
 	shrine.apply_shrine_offer("revive", patient)
 	TEST_ASSERT(!patient.has_any_defeat_trauma(), "Buying the revive should lift the trauma.")
+
+	// Grievous Wounds are town-clinic-only: the shrine must refuse the sale
+	// rather than pocket the motes for a hurt it cannot touch.
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/grievous, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT(patient.has_any_defeat_trauma(), "The grievous trauma should have applied.")
+	TEST_ASSERT(!shrine.has_treatable_trauma(patient), "Grievous Wounds alone leave nothing this shrine can lift.")
+	TEST_ASSERT(!shrine.can_buy_offer("revive", patient), "A buyer carrying only Grievous Wounds must be refused before payment.")
+
+	// A lesser hurt alongside it can still be bought - and the grievous one stays.
+	patient.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/physical/leg, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT(shrine.has_treatable_trauma(patient), "A lesser hurt alongside a maiming is still treatable.")
+	TEST_ASSERT(shrine.can_buy_offer("revive", patient), "The sale should go through when something is liftable.")
+	shrine.apply_shrine_offer("revive", patient)
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "The shrine must not cure Grievous Wounds.")
+
+	// An unliftable purchase refunds rather than eating the motes.
+	run.motes = 500
+	var/motes_before = run.motes
+	shrine.apply_shrine_offer("revive", patient)
+	TEST_ASSERT_EQUAL(run.motes, motes_before + DUNGEON_SHRINE_TRAUMA_COST, "A revive that lifts nothing must refund its cost.")
 	qdel(run)

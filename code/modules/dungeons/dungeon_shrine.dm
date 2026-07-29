@@ -48,7 +48,36 @@
 	if(!user.has_any_defeat_trauma())
 		to_chat(user, span_warning("The light searches you and finds nothing lingering to undo."))
 		return FALSE
+	// Grievous Wounds are town-clinic-only by design. Carrying nothing else
+	// means there is nothing here to buy - say so instead of taking the motes.
+	if(!has_treatable_trauma(user))
+		to_chat(user, span_warning("The shrine's light washes over you and recoils. This place mends lesser hurts; it cannot touch maiming this deep - only a healer's hands at the town clinic can set you right."))
+		return FALSE
 	return TRUE
+
+/// The hurt this shrine would lift, or null. Grievous Wounds are town-clinic
+/// only by design, so they are never chosen - and because the universal
+/// treatment provider WILL cure them if left to pick its own target, the
+/// shrine always names its target explicitly.
+/obj/structure/dungeon_shrine/proc/get_treatable_trauma(mob/living/user)
+	for(var/datum/status_effect/effect as anything in user.status_effects)
+		if(!istype(effect, /datum/status_effect/debuff/defeat))
+			continue
+		if(istype(effect, /datum/status_effect/debuff/defeat/grievous))
+			continue
+		return effect
+	return null
+
+/// TRUE when the buyer carries a hurt this shrine can actually lift.
+/obj/structure/dungeon_shrine/proc/has_treatable_trauma(mob/living/user)
+	return !!get_treatable_trauma(user)
+
+/// Price of an offer by id, for refunds.
+/obj/structure/dungeon_shrine/proc/get_offer_cost(id)
+	for(var/list/offer as anything in build_shrine_offers())
+		if(offer["id"] == id)
+			return offer["cost"]
+	return 0
 
 /obj/structure/dungeon_shrine/proc/build_shrine_offers()
 	var/floor = owning_run?.floor || 1
@@ -70,13 +99,22 @@
 			// The dungeon's own light pays the debt a fall left behind. Routed
 			// through the defeat system's universal treatment so every listener
 			// (logging, achievements) sees a normal cure.
-			if(user.defeat_treat_trauma(user, DEFEAT_TREATMENT_UNIVERSAL))
+			var/datum/status_effect/debuff/defeat/target = get_treatable_trauma(user)
+			if(target && user.defeat_treat_trauma(user, DEFEAT_TREATMENT_UNIVERSAL, target))
 				user.visible_message(
 					span_nicegreen("[user] straightens as something long-carried lets go of [user.p_them()]."),
 					span_nicegreen("The shrine's light reaches into an old hurt and undoes it. You stand easier."),
 				)
+				// Be honest about what it could not reach, so nobody keeps paying
+				// at this shrine hoping to mend a maiming.
+				if(user.has_status_effect(/datum/status_effect/debuff/defeat/grievous))
+					to_chat(user, span_warning("The deeper maiming does not answer. This shrine mends lesser hurts; only a healer at the town clinic can undo that one."))
 			else
-				to_chat(user, span_warning("The light gutters - whatever ails you is beyond this shrine."))
+				// Nothing was lifted - the light took nothing for nothing.
+				var/refund = get_offer_cost("revive")
+				if(refund > 0)
+					owning_run.motes += refund
+				to_chat(user, span_warning("The light gutters and gives your motes back. Whatever ails you lies beyond this shrine's reach."))
 		if("boon")
 			owning_run.offer_break_room_boon(user)
 		if("cache")
