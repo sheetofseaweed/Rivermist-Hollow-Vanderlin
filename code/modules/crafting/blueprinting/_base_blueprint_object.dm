@@ -11,7 +11,8 @@
 	UUID_saving = TRUE
 
 	var/datum/blueprint_recipe/recipe
-	var/tmp/mob/creator
+	/// ckey of whoever placed this, stored as text so ownership survives a relog
+	var/creator_ckey
 	var/construction_progress = 0
 	var/max_construction_progress = 100
 	var/tmp/list/viewing_images = list() // Track images by client
@@ -25,32 +26,35 @@
 
 /obj/structure/blueprint/Initialize(mapload)
 	. = ..()
-	GLOB.active_blueprints += src
-	SSblueprints.add_new_blueprint(src)
-
-/obj/structure/blueprint/after_load()
-	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(setup_blueprint), 1 SECONDS))
+	// /obj/Initialize can swap us out for a stasis-restored copy and qdel us. Registering here would
+	// leak the corpse into active_blueprints forever, where it blocks placement nobody can clear.
+	if(QDELETED(src))
+		return
+	GLOB.active_blueprints |= src
+	// Viewers are handed out by setup_blueprint(), which is the first point where recipe is set.
 
 /obj/structure/blueprint/Destroy()
 	GLOB.active_blueprints -= src
 	SSblueprints.remove_blueprint(src)
-	clear_all_viewers()
 	return ..()
 
 /obj/structure/blueprint/after_load()
+	. = ..()
 	GLOB.active_blueprints |= src
-	SSblueprints.add_new_blueprint(src)
+	// Deferred so neighbouring turfs exist before we smooth against them.
+	addtimer(CALLBACK(src, PROC_REF(setup_blueprint)), 1 SECONDS)
 
 /obj/structure/blueprint/attackby(obj/item/I, mob/user, list/modifiers)
-	if(!istype(I, recipe.construct_tool))
+	// A recipe-less blueprint is junk squatting on the turf; try_construct clears it out.
+	if(recipe && !istype(I, recipe.construct_tool))
 		return
 	try_construct(user, I)
 
 /obj/structure/blueprint/attack_hand(mob/user)
-	if(recipe.construct_tool)
+	if(recipe?.construct_tool)
 		return
 	try_construct(user)
+
 /obj/structure/blueprint/proc/setup_blueprint()
 	if(!recipe)
 		return
@@ -107,22 +111,23 @@
 		QUEUE_SMOOTH_NEIGHBORS(src)
 	dir = recipe.supports_directions ? blueprint_dir : initial(result.dir)
 
-	// Update all existing images when appearance changes
+	// Appearance is only final now, so drop the stale cache and refresh anyone already watching.
 	update_all_images(FALSE)
+	// Only now does recipe exist, so this is the earliest point the requires_learning gate is accurate.
+	SSblueprints.add_new_blueprint(src)
 
-/obj/structure/blueprint/proc/add_viewer(mob/living/viewer)
-	if(!viewer.client || viewing_images[viewer.client])
+/obj/structure/blueprint/proc/add_viewer(mob/viewer)
+	if(!viewer?.client || viewing_images[viewer.client])
 		return
-	if(recipe) // this helps me visualize it give me a break
-		if(recipe?.requires_learning && !(recipe?.type in viewer.mind?.learned_recipes))
-			return
+	if(recipe?.requires_learning && !(recipe.type in viewer.mind?.learned_recipes))
+		return
 
 	var/image/blueprint_image = create_blueprint_image()
 	viewing_images[viewer.client] = blueprint_image
 	viewer.client.images += blueprint_image
 
-/obj/structure/blueprint/proc/remove_viewer(mob/living/viewer)
-	if(!viewer.client)
+/obj/structure/blueprint/proc/remove_viewer(mob/viewer)
+	if(!viewer?.client)
 		return
 	remove_viewer_client(viewer.client)
 
@@ -158,11 +163,17 @@
 	return blueprint_image
 
 /obj/structure/blueprint/proc/update_all_images(use_cache = TRUE)
+	if(!use_cache)
+		cached_image = null // otherwise every later add_viewer() hands out the pre-setup appearance
+	if(!length(viewing_images))
+		return
+
+	var/image/new_image = create_blueprint_image(use_cache)
 	for(var/client/C in viewing_images)
 		var/image/old_image = viewing_images[C]
+		if(old_image == new_image)
+			continue
 		C.images -= old_image
-
-		var/image/new_image = create_blueprint_image(use_cache)
 		viewing_images[C] = new_image
 		C.images += new_image
 

@@ -93,6 +93,9 @@ GLOBAL_LIST_EMPTY(blueprint_recipes)
 /mob/proc/exit_blueprint()
 	if(HAS_TRAIT(src, TRAIT_BLUEPRINT_VISION))
 		REMOVE_TRAIT(src, TRAIT_BLUEPRINT_VISION, TRAIT_GENERIC)
+	// Covers a stale trait with no system datum left to clean up after itself.
+	if(client)
+		SSblueprints.remove_viewer_from_all(client)
 	if(!blueprints)
 		return
 	var/datum/blueprint_system/current_blueprints = blueprints

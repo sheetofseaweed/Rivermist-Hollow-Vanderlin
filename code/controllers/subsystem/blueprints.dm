@@ -2,33 +2,26 @@ SUBSYSTEM_DEF(blueprints)
 	name = "Blueprint Visibility Manager"
 	flags = SS_NO_FIRE
 
-/datum/controller/subsystem/blueprints/Initialize(start_timeofday)
-	RegisterSignal(SSdcs, COMSIG_ATOM_ADD_TRAIT, PROC_REF(check_add_trait))
-	RegisterSignal(SSdcs, COMSIG_ATOM_REMOVE_TRAIT, PROC_REF(check_remove_trait))
-	return ..()
-
-/datum/controller/subsystem/blueprints/proc/check_add_trait(datum/source, mob/living/target, trait)
-	if(!istype(target) || trait != TRAIT_BLUEPRINT_VISION || !target.client)
+/// Hands a mob entering blueprint mode an image for every blueprint already standing.
+/// Blueprints are alpha 0 / invisibility 100, so without this they are invisible and unclickable.
+/datum/controller/subsystem/blueprints/proc/add_viewer_to_all(mob/viewer)
+	if(!viewer?.client)
 		return
-
-	// Add viewer to all existing blueprints
 	for(var/obj/structure/blueprint/blueprint in GLOB.active_blueprints)
-		blueprint.add_viewer(target)
+		blueprint.add_viewer(viewer)
 
-/datum/controller/subsystem/blueprints/proc/check_remove_trait(datum/source, mob/living/target, trait)
-	if(!istype(target) || trait != TRAIT_BLUEPRINT_VISION || !target.client)
+/// Drops every blueprint image held by a client leaving blueprint mode.
+/datum/controller/subsystem/blueprints/proc/remove_viewer_from_all(client/viewer_client)
+	if(!viewer_client)
 		return
-
-	// Remove viewer from all blueprints
 	for(var/obj/structure/blueprint/blueprint in GLOB.active_blueprints)
-		blueprint.remove_viewer(target)
+		blueprint.remove_viewer_client(viewer_client)
 
+/// Shows a freshly set up blueprint to everyone currently in blueprint mode.
 /datum/controller/subsystem/blueprints/proc/add_new_blueprint(obj/structure/blueprint/blueprint)
-	// When a new blueprint is created, add it to all players with the trait
-	for(var/mob/living/M in GLOB.player_list)
-		if(HAS_TRAIT(M, TRAIT_BLUEPRINT_VISION) && M.client)
-			blueprint.add_viewer(M)
+	for(var/mob/viewer in GLOB.player_list)
+		if(HAS_TRAIT(viewer, TRAIT_BLUEPRINT_VISION) && viewer.client)
+			blueprint.add_viewer(viewer)
 
 /datum/controller/subsystem/blueprints/proc/remove_blueprint(obj/structure/blueprint/blueprint)
-	// When a blueprint is removed, clean up its viewers
 	blueprint.clear_all_viewers()
