@@ -45,8 +45,6 @@
 	///do we give xp to those who find us?
 	var/adds_xp_on_reveal = FALSE
 
-	var/static/list/mobs_with_trait = list()
-
 /obj/effect/skill_tracker/Initialize(mapload, atom/parent)
 	. = ..()
 	if(!parent)
@@ -71,11 +69,15 @@
 	return ..()
 
 /obj/effect/skill_tracker/proc/check_for_users()
-	for(var/datum/weakref/weak as anything in mobs_with_trait[always_revealed_trait])
+	for(var/datum/weakref/weak as anything in SStrackables.mobs_by_trait[always_revealed_trait])
 		var/mob/living/living = weak.resolve()
 		if(QDELETED(living) || !living)
 			continue
 		add_knower(living, ANALYSIS_PERFECT)
+
+///Reveals this track in full to a mob that holds our always_revealed_trait.
+/obj/effect/skill_tracker/proc/reveal_to_trait_holder(mob/living/user)
+	add_knower(user, ANALYSIS_PERFECT)
 
 ///Handles checks for if a mob can reveal this. Also returns FALSE if already known to mob.
 /obj/effect/skill_tracker/proc/check_reveal(mob/living/user)
