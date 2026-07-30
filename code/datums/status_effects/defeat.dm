@@ -208,6 +208,18 @@
 	desc = "Lingering harm from a recent defeat. A town healer, priest, or potent remedy can mend it - and it festers worse each time you are defeated untreated."
 	icon_state = "muscles"
 
+/// Distinct icons per trauma family. The name and description are overwritten per trauma by
+/// refresh_trauma_alert(); these defaults only show if a subtype somehow never stamps itself.
+/atom/movable/screen/alert/status_effect/debuff/defeat_trauma/horny
+	name = "Lewd Trauma"
+	desc = "A wrung-out afterglow that will not fade. A healer, a priest, or a potent remedy restores you."
+	icon_state = "hypnosis"
+
+/atom/movable/screen/alert/status_effect/debuff/defeat_trauma/rune
+	name = "Rune Backlash"
+	desc = "Cold rune-weariness from being wrenched back. Only a priest's rite or a potent remedy soothes it."
+	icon_state = "drunk"
+
 /datum/status_effect/debuff/defeat
 	id = "defeat_trauma"
 	duration = 30 MINUTES
@@ -215,6 +227,9 @@
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma
 	/// Player-facing label shown on the status alert; subtypes override per injury.
 	var/trauma_label = "Defeat Trauma"
+	/// Category word prefixed onto the alert name, so an ordinary injury, a lewd trauma, a rune
+	/// backlash and a grievous wound are told apart at a glance instead of all reading "Defeat Trauma".
+	var/trauma_category_label = "Injury"
 	/// Unique alert description per injury, so no two defeat traumas read alike. Subtypes override.
 	var/trauma_desc = "Lingering harm from a recent defeat. A town healer, a priest, or a potent remedy can mend it - and it festers worse each time you are defeated untreated."
 	/// Which skilled treatment cures this trauma (DEFEAT_TREATMENT_MEDICAL or _SPIRITUAL). Each trauma
@@ -238,7 +253,20 @@
 		severity = severity_override
 	if(!duration_override)
 		duration_override = defeat_duration_for_severity(severity)
-	return ..()
+	. = ..()
+	if(!.)
+		return
+	// The parent only builds linked_alert *after* on_apply() has already run, so stamping the label
+	// there silently did nothing and every trauma kept the alert type's generic name. Do it here.
+	refresh_trauma_alert()
+
+/// Writes this trauma's category, label and severity onto its status alert. Safe to call repeatedly.
+/datum/status_effect/debuff/defeat/proc/refresh_trauma_alert()
+	if(!linked_alert)
+		return FALSE
+	linked_alert.name = "[trauma_category_label]: [trauma_label] ([defeat_severity_label(severity)])"
+	linked_alert.desc = trauma_desc
+	return TRUE
 
 /datum/status_effect/debuff/defeat/remove_effect_on_heal(datum/source, heal_flags)
 	if((heal_flags & HEAL_ADMIN) && !owner.defeat_suppress_heal_cleanup)
@@ -250,10 +278,7 @@
 	var/penalty = defeat_penalty_for_severity(severity)
 	if(penalty)
 		effectedstats = defeat_stat_penalties(penalty)
-	. = ..()
-	if(. && linked_alert)
-		linked_alert.name = "[trauma_label] ([defeat_severity_label(severity)])"
-		linked_alert.desc = trauma_desc
+	return ..()
 
 /datum/status_effect/debuff/defeat/tick()
 	if(!owner || world.time < next_feedback_at)
@@ -444,6 +469,8 @@
 /datum/status_effect/debuff/defeat/rune
 	id = "defeat_rune_trauma"
 	trauma_label = "Mana Backlash"
+	trauma_category_label = "Backlash"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/rune
 	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. Only a priest's rite or a potent remedy soothes it."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
 	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
@@ -471,6 +498,8 @@
 /datum/status_effect/debuff/defeat/horny
 	id = "defeat_horny_trauma"
 	trauma_label = "Lewd Exhaustion"
+	trauma_category_label = "Lewd"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/horny
 	trauma_desc = "A wrung-out, trembling afterglow that will not fade, letting focus and luck slip through your fingers. A healer, a priest, or a potent remedy restores you."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
 	// Intimate defeat is spiritual trauma for routing purposes. Its own subtype and descriptive
@@ -609,6 +638,7 @@
 /datum/status_effect/debuff/defeat/grievous
 	id = "defeat_grievous_trauma"
 	trauma_label = "Grievous Wounds"
+	trauma_category_label = "Grievous"
 	trauma_desc = "You clawed your way up from a defeat with no one to help. Barely able to stand, far too broken to fight, and slowed to a crawl - only a healer at the town clinic can truly set you right."
 	remove_on_fullheal = FALSE
 	// Deliberately narrower than the base list: dropping the universal tag keeps field healing out.

@@ -2127,9 +2127,30 @@
 	TEST_ASSERT(beast.mob_horny_defeat_enabled, "Adding arousal to a clientless mob must enable mob horny defeat.")
 	TEST_ASSERT_NOTNULL(beast.GetComponent(/datum/component/defeat_monitor), "Adding arousal to a clientless mob must attach the defeat monitor.")
 
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma
+
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+
+	var/datum/status_effect/debuff/defeat/physical/concussion/head = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/concussion, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_NOTNULL(head.linked_alert, "A defeat trauma should own a status alert.")
+	TEST_ASSERT_NOTEQUAL(head.linked_alert.name, "Defeat Trauma", "A trauma alert must not keep the generic fallback name.")
+	TEST_ASSERT_EQUAL(head.linked_alert.name, "Injury: Concussion (Moderate)", "A physical trauma alert should read as a categorized injury.")
+	TEST_ASSERT_EQUAL(head.linked_alert.desc, head.trauma_desc, "A trauma alert should carry its own description.")
+
+	var/datum/status_effect/debuff/defeat/horny/wobble/lewd = patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(lewd.linked_alert.name, "Lewd: Rubbery Legs (Severe)", "A horny trauma alert should be labelled distinctly from an ordinary injury.")
+	TEST_ASSERT_NOTEQUAL(lewd.linked_alert.icon_state, head.linked_alert.icon_state, "Horny and physical trauma alerts should not share an icon.")
+
+	var/datum/status_effect/debuff/defeat/grievous/grave = patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(grave.linked_alert.name, "Grievous: Grievous Wounds (Severe)", "A grievous wound alert should be labelled distinctly.")
+	TEST_ASSERT_NOTEQUAL(grave.linked_alert.icon_state, head.linked_alert.icon_state, "Grievous and physical trauma alerts should not share an icon.")
+
 // Focused isolation run for just the mob horny-defeat KO tests. Compile with FOCUS_MOB_HORNY_DEFEAT_TEST
 // defined to run only these. Guarded so it is inert (and safe to leave in) on a normal build.
 #ifdef FOCUS_MOB_HORNY_DEFEAT_TEST
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma
+	focus = TRUE
 /datum/unit_test/mob_horny_defeat_eligibility
 	focus = TRUE
 /datum/unit_test/mob_horny_ko_cleanup_deletes_when_alone

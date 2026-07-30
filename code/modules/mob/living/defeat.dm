@@ -945,10 +945,18 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 	to_chat(victim, span_userdanger("[src] has seized me and is trying to drag me away! My companions have only moments to intervene!"))
 	victim.emote("scream")
 
+	// can_continue_kidnap is the authoritative interruption test (adjacency, KO, reservation, being
+	// outnumbered, damage to the captor) and is revalidated every tick. Left at default flags, do_after
+	// piles on much stricter cancels that have nothing to do with a rescue: a third party nudging the
+	// body one tile, the captor turning to face something, its held item changing, or the captor merely
+	// being busy with another interaction - all common while other mobs paw at the same victim, and all
+	// of which read to players as a phantom "the attempt is broken!". Adjacency still covers a victim
+	// actually being dragged out of reach.
 	var/haul_completed = do_after(
 		src,
 		KIDNAP_HAUL_TIME,
 		victim,
+		timed_action_flags = IGNORE_TARGET_LOC_CHANGE | IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_USER_DOING,
 		extra_checks = CALLBACK(src, PROC_REF(can_continue_kidnap), victim, started_at),
 		interaction_key = "defeat_kidnap",
 	)
