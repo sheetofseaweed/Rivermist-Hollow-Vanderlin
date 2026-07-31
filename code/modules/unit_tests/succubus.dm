@@ -46,6 +46,18 @@
 	focus = TRUE
 /datum/unit_test/succubus_sovereign_gaze
 	focus = TRUE
+/datum/unit_test/succubus_rift_objective_and_unlock
+	focus = TRUE
+/datum/unit_test/succubus_rift_stage_lifecycle
+	focus = TRUE
+/datum/unit_test/succubus_rift_exclusivity_and_collapse
+	focus = TRUE
+/datum/unit_test/succubus_rift_incursion_lifecycle
+	focus = TRUE
+/datum/unit_test/succubus_rift_sealing_and_failure
+	focus = TRUE
+/datum/unit_test/succubus_rift_ascension_and_retinue_cleanup
+	focus = TRUE
 #endif
 
 /datum/targetting_datum/basic/succubus_lusthound_unit_test/can_use_horny_ai_target(mob/living/living_mob, mob/living/carbon/human/human_target)
@@ -689,3 +701,290 @@
 
 	caster.mind.antag_datums -= antag
 	antag.owner = null
+
+/datum/unit_test/succubus_rift_objective_and_unlock/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human)
+	body.mind_initialize()
+	antag.owner = body.mind
+	LAZYADD(body.mind.antag_datums, antag)
+
+	var/datum/objective/succubus/rift/rift_objective = antag.forge_succubus_objectives()
+	TEST_ASSERT_NOTNULL(rift_objective, "the Succubus must receive a Rift campaign objective")
+	TEST_ASSERT_EQUAL(rift_objective.owner, body.mind, "the Rift objective must belong to the Succubus mind")
+	TEST_ASSERT(!rift_objective.check_completion(), "Rift-A must not begin with its future ascension result complete")
+	TEST_ASSERT_EQUAL(antag.forge_succubus_objectives(), rift_objective, "forging objectives twice must reuse the existing Rift objective")
+
+	var/rift_objective_count = 0
+	for(var/datum/objective/succubus/rift/found_objective in antag.objectives)
+		rift_objective_count++
+	TEST_ASSERT_EQUAL(rift_objective_count, 1, "objective forging must remain idempotent")
+
+	antag.true_form_active = TRUE
+	antag.contracts_completed_full = 2
+	antag.refresh_succubus_rift_action(body)
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_rift, TRUE), "Tier 3 True Form must not receive the Rift ritual")
+
+	antag.contracts_completed_full = 3
+	antag.refresh_succubus_rift_action(body)
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_rift, TRUE), "Tier 4 True Form must receive the Rift ritual")
+	antag.remove_true_form_actions(body)
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_rift, TRUE), "leaving True Form must remove the Rift ritual")
+
+	antag.true_form_active = FALSE
+	body.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_rift_stage_lifecycle/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human)
+	body.mind_initialize()
+	antag.owner = body.mind
+	LAZYADD(body.mind.antag_datums, antag)
+
+	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift)
+	TEST_ASSERT(rift.bind_to(antag), "an unclaimed world must accept the Succubus's first Rift")
+	TEST_ASSERT_EQUAL(antag.get_active_rift(), rift, "binding must establish the owner's weak Rift link")
+	TEST_ASSERT_EQUAL(rift.owner_mind_ref?.resolve(), body.mind, "binding must establish the Rift's weak owner-mind link")
+	TEST_ASSERT(rift in GLOB.active_succubus_rifts, "binding must register the Rift globally")
+	TEST_ASSERT_EQUAL(rift.get_next_channel_time(), SUCCUBUS_RIFT_SEED_CHANNEL, "an unseeded Rift must use the seed channel")
+
+	TEST_ASSERT(rift.advance_stage(ignore_maturation = TRUE, trigger_stage_effects = FALSE), "the first ritual stage must seed the Rift")
+	TEST_ASSERT_EQUAL(rift.current_stage, SUCCUBUS_RIFT_STAGE_SEED, "the first transition must enter the seeded stage")
+	TEST_ASSERT_EQUAL(rift.max_integrity, SUCCUBUS_RIFT_SEED_INTEGRITY, "the seeded Rift must use seeded integrity")
+	TEST_ASSERT_EQUAL(rift.get_integrity(), SUCCUBUS_RIFT_SEED_INTEGRITY, "advancement must fully reinforce the seeded Rift")
+	TEST_ASSERT_EQUAL(rift.next_stage_at, world.time + SUCCUBUS_RIFT_MATURATION, "the seeded Rift must receive a maturation deadline")
+	TEST_ASSERT_EQUAL(rift.get_next_channel_time(), SUCCUBUS_RIFT_WIDEN_CHANNEL, "a seeded Rift must use the widening channel")
+
+	rift.next_stage_at = world.time
+	TEST_ASSERT(rift.advance_stage(trigger_stage_effects = FALSE), "a mature seeded Rift must widen")
+	TEST_ASSERT_EQUAL(rift.current_stage, SUCCUBUS_RIFT_STAGE_WIDENED, "the second transition must enter the widened stage")
+	TEST_ASSERT_EQUAL(rift.max_integrity, SUCCUBUS_RIFT_WIDENED_INTEGRITY, "the widened Rift must use widened integrity")
+	TEST_ASSERT_EQUAL(rift.get_next_channel_time(), SUCCUBUS_RIFT_OPEN_CHANNEL, "a widened Rift must use the opening channel")
+
+	rift.next_stage_at = world.time
+	TEST_ASSERT(rift.advance_stage(trigger_stage_effects = FALSE), "a mature widened Rift must open")
+	TEST_ASSERT_EQUAL(rift.current_stage, SUCCUBUS_RIFT_STAGE_OPEN, "the third transition must enter the open stage")
+	TEST_ASSERT_EQUAL(rift.max_integrity, SUCCUBUS_RIFT_OPEN_INTEGRITY, "the open Rift must use open integrity")
+	TEST_ASSERT_EQUAL(rift.next_stage_at, 0, "the open Rift must have no further maturation deadline")
+	TEST_ASSERT_EQUAL(rift.get_next_channel_time(), 0, "the open Rift must expose no further channel")
+	TEST_ASSERT(!rift.advance_stage(ignore_maturation = TRUE), "the open Rift must reject further advancement")
+
+	qdel(rift)
+	TEST_ASSERT(!(rift in GLOB.active_succubus_rifts), "Rift deletion must clear the global registry")
+	TEST_ASSERT_NULL(antag.get_active_rift(), "Rift deletion must clear the owner's weak link")
+	TEST_ASSERT_EQUAL(antag.rift_retry_at, 0, "plain cleanup must not apply a collapse retry penalty")
+
+	body.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_rift_exclusivity_and_collapse/Run()
+	var/datum/antagonist/succubus/first_antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/first_body = allocate(/mob/living/carbon/human)
+	first_body.mind_initialize()
+	first_antag.owner = first_body.mind
+	LAZYADD(first_body.mind.antag_datums, first_antag)
+
+	var/datum/antagonist/succubus/second_antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/second_body = allocate(/mob/living/carbon/human)
+	second_body.mind_initialize()
+	second_antag.owner = second_body.mind
+	LAZYADD(second_body.mind.antag_datums, second_antag)
+
+	var/obj/structure/succubus_rift/first_rift = allocate(/obj/structure/succubus_rift)
+	var/obj/structure/succubus_rift/same_owner_rift = allocate(/obj/structure/succubus_rift)
+	var/obj/structure/succubus_rift/other_owner_rift = allocate(/obj/structure/succubus_rift)
+	TEST_ASSERT(first_rift.bind_to(first_antag), "the first Rift must bind")
+	TEST_ASSERT(!same_owner_rift.bind_to(first_antag), "one Succubus must not bind a second Rift")
+	TEST_ASSERT(!other_owner_rift.bind_to(second_antag), "a second Succubus must not bypass the one-Rift world cap")
+
+	TEST_ASSERT(first_rift.collapse(), "gameplay collapse must resolve once")
+	TEST_ASSERT(first_antag.rift_retry_at > world.time, "gameplay collapse must apply the retry lockout")
+	TEST_ASSERT_NULL(first_antag.get_active_rift(), "gameplay collapse must clear owner state")
+	TEST_ASSERT(!length(GLOB.active_succubus_rifts), "gameplay collapse must release the global Rift cap")
+
+	first_antag.rift_retry_at = 0
+	var/obj/structure/succubus_rift/admin_rift = allocate(/obj/structure/succubus_rift)
+	TEST_ASSERT(admin_rift.bind_to(first_antag), "a cleaned world must accept a replacement debug Rift")
+	TEST_ASSERT(admin_rift.collapse(apply_retry = FALSE), "administrative collapse must resolve")
+	TEST_ASSERT_EQUAL(first_antag.rift_retry_at, 0, "administrative collapse must not apply a retry lockout")
+	TEST_ASSERT(!length(GLOB.active_succubus_rifts), "administrative collapse must release the global Rift cap")
+
+	qdel(same_owner_rift)
+	qdel(other_owner_rift)
+	first_body.mind.antag_datums -= first_antag
+	first_antag.owner = null
+	second_body.mind.antag_datums -= second_antag
+	second_antag.owner = null
+
+/datum/unit_test/succubus_rift_incursion_lifecycle/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	body.mind_initialize()
+	antag.owner = body.mind
+	LAZYADD(body.mind.antag_datums, antag)
+
+	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift, run_loc_floor_bottom_left)
+	TEST_ASSERT(rift.bind_to(antag), "the incursion test Rift must bind to its Succubus")
+
+	rift.configure_incursion_limits(1)
+	TEST_ASSERT_EQUAL(rift.active_demon_cap, SUCCUBUS_RIFT_MIN_ACTIVE_DEMONS, "a low-population incursion must retain the minimum active pressure")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MIN_TOTAL_DEMONS, "a low-population incursion must retain the minimum total pressure")
+
+	rift.configure_incursion_limits(13)
+	TEST_ASSERT_EQUAL(rift.active_demon_cap, 3, "thirteen players must scale the active cap to three")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, 11, "an active cap of three must scale the total cap to eleven")
+
+	rift.configure_incursion_limits(40)
+	TEST_ASSERT_EQUAL(rift.active_demon_cap, SUCCUBUS_RIFT_MAX_ACTIVE_DEMONS, "a large population must clamp at the maximum active cap")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MAX_TOTAL_DEMONS, "a large population must clamp at the maximum total cap")
+
+	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
+	TEST_ASSERT(rift.start_incursion(), "an Open Rift must start its bounded incursion")
+	TEST_ASSERT(rift.incursion_active, "starting the incursion must set its active state")
+	TEST_ASSERT(rift.incursion_wave_timer != TIMER_ID_NULL, "starting the incursion must own a stoppable wave timer")
+	TEST_ASSERT(rift.incursion_end_timer != TIMER_ID_NULL, "starting the incursion must own a stoppable resolution timer")
+	TEST_ASSERT_EQUAL(length(rift.incursion_demons), SUCCUBUS_RIFT_WAVE_SIZE, "starting the incursion must spawn its immediate wave")
+	TEST_ASSERT_EQUAL(rift.total_demons_spawned, SUCCUBUS_RIFT_WAVE_SIZE, "the immediate wave must count against the total cap")
+	for(var/mob/living/owned_demon as anything in rift.incursion_demons)
+		TEST_ASSERT(owned_demon.ai_targeting_ally_check(body), "every Rift demon must recognize the owning Succubus as an ally")
+
+	var/mob/living/first_demon = rift.incursion_demons[1]
+	qdel(first_demon)
+	TEST_ASSERT(!(first_demon in rift.incursion_demons), "a deleted Rift demon must release its active registry entry")
+
+	var/list/remaining_demons = rift.incursion_demons.Copy()
+	TEST_ASSERT(rift.end_incursion(show_message = FALSE), "an active incursion must end exactly once")
+	TEST_ASSERT(!rift.incursion_active, "ending the incursion must clear its active state")
+	TEST_ASSERT_EQUAL(rift.incursion_wave_timer, TIMER_ID_NULL, "ending the incursion must cancel the wave timer")
+	TEST_ASSERT_EQUAL(rift.incursion_end_timer, TIMER_ID_NULL, "ending the incursion must cancel the resolution timer")
+	TEST_ASSERT(!length(rift.incursion_demons), "ending the incursion must release the demon registry")
+	for(var/mob/living/remaining_demon as anything in remaining_demons)
+		TEST_ASSERT(QDELETED(remaining_demon), "ending the incursion must delete every surviving owned demon")
+
+	qdel(rift)
+	body.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_rift_sealing_and_failure/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	body.mind_initialize()
+	antag.owner = body.mind
+	antag.contracts_completed_full = 3
+	antag.essence_cap = SUCCUBUS_ESSENCE_CAP_TIER_4
+	antag.essence = SUCCUBUS_ESSENCE_CAP_TIER_4
+	antag.contract_pool = allocate(/datum/contract_pool/succubus)
+	antag.contract_created_at = world.time
+	var/datum/antag_contract/interrupted_contract = allocate(/datum/antag_contract)
+	interrupted_contract.completed_early = TRUE
+	antag.current_contract = interrupted_contract
+	LAZYADD(body.mind.antag_datums, antag)
+	var/datum/objective/succubus/rift/rift_objective = antag.forge_succubus_objectives()
+
+	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift, run_loc_floor_bottom_left)
+	TEST_ASSERT(rift.bind_to(antag), "the sealing test Rift must bind to its Succubus")
+	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
+	var/mob/living/carbon/human/sealer = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	sealer.mind_initialize()
+
+	antag.true_form_active = TRUE
+	TEST_ASSERT(!antag.can_leave_true_form(silent = TRUE), "an Open Rift must tether its Succubus to True Form")
+	antag.true_form_active = FALSE
+	TEST_ASSERT(!rift.can_seal_rift(body, silent = TRUE), "the Rift owner must not contribute to sealing her own breach")
+	TEST_ASSERT(rift.can_seal_rift(sealer, silent = TRUE), "an adjacent conscious outsider must be able to seal the Rift")
+
+	TEST_ASSERT(rift.add_seal_progress(1, sealer), "the first universal sealing contribution must be accepted")
+	TEST_ASSERT_EQUAL(rift.seal_progress, 1, "one contribution must advance the closure counter once")
+	TEST_ASSERT(rift.add_seal_progress(1, sealer), "the second universal sealing contribution must be accepted")
+	TEST_ASSERT(!QDELETED(rift), "the Rift must survive until the final sealing contribution")
+	TEST_ASSERT(rift.add_seal_progress(1, sealer), "the final universal sealing contribution must resolve the Rift")
+
+	TEST_ASSERT(QDELETED(rift), "the final sealing contribution must delete the resolved Rift")
+	TEST_ASSERT(!antag.rift_banished, "closure must not banish a Succubus who defaults to survival")
+	TEST_ASSERT(antag.rift_repelled, "closure must record a retryable campaign defeat")
+	TEST_ASSERT(!antag.rift_ascended, "closure must not complete the ascension objective")
+	TEST_ASSERT(!rift_objective.check_completion(), "a sealed Rift must fail its campaign objective")
+	TEST_ASSERT_NULL(antag.get_active_rift(), "closure must clear the owner's active Rift link")
+	TEST_ASSERT(!length(GLOB.active_succubus_rifts), "closure must release the world Rift cap")
+	TEST_ASSERT(isturf(body.loc), "default survival must leave the mortal shell in active play")
+	TEST_ASSERT_EQUAL(antag.get_succubus_contract_tier(), 1, "closure must reset infernal favor to Tier 1")
+	TEST_ASSERT_EQUAL(antag.essence, 0, "closure must drain all stored essence")
+	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_BASE, "closure must restore the Tier 1 essence cap")
+	TEST_ASSERT_EQUAL(antag.contract_history[1], interrupted_contract, "closure must preserve the interrupted contract in round-end history")
+	TEST_ASSERT_EQUAL(interrupted_contract.grade, CONTRACT_GRADE_EXCUSED, "closure must excuse rather than fail the interrupted patron contract")
+	TEST_ASSERT(!interrupted_contract.completed_early, "closure must prevent old early completion from raising the replacement contract's tier ceiling")
+	TEST_ASSERT_NOTNULL(antag.current_contract, "default survival must issue a fresh patron contract")
+	TEST_ASSERT_EQUAL(antag.current_contract.tier_ceiling, 1, "the replacement contract must roll at Tier 1")
+	TEST_ASSERT_EQUAL(antag.current_contract.deadline, world.time + antag.contract_pool.cycle_length, "the replacement contract must receive one full fresh cycle")
+	TEST_ASSERT(body.mind.has_antag_datum(/datum/antagonist/succubus) == antag, "survival must retain the Succubus datum for continued play and round-end reporting")
+
+	body.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_rift_ascension_and_retinue_cleanup/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/mortal_body = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	mortal_body.mind_initialize()
+	var/datum/mind/succubus_mind = mortal_body.mind
+	antag.owner = succubus_mind
+	antag.contracts_completed_full = 3
+	antag.essence_cap = SUCCUBUS_ESSENCE_CAP_TIER_4
+	antag.essence = SUCCUBUS_ESSENCE_CAP_TIER_4
+	LAZYADD(succubus_mind.antag_datums, antag)
+	var/datum/objective/succubus/rift/rift_objective = antag.forge_succubus_objectives()
+
+	var/mob/living/carbon/human/thrall = allocate(/mob/living/carbon/human)
+	thrall.mind_initialize()
+	var/datum/team/succubus_harem/harem = antag.ensure_harem()
+	var/datum/antagonist/succubus_thrall/thrall_datum = allocate(/datum/antagonist/succubus_thrall)
+	thrall_datum.owner = thrall.mind
+	thrall_datum.mistress_mind = succubus_mind
+	thrall_datum.harem = harem
+	harem.add_member(thrall.mind)
+	LAZYADD(thrall.mind.antag_datums, thrall_datum)
+
+	var/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus/imp = allocate(/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus)
+	imp.mind_initialize()
+	var/datum/antagonist/succubus_imp/imp_datum = allocate(/datum/antagonist/succubus_imp)
+	imp_datum.owner = imp.mind
+	imp_datum.mistress_mind = succubus_mind
+	LAZYADD(imp.mind.antag_datums, imp_datum)
+	antag.summoned_imp_minds += imp.mind
+
+	var/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound/hound = allocate(/mob/living/simple_animal/hostile/retaliate/wolf/companion/lustbound, run_loc_floor_bottom_left)
+	TEST_ASSERT(hound.bind_to(antag), "the verdict test hound must bind to its Succubus")
+	var/obj/structure/succubus_infernal_snare/snare = allocate(/obj/structure/succubus_infernal_snare, run_loc_floor_bottom_left)
+	TEST_ASSERT(snare.bind_to(antag), "the verdict test snare must bind to its Succubus")
+
+	TEST_ASSERT(antag.assume_true_form(), "the verdict test must enter a real True Form before opening the Rift")
+	var/mob/living/form_body = succubus_mind.current
+	TEST_ASSERT(form_body != mortal_body, "entering True Form must transfer the mind into the spawned form")
+
+	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift, run_loc_floor_bottom_left)
+	TEST_ASSERT(rift.bind_to(antag), "the ascension test Rift must bind to its Succubus")
+	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
+	TEST_ASSERT(rift.resolve_verdict(ascended = TRUE), "surviving the trial must resolve the Rift as an ascension")
+
+	TEST_ASSERT(QDELETED(rift), "ascension must delete the resolved Rift")
+	TEST_ASSERT(antag.rift_ascended, "ascension must persist its campaign success flag")
+	TEST_ASSERT(!antag.rift_banished, "ascension must not record a banishment")
+	TEST_ASSERT(rift_objective.check_completion(), "ascension must complete the campaign objective")
+	TEST_ASSERT_EQUAL(succubus_mind.current, mortal_body, "ascension must safely re-home the mind in the restored mortal shell")
+	TEST_ASSERT(!antag.true_form_active, "ascension must clear the True Form state")
+	TEST_ASSERT(!isturf(mortal_body.loc), "ascension must retire the restored shell from active play")
+	TEST_ASSERT(succubus_mind.has_antag_datum(/datum/antagonist/succubus) == antag, "ascension must retain the Succubus datum for round-end reporting")
+	TEST_ASSERT_NULL(thrall.mind.has_antag_datum(/datum/antagonist/succubus_thrall), "the verdict must release consenting thralls")
+	TEST_ASSERT_EQUAL(imp.mind.has_antag_datum(/datum/antagonist/succubus_imp), imp_datum, "the verdict must not delete the player-controlled Imp role")
+	TEST_ASSERT_NULL(imp_datum.mistress_mind, "the verdict must detach the player Imp from its summoner")
+	TEST_ASSERT(QDELETED(hound), "the verdict must delete the Succubus's NPC hound")
+	TEST_ASSERT(QDELETED(snare), "the verdict must delete the Succubus's infernal snares")
+	TEST_ASSERT(!length(antag.summoned_lusthounds), "the verdict must clear the hound ownership list")
+	TEST_ASSERT(!length(antag.infernal_snares), "the verdict must clear the snare ownership list")
+
+	imp.mind.antag_datums -= imp_datum
+	imp_datum.owner = null
+	succubus_mind.antag_datums -= antag
+	antag.owner = null
+	qdel(harem)
+	antag.harem = null

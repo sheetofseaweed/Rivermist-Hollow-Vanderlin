@@ -80,6 +80,7 @@
 	form_body.add_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus, source = form_body)
 	form_body.add_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze, source = form_body)
 	form_body.add_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws, source = form_body)
+	refresh_succubus_rift_action(form_body)
 
 /datum/antagonist/succubus/proc/remove_true_form_actions(mob/living/form_body)
 	if(!istype(form_body))
@@ -88,6 +89,7 @@
 	form_body.remove_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus)
 	form_body.remove_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze)
 	form_body.remove_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws)
+	form_body.remove_spell(/datum/action/cooldown/spell/undirected/succubus_rift)
 
 /datum/antagonist/succubus/proc/unleash_overwhelming_presence(mob/living/form_body)
 	if(!istype(form_body))
@@ -185,8 +187,21 @@
 	unleash_overwhelming_presence(new_form)
 	return TRUE
 
-/datum/antagonist/succubus/proc/leave_true_form()
+/datum/antagonist/succubus/proc/can_leave_true_form(silent = FALSE)
 	var/mob/living/form_body = owner?.current
+	if(!true_form_active || !isliving(form_body))
+		return FALSE
+	var/obj/structure/succubus_rift/rift = get_active_rift()
+	if(rift?.current_stage == SUCCUBUS_RIFT_STAGE_OPEN && !rift.collapsing)
+		if(!silent)
+			to_chat(form_body, span_userdanger("The open Rift has chained me to my unveiled shape. I cannot retreat into my mortal shell until its verdict is decided!"))
+		return FALSE
+	return TRUE
+
+/datum/antagonist/succubus/proc/leave_true_form(force = FALSE)
+	var/mob/living/form_body = owner?.current
+	if(!force && !can_leave_true_form())
+		return FALSE
 	if(!true_form_active || !isliving(form_body))
 		return FALSE
 	// The status effect restores the stashed human and moves the mind back
@@ -210,12 +225,18 @@
 			span_warning("The terrible glamour collapses back into [restored]'s mortal shell."),
 			span_love("I fold myself back into the little shell."),
 		)
+	var/obj/structure/succubus_rift/rift = get_active_rift()
+	if(rift?.current_stage == SUCCUBUS_RIFT_STAGE_OPEN)
+		rift.resolve_verdict(ascended = FALSE)
 
 /// True-form body gibbed/deleted without an unshapeshift, so the revert path never runs —
 /// clear the stale flag. Signal auto-unregisters on the qdel.
 /datum/antagonist/succubus/proc/on_true_form_body_deleted(datum/source)
 	SIGNAL_HANDLER
 	true_form_active = FALSE
+	var/obj/structure/succubus_rift/rift = get_active_rift()
+	if(rift?.current_stage == SUCCUBUS_RIFT_STAGE_OPEN)
+		rift.resolve_verdict(ascended = FALSE)
 
 // --- True-form combat mobility and control --------------------------------------------------------
 
@@ -521,7 +542,8 @@
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
 	if(!succubus_antag)
 		return . | SPELL_CANCEL_CAST
-	// can_assume_true_form messages on failure; leaving is always allowed
+	if(succubus_antag.true_form_active && !succubus_antag.can_leave_true_form())
+		return . | SPELL_CANCEL_CAST
 	if(!succubus_antag.true_form_active && !succubus_antag.can_assume_true_form())
 		return . | SPELL_CANCEL_CAST
 

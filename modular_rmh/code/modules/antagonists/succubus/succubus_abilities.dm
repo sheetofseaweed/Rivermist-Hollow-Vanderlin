@@ -477,6 +477,7 @@
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
 		current_mob.remove_spell(/datum/action/cooldown/spell/succubus_infernal_snare)
+	refresh_succubus_rift_action(current_mob)
 
 /datum/antagonist/succubus/proc/remove_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
@@ -494,6 +495,7 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_infernal_snare)
+	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_rift)
 	// Allure's aura is a separate datum that outlives the spell if stripped mid-pulse
 	if(current_mob.has_status_effect(/datum/status_effect/succubus_allure_aura))
 		current_mob.remove_status_effect(/datum/status_effect/succubus_allure_aura)

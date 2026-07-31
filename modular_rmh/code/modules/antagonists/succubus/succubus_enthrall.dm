@@ -210,6 +210,7 @@
 /datum/antagonist/succubus/get_admin_commands()
 	. = ..()
 	.["Release Thrall"] = CALLBACK(src, PROC_REF(admin_release_thrall))
+	.["Rift: Debug Control"] = CALLBACK(src, PROC_REF(admin_debug_rift))
 
 /datum/antagonist/succubus/proc/admin_release_thrall(mob/admin)
 	var/list/thrall_minds = list()

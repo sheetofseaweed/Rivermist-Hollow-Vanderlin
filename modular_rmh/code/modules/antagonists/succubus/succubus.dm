@@ -25,17 +25,21 @@
 	return ..()
 
 /datum/antagonist/succubus/on_gain()
+	forge_succubus_objectives()
 	. = ..()
 	grant_succubus_powers()
 
 /datum/antagonist/succubus/on_removal()
-	// Revert first so the mind is moved back to the human before the antag detaches
+	// Administrative removal cleans the Rift before reverting so the Open-state
+	// tether cannot turn a cleanup path into a dramatic banishment.
+	discard_active_rift()
 	if(true_form_active)
-		leave_true_form()
+		leave_true_form(force = TRUE)
 	remove_succubus_powers()
 	return ..()
 
 /datum/antagonist/succubus/Destroy()
+	discard_active_rift(refresh_objective = FALSE)
 	for(var/datum/mind/imp_mind as anything in summoned_imp_minds)
 		var/datum/antagonist/succubus_imp/imp_datum = imp_mind?.has_antag_datum(/datum/antagonist/succubus_imp)
 		if(imp_datum?.mistress_mind == owner)

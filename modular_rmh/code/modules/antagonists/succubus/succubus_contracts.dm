@@ -188,7 +188,10 @@
 	if(old_cap == essence_cap)
 		return FALSE
 	if(owner?.current)
-		to_chat(owner.current, span_notice("Asmodeus deepens my vessel. I can now hold [essence_cap] essence."))
+		if(essence_cap > old_cap)
+			to_chat(owner.current, span_notice("Asmodeus deepens my vessel. I can now hold [essence_cap] essence."))
+		else
+			to_chat(owner.current, span_userdanger("Asmodeus strips the favor from my vessel. I can now hold only [essence_cap] essence."))
 	return TRUE
 
 /datum/antagonist/succubus/on_contract_completed(datum/antag_contract/contract)
