@@ -166,7 +166,7 @@
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
 	if(!succubus_antag)
 		return
-	for(var/mob/living/carbon/human/target in range(3, owner))
+	for(var/mob/living/carbon/human/target in range(SUCCUBUS_ALLURE_RANGE, owner))
 		if(target == owner)
 			continue
 		if(!succubus_antag.can_target_lewd(target))
@@ -242,12 +242,21 @@
 	UnregisterSignal(owner, COMSIG_SEX_RECEIVE_ACTION)
 	to_chat(owner, span_notice("The venom on my lips fades, unused."))
 
+/datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss/Grant(mob/grant_to)
+	. = ..()
+	if(venom_timer && owner)
+		RegisterSignal(owner, COMSIG_SEX_RECEIVE_ACTION, PROC_REF(on_kiss_received), override = TRUE)
+	return .
+
 /datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss/Remove(mob/living/remove_from)
+	if(remove_from)
+		UnregisterSignal(remove_from, COMSIG_SEX_RECEIVE_ACTION)
+	return ..()
+
+/datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss/Destroy()
 	if(venom_timer)
 		deltimer(venom_timer)
 		venom_timer = null
-	if(remove_from)
-		UnregisterSignal(remove_from, COMSIG_SEX_RECEIVE_ACTION)
 	return ..()
 
 // --- Whisper: telepathic flirtation at range -----------------------------------------------------
@@ -409,7 +418,7 @@
 	if(. & SPELL_CANCEL_CAST)
 		return
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
-	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 2)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < SUCCUBUS_BEGUILING_DOUBLES_UNLOCK_TIER)
 		return . | SPELL_CANCEL_CAST
 	if(succubus_antag.essence < SUCCUBUS_COST_BEGUILING_DOUBLES)
 		to_chat(owner, span_warning("I lack the essence to split my image."))
@@ -418,7 +427,7 @@
 /datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/cast(mob/living/cast_on)
 	. = ..()
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
-	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 2)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < SUCCUBUS_BEGUILING_DOUBLES_UNLOCK_TIER)
 		return
 	if(succubus_antag.essence < SUCCUBUS_COST_BEGUILING_DOUBLES)
 		return
@@ -461,7 +470,7 @@
 	if(!current_mob)
 		return
 	var/current_tier = get_succubus_contract_tier()
-	if(current_tier >= 2)
+	if(current_tier >= SUCCUBUS_BEGUILING_DOUBLES_UNLOCK_TIER)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, source = owner)
 	else
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
@@ -469,7 +478,7 @@
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, source = owner)
 	else
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
-	if(current_tier >= 3)
+	if(current_tier >= SUCCUBUS_RETINUE_UNLOCK_TIER)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, source = owner)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, source = owner)
 		current_mob.add_spell(/datum/action/cooldown/spell/succubus_infernal_snare, source = owner)

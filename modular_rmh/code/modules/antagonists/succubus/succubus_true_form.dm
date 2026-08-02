@@ -485,7 +485,7 @@
 	cast_on.apply_status_effect(/datum/status_effect/debuff/mesmerised, SUCCUBUS_TRUE_FORM_GAZE_MESMERISED_DURATION)
 
 /datum/action/cooldown/spell/aoe/repulse/dragon/succubus
-	name = "Tail Sweep"
+	name = "Barbed Tail Sweep"
 	desc = "Sweep your barbed tail around you, knocking nearby enemies away."
 	aoe_radius = SUCCUBUS_TRUE_FORM_TAIL_SWEEP_RANGE
 	cooldown_time = SUCCUBUS_TRUE_FORM_TAIL_SWEEP_COOLDOWN
@@ -500,6 +500,9 @@
 	spell_flags = SPELL_IGNORE_SPELLBLOCK
 
 /datum/action/cooldown/spell/aoe/repulse/dragon/succubus/is_valid_target(atom/cast_on)
+	. = ..()
+	if(!.)
+		return FALSE
 	return isliving(cast_on) && isturf(cast_on.loc)
 
 /datum/action/cooldown/spell/aoe/repulse/dragon/succubus/cast_on_thing_in_aoe(mob/living/victim, atom/caster)

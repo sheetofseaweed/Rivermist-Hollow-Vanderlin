@@ -302,9 +302,7 @@
 /obj/item/organ/genitals/filling_organ/vagina/proc/tag_femcum_donor()
 	if(!owner || !reagents)
 		return
-	if(!(reagent_to_make in reagents.reagent_list))
-		return
-	var/datum/reagent/consumable/femcum/nectar = reagents.reagent_list[reagent_to_make]
+	var/datum/reagent/consumable/femcum/nectar = reagents.get_reagent(reagent_to_make)
 	if(istype(nectar))
 		nectar.sync_femcum_parent(owner)
 

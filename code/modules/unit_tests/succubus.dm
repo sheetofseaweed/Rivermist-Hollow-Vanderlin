@@ -18,6 +18,10 @@
 	focus = TRUE
 /datum/unit_test/succubus_reagent_harvest
 	focus = TRUE
+/datum/unit_test/succubus_femcum_donor_transfer
+	focus = TRUE
+/datum/unit_test/succubus_aphrodisiac_kiss_body_transfer
+	focus = TRUE
 /datum/unit_test/succubus_enthrall_gates
 	focus = TRUE
 /datum/unit_test/succubus_contract_pool
@@ -176,6 +180,43 @@
 	second_antag.essence_cap = 100000
 	second_antag.harvest_from_reagent(null, 10)
 	TEST_ASSERT_EQUAL(second_antag.essence, round(SUCCUBUS_ESSENCE_PER_REAGENT_UNIT * 10 * SUCCUBUS_NOVELTY_FLOOR, 0.1), "untraceable fluid must pay the floor rate")
+
+/datum/unit_test/succubus_femcum_donor_transfer/Run()
+	var/mob/living/carbon/human/donor = allocate(/mob/living/carbon/human)
+	donor.mind_initialize()
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(donor, TRUE, FALSE)
+	vagina.reagents.clear_reagents()
+	vagina.reagents.add_reagent(/datum/reagent/consumable/femcum, 5)
+	vagina.tag_femcum_donor()
+
+	var/mob/living/carbon/human/receiver = allocate(/mob/living/carbon/human)
+	vagina.reagents.trans_to(receiver, 5, preserve_data = TRUE)
+	var/datum/reagent/consumable/femcum/transferred_femcum = receiver.reagents.get_reagent(/datum/reagent/consumable/femcum)
+	TEST_ASSERT_NOTNULL(transferred_femcum, "femcum must survive transfer out of its producing organ")
+	TEST_ASSERT_EQUAL(transferred_femcum.get_femcum_parent(), donor, "transferred femcum must retain its producing mob as donor")
+
+/datum/unit_test/succubus_aphrodisiac_kiss_body_transfer/Run()
+	var/mob/living/carbon/human/old_body = allocate(/mob/living/carbon/human)
+	old_body.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = old_body.mind
+	antag.essence = SUCCUBUS_COST_APHRODISIAC_KISS
+	LAZYADD(old_body.mind.antag_datums, antag)
+
+	var/datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss/kiss_action = allocate(/datum/action/cooldown/spell/undirected/succubus_aphrodisiac_kiss, old_body.mind)
+	kiss_action.Grant(old_body)
+	kiss_action.cast(old_body)
+	var/original_timer = kiss_action.venom_timer
+	TEST_ASSERT(original_timer, "arming Aphrodisiac Kiss must create its expiry timer")
+
+	var/mob/living/carbon/human/new_body = allocate(/mob/living/carbon/human)
+	old_body.mind.transfer_to(new_body)
+	TEST_ASSERT_EQUAL(kiss_action.owner, new_body, "the mind-sourced Kiss action must re-home to the new body")
+	TEST_ASSERT_EQUAL(kiss_action.venom_timer, original_timer, "an armed venom charge must survive the action's body transfer")
+
+	new_body.mind.antag_datums -= antag
+	antag.owner = null
 
 /datum/unit_test/succubus_enthrall_gates/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
@@ -829,15 +870,19 @@
 
 	rift.configure_incursion_limits(1)
 	TEST_ASSERT_EQUAL(rift.active_demon_cap, SUCCUBUS_RIFT_MIN_ACTIVE_DEMONS, "a low-population incursion must retain the minimum active pressure")
-	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MIN_TOTAL_DEMONS, "a low-population incursion must retain the minimum total pressure")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MIN_ACTIVE_DEMONS + SUCCUBUS_RIFT_TOTAL_DEMON_MARGIN, "the total cap must preserve the configured reserve beyond active demons")
 
 	rift.configure_incursion_limits(13)
-	TEST_ASSERT_EQUAL(rift.active_demon_cap, 3, "thirteen players must scale the active cap to three")
-	TEST_ASSERT_EQUAL(rift.total_demon_cap, 11, "an active cap of three must scale the total cap to eleven")
+	TEST_ASSERT_EQUAL(rift.active_demon_cap, SUCCUBUS_RIFT_MIN_ACTIVE_DEMONS, "thirteen players must remain at the minimum active pressure")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MIN_ACTIVE_DEMONS + SUCCUBUS_RIFT_TOTAL_DEMON_MARGIN, "the total cap must follow the active cap plus its reserve")
 
 	rift.configure_incursion_limits(40)
+	TEST_ASSERT_EQUAL(rift.active_demon_cap, 5, "forty players must scale the active cap to five")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, 5 + SUCCUBUS_RIFT_TOTAL_DEMON_MARGIN, "a five-demon active cap must retain the configured reserve")
+
+	rift.configure_incursion_limits(SUCCUBUS_RIFT_PLAYERS_PER_DEMON * SUCCUBUS_RIFT_MAX_ACTIVE_DEMONS)
 	TEST_ASSERT_EQUAL(rift.active_demon_cap, SUCCUBUS_RIFT_MAX_ACTIVE_DEMONS, "a large population must clamp at the maximum active cap")
-	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MAX_TOTAL_DEMONS, "a large population must clamp at the maximum total cap")
+	TEST_ASSERT_EQUAL(rift.total_demon_cap, SUCCUBUS_RIFT_MAX_ACTIVE_DEMONS + SUCCUBUS_RIFT_TOTAL_DEMON_MARGIN, "the maximum active cap must retain the configured reserve")
 
 	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
 	TEST_ASSERT(rift.start_incursion(), "an Open Rift must start its bounded incursion")

@@ -112,16 +112,13 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 		current_contract.completed_early = FALSE
 		contract_history += current_contract
 		current_contract = null
-	if(contract_pool)
-		contract_created_at = world.time - length(contract_history) * contract_pool.cycle_length
-	else
-		contract_created_at = world.time
+	reanchor_contract_clock()
 	rift_retry_at = 0
 
 /datum/antagonist/succubus/proc/prompt_rift_defeat_choice()
 	var/mob/living/restored_body = owner?.current
 	var/choice
-	if(!QDELETED(restored_body) && restored_body.client)
+	if(!QDELETED(restored_body) && restored_body.stat != DEAD && restored_body.client)
 		choice = tgui_alert(
 			restored_body,
 			"The sealed Rift has cast me back into my mortal shell and stripped away Asmodeus's favor. I can cling to this world and rebuild from Tier 1, or stop resisting and let the last infernal tether drag me away from active play.",
@@ -141,7 +138,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	if(contract_pool && !current_contract)
 		issue_next_contract()
 	restored_body = owner.current
-	if(!QDELETED(restored_body))
+	if(!QDELETED(restored_body) && restored_body.stat != DEAD)
 		to_chat(restored_body, span_boldnotice("I cling to the mortal world. If I want the Rift again, I must earn every measure of Asmodeus's favor anew."))
 	refresh_rift_objective()
 	return TRUE
@@ -328,13 +325,13 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	switch(current_stage)
 		if(SUCCUBUS_RIFT_STAGE_SEED)
 			emit_rose_mist(1)
-			for(var/mob/living/carbon/human/dreamer as anything in GLOB.player_list)
+			for(var/mob/living/carbon/human/dreamer in GLOB.player_list)
 				if(dreamer.stat < UNCONSCIOUS || dreamer.stat >= DEAD)
 					continue
 				to_chat(dreamer, span_notice("A rose-colored crack opens behind my eyelids. Something on the far side learns the shape of my name."))
 		if(SUCCUBUS_RIFT_STAGE_WIDENED)
 			emit_rose_mist(2)
-			for(var/mob/living/carbon/human/witness as anything in GLOB.player_list)
+			for(var/mob/living/carbon/human/witness in GLOB.player_list)
 				if(witness.stat >= DEAD || !isturf(witness.loc))
 					continue
 				to_chat(witness, span_warning("For one breath, a warm whisper curls behind my thoughts: the boundary is thinning."))
@@ -362,11 +359,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 		SUCCUBUS_RIFT_MIN_ACTIVE_DEMONS,
 		SUCCUBUS_RIFT_MAX_ACTIVE_DEMONS,
 	)
-	total_demon_cap = clamp(
-		8 + active_demon_cap,
-		SUCCUBUS_RIFT_MIN_TOTAL_DEMONS,
-		SUCCUBUS_RIFT_MAX_TOTAL_DEMONS,
-	)
+	total_demon_cap = active_demon_cap + SUCCUBUS_RIFT_TOTAL_DEMON_MARGIN
 	total_demons_spawned = 0
 
 /obj/structure/succubus_rift/proc/start_incursion()
@@ -374,7 +367,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 		return FALSE
 
 	var/player_count = 0
-	for(var/mob/living/player as anything in GLOB.player_list)
+	for(var/mob/living/player in GLOB.player_list)
 		if(player.stat >= DEAD || !isturf(player.loc))
 			continue
 		player_count++
@@ -666,13 +659,10 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	return succubus_antag?.can_invoke_rift(owner, silent = TRUE) || FALSE
 
 /datum/action/cooldown/spell/undirected/succubus_rift/before_cast(atom/cast_on)
-	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
-	if(!succubus_antag?.can_invoke_rift(owner))
-		return SPELL_CANCEL_CAST
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
-		return
-	succubus_antag = IS_SUCCUBUS(owner)
+		return .
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
 	if(!succubus_antag?.can_invoke_rift(owner))
 		return . | SPELL_CANCEL_CAST
 

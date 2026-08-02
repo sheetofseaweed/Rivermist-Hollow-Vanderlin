@@ -221,7 +221,7 @@
 	if(. & SPELL_CANCEL_CAST)
 		return
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
-	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 3)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < SUCCUBUS_RETINUE_UNLOCK_TIER)
 		return . | SPELL_CANCEL_CAST
 	if(succubus_antag.succubus_imp_offer_pending)
 		to_chat(owner, span_warning("My call is already echoing through the lower planes."))
@@ -273,7 +273,7 @@
 
 	var/mob/living/caster = owner?.current
 	var/turf/spawn_turf = get_imp_spawn_turf()
-	if(summon_spell.owner != caster || !istype(caster) || caster.stat == DEAD || get_succubus_contract_tier() < 3 || count_summoned_imps() >= SUCCUBUS_SUMMON_IMP_CAP || essence < SUCCUBUS_COST_SUMMON_IMP || !spawn_turf)
+	if(summon_spell.owner != caster || !istype(caster) || caster.stat == DEAD || get_succubus_contract_tier() < SUCCUBUS_RETINUE_UNLOCK_TIER || count_summoned_imps() >= SUCCUBUS_SUMMON_IMP_CAP || essence < SUCCUBUS_COST_SUMMON_IMP || !spawn_turf)
 		to_chat(caster, span_warning("My summoning circle falters before the spirit can cross."))
 		summon_spell.StartCooldown(SUCCUBUS_SUMMON_IMP_RETRY_COOLDOWN)
 		return
@@ -332,7 +332,7 @@
 	if(. & SPELL_CANCEL_CAST)
 		return
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
-	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 3)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < SUCCUBUS_RETINUE_UNLOCK_TIER)
 		return . | SPELL_CANCEL_CAST
 	if(succubus_antag.count_summoned_lusthounds() >= SUCCUBUS_SUMMON_LUSTHOUND_CAP)
 		to_chat(owner, span_warning("I can bind only one lustbound hound at a time."))

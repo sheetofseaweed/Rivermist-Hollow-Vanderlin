@@ -4,7 +4,7 @@
 	var/contract_pool_type
 	var/datum/contract_pool/contract_pool
 	var/datum/antag_contract/current_contract
-	var/list/contract_history = list()
+	var/list/datum/antag_contract/contract_history = list()
 	var/contracts_completed_full = 0
 	var/contract_created_at = 0
 
@@ -13,16 +13,41 @@
 		return
 	contract_pool = new contract_pool_type
 	contract_created_at = world.time
+	RegisterSignal(owner, COMSIG_MIND_TRANSFERRED, PROC_REF(on_contract_mind_transfer))
+	if(owner?.current && !(/mob/living/proc/review_patron_contract in owner.current.verbs))
+		add_verb(owner.current, /mob/living/proc/review_patron_contract)
 	SScontracts.register(src)
 	issue_next_contract()
 
 /datum/antagonist/proc/teardown_contracts()
 	if(!contract_pool)
 		return
+	UnregisterSignal(owner, COMSIG_MIND_TRANSFERRED)
+	var/has_other_contract = FALSE
+	for(var/datum/antagonist/other_antag as anything in owner?.antag_datums)
+		if(other_antag != src && other_antag.contract_pool)
+			has_other_contract = TRUE
+			break
+	if(!has_other_contract && owner?.current)
+		remove_verb(owner.current, /mob/living/proc/review_patron_contract)
 	SScontracts.deregister(src)
 	QDEL_NULL(current_contract)
 	QDEL_LIST(contract_history)
 	QDEL_NULL(contract_pool)
+
+/datum/antagonist/proc/on_contract_mind_transfer(datum/mind/source, mob/living/old_body)
+	SIGNAL_HANDLER
+	if(old_body)
+		remove_verb(old_body, /mob/living/proc/review_patron_contract)
+	if(isliving(source.current) && !(/mob/living/proc/review_patron_contract in source.current.verbs))
+		add_verb(source.current, /mob/living/proc/review_patron_contract)
+
+/// Re-anchor the fixed clock after an administrative or campaign reset archives
+/// a contract without waiting for its natural three-hour boundary.
+/datum/antagonist/proc/reanchor_contract_clock()
+	contract_created_at = world.time
+	if(contract_pool)
+		contract_created_at -= length(contract_history) * contract_pool.cycle_length
 
 /datum/antagonist/proc/issue_next_contract()
 	var/cycle = length(contract_history) + 1
@@ -83,7 +108,7 @@
 	if(owner?.current)
 		to_chat(owner.current, span_notice("<b>[contract_pool.patron_name]'s demands are fulfilled early. Its appetite grows...</b>"))
 
-/datum/antagonist/proc/close_contract_cycle()
+/datum/antagonist/proc/close_contract_cycle(reanchor_clock = FALSE)
 	var/datum/antag_contract/contract = current_contract
 	if(!contract)
 		return
@@ -106,6 +131,8 @@
 	on_contract_cycle_closed(contract)
 	contract_history += contract
 	current_contract = null
+	if(reanchor_clock)
+		reanchor_contract_clock()
 	issue_next_contract()
 
 /// Antag-specific boon hook (ability unlocks etc.) — override per antag

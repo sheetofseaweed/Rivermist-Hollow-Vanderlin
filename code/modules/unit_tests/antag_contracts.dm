@@ -93,6 +93,10 @@
 
 /datum/unit_test/contract_boundary_math/Run()
 	var/datum/antagonist/test_contract_cycle_hook/antag = allocate(/datum/antagonist/test_contract_cycle_hook)
+	var/mob/living/carbon/human/contract_owner = allocate(/mob/living/carbon/human)
+	contract_owner.mind_initialize()
+	antag.owner = contract_owner.mind
+	LAZYADD(contract_owner.mind.antag_datums, antag)
 	antag.contract_pool = new /datum/contract_pool
 	antag.contract_pool.goal_templates = list(/datum/contract_goal/test_counter)
 	antag.contract_pool.goals_per_contract_min = 1
@@ -115,7 +119,19 @@
 	// Anti-repeat across the reroll: cycle 2's pool excluded cycle 1's only template
 	TEST_ASSERT_EQUAL(length(antag.current_contract.goals), 0, "single-template pool must yield an empty contract on the following cycle (anti-repeat)")
 
+	var/mob/dead/observer/admin = allocate(/mob/dead/observer)
+	antag.current_contract.completed_early = TRUE
+	antag.admin_reroll_contract(admin)
+	TEST_ASSERT(!antag.contract_history[2].completed_early, "an administrative reroll must clear the discarded contract's early-completion reward")
+	TEST_ASSERT_EQUAL(antag.current_contract.tier_ceiling, 1, "a reroll must not grant the replacement contract a free tier-ceiling bump")
+	TEST_ASSERT_EQUAL(antag.current_contract.deadline, world.time + cycle_length, "a reroll must give the replacement contract exactly one fresh cycle")
+
+	antag.admin_warp_cycle(admin)
+	TEST_ASSERT_EQUAL(antag.current_contract.deadline, world.time + cycle_length, "an administrative deadline warp must give the replacement contract exactly one fresh cycle")
+
 	antag.teardown_contracts()
+	contract_owner.mind.antag_datums -= antag
+	antag.owner = null
 
 /datum/unit_test/werewolf_contract_feedthrough/Run()
 	var/datum/antagonist/werewolf/antag = allocate(/datum/antagonist/werewolf)

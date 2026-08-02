@@ -61,7 +61,7 @@
 	var/datum/antagonist/succubus_imp/imp_datum = possible_friend.mind.has_antag_datum(/datum/antagonist/succubus_imp)
 	return imp_datum?.mistress_mind == owner_mind
 
-/obj/structure/succubus_infernal_snare/Crossed(atom/movable/arrived)
+/obj/structure/succubus_infernal_snare/Crossed(atom/movable/arrived, oldloc)
 	. = ..()
 	if(spent || !isliving(arrived))
 		return
@@ -111,7 +111,7 @@
 		return
 
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
-	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < 3)
+	if(!succubus_antag || succubus_antag.get_succubus_contract_tier() < SUCCUBUS_RETINUE_UNLOCK_TIER)
 		to_chat(owner, span_warning("My patron has not yet taught me this snare."))
 		return . | SPELL_CANCEL_CAST
 	if(succubus_antag.essence < SUCCUBUS_COST_INFERNAL_SNARE)

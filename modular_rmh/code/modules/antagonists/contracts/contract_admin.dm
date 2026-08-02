@@ -31,8 +31,10 @@
 /datum/antagonist/proc/admin_reroll_contract(mob/admin)
 	if(current_contract)
 		current_contract.grade = CONTRACT_GRADE_EXCUSED
+		current_contract.completed_early = FALSE
 		contract_history += current_contract
 		current_contract = null
+		reanchor_contract_clock()
 	issue_next_contract()
 	message_admins("[key_name_admin(admin)] rerolled [key_name_admin(owner)]'s contract.")
 
@@ -49,26 +51,26 @@
 			continue
 		goal.progress = goal.target_amount
 		goal.complete()
-	close_contract_cycle()
+	close_contract_cycle(reanchor_clock = TRUE)
 	message_admins("[key_name_admin(admin)] forced full completion of [key_name_admin(owner)]'s contract cycle.")
 
 /datum/antagonist/proc/admin_warp_cycle(mob/admin)
 	if(!current_contract)
 		return
 	current_contract.deadline = world.time
-	close_contract_cycle()
+	close_contract_cycle(reanchor_clock = TRUE)
 	message_admins("[key_name_admin(admin)] warped [key_name_admin(owner)]'s contract cycle to its deadline.")
 
 /datum/antagonist/proc/admin_extend_deadline(mob/admin)
 	if(!current_contract)
 		return
 	var/minutes = input(admin, "Extend deadline by how many minutes?", "Extend Deadline", 30) as null|num
-	if(!minutes)
+	if(isnull(minutes) || minutes <= 0)
 		return
 	current_contract.deadline += minutes MINUTES
 	message_admins("[key_name_admin(admin)] extended [key_name_admin(owner)]'s contract deadline by [minutes] minutes.")
 
-/mob/living/verb/review_patron_contract()
+/mob/living/proc/review_patron_contract()
 	set name = "Review Contract"
 	set category = "IC"
 	if(!mind)
