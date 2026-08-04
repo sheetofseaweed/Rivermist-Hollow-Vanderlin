@@ -1051,3 +1051,23 @@
 /atom/movable/screen/alert/status_effect/buff/free_feet
 	name = "Foot Freedom"
 	desc = "Not wearing shoes allows me to move more freely."
+
+/datum/status_effect/buff/skum
+	id = "skum"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/druqks
+	effectedstats = list(STAT_INTELLIGENCE = -4, STAT_PERCEPTION = 2, STAT_ENDURANCE = 2)
+	duration = 2 MINUTES
+
+/datum/status_effect/buff/skum/on_apply()
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.add_stress(/datum/stress_event/ozium)
+	ADD_TRAIT(owner, TRAIT_NOPAIN, TRAIT_STATUS_EFFECT(id))
+
+/datum/status_effect/buff/skum/on_remove()
+	. = ..()
+	REMOVE_TRAIT(owner, TRAIT_NOPAIN, TRAIT_STATUS_EFFECT(id))
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		C.remove_stress(/datum/stress_event/ozium)

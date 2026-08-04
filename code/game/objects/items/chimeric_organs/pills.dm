@@ -66,16 +66,16 @@
 	reagents.trans_to(target, reagents.total_volume, transfered_by = user)
 	qdel(src)
 
-/obj/item/reagent_containers/pill/sate
-	name = "SATE pill"
-	desc = "Prevents the loss of thaumiel blood."
+/obj/item/reagent_containers/pill/atropine
+	name = "CRITE pill"
+	desc = "An effective pill for people in serious condition."
 	icon_state = "pinkb"
 
-	list_reagents = list(/datum/reagent/sate = 50)
+	list_reagents = list(/datum/reagent/medicine/atropine = 20)
 
-/obj/item/reagent_containers/pill/devour
-	name = "DEVOUR pill"
-	desc = "Devours thaumiel blood to forcibly induce the triggering of chimeric organs."
+/obj/item/reagent_containers/pill/charcoal
+	name = "CHARCOAL pill"
+	desc = "A green pill for the rapid elimination of substances from the body"
 
 	icon_state = "pillg"
-	list_reagents = list(/datum/reagent/devour = 10)
+	list_reagents = list(/datum/reagent/medicine/charcoal = 10)

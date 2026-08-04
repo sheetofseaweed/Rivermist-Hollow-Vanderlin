@@ -12,8 +12,8 @@
 	populate_contents = list(
 		/obj/item/reagent_containers/syringe,
 		/obj/item/natural/bundle/cloth/bandage/full,
-		/obj/item/storage/fancy/pilltin/sate,
-		/obj/item/storage/fancy/pilltin/devour,
+		/obj/item/storage/fancy/pilltin/atropine,
+		/obj/item/storage/fancy/pilltin/charcoal,
 		/obj/item/candle/yellow,
 		/obj/item/needle,
 	)
