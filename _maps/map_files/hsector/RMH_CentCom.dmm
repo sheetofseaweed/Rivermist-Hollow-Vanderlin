@@ -9010,11 +9010,11 @@
 	pixel_y = 0;
 	dir = 8
 	},
-/obj/item/storage/fancy/pilltin/devour{
+/obj/item/reagent_containers/pill/charcoal{
 	pixel_x = -5;
 	pixel_y = 5
 	},
-/obj/item/storage/fancy/pilltin/sate{
+/obj/item/storage/fancy/pilltin/atropine{
 	pixel_y = 14
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood1,
