@@ -87,8 +87,11 @@
 		else
 			if(ismobholder(loaded_thing))
 				var/obj/item/mob_holder/curler = loaded_thing
-				loaded_thing = curler.held_mob
-				qdel(curler)
+				var/mob/living/curled_up = curler.held_mob
+				qdel(curler) //dumps the occupant onto turf_to_shoot_from
+				if(!curled_up)
+					continue
+				loaded_thing = curled_up
 			loaded_thing.throw_at(target, blast_range, 3, force = MOVE_FORCE_OVERPOWERING)
 			if(isliving(loaded_thing))
 				var/mob/living/loaded_living = loaded_thing

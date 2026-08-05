@@ -417,7 +417,7 @@
 	test_human.defeat_system_ai_opt_in = TRUE
 	test_human.setBruteLoss(200, FALSE, TRUE)
 
-	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat.")
+	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat. eligible=[test_human.defeat_system_is_eligible()] stat=[test_human.stat] brute=[test_human.getBruteLoss()] health=[test_human.health]")
 	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Defeat should apply the custom KO status.")
 	TEST_ASSERT(HAS_TRAIT(test_human, TRAIT_NODEATH), "Defeat KO should protect against normal death.")
 	TEST_ASSERT(HAS_TRAIT(test_human, TRAIT_PACIFISM), "Defeat KO should pacify hostile actions.")
@@ -907,7 +907,7 @@
 	monitor.horny_defeat_climax_threshold = 1
 
 	monitor.on_climax(victim, null, victim, grabber, grabber)
-	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Hostile grab climax metadata should trigger horny defeat when the threshold is met.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Hostile grab climax metadata should trigger horny defeat when the threshold is met. eligible=[victim.defeat_system_is_eligible()] horny_eligible=[victim.horny_defeat_is_eligible()] stat=[victim.stat] climaxes=[monitor.horny_defeat_climax_count] threshold=[monitor.horny_defeat_climax_threshold]")
 	TEST_ASSERT_EQUAL(victim.last_defeat_snapshot.reason, DEFEAT_REASON_HORNY, "Horny defeat should preserve its reason in the snapshot.")
 
 /datum/unit_test/defeat_horny_rejects_self_farming_and_unopted_ai
@@ -1099,6 +1099,9 @@
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
 	victim.mind = allocate(/datum/mind, "legacy-deterministic-threshold-test")
+	// /datum/mind/Destroy() detaches itself through current, so a mind attached without one leaves
+	// the body holding a deleted mind and hard-deletes at the end of the run.
+	victim.mind.current = victim
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
 	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16
@@ -1118,6 +1121,9 @@
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
 	victim.mind = allocate(/datum/mind, "legacy-threshold-timeout-test")
+	// /datum/mind/Destroy() detaches itself through current, so a mind attached without one leaves
+	// the body holding a deleted mind and hard-deletes at the end of the run.
+	victim.mind.current = victim
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
 	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16
@@ -1147,6 +1153,11 @@
 	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 0, "Recovery should clear completed horny-defeat progress.")
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 0, "Recovery should clear the cached horny-defeat threshold.")
+
+	// Entering a real defeat here detaches current, so the mind can no longer unhook itself in
+	// Destroy() and the body would hold a deleted mind. Detach both ends by hand.
+	victim.mind.current = null
+	victim.mind = null
 
 /datum/unit_test/defeat_knockout_clears_traits_without_physiology
 
@@ -1566,7 +1577,7 @@
 	player.defeat_mode = DEFEAT_MODE_KO_RUNE
 	// Mirrors apply_prefs_to running before the client/mind is attached: not yet eligible -> no monitor.
 	player.ensure_defeat_monitor()
-	TEST_ASSERT_NULL(player.GetComponent(/datum/component/defeat_monitor), "Without a client or mind, the monitor must not attach (the spawn-time pref-cache case).")
+	TEST_ASSERT_NULL(player.GetComponent(/datum/component/defeat_monitor), "Without a client or mind, the monitor must not attach (the spawn-time pref-cache case). mind=[player.mind || "null"] client=[player.client || "null"] ai_opt_in=[player.defeat_system_ai_opt_in] horny_enabled=[player.mob_horny_defeat_enabled] mode=[player.defeat_mode]")
 
 	// Once the player actually controls the body (as at Login), it must attach.
 	player.mind = allocate(/datum/mind, "defeat-monitor-attach-test")
@@ -2126,6 +2137,21 @@
 
 	TEST_ASSERT(beast.mob_horny_defeat_enabled, "Adding arousal to a clientless mob must enable mob horny defeat.")
 	TEST_ASSERT_NOTNULL(beast.GetComponent(/datum/component/defeat_monitor), "Adding arousal to a clientless mob must attach the defeat monitor.")
+
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_carbon_npc
+
+/// Carbon NPCs are in the horny system too. They are told apart from a not-yet-logged-in player body
+/// by their ai_controller, since neither has a client when arousal is attached in Initialize.
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_carbon_npc/Run()
+	var/mob/living/carbon/human/npc = allocate(/mob/living/carbon/human/species/human/northern/bum)
+	TEST_ASSERT_NOTNULL(npc.ai_controller, "Setup: the fixture must be an AI-driven carbon NPC.")
+
+	TEST_ASSERT(npc.mob_horny_defeat_enabled, "A carbon NPC carrying arousal must stay horny-KO-able.")
+	TEST_ASSERT_NOTNULL(npc.GetComponent(/datum/component/defeat_monitor), "A carbon NPC must still get the defeat monitor.")
+
+	var/mob/living/carbon/human/player_body = allocate(/mob/living/carbon/human)
+	TEST_ASSERT_NULL(player_body.ai_controller, "Setup: a plain human body must not be AI-driven.")
+	TEST_ASSERT(!player_body.mob_horny_defeat_enabled, "A clientless player body must not be mistaken for an NPC before Login.")
 
 /datum/unit_test/defeat_trauma_alert_names_are_per_trauma
 

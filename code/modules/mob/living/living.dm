@@ -2340,7 +2340,13 @@
 
 /mob/living/MouseDrop(mob/over)
 	. = ..()
+	if(. & COMPONENT_NO_MOUSEDROP)
+		return
 	var/mob/living/user = usr
+	// Both branches below make this mob climb into something, so only this mob may start them.
+	// Ungated, a bystander dragging a tiny mob anywhere got the tiny mob prompted and stowed.
+	if(user != src)
+		return
 	if(HAS_TRAIT(src, TRAIT_TINY) && isturf(over.loc))
 		if(stat == DEAD || !Adjacent(over))
 			return
@@ -2354,13 +2360,19 @@
 				return
 		var/datum/component/storage = over.GetComponent(/datum/component/storage)
 		if(storage && !istype(storage, /datum/component/storage/concrete/organ))
-			var/obj/item/mob_holder/holder = new(get_turf(src), src)
 			visible_message(span_warning("[src] starts to climb into [over]."), span_warning("You start to climb into [over]."))
-			if(do_after(src, 1.2 SECONDS, over))
-				if(over.loc == src)
-					return
-				if(!SEND_SIGNAL(over, COMSIG_TRY_STORAGE_INSERT, holder, null, TRUE, TRUE))
-					qdel(holder)
+			if(!do_after(src, 1.2 SECONDS, over))
+				return
+			if(over.loc == src || !isturf(loc))
+				return
+			// Built after the wait, not before it: a holder made up front leaks on every abort path
+			// and keeps claiming this mob from wherever it landed.
+			var/obj/item/mob_holder/holder = new(get_turf(src), src)
+			if(QDELETED(holder))
+				return
+			if(!SEND_SIGNAL(over, COMSIG_TRY_STORAGE_INSERT, holder, null, TRUE, TRUE))
+				qdel(holder)
+			return
 
 	if(HAS_TRAIT(src, TRAIT_TINY) && ismob(over) && over != src)
 		if(stat == DEAD || !Adjacent(over))
@@ -2370,21 +2382,12 @@
 		for(var/obj/item/grabbing/G in grabbedby)
 			if(G.grab_state == GRAB_AGGRESSIVE)
 				return
-		var/list/pickable_items = list()
-		for(var/obj/item/item in over.get_all_contents())
-			var/datum/component/storage = item.GetComponent(/datum/component/storage)
-			if(storage)
-				pickable_items |= item
-		var/obj/item/picked = input(src, "What bag do you want to crawl into?") as null|anything in pickable_items
-		if(!picked)
+		var/list/pickable_items = get_climbable_containers(over)
+		if(!length(pickable_items))
 			return
-		var/obj/item/mob_holder/holder = new(get_turf(src), src)
-		visible_message(span_warning("[src] starts to climb into [picked] on [over]."), span_warning("You start to climb into [picked] on [over]."))
-		if(do_after(src, 3 SECONDS, over))
-			if(picked.loc == src)
-				return
-			if(!SEND_SIGNAL(picked, COMSIG_TRY_STORAGE_INSERT, holder, null, TRUE, TRUE))
-				qdel(holder)
+		var/obj/item/picked = input(src, "What bag do you want to crawl into?") as null|anything in pickable_items
+		climb_into_carried_container(over, picked)
+		return
 
 	if(!istype(over) || !istype(user))
 		return
@@ -2395,7 +2398,7 @@
 	var/mob/living/U = user
 	if(!user.Adjacent(src))
 		return
-	if(isliving(dropping))
+	if(isliving(dropping) && dropping != user)
 		var/mob/living/M = dropping
 		if((M.can_be_held ||  HAS_TRAIT(M, TRAIT_TINY)) && U.cmode)
 			M.mob_try_pickup(U)//blame kevinz
@@ -2403,27 +2406,71 @@
 	. = ..()
 
 
+/// Things [target] is carrying that a small mob could climb inside.
+/mob/living/proc/get_climbable_containers(mob/target)
+	. = list()
+	if(QDELETED(target))
+		return
+	for(var/obj/item/item in target.get_all_contents())
+		if(item.GetComponent(/datum/component/storage))
+			. |= item
+
+/// Climbs into [picked] while it is being carried by [target]. Shared by the tiny-mob mousedrop
+/// and the seelie perch prompt, both of which pick the container with a sleeping input().
+/mob/living/proc/climb_into_carried_container(mob/target, obj/item/picked)
+	if(QDELETED(picked) || QDELETED(target) || !isturf(loc) || !Adjacent(target))
+		return FALSE
+	visible_message(span_warning("[src] starts to climb into [picked] on [target]."), span_warning("You start to climb into [picked] on [target]."))
+	if(!do_after(src, 3 SECONDS, target))
+		return FALSE
+	if(picked.loc == src || !isturf(loc))
+		return FALSE
+	// Built after the wait, not before it: a holder made up front leaks on every abort path.
+	var/obj/item/mob_holder/holder = new(get_turf(src), src)
+	if(QDELETED(holder))
+		return FALSE
+	if(!SEND_SIGNAL(picked, COMSIG_TRY_STORAGE_INSERT, holder, null, TRUE, TRUE))
+		qdel(holder)
+		return FALSE
+	return TRUE
+
+/// Pre-flight for scooping this mob into a /obj/item/mob_holder. Re-checked after the wind-up,
+/// since two people can otherwise finish scooping the same mob and end up holding a copy each.
+/mob/living/proc/can_be_mob_scooped(mob/living/user, silent = FALSE)
+	if(QDELETED(src) || QDELETED(user) || user == src)
+		return FALSE
+	if(!isturf(loc) || !user.Adjacent(src))
+		return FALSE
+	if(user.get_active_held_item())
+		if(!silent)
+			to_chat(user, span_warning("My hands are full!"))
+		return FALSE
+	if(buckled)
+		if(!silent)
+			to_chat(user, span_warning("[src] is buckled to something!"))
+		return FALSE
+	return TRUE
+
 /mob/living/proc/mob_pickup(mob/living/user)
 	var/obj/item/mob_holder/holder = new(get_turf(src), src)
+	if(QDELETED(holder))
+		return FALSE
 	user.visible_message(span_warning("[user] scoops up [src]!"))
-	user.put_in_hands(holder)
+	return user.put_in_hands(holder)
 
 /mob/living/proc/mob_try_pickup(mob/living/user)
 	if(!ishuman(user))
-		return
-	if(user.get_active_held_item())
-		to_chat(user, "<span class='warning'>My hands are full!</span>")
 		return FALSE
-	if(buckled)
-		to_chat(user, "<span class='warning'>[src] is buckled to something!</span>")
+	if(!can_be_mob_scooped(user))
 		return FALSE
 	user.visible_message("<span class='warning'>[user] starts trying to scoop up [src]!</span>", \
 					"<span class='danger'>I start trying to scoop up [src]...</span>", null, null, src)
 	to_chat(src, "<span class='danger'>[user] starts trying to scoop you up!</span>")
 	if(!do_after(user, 2 SECONDS, src))
 		return FALSE
-	mob_pickup(user)
-	return TRUE
+	if(!can_be_mob_scooped(user))
+		return FALSE
+	return mob_pickup(user)
 
 /mob/living/reset_perspective(atom/A)
 	if(..())

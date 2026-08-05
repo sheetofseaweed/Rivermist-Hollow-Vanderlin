@@ -41,6 +41,9 @@
 /datum/unit_test/horny_defeat_player_threshold_caches_until_timeout/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	victim.mind = allocate(/datum/mind, "horny-threshold-disconnected-player")
+	// /datum/mind/Destroy() detaches itself through current, so a mind attached without one leaves
+	// the body holding a deleted mind and hard-deletes at the end of the run.
+	victim.mind.current = victim
 	var/mob/living/carbon/human/aggressor = allocate(/mob/living/carbon/human)
 	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
 	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16

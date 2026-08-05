@@ -1,25 +1,14 @@
-/mob/living/MouseDrop_T(atom/dropping, mob/user)
-	if(ishuman(dropping))
-		var/mob/living/carbon/human/seelie = dropping
-		if(user == seelie && seelie.is_seelie() && seelie.seelie_perch_on(src))
-			return TRUE
-
-	return ..()
-
-/mob/living/carbon/human/MouseDrop_T(mob/living/target, mob/living/user)
-	if(istype(target, /mob/living/carbon/human))
-		var/mob/living/carbon/human/seelie = target
-		if(user == seelie && seelie.is_seelie() && seelie.seelie_perch_on(src))
-			return TRUE
-
-	return ..()
-
-/mob/living/carbon/human/proc/seelie_perch_on(mob/living/target)
+/mob/living/carbon/human/proc/can_seelie_perch_on(mob/living/target)
 	if(!is_seelie() || !istype(target) || get_dist(src, target) > 1)
 		return FALSE
 	if(target == src || target.buckled)
 		return FALSE
 	if(!ishuman(target) && !istype(target, /mob/living/simple_animal/hostile/retaliate/bigrat))
+		return FALSE
+	return TRUE
+
+/mob/living/carbon/human/proc/seelie_perch_on(mob/living/target)
+	if(!can_seelie_perch_on(target))
 		return FALSE
 
 	target.buckle_mob(src, TRUE, FALSE, FALSE, 0, 0)
@@ -35,18 +24,59 @@
 	)
 	return TRUE
 
-/mob/living/carbon/human/proc/seelie_enter_container(atom/target)
+/// Dragging onto a mob is the gesture for both perching and stowing away in something they carry,
+/// so the seelie chooses. Only asks when there is actually something to climb into.
+/mob/living/carbon/human/proc/seelie_mount_or_stow(mob/living/target)
+	if(!can_seelie_perch_on(target))
+		return FALSE
+	if(seelie_has_grand_glamour())
+		return seelie_perch_on(target)
+
+	var/static/list/drop_choices = list("Perch on their shoulder", "Climb into their bags")
+	var/list/climbable = get_climbable_containers(target)
+	if(!length(climbable))
+		return seelie_perch_on(target)
+
+	var/choice = input(src, "What do I do with [target]?", "Seelie") as null|anything in drop_choices
+	if(choice == drop_choices[1])
+		return seelie_perch_on(target)
+	if(choice != drop_choices[2])
+		return FALSE
+
+	// Rebuilt after the prompt: bags change hands while an input window sits open.
+	climbable = get_climbable_containers(target)
+	if(!length(climbable))
+		return FALSE
+	var/obj/item/picked = input(src, "What do I crawl into?", "Seelie") as null|anything in climbable
+	if(!climb_into_carried_container(target, picked))
+		return FALSE
+
+	seelie_ensure_scale()
+	to_chat(src, span_notice("I tuck myself inside [picked]."))
+	return TRUE
+
+/// Synchronous half of seelie_enter_container, so the mousedrop hook can decide whether to claim
+/// the drag before doing any of the work.
+/mob/living/carbon/human/proc/can_seelie_enter_container(atom/target, silent = FALSE)
 	if(!is_seelie() || QDELETED(target) || get_dist(src, target) > 1 || loc == target)
 		return FALSE
 	if(seelie_has_grand_glamour())
-		to_chat(src, span_warning("I'm too large to squeeze into [target] while the glamour holds."))
+		if(!silent)
+			to_chat(src, span_warning("I'm too large to squeeze into [target] while the glamour holds."))
 		return FALSE
 
 	if(istype(target, /obj/item/flashlight/flare/torch/lantern))
 		var/obj/item/flashlight/flare/torch/lantern/lantern = target
-		if(lantern.on || lantern.get_seelie_occupant())
-			return FALSE
+		return !lantern.on && !lantern.get_seelie_occupant()
 
+	return istype(target, /obj/structure/closet) || istype(target, /obj/item/storage)
+
+/mob/living/carbon/human/proc/seelie_enter_container(atom/target)
+	if(!can_seelie_enter_container(target, silent = TRUE))
+		return FALSE
+
+	if(istype(target, /obj/item/flashlight/flare/torch/lantern))
+		var/obj/item/flashlight/flare/torch/lantern/lantern = target
 		lantern.seelie_inside = WEAKREF(src)
 		forceMove(lantern)
 		seelie_ensure_scale()
@@ -70,6 +100,8 @@
 	if(istype(target, /obj/item/storage))
 		var/obj/item/storage/storage = target
 		var/obj/item/mob_holder/holder = new(get_turf(src), src)
+		if(QDELETED(holder))
+			return FALSE
 		if(!SEND_SIGNAL(storage, COMSIG_TRY_STORAGE_INSERT, holder, null, TRUE, TRUE))
 			qdel(holder)
 			return FALSE
@@ -80,7 +112,7 @@
 
 	return FALSE
 
-/mob/living/carbon/human/proc/seelie_force_into_container(atom/target, mob/living/forcer)
+/mob/living/carbon/human/proc/can_seelie_force_into_container(atom/target, mob/living/forcer, silent = FALSE)
 	if(!is_seelie() || QDELETED(target))
 		return FALSE
 
@@ -92,6 +124,12 @@
 			return FALSE
 
 	if(get_dist(src, target) > 1 && (!forcer || get_dist(src, forcer) > 1))
+		return FALSE
+
+	return can_seelie_enter_container(target, silent)
+
+/mob/living/carbon/human/proc/seelie_force_into_container(atom/target, mob/living/forcer)
+	if(!can_seelie_force_into_container(target, forcer, silent = TRUE))
 		return FALSE
 
 	return seelie_enter_container(target)
@@ -140,30 +178,6 @@
 
 	return TRUE
 
-/obj/structure/closet/MouseDrop_T(atom/movable/dropping, mob/living/user)
-	if(ishuman(dropping))
-		var/mob/living/carbon/human/seelie = dropping
-		if(seelie.is_seelie())
-			if(user == seelie)
-				if(seelie.seelie_enter_container(src))
-					return TRUE
-			else if(seelie.seelie_force_into_container(src, user))
-				return TRUE
-
-	return ..()
-
-/obj/item/storage/MouseDrop_T(atom/dropping, mob/user)
-	if(ishuman(dropping))
-		var/mob/living/carbon/human/seelie = dropping
-		if(seelie.is_seelie())
-			if(user == seelie)
-				if(seelie.seelie_enter_container(src))
-					return TRUE
-			else if(isliving(user) && seelie.seelie_force_into_container(src, user))
-				return TRUE
-
-	return ..()
-
 /obj/item/flashlight/flare/torch/lantern
 	var/datum/weakref/seelie_inside
 
@@ -173,18 +187,6 @@
 		seelie_inside = null
 		return null
 	return seelie
-
-/obj/item/flashlight/flare/torch/lantern/MouseDrop_T(atom/dropping, mob/user)
-	if(ishuman(dropping))
-		var/mob/living/carbon/human/seelie = dropping
-		if(seelie.is_seelie())
-			if(user == seelie)
-				if(seelie.seelie_enter_container(src))
-					return TRUE
-			else if(isliving(user) && seelie.seelie_force_into_container(src, user))
-				return TRUE
-
-	return ..()
 
 /obj/item/flashlight/flare/torch/lantern/attack_self(mob/user, list/modifiers)
 	if(!on && get_seelie_occupant())

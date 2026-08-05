@@ -50,8 +50,12 @@
 	. = ..()
 	// A clientless mob that gains arousal (i.e. is in the horny system) becomes horny-KO-able. Scoped to
 	// clientless bodies so players - who also carry arousal - are untouched and keep the full defeat flow.
+	// !client alone is not enough to tell those apart: every human is given arousal in Initialize, long
+	// before its client attaches at Login, so a player body looks identical to an NPC at this point.
+	// An ai_controller is what actually marks a body as AI-driven - carbon NPCs declare one as an
+	// initial var, player bodies never do - and non-carbons are the mob path's original audience.
 	var/mob/living/horny_ko_parent = parent
-	if(istype(horny_ko_parent) && !horny_ko_parent.client)
+	if(istype(horny_ko_parent) && !horny_ko_parent.client && (horny_ko_parent.ai_controller || !iscarbon(horny_ko_parent)))
 		horny_ko_parent.mob_horny_defeat_enabled = TRUE
 		horny_ko_parent.ensure_defeat_monitor()
 	RegisterSignal(parent, COMSIG_SEX_ADJUST_AROUSAL, PROC_REF(adjust_arousal))

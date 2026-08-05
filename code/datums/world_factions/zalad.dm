@@ -185,7 +185,9 @@
 		/datum/supply_pack/narcotics/ozium,
 		/datum/supply_pack/narcotics/poison,
 		/datum/supply_pack/medicine/antipregpot,
-		/datum/supply_pack/tools/camp_pavilion
+		/datum/supply_pack/tools/camp_pavilion,
+		// Livestock
+		/datum/supply_pack/livestock/terrorbird
 	)
 	exotic_pool = list(
 		/datum/supply_pack/apparel/silkcoat,

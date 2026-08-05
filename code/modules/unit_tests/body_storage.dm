@@ -157,3 +157,43 @@
 	TEST_ASSERT_NOTNULL(revived_guts, "Admin revive should regenerate guts.")
 	TEST_ASSERT(gut_item in revived_guts.contents, "Admin revive should preserve items stored in regenerated stomach/oral storage.")
 	TEST_ASSERT_EQUAL(SEND_SIGNAL(revived_guts, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, gut_item), STORAGE_LAYER_DEEP, "Admin revive should preserve stomach/oral storage layers.")
+
+/datum/unit_test/body_storage_keeps_stored_mob_on_the_map
+
+/// An inserted organ moves itself to nullspace, so a mob_holder placed inside one would leave its
+/// passenger with no turf: black screen for that player, and a stack trace from every subsystem
+/// that tries to locate them. An occupied holder has to hang off the body instead.
+/datum/unit_test/body_storage_keeps_stored_mob_on_the_map/Run()
+	var/mob/living/carbon/human/carrier = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(carrier, TRUE, TRUE)
+	TEST_ASSERT_NULL(get_turf(vagina), "Setup: an inserted organ is expected to sit in nullspace.")
+
+	var/mob/living/carbon/human/passenger = allocate(/mob/living/carbon/human)
+	var/obj/item/mob_holder/holder = allocate(/obj/item/mob_holder, null, passenger)
+	TEST_ASSERT(!QDELETED(holder), "Setup: the holder should have accepted the passenger.")
+	TEST_ASSERT_EQUAL(holder.held_mob, passenger, "Setup: the holder should be carrying the passenger.")
+
+	SEND_SIGNAL(vagina, COMSIG_BODYSTORAGE_FORCE_INSERT, holder, STORAGE_LAYER_INNER)
+
+	TEST_ASSERT(holder.is_in_hole_storage(), "A stored holder should be registered in the hole storage.")
+	TEST_ASSERT(holder.is_inside_storage_organ(), "A stored holder should report itself as stored.")
+	TEST_ASSERT_NOTNULL(get_turf(holder), "A stored holder must keep a resolvable turf.")
+	TEST_ASSERT_EQUAL(get_turf(passenger), get_turf(carrier), "The stored passenger should be on the carrier's turf.")
+
+	TEST_ASSERT(holder.remove_from_hole_storage(), "The occupant must be able to leave the hole storage.")
+	TEST_ASSERT(!holder.is_in_hole_storage(), "Leaving the hole storage should deregister the holder.")
+	TEST_ASSERT_NOTNULL(get_turf(passenger), "The passenger must still have a turf after removal.")
+
+/datum/unit_test/body_storage_stores_ordinary_items_in_the_organ
+
+/// The counterpart to the above: an item with nothing living inside it still belongs in the organ.
+/datum/unit_test/body_storage_stores_ordinary_items_in_the_organ/Run()
+	var/mob/living/carbon/human/test_subject = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(test_subject, TRUE, TRUE)
+
+	var/obj/item/dildo/wood/dildo = allocate(/obj/item/dildo/wood)
+	SEND_SIGNAL(vagina, COMSIG_BODYSTORAGE_FORCE_INSERT, dildo, STORAGE_LAYER_INNER)
+
+	TEST_ASSERT(dildo in vagina.contents, "An ordinary item should still be stored inside the organ itself.")

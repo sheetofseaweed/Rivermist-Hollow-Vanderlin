@@ -200,7 +200,10 @@
 		return FALSE
 
 	// Player-owned bodies retain the player formula and full defeat path while temporarily disconnected.
-	var/mob_ko_path = !living_parent.horny_defeat_uses_player_stats()
+	// Routed on what the mob path will actually accept, not on who owns the body: enter_mob_horny_defeat
+	// refuses anything that is not an enabled clientless mob, so picking it for an AI-opted-in carbon
+	// left that victim with no knockout from either path.
+	var/mob_ko_path = living_parent.mob_horny_defeat_enabled && !living_parent.client
 	if(horny_defeat_climax_threshold <= 0)
 		var/list/resolved_threshold = living_parent.resolve_horny_defeat_threshold()
 		horny_defeat_climax_threshold = resolved_threshold[DEFEAT_HORNY_THRESHOLD_VALUE]
