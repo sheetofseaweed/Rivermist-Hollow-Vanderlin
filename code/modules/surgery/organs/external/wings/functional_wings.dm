@@ -280,6 +280,12 @@
 
 // Stop flying normally
 /datum/action/item_action/organ_action/use/flight/proc/stop_flying()
+	// Landing moves the owner to a turf. Someone inside a container has no landing to do, and doing
+	// it anyway would tear them out of it.
+	if(!isturf(owner.loc))
+		fall()
+		return
+
 	var/turf/turf = get_turf(owner)
 	// If you can't fly up you can't fly down, drop like a rock
 	if(allows_z_rise)
@@ -367,13 +373,19 @@
 	SIGNAL_HANDLER
 
 	if(owner.movement_type & FLYING)
+		// Being stowed in a container is a Moved(), and landing relocates the owner to get_turf(),
+		// which would drag them straight back out of whatever now holds them. Just stop flying.
+		if(!isturf(owner.loc))
+			fall()
+			return
+
 		if(!can_fly())
-			stop_flying(owner)
+			stop_flying()
 			return
 
 		if(!owner.adjust_stamina(-3))
 			to_chat(owner, span_warning("You're too exhausted to keep flying!"))
-			stop_flying(owner)
+			stop_flying()
 			return
 
 		var/turf/this_turf = get_turf(owner)

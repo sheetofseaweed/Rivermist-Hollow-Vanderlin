@@ -138,16 +138,23 @@
  * @param target_layer - The storage layer where we should put the item in
 */
 /datum/component/body_storage/proc/insert_in_storage(datum/source, obj/item/incoming_item, target_layer)
+	// Usually the organ itself, but an item carrying a live mob hangs off the body instead - an
+	// inserted organ sits in nullspace, which would strand the passenger without a turf.
+	var/atom/destination = incoming_item.body_storage_destination(organ_storing, owner) || organ_storing
 	if(iscarbon(incoming_item.loc))
 		var/mob/living/carbon/M = incoming_item.loc
-		M.dropItemToGround(incoming_item, FALSE, TRUE)
-	if(!(organ_storing.contains(incoming_item)))
+		// Unequip straight to the destination. dropItemToGround() lands the item on a turf first and
+		// only then calls dropped(), which is enough for a mob_holder to decide it was dropped and
+		// qdel itself mid-insertion, spilling its occupant and leaving a dead holder in the hole.
+		M.transferItemToLoc(incoming_item, destination, FALSE, TRUE)
+	if(destination == organ_storing && !organ_storing.contains(incoming_item))
 		organ_storing.contents += incoming_item
-	incoming_item.forceMove(organ_storing)
+	incoming_item.forceMove(destination)
 	var/list/t_layer = all_layers[target_layer]
 	t_layer.Add(incoming_item)
 	layer_storage_cur_bulk[target_layer] += incoming_item.body_storage_bulk
 	organ_storing.on_body_storage_inserted(incoming_item, target_layer)
+	incoming_item.on_body_storage_entered(organ_storing, target_layer)
 	var/diff = layer_storage_cur_bulk[target_layer] - layer_storage_max_bulk[target_layer]
 	if(incoming_item.has_body_storage_overlay)
 		if(isnull(incoming_item.bstorage_visible_layer) || incoming_item.bstorage_visible_layer == target_layer)
@@ -245,11 +252,19 @@
 */
 /datum/component/body_storage/proc/remove_from_storage(datum/source, obj/item/removed_item, target_layer)
 	organ_storing.contents -= removed_item
+	// contents -= leaves the item in nullspace. Most callers relocate it a line later, but anything
+	// that reacts in between - a mob_holder being qdel'd, say - would have nowhere to put its
+	// occupant. Park it on the body's turf so the item is never homeless mid-removal.
+	if(isnull(removed_item.loc))
+		var/turf/fallback = get_turf(organ_storing) || get_turf(owner)
+		if(fallback)
+			removed_item.forceMove(fallback)
 	var/list/t_layer = all_layers[target_layer]
 	t_layer.Remove(removed_item)
 	layer_storage_cur_bulk[target_layer] -= removed_item.body_storage_bulk
 	if(removed_item.has_body_storage_overlay)
 		remove_outer_overlay(removed_item)
+	removed_item.on_body_storage_exited(organ_storing)
 	if(iscarbon(owner))
 		var/mob/living/carbon/carbon_owner = owner
 		carbon_owner.update_carry_weight()
@@ -265,7 +280,10 @@
 			var/datum/body_storage_transfer_item/transfer_item = new(stored_item, storage_layer)
 			transfer_items += transfer_item
 			remove_from_storage(parent, stored_item, storage_layer)
-			stored_item.moveToNullspace()
+			// Anything that hangs off the body rather than sitting in the organ is carrying something
+			// that needs a turf, so parking it in nullspace here would strand that passenger.
+			if(stored_item.body_storage_destination(organ_storing, owner) == organ_storing)
+				stored_item.moveToNullspace()
 
 	return transfer_items
 

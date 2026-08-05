@@ -943,10 +943,12 @@ GLOBAL_LIST_EMPTY(active_lifts_by_type)
 
 			if(ismobholder(listed_atom))
 				var/obj/item/mob_holder/holder = listed_atom
-				for(var/obj/item/item in holder.held_mob.get_equipped_items())
-					item.forceMove(get_turf(holder))
-				to_chat(holder.held_mob, span_boldwarning("You have been sold."))
-				qdel(holder.held_mob) //so long my friend
+				var/mob/living/sold_mob = holder.held_mob
+				if(sold_mob)
+					for(var/obj/item/item in sold_mob.get_equipped_items())
+						item.forceMove(get_turf(holder))
+					to_chat(sold_mob, span_boldwarning("You have been sold."))
+					qdel(sold_mob) //so long my friend
 			qdel(listed_atom)
 
 		var/atom/location = spawn_coins(total_coin_value, platform) // try_process_order will eat these coins, so don't spawn a chest

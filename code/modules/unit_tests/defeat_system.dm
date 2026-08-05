@@ -417,7 +417,7 @@
 	test_human.defeat_system_ai_opt_in = TRUE
 	test_human.setBruteLoss(200, FALSE, TRUE)
 
-	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat.")
+	TEST_ASSERT(test_human.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "Eligible damage should enter defeat. eligible=[test_human.defeat_system_is_eligible()] stat=[test_human.stat] brute=[test_human.getBruteLoss()] health=[test_human.health]")
 	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Defeat should apply the custom KO status.")
 	TEST_ASSERT(HAS_TRAIT(test_human, TRAIT_NODEATH), "Defeat KO should protect against normal death.")
 	TEST_ASSERT(HAS_TRAIT(test_human, TRAIT_PACIFISM), "Defeat KO should pacify hostile actions.")
@@ -907,7 +907,7 @@
 	monitor.horny_defeat_climax_threshold = 1
 
 	monitor.on_climax(victim, null, victim, grabber, grabber)
-	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Hostile grab climax metadata should trigger horny defeat when the threshold is met.")
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Hostile grab climax metadata should trigger horny defeat when the threshold is met. eligible=[victim.defeat_system_is_eligible()] horny_eligible=[victim.horny_defeat_is_eligible()] stat=[victim.stat] climaxes=[monitor.horny_defeat_climax_count] threshold=[monitor.horny_defeat_climax_threshold]")
 	TEST_ASSERT_EQUAL(victim.last_defeat_snapshot.reason, DEFEAT_REASON_HORNY, "Horny defeat should preserve its reason in the snapshot.")
 
 /datum/unit_test/defeat_horny_rejects_self_farming_and_unopted_ai
@@ -1099,6 +1099,9 @@
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
 	victim.mind = allocate(/datum/mind, "legacy-deterministic-threshold-test")
+	// /datum/mind/Destroy() detaches itself through current, so a mind attached without one leaves
+	// the body holding a deleted mind and hard-deletes at the end of the run.
+	victim.mind.current = victim
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
 	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16
@@ -1118,6 +1121,9 @@
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/grabber = allocate(/mob/living/carbon/human)
 	victim.mind = allocate(/datum/mind, "legacy-threshold-timeout-test")
+	// /datum/mind/Destroy() detaches itself through current, so a mind attached without one leaves
+	// the body holding a deleted mind and hard-deletes at the end of the run.
+	victim.mind.current = victim
 	victim.defeat_system_ai_opt_in = TRUE
 	victim.attributes.raw_attribute_list[STAT_CONSTITUTION] = 14
 	victim.attributes.raw_attribute_list[STAT_ENDURANCE] = 16
@@ -1147,6 +1153,11 @@
 	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 0, "Recovery should clear completed horny-defeat progress.")
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 0, "Recovery should clear the cached horny-defeat threshold.")
+
+	// Entering a real defeat here detaches current, so the mind can no longer unhook itself in
+	// Destroy() and the body would hold a deleted mind. Detach both ends by hand.
+	victim.mind.current = null
+	victim.mind = null
 
 /datum/unit_test/defeat_knockout_clears_traits_without_physiology
 
@@ -1252,12 +1263,18 @@
 
 	// Town-clinic-only cure: a full field heal must NOT clear Grievous Wounds.
 	patient.fully_heal(HEAL_ALL)
-	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A field full-heal must not cure Grievous Wounds - only town care does.")
+	var/datum/status_effect/debuff/defeat/grievous/wounds = patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous)
+	TEST_ASSERT_NOTNULL(wounds, "A field full-heal must not cure Grievous Wounds - only town care does.")
 
-	// A skilled medic (the clinic cure path) clears it.
+	// The universal potion/spell path is field healing by another name and must not reach it either.
+	TEST_ASSERT(!patient.defeat_treat_trauma(patient, DEFEAT_TREATMENT_UNIVERSAL, wounds), "The universal cure must not accept Grievous Wounds.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A refused universal cure must leave Grievous Wounds in place.")
+
+	// A skilled medic (the clinic cure path) clears it. The struggle also left the ordinary damage
+	// trauma behind, and a provider treats one exact injury per attempt, so name the target.
 	var/mob/living/carbon/human/medic = allocate(/mob/living/carbon/human)
 	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_EXPERT, TRUE)
-	TEST_ASSERT(patient.defeat_treat_trauma(medic, DEFEAT_TREATMENT_MEDICAL), "Medical care should treat Grievous Wounds.")
+	TEST_ASSERT(patient.defeat_treat_trauma(medic, DEFEAT_TREATMENT_MEDICAL, wounds), "Medical care should treat Grievous Wounds.")
 	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Medical care should clear Grievous Wounds.")
 
 /datum/unit_test/defeat_depleted_rune_arms_struggle_up
@@ -1560,7 +1577,7 @@
 	player.defeat_mode = DEFEAT_MODE_KO_RUNE
 	// Mirrors apply_prefs_to running before the client/mind is attached: not yet eligible -> no monitor.
 	player.ensure_defeat_monitor()
-	TEST_ASSERT_NULL(player.GetComponent(/datum/component/defeat_monitor), "Without a client or mind, the monitor must not attach (the spawn-time pref-cache case).")
+	TEST_ASSERT_NULL(player.GetComponent(/datum/component/defeat_monitor), "Without a client or mind, the monitor must not attach (the spawn-time pref-cache case). mind=[player.mind || "null"] client=[player.client || "null"] ai_opt_in=[player.defeat_system_ai_opt_in] horny_enabled=[player.mob_horny_defeat_enabled] mode=[player.defeat_mode]")
 
 	// Once the player actually controls the body (as at Login), it must attach.
 	player.mind = allocate(/datum/mind, "defeat-monitor-attach-test")
@@ -2121,9 +2138,45 @@
 	TEST_ASSERT(beast.mob_horny_defeat_enabled, "Adding arousal to a clientless mob must enable mob horny defeat.")
 	TEST_ASSERT_NOTNULL(beast.GetComponent(/datum/component/defeat_monitor), "Adding arousal to a clientless mob must attach the defeat monitor.")
 
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_carbon_npc
+
+/// Carbon NPCs are in the horny system too. They are told apart from a not-yet-logged-in player body
+/// by their ai_controller, since neither has a client when arousal is attached in Initialize.
+/datum/unit_test/arousal_enables_mob_horny_defeat_on_carbon_npc/Run()
+	var/mob/living/carbon/human/npc = allocate(/mob/living/carbon/human/species/human/northern/bum)
+	TEST_ASSERT_NOTNULL(npc.ai_controller, "Setup: the fixture must be an AI-driven carbon NPC.")
+
+	TEST_ASSERT(npc.mob_horny_defeat_enabled, "A carbon NPC carrying arousal must stay horny-KO-able.")
+	TEST_ASSERT_NOTNULL(npc.GetComponent(/datum/component/defeat_monitor), "A carbon NPC must still get the defeat monitor.")
+
+	var/mob/living/carbon/human/player_body = allocate(/mob/living/carbon/human)
+	TEST_ASSERT_NULL(player_body.ai_controller, "Setup: a plain human body must not be AI-driven.")
+	TEST_ASSERT(!player_body.mob_horny_defeat_enabled, "A clientless player body must not be mistaken for an NPC before Login.")
+
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma
+
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+
+	var/datum/status_effect/debuff/defeat/physical/concussion/head = patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/concussion, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_NOTNULL(head.linked_alert, "A defeat trauma should own a status alert.")
+	TEST_ASSERT_NOTEQUAL(head.linked_alert.name, "Defeat Trauma", "A trauma alert must not keep the generic fallback name.")
+	TEST_ASSERT_EQUAL(head.linked_alert.name, "Injury: Concussion (Moderate)", "A physical trauma alert should read as a categorized injury.")
+	TEST_ASSERT_EQUAL(head.linked_alert.desc, head.trauma_desc, "A trauma alert should carry its own description.")
+
+	var/datum/status_effect/debuff/defeat/horny/wobble/lewd = patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(lewd.linked_alert.name, "Lewd: Rubbery Legs (Severe)", "A horny trauma alert should be labelled distinctly from an ordinary injury.")
+	TEST_ASSERT_NOTEQUAL(lewd.linked_alert.icon_state, head.linked_alert.icon_state, "Horny and physical trauma alerts should not share an icon.")
+
+	var/datum/status_effect/debuff/defeat/grievous/grave = patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(grave.linked_alert.name, "Grievous: Grievous Wounds (Severe)", "A grievous wound alert should be labelled distinctly.")
+	TEST_ASSERT_NOTEQUAL(grave.linked_alert.icon_state, head.linked_alert.icon_state, "Grievous and physical trauma alerts should not share an icon.")
+
 // Focused isolation run for just the mob horny-defeat KO tests. Compile with FOCUS_MOB_HORNY_DEFEAT_TEST
 // defined to run only these. Guarded so it is inert (and safe to leave in) on a normal build.
 #ifdef FOCUS_MOB_HORNY_DEFEAT_TEST
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma
+	focus = TRUE
 /datum/unit_test/mob_horny_defeat_eligibility
 	focus = TRUE
 /datum/unit_test/mob_horny_ko_cleanup_deletes_when_alone

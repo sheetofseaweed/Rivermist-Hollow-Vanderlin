@@ -410,6 +410,20 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 /obj/item/proc/can_random_body_storage_layer_swap()
 	return TRUE
 
+/// Where this item physically sits while stored in [storage_organ]. An inserted organ moves itself to
+/// nullspace, so anything that needs get_turf() to keep resolving - a mob_holder with a live occupant,
+/// whose passenger would otherwise go black-screened - has to hang off [storage_owner] instead.
+/obj/item/proc/body_storage_destination(obj/item/organ/storage_organ, mob/living/storage_owner)
+	return storage_organ
+
+/// Called after this item has been registered in a body storage layer.
+/obj/item/proc/on_body_storage_entered(obj/item/organ/storage_organ, target_layer)
+	return
+
+/// Called after this item has been taken back out of a body storage layer.
+/obj/item/proc/on_body_storage_exited(obj/item/organ/storage_organ)
+	return
+
 /obj/item/proc/blocks_body_storage_insertion(datum/component/body_storage/storage, obj/item/incoming_item, target_layer, blocker_layer)
 	if(!body_storage_blocks_insertions)
 		return FALSE

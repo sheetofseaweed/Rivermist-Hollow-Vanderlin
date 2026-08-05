@@ -116,8 +116,16 @@
 	var/mob/living/carbon/human/third = allocate(/mob/living/carbon/human)
 
 	var/list/group_sessions = list()
-	for(var/participant_number in 3 to SEX_SCENE_MAX_PARTICIPANTS)
-		var/mob/living/carbon/human/joiner = participant_number == 3 ? third : allocate(/mob/living/carbon/human)
+	// Counts from 2, because the focus is participant 1 and is never a joiner.
+	for(var/participant_number in 2 to SEX_SCENE_MAX_PARTICIPANTS)
+		var/mob/living/carbon/human/joiner
+		switch(participant_number)
+			if(2)
+				joiner = partner
+			if(3)
+				joiner = third
+			else
+				joiner = allocate(/mob/living/carbon/human)
 		var/datum/sex_scene_controller/group_session = joiner.open_sex_scene(focus, show_ui = FALSE)
 		TEST_ASSERT_NOTNULL(group_session, "participant [participant_number] should be admitted up to the configured scene cap")
 		group_sessions += group_session
@@ -392,8 +400,11 @@
 	focus_effect.arousal_amt = 10
 	focus_effect.orgasm_prog_amt = 10
 	focus.sex_scene.modify_action_effect(focus_effect)
-	TEST_ASSERT_EQUAL(focus_effect.arousal_amt, 12.5, "only the maximal airtight modifier should apply to its focus")
-	TEST_ASSERT_EQUAL(focus_effect.orgasm_prog_amt, 12.5, "overlapping subset patterns must not stack their mechanics")
+	// Taken from the pattern rather than written out, so retuning the multiplier can't silently
+	// turn this into a test of one specific number instead of "exactly one modifier applied".
+	var/expected_focus_amt = 10 * airtight_match.pattern.focus_pleasure_multiplier
+	TEST_ASSERT_EQUAL(focus_effect.arousal_amt, expected_focus_amt, "only the maximal airtight modifier should apply to its focus")
+	TEST_ASSERT_EQUAL(focus_effect.orgasm_prog_amt, expected_focus_amt, "overlapping subset patterns must not stack their mechanics")
 	qdel(focus_effect)
 
 	oral_action.unbind_runtime()

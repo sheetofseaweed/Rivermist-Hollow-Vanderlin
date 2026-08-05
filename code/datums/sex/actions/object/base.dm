@@ -41,8 +41,11 @@
 	. = ..()
 	if(!.)
 		return FALSE
+	// run_runtime() gates on can_run(TRUE) before it calls on_start(), so on the first pass the toy
+	// has not been chosen yet. Demanding selected_toy here stopped the action before it ever began -
+	// any toy in hand is enough until on_start() picks one.
 	if(!selected_toy)
-		return FALSE
+		return get_storage_check_item(user, target) != null
 	// Dropping the toy ends the action even if it lands on the tile everyone is standing on.
 	return get_storage_check_item(user, target) == selected_toy
 
