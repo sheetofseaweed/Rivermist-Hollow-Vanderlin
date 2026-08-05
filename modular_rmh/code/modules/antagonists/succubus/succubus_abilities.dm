@@ -7,6 +7,8 @@
 /datum/antagonist/succubus/proc/can_target_lewd(mob/living/target)
 	if(!ishuman(target))
 		return FALSE
+	if(is_succubus_consecrated(target) || is_succubus_consecrated(owner?.current))
+		return FALSE
 	return target.has_erp_pref(/datum/erp_preference/boolean/lust_magic_targetable)
 
 // --- Detect Desire: pointed, no cost, short cooldown --------------------------------------------
@@ -39,6 +41,9 @@
 	if(!istype(target))
 		return
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
+	if(succubus_antag && (is_succubus_consecrated(target) || is_succubus_consecrated(owner)))
+		to_chat(owner, span_warning("Consecrated ground turns my gaze aside in a flare of white fire."))
+		return . | SPELL_CANCEL_CAST
 	if(succubus_antag && !succubus_antag.can_target_lewd(target))
 		to_chat(owner, span_notice("I gaze into [target.real_name]... and meet a wall of white flame. This soul is warded against me."))
 		return . | SPELL_CANCEL_CAST
@@ -57,6 +62,10 @@
 	lines += cast_on.has_erp_pref(/datum/erp_preference/boolean/enthrallable) ? "Their will could be bound to mine, in time." : "Their will is anchored; thralldom is beyond reach."
 	lines += cast_on.has_erp_pref(/datum/erp_preference/boolean/dream_visitable) ? "Their dreams lie unlatched." : "Their dreams are barred."
 	lines += cast_on.has_erp_pref(/datum/erp_preference/boolean/fatal_drain_ok) ? "I could drink this one to the very dregs..." : "Something guards their lifespark; I may sip, never drain."
+	if(cast_on.IsWedded())
+		lines += "A mortal vow binds this soul. Corrupting it would be especially sweet."
+	if(cast_on.virginity)
+		lines += "This soul is untouched. Its first surrender would be potent."
 	to_chat(owner, span_love(lines.Join("<br>")))
 
 // --- Lust: pointed, essence cost, hard pref gate -------------------------------------------------
@@ -90,6 +99,9 @@
 		return
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(owner)
 	if(!succubus_antag)
+		return . | SPELL_CANCEL_CAST
+	if(is_succubus_consecrated(target) || is_succubus_consecrated(owner))
+		to_chat(owner, span_warning("Consecrated ground scatters my magic before it can take hold."))
 		return . | SPELL_CANCEL_CAST
 	if(!succubus_antag.can_target_lewd(target))
 		to_chat(owner, span_notice("I reach for [target.real_name]'s heart... and meet a wall of white flame. This soul is warded against me."))
@@ -486,6 +498,10 @@
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
 		current_mob.remove_spell(/datum/action/cooldown/spell/succubus_infernal_snare)
+	if(current_tier >= SUCCUBUS_FATAL_DRAIN_UNLOCK_TIER)
+		current_mob.add_spell(/datum/action/cooldown/spell/succubus_fatal_drain, source = owner)
+	else
+		current_mob.remove_spell(/datum/action/cooldown/spell/succubus_fatal_drain)
 	refresh_succubus_rift_action(current_mob)
 
 /datum/antagonist/succubus/proc/remove_succubus_abilities()
@@ -504,6 +520,7 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_infernal_snare)
+	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_fatal_drain)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_rift)
 	// Allure's aura is a separate datum that outlives the spell if stripped mid-pulse
 	if(current_mob.has_status_effect(/datum/status_effect/succubus_allure_aura))

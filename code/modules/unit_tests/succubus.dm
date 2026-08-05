@@ -10,6 +10,20 @@
 #ifdef FOCUS_SUCCUBUS_TEST
 /datum/unit_test/succubus_novelty_decay
 	focus = TRUE
+/datum/unit_test/succubus_depletion
+	focus = TRUE
+/datum/unit_test/succubus_counterplay
+	focus = TRUE
+/datum/unit_test/succubus_consecration
+	focus = TRUE
+/datum/unit_test/succubus_fatal_drain_fight
+	focus = TRUE
+/datum/unit_test/succubus_fatal_drain_yield
+	focus = TRUE
+/datum/unit_test/succubus_holy_water
+	focus = TRUE
+/datum/unit_test/succubus_special_corruption
+	focus = TRUE
 /datum/unit_test/succubus_essence_cap
 	focus = TRUE
 /datum/unit_test/succubus_wardrobe
@@ -115,6 +129,261 @@
 	var/before = antag.essence
 	antag.harvest_from_climax(partner)
 	TEST_ASSERT(antag.essence - before >= floor_gain * 0.9, "novelty must floor, not decay to zero")
+
+/datum/unit_test/succubus_depletion/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	partner.mind_initialize()
+	partner.set_nutrition(NUTRITION_LEVEL_FED)
+	var/base_endurance = partner.get_stat_level(STAT_ENDURANCE)
+	var/base_constitution = partner.get_stat_level(STAT_CONSTITUTION)
+
+	antag.harvest_from_climax(partner)
+	var/datum/status_effect/debuff/succubus_depletion/depletion = partner.has_status_effect(/datum/status_effect/debuff/succubus_depletion)
+	TEST_ASSERT_NOTNULL(depletion, "a successful harvest must apply Soul Depletion")
+	TEST_ASSERT_EQUAL(depletion.stage, SUCCUBUS_DEPLETION_SOUL_TOUCHED, "the first harvest must leave the victim Soul-Touched")
+	TEST_ASSERT_EQUAL(partner.nutrition, NUTRITION_LEVEL_FED - SUCCUBUS_DEPLETION_TOUCHED_NUTRITION, "the first harvest must remove the Soul-Touched nutrition amount")
+	TEST_ASSERT_EQUAL(partner.get_stat_level(STAT_ENDURANCE), base_endurance - 1, "Soul-Touched must temporarily reduce Endurance by one")
+	var/datum/status_effect/succubus_brand/brand = partner.has_status_effect(/datum/status_effect/succubus_brand)
+	TEST_ASSERT_NOTNULL(brand, "the first harvest must leave a persistent infernal brand")
+	TEST_ASSERT(brand.brand_location, "the infernal brand must record a body location")
+
+	antag.last_harvest_time = -1
+	antag.harvest_from_climax(partner)
+	TEST_ASSERT_EQUAL(depletion.stage, SUCCUBUS_DEPLETION_SOUL_DRAINED, "the second harvest inside the recovery window must leave the victim Soul-Drained")
+	TEST_ASSERT_EQUAL(partner.get_stat_level(STAT_CONSTITUTION), base_constitution - 1, "Soul-Drained must temporarily reduce Constitution by one")
+
+	antag.last_harvest_time = -1
+	antag.harvest_from_climax(partner)
+	TEST_ASSERT_EQUAL(depletion.stage, SUCCUBUS_DEPLETION_HOLLOWED, "the third harvest inside the recovery window must Hollow the victim")
+	TEST_ASSERT_EQUAL(partner.get_stat_level(STAT_ENDURANCE), base_endurance - 2, "Hollowed must replace the earlier Endurance modifier with the capped penalty")
+	TEST_ASSERT_EQUAL(brand.strongest_stage, SUCCUBUS_DEPLETION_HOLLOWED, "the infernal brand must remember the victim's strongest depletion stage")
+
+	antag.last_harvest_time = -1
+	antag.harvest_from_climax(partner)
+	TEST_ASSERT_EQUAL(depletion.stage, SUCCUBUS_DEPLETION_HOLLOWED, "further harvests must refresh Hollowed instead of creating uncapped severity")
+
+	partner.remove_status_effect(/datum/status_effect/debuff/succubus_depletion)
+	TEST_ASSERT_EQUAL(partner.get_stat_level(STAT_ENDURANCE), base_endurance, "removing Soul Depletion must restore temporary attribute modifiers")
+	TEST_ASSERT_NOTNULL(partner.has_status_effect(/datum/status_effect/succubus_brand), "ordinary depletion recovery must not erase the hidden infernal brand")
+
+	partner.set_nutrition(NUTRITION_LEVEL_STARVING + 10)
+	antag.last_harvest_time = -1
+	antag.harvest_from_climax(partner)
+	TEST_ASSERT_EQUAL(partner.nutrition, NUTRITION_LEVEL_STARVING, "ordinary harvesting must not drain nutrition below the starvation threshold")
+
+/datum/unit_test/succubus_counterplay/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.mind_initialize()
+	victim.apply_succubus_harvest_depletion()
+	victim.apply_succubus_harvest_depletion()
+	victim.apply_succubus_harvest_depletion()
+
+	var/datum/status_effect/debuff/succubus_depletion/depletion = victim.has_status_effect(/datum/status_effect/debuff/succubus_depletion)
+	var/datum/status_effect/succubus_brand/brand = victim.has_status_effect(/datum/status_effect/succubus_brand)
+	TEST_ASSERT_NOTNULL(victim.get_succubus_depletion_diagnosis(), "advanced Soul Depletion must produce a secular medical finding")
+	TEST_ASSERT(!brand.revealed, "secular diagnosis must not reveal the hidden infernal brand")
+	TEST_ASSERT(!victim.can_receive_succubus_deliverance(), "a hidden brand must not let the full rite act as a brute-force scanner")
+
+	TEST_ASSERT(victim.apply_succubus_blessing(null), "holy diagnosis must affect a branded, Hollowed victim")
+	TEST_ASSERT(brand.revealed, "holy diagnosis must reveal the infernal brand")
+	TEST_ASSERT_EQUAL(depletion.stage, SUCCUBUS_DEPLETION_SOUL_DRAINED, "the first blessing must relieve exactly one depletion stage")
+	TEST_ASSERT(!victim.apply_succubus_blessing(null), "repeating the light blessing on one brand must not replace the full cleansing rite")
+	TEST_ASSERT_EQUAL(depletion.stage, SUCCUBUS_DEPLETION_SOUL_DRAINED, "one brand must receive only one stage of light-blessing relief")
+	TEST_ASSERT(victim.receive_succubus_deliverance(null), "the full rite must accept a revealed brand")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/debuff/succubus_depletion), "the full rite must clear all remaining Soul Depletion")
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/succubus_brand), "the full rite must remove the infernal brand")
+
+	var/datum/antagonist/succubus/mistress_datum = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/mistress = allocate(/mob/living/carbon/human)
+	mistress.mind_initialize()
+	mistress_datum.owner = mistress.mind
+	LAZYADD(mistress.mind.antag_datums, mistress_datum)
+	var/datum/team/succubus_harem/harem = mistress_datum.ensure_harem()
+	var/datum/antagonist/succubus_thrall/thrall_datum = allocate(/datum/antagonist/succubus_thrall)
+	thrall_datum.owner = victim.mind
+	thrall_datum.mistress_mind = mistress.mind
+	thrall_datum.harem = harem
+	harem.add_member(victim.mind)
+	LAZYADD(victim.mind.antag_datums, thrall_datum)
+
+	TEST_ASSERT(victim.receive_succubus_deliverance(null), "the full rite must accept an enthralled target without using the brand as a scanner")
+	TEST_ASSERT_NULL(victim.mind.has_antag_datum(/datum/antagonist/succubus_thrall), "exorcism must release the thrall through the mistress API")
+
+	var/datum/devotion/priest_devotion = allocate(/datum/devotion)
+	priest_devotion.make_priest()
+	TEST_ASSERT((/datum/action/cooldown/spell/succubus_deliverance in priest_devotion.miracles_extra), "priest setup must grant Rite of Deliverance")
+
+	mistress.mind.antag_datums -= mistress_datum
+	mistress_datum.owner = null
+	qdel(harem)
+	mistress_datum.harem = null
+
+/datum/unit_test/succubus_holy_water/Run()
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human)
+	succubus.mind_initialize()
+	succubus.real_name = "Original Face"
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = succubus.mind
+	LAZYADD(succubus.mind.antag_datums, antag)
+	antag.base_form = allocate(/datum/identity_snapshot)
+	antag.base_form.capture(succubus)
+	antag.current_form_key = succubus.mind
+	succubus.real_name = "Borrowed Face"
+
+	var/datum/reagent/water/blessed/blessed_water = allocate(/datum/reagent/water/blessed)
+	var/fire_before = succubus.getFireLoss()
+	blessed_water.reaction_mob(succubus, TOUCH, 20)
+	TEST_ASSERT_NULL(antag.current_form_key, "blessed water must collapse a currently borrowed face")
+	TEST_ASSERT_EQUAL(succubus.real_name, "Original Face", "holy-water camouflage failure must restore the Succubus's own mortal identity")
+	TEST_ASSERT_EQUAL(succubus.getFireLoss() - fire_before, SUCCUBUS_BLESSED_WATER_MAX_BURN, "blessed-water burn must cap at the evidence-test limit")
+
+	var/fire_before_drinking = succubus.getFireLoss()
+	blessed_water.reaction_mob(succubus, INGEST, 20)
+	TEST_ASSERT_EQUAL(succubus.getFireLoss() - fire_before_drinking, SUCCUBUS_BLESSED_WATER_MAX_BURN, "drinking blessed water must run the same capped Succubus evidence test")
+
+	antag.true_form_active = TRUE
+	var/fire_in_true_form = succubus.getFireLoss()
+	blessed_water.reaction_mob(succubus, TOUCH, 20)
+	TEST_ASSERT_EQUAL(succubus.getFireLoss() - fire_in_true_form, SUCCUBUS_BLESSED_WATER_MAX_BURN, "blessed water must also visibly sting an already revealed True Form")
+
+	succubus.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_consecration/Run()
+	var/turf/test_turf = get_turf(run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human, test_turf)
+	succubus.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = succubus.mind
+	antag.essence_cap = 1000
+	LAZYADD(succubus.mind.antag_datums, antag)
+
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human, test_turf)
+	target.mind_initialize()
+	target.set_cached_erp_preferences(list(
+		/datum/erp_preference/boolean/lust_magic_targetable = TRUE,
+	))
+	TEST_ASSERT(antag.can_target_lewd(target), "an opted-in target must be open to lust magic before consecration")
+
+	var/obj/structure/succubus_consecration/ward = allocate(/obj/structure/succubus_consecration, test_turf)
+	TEST_ASSERT((ward in GLOB.active_succubus_consecrations), "a consecration ward must register while active")
+	TEST_ASSERT_EQUAL(get_active_succubus_consecration(target), ward, "the ward must protect targets in its indoor area")
+	TEST_ASSERT(!antag.can_target_lewd(target), "consecrated refuge must block lust magic against an otherwise opted-in target")
+
+	antag.harvest_from_climax(target)
+	TEST_ASSERT_EQUAL(antag.essence, 0, "consecrated refuge must prevent climax essence harvesting")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/debuff/succubus_depletion), "a blocked harvest must not deplete the protected target")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/succubus_brand), "a blocked harvest must not brand the protected target")
+
+	qdel(ward)
+	TEST_ASSERT(!(ward in GLOB.active_succubus_consecrations), "destroying the ward must release its global registry entry")
+	TEST_ASSERT_NULL(get_active_succubus_consecration(target), "ward protection must end with the ward's lifecycle")
+	TEST_ASSERT(antag.can_target_lewd(target), "lust magic must become available again after the refuge falls")
+
+	var/datum/devotion/priest_devotion = allocate(/datum/devotion)
+	priest_devotion.make_priest()
+	TEST_ASSERT((/datum/action/cooldown/spell/undirected/succubus_consecrate_refuge in priest_devotion.miracles_extra), "priest setup must grant Consecrate Refuge")
+	TEST_ASSERT((/datum/action/cooldown/spell/succubus_seal_rift in priest_devotion.miracles_extra), "priest setup must grant Rite of Sealing")
+
+	succubus.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_fatal_drain_fight/Run()
+	var/turf/test_turf = get_turf(run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human, test_turf)
+	succubus.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = succubus.mind
+	antag.contracts_completed_full = 2
+	antag.essence_cap = SUCCUBUS_ESSENCE_CAP_TIER_3
+	antag.essence = 250
+	antag.contract_pool = allocate(/datum/contract_pool/succubus)
+	var/datum/antag_contract/contract = allocate(/datum/antag_contract)
+	var/datum/contract_goal/succubus/infernal_tithe/tithe = new(antag)
+	tithe.target_amount = 1000
+	contract.goals = list(tithe)
+	antag.current_contract = contract
+	LAZYADD(succubus.mind.antag_datums, antag)
+
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human, test_turf)
+	target.mind_initialize()
+	target.defeat_mode = DEFEAT_MODE_KO_ONLY
+	TEST_ASSERT(!antag.can_fatal_drain(target, require_client = FALSE), "Fatal Drain must reject a target without explicit fatal-drain consent")
+	target.set_cached_erp_preferences(list(
+		/datum/erp_preference/boolean/fatal_drain_ok = TRUE,
+	))
+	TEST_ASSERT(!antag.can_fatal_drain(target, require_client = FALSE), "Fatal Drain must reject a consenting target who is not Hollowed")
+	target.apply_succubus_harvest_depletion()
+	target.apply_succubus_harvest_depletion()
+	target.apply_succubus_harvest_depletion()
+	TEST_ASSERT(antag.can_fatal_drain(target, require_client = FALSE), "a Tier-3 Succubus must be able to drain an adjacent consenting Hollowed target")
+
+	var/obj/structure/succubus_consecration/ward = allocate(/obj/structure/succubus_consecration, test_turf)
+	TEST_ASSERT(!antag.can_fatal_drain(target, require_client = FALSE), "consecrated refuge must block Fatal Drain before any prompt")
+	qdel(ward)
+	TEST_ASSERT(antag.can_fatal_drain(target, require_client = FALSE), "Fatal Drain must become available when the refuge falls")
+
+	TEST_ASSERT(antag.complete_fatal_drain(target, FALSE), "Fight for Life must complete through the target's defeat pipeline")
+	TEST_ASSERT_NOTNULL(target.has_status_effect(/datum/status_effect/defeat_knockout), "Fight for Life must leave a defeat knockout")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/debuff/succubus_depletion), "successful Fatal Drain must consume Hollowed depletion")
+	TEST_ASSERT_NOTNULL(target.has_status_effect(/datum/status_effect/succubus_fatal_drain_scar), "successful Fatal Drain must leave a public soul-scar")
+	var/datum/status_effect/succubus_brand/brand = target.has_status_effect(/datum/status_effect/succubus_brand)
+	TEST_ASSERT(brand?.revealed, "successful Fatal Drain must leave a revealed infernal brand")
+	TEST_ASSERT_EQUAL(antag.essence, SUCCUBUS_ESSENCE_CAP_TIER_3, "Fatal Drain reward must clamp at the current essence cap")
+	TEST_ASSERT_EQUAL(tithe.progress, SUCCUBUS_ESSENCE_CAP_TIER_3 - 250, "Infernal Tithe must receive only the Fatal Drain essence actually gained after cap clamping")
+
+	TEST_ASSERT(target.cleanse_succubus_afflictions(), "full Church cleansing must accept Fatal Drain evidence")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/succubus_fatal_drain_scar), "full Church cleansing must remove the public soul-scar")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/succubus_brand), "full Church cleansing must remove the revealed brand")
+
+	succubus.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_fatal_drain_yield/Run()
+	var/turf/test_turf = get_turf(run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human, test_turf)
+	succubus.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = succubus.mind
+	antag.contracts_completed_full = 2
+	antag.essence_cap = 1000
+	LAZYADD(succubus.mind.antag_datums, antag)
+
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human, test_turf)
+	target.mind_initialize()
+	target.set_cached_erp_preferences(list(
+		/datum/erp_preference/boolean/fatal_drain_ok = TRUE,
+	))
+	target.apply_succubus_harvest_depletion()
+	target.apply_succubus_harvest_depletion()
+	target.apply_succubus_harvest_depletion()
+
+	TEST_ASSERT(antag.complete_fatal_drain(target, TRUE), "Yield the Lifespark must complete through direct death")
+	TEST_ASSERT_EQUAL(target.stat, DEAD, "Yield the Lifespark must kill the consenting victim")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/defeat_knockout), "Yield the Lifespark must bypass defeat knockout and rune rescue")
+	TEST_ASSERT_NULL(target.has_status_effect(/datum/status_effect/debuff/succubus_depletion), "lethal Fatal Drain must consume Hollowed depletion")
+	TEST_ASSERT_NOTNULL(target.has_status_effect(/datum/status_effect/succubus_fatal_drain_scar), "lethal Fatal Drain must leave a public soul-scar on the corpse")
+	var/datum/status_effect/succubus_brand/brand = target.has_status_effect(/datum/status_effect/succubus_brand)
+	TEST_ASSERT(brand?.revealed, "lethal Fatal Drain must leave a revealed infernal brand")
+	TEST_ASSERT_EQUAL(antag.essence, SUCCUBUS_FATAL_DRAIN_REWARD, "lethal Fatal Drain must award its configured essence reward")
+
+	succubus.mind.antag_datums -= antag
+	antag.owner = null
+
+/datum/unit_test/succubus_special_corruption/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	partner.mind_initialize()
+	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner), 1, "an ordinary partner must have no corruption bonus")
+
+	var/mob/living/carbon/human/spouse = allocate(/mob/living/carbon/human)
+	partner.spouse_mob = spouse
+	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner), SUCCUBUS_CORRUPTION_MARRIED, "a married partner must receive the oath-corruption multiplier")
+	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner, TRUE), SUCCUBUS_CORRUPTION_VIRGIN, "virgin corruption must supersede the smaller marriage multiplier")
+
+	partner.mind.assigned_role = allocate(/datum/job/acolyte)
+	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner, TRUE), SUCCUBUS_CORRUPTION_CLERGY, "special corruption multipliers must use clergy as the highest value instead of compounding")
 
 /datum/unit_test/succubus_essence_cap/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
@@ -360,6 +629,7 @@
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "tier 2 must not grant Call Whispering Imp")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), "tier 2 must not grant Call Lustbound Hound")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), "tier 2 must not grant Lay Infernal Snare")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_fatal_drain, TRUE), "tier 2 must not grant Fatal Drain")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing the same tier must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), doubles, "refreshing tier 2 must not replace Beguiling Doubles")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE), true_form, "refreshing tier 2 must not replace True Form")
@@ -370,19 +640,23 @@
 	var/datum/action/cooldown/spell/undirected/succubus_summon_imp/summon_imp = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE)
 	var/datum/action/cooldown/spell/undirected/succubus_summon_lusthound/summon_lusthound = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE)
 	var/datum/action/cooldown/spell/succubus_infernal_snare/infernal_snare = succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE)
+	var/datum/action/cooldown/spell/succubus_fatal_drain/fatal_drain = succubus.get_spell(/datum/action/cooldown/spell/succubus_fatal_drain, TRUE)
 	TEST_ASSERT_NOTNULL(summon_imp, "tier 3 must grant Call Whispering Imp")
 	TEST_ASSERT_NOTNULL(summon_lusthound, "tier 3 must grant Call Lustbound Hound")
 	TEST_ASSERT_NOTNULL(infernal_snare, "tier 3 must grant Lay Infernal Snare")
+	TEST_ASSERT_NOTNULL(fatal_drain, "tier 3 must grant Fatal Drain")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing tier 3 must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), summon_imp, "refreshing tier 3 must not replace Call Whispering Imp")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), summon_lusthound, "refreshing tier 3 must not replace Call Lustbound Hound")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), infernal_snare, "refreshing tier 3 must not replace Lay Infernal Snare")
+	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/succubus_fatal_drain, TRUE), fatal_drain, "refreshing tier 3 must not replace Fatal Drain")
 
 	antag.contracts_completed_full = 1
 	antag.refresh_succubus_contract_progression()
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "dropping below tier 3 must remove Call Whispering Imp")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), "dropping below tier 3 must remove Call Lustbound Hound")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), "dropping below tier 3 must remove Lay Infernal Snare")
+	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_fatal_drain, TRUE), "dropping below tier 3 must remove Fatal Drain")
 
 	antag.contracts_completed_full = 3
 	antag.refresh_succubus_contract_progression()
@@ -941,11 +1215,12 @@
 
 	TEST_ASSERT(rift.add_seal_progress(1, sealer), "the first universal sealing contribution must be accepted")
 	TEST_ASSERT_EQUAL(rift.seal_progress, 1, "one contribution must advance the closure counter once")
-	TEST_ASSERT(rift.add_seal_progress(1, sealer), "the second universal sealing contribution must be accepted")
-	TEST_ASSERT(!QDELETED(rift), "the Rift must survive until the final sealing contribution")
-	TEST_ASSERT(rift.add_seal_progress(1, sealer), "the final universal sealing contribution must resolve the Rift")
+	var/datum/action/cooldown/spell/succubus_seal_rift/sealing_rite = allocate(/datum/action/cooldown/spell/succubus_seal_rift)
+	sealing_rite.Grant(sealer)
+	TEST_ASSERT(sealing_rite.is_valid_target(rift), "Rite of Sealing must accept an Open Rift as its pointed target")
+	sealing_rite.cast(rift)
 
-	TEST_ASSERT(QDELETED(rift), "the final sealing contribution must delete the resolved Rift")
+	TEST_ASSERT(QDELETED(rift), "one ordinary contribution plus the two-point holy rite must resolve and delete the Rift")
 	TEST_ASSERT(!antag.rift_banished, "closure must not banish a Succubus who defaults to survival")
 	TEST_ASSERT(antag.rift_repelled, "closure must record a retryable campaign defeat")
 	TEST_ASSERT(!antag.rift_ascended, "closure must not complete the ascension objective")

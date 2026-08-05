@@ -88,7 +88,8 @@
 	if(target && climaxer != target)
 		var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(target)
 		if(succubus_antag)
-			succubus_antag.harvest_from_climax(climaxer)
+			var/was_virgin_at_action_start = action?.was_participant_virgin_at_start(climaxer)
+			succubus_antag.harvest_from_climax(climaxer, was_virgin_at_action_start)
 	if(!source_reagents || amount <= 0)
 		return amount
 	var/datum/sex_action_effect_context/context = new(climaxer, target, action, action_initiator ? action_initiator : climaxer, action_target ? action_target : target, TRUE)

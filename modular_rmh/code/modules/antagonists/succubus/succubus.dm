@@ -71,10 +71,19 @@
 	items += "Infernal Favor: Tier [get_succubus_contract_tier()]"
 
 /// Called from the climax pipeline when someone climaxes with the succubus as partner.
-/datum/antagonist/succubus/proc/harvest_from_climax(mob/living/carbon/human/partner)
+/datum/antagonist/succubus/proc/harvest_from_climax(mob/living/carbon/human/partner, was_virgin_at_action_start = FALSE)
 	if(!istype(partner) || !partner.mind || partner == owner?.current)
 		return
 	if(last_harvest_mind == partner.mind && last_harvest_time == world.time)
+		return
+	last_harvest_mind = partner.mind
+	last_harvest_time = world.time
+	var/mob/living/current_body = owner?.current
+	if(is_succubus_consecrated(partner) || is_succubus_consecrated(current_body))
+		if(current_body)
+			to_chat(current_body, span_userdanger("The refuge's ward catches their release and burns it away before I can feed!"))
+			revert_form(forced = TRUE)
+		to_chat(partner, span_boldnotice("A clean warmth answers from the ward, leaving nothing hungry behind."))
 		return
 	var/harvest_count = partner_harvests[partner.mind] || 0
 	var/novelty = max(SUCCUBUS_NOVELTY_FLOOR, SUCCUBUS_NOVELTY_DECAY ** harvest_count)
@@ -84,12 +93,11 @@
 	if(arousal_comp)
 		partner_arousal = arousal_comp.arousal
 		arousal_mult += min(partner_arousal / SUCCUBUS_AROUSAL_BONUS_DIVISOR, SUCCUBUS_AROUSAL_BONUS_MAX)
-	var/corruption_mult = get_corruption_multiplier(partner)
+	var/corruption_mult = get_corruption_multiplier(partner, was_virgin_at_action_start)
 	var/gained = round(SUCCUBUS_ESSENCE_BASE_HARVEST * novelty * arousal_mult * corruption_mult)
 	partner_harvests[partner.mind] = harvest_count + 1
-	last_harvest_mind = partner.mind
-	last_harvest_time = world.time
 	adjust_essence(gained)
+	partner.apply_succubus_harvest_depletion()
 	if(owner?.current)
 		to_chat(owner.current, span_love("Their release feeds me. (+[gained] essence, [essence]/[essence_cap])"))
 	store_partner_form(partner)
@@ -120,10 +128,15 @@
 		reagent_units_absorbed[donor] = absorbed + volume
 	adjust_essence(round(SUCCUBUS_ESSENCE_PER_REAGENT_UNIT * volume * decay, 0.1))
 
-/datum/antagonist/succubus/proc/get_corruption_multiplier(mob/living/carbon/human/partner)
+/datum/antagonist/succubus/proc/get_corruption_multiplier(mob/living/carbon/human/partner, was_virgin_at_action_start = FALSE)
+	var/corruption_multiplier = 1
+	if(partner.IsWedded())
+		corruption_multiplier = max(corruption_multiplier, SUCCUBUS_CORRUPTION_MARRIED)
+	if(was_virgin_at_action_start)
+		corruption_multiplier = max(corruption_multiplier, SUCCUBUS_CORRUPTION_VIRGIN)
 	if(partner.mind?.assigned_role?.title in GLOB.succubus_clergy_roles)
-		return SUCCUBUS_CORRUPTION_CLERGY
-	return 1
+		corruption_multiplier = max(corruption_multiplier, SUCCUBUS_CORRUPTION_CLERGY)
+	return corruption_multiplier
 
 GLOBAL_LIST_INIT(succubus_clergy_roles, list(
 	"Chapel Acolyte",

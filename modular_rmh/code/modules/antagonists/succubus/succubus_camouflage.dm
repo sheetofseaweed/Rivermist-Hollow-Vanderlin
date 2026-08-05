@@ -30,6 +30,9 @@
 	if(true_form_active)
 		to_chat(body, span_warning("This shape wears no masks."))
 		return FALSE
+	if(is_succubus_consecrated(body))
+		to_chat(body, span_warning("White fire traces the refuge's ward; no borrowed face will hold here."))
+		return FALSE
 	if(essence < SUCCUBUS_COST_CAMOUFLAGE)
 		to_chat(body, span_warning("I lack the essence to reshape my flesh."))
 		return FALSE
