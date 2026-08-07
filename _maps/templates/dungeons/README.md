@@ -18,6 +18,27 @@ key-locked treasure gate wired to a keyholder (see `combat_gobwarren.dmm`).
 
 Everything else (loading, collapsing, mob tracking, loot, currency, party logic) is automatic.
 
+### Shipped standalone singlets
+
+The original 15x15 RMH small-room set remains in
+`_maps/templates/rmh/randomlocs/small/` and is registered in place. Each room has its own
+theme-filtered entrance subtype, while the entrance still rolls by theme rather than hard-locking
+one template. Adding another room to the same theme and tier automatically gives that entrance
+cooldown-to-cooldown variety.
+
+| Interior | Template id | Entrance subtype | Tier |
+|---|---|---|---|
+| Soot-Stained Hideout | `singlet_bandit_hideout` | `/obj/structure/dungeon_entrance/bandit_hideout` | 2 |
+| Bloodmoss Den | `singlet_bear_den` | `/obj/structure/dungeon_entrance/bear_den` | 3 |
+| Gnawcamp | `singlet_ratfolk_camp` | `/obj/structure/dungeon_entrance/ratfolk_camp` | 2 |
+| Silk-Choked Nursery | `singlet_spider_nursery` | `/obj/structure/dungeon_entrance/spider_nursery` | 1 |
+| Moon-Riven Shrine | `singlet_werewolf_shrine` | `/obj/structure/dungeon_entrance/werewolf_shrine` | 3 |
+| Bone-Littered Den | `singlet_wolf_den` | `/obj/structure/dungeon_entrance/wolf_den` | 1 |
+
+Place the matching entrance subtype on an overworld map or exterior random-location template. Do
+not use the unfiltered base entrance for authored content: its broad fallback is intended for
+debugging and mapper experimentation.
+
 ---
 
 ## 1. The golden rules
@@ -111,8 +132,9 @@ so no list to edit. Resolve one in code by `id` via `SSpocket_dimensions.resolve
 |---|---|
 | `name` / `id` | Display name and unique id (id is how everything references it) |
 | `mappath` | Path to the `.dmm` |
-| `theme` | `DUNGEON_THEME_*` — `BANDIT`, `WOLF`, `TENTACLE`, `TEST` (add your own in `code/__DEFINES/dungeons.dm`) |
+| `theme` | `DUNGEON_THEME_*` — see `code/__DEFINES/dungeons.dm` for the current production and test themes |
 | `room_kind` | `DUNGEON_ROOM_*` — `ONESHOT`, `COMBAT`, `BREAK`, `BOSS`, `DESCENT` |
+| `production_eligible` | Keep TRUE for shipped rooms. Test fixtures set this FALSE and broad production pools cannot select them |
 | `difficulty_tier` | 1–5+; how dangerous. Infinite runs pick templates in a tier band around the current floor |
 | `dungeon_weight` | Relative pick weight inside its filtered pool |
 | `loot_table_type` | A `/datum/loot_table` subtype the room's caches roll from |
@@ -126,7 +148,7 @@ so no list to edit. Resolve one in code by `id` via `SSpocket_dimensions.resolve
 Self-contained. Player enters, clears guardians, loots, leaves via the exit seam, it collapses.
 - ✅ `entry` landmark
 - ✅ `exit` landmark (the return seam)
-- ✅ one or more `guardian` markers (or mapped-in hostiles)
+- ✅ one or more `guardian` markers (mapped-in simple-animal hostiles are also discovered automatically; carbon/NPC guardians require a marker)
 - ✅ one or more `loot` markers
 - ❌ no gates needed
 

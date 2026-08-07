@@ -72,6 +72,8 @@
 	if(istype(boss, /mob/living/simple_animal/hostile))
 		var/mob/living/simple_animal/hostile/hostile_boss = boss
 		target = hostile_boss.target
+	else if(boss.ai_controller)
+		target = boss.ai_controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET]
 	if(!target)
 		return
 	for(var/datum/dungeon_boss_ability/ability as anything in abilities)

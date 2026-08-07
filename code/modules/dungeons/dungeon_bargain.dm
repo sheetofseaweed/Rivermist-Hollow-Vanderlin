@@ -95,6 +95,10 @@
 	offer["bought"] = TRUE
 	var/datum/dungeon_boon/boon = offer["boon"]
 	offer["boon"] = null // Destroy() must not qdel an applied boon
+	if(!owning_run.can_add_boon(boon))
+		to_chat(user, span_warning("That power already belongs to the expedition. The stale bargain crumbles without taking its price."))
+		qdel(boon)
+		return
 	switch(offer["price"])
 		if("flesh")
 			owning_run.add_boon(new /datum/dungeon_boon/dark_price/flesh)

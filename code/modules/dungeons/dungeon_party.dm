@@ -3,9 +3,36 @@
 // gates advancement behind a party muster, and handles the assembly UI plus the
 // lockout / petition / approval flow for outsiders.
 
-/datum/dungeon_run/proc/bind_party(datum/party/party)
+/datum/dungeon_run/proc/bind_party(datum/party/party, mob/living/founder)
 	if(istype(party))
 		party_ref = WEAKREF(party)
+		party_bound = TRUE
+		for(var/member_ckey in party.members)
+			member_ckeys |= ckey(member_ckey)
+		leader_ckey = ckey(party.party_leader_ckey)
+	if(istype(founder))
+		member_refs |= WEAKREF(founder)
+		leader_ref = WEAKREF(founder)
+		if(founder.ckey)
+			member_ckeys |= ckey(founder.ckey)
+			if(!leader_ckey)
+				leader_ckey = ckey(founder.ckey)
+
+/datum/dungeon_run/proc/get_participant_id(mob/living/user)
+	if(user?.ckey)
+		return ckey(user.ckey)
+	if(user?.mind?.key)
+		return ckey(user.mind.key)
+	return "[REF(user)]"
+
+/datum/dungeon_run/proc/add_run_member(mob/living/user)
+	if(!istype(user))
+		return FALSE
+	member_refs |= WEAKREF(user)
+	var/member_key = user.ckey || user.mind?.key
+	if(member_key)
+		member_ckeys |= ckey(member_key)
+	return TRUE
 
 /datum/dungeon_run/proc/get_party()
 	var/datum/party/party = party_ref?.resolve()
@@ -14,16 +41,49 @@
 	return null
 
 /datum/dungeon_run/proc/is_party_member(mob/living/user)
-	if(!user?.ckey)
-		return TRUE // partyless lone delver is always "in" its own run
-	var/datum/party/party = get_party()
-	if(!party)
+	if(!istype(user))
+		return FALSE
+	var/member_key = user.ckey || user.mind?.key
+	if(member_key && (ckey(member_key) in member_ckeys))
 		return TRUE
-	return (ckey(user.ckey) in party.members)
+	return (WEAKREF(user) in member_refs)
+
+/datum/dungeon_run/proc/is_run_leader(mob/living/user)
+	if(!is_party_member(user))
+		return FALSE
+	if(party_bound)
+		var/datum/party/party = get_party()
+		return party ? party.is_leader(user.ckey) : FALSE
+	if(leader_ckey && user.ckey)
+		return ckey(user.ckey) == leader_ckey
+	return leader_ref?.resolve() == user
+
+/datum/dungeon_run/proc/add_forced_entrant(mob/living/user)
+	if(!istype(user) || is_party_member(user))
+		return FALSE
+	forced_entrant_refs |= WEAKREF(user)
+	return TRUE
+
+/datum/dungeon_run/proc/remove_forced_entrant(mob/living/user)
+	if(istype(user))
+		forced_entrant_refs -= WEAKREF(user)
+
+/datum/dungeon_run/proc/is_forced_entrant(mob/living/user)
+	return istype(user) && (WEAKREF(user) in forced_entrant_refs)
+
+/datum/dungeon_run/proc/is_run_participant(mob/living/user)
+	return is_party_member(user) || is_forced_entrant(user)
 
 /datum/dungeon_run/proc/mark_present(mob/living/user)
 	if(!istype(user))
 		return
+	// Directly constructed solo runs (notably the harness) adopt their first
+	// explicitly marked delver. Live entrances bind the founder before start().
+	if(!party_bound && !length(member_ckeys) && !length(member_refs))
+		add_run_member(user)
+		leader_ref = WEAKREF(user)
+		if(user.ckey)
+			leader_ckey = ckey(user.ckey)
 	if(user.ckey)
 		present_ckeys |= ckey(user.ckey)
 	// Fall notification + wipe detection (override: re-entry re-marks freely).
@@ -47,7 +107,7 @@
 	for(var/mob/occupant as anything in room.get_occupants())
 		if(QDELETED(occupant) || !isliving(occupant))
 			continue
-		if(occupant.mind || occupant.client)
+		if((occupant.mind || occupant.client) && is_run_participant(occupant))
 			found += occupant
 	return found
 
@@ -74,8 +134,16 @@
 /// Attempts to advance the present party through a forward/descent gate.
 /// Solo / partyless callers advance immediately. Otherwise all present,
 /// conscious, connected members must be gathered in the gate's room.
-/datum/dungeon_run/proc/muster_advance(obj/structure/dungeon_gate/gate, mob/living/initiator, force = FALSE)
+/datum/dungeon_run/proc/muster_advance(obj/structure/dungeon_gate/gate, mob/living/initiator, force = FALSE, automatic = FALSE)
 	if(ending || QDELETED(gate))
+		return FALSE
+	if(advancing)
+		to_chat(initiator, span_warning("Another passage is already taking shape."))
+		return FALSE
+	if(!is_party_member(initiator) || gate.owning_run != src || QDELETED(gate.source_room) || !gate.source_room.contains_turf(get_turf(initiator)))
+		return FALSE
+	if(force && !automatic && !is_run_leader(initiator))
+		to_chat(initiator, span_warning("Only the expedition leader may force the party onward."))
 		return FALSE
 	// Anti-branching backstop: this is the single chokepoint every forward/descent
 	// opener funnels through (use_gate, the panel's Traverse/Force, right-click).
@@ -90,14 +158,24 @@
 	var/datum/pocket_dimension/dungeon/source_room = gate.source_room
 	if(QDELETED(source_room))
 		return FALSE
-
-	if(!force && !is_mustered(source_room))
-		announce_muster_gap(source_room, initiator)
+	if(gate.requires_key && !gate.key_unlocked)
+		to_chat(initiator, span_warning("The passage will not answer without its key."))
 		return FALSE
 
+	if(!force && !is_mustered(source_room))
+		begin_muster(gate, initiator)
+		announce_muster_gap(source_room, initiator)
+		return FALSE
+	clear_muster()
+
+	advancing = TRUE
 	var/datum/pocket_dimension/dungeon/target = gate.resolve_destination()
 	if(!target)
+		advancing = FALSE
 		to_chat(initiator, span_warning("The passage twists shut before me."))
+		return FALSE
+	if(ending || QDELETED(gate) || gate.owning_run != src || QDELETED(source_room) || !source_room.contains_turf(get_turf(initiator)) || gate.sealed || gate.forsaken || (gate.requires_key && !gate.key_unlocked))
+		advancing = FALSE
 		return FALSE
 
 	// Cohort = every minded/client mob currently in the source room (carries downed bodies).
@@ -109,7 +187,7 @@
 	for(var/mob/living/member as anything in cohort)
 		if(QDELETED(member))
 			continue
-		move_member_through(member, target)
+		move_member_through(member, target, source_room)
 
 	// The path is chosen: sibling onward passages fuse shut for good. Only the
 	// taken door stays open for backtracking.
@@ -121,7 +199,8 @@
 
 	target.touch()
 	source_room.touch()
-	on_room_entered(target, initiator)
+	advancing = FALSE
+	on_room_reached(target, initiator)
 	return TRUE
 
 /// TRUE when every present, conscious, connected member is in source_room.
@@ -129,7 +208,7 @@
 	return !length(get_muster_missing(source_room))
 
 /// Moves a single member to a target room's entry turf, dragging pulled cargo.
-/datum/dungeon_run/proc/move_member_through(mob/living/member, datum/pocket_dimension/dungeon/target)
+/datum/dungeon_run/proc/move_member_through(mob/living/member, datum/pocket_dimension/dungeon/target, datum/pocket_dimension/dungeon/source_room)
 	var/turf/entry_turf = target.get_entry_turf()
 	if(!entry_turf)
 		return FALSE
@@ -140,13 +219,21 @@
 		if(grab_item.grabbed && !QDELETED(grab_item.grabbed) && ismovable(grab_item.grabbed))
 			dragged |= grab_item.grabbed
 	member.forceMove(entry_turf)
-	mark_present(member)
-	apply_boons_to(member) // mustered members share the run's active boons
-	if(target.current_trait?.announce && member.client)
-		to_chat(member, span_warning(target.current_trait.announce))
+	if(get_turf(member) != entry_turf)
+		return FALSE
+	source_room?.current_trait?.on_mob_exited(source_room, member)
+	on_member_entered_room(target, member)
 	for(var/atom/movable/cargo as anything in dragged)
+		if(isliving(cargo) && is_run_participant(cargo))
+			continue // another cohort iteration performs its authoritative hooks
 		var/turf/drop_turf = target.get_drop_turf(cargo) || entry_turf
 		cargo.forceMove(drop_turf)
+		if(isliving(cargo))
+			var/mob/living/dragged_living = cargo
+			if(!is_run_participant(dragged_living))
+				add_forced_entrant(dragged_living)
+				source_room?.current_trait?.on_mob_exited(source_room, dragged_living)
+				on_member_entered_room(target, dragged_living)
 	return TRUE
 
 /// Names of present members who still gate a muster from this room (conscious,
@@ -156,26 +243,74 @@
 	if(QDELETED(source_room))
 		return missing
 	for(var/mob/living/member as anything in get_present_members())
-		if(QDELETED(member) || !member.client || member.stat >= UNCONSCIOUS)
+		if(QDELETED(member) || member.stat >= UNCONSCIOUS)
 			continue
 		if(member.has_status_effect(/datum/status_effect/defeat_knockout))
 			continue // defeated members are carried, not waited on
+		var/member_id = get_participant_id(member)
+		if(!member.client)
+			if(!member.ckey && !member.mind?.key)
+				continue // clientless harness bodies are not SSD players
+			if(!muster_started_at)
+				missing += "[member.real_name || member.name] (disconnected)"
+				continue
+			if(!muster_ssd_since[member_id])
+				muster_ssd_since[member_id] = world.time
+			if(world.time < muster_ssd_since[member_id] + DUNGEON_MUSTER_SSD_GRACE)
+				missing += "[member.real_name || member.name] (disconnected)"
+			continue
+		muster_ssd_since -= member_id
 		if(!source_room.contains_turf(get_turf(member)))
 			missing += (member.real_name || member.name)
 	return missing
+
+/datum/dungeon_run/proc/begin_muster(obj/structure/dungeon_gate/gate, mob/living/initiator)
+	if(muster_gate_ref?.resolve() == gate)
+		return
+	clear_muster()
+	muster_gate_ref = WEAKREF(gate)
+	muster_initiator_ref = WEAKREF(initiator)
+	muster_started_at = world.time
+	muster_timer = addtimer(CALLBACK(src, PROC_REF(resolve_muster_timeout)), DUNGEON_MUSTER_TIMEOUT, TIMER_STOPPABLE)
+	notify_roster("The passage begins a [DisplayTimeText(DUNGEON_MUSTER_TIMEOUT)] muster. Gather now; when it ends, those at the gate will advance.")
+
+/datum/dungeon_run/proc/resolve_muster_timeout()
+	muster_timer = null
+	var/obj/structure/dungeon_gate/gate = muster_gate_ref?.resolve()
+	var/mob/living/initiator = muster_initiator_ref?.resolve()
+	if(!QDELETED(gate) && (QDELETED(initiator) || !gate.source_room?.contains_turf(get_turf(initiator))))
+		for(var/mob/living/member as anything in get_members_in_room(gate.source_room))
+			if(is_party_member(member))
+				initiator = member
+				break
+	clear_muster()
+	if(QDELETED(gate) || QDELETED(initiator))
+		return
+	notify_roster("The muster ends. The passage takes those who gathered at its threshold.")
+	muster_advance(gate, initiator, TRUE, TRUE)
+
+/datum/dungeon_run/proc/clear_muster()
+	if(muster_timer)
+		deltimer(muster_timer)
+		muster_timer = null
+	muster_gate_ref = null
+	muster_initiator_ref = null
+	muster_started_at = 0
+	muster_ssd_since.Cut()
 
 /// Tells the initiator who still needs to gather before the party can advance.
 /datum/dungeon_run/proc/announce_muster_gap(datum/pocket_dimension/dungeon/source_room, mob/living/initiator)
 	var/list/missing = get_muster_missing(source_room)
 	if(length(missing))
-		to_chat(initiator, span_warning("The passage will not open until the party gathers. Still scattered: [english_list(missing)]."))
+		var/time_left = max(0, DUNGEON_MUSTER_TIMEOUT - (world.time - muster_started_at))
+		to_chat(initiator, span_warning("The party is not gathered. Still scattered: [english_list(missing)]. The muster resolves in [DisplayTimeText(time_left)]."))
 	else
 		to_chat(initiator, span_warning("The passage resists. Try again."))
 
 // -- Assembly UI -------------------------------------------------------------
 
 /obj/structure/dungeon_entrance/proc/open_assembly_menu(mob/living/carbon/user)
-	if(!istype(user) || !user.client)
+	if(entrance_kind != DUNGEON_ENTRANCE_INFINITE || !istype(user) || !user.client || !user.Adjacent(src))
 		return
 	ui_interact(user)
 
@@ -183,6 +318,8 @@
 	return GLOB.physical_state
 
 /obj/structure/dungeon_entrance/ui_interact(mob/user, datum/tgui/ui)
+	if(entrance_kind != DUNGEON_ENTRANCE_INFINITE || !user?.Adjacent(src))
+		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "DungeonAssembly")
@@ -274,7 +411,7 @@
 	if(.)
 		return
 	var/mob/living/carbon/user = usr
-	if(!iscarbon(user))
+	if(entrance_kind != DUNGEON_ENTRANCE_INFINITE || !iscarbon(user) || !user.Adjacent(src))
 		return
 	switch(action)
 		if("create_party")
@@ -378,30 +515,43 @@
 
 /// Starts the run (if needed) and moves every present, adjacent party member in.
 /obj/structure/dungeon_entrance/proc/descend_with_party(mob/living/carbon/leader, datum/party/party)
-	if(is_dormant())
+	if(!istype(leader) || !leader.Adjacent(src) || is_dormant())
 		to_chat(leader, span_warning("The way down is buried under fresh rubble."))
 		return
 	if(!active_run)
+		if(!party || leader.current_party != party || !party.is_leader(leader.ckey))
+			return
 		var/datum/dungeon_run/new_run = new(src, theme_filter)
-		new_run.bind_party(party)
+		new_run.bind_party(party, leader)
 		new_run.seed_from_progress(get_dungeon_progress(leader.ckey))
 		new_run.heat_ranks = consume_pending_heat(leader)
+		active_run = new_run
 		if(!new_run.start())
+			if(active_run == new_run)
+				active_run = null
 			qdel(new_run)
 			to_chat(leader, span_warning("The depths refuse to take shape."))
 			return
-		active_run = new_run
+		// start() yields while maps load. The order must still be valid when it returns.
+		if(QDELETED(party) || leader.current_party != party || !party.is_leader(leader.ckey) || !leader.Adjacent(src))
+			qdel(new_run)
+			return
+	if(!active_run.is_party_member(leader))
+		return
 	var/datum/pocket_dimension/dungeon/break_room = active_run.current_break_room
 	if(!break_room)
+		to_chat(leader, span_warning("The depths are still taking shape. Try again in a moment."))
+		return
+	if(!party || active_run.get_party() != party)
+		try_enter(leader)
 		return
 	var/descended = 0
-	for(var/member_ckey in party.members)
+	for(var/member_ckey in active_run.member_ckeys)
 		var/mob/living/member = get_mob_by_ckey(member_ckey)
 		if(!member || !member.Adjacent(src))
 			continue
 		if(break_room.enter_mob(member, get_turf(src), src))
-			active_run.mark_present(member)
-			active_run.apply_boons_to(member)
+			active_run.on_member_entered_room(break_room, member, TRUE)
 			descended++
 	if(!descended)
 		to_chat(leader, span_warning("No one was close enough to descend."))
@@ -431,7 +581,8 @@
 
 /// Asks present members to approve an outsider; non-unanimous per approval mode.
 /datum/dungeon_run/proc/request_join(mob/living/carbon/petitioner)
-	if(ending || !istype(petitioner))
+	var/datum/pocket_dimension/dungeon/expected_room = current_break_room
+	if(!can_admit_petitioner(petitioner, expected_room, TRUE))
 		return
 	var/list/mob/voters = list()
 	for(var/mob/living/member as anything in get_present_members())
@@ -445,9 +596,15 @@
 	var/approvals = 0
 	var/needed = get_join_approvals_needed(length(voters), party)
 	for(var/mob/living/voter as anything in voters)
+		if(!can_admit_petitioner(petitioner, expected_room, TRUE))
+			to_chat(petitioner, span_warning("The opportunity to join has passed."))
+			return
 		if(join_approval_mode == DUNGEON_JOIN_APPROVAL_LEADER && party && !party.is_leader(voter.ckey))
 			continue
 		var/yes = tgui_alert(voter, "[petitioner.real_name] petitions to join your expedition. Allow it?", "A Petitioner", list("Allow", "Deny"))
+		if(!can_admit_petitioner(petitioner, expected_room, TRUE))
+			to_chat(petitioner, span_warning("The opportunity to join has passed."))
+			return
 		if(yes == "Allow")
 			approvals++
 			if(approvals >= needed)
@@ -456,6 +613,17 @@
 		admit_petitioner(petitioner)
 	else
 		to_chat(petitioner, span_warning("The party turns you away."))
+
+/datum/dungeon_run/proc/can_admit_petitioner(mob/living/carbon/petitioner, datum/pocket_dimension/dungeon/expected_room, require_client = FALSE)
+	if(ending || !istype(petitioner) || QDELETED(petitioner))
+		return FALSE
+	if(require_client && !petitioner.client)
+		return FALSE
+	if(current_break_room != expected_room || !is_at_rest())
+		return FALSE
+	if(party_bound && !get_party())
+		return FALSE
+	return TRUE
 
 /datum/dungeon_run/proc/get_join_approvals_needed(voter_count, datum/party/party)
 	switch(join_approval_mode)
@@ -466,11 +634,8 @@
 	return 1 // ANY
 
 /datum/dungeon_run/proc/admit_petitioner(mob/living/carbon/petitioner)
-	if(ending || QDELETED(current_break_room))
-		return
-	var/datum/party/party = get_party()
-	if(party && !(ckey(petitioner.ckey) in party.members))
-		join_party(petitioner, party)
+	if(!can_admit_petitioner(petitioner, current_break_room))
+		return FALSE
 	// Approval can land long after the petition - the petitioner may have
 	// wandered off, or been dragged across the map. Never yank someone into the
 	// dark from wherever they happen to be standing: tell them the way is open
@@ -480,7 +645,13 @@
 		to_chat(petitioner, span_nicegreen("The expedition has accepted your petition. Return to [entrance] and touch it to descend - the way will hold for you."))
 		accepted_petitioners |= WEAKREF(petitioner)
 		waiting_petitioners -= WEAKREF(petitioner)
-		return
+		return TRUE
+	var/datum/party/party = get_party()
+	if(party && !(ckey(petitioner.ckey) in party.members))
+		if(!join_party(petitioner, party))
+			to_chat(petitioner, span_warning("You cannot join this expedition while bound to another party."))
+			return FALSE
+	add_run_member(petitioner)
 	// Actually descending consumes any remembered approval, whichever path got
 	// them here.
 	accepted_petitioners -= WEAKREF(petitioner)
@@ -488,12 +659,12 @@
 	var/turf/entry_turf = current_break_room.get_entry_turf()
 	if(entry_turf)
 		petitioner.forceMove(entry_turf)
-		mark_present(petitioner)
-		apply_boons_to(petitioner) // late joiners share the run's active boons
+		on_member_entered_room(current_break_room, petitioner)
 		to_chat(petitioner, span_nicegreen("The party admits you. You descend to join them."))
 		for(var/mob/living/member as anything in get_present_members())
 			if(member != petitioner)
 				to_chat(member, span_notice("[petitioner.real_name] has joined the expedition."))
+	return TRUE
 
 /datum/dungeon_run/proc/notify_waiting_petitioners()
 	for(var/datum/weakref/petitioner_ref as anything in waiting_petitioners.Copy())

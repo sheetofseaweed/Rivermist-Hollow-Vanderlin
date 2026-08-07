@@ -2,150 +2,157 @@
 "a" = (
 /obj/item/grown/log/tree/stick,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "b" = (
 /obj/item/natural/rock,
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "c" = (
-/obj/effect/landmark/hammer/dev_text{
-	name = "SPIDER ENTER"
-	},
+/obj/effect/landmark/pocket_dimension/entry,
+/obj/effect/landmark/pocket_dimension/exit,
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "d" = (
 /obj/structure/stalagmite,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "e" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "f" = (
 /obj/structure/spider/cocoon,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "g" = (
 /obj/structure/spider/stickyweb,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "h" = (
+/obj/effect/landmark/dungeon/guardian/singlet/spider,
 /obj/structure/spider/nest,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "i" = (
 /obj/structure/spider/stickyweb,
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "j" = (
 /obj/structure/spider/stickyweb,
 /obj/item/grown/log/tree/stick,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "k" = (
 /obj/item/grown/log/tree/stick,
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "l" = (
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "m" = (
 /obj/structure/spider/cocoon,
 /obj/structure/spider/stickyweb,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "p" = (
 /obj/structure/spider/stickyweb,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "r" = (
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "t" = (
 /obj/structure/spider/stickyweb/solo,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
+"u" = (
+/obj/item/grown/log/tree/stick,
+/obj/effect/landmark/dungeon/guardian/singlet/spider,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
 "x" = (
 /obj/structure/spider/cocoon,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "z" = (
 /obj/structure/spider/cocoon,
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "B" = (
 /obj/structure/spider/stickyweb,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "C" = (
 /obj/item/grown/log/tree/stick,
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "D" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "E" = (
 /obj/structure/spider/stickyweb/solo,
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "H" = (
 /obj/structure/spider/stickyweb/solo,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "I" = (
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "J" = (
 /obj/structure/spider/cocoon,
 /obj/structure/spider/stickyweb/solo,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "K" = (
 /obj/item/natural/rock,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "L" = (
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "M" = (
+/obj/effect/landmark/dungeon/loot,
 /obj/structure/spider/cocoon,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "N" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "O" = (
 /obj/structure/spider/stickyweb,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "Q" = (
+/obj/effect/landmark/dungeon/guardian/singlet/spider,
 /obj/structure/spider/nest,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "R" = (
 /obj/structure/spider/stickyweb/solo,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "T" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "V" = (
 /obj/item/grown/log/tree/stick,
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "W" = (
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "Y" = (
 /turf/closed/mineral/bedrock,
-/area)
+/area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 Y
@@ -175,7 +182,7 @@ Y
 Y
 O
 m
-a
+u
 W
 g
 f

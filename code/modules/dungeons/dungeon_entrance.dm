@@ -83,10 +83,10 @@
 	open_assembly_menu(carbon_user)
 
 /obj/structure/dungeon_entrance/attack_hand_secondary(mob/user, list/modifiers)
-	// One window for everything: the Delver's Ledger lives in a tab of the
-	// assembly screen now.
-	if(isliving(user) && user.client)
+	if(entrance_kind == DUNGEON_ENTRANCE_INFINITE && isliving(user) && user.client)
 		ui_interact(user)
+	else
+		user.examinate(src)
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 /obj/structure/dungeon_entrance/attackby(obj/item/attacking_item, mob/living/user, list/modifiers)
@@ -114,14 +114,29 @@
 			if(iscarbon(user))
 				var/mob/living/carbon/carbon_user = user
 				user_party = carbon_user.current_party
-			new_run.bind_party(user_party) // null is fine (solo)
+			new_run.bind_party(user_party, user) // null is fine (solo)
 			new_run.seed_from_progress(get_dungeon_progress(user.ckey))
 			new_run.heat_ranks = consume_pending_heat(user)
+			// Publish before start(): map activation yields, and a second entrant
+			// must observe this construction instead of creating a duplicate run.
+			active_run = new_run
 			if(!new_run.start())
+				if(active_run == new_run)
+					active_run = null
 				qdel(new_run)
 				to_chat(user, span_warning("The depths refuse to take shape. Nothing answers."))
 				return null
-			active_run = new_run
+			var/datum/party/current_user_party
+			if(iscarbon(user))
+				var/mob/living/carbon/current_carbon_user = user
+				current_user_party = current_carbon_user.current_party
+			if(active_run != new_run || QDELETED(user) || !user.Adjacent(src) || current_user_party != user_party)
+				if(!QDELETED(new_run))
+					qdel(new_run)
+				return null
+		if(!active_run.current_break_room)
+			to_chat(user, span_warning("The depths are still taking shape. Try again in a moment."))
+			return null
 		return active_run.current_break_room
 
 	var/datum/pocket_dimension/dungeon/instance = SSpocket_dimensions.get_instance(get_instance_key())
@@ -154,8 +169,7 @@
 	to_chat(user, span_notice("I slip down into the dark."))
 	. = room.enter_mob(user, get_turf(src), src)
 	if(. && active_run)
-		active_run.mark_present(user)
-		active_run.apply_boons_to(user)
+		active_run.on_member_entered_room(room, user, TRUE)
 	return .
 
 /obj/structure/dungeon_entrance/proc/handle_grabbed_entry(mob/living/user, obj/item/grabbing/grab_item)
@@ -170,9 +184,13 @@
 	if(!room.send_movable_inside(victim, get_turf(src), null, src))
 		to_chat(user, span_warning("[victim] won't fit through the opening."))
 		return TRUE
+	if(active_run)
+		active_run.add_forced_entrant(victim)
+		active_run.on_member_entered_room(room, victim)
 	user.stop_pulling()
 	qdel(grab_item)
-	room.enter_mob(user, get_turf(src), src)
+	if(room.enter_mob(user, get_turf(src), src) && active_run)
+		active_run.on_member_entered_room(room, user, TRUE)
 	user.visible_message(
 		span_warning("[user] drags [victim] down into [src]!"),
 		span_notice("I drag [victim] down into [src]."),
@@ -189,8 +207,9 @@
 	visible_message(span_warning("[src] shudders as the passage below collapses in on itself!"))
 
 /obj/structure/dungeon_entrance/proc/on_run_ended(datum/dungeon_run/run)
-	if(active_run == run)
-		active_run = null
+	if(active_run != run)
+		return
+	active_run = null
 	dormant_until = world.time + respawn_cooldown
 	visible_message(span_warning("[src] shudders as the passage below collapses in on itself!"))
 
@@ -206,3 +225,71 @@
 	name = "sunken warren gate"
 	desc = "A gate sealing a root-torn pit breathing marsh-rot and faint goblin chatter. The dark below is wet and it is listening."
 	theme_filter = DUNGEON_THEME_SWAMPGOB
+
+// -- Standalone singlet entrances -----------------------------------------
+
+/obj/structure/dungeon_entrance/bandit_hideout
+	name = "smoke-stained hideout mouth"
+	desc = "A cramped cut in the earth, reinforced with stolen timber. Boot-mud, cookfire smoke, and fresh whetstone dust mark the way below."
+	icon = 'icons/roguetown/misc/dungeon_entrances_64.dmi'
+	icon_state = "bandit_hideout"
+	pixel_x = -16
+	pixel_y = 0
+	theme_filter = DUNGEON_THEME_BANDIT
+	tier_min = 2
+	tier_max = 2
+
+/obj/structure/dungeon_entrance/bear_den
+	name = "claw-riven den mouth"
+	desc = "A broad cave mouth scored by claws wider than a man's hand. The stones are slick with moss, old blood, and the heat of a great sleeping beast."
+	icon = 'icons/roguetown/misc/dungeon_entrances_64.dmi'
+	icon_state = "bear_den"
+	pixel_x = -16
+	pixel_y = 0
+	theme_filter = DUNGEON_THEME_BEAR
+	tier_min = 3
+	tier_max = 3
+
+/obj/structure/dungeon_entrance/ratfolk_camp
+	name = "gnawed warrens"
+	desc = "A low burrow propped open with splintered planks and filthy tentcloth. Grease smoke curls out beside the sound of quick, clawed feet."
+	icon = 'icons/roguetown/misc/dungeon_entrances_64.dmi'
+	icon_state = "ratfolk_camp"
+	pixel_x = -16
+	pixel_y = 0
+	theme_filter = DUNGEON_THEME_RATFOLK
+	tier_min = 2
+	tier_max = 2
+
+/obj/structure/dungeon_entrance/spider_nursery
+	name = "silk-choked fissure"
+	desc = "A narrow fissure curtained in old web. Cocoon silk tugs softly at the stones, though the air is perfectly still."
+	icon = 'icons/roguetown/misc/dungeon_entrances_64.dmi'
+	icon_state = "spider_nursery"
+	pixel_x = -16
+	pixel_y = 0
+	theme_filter = DUNGEON_THEME_SPIDER
+	tier_min = 1
+	tier_max = 1
+
+/obj/structure/dungeon_entrance/werewolf_shrine
+	name = "moon-scarred stair"
+	desc = "Broken shrine steps descend beneath a crescent gouged into the stone. Cold crystal-light pulses below like a heartbeat."
+	icon = 'icons/roguetown/misc/dungeon_entrances_64.dmi'
+	icon_state = "werewolf_shrine"
+	pixel_x = -16
+	pixel_y = 0
+	theme_filter = DUNGEON_THEME_WEREWOLF
+	tier_min = 3
+	tier_max = 3
+
+/obj/structure/dungeon_entrance/wolf_den
+	name = "bone-strewn den mouth"
+	desc = "A cramped animal trail disappears between damp stones. Tufts of grey fur cling to the rock above a scatter of gnawed bones."
+	icon = 'icons/roguetown/misc/dungeon_entrances_64.dmi'
+	icon_state = "wolf_den"
+	pixel_x = -16
+	pixel_y = 0
+	theme_filter = DUNGEON_THEME_WOLF
+	tier_min = 1
+	tier_max = 1

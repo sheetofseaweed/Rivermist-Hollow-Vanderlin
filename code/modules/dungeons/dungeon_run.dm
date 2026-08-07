@@ -13,6 +13,18 @@
 	var/datum/dungeon_floor_config/floor_config
 	/// The party this run belongs to (the roster). May be null for a lone delver.
 	var/datum/weakref/party_ref
+	/// Immutable-at-entry ckey roster. A vanished /datum/party must never make the run public.
+	var/list/member_ckeys = list()
+	/// Weakref roster fallback for clientless test mobs and the founding body.
+	var/list/member_refs = list()
+	/// Founding leader, kept independently of the mutable party datum.
+	var/leader_ckey
+	var/datum/weakref/leader_ref
+	/// TRUE when the run was founded by a party rather than a lone delver.
+	var/party_bound = FALSE
+	/// Captives dragged through the entrance are legitimate transient participants,
+	/// but are not roster members and cannot lead, vote, or initiate passage use.
+	var/list/forced_entrant_refs = list()
 	/// ckeys of members physically inside the run right now
 	var/list/present_ckeys = list()
 	/// weakrefs of outsiders waiting at the entrance to join at the next rest area
@@ -26,10 +38,23 @@
 	var/motes = 0
 	/// Active /datum/dungeon_boon instances, applied to all roster members
 	var/list/active_boons = list()
-	/// REF text -> TRUE for mobs currently carrying the run's boon stack.
+	/// Weakrefs of mobs currently carrying the run's boon stack.
 	/// Guards against re-applying on every room entry (additive boons would
 	/// stack) and against double-stripping (additive removes would drain).
 	var/list/boon_carriers = list()
+	/// Echoes personally banked by ckey during this run.
+	var/list/banked_echoes_by_ckey = list()
+	/// Roster ckeys already credited for a meaningful safe exit.
+	var/list/completed_ckeys = list()
+	/// Bodies which safely exited, retained so the terminal shared payout reaches them.
+	var/list/safe_exit_refs = list()
+	/// Muster state for the current gate.
+	var/datum/weakref/muster_gate_ref
+	var/datum/weakref/muster_initiator_ref
+	var/muster_started_at = 0
+	var/muster_timer
+	/// First time an absent client was observed during the current muster, by participant id.
+	var/list/muster_ssd_since = list()
 	/// Open /datum/dungeon_boon_offer sessions (unanswered pick windows)
 	var/list/open_boon_offers = list()
 	/// world.time of the last presence sweep (throttles validate_presence)
@@ -67,6 +92,8 @@
 	var/last_seen_occupied = 0
 	/// Reentrancy guard for teardown
 	var/ending = FALSE
+	/// Guards the yielding destination-build/party-transfer transaction.
+	var/advancing = FALSE
 	/// TRUE when the run ended in a full party wipe (skips mote banking)
 	var/wiped = FALSE
 	/// Armed wipe-grace timer id, null when the party stands
@@ -104,35 +131,41 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	if(wipe_timer)
 		deltimer(wipe_timer)
 		wipe_timer = null
+	clear_muster()
 	var/obj/structure/dungeon_entrance/entrance = get_entrance()
 	var/atom/eject_target = entrance ? get_turf(entrance) : null
 	var/list/doomed = get_all_rooms()
 	current_break_room = null
 	stretch_rooms = null
-	// Strip run boons from everyone still inside (sandbox guarantee).
-	for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
-		if(QDELETED(room))
-			continue
-		for(var/mob/living/occupant as anything in room.get_occupants())
-			strip_boons_from(occupant)
-	// Bank a share of unspent motes as echoes for present clients on a real run.
-	// A full party wipe forfeits everything unbanked - that is the contract.
+	// Strip every tracked carrier, including anyone extracted without exit_mob.
+	for(var/datum/weakref/carrier_ref as anything in boon_carriers.Copy())
+		var/mob/living/carrier = carrier_ref.resolve()
+		if(carrier && !QDELETED(carrier))
+			strip_boons_from(carrier)
+		else
+			boon_carriers -= carrier_ref
+	// Bank a deduplicated share for eligible delvers. Safe exit bodies are
+	// retained because the last person has already left when the run tears down.
 	if(run_was_meaningful && motes > 0 && !wiped)
-		var/list/mob/banking_clients = list()
+		var/list/banking_clients_by_ckey = list()
 		for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
 			if(QDELETED(room))
 				continue
-			for(var/mob/occupant as anything in room.get_occupants())
-				if(occupant.client && occupant.ckey)
-					banking_clients += occupant
-		if(length(banking_clients))
-			var/share = round((motes * get_echo_conversion()) / length(banking_clients))
-			for(var/mob/banker as anything in banking_clients)
+			for(var/mob/living/occupant as anything in get_members_in_room(room))
+				if(occupant.client && occupant.ckey && is_party_member(occupant))
+					banking_clients_by_ckey[ckey(occupant.ckey)] = occupant
+		for(var/datum/weakref/exiter_ref as anything in safe_exit_refs)
+			var/mob/living/exiter = exiter_ref.resolve()
+			if(exiter?.client && exiter.ckey && is_party_member(exiter))
+				banking_clients_by_ckey[ckey(exiter.ckey)] = exiter
+		if(length(banking_clients_by_ckey))
+			var/share = round((motes * get_echo_conversion()) / length(banking_clients_by_ckey))
+			for(var/member_ckey in banking_clients_by_ckey)
+				var/mob/banker = banking_clients_by_ckey[member_ckey]
 				var/datum/dungeon_progress/progress = get_dungeon_progress(banker.ckey)
 				progress?.add_echoes(share)
-				progress?.record_run_complete(floor, share)
-				grant_dungeon_milestones(banker, floor, FALSE)
-				to_chat(banker, span_info("<b>Dungeon run complete.</b> Reached floor [floor]. Banked [share] echoes."))
+				banked_echoes_by_ckey[member_ckey] = (banked_echoes_by_ckey[member_ckey] || 0) + share
+				to_chat(banker, span_info("The run's remaining light crystallizes into [share] echoes."))
 		motes = 0
 	for(var/datum/pocket_dimension/dungeon/room as anything in doomed)
 		if(QDELETED(room))
@@ -140,6 +173,8 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		room.owning_run = null
 		SSpocket_dimensions.delete_instance(room, teardown_message, eject_target)
 	QDEL_LIST(open_boon_offers)
+	for(var/datum/dungeon_boon/boon as anything in active_boons)
+		boon.release(src)
 	QDEL_LIST(active_boons)
 	active_boons = null
 	boon_carriers = null
@@ -339,36 +374,60 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	return spend_motes(cost)
 
 /datum/dungeon_run/proc/add_boon(datum/dungeon_boon/boon)
-	if(!istype(boon))
-		return
+	if(!can_add_boon(boon))
+		return FALSE
 	active_boons += boon
-	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
-		for(var/mob/living/occupant as anything in get_members_in_room(room))
-			boon.apply(src, occupant)
+	boon.acquire(src)
+	for(var/datum/weakref/carrier_ref as anything in boon_carriers)
+		var/mob/living/carrier = carrier_ref.resolve()
+		if(carrier && !QDELETED(carrier))
+			boon.apply(src, carrier)
+	return TRUE
 
 /datum/dungeon_run/proc/apply_boons_to(mob/living/target)
 	if(!istype(target))
 		return
-	var/carrier_key = "[REF(target)]"
-	if(boon_carriers[carrier_key])
+	var/datum/weakref/carrier_ref = WEAKREF(target)
+	if(carrier_ref in boon_carriers)
 		return // already carrying the stack - never re-apply per room entry
-	boon_carriers[carrier_key] = TRUE
+	boon_carriers += carrier_ref
+	RegisterSignal(target, COMSIG_MOVABLE_MOVED, PROC_REF(on_boon_carrier_moved), override = TRUE)
+	RegisterSignal(target, COMSIG_PARENT_QDELETING, PROC_REF(on_boon_carrier_qdeleting), override = TRUE)
 	for(var/datum/dungeon_boon/boon as anything in active_boons)
 		boon.apply(src, target)
 
 /datum/dungeon_run/proc/strip_boons_from(mob/living/target)
 	if(!istype(target))
 		return
-	var/carrier_key = "[REF(target)]"
-	if(!boon_carriers[carrier_key])
+	var/datum/weakref/carrier_ref = WEAKREF(target)
+	if(!(carrier_ref in boon_carriers))
 		return // never applied (or already stripped) - don't drain twice
-	boon_carriers -= carrier_key
+	boon_carriers -= carrier_ref
+	UnregisterSignal(target, list(COMSIG_MOVABLE_MOVED, COMSIG_PARENT_QDELETING))
 	for(var/datum/dungeon_boon/boon as anything in active_boons)
 		boon.remove(src, target)
 
+/datum/dungeon_run/proc/on_boon_carrier_moved(mob/living/source)
+	SIGNAL_HANDLER
+	if(ending || QDELETED(source))
+		return
+	var/turf/carrier_turf = get_turf(source)
+	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
+		if(room.contains_turf(carrier_turf))
+			return
+	strip_boons_from(source)
+	mark_absent(source)
+	remove_forced_entrant(source)
+
+/datum/dungeon_run/proc/on_boon_carrier_qdeleting(mob/living/source)
+	SIGNAL_HANDLER
+	strip_boons_from(source)
+	mark_absent(source)
+	remove_forced_entrant(source)
+
 /// Crystallizes a user's run motes into persistent echoes at a shrine.
 /datum/dungeon_run/proc/bank_motes_now(mob/user)
-	if(!istype(user) || !user.ckey)
+	if(!istype(user) || !user.ckey || !is_party_member(user))
 		return
 	if(motes <= 0)
 		to_chat(user, span_warning("There are no motes to bank."))
@@ -383,6 +442,8 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	if(!progress)
 		return
 	progress.add_echoes(converted)
+	var/member_ckey = ckey(user.ckey)
+	banked_echoes_by_ckey[member_ckey] = (banked_echoes_by_ckey[member_ckey] || 0) + converted
 	to_chat(user, span_nicegreen("You crystallize [converted] echoes from the run's light."))
 
 /// Creates a dungeon room instance with depth/run wired up BEFORE activate(),
@@ -648,11 +709,14 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/on_boss_killed(datum/pocket_dimension/dungeon/room)
 	for(var/mob/occupant as anything in room.get_occupants())
 		to_chat(occupant, span_nicegreen("The floor's guardian falls! Beyond waits a place of true respite - and the way back to the surface."))
-		if(occupant.client && occupant.ckey)
-			var/datum/dungeon_progress/progress = get_dungeon_progress(occupant.ckey)
+		if(occupant.client && occupant.ckey && isliving(occupant))
+			var/mob/living/delver = occupant
+			if(!is_party_member(delver))
+				continue
+			var/datum/dungeon_progress/progress = get_dungeon_progress(delver.ckey)
 			progress?.record_boss_kill()
 			progress?.record_floor(floor)
-			grant_dungeon_milestones(occupant, floor, TRUE)
+			grant_dungeon_milestones(delver, floor, TRUE)
 
 /// Grants milestone achievements to a client-bearing mob based on progress.
 /datum/dungeon_run/proc/grant_dungeon_milestones(mob/user, milestone_floor, boss_killed)
@@ -665,17 +729,24 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	if(milestone_floor >= 10)
 		user.client.give_award(/datum/award/achievement/dungeon/floor_ten, user)
 
-/// Called by gates after moving someone; advances the run when a fresh
-/// break room is reached, despawning the finished stretch behind the party.
-/datum/dungeon_run/proc/on_room_entered(datum/pocket_dimension/dungeon/room, mob/living/user)
-	if(ending)
+/// Applies participant-local entry state. Cohort movement calls this for every
+/// delver before committing the room transition once.
+/datum/dungeon_run/proc/on_member_entered_room(datum/pocket_dimension/dungeon/room, mob/living/user, trait_handled = FALSE)
+	if(ending || QDELETED(room) || !is_run_participant(user))
 		return
 	last_seen_occupied = world.time
 	mark_present(user)
 	apply_boons_to(user)
 	announce_gaze(user)
-	var/datum/dungeon_room_trait/room_trait = room.current_trait
-	room_trait?.on_mob_entered(room, user)
+	if(!trait_handled)
+		if(room.current_trait?.announce && user.client)
+			to_chat(user, span_warning(room.current_trait.announce))
+		room.current_trait?.on_mob_entered(room, user)
+
+/// Commits the run-level transition after everyone in the cohort has moved.
+/datum/dungeon_run/proc/on_room_reached(datum/pocket_dimension/dungeon/room, mob/living/user)
+	if(ending || QDELETED(room))
+		return
 	var/datum/map_template/pocket/dungeon/dungeon_template = room.get_dungeon_template()
 	if(!dungeon_template)
 		return
@@ -687,6 +758,11 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		if(DUNGEON_ROOM_DESCENT)
 			if(room != current_break_room)
 				advance_floor(room)
+
+/// Single-member compatibility path used by backtracking gates.
+/datum/dungeon_run/proc/on_room_entered(datum/pocket_dimension/dungeon/room, mob/living/user)
+	on_member_entered_room(room, user)
+	on_room_reached(room, user)
 
 /datum/dungeon_run/proc/advance_floor(datum/pocket_dimension/dungeon/new_floor_room)
 	run_was_meaningful = TRUE
@@ -726,7 +802,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/has_client_occupants()
 	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
 		for(var/mob/occupant as anything in room.get_occupants())
-			if(occupant.client && isliving(occupant))
+			if(occupant.client && isliving(occupant) && is_run_participant(occupant))
 				return TRUE
 	return FALSE
 
@@ -736,6 +812,27 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		return
 	if(!has_client_occupants())
 		qdel(src)
+
+/// Credits a roster member once when they successfully leave from a true rest
+/// room. Forced captives are released cleanly but never gain expedition credit.
+/datum/dungeon_run/proc/complete_safe_exit(mob/living/user)
+	if(!istype(user))
+		return
+	safe_exit_refs |= WEAKREF(user)
+	if(is_forced_entrant(user))
+		remove_forced_entrant(user)
+		return
+	if(!run_was_meaningful || !is_party_member(user) || !user.ckey)
+		return
+	var/member_ckey = ckey(user.ckey)
+	if(member_ckey in completed_ckeys)
+		return
+	completed_ckeys |= member_ckey
+	var/personal_echoes = banked_echoes_by_ckey[member_ckey] || 0
+	var/datum/dungeon_progress/progress = get_dungeon_progress(member_ckey)
+	progress?.record_run_complete(floor, personal_echoes)
+	grant_dungeon_milestones(user, floor, FALSE)
+	to_chat(user, span_info("<b>Dungeon run complete.</b> Reached floor [floor]; personally banked [personal_echoes] echoes."))
 
 /// Anyone carrying the run's boon stack who is no longer inside any run room
 /// was extracted by something that bypassed exit_mob - a defeat-rune return,
@@ -749,10 +846,10 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		return
 	last_presence_validation = world.time
 	var/list/rooms = get_all_rooms()
-	for(var/carrier_key in boon_carriers.Copy())
-		var/mob/living/carrier = locate(carrier_key)
+	for(var/datum/weakref/carrier_ref as anything in boon_carriers.Copy())
+		var/mob/living/carrier = carrier_ref.resolve()
 		if(!istype(carrier) || QDELETED(carrier))
-			boon_carriers -= carrier_key
+			boon_carriers -= carrier_ref
 			continue
 		var/turf/carrier_turf = get_turf(carrier)
 		var/inside = FALSE
@@ -764,6 +861,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 			continue
 		strip_boons_from(carrier)
 		mark_absent(carrier)
+		remove_forced_entrant(carrier)
 
 /// The run's unique kidnap-lair tag (see the larder landmark).
 /datum/dungeon_run/proc/get_larder_tag()

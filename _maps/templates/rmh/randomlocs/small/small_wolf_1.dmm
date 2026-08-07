@@ -1,195 +1,210 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
 "a" = (
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "c" = (
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "e" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "f" = (
 /obj/effect/decal/remains/human,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "h" = (
 /obj/structure/fluff/nest{
 	name = "patch of straw"
 	},
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "i" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "j" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/grass,
 /obj/structure/flora/new_shroom/cyan,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "k" = (
+/obj/effect/landmark/dungeon/guardian/singlet/wolf,
 /obj/effect/decal/remains/saiga,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "l" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/grass,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "m" = (
 /obj/structure/flora/new_shroom/purplef,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "n" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/redwall,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "o" = (
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "p" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/item/natural/rock,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "q" = (
 /obj/effect/decal/remains/saiga,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "r" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/purple,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "s" = (
 /obj/effect/decal/remains/fox,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "u" = (
 /obj/item/alch/bone,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "v" = (
 /obj/structure/flora/new_shroom/purplesmall,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "w" = (
 /obj/item/alch/bone,
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "x" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/redwall,
+/obj/effect/landmark/dungeon/loot,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "y" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/stalagmite,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "z" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "A" = (
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "B" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/cyanf,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
+"C" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/obj/effect/landmark/dungeon/guardian/singlet/wolf,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension/dungeon)
 "D" = (
 /obj/structure/stalagmite,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "E" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "F" = (
 /obj/structure/flora/grass,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/structure/fluff/nest{
+	name = "patch of straw"
+	},
+/obj/effect/landmark/dungeon/guardian/singlet/wolf,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
 "H" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "I" = (
-/obj/effect/landmark/hammer/dev_text{
-	name = "WOLF ENTER"
-	},
+/obj/effect/landmark/pocket_dimension/entry,
+/obj/effect/landmark/pocket_dimension/exit,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "J" = (
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "K" = (
 /obj/effect/decal/remains/bigrat,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "L" = (
 /obj/effect/decal/remains/mole,
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "M" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "N" = (
 /obj/structure/vine,
 /turf/closed/mineral/bedrock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "O" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "P" = (
 /obj/item/alch/bone,
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "Q" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/cyansmall,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "R" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "S" = (
 /obj/effect/decal/cleanable/blood/old,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "T" = (
 /turf/closed/mineral/bedrock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "U" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/structure/flora/new_shroom/redwall,
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "V" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/cyan,
 /turf/open/floor/dirt,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 "Y" = (
 /obj/structure/fluff/nest{
 	name = "patch of straw"
 	},
 /turf/open/floor/cobblerock,
-/area/under/rmh_bogforest_caves/wolf)
+/area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 T
@@ -247,7 +262,7 @@ T
 T
 w
 c
-Y
+C
 s
 N
 T
@@ -384,7 +399,7 @@ N
 H
 f
 S
-h
+G
 J
 c
 H

@@ -20,6 +20,8 @@
 	var/god_brand
 	/// TRUE = never appears in normal offers; sold only at dark bargain altars
 	var/dark_bargain_only = FALSE
+	/// Price datums may stack when a party accepts the same cost repeatedly.
+	var/allow_duplicates = FALSE
 
 /datum/dungeon_boon/proc/get_mod_id(datum/dungeon_run/run)
 	return "dungeon_boon_[type]_[REF(run)]"
@@ -34,6 +36,13 @@
 	return
 
 /datum/dungeon_boon/proc/remove(datum/dungeon_run/run, mob/living/target)
+	return
+
+/// Run-global effects belong to boon acquisition, never to carrier count.
+/datum/dungeon_boon/proc/acquire(datum/dungeon_run/run)
+	return
+
+/datum/dungeon_boon/proc/release(datum/dungeon_run/run)
 	return
 
 /// Optional per-room hook, called for every active boon when a combat room clears.
@@ -114,10 +123,10 @@
 	desc = "Slain guardians spill more light. (+mote drops)"
 	domains = list("luck", "shadow")
 
-/datum/dungeon_boon/greed/apply(datum/dungeon_run/run, mob/living/target)
+/datum/dungeon_boon/greed/acquire(datum/dungeon_run/run)
 	run.mote_multiplier = 1 + 0.5 * magnitude
 
-/datum/dungeon_boon/greed/remove(datum/dungeon_run/run, mob/living/target)
+/datum/dungeon_boon/greed/release(datum/dungeon_run/run)
 	run.mote_multiplier = 1
 
 // -- War --
@@ -186,10 +195,10 @@
 	desc = "Your deeds crystallize more readily. (+echo conversion)"
 	domains = list("fate")
 
-/datum/dungeon_boon/echo_affinity/apply(datum/dungeon_run/run, mob/living/target)
+/datum/dungeon_boon/echo_affinity/acquire(datum/dungeon_run/run)
 	run.echo_conversion_bonus = 0.1 * magnitude
 
-/datum/dungeon_boon/echo_affinity/remove(datum/dungeon_run/run, mob/living/target)
+/datum/dungeon_boon/echo_affinity/release(datum/dungeon_run/run)
 	run.echo_conversion_bonus = 0
 
 // -- Synergies (guaranteed card once prerequisites are held) --
@@ -290,6 +299,7 @@
 	abstract_type = /datum/dungeon_boon/dark_price
 	dark_bargain_only = TRUE
 	weight = 0
+	allow_duplicates = TRUE
 
 /// The Price of Flesh: every roster member loses a cut of max health for the
 /// rest of the run. Rides the carrier registry like any boon, so it applies to
@@ -345,10 +355,10 @@
 		if(length(candidate.requires)) // synergies never roll normally
 			qdel(candidate)
 			continue
-		pool += candidate
+		pool[candidate] = max(1, candidate.weight)
 	var/list/chosen = list()
 	while(length(pool) && length(chosen) < count)
-		var/datum/dungeon_boon/picked = pick(pool)
+		var/datum/dungeon_boon/picked = pickweight(pool)
 		pool -= picked
 		chosen += picked
 	for(var/datum/dungeon_boon/leftover as anything in pool)
@@ -418,6 +428,19 @@
 
 	return cards
 
+/datum/dungeon_run/proc/can_add_boon(datum/dungeon_boon/candidate)
+	if(!istype(candidate) || ending)
+		return FALSE
+	var/list/active_types = list()
+	for(var/datum/dungeon_boon/active as anything in active_boons)
+		active_types[active.type] = TRUE
+	if(active_types[candidate.type] && !candidate.allow_duplicates)
+		return FALSE
+	for(var/required_type in candidate.requires)
+		if(!active_types[required_type])
+			return FALSE
+	return TRUE
+
 // -- Offer session: one open pick-three window ------------------------------
 
 /// A pending boon choice. Owns its unpicked cards; dies with the run.
@@ -484,8 +507,19 @@
 	if(QDELETED(src) || QDELETED(run) || !isnum(index) || index < 1 || index > length(cards))
 		return FALSE
 	var/datum/dungeon_boon/chosen = cards[index]
+	if(!run.can_add_boon(chosen))
+		to_chat(chooser, span_warning("That blessing has already been claimed or its bond has broken. The gods redraw their hands."))
+		QDEL_LIST(cards)
+		cards = build_boon_offer(run, 3)
+		if(!length(cards))
+			qdel(src)
+			return FALSE
+		SStgui.update_uis(src)
+		return FALSE
 	cards -= chosen // Destroy() must not qdel the applied boon
-	run.add_boon(chosen)
+	if(!run.add_boon(chosen))
+		qdel(chosen)
+		return FALSE
 	if(chooser && !QDELETED(chooser))
 		to_chat(chooser, span_nicegreen("The run is blessed: [chosen.get_display_name()]."))
 	qdel(src)

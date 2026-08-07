@@ -117,6 +117,8 @@
 	return GLOB.physical_state
 
 /obj/structure/dungeon_gate/ui_interact(mob/user, datum/tgui/ui)
+	if(!can_gate_interact(user))
+		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "DungeonGate")
@@ -141,8 +143,7 @@
 	if(owning_run && !QDELETED(owning_run))
 		if(gate_role != DUNGEON_GATE_BACK && !QDELETED(source_room))
 			missing = owning_run.get_muster_missing(source_room)
-		var/datum/party/party = owning_run.get_party()
-		is_leader = !party || party.is_leader(user?.ckey)
+		is_leader = owning_run.is_run_leader(user)
 	data["muster_missing"] = missing
 	data["is_leader"] = is_leader
 	return data
@@ -152,7 +153,7 @@
 	if(.)
 		return
 	var/mob/living/user = usr
-	if(!isliving(user))
+	if(!isliving(user) || !can_gate_interact(user))
 		return
 	switch(action)
 		if("traverse")
@@ -160,17 +161,15 @@
 			use_gate(user)
 			return TRUE
 		if("force")
-			if(!owning_run || QDELETED(owning_run) || sealed || forsaken || gate_role == DUNGEON_GATE_BACK)
-				return
-			var/datum/party/party = owning_run.get_party()
-			if(party && !party.is_leader(user.ckey))
-				to_chat(user, span_warning("Only the party leader can force the way open."))
+			if(!can_use_gate(user) || gate_role == DUNGEON_GATE_BACK || !owning_run.is_run_leader(user))
 				return
 			ui.close()
 			if(user.client)
 				user.visible_message(span_notice("[user] begins working the passage open..."), span_notice("I begin working the passage open..."))
 				if(!do_after(user, DUNGEON_GATE_TRAVERSE_TIME, src))
 					return TRUE
+			if(!can_use_gate(user) || gate_role == DUNGEON_GATE_BACK || !owning_run.is_run_leader(user))
+				return TRUE
 			owning_run.muster_advance(src, user, force = TRUE)
 			return TRUE
 
@@ -182,6 +181,8 @@
 
 /obj/structure/dungeon_gate/attackby(obj/item/attacking_item, mob/living/user, list/modifiers)
 	if(requires_key && !key_unlocked && istype(attacking_item, /obj/item/dungeon_key))
+		if(!can_gate_interact(user) || !owning_run.is_party_member(user))
+			return TRUE
 		var/obj/item/dungeon_key/key = attacking_item
 		if(key.key_id != key_id)
 			to_chat(user, span_warning("This key does not fit this passage."))
@@ -193,28 +194,15 @@
 	return ..()
 
 /obj/structure/dungeon_gate/proc/use_gate(mob/living/user)
-	if(!istype(user))
-		return FALSE
-	// Dungeon natives don't get to wander the run.
-	if(!user.mind && !user.client)
-		return FALSE
-	if(forsaken)
-		to_chat(user, span_warning("The passage is dead stone. The path was chosen, and it was not this one."))
-		return FALSE
-	if(sealed)
-		to_chat(user, span_warning("The passage is sealed. Whatever guards this room holds it shut."))
-		return FALSE
-	if(!owning_run || QDELETED(owning_run))
-		to_chat(user, span_warning("The passage leads nowhere. The dungeon has lost interest."))
-		return FALSE
-	if(requires_key && !key_unlocked)
-		to_chat(user, span_warning("This passage is locked. It needs a key found within this room."))
+	if(!can_use_gate(user))
 		return FALSE
 	// Working a passage open takes a moment (players only; the harness and any
 	// odd mob paths stay instant).
 	if(user.client)
 		user.visible_message(span_notice("[user] begins working the passage open..."), span_notice("I begin working the passage open..."))
 		if(!do_after(user, DUNGEON_GATE_TRAVERSE_TIME, src))
+			return FALSE
+		if(!can_use_gate(user))
 			return FALSE
 	if(gate_role == DUNGEON_GATE_BACK)
 		// Backtracking is free: any present member may step back alone.
@@ -223,8 +211,49 @@
 			to_chat(user, span_warning("The way back has crumbled."))
 			return FALSE
 		return transfer_through(user, back_room)
+	if(destination_room && !QDELETED(destination_room))
+		for(var/mob/living/advanced_member as anything in owning_run.get_members_in_room(destination_room))
+			if(owning_run.is_party_member(advanced_member))
+				return transfer_through(user, destination_room)
+	if(owning_run.is_forced_entrant(user))
+		// Captives may follow a route the expedition already opened, but may not
+		// choose or instantiate a route of their own.
+		if(destination_room && !QDELETED(destination_room))
+			return transfer_through(user, destination_room)
+		to_chat(user, span_warning("The passage will not answer your hand. Only the expedition may choose the road ahead."))
+		return FALSE
 	// Forward / descent gates move the whole present party together (muster).
 	return owning_run.muster_advance(src, user)
+
+/obj/structure/dungeon_gate/proc/can_gate_interact(mob/living/user)
+	if(!istype(user) || QDELETED(src))
+		return FALSE
+	if(user.client && !user.Adjacent(src))
+		return FALSE
+	if(!user.mind && !user.client)
+		return FALSE
+	if(!owning_run || QDELETED(owning_run) || QDELETED(source_room) || owning_run.ending)
+		return FALSE
+	if(!source_room.contains_turf(get_turf(user)))
+		return FALSE
+	return owning_run.is_run_participant(user)
+
+/obj/structure/dungeon_gate/proc/can_use_gate(mob/living/user, show_feedback = TRUE)
+	if(!can_gate_interact(user))
+		return FALSE
+	if(forsaken)
+		if(show_feedback)
+			to_chat(user, span_warning("The passage is dead stone. The path was chosen, and it was not this one."))
+		return FALSE
+	if(sealed)
+		if(show_feedback)
+			to_chat(user, span_warning("The passage is sealed. Whatever guards this room holds it shut."))
+		return FALSE
+	if(requires_key && !key_unlocked)
+		if(show_feedback)
+			to_chat(user, span_warning("This passage is locked. It needs a key found within this room."))
+		return FALSE
+	return TRUE
 
 /obj/structure/dungeon_gate/attack_hand_secondary(mob/user, list/modifiers)
 	// Right-click no longer force-opens the room instantly - it funnels through
@@ -257,11 +286,19 @@
 			dragged |= grab_item.grabbed
 
 	user.forceMove(entry_turf)
+	if(get_turf(user) != entry_turf)
+		return FALSE
 	if(source_room && !QDELETED(source_room) && source_room.current_trait)
 		source_room.current_trait.on_mob_exited(source_room, user)
 	for(var/atom/movable/cargo as anything in dragged)
 		var/turf/drop_turf = target_room.get_drop_turf(cargo) || entry_turf
 		cargo.forceMove(drop_turf)
+		if(isliving(cargo))
+			var/mob/living/dragged_living = cargo
+			if(!owning_run.is_run_participant(dragged_living))
+				owning_run.add_forced_entrant(dragged_living)
+			source_room?.current_trait?.on_mob_exited(source_room, dragged_living)
+			owning_run.on_member_entered_room(target_room, dragged_living)
 	target_room.touch()
 	source_room?.touch()
 	owning_run.on_room_entered(target_room, user)

@@ -7,10 +7,14 @@
 
 // Theme tags used to filter template pools
 #define DUNGEON_THEME_BANDIT "bandit"
-#define DUNGEON_THEME_WOLF "wolf"
-#define DUNGEON_THEME_TENTACLE "tentacle"
+#define DUNGEON_THEME_BEAR "bear"
+#define DUNGEON_THEME_RATFOLK "ratfolk"
+#define DUNGEON_THEME_SPIDER "spider"
 #define DUNGEON_THEME_SWAMPGOB "swampgob"
+#define DUNGEON_THEME_TENTACLE "tentacle"
 #define DUNGEON_THEME_TEST "test"
+#define DUNGEON_THEME_WEREWOLF "werewolf"
+#define DUNGEON_THEME_WOLF "wolf"
 
 // Gate roles
 #define DUNGEON_GATE_FORWARD "forward"

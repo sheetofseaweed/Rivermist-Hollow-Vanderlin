@@ -25,9 +25,14 @@
 	TEST_ASSERT(instance.cleared, "Dungeon should clear when its last guardian dies.")
 	TEST_ASSERT(!cache.locked, "Reward cache should unlock on clear.")
 
-	TEST_ASSERT(SSpocket_dimensions.delete_instance(instance, null, origin), "Dungeon should collapse on demand.")
-	TEST_ASSERT_EQUAL(get_turf(raider), origin, "Raider should be ejected to the entrance on collapse.")
+	TEST_ASSERT(instance.exit_mob(raider), "Raider should be able to leave the cleared one-bite dungeon.")
+	TEST_ASSERT_EQUAL(get_turf(raider), origin, "Normal exit should return the raider to the entrance.")
+	var/obj/item/weapon/knife/keepsake = allocate(/obj/item/weapon/knife, instance.get_entry_turf())
+	instance.last_touched = world.time - instance.idle_timeout - 1
+	TEST_ASSERT(instance.process_idle_lifecycle(), "A cleared standalone room should collapse despite its native guardian corpse.")
+	TEST_ASSERT(QDELETED(instance), "Idle collapse should delete the spent standalone room.")
 	TEST_ASSERT(QDELETED(guardian), "Dead native guardian must be deleted on collapse, not ejected.")
+	TEST_ASSERT_EQUAL(get_turf(keepsake), origin, "Foreign items left in a standalone room must be ejected on collapse.")
 
 /datum/unit_test/dungeon_native_mobs_die_on_collapse/Run()
 	var/turf/origin = run_loc_floor_bottom_left
@@ -43,6 +48,106 @@
 	// Collapse with the guardian still alive - it must be deleted, never ejected.
 	TEST_ASSERT(SSpocket_dimensions.delete_instance(instance, null, origin), "Dungeon should collapse with a live guardian inside.")
 	TEST_ASSERT(QDELETED(guardian), "Live native guardian must be deleted on collapse, not ejected.")
+
+/datum/unit_test/dungeon_singlet_production_harnesses/Run()
+	var/list/production_pool = get_dungeon_template_pool(DUNGEON_ROOM_ONESHOT)
+	TEST_ASSERT(length(production_pool) >= 6, "The production one-shot pool should contain the shipped singlet set.")
+	for(var/datum/map_template/pocket/dungeon/pooled_template as anything in production_pool)
+		TEST_ASSERT(pooled_template.production_eligible, "Broad one-shot pools must never contain a test-only template ([pooled_template.id]).")
+
+	var/list/harnesses = list(
+		/obj/structure/dungeon_entrance/bandit_hideout = list("template_id" = "singlet_bandit_hideout", "guardians" = 2, "guardian_type" = /mob/living/carbon/human/species/human/northern/bum/ambush),
+		/obj/structure/dungeon_entrance/bear_den = list("template_id" = "singlet_bear_den", "guardians" = 1, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/direbear),
+		/obj/structure/dungeon_entrance/ratfolk_camp = list("template_id" = "singlet_ratfolk_camp", "guardians" = 2, "guardian_type" = /mob/living/carbon/human/species/rousman/ambush),
+		/obj/structure/dungeon_entrance/spider_nursery = list("template_id" = "singlet_spider_nursery", "guardians" = 2, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/spider),
+		/obj/structure/dungeon_entrance/werewolf_shrine = list("template_id" = "singlet_werewolf_shrine", "guardians" = 1, "guardian_type" = /mob/living/simple_animal/hostile/werewolf),
+		/obj/structure/dungeon_entrance/wolf_den = list("template_id" = "singlet_wolf_den", "guardians" = 2, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/wolf),
+	)
+	var/turf/origin = run_loc_floor_bottom_left
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, origin)
+	for(var/entrance_type in harnesses)
+		var/list/harness = harnesses[entrance_type]
+		var/datum/map_template/pocket/dungeon/expected_template = SSpocket_dimensions.resolve_template(harness["template_id"])
+		TEST_ASSERT_NOTNULL(expected_template, "Shipped singlet template [harness["template_id"]] should register.")
+		TEST_ASSERT(expected_template.production_eligible, "Shipped singlet [expected_template.id] must be production eligible.")
+		TEST_ASSERT_EQUAL(expected_template.width, 15, "Singlet [expected_template.id] should retain its authored width.")
+		TEST_ASSERT_EQUAL(expected_template.height, 15, "Singlet [expected_template.id] should retain its authored height.")
+
+		var/obj/structure/dungeon_entrance/entrance = allocate(entrance_type, origin)
+		var/datum/pocket_dimension/dungeon/room = entrance.get_entry_room(delver)
+		TEST_ASSERT_NOTNULL(room, "[entrance] should instantiate its themed singlet.")
+		TEST_ASSERT_EQUAL(room.get_dungeon_template(), expected_template, "[entrance] should resolve only its matching themed template in the current set.")
+		TEST_ASSERT_EQUAL(length(room.entry_turfs), 1, "Singlet [expected_template.id] should have one authored entry.")
+		TEST_ASSERT_EQUAL(length(room.exit_objects), 1, "Singlet [expected_template.id] should build one return seam.")
+		TEST_ASSERT_EQUAL(length(room.guardian_refs), harness["guardians"], "Singlet [expected_template.id] should spawn its authored guardian count.")
+		TEST_ASSERT_EQUAL(length(room.loot_caches), 1, "Singlet [expected_template.id] should build one sealed reward cache.")
+		TEST_ASSERT(room.loot_caches[1].locked, "Singlet [expected_template.id]'s reward should begin sealed.")
+		for(var/guardian_ref in room.guardian_refs)
+			var/datum/weakref/guardian_weakref = room.guardian_refs[guardian_ref]
+			var/mob/living/guardian = guardian_weakref.resolve()
+			TEST_ASSERT(istype(guardian, harness["guardian_type"]), "Singlet [expected_template.id] spawned the wrong guardian type.")
+		for(var/turf/room_turf as anything in room.affected_turfs)
+			TEST_ASSERT(istype(get_area(room_turf), /area/pocket_dimension/dungeon), "Every turf in [expected_template.id] must use the dungeon pocket area.")
+
+		TEST_ASSERT(entrance.try_enter(delver), "[entrance] should admit a delver through normal one-shot interaction.")
+		TEST_ASSERT(room.contains_turf(get_turf(delver)), "[entrance] should deliver the delver into its room.")
+		TEST_ASSERT(room.exit_mob(delver), "The return seam in [expected_template.id] should work.")
+		TEST_ASSERT_EQUAL(get_turf(delver), origin, "The return seam in [expected_template.id] should lead back to its entrance.")
+		qdel(entrance)
+
+/datum/unit_test/dungeon_singlet_shared_lifecycle_and_cooldown/Run()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/obj/structure/dungeon_entrance/wolf_den/entrance = allocate(/obj/structure/dungeon_entrance/wolf_den, origin)
+	var/mob/living/carbon/human/first_delver = allocate(/mob/living/carbon/human, origin)
+	var/mob/living/carbon/human/second_delver = allocate(/mob/living/carbon/human, origin)
+	first_delver.mind_initialize()
+	second_delver.mind_initialize()
+
+	TEST_ASSERT(entrance.try_enter(first_delver), "The first delver should enter the wolf singlet.")
+	var/datum/pocket_dimension/dungeon/room = SSpocket_dimensions.get_instance(entrance.get_instance_key())
+	TEST_ASSERT_NOTNULL(room, "The first entry should create a keyed singlet room.")
+	TEST_ASSERT(entrance.try_enter(second_delver), "The second delver should enter the existing wolf singlet.")
+	TEST_ASSERT_EQUAL(SSpocket_dimensions.get_instance(entrance.get_instance_key()), room, "Both delvers must share the one room keyed to their entrance.")
+
+	for(var/guardian_ref in room.guardian_refs.Copy())
+		var/datum/weakref/guardian_weakref = room.guardian_refs[guardian_ref]
+		var/mob/living/guardian = guardian_weakref.resolve()
+		if(guardian)
+			qdel(guardian)
+	TEST_ASSERT(room.cleared, "Removing every guardian should clear the shared singlet.")
+
+	TEST_ASSERT(room.exit_mob(first_delver), "The first delver should be able to leave.")
+	room.last_touched = world.time - room.idle_timeout - 1
+	TEST_ASSERT(!room.process_idle_lifecycle(), "One delver leaving must not collapse the room under the other.")
+	TEST_ASSERT(!QDELETED(room), "The shared room must remain while its second delver is inside.")
+
+	var/obj/item/weapon/knife/keepsake = allocate(/obj/item/weapon/knife, room.get_entry_turf())
+	TEST_ASSERT(room.exit_mob(second_delver), "The second delver should be able to leave.")
+	room.last_touched = world.time - room.idle_timeout - 1
+	var/first_instance_id = room.instance_id
+	TEST_ASSERT(room.process_idle_lifecycle(), "The cleared room should collapse after its last delver leaves.")
+	TEST_ASSERT(QDELETED(room), "The spent shared room should be deleted.")
+	TEST_ASSERT_EQUAL(get_turf(keepsake), origin, "A foreign item left in the singlet should return to the entrance.")
+	TEST_ASSERT(entrance.is_dormant(), "Lifecycle collapse should arm the entrance cooldown.")
+	TEST_ASSERT_NULL(entrance.get_entry_room(first_delver), "A dormant entrance must refuse to reopen early.")
+
+	entrance.dormant_until = world.time
+	var/datum/pocket_dimension/dungeon/fresh_room = entrance.get_entry_room(first_delver)
+	TEST_ASSERT_NOTNULL(fresh_room, "The entrance should roll a fresh room after its cooldown.")
+	TEST_ASSERT_NOTEQUAL(fresh_room.instance_id, first_instance_id, "A reopened entrance must not reuse its spent instance.")
+	qdel(entrance)
+
+/datum/unit_test/dungeon_singlet_entrance_deletion_ejects_occupants/Run()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/obj/structure/dungeon_entrance/spider_nursery/entrance = allocate(/obj/structure/dungeon_entrance/spider_nursery, origin)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, origin)
+	TEST_ASSERT(entrance.try_enter(delver), "The delver should enter before the entrance is removed.")
+	var/datum/pocket_dimension/dungeon/room = SSpocket_dimensions.get_instance(entrance.get_instance_key())
+	TEST_ASSERT_NOTNULL(room, "The entrance should own a live room before deletion.")
+
+	qdel(entrance)
+	TEST_ASSERT(QDELETED(room), "Deleting a singlet entrance should tear down its keyed room.")
+	TEST_ASSERT_EQUAL(get_turf(delver), origin, "Deleting an occupied entrance should eject its delver safely to the entrance turf.")
 
 /datum/unit_test/dungeon_infinite_run/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
@@ -172,6 +277,10 @@
 	var/datum/dungeon_run/run = entrance.active_run
 	TEST_ASSERT_NOTNULL(run, "Solo entry should create a run.")
 	TEST_ASSERT_NULL(run.get_party(), "Solo run should have no bound party.")
+	var/mob/living/carbon/human/outsider = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	outsider.mind_initialize()
+	TEST_ASSERT(!run.is_party_member(outsider), "A solo run must not fail open to an unrelated delver.")
+	TEST_ASSERT_NULL(entrance.get_entry_room(outsider), "An unrelated delver must petition instead of entering a solo run directly.")
 
 	var/datum/pocket_dimension/dungeon/break_room = run.current_break_room
 	var/obj/structure/dungeon_gate/forward_gate
@@ -204,6 +313,30 @@
 	TEST_ASSERT(forward_gate.use_gate(delver), "Advance into the combat stretch.")
 	TEST_ASSERT(!run.is_at_rest(), "With a live combat stretch room, the run should not be at rest.")
 
+	qdel(run)
+
+/datum/unit_test/dungeon_forced_entrant_lifecycle/Run()
+	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	delver.mind_initialize()
+	TEST_ASSERT(entrance.try_enter(delver), "Entrance should accept the founding delver.")
+	var/datum/dungeon_run/run = entrance.active_run
+	var/datum/pocket_dimension/dungeon/room = run.current_break_room
+
+	var/mob/living/carbon/human/captive = allocate(/mob/living/carbon/human, room.get_entry_turf())
+	captive.mind_initialize()
+	var/base_health = captive.maxHealth
+	run.add_boon(new /datum/dungeon_boon/vigor)
+	TEST_ASSERT(run.add_forced_entrant(captive), "A non-roster captive should be trackable as a forced entrant.")
+	run.on_member_entered_room(room, captive)
+	TEST_ASSERT(run.is_run_participant(captive), "A tracked captive should participate in run movement and presence.")
+	TEST_ASSERT(!run.is_party_member(captive), "Forced entry must not grant roster membership.")
+	TEST_ASSERT(!run.is_run_leader(captive), "Forced entry must never grant leadership.")
+	TEST_ASSERT_EQUAL(captive.maxHealth, base_health + 25, "A forced entrant should receive the run's active boon stack.")
+
+	captive.forceMove(run_loc_floor_bottom_left)
+	TEST_ASSERT(!run.is_run_participant(captive), "Extraction should end forced-entrant status immediately.")
+	TEST_ASSERT_EQUAL(captive.maxHealth, base_health, "Extraction should strip the run's boons immediately.")
 	qdel(run)
 
 /datum/unit_test/dungeon_present_set/Run()
@@ -378,6 +511,9 @@
 	var/datum/dungeon_boon/greed/greed = new
 	run.add_boon(greed)
 	TEST_ASSERT(run.mote_multiplier > 1, "Greed boon should set a mote multiplier.")
+	run.strip_boons_from(delver)
+	TEST_ASSERT(run.mote_multiplier > 1, "A carrier leaving must not disable a run-global boon.")
+	run.apply_boons_to(delver)
 
 	qdel(run)
 	TEST_ASSERT_EQUAL(delver.maxHealth, starting_health, "Run teardown should strip boons and restore max health (sandbox guarantee).")
@@ -543,6 +679,18 @@
 	TEST_ASSERT(bounty > 0, "make_dungeon_boss should return a positive mote bounty.")
 	TEST_ASSERT_NOTNULL(victim.GetComponent(/datum/component/dungeon_boss_healthbar), "Promoted boss should get a healthbar component.")
 	TEST_ASSERT_NOTNULL(victim.GetComponent(/datum/component/dungeon_boss_abilities), "A non-ATB mob promoted to boss should get the ability kit.")
+
+	var/mob/living/carbon/human/species/goblin/npc/ambush/goblin_boss = allocate(/mob/living/carbon/human/species/goblin/npc/ambush, spot)
+	var/mob/living/carbon/human/carbon_target = allocate(/mob/living/carbon/human, get_step(spot, EAST))
+	make_dungeon_boss(goblin_boss, 1, 1)
+	var/datum/component/dungeon_boss_abilities/carbon_kit = goblin_boss.GetComponent(/datum/component/dungeon_boss_abilities)
+	TEST_ASSERT_NOTNULL(carbon_kit, "The shipped carbon boss type should receive an ability kit.")
+	TEST_ASSERT_NOTNULL(goblin_boss.ai_controller, "The shipped carbon boss type should have an AI controller.")
+	goblin_boss.ai_controller.set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, carbon_target)
+	var/datum/dungeon_boss_ability/carbon_ability = carbon_kit.abilities[1]
+	carbon_ability.next_use = 0
+	carbon_kit.process(0.1)
+	TEST_ASSERT(carbon_ability.next_use > world.time, "A carbon boss should fire its kit at the AI controller's combat target.")
 
 /datum/unit_test/dungeon_scatter/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
@@ -1076,6 +1224,19 @@
 	TEST_ASSERT(QDELETED(unpicked_a), "Unpicked cards should be deleted with the session.")
 	TEST_ASSERT(!QDELETED(picked), "The applied boon must survive the session.")
 	TEST_ASSERT_EQUAL(length(run.open_boon_offers), 0, "Session should deregister from the run.")
+
+	// Concurrent windows must not commit the same boon type twice.
+	var/datum/dungeon_boon_offer/first_duplicate = new(run, delver, list(new /datum/dungeon_boon/dark/umbral_edge))
+	var/datum/dungeon_boon_offer/stale_duplicate = new(run, delver, list(new /datum/dungeon_boon/dark/umbral_edge))
+	run.open_boon_offers += first_duplicate
+	run.open_boon_offers += stale_duplicate
+	TEST_ASSERT(first_duplicate.resolve_pick(1), "The first concurrent copy should resolve normally.")
+	TEST_ASSERT(!stale_duplicate.resolve_pick(1), "A stale concurrent copy must be rejected and redrawn.")
+	var/price_count = 0
+	for(var/datum/dungeon_boon/active as anything in run.active_boons)
+		if(istype(active, /datum/dungeon_boon/dark/umbral_edge))
+			price_count++
+	TEST_ASSERT_EQUAL(price_count, 1, "Concurrent boon offers must preserve type uniqueness.")
 
 	// An unanswered session dies with the run.
 	var/list/datum/dungeon_boon/cards2 = build_boon_offer(run, 3)

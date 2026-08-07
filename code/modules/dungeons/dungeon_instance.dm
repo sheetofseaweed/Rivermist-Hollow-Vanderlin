@@ -549,6 +549,8 @@
 
 /datum/pocket_dimension/dungeon/enter_mob(mob/user, turf/new_return_turf, atom/new_return_anchor = null)
 	. = ..()
+	if(. && !contains_turf(get_turf(user)))
+		return FALSE
 	if(!. || !current_trait || !ismob(user))
 		return
 	var/mob/entrant = user
@@ -558,13 +560,35 @@
 		current_trait.on_mob_entered(src, entrant)
 
 /datum/pocket_dimension/dungeon/exit_mob(mob/user)
-	if(owning_run && isliving(user))
-		current_trait?.on_mob_exited(src, user)
-		owning_run.strip_boons_from(user)
-		owning_run.mark_absent(user)
+	var/datum/dungeon_run/run = owning_run
 	. = ..()
-	if(. && owning_run)
-		owning_run.note_possible_run_end()
+	if(!. || contains_turf(get_turf(user)))
+		return FALSE
+	if(!run || !isliving(user))
+		return
+	var/mob/living/exiter = user
+	current_trait?.on_mob_exited(src, exiter)
+	run.strip_boons_from(exiter)
+	run.mark_absent(exiter)
+	run.complete_safe_exit(exiter)
+	run.note_possible_run_end()
+
+/// Run rooms are retired only by their owning run. Standalone rooms ignore
+/// native guardians, corpses, and spectators when deciding whether abandoned
+/// space may collapse.
+/datum/pocket_dimension/dungeon/process_idle_lifecycle()
+	if(owning_run)
+		return FALSE
+	if(!idle_timeout || world.time < last_touched + idle_timeout)
+		return FALSE
+	for(var/mob/living/occupant as anything in get_occupants())
+		if(QDELETED(occupant) || occupant.stat == DEAD || is_native_dungeon_mob(occupant))
+			continue
+		if(occupant.mind || occupant.client)
+			return FALSE
+	if(lifecycle_policy == POCKET_LIFECYCLE_COLLAPSE && SSpocket_dimensions)
+		return SSpocket_dimensions.delete_instance(src)
+	return FALSE
 
 /datum/pocket_dimension/dungeon/process_pocket()
 	owning_run?.check_abandonment()

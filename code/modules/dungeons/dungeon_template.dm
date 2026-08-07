@@ -19,6 +19,8 @@
 	var/difficulty_tier = 1
 	/// DUNGEON_ROOM_* kind
 	var/room_kind = DUNGEON_ROOM_ONESHOT
+	/// FALSE for harness fixtures that must never enter a production roll
+	var/production_eligible = TRUE
 	/// /datum/loot_table path used by reward caches in this dungeon
 	var/loot_table_type
 	/// Examine hint shown on gates leading to a room of this template
@@ -33,6 +35,15 @@
 		var/datum/map_template/pocket/dungeon/template = SSpocket_dimensions.templates_by_id[template_id]
 		if(!istype(template))
 			continue
+		if(!template.production_eligible)
+#ifdef UNIT_TESTS
+			// Focused test-theme requests may use fixtures. Broad pools still
+			// exercise exactly the production-eligible set.
+			if(theme != DUNGEON_THEME_TEST)
+				continue
+#else
+			continue
+#endif
 		if(template.room_kind != room_kind)
 			continue
 		if(theme && template.theme != theme)
@@ -75,6 +86,7 @@
 	mappath = "_maps/templates/dungeons/_test/dungeon_test_onebite.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_ONESHOT
+	production_eligible = FALSE
 	loot_table_type = /datum/loot_table/debug
 	gate_hint = "It smells of sawdust and unit tests."
 
@@ -84,6 +96,7 @@
 	mappath = "_maps/templates/dungeons/_test/dungeon_test_break.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_BREAK
+	production_eligible = FALSE
 
 /datum/map_template/pocket/dungeon/test_combat
 	name = "Test Combat Room"
@@ -91,6 +104,7 @@
 	mappath = "_maps/templates/dungeons/_test/dungeon_test_combat.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_COMBAT
+	production_eligible = FALSE
 	loot_table_type = /datum/loot_table/debug
 
 /datum/map_template/pocket/dungeon/test_descent
@@ -99,6 +113,7 @@
 	mappath = "_maps/templates/dungeons/_test/dungeon_test_break.dmm" // reuse break layout (entry+exit+gates)
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_DESCENT
+	production_eligible = FALSE
 
 /datum/map_template/pocket/dungeon/test_boss
 	name = "Test Boss Room"
@@ -106,6 +121,7 @@
 	mappath = "_maps/templates/dungeons/_test/dungeon_test_boss.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_BOSS
+	production_eligible = FALSE
 	loot_table_type = /datum/loot_table/debug
 	gate_hint = "Something vast breathes in the dark ahead."
 
@@ -115,7 +131,70 @@
 	mappath = "_maps/templates/dungeons/_test/dungeon_test_scatter.dmm"
 	theme = DUNGEON_THEME_TEST
 	room_kind = DUNGEON_ROOM_COMBAT
+	production_eligible = FALSE
 	loot_table_type = /datum/loot_table/debug
+
+// -- Standalone singlets: self-contained lairs reached from themed entrances --
+
+/datum/map_template/pocket/dungeon/singlet
+	name = "_singlet_base"
+	id = "_singlet_base"
+	room_kind = DUNGEON_ROOM_ONESHOT
+	dungeon_weight = 10
+
+/datum/map_template/pocket/dungeon/singlet/bandit_hideout
+	name = "The Soot-Stained Hideout"
+	id = "singlet_bandit_hideout"
+	mappath = "_maps/templates/rmh/randomlocs/small/small_bandit_1.dmm"
+	theme = DUNGEON_THEME_BANDIT
+	difficulty_tier = 2
+	loot_table_type = /datum/loot_table/dungeon/tier2
+	gate_hint = "Woodsmoke, whetstone grit, and low voices leak from the dark."
+
+/datum/map_template/pocket/dungeon/singlet/bear_den
+	name = "The Bloodmoss Den"
+	id = "singlet_bear_den"
+	mappath = "_maps/templates/rmh/randomlocs/small/small_bear_1.dmm"
+	theme = DUNGEON_THEME_BEAR
+	difficulty_tier = 3
+	loot_table_type = /datum/loot_table/dungeon/tier3
+	gate_hint = "Wet fur, old blood, and the musk of something enormous hang beyond."
+
+/datum/map_template/pocket/dungeon/singlet/ratfolk_camp
+	name = "The Gnawcamp"
+	id = "singlet_ratfolk_camp"
+	mappath = "_maps/templates/rmh/randomlocs/small/small_ratfolk_1.dmm"
+	theme = DUNGEON_THEME_RATFOLK
+	difficulty_tier = 2
+	loot_table_type = /datum/loot_table/dungeon/tier2
+	gate_hint = "Grease smoke and the skitter of clawed feet drift through."
+
+/datum/map_template/pocket/dungeon/singlet/spider_nursery
+	name = "The Silk-Choked Nursery"
+	id = "singlet_spider_nursery"
+	mappath = "_maps/templates/rmh/randomlocs/small/small_spider_1.dmm"
+	theme = DUNGEON_THEME_SPIDER
+	difficulty_tier = 1
+	loot_table_type = /datum/loot_table/dungeon/tier1
+	gate_hint = "Sticky silk trembles in a breeze that carries no sound."
+
+/datum/map_template/pocket/dungeon/singlet/werewolf_shrine
+	name = "The Moon-Riven Shrine"
+	id = "singlet_werewolf_shrine"
+	mappath = "_maps/templates/rmh/randomlocs/small/small_werewolf_1.dmm"
+	theme = DUNGEON_THEME_WEREWOLF
+	difficulty_tier = 3
+	loot_table_type = /datum/loot_table/dungeon/tier3
+	gate_hint = "Cold crystal-light glints over claw marks and matted fur."
+
+/datum/map_template/pocket/dungeon/singlet/wolf_den
+	name = "The Bone-Littered Den"
+	id = "singlet_wolf_den"
+	mappath = "_maps/templates/rmh/randomlocs/small/small_wolf_1.dmm"
+	theme = DUNGEON_THEME_WOLF
+	difficulty_tier = 1
+	loot_table_type = /datum/loot_table/dungeon/tier1
+	gate_hint = "A pack's breath and the copper stink of old kills linger ahead."
 
 // -- The Sunken Warrens: underground swamp goblin starter set --
 

@@ -58,6 +58,35 @@
 		/mob/living/simple_animal/hostile/retaliate/spider = 3,
 	)
 
+// -- Standalone singlet encounters -----------------------------------------
+
+/obj/effect/landmark/dungeon/guardian/singlet/bandit
+	name = "bandit singlet guardian marker"
+	mob_pool = list(/mob/living/carbon/human/species/human/northern/bum/ambush = 10)
+
+/obj/effect/landmark/dungeon/guardian/singlet/bear
+	name = "bear singlet guardian marker"
+	mob_pool = list(/mob/living/simple_animal/hostile/retaliate/direbear = 10)
+
+/obj/effect/landmark/dungeon/guardian/singlet/ratfolk
+	name = "ratfolk singlet guardian marker"
+	mob_pool = list(/mob/living/carbon/human/species/rousman/ambush = 10)
+
+/obj/effect/landmark/dungeon/guardian/singlet/spider
+	name = "spider singlet guardian marker"
+	mob_pool = list(
+		/mob/living/simple_animal/hostile/retaliate/spider = 8,
+		/mob/living/simple_animal/hostile/retaliate/spider/mutated = 2,
+	)
+
+/obj/effect/landmark/dungeon/guardian/singlet/werewolf
+	name = "werewolf singlet guardian marker"
+	mob_pool = list(/mob/living/simple_animal/hostile/werewolf = 10)
+
+/obj/effect/landmark/dungeon/guardian/singlet/wolf
+	name = "wolf singlet guardian marker"
+	mob_pool = list(/mob/living/simple_animal/hostile/retaliate/wolf = 10)
+
 /obj/effect/landmark/dungeon/guardian/keyholder
 	name = "dungeon keyholder marker"
 	/// Key id the dropped key carries; must match a gate in the room

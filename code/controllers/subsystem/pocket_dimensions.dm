@@ -8,6 +8,8 @@ SUBSYSTEM_DEF(pocket_dimensions)
 	var/list/templates_by_type = list()
 	var/list/instances_by_key = list()
 	var/list/instances_by_id = list()
+	/// Per-key futures covering the yielding map activation window.
+	var/list/creation_reservations = list()
 	var/list/currentrun = list()
 	var/next_instance_id = 1
 
@@ -55,6 +57,18 @@ SUBSYSTEM_DEF(pocket_dimensions)
 		instance.apply_lifecycle_settings(lifecycle_policy, idle_timeout)
 		instance.set_pocket_holder(pocket_holder)
 		return instance
+	var/datum/pocket_dimension_creation_reservation/existing_reservation = creation_reservations[instance_key]
+	if(existing_reservation)
+		var/wait_started = world.time
+		while(!existing_reservation.finished)
+			if(world.time > wait_started + 2 MINUTES)
+				return null
+			stoplag()
+		instance = get_instance(instance_key)
+		if(instance)
+			instance.apply_lifecycle_settings(lifecycle_policy, idle_timeout)
+			instance.set_pocket_holder(pocket_holder)
+		return instance
 
 	var/datum/map_template/pocket/template = resolve_template(template_ref)
 	if(!template)
@@ -64,13 +78,24 @@ SUBSYSTEM_DEF(pocket_dimensions)
 	if(!ispath(instance_type, /datum/pocket_dimension))
 		instance_type = /datum/pocket_dimension
 
+	var/datum/pocket_dimension_creation_reservation/reservation = new
+	creation_reservations[instance_key] = reservation
 	instance = new instance_type(template, instance_key, next_instance_id++, lifecycle_policy, idle_timeout, pocket_holder)
 	if(!instance.activate())
 		qdel(instance)
+		reservation.finished = TRUE
+		if(creation_reservations[instance_key] == reservation)
+			creation_reservations -= instance_key
 		return null
 
 	register_instance(instance)
+	reservation.finished = TRUE
+	if(creation_reservations[instance_key] == reservation)
+		creation_reservations -= instance_key
 	return instance
+
+/datum/pocket_dimension_creation_reservation
+	var/finished = FALSE
 
 /datum/controller/subsystem/pocket_dimensions/proc/register_instance(datum/pocket_dimension/instance)
 	if(!instance)
