@@ -330,7 +330,8 @@
 			var/obj/structure/closet/sex_shack = action_user.loc
 			sex_shack.Shake(1, 3, 15)
 
-		if(action_user.has_kink(KINK_VISUAL_EFFECTS))
+		// Remote work stays anonymous - hearts over the caster would point straight back at them.
+		if(action_user.has_kink(KINK_VISUAL_EFFECTS) && !action_remote_context)
 			show_sex_effects(action_user)
 
 		if(is_finished(action_user, action_target) || !continous)
