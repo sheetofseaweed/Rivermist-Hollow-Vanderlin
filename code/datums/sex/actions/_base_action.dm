@@ -392,6 +392,7 @@
 	if(action_target && action_target != action_user)
 		action_target.pop_visible_message_suppression()
 
+/// Never returns null - the result divides do_time, so an unlisted speed would be a division by zero.
 /datum/sex_action/proc/get_speed_multiplier()
 	switch(speed)
 		if(SEX_SPEED_LOW)
@@ -402,6 +403,7 @@
 			return 2.25
 		if(SEX_SPEED_EXTREME)
 			return 3
+	return 1.5
 
 /datum/sex_action/proc/get_stamina_cost_multiplier()
 	switch(force)
@@ -413,6 +415,7 @@
 			return 2.0
 		if(SEX_FORCE_EXTREME)
 			return 2.5
+	return 1.5
 
 /**
  * Applies one tick of stimulation using an explicit runtime action context.

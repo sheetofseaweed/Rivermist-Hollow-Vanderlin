@@ -33,7 +33,7 @@
 	var/pain = rand(8, 16)
 	var/climax = rand(0,1)
 
-	SEND_SIGNAL(victim, COMSIG_SEX_GENERIC_ACTION, victim, arousal, pain, climax)
+	SEND_SIGNAL(victim, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax, src)
 	playsound(src, pick('modular_rmh/sound/effects/slap1.ogg', 'modular_rmh/sound/effects/slap2.ogg'), 100)
 
 	var/zone = user.zone_selected
@@ -101,7 +101,7 @@
 	var/pain = rand(3, 7)
 	var/climax = rand(0,1)
 
-	SEND_SIGNAL(victim, COMSIG_SEX_GENERIC_ACTION, victim, arousal, pain, climax)
+	SEND_SIGNAL(victim, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax, src)
 	playsound(src, pick('modular_rmh/sound/effects/slap1.ogg', 'modular_rmh/sound/effects/slap2.ogg'), 100)
 
 	var/zone = user.zone_selected

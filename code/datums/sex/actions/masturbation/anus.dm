@@ -24,11 +24,11 @@
 
 /datum/sex_action/masturbate/anus/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	if(can_show_action_message())
+	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fingers [user.p_their()] butt..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	perform_sex_action(user, user, 2, 6, 2)
+	perform_sex_action(user, user, 2, 2, 2)
 	handle_passive_ejaculation()
 
 /datum/sex_action/masturbate/anus/on_finish(mob/living/user, mob/living/target)

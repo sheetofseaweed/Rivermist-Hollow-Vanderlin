@@ -9,7 +9,7 @@
 
 /// Returns the holder's active-hand glass container if it can still hold fluid, else null.
 /datum/sex_action/collect_fluid/proc/get_held_container(mob/living/holder)
-	if(!holder)
+	if(!isliving(holder))
 		return null
 	var/obj/item/reagent_containers/glass/container = holder.get_active_held_item()
 	if(istype(container) && container.reagents)

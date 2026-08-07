@@ -231,7 +231,8 @@
 		var/obj/item/organ/genitals/penis/penis = top.getorganslot(ORGAN_SLOT_PENIS)
 		var/datum/sex_action/action = knotted_action_ref?.resolve()
 		if(action && ((action.action_user == top && action.action_target == btm) || (action.action_user == btm && action.action_target == top)))
-			action.perform_sex_action(btm, top, penis?.organ_size > DEFAULT_PENIS_SIZE ? 6.0 : 3.0, 2, 3)
+			var/oversized = penis?.organ_size > DEFAULT_PENIS_SIZE
+			action.perform_sex_action(btm, top, oversized ? 6.0 : 3.0, oversized ? 4 : 2, 3)
 			var/datum/component/arousal/btm_arousal = btm.GetComponent(/datum/component/arousal)
 			btm_arousal?.try_ejaculate(action, action.action_user, action.action_target, action.action_user == btm, top)
 		if(prob(50))

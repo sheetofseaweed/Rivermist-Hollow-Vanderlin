@@ -48,10 +48,11 @@
 	target.make_sucking_noise()
 	do_thrust_animate(user, target)
 
-	perform_sex_action(user, target, 1, 3, 1)
+	// The one sat on is the one who can't breathe; the sitter has nothing to hurt.
+	perform_sex_action(user, target, 1, 0, 1)
 	handle_passive_ejaculation()
 
-	perform_sex_action(target, user, 0.5, 2, 0)
+	perform_sex_action(target, user, 0.5, 3, 0)
 	handle_passive_ejaculation(target)
 
 /datum/sex_action/facesitting/on_finish(mob/living/user, mob/living/target)

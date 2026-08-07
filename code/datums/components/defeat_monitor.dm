@@ -162,8 +162,9 @@
 		return FALSE
 	if(!victim.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
-	var/mob/living/holy_one = action_performer || action_partner
-	if(!holy_one || holy_one == victim)
+	// action_performer can be a structure or item on the generic path, so only a mob qualifies here.
+	var/mob/living/holy_one = isliving(action_performer) ? action_performer : action_partner
+	if(!isliving(holy_one) || holy_one == victim)
 		return FALSE
 	if(!HAS_TRAIT(holy_one, TRAIT_HOLY))
 		return FALSE
@@ -191,8 +192,9 @@
 	// guard (a solo or self-cast climax has no external instigator). We deliberately do NOT require a
 	// maintained aggressive grab/pull anymore: horny mobs rarely hold their prey the whole encounter,
 	// and a second attacker performing while the first one pulls broke the old `pulledby` check outright.
-	var/mob/living/instigator = action_performer || action_partner
-	if(!instigator || instigator == living_parent)
+	// action_performer can be a structure or item on the generic path; defeat needs a living instigator.
+	var/mob/living/instigator = isliving(action_performer) ? action_performer : action_partner
+	if(!isliving(instigator) || instigator == living_parent)
 		return FALSE
 	// A player instigator only forces a horny defeat while in combat mode - a consensual encounter
 	// (cmode off) never pushes the loss. NPC / AI mobs have no such switch, so they always count.
@@ -218,8 +220,8 @@
 		return FALSE
 
 	if(mob_ko_path)
-		return living_parent.enter_mob_horny_defeat(action_performer)
-	return living_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, action_performer)
+		return living_parent.enter_mob_horny_defeat(instigator)
+	return living_parent.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, instigator)
 
 /// Ends the current horny-defeat encounter. Recovery, timeout, and explicit callers own this reset.
 /datum/component/defeat_monitor/proc/reset_horny_defeat_encounter()
