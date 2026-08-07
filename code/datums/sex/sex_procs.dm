@@ -811,3 +811,10 @@
 /// TRUE when both of us are tucked inside the same thing, which counts as sharing a tile.
 /mob/living/proc/check_closet(atom/neighbor)
 	return neighbor && !isturf(loc) && (loc == neighbor.loc)
+
+/mob/living/proc/in_sex_interaction_range(atom/other)
+	if(!other)
+		return FALSE
+	if(other in view(1, src))
+		return TRUE
+	return adjacent_or_closet(other)
