@@ -247,8 +247,28 @@
 	. |= set_customizer_entry_type_enabled(/datum/customizer_entry/organ/genitals/breasts, !masculine)
 	. |= set_customizer_entry_type_enabled(/datum/customizer_entry/organ/genitals/vagina, !masculine)
 
+/// Enables every gendered genital entry at once. Only legal with the Extra Genitals unlock.
+/datum/preferences/proc/set_mixed_genital_set()
+	. = FALSE
+	. |= set_customizer_entry_type_enabled(/datum/customizer_entry/organ/genitals/penis, TRUE)
+	. |= set_customizer_entry_type_enabled(/datum/customizer_entry/organ/genitals/testicles, TRUE)
+	. |= set_customizer_entry_type_enabled(/datum/customizer_entry/organ/genitals/breasts, TRUE)
+	. |= set_customizer_entry_type_enabled(/datum/customizer_entry/organ/genitals/vagina, TRUE)
+
 /datum/preferences/proc/toggle_genital_set()
-	if(has_masculine_genital_set() && !has_feminine_genital_set())
+	// A mixed set is a state the player deliberately built, so with Extra Genitals the toggle
+	// cycles through it (mixed -> masculine -> feminine -> mixed) instead of silently
+	// discarding half of the selection on the first press.
+	if(has_extra_genital_customizer_unlock() && species_has_masculine_genital_set() && species_has_feminine_genital_set())
+		var/had_masculine = has_masculine_genital_set()
+		var/had_feminine = has_feminine_genital_set()
+		if(had_masculine && had_feminine)
+			set_genital_set("masculine")
+		else if(had_masculine)
+			set_genital_set("feminine")
+		else
+			set_mixed_genital_set()
+	else if(has_masculine_genital_set() && !has_feminine_genital_set())
 		set_genital_set("feminine")
 	else
 		set_genital_set("masculine")

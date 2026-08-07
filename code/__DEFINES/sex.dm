@@ -152,6 +152,28 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define PAIN_MINIMUM_FOR_DAMAGE PAIN_MED_EFFECT
 #define PAIN_DAMAGE_DIVISOR 50
 
+/// Force pain steps. Top step jumps hard; low steps stay under 1 so gentle contact never hurts.
+#define SEX_FORCE_PAIN_MULT_LOW 0.25
+#define SEX_FORCE_PAIN_MULT_MID 0.75
+#define SEX_FORCE_PAIN_MULT_HIGH 2.0
+#define SEX_FORCE_PAIN_MULT_EXTREME 4.0
+
+/// Speed pain steps. Secondary to force; speed sharpens what force already causes.
+#define SEX_SPEED_PAIN_MULT_LOW 0.8
+#define SEX_SPEED_PAIN_MULT_MID 1.0
+#define SEX_SPEED_PAIN_MULT_HIGH 1.25
+#define SEX_SPEED_PAIN_MULT_EXTREME 1.5
+
+/// How much the receiver's own arousal softens incoming pain, by arousal band.
+#define SEX_PAIN_READINESS_UNAROUSED 1.4
+#define SEX_PAIN_READINESS_WARMING 1.0
+#define SEX_PAIN_READINESS_READY 0.75
+#define SEX_PAIN_READINESS_LOST 0.55
+
+#define SEX_PAIN_READINESS_WARMING_THRESHOLD 20
+#define SEX_PAIN_READINESS_READY_THRESHOLD 60
+#define SEX_PAIN_READINESS_LOST_THRESHOLD 120
+
 #define MAX_AROUSAL 500
 #define PASSIVE_EJAC_THRESHOLD 108
 #define ACTIVE_EJAC_THRESHOLD 100
@@ -166,6 +188,9 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 
 #define MOAN_COOLDOWN 3 SECONDS
 #define PAIN_COOLDOWN 6 SECONDS
+/// Harder force earns faster feedback, so top settings read as continuous.
+#define PAIN_COOLDOWN_HIGH (4 SECONDS)
+#define PAIN_COOLDOWN_EXTREME (2.5 SECONDS)
 
 #define LOW_ORGASM_THRESHOLD_GAIN 4
 #define MED_ORGASM_THRESHOLD_GAIN 6
@@ -204,7 +229,6 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define AROUSAL_LOW_UNHORNY_RATE (0.2 / (1 SECONDS))
 
 #define LOINHURT_GAIN_THRESHOLD 25
-#define LOINHURT_LOSE_THRESHOLD 20
 
 #define MIN_PENIS_SIZE 1
 #define DEFAULT_PENIS_SIZE 2

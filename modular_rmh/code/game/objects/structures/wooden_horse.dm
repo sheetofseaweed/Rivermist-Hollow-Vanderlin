@@ -131,7 +131,7 @@
 	var/arousal = rand(0,2)
 	var/pain = rand(1,3)
 	var/climax = rand(0,1)
-	SEND_SIGNAL(buckled_mob, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax)
+	SEND_SIGNAL(buckled_mob, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax, src)
 
 	// Strength roll
 	var/roll = rand(1,20)
@@ -168,7 +168,7 @@
 		var/mob/living/carbon/victim = M
 		var/pain = pain_per_tick * delta_time
 		var/arousal = rand(1,3) * delta_time
-		SEND_SIGNAL(victim, COMSIG_SEX_GENERIC_ACTION, victim, arousal, pain, 0)
+		SEND_SIGNAL(victim, COMSIG_SEX_GENERIC_ACTION, victim, arousal, pain, 0, src)
 
 		if(world.time >= next_reaction_time)
 			next_reaction_time = world.time + 2 MINUTES
@@ -218,7 +218,7 @@
 		var/arousal = rand(1,3)
 		var/pain = rand(1,5)
 		var/climax = rand(0,1)
-		SEND_SIGNAL(H, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax)
+		SEND_SIGNAL(H, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax, src)
 		playsound(src, pick('modular_rmh/sound/effects/swing_horse (1).ogg', 'modular_rmh/sound/effects/swing_horse (2).ogg', 'modular_rmh/sound/effects/swing_horse (3).ogg'), 100)
 
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN

@@ -113,6 +113,16 @@
 		return ..()
 	I.attack(held_mob, user, user.zone_selected)
 
+/// The occupant is still a person, so opening the interaction menu on them goes through the same
+/// scene the rest of the sex system uses - including its consent gate - rather than a side door.
+/obj/item/mob_holder/attack_self(mob/living/user, list/modifiers)
+	if(!isliving(user) || QDELETED(held_mob))
+		return ..()
+	if(!held_mob.client && !held_mob.mind)
+		return ..()
+	user.open_sex_scene(held_mob)
+	return TRUE
+
 /obj/item/mob_holder/proc/update_visuals(mob/living/L)
 	if(!L)
 		return

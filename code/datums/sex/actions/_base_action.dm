@@ -304,7 +304,7 @@
 		var/current_do_time = do_time / get_speed_multiplier()
 		var/do_after_flags = IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_SLOWDOWNS | IGNORE_USER_DOING | IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE
 		var/interaction_key = "sex_action_[REF(src)]"
-		if(!(action_target in view(1, action_user)) && !can_remote_interact())
+		if(!action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
 			action_scene.stop_action(src)
 			return
 		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))
@@ -392,6 +392,7 @@
 	if(action_target && action_target != action_user)
 		action_target.pop_visible_message_suppression()
 
+/// Never returns null - the result divides do_time, so an unlisted speed would be a division by zero.
 /datum/sex_action/proc/get_speed_multiplier()
 	switch(speed)
 		if(SEX_SPEED_LOW)
@@ -402,6 +403,7 @@
 			return 2.25
 		if(SEX_SPEED_EXTREME)
 			return 3
+	return 1.5
 
 /datum/sex_action/proc/get_stamina_cost_multiplier()
 	switch(force)
@@ -413,6 +415,7 @@
 			return 2.0
 		if(SEX_FORCE_EXTREME)
 			return 2.5
+	return 1.5
 
 /**
  * Applies one tick of stimulation using an explicit runtime action context.

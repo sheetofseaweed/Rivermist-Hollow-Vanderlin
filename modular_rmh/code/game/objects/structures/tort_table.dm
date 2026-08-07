@@ -83,7 +83,7 @@
 					var/pain = rand(5,10)
 					var/climax = rand(0)
 
-					SEND_SIGNAL(M, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax)
+					SEND_SIGNAL(M, COMSIG_SEX_GENERIC_ACTION, user, arousal, pain, climax, src)
 				START_PROCESSING(SSobj, src)
 		return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
@@ -155,7 +155,7 @@
 		if(stage == TORTURE_STAGE_PAINS_ONLY)
 			any_active = TRUE
 			var/pain_amt = rand(8,16)
-			SEND_SIGNAL(M, COMSIG_SEX_GENERIC_ACTION, last_operator, 0, pain_amt, 0)
+			SEND_SIGNAL(M, COMSIG_SEX_GENERIC_ACTION, last_operator, 0, pain_amt, 0, src)
 			torture_targets[M] = TORTURE_STAGE_WAIT_DONE
 
 

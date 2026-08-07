@@ -81,7 +81,7 @@
 				target.visible_message(span_notice(pick("[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] fill [target]'s pussy.", "[user] feeds [target]'s pussy with [english_list(contdildo.reagents.reagent_list)] from \The [contdildo]", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] splash into [target]'s pussy.", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] flood into [target]'s pussy.")), span_notice(pick("[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] fill my pussy.", "I feed my pussy with [english_list(contdildo.reagents.reagent_list)] from \The [contdildo]", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] splash into my pussy.", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] flood into me.")))
 				contdildo.reagents.trans_to(targetpuss, speed, 1, TRUE, FALSE, targetpuss, FALSE, INJECT, FALSE, TRUE)
 			playsound(user.loc, 'sound/misc/mat/endin.ogg', 20, TRUE)
-			pain_amt = -8 //liquid ease pain i guess
+			pain_amt = max(pain_amt - 8, 0) //liquid ease pain i guess
 			target.heal_bodypart_damage(0,1,0,TRUE) //water on burn i guess.
 
 	perform_sex_action(target, user, 2, pain_amt, 2)
