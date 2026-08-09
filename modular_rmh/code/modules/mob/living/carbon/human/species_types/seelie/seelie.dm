@@ -46,6 +46,7 @@
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
 	inherent_traits = list(TRAIT_TINY, TRAIT_NOMOBSWAP, TRAIT_NOFALLDAMAGE1)
+	default_mob_weight = SEELIE_WEIGHT
 	allowed_pronouns = PRONOUNS_LIST_NO_IT
 
 	possible_ages = ALL_AGES_LIST
@@ -154,8 +155,14 @@
 	if(human.getorganslot(ORGAN_SLOT_WINGS))
 		REMOVE_TRAIT(human, TRAIT_FLOORED, SEELIE_WING_TRAIT)
 		ADD_TRAIT(human, TRAIT_MOVE_FLOATING, "[type]")
+		// A get_up() in progress has to finish on its own. Forcing the position here
+		// fails its rest_checks_callback, killing the do_after before it can clear
+		// lying_angle - which leaves the seelie upright but rotated for good.
+		if(DOING_INTERACTION(human, DOAFTER_SOURCE_GETTING_UP))
+			return
 		if(!HAS_TRAIT(human, TRAIT_FLOORED) && human.body_position == LYING_DOWN && !human.resting)
 			human.set_body_position(STANDING_UP)
+			human.set_lying_angle(0)
 		return
 
 	ADD_TRAIT(human, TRAIT_FLOORED, SEELIE_WING_TRAIT)
@@ -184,6 +191,7 @@
 	enforce_wing_requirement(human)
 	human.update_body()
 	human.verbs |= /mob/living/carbon/human/proc/seelie_exit_container
+	RegisterSignal(human, COMSIG_MOUSEDROP_ONTO, PROC_REF(on_mousedrop_onto))
 
 /datum/species/seelie/on_species_loss(mob/living/carbon/carbon_mob)
 	. = ..()
@@ -200,6 +208,33 @@
 	REMOVE_TRAIT(human, TRAIT_PACIFISM, "[type]")
 	human.remove_spell(/datum/action/cooldown/spell/undirected/seelie_grand_glamour)
 	human.verbs -= /mob/living/carbon/human/proc/seelie_exit_container
+	UnregisterSignal(human, COMSIG_MOUSEDROP_ONTO)
+
+// Fires on the seelie being dragged, before MouseDrop_T runs at all. This used to be four extra
+// MouseDrop_T definitions on /mob/living, /mob/living/carbon/human and /obj/structure/closet, which
+// silently shadowed the real ones in living.dm, human.dm and closets.dm. Only claim the drag when
+// the seelie action is going to happen, otherwise the normal drop behaviour has to run.
+/datum/species/seelie/proc/on_mousedrop_onto(mob/living/carbon/human/source, atom/over, mob/user)
+	SIGNAL_HANDLER
+	if(QDELETED(over) || over == source)
+		return NONE
+
+	if(user == source)
+		if(isliving(over))
+			if(!source.can_seelie_perch_on(over))
+				return NONE
+			INVOKE_ASYNC(source, TYPE_PROC_REF(/mob/living/carbon/human, seelie_mount_or_stow), over)
+			return COMPONENT_NO_MOUSEDROP
+
+		if(!source.can_seelie_enter_container(over))
+			return NONE
+		INVOKE_ASYNC(source, TYPE_PROC_REF(/mob/living/carbon/human, seelie_enter_container), over)
+		return COMPONENT_NO_MOUSEDROP
+
+	if(!isliving(user) || !source.can_seelie_force_into_container(over, user))
+		return NONE
+	INVOKE_ASYNC(source, TYPE_PROC_REF(/mob/living/carbon/human, seelie_force_into_container), over, user)
+	return COMPONENT_NO_MOUSEDROP
 
 /datum/species/seelie/check_roundstart_eligible()
 	return TRUE

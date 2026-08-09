@@ -46,6 +46,8 @@
 	tick_interval = SEELIE_GLAMOUR_CHECK_INTERVAL
 	alert_type = /atom/movable/screen/alert/status_effect/buff/seelie_grand_glamour
 	var/seelie_pass_flags
+	/// Tracked so the top-up is only ever taken back off a seelie it was actually put on.
+	var/applied_mortal_weight = FALSE
 
 /atom/movable/screen/alert/status_effect/buff/seelie_grand_glamour
 	name = "Grand Glamour"
@@ -76,6 +78,10 @@
 	REMOVE_TRAIT(seelie, TRAIT_TINY, SPECIES_TRAIT)
 	seelie_pass_flags = seelie.pass_flags & (PASSTABLE | PASSMOB)
 	seelie.pass_flags &= ~seelie_pass_flags
+	// A fae at mortal size has to weigh like one, or anything carrying them is holding 150 grams.
+	seelie.extra_mob_weight += HUMAN_WEIGHT - SEELIE_WEIGHT
+	applied_mortal_weight = TRUE
+	seelie.update_carry_weight()
 	seelie.seelie_ensure_scale()
 	seelie.visible_message(
 		span_notice("[seelie] swells to mortal size beneath a shimmering glamour."),
@@ -92,6 +98,12 @@
 			COMSIG_MOB_EQUIPPED_ITEM,
 			COMSIG_MOB_APPLIED_STATUS_EFFECT,
 		))
+		// Taken off before the is_seelie() guard below: a body that stopped being a seelie mid-glamour
+		// would otherwise keep carrying the mortal-size top-up forever.
+		if(applied_mortal_weight)
+			seelie.extra_mob_weight -= HUMAN_WEIGHT - SEELIE_WEIGHT
+			applied_mortal_weight = FALSE
+			seelie.update_carry_weight()
 
 	. = ..()
 

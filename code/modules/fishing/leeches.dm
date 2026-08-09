@@ -649,7 +649,7 @@
 		)))
 
 /obj/item/natural/worms/leech/erotic/proc/stimulate_owner(mob/living/carbon/human/H)
-	SEND_SIGNAL(H, COMSIG_SEX_GENERIC_ACTION, H, rand(2, 4), 0, rand(1, 3))
+	SEND_SIGNAL(H, COMSIG_SEX_GENERIC_ACTION, H, rand(2, 4), 0, rand(1, 3), src)
 
 /obj/item/natural/worms/leech/erotic/proc/drain_attached_fluids(mob/living/carbon/human/H, obj/item/organ/organ)
 	var/datum/reagents/source_reagents = get_fluid_source(H, organ)

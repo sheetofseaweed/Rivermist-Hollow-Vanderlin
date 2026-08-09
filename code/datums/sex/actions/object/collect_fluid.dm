@@ -9,12 +9,19 @@
 
 /// Returns the holder's active-hand glass container if it can still hold fluid, else null.
 /datum/sex_action/collect_fluid/proc/get_held_container(mob/living/holder)
-	if(!holder)
+	if(!isliving(holder))
 		return null
 	var/obj/item/reagent_containers/glass/container = holder.get_active_held_item()
 	if(istype(container) && container.reagents)
 		return container
 	return null
+
+/// Putting the container down ends the collection, wherever it lands.
+/datum/sex_action/collect_fluid/can_continue(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	return !!get_held_container(user)
 
 /datum/sex_action/collect_fluid/get_climax_container(mob/living/user, mob/living/target, mob/living/action_initiator, mob/living/action_target, mob/living/action_performer)
 	// The climaxing mob is passed as `user`; the container may be held by whoever performed the action. Check all candidates.
@@ -88,7 +95,6 @@
 // --- Other ---
 /datum/sex_action/collect_fluid/other
 	name = "Milk them into a container"
-	flipped = TRUE
 	check_same_tile = FALSE
 	mage_hand_allowed = TRUE
 	mage_hand_overlay_zone = MAGE_HAND_ZONE_GROIN
@@ -139,7 +145,11 @@
 
 /datum/sex_action/collect_fluid/other/on_finish(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] lowers \the [get_held_container(user)]."))
+	var/obj/item/container = get_held_container(user)
+	if(container)
+		user.visible_message(span_warning("[user] lowers \the [container]."))
+	else
+		user.visible_message(span_warning("[user] stops."))
 
 /datum/sex_action/collect_fluid/other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	// `user` is the climaxing partner; `target` is the one holding the container.

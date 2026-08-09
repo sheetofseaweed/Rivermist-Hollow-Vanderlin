@@ -4,6 +4,8 @@
 	//Mind updates
 	sync_mind()
 	refresh_erp_preference_cache()
+	// Must run after ..(), which wipes client.images out from under any track we already know.
+	SStrackables.watch_mob(src)
 	// Prefs are applied to the body BEFORE the client/mind is attached, so the spawn-time
 	// ensure_defeat_monitor() bailed on the eligibility check. Attach it now that we're in control.
 	ensure_defeat_monitor()

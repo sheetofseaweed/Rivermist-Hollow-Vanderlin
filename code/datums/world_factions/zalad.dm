@@ -73,7 +73,10 @@
 		/datum/supply_pack/luxury/spectacles_onyxa,
 		/datum/supply_pack/jewelry/nosegold,
 		/datum/supply_pack/apparel/engineering_goggles,
-		/datum/supply_pack/apparel/hatblu
+		/datum/supply_pack/apparel/hatblu,
+		// Nomad shelter
+		/datum/supply_pack/tools/camp_tent,
+		/datum/supply_pack/tools/camp_yurt
 	)
 	uncommon_pool = list(
 		// Better armor
@@ -181,7 +184,10 @@
 		// Narcotics
 		/datum/supply_pack/narcotics/ozium,
 		/datum/supply_pack/narcotics/poison,
-		/datum/supply_pack/medicine/antipregpot
+		/datum/supply_pack/medicine/antipregpot,
+		/datum/supply_pack/tools/camp_pavilion,
+		// Livestock
+		/datum/supply_pack/livestock/terrorbird
 	)
 	exotic_pool = list(
 		/datum/supply_pack/apparel/silkcoat,

@@ -80,7 +80,7 @@
 	forge_werewolf_objectives()
 
 	owner.current.grant_language(/datum/language/beast)
-	owner.current.faction.Add("wolves")
+	owner.current.faction.Add(FACTION_WOLVES)
 
 	wolfname = "[pick(strings("werewolf_names.json", "wolf_prefixes"))] [pick(strings("werewolf_names.json", "wolf_suffixes"))]"
 	last_seen_tod = GLOB.tod
@@ -120,7 +120,7 @@
 
 	if(owner.current)
 		owner.current.remove_language(/datum/language/beast)
-		owner.current.faction.Remove("wolves")
+		owner.current.faction.Remove(FACTION_WOLVES)
 
 	return ..()
 

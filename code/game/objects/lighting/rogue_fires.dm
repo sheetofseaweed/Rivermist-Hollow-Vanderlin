@@ -537,6 +537,97 @@
 	soundloop = /datum/looping_sound/fireloop
 
 	temperature_change = 25
+	/// Only fires deliberately made by a player may provide Defeat recovery.
+	var/player_built = FALSE
+	/// Weak references to the small set of victims explicitly resting at this fire.
+	var/list/datum/weakref/defeat_recovery_channels
+
+/obj/machinery/light/fueled/campfire/OnCrafted(dirin, mob/user)
+	. = ..()
+	if(isliving(user) && (user.client || user.mind))
+		player_built = TRUE
+
+/obj/machinery/light/fueled/campfire/Destroy()
+	cancel_defeat_recovery_channels()
+	defeat_recovery_channels = null
+	return ..()
+
+/obj/machinery/light/fueled/campfire/burn_out()
+	. = ..()
+	cancel_defeat_recovery_channels()
+
+/obj/machinery/light/fueled/campfire/proc/register_defeat_recovery_channel(datum/defeat_recovery_channel/channel)
+	if(!channel)
+		return FALSE
+	LAZYINITLIST(defeat_recovery_channels)
+	for(var/datum/weakref/channel_ref as anything in defeat_recovery_channels)
+		if(channel_ref.resolve() == channel)
+			return FALSE
+	defeat_recovery_channels += WEAKREF(channel)
+	return TRUE
+
+/obj/machinery/light/fueled/campfire/proc/unregister_defeat_recovery_channel(datum/defeat_recovery_channel/channel)
+	for(var/datum/weakref/channel_ref as anything in defeat_recovery_channels)
+		var/datum/defeat_recovery_channel/registered_channel = channel_ref.resolve()
+		if(!registered_channel || registered_channel == channel)
+			defeat_recovery_channels -= channel_ref
+	if(!length(defeat_recovery_channels))
+		defeat_recovery_channels = null
+
+/obj/machinery/light/fueled/campfire/proc/cancel_defeat_recovery_channels()
+	for(var/datum/weakref/channel_ref as anything in defeat_recovery_channels?.Copy())
+		var/datum/defeat_recovery_channel/channel = channel_ref.resolve()
+		if(!channel)
+			continue
+		channel.cancel()
+		qdel(channel)
+	defeat_recovery_channels = null
+
+/obj/machinery/light/fueled/campfire/proc/begin_passive_defeat_recovery(mob/living/victim)
+	if(!victim || victim.defeat_recovery_channel)
+		return FALSE
+	return victim.defeat_begin_campfire_recovery(src)
+
+/obj/machinery/light/fueled/campfire/proc/begin_tended_defeat_recovery(mob/living/victim, mob/living/helper)
+	if(!victim || !helper)
+		return FALSE
+	var/datum/defeat_recovery_channel/old_channel = victim.defeat_recovery_channel
+	if(old_channel)
+		if(old_channel.resolve_source() != src || !istype(old_channel.profile, /datum/defeat_recovery_profile/campfire))
+			return FALSE
+	// Preflight the faster profile before touching the passive timer. An attacker or otherwise
+	// ineligible helper must not be able to repeatedly reset someone else's recovery progress.
+	var/datum/defeat_recovery_profile/campfire/tended/tended_profile = new
+	var/datum/defeat_recovery_channel/preflight_channel = new(tended_profile, victim, helper, "campfire tending", src)
+	var/can_tend = tended_profile.can_recover(preflight_channel)
+	qdel(preflight_channel)
+	if(!can_tend)
+		return FALSE
+	if(old_channel)
+		old_channel.cancel()
+		qdel(old_channel)
+	return victim.defeat_begin_campfire_recovery(src, helper)
+
+/obj/machinery/light/fueled/campfire/proc/tend_registered_defeat_target(mob/living/helper)
+	for(var/datum/weakref/channel_ref as anything in defeat_recovery_channels)
+		var/datum/defeat_recovery_channel/channel = channel_ref.resolve()
+		var/mob/living/victim = channel?.resolve_victim()
+		if(!victim || !helper.Adjacent(victim))
+			continue
+		helper.visible_message(span_notice("[helper] settles beside [victim], tending them by [src]."), span_notice("I settle beside [victim] and tend them by [src]."))
+		return begin_tended_defeat_recovery(victim, helper)
+	return FALSE
+
+/obj/machinery/light/fueled/campfire/MouseDrop_T(atom/movable/dropped, mob/user)
+	. = ..()
+	if(!isliving(dropped) || !isliving(user))
+		return
+	var/mob/living/victim = dropped
+	var/mob/living/helper = user
+	if(!helper.Adjacent(src) || !helper.Adjacent(victim) || !victim.Adjacent(src))
+		return
+	if(begin_passive_defeat_recovery(victim))
+		helper.visible_message(span_notice("[helper] settles [victim] beside [src] to recover."), span_notice("I settle [victim] beside [src] to recover."))
 
 /obj/machinery/light/fueled/campfire/process()
 	..()
@@ -560,6 +651,8 @@
 		var/mob/living/carbon/human/H = user
 
 		if(istype(H))
+			if(tend_registered_defeat_target(H))
+				return TRUE
 			H.visible_message("<span class='info'>[H] warms \his hand near the fire.</span>")
 
 			if(do_after(H, 10 SECONDS, src))

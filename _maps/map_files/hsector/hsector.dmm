@@ -37174,6 +37174,13 @@
 /obj/structure/fluff/railing/border/east,
 /turf/open/openspace,
 /area/outdoors/rmh_field/west)
+"mrG" = (
+/obj/machinery/light/fueled/wallfire/candle{
+	pixel_y = -32
+	},
+/obj/machinery/defeat_medical_machine,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/town/rmh/craft/clinic)
 "mrH" = (
 /obj/structure/table/wood,
 /obj/item/natural/bundle/cloth{
@@ -69706,6 +69713,10 @@
 /obj/effect/decal/wood/herringbone,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh)
+"xdd" = (
+/obj/structure/fluff/statue/small,
+/turf/open/floor/church,
+/area/indoors/town/rmh/chapel)
 "xde" = (
 /obj/machinery/light/fueled/wallfire/candle,
 /obj/structure/table/wood/large/corner_new{
@@ -163786,7 +163797,7 @@ cvR
 wPl
 wPl
 loo
-oKg
+mrG
 tED
 gbX
 cgV
@@ -178170,7 +178181,7 @@ jHp
 rDm
 avZ
 tfx
-feh
+xdd
 evv
 siQ
 jRV

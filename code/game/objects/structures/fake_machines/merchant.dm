@@ -204,6 +204,8 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 /////////////////////////////////////////////////////////////////
 
 #define UPGRADE_NOTAX		(1<<0)
+/// Catch-all tab for supply packs that declare no group of their own.
+#define MERCHANT_CAT_MISC	"Misc"
 
 /obj/structure/fake_machine/merchantvend
 	name = "GOLDFACE"
@@ -245,7 +247,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	//RMH EDITED END
 	// this is the list of supply groups that you can purchase with this machine
 	var/list/unlocked_cats = list("Apparel","Storage","Armor(Light)","Armor(Steel)","Food","Drinks","Jewelry","Luxury","Tools","Seeds","Shields","Medicine","Raw Materials",
-								"Weapons (Iron)","Weapons (Steel)","Weapons (Ranged)","Ammunition")
+								"Weapons (Iron)","Weapons (Steel)","Weapons (Ranged)","Ammunition",MERCHANT_CAT_MISC)
 
 /obj/structure/fake_machine/merchantvend/Initialize()
 	. = ..()
@@ -351,12 +353,16 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	var/list/packs = list()
 	var/total_matches = 0
 	var/searching = (length(search) > 0)
+	var/browsing_misc = (current_cat == MERCHANT_CAT_MISC)
 	if(searching || (current_cat && (current_cat in unlocked_cats)))
 		var/list/matched = list()
 		for(var/pack in SSmerchant.supply_packs)
 			var/datum/supply_pack/P = SSmerchant.supply_packs[pack]
 			if(searching)
 				if(!findtext(P.name, search))
+					continue
+			else if(browsing_misc)
+				if(length(P.group))
 					continue
 			else if(P.group != current_cat)
 				continue
@@ -372,7 +378,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 			packs += list(list(
 				"ref" = "[P.type]",
 				"name" = P.name,
-				"category" = P.group,
+				"category" = length(P.group) ? P.group : MERCHANT_CAT_MISC,
 				"qty" = (islist(P.contains) ? length(P.contains) : 1),
 				"price" = price_base + price_tariff,
 				"price_base" = price_base,
@@ -492,6 +498,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 		"Seeds",
 		"Tools",
 		"Medicine",
+		MERCHANT_CAT_MISC,
 	)
 
 /obj/structure/fake_machine/merchantvend/public/examine(mob/user)
@@ -526,4 +533,6 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	unlocked_cats = list(
 		"Medicine",
 	)
+
+#undef MERCHANT_CAT_MISC
 //RMH EDITED END

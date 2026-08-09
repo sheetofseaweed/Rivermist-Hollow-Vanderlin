@@ -74,7 +74,7 @@
 				target.visible_message(span_notice(pick("[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] fill [target]'s ass.", "[user] feeds [target]'s ass with [english_list(contdildo.reagents.reagent_list)] from \The [contdildo]", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] splash into [target]'s ass.", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] flood into [target]'s ass.")), span_notice(pick("[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] fill my ass.", "I feed my ass with [english_list(contdildo.reagents.reagent_list)] from \The [contdildo]", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] splash into my ass.", "[english_list(contdildo.reagents.reagent_list)] from \the [contdildo] flood into me.")))
 				contdildo.reagents.trans_to(targetass, speed, 1, TRUE, FALSE, targetass, FALSE, INJECT, FALSE, TRUE)
 			playsound(user.loc, 'sound/misc/mat/endin.ogg', 20, TRUE)
-			pain_amt = -8 //liquid ease pain i guess
+			pain_amt = max(pain_amt - 8, 0) //liquid ease pain i guess
 			target.heal_bodypart_damage(0,1,0,TRUE) //water on burn i guess.
 
 	perform_sex_action(user, target, 2, pain_amt, 2)
@@ -86,7 +86,7 @@
 	return ORGASM_LOCATION_SELF
 
 /datum/sex_action/object_fuck/object_anal/on_finish(mob/living/user, mob/living/target)
+	var/obj/item/dildo = selected_toy || get_sextoy_in_hand(user)
 	. = ..()
-	var/obj/item/dildo = get_sextoy_in_hand(user)
 	user.visible_message(span_warning("[user] pulls \the [dildo] from their ass."))
 

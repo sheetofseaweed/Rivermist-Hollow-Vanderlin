@@ -35,10 +35,13 @@
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] makes out with [target]..."))
 	user.make_sucking_noise()
 
-	perform_sex_action(user, target, 1, 2, 0)
+	// Kissing has no pain of its own; only the top force step bites hard enough to sting.
+	var/pain_amt = (force >= SEX_FORCE_EXTREME) ? 2.5 : 0
+
+	perform_sex_action(user, target, 1, pain_amt, 0)
 	handle_passive_ejaculation(user)
 
-	perform_sex_action(target, user, 1, 2, 0)
+	perform_sex_action(target, user, 1, pain_amt, 0)
 	handle_passive_ejaculation(target)
 
 /datum/sex_action/kissing/on_finish(mob/living/user, mob/living/target)

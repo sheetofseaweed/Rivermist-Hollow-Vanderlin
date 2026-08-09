@@ -49,6 +49,7 @@
 	FACTION_CABAL, \
 	FACTION_RATS, \
 	FACTION_ORCS, \
+	FACTION_WOLVES, \
 	FACTION_BUMS, \
 	FACTION_VIKINGS, \
 	FACTION_MINOTAURS, \
@@ -67,6 +68,7 @@
 #define FACTION_CABAL		"Cabal"
 #define FACTION_RATS		"Rats"
 #define FACTION_ORCS		"Orcs"
+#define FACTION_WOLVES		"Wolves"
 #define FACTION_BUMS		"Bums"
 #define FACTION_MATTHIOS	"Matthios"
 #define FACTION_VIKINGS     "Vikings"

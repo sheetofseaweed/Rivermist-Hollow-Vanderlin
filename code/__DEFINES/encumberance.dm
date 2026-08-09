@@ -9,6 +9,8 @@
 
 /// Weight of an average human in kgs
 #define HUMAN_WEIGHT 60
+/// Weight of a seelie in their tiny fae form. A grand glamour tops this back up to HUMAN_WEIGHT.
+#define SEELIE_WEIGHT 150 GRAMS
 /// Weight required for someone to fall in water
 #define DROWNING_WEIGHT HUMAN_WEIGHT * 2
 

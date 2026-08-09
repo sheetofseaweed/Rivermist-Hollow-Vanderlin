@@ -67,6 +67,14 @@
 				no_beach_spawn = TRUE,
 				max_h = 1,
 				weight = 120
+			),
+			/mob/living/simple_animal/hostile/retaliate/saiga/terrorbird = new /datum/fauna_spawn_rule(
+				min_moist = 0.3,
+				max_moist = 0.8,
+				min_temp = 0.3,
+				max_temp = 0.7,
+				no_beach_spawn = TRUE,
+				weight = 60
 			)
 		)
 	if(difficulty >= 3)

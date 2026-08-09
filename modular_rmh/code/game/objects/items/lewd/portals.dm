@@ -894,13 +894,13 @@
 
 /datum/sex_action/portal_base/portal_store_vaginal
 	parent_type = /datum/sex_action/portal_base/portal_store_base
-	name = "Portal Store"
+	name = "Portal Store Pussy"
 	hole_id = ORGAN_SLOT_VAGINA
 	base_pain_amt = 2
 
 /datum/sex_action/portal_base/portal_store_anal
 	parent_type = /datum/sex_action/portal_base/portal_store_base
-	name = "Portal Store"
+	name = "Portal Store Ass"
 	hole_id = ORGAN_SLOT_ANUS
 	base_pain_amt = 4
 
@@ -980,13 +980,13 @@
 
 /datum/sex_action/portal_base/portal_remove_vaginal
 	parent_type = /datum/sex_action/portal_base/portal_remove_base
-	name = "Remove items from vagina"
+	name = "Portal Retrieve Pussy"
 	hole_id = ORGAN_SLOT_VAGINA
 	base_pain_amt = 1
 
 /datum/sex_action/portal_base/portal_remove_anal
 	parent_type = /datum/sex_action/portal_base/portal_remove_base
-	name = "Remove items from anus"
+	name = "Portal Retrieve Ass"
 	hole_id = ORGAN_SLOT_ANUS
 	base_pain_amt = 2
 /*

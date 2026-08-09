@@ -236,8 +236,12 @@
 			thrown_thing = I
 			if(ismobholder(thrown_thing))
 				var/obj/item/mob_holder/old = thrown_thing
-				thrown_thing = thrown_thing:held_mob
-				old.release()
+				var/mob/living/curled_up = old.held_mob
+				// A holder that can't let go (empty, or sealed in a body cavity) must not be
+				// swapped out for its occupant, or we throw a mob that is still inside something.
+				if(!curled_up || !old.release())
+					return
+				thrown_thing = curled_up
 				used_sound = pick(I.swingsound)
 			else
 				dropItemToGround(I, silent = TRUE)
@@ -711,14 +715,14 @@
 	set_health(round(maxHealth - used_damage, DAMAGE_PRECISION))
 	update_pain()
 	update_shock()
-	handle_defeat_health_update()
+	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
+	// Defeat must be evaluated before this can finalize a lethal health value.
 	update_stat()
 
 	if(stat == SOFT_CRIT)
 		add_movespeed_modifier(MOVESPEED_ID_CARBON_SOFTCRIT, TRUE, multiplicative_slowdown = SOFTCRIT_ADD_SLOWDOWN)
 	else
 		remove_movespeed_modifier(MOVESPEED_ID_CARBON_SOFTCRIT, TRUE)
-	SEND_SIGNAL(src, COMSIG_LIVING_HEALTH_UPDATE)
 
 /mob/living/carbon/var/lightning_flashing = FALSE
 
@@ -1431,9 +1435,10 @@
 		if(isnull(worn_item))
 			continue
 		. += worn_item.get_carry_weight(src) * weight_multiplier
+	// Seelies used to be skipped here because a perched fae otherwise dumped a full human's weight on
+	// its ride. They now weigh SEELIE_WEIGHT, so the honest sum is already negligible - and a seelie
+	// holding a grand glamour is mortal-sized and should be felt.
 	for(var/mob/living/carbon/human/friend in buckled_mobs)
-		if(friend.dna?.species?.id == SPEC_ID_SEELIE)
-			continue
 		. += friend.get_mob_weight() + friend.carry_weight
 
 	carry_weight = .

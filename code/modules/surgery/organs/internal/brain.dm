@@ -309,6 +309,12 @@
 /obj/item/organ/brain/on_life(delta_time, times_fired)
 	. = ..()
 	if(damage >= BRAIN_DAMAGE_DEATH) //rip
+		// Brain damage can finalize death synchronously, before the owner's next updatehealth(). Give
+		// the authoritative Defeat health signal first refusal, then re-check this organ after its
+		// bounded safety pass may have lowered the damage.
+		SEND_SIGNAL(owner, COMSIG_LIVING_HEALTH_UPDATE)
+		if(damage < BRAIN_DAMAGE_DEATH)
+			return
 		to_chat(owner, "<span class='danger'>The last spark of life in your brain fizzles out...</span>")
 		owner.death()
 		brain_death = TRUE
@@ -336,6 +342,11 @@
 				gain_trauma_type(BRAIN_TRAUMA_MILD, natural_gain = TRUE)
 	if(owner)
 		if(damage >= BRAIN_DAMAGE_DEATH && prev_damage < BRAIN_DAMAGE_DEATH && (organ_flags & ORGAN_VITAL))
+			// applyOrganDamage() reaches this threshold before updatehealth(), so route the lethal
+			// transition through the same monitor callback used by every normal health recomputation.
+			SEND_SIGNAL(owner, COMSIG_LIVING_HEALTH_UPDATE)
+			if(damage < BRAIN_DAMAGE_DEATH)
+				return
 			owner.death()
 			return
 		var/brain_message

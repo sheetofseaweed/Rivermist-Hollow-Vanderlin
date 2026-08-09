@@ -320,7 +320,7 @@
 		var/current_do_time = do_time / get_speed_multiplier()
 		var/do_after_flags = IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_SLOWDOWNS | IGNORE_USER_DOING | IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE
 		var/interaction_key = "sex_action_[REF(src)]"
-		if(!(action_target in view(1, action_user)) && !can_remote_interact())
+		if(!action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
 			action_scene.stop_action(src)
 			return
 		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))
@@ -346,7 +346,8 @@
 			var/obj/structure/closet/sex_shack = action_user.loc
 			sex_shack.Shake(1, 3, 15)
 
-		if(action_user.has_kink(KINK_VISUAL_EFFECTS))
+		// Remote work stays anonymous - hearts over the caster would point straight back at them.
+		if(action_user.has_kink(KINK_VISUAL_EFFECTS) && !action_remote_context)
 			show_sex_effects(action_user)
 
 		if(is_finished(action_user, action_target) || !continous)
@@ -386,7 +387,10 @@
 		var/grabstate = action_user.get_effective_grab_state_on(action_target)
 		if(grabstate == null || grabstate < required_grab_state)
 			return FALSE
-	if(!performing && !can_perform(action_user, action_target))
+	if(performing)
+		if(!can_continue(action_user, action_target))
+			return FALSE
+	else if(!can_perform(action_user, action_target))
 		return FALSE
 	return TRUE
 
@@ -405,6 +409,7 @@
 	if(action_target && action_target != action_user)
 		action_target.pop_visible_message_suppression()
 
+/// Never returns null - the result divides do_time, so an unlisted speed would be a division by zero.
 /datum/sex_action/proc/get_speed_multiplier()
 	switch(speed)
 		if(SEX_SPEED_LOW)
@@ -415,6 +420,7 @@
 			return 2.25
 		if(SEX_SPEED_EXTREME)
 			return 3
+	return 1.5
 
 /datum/sex_action/proc/get_stamina_cost_multiplier()
 	switch(force)
@@ -426,6 +432,7 @@
 			return 2.0
 		if(SEX_FORCE_EXTREME)
 			return 2.5
+	return 1.5
 
 /**
  * Applies one tick of stimulation using an explicit runtime action context.
@@ -618,6 +625,17 @@
 	if(requires_hole_storage)
 		if(!check_hole_storage_available(user, target))
 			return FALSE
+	return TRUE
+
+/**
+ * Re-checked on every loop of an already running action, for the resources the action keeps
+ * borrowing rather than the ones it only needed to start.
+ *
+ * can_perform() cannot be reused here: it is a start-time precondition, and its hole storage check
+ * would fail against the action's own stored item the moment the action gets going.
+ */
+/datum/sex_action/proc/can_continue(mob/living/user, mob/living/target)
+	SHOULD_CALL_PARENT(TRUE)
 	return TRUE
 
 /datum/sex_action/proc/can_mage_hand_reach(mob/living/user, mob/living/target)
@@ -966,7 +984,15 @@
 		qdel(claim)
 	resource_claims.Cut()
 
-/datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE) //must_flip is for handling partner's message
+/**
+ * Announces a climax and returns where the fluid goes, or null to fall back to the generic handling.
+ *
+ * Note the argument names do not mean what they mean everywhere else in this file: `user` is
+ * whoever just climaxed and `target` is the other participant, regardless of who started the
+ * action. Word the message with `user` as its subject. `must_flip` is set when the climaxing
+ * participant is not the one performing the action, so it selects the partner's phrasing.
+ */
+/datum/sex_action/proc/handle_climax_message(mob/living/user, mob/living/target, must_flip = FALSE)
 	return
 
 /// Returns the reagent container an ORGASM_LOCATION_CONTAINER climax should be routed into, or null. Overridden by collect-fluid actions.

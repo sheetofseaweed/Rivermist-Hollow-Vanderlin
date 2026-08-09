@@ -31,6 +31,7 @@
 	Insert(target_human, TRUE, TRUE)
 	target_human.set_resting(FALSE, silent = TRUE)
 	target_human.set_body_position(STANDING_UP)
+	target_human.set_lying_angle(0)
 	target_human.seelie_ensure_scale()
 	target_human.update_body()
 

@@ -695,14 +695,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 			if(job_preferences[j] != JP_LOW && job_preferences[j] != JP_MEDIUM && job_preferences[j] != JP_HIGH)
 				job_preferences -= j
 
-	S["customizer_entries"] >> customizer_entries
-	validate_customizer_entries()
-
-	load_quirks(S)
+	load_customizer_and_quirk_data(S)
 
 	load_erp_preferences(S)
 
 	return TRUE
+
+/// Quirk availability is judged against the customizer entries, and the genital set rules are
+/// judged against the quirks, so the entries are sanitized first, the quirks are read second, and
+/// load_quirks() runs the enforcing validation pass once both halves are present. Enforcing before
+/// the quirks are read strips the mixed genital set that Extra Genitals exists to allow.
+/datum/preferences/proc/load_customizer_and_quirk_data(savefile/S)
+	S["customizer_entries"] >> customizer_entries
+	validate_customizer_entries(enforce_genital_rules = FALSE)
+	load_quirks(S)
 
 /datum/preferences/proc/save_character()
 	if(!path)

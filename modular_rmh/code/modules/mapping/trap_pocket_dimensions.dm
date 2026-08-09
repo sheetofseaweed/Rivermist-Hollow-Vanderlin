@@ -367,21 +367,8 @@
 /datum/trap_pocket_tracker/proc/choose_lobby_escape(mob/living/carbon/captive)
 	parent_pocket.unmark_forced_captive(captive)
 	qdel(src)
-
-	var/datum/job/J = SSjob.GetJob(captive.job)
-	if(J.parent_job)
-		J.parent_job.adjust_current_positions(-1)
-		J.adjust_current_positions(-1)
-	else
-		J.adjust_current_positions(-1)
-
-	for(var/obj/structure/resurrection_rune/rr in GLOB.global_resurrunes)
-		if(captive in rr.resrunecontroler.linked_users)
-			rr.resrunecontroler.remove_user(captive)
-			GLOB.rune_roundstart_mobs -= captive
-	GLOB.chosen_names -= captive.real_name
+	captive.prepare_abandon_character()
 	captive.returntolobby()
-	qdel(captive)
 	return TRUE
 
 /datum/trap_pocket_tracker/proc/choose_keep_going(mob/living/carbon/captive)

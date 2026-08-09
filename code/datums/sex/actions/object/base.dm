@@ -37,6 +37,18 @@
 		return FALSE
 	return TRUE
 
+/datum/sex_action/object_fuck/can_continue(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	// run_runtime() gates on can_run(TRUE) before it calls on_start(), so on the first pass the toy
+	// has not been chosen yet. Demanding selected_toy here stopped the action before it ever began -
+	// any toy in hand is enough until on_start() picks one.
+	if(!selected_toy)
+		return get_storage_check_item(user, target) != null
+	// Dropping the toy ends the action even if it lands on the tile everyone is standing on.
+	return get_storage_check_item(user, target) == selected_toy
+
 /datum/sex_action/object_fuck/on_start(mob/living/user, mob/living/target)
 	selected_toy = get_storage_check_item(user, target)
 	if(!selected_toy)

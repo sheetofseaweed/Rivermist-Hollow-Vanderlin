@@ -142,7 +142,10 @@ GLOBAL_LIST_INIT(colorlist, list(
 			to_chat(user, span_warning("I could not fit [I] into [src]."))
 			return
 		var/obj/item/mob_holder/fellow = I
-		fellow.release() //is this not a bug?
+		// release() deletes the holder, so there is nothing left to insert. Falling through here
+		// used to hand a qdeleting item to transferItemToLoc and CRASH in forceMove.
+		fellow.release()
+		return
 
 	if(inserted)
 		to_chat(user, span_warning("There is already something inside the dye bin."))

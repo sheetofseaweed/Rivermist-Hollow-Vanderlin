@@ -306,14 +306,22 @@
 		return belly_comp
 	return null
 
+/// Every action this actor runs, unlike get_active_actions() which is scoped to the selected target.
+/datum/sex_scene_controller/proc/get_owned_actions()
+	var/list/actions = list()
+	for(var/datum/sex_action/action as anything in scene?.active_actions)
+		if(action.action_user == user)
+			actions += action
+	return actions
+
 /datum/sex_scene_controller/proc/set_current_speed(new_speed)
 	speed = clamp(new_speed, SEX_SPEED_MIN, SEX_SPEED_MAX)
-	for(var/datum/sex_action/action as anything in get_active_actions())
+	for(var/datum/sex_action/action as anything in get_owned_actions())
 		action.speed = speed
 
 /datum/sex_scene_controller/proc/set_current_force(new_force)
 	force = clamp(new_force, SEX_FORCE_MIN, SEX_FORCE_MAX)
-	for(var/datum/sex_action/action as anything in get_active_actions())
+	for(var/datum/sex_action/action as anything in get_owned_actions())
 		action.force = force
 
 /datum/sex_scene_controller/proc/set_stop_on_climax(stop_on_climax)

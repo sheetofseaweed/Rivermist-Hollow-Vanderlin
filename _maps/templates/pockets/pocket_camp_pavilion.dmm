@@ -1,0 +1,185 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/tent,
+/area/pocket_dimension/camp_pavilion)
+"b" = (
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_pavilion)
+"c" = (
+/obj/structure/closet/crate/crafted_closet,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_pavilion)
+"d" = (
+/obj/machinery/light/fueled/torchholder/metal_torch/east,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_pavilion)
+"e" = (
+/obj/structure/bed/wool,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_pavilion)
+"f" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"g" = (
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"h" = (
+/obj/machinery/light/fueled/torchholder/metal_torch,
+/turf/closed/wall/mineral/tent,
+/area/pocket_dimension/camp_pavilion)
+"i" = (
+/obj/structure/roguetent,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"j" = (
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/camp_pavilion)
+"k" = (
+/obj/structure/bed/inn/double,
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/camp_pavilion)
+"l" = (
+/obj/structure/table/wood/folding,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"r" = (
+/obj/machinery/light/fueled/torchholder/metal_torch/west,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"s" = (
+/obj/machinery/light/fueled/firebowl/standing,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"t" = (
+/obj/effect/landmark/pocket_dimension/drop_spot,
+/obj/structure/chair/stool,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"u" = (
+/obj/structure/chair/stool,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"y" = (
+/obj/machinery/light/fueled/hearth,
+/obj/structure/fluff/littlebanners,
+/turf/open/floor/blocks/newstone/alt,
+/area/pocket_dimension/camp_pavilion)
+"z" = (
+/obj/structure/fluff/littlebanners,
+/obj/structure/closet/crate/crafted_closet,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"A" = (
+/obj/structure/closet/crate/chest,
+/obj/structure/fluff/littlebanners,
+/turf/open/floor/woodturned,
+/area/pocket_dimension/camp_pavilion)
+"Q" = (
+/obj/machinery/light/fueled/torchholder/metal_torch/west,
+/turf/open/floor/carpet,
+/area/pocket_dimension/camp_pavilion)
+"Y" = (
+/obj/effect/landmark/pocket_dimension/exit/camp_shelter,
+/turf/closed/wall/mineral/tent,
+/area/pocket_dimension/camp_pavilion)
+
+(1,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+a
+c
+a
+e
+d
+a
+a
+a
+"}
+(3,1,1) = {"
+h
+j
+b
+a
+a
+i
+a
+A
+a
+"}
+(4,1,1) = {"
+a
+k
+b
+i
+g
+u
+g
+g
+a
+"}
+(5,1,1) = {"
+a
+a
+a
+a
+y
+l
+t
+f
+Y
+"}
+(6,1,1) = {"
+h
+j
+b
+i
+r
+u
+s
+g
+a
+"}
+(7,1,1) = {"
+a
+k
+b
+a
+a
+i
+a
+z
+a
+"}
+(8,1,1) = {"
+a
+a
+c
+a
+e
+Q
+a
+a
+a
+"}
+(9,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}
