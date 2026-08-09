@@ -7,6 +7,7 @@
 	armor_penetration = 100
 	pass_flags = PASSTABLE | PASSGRILLE
 	flag = "magic"
+	chest_bias = 60
 	/// determines what type of antimagic can block the spell projectile
 	var/antimagic_flags = MAGIC_RESISTANCE
 	/// determines the drain cost on the antimagic item
@@ -117,6 +118,7 @@
 	flag = "magic"
 	dismemberment = 50
 	nodamage = FALSE
+	woundclass = BCLASS_CUT
 
 /obj/projectile/magic/arcane_barrage
 	name = "arcane bolt"
@@ -126,6 +128,7 @@
 	nodamage = FALSE
 	armor_penetration = 0
 	flag = "magic"
+	woundclass = BCLASS_BURN
 	hitsound = 'sound/blank.ogg'
 
 /obj/projectile/magic/flying
@@ -228,6 +231,7 @@
 	damage = 10
 	damage_type = BRUTE
 	nodamage = FALSE
+	woundclass = BCLASS_BURN // Wounding class decides the injury, so every fireball subtype burns
 	light_color = "#f8af07"
 	light_outer_range =  2
 

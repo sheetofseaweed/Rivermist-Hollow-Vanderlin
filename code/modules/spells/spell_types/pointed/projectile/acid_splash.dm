@@ -77,6 +77,7 @@
 	icon_state = "acid_splash"
 	damage = 10
 	damage_type = BURN
+	woundclass = BCLASS_BURN
 	range = 15
 	speed = 3
 	var/aoe_range = 1

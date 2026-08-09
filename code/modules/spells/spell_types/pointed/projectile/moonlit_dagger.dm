@@ -25,6 +25,7 @@
 	nodamage = FALSE
 	damage_type = BRUTE
 	damage = DAMAGE_DAGGER * 1.5
+	woundclass = BCLASS_STAB
 	range = 7
 
 /obj/projectile/magic/moondagger/on_hit(mob/living/carbon/human/target, blocked = FALSE)

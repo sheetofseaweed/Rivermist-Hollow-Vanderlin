@@ -45,6 +45,7 @@
 	damage = 25
 	damage_type = BRUTE
 	nodamage = FALSE
+	woundclass = BCLASS_PIERCE
 	speed = 0.3
 	light_color = "#e74141"
 	light_outer_range =  7
