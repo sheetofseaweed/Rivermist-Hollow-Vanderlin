@@ -304,7 +304,8 @@
 		var/current_do_time = do_time / get_speed_multiplier()
 		var/do_after_flags = IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_SLOWDOWNS | IGNORE_USER_DOING | IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE
 		var/interaction_key = "sex_action_[REF(src)]"
-		if(!action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
+		// Mirrors can_run(): actions that opted out of proximity reach their target some other way.
+		if(check_distance && !action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
 			action_scene.stop_action(src)
 			return
 		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))

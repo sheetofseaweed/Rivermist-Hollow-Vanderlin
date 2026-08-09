@@ -2,10 +2,14 @@
 #define LEECH_BEHAVIOR_INTERVAL (10 SECONDS)
 #define LEECH_FEEDBACK_COOLDOWN (45 SECONDS)
 #define LEECH_MIGRATION_TIME (10 SECONDS)
-#define LEECH_APHRO_AMOUNT 0.05
+// Dosing has to outpace the reagent's own metabolization_rate over one behavior interval, or the
+// host's level only ever falls. It must also stay clear of update_total()'s 0.05 deletion floor.
+#define LEECH_APHRO_AMOUNT 0.6
 #define LEECH_APHRO_CAP 4
-#define LEECH_LACTATION_AMOUNT 0.1
+#define LEECH_LACTATION_AMOUNT 0.5
 #define LEECH_LACTATION_CAP 2
+/// Headroom kept below a reagent's addiction or overdose threshold. Leeches top up, they don't hook.
+#define LEECH_REAGENT_SAFETY_MARGIN 1
 #define LEECH_EGG_INTERVAL (4 MINUTES)
 #define LEECH_SEX_DRAIN_AMOUNT 10
 #define LEECH_BLOOD_STOP_THRESHOLD (BLOOD_VOLUME_NORMAL * 0.5)
@@ -634,6 +638,35 @@
 		return null
 	return SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, src)
 
+/// The highest level a leech may push a host to: our own cap, held under whatever addiction or
+/// overdose threshold the reagent declares. Zero means the reagent is unsafe to dose at all.
+/obj/item/natural/worms/leech/erotic/proc/get_safe_reagent_cap(reagent_type, leech_cap)
+	var/datum/reagent/reagent = GLOB.chemical_reagents_list[reagent_type]
+	if(!reagent)
+		return 0
+
+	var/safe_cap = leech_cap
+	if(reagent.addiction_threshold > 0)
+		safe_cap = min(safe_cap, reagent.addiction_threshold - LEECH_REAGENT_SAFETY_MARGIN)
+	if(reagent.overdose_threshold > 0)
+		safe_cap = min(safe_cap, reagent.overdose_threshold - LEECH_REAGENT_SAFETY_MARGIN)
+	return max(0, safe_cap)
+
+/// Tops the host up toward the safe cap. Reads the total level, so a dose from any other source
+/// counts against us rather than stacking on top of it.
+/obj/item/natural/worms/leech/erotic/proc/top_up_reagent(mob/living/carbon/human/H, reagent_type, amount, leech_cap)
+	if(!H?.reagents)
+		return FALSE
+
+	var/safe_cap = get_safe_reagent_cap(reagent_type, leech_cap)
+	if(safe_cap <= 0)
+		return FALSE
+
+	var/current_amount = H.reagents.get_reagent_amount(reagent_type)
+	if(current_amount >= safe_cap)
+		return FALSE
+	return H.reagents.add_reagent(reagent_type, min(amount, safe_cap - current_amount))
+
 /obj/item/natural/worms/leech/erotic/proc/do_behavior_tick(mob/living/carbon/human/H, obj/item/organ/organ)
 	stimulate_owner(H)
 	drain_attached_fluids(H, organ)
@@ -713,10 +746,7 @@
 	color = "#ff3fb4"
 
 /obj/item/natural/worms/leech/erotic/aphrodisiac/do_behavior_tick(mob/living/carbon/human/H, obj/item/organ/organ)
-	if(H.reagents)
-		var/current_aphro = H.reagents.get_reagent_amount(/datum/reagent/consumable/aphrodisiac)
-		if(current_aphro < LEECH_APHRO_CAP)
-			H.reagents.add_reagent(/datum/reagent/consumable/aphrodisiac, min(LEECH_APHRO_AMOUNT, LEECH_APHRO_CAP - current_aphro))
+	top_up_reagent(H, /datum/reagent/consumable/aphrodisiac, LEECH_APHRO_AMOUNT, LEECH_APHRO_CAP)
 	return ..()
 
 /obj/item/natural/worms/leech/erotic/milky
@@ -737,10 +767,7 @@
 	if(!breasts || !target_allows_pref(H, /datum/erp_preference/boolean/allow_forced_lactation))
 		erotic_unattach(H, span_notice("[src] slips off, unable to draw milk."))
 		return
-	if(H.reagents)
-		var/current_lactation = H.reagents.get_reagent_amount(/datum/reagent/consumable/lactation_inducer)
-		if(current_lactation < LEECH_LACTATION_CAP)
-			H.reagents.add_reagent(/datum/reagent/consumable/lactation_inducer, min(LEECH_LACTATION_AMOUNT, LEECH_LACTATION_CAP - current_lactation))
+	top_up_reagent(H, /datum/reagent/consumable/lactation_inducer, LEECH_LACTATION_AMOUNT, LEECH_LACTATION_CAP)
 	stimulate_owner(H)
 	drain_reagents_into_self(breasts.reagents, fluid_sucking)
 	if(is_full())
@@ -937,6 +964,7 @@
 #undef LEECH_EGG_INTERVAL
 #undef LEECH_LACTATION_CAP
 #undef LEECH_LACTATION_AMOUNT
+#undef LEECH_REAGENT_SAFETY_MARGIN
 #undef LEECH_APHRO_CAP
 #undef LEECH_APHRO_AMOUNT
 #undef LEECH_MIGRATION_TIME
