@@ -211,7 +211,7 @@ GLOBAL_LIST_EMPTY(active_succubus_consecrations)
 			span_boldwarning("Blessed water erupts into rose-colored steam against [body]'s skin!"),
 			span_userdanger("The blessed water sears my infernal nature!"),
 		)
-	if(!true_form_active)
+	if(!is_in_true_form())
 		revert_form(forced = TRUE)
 	var/burn_amount = min(max(reac_volume, 1), SUCCUBUS_BLESSED_WATER_MAX_BURN)
 	body.adjustFireLoss(burn_amount, 0)

@@ -6325,6 +6325,10 @@
 /obj/structure/flora/grass,
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh/livingquart)
+"coa" = (
+/obj/effect/landmark/succubus_insertion/sewers,
+/turf/open/floor/greenstone,
+/area/under/town/rmh/sewer)
 "coe" = (
 /obj/structure/fluff/walldeco/vinez/l,
 /obj/effect/decal/cobbleedge{
@@ -10326,6 +10330,10 @@
 /obj/effect/decal/wood/herringbone,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh)
+"dEf" = (
+/obj/effect/landmark/succubus_insertion/sewers,
+/turf/open/floor/blocks/paving,
+/area/under/town/rmh/sewer)
 "dEj" = (
 /obj/machinery/light/fueled/hearth,
 /obj/machinery/light/fueled/oven/north,
@@ -17397,6 +17405,10 @@
 	dir = 1
 	},
 /area/indoors/town/rmh/chapel)
+"fWY" = (
+/obj/effect/landmark/succubus_insertion/sewers,
+/turf/open/floor/blocks/paving/vert,
+/area/under/town/rmh/sewer)
 "fXa" = (
 /obj/item/grown/log/tree/stick,
 /turf/open/floor/dirt,
@@ -94115,7 +94127,7 @@ gYX
 gYX
 gJl
 gYX
-cTY
+fWY
 cTY
 cTY
 mxV
@@ -96921,7 +96933,7 @@ gLU
 kLd
 kLd
 nfA
-mGQ
+coa
 dHw
 ghp
 lFU
@@ -103451,7 +103463,7 @@ gSo
 hYN
 dHw
 dHw
-dHw
+dEf
 orA
 eTt
 pfo

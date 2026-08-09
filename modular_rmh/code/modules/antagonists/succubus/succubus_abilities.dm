@@ -486,10 +486,6 @@
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, source = owner)
 	else
 		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
-	if(current_tier >= SUCCUBUS_TRUE_FORM_UNLOCK_TIER)
-		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, source = owner)
-	else
-		current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
 	if(current_tier >= SUCCUBUS_RETINUE_UNLOCK_TIER)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, source = owner)
 		current_mob.add_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, source = owner)
@@ -502,7 +498,7 @@
 		current_mob.add_spell(/datum/action/cooldown/spell/succubus_fatal_drain, source = owner)
 	else
 		current_mob.remove_spell(/datum/action/cooldown/spell/succubus_fatal_drain)
-	refresh_succubus_rift_action(current_mob)
+	refresh_succubus_form_actions()
 
 /datum/antagonist/succubus/proc/remove_succubus_abilities()
 	var/mob/living/current_mob = owner?.current
@@ -516,12 +512,11 @@
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_charm)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_enthrall)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles)
-	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_true_form)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp)
 	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_infernal_snare)
 	current_mob.remove_spell(/datum/action/cooldown/spell/succubus_fatal_drain)
-	current_mob.remove_spell(/datum/action/cooldown/spell/undirected/succubus_rift)
+	remove_true_form_actions(current_mob)
 	// Allure's aura is a separate datum that outlives the spell if stripped mid-pulse
 	if(current_mob.has_status_effect(/datum/status_effect/succubus_allure_aura))
 		current_mob.remove_status_effect(/datum/status_effect/succubus_allure_aura)

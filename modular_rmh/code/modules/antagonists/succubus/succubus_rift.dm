@@ -34,7 +34,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	var/datum/antagonist/succubus/succubus_antag = owner?.has_antag_datum(/datum/antagonist/succubus)
 	var/obj/structure/succubus_rift/rift = succubus_antag?.get_active_rift()
 	if(succubus_antag?.rift_ascended)
-		progress = "I held the breach and ascended beyond my mortal shell."
+		progress = "I held the breach. Its conquered road to my lair is mine."
 	else if(succubus_antag?.rift_banished)
 		progress = "The breach was sealed, and I was dragged back through it."
 	else if(rift)
@@ -100,9 +100,6 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	QDEL_LIST(infernal_snares)
 
 /datum/antagonist/succubus/proc/prepare_for_rift_retry()
-	if(true_form_active)
-		leave_true_form(force = TRUE)
-
 	contracts_completed_full = 0
 	essence = 0
 	refresh_succubus_contract_progression()
@@ -115,48 +112,82 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	reanchor_contract_clock()
 	rift_retry_at = 0
 
+/datum/antagonist/succubus/proc/return_to_lair_after_rift_defeat()
+	var/mob/living/carbon/human/restored_body = owner?.current
+	if(!ishuman(restored_body) || QDELETED(restored_body))
+		return FALSE
+	if(restored_body.stat == DEAD || restored_body.mind != owner || !base_form)
+		return FALSE
+
+	var/datum/job/succubus/succubus_job = SSjob.GetJobType(/datum/job/succubus)
+	var/obj/effect/landmark/start/succubus/home_spawn = succubus_job?.get_home_spawn_point()
+	var/turf/home_turf = get_turf(home_spawn)
+	if(QDELETED(home_spawn) || !isturf(home_turf))
+		log_world("Failed to return [key_name(restored_body)] to the Succubus lair after a Rift defeat: no valid home landmark was available.")
+		return FALSE
+	if(home_turf.density || !istype(get_area(home_turf), /area/indoors/succubus_lair))
+		log_world("Failed to return [key_name(restored_body)] to the Succubus lair after a Rift defeat: no valid home landmark was available.")
+		return FALSE
+	if(!base_form.apply(restored_body))
+		log_world("Failed to restore [key_name(restored_body)] to their Demon identity after a Rift defeat.")
+		return FALSE
+
+	current_form_key = null
+	if(!restored_body.forceMove(home_turf))
+		log_world("Failed to move [key_name(restored_body)] to the Succubus lair after a Rift defeat.")
+		refresh_succubus_form_actions()
+		return FALSE
+
+	has_entered_mortal_world = FALSE
+	refresh_succubus_form_actions()
+	log_game("[key_name(restored_body)] returned to the Succubus lair after a Rift defeat at [AREACOORD(restored_body)].")
+	return TRUE
+
 /datum/antagonist/succubus/proc/prompt_rift_defeat_choice()
-	var/mob/living/restored_body = owner?.current
+	var/mob/living/carbon/human/restored_body = owner?.current
 	var/choice
 	if(!QDELETED(restored_body) && restored_body.stat != DEAD && restored_body.client)
 		choice = tgui_alert(
 			restored_body,
-			"The sealed Rift has cast me back into my mortal shell and stripped away Asmodeus's favor. I can cling to this world and rebuild from Tier 1, or stop resisting and let the last infernal tether drag me away from active play.",
+			"The sealed Rift has stripped away Asmodeus's favor. I can let its recoil cast me back into my lair to rebuild from Tier 1, or stop resisting and let the last infernal tether drag me away from active play.",
 			"The Rift's Verdict",
-			list("Cling to This World", "Surrender to the Rift"),
+			list("Return to My Lair", "Surrender to the Rift"),
 			SUCCUBUS_RIFT_DEFEAT_PROMPT_TIMEOUT,
 		)
 
 	if(QDELETED(src) || !owner || owner.has_antag_datum(/datum/antagonist/succubus) != src)
 		return FALSE
-	if(choice == "Surrender to the Rift" && retire_through_rift(ascended = FALSE))
+	restored_body = owner.current
+	if(!ishuman(restored_body) || QDELETED(restored_body))
+		refresh_rift_objective()
+		return TRUE
+	if(restored_body.stat == DEAD || restored_body.mind != owner)
+		refresh_rift_objective()
+		return TRUE
+	if(choice == "Surrender to the Rift" && surrender_to_rift())
 		rift_banished = TRUE
 		rift_repelled = FALSE
 		refresh_rift_objective()
 		return TRUE
 
+	var/returned_home = return_to_lair_after_rift_defeat()
 	if(contract_pool && !current_contract)
 		issue_next_contract()
-	restored_body = owner.current
-	if(!QDELETED(restored_body) && restored_body.stat != DEAD)
-		to_chat(restored_body, span_boldnotice("I cling to the mortal world. If I want the Rift again, I must earn every measure of Asmodeus's favor anew."))
+	if(returned_home)
+		to_chat(restored_body, span_boldnotice("The Rift's recoil hurls me back into my lair in my true flesh. My gateway opens anew, but I must earn every measure of Asmodeus's favor again."))
+	else
+		to_chat(restored_body, span_boldwarning("The severed Rift cannot find the path back to my lair. I remain in this world at Tier 1, and my gateway stays spent."))
 	refresh_rift_objective()
 	return TRUE
 
-/datum/antagonist/succubus/proc/retire_through_rift(ascended)
-	if(true_form_active)
-		leave_true_form(force = TRUE)
-
+/datum/antagonist/succubus/proc/surrender_to_rift()
 	var/mob/living/restored_body = owner?.current
 	if(QDELETED(restored_body))
 		return FALSE
-	if(ascended)
-		to_chat(restored_body, span_boldnotice("The Rift accepts me. My mortal shell falls away as I ascend beyond this world."))
-	else
-		restored_body.visible_message(
-			span_boldwarning("A last rose-colored tether coils around [restored_body] and tears them from the mortal world!"),
-			span_userdanger("I stop resisting. The last infernal tether hooks into my soul and drags me screaming into the lower planes!"),
-		)
+	restored_body.visible_message(
+		span_boldwarning("A last rose-colored tether coils around [restored_body] and tears them from the mortal world!"),
+		span_userdanger("I stop resisting. The last infernal tether hooks into my soul and drags me screaming into the lower planes!"),
+	)
 	restored_body.ghostize(can_reenter_corpse = FALSE)
 	restored_body.moveToNullspace()
 	return TRUE
@@ -168,7 +199,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 		if(!silent)
 			to_chat(form_body, span_warning("Asmodeus has not yet entrusted me with the final breach."))
 		return FALSE
-	if(!true_form_active)
+	if(!is_in_true_form())
 		if(!silent)
 			to_chat(form_body, span_warning("Only my unveiled form can tear at the boundary."))
 		return FALSE
@@ -217,8 +248,8 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 /datum/antagonist/succubus/proc/refresh_succubus_rift_action(mob/living/form_body)
 	if(!istype(form_body))
 		return
-	if(true_form_active && owner?.current == form_body && get_succubus_contract_tier() >= SUCCUBUS_RIFT_UNLOCK_TIER)
-		form_body.add_spell(/datum/action/cooldown/spell/undirected/succubus_rift, source = form_body)
+	if(!rift_ascended && is_in_true_form() && owner?.current == form_body && get_succubus_contract_tier() >= SUCCUBUS_RIFT_UNLOCK_TIER)
+		form_body.add_spell(/datum/action/cooldown/spell/undirected/succubus_rift, source = owner)
 		return
 	form_body.remove_spell(/datum/action/cooldown/spell/undirected/succubus_rift)
 
@@ -496,16 +527,66 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	var/datum/antagonist/succubus/owner_datum = owner_mind?.has_antag_datum(/datum/antagonist/succubus)
 	if(!owner_datum)
 		return FALSE
+	var/datum/antagonist/succubus/user_datum = IS_SUCCUBUS(user)
+	if(user_datum)
+		if(!silent)
+			if(user_datum == owner_datum)
+				to_chat(user, span_warning("My Rift recognizes its mistress. Its hungry edges will never close beneath my own hand."))
+			else
+				to_chat(user, span_warning("The rival Rift rejects my infernal touch. One succubus cannot seal another's claim."))
+		return FALSE
 	if(owner_datum.is_linked_retinue(user))
 		if(!silent)
 			to_chat(user, span_warning("My infernal bond recoils from any attempt to seal its mistress's Rift."))
 		return FALSE
 	return TRUE
 
+/obj/structure/succubus_rift/proc/travel_owner_to_lair(mob/living/carbon/human/user)
+	if(QDELETED(src) || current_stage != SUCCUBUS_RIFT_STAGE_ASCENDED)
+		return FALSE
+	if(!ishuman(user) || QDELETED(user) || user.stat != CONSCIOUS || !isturf(user.loc) || !Adjacent(user))
+		if(user)
+			to_chat(user, span_warning("I must stand beside the victorious Rift, conscious and steady, to take its path home."))
+		return FALSE
+
+	var/datum/mind/owner_mind = owner_mind_ref?.resolve()
+	var/datum/antagonist/succubus/owner_datum = owner_mind?.has_antag_datum(/datum/antagonist/succubus)
+	if(!owner_datum || owner_datum.owner?.current != user || user.mind != owner_mind)
+		to_chat(user, span_warning("The conquered Rift hardens against me. Its path belongs to another."))
+		return FALSE
+
+	var/datum/job/succubus/succubus_job = SSjob.GetJobType(/datum/job/succubus)
+	var/obj/effect/landmark/start/succubus/home_spawn = succubus_job?.get_home_spawn_point()
+	var/turf/home_turf = get_turf(home_spawn)
+	if(QDELETED(home_spawn) || !isturf(home_turf))
+		to_chat(user, span_warning("My victorious Rift reaches for the lair, but finds no stable path home."))
+		log_world("Failed to return [key_name(user)] through the ascended Succubus Rift: no valid home landmark was available.")
+		return FALSE
+	if(home_turf.density || !istype(get_area(home_turf), /area/indoors/succubus_lair))
+		to_chat(user, span_warning("My victorious Rift reaches for the lair, but finds no stable path home."))
+		log_world("Failed to return [key_name(user)] through the ascended Succubus Rift: no valid home landmark was available.")
+		return FALSE
+	if(!user.forceMove(home_turf))
+		to_chat(user, span_warning("The path to my lair twists shut before I can cross it."))
+		log_world("Failed to move [key_name(user)] through the ascended Succubus Rift to the lair.")
+		return FALSE
+
+	owner_datum.has_entered_mortal_world = FALSE
+	user.visible_message(
+		span_boldnotice("Rose-gold light parts as [user] steps out of the victorious Rift."),
+		span_love("I cross my conquered Rift and return to my lair. The mortal gateway is mine to use again."),
+	)
+	playsound(user, 'sound/misc/portalopen.ogg', 60, TRUE)
+	log_game("[key_name(user)] returned to the Succubus lair through the ascended Rift at [AREACOORD(user)].")
+	return TRUE
+
 /obj/structure/succubus_rift/attack_hand(mob/living/user)
 	. = ..()
 	if(.)
 		return
+	if(current_stage == SUCCUBUS_RIFT_STAGE_ASCENDED)
+		travel_owner_to_lair(user)
+		return TRUE
 	if(current_stage != SUCCUBUS_RIFT_STAGE_OPEN || collapsing)
 		return
 	if(!can_seal_rift(user))
@@ -557,31 +638,38 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	owner_datum.cleanup_rift_retinue()
 	if(!ascended)
 		owner_datum.prepare_for_rift_retry()
+	else
+		current_stage = SUCCUBUS_RIFT_STAGE_ASCENDED
+		name = "ascendant Rift of Lust"
+		desc = "A conquered wound of steady rose-gold light. Its victorious mistress alone commands the road through it."
+		color = "#E89ACF"
+		resistance_flags |= INDESTRUCTIBLE
 
 	var/area_name = get_area_name(src)
 	if(ascended)
-		visible_message(span_boldnotice("[src] blooms into rose-gold light as its mistress passes beyond the mortal world!"))
+		visible_message(span_boldnotice("[src] steadies into an unbreakable rose-gold wound as its mistress claims the road beyond!"))
 		priority_announce(
-			"The infernal breach in [area_name] has folded shut. Its mistress survived the trial and vanished beyond mortal reach.",
-			"Infernal Incursion Resolved",
+			"The infernal breach in [area_name] has stabilized beyond mortal sealing. Its mistress survived the trial and now commands a road between this world and her lair.",
+			"Infernal Incursion Lost",
 			'sound/misc/alert.ogg',
 		)
+		if(owner_datum.owner?.current)
+			to_chat(owner_datum.owner.current, span_boldnotice("The Rift accepts my victory. It will remain here as an unbreakable road back to my lair."))
 	else
-		visible_message(span_boldwarning("[src] collapses and wrenches its mistress back into her weakened mortal shell!"))
+		visible_message(span_boldwarning("[src] collapses and strips its mistress of infernal favor!"))
 		priority_announce(
-			"The infernal breach in [area_name] has been sealed. Its mistress was torn from her unveiled form, stripped of infernal favor, and left to mortal judgment.",
+			"The infernal breach in [area_name] has been sealed. Its mistress was stripped of infernal favor and left to mortal judgment.",
 			"Infernal Incursion Repelled",
 			'sound/misc/alert.ogg',
 		)
 
-	if(ascended)
-		owner_datum.retire_through_rift(ascended = TRUE)
-	if(owner_datum.get_active_rift() == src)
+	if(!ascended && owner_datum.get_active_rift() == src)
 		owner_datum.active_rift_ref = null
 	owner_datum.refresh_rift_objective()
+	owner_datum.refresh_succubus_form_actions()
 	if(!ascended)
 		INVOKE_ASYNC(owner_datum, TYPE_PROC_REF(/datum/antagonist/succubus, prompt_rift_defeat_choice))
-	if(delete_rift)
+	if(delete_rift && !ascended)
 		qdel(src)
 	return TRUE
 
@@ -754,7 +842,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 			if(!rift?.resolve_verdict(ascended = TRUE))
 				to_chat(admin, span_warning("There is no unresolved Open Rift to ascend through."))
 				return
-			to_chat(admin, span_notice("Forced the Rift's ascension verdict and retired its owner from active play."))
+			to_chat(admin, span_notice("Forced the Rift's ascension verdict and stabilized its permanent lair portal."))
 		if("Force Rift Closure")
 			if(!rift?.resolve_verdict(ascended = FALSE))
 				to_chat(admin, span_warning("There is no unresolved Open Rift to seal."))
@@ -764,7 +852,13 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 			if(!rift)
 				to_chat(admin, span_warning("There is no active Rift to collapse."))
 				return
-			rift.collapse(apply_retry = FALSE)
+			if(rift.current_stage == SUCCUBUS_RIFT_STAGE_ASCENDED)
+				qdel(rift)
+				to_chat(admin, span_notice("Removed the stable ascended portal."))
+				return
+			if(!rift.collapse(apply_retry = FALSE))
+				to_chat(admin, span_warning("The active Rift could not be collapsed."))
+				return
 			to_chat(admin, span_notice("Collapsed the Rift without applying a retry lockout."))
 
 	message_admins("[key_name_admin(admin)] used Rift debug control '[choice]' on [key_name_admin(owner)].")

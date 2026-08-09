@@ -1,5 +1,10 @@
 //MAIN MAP AREAS//
 
+/area/indoors/succubus_lair
+	name = "lair (Succubus)"
+	first_time_text = "THE INFERNAL BOUDOIR"
+	ceiling_protected = TRUE
+
 
 /area/outdoors/exposed/rmh
 	icon_state = "exposed"

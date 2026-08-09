@@ -26,7 +26,11 @@
 	focus = TRUE
 /datum/unit_test/succubus_essence_cap
 	focus = TRUE
+/datum/unit_test/succubus_spawn_identity
+	focus = TRUE
 /datum/unit_test/succubus_wardrobe
+	focus = TRUE
+/datum/unit_test/succubus_disguise_sandbox
 	focus = TRUE
 /datum/unit_test/succubus_pref_gating
 	focus = TRUE
@@ -60,7 +64,9 @@
 	focus = TRUE
 /datum/unit_test/succubus_harem_team
 	focus = TRUE
-/datum/unit_test/succubus_true_form_gates
+/datum/unit_test/succubus_demon_form_gates
+	focus = TRUE
+/datum/unit_test/succubus_deployment_gateway
 	focus = TRUE
 /datum/unit_test/succubus_sovereign_gaze
 	focus = TRUE
@@ -73,6 +79,8 @@
 /datum/unit_test/succubus_rift_incursion_lifecycle
 	focus = TRUE
 /datum/unit_test/succubus_rift_sealing_and_failure
+	focus = TRUE
+/datum/unit_test/succubus_rift_dead_retry_stays_put
 	focus = TRUE
 /datum/unit_test/succubus_rift_ascension_and_retinue_cleanup
 	focus = TRUE
@@ -226,8 +234,8 @@
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
 	antag.owner = succubus.mind
 	LAZYADD(succubus.mind.antag_datums, antag)
-	antag.base_form = allocate(/datum/identity_snapshot)
-	antag.base_form.capture(succubus)
+	TEST_ASSERT(antag.initialize_demon_identity(), "holy-water test Succubus must initialize her Demon identity")
+	TEST_ASSERT(antag.starting_form.apply(succubus), "holy-water test Succubus must be able to wear her starting face")
 	antag.current_form_key = succubus.mind
 	succubus.real_name = "Borrowed Face"
 
@@ -235,14 +243,14 @@
 	var/fire_before = succubus.getFireLoss()
 	blessed_water.reaction_mob(succubus, TOUCH, 20)
 	TEST_ASSERT_NULL(antag.current_form_key, "blessed water must collapse a currently borrowed face")
-	TEST_ASSERT_EQUAL(succubus.real_name, "Original Face", "holy-water camouflage failure must restore the Succubus's own mortal identity")
+	TEST_ASSERT_EQUAL(succubus.real_name, "Original Face", "holy-water camouflage failure must restore the Succubus's Demon identity")
+	TEST_ASSERT(antag.is_in_true_form(), "holy-water camouflage failure must leave the same body visibly Demon")
 	TEST_ASSERT_EQUAL(succubus.getFireLoss() - fire_before, SUCCUBUS_BLESSED_WATER_MAX_BURN, "blessed-water burn must cap at the evidence-test limit")
 
 	var/fire_before_drinking = succubus.getFireLoss()
 	blessed_water.reaction_mob(succubus, INGEST, 20)
 	TEST_ASSERT_EQUAL(succubus.getFireLoss() - fire_before_drinking, SUCCUBUS_BLESSED_WATER_MAX_BURN, "drinking blessed water must run the same capped Succubus evidence test")
 
-	antag.true_form_active = TRUE
 	var/fire_in_true_form = succubus.getFireLoss()
 	blessed_water.reaction_mob(succubus, TOUCH, 20)
 	TEST_ASSERT_EQUAL(succubus.getFireLoss() - fire_in_true_form, SUCCUBUS_BLESSED_WATER_MAX_BURN, "blessed water must also visibly sting an already revealed True Form")
@@ -392,14 +400,249 @@
 	antag.adjust_essence(-(antag.essence_cap * 2))
 	TEST_ASSERT_EQUAL(antag.essence, 0, "essence must clamp at zero")
 
+/datum/unit_test/succubus_spawn_identity/Run()
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human)
+	succubus.mind_initialize()
+	var/mob/living/carbon/human/original_body = succubus
+	var/datum/mind/original_mind = succubus.mind
+	var/original_species_type = succubus.dna.species.type
+	succubus.real_name = "Mortal Preference"
+	succubus.age = 37
+	succubus.gender = FEMALE
+	succubus.pronouns = THEY_THEM
+	succubus.voice_type = VOICE_TYPE_ANDRO
+	succubus.voice_color = "c71585"
+	succubus.skin_tone = SKIN_TONE_PALE
+	succubus.set_hair_color("#8a2be2", FALSE)
+	succubus.set_eye_color("#12ab34", "#5634ab", FALSE)
+	succubus.dna.update_ui_block(DNA_GENDER_BLOCK)
+	succubus.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
+
+	var/obj/item/organ/genitals/penis/preference_penis = succubus.getorganslot(ORGAN_SLOT_PENIS)
+	if(!preference_penis)
+		preference_penis = allocate(/obj/item/organ/genitals/penis)
+		preference_penis.Insert(succubus, TRUE, FALSE)
+	preference_penis.organ_size = 7
+	succubus.dna.organ_dna[ORGAN_SLOT_PENIS] = preference_penis.create_organ_dna()
+
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = succubus.mind
+	LAZYADD(succubus.mind.antag_datums, antag)
+
+	TEST_ASSERT(antag.initialize_demon_identity(), "Succubus gain must derive a Demon identity from a valid human")
+	TEST_ASSERT_EQUAL(antag.owner.current, original_body, "Demon initialization must keep the same body reference")
+	TEST_ASSERT_EQUAL(succubus.mind, original_mind, "Demon initialization must keep the same mind")
+	TEST_ASSERT(istype(succubus.dna.species, /datum/species/demon), "the initialized body must use the Demon species")
+	var/list/demon_skin_tones = succubus.dna.species.get_skin_list()
+	var/list/demon_skin_values = list()
+	for(var/skin_name in demon_skin_tones)
+		demon_skin_values += demon_skin_tones[skin_name]
+	TEST_ASSERT((succubus.skin_tone in demon_skin_values), "the derived Demon must use an infernal skin tone")
+	TEST_ASSERT_EQUAL(succubus.real_name, "Mortal Preference", "the derived Demon must retain the selected name")
+	TEST_ASSERT_EQUAL(succubus.pronouns, THEY_THEM, "the derived Demon must retain selected pronouns")
+	TEST_ASSERT_EQUAL(succubus.voice_type, VOICE_TYPE_ANDRO, "the derived Demon must retain the selected voice")
+	TEST_ASSERT_NOTNULL(antag.starting_form, "initialization must retain the preference identity as a disguise")
+	TEST_ASSERT_NOTNULL(antag.base_form, "initialization must capture a complete Demon base identity")
+	TEST_ASSERT_EQUAL(length(antag.stolen_forms), 0, "the starting disguise must not consume a harvested wardrobe slot")
+	TEST_ASSERT(istype(antag.starting_form.dna.species, original_species_type), "the starting disguise must retain the preference species")
+	TEST_ASSERT(istype(antag.base_form.dna.species, /datum/species/demon), "the base snapshot must retain the Demon species")
+	var/obj/item/organ/horns/demon/demon_horns = succubus.getorganslot(ORGAN_SLOT_HORNS)
+	var/obj/item/organ/wings/flight/demon/demon_wings = succubus.getorganslot(ORGAN_SLOT_WINGS)
+	TEST_ASSERT_EQUAL(demon_horns?.accessory_type, /datum/sprite_accessory/horns/longhorns, "the derived Demon must have fixed long horns")
+	TEST_ASSERT_EQUAL(demon_wings?.accessory_type, /datum/sprite_accessory/wings/wide/succubus, "the derived Demon must have fixed Succubus wings")
+	var/obj/item/organ/genitals/penis/demon_penis = succubus.getorganslot(ORGAN_SLOT_PENIS)
+	TEST_ASSERT_EQUAL(demon_penis?.organ_size, 7, "Demon derivation must retain the selected genital configuration")
+
+	TEST_ASSERT(antag.starting_form.apply(succubus), "the starting disguise must apply to the Demon body")
+	antag.current_form_key = antag.owner
+	TEST_ASSERT_EQUAL(succubus.dna.species.type, original_species_type, "the starting disguise must restore the preference species")
+	TEST_ASSERT_EQUAL(succubus.real_name, "Mortal Preference", "the starting disguise must restore the preference name")
+	TEST_ASSERT_EQUAL(succubus.skin_tone, SKIN_TONE_PALE, "the starting disguise must restore the preference skin")
+	TEST_ASSERT_EQUAL(succubus.get_eye_color(RIGHT_SIDE), "#12ab34", "the starting disguise must restore eye color")
+	TEST_ASSERT_EQUAL(succubus.pronouns, THEY_THEM, "the starting disguise must restore pronouns")
+	var/obj/item/organ/genitals/penis/restored_penis = succubus.getorganslot(ORGAN_SLOT_PENIS)
+	TEST_ASSERT_EQUAL(restored_penis?.organ_size, 7, "the starting disguise must restore genital configuration")
+
+	TEST_ASSERT(antag.revert_form(forced = TRUE), "shedding the starting disguise must restore the Demon base snapshot")
+	TEST_ASSERT(istype(succubus.dna.species, /datum/species/demon), "shedding a disguise must restore the Demon species")
+	TEST_ASSERT_NULL(antag.current_form_key, "shedding a disguise must clear the worn-form key")
+
+	antag.on_removal()
+	TEST_ASSERT_EQUAL(original_mind.current, original_body, "antagonist removal must keep the original mind in the original body")
+	TEST_ASSERT_EQUAL(succubus.dna.species.type, original_species_type, "antagonist removal must restore the preference species")
+	TEST_ASSERT_EQUAL(succubus.real_name, "Mortal Preference", "antagonist removal must restore the preference identity")
+	TEST_ASSERT_NULL(succubus.getorganslot(ORGAN_SLOT_HORNS), "antagonist removal must remove Demon horns from a human preference body")
+	TEST_ASSERT_NULL(succubus.getorganslot(ORGAN_SLOT_WINGS), "antagonist removal must remove Demon flight wings from a human preference body")
+
+/datum/unit_test/succubus_deployment_gateway/Run()
+	var/turf/gateway_turf = get_turf(run_loc_floor_bottom_left)
+	var/turf/user_turf = get_step(gateway_turf, EAST)
+	var/turf/outskirts_turf = get_turf(run_loc_floor_top_right)
+	var/turf/sewer_turf = get_step(outskirts_turf, WEST)
+	TEST_ASSERT(isfloorturf(gateway_turf) && isfloorturf(user_turf), "deployment test needs adjacent gateway and user floor turfs")
+	TEST_ASSERT(isfloorturf(outskirts_turf) && isfloorturf(sewer_turf), "deployment test needs valid destination floor turfs")
+
+	var/obj/structure/succubus_gateway/gateway = allocate(/obj/structure/succubus_gateway, gateway_turf)
+	var/obj/effect/landmark/start/adventurerlate/outskirts_marker = allocate(/obj/effect/landmark/start/adventurerlate, outskirts_turf)
+	var/obj/effect/landmark/succubus_insertion/sewers/sewer_marker = allocate(/obj/effect/landmark/succubus_insertion/sewers, sewer_turf)
+
+	var/mob/living/carbon/human/outskirts_succubus = allocate(/mob/living/carbon/human, user_turf)
+	outskirts_succubus.mind_initialize()
+	var/datum/antagonist/succubus/outskirts_antag = allocate(/datum/antagonist/succubus)
+	outskirts_antag.owner = outskirts_succubus.mind
+	LAZYADD(outskirts_succubus.mind.antag_datums, outskirts_antag)
+
+	TEST_ASSERT(!gateway.can_deploy_succubus(outskirts_succubus, outskirts_antag, silent = TRUE), "the gateway must reject an undisguised Succubus")
+	outskirts_antag.current_form_key = outskirts_antag.owner
+	TEST_ASSERT(gateway.can_deploy_succubus(outskirts_succubus, outskirts_antag, silent = TRUE), "an adjacent disguised Succubus with both routes must pass deployment validation")
+	var/list/valid_outskirts = gateway.get_valid_deployment_landmarks(SUCCUBUS_DEPLOYMENT_OUTSKIRTS)
+	var/list/valid_outskirts_turfs = list()
+	for(var/obj/effect/landmark/outskirts_landmark as anything in valid_outskirts)
+		valid_outskirts_turfs += get_turf(outskirts_landmark)
+	TEST_ASSERT(outskirts_marker in valid_outskirts, "the persistent Adventurer landmark must be a valid outskirts route")
+	TEST_ASSERT(gateway.complete_succubus_deployment(outskirts_succubus, outskirts_antag, SUCCUBUS_DEPLOYMENT_OUTSKIRTS), "the outskirts route must commit a valid one-way deployment")
+	TEST_ASSERT(outskirts_antag.has_entered_mortal_world, "successful deployment must consume the Succubus's gateway use")
+	TEST_ASSERT((outskirts_succubus.loc in valid_outskirts_turfs), "outskirts deployment must move the same body to an Adventurer landmark")
+	TEST_ASSERT(!gateway.complete_succubus_deployment(outskirts_succubus, outskirts_antag, SUCCUBUS_DEPLOYMENT_OUTSKIRTS), "a deployed Succubus must not use the gateway twice")
+
+	var/mob/living/carbon/human/sewer_succubus = allocate(/mob/living/carbon/human, user_turf)
+	sewer_succubus.mind_initialize()
+	var/datum/antagonist/succubus/sewer_antag = allocate(/datum/antagonist/succubus)
+	sewer_antag.owner = sewer_succubus.mind
+	sewer_antag.current_form_key = sewer_antag.owner
+	LAZYADD(sewer_succubus.mind.antag_datums, sewer_antag)
+	var/list/valid_sewers = gateway.get_valid_deployment_landmarks(SUCCUBUS_DEPLOYMENT_SEWERS)
+	var/list/valid_sewer_turfs = list()
+	for(var/obj/effect/landmark/sewer_landmark as anything in valid_sewers)
+		valid_sewer_turfs += get_turf(sewer_landmark)
+	TEST_ASSERT(sewer_marker in valid_sewers, "a registered sewer insertion must be a valid underground route")
+	TEST_ASSERT(gateway.complete_succubus_deployment(sewer_succubus, sewer_antag, SUCCUBUS_DEPLOYMENT_SEWERS), "the sewer route must commit a valid one-way deployment")
+	TEST_ASSERT(sewer_antag.has_entered_mortal_world, "sewer deployment must consume the Succubus's gateway use")
+	TEST_ASSERT((sewer_succubus.loc in valid_sewer_turfs), "sewer deployment must move the same body to a registered sewer insertion")
+
+	qdel(outskirts_marker)
+	qdel(sewer_marker)
+	TEST_ASSERT(!(outskirts_marker in GLOB.start_landmarks_list), "deleting the test outskirts marker must release its global registry entry")
+	TEST_ASSERT(!(sewer_marker in GLOB.succubus_sewer_insertions), "deleting the test sewer marker must release its global registry entry")
+	outskirts_succubus.mind.antag_datums -= outskirts_antag
+	outskirts_antag.owner = null
+	sewer_succubus.mind.antag_datums -= sewer_antag
+	sewer_antag.owner = null
+
 /datum/unit_test/succubus_wardrobe/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/datum/mind/first_shared_mind
+	var/datum/mind/second_shared_mind
 	for(var/i in 1 to SUCCUBUS_WARDROBE_CAP + 2)
 		var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
 		partner.mind_initialize()
-		partner.real_name = "Sample [i]"
+		partner.real_name = i <= 2 ? "Shared Face" : "Sample [i]"
+		if(i == 1)
+			first_shared_mind = partner.mind
+		else if(i == 2)
+			second_shared_mind = partner.mind
 		antag.store_partner_form(partner)
 	TEST_ASSERT_EQUAL(length(antag.stolen_forms), SUCCUBUS_WARDROBE_CAP, "wardrobe must cap")
+
+	antag.starting_form = new
+	antag.starting_form.real_name = "Shared Face"
+	for(var/slot in 1 to SUCCUBUS_CREATED_DISGUISE_MAX_SLOTS)
+		var/datum/identity_snapshot/created_form = new
+		created_form.real_name = slot == 1 ? "Shared Face" : "Created Face [slot]"
+		antag.created_forms[slot] = created_form
+
+	for(var/tier in 1 to SUCCUBUS_CONTRACT_TIER_MAX)
+		antag.contracts_completed_full = tier - 1
+		TEST_ASSERT_EQUAL(antag.get_created_disguise_slot_cap(), tier, "contract tier [tier] must unlock exactly [tier] created-disguise slots")
+
+	antag.contracts_completed_full = 0
+	var/created_one_key = antag.get_created_disguise_form_key(1)
+	var/created_two_key = antag.get_created_disguise_form_key(2)
+	TEST_ASSERT_NULL(antag.get_created_disguise_form_key(0), "created-disguise keys must reject slot zero")
+	TEST_ASSERT_NULL(antag.get_created_disguise_form_key(SUCCUBUS_CREATED_DISGUISE_MAX_SLOTS + 1), "created-disguise keys must reject slots above the fixed wardrobe")
+	TEST_ASSERT_EQUAL(antag.get_disguise_snapshot(SUCCUBUS_FORM_KEY_STARTING), antag.starting_form, "the starting key must resolve the preference identity")
+	TEST_ASSERT_EQUAL(antag.get_disguise_snapshot(first_shared_mind), antag.stolen_forms[first_shared_mind], "a harvested mind key must resolve its captured identity")
+	TEST_ASSERT_EQUAL(antag.get_disguise_snapshot(created_one_key), antag.created_forms[1], "tier 1 must resolve its unlocked created identity")
+	TEST_ASSERT_NULL(antag.get_disguise_snapshot(created_two_key), "tier 1 must not resolve a locked tier 2 identity for wearing")
+	TEST_ASSERT_EQUAL(antag.get_disguise_snapshot(created_two_key, include_locked = TRUE), antag.created_forms[2], "lifecycle code must be able to inspect a retained locked identity")
+
+	var/list/tier_one_choices = antag.get_wearable_disguise_choices()
+	TEST_ASSERT_EQUAL(length(tier_one_choices), SUCCUBUS_WARDROBE_CAP + 2, "tier 1 choices must contain starting, one created, and every harvested identity")
+	TEST_ASSERT_EQUAL(tier_one_choices["\[Starting\] Shared Face"], SUCCUBUS_FORM_KEY_STARTING, "the starting identity must carry an explicit source label")
+	TEST_ASSERT_EQUAL(tier_one_choices["\[Created 1\] Shared Face"], created_one_key, "the created identity must carry its fixed slot label")
+	TEST_ASSERT_EQUAL(tier_one_choices["\[Harvested\] Shared Face"], first_shared_mind, "the first duplicate harvested name must retain its source label")
+	TEST_ASSERT_EQUAL(tier_one_choices["\[Harvested\] Shared Face (2)"], second_shared_mind, "duplicate harvested names must remain separately selectable")
+
+	antag.contracts_completed_full = SUCCUBUS_CONTRACT_TIER_MAX - 1
+	var/list/tier_four_choices = antag.get_wearable_disguise_choices()
+	TEST_ASSERT_EQUAL(length(tier_four_choices), SUCCUBUS_WARDROBE_CAP + 1 + SUCCUBUS_CREATED_DISGUISE_MAX_SLOTS, "tier 4 choices must expose all fixed created slots without consuming harvested capacity")
+	TEST_ASSERT_EQUAL(tier_four_choices["\[Created 4\] Created Face 4"], antag.get_created_disguise_form_key(4), "tier 4 must expose the fourth created slot")
+
+	antag.contracts_completed_full = 0
+	var/datum/identity_snapshot/retained_tier_four_form = antag.created_forms[4]
+	TEST_ASSERT_EQUAL(antag.created_forms[4], retained_tier_four_form, "falling to tier 1 must lock, not delete, a tier 4 identity")
+	qdel(antag)
+	TEST_ASSERT(QDELETED(retained_tier_four_form), "destroying the antagonist must delete its created identity snapshots")
+
+/datum/unit_test/succubus_disguise_sandbox/Run()
+	var/datum/preferences/succubus_disguise/editor = new(null, null, 1)
+	TEST_ASSERT(!editor.save_preferences(), "the disguise sandbox must reject account-preference saves")
+	TEST_ASSERT(!editor.save_character(), "the disguise sandbox must reject character saves")
+	TEST_ASSERT(editor.is_allowed_species(SPEC_ID_HUMEN), "an ordinary Preferences species must remain available to the disguise sandbox")
+	TEST_ASSERT(!editor.is_allowed_species(SPEC_ID_DEMON), "the antagonist-only Demon species must never be selectable as a disguise")
+
+	TEST_ASSERT(editor.is_allowed_disguise_action("pref", list("preference" = "name", "task" = "input")), "the allowlist must accept approved identity editing")
+	TEST_ASSERT(editor.is_allowed_disguise_action("set_age", list("value" = 1)), "the allowlist must accept a numeric age-slider value")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("set_age", list("value" = "1")), "the allowlist must reject forged non-numeric age values")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("pref", list("preference" = "name", "task" = "save")), "the allowlist must reject hidden tasks on an otherwise valid preference")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("pref", list("preference" = "job", "task" = "menu")), "the allowlist must reject job controls")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("pref", list("preference" = "erp", "task" = "menu")), "the allowlist must reject ERP controls")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("pref", list("preference" = "markings", "task" = "menu")), "the allowlist must reject the legacy body-marking browser route")
+	TEST_ASSERT(editor.is_allowed_disguise_action("pref", list("preference" = "character_setup_body_marking", "marking_action" = "use_preset")), "the allowlist must accept the sandbox's direct marking route")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("pref", list("preference" = "save")), "the allowlist must reject character-save controls")
+	TEST_ASSERT(!editor.is_allowed_disguise_action("commit", list()), "the allowlist must reject unknown top-level actions")
+	editor.real_name = "Crafted Face"
+	editor.voice_color = "f0a0b0"
+	var/datum/identity_snapshot/built_form = editor.build_disguise_snapshot()
+	TEST_ASSERT_NOTNULL(built_form, "an allowed draft must build a complete temporary identity snapshot")
+	TEST_ASSERT_NOTNULL(built_form.dna, "a built disguise must own copied DNA")
+	TEST_ASSERT_EQUAL(built_form.real_name, "Crafted Face", "the built disguise must retain the drafted name")
+	TEST_ASSERT_EQUAL(built_form.voice_color, "f0a0b0", "character-setup capture must explicitly retain the drafted voice color")
+	qdel(editor)
+
+	var/mob/living/carbon/human/owner_body = allocate(/mob/living/carbon/human)
+	owner_body.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = owner_body.mind
+	LAZYADD(owner_body.mind.antag_datums, antag)
+	editor = new(null, owner_body.mind, 1)
+	antag.active_disguise_editor = editor
+	qdel(editor)
+	TEST_ASSERT_NULL(antag.active_disguise_editor, "disposing the draft must release the antagonist's strong editor reference")
+
+	var/datum/identity_snapshot/old_form = new
+	old_form.dna = new
+	old_form.real_name = "Old Face"
+	antag.created_forms[1] = old_form
+	antag.essence = SUCCUBUS_COST_CREATE_DISGUISE
+	antag.current_form_key = antag.get_created_disguise_form_key(1)
+	TEST_ASSERT(!antag.commit_created_disguise(1, built_form, SUCCUBUS_COST_CREATE_DISGUISE), "the worn created identity must not be replaceable")
+	TEST_ASSERT_EQUAL(antag.essence, SUCCUBUS_COST_CREATE_DISGUISE, "a blocked active-slot replacement must not spend essence")
+	TEST_ASSERT_EQUAL(antag.created_forms[1], old_form, "a blocked active-slot replacement must preserve the old identity")
+
+	antag.current_form_key = null
+	antag.essence = SUCCUBUS_COST_CREATE_DISGUISE - 1
+	TEST_ASSERT(!antag.commit_created_disguise(1, built_form, SUCCUBUS_COST_CREATE_DISGUISE), "insufficient essence must reject the transaction")
+	TEST_ASSERT_EQUAL(antag.essence, SUCCUBUS_COST_CREATE_DISGUISE - 1, "an insufficient-essence failure must not spend essence")
+	TEST_ASSERT_EQUAL(antag.created_forms[1], old_form, "an insufficient-essence failure must preserve the old identity")
+
+	antag.essence = SUCCUBUS_COST_CREATE_DISGUISE
+	TEST_ASSERT(antag.commit_created_disguise(1, built_form, SUCCUBUS_COST_CREATE_DISGUISE), "a valid transaction must store the drafted identity")
+	TEST_ASSERT_EQUAL(antag.essence, 0, "a successful paid transaction must charge exactly the creation cost")
+	TEST_ASSERT_EQUAL(antag.created_forms[1], built_form, "a successful transaction must make the new identity authoritative")
+	TEST_ASSERT(QDELETED(old_form), "a successful replacement must delete the displaced snapshot")
+	owner_body.mind.antag_datums -= antag
+	antag.owner = null
 
 /datum/unit_test/succubus_pref_gating/Run()
 	// The non-negotiable test (spec §12): an opted-out target yields nothing.
@@ -521,6 +764,11 @@
 
 /datum/unit_test/succubus_contract_harvest_feedthrough/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human)
+	succubus.mind_initialize()
+	antag.owner = succubus.mind
+	LAZYADD(succubus.mind.antag_datums, antag)
+	succubus.set_species(/datum/species/demon)
 	antag.essence_cap = 100000
 	antag.contract_pool = new /datum/contract_pool/succubus
 
@@ -558,7 +806,6 @@
 
 	antag.last_harvest_time = -1
 	antag.current_form_key = null
-	antag.true_form_active = TRUE
 	var/mob/living/carbon/human/second_partner = allocate(/mob/living/carbon/human)
 	second_partner.mind_initialize()
 	second_partner.mind.key = "succubus_contract_partner_two"
@@ -574,12 +821,15 @@
 	npc_variety.target_amount = 3
 	npc_contract.goals = list(npc_tithe, npc_variety)
 	antag.current_contract = npc_contract
-	antag.true_form_active = FALSE
+	antag.current_form_key = first_partner.mind
 	var/mob/living/carbon/human/npc_partner = allocate(/mob/living/carbon/human)
 	npc_partner.mind_initialize()
 	antag.harvest_from_climax(npc_partner)
 	TEST_ASSERT_EQUAL(npc_tithe.progress, 0, "a keyless NPC must not satisfy the patron's essence demand")
 	TEST_ASSERT_EQUAL(npc_variety.progress, 0, "a keyless NPC must not count as a distinct player partner")
+
+	succubus.mind.antag_datums -= antag
+	antag.owner = null
 
 /datum/unit_test/succubus_contract_enthrall_feedthrough/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
@@ -617,22 +867,18 @@
 	TEST_ASSERT_EQUAL(antag.get_succubus_contract_tier(), 1, "zero full contracts must remain tier 1")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_BASE, "tier 1 cap must be the base cap")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), "tier 1 must not grant Beguiling Doubles")
-	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE), "tier 1 must not grant True Form")
 
 	antag.contracts_completed_full = 1
 	TEST_ASSERT(antag.refresh_succubus_contract_progression(), "first full contract must change the cap")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_TIER_2, "one full contract must grant the tier 2 cap")
 	var/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles/doubles = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE)
-	var/datum/action/cooldown/spell/undirected/succubus_true_form/true_form = succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE)
 	TEST_ASSERT_NOTNULL(doubles, "tier 2 must grant Beguiling Doubles")
-	TEST_ASSERT_NOTNULL(true_form, "tier 2 must grant True Form")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_imp, TRUE), "tier 2 must not grant Call Whispering Imp")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_summon_lusthound, TRUE), "tier 2 must not grant Call Lustbound Hound")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_infernal_snare, TRUE), "tier 2 must not grant Lay Infernal Snare")
 	TEST_ASSERT_NULL(succubus.get_spell(/datum/action/cooldown/spell/succubus_fatal_drain, TRUE), "tier 2 must not grant Fatal Drain")
 	TEST_ASSERT(!antag.refresh_succubus_contract_progression(), "refreshing the same tier must be idempotent")
 	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_beguiling_doubles, TRUE), doubles, "refreshing tier 2 must not replace Beguiling Doubles")
-	TEST_ASSERT_EQUAL(succubus.get_spell(/datum/action/cooldown/spell/undirected/succubus_true_form, TRUE), true_form, "refreshing tier 2 must not replace True Form")
 
 	antag.contracts_completed_full = 2
 	antag.refresh_succubus_contract_progression()
@@ -905,47 +1151,66 @@
 	antag.harem = null
 	antag.owner = null // hand-set above, not via add_antag_datum; detach before harness qdel
 
-/datum/unit_test/succubus_true_form_gates/Run()
+/datum/unit_test/succubus_demon_form_gates/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
 	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human)
 	body.mind_initialize()
+	var/mob/living/carbon/human/original_body = body
+	var/datum/mind/original_mind = body.mind
 	antag.owner = body.mind
-	body.mind.current = body
+	LAZYADD(body.mind.antag_datums, antag)
 	antag.essence_cap = 100000
+	antag.essence = 100000
+	TEST_ASSERT(antag.initialize_demon_identity(), "true-form gates require a derived Demon identity")
+	TEST_ASSERT_EQUAL(antag.owner.current, original_body, "Demon initialization must retain the original body")
+	TEST_ASSERT_EQUAL(body.mind, original_mind, "Demon initialization must retain the original mind")
+	TEST_ASSERT(antag.is_in_true_form(), "the initialized Demon identity must be the authoritative true form")
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "a Tier 1 Demon must not receive combat-form actions")
+	var/obj/item/organ/wings/flight/demon/demon_wings = body.getorganslot(ORGAN_SLOT_WINGS)
+	TEST_ASSERT_NOTNULL(demon_wings, "the permanent Demon body must have flight-capable wings")
 
-	antag.essence = SUCCUBUS_COST_TRUE_FORM
-	TEST_ASSERT(!antag.can_assume_true_form(TRUE), "true form must remain locked at tier 1")
+	TEST_ASSERT(antag.starting_form.apply(body), "the selected starting identity must remain a usable disguise")
+	antag.current_form_key = antag.owner
+	antag.has_entered_mortal_world = TRUE
+	TEST_ASSERT(!antag.can_voluntarily_reveal(silent = TRUE), "the mortal-world seal must block a Tier 1 voluntary reveal")
+	TEST_ASSERT(!antag.revert_form(), "a deployed Tier 1 Succubus must not shed her disguise voluntarily")
+	TEST_ASSERT(antag.revert_form(forced = TRUE), "forced exposure must bypass the Tier 1 seal")
+	TEST_ASSERT_EQUAL(antag.owner.current, original_body, "forced exposure must keep the same body")
+	TEST_ASSERT_EQUAL(body.mind, original_mind, "forced exposure must keep the same mind")
+	TEST_ASSERT(antag.is_in_true_form(), "forced exposure must restore the Demon identity")
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "forced Tier 1 exposure must not grant combat actions")
+
+	TEST_ASSERT(antag.wear_form(antag.starting_form, antag.owner), "the Demon must be able to reapply her starting disguise")
 	antag.contracts_completed_full = 1
-	antag.essence = 0
-	TEST_ASSERT(!antag.can_assume_true_form(TRUE), "true form must be essence-gated")
-	antag.essence = SUCCUBUS_COST_TRUE_FORM
-	TEST_ASSERT(antag.can_assume_true_form(TRUE), "sufficient essence must open the gate")
+	var/essence_before_reveal = antag.essence
+	TEST_ASSERT(antag.can_voluntarily_reveal(silent = TRUE), "Tier 2 must unlock voluntary revelation")
+	TEST_ASSERT(antag.revert_form(), "Tier 2 voluntary revelation must restore the Demon identity")
+	TEST_ASSERT_EQUAL(antag.essence, essence_before_reveal, "revealing the permanent Demon identity must be free")
+	TEST_ASSERT_EQUAL(antag.owner.current, original_body, "voluntary revelation must keep the same body")
+	TEST_ASSERT_EQUAL(body.mind, original_mind, "voluntary revelation must keep the same mind")
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "Tier 2 True Form must gain Wingbeat")
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus), "Tier 2 True Form must gain Tail Sweep")
+	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze), "Tier 2 True Form must gain Sovereign Gaze")
+	var/datum/action/cooldown/spell/undirected/succubus_predatory_claws/claw_spell = body.get_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws, TRUE)
+	TEST_ASSERT_NOTNULL(claw_spell, "Tier 2 True Form must gain Predatory Claws")
 
-	antag.grant_true_form_actions(body)
-	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "true form must gain Wingbeat")
-	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus), "true form must gain Tail Sweep")
-	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze), "true form must gain Sovereign Gaze")
-	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws), "true form must gain Predatory Claws")
-	antag.remove_true_form_actions(body)
-	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "leaving true form must remove Wingbeat")
-	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/aoe/repulse/dragon/succubus), "leaving true form must remove Tail Sweep")
-	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_sovereign_gaze), "leaving true form must remove Sovereign Gaze")
-	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_predatory_claws), "leaving true form must remove Predatory Claws")
-
-	var/mob/living/carbon/human/species/succubus_true/form_body = allocate(/mob/living/carbon/human/species/succubus_true)
-	var/datum/action/cooldown/spell/undirected/succubus_predatory_claws/claw_spell = allocate(/datum/action/cooldown/spell/undirected/succubus_predatory_claws)
-	claw_spell.Grant(form_body)
-	claw_spell.cast(form_body)
-	var/obj/item/weapon/succubus_claw/left/left_claw = form_body.get_item_for_held_index(1)
-	var/obj/item/weapon/succubus_claw/right/right_claw = form_body.get_item_for_held_index(2)
+	claw_spell.cast(body)
+	var/obj/item/weapon/succubus_claw/left/left_claw = body.get_item_for_held_index(1)
+	var/obj/item/weapon/succubus_claw/right/right_claw = body.get_item_for_held_index(2)
 	TEST_ASSERT_NOTNULL(left_claw, "Predatory Claws must fill the left hand")
 	TEST_ASSERT_NOTNULL(right_claw, "Predatory Claws must fill the right hand")
 	TEST_ASSERT_EQUAL(left_claw.force, DAMAGE_KNIFE, "Predatory Claws must remain below werewolf claw damage")
 	TEST_ASSERT_EQUAL(left_claw.possible_item_intents[1], /datum/intent/simple/succubus_claw, "Predatory Claws must use their bounded natural-weapon intent")
 	TEST_ASSERT(HAS_TRAIT(left_claw, TRAIT_NODROP), "Predatory Claws must not be transferable")
-	claw_spell.Remove(form_body)
+	claw_spell.Remove(body)
 	TEST_ASSERT(QDELETED(left_claw), "removing the form action must delete its left claw")
 	TEST_ASSERT(QDELETED(right_claw), "removing the form action must delete its right claw")
+
+	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift)
+	TEST_ASSERT(rift.bind_to(antag), "the disguise tether test Rift must bind to its Succubus")
+	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
+	TEST_ASSERT(!antag.wear_form(antag.starting_form, antag.owner), "an Open Rift must prevent the Succubus from hiding her Demon identity")
+	qdel(rift)
 
 	TEST_ASSERT(antag.is_linked_retinue(body), "the succubus's current body must be recognized as friendly")
 	var/mob/living/carbon/human/stranger = allocate(/mob/living/carbon/human)
@@ -960,9 +1225,7 @@
 	thrall_datum.owner = null
 	qdel(thrall_datum)
 
-	antag.true_form_active = TRUE
-	TEST_ASSERT(!antag.can_assume_true_form(TRUE), "cannot assume while already assumed")
-	antag.true_form_active = FALSE
+	body.mind.antag_datums -= antag
 	antag.owner = null // hand-set; detach before harness qdel
 
 /datum/unit_test/succubus_sovereign_gaze/Run()
@@ -971,11 +1234,13 @@
 	var/turf/warded_turf = get_step(caster_turf, NORTH)
 	TEST_ASSERT(isfloorturf(target_turf) && isfloorturf(warded_turf), "Sovereign Gaze test needs adjacent floor turfs")
 
-	var/mob/living/carbon/human/species/succubus_true/caster = allocate(/mob/living/carbon/human/species/succubus_true, caster_turf)
+	var/mob/living/carbon/human/caster = allocate(/mob/living/carbon/human, caster_turf)
 	caster.mind_initialize()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
 	antag.owner = caster.mind
 	LAZYADD(caster.mind.antag_datums, antag)
+	caster.set_species(/datum/species/demon)
+	antag.current_form_key = null
 	var/datum/action/cooldown/spell/succubus_sovereign_gaze/gaze = allocate(/datum/action/cooldown/spell/succubus_sovereign_gaze)
 	gaze.Grant(caster)
 
@@ -1023,6 +1288,9 @@
 	body.mind_initialize()
 	antag.owner = body.mind
 	LAZYADD(body.mind.antag_datums, antag)
+	TEST_ASSERT(antag.initialize_demon_identity(), "Rift unlock testing requires the permanent Demon identity")
+	antag.essence_cap = 100000
+	antag.essence = 100000
 
 	var/datum/objective/succubus/rift/rift_objective = antag.forge_succubus_objectives()
 	TEST_ASSERT_NOTNULL(rift_objective, "the Succubus must receive a Rift campaign objective")
@@ -1035,18 +1303,16 @@
 		rift_objective_count++
 	TEST_ASSERT_EQUAL(rift_objective_count, 1, "objective forging must remain idempotent")
 
-	antag.true_form_active = TRUE
 	antag.contracts_completed_full = 2
-	antag.refresh_succubus_rift_action(body)
+	antag.refresh_succubus_form_actions()
 	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_rift, TRUE), "Tier 3 True Form must not receive the Rift ritual")
 
 	antag.contracts_completed_full = 3
-	antag.refresh_succubus_rift_action(body)
+	antag.refresh_succubus_form_actions()
 	TEST_ASSERT_NOTNULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_rift, TRUE), "Tier 4 True Form must receive the Rift ritual")
-	antag.remove_true_form_actions(body)
+	TEST_ASSERT(antag.wear_form(antag.starting_form, antag.owner), "a Tier 4 Succubus without an Open Rift must still be able to disguise herself")
 	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/undirected/succubus_rift, TRUE), "leaving True Form must remove the Rift ritual")
 
-	antag.true_form_active = FALSE
 	body.mind.antag_datums -= antag
 	antag.owner = null
 
@@ -1199,6 +1465,10 @@
 	interrupted_contract.completed_early = TRUE
 	antag.current_contract = interrupted_contract
 	LAZYADD(body.mind.antag_datums, antag)
+	TEST_ASSERT(antag.initialize_demon_identity(), "the sealing test must begin in the permanent Demon identity")
+	antag.has_entered_mortal_world = TRUE
+	var/datum/identity_snapshot/preserved_starting_form = antag.starting_form
+	var/datum/identity_snapshot/preserved_base_form = antag.base_form
 	var/datum/objective/succubus/rift/rift_objective = antag.forge_succubus_objectives()
 
 	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift, run_loc_floor_bottom_left)
@@ -1206,10 +1476,11 @@
 	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
 	var/mob/living/carbon/human/sealer = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
 	sealer.mind_initialize()
+	antag.store_partner_form(sealer)
+	var/datum/identity_snapshot/preserved_stolen_form = antag.stolen_forms[sealer.mind]
+	body.real_name = "Rift-Distorted Identity"
 
-	antag.true_form_active = TRUE
-	TEST_ASSERT(!antag.can_leave_true_form(silent = TRUE), "an Open Rift must tether its Succubus to True Form")
-	antag.true_form_active = FALSE
+	TEST_ASSERT(!antag.wear_form(antag.starting_form, antag.owner), "an Open Rift must tether its Succubus to her Demon identity")
 	TEST_ASSERT(!rift.can_seal_rift(body, silent = TRUE), "the Rift owner must not contribute to sealing her own breach")
 	TEST_ASSERT(rift.can_seal_rift(sealer, silent = TRUE), "an adjacent conscious outsider must be able to seal the Rift")
 
@@ -1227,8 +1498,15 @@
 	TEST_ASSERT(!rift_objective.check_completion(), "a sealed Rift must fail its campaign objective")
 	TEST_ASSERT_NULL(antag.get_active_rift(), "closure must clear the owner's active Rift link")
 	TEST_ASSERT(!length(GLOB.active_succubus_rifts), "closure must release the world Rift cap")
-	TEST_ASSERT(isturf(body.loc), "default survival must leave the mortal shell in active play")
+	TEST_ASSERT(istype(get_area(body), /area/indoors/succubus_lair), "default survival must return the same Demon body to the Succubus lair")
+	TEST_ASSERT(!antag.has_entered_mortal_world, "a successful return must reopen the one-way deployment gateway")
+	TEST_ASSERT(antag.is_in_true_form(), "a retryable defeat must restore the stored Demon identity without replacing its body")
+	TEST_ASSERT_EQUAL(body.real_name, preserved_base_form.real_name, "the lair return must authoritatively restore the stored Demon identity")
+	TEST_ASSERT_EQUAL(antag.starting_form, preserved_starting_form, "a retryable defeat must preserve the selected starting disguise")
+	TEST_ASSERT_EQUAL(antag.base_form, preserved_base_form, "a retryable defeat must preserve the replaceable Demon snapshot")
+	TEST_ASSERT_EQUAL(antag.stolen_forms[sealer.mind], preserved_stolen_form, "a retryable defeat must preserve harvested wardrobe entries")
 	TEST_ASSERT_EQUAL(antag.get_succubus_contract_tier(), 1, "closure must reset infernal favor to Tier 1")
+	TEST_ASSERT_NULL(body.get_spell(/datum/action/cooldown/spell/succubus_wingbeat), "the Tier 1 reset must remove Demon combat actions")
 	TEST_ASSERT_EQUAL(antag.essence, 0, "closure must drain all stored essence")
 	TEST_ASSERT_EQUAL(antag.essence_cap, SUCCUBUS_ESSENCE_CAP_BASE, "closure must restore the Tier 1 essence cap")
 	TEST_ASSERT_EQUAL(antag.contract_history[1], interrupted_contract, "closure must preserve the interrupted contract in round-end history")
@@ -1242,16 +1520,39 @@
 	body.mind.antag_datums -= antag
 	antag.owner = null
 
+/datum/unit_test/succubus_rift_dead_retry_stays_put/Run()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	body.mind_initialize()
+	antag.owner = body.mind
+	antag.contract_pool = allocate(/datum/contract_pool/succubus)
+	LAZYADD(body.mind.antag_datums, antag)
+	TEST_ASSERT(antag.initialize_demon_identity(), "the dead-retry test must begin in the permanent Demon identity")
+	antag.has_entered_mortal_world = TRUE
+	var/turf/death_turf = get_turf(body)
+	body.stat = DEAD
+
+	antag.prepare_for_rift_retry()
+	TEST_ASSERT(antag.prompt_rift_defeat_choice(), "a dead owner must resolve the deferred verdict without being offered an active-play choice")
+	TEST_ASSERT_EQUAL(get_turf(body), death_turf, "a dead owner must not be teleported to the Succubus lair")
+	TEST_ASSERT(antag.has_entered_mortal_world, "a dead owner must not regain an unused deployment gateway")
+	TEST_ASSERT_NULL(antag.current_contract, "a dead owner must not receive a fresh active-play contract")
+	TEST_ASSERT_EQUAL(body.stat, DEAD, "Rift retry handling must not revive its dead owner")
+
+	body.mind.antag_datums -= antag
+	antag.owner = null
+
 /datum/unit_test/succubus_rift_ascension_and_retinue_cleanup/Run()
 	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
-	var/mob/living/carbon/human/mortal_body = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
-	mortal_body.mind_initialize()
-	var/datum/mind/succubus_mind = mortal_body.mind
+	var/mob/living/carbon/human/succubus_body = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	succubus_body.mind_initialize()
+	var/datum/mind/succubus_mind = succubus_body.mind
 	antag.owner = succubus_mind
 	antag.contracts_completed_full = 3
 	antag.essence_cap = SUCCUBUS_ESSENCE_CAP_TIER_4
 	antag.essence = SUCCUBUS_ESSENCE_CAP_TIER_4
 	LAZYADD(succubus_mind.antag_datums, antag)
+	TEST_ASSERT(antag.initialize_demon_identity(), "the ascension test must begin in the permanent Demon identity")
 	var/datum/objective/succubus/rift/rift_objective = antag.forge_succubus_objectives()
 
 	var/mob/living/carbon/human/thrall = allocate(/mob/living/carbon/human)
@@ -1277,23 +1578,29 @@
 	var/obj/structure/succubus_infernal_snare/snare = allocate(/obj/structure/succubus_infernal_snare, run_loc_floor_bottom_left)
 	TEST_ASSERT(snare.bind_to(antag), "the verdict test snare must bind to its Succubus")
 
-	TEST_ASSERT(antag.assume_true_form(), "the verdict test must enter a real True Form before opening the Rift")
-	var/mob/living/form_body = succubus_mind.current
-	TEST_ASSERT(form_body != mortal_body, "entering True Form must transfer the mind into the spawned form")
+	TEST_ASSERT_EQUAL(succubus_mind.current, succubus_body, "the permanent Demon identity must use the original body")
+	TEST_ASSERT(antag.is_in_true_form(), "the ascension test Succubus must be visibly Demon")
+	antag.has_entered_mortal_world = TRUE
 
 	var/obj/structure/succubus_rift/rift = allocate(/obj/structure/succubus_rift, run_loc_floor_bottom_left)
 	TEST_ASSERT(rift.bind_to(antag), "the ascension test Rift must bind to its Succubus")
 	rift.current_stage = SUCCUBUS_RIFT_STAGE_OPEN
+	TEST_ASSERT(!rift.can_seal_rift(succubus_body, silent = TRUE), "the owning Succubus must never be allowed to seal her own Rift")
 	TEST_ASSERT(rift.resolve_verdict(ascended = TRUE), "surviving the trial must resolve the Rift as an ascension")
 
-	TEST_ASSERT(QDELETED(rift), "ascension must delete the resolved Rift")
+	TEST_ASSERT(!QDELETED(rift), "ascension must preserve the victorious Rift as a lair portal")
+	TEST_ASSERT_EQUAL(rift.current_stage, SUCCUBUS_RIFT_STAGE_ASCENDED, "ascension must move the Rift into its resolved portal stage")
+	rift.take_damage(SUCCUBUS_RIFT_OPEN_INTEGRITY * 10)
+	TEST_ASSERT(!QDELETED(rift), "the ascended portal must survive ordinary damage")
+	TEST_ASSERT(!rift.can_seal_rift(succubus_body, silent = TRUE), "the ascended portal must no longer accept sealing contributions")
 	TEST_ASSERT(antag.rift_ascended, "ascension must persist its campaign success flag")
 	TEST_ASSERT(!antag.rift_banished, "ascension must not record a banishment")
 	TEST_ASSERT(rift_objective.check_completion(), "ascension must complete the campaign objective")
-	TEST_ASSERT_EQUAL(succubus_mind.current, mortal_body, "ascension must safely re-home the mind in the restored mortal shell")
-	TEST_ASSERT(!antag.true_form_active, "ascension must clear the True Form state")
-	TEST_ASSERT(!isturf(mortal_body.loc), "ascension must retire the restored shell from active play")
-	TEST_ASSERT(succubus_mind.has_antag_datum(/datum/antagonist/succubus) == antag, "ascension must retain the Succubus datum for round-end reporting")
+	TEST_ASSERT_EQUAL(succubus_mind.current, succubus_body, "ascension must not transfer the mind to a replacement body")
+	TEST_ASSERT(istype(succubus_body.dna.species, /datum/species/demon), "ascension must preserve the permanent Demon identity")
+	TEST_ASSERT(isturf(succubus_body.loc), "ascension must leave the Demon body in active play")
+	TEST_ASSERT_EQUAL(antag.get_active_rift(), rift, "the victorious Rift must remain linked to its owner")
+	TEST_ASSERT(succubus_mind.has_antag_datum(/datum/antagonist/succubus) == antag, "ascension must retain the active Succubus datum")
 	TEST_ASSERT_NULL(thrall.mind.has_antag_datum(/datum/antagonist/succubus_thrall), "the verdict must release consenting thralls")
 	TEST_ASSERT_EQUAL(imp.mind.has_antag_datum(/datum/antagonist/succubus_imp), imp_datum, "the verdict must not delete the player-controlled Imp role")
 	TEST_ASSERT_NULL(imp_datum.mistress_mind, "the verdict must detach the player Imp from its summoner")
@@ -1301,6 +1608,18 @@
 	TEST_ASSERT(QDELETED(snare), "the verdict must delete the Succubus's infernal snares")
 	TEST_ASSERT(!length(antag.summoned_lusthounds), "the verdict must clear the hound ownership list")
 	TEST_ASSERT(!length(antag.infernal_snares), "the verdict must clear the snare ownership list")
+
+	var/mob/living/carbon/human/outsider = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	outsider.mind_initialize()
+	TEST_ASSERT(!rift.travel_owner_to_lair(outsider), "the ascended portal must reject anyone except its owning Succubus")
+	TEST_ASSERT(rift.travel_owner_to_lair(succubus_body), "the owning Succubus must be able to return to her lair through the ascended portal")
+	TEST_ASSERT(istype(get_area(succubus_body), /area/indoors/succubus_lair), "victorious portal travel must move the Succubus to her mapped lair")
+	TEST_ASSERT(!antag.has_entered_mortal_world, "victorious portal travel must reopen the lair gateway for outward travel")
+	TEST_ASSERT_EQUAL(antag.get_active_rift(), rift, "traveling home must leave the victorious mortal-world portal intact")
+
+	qdel(rift)
+	TEST_ASSERT_NULL(antag.get_active_rift(), "deleting the victorious portal must release its owner's weak link")
+	TEST_ASSERT(!(rift in GLOB.active_succubus_rifts), "deleting the victorious portal must release the global Rift cap")
 
 	imp.mind.antag_datums -= imp_datum
 	imp_datum.owner = null

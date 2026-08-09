@@ -25,6 +25,7 @@
 	return ..()
 
 /datum/antagonist/succubus/on_gain()
+	initialize_demon_identity()
 	forge_succubus_objectives()
 	. = ..()
 	grant_succubus_powers()
@@ -32,13 +33,14 @@
 /datum/antagonist/succubus/on_removal()
 	// Administrative removal cleans the Rift before reverting so the Open-state
 	// tether cannot turn a cleanup path into a dramatic banishment.
+	QDEL_NULL(active_disguise_editor)
 	discard_active_rift()
-	if(true_form_active)
-		leave_true_form(force = TRUE)
+	restore_starting_identity()
 	remove_succubus_powers()
 	return ..()
 
 /datum/antagonist/succubus/Destroy()
+	QDEL_NULL(active_disguise_editor)
 	discard_active_rift(refresh_objective = FALSE)
 	for(var/datum/mind/imp_mind as anything in summoned_imp_minds)
 		var/datum/antagonist/succubus_imp/imp_datum = imp_mind?.has_antag_datum(/datum/antagonist/succubus_imp)
@@ -50,8 +52,11 @@
 	summoned_lusthounds = null
 	QDEL_LIST(infernal_snares)
 	infernal_snares = null
+	QDEL_NULL(starting_form)
 	QDEL_NULL(base_form)
 	QDEL_LIST_ASSOC_VAL(stolen_forms)
+	QDEL_LIST(created_forms)
+	created_forms = null
 	partner_harvests = null
 	last_harvest_mind = null
 	reagent_units_absorbed = null
@@ -113,7 +118,7 @@
 		record_contract_progress(/datum/contract_goal/succubus/masked_feast)
 	if(corruption_mult > 1)
 		record_contract_progress(/datum/contract_goal/succubus/sacred_corruption)
-	if(true_form_active)
+	if(is_in_true_form())
 		record_contract_progress(/datum/contract_goal/succubus/unmasked_hunger)
 
 /// Trickle essence from absorbed cum/femcum; decay compounds per originator so

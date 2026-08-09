@@ -1009,6 +1009,8 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	var/mob/user = ui?.user || usr
 	if(!user)
 		return FALSE
+	if(!character_setup_action_allowed(user, action, params))
+		return FALSE
 
 	switch(action)
 		if("pref")
@@ -1053,6 +1055,11 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return FALSE
 
 // ---- Hooks ----
+
+/// Allows temporary Preferences subtypes to reject actions before the legacy
+/// process_link() bridge sees them. Ordinary character setup remains open.
+/datum/preferences/proc/character_setup_action_allowed(mob/user, action, list/params)
+	return TRUE
 
 /// Close the setup menu when the lobby mob turns into a real character.
 /mob/dead/new_player/transfer_character()

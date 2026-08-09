@@ -1,6 +1,5 @@
-// Midround solo antag event, modeled on the vampire event's candidate-poll/ban/whitelist plumbing.
-// Deliberately midround (not roundstart) with a conservative weight so the succubus isn't
-// roundstart witch-hunt bait. Corruption/magic tags, no role restrictions.
+// Legacy event controller retained for administrative forcing. Natural Succubus entry now
+// comes exclusively from the Villain job.
 
 /datum/round_event_control/antagonist/solo/succubus
 	name = "Succubus"
@@ -14,6 +13,7 @@
 	shared_occurence_type = null
 
 	weight = 5
+	max_occurrences = 0
 
 	denominator = 25
 
