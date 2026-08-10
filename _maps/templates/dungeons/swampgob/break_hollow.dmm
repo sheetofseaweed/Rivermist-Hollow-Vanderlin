@@ -78,7 +78,7 @@
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "P" = (
-/obj/effect/landmark/dungeon/gate/elite,
+/obj/structure/flora/rock/pile,
 /turf/open/floor/cobblerock/alt,
 /area/pocket_dimension/dungeon)
 "Q" = (
@@ -195,7 +195,7 @@ b
 g
 g
 b
-b
+i
 d
 "}
 (9,1,1) = {"
@@ -205,10 +205,10 @@ w
 b
 C
 s
+T
 s
-s
-s
-s
+P
+i
 a
 "}
 (10,1,1) = {"
@@ -217,11 +217,11 @@ L
 w
 w
 L
-h
 T
-P
-i
-P
+d
+h
+d
+a
 d
 "}
 (11,1,1) = {"
@@ -232,7 +232,7 @@ a
 a
 d
 a
-d
+a
 a
 d
 d

@@ -26,6 +26,11 @@
 	/// Examine hint shown on gates leading to a room of this template
 	var/gate_hint = "Something stirs in the dark beyond."
 
+/// Returns the cache table for this template at the given run floor. Most
+/// templates pin one table; themes spanning several floor bands may override.
+/datum/map_template/pocket/dungeon/proc/get_loot_table_type(dungeon_floor = 1)
+	return loot_table_type
+
 /// Returns an assoc list of template datum -> weight for all dungeon templates
 /// matching the given filters. Templates are the cached datums registered in
 /// SSpocket_dimensions.templates_by_id (built from SSmapping.map_templates).
@@ -258,3 +263,86 @@
 	difficulty_tier = 2
 	loot_table_type = /datum/loot_table/dungeon/tier3
 	gate_hint = "Drums. Torchlight. Something vast squats on a throne of mud."
+
+// -- Drow Dungeon: occupied undercity beyond the Sunken Warrens --
+
+/datum/map_template/pocket/dungeon/drow
+	name = "_drow_base"
+	id = "_drow_base"
+	theme = DUNGEON_THEME_DROW
+	loot_table_type = /datum/loot_table/dungeon/drow/tier1
+
+/datum/map_template/pocket/dungeon/drow/get_loot_table_type(dungeon_floor = 1)
+	return get_drow_loot_table_type_for_floor(dungeon_floor)
+
+/datum/map_template/pocket/dungeon/drow/break_veiled_refuge
+	name = "The Veiled Refuge"
+	id = "drow_break_veiled_refuge"
+	mappath = "_maps/templates/dungeons/drow/break_veiled_refuge.dmm"
+	room_kind = DUNGEON_ROOM_BREAK
+	difficulty_tier = 2
+	gate_hint = "Blue fire glows beyond a curtain of still, clean silk."
+
+/datum/map_template/pocket/dungeon/drow/descent_umbra_gate
+	name = "The Umbra Gatehouse"
+	id = "drow_descent_umbra_gate"
+	mappath = "_maps/templates/dungeons/drow/descent_umbra_gate.dmm"
+	room_kind = DUNGEON_ROOM_DESCENT
+	difficulty_tier = 2
+	gate_hint = "Measured footsteps echo beneath a black-stone arch."
+
+/datum/map_template/pocket/dungeon/drow/combat_silk_antechamber
+	name = "The Silk Antechamber"
+	id = "drow_combat_silk_antechamber"
+	mappath = "_maps/templates/dungeons/drow/combat_silk_antechamber.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 2
+	gate_hint = "Drawn silk whispers over polished stone."
+
+/datum/map_template/pocket/dungeon/drow/combat_slave_pens
+	name = "The Slave Pens"
+	id = "drow_combat_slave_pens"
+	mappath = "_maps/templates/dungeons/drow/combat_slave_pens.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 2
+	gate_hint = "Iron scrapes stone, followed by the snap of a lash."
+
+/datum/map_template/pocket/dungeon/drow/combat_webbed_gallery
+	name = "The Webbed Gallery"
+	id = "drow_combat_webbed_gallery"
+	mappath = "_maps/templates/dungeons/drow/combat_webbed_gallery.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 3
+	gate_hint = "Something many-legged crosses the webbing overhead."
+
+/datum/map_template/pocket/dungeon/drow/combat_fungal_reservoir
+	name = "The Fungal Reservoir"
+	id = "drow_combat_fungal_reservoir"
+	mappath = "_maps/templates/dungeons/drow/combat_fungal_reservoir.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 3
+	gate_hint = "Cold water drips among beds of luminous fungus."
+
+/datum/map_template/pocket/dungeon/drow/combat_blade_chapel
+	name = "The Chapel of Blades"
+	id = "drow_combat_blade_chapel"
+	mappath = "_maps/templates/dungeons/drow/combat_blade_chapel.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 4
+	gate_hint = "Steel chimes softly where no wind should reach."
+
+/datum/map_template/pocket/dungeon/drow/combat_matron_gauntlet
+	name = "The Matron's Gauntlet"
+	id = "drow_combat_matron_gauntlet"
+	mappath = "_maps/templates/dungeons/drow/combat_matron_gauntlet.dmm"
+	room_kind = DUNGEON_ROOM_COMBAT
+	difficulty_tier = 4
+	gate_hint = "A disciplined war-chant answers the gate's pulse."
+
+/datum/map_template/pocket/dungeon/drow/boss_widows_court
+	name = "The Widow's Court"
+	id = "drow_boss_widows_court"
+	mappath = "_maps/templates/dungeons/drow/boss_widows_court.dmm"
+	room_kind = DUNGEON_ROOM_BOSS
+	difficulty_tier = 4
+	gate_hint = "A vast shadow waits beneath a crown of blue flame."

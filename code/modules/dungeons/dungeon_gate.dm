@@ -56,9 +56,12 @@
 	else if(gate_role == DUNGEON_GATE_DESCENT)
 		. += span_notice("A stairway plunges deeper. The air below is colder, hungrier.")
 	else if(pre_rolled_template)
+		var/transition_text = get_transition_destination_text()
 		. += span_notice(pre_rolled_template.gate_hint)
 		if(leads_to_boss())
 			. += span_boldwarning("Beyond this passage, something vast is waiting. The floor's master.")
+		else if(transition_text)
+			. += span_boldnotice(transition_text)
 		else if(special_kind)
 			. += span_boldnotice(get_special_kind_text())
 		else if(reward_type)
@@ -69,6 +72,31 @@
 /obj/structure/dungeon_gate/proc/leads_to_boss()
 	var/datum/map_template/pocket/dungeon/next_template = pre_rolled_template
 	return !!(next_template && next_template.room_kind == DUNGEON_ROOM_BOSS)
+
+/// Describes structural floor transitions that should not carry combat-door
+/// danger or reward promises.
+/obj/structure/dungeon_gate/proc/get_transition_destination_text()
+	var/datum/map_template/pocket/dungeon/next_template = pre_rolled_template
+	if(!next_template)
+		return null
+	var/datum/map_template/pocket/dungeon/source_template = source_room?.get_dungeon_template()
+	if(source_template?.room_kind == DUNGEON_ROOM_BREAK && owning_run?.boss_defeated_this_floor)
+		return "This passage leads to the entrance of the next floor."
+	if(source_template?.room_kind == DUNGEON_ROOM_BOSS)
+		if(next_template.room_kind == DUNGEON_ROOM_BREAK)
+			if(sealed)
+				return "A place of respite waits beyond, sealed until the floor's master falls."
+			return "The floor's master has fallen. A place of respite waits beyond."
+		if(next_template.room_kind == DUNGEON_ROOM_DESCENT)
+			if(sealed)
+				return "The way to the next floor waits beyond, sealed until its master falls."
+			return "The floor's master has fallen. The way descends to the next floor."
+	switch(next_template.room_kind)
+		if(DUNGEON_ROOM_BREAK)
+			return "A place of respite waits beyond."
+		if(DUNGEON_ROOM_DESCENT)
+			return "This passage leads to the entrance of the next floor."
+	return null
 
 /obj/structure/dungeon_gate/proc/get_reward_promise_text()
 	switch(reward_type)
@@ -131,9 +159,11 @@
 	data["forsaken"] = forsaken
 	data["locked"] = (requires_key && !key_unlocked)
 	var/boss_ahead = leads_to_boss()
+	var/transition_text = get_transition_destination_text()
 	data["boss_ahead"] = boss_ahead
-	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK || special_kind || boss_ahead || !reward_type) ? null : get_reward_promise_text()
-	data["danger_text"] = (gate_role == DUNGEON_GATE_BACK || boss_ahead) ? null : get_path_danger_text()
+	data["destination_text"] = transition_text
+	data["reward_text"] = (gate_role == DUNGEON_GATE_BACK || special_kind || boss_ahead || transition_text || !reward_type) ? null : get_reward_promise_text()
+	data["danger_text"] = (gate_role == DUNGEON_GATE_BACK || boss_ahead || transition_text) ? null : get_path_danger_text()
 	data["special_text"] = special_kind ? get_special_kind_text() : null
 	data["hint"] = pre_rolled_template?.gate_hint
 	data["back_available"] = (gate_role == DUNGEON_GATE_BACK) ? (destination_room && !QDELETED(destination_room)) : TRUE

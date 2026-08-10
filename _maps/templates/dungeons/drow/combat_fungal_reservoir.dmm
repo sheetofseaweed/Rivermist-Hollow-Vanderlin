@@ -1,0 +1,244 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"b" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/decostone/moss,
+/area/pocket_dimension/dungeon)
+"c" = (
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"d" = (
+/obj/structure/flora/grass/mushroom,
+/turf/open/floor/mushroom,
+/area/pocket_dimension/dungeon)
+"f" = (
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/mushroom,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/structure/flora/mushroomcluster,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"k" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"n" = (
+/obj/structure/flora/shroom_tree/happy/mushroom5,
+/turf/open/floor/mushroom,
+/area/pocket_dimension/dungeon)
+"p" = (
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"q" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"u" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/structure/flora/rock,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"v" = (
+/turf/open/water/pond,
+/area/pocket_dimension/dungeon)
+"w" = (
+/turf/closed/wall/mineral/decostone/moss,
+/area/pocket_dimension/dungeon)
+"y" = (
+/obj/structure/flora/shroom_tree/happy/mushroom2,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"K" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"L" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"N" = (
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"P" = (
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"T" = (
+/obj/effect/landmark/dungeon/gate/treasure,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension/dungeon)
+"W" = (
+/turf/open/floor/mushroom,
+/area/pocket_dimension/dungeon)
+"X" = (
+/obj/structure/flora/shroom_tree/happy/mushroom5,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"Z" = (
+/obj/structure/flora/new_shroom/cyansmall,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+b
+b
+w
+K
+K
+K
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+B
+E
+p
+q
+u
+k
+w
+a
+a
+a
+"}
+(3,1,1) = {"
+a
+c
+p
+v
+v
+f
+v
+v
+p
+w
+a
+"}
+(4,1,1) = {"
+a
+w
+p
+v
+d
+P
+d
+v
+F
+p
+a
+"}
+(5,1,1) = {"
+a
+L
+p
+v
+f
+W
+X
+v
+p
+L
+a
+"}
+(6,1,1) = {"
+a
+G
+p
+f
+W
+N
+f
+h
+p
+T
+a
+"}
+(7,1,1) = {"
+a
+L
+p
+v
+P
+y
+W
+v
+p
+k
+a
+"}
+(8,1,1) = {"
+a
+w
+p
+v
+n
+W
+Z
+v
+F
+b
+a
+"}
+(9,1,1) = {"
+a
+b
+W
+v
+v
+f
+v
+v
+b
+w
+a
+"}
+(10,1,1) = {"
+a
+b
+Z
+Z
+L
+G
+k
+b
+w
+w
+w
+"}
+(11,1,1) = {"
+a
+a
+a
+K
+a
+a
+a
+a
+a
+a
+a
+"}

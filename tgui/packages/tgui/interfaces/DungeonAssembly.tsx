@@ -311,6 +311,10 @@ function LedgerTab(props) {
             </Button>
           }
         >
+          <Box color="label" mb={1}>
+            Wearing a title appends it to your visible name. Choose None to
+            hide it again.
+          </Box>
           {titles.map((row) => (
             <Box key={row.id} mb={0.5}>
               <Box inline width="70%">

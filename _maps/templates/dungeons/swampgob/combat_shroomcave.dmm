@@ -31,9 +31,9 @@
 /area/pocket_dimension/dungeon)
 "n" = (
 /obj/structure/fluff/nest,
-/obj/effect/landmark/dungeon/guardian/swampgob,
 /obj/structure/flora/tinymushrooms,
 /obj/effect/decal/cleanable/sexfluid/cumdrip,
+/obj/effect/landmark/dungeon/encounter,
 /turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "q" = (
@@ -97,6 +97,10 @@
 "X" = (
 /obj/effect/landmark/dungeon/guardian/swampgob,
 /turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"Y" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
@@ -168,7 +172,7 @@ a
 a
 c
 r
-b
+Y
 b
 F
 X

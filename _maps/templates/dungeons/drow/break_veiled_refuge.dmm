@@ -1,0 +1,580 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"ae" = (
+/turf/closed/wall/mineral/craftstone,
+/area/pocket_dimension/dungeon)
+"af" = (
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"ar" = (
+/obj/structure/fluff/pillow/purple{
+	dir = 1
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"aB" = (
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"bw" = (
+/obj/structure/chair/bench/couchamagenta/r,
+/obj/item/bedsheet/cloth{
+	pixel_y = 1;
+	plane = -10;
+	layer = 3;
+	anchored = 1;
+	color = "#8b2323";
+	pixel_x = -10
+	},
+/obj/structure/fluff/pillow/purple{
+	dir = 1;
+	layer = 3.1;
+	pixel_x = -7;
+	pixel_y = -4
+	},
+/turf/open/floor/tile/harem2,
+/area/pocket_dimension/dungeon)
+"bJ" = (
+/obj/effect/lily_petal/two,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"bV" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"ee" = (
+/obj/structure/window/harem2,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"eA" = (
+/obj/machinery/light/fueled/wallfire/floorcandle/alt/pink,
+/obj/machinery/light/fueled/wallfire/floorcandle/pink{
+	pixel_y = -12
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"ga" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"gc" = (
+/obj/structure/window/harem1,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"gO" = (
+/obj/effect/landmark/pocket_dimension/exit,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"hs" = (
+/obj/structure/stairs/stone/church{
+	dir = 1
+	},
+/turf/open/water/bath,
+/area/pocket_dimension/dungeon)
+"hX" = (
+/obj/effect/decal/carpet/square/black{
+	pixel_y = -6
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"jK" = (
+/obj/structure/fluff/railing/wood/west,
+/obj/structure/chair/bench/couchamagenta,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"kG" = (
+/obj/item/painting/skull{
+	pixel_x = 30;
+	pixel_y = 0
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"lK" = (
+/obj/effect/decal/edge_corner{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 10;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"nL" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"oC" = (
+/obj/effect/lily_petal/three,
+/obj/structure/fluff/statue/femalestatue/cleanlying{
+	pixel_x = -47
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"qo" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"qs" = (
+/obj/machinery/light/fueled/firebowl/standing{
+	pixel_x = 16;
+	density = 0;
+	pixel_y = 21
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"sM" = (
+/obj/effect/decal/carpet/square/black{
+	color = "#a989ad";
+	dir = 4;
+	pixel_x = 27;
+	pixel_y = 2
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"to" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"vC" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"vI" = (
+/obj/structure/curtain/magenta,
+/turf/closed/wall/mineral/craftstone,
+/area/pocket_dimension/dungeon)
+"wy" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"xj" = (
+/obj/structure/stairs/stone/church{
+	dir = 1
+	},
+/obj/item/natural/cloth,
+/turf/open/water/bath,
+/area/pocket_dimension/dungeon)
+"xu" = (
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/machinery/light/fueled/wallfire/candle/r,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"yx" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"zw" = (
+/obj/effect/decal/carpet/square/black{
+	dir = 4;
+	pixel_x = 23;
+	pixel_y = 12
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"zM" = (
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"zQ" = (
+/obj/structure/chair/bench/couchamagenta,
+/obj/effect/decal/carpet/kover_purple{
+	pixel_x = 25;
+	pixel_y = -10
+	},
+/turf/open/floor/tile/harem2,
+/area/pocket_dimension/dungeon)
+"Aw" = (
+/obj/effect/decal/edge_corner{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 6;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"Bk" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"JE" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/fluff/pillow/purple,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"Kz" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"Lg" = (
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 1
+	},
+/obj/effect/landmark/dungeon/shrine,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"Ow" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"OL" = (
+/obj/structure/fluff/pillow/magenta{
+	dir = 8;
+	pixel_x = -10;
+	pixel_y = 1
+	},
+/obj/structure/shisha/hookah{
+	pixel_x = 14;
+	pixel_y = 1
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"QU" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"Sr" = (
+/obj/structure/fluff/pillow/magenta{
+	pixel_x = 7
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"Tx" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 5;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"TG" = (
+/obj/structure/chair/bench/couchamagenta,
+/obj/effect/decal/carpet/kover_purple{
+	pixel_x = 16;
+	pixel_y = -2
+	},
+/obj/structure/fluff/pillow/magenta{
+	pixel_x = 1;
+	layer = 3.1;
+	dir = 8
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/harem2,
+/area/pocket_dimension/dungeon)
+"Uu" = (
+/obj/structure/chair/bench/couchamagenta/r,
+/obj/item/bedsheet/cloth{
+	pixel_y = 1;
+	plane = -10;
+	layer = 3;
+	anchored = 1;
+	color = "#8b2323"
+	},
+/obj/item/plate/pewter{
+	layer = 3.1;
+	pixel_x = -3;
+	pixel_y = -4
+	},
+/turf/open/floor/tile/harem2,
+/area/pocket_dimension/dungeon)
+"Uz" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"UJ" = (
+/turf/closed/wall/mineral/decorstone,
+/area/pocket_dimension/dungeon)
+"UP" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 9;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"Vv" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"VV" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/machinery/light/fueled/wallfire/candle/l,
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"WY" = (
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"Yu" = (
+/obj/structure/fluff/railing/wood/east,
+/obj/structure/chair/bench/couchamagenta/r,
+/obj/structure/fluff/pillow/purple{
+	dir = 1;
+	layer = 3.1;
+	pixel_x = -7;
+	pixel_y = -4
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"ZV" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 6
+	},
+/turf/open/floor/tile/brownbrick,
+/area/pocket_dimension/dungeon)
+"ZZ" = (
+/obj/structure/fluff/pillow/purple{
+	dir = 8
+	},
+/obj/machinery/light/fueled/firebowl/standing{
+	density = 0;
+	pixel_x = -9;
+	pixel_y = -14;
+	layer = 2.95;
+	plane = -10
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+aB
+UJ
+UJ
+UJ
+aB
+ee
+gc
+WY
+WY
+WY
+WY
+"}
+(2,1,1) = {"
+ee
+Aw
+QU
+QU
+VV
+Tx
+eA
+zM
+zw
+Bk
+WY
+"}
+(3,1,1) = {"
+vI
+vC
+ZZ
+zQ
+OL
+Kz
+hs
+zM
+zM
+Vv
+WY
+"}
+(4,1,1) = {"
+ee
+lK
+Uz
+bw
+Sr
+bV
+hs
+zM
+af
+WY
+WY
+"}
+(5,1,1) = {"
+ae
+jK
+Ow
+zM
+sM
+qo
+bJ
+zM
+zM
+Vv
+WY
+"}
+(6,1,1) = {"
+ae
+Yu
+wy
+zM
+zM
+JE
+oC
+zM
+zM
+gO
+WY
+"}
+(7,1,1) = {"
+ee
+Aw
+nL
+TG
+af
+ga
+xj
+zM
+zM
+Vv
+WY
+"}
+(8,1,1) = {"
+vI
+Kz
+qs
+Uu
+ar
+vC
+hs
+hX
+zM
+zM
+WY
+"}
+(9,1,1) = {"
+ee
+lK
+yx
+ZV
+xu
+UP
+eA
+zM
+kG
+zM
+WY
+"}
+(10,1,1) = {"
+aB
+UJ
+Lg
+qo
+aB
+ee
+gc
+zM
+aB
+to
+WY
+"}
+(11,1,1) = {"
+WY
+WY
+WY
+WY
+WY
+WY
+WY
+WY
+WY
+WY
+WY
+"}

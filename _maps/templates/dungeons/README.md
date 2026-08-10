@@ -12,9 +12,11 @@ You do two things to add content:
 **Folder convention: one folder per theme/set, `<kind>_<name>.dmm` inside it.** Rooms in a
 theme are authored and re-skinned together, so they live together; the room kind goes in the
 filename prefix (`break_`, `combat_`, `boss_`, `descent_`, `oneshot_`). Harness fixtures live in
-`_test/` — never put content there. **`swampgob/` (The Sunken Warrens) is the reference set**:
-seven rooms + floor configs + a themed entrance, showing every marker in real use, including a
-key-locked treasure gate wired to a keyholder (see `combat_gobwarren.dmm`).
+`_test/` — never put content there. **`swampgob/` (The Sunken Warrens) is the starter reference
+set**: seven rooms + floor configs, showing every marker in real use, including a key-locked
+treasure gate wired to a keyholder (see `combat_gobwarren.dmm`). **`drow/` (Drow Dungeon) is the
+deeper production set**: one break room, one descent, one boss room, and six combat rooms used by
+floors 3–5 of the generic infinite delve.
 
 Everything else (loading, collapsing, mob tracking, loot, currency, party logic) is automatic.
 

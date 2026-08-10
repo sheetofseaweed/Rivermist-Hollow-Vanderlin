@@ -58,6 +58,41 @@
 	density_max = 5
 	elite_chance = 12
 
+// -- Drow Dungeon: the occupied depths beneath the warrens --
+
+/datum/dungeon_floor_config/drow
+	floor = 3
+	floor_name = "Drow Dungeon: The Umbral Outworks"
+	themes = list(DUNGEON_THEME_DROW)
+	tier = 2
+	stretch_length = 5
+	boss_pool = list(
+		/mob/living/carbon/human/species/elf/dark/drowraider/ambush = 12,
+		/mob/living/simple_animal/hostile/retaliate/spider/mutated = 5,
+	)
+	density_min = 3
+	density_max = 5
+	elite_chance = 12
+
+/datum/dungeon_floor_config/drow/labyrinth
+	floor = 4
+	floor_name = "Drow Dungeon: The Silken Labyrinth"
+	tier = 3
+	density_min = 4
+	density_max = 6
+	enhance_chance = 30
+	elite_chance = 16
+
+/datum/dungeon_floor_config/drow/widows_court
+	floor = 5
+	floor_name = "Drow Dungeon: The Widow's Court"
+	tier = 4
+	stretch_length = 6
+	density_min = 4
+	density_max = 6
+	enhance_chance = 35
+	elite_chance = 20
+
 #ifdef UNIT_TESTS
 // Deterministic fixture floor: outranks content configs on floor 1 so the unit
 // tests aren't subject to random elite/affix/trait variance. Trait behavior is

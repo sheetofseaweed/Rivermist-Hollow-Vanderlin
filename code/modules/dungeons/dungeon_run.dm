@@ -90,6 +90,9 @@
 	var/room_serial = 0
 	/// world.time we last saw a client-bearing occupant anywhere in the run
 	var/last_seen_occupied = 0
+	/// TRUE after the first legitimate delver enters. Once set, an entirely
+	/// empty run collapses even when its occupants left through an outside system.
+	var/has_been_occupied = FALSE
 	/// Reentrancy guard for teardown
 	var/ending = FALSE
 	/// Guards the yielding destination-build/party-transfer transaction.
@@ -231,8 +234,15 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	return TRUE
 
 /datum/dungeon_run/proc/pick_floor_theme()
-	if(floor_config && length(floor_config.themes))
-		return pick(floor_config.themes)
+	return pick_theme_for_floor(floor)
+
+/// Picks the authored theme for a specific floor. Floor transitions pre-roll
+/// their descent before floor advances, so they must be able to consult the
+/// next config rather than accidentally carrying the old theme downstairs.
+/datum/dungeon_run/proc/pick_theme_for_floor(target_floor)
+	var/datum/dungeon_floor_config/target_config = (target_floor == floor && floor_config) ? floor_config : get_dungeon_floor_config(target_floor)
+	if(target_config && length(target_config.themes))
+		return pick(target_config.themes)
 	return theme
 
 /// Builds the stretch's door-reward deck: guaranteed boon + treasure, weighted
@@ -567,11 +577,19 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /// descent landing -> combat stretch -> boss -> break room (the exit) ->
 /// descent -> next floor. Mid-floor breaks (multi-stretch floors) resume combat.
 /datum/dungeon_run/proc/roll_next_room_template(datum/pocket_dimension/dungeon/room, list/sibling_exclude)
-	var/theme_to_use = pick_floor_theme()
-	// The post-boss break room opens onto the stairway down.
 	var/datum/map_template/pocket/dungeon/source_template = room.get_dungeon_template()
+	// A transition landing is instantiated and given its gates before advance_floor()
+	// commits. Its own theme already belongs to the destination floor, so use it
+	// to keep those pre-rolled passages on the far side of the boundary.
+	var/theme_to_use = source_template?.room_kind == DUNGEON_ROOM_DESCENT ? (source_template.theme || pick_theme_for_floor(floor + 1)) : pick_floor_theme()
+	// A boss gate always opens onto the floor's true respite. Pre-roll it now so
+	// even the sealed gate advertises its real destination before the boss falls.
+	if(source_template?.room_kind == DUNGEON_ROOM_BOSS)
+		return pick_dungeon_template(DUNGEON_ROOM_BREAK, theme_to_use) || pick_dungeon_template(DUNGEON_ROOM_DESCENT, theme_to_use)
+	// The post-boss break room opens onto the next floor's stairway down.
 	if(source_template?.room_kind == DUNGEON_ROOM_BREAK && boss_defeated_this_floor)
-		return pick_dungeon_template(DUNGEON_ROOM_DESCENT, theme_to_use) || pick_dungeon_template(DUNGEON_ROOM_BREAK, theme_to_use)
+		var/next_floor_theme = pick_theme_for_floor(floor + 1)
+		return pick_dungeon_template(DUNGEON_ROOM_DESCENT, next_floor_theme) || pick_dungeon_template(DUNGEON_ROOM_BREAK, next_floor_theme)
 	var/next_position = room.stretch_position + 1
 	if(next_position > stretch_length)
 		// End of stretch: a boss caps the floor's final stretch, else a break room.
@@ -669,8 +687,11 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		if(is_boss_room)
 			// Boss death opens the way to the floor's true rest: a break room
 			// with an exit. Its far door leads to the stairway down.
-			gate.pre_rolled_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme()) || pick_dungeon_template(DUNGEON_ROOM_DESCENT, pick_floor_theme())
+			var/next_room_kind = gate.pre_rolled_template?.room_kind
+			if(next_room_kind != DUNGEON_ROOM_BREAK && next_room_kind != DUNGEON_ROOM_DESCENT)
+				gate.pre_rolled_template = pick_dungeon_template(DUNGEON_ROOM_BREAK, pick_floor_theme()) || pick_dungeon_template(DUNGEON_ROOM_DESCENT, pick_floor_theme())
 			gate.reward_type = null
+		SStgui.update_uis(gate)
 	if(is_boss_room)
 		boss_defeated_this_floor = TRUE
 		on_boss_killed(room)
@@ -734,6 +755,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/on_member_entered_room(datum/pocket_dimension/dungeon/room, mob/living/user, trait_handled = FALSE)
 	if(ending || QDELETED(room) || !is_run_participant(user))
 		return
+	has_been_occupied = TRUE
 	last_seen_occupied = world.time
 	mark_present(user)
 	apply_boons_to(user)
@@ -797,8 +819,8 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 	// Reaching a fresh rest area lets waiting outsiders petition to join.
 	notify_waiting_petitioners()
 
-/// A watching ghost is not an occupant - only living, client-bearing delvers
-/// keep a run alive against the abandonment timer.
+/// A watching ghost is not an occupant. Client-bearing delvers refresh the
+/// abandonment clock; an SSD body is handled by the physical-presence guard.
 /datum/dungeon_run/proc/has_client_occupants()
 	for(var/datum/pocket_dimension/dungeon/room as anything in get_all_rooms())
 		for(var/mob/occupant as anything in room.get_occupants())
@@ -810,7 +832,7 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 /datum/dungeon_run/proc/note_possible_run_end()
 	if(ending)
 		return
-	if(!has_client_occupants())
+	if(!length(get_present_members()))
 		qdel(src)
 
 /// Credits a roster member once when they successfully leave from a true rest
@@ -934,6 +956,12 @@ GLOBAL_LIST_EMPTY(active_dungeon_runs)
 		return
 	validate_presence()
 	maybe_arm_wipe() // covers deaths and disconnects the defeat signal misses
+	if(length(get_present_members()))
+		has_been_occupied = TRUE
+	else if(has_been_occupied)
+		teardown_message = "With no delvers left to hold it open, the dungeon folds in on itself!"
+		qdel(src)
+		return
 	if(has_client_occupants())
 		last_seen_occupied = world.time
 		return

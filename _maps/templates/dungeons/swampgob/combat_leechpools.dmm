@@ -17,6 +17,10 @@
 /obj/structure/kneestingers,
 /turf/closed/mineral,
 /area/pocket_dimension/dungeon)
+"r" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
 "w" = (
 /turf/open/water/swamp,
 /area/pocket_dimension/dungeon)
@@ -61,7 +65,7 @@ a
 l
 F
 b
-b
+r
 b
 E
 a
@@ -161,14 +165,14 @@ a
 (10,1,1) = {"
 a
 l
-b
+r
 h
 b
 h
 b
 h
 b
-b
+r
 a
 "}
 (11,1,1) = {"

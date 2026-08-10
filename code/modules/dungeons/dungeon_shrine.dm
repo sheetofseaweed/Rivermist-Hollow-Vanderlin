@@ -43,6 +43,11 @@
 
 /// Pre-payment gate for offers that can be bought pointlessly.
 /obj/structure/dungeon_shrine/proc/can_buy_offer(id, mob/living/user)
+	if(id == "repair")
+		if(length(get_damaged_worn_armor(user)))
+			return TRUE
+		to_chat(user, span_warning("The light finds no damaged armor upon you."))
+		return FALSE
 	if(id != "revive")
 		return TRUE
 	if(!user.has_any_defeat_trauma())
@@ -72,6 +77,42 @@
 /obj/structure/dungeon_shrine/proc/has_treatable_trauma(mob/living/user)
 	return !!get_treatable_trauma(user)
 
+/// Damaged, normally repairable armor currently worn by the buyer. This uses
+/// the same protective layers as human armor checks and excludes bags, belts,
+/// ordinary clothes, and indestructible costume pieces.
+/obj/structure/dungeon_shrine/proc/get_damaged_worn_armor(mob/living/user)
+	var/list/damaged = list()
+	if(!ishuman(user))
+		return damaged
+	var/mob/living/carbon/human/human = user
+	var/list/worn_layers = list(
+		human.skin_armor,
+		human.head,
+		human.wear_mask,
+		human.wear_wrists,
+		human.gloves,
+		human.wear_neck,
+		human.cloak,
+		human.wear_armor,
+		human.wear_shirt,
+		human.shoes,
+		human.wear_pants,
+	)
+	for(var/obj/item/clothing/armor_piece as anything in worn_layers)
+		if(!armor_piece)
+			continue
+		if(!(armor_piece.anvilrepair || armor_piece.sewrepair) || !armor_piece.uses_integrity || armor_piece.get_integrity() >= armor_piece.max_integrity)
+			continue
+		var/is_protective = length(armor_piece.prevent_crits)
+		if(!is_protective)
+			for(var/rating in armor_piece.armor.getList())
+				if(armor_piece.armor.getRating(rating) > 0)
+					is_protective = TRUE
+					break
+		if(is_protective)
+			damaged |= armor_piece
+	return damaged
+
 /// Price of an offer by id, for refunds.
 /obj/structure/dungeon_shrine/proc/get_offer_cost(id)
 	for(var/list/offer as anything in build_shrine_offers())
@@ -83,6 +124,7 @@
 	var/floor = owning_run?.floor || 1
 	return list(
 		list("id" = "heal", "label" = "Mend wounds", "cost" = 25),
+		list("id" = "repair", "label" = "Reforge worn armor (fully repairs equipped armor)", "cost" = DUNGEON_SHRINE_ARMOR_REPAIR_COST),
 		list("id" = "revive", "label" = "Undo a lingering hurt (clears one defeat trauma)", "cost" = DUNGEON_SHRINE_TRAUMA_COST),
 		list("id" = "boon", "label" = "Beg a blessing (extra boon)", "cost" = 150),
 		list("id" = "cache", "label" = "Conjure a cache roll", "cost" = 60 + floor * 20),
@@ -95,6 +137,11 @@
 			user.adjustBruteLoss(-40)
 			user.adjustFireLoss(-40)
 			to_chat(user, span_nicegreen("The shrine's light knits your wounds."))
+		if("repair")
+			var/list/damaged_armor = get_damaged_worn_armor(user)
+			for(var/obj/item/clothing/armor_piece as anything in damaged_armor)
+				armor_piece.repair_damage(armor_piece.max_integrity)
+			to_chat(user, span_nicegreen("The shrine's light runs across your worn armor, sealing rents and straightening battered plates."))
 		if("revive")
 			// The dungeon's own light pays the debt a fall left behind. Routed
 			// through the defeat system's universal treatment so every listener

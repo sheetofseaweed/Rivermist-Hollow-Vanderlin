@@ -320,6 +320,9 @@
 /obj/structure/dungeon_entrance/ui_interact(mob/user, datum/tgui/ui)
 	if(entrance_kind != DUNGEON_ENTRANCE_INFINITE || !user?.Adjacent(src))
 		return
+	if(ishuman(user))
+		var/mob/living/carbon/human/human_user = user
+		human_user.update_dungeon_title()
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "DungeonAssembly")
@@ -477,6 +480,9 @@
 			else
 				return
 			progress.save_progress()
+			if(ishuman(user))
+				var/mob/living/carbon/human/human_user = user
+				human_user.update_dungeon_title()
 			return TRUE
 		if("invite")
 			INVOKE_ASYNC(user, TYPE_VERB_REF(/mob/living/carbon, invite_to_party))

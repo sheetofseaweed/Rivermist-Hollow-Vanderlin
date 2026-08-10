@@ -16,6 +16,7 @@ type Data = {
   reward_text: string | null;
   danger_text: string | null;
   special_text: string | null;
+  destination_text: string | null;
   boss_ahead: 0 | 1;
   hint: string | null;
   back_available: 0 | 1;
@@ -39,6 +40,7 @@ export function DungeonGate(props) {
     reward_text,
     danger_text,
     special_text,
+    destination_text,
     boss_ahead,
     hint,
     back_available,
@@ -104,6 +106,11 @@ export function DungeonGate(props) {
                   {special_text && (
                     <LabeledList.Item label="Beyond" color="purple">
                       {special_text}
+                    </LabeledList.Item>
+                  )}
+                  {destination_text && (
+                    <LabeledList.Item label="Destination" color="blue">
+                      {destination_text}
                     </LabeledList.Item>
                   )}
                   {reward_text && (

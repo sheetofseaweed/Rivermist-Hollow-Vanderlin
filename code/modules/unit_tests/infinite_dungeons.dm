@@ -49,6 +49,113 @@
 	TEST_ASSERT(SSpocket_dimensions.delete_instance(instance, null, origin), "Dungeon should collapse with a live guardian inside.")
 	TEST_ASSERT(QDELETED(guardian), "Live native guardian must be deleted on collapse, not ejected.")
 
+/datum/unit_test/dungeon_drow_theme_harness/Run()
+	var/list/expected_rooms = list(
+		"drow_break_veiled_refuge" = list("kind" = DUNGEON_ROOM_BREAK),
+		"drow_descent_umbra_gate" = list("kind" = DUNGEON_ROOM_DESCENT),
+		"drow_combat_silk_antechamber" = list("kind" = DUNGEON_ROOM_COMBAT),
+		"drow_combat_slave_pens" = list("kind" = DUNGEON_ROOM_COMBAT),
+		"drow_combat_webbed_gallery" = list("kind" = DUNGEON_ROOM_COMBAT),
+		"drow_combat_fungal_reservoir" = list("kind" = DUNGEON_ROOM_COMBAT),
+		"drow_combat_blade_chapel" = list("kind" = DUNGEON_ROOM_COMBAT),
+		"drow_combat_matron_gauntlet" = list("kind" = DUNGEON_ROOM_COMBAT),
+		"drow_boss_widows_court" = list("kind" = DUNGEON_ROOM_BOSS),
+	)
+	var/list/kind_counts = list(
+		DUNGEON_ROOM_BREAK = 0,
+		DUNGEON_ROOM_DESCENT = 0,
+		DUNGEON_ROOM_COMBAT = 0,
+		DUNGEON_ROOM_BOSS = 0,
+	)
+	var/turf/origin = run_loc_floor_bottom_left
+
+	for(var/template_id in expected_rooms)
+		var/list/expected = expected_rooms[template_id]
+		var/datum/map_template/pocket/dungeon/template = SSpocket_dimensions.resolve_template(template_id)
+		TEST_ASSERT_NOTNULL(template, "Drow Dungeon room [template_id] should register.")
+		TEST_ASSERT(template.production_eligible, "Drow Dungeon room [template_id] must be production eligible.")
+		TEST_ASSERT_EQUAL(template.theme, DUNGEON_THEME_DROW, "Drow Dungeon room [template_id] has the wrong theme.")
+		TEST_ASSERT_EQUAL(template.room_kind, expected["kind"], "Drow Dungeon room [template_id] has the wrong room kind.")
+		TEST_ASSERT(template.width > 0, "Drow Dungeon room [template_id] should expose its authored width.")
+		TEST_ASSERT(template.height > 0, "Drow Dungeon room [template_id] should expose its authored height.")
+		kind_counts[template.room_kind]++
+
+		var/datum/pocket_dimension/dungeon/room = SSpocket_dimensions.get_or_create_instance("[REF(src)]::[template_id]", template.type, POCKET_LIFECYCLE_COLLAPSE, 0)
+		TEST_ASSERT_NOTNULL(room, "Drow Dungeon room [template_id] should load as a pocket instance.")
+		TEST_ASSERT_EQUAL(length(room.entry_turfs), 1, "Drow Dungeon room [template_id] should have one authored entry.")
+		var/forward_gate_count = 0
+		var/back_gate_count = 0
+		for(var/list/gate_info as anything in room.gate_landmark_info)
+			switch(gate_info["role"])
+				if(DUNGEON_GATE_FORWARD)
+					forward_gate_count++
+				if(DUNGEON_GATE_BACK)
+					back_gate_count++
+		TEST_ASSERT(forward_gate_count >= 1, "Drow Dungeon room [template_id] needs a forward route.")
+		if(template.room_kind != DUNGEON_ROOM_BREAK && template.room_kind != DUNGEON_ROOM_DESCENT)
+			TEST_ASSERT(back_gate_count >= 1, "Drow Dungeon hostile room [template_id] needs a back route.")
+		for(var/turf/room_turf as anything in room.affected_turfs)
+			TEST_ASSERT(istype(get_area(room_turf), /area/pocket_dimension/dungeon), "Every turf in [template_id] must use the dungeon pocket area.")
+		TEST_ASSERT(SSpocket_dimensions.delete_instance(room, null, origin), "Drow Dungeon room [template_id] should collapse cleanly after validation.")
+
+	TEST_ASSERT_EQUAL(kind_counts[DUNGEON_ROOM_BREAK], 1, "Drow Dungeon should ship exactly one mandatory break room.")
+	TEST_ASSERT_EQUAL(kind_counts[DUNGEON_ROOM_DESCENT], 1, "Drow Dungeon should ship exactly one mandatory descent room.")
+	TEST_ASSERT_EQUAL(kind_counts[DUNGEON_ROOM_COMBAT], 6, "Drow Dungeon should ship six combat rooms.")
+	TEST_ASSERT_EQUAL(kind_counts[DUNGEON_ROOM_BOSS], 1, "Drow Dungeon should ship exactly one mandatory boss room.")
+
+	var/datum/dungeon_floor_config/drow_floor = get_dungeon_floor_config(3)
+	TEST_ASSERT(DUNGEON_THEME_DROW in drow_floor.themes, "Floor 3 should begin the Drow Dungeon sequence.")
+	TEST_ASSERT(length(drow_floor.combat_mob_pool) >= 4, "Drow Dungeon floors need their themed encounter roster.")
+	TEST_ASSERT(length(drow_floor.boss_pool) >= 2, "Drow Dungeon floors need a usable boss roster.")
+	var/datum/dungeon_floor_config/deep_drow_floor = get_dungeon_floor_config(5)
+	TEST_ASSERT(DUNGEON_THEME_DROW in deep_drow_floor.themes, "Floor 5 should remain in the Drow Dungeon theme.")
+
+	var/datum/map_template/pocket/dungeon/drow_loot_template = SSpocket_dimensions.resolve_template("drow_combat_silk_antechamber")
+	TEST_ASSERT_EQUAL(drow_loot_template.get_loot_table_type(1), /datum/loot_table/dungeon/drow/tier1, "Shallow Drow rooms should use their tier-1 cache table.")
+	TEST_ASSERT_EQUAL(drow_loot_template.get_loot_table_type(3), /datum/loot_table/dungeon/drow/tier2, "Floors 3-4 should use the mid-tier Drow cache table.")
+	TEST_ASSERT_EQUAL(drow_loot_template.get_loot_table_type(5), /datum/loot_table/dungeon/drow/tier3, "Floor 5 and beyond should use the deep Drow cache table.")
+
+	var/datum/loot_table/dungeon/tier1/generic_tier1 = new
+	var/datum/loot_table/dungeon/drow/tier1/drow_tier1 = new
+	TEST_ASSERT(drow_tier1.donor_types[/datum/loot_table/potion_vitals] < generic_tier1.donor_types[/datum/loot_table/potion_vitals], "Shallow Drow caches should make vital potions rarer than generic tier 1.")
+	qdel(generic_tier1)
+	qdel(drow_tier1)
+
+	var/datum/loot_table/dungeon/tier2/generic_tier2 = new
+	var/datum/loot_table/dungeon/drow/tier2/drow_tier2 = new
+	TEST_ASSERT(drow_tier2.donor_types[/datum/loot_table/potion_vitals] < generic_tier2.donor_types[/datum/loot_table/potion_vitals], "Mid-tier Drow caches should make vital potions rarer than generic tier 2.")
+	TEST_ASSERT(drow_tier2.donor_types[/datum/loot_table/potion_stats] < generic_tier2.donor_types[/datum/loot_table/potion_stats], "Mid-tier Drow caches should make stat potions rarer than generic tier 2.")
+	qdel(generic_tier2)
+	qdel(drow_tier2)
+
+	var/datum/loot_table/dungeon/tier3/generic_tier3 = new
+	var/datum/loot_table/dungeon/drow/tier3/drow_tier3 = new
+	TEST_ASSERT(drow_tier3.donor_types[/datum/loot_table/potion_stats] < generic_tier3.donor_types[/datum/loot_table/potion_stats], "Deep Drow caches should make stat potions rarer than generic tier 3.")
+	qdel(generic_tier3)
+	qdel(drow_tier3)
+
+	// Floor transitions are pre-rolled before advance_floor() commits. Verify the
+	// floor-2 break points into the new set and that its landing points onward
+	// into Drow combat rather than retaining the Warrens theme.
+	var/datum/dungeon_run/transition_run = new(null, DUNGEON_THEME_SWAMPGOB)
+	transition_run.floor = 2
+	transition_run.floor_config = get_dungeon_floor_config(2)
+	transition_run.boss_defeated_this_floor = TRUE
+	var/datum/pocket_dimension/dungeon/transition_break = SSpocket_dimensions.get_or_create_instance("[REF(src)]::drow_transition_break", /datum/map_template/pocket/dungeon/swampgob/break_hollow, POCKET_LIFECYCLE_COLLAPSE, 0)
+	var/datum/map_template/pocket/dungeon/next_descent = transition_run.roll_next_room_template(transition_break)
+	TEST_ASSERT_NOTNULL(next_descent, "The floor-2 break should find a descent template for floor 3.")
+	TEST_ASSERT_EQUAL(next_descent.theme, DUNGEON_THEME_DROW, "The floor-2 break should pre-roll a Drow Dungeon descent for floor 3.")
+	TEST_ASSERT_EQUAL(next_descent.room_kind, DUNGEON_ROOM_DESCENT, "The Drow floor transition should retain the mandatory descent room kind.")
+	TEST_ASSERT(SSpocket_dimensions.delete_instance(transition_break, null, origin), "The transition break fixture should collapse cleanly.")
+
+	var/datum/pocket_dimension/dungeon/transition_descent = SSpocket_dimensions.get_or_create_instance("[REF(src)]::drow_transition_descent", /datum/map_template/pocket/dungeon/drow/descent_umbra_gate, POCKET_LIFECYCLE_COLLAPSE, 0)
+	var/datum/map_template/pocket/dungeon/next_combat = transition_run.roll_next_room_template(transition_descent)
+	TEST_ASSERT_NOTNULL(next_combat, "The Drow landing should find a combat template for its stretch.")
+	TEST_ASSERT_EQUAL(next_combat.theme, DUNGEON_THEME_DROW, "The pre-advance Drow landing should pre-roll Drow combat rooms.")
+	TEST_ASSERT_EQUAL(next_combat.room_kind, DUNGEON_ROOM_COMBAT, "The Drow landing should lead into a combat stretch.")
+	TEST_ASSERT(SSpocket_dimensions.delete_instance(transition_descent, null, origin), "The transition descent fixture should collapse cleanly.")
+	qdel(transition_run)
+
 /datum/unit_test/dungeon_singlet_production_harnesses/Run()
 	var/list/production_pool = get_dungeon_template_pool(DUNGEON_ROOM_ONESHOT)
 	TEST_ASSERT(length(production_pool) >= 6, "The production one-shot pool should contain the shipped singlet set.")
@@ -391,6 +498,12 @@
 			break
 	TEST_ASSERT_NOTNULL(onward, "Boss room should have a forward gate.")
 	TEST_ASSERT(onward.sealed, "Boss room forward gate should be sealed while the boss lives.")
+	var/datum/map_template/pocket/dungeon/sealed_onward_template = onward.pre_rolled_template
+	TEST_ASSERT_NOTNULL(sealed_onward_template, "The sealed boss exit should pre-roll its destination.")
+	TEST_ASSERT_EQUAL(sealed_onward_template.room_kind, DUNGEON_ROOM_BREAK, "The sealed boss exit should already point toward respite, not another fight.")
+	var/list/sealed_onward_data = onward.ui_data(delver)
+	TEST_ASSERT_EQUAL(sealed_onward_data["destination_text"], "A place of respite waits beyond, sealed until the floor's master falls.", "The sealed boss exit should identify the break room beyond.")
+	TEST_ASSERT_NULL(sealed_onward_data["danger_text"], "The sealed boss exit should not advertise another combat encounter.")
 
 	boss.death()
 	TEST_ASSERT(boss_room.cleared, "Killing the boss should clear the room.")
@@ -401,6 +514,9 @@
 	TEST_ASSERT_NOTNULL(onward_template, "The onward gate should have a template after the kill.")
 	TEST_ASSERT_EQUAL(onward_template.room_kind, DUNGEON_ROOM_BREAK, "The boss guards the floor's break room.")
 	TEST_ASSERT_NULL(onward.reward_type, "The door to respite promises no deck reward.")
+	var/list/onward_gate_data = onward.ui_data(delver)
+	TEST_ASSERT_EQUAL(onward_gate_data["destination_text"], "The floor's master has fallen. A place of respite waits beyond.", "The boss exit should identify the break room beyond.")
+	TEST_ASSERT_NULL(onward_gate_data["danger_text"], "The boss exit should not describe its break room as another combat encounter.")
 
 	// Walk the full post-boss loop: break room (the floor's exit), then the
 	// stairway down, which advances the floor.
@@ -423,6 +539,9 @@
 	var/datum/map_template/pocket/dungeon/down_template = down_gate.pre_rolled_template
 	TEST_ASSERT_NOTNULL(down_template, "The break room's forward gate should have a template.")
 	TEST_ASSERT_EQUAL(down_template.room_kind, DUNGEON_ROOM_DESCENT, "The post-boss break room opens onto the stairway down.")
+	var/list/down_gate_data = down_gate.ui_data(delver)
+	TEST_ASSERT_EQUAL(down_gate_data["destination_text"], "This passage leads to the entrance of the next floor.", "The break-room exit should identify the next-floor entrance beyond.")
+	TEST_ASSERT_NULL(down_gate_data["danger_text"], "The break-room exit should not describe the next-floor entrance as a combat encounter.")
 	var/floor_before = run.floor
 	var/datum/pocket_dimension/dungeon/stairway_probe = down_gate.resolve_destination()
 	TEST_ASSERT_NOTNULL(stairway_probe, "Stairway gate should resolve a destination (template=[down_template.id], sealed=[down_gate.sealed], forsaken=[down_gate.forsaken], run_ending=[run.ending]).")
@@ -537,6 +656,14 @@
 	TEST_ASSERT_NOTNULL(shrine, "Break room with a shrine landmark should build a shrine structure.")
 	TEST_ASSERT_EQUAL(shrine.owning_run, run, "Shrine should know its run.")
 
+	var/obj/item/clothing/armor/plate/damaged_plate = allocate(/obj/item/clothing/armor/plate)
+	TEST_ASSERT(delver.equip_to_slot_if_possible(damaged_plate, ITEM_SLOT_ARMOR, disable_warning = TRUE), "Test setup should equip the shrine buyer's plate.")
+	damaged_plate.update_integrity(damaged_plate.max_integrity - 50)
+	TEST_ASSERT(shrine.can_buy_offer("repair", delver), "Damaged worn armor should make the repair offer payable.")
+	shrine.apply_shrine_offer("repair", delver)
+	TEST_ASSERT_EQUAL(damaged_plate.get_integrity(), damaged_plate.max_integrity, "The repair offer should fully restore worn armor.")
+	TEST_ASSERT(!shrine.can_buy_offer("repair", delver), "Fully repaired armor should be refused before payment.")
+
 	shrine.apply_shrine_offer("cache", delver)
 	TEST_ASSERT(run.spend_motes(40), "Run should still have motes after a free apply (spend path tested separately).")
 
@@ -628,6 +755,14 @@
 	TEST_ASSERT_NOTNULL(cosmetic, "Should resolve a cosmetic by id.")
 	TEST_ASSERT_EQUAL(cosmetic.title_text, "Delver of the Deep", "Title text should match.")
 	qdel(cosmetic)
+
+	var/mob/living/carbon/human/titled_delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	titled_delver.real_name = "Test Delver"
+	titled_delver.name = "Test Delver, Delver of the Deep"
+	titled_delver.applied_dungeon_title = "Delver of the Deep"
+	TEST_ASSERT_NULL(titled_delver.get_alt_name(), "A worn dungeon title should not make its recognizable speaker anonymous.")
+	titled_delver.name = "Masked Delver, Delver of the Deep"
+	TEST_ASSERT_NOTNULL(titled_delver.get_alt_name(), "A genuine disguise should remain anonymous even while a title is tracked.")
 
 	// Cleanup
 	progress.purchased_cosmetics = list()
@@ -1144,7 +1279,14 @@
 	TEST_ASSERT(entrance.try_enter(delver), "Re-entry should be allowed.")
 	TEST_ASSERT_EQUAL(delver.maxHealth, base_health + 25, "Re-entering should re-apply the run's boon stack once.")
 
-	qdel(run)
+	// A second outside extraction leaves no legitimate delvers behind. The
+	// centralized lifecycle sweep should now collapse the run immediately,
+	// without needing the extracting system to know anything about dungeons.
+	delver.forceMove(get_turf(entrance))
+	run.last_presence_validation = 0
+	run.check_abandonment()
+	TEST_ASSERT(QDELETED(run), "A run should collapse once every delver has left by an outside teleport.")
+	TEST_ASSERT_NULL(entrance.active_run, "External extraction collapse should release the owning entrance.")
 
 /datum/unit_test/dungeon_forsaken_paths/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)

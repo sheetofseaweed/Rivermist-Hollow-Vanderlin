@@ -37,6 +37,13 @@
 
 /proc/get_dungeon_theme_mob_entries(theme)
 	switch(theme)
+		if(DUNGEON_THEME_DROW)
+			return list(
+				new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/elf/dark/drowraider/ambush, 12, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/elf/dark/drowraider, 8, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/spider, 5, DUNGEON_STYLE_MELEE),
+				new /datum/dungeon_spawn_entry(/mob/living/simple_animal/hostile/retaliate/spider/mutated, 4, DUNGEON_STYLE_MELEE, 3),
+			)
 		if(DUNGEON_THEME_SWAMPGOB)
 			return list(
 				new /datum/dungeon_spawn_entry(/mob/living/carbon/human/species/goblin/npc/ambush, 12, DUNGEON_STYLE_MELEE),

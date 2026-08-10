@@ -26,7 +26,7 @@
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "m" = (
-/obj/machinery/light/fueled/campfire/longlived,
+/obj/machinery/light/fueled/firebowl/stump,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
 "n" = (
@@ -135,7 +135,7 @@ g
 (4,1,1) = {"
 g
 b
-b
+m
 b
 N
 b
@@ -217,7 +217,7 @@ b
 b
 N
 b
-b
+m
 a
 "}
 (12,1,1) = {"

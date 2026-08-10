@@ -20,6 +20,10 @@
 /obj/effect/landmark/dungeon/gate,
 /turf/open/floor/dirt,
 /area/pocket_dimension/dungeon)
+"j" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
 "k" = (
 /obj/effect/landmark/dungeon/encounter,
 /turf/open/floor/grass,
@@ -28,7 +32,8 @@
 /turf/open/water/swamp,
 /area/pocket_dimension/dungeon)
 "y" = (
-/turf/open/floor/cobble/mossy,
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/grass,
 /area/pocket_dimension/dungeon)
 "A" = (
 /obj/effect/landmark/dungeon/guardian/swampgob,
@@ -36,7 +41,7 @@
 /area/pocket_dimension/dungeon)
 "B" = (
 /obj/item/clothing/face/facemask/goldmask,
-/turf/open/floor/cobble/mossy,
+/turf/closed/mineral,
 /area/pocket_dimension/dungeon)
 "E" = (
 /obj/effect/landmark/dungeon/encounter,
@@ -84,7 +89,7 @@ a
 "}
 (4,1,1) = {"
 e
-b
+j
 b
 g
 w
@@ -120,11 +125,11 @@ a
 "}
 (8,1,1) = {"
 a
-y
+a
 a
 b
 b
-g
+y
 a
 "}
 (9,1,1) = {"
@@ -157,7 +162,7 @@ a
 (12,1,1) = {"
 e
 w
-g
+y
 b
 e
 a

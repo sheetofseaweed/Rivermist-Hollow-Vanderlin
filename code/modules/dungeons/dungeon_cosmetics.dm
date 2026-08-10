@@ -4,7 +4,7 @@
 	var/name = "Cosmetic"
 	var/desc = ""
 	var/echo_cost = 50
-	/// "title" cosmetics provide an examinable suffix
+	/// "title" cosmetics provide a visible name suffix
 	var/cosmetic_kind = "title"
 	/// For titles: the suffix text, e.g. "Delver of the Deep"
 	var/title_text
@@ -41,6 +41,31 @@
 		qdel(cosmetic)
 	return null
 
+/mob/living/carbon/human
+	/// The exact dungeon suffix currently appended to name. Kept separate from
+	/// real_name so records, minds, and character identity remain untouched.
+	var/tmp/applied_dungeon_title
+
+/// Reconciles the visible dungeon title with this body's current owner's
+/// persistent selection. Only a suffix previously applied here is removed.
+/mob/living/carbon/human/proc/update_dungeon_title()
+	if(applied_dungeon_title)
+		var/old_suffix = ", [applied_dungeon_title]"
+		if(endswith(name, old_suffix))
+			name = copytext(name, 1, length(name) - length(old_suffix) + 1)
+		applied_dungeon_title = null
+
+	if(!ckey)
+		return
+	var/datum/dungeon_progress/progress = get_dungeon_progress(ckey)
+	if(!progress?.selected_title)
+		return
+	var/datum/dungeon_cosmetic/cosmetic = get_dungeon_cosmetic_by_id(progress.selected_title)
+	if(cosmetic?.title_text)
+		applied_dungeon_title = cosmetic.title_text
+		name = "[name], [applied_dungeon_title]"
+	qdel(cosmetic)
+
 /mob/living/carbon/human/examine(mob/user)
 	. = ..()
 	if(!ckey)
@@ -49,6 +74,8 @@
 	if(!progress || !progress.selected_title)
 		return
 	var/datum/dungeon_cosmetic/cosmetic = get_dungeon_cosmetic_by_id(progress.selected_title)
-	if(cosmetic?.title_text)
+	// Fresh bodies acquire their suffix when they next open the Ledger. Keep
+	// the old examine line as a fallback until then, without printing it twice.
+	if(cosmetic?.title_text && applied_dungeon_title != cosmetic.title_text)
 		. += span_notice("<b>[src.name], [cosmetic.title_text].</b>")
 	qdel(cosmetic)

@@ -8,6 +8,7 @@
 // Theme tags used to filter template pools
 #define DUNGEON_THEME_BANDIT "bandit"
 #define DUNGEON_THEME_BEAR "bear"
+#define DUNGEON_THEME_DROW "drow"
 #define DUNGEON_THEME_RATFOLK "ratfolk"
 #define DUNGEON_THEME_SPIDER "spider"
 #define DUNGEON_THEME_SWAMPGOB "swampgob"
@@ -72,11 +73,11 @@
 // -- In-run currency (motes) & meta-currency (echoes) --
 
 /// Base motes a normal guardian drops on death
-#define DUNGEON_MOTE_GUARDIAN_BASE 5
+#define DUNGEON_MOTE_GUARDIAN_BASE 2
 /// Extra motes per floor
-#define DUNGEON_MOTE_FLOOR_BONUS 3
+#define DUNGEON_MOTE_FLOOR_BONUS 1.2
 /// Elite guardian mote multiplier
-#define DUNGEON_MOTE_ELITE_MULT 3
+#define DUNGEON_MOTE_ELITE_MULT 2
 
 // -- Encounter difficulty curve --
 // Guardians are enhanced from a FLOOR-relative delve, not the run's cumulative
@@ -89,6 +90,8 @@
 #define DUNGEON_DELVE_MAX 10
 /// Fraction of unspent motes that converts to echoes when a run is banked
 #define DUNGEON_ECHO_CONVERSION 0.25
+/// Shrine price to fully restore the delver's damaged, repairable worn armor
+#define DUNGEON_SHRINE_ARMOR_REPAIR_COST 50
 /// Shrine price to lift one lingering defeat trauma - dearer than mending
 /// wounds, since it buys back what a fall actually cost you
 #define DUNGEON_SHRINE_TRAUMA_COST 80

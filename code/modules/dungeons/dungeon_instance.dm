@@ -273,8 +273,9 @@
 		return null
 	var/obj/structure/dungeon_loot_cache/cache = new(spot)
 	var/datum/map_template/pocket/dungeon/dungeon_template = get_dungeon_template()
-	if(dungeon_template?.loot_table_type)
-		cache.loot = new dungeon_template.loot_table_type
+	var/table_type = dungeon_template?.get_loot_table_type(owning_run?.floor || 1)
+	if(table_type)
+		cache.loot = new table_type
 	// Floor-relative, matching guardian scaling - cumulative depth inflated
 	// cache quantity by 1.1^depth and rare weights by 1.3^depth.
 	cache.delve_level = max(1, (owning_run ? owning_run.get_encounter_delve() : depth) + bonus_delve)
