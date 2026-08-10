@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_handjob
 	name = "Use their hand"
-	stamina_cost = 0
 
 /datum/sex_action/npc/npc_handjob/shows_on_menu(mob/living/user, mob/living/target)
 	return FALSE

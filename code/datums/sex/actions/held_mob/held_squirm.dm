@@ -80,7 +80,8 @@
 	if(user_weight > 0 && target_weight > 0)
 		leverage = clamp(user_weight / target_weight, 0.1, 1)
 
-	target.adjust_stamina(-(HELD_MOB_SQUIRM_BASE_DRAIN * leverage))
+	// Positive tires: stamina counts fatigue accumulated, so a drain adds to it.
+	target.adjust_stamina(HELD_MOB_SQUIRM_BASE_DRAIN * leverage)
 
 	if(can_show_action_message(user, target))
 		user.visible_message(span_warning("[user] bucks and kicks against [target]'s fingers."))

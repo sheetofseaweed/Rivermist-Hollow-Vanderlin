@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_anal_sex
 	name = "NPC Sodomize them"
-	stamina_cost = 0
 	check_same_tile = FALSE
 	require_grab = FALSE
 	hole_id = ORGAN_SLOT_ANUS

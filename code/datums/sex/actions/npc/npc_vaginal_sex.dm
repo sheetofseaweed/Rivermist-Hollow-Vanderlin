@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_vaginal_sex
 	name = "Fuck their cunt"
-	stamina_cost = 0
 	check_same_tile = FALSE
 	hole_id = ORGAN_SLOT_VAGINA
 	scene_interaction = SEX_SCENE_INTERACTION_PENETRATION

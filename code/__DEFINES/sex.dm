@@ -481,3 +481,8 @@ GLOBAL_LIST_INIT(mage_hand_start_durations, list(
 	"shacklesup" = 9,
 	"shacklesdown" = 9,
 ))
+
+/// Clench roll outcomes, ordered worst to best for the clencher.
+#define CLENCH_RESULT_FAIL 0
+#define CLENCH_RESULT_INTERRUPT 1
+#define CLENCH_RESULT_STOP 2
