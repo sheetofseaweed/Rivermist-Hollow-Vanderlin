@@ -11,7 +11,7 @@
 	faction = list("maneater")
 	gender = PLURAL
 	ai_controller = null
-	anchored = TRUE
+	move_resist = INFINITY
 	density = FALSE
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	invisibility = INVISIBILITY_ABSTRACT
@@ -114,7 +114,7 @@
 		valid_turfs += candidate
 	if(length(valid_turfs) < guardians_needed)
 		for(var/turf/open/candidate as anything in affected_turfs)
-			if(candidate in valid_turfs || candidate.is_blocked_turf(TRUE))
+			if((candidate in valid_turfs) || candidate.is_blocked_turf(TRUE))
 				continue
 			valid_turfs += candidate
 

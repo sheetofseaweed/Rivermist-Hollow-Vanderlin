@@ -161,7 +161,7 @@
 /area/pocket_dimension/dungeon)
 "X" = (
 /obj/structure/window/harem2,
-/turf/closed/wall/mineral/decostone,
+/turf/open/floor/tile/harem1,
 /area/pocket_dimension/dungeon)
 "Y" = (
 /obj/structure/table/wood/counter/end/north_east,
