@@ -422,19 +422,6 @@
 /obj/item/natural/rock/random_ore,
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/moistcaves)
-"cH" = (
-/obj/structure/bars/tough{
-	icon = 'icons/effects/effects.dmi';
-	icon_state = "smoke";
-	attacked_sound = list();
-	damage_deflection = 1e+031;
-	max_integrity = 9999999;
-	mouse_opacity = 0;
-	opacity = 1;
-	name = "fog"
-	},
-/turf/open/floor/grass/eora,
-/area/under/rmh_bogforest_caves/moistcaves)
 "cI" = (
 /obj/structure/flora/grass,
 /obj/structure/wild_plant/random,
@@ -7082,19 +7069,6 @@
 /obj/structure/fluff/railing/wood/east,
 /turf/open/floor/ruinedwood,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
-"UE" = (
-/obj/structure/bars/tough{
-	icon = 'icons/effects/effects.dmi';
-	icon_state = "smoke";
-	attacked_sound = list();
-	damage_deflection = 1e+031;
-	max_integrity = 9999999;
-	mouse_opacity = 0;
-	opacity = 1;
-	name = "fog"
-	},
-/turf/open/floor/grass/eora,
-/area/under/rmh_bogforest_caves/mindflayer)
 "UJ" = (
 /obj/structure/stairs{
 	dir = 8
@@ -36028,8 +36002,8 @@ rv
 uM
 uM
 Dw
-UE
-UE
+Yi
+Yi
 QH
 QH
 QH
@@ -36244,7 +36218,7 @@ QH
 QH
 uM
 Dw
-UE
+Yi
 Yi
 qy
 qy
@@ -37646,7 +37620,7 @@ QH
 QH
 Yi
 Yi
-UE
+Yi
 QH
 QH
 QH
@@ -37862,7 +37836,7 @@ QH
 QH
 QH
 Yi
-UE
+Yi
 Dw
 uM
 QH
@@ -42374,7 +42348,7 @@ Ti
 ih
 QH
 QH
-XB
+ai
 QH
 QH
 QH
@@ -42591,7 +42565,7 @@ ih
 ih
 QH
 QH
-XB
+ai
 ai
 QH
 QH
@@ -46073,7 +46047,7 @@ QH
 QH
 QH
 QH
-ai
+XB
 QH
 QH
 QH
@@ -46241,8 +46215,8 @@ QH
 QH
 QH
 QH
-UE
-UE
+Yi
+Yi
 QH
 QH
 QH
@@ -46290,7 +46264,7 @@ uM
 QH
 QH
 QH
-UE
+gb
 QH
 QH
 QH
@@ -47612,7 +47586,7 @@ QH
 QH
 QH
 Dw
-cH
+Dw
 xk
 xk
 Lm
@@ -47829,7 +47803,7 @@ QH
 QH
 Dw
 Dw
-cH
+Dw
 DY
 GJ
 MZ
@@ -48689,7 +48663,7 @@ Nf
 rv
 QH
 QH
-cH
+Dw
 QH
 QH
 QH
