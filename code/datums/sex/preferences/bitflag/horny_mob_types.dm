@@ -14,6 +14,7 @@
 		"Lycans" = HORNY_MOB_TYPE_LYCANS,
 		"Lizards" = HORNY_MOB_TYPE_LIZARDS,
 		"Undead" = HORNY_MOB_TYPE_UNDEAD,
+		"Tentacles" = HORNY_MOB_TYPE_TENTACLES,
 	)
 	flag_descriptions = list(
 		"Humanoids" = "Humanlike horny NPCs such as orcs, goblins, bums, and other humanoid hostiles may target you.",
@@ -26,4 +27,5 @@
 		"Lycans" = "Horny lycans may target you.",
 		"Lizards" = "Horny lizards like gators may target you.",
 		"Undead" = "Horny undead may target you.",
+		"Tentacles" = "Horny tentacle creatures may target you.",
 	)

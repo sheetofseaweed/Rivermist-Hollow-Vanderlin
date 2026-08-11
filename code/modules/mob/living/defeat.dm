@@ -719,10 +719,10 @@
 	return changed_anything
 
 //////////////////////////////////////////////////
-// LEGACY KIDNAPPING LANDMARKS
-// Existing maps still contain these keyed markers during migration. New kidnappings are admitted to
-// profile-owned pocket instances in defeat_captivity.dm; no gameplay path teleports into these static
-// rooms anymore, so damage to a live captivity pocket disappears when that instance is torn down.
+// KIDNAPPING LANDMARKS
+// Existing wolf/orc/bandit markers remain as migration-era map content while those factions use
+// profile-owned pockets. Dedicated mapped-lair content may opt into explicitly named subtypes, as the
+// tentacle family does, without changing the default pocket lifecycle.
 //////////////////////////////////////////////////
 
 /// lair_tag -> list of /obj/effect/landmark/kidnap/entrance
@@ -929,6 +929,12 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		return FALSE
 	return can_kidnap_defeated_prey(victim, allow_own_reservation = TRUE)
 
+/// Destination hook for captors with a physical, mapped lair. The default remains the existing
+/// profile-owned pocket; content which overrides this must preserve the captivity consent gates.
+/mob/living/proc/complete_kidnap_defeated_prey(mob/living/victim)
+	var/profile_spec = kidnap_captivity_profile || get_defeat_captivity_profile_for_lair(kidnap_lair_tag)
+	return victim.kidnap_to_pocket(profile_spec, src, faction, kidnap_lair_tag)
+
 /// Hauls a defeated victim off to this mob's lair after a short, visible, interruptible struggle.
 /mob/living/proc/try_kidnap_defeated_prey(mob/living/victim)
 	if(!can_kidnap_defeated_prey(victim))
@@ -971,8 +977,7 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 		to_chat(victim, span_notice("The attempt to drag me away is broken!"))
 		return FALSE
 
-	var/profile_spec = kidnap_captivity_profile || get_defeat_captivity_profile_for_lair(kidnap_lair_tag)
-	if(!victim.kidnap_to_pocket(profile_spec, src, faction, kidnap_lair_tag))
+	if(!complete_kidnap_defeated_prey(victim))
 		victim.clear_kidnap_reservation(src)
 		kidnap_retry_after = world.time + KIDNAP_RETRY_COOLDOWN
 		return FALSE

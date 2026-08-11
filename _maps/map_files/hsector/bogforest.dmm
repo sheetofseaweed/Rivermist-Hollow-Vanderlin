@@ -422,6 +422,19 @@
 /obj/item/natural/rock/random_ore,
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/moistcaves)
+"cH" = (
+/obj/structure/bars/tough{
+	icon = 'icons/effects/effects.dmi';
+	icon_state = "smoke";
+	attacked_sound = list();
+	damage_deflection = 1e+031;
+	max_integrity = 9999999;
+	mouse_opacity = 0;
+	opacity = 1;
+	name = "fog"
+	},
+/turf/open/floor/grass/eora,
+/area/under/rmh_bogforest_caves/moistcaves)
 "cI" = (
 /obj/structure/flora/grass,
 /obj/structure/wild_plant/random,
@@ -476,7 +489,7 @@
 /area/indoors/rmh_darkforestbog/forest/forestranger)
 "dc" = (
 /turf/open/floor/mushroom/green,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "dd" = (
 /obj/structure/flora/tree/pine/dead{
 	icon_state = "dead3";
@@ -535,7 +548,7 @@
 /area/indoors/rmh_darkforestbog/bogpass)
 "dt" = (
 /turf/open/floor/mushroom/blue,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "du" = (
 /obj/item/natural/stone{
 	pixel_x = 8
@@ -918,6 +931,10 @@
 "ga" = (
 /turf/closed/wall/mineral/wooddark/horizontal,
 /area/outdoors/rmh_darkforest)
+"gb" = (
+/obj/effect/landmark/kidnap/escape/tentacle,
+/turf/open/floor/grass/eora,
+/area/under/rmh_bogforest_caves/mindflayer)
 "gc" = (
 /obj/structure/flora/newtree,
 /turf/open/floor/grass,
@@ -1933,6 +1950,10 @@
 "mR" = (
 /turf/closed/wall/mineral/decostone/fluffstone,
 /area/outdoors/rmh_air)
+"mS" = (
+/obj/effect/landmark/kidnap/escape/tentacle,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "mT" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/blocks,
@@ -1968,6 +1989,10 @@
 /obj/item/reagent_containers/glass/bucket/wooden,
 /turf/open/floor/cobblerock,
 /area/under/cave)
+"ne" = (
+/obj/structure/tentacle_growth/colony_core,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "nf" = (
 /obj/structure/fluff/walldeco/vinez,
 /turf/open/floor/dirt,
@@ -2138,7 +2163,7 @@
 "oe" = (
 /obj/structure/flora/grass/mushroom,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "of" = (
 /turf/open/floor/cobble/mossy,
 /area/outdoors/rmh_darkforest)
@@ -2650,6 +2675,10 @@
 /obj/machinery/light/fueled/torchholder/l,
 /turf/open/floor/cobblerock,
 /area/indoors/rmh_darkforestbog/forest/forestranger)
+"ru" = (
+/obj/effect/landmark/kidnap/entrance/tentacle,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "rv" = (
 /turf/open/floor/dirt,
 /area/under/rmh_bogforest_caves/moistcaves)
@@ -3508,11 +3537,11 @@
 /area/under/rmh_bogforest_caves/spiders)
 "xk" = (
 /turf/open/floor/mushroom,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "xo" = (
 /obj/structure/flora/tinymushrooms,
 /turf/open/floor/mushroom,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "xp" = (
 /turf/open/floor/dirt/road,
 /area/under/rmh_dungeon/goblindungeon)
@@ -4452,7 +4481,7 @@
 "DY" = (
 /obj/structure/wild_plant/nospread/mushroom/waddle,
 /turf/open/floor/mushroom,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "DZ" = (
 /obj/structure/flora/newleaf/corner{
 	dir = 6
@@ -4921,7 +4950,7 @@
 "GJ" = (
 /obj/structure/flora/grass/mushroom,
 /turf/open/floor/mushroom,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "GM" = (
 /turf/open/water/swamp,
 /area/indoors/rmh_darkforestbog/bog/swampvillage)
@@ -5349,6 +5378,9 @@
 	},
 /turf/open/floor/grass,
 /area/outdoors/rmh_darkforest)
+"Jt" = (
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/moistcaves)
 "Ju" = (
 /obj/structure/vine,
 /turf/open/floor/dirt/road,
@@ -5577,7 +5609,7 @@
 "KS" = (
 /obj/structure/flora/grass/mushroom,
 /turf/open/floor/mushroom/blue,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "KT" = (
 /obj/effect/decal/cleanable/debris/stone,
 /obj/machinery/light/fueled/firebowl/blackfire,
@@ -5668,11 +5700,11 @@
 "Lm" = (
 /obj/structure/flora/grass/mushroom,
 /turf/open/floor/mushroom/green,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "Lo" = (
 /obj/structure/wild_plant/nospread/mushroom/merkel,
 /turf/open/floor/mushroom/blue,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "Lp" = (
 /obj/structure/spider/stickyweb,
 /obj/structure/spider/stickyweb,
@@ -5798,7 +5830,7 @@
 "Mf" = (
 /obj/structure/wild_plant/nospread/mushroom/borowiki,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "Mh" = (
 /obj/item/natural/stone,
 /obj/effect/decal/cobblerockedge/alt{
@@ -5956,6 +5988,10 @@
 "MX" = (
 /turf/open/floor/naturalstone,
 /area/under/rmh_bedrock)
+"MZ" = (
+/obj/effect/spawner/tentacle_pack/large,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/moistcaves)
 "Na" = (
 /obj/structure/bed/shit,
 /turf/open/floor/cobblerock,
@@ -7537,6 +7573,10 @@
 	baseturfs = /turf/open/water/swamp/deep
 	},
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
+"XB" = (
+/obj/effect/landmark/kidnap/escape/tentacle,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "XC" = (
 /obj/effect/decal/cobblerockedge/alt{
 	dir = 4
@@ -7883,7 +7923,7 @@
 "ZT" = (
 /obj/structure/ladder/unbreakable,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/mindflayer)
+/area/under/rmh_bogforest_caves/moistcaves)
 "ZU" = (
 /obj/structure/table/wood/plain/alt,
 /obj/item/storage/hip/headhook,
@@ -37070,8 +37110,8 @@ QH
 QH
 QH
 QH
-ai
-ai
+XB
+XB
 ai
 QH
 QH
@@ -37170,7 +37210,7 @@ QH
 QH
 qy
 qy
-qy
+mS
 QH
 QH
 QH
@@ -37386,8 +37426,8 @@ QH
 QH
 QH
 QH
-qy
-qy
+mS
+mS
 Yi
 QH
 QH
@@ -38645,7 +38685,7 @@ qy
 qy
 qy
 qy
-ai
+ru
 ai
 ai
 ai
@@ -39295,7 +39335,7 @@ qy
 qy
 qy
 qy
-qy
+ne
 qy
 qy
 qy
@@ -42334,7 +42374,7 @@ Ti
 ih
 QH
 QH
-ai
+XB
 QH
 QH
 QH
@@ -42551,8 +42591,8 @@ ih
 ih
 QH
 QH
+XB
 ai
-ai
 QH
 QH
 QH
@@ -42577,7 +42617,7 @@ QH
 QH
 QH
 QH
-ai
+XB
 QH
 QH
 QH
@@ -42794,7 +42834,7 @@ QH
 QH
 QH
 QH
-ai
+XB
 QH
 QH
 QH
@@ -45984,8 +46024,8 @@ QH
 QH
 QH
 QH
-Yi
-Yi
+gb
+gb
 QH
 QH
 QH
@@ -47571,8 +47611,8 @@ QH
 QH
 QH
 QH
-Yi
-UE
+Dw
+cH
 xk
 xk
 Lm
@@ -47787,13 +47827,13 @@ QH
 QH
 QH
 QH
-Yi
-Yi
-UE
+Dw
+Dw
+cH
 DY
 GJ
-qy
-qy
+MZ
+uM
 oe
 oe
 QH
@@ -48003,15 +48043,15 @@ QH
 QH
 QH
 QH
-ai
-ai
+Jt
+Jt
 QH
 QH
 GJ
 dt
 dt
 ZT
-qy
+uM
 oe
 QH
 QH
@@ -48219,8 +48259,8 @@ QH
 QH
 QH
 QH
-ai
-ai
+Jt
+Jt
 QH
 QH
 QH
@@ -48229,7 +48269,7 @@ QH
 dt
 KS
 Lo
-qy
+uM
 QH
 QH
 QH
@@ -48432,11 +48472,11 @@ uM
 QH
 QH
 QH
-Yi
-Yi
-ai
-ai
-ai
+Dw
+Dw
+Jt
+Jt
+Jt
 QH
 QH
 QH
@@ -48445,7 +48485,7 @@ QH
 QH
 xo
 xk
-qy
+uM
 QH
 QH
 QH
@@ -48649,7 +48689,7 @@ Nf
 rv
 QH
 QH
-UE
+cH
 QH
 QH
 QH

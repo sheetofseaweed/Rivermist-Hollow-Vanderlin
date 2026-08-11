@@ -252,8 +252,18 @@
 	name = "Mindflayer Colony"
 	icon = 'modular_rmh/icons/turf/areas.dmi'
 	icon_state = "living"
-	first_time_text = "MINDFLAYER COLONY"
-	//deathsight_message = "Mindflayer Colony"
+	first_time_text = "DEEP TUNNELS"
+	ambush_times = list("night", "dawn", "dusk", "day")
+	ambush_types = list(
+		/turf/open/floor/naturalstone,
+		/turf/open/floor/cobblerock,
+		/turf/open/floor/mushroom,
+	)
+	ambush_mobs = list(
+		/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher = 15,
+		/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/medium = 35,
+		/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/small = 50,
+	)
 
 /area/under/rmh_bogforest_caves/forestcaves
 	name = "Forest cave"
