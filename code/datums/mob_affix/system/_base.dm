@@ -9,6 +9,10 @@
 /datum/mob_affix_system/New()
 	. = ..()
 	available_affixes = subtypesof(/datum/mob_affix)
+	available_affixes -= list(
+		/datum/mob_affix/mirror_images,
+		/datum/mob_affix/explosive,
+	)
 
 /datum/mob_affix_system/proc/get_stat_multipliers(delve_level, mob_tier = 0)
 	var/list/multipliers = list()
