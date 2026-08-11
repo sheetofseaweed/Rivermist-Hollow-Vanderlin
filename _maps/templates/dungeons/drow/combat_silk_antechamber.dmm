@@ -1,0 +1,342 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"c" = (
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"d" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/structure/chair/wood/alt/fancy/chair5{
+	dir = 1
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"f" = (
+/obj/item/statue/bronze/vasefancy,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/structure/table/wood/plain/alto,
+/obj/item/perfume/random,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"k" = (
+/obj/structure/flora/pillar,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"m" = (
+/obj/structure/table/wood/counter/end/east,
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"o" = (
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"p" = (
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"r" = (
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/dungeon)
+"s" = (
+/obj/structure/chair/wood/alt/fancy/chair5,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"t" = (
+/obj/effect/landmark/dungeon/guardian,
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"u" = (
+/obj/effect/landmark/dungeon/gate/treasure,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"y" = (
+/obj/structure/alizeria/curtainaliz/purple,
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"z" = (
+/obj/structure/carpet/purple,
+/obj/structure/fluff/pillow,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/effect/landmark/dungeon/loot,
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"C" = (
+/obj/structure/chair/bench/couchamagenta/r,
+/obj/item/bedsheet/cloth{
+	pixel_y = 1;
+	plane = -10;
+	layer = 3;
+	anchored = 1;
+	color = "#8b2323"
+	},
+/obj/item/plate/pewter{
+	layer = 3.1;
+	pixel_x = -3;
+	pixel_y = -4
+	},
+/turf/open/floor/tile/harem2,
+/area/pocket_dimension/dungeon)
+"D" = (
+/obj/effect/landmark/dungeon/guardian,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/structure/closet/crate/crafted_closet/dark,
+/obj/item/clothing/pants/loincloth/colored/black,
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"F" = (
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/structure/mirror/fancy{
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"H" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"J" = (
+/obj/structure/table/wood/counter,
+/obj/item/tablecloth/silk{
+	pixel_y = 2;
+	pixel_x = -4
+	},
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"M" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"N" = (
+/obj/structure/flora/pillar,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"O" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"Q" = (
+/obj/item/statue/silver/vasefancy,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"R" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"S" = (
+/obj/structure/fluff/pillow/purple{
+	dir = 1
+	},
+/obj/effect/landmark/dungeon/guardian,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"T" = (
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"W" = (
+/obj/structure/table/wood/counter,
+/obj/item/reagent_containers/glass/bottle/clayvase{
+	list_reagents = list(/datum/reagent/blood = 65);
+	pixel_x = 4;
+	pixel_y = 20
+	},
+/obj/item/plate/pewter{
+	layer = 3.1;
+	pixel_x = 1;
+	pixel_y = 1
+	},
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"X" = (
+/obj/structure/window/harem2,
+/turf/open/floor/tile/harem1,
+/area/pocket_dimension/dungeon)
+"Y" = (
+/obj/structure/table/wood/counter/end/north_east,
+/obj/item/carvedgem/jade/vase{
+	pixel_x = -7;
+	pixel_y = 8
+	},
+/turf/open/floor/carpet/purple,
+/area/pocket_dimension/dungeon)
+"Z" = (
+/obj/structure/chair/bench/couchamagenta,
+/obj/effect/decal/carpet/kover_purple{
+	pixel_x = 16;
+	pixel_y = -2
+	},
+/obj/structure/fluff/pillow/magenta{
+	pixel_x = 1;
+	layer = 3.1;
+	dir = 8
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/harem2,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+y
+o
+y
+a
+y
+a
+y
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+X
+B
+E
+E
+a
+s
+h
+e
+d
+H
+o
+"}
+(3,1,1) = {"
+a
+X
+c
+t
+c
+c
+p
+p
+p
+F
+R
+a
+"}
+(4,1,1) = {"
+a
+a
+Y
+W
+J
+m
+M
+F
+F
+F
+p
+o
+"}
+(5,1,1) = {"
+a
+d
+N
+D
+F
+N
+r
+N
+F
+F
+k
+a
+"}
+(6,1,1) = {"
+a
+O
+r
+r
+r
+r
+r
+r
+r
+F
+Q
+o
+"}
+(7,1,1) = {"
+a
+u
+r
+r
+r
+r
+r
+r
+r
+F
+Q
+a
+"}
+(8,1,1) = {"
+a
+d
+N
+F
+F
+N
+r
+N
+F
+F
+k
+o
+"}
+(9,1,1) = {"
+a
+X
+Z
+z
+r
+F
+D
+F
+F
+F
+p
+a
+"}
+(10,1,1) = {"
+a
+X
+C
+S
+r
+F
+G
+f
+d
+T
+o
+a
+"}
+(11,1,1) = {"
+a
+a
+y
+o
+y
+a
+o
+y
+a
+a
+a
+a
+"}

@@ -2,134 +2,142 @@
 "aS" = (
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "bh" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/mannequin,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "ew" = (
 /obj/effect/decal/cleanable/dirt/cobweb{
 	icon_state = "cobweb2"
 	},
 /obj/machinery/light/fueled/firebowl/stump,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "eO" = (
 /obj/machinery/light/fueled/torchholder/c,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "fo" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "fr" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "fJ" = (
 /obj/structure/table/wood/plain,
 /obj/item/recipe_book/survival,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "gd" = (
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "hC" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/darker,
-/area)
+/area/pocket_dimension/dungeon)
+"ii" = (
+/obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/dungeon/guardian/singlet/bandit,
+/turf/open/floor/twig,
+/area/pocket_dimension/dungeon)
 "ip" = (
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "iI" = (
 /obj/structure/stairs,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "iJ" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/ruinedwood/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "iT" = (
 /obj/structure/table/wood/plain,
 /obj/item/reagent_containers/glass/cup/skull,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "kg" = (
 /obj/machinery/tanningrack,
 /obj/effect/decal/cleanable/dirt/cobweb,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "kp" = (
-/obj/effect/landmark/hammer/dev_text{
-	name = "BANDIT ENTER"
-	},
+/obj/effect/landmark/pocket_dimension/entry,
+/obj/effect/landmark/pocket_dimension/exit,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "lV" = (
 /obj/structure/chair/stool,
 /turf/open/floor/ruinedwood/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "mq" = (
 /obj/structure/chair/stool,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "nu" = (
 /obj/structure/fermentation_keg/water,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "oV" = (
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "pw" = (
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/ruinedwood/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "pG" = (
 /obj/structure/chair/stool,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "pN" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/rack/shelf/biggest,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "sp" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/machinery/anvil/crafted,
 /obj/item/weapon/hammer/iron,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "su" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
+"sA" = (
+/obj/effect/landmark/dungeon/guardian/singlet/bandit,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/pocket_dimension/dungeon)
 "sN" = (
 /turf/open/floor/ruinedwood/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "tf" = (
 /turf/closed/mineral/bedrock,
-/area)
+/area/pocket_dimension/dungeon)
 "tg" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/bed/hay,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "tq" = (
 /obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "ud" = (
 /turf/closed/wall/mineral/wood,
-/area)
+/area/pocket_dimension/dungeon)
 "ux" = (
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "xj" = (
 /obj/structure/table/wood/plain,
 /obj/item/candle/skull/lit{
@@ -137,60 +145,65 @@
 	pixel_x = 3
 	},
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "xI" = (
 /obj/structure/table/wood/plain,
 /obj/item/candle/tin/lit,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "ya" = (
 /obj/structure/door/driftwood{
 	color = "#a6a6a6"
 	},
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "yy" = (
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "zK" = (
 /turf/closed/wall/mineral/stone/moss,
-/area)
+/area/pocket_dimension/dungeon)
 "Ah" = (
 /obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "AA" = (
 /obj/structure/fluff/statue/tdummy,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
+"AG" = (
+/obj/structure/fluff/railing/wood,
+/obj/effect/landmark/dungeon/loot,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension/dungeon)
 "Bk" = (
 /obj/structure/closet/crate/chest/neu,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "BE" = (
 /obj/machinery/light/fueled/hearth,
 /obj/item/reagent_containers/glass/bucket/pot/stone,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "BG" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "CU" = (
 /obj/structure/rack/shelf/biggest,
 /obj/item/kitchen/spoon/pewter,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "GG" = (
 /obj/structure/fluff/railing/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "Hs" = (
 /obj/structure/chair/stool,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "If" = (
 /obj/structure/table/wood/plain,
 /obj/item/reagent_containers/glass/cup/wooden{
@@ -202,77 +215,82 @@
 	pixel_x = 10
 	},
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "Jl" = (
 /obj/structure/rack/shelf/biggest,
 /obj/item/rope,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "KE" = (
 /obj/structure/bed/hay,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
+"KH" = (
+/obj/effect/landmark/dungeon/guardian/singlet/bandit,
+/turf/open/floor/twig,
+/area/pocket_dimension/dungeon)
 "KN" = (
 /obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cleanable/dirt,
+/obj/effect/landmark/dungeon/guardian/singlet/bandit,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "Ln" = (
 /obj/structure/giantfur{
 	layer = 2;
 	pixel_x = -16
 	},
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "Me" = (
 /obj/effect/decal/cleanable/dirt,
 /obj/structure/fluff/railing/wood/east,
 /obj/structure/fluff/railing/wood,
 /obj/structure/closet/crate/chest/neu,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "MZ" = (
 /obj/structure/chair/stool,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "Nj" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "Oy" = (
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "Pm" = (
 /obj/structure/chair/stool,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/ruinedwood/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "QC" = (
 /obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "Rd" = (
 /obj/item/bin/water,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "RR" = (
 /obj/machinery/light/fueled/torchholder/c,
 /obj/structure/grindwheel,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "Tb" = (
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "TG" = (
 /obj/item/bin/water,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "Us" = (
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "UA" = (
 /obj/structure/rack/shelf/biggest,
 /obj/effect/decal/cleanable/dirt/cobweb{
@@ -281,7 +299,7 @@
 	dir = 8
 	},
 /turf/open/floor/twig,
-/area)
+/area/pocket_dimension/dungeon)
 "XD" = (
 /obj/structure/table/wood/plain,
 /obj/item/reagent_containers/glass/cup{
@@ -292,21 +310,21 @@
 	pixel_y = 8
 	},
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "XI" = (
 /obj/machinery/light/fueled/torchholder/c,
 /obj/effect/decal/cleanable/dirt,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "XM" = (
 /obj/machinery/light/fueled/torchholder/r,
 /obj/structure/stairs,
 /turf/open/floor/ruinedwood/turned/darker,
-/area)
+/area/pocket_dimension/dungeon)
 "Yq" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 tf
@@ -352,7 +370,7 @@ ud
 eO
 sp
 su
-GG
+AG
 pw
 pG
 ux
@@ -372,13 +390,13 @@ Tb
 Me
 pG
 XD
-ux
+sA
 fo
 tf
 "}
 (5,1,1) = {"
 tf
-Us
+ii
 su
 ip
 ip
@@ -537,7 +555,7 @@ KE
 yy
 xj
 KE
-yy
+KH
 UA
 tf
 ud

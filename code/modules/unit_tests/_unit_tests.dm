@@ -94,6 +94,7 @@
 #include "focus_only_tests.dm"
 #include "guard_deflect.dm"
 #include "hostile_ai_grab.dm"
+#include "infinite_dungeons.dm"
 #include "leeches.dm"
 #include "load_map_security.dm"
 #include "lootpanel.dm"

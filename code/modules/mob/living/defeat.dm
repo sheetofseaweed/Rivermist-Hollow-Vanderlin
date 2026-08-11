@@ -7,6 +7,9 @@
 	var/defeat_system_ai_opt_in = FALSE
 	/// Most recent defeat snapshot captured before stabilization/rune routing.
 	var/datum/defeat_snapshot/last_defeat_snapshot
+	/// Multiplier on the KO Only struggle-up timers (content hooks may shorten
+	/// them - e.g. a dungeon boon). 1 = the standard delays.
+	var/defeat_struggle_delay_mult = 1
 	/// Set by the resurrection rune around its own ADMIN_HEAL_ALL revive so that heal does NOT auto-wipe
 	/// the defeat KO/traumas - the rune runs its own defeat teardown (manual KO removal + trauma
 	/// escalation). Every other HEAL_ADMIN heal (the admin verb) still resets defeat state. Transient.
@@ -1174,6 +1177,8 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 
 /// Ambient captive: a random downtrodden race, no gear, crying for rescue.
 /mob/living/carbon/human/npc_in_distress
+	/// Distress component this mob binds on spawn (subtypes may pay extra bounties)
+	var/distress_component_type = /datum/component/npc_in_distress
 
 /mob/living/carbon/human/npc_in_distress/Initialize(mapload)
 	. = ..()
@@ -1190,7 +1195,7 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	var/datum/species/our_species = dna?.species
 	var/new_name = our_species ? our_species.random_name(gender) : random_unique_name(gender)
 	fully_replace_character_name(real_name, new_name)
-	AddComponent(/datum/component/npc_in_distress, FALSE)
+	AddComponent(distress_component_type, FALSE)
 
 /// Mapper landmark that spawns one ambient captive where placed.
 /obj/effect/landmark/distress_spawner

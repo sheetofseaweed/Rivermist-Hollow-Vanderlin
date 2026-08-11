@@ -82,3 +82,7 @@
 	if(!action_target.wants_auto_clench())
 		return FALSE
 	return can_clench(action_target)
+
+#undef CLENCH_COOLDOWN
+#undef CLENCH_STAMINA_FRACTION
+#undef CLENCH_AROUSAL_BONUS

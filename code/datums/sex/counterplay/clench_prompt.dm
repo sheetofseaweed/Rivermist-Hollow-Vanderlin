@@ -48,3 +48,5 @@
 /datum/sex_action/Topic(href, list/href_list)
 	. = ..()
 	handle_clench_topic(usr, href_list)
+
+#undef CLENCH_PROMPT_INTERVAL

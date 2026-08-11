@@ -1,0 +1,223 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"f" = (
+/obj/effect/landmark/dungeon/loot,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension/dungeon)
+"i" = (
+/obj/structure/abyss_window,
+/turf/closed/wall/window/stained,
+/area/pocket_dimension/dungeon)
+"n" = (
+/obj/effect/landmark/dungeon/guardian,
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"o" = (
+/obj/structure/spider/stickyweb/solo,
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"p" = (
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"r" = (
+/turf/open/floor/cobblerock,
+/area/pocket_dimension/dungeon)
+"w" = (
+/obj/structure/flora/pillar,
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"H" = (
+/obj/effect/landmark/dungeon/gate/hazard,
+/turf/open/floor/hexstone,
+/area/pocket_dimension/dungeon)
+"N" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"U" = (
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/water/pond,
+/area/pocket_dimension/dungeon)
+"W" = (
+/turf/open/water/pond,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+N
+a
+a
+N
+o
+a
+N
+a
+a
+o
+a
+a
+a
+a
+a
+o
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+H
+p
+n
+p
+n
+p
+p
+p
+p
+p
+p
+w
+N
+W
+N
+r
+r
+a
+o
+a
+"}
+(3,1,1) = {"
+a
+N
+w
+p
+w
+p
+w
+p
+w
+p
+N
+p
+p
+r
+W
+r
+r
+p
+p
+N
+a
+"}
+(4,1,1) = {"
+a
+G
+r
+r
+r
+r
+r
+r
+r
+f
+i
+p
+p
+r
+U
+r
+p
+p
+E
+B
+a
+"}
+(5,1,1) = {"
+a
+N
+w
+p
+w
+p
+w
+p
+w
+p
+N
+p
+p
+r
+W
+r
+r
+p
+p
+N
+F
+"}
+(6,1,1) = {"
+a
+G
+p
+p
+p
+n
+p
+p
+p
+p
+p
+p
+w
+N
+W
+N
+r
+r
+a
+a
+a
+"}
+(7,1,1) = {"
+a
+a
+N
+a
+a
+N
+a
+a
+N
+o
+a
+a
+a
+a
+a
+o
+a
+a
+a
+a
+a
+"}
