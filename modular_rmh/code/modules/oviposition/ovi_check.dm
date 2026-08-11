@@ -547,6 +547,8 @@
 			return "Harpy"
 		if(OVI_EGG_EMBRYO)
 			return "Embryo"
+		if(OVI_EGG_MANEATER)
+			return "Maneater"
 	return "[egg_type]"
 
 /proc/get_oviposition_egg_trait_name(trait_flag)

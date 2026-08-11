@@ -616,22 +616,19 @@
 		qdel(src)
 	return origin
 
-/// Explicitly refusing a surfaced rune ejects first, clears all captivity state, then uses the common
-/// bounded environmental recovery profile. That profile applies ordinary Defeat trauma.
+/// Explicitly refusing a surfaced rune wakes the captive in place and makes the lair's denizens
+/// leave them alone. Captivity remains active so they can continue the scene or use its normal exit.
 /datum/component/kidnap_captivity/proc/reject_rune_and_wake()
 	if(ending || !released)
 		return FALSE
 	var/mob/living/victim = parent
-	var/turf/destination = get_contextual_destination()
-	if(!victim || QDELETED(victim) || !destination)
+	if(!victim || QDELETED(victim))
 		return FALSE
-	ending = TRUE
-	victim.grant_kidnap_release_grace()
-	victim.forceMove(destination)
-	qdel(src)
-	if(!victim.perform_defeat_rescue(null, "rune rejection", /datum/defeat_recovery_profile/environmental))
+	if(!victim.perform_defeat_rescue(null, "rune rejection", /datum/defeat_recovery_profile/environmental, src))
 		return FALSE
-	to_chat(victim, span_warning("You reject the rune and wrench yourself awake. Freedom comes with the full weight of your defeat."))
+	grant_refuse_advances(victim)
+	ADD_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
+	to_chat(victim, span_warning("You reject the rune and wrench yourself awake inside the lair. You steel yourself against its denizens; use Refuse Advances if you later choose to relent."))
 	return TRUE
 
 /datum/component/kidnap_captivity/proc/release_from_knockout()
@@ -696,7 +693,7 @@
 	choice_prompt_open = TRUE
 	var/choice = tgui_alert(
 		victim,
-		"Your forced wait is over. Calling the rune pulls you to safety and heals you, but spends a limited charge and exacts coin, blood, clothing, mana, and lasting weariness. Rejecting it wakes and ejects you with ordinary Defeat trauma. Waiting leaves you here with these choices still available. Abandoning the character is permanent.",
+		"Your forced wait is over. Calling the rune pulls you to safety and heals you, but spends a limited charge and exacts coin, blood, clothing, mana, and lasting weariness. Rejecting it wakes you here with ordinary Defeat trauma and makes the lair's denizens leave you alone. Waiting leaves you here with these choices still available. Abandoning the character is permanent.",
 		"Captivity",
 		choices,
 	)

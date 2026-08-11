@@ -121,6 +121,8 @@
 			return "Bog Bug"
 		if(OVI_EGG_TENTACLE)
 			return "Tentacle"
+		if(OVI_EGG_MANEATER)
+			return "Maneater"
 		if(OVI_EGG_EMBRYO)
 			return "Embryo"
 	return "[option]"

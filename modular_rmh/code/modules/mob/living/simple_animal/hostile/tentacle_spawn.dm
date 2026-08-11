@@ -37,6 +37,18 @@
 		return FALSE
 	return is_within_home_range(living_mob, target)
 
+/datum/targetting_datum/basic/tentacle/ambusher/maneater
+
+/datum/targetting_datum/basic/tentacle/ambusher/maneater/is_horny_pref_target(mob/living/living_mob, atom/target)
+	if(!ishuman(target))
+		return FALSE
+	var/mob/living/carbon/human/human_target = target
+	if(!is_horny_mob_family_allowed(living_mob, human_target))
+		return FALSE
+	// Maneater vines are sexless plants. Either ordinary horny-mob gender opt-in enables them;
+	// the dedicated family preference remains the authoritative plant-specific gate.
+	return !!get_horny_mob_pref_flags(human_target)
+
 /datum/ai_planning_subtree/basic_melee_attack_subtree/agile/tentacle_ambusher
 
 /datum/ai_planning_subtree/basic_melee_attack_subtree/agile/tentacle_ambusher/SelectBehaviors(datum/ai_controller/controller, delta_time)
@@ -117,6 +129,12 @@
 	)
 
 	idle_behavior = /datum/idle_behavior/nothing
+
+/datum/ai_controller/tentacle_ambusher/maneater
+	horny_pref_family_flag = HORNY_MOB_TYPE_MANEATERS
+	blackboard = list(
+		BB_TARGETTING_DATUM = new /datum/targetting_datum/basic/tentacle/ambusher/maneater(),
+	)
 
 /datum/ai_controller/tentacle_colony_defender
 	movement_delay = 0.5 SECONDS
@@ -428,6 +446,53 @@
 	ai_controller = /datum/ai_controller/tentacle_colony_defender
 	kidnap_lair_tag = null
 	kidnap_captivity_profile = null
+
+/// Green stomach vines use the burrow-tentacle movement and combat model, but belong to the
+/// maneater preference family and produce seedlings rather than more tentacles.
+/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater
+	name = "maneater stomach vine"
+	desc = "A slick green feeding vine rooted in the yielding walls of a maneater's stomach."
+	icon = 'modular_rmh/icons/mob/monster/maneater_tentacles.dmi'
+	icon_state = "tentacle_medium"
+	icon_living = "tentacle_medium"
+	icon_dead = "tentacle_big_dead"
+	ai_controller = /datum/ai_controller/tentacle_ambusher/maneater
+	faction = list("maneater")
+	kidnap_lair_tag = null
+	kidnap_captivity_profile = null
+	health = 55
+	maxHealth = 55
+	base_constitution = 6
+	base_strength = 6
+	base_speed = 11
+	melee_damage_lower = 6
+	melee_damage_upper = 11
+	vision_range = 8
+	aggro_vision_range = 8
+	leash_distance = 8
+	hide_icon_state = null
+	emerge_icon_state = null
+
+/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/Initialize(mapload)
+	. = ..()
+	var/obj/item/organ/genitals/penis/ovipositor/ovipositor = ensure_typed_ovipositor(src, OVI_EGG_MANEATER)
+	if(ovipositor)
+		ovipositor.name = "seed-bearing vine"
+		ovipositor.desc = "A prehensile plant tendril adapted to implant soft, root-filled eggs."
+
+/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/small
+	name = "lesser maneater stomach vine"
+	desc = "A thin green tendril searching the stomach floor for something warm to coil around."
+	icon_state = "tentacle_small"
+	icon_living = "tentacle_small"
+	health = 35
+	maxHealth = 35
+	base_constitution = 4
+	base_strength = 4
+	base_speed = 12
+	melee_damage_lower = 3
+	melee_damage_upper = 7
+	leash_distance = 7
 
 /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/small
 	name = "lesser burrow tentacle"

@@ -819,7 +819,7 @@ GLOBAL_LIST_EMPTY(kidnap_escape_markers)
 
 /datum/action/innate/defeat_captivity_choices
 	name = "Captivity Choices"
-	desc = "Review your available ways forward: rune rescue, waking without it, waiting, or permanently abandoning this character."
+	desc = "Review your available ways forward: rune rescue, waking safely inside the lair, waiting, or permanently abandoning this character."
 
 /datum/action/innate/defeat_captivity_choices/Activate()
 	if(!isliving(owner))

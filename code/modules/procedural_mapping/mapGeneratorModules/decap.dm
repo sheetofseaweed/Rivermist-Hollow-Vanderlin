@@ -25,7 +25,8 @@
 							/obj/structure/closet/dirthole/closed/loot = 3,
 							// /obj/item/restraints/legcuffs/beartrap/armed/camouflage = 7,
 							/obj/structure/flora/grass/maneater/real = 0,
-							/obj/structure/flora/grass/pyroclasticflowers = 15)
+							/obj/structure/flora/grass/pyroclasticflowers = 15
+							)
 	spawnableTurfs = list(/turf/open/lava = 2,/turf/open/floor/dirt/road = 36)
 	allowed_areas = list(/area/outdoors/mountains/decap)
 

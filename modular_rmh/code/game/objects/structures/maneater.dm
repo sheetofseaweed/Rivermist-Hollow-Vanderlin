@@ -1,3 +1,132 @@
+/// Every adult maneater owns one folded stomach through this otherwise invisible living proxy.
+/// Keeping the carrier as a mob lets the existing sex and captivity systems work without teaching
+/// either system how to treat an anchored structure as an actor.
+/mob/living/simple_animal/hostile/retaliate/maneater_tendrils
+	name = "flowering maneater vines"
+	desc = "The unseen feeding vines of a maneater."
+	icon = 'modular_rmh/icons/mob/monster/maneater_tentacles.dmi'
+	icon_state = "tentacle_medium"
+	icon_living = "tentacle_medium"
+	icon_dead = "tentacle_big_dead"
+	faction = list("maneater")
+	gender = PLURAL
+	ai_controller = null
+	anchored = TRUE
+	density = FALSE
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	invisibility = INVISIBILITY_ABSTRACT
+	health = 100
+	maxHealth = 100
+	var/tmp/datum/weakref/maneater_ref
+
+/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/Initialize(mapload)
+	. = ..()
+	var/obj/item/organ/genitals/penis/ovipositor/ovipositor = ensure_typed_ovipositor(src, OVI_EGG_MANEATER)
+	if(ovipositor)
+		ovipositor.name = "seed-bearing vine"
+		ovipositor.desc = "A flowering tendril adapted to implant soft, root-filled seeds."
+
+/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/proc/set_maneater_owner(obj/structure/flora/grass/maneater/real/maneater)
+	maneater_ref = maneater ? WEAKREF(maneater) : null
+
+/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/proc/get_maneater_owner()
+	var/obj/structure/flora/grass/maneater/real/maneater = maneater_ref?.resolve()
+	if(maneater && !QDELETED(maneater))
+		return maneater
+	maneater_ref = null
+	return null
+
+/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/visible_message(message, self_message, blind_message, vision_distance = DEFAULT_MESSAGE_RANGE, list/ignored_mobs, runechat_message = null, log_seen = NONE, log_seen_msg = null)
+	var/obj/structure/flora/grass/maneater/real/maneater = get_maneater_owner()
+	if(!maneater)
+		return ..()
+	// The proxy is abstract-invisible, which would suppress ordinary sex-action announcements.
+	// Announce through the visible plant while retaining the vines' name in the prepared message.
+	return maneater.visible_message(message, null, blind_message, vision_distance, ignored_mobs, runechat_message, log_seen, log_seen_msg)
+
+/datum/map_template/pocket/defeat_captivity/maneater
+	name = "Maneater Stomach"
+	id = "pocket_defeat_captivity_maneater"
+	mappath = "_maps/templates/pockets/kidnap_lairs/maneater_stomach.dmm"
+	instance_type = /datum/pocket_dimension/defeat_captivity/maneater
+
+/obj/structure/pocket_dimension_exit/maneater
+	name = "living vine passage"
+	desc = "A narrow opening between thick, slowly writhing vines. Push through it to escape the maneater."
+	icon = 'modular_rmh/icons/obj/structures/maneater_stomach.dmi'
+	icon_state = "vine_exit"
+
+/obj/effect/landmark/pocket_dimension/exit/maneater
+	name = "maneater stomach exit marker"
+	exit_structure_type = /obj/structure/pocket_dimension_exit/maneater
+
+/datum/defeat_captivity_profile/carrier/maneater
+	stable_key = "maneater_stomach"
+	display_name = "maneater stomach"
+	template_type = /datum/map_template/pocket/defeat_captivity/maneater
+	// The defeat knockout blocks this exit at first. Once it wears off, a captive who reaches the
+	// opening through the guardian vines may climb back out at the parent plant.
+	access_rule = DEFEAT_CAPTIVITY_ACCESS_RELEASED
+
+/datum/defeat_captivity_profile/carrier/maneater/get_ejection_destination(datum/component/kidnap_captivity/captivity, datum/pocket_dimension/defeat_captivity/instance)
+	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/vines = captivity?.resolve_captor()
+	var/obj/structure/flora/grass/maneater/real/maneater = vines?.get_maneater_owner()
+	if(!maneater)
+		return ..()
+
+	var/mob/living/victim = captivity.parent
+	var/list/valid_destinations = list()
+	for(var/turf/open/candidate in orange(1, maneater))
+		if(candidate.is_blocked_turf(TRUE, victim))
+			continue
+		if(locate(/obj/structure/flora/grass/maneater/real) in candidate)
+			continue
+		if(is_valid_ejection_turf(candidate, instance))
+			valid_destinations += candidate
+	if(length(valid_destinations))
+		return pick(valid_destinations)
+	return null
+
+/datum/pocket_dimension/defeat_captivity/maneater
+
+/datum/pocket_dimension/defeat_captivity/maneater/Destroy(force)
+	// Pocket teardown normally ejects every living occupant. Stomach flora belongs to the pocket
+	// instead, so remove it before the parent returns captives to the destroyed plant's turf.
+	for(var/mob/occupant as anything in get_occupants())
+		if(istype(occupant, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater))
+			qdel(occupant)
+	return ..()
+
+/datum/pocket_dimension/defeat_captivity/maneater/proc/ensure_stomach_guardians(atom/reference)
+	var/guardian_count = 0
+	for(var/mob/occupant as anything in get_occupants())
+		if(istype(occupant, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater))
+			guardian_count++
+
+	var/guardians_needed = 3 - guardian_count
+	if(guardians_needed <= 0)
+		return
+
+	var/list/valid_turfs = list()
+	for(var/turf/open/candidate as anything in RANGE_TURFS(3, reference))
+		if(!contains_turf(candidate) || candidate.is_blocked_turf(TRUE))
+			continue
+		valid_turfs += candidate
+	if(length(valid_turfs) < guardians_needed)
+		for(var/turf/open/candidate as anything in affected_turfs)
+			if(candidate in valid_turfs || candidate.is_blocked_turf(TRUE))
+				continue
+			valid_turfs += candidate
+
+	while(guardians_needed > 0 && length(valid_turfs))
+		var/turf/spawn_turf = pick_n_take(valid_turfs)
+		var/guardian_type = pickweight(list(
+			/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/small = 3,
+			/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater = 1,
+		))
+		new guardian_type(spawn_turf)
+		guardians_needed--
+
 //safer maneater
 /obj/structure/flora/grass/maneater
 	name = "grass"
@@ -22,6 +151,12 @@
 	var/seednutrition = 0
 	var/max_seednutrition = 100
 	var/mob/planter = null
+	/// Victim currently being prepared for swallowing.
+	var/datum/weakref/horny_victim_ref
+	/// Invisible living actor used for sex actions and as this plant's stomach carrier.
+	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/sex_proxy
+	var/swallow_timer
+	var/swallow_time = 30 SECONDS
 
 /obj/structure/flora/grass/maneater/real/process()
 	if(seednutrition >= max_seednutrition)
@@ -35,6 +170,7 @@
 
 /obj/structure/flora/grass/maneater/real/atom_break(damage_flag)
 	. = ..()
+	reset_horny_capture(TRUE)
 	unbuckle_all_mobs()
 	if(contents.len)
 		for(var/obj/item/eaten in contents)
@@ -45,6 +181,7 @@
 	STOP_PROCESSING(SSobj, src)
 
 /obj/structure/flora/grass/maneater/real/Destroy()
+	reset_horny_capture(TRUE)
 	unbuckle_all_mobs()
 	if(contents.len)
 		for(var/obj/item/eaten in contents)
@@ -83,8 +220,109 @@
 	if(victim.m_intent == MOVE_INTENT_SNEAK)
 		return
 
-	buckle_mob(victim, TRUE, check_loc = FALSE)
-	begin_eat(victim)
+	if(!buckle_mob(victim, TRUE, check_loc = FALSE))
+		return
+	if(victim_allows_horny_capture(victim))
+		begin_horny_swallow(victim)
+	else
+		begin_eat(victim)
+
+/obj/structure/flora/grass/maneater/real/proc/victim_allows_horny_capture(mob/living/victim)
+	if(!ishuman(victim) || victim.stat == DEAD || victim.status_flags & GODMODE)
+		return FALSE
+	if(HAS_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES))
+		return FALSE
+	if(!(victim.get_cached_horny_mob_family_flags() & HORNY_MOB_TYPE_MANEATERS))
+		return FALSE
+	// Maneaters are sexless plants, so opting into either ordinary horny-mob target sex enables them.
+	return !!victim.get_cached_horny_mob_pref_flags()
+
+/obj/structure/flora/grass/maneater/real/proc/get_sex_proxy()
+	if(sex_proxy && !QDELETED(sex_proxy))
+		sex_proxy.forceMove(get_turf(src))
+		sex_proxy.set_maneater_owner(src)
+		return sex_proxy
+	sex_proxy = new(get_turf(src))
+	sex_proxy.set_maneater_owner(src)
+	return sex_proxy
+
+/obj/structure/flora/grass/maneater/real/proc/begin_horny_swallow(mob/living/victim)
+	if(!victim || QDELETED(victim) || victim.buckled != src)
+		return FALSE
+	reset_horny_capture()
+	horny_victim_ref = WEAKREF(victim)
+
+	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/vines = get_sex_proxy()
+	var/datum/sex_scene_controller/scene_controller = vines?.open_sex_scene(victim, FALSE)
+	if(scene_controller)
+		var/list/action_choices = list(
+			/datum/sex_action/npc/npc_anal_sex/tentacle/maneater,
+			/datum/sex_action/npc/npc_throat_sex/tentacle/maneater,
+			/datum/sex_action/maneater_vine_caress,
+		)
+		if(victim.getorganslot(ORGAN_SLOT_VAGINA))
+			action_choices += /datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater
+		if(victim.getorganslot(ORGAN_SLOT_PENIS))
+			action_choices += /datum/sex_action/tentacle_jerk/maneater
+		while(length(action_choices))
+			var/action_type = pick_n_take(action_choices)
+			if(scene_controller.try_start_action(action_type, "ai"))
+				break
+		scene_controller.set_current_force(rand(SEX_FORCE_MID, SEX_FORCE_MAX))
+		scene_controller.set_current_speed(rand(SEX_SPEED_MID, SEX_SPEED_MAX))
+
+	visible_message(span_warningbig("[src]'s flowering vines close around [victim] and begin drawing them toward its maw!"))
+	to_chat(victim, span_userdanger("The maneater's vines tease and restrain you while its throat slowly opens beneath you. You have [DisplayTimeText(swallow_time)] to break free!"))
+	swallow_timer = addtimer(CALLBACK(src, PROC_REF(complete_horny_swallow)), swallow_time, TIMER_STOPPABLE | TIMER_DELETE_ME)
+	return TRUE
+
+/obj/structure/flora/grass/maneater/real/proc/stop_horny_actions()
+	if(!sex_proxy || QDELETED(sex_proxy))
+		return
+	sex_proxy.sex_scene?.stop_action()
+
+/obj/structure/flora/grass/maneater/real/proc/reset_horny_capture(delete_proxy = FALSE)
+	if(swallow_timer)
+		deltimer(swallow_timer)
+		swallow_timer = null
+	horny_victim_ref = null
+	stop_horny_actions()
+	if(delete_proxy)
+		QDEL_NULL(sex_proxy)
+
+/obj/structure/flora/grass/maneater/real/proc/complete_horny_swallow()
+	swallow_timer = null
+	var/mob/living/victim = horny_victim_ref?.resolve()
+	horny_victim_ref = null
+	if(!victim || QDELETED(victim) || victim.buckled != src || victim.loc != loc || obj_broken)
+		stop_horny_actions()
+		return FALSE
+
+	stop_horny_actions()
+	visible_message(span_userdanger("[src]'s maw yawns open and swallows [victim] whole!"))
+	unbuckle_mob(victim, TRUE)
+
+	var/added_knockout = !victim.has_status_effect(/datum/status_effect/defeat_knockout)
+	if(added_knockout)
+		victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/vines = get_sex_proxy()
+	if(!victim.kidnap_to_pocket(/datum/defeat_captivity_profile/carrier/maneater, vines, list("maneater"), "maneater_stomach"))
+		if(added_knockout)
+			victim.remove_status_effect(/datum/status_effect/defeat_knockout)
+		maneater_spit_out(victim)
+		return FALSE
+
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/maneater/stomach = captivity?.resolve_instance()
+	stomach?.ensure_stomach_guardians(victim)
+	last_eat = world.time
+	to_chat(victim, span_userdanger("Warm, yielding walls close around you. Hungry green vines stir nearby."))
+	return TRUE
+
+/obj/structure/flora/grass/maneater/real/post_unbuckle_mob(mob/living/unbuckled_mob)
+	. = ..()
+	if(unbuckled_mob == horny_victim_ref?.resolve())
+		reset_horny_capture()
 
 /obj/structure/flora/grass/maneater/real/proc/begin_eat(mob/living/victim, chew_factor = 1)
 	if(victim.loc != loc)
@@ -136,8 +374,11 @@
 		return
 	if(!isliving(C))
 		return
+	if(C == horny_victim_ref?.resolve())
+		reset_horny_capture()
 	visible_message(span_danger("[src] spits out [C]!"))
-	C.unbuckle_mob(C)
+	if(C.buckled == src)
+		unbuckle_mob(C, TRUE)
 	var/turf/target = get_ranged_target_turf(src, pick(GLOB.alldirs), 3)
 	C.throw_at(target, 3, 2)
 	playsound(src,'sound/misc/maneaterspit.ogg', 100)
@@ -261,18 +502,8 @@
 
 /obj/item/maneaterseed/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	var/turf/T = get_turf(target)
-	if(istype(T, /turf/open/floor/dirt) || istype(T, /turf/open/floor/grass))
+	if(can_grow_at(T, user))
 		if(!proximity_flag)
-			return
-		for(var/obj/structure/flora/grass/maneater/M in T)
-			to_chat(user, span_warning("The maneater plants need more space between them to grow."))
-			return
-		for(var/turf/adjacent in orange(2, T))
-			for(var/obj/structure/flora/grass/maneater/M in adjacent)
-				to_chat(user, span_warning("The maneater plants need more space between them to grow."))
-				return
-		for(var/obj/effect/decal/D in T) //To stop planting on mapped cobble decals etc
-			to_chat(user, span_warning("The ground is too uneven to plant a maneater seed here."))
 			return
 		user.visible_message(span_notice("[user] begins planting a maneater seed."), \
 				span_notice("I begin planting the maneater seed."))
@@ -285,6 +516,42 @@
 			message_admins("[user]/([user.ckey]) plants a maneater seed at [ADMIN_VERBOSEJMP(T)]")
 			return
 	. = ..()
+
+/obj/item/maneaterseed/proc/can_grow_at(turf/target, mob/user)
+	if(!istype(target, /turf/open/floor/dirt) && !istype(target, /turf/open/floor/grass))
+		return FALSE
+	for(var/obj/structure/flora/grass/maneater/maneater in target)
+		if(user)
+			to_chat(user, span_warning("The maneater plants need more space between them to grow."))
+		return FALSE
+	for(var/turf/adjacent in orange(2, target))
+		for(var/obj/structure/flora/grass/maneater/maneater in adjacent)
+			if(user)
+				to_chat(user, span_warning("The maneater plants need more space between them to grow."))
+			return FALSE
+	for(var/obj/effect/decal/uneven_ground in target) // Prevent planting on mapped cobble decals, etc.
+		if(user)
+			to_chat(user, span_warning("The ground is too uneven to plant a maneater seed here."))
+		return FALSE
+	return TRUE
+
+/// Eggs laid by stomach vines hatch as damp seedlings. On natural soil they take root by themselves;
+/// elsewhere they remain portable and can be planted exactly like an ordinary maneater seed.
+/obj/item/maneaterseed/seedling
+	name = "maneater seedling"
+	desc = "A newly hatched tangle of hungry roots. It will take root on green grass or dirt."
+
+/obj/item/maneaterseed/seedling/Initialize(mapload)
+	. = ..()
+	addtimer(CALLBACK(src, PROC_REF(try_take_root)), 2 SECONDS, TIMER_DELETE_ME)
+
+/obj/item/maneaterseed/seedling/proc/try_take_root()
+	var/turf/rooting_turf = get_turf(src)
+	if(loc != rooting_turf || !can_grow_at(rooting_turf))
+		return
+	visible_message(span_warning("[src] splits open and drives pale roots into [rooting_turf]!"))
+	new /obj/structure/flora/grass/maneater/real/juvenile(rooting_turf)
+	qdel(src)
 
 /obj/structure/flora/grass/maneater/real/proc/produce_seed()
 	visible_message(span_warning("[src] spits out a seed!"))

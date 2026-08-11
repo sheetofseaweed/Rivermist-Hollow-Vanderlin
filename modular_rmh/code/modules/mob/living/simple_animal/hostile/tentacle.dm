@@ -143,21 +143,97 @@
 	description = "Work an egg-bearing tentacle into their vagina."
 
 /datum/sex_action/npc/npc_vaginal_sex/tentacle/shows_on_menu(mob/living/user, mob/living/target)
-	return istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) && user != target
+	return istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) && !is_maneater_tendril(user) && user != target
+
+/datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater
+	name = "Part their petals with a vine"
+	description = "Work a seed-bearing plant tendril into their vagina."
+
+/datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater/shows_on_menu(mob/living/user, mob/living/target)
+	return is_maneater_tendril(user) && user != target
+
+/datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater/get_start_message(mob/living/user, mob/living/target)
+	return "[user] eases a flowering vine into [target]'s cunt!"
+
+/datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] roots its flowering vine in [target]'s pussy."
+
+/datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] draws its sap-slick vine out of [target]'s pussy."
+
+/datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater/handle_climax_message(mob/living/user, mob/living/target, must_flip)
+	if(must_flip)
+		user.visible_message(span_love("[user] shudders as [target] clenches around its flowering vine!"))
+		user.lose_virginity()
+		target.lose_virginity()
+		return ORGASM_LOCATION_ONTO
+	user.visible_message(span_love("[user]'s vine pulses warm sap and seed into [target]'s pussy!"))
+	user.lose_virginity()
+	target.lose_virginity()
+	return ORGASM_LOCATION_INTO
 
 /datum/sex_action/npc/npc_anal_sex/tentacle
 	name = "Tentacle their anus"
 	description = "Work an egg-bearing tentacle into their anus."
 
 /datum/sex_action/npc/npc_anal_sex/tentacle/shows_on_menu(mob/living/user, mob/living/target)
-	return istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) && user != target
+	return istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) && !is_maneater_tendril(user) && user != target
+
+/datum/sex_action/npc/npc_anal_sex/tentacle/maneater
+	name = "Root a vine in their anus"
+	description = "Ease a seed-bearing plant tendril into their anus."
+
+/datum/sex_action/npc/npc_anal_sex/tentacle/maneater/shows_on_menu(mob/living/user, mob/living/target)
+	return is_maneater_tendril(user) && user != target
+
+/datum/sex_action/npc/npc_anal_sex/tentacle/maneater/get_start_message(mob/living/user, mob/living/target)
+	return "[user] works a tapering green vine into [target]'s ass!"
+
+/datum/sex_action/npc/npc_anal_sex/tentacle/maneater/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] drives its rooting vine into [target]'s ass."
+
+/datum/sex_action/npc/npc_anal_sex/tentacle/maneater/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] slowly unroots its slick vine from [target]'s butt."
+
+/datum/sex_action/npc/npc_anal_sex/tentacle/maneater/handle_climax_message(mob/living/user, mob/living/target, must_flip)
+	if(must_flip)
+		user.visible_message(span_love("[user] trembles as [target] wrings its vine tight!"))
+		user.lose_virginity()
+		target.lose_virginity()
+		return ORGASM_LOCATION_SELF
+	user.visible_message(span_love("[user]'s vine swells and spills warm seed into [target]'s butt!"))
+	user.lose_virginity()
+	target.lose_virginity()
+	return ORGASM_LOCATION_INTO
 
 /datum/sex_action/npc/npc_throat_sex/tentacle
 	name = "Tentacle their throat"
 	description = "Ease an egg-bearing tentacle into their mouth."
 
 /datum/sex_action/npc/npc_throat_sex/tentacle/shows_on_menu(mob/living/user, mob/living/target)
-	return istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) && user != target
+	return istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) && !is_maneater_tendril(user) && user != target
+
+/datum/sex_action/npc/npc_throat_sex/tentacle/maneater
+	name = "Feed them a flowering vine"
+	description = "Ease a seed-bearing plant tendril into their mouth."
+
+/datum/sex_action/npc/npc_throat_sex/tentacle/maneater/shows_on_menu(mob/living/user, mob/living/target)
+	return is_maneater_tendril(user) && user != target
+
+/datum/sex_action/npc/npc_throat_sex/tentacle/maneater/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] feeds its flowering vine down [target]'s throat."
+
+/datum/sex_action/npc/npc_throat_sex/tentacle/maneater/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] lets its flowering vine slip free of [target]'s throat."
+
+/datum/sex_action/npc/npc_throat_sex/tentacle/maneater/handle_climax_message(mob/living/user, mob/living/target, must_flip)
+	if(must_flip)
+		user.visible_message(span_love("[user] quivers from the pressure around its flowering vine!"))
+		user.lose_virginity()
+		return ORGASM_LOCATION_SELF
+	user.visible_message(span_love("[user]'s vine pulses a mouthful of sweet sap and seed into [target]'s throat!"))
+	user.lose_virginity()
+	return ORGASM_LOCATION_ORAL
 
 /datum/sex_action/tentacle_jerk
 	name = "Tentacle jerk them off"
@@ -167,7 +243,7 @@
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
 
 /datum/sex_action/tentacle_jerk/shows_on_menu(mob/living/user, mob/living/target)
-	if(!istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) || user == target)
+	if(!istype(user, /mob/living/simple_animal/hostile/retaliate/tentacle) || is_maneater_tendril(user) || user == target)
 		return FALSE
 	return !!target.getorganslot(ORGAN_SLOT_PENIS)
 
@@ -181,19 +257,83 @@
 
 /datum/sex_action/tentacle_jerk/on_start(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] coils a slick tentacle around [target]'s cock."))
+	user.visible_message(span_warning(get_start_message(user, target)))
+
+/datum/sex_action/tentacle_jerk/proc/get_start_message(mob/living/user, mob/living/target)
+	return "[user] coils a slick tentacle around [target]'s cock."
 
 /datum/sex_action/tentacle_jerk/on_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(can_show_action_message(user, target))
-		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] milks [target]'s cock with a rippling tentacle."))
+		user.visible_message(spanify_force(get_perform_message(user, target)))
 	playsound(target, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 	perform_sex_action(target, user, 2, 0, 2)
 	handle_passive_ejaculation(target)
 
+/datum/sex_action/tentacle_jerk/proc/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] milks [target]'s cock with a rippling tentacle."
+
 /datum/sex_action/tentacle_jerk/on_finish(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] unwinds its tentacle from [target]'s cock."))
+	user.visible_message(span_warning(get_finish_message(user, target)))
+
+/datum/sex_action/tentacle_jerk/proc/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] unwinds its tentacle from [target]'s cock."
 
 /datum/sex_action/tentacle_jerk/lock_sex_object(mob/living/user, mob/living/target)
 	add_sex_lock(target, ORGAN_SLOT_PENIS, null, FALSE)
+
+/datum/sex_action/tentacle_jerk/maneater
+	name = "Wind vines around their cock"
+	description = "Coil a flowering tendril around their penis."
+
+/datum/sex_action/tentacle_jerk/maneater/shows_on_menu(mob/living/user, mob/living/target)
+	if(!is_maneater_tendril(user) || user == target)
+		return FALSE
+	return !!target.getorganslot(ORGAN_SLOT_PENIS)
+
+/datum/sex_action/tentacle_jerk/maneater/get_start_message(mob/living/user, mob/living/target)
+	return "[user] winds a pair of flowering vines around [target]'s cock."
+
+/datum/sex_action/tentacle_jerk/maneater/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] milks [target]'s cock between pulsing, sap-slick vines."
+
+/datum/sex_action/tentacle_jerk/maneater/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] lets its flowering vines uncurl from [target]'s cock."
+
+/datum/sex_action/maneater_vine_caress
+	name = "Envelop them in flowering vines"
+	description = "Stroke and squeeze their body with warm, sap-slick tendrils."
+	check_same_tile = FALSE
+	user_menu_zone_mask = SEX_UI_ZONE_BODY
+	target_menu_zone_mask = SEX_UI_ZONE_BODY
+
+/datum/sex_action/maneater_vine_caress/shows_on_menu(mob/living/user, mob/living/target)
+	return is_maneater_tendril(user) && user != target
+
+/datum/sex_action/maneater_vine_caress/can_perform(mob/living/user, mob/living/target)
+	. = ..()
+	return . && shows_on_menu(user, target)
+
+/datum/sex_action/maneater_vine_caress/on_start(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	user.visible_message(span_warning("Flowering vines from [user] curl around [target]'s body and draw tight."))
+	return TRUE
+
+/datum/sex_action/maneater_vine_caress/on_perform(mob/living/user, mob/living/target)
+	. = ..()
+	if(can_show_action_message(user, target))
+		user.visible_message(spanify_force("The vines of [user] [get_generic_force_adjective()] stroke and squeeze [target]."))
+	playsound(target, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
+	perform_sex_action(target, user, 2, 0, 2)
+	perform_sex_action(user, target, 0.5, 0, 0.5)
+
+/datum/sex_action/maneater_vine_caress/on_finish(mob/living/user, mob/living/target)
+	. = ..()
+	user.visible_message(span_warning("The flowering vines of [user] loosen their hold on [target]."))
+
+/proc/is_maneater_tendril(mob/living/tendril)
+	return istype(tendril, /mob/living/simple_animal/hostile/retaliate/maneater_tendrils) \
+		|| istype(tendril, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater)

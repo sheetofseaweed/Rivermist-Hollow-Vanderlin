@@ -460,6 +460,15 @@
 		if(target_has_penis)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk, 2)
 		return
+	if(basic_mob.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_MANEATERS)
+		if(has_penis)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/tentacle/maneater, 2)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle/maneater, 2)
+			if(target_has_vagina)
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater, 3)
+		if(target_has_penis)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk/maneater, 2)
+		return
 
 	if(has_penis)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex, 2)
@@ -545,6 +554,8 @@
 			return "[basic_mob] wrestles [target_living] into a rough hold!"
 		if(HORNY_MOB_TYPE_TENTACLES)
 			return "[basic_mob] coils around [target_living]'s limbs and pins [target_living.p_them()] beneath its weight!"
+		if(HORNY_MOB_TYPE_MANEATERS)
+			return "[basic_mob] knots its thorny vines around [target_living] and pins [target_living.p_them()] against the loam!"
 	return "[basic_mob] clamps onto [target_living], holding [target_living.p_them()] in place!"
 
 /datum/ai_behavior/horny/simple_mob/proc/promote_existing_pull_to_hold(mob/living/basic_mob, mob/living/target_living)
