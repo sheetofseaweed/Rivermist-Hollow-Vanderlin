@@ -147,20 +147,22 @@
 
 /datum/unit_test/defeat_captivity_rune_cleanup_and_rejection_aftermath/Run()
 	var/turf/origin = run_loc_floor_bottom_left
-	var/turf/test_wilds = run_loc_floor_top_right
 	var/mob/living/carbon/human/rejecting_victim = allocate(/mob/living/carbon/human, origin)
 	rejecting_victim.defeat_system_ai_opt_in = TRUE
 	TEST_ASSERT(rejecting_victim.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL), "The rejection victim should enter Defeat with a snapshot.")
 	TEST_ASSERT(rejecting_victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The rejection victim should enter an isolated pocket.")
 	var/datum/component/kidnap_captivity/rejecting_captivity = rejecting_victim.GetComponent(/datum/component/kidnap_captivity)
-	var/datum/defeat_captivity_profile/per_captive/unit_test/rejecting_profile = rejecting_captivity.profile
-	rejecting_profile.unit_test_wilds = test_wilds
+	var/datum/pocket_dimension/defeat_captivity/rejecting_instance = rejecting_captivity.resolve_instance()
+	var/turf/rejection_turf = get_turf(rejecting_victim)
 	rejecting_captivity.released = TRUE
-	TEST_ASSERT(rejecting_captivity.reject_rune_and_wake(), "Reject Rune and Wake should eject and run bounded recovery.")
-	TEST_ASSERT_NULL(rejecting_victim.GetComponent(/datum/component/kidnap_captivity), "Rune rejection should clear captivity before the victim wakes.")
+	TEST_ASSERT(rejecting_captivity.reject_rune_and_wake(), "Reject Rune and Wake should run bounded recovery in place.")
+	TEST_ASSERT_EQUAL(rejecting_victim.GetComponent(/datum/component/kidnap_captivity), rejecting_captivity, "Rune rejection should keep the victim's captivity choices available.")
 	TEST_ASSERT(!rejecting_victim.has_status_effect(/datum/status_effect/defeat_knockout), "Rune rejection should remove the Defeat knockout.")
 	TEST_ASSERT(rejecting_victim.has_any_defeat_trauma(), "Rune rejection should retain ordinary Defeat trauma.")
-	TEST_ASSERT_EQUAL(get_turf(rejecting_victim), test_wilds, "Rune rejection from a per-captive pocket should use wilds-first ejection.")
+	TEST_ASSERT_EQUAL(get_turf(rejecting_victim), rejection_turf, "Rune rejection should wake the victim on their current lair tile.")
+	TEST_ASSERT(HAS_TRAIT(rejecting_victim, TRAIT_DEFEAT_REFUSE_ADVANCES), "Rune rejection should automatically refuse the lair's advances.")
+	TEST_ASSERT(locate(/datum/action/innate/defeat_refuse_advances) in rejecting_victim.actions, "Rune rejection should let the victim relent through Refuse Advances.")
+	TEST_ASSERT(SSpocket_dimensions.delete_instance(rejecting_instance), "The rejection test pocket should cleanly tear down afterward.")
 
 	var/mob/living/carbon/human/calling_victim = allocate(/mob/living/carbon/human, origin)
 	calling_victim.apply_status_effect(/datum/status_effect/defeat_knockout)

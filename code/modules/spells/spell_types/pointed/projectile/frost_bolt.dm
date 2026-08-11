@@ -33,6 +33,7 @@
 	icon_state = "ice_2"
 	damage = 25
 	damage_type = BURN
+	woundclass = BCLASS_BURN
 	range = 10
 	speed = 1
 

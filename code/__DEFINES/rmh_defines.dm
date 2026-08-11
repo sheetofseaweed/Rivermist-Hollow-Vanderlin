@@ -40,6 +40,9 @@
 
 #define HOLE_MAX_BULK_INSERT 10 //we want to have it possible that a sufficiently big insertible will trigger stretching on it's own
 
+// RMH object smoothing groups. S_OBJ(1-7) are occupied by core structures.
+#define SMOOTH_GROUP_TENTACLE_GROWTH S_OBJ(8)
+
 // Oviposition egg type identifiers.
 #define OVI_EGG_NORMAL "normal_ovi"
 #define OVI_EGG_AVIAN "avian_ovi"
@@ -50,6 +53,8 @@
 #define OVI_EGG_HARPY "harpy_ovi"
 #define OVI_EGG_EMBRYO "embryo_ovi"
 #define OVI_EGG_LEECH "leech_ovi"
+#define OVI_EGG_TENTACLE "tentacle_ovi"
+#define OVI_EGG_MANEATER "maneater_ovi"
 
 // Oviposition customization and balance limits.
 #define OVI_EGG_MAX_CLUTCH 30

@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_body_rub
 	name = "Rub genitals against their body"
-	stamina_cost = 0
 	var/selected_genital_slot
 
 /datum/sex_action/npc/npc_body_rub/shows_on_menu(mob/living/user, mob/living/target)

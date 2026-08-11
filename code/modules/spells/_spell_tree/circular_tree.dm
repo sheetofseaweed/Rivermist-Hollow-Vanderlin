@@ -495,9 +495,9 @@
 	prerequisites = list(/datum/spell_node/arcyne_eye)
 	spell_type = /datum/action/cooldown/spell/undirected/touch/prestidigitation
 
-/*/datum/spell_node/mage_hand
+/datum/spell_node/mage_hand
 	name = "Mage Hand"
-	desc = "Shape a distant arcyne hand for careful remote touch."
+	desc = "Shape a distant arcyne hand for careful remote touch. (ERP spell)"
 	node_x = 0
 	node_y = 160
 	prerequisites = list(/datum/spell_node/prestidigitation)
@@ -520,7 +520,7 @@
 	if(!spell_source)
 		spell_source = user
 	living_user.add_spell(/datum/action/cooldown/spell/mage_hand/scrying, silent = TRUE, source = spell_source, override = TRUE)
-	to_chat(user, span_notice("My Mage Hand can now follow my scrying vision."))*/
+	to_chat(user, span_notice("My Mage Hand can now follow my scrying vision."))
 
 /datum/spell_node/frost_affinity
 	name = "Frost Affinity"

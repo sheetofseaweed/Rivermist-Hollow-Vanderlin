@@ -120,6 +120,16 @@
 	var/list/active_overlay_counts = list()
 	var/list/mutable_appearance/active_overlays = list()
 	var/list/action_overlay_zones = list()
+	/// Zone to the timer id handing its intro animation over to the looping state.
+	var/list/overlay_start_timers = list()
+	/// Bind zone to the conjured restraint holding it, or TRUE for binds that need no item.
+	var/list/active_binds = list()
+	/// The caster's grip on every active bind. Losing it dispels them all.
+	var/obj/item/arcyne_binders/binder
+
+/datum/sex_remote_context/mage_hand/Destroy(force, ...)
+	release_all_binds()
+	return ..()
 
 /datum/sex_remote_context/mage_hand/allows_action(datum/sex_action/action)
 	return !!action?.mage_hand_allowed
@@ -235,26 +245,10 @@
 /datum/sex_remote_context/mage_hand/show_action_overlay(datum/sex_action/action)
 	if(!action || !is_valid(scene))
 		return FALSE
-	var/mob/living/remote_target = get_target()
-	if(!ishuman(remote_target))
-		return FALSE
 	var/zone = get_action_overlay_zone(action)
-	if(!zone)
+	if(!add_zone_overlay(zone))
 		return FALSE
-
 	action_overlay_zones[action] = zone
-	active_overlay_counts[zone] = (active_overlay_counts[zone] || 0) + 1
-	if(active_overlays[zone])
-		return TRUE
-
-	var/mutable_appearance/hand_overlay = mutable_appearance('modular_rmh/icons/mob/overlays/mage_hands.dmi', "overlay", ABOVE_MOB_LAYER)
-	hand_overlay.color = "#8fc7ff"
-	hand_overlay.alpha = 170
-	var/list/offset = get_overlay_offset(zone)
-	hand_overlay.pixel_x = offset["x"]
-	hand_overlay.pixel_y = offset["y"]
-	active_overlays[zone] = hand_overlay
-	remote_target.add_overlay(hand_overlay)
 	return TRUE
 
 /datum/sex_remote_context/mage_hand/clear_action_overlay(datum/sex_action/action)
@@ -262,14 +256,74 @@
 		return
 	var/zone = action_overlay_zones[action] || get_action_overlay_zone(action)
 	action_overlay_zones -= action
+	remove_zone_overlay(zone)
+
+/datum/sex_remote_context/mage_hand/clear_all_overlays()
+	for(var/zone in active_overlays.Copy())
+		clear_zone_overlay(zone)
+	active_overlay_counts.Cut()
+	active_overlays.Cut()
+	action_overlay_zones.Cut()
+	overlay_start_timers.Cut()
+
+/// Claims one reference on a zone's hand, drawing it if nothing was holding it yet.
+/datum/sex_remote_context/mage_hand/proc/add_zone_overlay(zone)
+	if(!zone || !GLOB.mage_hand_zone_sprites[zone] || !ishuman(get_target()))
+		return FALSE
+	active_overlay_counts[zone] = (active_overlay_counts[zone] || 0) + 1
+	if(active_overlays[zone])
+		return TRUE
+	return apply_zone_overlay(zone, TRUE)
+
+/// Drops one reference on a zone's hand, cutting it once nothing holds it.
+/datum/sex_remote_context/mage_hand/proc/remove_zone_overlay(zone)
 	if(!zone || !active_overlay_counts[zone])
 		return
-
 	active_overlay_counts[zone]--
 	if(active_overlay_counts[zone] > 0)
 		return
-
 	active_overlay_counts -= zone
+	clear_zone_overlay(zone)
+
+/// Draws the zone's hand. `animate_start` plays the one-shot intro and schedules the swap to the looping state.
+/datum/sex_remote_context/mage_hand/proc/apply_zone_overlay(zone, animate_start = FALSE)
+	var/mob/living/remote_target = get_target()
+	if(!ishuman(remote_target))
+		return FALSE
+	var/sprite = GLOB.mage_hand_zone_sprites[zone]
+	if(!sprite)
+		return FALSE
+
+	var/timer_id = overlay_start_timers[zone]
+	if(timer_id)
+		deltimer(timer_id)
+		overlay_start_timers -= zone
+
+	var/mutable_appearance/previous_overlay = active_overlays[zone]
+	if(previous_overlay)
+		remote_target.cut_overlay(previous_overlay)
+
+	var/state = "[get_overlay_prefix(remote_target)]_[animate_start ? "start_" : ""][sprite]"
+	var/mutable_appearance/hand_overlay = mutable_appearance(MAGE_HAND_OVERLAY_ICON, state, ABOVE_MOB_LAYER)
+	active_overlays[zone] = hand_overlay
+	remote_target.add_overlay(hand_overlay)
+
+	if(animate_start)
+		overlay_start_timers[zone] = addtimer(CALLBACK(src, PROC_REF(finish_start_animation), zone), GLOB.mage_hand_start_durations[sprite], TIMER_STOPPABLE)
+	return TRUE
+
+/datum/sex_remote_context/mage_hand/proc/finish_start_animation(zone)
+	overlay_start_timers -= zone
+	if(!active_overlays[zone])
+		return
+	apply_zone_overlay(zone, FALSE)
+
+/// Cuts the zone's appearance and cancels any pending intro handoff, leaving its reference count alone.
+/datum/sex_remote_context/mage_hand/proc/clear_zone_overlay(zone)
+	var/timer_id = overlay_start_timers[zone]
+	if(timer_id)
+		deltimer(timer_id)
+		overlay_start_timers -= zone
 	var/mutable_appearance/hand_overlay = active_overlays[zone]
 	if(hand_overlay)
 		var/mob/living/remote_target = get_target()
@@ -277,16 +331,17 @@
 			remote_target.cut_overlay(hand_overlay)
 	active_overlays -= zone
 
-/datum/sex_remote_context/mage_hand/clear_all_overlays()
-	var/mob/living/remote_target = get_target()
-	if(remote_target)
-		for(var/zone in active_overlays)
-			var/mutable_appearance/hand_overlay = active_overlays[zone]
-			if(hand_overlay)
-				remote_target.cut_overlay(hand_overlay)
-	active_overlay_counts.Cut()
-	active_overlays.Cut()
-	action_overlay_zones.Cut()
+/// Mirrors the worn clothing state convention: base name, then _f for the female set, then _dwarf for the dwarf set.
+/datum/sex_remote_context/mage_hand/proc/get_overlay_prefix(mob/living/carbon/human/wearer)
+	var/prefix = "arcyne_binders"
+	var/datum/species/species = wearer.dna?.species
+	if(!species)
+		return prefix
+	if(species.sexes && ((wearer.gender == FEMALE && !species.swap_female_clothes) || (wearer.gender == MALE && species.swap_male_clothes)))
+		prefix += "_f"
+	if(species.custom_clothes && ((species.custom_id || species.id) == SPEC_ID_DWARF))
+		prefix += "_dwarf"
+	return prefix
 
 /datum/sex_remote_context/mage_hand/get_active_overlay_count()
 	var/count = 0
@@ -309,19 +364,105 @@
 		return MAGE_HAND_ZONE_BODY
 	return MAGE_HAND_ZONE_BODY
 
-/datum/sex_remote_context/mage_hand/proc/get_overlay_offset(zone)
+/// Conjures the bind for `zone`, giving the caster a binder to hold it with. Returns TRUE if the target ended up bound.
+/datum/sex_remote_context/mage_hand/proc/try_bind(zone)
+	if(!zone || active_binds[zone] || !is_valid(scene))
+		return FALSE
+	var/mob/living/caster = get_caster()
+	var/mob/living/carbon/remote_target = get_target()
+	if(!caster || !iscarbon(remote_target))
+		return FALSE
+	if(!ensure_binder(caster))
+		return FALSE
+	if(!conjure_bind(zone, remote_target))
+		if(!length(active_binds))
+			dispel_binder()
+		return FALSE
+	add_zone_overlay(zone)
+	return TRUE
+
+/// Applies the mechanical half of a bind. Callers own the overlay and the binder.
+/datum/sex_remote_context/mage_hand/proc/conjure_bind(zone, mob/living/carbon/remote_target)
 	switch(zone)
-		if(MAGE_HAND_ZONE_GROIN)
-			return list("x" = 0, "y" = -7)
-		if(MAGE_HAND_ZONE_CHEST)
-			return list("x" = -5, "y" = 7)
-		if(MAGE_HAND_ZONE_BUTT)
-			return list("x" = 5, "y" = -5)
-		if(MAGE_HAND_ZONE_MOUTH)
-			return list("x" = 0, "y" = 13)
-		if(MAGE_HAND_ZONE_BODY)
-			return list("x" = 0, "y" = 2)
-	return list("x" = 0, "y" = 0)
+		if(MAGE_HAND_ZONE_ARMS)
+			if(remote_target.handcuffed || remote_target.num_hands < 2)
+				return FALSE
+			var/obj/item/restraints/arcyne/shackles = conjure_shackles(zone, remote_target)
+			remote_target.set_handcuffed(shackles)
+			remote_target.update_handcuffed()
+			active_binds[zone] = shackles
+			return TRUE
+		if(MAGE_HAND_ZONE_LEGS)
+			if(remote_target.legcuffed || remote_target.num_legs < 2)
+				return FALSE
+			var/obj/item/restraints/arcyne/shackles = conjure_shackles(zone, remote_target)
+			remote_target.legcuffed = shackles
+			remote_target.add_movespeed_modifier(MOVESPEED_ID_LEGCUFF_SLOWDOWN, multiplicative_slowdown = shackles.legcuff_multiplicative_slowdown)
+			remote_target.update_inv_legcuffed()
+			active_binds[zone] = shackles
+			return TRUE
+		if(MAGE_HAND_ZONE_EYES)
+			remote_target.become_blind(MAGE_HAND_BLIND_TRAIT)
+			active_binds[zone] = TRUE
+			return TRUE
+	return FALSE
+
+/datum/sex_remote_context/mage_hand/proc/conjure_shackles(zone, mob/living/carbon/remote_target)
+	var/obj/item/restraints/arcyne/shackles = new(remote_target)
+	shackles.context_ref = WEAKREF(src)
+	shackles.bind_zone = zone
+	return shackles
+
+/// Undoes one bind. The restraint's own Destroy() reports back through on_bind_lost().
+/datum/sex_remote_context/mage_hand/proc/release_bind(zone)
+	var/bind = active_binds[zone]
+	if(!bind)
+		return
+	active_binds -= zone
+	remove_zone_overlay(zone)
+	if(zone == MAGE_HAND_ZONE_EYES)
+		var/mob/living/remote_target = get_target()
+		remote_target?.cure_blind(MAGE_HAND_BLIND_TRAIT)
+		return
+	if(istype(bind, /obj/item/restraints/arcyne))
+		qdel(bind)
+
+/datum/sex_remote_context/mage_hand/proc/release_all_binds()
+	for(var/zone in active_binds.Copy())
+		release_bind(zone)
+	dispel_binder()
+
+/// Called by a conjured restraint that left the target on its own, most often because they broke out.
+/datum/sex_remote_context/mage_hand/proc/on_bind_lost(zone)
+	if(!zone || !active_binds[zone])
+		return
+	active_binds -= zone
+	remove_zone_overlay(zone)
+	if(!length(active_binds))
+		dispel_binder()
+
+/// Puts a binder in the caster's hand if they aren't already holding one.
+/datum/sex_remote_context/mage_hand/proc/ensure_binder(mob/living/caster)
+	if(binder && !QDELETED(binder))
+		if(binder.loc == caster)
+			return TRUE
+		// It left their hands without telling us. Unravel everything rather than orphan a live binder.
+		dispel_binder()
+	binder = null
+	var/obj/item/arcyne_binders/new_binder = new(caster.drop_location())
+	if(!caster.put_in_hands(new_binder))
+		qdel(new_binder)
+		to_chat(caster, span_warning("I have no free hand to hold the binding with."))
+		return FALSE
+	new_binder.context_ref = WEAKREF(src)
+	binder = new_binder
+	return TRUE
+
+/datum/sex_remote_context/mage_hand/proc/dispel_binder()
+	var/obj/item/arcyne_binders/held_binder = binder
+	binder = null
+	if(held_binder && !QDELETED(held_binder))
+		held_binder.dispel()
 
 /proc/clear_mage_hand_tethers_for(mob/living/caster)
 	if(!caster)

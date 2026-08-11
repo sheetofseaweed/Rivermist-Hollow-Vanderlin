@@ -51,3 +51,9 @@
 	description = "If enabled, horny mobs outside your enabled mob prefs will try to disarm or subdue you instead of damaging you."
 	default_value = TRUE
 	category = "Mobs"
+
+/datum/erp_preference/boolean/auto_clench
+	name = "Auto-Clench In Combat Mode"
+	description = "Automatically resist sex actions performed on you while combat mode is on. Costs stamina each attempt."
+	default_value = FALSE
+	category = "General"

@@ -442,10 +442,49 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define HORNY_MOB_TYPE_LYCANS (1 << 7)
 #define HORNY_MOB_TYPE_LIZARDS (1 << 8)
 #define HORNY_MOB_TYPE_UNDEAD (1 << 9)
-#define HORNY_MOB_TYPE_ALL (HORNY_MOB_TYPE_HUMANOIDS | HORNY_MOB_TYPE_SPIDERS | HORNY_MOB_TYPE_BOG_BUGS | HORNY_MOB_TYPE_TROLLS | HORNY_MOB_TYPE_BEASTS | HORNY_MOB_TYPE_LAMIAS | HORNY_MOB_TYPE_MINOTAURS | HORNY_MOB_TYPE_LYCANS | HORNY_MOB_TYPE_LIZARDS | HORNY_MOB_TYPE_UNDEAD)
+#define HORNY_MOB_TYPE_TENTACLES (1 << 10)
+#define HORNY_MOB_TYPE_MANEATERS (1 << 11)
+#define HORNY_MOB_TYPE_ALL (HORNY_MOB_TYPE_HUMANOIDS | HORNY_MOB_TYPE_SPIDERS | HORNY_MOB_TYPE_BOG_BUGS | HORNY_MOB_TYPE_TROLLS | HORNY_MOB_TYPE_BEASTS | HORNY_MOB_TYPE_LAMIAS | HORNY_MOB_TYPE_MINOTAURS | HORNY_MOB_TYPE_LYCANS | HORNY_MOB_TYPE_LIZARDS | HORNY_MOB_TYPE_UNDEAD | HORNY_MOB_TYPE_TENTACLES | HORNY_MOB_TYPE_MANEATERS)
 
 #define MAGE_HAND_ZONE_GROIN "groin"
 #define MAGE_HAND_ZONE_CHEST "chest"
 #define MAGE_HAND_ZONE_BUTT "butt"
 #define MAGE_HAND_ZONE_MOUTH "mouth"
 #define MAGE_HAND_ZONE_BODY "body"
+
+/// Bind zones. Unlike the zones above these are conjured by hand, not driven by a running action.
+#define MAGE_HAND_ZONE_ARMS "arms"
+#define MAGE_HAND_ZONE_LEGS "legs"
+#define MAGE_HAND_ZONE_EYES "eyes"
+
+/// Every Mage Hand mob overlay lives here, stated like worn clothing.
+#define MAGE_HAND_OVERLAY_ICON 'modular_rmh/icons/mob/overlays/mage_hands.dmi'
+/// Blindness source held by a conjured blindfold.
+#define MAGE_HAND_BLIND_TRAIT "mage_hand_blindfold"
+
+/// Mage Hand zone to icon_state suffix. A zone missing from this list draws nothing.
+GLOBAL_LIST_INIT(mage_hand_zone_sprites, list(
+	MAGE_HAND_ZONE_GROIN = "masturbate",
+	MAGE_HAND_ZONE_CHEST = "tittwister",
+	MAGE_HAND_ZONE_BUTT = "cheekslap",
+	MAGE_HAND_ZONE_MOUTH = "blindfold",
+	MAGE_HAND_ZONE_BODY = "tittwister",
+	MAGE_HAND_ZONE_ARMS = "shacklesup",
+	MAGE_HAND_ZONE_LEGS = "shacklesdown",
+	MAGE_HAND_ZONE_EYES = "blindfold",
+))
+
+/// Deciseconds each `start_` state runs before handing off to its looping state. Must equal the sheet's summed frame delays.
+GLOBAL_LIST_INIT(mage_hand_start_durations, list(
+	"masturbate" = 9,
+	"tittwister" = 12,
+	"cheekslap" = 12,
+	"blindfold" = 9,
+	"shacklesup" = 9,
+	"shacklesdown" = 9,
+))
+
+/// Clench roll outcomes, ordered worst to best for the clencher.
+#define CLENCH_RESULT_FAIL 0
+#define CLENCH_RESULT_INTERRUPT 1
+#define CLENCH_RESULT_STOP 2

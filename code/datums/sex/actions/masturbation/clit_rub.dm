@@ -116,7 +116,7 @@
 		user.visible_message(spanify_force("[user] [action_text] [target]'s clit..."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 
-	perform_sex_action(user, target, arousal_amt, pain_amt, orgasm_amt)
+	perform_sex_action(target, user, arousal_amt, pain_amt, orgasm_amt)
 	handle_passive_ejaculation(target)
 
 /datum/sex_action/masturbate/other/clit_rub/on_finish(mob/living/user, mob/living/target)

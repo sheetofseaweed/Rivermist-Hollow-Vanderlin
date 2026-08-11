@@ -132,6 +132,8 @@
 	var/hit_stunned_targets = FALSE
 
 	var/woundclass = null
+	/// Percent chance a limb hit is pulled to the chest. 0 disables. Magic uses it to reach lethal zones.
+	var/chest_bias = 0
 	var/embedchance = 0
 	var/obj/item/dropped = null //Holds reference to object drop/embed. DO NOT SET TO TYPEPATH
 	var/ammo_type
@@ -362,6 +364,8 @@
 
 	var/distance = get_dist(T, starting) // Get the distance between the turf shot from and the mob we hit and use that for the calculations.
 	def_zone = ran_zone(def_zone, max(100-(7*distance), 5)) //Lower accurancy/longer range tradeoff. 7 is a balanced number to use.
+	if(chest_bias && prob(chest_bias) && !(def_zone in list(BODY_ZONE_HEAD, BODY_ZONE_CHEST)))
+		def_zone = BODY_ZONE_CHEST
 
 	return process_hit(T, select_target(T, A))
 

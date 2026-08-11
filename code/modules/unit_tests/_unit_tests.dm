@@ -120,6 +120,7 @@
 #include "roguetown_clothing.dm"
 #include "runtime_gc_regressions.dm"
 #include "runtime_regressions.dm"
+#include "sex_clench.dm"
 #include "sex_item_actions.dm"
 #include "sex_reach.dm"
 #include "sex_scene.dm"

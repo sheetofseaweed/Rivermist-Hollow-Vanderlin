@@ -69,6 +69,7 @@
 	damage = 50
 	damage_type = BURN
 	nodamage = FALSE
+	woundclass = BCLASS_BURN
 	flag = "magic"
 	hitsound = 'sound/fireball.ogg'
 	aoe_range = 0

@@ -17,6 +17,9 @@
 /datum/ai_behavior/horny/simple_mob/spider
 	// Spider-family mobs can wrap prone targets in silk before starting.
 
+/datum/ai_behavior/horny/simple_mob/tentacle
+	// Tentacle mobs pin and resin-bind prone targets before starting.
+
 /datum/ai_behavior/horny/human
 	// Human-type mobs add prep work before the shared action flow.
 
@@ -147,6 +150,9 @@
 		controller.clear_blackboard_key(BB_HORNY_SEEK_START_TIME)
 
 	if(portal_light)
+		controller.set_blackboard_key(BB_HORNY_KNOCKDOWN_NEED, FALSE)
+		knockdown_need = FALSE
+	else if(target_living.buckled)
 		controller.set_blackboard_key(BB_HORNY_KNOCKDOWN_NEED, FALSE)
 		knockdown_need = FALSE
 	else if(target_living.body_position != LYING_DOWN)
@@ -445,6 +451,24 @@
 	var/has_vagina = !!basic_mob.getorganslot(ORGAN_SLOT_VAGINA)
 	var/target_has_penis = !!target_living.getorganslot(ORGAN_SLOT_PENIS)
 	var/target_has_vagina = !!target_living.getorganslot(ORGAN_SLOT_VAGINA)
+	if(basic_mob.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_TENTACLES)
+		if(has_penis)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/tentacle, 2)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle, 2)
+			if(target_has_vagina)
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/tentacle, 3)
+		if(target_has_penis)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk, 2)
+		return
+	if(basic_mob.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_MANEATERS)
+		if(has_penis)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/tentacle/maneater, 2)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle/maneater, 2)
+			if(target_has_vagina)
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater, 3)
+		if(target_has_penis)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk/maneater, 2)
+		return
 
 	if(has_penis)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex, 2)
@@ -528,6 +552,10 @@
 			return "[basic_mob] slams into [target_living] and pins [target_living.p_them()] in place!"
 		if(HORNY_MOB_TYPE_HUMANOIDS)
 			return "[basic_mob] wrestles [target_living] into a rough hold!"
+		if(HORNY_MOB_TYPE_TENTACLES)
+			return "[basic_mob] coils around [target_living]'s limbs and pins [target_living.p_them()] beneath its weight!"
+		if(HORNY_MOB_TYPE_MANEATERS)
+			return "[basic_mob] knots its thorny vines around [target_living] and pins [target_living.p_them()] against the loam!"
 	return "[basic_mob] clamps onto [target_living], holding [target_living.p_them()] in place!"
 
 /datum/ai_behavior/horny/simple_mob/proc/promote_existing_pull_to_hold(mob/living/basic_mob, mob/living/target_living)
@@ -581,7 +609,7 @@
 	return TRUE
 
 /datum/ai_behavior/horny/simple_mob/proc/wait_for_knockdown(mob/living/basic_mob, mob/living/target_living)
-	if(target_living.body_position == LYING_DOWN)
+	if(target_living.buckled || target_living.body_position == LYING_DOWN)
 		return FALSE
 
 	if(target_living.pulledby == basic_mob)
@@ -800,6 +828,59 @@
 		return TRUE
 
 	qdel(webbing)
+	return FALSE
+
+/datum/ai_behavior/horny/simple_mob/tentacle/handle_target_prep(datum/ai_controller/controller, mob/living/basic_mob, mob/living/target_living, datum/sex_scene_controller/scene_controller)
+	if(get_target_portal_light(controller, basic_mob, target_living))
+		return FALSE
+	if(!ishuman(target_living) || !basic_mob.Adjacent(target_living))
+		return FALSE
+	if(wait_for_knockdown(basic_mob, target_living))
+		return TRUE
+	if(ensure_target_hold(controller, basic_mob, target_living))
+		return TRUE
+	if(length(scene_controller.get_active_actions()))
+		return FALSE
+
+	var/mob/living/carbon/human/human_target = target_living
+	if(!controller.blackboard[BB_HORNY_INITIAL_STRIP_DONE])
+		controller.set_blackboard_key(BB_HORNY_INITIAL_STRIP_DONE, TRUE)
+		if(pick_strip_target(basic_mob, human_target, allow_regular_clothes = TRUE))
+			return strip_human_target(basic_mob, human_target)
+
+	var/has_valid_action = !isnull(select_horny_ai_act(controller, basic_mob, target_living, scene_controller))
+	if((!has_valid_action || prob(20)) && strip_human_target(basic_mob, human_target))
+		return TRUE
+	if(tie_human_target(basic_mob, human_target))
+		return TRUE
+	return FALSE
+
+/datum/ai_behavior/horny/simple_mob/tentacle/proc/tie_human_target(mob/living/basic_mob, mob/living/carbon/human/human_target)
+	if(human_target.body_position != LYING_DOWN || human_target.get_active_held_item())
+		return FALSE
+	if(!basic_mob.Adjacent(human_target) || human_target.get_num_arms(TRUE) <= 1 || human_target.handcuffed)
+		return FALSE
+
+	basic_mob.visible_message(
+		span_danger("[basic_mob] starts winding sticky resin around [human_target]'s wrists!"),
+		span_danger("[basic_mob] starts winding sticky resin around my wrists!"),
+		span_hear("I hear wet strands stretching tight."),
+	)
+	if(!do_after(basic_mob, 1 SECONDS, human_target))
+		return FALSE
+	if(QDELETED(human_target) || !basic_mob.Adjacent(human_target) || human_target.handcuffed || human_target.body_position != LYING_DOWN)
+		return FALSE
+
+	var/obj/item/rope/spider_silk/tentacle_resin/restraints = new
+	if(restraints.apply_cuffs(human_target))
+		human_target.visible_message(
+			span_danger("[basic_mob] binds [human_target]'s wrists in clinging resin!"),
+			span_userdanger("[basic_mob] binds my wrists in clinging resin!"),
+			span_hear("I hear resin tightening around someone's wrists."),
+		)
+		return TRUE
+
+	qdel(restraints)
 	return FALSE
 
 /datum/ai_behavior/horny/human/handle_target_prep(datum/ai_controller/controller, mob/living/basic_mob, mob/living/target_living, datum/sex_scene_controller/scene_controller)
