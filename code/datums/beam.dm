@@ -236,6 +236,8 @@
 	. += emissive_overlay
 
 /obj/effect/ebeam/Destroy()
+	// Segments can die without the beam (turf wipes, area clears), so unlink or the list hard-dels us
+	owner?.elements -= src
 	owner = null
 	return ..()
 

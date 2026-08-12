@@ -12,6 +12,8 @@
 	var/idle_timeout = POCKET_DEFAULT_IDLE_TIMEOUT
 	var/persistence_mode = POCKET_PERSISTENCE_NONE
 	var/state = POCKET_STATE_HIBERNATING
+	/// TRUE while our template is loading. The loader sleeps, so teardown must not wipe turfs it is still filling.
+	var/loading = FALSE
 	var/last_touched = 0
 	var/datum/turf_reservation/reservation
 	var/turf/load_turf
@@ -181,7 +183,14 @@
 	var/load_x = load_turf?.x
 	var/load_y = load_turf?.y
 	var/load_z = load_turf?.z
-	if(!load_turf || !template.load(load_turf))
+	// Touch before loading too: the loader sleeps, and a stale timestamp reads as idle while it runs
+	touch()
+	var/loaded = FALSE
+	if(load_turf)
+		loading = TRUE
+		loaded = template.load(load_turf)
+		loading = FALSE
+	if(!loaded)
 		load_turf = null
 		release_reservation()
 		return FALSE
@@ -874,6 +883,8 @@
 	return html.Join()
 
 /datum/pocket_dimension/proc/hibernate()
+	if(loading)
+		return FALSE
 	if(is_hibernating())
 		return TRUE
 	if(has_occupants())
@@ -885,6 +896,8 @@
 	return TRUE
 
 /datum/pocket_dimension/proc/process_idle_lifecycle()
+	if(loading)
+		return FALSE
 	if(!idle_timeout || world.time < last_touched + idle_timeout)
 		return FALSE
 	if(has_occupants())
