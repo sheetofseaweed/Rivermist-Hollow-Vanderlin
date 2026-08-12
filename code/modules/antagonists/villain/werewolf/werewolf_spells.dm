@@ -1,7 +1,8 @@
 /datum/action/cooldown/spell/undirected/howl
 	name = "Howl"
-	desc = "!"
+	desc = "Howl to the hidden moon to communicate with fellow wolves. Those versed in Beast Tongue may also understand you."
 	button_icon_state = "howl"
+
 	has_visual_effects = FALSE
 	antimagic_flags = NONE
 	spell_flags = SPELL_IGNORE_SPELLBLOCK
@@ -10,46 +11,114 @@
 	cooldown_time = 1 MINUTES
 
 	var/message
-	var/use_language = FALSE
+	var/use_language = TRUE
+	var/howl_distance_limit = 500
+
+	var/list/howl_sounds = list(
+		'sound/vo/mobs/wwolf/howl (1).ogg',
+		'sound/vo/mobs/wwolf/howl (2).ogg',
+	)
+
+	var/list/howl_sounds_far = list(
+		'sound/vo/mobs/wwolf/howldist (1).ogg',
+		'sound/vo/mobs/wwolf/howldist (2).ogg',
+	)
+
 
 /datum/action/cooldown/spell/undirected/howl/before_cast(atom/cast_on)
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)
 		return
 
-	message = browser_input_text(owner, "Howl at the hidden moon...", "MOONCURSED", multiline = TRUE)
+	message = browser_input_text(
+		owner,
+		"Howl at the hidden moon...",
+		"MOONCURSED",
+		multiline = TRUE,
+	)
+
 	if(QDELETED(src) || QDELETED(owner) || !can_cast_spell())
 		return . | SPELL_CANCEL_CAST
-
 	if(!message)
 		reset_spell_cooldown()
 		return . | SPELL_CANCEL_CAST
 
+
 /datum/action/cooldown/spell/undirected/howl/cast(atom/cast_on)
 	. = ..()
 
-	// sound played for owner
-	playsound(owner, pick('sound/vo/mobs/wwolf/howl (1).ogg', 'sound/vo/mobs/wwolf/howl (2).ogg'), 75, TRUE)
+	if(!owner || !message)
+		return
 
-	var/datum/antagonist/werewolf/werewolf_antag = IS_WEREWOLF(owner)
-	var/howler_name = werewolf_antag ? werewolf_antag.wolfname : owner.real_name
+	// Normal/close howl for the caster.
+	playsound(
+		owner,
+		pick(howl_sounds),
+		75,
+		TRUE,
+	)
 
-	to_chat(owner, span_boldannounce("I howl to the hidden moon: \"[message]\""))
+	var/datum/antagonist/werewolf/werewolf_antag
+	if(owner.mind)
+		werewolf_antag = owner.mind.has_antag_datum(/datum/antagonist/werewolf)
+
+	var/howler_name = owner.real_name
+	if(werewolf_antag)
+		howler_name = werewolf_antag.wolfname
+
+	// The caster sees their own howl.
+	to_chat(
+		owner,
+		span_boldannounce("I howl to the hidden moon: \"[message]\""),
+	)
 
 	for(var/mob/player as anything in (GLOB.player_list - owner))
 		if(!player.mind)
 			continue
+
 		if(player.stat == DEAD)
 			continue
 
-		// Announcement to other werewolves (and anyone else who has beast language somehow)
-		if(player.mind.has_antag_datum(/datum/antagonist/werewolf) || (use_language && player.has_language(/datum/language/beast)))
-			to_chat(player, span_boldannounce("[howler_name] howls to the hidden moon: \"[message]\""))
+		if(isbrain(player))
+			continue
 
-		if(get_dist(player, owner) > 7)
-			player.playsound_local(get_turf(player), pick('sound/vo/mobs/wwolf/howldist (1).ogg','sound/vo/mobs/wwolf/howldist (2).ogg'), 50, FALSE, pressure_affected = FALSE)
+		// Werewolf understand it too
+		var/can_understand_howl = FALSE
 
-	owner.log_message("howls: [message] (WEREWOLF)", LOG_ATTACK)
+		if(player.mind.has_antag_datum(/datum/antagonist/werewolf))
+			can_understand_howl = TRUE
+
+		else if(use_language && player.has_language(/datum/language/beast))
+			can_understand_howl = TRUE
+
+		if(can_understand_howl)
+			to_chat(
+				player,
+				span_boldannounce("[howler_name] howls to the hidden moon: \"[message]\""),
+			)
+
+		// Distant physical sound should not travel between Z-levels.
+		if(player.z != owner.z)
+			continue
+
+		var/player_distance = get_dist(player, owner)
+
+		if(player_distance > 7 && player_distance <= howl_distance_limit)
+			player.playsound_local(
+				get_turf(player),
+				pick(howl_sounds_far),
+				50,
+				FALSE,
+				pressure_affected = FALSE,
+			)
+
+	owner.log_message(
+		"howls: [message] (WEREWOLF)",
+		LOG_GAME,
+	)
+
+	// Avoid keeping the previous text around between casts.
+	message = null
 
 /datum/action/cooldown/spell/undirected/claws
 	name = "Lupine Claws"
