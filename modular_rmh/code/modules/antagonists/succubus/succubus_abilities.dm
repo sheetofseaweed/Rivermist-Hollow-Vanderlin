@@ -340,6 +340,10 @@
 	desc = span_green("A warm fondness settles over me like perfume...")
 	timer = 10 MINUTES
 
+/datum/stress_event/succubus_charm/on_remove(mob/living/user)
+	. = ..()
+	to_chat(user, span_notice("The glamour finally slips away. I remember how this made me feel, but no clear detail remains of what happened to me - or who did it."))
+
 /datum/action/cooldown/spell/succubus_charm
 	name = "Charm"
 	desc = "Wrap a target's heart in warmth toward you. A nudge of disposition, nothing more - the rest is craft."
@@ -383,7 +387,7 @@
 	succubus_antag.adjust_essence(-SUCCUBUS_COST_CHARM)
 	cast_on.add_stress(/datum/stress_event/succubus_charm)
 	var/mob/living/caster = owner
-	to_chat(cast_on, span_love("A warm fondness for [caster.real_name] settles over me like perfume."))
+	to_chat(cast_on, span_love("A warm fondness for [caster.real_name] settles over me like perfume. My thoughts grow pleasantly hazy, and the details of this moment already feel difficult to hold."))
 	to_chat(owner, span_love("[cast_on.real_name]'s heart softens toward me."))
 
 // --- Beguiling Doubles: tier-2 visual misdirection ----------------------------------------------

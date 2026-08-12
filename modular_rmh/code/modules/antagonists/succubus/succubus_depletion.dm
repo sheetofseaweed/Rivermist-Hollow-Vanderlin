@@ -4,29 +4,89 @@
 	id = "succubus_depletion"
 	status_type = STATUS_EFFECT_UNIQUE
 	duration = SUCCUBUS_DEPLETION_TOUCHED_DURATION
-	alert_type = /atom/movable/screen/alert/status_effect/debuff/succubus_depletion
+	alert_type = null
 	effectedstats = list(STAT_ENDURANCE = -1)
 	remove_on_fullheal = TRUE
 	var/stage = SUCCUBUS_DEPLETION_SOUL_TOUCHED
-
-/datum/status_effect/debuff/succubus_depletion/on_creation(mob/living/new_owner, duration_override, ...)
-	. = ..()
-	update_alert()
+	/// Highest stage whose symptoms the victim and observers can currently recognize.
+	var/revealed_stage = 0
+	/// One stoppable manifestation timer per newly reached stage, keyed by stage number as text.
+	var/list/reveal_timers = list()
 
 /datum/status_effect/debuff/succubus_depletion/on_apply()
 	. = ..()
 	if(!.)
 		return FALSE
-	to_chat(owner, span_warning("The sweetness ebbs, leaving a hollow hunger in its wake."))
+	queue_stage_reveal(stage)
 	return TRUE
 
+/datum/status_effect/debuff/succubus_depletion/Destroy()
+	cancel_reveal_timers()
+	return ..()
+
 /datum/status_effect/debuff/succubus_depletion/get_examine_text(mob/user, list/pronouns)
-	switch(stage)
+	if(!revealed_stage)
+		return null
+	switch(revealed_stage)
 		if(SUCCUBUS_DEPLETION_SOUL_DRAINED)
 			return span_warning("SUBJECTPRONOUN looks unusually pale and tired.")
 		if(SUCCUBUS_DEPLETION_HOLLOWED)
 			return span_danger("SUBJECTPRONOUN looks deathly pale; a faint shiver runs through cold skin.")
 	return null
+
+/// Starts a separate delay for each newly reached severity so later harvests never identify themselves immediately.
+/datum/status_effect/debuff/succubus_depletion/proc/queue_stage_reveal(stage_to_reveal)
+	if(stage_to_reveal <= revealed_stage)
+		return
+	var/stage_key = "[stage_to_reveal]"
+	if(reveal_timers[stage_key])
+		return
+	reveal_timers[stage_key] = addtimer(CALLBACK(src, PROC_REF(reveal_stage_after_delay), stage_to_reveal), SUCCUBUS_DEPLETION_REVEAL_DELAY, TIMER_STOPPABLE)
+
+/datum/status_effect/debuff/succubus_depletion/proc/reveal_stage_after_delay(stage_to_reveal)
+	reveal_timers -= "[stage_to_reveal]"
+	reveal_condition(FALSE, stage_to_reveal)
+
+/datum/status_effect/debuff/succubus_depletion/proc/cancel_reveal_timers()
+	for(var/stage_key in reveal_timers)
+		var/timer_id = reveal_timers[stage_key]
+		deltimer(timer_id)
+	reveal_timers.Cut()
+
+/// Makes the symptoms, alert, and diagnosis visible. Holy diagnosis may force this before the normal delay.
+/datum/status_effect/debuff/succubus_depletion/proc/reveal_condition(holy_diagnosis = FALSE, stage_to_reveal)
+	if(!owner)
+		return FALSE
+
+	if(holy_diagnosis || isnull(stage_to_reveal))
+		stage_to_reveal = stage
+	if(holy_diagnosis)
+		cancel_reveal_timers()
+	stage_to_reveal = min(stage_to_reveal, stage)
+	if(stage_to_reveal <= revealed_stage)
+		return FALSE
+
+	revealed_stage = stage_to_reveal
+
+	if(!linked_alert)
+		var/atom/movable/screen/alert/status_effect/debuff/succubus_depletion/depletion_alert = owner.throw_alert(id, /atom/movable/screen/alert/status_effect/debuff/succubus_depletion)
+		if(depletion_alert)
+			depletion_alert.attached_effect = src
+			linked_alert = depletion_alert
+	update_alert()
+
+	if(holy_diagnosis)
+		to_chat(owner, span_userdanger("Holy light lays bare an unnatural weakness within me before its signs could surface on their own."))
+		return TRUE
+
+	switch(revealed_stage)
+		if(SUCCUBUS_DEPLETION_SOUL_TOUCHED)
+			to_chat(owner, span_warning("Only now, minutes after the sweetness faded, does an unnatural hunger settle into my bones."))
+		if(SUCCUBUS_DEPLETION_SOUL_DRAINED)
+			to_chat(owner, span_warning("Only now, minutes after the encounter, does the hunger turn sharp. My limbs feel leaden, and warmth flees my skin."))
+		if(SUCCUBUS_DEPLETION_HOLLOWED)
+			to_chat(owner, span_userdanger("Only now, long after the encounter, do I feel what was taken from me. I am achingly, ravenously hollow."))
+	return TRUE
 
 /datum/status_effect/debuff/succubus_depletion/proc/add_harvest()
 	set_stage(min(stage + 1, SUCCUBUS_DEPLETION_MAX_STAGE))
@@ -47,8 +107,6 @@
 				STAT_CONSTITUTION = -1,
 				STAT_PERCEPTION = -1,
 			)
-			if(stage > previous_stage)
-				to_chat(owner, span_warning("The hunger returns sharper than before. My limbs feel leaden, and warmth flees my skin."))
 		if(SUCCUBUS_DEPLETION_HOLLOWED)
 			duration = world.time + SUCCUBUS_DEPLETION_HOLLOWED_DURATION
 			initial_duration = SUCCUBUS_DEPLETION_HOLLOWED_DURATION
@@ -58,8 +116,10 @@
 				STAT_STRENGTH = -1,
 				STAT_PERCEPTION = -1,
 			)
-			if(stage > previous_stage)
-				to_chat(owner, span_userdanger("Something vital tears loose. I feel achingly, ravenously hollow."))
+	if(stage > previous_stage)
+		queue_stage_reveal(stage)
+	else if(stage < revealed_stage)
+		revealed_stage = stage
 	owner.set_stat_modifier("[id]", effectedstats)
 	update_alert()
 
@@ -88,7 +148,7 @@
 /datum/status_effect/debuff/succubus_depletion/proc/update_alert()
 	if(!linked_alert)
 		return
-	switch(stage)
+	switch(revealed_stage)
 		if(SUCCUBUS_DEPLETION_SOUL_TOUCHED)
 			linked_alert.name = "Soul-Touched"
 			linked_alert.desc = "A sweet encounter left behind an unnatural hunger."
@@ -145,15 +205,24 @@
 
 /mob/living/carbon/human/proc/get_succubus_depletion_diagnosis()
 	var/datum/status_effect/debuff/succubus_depletion/depletion = has_status_effect(/datum/status_effect/debuff/succubus_depletion)
-	if(!depletion || depletion.stage < SUCCUBUS_DEPLETION_SOUL_DRAINED)
+	if(!depletion || depletion.revealed_stage < SUCCUBUS_DEPLETION_SOUL_DRAINED)
 		return null
 
-	if(depletion.stage >= SUCCUBUS_DEPLETION_HOLLOWED)
+	if(depletion.revealed_stage >= SUCCUBUS_DEPLETION_HOLLOWED)
 		return "The deathly pallor, cold skin, and profound weakness do not match ordinary hunger. Their vitality has been unnaturally leeched away."
 	return "The pallor and fatigue are too severe for ordinary hunger. Something has unnaturally depleted their vitality."
 
 /mob/living/carbon/human/proc/apply_succubus_blessing(mob/living/blesser)
 	var/changed = FALSE
+	var/datum/status_effect/debuff/succubus_depletion/depletion = has_status_effect(/datum/status_effect/debuff/succubus_depletion)
+	var/depletion_was_revealed = depletion?.reveal_condition(TRUE)
+	if(depletion_was_revealed)
+		changed = TRUE
+		if(blesser)
+			var/depletion_diagnosis = get_succubus_depletion_diagnosis()
+			if(depletion_diagnosis)
+				to_chat(blesser, span_warning(depletion_diagnosis))
+
 	var/datum/status_effect/succubus_brand/brand = has_status_effect(/datum/status_effect/succubus_brand)
 	if(brand?.reveal())
 		changed = TRUE
@@ -162,7 +231,6 @@
 			span_userdanger("Holy light bites into my skin as a dark, thorn-ringed brand blooms [brand.brand_location]!"),
 		)
 
-	var/datum/status_effect/debuff/succubus_depletion/depletion = has_status_effect(/datum/status_effect/debuff/succubus_depletion)
 	if(brand && !brand.light_blessing_used && depletion?.relieve_one_stage())
 		brand.light_blessing_used = TRUE
 		changed = TRUE
