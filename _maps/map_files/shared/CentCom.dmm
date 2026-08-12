@@ -230,6 +230,9 @@
 	},
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/catacombs_church)
+"bd" = (
+/turf/closed/wall/mineral/decostone/cand,
+/area/indoors/succubus_lair)
 "be" = (
 /obj/structure/closet/crate/drawer,
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -283,6 +286,14 @@
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood1,
 /area/indoors/town/rmh/manor)
+"bn" = (
+/obj/effect/decal/edge{
+	dir = 9;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/red,
+/turf/open/floor/wood,
+/area/indoors/succubus_lair)
 "bo" = (
 /obj/structure/door/swing,
 /turf/open/floor/ruinedwood/spiral,
@@ -380,6 +391,14 @@
 /obj/item/weapon/surgery/scalpel,
 /turf/open/floor/ruinedwood/alizeria/tiles/wood3,
 /area/indoors/town/rmh/manor/basement)
+"bF" = (
+/obj/structure/fluff/pillow/red{
+	dir = 1;
+	pixel_y = 0
+	},
+/obj/structure/carpet,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "bG" = (
 /obj/structure/essence_node{
 	essence_type = /datum/thaumaturgical_essence/order
@@ -808,6 +827,11 @@
 /obj/structure/mannequin/male/female,
 /turf/open/floor/wood,
 /area)
+"ds" = (
+/obj/structure/stairs,
+/obj/structure/fluff/railing/wood/west,
+/turf/open/floor/ruinedwood,
+/area/indoors/succubus_lair)
 "dt" = (
 /obj/structure/fluff/railing/corner/south_west,
 /turf/open/floor/tile/bfloorz,
@@ -834,6 +858,13 @@
 "dB" = (
 /turf/open/floor/naturalstone,
 /area/outdoors/woods_safe)
+"dC" = (
+/obj/structure/stairs/stone/church{
+	dir = 1
+	},
+/obj/item/natural/cloth,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "dD" = (
 /obj/structure/table/wood/fancy/red,
 /obj/item/clothing/armor/plate/orc/warlord,
@@ -1684,7 +1715,7 @@
 "hn" = (
 /obj/structure/carpet/red,
 /turf/open/floor/wood,
-/area/indoors/town/rmh/manor/bath)
+/area/indoors/succubus_lair)
 "hp" = (
 /obj/structure/mannequin/male,
 /obj/item/clothing/shoes/simpleshoes/buckle,
@@ -1833,6 +1864,11 @@
 /obj/item/natural/cloth,
 /turf/open/water/bath,
 /area/indoors/town/rmh/manor/bath)
+"ia" = (
+/obj/structure/stairs/maskstairs,
+/obj/structure/curtain/magenta,
+/turf/open/floor/concrete,
+/area/indoors/succubus_lair)
 "ib" = (
 /obj/structure/chair/wood/alt/fancy/chair4{
 	dir = 8
@@ -1916,6 +1952,23 @@
 /obj/item/natural/rock,
 /turf/open/floor/dirt,
 /area/outdoors/woods_safe)
+"iu" = (
+/obj/effect/lily_petal/two,
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 10
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
+"iw" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/red,
+/obj/structure/carpet/purple,
+/turf/open/floor/wood,
+/area/indoors/succubus_lair)
 "ix" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10;
@@ -2010,6 +2063,9 @@
 /obj/item/clothing/armor/chainmail/hauberk,
 /turf/open/floor/carpet,
 /area/indoors)
+"iR" = (
+/turf/closed/wall/mineral/decorstone,
+/area/indoors/succubus_lair)
 "iS" = (
 /obj/structure/table/wood/large/corner_new{
 	dir = 6;
@@ -2017,6 +2073,19 @@
 	},
 /turf/open/floor/cobblerock,
 /area)
+"iV" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
+"iW" = (
+/obj/structure/stairs,
+/obj/structure/fluff/railing/wood/east,
+/turf/open/floor/ruinedwood,
+/area/indoors/succubus_lair)
 "iX" = (
 /obj/structure/flora/starfish,
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -2066,6 +2135,10 @@
 	dir = 1
 	},
 /area/overlord_lair)
+"jk" = (
+/obj/structure/carpet/red,
+/turf/open/floor/wood,
+/area/indoors/town/rmh/manor/bath)
 "jl" = (
 /obj/structure/fluff/pillow{
 	dir = 1;
@@ -2176,12 +2249,31 @@
 	},
 /turf/open/floor/church/rust,
 /area/indoors/town/rmh/manor)
+"jM" = (
+/obj/structure/chair/bench/couchamagenta,
+/obj/effect/decal/carpet/kover_purple{
+	pixel_x = 25;
+	pixel_y = -10
+	},
+/turf/open/floor/tile/harem2,
+/area/indoors/succubus_lair)
 "jP" = (
 /obj/structure/stairs/stone{
 	dir = 1
 	},
 /turf/open/floor/carpet,
 /area/overlord_lair)
+"jQ" = (
+/obj/effect/decal/edge_corner{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 6;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "jT" = (
 /obj/structure/hotspring/border/seven,
 /obj/structure/bridge{
@@ -2345,6 +2437,12 @@
 /obj/structure/bed/hay,
 /turf/open/floor/naturalstone,
 /area)
+"kD" = (
+/obj/structure/fluff/pillow/magenta{
+	pixel_x = 7
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "kF" = (
 /obj/effect/landmark/vteleportsending,
 /turf/open/floor/church/purple,
@@ -2417,6 +2515,20 @@
 /obj/effect/falling_sakura,
 /turf/open/floor/dirt/road,
 /area/outdoors)
+"kW" = (
+/obj/structure/chair/bench/couchamagenta,
+/obj/effect/decal/carpet/kover_purple{
+	pixel_x = 16;
+	pixel_y = -2
+	},
+/obj/structure/fluff/pillow/magenta{
+	pixel_x = 1;
+	layer = 3.1;
+	dir = 8
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/harem2,
+/area/indoors/succubus_lair)
 "kX" = (
 /obj/structure/carpet/cyan,
 /turf/open/floor/tile/bfloorz,
@@ -2547,12 +2659,29 @@
 	},
 /turf/open/floor/wood,
 /area/indoors)
+"lw" = (
+/obj/effect/lily_petal/three,
+/obj/item/natural/cloth,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
+"lx" = (
+/obj/structure/carpet,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "lz" = (
 /obj/machinery/light/fueled/hearth{
 	pixel_y = 4
 	},
 /turf/open/floor/concrete,
 /area/under/rmh_dungeon/catacombs_church)
+"lB" = (
+/obj/structure/flora/grass/crawlvines{
+	dir = 9
+	},
+/turf/closed/wall/mineral/wooddark/deco{
+	dir = 8
+	},
+/area/indoors/succubus_lair)
 "lC" = (
 /obj/effect/decal/edge{
 	dir = 9;
@@ -2638,6 +2767,11 @@
 	},
 /turf/open/floor/snow/patchy,
 /area/outdoors/exposed/rmh/manorgarri)
+"md" = (
+/obj/structure/fluff/pillow,
+/obj/structure/carpet,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "me" = (
 /obj/structure/table/map,
 /obj/structure/vampire/scryingorb{
@@ -2894,6 +3028,9 @@
 /obj/item/clothing/armor/plate/blkknight,
 /turf/open/floor/carpet,
 /area/indoors)
+"nb" = (
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "nc" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
@@ -3145,6 +3282,10 @@
 	},
 /turf/open/floor/tile/bfloorz,
 /area/indoors/town/rmh/manor/bath)
+"oj" = (
+/obj/structure/window/harem1,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "ok" = (
 /obj/structure/fluff/railing/border,
 /obj/effect/decal/edge_corner{
@@ -3153,6 +3294,19 @@
 	},
 /turf/open/floor/cobble,
 /area/outdoors/exposed/rmh/manorgarri)
+"ol" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/machinery/light/fueled/wallfire/candle/l,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "on" = (
 /obj/structure/fluff/walldeco/customflag{
 	name = "rivermist hollow flag";
@@ -3259,6 +3413,11 @@
 /obj/machinery/light/fueled/firebowl/standing,
 /turf/open/floor/carpet,
 /area/indoors)
+"oQ" = (
+/obj/structure/flora/starfish,
+/obj/machinery/light/fueled/wallfire/candle/l,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "oR" = (
 /obj/structure/mannequin/male,
 /obj/item/clothing/shoes/simpleshoes/buckle,
@@ -3280,6 +3439,18 @@
 	},
 /turf/open/floor/dirt/road,
 /area/outdoors)
+"oW" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 9;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "oX" = (
 /mob/living/simple_animal/hostile/retaliate/wolf,
 /turf/open/floor/dirt/road,
@@ -3450,6 +3621,13 @@
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/manor)
+"pt" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "pu" = (
 /obj/structure/stairs/stone/church{
 	dir = 1
@@ -3634,7 +3812,7 @@
 "qk" = (
 /obj/structure/carpet/purple,
 /turf/open/floor/wood,
-/area/indoors/town/rmh/manor/bath)
+/area/indoors/succubus_lair)
 "ql" = (
 /obj/structure/door/fancy{
 	name = "main hall"
@@ -3646,6 +3824,10 @@
 	},
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/manor)
+"qm" = (
+/obj/structure/window/harem2,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "qo" = (
 /obj/structure/table/wood/reinf_long{
 	dir = 8
@@ -3966,6 +4148,18 @@
 /obj/structure/carpet/cyan,
 /turf/open/floor/church,
 /area/indoors/town/rmh/manor)
+"rD" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "rE" = (
 /obj/structure/hotspring/border/eight,
 /obj/effect/falling_sakura,
@@ -3988,6 +4182,18 @@
 	},
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/manor/bath)
+"rK" = (
+/obj/structure/fluff/pillow/magenta{
+	dir = 8;
+	pixel_x = -10;
+	pixel_y = 1
+	},
+/obj/structure/shisha/hookah{
+	pixel_x = 14;
+	pixel_y = 1
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "rL" = (
 /obj/effect/decal/cobblerockedge{
 	dir = 5
@@ -4029,6 +4235,17 @@
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood24,
 /area/indoors/town/rmh/manor)
+"rQ" = (
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 2
+	},
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 4
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "rR" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/effect/decal/cleanable/debris/stone,
@@ -4161,6 +4378,13 @@
 /obj/structure/fluff/railing/corner/north_east,
 /turf/open/dungeon_trap,
 /area/outdoors/exposed/rmh/manorgarri)
+"sz" = (
+/obj/structure/fluff/pillow{
+	dir = 8
+	},
+/obj/structure/carpet/green,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "sC" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
@@ -4372,6 +4596,13 @@
 /obj/item/storage/sack,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/manor/basement)
+"tn" = (
+/obj/machinery/light/fueled/wallfire/floorcandle/alt/pink,
+/obj/machinery/light/fueled/wallfire/floorcandle/pink{
+	pixel_y = -12
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "tq" = (
 /obj/structure/door/window,
 /turf/open/floor/blocks,
@@ -4513,7 +4744,15 @@
 /area/indoors)
 "tN" = (
 /turf/closed/wall/mineral/craftstone,
-/area/indoors/town/rmh/manor/bath)
+/area/indoors/succubus_lair)
+"tP" = (
+/obj/structure/carpet/purple,
+/obj/structure/carpet/red,
+/obj/structure/table/map{
+	dir = 6
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "tQ" = (
 /obj/machinery/light/fueled/wallfire/candle,
 /turf/open/floor/ruinedwood/alizeria/tiles/wood24,
@@ -4907,6 +5146,13 @@
 "vz" = (
 /turf/open/floor/metal/alt,
 /area/indoors/town/rmh/manor)
+"vE" = (
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 8
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "vF" = (
 /obj/machinery/light/fueled/oven/south,
 /obj/structure/table/wood/counter/alt,
@@ -5006,6 +5252,17 @@
 /obj/structure/fluff/pillow/purple,
 /turf/open/floor/tile/diamond/purple,
 /area/indoors/town/rmh/manor/bath)
+"vW" = (
+/obj/machinery/light/fueled/wallfire/floorcandle/alt/pink,
+/obj/machinery/light/fueled/wallfire/floorcandle/pink{
+	pixel_y = -12
+	},
+/obj/item/reagent_containers/glass/carafe/water{
+	pixel_y = 22;
+	pixel_x = -1
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "vX" = (
 /obj/effect/decal/edge_corner{
 	dir = 4;
@@ -5284,6 +5541,18 @@
 	},
 /turf/open/floor/tile,
 /area/indoors/town/rmh/manor/basement)
+"wT" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "wU" = (
 /obj/effect/decal/cobbleedge{
 	dir = 1;
@@ -5396,6 +5665,12 @@
 	},
 /turf/open/floor/blocks,
 /area/under/rmh_dungeon/catacombs_church)
+"xn" = (
+/obj/structure/table/map{
+	dir = 10
+	},
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "xo" = (
 /obj/machinery/light/fueled/torchholder/r,
 /obj/structure/rack/shelf/biggest,
@@ -5560,6 +5835,18 @@
 /obj/structure/chair/wood/alt/fancy,
 /turf/open/floor/desert/deserttile/tilegreyblu,
 /area/indoors/town/rmh/manor)
+"xN" = (
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "xO" = (
 /obj/structure/curtain/magenta,
 /obj/structure/stairs/maskstairs,
@@ -5612,6 +5899,14 @@
 "xX" = (
 /turf/open/floor/cobble,
 /area/indoors)
+"xY" = (
+/obj/effect/lily_petal/three,
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 6
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "xZ" = (
 /obj/structure/chair/wood/alt/fancy/chair5,
 /turf/open/floor/carpet/alizeria/tiles/carpet4,
@@ -5656,6 +5951,19 @@
 	},
 /turf/open/floor/plasteel/maniac,
 /area)
+"yl" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 5;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "yn" = (
 /obj/effect/landmark/mapGenerator/underdark{
 	startTurfX = 111;
@@ -5755,6 +6063,9 @@
 /obj/structure/mannequin/male,
 /turf/open/floor/wood,
 /area/indoors)
+"yM" = (
+/turf/closed/wall/mineral/craftstone,
+/area/indoors/town/rmh/manor/bath)
 "yN" = (
 /obj/structure/bed/shit{
 	name = "makeshift bed"
@@ -5837,6 +6148,14 @@
 /obj/item/natural/rock/random_ore,
 /turf/open/floor/naturalstone,
 /area/outdoors/woods_safe)
+"ze" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "zh" = (
 /obj/machinery/light/fueled/oven/south,
 /obj/structure/table/wood/reinf_long{
@@ -5895,6 +6214,22 @@
 /obj/structure/bars/bent,
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/manor)
+"zo" = (
+/obj/structure/chair/bench/couchamagenta/r,
+/obj/item/bedsheet/cloth{
+	pixel_y = 1;
+	plane = -10;
+	layer = 3;
+	anchored = 1;
+	color = "#8b2323"
+	},
+/obj/item/plate/pewter{
+	layer = 3.1;
+	pixel_x = -3;
+	pixel_y = -4
+	},
+/turf/open/floor/tile/harem2,
+/area/indoors/succubus_lair)
 "zq" = (
 /obj/structure/table/wood/fancy/red,
 /obj/item/reagent_containers/glass/bottle/tiefling_wine,
@@ -6002,6 +6337,15 @@
 	},
 /turf/open/floor/naturalstone,
 /area/outdoors/woods_safe)
+"zO" = (
+/obj/structure/flora/grass/crawlvines{
+	dir = 8
+	},
+/obj/machinery/light/fueled/wallfire/floorcandle{
+	pixel_y = -13
+	},
+/turf/closed/wall/mineral/decostone/cand,
+/area/indoors/succubus_lair)
 "zQ" = (
 /obj/effect/decal/edge{
 	dir = 4;
@@ -6159,6 +6503,15 @@
 	},
 /turf/open/floor/snow,
 /area/outdoors/exposed/rmh/manorgarri)
+"AF" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "AJ" = (
 /obj/structure/table/wood/reinf_long{
 	dir = 8
@@ -6373,6 +6726,15 @@
 /obj/machinery/light/fueled/wallfire/candle/skull/l,
 /turf/open/floor/herringbone,
 /area/overlord_lair)
+"Bx" = (
+/obj/effect/decal/carpet/square/black{
+	color = "#a989ad";
+	dir = 4;
+	pixel_x = 27;
+	pixel_y = 2
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "By" = (
 /obj/item/natural/rock,
 /turf/open/floor/dirt/road,
@@ -6427,6 +6789,10 @@
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/manor/basement)
+"BG" = (
+/obj/structure/table/map,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "BI" = (
 /obj/structure/chair/stool,
 /turf/open/floor/cobblerock,
@@ -6715,6 +7081,19 @@
 /obj/item/clothing/head/roguehood/colored/black,
 /turf/open/floor/carpet,
 /area/indoors)
+"CT" = (
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/machinery/light/fueled/wallfire/candle/r,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "CW" = (
 /obj/structure/stairs/fancy{
 	color = "#9c9c9c"
@@ -6764,6 +7143,17 @@
 /obj/item/reagent_containers/food/snacks/cheddar,
 /turf/open/floor/tile,
 /area/indoors)
+"Df" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "Dg" = (
 /obj/structure/closet/crate/crafted_closet/inn/south,
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -6846,6 +7236,17 @@
 /obj/structure/soil/debug_soil/random,
 /turf/open/floor/dirt/road,
 /area/outdoors)
+"DG" = (
+/obj/structure/table/wood/counter/end/right{
+	name = "massage table"
+	},
+/obj/item/tablecloth/silk{
+	pixel_y = 10;
+	pixel_x = 4
+	},
+/obj/item/natural/cloth,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "DJ" = (
 /obj/item/bin/water,
 /obj/machinery/light/fueled/torchholder/l,
@@ -6919,6 +7320,14 @@
 "DV" = (
 /turf/closed/wall/mineral/stonebrick,
 /area/indoors/town/rmh/manor)
+"DW" = (
+/obj/effect/decal/edge{
+	dir = 5;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/red,
+/turf/open/floor/wood,
+/area/indoors/succubus_lair)
 "DY" = (
 /obj/structure/stairs/stone/reddish,
 /turf/open/floor/hexstone,
@@ -6935,6 +7344,14 @@
 	dir = 8
 	},
 /area/indoors/town/rmh/manor)
+"Ec" = (
+/obj/machinery/light/fueled/firebowl/standing{
+	pixel_x = 16;
+	density = 0;
+	pixel_y = 21
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "Ee" = (
 /obj/structure/table/wood/plain,
 /turf/open/floor/tile/checker_green,
@@ -7043,6 +7460,19 @@
 /obj/structure/fake_machine/camera/right,
 /turf/open/floor/carpet,
 /area/indoors)
+"ED" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "EF" = (
 /obj/structure/stairs/stone/church{
 	dir = 1
@@ -7109,6 +7539,9 @@
 /obj/item/clothing/armor/plate/orc,
 /turf/open/floor/carpet,
 /area/indoors)
+"EU" = (
+/turf/open/floor/wood,
+/area/indoors/succubus_lair)
 "EX" = (
 /obj/structure/table/wood{
 	icon_state = "tablewood1"
@@ -7352,6 +7785,10 @@
 "FS" = (
 /turf/closed/mineral/bedrock,
 /area/outdoors/woods_safe)
+"FW" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/decorstone,
+/area/indoors/succubus_lair)
 "FY" = (
 /obj/structure/rotation_piece,
 /turf/open/floor/grass/yel,
@@ -7494,6 +7931,9 @@
 /obj/machinery/light/fueled/torchholder,
 /turf/closed/wall/mineral/wooddark/slitted,
 /area/indoors)
+"Gw" = (
+/turf/closed/mineral/bedrock,
+/area/indoors/succubus_lair)
 "Gx" = (
 /obj/effect/decal/edge{
 	dir = 1;
@@ -7566,6 +8006,10 @@
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/manor)
+"GH" = (
+/obj/effect/lily_petal,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "GJ" = (
 /obj/structure/fluff/pillow{
 	dir = 1
@@ -7635,6 +8079,10 @@
 /obj/structure/fluff/railing/border/west,
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/manor)
+"GX" = (
+/obj/structure/carpet/cyan,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "Ha" = (
 /obj/item/weapon/sword/scimitar/falchion,
 /obj/item/weapon/sword/scimitar/falchion,
@@ -7735,6 +8183,14 @@
 	},
 /turf/open/floor/cobblerock,
 /area)
+"Hx" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "Hy" = (
 /obj/structure/chair/wood/alt/fancy{
 	icon_state = "chair1";
@@ -7985,6 +8441,12 @@
 /obj/structure/stairs/maskstairs,
 /turf/open/floor/church/green,
 /area)
+"Iv" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/closed/wall/mineral/wooddark/deco{
+	dir = 4
+	},
+/area/indoors/succubus_lair)
 "Iw" = (
 /obj/structure/fluff/railing/corner/south_east,
 /turf/open/floor/blocks,
@@ -8020,6 +8482,10 @@
 /obj/item/reagent_containers/glass/cup/skull,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors)
+"IK" = (
+/obj/effect/lily_petal/three,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "IL" = (
 /obj/effect/decal/cobbleedge/alt,
 /obj/effect/decal/cobbleedge/alt{
@@ -8205,6 +8671,13 @@
 "JB" = (
 /turf/open/water/river,
 /area/outdoors)
+"JC" = (
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 4
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "JD" = (
 /obj/structure/flora/new_shroom/purplef,
 /turf/open/floor/naturalstone,
@@ -8405,6 +8878,18 @@
 	},
 /turf/open/floor/cobble,
 /area/outdoors/exposed/rmh/manorgarri)
+"Kw" = (
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 2
+	},
+/obj/effect/decal/edge{
+	color = "#575757";
+	dir = 8
+	},
+/obj/structure/succubus_gateway,
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "Kx" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
@@ -8416,6 +8901,11 @@
 /obj/structure/fluff/statue/knight/interior,
 /turf/open/floor/herringbone,
 /area/overlord_lair)
+"KB" = (
+/obj/structure/shisha,
+/obj/structure/carpet/green,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "KC" = (
 /obj/effect/decal/cobbleedge{
 	icon = 'icons/roguetown/misc/tables.dmi';
@@ -8540,6 +9030,12 @@
 /obj/item/alch/herb/valeriana,
 /turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/manor)
+"KT" = (
+/obj/structure/table/map{
+	dir = 6
+	},
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "KV" = (
 /obj/structure/table/wood/large/corner_new{
 	dir = 1
@@ -8761,6 +9257,10 @@
 /obj/structure/carpet/purple,
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/manor/bath)
+"LN" = (
+/obj/effect/lily_petal/two,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "LO" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -8846,6 +9346,11 @@
 	},
 /turf/open/floor/blocks,
 /area/indoors/town/rmh/manor)
+"Mh" = (
+/obj/machinery/light/fueled/wallfire/candle/r,
+/obj/item/natural/cloth,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "Mi" = (
 /turf/open/floor/desert/deserttile/tilegreyblu,
 /area/indoors/town/rmh/manor)
@@ -8859,6 +9364,10 @@
 "Ml" = (
 /turf/open/floor/herringbone,
 /area/outdoors/exposed/rmh/manorgarri)
+"Mp" = (
+/obj/machinery/light/fueled/wallfire/candle/r,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "Ms" = (
 /obj/structure/table/wood/plain,
 /obj/item/kitchen/rollingpin,
@@ -8868,6 +9377,10 @@
 /obj/structure/flora/grass/bush/wall/green,
 /turf/open/floor/grass/healthy,
 /area/indoors/town/rmh/manor)
+"Mv" = (
+/obj/structure/flora/starfish,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "Mx" = (
 /obj/structure/gate{
 	gid = "thronegate";
@@ -9044,6 +9557,10 @@
 /obj/item/coin/silver/pile,
 /turf/open/floor/carpet,
 /area/indoors)
+"Nd" = (
+/obj/machinery/light/fueled/wallfire/candle/l,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "Nf" = (
 /obj/item/natural/rock,
 /turf/open/floor/dirt/road,
@@ -9202,6 +9719,14 @@
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/manor/basement)
+"NQ" = (
+/obj/structure/table/wood/counter/end{
+	name = "massage table"
+	},
+/obj/item/bedsheet/cloth,
+/obj/structure/carpet/cyan,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "NR" = (
 /mob/living/carbon/human/species/goblin/npc/ambush,
 /turf/open/floor/naturalstone,
@@ -9270,6 +9795,19 @@
 /obj/effect/landmark/kidnap/escape/greenskin,
 /turf/open/floor/cobblerock,
 /area/outdoors/woods_safe)
+"Og" = (
+/obj/effect/landmark/start/succubus,
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
+"Oh" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#3b3b3b";
+	pixel_y = 0
+	},
+/obj/structure/fluff/pillow/purple,
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "Oj" = (
 /obj/structure/stairs/maskstairs{
 	dir = 1
@@ -9291,6 +9829,17 @@
 /obj/structure/door/viewport/stone,
 /turf/open/floor/concrete,
 /area/under/rmh_dungeon/catacombs_church)
+"Oq" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "Or" = (
 /obj/effect/landmark/hammer/dev_text{
 	name = "ENTER/EXIT"
@@ -9650,6 +10199,10 @@
 /obj/item/natural/cloth,
 /turf/open/floor/tile/checker_green,
 /area/indoors)
+"PC" = (
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "PD" = (
 /obj/structure/fake_door{
 	density = 1
@@ -9711,6 +10264,12 @@
 	},
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/manor/bath)
+"PO" = (
+/obj/structure/fluff/pillow/purple{
+	dir = 1
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "PP" = (
 /obj/structure/closet/crate/chest/neu_fancy,
 /turf/open/floor/tile/masonic/inverted,
@@ -9741,6 +10300,24 @@
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood1,
 /area/indoors/town/rmh/manor)
+"PT" = (
+/obj/structure/chair/bench/couchamagenta/r,
+/obj/item/bedsheet/cloth{
+	pixel_y = 1;
+	plane = -10;
+	layer = 3;
+	anchored = 1;
+	color = "#8b2323";
+	pixel_x = -10
+	},
+/obj/structure/fluff/pillow/purple{
+	dir = 1;
+	layer = 3.1;
+	pixel_x = -7;
+	pixel_y = -4
+	},
+/turf/open/floor/tile/harem2,
+/area/indoors/succubus_lair)
 "PW" = (
 /obj/structure/stairs/stone{
 	dir = 8
@@ -9920,6 +10497,10 @@
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
 /area/outdoors/woods_safe)
+"Qn" = (
+/obj/structure/carpet/purple,
+/turf/open/floor/wood,
+/area/indoors/town/rmh/manor/bath)
 "Qo" = (
 /turf/closed/wall/mineral/underbrick,
 /area/overlord_lair)
@@ -9976,6 +10557,19 @@
 	},
 /turf/open/floor/ruinedwood/darker,
 /area/outdoors/woods_safe)
+"QB" = (
+/obj/structure/fluff/pillow/purple{
+	dir = 8
+	},
+/obj/machinery/light/fueled/firebowl/standing{
+	density = 0;
+	pixel_x = -9;
+	pixel_y = -14;
+	layer = 2.95;
+	plane = -10
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "QD" = (
 /obj/structure/chair/wood/alt/fancy{
 	dir = 4
@@ -9996,6 +10590,18 @@
 "QF" = (
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/manor)
+"QG" = (
+/obj/effect/decal/edge_corner{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 10;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "QH" = (
 /obj/structure/fluff/globe,
 /turf/open/floor/ruinedwood/chevron,
@@ -10225,6 +10831,14 @@
 	dir = 4
 	},
 /area/indoors/town/rmh/manor)
+"RM" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/red,
+/turf/open/floor/wood,
+/area/indoors/succubus_lair)
 "RN" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -10347,6 +10961,14 @@
 /obj/structure/flora/ausbushes/brflowers,
 /turf/open/floor/grass/yel,
 /area/outdoors)
+"Sl" = (
+/obj/structure/flora/grass/crawlvines{
+	dir = 4
+	},
+/turf/closed/wall/mineral/wooddark/deco{
+	dir = 8
+	},
+/area/indoors/succubus_lair)
 "Sn" = (
 /obj/structure/hotspring/border/eight,
 /turf/open/floor/dirt/road,
@@ -10627,10 +11249,19 @@
 	},
 /turf/open/floor/wood,
 /area/indoors/town/rmh/manor)
+"Td" = (
+/obj/structure/curtain/magenta,
+/obj/structure/stairs/maskstairs,
+/turf/open/floor/concrete,
+/area/indoors/succubus_lair)
 "Te" = (
 /obj/structure/table/wood/plain/alt,
 /turf/open/floor/woodturned,
 /area/indoors)
+"Tg" = (
+/obj/item/natural/cloth,
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "Th" = (
 /obj/effect/decal/edge{
 	dir = 9;
@@ -10662,6 +11293,9 @@
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood1,
 /area/indoors/town/rmh/manor)
+"Tl" = (
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "Tm" = (
 /obj/item/clothing/shirt/dress/silkdress/colored/silkdressprimary,
 /obj/item/clothing/shoes/shortboots,
@@ -11212,6 +11846,10 @@
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/metal/alt,
 /area/indoors/town/rmh/manor/basement)
+"VJ" = (
+/obj/structure/carpet/green,
+/turf/open/floor/tile/bfloorz,
+/area/indoors/succubus_lair)
 "VK" = (
 /obj/effect/decal/edge{
 	dir = 2;
@@ -11544,6 +12182,9 @@
 	},
 /turf/open/floor/blocks,
 /area/under/rmh_dungeon/catacombs_church)
+"Xb" = (
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "Xd" = (
 /obj/structure/hotspring/border/ten,
 /turf/open/floor/mushroom,
@@ -11682,6 +12323,14 @@
 /obj/structure/water_pipe,
 /turf/open/floor/grass/yel,
 /area/outdoors)
+"Xz" = (
+/obj/structure/carpet/purple,
+/obj/structure/carpet/red,
+/obj/structure/table/map{
+	dir = 10
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/indoors/succubus_lair)
 "XA" = (
 /obj/structure/stairs/stone/church{
 	dir = 1
@@ -11734,6 +12383,12 @@
 /obj/item/clothing/shirt/dress,
 /turf/open/floor/wood,
 /area/indoors)
+"XT" = (
+/obj/structure/stairs/stone/church{
+	dir = 1
+	},
+/turf/open/water/bath,
+/area/indoors/succubus_lair)
 "XU" = (
 /obj/effect/decal/edge_corner{
 	dir = 2;
@@ -17259,7 +17914,7 @@ WT
 HZ
 QK
 Gx
-hn
+jk
 aW
 Dn
 Re
@@ -17461,9 +18116,9 @@ qj
 oi
 fE
 Gi
-hn
+jk
 aW
-tN
+yM
 nw
 pd
 gX
@@ -17663,9 +18318,9 @@ eS
 HZ
 Gd
 Gi
-qk
+Qn
 Gs
-tN
+yM
 EF
 PN
 gX
@@ -21289,29 +21944,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-BB
-Nn
-Nn
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
 Nn
 Nn
 Nn
@@ -21491,29 +22146,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+bd
+iR
+iR
+iR
+bd
+iR
+iR
+iR
+bd
+iR
+iR
+iR
+bd
+qm
+oj
+qm
+bd
+iR
+iR
+iR
+bd
+Gw
 Nn
 Nn
 Nn
@@ -21693,29 +22348,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+Sl
+GX
+GX
+GX
+Nd
+iW
+EU
+EU
+qm
+jQ
+wT
+wT
+ol
+yl
+tn
+GH
+oQ
+Xb
+LN
+tn
+oj
+Gw
 Nn
 Nn
 Nn
@@ -21895,29 +22550,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+Iv
+GX
+NQ
+GX
+nb
+DW
+EU
+EU
+Td
+rD
+QB
+jM
+rK
+ED
+XT
+Xb
+Xb
+Xb
+Xb
+Xb
+qm
+Gw
 Nn
 Nn
 Nn
@@ -22097,29 +22752,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+FW
+nb
+DG
+nb
+xn
+iw
+hn
+EU
+qm
+QG
+ze
+PT
+kD
+Df
+XT
+Xb
+Xb
+IK
+Tg
+Mv
+bd
+Gw
 Nn
 Nn
 Nn
@@ -22299,29 +22954,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+zO
+nb
+nb
+nb
+BG
+RM
+hn
+EU
+tN
+Xz
+AF
+Tl
+Bx
+Hx
+iu
+vE
+vE
+Kw
+Xb
+Xb
+oj
+Gw
 Nn
 Nn
 Nn
@@ -22501,29 +23156,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+iR
+VJ
+sz
+nb
+KT
+RM
+qk
+EU
+tN
+tP
+iV
+Og
+Tl
+Oh
+xY
+JC
+JC
+rQ
+Xb
+Xb
+oj
+Gw
 Nn
 Nn
 Nn
@@ -22703,29 +23358,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+lB
+VJ
+KB
+nb
+nb
+bn
+EU
+EU
+qm
+jQ
+pt
+kW
+PC
+Oq
+dC
+Xb
+LN
+Mv
+Xb
+lw
+bd
+Gw
 Nn
 Nn
 Nn
@@ -22905,29 +23560,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+Iv
+md
+lx
+bF
+Mh
+ds
+EU
+EU
+ia
+ED
+Ec
+zo
+PO
+rD
+XT
+GH
+Xb
+Xb
+Xb
+Xb
+qm
+Gw
 Nn
 Nn
 Nn
@@ -23107,29 +23762,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+bd
+iR
+iR
+iR
+bd
+iR
+iR
+iR
+qm
+QG
+xN
+xN
+CT
+oW
+tn
+Xb
+Mp
+LN
+Xb
+vW
+oj
+Gw
 Nn
 Nn
 Nn
@@ -23309,29 +23964,29 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+bd
+iR
+iR
+iR
+bd
+qm
+oj
+qm
+bd
+iR
+iR
+iR
+bd
+Gw
 Nn
 Nn
 Nn
@@ -23519,21 +24174,21 @@ Nn
 Nn
 Nn
 Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
-Nn
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
+Gw
 Nn
 Nn
 Nn

@@ -33,7 +33,8 @@
 		parts += "<a href='?_src_=holder;[HrefToken()];adminplayerobservefollow=[REF(owner.current)]'>FLW</a>"
 	else
 		parts += ""
-	parts += "<a href='?_src_=holder;[HrefToken()];traitor=[REF(owner)]'>Show Objective</a>"
+	var/panel_label = contract_pool ? "Manage Contract" : "Show Objective"
+	parts += "<a href='?_src_=holder;[HrefToken()];traitor=[REF(owner)]'>[panel_label]</a>"
 	return parts //Better as one cell or two/three
 
 //Builds table row for the antag

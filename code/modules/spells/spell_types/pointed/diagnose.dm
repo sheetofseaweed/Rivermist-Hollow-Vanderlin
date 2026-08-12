@@ -20,9 +20,13 @@
 /datum/action/cooldown/spell/diagnose/cast(mob/living/carbon/human/cast_on)
 	. = ..()
 	cast_on.check_for_injuries(owner, additional = TRUE)
+	var/depletion_diagnosis = cast_on.get_succubus_depletion_diagnosis()
+	if(depletion_diagnosis)
+		to_chat(owner, span_warning(depletion_diagnosis))
 
 /datum/action/cooldown/spell/diagnose/holy
 	name = "Diagnosis"
+	desc = "Read a patient's wounds through holy insight. The first blessing against an infernal brand reveals it and relieves one stage of its victim's depletion."
 
 	cast_range = 4
 	spell_type = SPELL_MIRACLE
@@ -31,3 +35,7 @@
 
 	cooldown_time = 5 SECONDS
 	spell_cost = 5
+
+/datum/action/cooldown/spell/diagnose/holy/cast(mob/living/carbon/human/cast_on)
+	. = ..()
+	cast_on.apply_succubus_blessing(owner)

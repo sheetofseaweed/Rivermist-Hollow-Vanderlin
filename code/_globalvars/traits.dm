@@ -105,6 +105,8 @@ GLOBAL_LIST_INIT(traits_by_type, list(
 		"Of the Cabal" = TRAIT_CABAL,
 		"Unleechable" = TRAIT_LEECHIMMUNE,
 		"Good Lover" = TRAIT_GOODLOVER,
+		"Identity Shifting" = TRAIT_IDENTITY_SHIFTING,
+		"Lustful Stamina" = TRAIT_LUSTFUL_STAMINA,
 		"Vaginal Egg Layer" = TRAIT_EGG_LAYER,
 		"Webwalker" = TRAIT_WEBWALK,
 		"Brushwalker" = TRAIT_BRUSHWALK,

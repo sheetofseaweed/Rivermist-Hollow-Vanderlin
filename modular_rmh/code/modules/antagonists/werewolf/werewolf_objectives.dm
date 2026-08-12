@@ -32,6 +32,7 @@
 		return FALSE
 
 	contract_objective_score += score_amount
+	record_contract_progress(/datum/contract_goal/werewolf/hunt_score, score_amount)
 	refresh_werewolf_objectives()
 
 	if(owner?.current)
@@ -53,6 +54,7 @@
 		return FALSE
 
 	bred_player_minds += target.mind
+	record_contract_progress(/datum/contract_goal/werewolf/breed)
 	refresh_werewolf_objectives()
 	return TRUE
 
@@ -65,6 +67,7 @@
 		return FALSE
 
 	converted_player_minds += target.mind
+	record_contract_progress(/datum/contract_goal/werewolf/convert)
 	refresh_werewolf_objectives()
 	return TRUE
 
@@ -77,6 +80,7 @@
 		return FALSE
 
 	trapped_player_minds += target.mind
+	record_contract_progress(/datum/contract_goal/werewolf/trap)
 	refresh_werewolf_objectives()
 	return TRUE
 
@@ -92,6 +96,7 @@
 
 	if(isanimal(victim))
 		animals_hunted_in_wolf_form += 1
+		record_contract_progress(/datum/contract_goal/werewolf/hunt_beasts)
 		refresh_werewolf_objectives()
 		return
 
@@ -99,6 +104,7 @@
 		return
 
 	foes_slain_in_wolf_form += 1
+	record_contract_progress(/datum/contract_goal/werewolf/slay_foe)
 	refresh_werewolf_objectives()
 
 /mob/living/carbon/human/proc/can_receive_werewolf_conversion_offer()

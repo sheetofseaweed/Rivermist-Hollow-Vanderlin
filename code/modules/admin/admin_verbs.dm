@@ -9,6 +9,7 @@ GLOBAL_PROTECT(admin_verbs_default)
 	/client/proc/spawn_pollution,
 	/client/proc/adjust_personal_see_leylines,
 	/client/proc/spawn_liquid,
+	/datum/admins/proc/anoint_priest,
 	/client/proc/spawn_faction_trader,
 	/client/proc/crop_nutrient_debug,
 	/client/proc/remove_liquid,

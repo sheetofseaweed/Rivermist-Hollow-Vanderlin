@@ -188,7 +188,38 @@ type SmallclothesEntry = {
   color: string | null;
 };
 
+type BodyMarkingEntry = {
+  name: string;
+  color: string;
+};
+
+type BodyMarkingZone = {
+  id: string;
+  name: string;
+  entries: BodyMarkingEntry[];
+  available: string[];
+  can_add: Booleanish;
+};
+
+type DisguiseSlot = {
+  slot: number;
+  unlocked: Booleanish;
+  occupied: Booleanish;
+  name: string;
+  active: Booleanish;
+};
+
 type PrefsData = {
+	disguise_mode?: Booleanish;
+	selected_slot?: number;
+	slot_cap?: number;
+	contract_tier?: number;
+	creation_cost?: number;
+	essence?: number;
+	slots?: DisguiseSlot[];
+	body_markings?: BodyMarkingZone[];
+	commit_available?: Booleanish;
+	commit_reason?: string;
   real_name: string;
   initial_tab: string;
   open_sequence: number;
@@ -597,6 +628,7 @@ const FieldBlock = (props: {
 
 export const PreferencesMenu = () => {
   const { act, data } = useBackend<PrefsData>();
+	const disguiseMode = asBool(data.disguise_mode);
 
   const mapTab = (tab: string) => (tab === 'game' ? 'settings' : 'identity');
   const [menuScale, setMenuScaleState] = useState(
@@ -1800,9 +1832,164 @@ export const PreferencesMenu = () => {
     );
   };
 
+  const renderBodyMarkingsEditor = () => (
+    <Section title="Body Markings" mb={1}>
+      <Stack align="center" mb={1}>
+        <Stack.Item grow>
+          <Box color="label">
+            Markings are part of this disguise and never alter your saved character.
+          </Box>
+        </Stack.Item>
+        <Stack.Item>
+          <Button
+            icon="layer-group"
+            onClick={() =>
+              doPref('character_setup_body_marking', undefined, {
+                marking_action: 'use_preset',
+              })
+            }
+          >
+            Use Preset
+          </Button>
+        </Stack.Item>
+        <Stack.Item>
+          <Button
+            icon="undo"
+            onClick={() =>
+              doPref('character_setup_body_marking', undefined, {
+                marking_action: 'reset_all_colors',
+              })
+            }
+          >
+            Reset Colors
+          </Button>
+        </Stack.Item>
+      </Stack>
+      {(data.body_markings ?? []).map((zone) => (
+        <Section
+          key={zone.id}
+          title={zone.name}
+          mb={0.75}
+          buttons={
+            <Button
+              compact
+              icon="plus"
+              disabled={!asBool(zone.can_add)}
+              onClick={() =>
+                doPref('character_setup_body_marking', undefined, {
+                  marking_action: 'add',
+                  zone: zone.id,
+                })
+              }
+            >
+              Add
+            </Button>
+          }
+        >
+          {zone.entries.length ? (
+            zone.entries.map((marking, index) => (
+              <Stack key={marking.name} align="center" mb={0.5}>
+                <Stack.Item>
+                  <Box
+                    width="22px"
+                    height="12px"
+                    backgroundColor={swatchColor(marking.color)}
+                    style={{ border: '1px solid rgba(255,255,255,0.35)' }}
+                  />
+                </Stack.Item>
+                <Stack.Item grow>
+                  <Box bold>{marking.name}</Box>
+                </Stack.Item>
+                <Stack.Item>
+                  <Button
+                    compact
+                    icon="arrow-up"
+                    disabled={index === 0}
+                    tooltip="Move up"
+                    onClick={() =>
+                      doPref('character_setup_body_marking', undefined, {
+                        marking_action: 'move_up',
+                        zone: zone.id,
+                        name: marking.name,
+                      })
+                    }
+                  />
+                </Stack.Item>
+                <Stack.Item>
+                  <Button
+                    compact
+                    icon="arrow-down"
+                    disabled={index === zone.entries.length - 1}
+                    tooltip="Move down"
+                    onClick={() =>
+                      doPref('character_setup_body_marking', undefined, {
+                        marking_action: 'move_down',
+                        zone: zone.id,
+                        name: marking.name,
+                      })
+                    }
+                  />
+                </Stack.Item>
+                <Stack.Item>
+                  <Button
+                    compact
+                    icon="exchange-alt"
+                    tooltip="Replace marking"
+                    onClick={() =>
+                      doPref('character_setup_body_marking', undefined, {
+                        marking_action: 'replace',
+                        zone: zone.id,
+                        name: marking.name,
+                      })
+                    }
+                  />
+                </Stack.Item>
+                <Stack.Item>
+                  <Button
+                    compact
+                    icon="palette"
+                    tooltip="Change color"
+                    onClick={() =>
+                      doPref('character_setup_body_marking', undefined, {
+                        marking_action: 'change_color',
+                        zone: zone.id,
+                        name: marking.name,
+                      })
+                    }
+                  />
+                </Stack.Item>
+                <Stack.Item>
+                  <Button
+                    compact
+                    icon="trash"
+                    color="bad"
+                    tooltip="Remove marking"
+                    onClick={() =>
+                      doPref('character_setup_body_marking', undefined, {
+                        marking_action: 'remove',
+                        zone: zone.id,
+                        name: marking.name,
+                      })
+                    }
+                  />
+                </Stack.Item>
+              </Stack>
+            ))
+          ) : (
+            <Box color="label">No markings.</Box>
+          )}
+        </Section>
+      ))}
+    </Section>
+  );
+
   const renderBodyEditor = () => (
     <>
-      <ActionButton icon="paint-brush" label="Body Markings" onClick={() => doPref('markings', 'menu')} />
+      {disguiseMode ? (
+        renderBodyMarkingsEditor()
+      ) : (
+        <ActionButton icon="paint-brush" label="Body Markings" onClick={() => doPref('markings', 'menu')} />
+      )}
       {(data.mutant_colors ?? []).map((entry) => (
         <PrefRow
           key={entry.slot}
@@ -1817,10 +2004,10 @@ export const PreferencesMenu = () => {
           }
         />
       ))}
-      {asBool(data.use_skintones) ? (
+      {!disguiseMode && asBool(data.use_skintones) ? (
         <ActionButton icon="list" label="Skin Color Reference" onClick={() => doPref('skin_color_ref_list', 'input')} />
       ) : null}
-      {asBool(data.use_titles) ? (
+      {!disguiseMode && asBool(data.use_titles) ? (
         <PrefRow icon="crown" label="Race Title" value={data.race_title} onClick={() => doPref('race_title', 'input')} />
       ) : null}
     </>
@@ -1877,7 +2064,7 @@ export const PreferencesMenu = () => {
     );
 
     const featureTabs = [
-      { key: UNDERWEAR_KEY, name: 'Underwear' },
+      ...(!disguiseMode ? [{ key: UNDERWEAR_KEY, name: 'Underwear' }] : []),
       { key: BODY_KEY, name: 'Body' },
       ...(faceFeatures.length ? [{ key: FACE_KEY, name: 'Face Details' }] : []),
       ...otherFeatures.map((feature) => ({
@@ -1886,7 +2073,7 @@ export const PreferencesMenu = () => {
       })),
       ...(asBool(data.is_taur) ? [{ key: TAUR_KEY, name: 'Taur Body' }] : []),
       { key: GENITALS_KEY, name: 'Genitals' },
-      { key: BACKDROP_KEY, name: 'Backdrop' },
+      ...(!disguiseMode ? [{ key: BACKDROP_KEY, name: 'Backdrop' }] : []),
     ];
     const currentKey = featureTabs.some((tab) => tab.key === activeFeature)
       ? activeFeature
@@ -2819,6 +3006,371 @@ export const PreferencesMenu = () => {
       </Stack.Item>
     </Stack>
   );
+
+  const renderDisguiseIdentity = () => (
+    <>
+      <Panel title="Identity" icon="id-card">
+        <PrefRow
+          icon="signature"
+          label="Name"
+          value={data.real_name}
+          onClick={() => doPref('name', 'input')}
+        />
+        <PrefRow
+          icon="venus-mars"
+          label="Body Type"
+          value={data.gender}
+          onClick={() => doPref('gender')}
+        />
+        <PrefRow
+          icon="comment"
+          label="Pronouns"
+          value={data.pronouns}
+          onClick={() => doPref('pronouns', 'input')}
+        />
+        <FieldBlock label="Age">
+          <Tooltip content={data.age_tooltips?.[data.age] ?? ''} position="bottom">
+            <Box>
+              <Dropdown
+                width="100%"
+                displayText={display(data.age)}
+                selected={display(data.age)}
+                options={ageOptions.map((option, index) => ({
+                  displayText: display(option, option),
+                  value: index + 1,
+                }))}
+                onSelected={(value) => act('set_age', { value })}
+              />
+            </Box>
+          </Tooltip>
+        </FieldBlock>
+        <Box>
+          <Button
+            icon="users"
+            selected={selectionMode === 'species'}
+            onClick={() => setSelectionMode('species')}
+          >
+            Species
+          </Button>
+          <Button
+            icon="leaf"
+            selected={selectionMode === 'ancestry'}
+            onClick={() => setSelectionMode('ancestry')}
+          >
+            {display(data.ancestry_label, 'Ancestry')}
+          </Button>
+        </Box>
+      </Panel>
+      {selectionMode === 'ancestry'
+        ? renderAncestryPicker()
+        : renderSpeciesPicker()}
+    </>
+  );
+
+  const renderDisguiseVoice = () => (
+    <Panel title="Voice" icon="volume-up">
+      <PrefRow
+        icon="microphone"
+        label="Voice Type"
+        value={data.voice_type}
+        onClick={() => doPref('voicetype', 'input')}
+      />
+      <PrefRow
+        icon="tint"
+        label="Voice Color"
+        swatch={data.voice_color}
+        value={data.voice_color}
+        onClick={() => doPref('voice', 'input')}
+      />
+    </Panel>
+  );
+
+  const renderDisguiseSection = () => {
+    switch (activeSection) {
+      case 'appearance':
+        return renderAppearance();
+      case 'voice':
+        return renderDisguiseVoice();
+      default:
+        return renderDisguiseIdentity();
+    }
+  };
+
+  const renderMiniPreview = (
+    ref: React.RefObject<HTMLDivElement | null>,
+    mapId: string | null,
+    label: string,
+  ) => (
+    <Stack.Item grow basis={0}>
+      <div
+        ref={ref}
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '1 / 1',
+          backgroundColor: '#0d0d0d',
+        }}
+      >
+        {mapId && previewMiniZoom > 0 ? (
+          <ByondUi
+            key={mapId}
+            width="100%"
+            height="100%"
+            params={{
+              id: mapId,
+              type: 'map',
+              zoom: previewMiniZoom,
+              'zoom-mode': 'distort',
+              'background-color': '#0d0d0d',
+            }}
+          />
+        ) : null}
+      </div>
+      <Box color="label" textAlign="center" fontSize="10px">
+        {label}
+      </Box>
+    </Stack.Item>
+  );
+
+  if (disguiseMode) {
+    const disguiseSections = [
+      { id: 'identity', label: 'Identity', icon: 'id-card' },
+      { id: 'appearance', label: 'Appearance', icon: 'palette' },
+      { id: 'voice', label: 'Voice', icon: 'volume-up' },
+    ];
+    const slots = data.slots ?? [];
+    const selectedSlot =
+      slots.find((slot) => slot.slot === data.selected_slot) ?? slots[0];
+    const commitReason = data.commit_reason ||
+      (asBool(data.commit_available) ? 'Store this identity.' : 'This disguise cannot be stored right now.');
+
+    return (
+      <Window
+        title="Create Disguise"
+        width={1320}
+        height={880}
+        theme="vanderlin"
+      >
+        <Window.Content>
+          <Stack vertical fill>
+            <Stack.Item>
+              <Section>
+                <Stack align="center">
+                  <Stack.Item grow>
+                    <Box bold fontSize="18px">
+                      {display(data.real_name, 'Unnamed Disguise')}
+                    </Box>
+                    <Box color="label">
+                      {display(data.species_name, 'Mortal')} / {display(data.gender)} / Tier{' '}
+                      {display(data.contract_tier, '1')}
+                    </Box>
+                  </Stack.Item>
+                  <Stack.Item>
+                    <Box color="label">Essence</Box>
+                    <Box bold textAlign="right">
+                      {display(data.essence, '0')}
+                    </Box>
+                  </Stack.Item>
+                </Stack>
+              </Section>
+            </Stack.Item>
+
+            <Stack.Item grow>
+              <Stack fill>
+                <Stack.Item basis="180px">
+                  <Stack vertical fill>
+                    <Stack.Item grow>
+                      <Section fill>
+                        <Tabs vertical>
+                          {disguiseSections.map(NavTab)}
+                        </Tabs>
+                        <Box mt={1} color="label" fontSize="11px">
+                          This draft is temporary. It cannot change your saved character.
+                        </Box>
+                      </Section>
+                    </Stack.Item>
+                    {data.preview_map_front && data.preview_map_side ? (
+                      <Stack.Item>
+                        <Stack>
+                          {renderMiniPreview(frontBoxRef, data.preview_map_front, 'Front')}
+                          {renderMiniPreview(sideBoxRef, data.preview_map_side, 'Side')}
+                        </Stack>
+                      </Stack.Item>
+                    ) : null}
+                  </Stack>
+                </Stack.Item>
+
+                <Stack.Item basis="430px">
+                  <Section fill title="Looking Glass">
+                    <Stack vertical fill>
+                      <Stack.Item grow>
+                        <Box
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                          }}
+                        >
+                          <div
+                            ref={dollBoxRef}
+                            style={{
+                              position: 'relative',
+                              width: '86%',
+                              aspectRatio: '0.82 / 1',
+                              maxHeight: '100%',
+                              backgroundColor: '#0d0d0d',
+                            }}
+                          >
+                            {data.preview_map && previewZoom > 0 ? (
+                              <ByondUi
+                                key={data.preview_map}
+                                width="100%"
+                                height="100%"
+                                params={{
+                                  id: data.preview_map,
+                                  type: 'map',
+                                  zoom: previewZoom,
+                                  'zoom-mode': 'distort',
+                                  'background-color': '#0d0d0d',
+                                }}
+                              />
+                            ) : (
+                              <Box
+                                style={{
+                                  position: 'absolute',
+                                  inset: 0,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Icon name="user" size={6} color="label" />
+                              </Box>
+                            )}
+                          </div>
+                        </Box>
+                      </Stack.Item>
+                      <Stack.Item>
+                        <Stack mb={0.5}>
+                          <Stack.Item grow>
+                            <Button
+                              fluid
+                              icon="arrow-left"
+                              tooltip="Rotate left"
+                              onClick={() =>
+                                doPref('character_setup_preview_rotate', undefined, {
+                                  rotate: 'left',
+                                })
+                              }
+                            />
+                          </Stack.Item>
+                          <Stack.Item grow>
+                            <Button
+                              fluid
+                              icon="arrow-right"
+                              tooltip="Rotate right"
+                              onClick={() =>
+                                doPref('character_setup_preview_rotate', undefined, {
+                                  rotate: 'right',
+                                })
+                              }
+                            />
+                          </Stack.Item>
+                        </Stack>
+                        <Button
+                          fluid
+                          icon="dice"
+                          onClick={() => doPref('randomiseappearanceprefs')}
+                        >
+                          Randomise Appearance
+                        </Button>
+                      </Stack.Item>
+                    </Stack>
+                  </Section>
+                </Stack.Item>
+
+                <Stack.Item grow basis={0}>
+                  <Section fill scrollable>
+                    {renderDisguiseSection()}
+                  </Section>
+                </Stack.Item>
+              </Stack>
+            </Stack.Item>
+
+            <Stack.Item>
+              <Section>
+                <Stack align="center">
+                  <Stack.Item grow>
+                    <Box color="label" mb={0.5}>
+                      Created disguise slots
+                    </Box>
+                    <Stack>
+                      {slots.map((slot) => (
+                        <Stack.Item key={slot.slot}>
+                          <Button
+                            selected={slot.slot === data.selected_slot}
+                            disabled={!asBool(slot.unlocked)}
+                            icon={
+                              asBool(slot.active)
+                                ? 'user-check'
+                                : asBool(slot.occupied)
+                                  ? 'user'
+                                  : 'plus'
+                            }
+                            tooltip={
+                              !asBool(slot.unlocked)
+                                ? `Requires Tier ${slot.slot}`
+                                : asBool(slot.active)
+                                  ? 'This identity is currently being worn.'
+                                  : asBool(slot.occupied)
+                                    ? `Replace ${slot.name}`
+                                    : 'Create a new identity'
+                            }
+                            onClick={() =>
+                              act('disguise_select_slot', { slot: slot.slot })
+                            }
+                          >
+                            {slot.slot}: {asBool(slot.occupied) ? slot.name : 'Empty'}
+                          </Button>
+                        </Stack.Item>
+                      ))}
+                    </Stack>
+                  </Stack.Item>
+                  <Stack.Item basis="250px">
+                    <Box color={asBool(data.commit_available) ? 'good' : 'average'}>
+                      {selectedSlot && asBool(selectedSlot.occupied)
+                        ? `Replace slot ${selectedSlot.slot}`
+                        : `Store in slot ${selectedSlot?.slot ?? 1}`}
+                    </Box>
+                    <Box color="label" fontSize="11px">
+                      Cost: {display(data.creation_cost, '0')} essence. {commitReason}
+                    </Box>
+                  </Stack.Item>
+                  <Stack.Item>
+                    <Button icon="times" onClick={() => act('disguise_cancel')}>
+                      Cancel
+                    </Button>
+                  </Stack.Item>
+                  <Stack.Item>
+                    <Button
+                      icon="check"
+                      color="green"
+                      disabled={!asBool(data.commit_available)}
+                      tooltip={commitReason}
+                      onClick={() => act('disguise_commit')}
+                    >
+                      Commit
+                    </Button>
+                  </Stack.Item>
+                </Stack>
+              </Section>
+            </Stack.Item>
+          </Stack>
+        </Window.Content>
+      </Window>
+    );
+  }
 
   return (
     <Window

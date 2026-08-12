@@ -193,6 +193,11 @@
 	if(!C || !C.client)
 		return
 
+	// Disguise shifts re-fire on_species_gain but aren't true growth — no stat prompt, so
+	// cycling forms can't farm picks. Creation-time modifiers are untouched (same-id replace).
+	if(HAS_TRAIT(C, TRAIT_IDENTITY_SHIFTING))
+		return
+
 	var/list/choices = list(
 		"Strength"      = STATKEY_STR,
 		"Perception"   = STATKEY_PER,

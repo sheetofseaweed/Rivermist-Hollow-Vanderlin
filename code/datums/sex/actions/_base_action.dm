@@ -65,6 +65,9 @@
 	var/mob/living/action_user
 	/// The participant this action is being performed on.
 	var/mob/living/action_target
+	/// Virginity is cleared by some climax handlers before downstream harvest effects run.
+	var/action_user_was_virgin = FALSE
+	var/action_target_was_virgin = FALSE
 	/// Runtime speed for this individual action.
 	var/speed = SEX_SPEED_MID
 	/// Runtime force for this individual action.
@@ -227,6 +230,12 @@
 	proposal_controller = controller
 	action_user = controller.user
 	action_target = controller.target
+	if(ishuman(action_user))
+		var/mob/living/carbon/human/human_user = action_user
+		action_user_was_virgin = human_user.virginity
+	if(ishuman(action_target))
+		var/mob/living/carbon/human/human_target = action_target
+		action_target_was_virgin = human_target.virginity
 	speed = controller.speed
 	force = controller.force
 	stop_on_climax = controller.do_until_finished
@@ -234,6 +243,13 @@
 	edging_other = controller.edging_other
 	remote_context = controller.scene.get_remote_context(action_user, action_target, src)
 	return TRUE
+
+/datum/sex_action/proc/was_participant_virgin_at_start(mob/living/participant)
+	if(participant == action_user)
+		return action_user_was_virgin
+	if(participant == action_target)
+		return action_target_was_virgin
+	return FALSE
 
 /datum/sex_action/proc/bind_runtime(datum/sex_scene_controller/controller)
 	if(!controller || QDELETED(controller) || !controller.scene || QDELETED(controller.scene))

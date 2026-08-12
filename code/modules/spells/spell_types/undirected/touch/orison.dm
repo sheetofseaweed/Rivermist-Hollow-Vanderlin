@@ -226,6 +226,10 @@
 			M.visible_message(span_warning("[M] erupts into angry fizzling and hissing!"), span_warning("BLESSED WATER!!! IT BURNS!!!"))
 			M.emote("scream")
 
+	if(method & (TOUCH | INGEST))
+		var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(M)
+		succubus_antag?.react_to_blessed_water(reac_volume, ingested = (method & INGEST))
+
 	return ..()
 
 /datum/reagent/water/cursed

@@ -4,6 +4,7 @@
 #define CUM_DATA_PARENT_FEATURES "oviposition_parent_features"
 #define CUM_DATA_PARENT_HATCH_RESULT_TYPE "oviposition_parent_hatch_result_type"
 #define CUM_DATA_MIXED_PARENTS "oviposition_mixed_parents"
+#define FEMCUM_DATA_PARENT_REF "femcum_parent_ref"
 
 /datum/reagent/consumable/cum
 	name = "Semen"
@@ -150,6 +151,10 @@
 			H.adjust_nutrition(5)
 		if(H.blood_volume < BLOOD_VOLUME_NORMAL)
 			H.blood_volume = min(H.blood_volume+10, BLOOD_VOLUME_NORMAL)
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(M)
+	if(succubus_antag)
+		var/mob/living/seed_donor = get_parent_from_transfer()
+		succubus_antag.harvest_from_reagent(seed_donor?.mind, metabolization_rate)
 	. = 1
 	..()
 
@@ -168,8 +173,38 @@
 	evaporation_rate = 0.2
 	opacity = 100
 
+/// Lightweight donor stamp — just the originator, for absorption mechanics
+/// (cum has full lineage tracking; femcum needs less).
+/datum/reagent/consumable/femcum/proc/sync_femcum_parent(mob/living/parent)
+	if(!parent)
+		return FALSE
+	if(!data)
+		data = list()
+	data[FEMCUM_DATA_PARENT_REF] = WEAKREF(parent)
+	return TRUE
+
+/datum/reagent/consumable/femcum/proc/get_femcum_parent()
+	var/datum/weakref/parent_ref = data?[FEMCUM_DATA_PARENT_REF]
+	var/mob/living/parent = parent_ref?.resolve()
+	if(isliving(parent))
+		return parent
+	// Still inside the producing organ: the owner is the donor
+	if(istype(holder?.my_atom, /obj/item/organ/genitals/filling_organ))
+		var/obj/item/organ/genitals/filling_organ/forgan = holder.my_atom
+		if(isliving(forgan.owner))
+			return forgan.owner
+	return null
+
+/datum/reagent/consumable/femcum/on_mob_life(mob/living/carbon/M)
+	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(M)
+	if(succubus_antag)
+		var/mob/living/nectar_donor = get_femcum_parent()
+		succubus_antag.harvest_from_reagent(nectar_donor?.mind, metabolization_rate)
+	return ..()
+
 #undef CUM_DATA_PARENT_REF
 #undef CUM_DATA_PARENT_NAME
 #undef CUM_DATA_PARENT_FEATURES
 #undef CUM_DATA_PARENT_HATCH_RESULT_TYPE
 #undef CUM_DATA_MIXED_PARENTS
+#undef FEMCUM_DATA_PARENT_REF

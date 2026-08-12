@@ -210,6 +210,10 @@
 		var/list/resolved_threshold = living_parent.resolve_horny_defeat_threshold()
 		horny_defeat_climax_threshold = resolved_threshold[DEFEAT_HORNY_THRESHOLD_VALUE]
 		horny_defeat_climax_threshold_source = resolved_threshold[DEFEAT_HORNY_THRESHOLD_SOURCE]
+		// Lust-fed beings (succubi) are nearly bottomless: heroic to tire out, not immune.
+		if(HAS_TRAIT(living_parent, TRAIT_LUSTFUL_STAMINA))
+			horny_defeat_climax_threshold *= SUCCUBUS_HORNY_KO_MULT
+			horny_defeat_climax_threshold_source += " Lust-fed stamina multiplies this threshold by [SUCCUBUS_HORNY_KO_MULT]."
 	else if(!horny_defeat_climax_threshold_source)
 		horny_defeat_climax_threshold_source = "Threshold source: explicitly cached for this encounter."
 	horny_defeat_climax_count = min(horny_defeat_climax_count + 1, horny_defeat_climax_threshold)

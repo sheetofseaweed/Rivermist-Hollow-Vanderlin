@@ -42,3 +42,21 @@
 
 #define LORE 1
 #define LAW 2
+
+// Antag contract framework — see docs/superpowers/specs/2026-07-16-antag-contracts-design.md
+
+#define CONTRACT_GRADE_FULL "full"
+#define CONTRACT_GRADE_PARTIAL "partial"
+#define CONTRACT_GRADE_FAIL "fail"
+#define CONTRACT_GRADE_EXCUSED "excused"
+
+/// Goal progress is recorded live via record_contract_progress()
+#define CONTRACT_GOAL_COUNTER 1
+/// Goal is evaluated by polling get_state_progress() at cycle end
+#define CONTRACT_GOAL_STATE 2
+
+/// Offline for at least this fraction of a cycle = EXCUSED grade
+#define CONTRACT_EXCUSED_OFFLINE_FRACTION 0.5
+/// Storyteller escalation per FULL contract, as fraction of track threshold, times tier
+#define CONTRACT_OMEN_ESCALATION_FRACTION 0.025
+#define CONTRACT_INTERVENTION_ESCALATION_FRACTION 0.01

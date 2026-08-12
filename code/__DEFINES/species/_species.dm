@@ -9,6 +9,7 @@
 #define SPEC_ID_DROW "drow"
 #define SPEC_ID_HALF_DROW "halfdrow"
 #define SPEC_ID_TIEFLING "tiefling"
+#define SPEC_ID_DEMON "demon"
 #define SPEC_ID_HALF_ORC "halforc"
 #define SPEC_ID_RAKSHARI "rakshari"
 #define SPEC_ID_KOBOLD "kobold"
