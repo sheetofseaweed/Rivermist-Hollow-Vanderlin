@@ -210,6 +210,11 @@
 /obj/structure/wild_plant/random,
 /turf/open/floor/grass,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
+"bi" = (
+/obj/item/weapon/axe/boneaxe,
+/obj/structure/table/wood/treestump,
+/turf/open/floor/dirt/road,
+/area/outdoors/rmh_darkforest)
 "bk" = (
 /obj/structure/fluff/railing/border/north,
 /turf/open/floor/wood/nosmooth/saiga,
@@ -270,6 +275,11 @@
 "bF" = (
 /turf/open/floor/ruinedwood/turned,
 /area/outdoors/rmh_air)
+"bG" = (
+/obj/structure/tentacle_growth/floor,
+/obj/structure/tentacle_growth/floor,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "bJ" = (
 /obj/structure/closet/crate/chest/old_crate,
 /obj/item/reagent_containers/food/snacks/cheddar/aged,
@@ -327,6 +337,11 @@
 	},
 /turf/open/floor/ruinedwood,
 /area/outdoors/rmh_air)
+"bZ" = (
+/obj/structure/tentacle_growth/floor,
+/obj/structure/tentacle_growth/floor,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "ca" = (
 /obj/structure/chair/stool,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -1256,6 +1271,10 @@
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/orcpost)
+"ix" = (
+/obj/structure/dungeon_entrance/werewolf_shrine,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
 "iy" = (
 /turf/closed/mineral/bedrock{
 	name = "solid rock"
@@ -1725,6 +1744,13 @@
 "ln" = (
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/moistcaves/southeast)
+"lo" = (
+/obj/machinery/light/fueled/firebowl/stump{
+	pixel_x = -6;
+	pixel_y = 5
+	},
+/turf/open/floor/grass,
+/area/outdoors/rmh_darkforest)
 "lp" = (
 /obj/machinery/light/fueled/wallfire/candle/l{
 	pixel_y = -32
@@ -2179,6 +2205,13 @@
 /obj/structure/flora/grass/thorn_bush,
 /turf/open/floor/ruinedwood/herringbone,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
+"op" = (
+/obj/item/grown/log/tree/small,
+/obj/item/grown/log/tree{
+	pixel_y = -5
+	},
+/turf/open/floor/dirt/road,
+/area/outdoors/rmh_darkforest)
 "os" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/fluff/railing/tall/palisade{
@@ -2244,6 +2277,10 @@
 /obj/item/natural/wood/plank,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/rmh_darkforestbog/forest/abandonedvillage)
+"oG" = (
+/obj/structure/dungeon_entrance/bandit_hideout,
+/turf/open/floor/grass,
+/area/outdoors/rmh_darkforest)
 "oH" = (
 /turf/open/floor/cobble,
 /area/under/rmh_dungeon/orcpost)
@@ -2389,6 +2426,10 @@
 	},
 /turf/open/floor/twig,
 /area/outdoors/rmh_air)
+"pH" = (
+/obj/structure/tentacle_growth/floor/luminescent,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "pL" = (
 /obj/item/natural/stone,
 /turf/open/floor/cobblerock,
@@ -2494,6 +2535,10 @@
 	},
 /turf/open/openspace,
 /area/outdoors/rmh_darkforest)
+"qp" = (
+/obj/structure/tentacle_growth/floor/luminescent,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "qq" = (
 /obj/structure/fluff/railing/wood/north{
 	pixel_y = 8
@@ -2760,6 +2805,10 @@
 	},
 /turf/open/floor/ruinedwood,
 /area/outdoors)
+"rZ" = (
+/obj/structure/dungeon_entrance/wolf_den,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/wolf)
 "sa" = (
 /obj/structure/fluff/walldeco/chains{
 	icon_state = "chains5"
@@ -2862,6 +2911,11 @@
 "sL" = (
 /turf/open/floor/twig,
 /area/indoors/rmh_darkforestbog/bog/swampvillage)
+"sM" = (
+/obj/structure/tentacle_growth/floor,
+/obj/structure/tentacle_growth/snare,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "sN" = (
 /obj/structure/fluff/nest{
 	name = "patch of straw";
@@ -2907,6 +2961,10 @@
 	icon_state = "dead2"
 	},
 /turf/open/water/swamp,
+/area/outdoors/rmh_bog/north)
+"th" = (
+/obj/structure/dungeon_entrance/ratfolk_camp,
+/turf/open/floor/dirt,
 /area/outdoors/rmh_bog/north)
 "tj" = (
 /obj/structure/flora/grass/water/reeds,
@@ -5437,6 +5495,12 @@
 /obj/item/natural/stoneblock,
 /turf/open/floor/cobble/alt,
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
+"JP" = (
+/obj/structure/tentacle_growth/floor,
+/obj/structure/tentacle_growth/nest,
+/mob/living/carbon/human/npc_in_distress,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "JQ" = (
 /turf/open/floor/grass,
 /area/outdoors/bog/rmh/travel/forest_to_main)
@@ -5818,6 +5882,10 @@
 /obj/structure/wild_plant/nospread/mushroom/borowiki,
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/moistcaves)
+"Mg" = (
+/obj/structure/dungeon_entrance/spider_nursery,
+/turf/open/floor/dirt,
+/area/under/rmh_bogforest_caves/spiders)
 "Mh" = (
 /obj/item/natural/stone,
 /obj/effect/decal/cobblerockedge/alt{
@@ -6279,6 +6347,10 @@
 "Pf" = (
 /turf/open/floor/dirt,
 /area/outdoors/rmh_bog/north)
+"Pg" = (
+/obj/structure/tentacle_growth/floor,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "Ph" = (
 /obj/structure/curtain/bounty,
 /turf/open/floor/twig,
@@ -6820,6 +6892,10 @@
 	},
 /turf/open/floor/naturalstone,
 /area/outdoors/bog/rmh/travel/underdark)
+"SM" = (
+/obj/structure/dungeon_entrance/spider_nursery,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/cliffcaves)
 "SN" = (
 /obj/structure/ladder/hatch,
 /turf/open/floor/metal,
@@ -6853,10 +6929,19 @@
 "Tg" = (
 /turf/open/water/swamp/deep,
 /area/outdoors/rmh_bog)
+"Th" = (
+/obj/structure/dungeon_entrance/wolf_den,
+/turf/open/floor/grass,
+/area/outdoors/rmh_darkforest)
 "Ti" = (
 /obj/structure/vine,
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/moistcaves)
+"Tj" = (
+/obj/structure/tentacle_growth/floor,
+/obj/structure/tentacle_growth/snare,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/mindflayer)
 "Tk" = (
 /obj/structure/flora/tree/pine/dead{
 	icon_state = "dead3";
@@ -7284,6 +7369,10 @@
 	},
 /turf/open/floor/naturalstone,
 /area/under/cavewet/bogcaves/west)
+"VT" = (
+/obj/structure/tentacle_growth/floor,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "VV" = (
 /obj/structure/statue/bone/skull,
 /obj/structure/flora/grass,
@@ -13446,7 +13535,7 @@ sx
 Ti
 Ti
 wB
-cW
+Th
 cW
 cW
 cW
@@ -31486,11 +31575,11 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+Pg
+Pg
+Pg
 QH
 QH
 QH
@@ -31702,15 +31791,15 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
 QH
 ih
 ih
@@ -31918,16 +32007,16 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+JP
+Pg
+Pg
+Pg
+JP
+Pg
+Pg
+Pg
 QH
 QH
 ih
@@ -32135,16 +32224,16 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+Pg
+Pg
+Tj
+Pg
+Pg
+Pg
+Pg
+Pg
 QH
 QH
 ih
@@ -32352,17 +32441,17 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+pH
+Pg
+Pg
+Pg
+pH
+Pg
+Pg
+JP
+Pg
 QH
 ih
 ih
@@ -32569,17 +32658,17 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
 QH
 QH
 ih
@@ -32786,17 +32875,17 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+JP
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
+Pg
 QH
 QH
 QH
@@ -33003,16 +33092,16 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+Pg
+Pg
+Pg
+Pg
+pH
+Pg
+Pg
+Pg
+Pg
 QH
 QH
 QH
@@ -33220,16 +33309,16 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
+Pg
+JP
+Pg
+Pg
+bG
+Pg
+Pg
+Pg
+Pg
+pH
 QH
 QH
 QH
@@ -33437,17 +33526,17 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-ai
-ai
+Pg
+Pg
+Pg
+pH
+Pg
+Pg
+Pg
+Pg
+Pg
+VT
+VT
 QH
 QH
 QH
@@ -33654,18 +33743,18 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-qy
-ai
-ai
-ai
-ai
+Pg
+Pg
+Pg
+Pg
+Pg
+Tj
+Pg
+Pg
+VT
+bZ
+VT
+VT
 QH
 QH
 QH
@@ -33872,18 +33961,18 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
-qy
-ai
-ai
-ai
-ai
-ai
-ai
-ai
+Pg
+Pg
+Pg
+Pg
+Pg
+VT
+VT
+VT
+VT
+VT
+VT
+VT
 QH
 QH
 QH
@@ -34094,14 +34183,14 @@ QH
 QH
 QH
 QH
-ai
-ai
-ai
-ai
-ai
-ai
-ai
-ai
+VT
+VT
+VT
+bZ
+sM
+VT
+qp
+VT
 QH
 QH
 QH
@@ -34314,13 +34403,13 @@ QH
 QH
 QH
 QH
-ai
-ai
-ai
-ai
-ai
-ai
-ai
+VT
+VT
+VT
+VT
+VT
+VT
+VT
 QH
 ai
 ai
@@ -34534,11 +34623,11 @@ QH
 QH
 QH
 QH
-ai
-ai
-ai
-ai
-ai
+VT
+VT
+VT
+VT
+VT
 ai
 ai
 ai
@@ -34753,9 +34842,9 @@ QH
 QH
 QH
 QH
-ai
-ai
-ai
+VT
+VT
+VT
 ai
 ai
 ai
@@ -34971,8 +35060,8 @@ QH
 QH
 QH
 QH
-ai
-ai
+VT
+VT
 ai
 ai
 ai
@@ -36437,7 +36526,7 @@ QH
 QH
 Yi
 qy
-hA
+qy
 qy
 QH
 QH
@@ -39500,7 +39589,7 @@ qy
 qy
 qy
 qy
-qy
+ne
 qy
 qy
 qy
@@ -39679,7 +39768,7 @@ qy
 qy
 qy
 qy
-qy
+ne
 qy
 qy
 qy
@@ -39771,7 +39860,7 @@ qy
 qy
 qy
 qy
-qy
+ne
 qy
 qy
 qy
@@ -43581,7 +43670,7 @@ qy
 qy
 qy
 qy
-qy
+ne
 qy
 qy
 qy
@@ -54992,8 +55081,8 @@ QH
 QH
 QH
 QH
-QH
-QH
+ix
+aM
 QH
 QH
 QH
@@ -57342,7 +57431,7 @@ hH
 HF
 cW
 cW
-cW
+Th
 cW
 wB
 wB
@@ -63566,8 +63655,8 @@ QH
 QH
 QH
 QH
-QH
-QH
+lo
+bi
 QH
 QH
 QH
@@ -63783,11 +63872,11 @@ QH
 QH
 QH
 QH
-QH
-QH
-QH
-QH
-QH
+oG
+op
+ya
+cW
+cW
 cW
 cW
 cW
@@ -64001,10 +64090,10 @@ QH
 QH
 QH
 QH
-QH
-QH
-QH
-QH
+cW
+ya
+ya
+ya
 cW
 cW
 cK
@@ -64220,8 +64309,8 @@ QH
 QH
 QH
 QH
-QH
 cW
+ya
 cW
 cK
 cK
@@ -64439,7 +64528,7 @@ QH
 QH
 QH
 cW
-cW
+ya
 cW
 cW
 cW
@@ -64657,7 +64746,7 @@ QH
 cW
 cW
 cW
-cW
+ya
 cW
 cW
 cW
@@ -65091,7 +65180,7 @@ QH
 QH
 QH
 cW
-cW
+ya
 HF
 HF
 cW
@@ -65525,7 +65614,7 @@ QH
 QH
 cW
 cW
-cW
+ya
 cW
 cW
 cW
@@ -65741,7 +65830,7 @@ ez
 ez
 ez
 cW
-cW
+ya
 cW
 cW
 cW
@@ -65958,7 +66047,7 @@ ez
 ez
 ez
 iG
-cW
+ya
 cW
 cK
 cK
@@ -66394,7 +66483,7 @@ iG
 cW
 cW
 cK
-cW
+ya
 cW
 fj
 jV
@@ -66828,7 +66917,7 @@ cW
 cW
 cK
 cW
-cW
+ya
 cW
 gc
 gc
@@ -67261,7 +67350,7 @@ ez
 HX
 cW
 cW
-cW
+ya
 cW
 AY
 fj
@@ -67476,7 +67565,7 @@ ez
 ez
 ez
 HX
-cW
+ya
 cW
 cW
 cW
@@ -67693,7 +67782,7 @@ ez
 ez
 ez
 cW
-cW
+ya
 HF
 HF
 cW
@@ -68126,7 +68215,7 @@ ez
 ez
 ez
 cW
-cW
+ya
 cW
 cW
 cW
@@ -68246,7 +68335,7 @@ kA
 QH
 QH
 uH
-aM
+rZ
 aM
 aM
 uH
@@ -68343,7 +68432,7 @@ ez
 ez
 ez
 cW
-cW
+ya
 cW
 cW
 cW
@@ -68776,7 +68865,7 @@ ez
 ez
 cW
 cW
-cW
+ya
 cW
 cW
 cW
@@ -68990,7 +69079,7 @@ cW
 cW
 cW
 cW
-cW
+ya
 cW
 cW
 cW
@@ -69206,7 +69295,7 @@ cW
 cW
 cW
 cW
-cW
+ya
 cW
 cW
 HF
@@ -69422,7 +69511,7 @@ ya
 ya
 cW
 cW
-cW
+ya
 cW
 cW
 cW
@@ -71350,7 +71439,7 @@ QH
 QH
 QH
 QH
-aM
+rZ
 xa
 RK
 RK
@@ -76612,7 +76701,7 @@ QH
 QH
 QH
 NS
-bl
+SM
 bl
 cF
 bl
@@ -81630,7 +81719,7 @@ UW
 AS
 gC
 bT
-bT
+Mg
 wS
 QD
 UW
@@ -100243,7 +100332,7 @@ QH
 QH
 Pf
 Pf
-Pf
+th
 Pf
 Pf
 QH

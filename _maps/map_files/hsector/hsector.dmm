@@ -1451,7 +1451,7 @@
 /area/indoors/cave/rmh_cave/northern)
 "ayI" = (
 /obj/structure/vein/coal,
-/turf/open/floor/sand,
+/turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/north_mountain)
 "ayJ" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -1989,6 +1989,10 @@
 	},
 /turf/open/floor/tile/tilerg,
 /area/indoors/town/rmh/bath)
+"aJM" = (
+/obj/machinery/light/fueled/torchholder/metal_torch,
+/turf/closed/wall/mineral/stone/moss,
+/area/indoors/cave/rmh_cave/southern)
 "aJT" = (
 /obj/effect/decal/cobblerockedge{
 	dir = 8
@@ -3983,6 +3987,13 @@
 /obj/machinery/light/fueled/firebowl,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison/wall)
+"bxz" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 9
+	},
+/obj/structure/vine,
+/turf/open/floor/cobblerock,
+/area/indoors/cave/rmh_cave/southern)
 "bxC" = (
 /obj/structure/barricade/wooden,
 /obj/structure/barricade/wooden/crude,
@@ -8075,6 +8086,11 @@
 "cVy" = (
 /turf/open/openspace,
 /area/outdoors/beach/rmh_beach)
+"cVP" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/indoors/cave/rmh_cave/southern)
 "cVW" = (
 /turf/open/floor/tile/tilerg,
 /area/indoors/town/rmh/bath)
@@ -9249,6 +9265,10 @@
 /obj/structure/hotspring,
 /turf/open/water/clean,
 /area/indoors/cave/rmh_cave/cave_druid)
+"doz" = (
+/obj/structure/dungeon_entrance/bandit_hideout,
+/turf/open/floor/naturalstone,
+/area/outdoors/rmh_field/north_mountain)
 "doB" = (
 /obj/item/natural/rock,
 /turf/open/floor/dirt/road,
@@ -11452,6 +11472,18 @@
 /obj/structure/carpet/purple,
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/bank)
+"dVd" = (
+/obj/structure/table/stone_small,
+/obj/item/weapon/knife/dagger{
+	pixel_x = -9;
+	pixel_y = 10
+	},
+/obj/item/reagent_containers/glass/bottle/vial/healthpot{
+	pixel_x = -8;
+	pixel_y = 0
+	},
+/turf/open/floor/blocks,
+/area/indoors/cave/rmh_cave/southern)
 "dVi" = (
 /obj/structure/ladder,
 /turf/open/floor/concrete,
@@ -12779,6 +12811,10 @@
 "etm" = (
 /turf/open/openspace,
 /area/outdoors/rmh_air)
+"ets" = (
+/obj/machinery/light/fueled/torchholder/metal_torch/east,
+/turf/open/floor/blocks/green,
+/area/under/town/rmh/sewer)
 "etx" = (
 /obj/effect/decal/edge{
 	icon_state = "stairs";
@@ -13464,6 +13500,13 @@
 /obj/structure/flora/new_shroom/cyanf,
 /turf/open/floor/mushroom/green,
 /area/under/rmh_dungeon/underdarkmaze)
+"eED" = (
+/obj/structure/fluff/signage/newsign/tall/broken{
+	desc = "Riches and glory await";
+	name = "Depths"
+	},
+/turf/open/floor/blocks,
+/area/indoors/cave/rmh_cave/southern)
 "eEI" = (
 /turf/open/openspace,
 /area/indoors/town/rmh/windmill)
@@ -14170,6 +14213,12 @@
 /obj/item/kitchen/spoon,
 /turf/open/floor/wood,
 /area/indoors/town/rmh)
+"ePJ" = (
+/obj/structure/dungeon_entrance/infinite{
+	pixel_x = -32
+	},
+/turf/open/floor/blocks,
+/area/indoors/cave/rmh_cave/southern)
 "ePN" = (
 /obj/structure/fluff/railing/wood/east,
 /turf/open/floor/twig,
@@ -16137,6 +16186,13 @@
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/farm/ambar)
+"fAQ" = (
+/obj/machinery/light/fueled/firebowl/stump{
+	pixel_x = -7;
+	pixel_y = 5
+	},
+/turf/open/floor/sand,
+/area/outdoors/rmh_field/north_mountain)
 "fAU" = (
 /turf/closed/wall/mineral/wooddark/window,
 /area/indoors)
@@ -23481,6 +23537,10 @@
 	},
 /turf/closed/wall/mineral/decostone/cand,
 /area/under/rmh_dungeon/catacombs_church)
+"hUT" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/cobble/alt,
+/area/indoors/cave/rmh_cave/southern)
 "hUW" = (
 /obj/structure/flora/grass/fullgrass,
 /obj/item/natural/rock,
@@ -26164,6 +26224,10 @@
 /obj/structure/flora/grass/fullgrass,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh)
+"iKG" = (
+/obj/structure/bars,
+/turf/open/water/sewer,
+/area/under/town/rmh/sewer)
 "iKL" = (
 /obj/structure/hotspring,
 /obj/structure/flora/hotspring_rocks/grassy,
@@ -34994,6 +35058,10 @@
 "lIF" = (
 /turf/closed/wall/mineral/stone/moss/red,
 /area/under/town/rmh/basement/bdsm)
+"lIM" = (
+/obj/machinery/light/fueled/torchholder/metal_torch/west,
+/turf/open/floor/cobble/alt,
+/area/indoors/cave/rmh_cave/southern)
 "lIO" = (
 /obj/effect/decal/cobblerockedge{
 	dir = 9
@@ -53550,6 +53618,18 @@
 	},
 /turf/open/floor/blocks,
 /area/under/rmh_dungeon/catacombs_town)
+"rET" = (
+/obj/effect/decal/cobbleedge/alt{
+	dir = 10;
+	icon_state = "cobbleedgealt-e"
+	},
+/obj/effect/decal/cobbleedge/alt{
+	dir = 1
+	},
+/obj/item/natural/stone,
+/obj/effect/decal/cleanable/dirt/dust,
+/turf/open/floor/cobblerock,
+/area/indoors/cave/rmh_cave/southern)
 "rEW" = (
 /obj/effect/decal/cobbleedge{
 	dir = 8
@@ -68312,6 +68392,10 @@
 	},
 /turf/open/floor/cobblerock,
 /area/indoors/town/rmh)
+"wHe" = (
+/obj/structure/flora/grass/crawlvines,
+/turf/open/floor/blocks,
+/area/indoors/cave/rmh_cave/southern)
 "wHg" = (
 /obj/effect/decal/wood/herringbone{
 	dir = 8
@@ -104249,10 +104333,10 @@ hYN
 lFU
 jzy
 pfo
-pfo
-pfo
-pfo
-pfo
+wHe
+wHe
+oop
+wHe
 pfo
 pfo
 pfo
@@ -104505,11 +104589,11 @@ mGQ
 gSo
 lFU
 jzy
-pfo
-pfo
-pfo
-pfo
-pfo
+jyh
+wLG
+wHe
+wLG
+wLG
 pfo
 pfo
 pfo
@@ -104762,11 +104846,11 @@ mGQ
 gSo
 lFU
 jzy
-pfo
-pfo
-pfo
-pfo
-pfo
+ePJ
+wLG
+wHe
+dVd
+wLG
 pfo
 pfo
 pfo
@@ -105019,12 +105103,12 @@ lFU
 hYN
 lFU
 jzy
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+wLG
+oop
+jyh
+bxz
+rET
+wAh
 pfo
 pfo
 pfo
@@ -105276,13 +105360,13 @@ lFU
 gSo
 mGQ
 jzy
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+aJM
+eED
+qhK
+dNe
+hUT
+hUT
+jyh
 pfo
 pfo
 pfo
@@ -105533,13 +105617,13 @@ lFU
 gSo
 mGQ
 eTt
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+ycP
+jyh
+iuw
+lIM
+jyh
+qxY
+cVP
 pfo
 pfo
 pfo
@@ -105790,13 +105874,13 @@ mGQ
 hYN
 mGQ
 eTt
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+ycP
+uXW
+uXW
+uXW
+jyh
+cVP
+ttM
 pfo
 pfo
 pfo
@@ -106046,14 +106130,14 @@ jzy
 mGQ
 gSo
 lFU
-eTt
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+jzy
+ycP
+ycP
+ycP
+ycP
+ycP
+iuw
+iuw
 pfo
 pfo
 pfo
@@ -106303,14 +106387,14 @@ jzy
 orA
 gSo
 lFU
-jzy
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+cXL
+ets
+orA
+lFU
+mGQ
+orA
+iuw
+iuw
 pfo
 pfo
 pfo
@@ -106559,14 +106643,14 @@ gLU
 eTt
 ghp
 gSo
-mGQ
-jzy
-pfo
-pfo
-pfo
-pfo
-pfo
-pfo
+gSo
+iKG
+gSo
+gSo
+gSo
+gSo
+wOc
+wOc
 pfo
 pfo
 pfo
@@ -106817,12 +106901,12 @@ eTt
 ghp
 hYN
 mGQ
-eTt
-pfo
-pfo
-pfo
-pfo
-pfo
+jBY
+ghp
+lFU
+orA
+ghp
+lkH
 pfo
 pfo
 pfo
@@ -107075,9 +107159,9 @@ ghp
 gSo
 lFU
 eTt
-pfo
-pfo
-pfo
+uXW
+ycP
+ycP
 pfo
 pfo
 pfo
@@ -263666,8 +263750,8 @@ pug
 pug
 kGC
 jHG
-okp
-okp
+ayW
+ayW
 kGC
 wUP
 kqJ
@@ -263923,7 +264007,7 @@ pug
 pug
 okp
 mvc
-mvc
+ayW
 mvc
 yaz
 wUP
@@ -264179,7 +264263,7 @@ wur
 pug
 fWx
 okp
-okp
+ayW
 yaz
 yaz
 jHG
@@ -264435,7 +264519,7 @@ wur
 wur
 sFy
 sFy
-sFy
+kGC
 hME
 okp
 mvc
@@ -264692,7 +264776,7 @@ gLU
 wur
 sFy
 sFy
-sFy
+okp
 okp
 okp
 mvc
@@ -264950,7 +265034,7 @@ gLU
 gLU
 sFy
 sFy
-okp
+ayW
 jBv
 okp
 kqJ
@@ -265465,7 +265549,7 @@ gLU
 sFy
 sFy
 sFy
-okp
+ayW
 okp
 kqJ
 jVb
@@ -265722,8 +265806,8 @@ gLU
 gLU
 tCv
 sFy
-kGC
-okp
+ayW
+ayW
 kqJ
 xQn
 xQn
@@ -266493,7 +266577,7 @@ gLU
 gLU
 sFy
 sFy
-kGC
+ayW
 okp
 kqJ
 kuU
@@ -266750,7 +266834,7 @@ gLU
 gLU
 sFy
 kOM
-kGC
+ayW
 okp
 mvc
 okp
@@ -267000,9 +267084,9 @@ gLU
 gLU
 gLU
 gLU
-gLU
-gLU
-gLU
+fAQ
+usS
+tCv
 gLU
 sFy
 sFy
@@ -267257,9 +267341,9 @@ gLU
 gLU
 gLU
 gLU
-gLU
-gLU
-gLU
+doz
+pug
+pug
 gLU
 sFy
 sFy
@@ -267515,9 +267599,9 @@ gLU
 gLU
 gLU
 gLU
-gLU
-sFy
-sFy
+tCv
+pug
+pug
 ayI
 sFy
 pug
@@ -267774,7 +267858,7 @@ gLU
 gLU
 gLU
 gLU
-sFy
+pug
 tCv
 sFy
 usS

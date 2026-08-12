@@ -1,4 +1,4 @@
-#define TENTACLE_GROWTH_GLOBAL_CAP 300
+#define TENTACLE_GROWTH_GLOBAL_CAP 600
 #define TENTACLE_GROWTH_MOVESPEED_ID "tentacle_growth"
 
 GLOBAL_VAR_INIT(tentacle_growth_tile_count, 0)

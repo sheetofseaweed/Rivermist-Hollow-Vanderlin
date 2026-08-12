@@ -163,6 +163,10 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/herringbone,
 /area/indoors/cave/rmh_dwarf_keep/grand)
+"co" = (
+/obj/structure/dungeon_entrance/wolf_den,
+/turf/open/floor/naturalstone,
+/area/indoors/cave/rmh_cave/cold)
 "cq" = (
 /turf/closed/wall/mineral/stonebrick,
 /area/indoors/cave/rmh_dwarf_keep/living)
@@ -883,6 +887,10 @@
 /obj/structure/flora/grass/both,
 /turf/open/floor/snow/rough,
 /area/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
+"ko" = (
+/obj/structure/dungeon_entrance/wolf_den,
+/turf/open/floor/snow,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "kp" = (
 /obj/item/fertilizer/ash,
 /mob/living/simple_animal/hostile/retaliate/voidstoneobelisk,
@@ -1030,6 +1038,10 @@
 /obj/structure/fluff/statue,
 /turf/open/floor/concrete,
 /area/indoors/cave/rmh_dwarf_keep/communal)
+"lS" = (
+/obj/effect/decal/remains/human,
+/turf/open/floor/snow/patchy,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "lV" = (
 /obj/structure/flora/tree/burnt,
 /turf/open/floor/dirt/road,
@@ -1194,6 +1206,10 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/herringbone,
 /area/indoors/cave/rmh_dwarf_keep/grand)
+"nE" = (
+/obj/structure/dungeon_entrance/bear_den,
+/turf/open/floor/snow,
+/area/outdoors/mountains/rmh_mountains/frozen)
 "nL" = (
 /obj/structure/fluff/statue/pillar,
 /turf/open/floor/dirt,
@@ -1548,6 +1564,10 @@
 /obj/effect/decal/cleanable/blood/tracks,
 /turf/open/floor/herringbone,
 /area/indoors/cave/rmh_dwarf_keep/living)
+"rI" = (
+/obj/structure/dungeon_entrance/bear_den,
+/turf/open/floor/snow,
+/area/indoors/cave/rmh_cave/cold)
 "rK" = (
 /obj/machinery/anvil,
 /obj/structure/fluff/walldeco/chains{
@@ -1581,6 +1601,10 @@
 /obj/item/natural/bundle/stoneblock,
 /turf/open/floor/snow/rough,
 /area/outdoors/mountains/rmh_mountains/frozen)
+"rT" = (
+/obj/effect/decal/remains/human,
+/turf/open/floor/dirt,
+/area/indoors/cave/rmh_cave/cold)
 "rV" = (
 /obj/structure/door/stone,
 /obj/effect/mapping_helpers/access/locker,
@@ -3890,6 +3914,10 @@
 "PO" = (
 /turf/closed/wall/mineral/decostone/cand,
 /area/indoors/cave/rmh_dwarf_keep/smelters)
+"PP" = (
+/obj/effect/decal/remains/human,
+/turf/open/floor/cobblerock/snow,
+/area/indoors/cave/rmh_cave/cold)
 "PQ" = (
 /turf/open/floor/metal/barograte,
 /area/indoors/cave/rmh_dwarf_keep/living)
@@ -28506,7 +28534,7 @@ bH
 bH
 bH
 bH
-QL
+ml
 LM
 QL
 QL
@@ -28635,10 +28663,10 @@ bH
 bH
 bH
 bH
-QL
-QL
-QL
-QQ
+ml
+lS
+ml
+Os
 QL
 wP
 LM
@@ -28764,8 +28792,8 @@ bH
 bH
 bH
 bH
-QL
-QL
+nE
+lS
 QL
 QL
 QL
@@ -28893,8 +28921,8 @@ bH
 bH
 bH
 bH
-QL
-QL
+ml
+ml
 dt
 QL
 AN
@@ -29024,7 +29052,7 @@ bH
 bH
 QL
 QL
-QL
+ml
 QL
 QL
 wP
@@ -29154,7 +29182,7 @@ bH
 QL
 QL
 QL
-QL
+ml
 QL
 wP
 QL
@@ -29413,9 +29441,9 @@ bH
 QL
 QL
 QL
-AN
+ml
 QL
-AN
+ml
 QL
 QL
 lg
@@ -29545,7 +29573,7 @@ QL
 AN
 dt
 QL
-QL
+ml
 QL
 QL
 Ad
@@ -29675,7 +29703,7 @@ AN
 QL
 QL
 QL
-QL
+ml
 QL
 Eg
 lY
@@ -31705,7 +31733,7 @@ bH
 bH
 bH
 bH
-bH
+PP
 vA
 oK
 bH
@@ -31833,8 +31861,8 @@ bH
 bH
 bH
 bH
-bH
-bH
+rI
+vA
 RY
 KX
 oK
@@ -31963,7 +31991,7 @@ bH
 bH
 bH
 bH
-bH
+oK
 vA
 vA
 oK
@@ -35930,7 +35958,7 @@ bH
 bH
 bH
 bH
-bH
+co
 vA
 vA
 oK
@@ -40510,8 +40538,8 @@ bH
 bH
 bH
 bH
-QL
-QL
+ml
+lS
 QL
 QL
 QL
@@ -40639,8 +40667,8 @@ bH
 bH
 bH
 bH
-QL
-QL
+nE
+ml
 QL
 QL
 LM
@@ -40736,8 +40764,8 @@ bH
 bH
 bH
 bH
-bH
-bH
+vA
+rT
 qE
 oK
 bH
@@ -40768,8 +40796,8 @@ bH
 bH
 bH
 bH
-QL
-QL
+ml
+ml
 LM
 QL
 QL
@@ -40865,8 +40893,8 @@ bH
 bH
 bH
 bH
-bH
-bH
+rI
+vA
 bH
 bH
 bH
@@ -40899,8 +40927,8 @@ bH
 QL
 QL
 QL
-QL
-QL
+ml
+ml
 QL
 QL
 QL
@@ -41158,9 +41186,9 @@ QL
 LM
 QL
 QL
+ml
 QL
-QL
-QL
+ml
 QL
 QL
 QL
@@ -44063,7 +44091,7 @@ QL
 QL
 QL
 QL
-AN
+ml
 QL
 AN
 AN
@@ -44320,7 +44348,7 @@ QL
 AN
 QL
 AN
-QL
+ml
 QL
 QL
 wP
@@ -44705,7 +44733,7 @@ QL
 QL
 QL
 QL
-QL
+ml
 QL
 wP
 QL
@@ -45092,7 +45120,7 @@ AN
 AN
 QL
 QL
-QL
+ml
 QL
 LM
 LM
@@ -45349,7 +45377,7 @@ QL
 QL
 GI
 QL
-QL
+ml
 QL
 QL
 QL
@@ -45481,7 +45509,7 @@ QL
 QL
 QL
 QL
-QL
+ml
 QL
 QL
 QL
@@ -45608,7 +45636,7 @@ LM
 LM
 LM
 QL
-QL
+ml
 LM
 QL
 LM
@@ -45737,7 +45765,7 @@ QL
 QL
 QL
 LM
-QL
+ml
 LM
 LM
 LM
@@ -45867,7 +45895,7 @@ ao
 QL
 QL
 QL
-QL
+ml
 QL
 QL
 QL
@@ -45995,8 +46023,8 @@ bH
 ao
 ao
 ao
-ao
-ao
+ml
+lS
 QL
 ao
 ao
@@ -46124,8 +46152,8 @@ bH
 bH
 bH
 bH
-bH
-ao
+ko
+ml
 bH
 ao
 bH
@@ -46253,8 +46281,8 @@ bH
 bH
 bH
 bH
-bH
-bH
+ml
+ml
 bH
 bH
 bH
