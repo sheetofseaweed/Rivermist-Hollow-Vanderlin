@@ -142,10 +142,7 @@ SUBSYSTEM_DEF(role_class_handler)
 
 	if(picked_class.inherit_parent_title)
 		if(old)
-			if(H.pronouns == SHE_HER && old.f_title)
-				picked_class.title_override = old.f_title
-			else
-				picked_class.title_override = old.title
+			picked_class.title_override = old.get_gendered_title(H.gender, H.pronouns)
 
 	SSjob.EquipRank(H, picked_class, H.client, reset_job_stats = picked_class.should_reset_stats)
 

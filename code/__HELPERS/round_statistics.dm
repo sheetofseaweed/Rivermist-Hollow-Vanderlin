@@ -609,10 +609,7 @@ GLOBAL_LIST_EMPTY(chronicle_stats)
 
 		if(M)
 			if(M.assigned_role.title != "Unassigned" && !is_unassigned_job(M.assigned_role))
-				if(user.pronouns == SHE_HER && M.assigned_role.f_title)
-					job_title = " ([M.assigned_role.f_title])"
-				else
-					job_title = " ([M.assigned_role.title])"
+				job_title = " ([M.assigned_role.get_informed_title(user)])"
 			else if(user.job && user.job != "Unassigned")
 				job_title = " ([user.job])"
 			else if(M.special_role)

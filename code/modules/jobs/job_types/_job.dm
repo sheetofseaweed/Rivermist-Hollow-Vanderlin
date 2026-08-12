@@ -7,6 +7,8 @@
 	var/title_override = null
 	/// The title of this job given to female mobs. Fluff, not as important as [var/title].
 	var/f_title = null
+	/// The title of this job given to male mobs. Fluff, not as important as [var/title].
+	var/m_title = null
 	/// Used if the job gets switched later to something else.
 	var/datum/job/parent_job
 	/// Used if this job uses parent's title for visuals
@@ -774,8 +776,14 @@
 	if(uses_parent_title && parent_job)
 		return parent_job.title
 
+	return get_gendered_title(mob.gender, mob.pronouns, ignore_pronouns)
+
+/datum/job/proc/get_gendered_title(character_gender, character_pronouns, ignore_pronouns = FALSE)
+	if(m_title && character_gender == MALE)
+		return m_title
+
 	if(f_title)
-		if(ignore_pronouns && mob.gender == FEMALE || !ignore_pronouns && mob.pronouns == SHE_HER)
+		if((ignore_pronouns && character_gender == FEMALE) || (!ignore_pronouns && character_pronouns == SHE_HER))
 			return f_title
 
 	return title
@@ -802,6 +810,7 @@
 	data["job_type"] = type
 	data["title"] = title
 	data["f_title"] = f_title
+	data["m_title"] = m_title
 	data["enabled"] = enabled
 	data["spawn_positions"] = spawn_positions
 	data["cmode_music"] = cmode_music
@@ -882,6 +891,7 @@
 
 	title = data["title"]
 	f_title = data["f_title"]
+	m_title = data["m_title"]
 	enabled = data["enabled"]
 	spawn_positions = data["spawn_positions"]
 	cmode_music = data["cmode_music"]

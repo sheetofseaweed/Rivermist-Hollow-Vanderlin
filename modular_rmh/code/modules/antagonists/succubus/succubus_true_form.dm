@@ -1,4 +1,4 @@
-// True Form is the Succubus's stored Demon identity applied to her existing human body.
+// True Form is the demon's stored identity applied to the existing human body.
 // The current species and disguise key are authoritative; no second mob or mind transfer exists.
 
 /datum/antagonist/succubus
@@ -105,7 +105,7 @@
 /obj/item/weapon/succubus_claw
 	parent_type = /obj/item/weapon/werewolf_claw
 	name = "predatory claw"
-	desc = "A rose-black talon grown from the unveiled flesh of a succubus."
+	desc = "A rose-black talon grown from the unveiled flesh of a demon."
 	force = DAMAGE_KNIFE
 	wdefense = MEDIOCRE_PARRY
 	wlength = WLENGTH_SHORT
@@ -162,7 +162,7 @@
 	extended = FALSE
 	if(show_message && owner)
 		owner.visible_message(
-			span_warning("[owner]'s predatory talons recede into her fingertips."),
+			span_warning("[owner]'s predatory talons recede into their fingertips."),
 			span_love("My talons recede, leaving my hands free once more."),
 		)
 
@@ -240,7 +240,7 @@
 		return
 	owner.setDir(get_dir(owner, target_turf))
 	owner.visible_message(
-		span_boldwarning("[owner] snaps her wings open and hurtles through the air!"),
+		span_boldwarning("[owner] snaps their wings open and hurtles through the air!"),
 		span_love("One savage wingbeat hurls me forward."),
 	)
 	owner.safe_throw_at(

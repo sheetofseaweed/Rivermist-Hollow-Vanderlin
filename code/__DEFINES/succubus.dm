@@ -1,6 +1,7 @@
 // Succubus antagonist defines.
 
 #define IS_SUCCUBUS(mob) (mob?.mind?.has_antag_datum(/datum/antagonist/succubus))
+#define SUCCUBUS_MALE_TITLE "Incubus"
 
 /// Base essence from a first-time partner's climax, before multipliers
 #define SUCCUBUS_ESSENCE_BASE_HARVEST 50

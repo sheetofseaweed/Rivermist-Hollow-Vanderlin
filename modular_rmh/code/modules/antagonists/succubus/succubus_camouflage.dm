@@ -24,6 +24,8 @@
 	if(!starting_form.capture(body))
 		QDEL_NULL(starting_form)
 		return FALSE
+	// ROLE_SUCCUBUS remains the persistent role ID; this instance name is presentation only.
+	name = starting_form.gender == MALE ? SUCCUBUS_MALE_TITLE : ROLE_SUCCUBUS
 
 	body.set_species(/datum/species/demon, icon_update = FALSE)
 	if(!istype(body.dna.species, /datum/species/demon))
@@ -97,12 +99,15 @@
 		QDEL_NULL(base_form)
 		QDEL_NULL(starting_form)
 		return FALSE
+	body.disguise_title_override = name
 	return TRUE
 
 /datum/antagonist/succubus/proc/restore_starting_identity()
 	var/mob/living/carbon/human/body = owner?.current
 	if(!ishuman(body) || !starting_form)
 		return FALSE
+	if(body.disguise_title_override == name)
+		body.disguise_title_override = null
 	if(!starting_form.apply(body))
 		return FALSE
 	current_form_key = null

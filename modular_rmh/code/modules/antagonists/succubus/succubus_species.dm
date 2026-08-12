@@ -16,7 +16,7 @@
 	parent_type = /datum/species/tieberian
 	name = "Demon"
 	id = SPEC_ID_DEMON
-	desc = "A fiend in her natural flesh, bearing long horns, a barbed tail, and powerful wings."
+	desc = "A fiend in natural flesh, bearing long horns, a barbed tail, and powerful wings."
 
 	organs = list(
 		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,

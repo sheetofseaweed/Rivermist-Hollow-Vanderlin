@@ -414,6 +414,10 @@
 	TEST_ASSERT_EQUAL(antag.essence, 0, "essence must clamp at zero")
 
 /datum/unit_test/succubus_spawn_identity/Run()
+	var/datum/job/succubus/succubus_job = allocate(/datum/job/succubus)
+	TEST_ASSERT_EQUAL(succubus_job.get_gendered_title(MALE, THEY_THEM), SUCCUBUS_MALE_TITLE, "a male character must receive the Incubus display title regardless of pronouns")
+	TEST_ASSERT_EQUAL(succubus_job.get_gendered_title(FEMALE, THEY_THEM), ROLE_SUCCUBUS, "a non-male character must retain the canonical Succubus display title")
+
 	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human)
 	succubus.mind_initialize()
 	var/mob/living/carbon/human/original_body = succubus
@@ -421,7 +425,7 @@
 	var/original_species_type = succubus.dna.species.type
 	succubus.real_name = "Mortal Preference"
 	succubus.age = 37
-	succubus.gender = FEMALE
+	succubus.gender = MALE
 	succubus.pronouns = THEY_THEM
 	succubus.voice_type = VOICE_TYPE_ANDRO
 	succubus.voice_color = "c71585"
@@ -443,6 +447,8 @@
 	LAZYADD(succubus.mind.antag_datums, antag)
 
 	TEST_ASSERT(antag.initialize_demon_identity(), "Succubus gain must derive a Demon identity from a valid human")
+	TEST_ASSERT_EQUAL(antag.name, SUCCUBUS_MALE_TITLE, "a male starting character must receive the Incubus antagonist display name")
+	TEST_ASSERT_EQUAL(succubus.disguise_title_override, SUCCUBUS_MALE_TITLE, "the Incubus display title must remain stable while identities change")
 	TEST_ASSERT_EQUAL(antag.owner.current, original_body, "Demon initialization must keep the same body reference")
 	TEST_ASSERT_EQUAL(succubus.mind, original_mind, "Demon initialization must keep the same mind")
 	TEST_ASSERT(istype(succubus.dna.species, /datum/species/demon), "the initialized body must use the Demon species")
@@ -482,6 +488,7 @@
 
 	antag.on_removal()
 	TEST_ASSERT_EQUAL(original_mind.current, original_body, "antagonist removal must keep the original mind in the original body")
+	TEST_ASSERT_NULL(succubus.disguise_title_override, "antagonist removal must clear the infernal display-title override")
 	TEST_ASSERT_EQUAL(succubus.dna.species.type, original_species_type, "antagonist removal must restore the preference species")
 	TEST_ASSERT_EQUAL(succubus.real_name, "Mortal Preference", "antagonist removal must restore the preference identity")
 	TEST_ASSERT_NULL(succubus.getorganslot(ORGAN_SLOT_HORNS), "antagonist removal must remove Demon horns from a human preference body")

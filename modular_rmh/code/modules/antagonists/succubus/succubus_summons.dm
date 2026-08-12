@@ -40,14 +40,14 @@
 /datum/antagonist/succubus_imp/on_gain()
 	var/datum/objective/serve = new
 	serve.owner = owner
-	serve.explanation_text = "Collaborate with my summoner, protect her secrets, and further her schemes until my borrowed form expires. I retain my own agency; preferences and server rules still bind every request."
+	serve.explanation_text = "Collaborate with my summoner, protect their secrets, and further their schemes until my borrowed form expires. I retain my own agency; preferences and server rules still bind every request."
 	objectives += serve
 	return ..()
 
 /datum/antagonist/succubus_imp/greet()
 	to_chat(owner.current, span_userdanger("A whisper from the lower planes binds me to a fragile infernal form for thirty minutes."))
 	if(mistress_mind?.current)
-		to_chat(owner.current, span_love("My summoner is [mistress_mind.current.real_name]. I should scout, carry messages, protect her secrets, and aid her schemes."))
+		to_chat(owner.current, span_love("My summoner is [mistress_mind.current.real_name]. I should scout, carry messages, protect their secrets, and aid their schemes."))
 	to_chat(owner.current, span_boldnotice("This is a collaborative role, not mind control. My agency, ERP preferences, server rules, and right to refuse remain intact."))
 	owner.announce_objectives()
 	return ..()
@@ -66,7 +66,7 @@
 /datum/antagonist/succubus/examine_friendorfoe(datum/antagonist/examined_datum, mob/examiner, mob/examined)
 	var/datum/antagonist/succubus_imp/imp_datum = examined_datum
 	if(istype(imp_datum) && imp_datum.mistress_mind == examiner.mind)
-		return span_boldnotice("My mistress, whose whisper called me into this world.")
+		return span_boldnotice("My summoner, whose whisper called me into this world.")
 
 // --- Mob and AI -----------------------------------------------------------------------------------
 
@@ -256,7 +256,7 @@
 
 /datum/antagonist/succubus/proc/offer_imp_summon(datum/weakref/spell_weakref)
 	var/list/candidates = pollGhostCandidates(
-		"Serve temporarily as a succubus's whispering imp? This is a 30-minute collaborative antagonist role.",
+		"Serve temporarily as a demon's whispering imp? This is a 30-minute collaborative antagonist role.",
 		ROLE_SUCCUBUS,
 		null,
 		poll_time = SUCCUBUS_SUMMON_IMP_POLL_TIME,

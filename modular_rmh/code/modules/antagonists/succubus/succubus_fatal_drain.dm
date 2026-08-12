@@ -72,10 +72,10 @@
 
 /mob/living/carbon/human/proc/prompt_succubus_fatal_drain(datum/weakref/succubus_ref)
 	var/datum/antagonist/succubus/succubus_antag = succubus_ref?.resolve()
-	var/succubus_name = succubus_antag?.owner?.current?.real_name || "the demoness"
+	var/demon_name = succubus_antag?.owner?.current?.real_name || "the demon"
 	var/choice = tgui_alert(
 		src,
-		"[succubus_name] has closed her hunger around my Hollowed soul. If the drain completes, I may yield my lifespark and die immediately, bypassing defeat and rune rescue, or fight for life through my normal defeat and rescue settings.",
+		"[demon_name] has closed their hunger around my Hollowed soul. If the drain completes, I may yield my lifespark and die immediately, bypassing defeat and rune rescue, or fight for life through my normal defeat and rescue settings.",
 		"Fatal Drain",
 		list("Fight for Life", "Yield the Lifespark"),
 		SUCCUBUS_FATAL_DRAIN_PROMPT_TIMEOUT,

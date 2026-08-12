@@ -14,7 +14,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	/// The final Rift verdict persists for objective and round-end reporting.
 	var/tmp/rift_ascended = FALSE
 	var/tmp/rift_banished = FALSE
-	/// The last Open Rift was sealed, but its mistress chose to remain and rebuild.
+	/// The last Open Rift was sealed, but its creator chose to remain and rebuild.
 	var/tmp/rift_repelled = FALSE
 
 /datum/objective/succubus/rift
@@ -93,7 +93,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 				continue
 			imp_datum.mistress_mind = null
 			if(imp_mind.current)
-				to_chat(imp_mind.current, span_boldnotice("The Rift's verdict severs my bond to the succubus. My borrowed form remains my own until its time expires."))
+				to_chat(imp_mind.current, span_boldnotice("The Rift's verdict severs my bond to my summoner. My borrowed form remains my own until its time expires."))
 		summoned_imp_minds.Cut()
 
 	QDEL_LIST(summoned_lusthounds)
@@ -531,13 +531,13 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	if(user_datum)
 		if(!silent)
 			if(user_datum == owner_datum)
-				to_chat(user, span_warning("My Rift recognizes its mistress. Its hungry edges will never close beneath my own hand."))
+				to_chat(user, span_warning("My Rift recognizes its creator. Its hungry edges will never close beneath my own hand."))
 			else
-				to_chat(user, span_warning("The rival Rift rejects my infernal touch. One succubus cannot seal another's claim."))
+				to_chat(user, span_warning("The rival Rift rejects my infernal touch. One demon cannot seal another's claim."))
 		return FALSE
 	if(owner_datum.is_linked_retinue(user))
 		if(!silent)
-			to_chat(user, span_warning("My infernal bond recoils from any attempt to seal its mistress's Rift."))
+			to_chat(user, span_warning("My infernal bond recoils from any attempt to seal its creator's Rift."))
 		return FALSE
 	return TRUE
 
@@ -641,24 +641,24 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 	else
 		current_stage = SUCCUBUS_RIFT_STAGE_ASCENDED
 		name = "ascendant Rift of Lust"
-		desc = "A conquered wound of steady rose-gold light. Its victorious mistress alone commands the road through it."
+		desc = "A conquered wound of steady rose-gold light. Its victorious creator alone commands the road through it."
 		color = "#E89ACF"
 		resistance_flags |= INDESTRUCTIBLE
 
 	var/area_name = get_area_name(src)
 	if(ascended)
-		visible_message(span_boldnotice("[src] steadies into an unbreakable rose-gold wound as its mistress claims the road beyond!"))
+		visible_message(span_boldnotice("[src] steadies into an unbreakable rose-gold wound as its creator claims the road beyond!"))
 		priority_announce(
-			"The infernal breach in [area_name] has stabilized beyond mortal sealing. Its mistress survived the trial and now commands a road between this world and her lair.",
+			"The infernal breach in [area_name] has stabilized beyond mortal sealing. Its creator survived the trial and now commands a road between this world and their lair.",
 			"Infernal Incursion Lost",
 			'sound/misc/alert.ogg',
 		)
 		if(owner_datum.owner?.current)
 			to_chat(owner_datum.owner.current, span_boldnotice("The Rift accepts my victory. It will remain here as an unbreakable road back to my lair."))
 	else
-		visible_message(span_boldwarning("[src] collapses and strips its mistress of infernal favor!"))
+		visible_message(span_boldwarning("[src] collapses and strips its creator of infernal favor!"))
 		priority_announce(
-			"The infernal breach in [area_name] has been sealed. Its mistress was stripped of infernal favor and left to mortal judgment.",
+			"The infernal breach in [area_name] has been sealed. Its creator was stripped of infernal favor and left to mortal judgment.",
 			"Infernal Incursion Repelled",
 			'sound/misc/alert.ogg',
 		)
@@ -815,7 +815,7 @@ GLOBAL_LIST_EMPTY(active_succubus_rifts)
 			if(!rift)
 				var/turf/spawn_turf = get_turf(current_body)
 				if(!isturf(spawn_turf))
-					to_chat(admin, span_warning("The Succubus has no map-present body for a debug Rift."))
+					to_chat(admin, span_warning("The demon has no map-present body for a debug Rift."))
 					return
 				rift = new(spawn_turf)
 				if(!rift.bind_to(src))

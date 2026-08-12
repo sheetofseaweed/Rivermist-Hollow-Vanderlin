@@ -2,6 +2,7 @@ GLOBAL_LIST_EMPTY(succubus_sewer_insertions)
 
 /datum/job/succubus
 	title = ROLE_SUCCUBUS
+	m_title = SUCCUBUS_MALE_TITLE
 	tutorial = "You awaken in your infernal home, hungry for mortal essence. Prepare a face, enter their world, and fulfill the contracts that will restore your full power."
 	department_flag = VILLAINS
 	faction = FACTION_TOWN
@@ -74,7 +75,7 @@ GLOBAL_LIST_EMPTY(succubus_sewer_insertions)
 	return get_home_spawn_point()
 
 /datum/outfit/antagonist/succubus
-	name = "Succubus"
+	name = "Succubus / Incubus"
 	head = null
 	mask = null
 	neck = null

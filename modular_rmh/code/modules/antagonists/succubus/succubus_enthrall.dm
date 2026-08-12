@@ -47,14 +47,14 @@
 /datum/antagonist/succubus_thrall/on_gain()
 	var/datum/objective/serve = new
 	serve.owner = owner
-	serve.explanation_text = "Aid and protect my mistress, preserve her secrets, and further her plans. I retain my own agency; preferences and server rules still bind every command."
+	serve.explanation_text = "Aid and protect my summoner, preserve their secrets, and further their plans. I retain my own agency; preferences and server rules still bind every command."
 	objectives += serve
 	return ..()
 
 /datum/antagonist/succubus_thrall/greet()
-	to_chat(owner.current, span_userdanger("A sweet bond bends my loyalty toward my mistress. Her secrets are sacred, but my choices remain my own."))
+	to_chat(owner.current, span_userdanger("A sweet bond bends my loyalty toward my summoner. Their secrets are sacred, but my choices remain my own."))
 	if(mistress_mind?.current)
-		to_chat(owner.current, span_love("My mistress is [mistress_mind.current.real_name]. I must aid her, cover for her, and bring her what she hungers for."))
+		to_chat(owner.current, span_love("My summoner is [mistress_mind.current.real_name]. I must aid them, cover for them, and bring them what they hunger for."))
 	to_chat(owner.current, span_boldnotice("Enthrallment does not waive my ERP preferences, remove my character agency, or require me to follow rule-breaking or preference-violating orders."))
 	owner.announce_objectives()
 	return ..()
@@ -104,7 +104,7 @@
 	var/mob/living/carbon/human/target = target_ref?.resolve()
 	if(!istype(target))
 		return FALSE
-	var/mistress_name = owner?.current?.real_name || "the demoness"
+	var/mistress_name = owner?.current?.real_name || "the demon"
 	var/choice = tgui_alert(target, "[mistress_name]'s essence coils through my veins, offering a supernatural bond.\n\nAccepting makes me a loyal thrall, but I keep full control of my character. The bond cannot override my ERP preferences, server rules, or my right to refuse preference-violating play.", "Accept Enthrallment", list("Accept the Bond", "Refuse"), SUCCUBUS_ENTHRALL_PROMPT_TIMEOUT)
 	// Clear the flag only while target is still valid (writing it on a hard-deleted target runtimes)
 	if(!QDELETED(target))
@@ -147,7 +147,7 @@
 	thrall_mind.remove_antag_datum(/datum/antagonist/succubus_thrall)
 	if(freed)
 		if(keep_memories)
-			to_chat(freed, span_boldwarning("The fog lifts — and I remember EVERYTHING. Her faces. Her hungers. What I did in her service."))
+			to_chat(freed, span_boldwarning("The fog lifts — and I remember EVERYTHING. Their faces. Their hungers. What I did in their service."))
 		else
 			to_chat(freed, span_warning("The fog lifts, taking its secrets with it. What... was I doing?"))
 	return TRUE
