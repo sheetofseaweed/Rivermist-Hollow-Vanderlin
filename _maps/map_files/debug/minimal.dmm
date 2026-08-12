@@ -22,7 +22,7 @@
 /turf/open/floor/cobblerock,
 /area)
 "k" = (
-/obj/effect/landmark/start/consort,
+/obj/effect/landmark/start/burgmeister,
 /turf/open/floor/cobblerock,
 /area)
 "t" = (
@@ -40,9 +40,6 @@
 "G" = (
 /obj/effect/landmark/start/adventurerlate,
 /obj/effect/landmark/latejoin,
-/obj/effect/landmark/start/lord{
-	dir = 8
-	},
 /turf/open/floor/cobblerock,
 /area)
 "H" = (
@@ -438,7 +435,7 @@ u
 u
 u
 u
-k
+u
 G
 u
 u
@@ -474,7 +471,7 @@ u
 t
 u
 u
-u
+k
 u
 u
 u

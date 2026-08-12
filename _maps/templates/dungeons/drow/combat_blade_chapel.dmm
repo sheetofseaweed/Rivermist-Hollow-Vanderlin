@@ -1,0 +1,321 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"i" = (
+/obj/effect/landmark/dungeon/encounter,
+/turf/open/floor/tile/diamond/blue,
+/area/pocket_dimension/dungeon)
+"j" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/tile/diamond/blue,
+/area/pocket_dimension/dungeon)
+"k" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"o" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"p" = (
+/obj/structure/flora/pillar,
+/turf/open/floor/tile/diamond/blue,
+/area/pocket_dimension/dungeon)
+"r" = (
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/obj/effect/landmark/dungeon/guardian,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"t" = (
+/mob/living/simple_animal/hostile/retaliate/spider/mutated,
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"v" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"w" = (
+/obj/effect/landmark/dungeon/gate/hazard,
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"x" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/tile/diamond/blue,
+/area/pocket_dimension/dungeon)
+"z" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/tile/diamond/blue,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/structure/fluff/statue/spider,
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"C" = (
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"D" = (
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/obj/item/statue/silver/vasefancy,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"J" = (
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+"L" = (
+/obj/structure/flora/pillar,
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"N" = (
+/turf/open/floor/tile/diamond/blue,
+/area/pocket_dimension/dungeon)
+"O" = (
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/obj/effect/landmark/dungeon/loot,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"R" = (
+/obj/structure/flora/pillar,
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"S" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#3b3b3b"
+	},
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/obj/effect/landmark/dungeon/guardian,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"Y" = (
+/obj/effect/landmark/dungeon/gate/elite,
+/obj/effect/decal/edge{
+	dir = 3;
+	color = "#3b3b3b"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+w
+F
+a
+B
+E
+F
+B
+E
+F
+B
+E
+a
+a
+"}
+(3,1,1) = {"
+a
+C
+N
+p
+k
+r
+p
+k
+r
+p
+k
+D
+L
+a
+"}
+(4,1,1) = {"
+a
+F
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+J
+a
+"}
+(5,1,1) = {"
+a
+j
+N
+N
+N
+N
+N
+i
+N
+N
+N
+z
+x
+a
+"}
+(6,1,1) = {"
+a
+F
+N
+N
+N
+N
+N
+N
+N
+N
+N
+N
+J
+a
+"}
+(7,1,1) = {"
+a
+C
+N
+p
+v
+G
+p
+v
+S
+p
+v
+o
+R
+a
+"}
+(8,1,1) = {"
+a
+Y
+F
+a
+t
+O
+F
+B
+E
+F
+B
+E
+a
+a
+"}
+(9,1,1) = {"
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+a
+"}

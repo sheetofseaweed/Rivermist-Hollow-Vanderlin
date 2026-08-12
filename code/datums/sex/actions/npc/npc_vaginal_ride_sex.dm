@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_vaginal_ride_sex
 	name = "NPC Ride them"
-	stamina_cost = 0
 	check_same_tile = FALSE
 	hole_id = ORGAN_SLOT_VAGINA
 	scene_interaction = SEX_SCENE_INTERACTION_PENETRATION

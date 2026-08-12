@@ -1,3 +1,5 @@
+#define SEX_STAMINA_MODIFIER 0.2 //Just a stopgap so that you don't tire out immediately
+
 /datum/sex_scene_resource_claim
 	var/datum/sex_action/owner
 	var/datum/sex_scene/scene
@@ -134,6 +136,12 @@
 	var/next_message_time = 0
 	/// Whether this running action should stop on its next loop check
 	var/stop_requested = FALSE
+	/// Whether the current cycle produced nothing and should be skipped without ending the action
+	var/cycle_interrupted = FALSE
+	/// World time before which this action refuses another clench
+	var/next_clench_time = 0
+	/// World time before which this action will not re-send its clench prompt
+	var/next_clench_prompt_time = 0
 	/// Which hand this action reserved, if any
 	var/selected_hand = null
 	/// Which zone the local user is using for interaction-menu filtering
@@ -312,19 +320,31 @@
 		action_remote_context.show_action_overlay(src)
 		action_remote_context.show_action_message(src, MAGE_HAND_ACTION_MESSAGE_START)
 
+	send_clench_prompt(force = TRUE)
+
 	while(is_runtime_active())
-		var/stamina_cost = src.stamina_cost * get_stamina_cost_multiplier()
-		if(!action_user.adjust_stamina(-stamina_cost))
+		// Positive tires: stamina counts fatigue accumulated, so a cost adds to it.
+		var/stamina_cost = src.stamina_cost * get_stamina_cost_multiplier() * SEX_STAMINA_MODIFIER
+		if(!action_user.adjust_stamina(stamina_cost))
 			break
+
+		if(should_auto_clench())
+			try_clench(action_target)
+			if(stop_requested)
+				break
 
 		var/current_do_time = do_time / get_speed_multiplier()
 		var/do_after_flags = IGNORE_USER_DIR_CHANGE | IGNORE_HELD_ITEM | IGNORE_SLOWDOWNS | IGNORE_USER_DOING | IGNORE_USER_LOC_CHANGE | IGNORE_TARGET_LOC_CHANGE
 		var/interaction_key = "sex_action_[REF(src)]"
-		if(!action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
+		// Mirrors can_run(): actions that opted out of proximity reach their target some other way.
+		if(check_distance && !action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
 			action_scene.stop_action(src)
 			return
 		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))
-			break
+			if(!cycle_interrupted)
+				break
+			cycle_interrupted = FALSE
+			continue
 
 		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
 			break
@@ -333,9 +353,14 @@
 		if(is_finished(action_user, action_target) || stop_requested)
 			break
 
+		if(cycle_interrupted)
+			cycle_interrupted = FALSE
+			continue
+
 		suppress_visible_messages = begin_remote_visible_message_suppression()
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
+		send_clench_prompt()
 		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
 			break
 
@@ -1035,3 +1060,5 @@
 	if(target_filter != SEX_UI_ZONE_ANY && !(target_menu_zone_mask & target_filter))
 		return FALSE
 	return TRUE
+
+#undef SEX_STAMINA_MODIFIER

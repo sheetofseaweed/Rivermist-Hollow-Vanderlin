@@ -32,6 +32,7 @@
 	damage = 15
 	damage_type = BURN
 	nodamage = FALSE
+	woundclass = BCLASS_BURN
 	speed = 0.3
 	light_color = "#dbe72c"
 	light_outer_range =  7

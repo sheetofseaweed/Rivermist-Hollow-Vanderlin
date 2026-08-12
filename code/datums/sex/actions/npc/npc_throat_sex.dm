@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_throat_sex
 	name = "NPC Fuck their throat"
-	stamina_cost = 0
 	check_same_tile = FALSE
 	hole_id = BODY_ZONE_PRECISE_MOUTH
 	gags_target = TRUE
@@ -32,7 +31,7 @@
 /datum/sex_action/npc/npc_throat_sex/on_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(can_show_action_message(user, target))
-		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s throat."))
+		user.visible_message(spanify_force(get_perform_message(user, target)))
 	playsound(target, 'sound/misc/mat/segso.ogg', 50, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
 
@@ -50,6 +49,9 @@
 				target.snap_worn_choker(user)
 	handle_passive_ejaculation()
 
+/datum/sex_action/npc/npc_throat_sex/proc/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] fucks [target]'s throat."
+
 /datum/sex_action/npc/npc_throat_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
 		user.visible_message(span_love("[user] shudders in orgasm from being throatfucked!"))
@@ -63,7 +65,10 @@
 
 /datum/sex_action/npc/npc_throat_sex/on_finish(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] pulls [user.p_their()] cock out of [target]'s throat."))
+	user.visible_message(span_warning(get_finish_message(user, target)))
+
+/datum/sex_action/npc/npc_throat_sex/proc/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] pulls [user.p_their()] cock out of [target]'s throat."
 
 /datum/sex_action/npc/npc_throat_sex/lock_sex_object(mob/living/user, mob/living/target)
 	add_sex_lock(user, ORGAN_SLOT_PENIS)

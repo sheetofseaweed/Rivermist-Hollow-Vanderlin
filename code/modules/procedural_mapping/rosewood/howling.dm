@@ -31,7 +31,8 @@
 						/obj/item/natural/rock = 10,
 						/obj/item/natural/rock/random_ore = 5,
 						/obj/structure/flora/shroom_tree = 5,
-						/obj/item/restraints/legcuffs/beartrap/armed = 2)
+						// /obj/item/restraints/legcuffs/beartrap/armed/camouflage = 2
+						)
 	allowed_areas = list(/area/under/mountains/anvil/lower)
 
 /datum/mapGeneratorModule/grove

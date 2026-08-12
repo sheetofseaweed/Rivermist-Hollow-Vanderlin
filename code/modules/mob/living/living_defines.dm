@@ -213,6 +213,8 @@
 	var/maximum_stamina = 100
 	var/stamina = 0
 	var/base_max_stamina = 100
+	/// Session auto-clench state. Null means follow the saved ERP preference.
+	var/auto_clench_override = null
 
 	var/last_fatigued = 0
 	var/last_ps = 0

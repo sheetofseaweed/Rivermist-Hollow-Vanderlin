@@ -43,6 +43,8 @@
 		return /datum/ai_behavior/horny/human
 	if(controller.pawn?.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_SPIDERS)
 		return /datum/ai_behavior/horny/simple_mob/spider
+	if(controller.pawn?.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_TENTACLES)
+		return /datum/ai_behavior/horny/simple_mob/tentacle
 
 	return /datum/ai_behavior/horny/simple_mob
 

@@ -79,6 +79,6 @@
 						/obj/structure/flora/tree = 5,
 						/obj/structure/flora/tree/burnt = 5,
 						/obj/structure/chair/bench/ancientlog = 5,
-						/obj/item/restraints/legcuffs/beartrap/armed = 10,
+						// /obj/item/restraints/legcuffs/beartrap/armed/camouflage = 10,
 						/obj/item/grown/log/tree/stick = 30)
 	spawnableTurfs = list(/turf/open/water/swamp/deep = 5)

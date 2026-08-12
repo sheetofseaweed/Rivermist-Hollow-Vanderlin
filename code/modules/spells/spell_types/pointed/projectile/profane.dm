@@ -52,7 +52,8 @@
 	icon_state = "chronobolt"
 	nodamage = FALSE
 	damage_type = BRUTE
-	damage = 20 //??? Correct me if i'm wrong but isn't that like a lot of damages for a spell
+	damage = 20
+	woundclass = BCLASS_PIERCE
 	range = 8
 	var/embed_prob = 10
 

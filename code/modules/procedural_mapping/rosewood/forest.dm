@@ -59,7 +59,7 @@
 							/obj/structure/flora/grass/maneater = 1,
 							/obj/structure/flora/grass/maneater/real = 0.1,
 							/obj/structure/chair/bench/ancientlog = 0.25,
-							/obj/item/restraints/legcuffs/beartrap/armed/camouflage = 0.1,
+							// /obj/item/restraints/legcuffs/beartrap/armed/camouflage = 0.1,
 							/obj/item/natural/stone = 2,
 							/obj/item/natural/rock = 4,
 							/obj/item/grown/log/tree/stick = 6)
@@ -89,7 +89,7 @@
 							/obj/structure/flora/grass/maneater = 1,
 							/obj/structure/flora/grass/pyroclasticflowers = 1,
 							/obj/structure/chair/bench/ancientlog = 5,
-							/obj/item/restraints/legcuffs/beartrap/armed/camouflage = 0.1,
+							// /obj/item/restraints/legcuffs/beartrap/armed/camouflage = 0.1,
 							/obj/item/natural/stone = 8,
 							/obj/item/natural/rock = 2,
 							/obj/item/grown/log/tree/stick = 8)

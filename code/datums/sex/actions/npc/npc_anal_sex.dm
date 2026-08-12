@@ -1,6 +1,5 @@
 /datum/sex_action/npc/npc_anal_sex
 	name = "NPC Sodomize them"
-	stamina_cost = 0
 	check_same_tile = FALSE
 	require_grab = FALSE
 	hole_id = ORGAN_SLOT_ANUS
@@ -31,13 +30,16 @@
 
 /datum/sex_action/npc/npc_anal_sex/on_start(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] slides his cock into [target]'s ass!"))
+	user.visible_message(span_warning(get_start_message(user, target)))
 	var/used_sex_volume = sex_volume
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
 
+/datum/sex_action/npc/npc_anal_sex/proc/get_start_message(mob/living/user, mob/living/target)
+	return "[user] slides his cock into [target]'s ass!"
+
 /datum/sex_action/npc/npc_anal_sex/on_perform(mob/living/user, mob/living/target)
 	if(can_show_action_message(user, target))
-		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s ass."))
+		user.visible_message(spanify_force(get_perform_message(user, target)))
 	var/used_sex_volume = sex_volume
 	playsound(target, get_force_sound(), used_sex_volume, TRUE, -2, ignore_walls = FALSE)
 	do_thrust_animate(user, target)
@@ -49,6 +51,9 @@
 	else
 		perform_sex_action(target, user, 2.4, 9, 2.4)
 	handle_passive_ejaculation(target)
+
+/datum/sex_action/npc/npc_anal_sex/proc/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] fucks [target]'s ass."
 
 
 /datum/sex_action/npc/npc_anal_sex/handle_climax_message(mob/living/user, mob/living/target, must_flip)
@@ -65,7 +70,10 @@
 
 /datum/sex_action/npc/npc_anal_sex/on_finish(mob/living/user, mob/living/target)
 	. = ..()
-	user.visible_message(span_warning("[user] pulls [user.p_their()] cock out of [target]'s butt."))
+	user.visible_message(span_warning(get_finish_message(user, target)))
+
+/datum/sex_action/npc/npc_anal_sex/proc/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] pulls [user.p_their()] cock out of [target]'s butt."
 
 /datum/sex_action/npc/npc_anal_sex/lock_sex_object(mob/living/user, mob/living/target)
 	add_sex_lock(user, ORGAN_SLOT_PENIS)

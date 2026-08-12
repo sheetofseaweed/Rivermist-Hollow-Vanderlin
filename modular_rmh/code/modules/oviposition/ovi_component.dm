@@ -235,17 +235,23 @@
 	switch(fit_result)
 		if(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
 			var/started_growing = receiver.start_oviposition_egg_growth(egg, carrier)
+			var/plants_maneater_seed = egg.egg_type == OVI_EGG_MANEATER
+			var/third_person_action = plants_maneater_seed ? "plants a seed in" : "lays an egg into"
+			var/first_person_action = plants_maneater_seed ? "plant a seed in" : "lay an egg into"
 			if(ishuman(receiver.owner))
 				var/mob/living/carbon/human/human_receiver = receiver.owner
 				human_receiver.grant_check_eggs_verb(TRUE)
 			carrier.visible_message(
-				span_love("[carrier] lays an egg into [receiver.owner]'s [receiver.get_oviposition_location_name()]!"),
-				span_love("I lai an egg into [receiver.owner]'s [receiver.get_oviposition_location_name()]!")
+				span_love("[carrier] [third_person_action] [receiver.owner]'s [receiver.get_oviposition_location_name()]!"),
+				span_love("I [first_person_action] [receiver.owner]'s [receiver.get_oviposition_location_name()]!")
 			)
 			if(receiver.owner != carrier)
-				to_chat(receiver.owner, span_love("[carrier] lays an egg into my [receiver.get_oviposition_location_name()]!"))
+				to_chat(receiver.owner, span_love("[carrier] [third_person_action] my [receiver.get_oviposition_location_name()]!"))
 			if(started_growing)
-				to_chat(receiver.owner, span_love("One of the eggs in my [receiver.get_oviposition_location_name()] immediately begins to grow."))
+				if(plants_maneater_seed)
+					to_chat(receiver.owner, span_love("The planted seed in my [receiver.get_oviposition_location_name()] immediately begins to grow."))
+				else
+					to_chat(receiver.owner, span_love("One of the eggs in my [receiver.get_oviposition_location_name()] immediately begins to grow."))
 			return TRUE
 
 	return FALSE
@@ -270,11 +276,14 @@
 	var/internal_laid = 0
 	var/external_laid = 0
 	var/warned_no_room = FALSE
+	var/plants_maneater_seeds = FALSE
 
 	for(var/i in 1 to clutch_size)
 		var/obj/item/oviposition_egg/egg = create_egg()
 		if(!egg)
 			break
+		if(egg.egg_type == OVI_EGG_MANEATER)
+			plants_maneater_seeds = TRUE
 
 		var/success = FALSE
 		if(receiver)
@@ -282,7 +291,8 @@
 			if(success)
 				internal_laid += 1
 			else if(!warned_no_room)
-				to_chat(carrier, span_warning("That [receiver.get_oviposition_location_name()] is too overfilled to lay an egg in."))
+				var/lay_action = plants_maneater_seeds ? "plant a seed" : "lay an egg"
+				to_chat(carrier, span_warning("That [receiver.get_oviposition_location_name()] is too overfilled to [lay_action] in."))
 				warned_no_room = TRUE
 
 		if(success)
@@ -302,8 +312,13 @@
 		return FALSE
 
 	if(external_laid)
-		var/laid_text = external_laid == 1 ? "an egg" : "[external_laid] eggs"
-		carrier.visible_message(span_notice("[carrier] lays [laid_text]!"), span_nicegreen("I lay [laid_text]!"))
+		var/laid_text
+		if(plants_maneater_seeds)
+			laid_text = external_laid == 1 ? "a seed" : "[external_laid] seeds"
+			carrier.visible_message(span_notice("[carrier] plants [laid_text]!"), span_nicegreen("I plant [laid_text]!"))
+		else
+			laid_text = external_laid == 1 ? "an egg" : "[external_laid] eggs"
+			carrier.visible_message(span_notice("[carrier] lays [laid_text]!"), span_nicegreen("I lay [laid_text]!"))
 
 	playsound(carrier, 'sound/effects/wounds/splatter.ogg', 70, TRUE)
 	eggs_stored = max(0, eggs_stored - eggs_laid)

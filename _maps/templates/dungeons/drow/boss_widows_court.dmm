@@ -1,0 +1,251 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/wall/mineral/decostone,
+/area/pocket_dimension/dungeon)
+"d" = (
+/turf/open/floor/carpet/red,
+/area/pocket_dimension/dungeon)
+"j" = (
+/obj/structure/chair/bench{
+	dir = 8
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"p" = (
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"q" = (
+/obj/structure/carpet/purple,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"r" = (
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/dungeon)
+"z" = (
+/obj/structure/chair/bench{
+	icon = 'icons/roguetown/misc/throne_alt.dmi';
+	icon_state = "throne";
+	pixel_x = -32;
+	name = "Underthrone"
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"B" = (
+/obj/effect/landmark/dungeon/gate/back,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"D" = (
+/obj/structure/fluff/statue/spider,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"E" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"K" = (
+/obj/effect/landmark/dungeon/loot,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"L" = (
+/mob/living/simple_animal/hostile/retaliate/spider/mutated,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"P" = (
+/obj/structure/chair/bench{
+	dir = 4
+	},
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"Q" = (
+/obj/effect/landmark/dungeon/guardian/boss,
+/turf/open/floor/carpet/royalblack,
+/area/pocket_dimension/dungeon)
+"U" = (
+/turf/closed/wall/mineral/abyssal,
+/area/pocket_dimension/dungeon)
+"V" = (
+/obj/structure/window/harem1,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"W" = (
+/obj/structure/flora/pillar,
+/turf/open/floor/tile/diamond/purple,
+/area/pocket_dimension/dungeon)
+"Z" = (
+/obj/machinery/light/fueled/firebowl/standing/blue,
+/turf/closed/wall/mineral/decostone/cand,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+a
+a
+a
+Z
+a
+Z
+a
+a
+a
+a
+a
+a
+a
+"}
+(2,1,1) = {"
+a
+a
+a
+P
+q
+P
+q
+P
+Z
+B
+a
+a
+a
+"}
+(3,1,1) = {"
+U
+a
+W
+p
+W
+p
+W
+p
+W
+E
+p
+Z
+U
+"}
+(4,1,1) = {"
+U
+V
+K
+p
+D
+p
+D
+r
+r
+F
+W
+V
+U
+"}
+(5,1,1) = {"
+U
+V
+F
+p
+r
+r
+r
+r
+r
+r
+p
+V
+U
+"}
+(6,1,1) = {"
+U
+V
+p
+z
+Q
+r
+r
+d
+d
+r
+p
+V
+U
+"}
+(7,1,1) = {"
+U
+V
+F
+p
+r
+r
+r
+r
+r
+r
+p
+V
+U
+"}
+(8,1,1) = {"
+U
+V
+K
+p
+D
+p
+L
+r
+r
+F
+W
+V
+U
+"}
+(9,1,1) = {"
+U
+a
+W
+p
+W
+p
+W
+p
+W
+p
+p
+Z
+U
+"}
+(10,1,1) = {"
+a
+a
+a
+j
+q
+j
+q
+j
+Z
+G
+a
+a
+a
+"}
+(11,1,1) = {"
+a
+a
+a
+Z
+a
+Z
+a
+a
+a
+a
+a
+a
+a
+"}

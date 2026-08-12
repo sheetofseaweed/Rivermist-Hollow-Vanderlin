@@ -1,0 +1,239 @@
+//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
+"a" = (
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"b" = (
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"c" = (
+/obj/effect/landmark/pocket_dimension/entry,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"d" = (
+/obj/structure/kneestingers,
+/turf/closed/mineral,
+/area/pocket_dimension/dungeon)
+"e" = (
+/obj/structure/table/wood/treestump,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"f" = (
+/obj/machinery/light/fueled/firebowl/stump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"g" = (
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"h" = (
+/obj/effect/landmark/dungeon/gate,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"i" = (
+/obj/structure/flora/rock,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"k" = (
+/obj/item/natural/rock,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"m" = (
+/obj/machinery/light/fueled/campfire/longlived,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"o" = (
+/obj/effect/landmark/dungeon/shrine,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"q" = (
+/turf/closed/wall/mineral/decostone/moss/long,
+/area/pocket_dimension/dungeon)
+"s" = (
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"w" = (
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"C" = (
+/obj/structure/flora/rock/pile,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"F" = (
+/obj/structure/flora/grass,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"G" = (
+/obj/effect/landmark/pocket_dimension/exit,
+/turf/open/floor/grass,
+/area/pocket_dimension/dungeon)
+"I" = (
+/obj/structure/kneestingers,
+/turf/closed/wall/mineral/decostone/moss/long,
+/area/pocket_dimension/dungeon)
+"L" = (
+/obj/structure/wild_plant/nospread/swampweed,
+/turf/open/water/swamp,
+/area/pocket_dimension/dungeon)
+"N" = (
+/obj/structure/table/wood/treestump/shroomstump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"P" = (
+/obj/structure/flora/rock/pile,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"Q" = (
+/obj/machinery/light/fueled/firebowl/stumpg,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+"S" = (
+/obj/structure/table/wood/treestump,
+/turf/open/floor/dirt,
+/area/pocket_dimension/dungeon)
+"T" = (
+/obj/structure/flora/hotspring_rocks/grassy,
+/turf/open/floor/cobblerock/alt,
+/area/pocket_dimension/dungeon)
+
+(1,1,1) = {"
+q
+q
+q
+d
+a
+a
+a
+a
+d
+a
+a
+"}
+(2,1,1) = {"
+q
+Q
+s
+g
+a
+a
+d
+b
+b
+G
+a
+"}
+(3,1,1) = {"
+I
+o
+s
+F
+b
+d
+b
+b
+c
+d
+a
+"}
+(4,1,1) = {"
+q
+Q
+s
+b
+b
+b
+b
+b
+d
+a
+a
+"}
+(5,1,1) = {"
+q
+w
+L
+b
+b
+S
+b
+g
+b
+a
+a
+"}
+(6,1,1) = {"
+d
+w
+w
+b
+e
+m
+S
+b
+b
+N
+a
+"}
+(7,1,1) = {"
+a
+L
+b
+b
+b
+S
+g
+b
+g
+b
+a
+"}
+(8,1,1) = {"
+a
+w
+k
+f
+b
+b
+g
+g
+b
+i
+d
+"}
+(9,1,1) = {"
+a
+w
+w
+b
+C
+s
+T
+s
+P
+i
+a
+"}
+(10,1,1) = {"
+a
+L
+w
+w
+L
+T
+d
+h
+d
+a
+d
+"}
+(11,1,1) = {"
+a
+a
+a
+a
+a
+d
+a
+a
+a
+d
+d
+"}

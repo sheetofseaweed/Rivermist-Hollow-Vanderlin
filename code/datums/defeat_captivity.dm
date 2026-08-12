@@ -350,12 +350,46 @@
 	)
 	return TRUE
 
+/// Admit a defeated victim to a physical lair already present on the active map. This keeps the
+/// ordinary captivity component, timers, choices, and consent gates, but replaces pocket transfer
+/// with a forceMove to the mapper-provided entrance.
+/mob/living/proc/kidnap_to_mapped_lair(profile_spec, mob/living/captor, list/captor_faction = null, stable_key = null, obj/effect/landmark/kidnap/entrance/mapped_entrance)
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(GetComponent(/datum/component/kidnap_captivity))
+		return FALSE
+	if(!ispath(profile_spec, /datum/defeat_captivity_profile) || QDELETED(mapped_entrance) || !get_turf(mapped_entrance))
+		return FALSE
+
+	var/datum/defeat_captivity_profile/profile = new profile_spec(stable_key)
+	var/datum/component/kidnap_captivity/captivity = AddComponent( \
+		/datum/component/kidnap_captivity, \
+		profile, \
+		null, \
+		captor, \
+		captor_faction, \
+		stable_key, \
+		mapped_entrance, \
+	)
+	if(!istype(captivity) || !captivity.enter_pocket())
+		if(captivity)
+			qdel(captivity)
+		return FALSE
+	visible_message(
+		span_userdanger("[src] is dragged in and dumped among the lair's writhing growth!"),
+		span_userdanger("You are dragged into a lair that lies somewhere on this very world..."),
+	)
+	return TRUE
+
 /// Compatibility name retained for callers and old escape landmarks; destination order now belongs
 /// to the active profile, including the mandatory wilds-first per-captive policy.
 /mob/living/proc/kidnap_escape_to_wilds(datum/component/kidnap_captivity/captivity)
 	if(!captivity || captivity.parent != src)
 		return FALSE
-	return captivity.release_to_context("You force your way out - free, but far from safety.")
+	var/release_message = captivity.is_mapped_lair() \
+		? "You cross the lair's boundary and tear free of its hold." \
+		: "You force your way out - free, but far from safety."
+	return captivity.release_to_context(release_message)
 
 /// Captivity state and return context. The component owns its profile datum but only weakly refers to
 /// the instance, captor, and origin; the pocket owns no captive strongly, avoiding component cycles.
@@ -365,6 +399,8 @@
 	var/datum/defeat_captivity_profile/profile
 	var/datum/weakref/instance_ref
 	var/datum/weakref/captor_ref
+	/// Physical entrance used instead of a pocket instance. Kept weak so map cleanup cannot be pinned.
+	var/datum/weakref/mapped_entrance_ref
 	var/turf/saved_origin
 	var/list/captor_faction
 	var/captive_since = 0
@@ -379,7 +415,7 @@
 	var/surrender_timer
 	var/choice_prompt_open = FALSE
 
-/datum/component/kidnap_captivity/Initialize(profile_spec, datum/pocket_dimension/defeat_captivity/instance, mob/living/captor, list/captor_faction = null, stable_key = null)
+/datum/component/kidnap_captivity/Initialize(profile_spec, datum/pocket_dimension/defeat_captivity/instance, mob/living/captor, list/captor_faction = null, stable_key = null, obj/effect/landmark/kidnap/entrance/mapped_entrance)
 	if(!isliving(parent))
 		return COMPONENT_INCOMPATIBLE
 	if(istype(profile_spec, /datum/defeat_captivity_profile))
@@ -400,6 +436,9 @@
 		captor_ref = WEAKREF(captor)
 	saved_origin = get_turf(parent)
 	captive_since = world.time
+	if(mapped_entrance)
+		mapped_entrance_ref = WEAKREF(mapped_entrance)
+		return ..()
 
 	if(!instance || !profile.can_admit(instance))
 		QDEL_NULL(profile)
@@ -434,14 +473,17 @@
 		choices_action.Remove(victim)
 		QDEL_NULL(choices_action)
 	var/datum/pocket_dimension/defeat_captivity/instance = resolve_instance()
-	instance?.unregister_captive(src, profile?.delete_when_empty)
+	if(!is_mapped_lair())
+		instance?.unregister_captive(src, profile?.delete_when_empty)
 	instance_ref = null
+	mapped_entrance_ref = null
 	return ..()
 
 /datum/component/kidnap_captivity/Destroy(force)
 	. = ..()
 	QDEL_NULL(profile)
 	captor_ref = null
+	mapped_entrance_ref = null
 	saved_origin = null
 	captor_faction = null
 	return .
@@ -460,6 +502,16 @@
 	captor_ref = null
 	return null
 
+/datum/component/kidnap_captivity/proc/resolve_mapped_entrance()
+	var/obj/effect/landmark/kidnap/entrance/entrance = mapped_entrance_ref?.resolve()
+	if(istype(entrance) && !QDELETED(entrance))
+		return entrance
+	mapped_entrance_ref = null
+	return null
+
+/datum/component/kidnap_captivity/proc/is_mapped_lair()
+	return !isnull(mapped_entrance_ref)
+
 /datum/component/kidnap_captivity/proc/get_saved_origin()
 	if(isturf(saved_origin) && !QDELETED(saved_origin))
 		return saved_origin
@@ -467,6 +519,17 @@
 
 /datum/component/kidnap_captivity/proc/enter_pocket()
 	var/mob/living/victim = parent
+	var/obj/effect/landmark/kidnap/entrance/mapped_entrance = resolve_mapped_entrance()
+	if(mapped_entrance)
+		var/turf/entrance_turf = get_turf(mapped_entrance)
+		if(!victim || QDELETED(victim) || !entrance_turf)
+			return FALSE
+		victim.forceMove(entrance_turf)
+		admitted = TRUE
+		to_chat(victim, span_userdanger("<b>YOU HAVE BEEN KIDNAPPED.</b><br>\
+			Defeat will hold you helpless for about one minute, but you can still speak, emote, and call for help.<br>\
+			This lair exists on the active map: rescuers can reach it, and its mapped escape marker ends captivity without folding space. When the hold loosens, your usual captivity and rune choices become available."))
+		return TRUE
 	var/datum/pocket_dimension/defeat_captivity/instance = resolve_instance()
 	if(!victim || QDELETED(victim) || !instance)
 		return FALSE
@@ -483,6 +546,17 @@
 	SIGNAL_HANDLER
 	if(ending || !admitted)
 		return
+	var/obj/effect/landmark/kidnap/entrance/mapped_entrance = resolve_mapped_entrance()
+	if(mapped_entrance)
+		var/turf/captive_turf = get_turf(parent)
+		var/turf/entrance_turf = get_turf(mapped_entrance)
+		if(captive_turf && entrance_turf && captive_turf.z == entrance_turf.z)
+			return
+		ending = TRUE
+		var/mob/living/mapped_victim = parent
+		mapped_victim?.grant_kidnap_release_grace()
+		qdel(src)
+		return
 	var/datum/pocket_dimension/defeat_captivity/instance = resolve_instance()
 	if(instance?.contains_turf(get_turf(parent)))
 		return
@@ -497,6 +571,8 @@
 	qdel(src)
 
 /datum/component/kidnap_captivity/proc/get_contextual_destination()
+	if(is_mapped_lair())
+		return get_turf(parent)
 	return profile?.get_ejection_destination(src, resolve_instance())
 
 /datum/component/kidnap_captivity/proc/release_to_context(message = null)
@@ -540,22 +616,19 @@
 		qdel(src)
 	return origin
 
-/// Explicitly refusing a surfaced rune ejects first, clears all captivity state, then uses the common
-/// bounded environmental recovery profile. That profile applies ordinary Defeat trauma.
+/// Explicitly refusing a surfaced rune wakes the captive in place and makes the lair's denizens
+/// leave them alone. Captivity remains active so they can continue the scene or use its normal exit.
 /datum/component/kidnap_captivity/proc/reject_rune_and_wake()
 	if(ending || !released)
 		return FALSE
 	var/mob/living/victim = parent
-	var/turf/destination = get_contextual_destination()
-	if(!victim || QDELETED(victim) || !destination)
+	if(!victim || QDELETED(victim))
 		return FALSE
-	ending = TRUE
-	victim.grant_kidnap_release_grace()
-	victim.forceMove(destination)
-	qdel(src)
-	if(!victim.perform_defeat_rescue(null, "rune rejection", /datum/defeat_recovery_profile/environmental))
+	if(!victim.perform_defeat_rescue(null, "rune rejection", /datum/defeat_recovery_profile/environmental, src))
 		return FALSE
-	to_chat(victim, span_warning("You reject the rune and wrench yourself awake. Freedom comes with the full weight of your defeat."))
+	grant_refuse_advances(victim)
+	ADD_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
+	to_chat(victim, span_warning("You reject the rune and wrench yourself awake inside the lair. You steel yourself against its denizens; use Refuse Advances if you later choose to relent."))
 	return TRUE
 
 /datum/component/kidnap_captivity/proc/release_from_knockout()
@@ -620,7 +693,7 @@
 	choice_prompt_open = TRUE
 	var/choice = tgui_alert(
 		victim,
-		"Your forced wait is over. Calling the rune pulls you to safety and heals you, but spends a limited charge and exacts coin, blood, clothing, mana, and lasting weariness. Rejecting it wakes and ejects you with ordinary Defeat trauma. Waiting leaves you here with these choices still available. Abandoning the character is permanent.",
+		"Your forced wait is over. Calling the rune pulls you to safety and heals you, but spends a limited charge and exacts coin, blood, clothing, mana, and lasting weariness. Rejecting it wakes you here with ordinary Defeat trauma and makes the lair's denizens leave you alone. Waiting leaves you here with these choices still available. Abandoning the character is permanent.",
 		"Captivity",
 		choices,
 	)

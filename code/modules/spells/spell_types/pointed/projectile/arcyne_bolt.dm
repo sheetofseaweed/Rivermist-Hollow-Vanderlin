@@ -35,5 +35,6 @@
 	armor_penetration = 10
 	nodamage = FALSE
 	flag = "piercing"
+	woundclass = BCLASS_PIERCE
 	speed = 2
 	spread = 4

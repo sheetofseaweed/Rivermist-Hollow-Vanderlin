@@ -117,6 +117,23 @@
 	//deathsight_message = "Gauntlet of Shar"
 	ceiling_protected = TRUE
 
+/area/under/underdark/rmh/tentacle_biome
+	name = "The Tangled Depths"
+	first_time_text = "THE TANGLED DEPTHS"
+	icon = 'modular_rmh/icons/turf/areas.dmi'
+	icon_state = "living"
+	ambush_times = list("night", "dawn", "dusk", "day")
+	ambush_types = list(
+		/turf/open/floor/naturalstone,
+		/turf/open/floor/cobblerock/alt,
+		/turf/open/floor/mushroom,
+	)
+	ambush_mobs = list(
+		/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher = 15,
+		/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/medium = 35,
+		/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/small = 50,
+	)
+
 
 //TRANSITIONS
 

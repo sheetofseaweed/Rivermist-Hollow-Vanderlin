@@ -1,260 +1,272 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
 "bh" = (
 /obj/structure/bed/shit,
+/obj/effect/landmark/dungeon/guardian/singlet/ratfolk,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "bi" = (
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "cu" = (
 /obj/structure/flora/grass,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "cx" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "dF" = (
 /obj/structure/vine,
 /turf/closed/mineral/bedrock,
-/area)
+/area/pocket_dimension/dungeon)
 "ei" = (
 /obj/structure/bed/shit,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "en" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "fG" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "gf" = (
 /obj/structure/fluff/nest{
 	name = "patch of straw"
 	},
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "hl" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "hp" = (
 /turf/closed/wall/mineral/wood,
-/area)
+/area/pocket_dimension/dungeon)
 "jb" = (
 /turf/closed/mineral/bedrock,
-/area)
+/area/pocket_dimension/dungeon)
 "jV" = (
 /obj/structure/flora/new_shroom/redwall,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "kM" = (
 /obj/structure/roguetent,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "ld" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/cleanable/debris/wood,
 /obj/item/natural/rock,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "lg" = (
-/obj/effect/landmark/hammer/dev_text{
-	name = "RATFOLK ENTER"
-	},
+/obj/effect/landmark/pocket_dimension/entry,
+/obj/effect/landmark/pocket_dimension/exit,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "lv" = (
 /obj/effect/decal/cleanable/food/egg_smudge,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "lA" = (
 /obj/structure/roguetent,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "nK" = (
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "nO" = (
 /obj/structure/flora/new_shroom/redwall,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "nU" = (
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "nW" = (
 /obj/structure/vine,
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "oR" = (
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "oZ" = (
 /obj/machinery/light/fueled/campfire/densefire,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "pf" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/stalagmite,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "um" = (
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "uy" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "uO" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "vq" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/closed/mineral/bedrock,
-/area)
+/area/pocket_dimension/dungeon)
 "wi" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "xn" = (
 /obj/item/natural/rock,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "xp" = (
 /obj/structure/vine,
 /turf/closed/wall/mineral/stone/moss,
-/area)
+/area/pocket_dimension/dungeon)
+"xw" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/effect/landmark/dungeon/guardian/singlet/ratfolk,
+/turf/open/floor/dirt/road,
+/area/pocket_dimension/dungeon)
 "xF" = (
 /obj/structure/tent_wall,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "xI" = (
 /obj/structure/table/wood/plain/alt,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "yK" = (
 /turf/open/water/clean/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "Az" = (
 /obj/machinery/light/fueled/torchholder/c,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "BJ" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "BK" = (
 /obj/structure/flora/grass,
 /turf/open/floor/grass,
-/area)
+/area/pocket_dimension/dungeon)
 "CJ" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/closed/wall/mineral/stone/moss,
-/area)
+/area/pocket_dimension/dungeon)
 "Eo" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/cleanable/debris/wood,
+/obj/effect/landmark/dungeon/loot,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "EF" = (
 /obj/effect/decal/cleanable/debris/wood,
 /obj/structure/flora/new_shroom/redwall,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "EP" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/structure/flora/new_shroom/redwall,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "FE" = (
 /obj/effect/decal/cleanable/food/mess/soup,
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "FX" = (
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "Gh" = (
 /obj/structure/tent_wall{
 	dir = 4
 	},
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "GP" = (
 /obj/structure/fluff/nest{
 	name = "patch of straw"
 	},
+/obj/effect/landmark/dungeon/guardian/singlet/ratfolk,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "GX" = (
 /obj/machinery/tanningrack,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "Hq" = (
 /obj/structure/fluff/nest{
 	name = "patch of straw"
 	},
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "JK" = (
 /obj/structure/stalagmite,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "Lm" = (
 /obj/item/natural/rock,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "No" = (
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "NH" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "Ol" = (
 /obj/structure/bed/shit,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
 "Px" = (
 /obj/structure/stalagmite,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 "Ro" = (
 /obj/structure/flora/grass/bush,
 /turf/open/floor/dirt,
-/area)
+/area/pocket_dimension/dungeon)
+"UN" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/effect/landmark/dungeon/guardian/singlet/ratfolk,
+/turf/closed/wall/mineral/stone/moss,
+/area/pocket_dimension/dungeon)
 "Vp" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "Vv" = (
 /obj/structure/closet/crate/chest/old_crate,
 /turf/open/floor/naturalstone,
-/area)
+/area/pocket_dimension/dungeon)
 "WH" = (
 /turf/closed/wall/mineral/stone/moss,
-/area)
+/area/pocket_dimension/dungeon)
 "WJ" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/dirt/road,
-/area)
+/area/pocket_dimension/dungeon)
 "Xp" = (
 /turf/open/floor/sand,
-/area)
+/area/pocket_dimension/dungeon)
 "Yk" = (
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
-/area)
+/area/pocket_dimension/dungeon)
 
 (1,1,1) = {"
 jb
@@ -300,7 +312,7 @@ en
 FX
 Vv
 jb
-CJ
+UN
 en
 Lm
 yK
@@ -402,7 +414,7 @@ um
 jb
 dF
 um
-wi
+xw
 WH
 WH
 xn

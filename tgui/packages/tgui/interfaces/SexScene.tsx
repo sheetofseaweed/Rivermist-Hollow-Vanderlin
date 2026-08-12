@@ -39,6 +39,8 @@ type ControlsData = {
   do_until_finished: Booleanish;
   edging_other: Booleanish;
   lying_direction: string | null;
+  cmode: Booleanish;
+  auto_clench: Booleanish;
 };
 
 type ArousalData = {
@@ -508,6 +510,18 @@ export const SexScene = () => {
             Edge {asBool(controls.edging_other) ? 'On' : 'Off'}
           </Button>
         </Stack.Item>
+        {asBool(controls.cmode) ? (
+          <Stack.Item>
+            <Button
+              compact
+              selected={asBool(controls.auto_clench)}
+              tooltip="Automatically resist actions performed on you. Costs stamina."
+              onClick={() => act('toggle_auto_clench')}
+            >
+              Auto-Clench {asBool(controls.auto_clench) ? 'On' : 'Off'}
+            </Button>
+          </Stack.Item>
+        ) : null}
         <Stack.Item>
           <Button
             compact

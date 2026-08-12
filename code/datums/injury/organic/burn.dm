@@ -30,13 +30,11 @@
 /datum/injury/burn/is_bleeding()
 	return FALSE //burns cannot bleed
 
-/*
 /datum/injury/burn/apply_injury(our_damage, obj/item/bodypart/limb)
 	. = ..()
 	//Burn damage can cause fluid loss due to blistering and cook-off
 	if(limb.owner && (damage_per_injury() >= 5 || damage + limb.burn_dam >= 20))
 		limb.owner.adjust_bloodvolume(-CEILING(BLOOD_VOLUME_SURVIVE * damage/100, 1))
-*/
 
 /*
 /datum/injury/burn/receive_damage(damage_received = 0, pain_received = 0, wounding_type = WOUND_BLUNT)

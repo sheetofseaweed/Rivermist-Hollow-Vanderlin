@@ -104,6 +104,34 @@
 	ready_message = "The bog bug egg in my %CONTAINER% churns like a swamp creature is kicking to get free."
 	hatch_message = "%EGG% bursts with a wet pop, spilling out a ravenous bog bug!"
 
+/datum/oviposition_egg_profile/tentacle
+	egg_type = OVI_EGG_TENTACLE
+	display_name = "tentacle egg"
+	display_desc = "A soft, wine-dark egg whose slick shell twitches beneath the fingers."
+	display_icon_state = "egg_color"
+	display_color = "#713e63"
+	hatch_result_type = /mob/living/simple_animal/hostile/retaliate/tentacle
+	requires_fertilization = FALSE
+	poll_for_ghost = FALSE
+	require_ghost_to_hatch = FALSE
+	incubation_stage_duration = 3 MINUTES
+	ready_message = "The tentacle egg in my %CONTAINER% squirms with impatient coils."
+	hatch_message = "%EGG% splits with a wet tear, spilling out a writhing tentacle mass!"
+
+/datum/oviposition_egg_profile/maneater
+	egg_type = OVI_EGG_MANEATER
+	display_name = "maneater seed egg"
+	display_desc = "A soft green egg threaded through with fine roots and restless veins."
+	display_icon_state = "egg_color"
+	display_color = "#6f843b"
+	hatch_result_type = /obj/item/maneaterseed/seedling
+	requires_fertilization = FALSE
+	poll_for_ghost = FALSE
+	require_ghost_to_hatch = FALSE
+	incubation_stage_duration = 4 MINUTES
+	ready_message = "The green egg in my %CONTAINER% tightens around a vigorously rooting seedling."
+	hatch_message = "%EGG% peels open like a wet flower, releasing a maneater seedling!"
+
 /datum/oviposition_egg_profile/harpy
 	egg_type = OVI_EGG_HARPY
 	display_name = "hardshell egg"
@@ -217,6 +245,10 @@
 			profile_type = /datum/oviposition_egg_profile/embryo
 		if(OVI_EGG_LEECH)
 			profile_type = /datum/oviposition_egg_profile/leech
+		if(OVI_EGG_TENTACLE)
+			profile_type = /datum/oviposition_egg_profile/tentacle
+		if(OVI_EGG_MANEATER)
+			profile_type = /datum/oviposition_egg_profile/maneater
 	return new profile_type
 
 /proc/get_species_oviposition_egg_type(mob/living/owner)
@@ -233,7 +265,7 @@
 		OVI_EGG_HARPY
 	)
 	if(include_unsafe)
-		options += list(OVI_EGG_SPIDER, OVI_EGG_BOG_BUG)
+		options += list(OVI_EGG_SPIDER, OVI_EGG_BOG_BUG, OVI_EGG_TENTACLE, OVI_EGG_MANEATER)
 	return options
 
 /proc/get_oviposition_egg_trait_options()

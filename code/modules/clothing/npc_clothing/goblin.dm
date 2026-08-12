@@ -36,7 +36,7 @@
 	icon = 'icons/roguetown/mob/monster/goblins.dmi'
 	allowed_race = list(SPEC_ID_GOBLIN)
 	armor = list("blunt" = DR_MEDIUM, "slash" = DBLOCK_MEDIUM, "stab" = DBLOCK_MEDIUM, "piercing" = DBLOCK_NONE, "fire" = DR_NONE, "acid" = DR_NONE)
-	body_parts_covered = CHEST|GROIN
+	body_parts_covered = GROIN
 	flags_inv = HIDECROTCH
 	sellprice = 0
 	smeltresult = /obj/item/fertilizer/ash
