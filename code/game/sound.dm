@@ -74,6 +74,14 @@
 			if(get_dist(listening_ghost, turf_source) <= audible_distance)
 				listeners += listening_ghost
 
+	// Pocket rooms share allocator space, but not an acoustic space. Resolve the source once and
+	// filter only pocket-origin sounds, leaving the overwhelmingly common world sound path unchanged.
+	var/area/source_area = get_area(turf_source)
+	if(istype(source_area, /area/pocket_dimension))
+		var/datum/pocket_dimension/source_pocket = get_pocket_dimension_at(turf_source)
+		if(source_pocket)
+			filter_pocket_sound_listeners(source_pocket, listeners)
+
 	for(var/mob/listening_mob in listeners)//had nulls sneak in here, hence the typecheck
 		listening_mob.playsound_local(turf_source, soundin, vol, vary, frequency, falloff_exponent, channel, pressure_affected, S, max_distance = maxdistance, falloff_distance = falloff_distance, repeat = repeat)
 

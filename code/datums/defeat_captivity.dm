@@ -151,7 +151,9 @@
 	ownership_mode = DEFEAT_CAPTIVITY_SHARED
 	access_rule = DEFEAT_CAPTIVITY_ACCESS_RELEASED
 	capacity = 8
-	delete_when_empty = TRUE
+	// These are stable places, not disposable encounter rooms. Once created, they remain loaded so
+	// later captives return to the same lair instead of rebuilding and scattering its contents.
+	delete_when_empty = FALSE
 
 /datum/defeat_captivity_profile/shared/greenskin
 	stable_key = "greenskin_lair"
@@ -292,6 +294,16 @@
 	if(captivity)
 		return captivity.release_to_context("You cross the folded threshold and escape captivity.")
 	return ..()
+
+// Captivity pockets can accumulate stripped clothes and other scene debris. If one is explicitly
+// torn down, swallow that foreign clutter like an infinite-dungeon room instead of dumping it at a
+// random safe turf. Occupants are ejected before this runs, so their carried belongings move with them.
+/datum/pocket_dimension/defeat_captivity/eject_foreign_movables(items_only = FALSE, atom/override_destination = null)
+	for(var/atom/movable/movable as anything in get_preservable_foreign_movables(items_only))
+		qdel(movable)
+	QDEL_LIST_ASSOC_VAL(hibernated_foreign_movables)
+	if(storage && !length(storage.contents))
+		QDEL_NULL(storage)
 
 /datum/pocket_dimension/defeat_captivity/eject_teardown_contents(message = null, atom/override_destination = null)
 	if(teardown_started)

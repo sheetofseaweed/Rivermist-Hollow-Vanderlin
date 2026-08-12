@@ -39,7 +39,10 @@
 	var/datum/component/kidnap_captivity/second_captivity = second.GetComponent(/datum/component/kidnap_captivity)
 	var/datum/defeat_captivity_profile/shared/unit_test/first_profile = first_captivity.profile
 	first_profile.unit_test_wilds = test_wilds
+	var/datum/defeat_captivity_profile/shared/unit_test/second_profile = second_captivity.profile
+	second_profile.unit_test_wilds = test_wilds
 	var/datum/pocket_dimension/defeat_captivity/shared_instance = first_captivity.resolve_instance()
+	var/obj/item/weapon/knife/left_behind = allocate(/obj/item/weapon/knife, shared_instance.get_entry_turf())
 	TEST_ASSERT_EQUAL(second_captivity.resolve_instance(), shared_instance, "Shared profiles should reuse one stable-key instance.")
 	TEST_ASSERT(shared_instance.can_exit_mob(first, null, FALSE), "The shared-lair exit should not duplicate KO interaction blocking with component state.")
 	first.remove_status_effect(/datum/status_effect/defeat_knockout)
@@ -49,7 +52,12 @@
 	TEST_ASSERT_NOTEQUAL(get_turf(first), first_origin, "A shared lair must not dump an escapee back on the capture turf, in the middle of their captors.")
 	TEST_ASSERT_EQUAL(get_turf(first), test_wilds, "A shared lair without a configured exterior should prefer the wilds over the saved capture turf.")
 	TEST_ASSERT(first.kidnap_protected_until > world.time, "Leaving captivity should grant a short recapture grace period.")
-	SSpocket_dimensions.delete_instance(shared_instance)
+	second.remove_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT(shared_instance.exit_mob(second), "The final captive should be able to leave the shared lair normally.")
+	TEST_ASSERT_EQUAL(SSpocket_dimensions.get_instance(shared_instance.instance_key), shared_instance, "An empty shared lair should remain loaded for later captives.")
+	TEST_ASSERT(shared_instance.contains_turf(get_turf(left_behind)), "Loose foreign contents should remain inside a persistent shared lair during the round.")
+	TEST_ASSERT(SSpocket_dimensions.delete_instance(shared_instance), "Explicit shared-lair teardown should still succeed.")
+	TEST_ASSERT(QDELETED(left_behind), "Explicit teardown should delete loose foreign contents instead of dumping them into the world.")
 
 /datum/unit_test/defeat_captivity_capacity/Run()
 	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
@@ -129,11 +137,14 @@
 	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT(victim.kidnap_to_pocket(/datum/defeat_captivity_profile/per_captive/unit_test, null), "The isolated test pocket should admit its captive.")
 	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	var/datum/pocket_dimension/defeat_captivity/isolated_instance = captivity.resolve_instance()
+	var/obj/item/weapon/knife/left_behind = allocate(/obj/item/weapon/knife, isolated_instance.get_entry_turf())
 	var/datum/defeat_captivity_profile/per_captive/unit_test/profile = captivity.profile
 	profile.unit_test_wilds = test_wilds
 	TEST_ASSERT(captivity.release_to_context(), "Contextual per-captive release should succeed.")
 	TEST_ASSERT_EQUAL(get_turf(victim), test_wilds, "Per-captive release should prefer a valid wilds destination over the saved origin.")
 	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Wilds release should clear captivity state.")
+	TEST_ASSERT(QDELETED(left_behind), "An isolated lair should delete loose foreign contents when its final captive leaves.")
 
 	var/mob/living/carbon/human/moved_victim = allocate(/mob/living/carbon/human, origin)
 	moved_victim.apply_status_effect(/datum/status_effect/defeat_knockout)
@@ -143,7 +154,8 @@
 	var/moved_instance_key = moved_instance.instance_key
 	moved_victim.forceMove(origin)
 	TEST_ASSERT_NULL(moved_victim.GetComponent(/datum/component/kidnap_captivity), "A forced move out of the pocket should remove stale captivity state.")
-	TEST_ASSERT_NULL(SSpocket_dimensions.get_instance(moved_instance_key), "The emptied shared pocket should be torn down after forced movement cleanup.")
+	TEST_ASSERT_EQUAL(SSpocket_dimensions.get_instance(moved_instance_key), moved_instance, "Forced movement cleanup should not destroy an emptied shared lair.")
+	SSpocket_dimensions.delete_instance(moved_instance)
 
 /datum/unit_test/defeat_captivity_rune_cleanup_and_rejection_aftermath/Run()
 	var/turf/origin = run_loc_floor_bottom_left
@@ -172,7 +184,8 @@
 	var/calling_instance_key = calling_instance.instance_key
 	TEST_ASSERT_EQUAL(calling_captivity.prepare_rune_return(), origin, "Rune preparation should preserve the original capture turf for return guidance.")
 	TEST_ASSERT_NULL(calling_victim.GetComponent(/datum/component/kidnap_captivity), "Call-rune preparation should clear captivity state before relocation.")
-	TEST_ASSERT_NULL(SSpocket_dimensions.get_instance(calling_instance_key), "Call-rune preparation should not leave an empty shared pocket registered.")
+	TEST_ASSERT_EQUAL(SSpocket_dimensions.get_instance(calling_instance_key), calling_instance, "Rune preparation should leave the stable shared lair registered.")
+	SSpocket_dimensions.delete_instance(calling_instance)
 
 /datum/unit_test/defeat_kidnap_reservation_and_grace/Run()
 	var/mob/living/carbon/human/first_captor = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)

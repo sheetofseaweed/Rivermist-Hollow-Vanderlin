@@ -128,6 +128,31 @@
 		TEST_ASSERT(istype(released_turf, RESERVED_TURF_TYPE), "Released pocket turfs should be restored to reserved turf.")
 		TEST_ASSERT(released_turf.turf_flags & UNUSED_RESERVATION_TURF, "Released pocket turfs should be marked as available again.")
 
+/datum/unit_test/pocket_dimension_sound_isolation/Run()
+	var/first_key = "[REF(src)]::sound_first"
+	var/second_key = "[REF(src)]::sound_second"
+	var/datum/pocket_dimension/first_pocket = SSpocket_dimensions.get_or_create_instance(first_key, /datum/map_template/pocket/test_chamber, POCKET_LIFECYCLE_KEEP_LOADED, 0)
+	var/datum/pocket_dimension/second_pocket = SSpocket_dimensions.get_or_create_instance(second_key, /datum/map_template/pocket/test_chamber, POCKET_LIFECYCLE_KEEP_LOADED, 0)
+	TEST_ASSERT_NOTNULL(first_pocket, "The source pocket should load for sound-isolation testing.")
+	TEST_ASSERT_NOTNULL(second_pocket, "The neighboring pocket should load for sound-isolation testing.")
+
+	var/mob/living/carbon/human/source = allocate(/mob/living/carbon/human, first_pocket.get_entry_turf())
+	var/mob/living/carbon/human/same_pocket_listener = allocate(/mob/living/carbon/human, first_pocket.get_entry_turf())
+	var/mob/living/carbon/human/other_pocket_listener = allocate(/mob/living/carbon/human, second_pocket.get_entry_turf())
+	var/mob/living/carbon/human/outside_listener = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	TEST_ASSERT_EQUAL(get_pocket_dimension_at(source), first_pocket, "The source turf should resolve to its exact pocket instance.")
+	TEST_ASSERT_EQUAL(get_pocket_dimension_at(other_pocket_listener), second_pocket, "A second copy of the same template should resolve to its own pocket instance.")
+	TEST_ASSERT_NULL(get_pocket_dimension_at(outside_listener), "A world turf should not resolve to a pocket instance.")
+
+	var/list/listeners = list(same_pocket_listener, other_pocket_listener, outside_listener)
+	filter_pocket_sound_listeners(first_pocket, listeners)
+	TEST_ASSERT(same_pocket_listener in listeners, "A positional sound should remain audible within its own pocket instance.")
+	TEST_ASSERT(!(other_pocket_listener in listeners), "A positional sound must not cross into another pocket instance.")
+	TEST_ASSERT(!(outside_listener in listeners), "A positional sound must not escape its pocket into allocator-adjacent space.")
+
+	SSpocket_dimensions.delete_instance(first_pocket)
+	SSpocket_dimensions.delete_instance(second_pocket)
+
 /datum/unit_test/magic_closet_transport/Run()
 	var/turf/origin = run_loc_floor_bottom_left
 	var/obj/structure/closet/crate/crafted_closet/magic/magic_closet = allocate(/obj/structure/closet/crate/crafted_closet/magic, origin)
@@ -153,6 +178,10 @@
 
 	TEST_ASSERT(SSpocket_dimensions.delete_instance(instance), "Magic closet pocket should be deletable.")
 	TEST_ASSERT_EQUAL(get_turf(foreign_item), origin, "Deleting the magic closet pocket should eject stored foreign items.")
+
+#ifdef FOCUS_POCKET_SOUND_ISOLATION_TEST
+TEST_FOCUS(/datum/unit_test/pocket_dimension_sound_isolation)
+#endif
 
 /datum/unit_test/pocket_dimension_snapshot/Run()
 	var/turf/origin = run_loc_floor_bottom_left

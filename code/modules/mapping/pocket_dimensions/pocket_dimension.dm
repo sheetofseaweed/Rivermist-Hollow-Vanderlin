@@ -4,6 +4,14 @@
 	var/offset_y = 0
 	var/removed = FALSE
 
+/datum/turf_reservation/pocket_dimension
+	/// Exact pocket instance owning this reservation. Area datums cannot provide this because loaded copies share them.
+	var/datum/weakref/pocket_instance_ref
+
+/datum/turf_reservation/pocket_dimension/Destroy()
+	pocket_instance_ref = null
+	return ..()
+
 /datum/pocket_dimension
 	var/instance_id
 	var/instance_key
@@ -171,9 +179,17 @@
 	var/list/preferred_bottom_left
 	if(last_reservation_width == padded_width && last_reservation_height == padded_height && length(last_reservation_bottom_left))
 		preferred_bottom_left = last_reservation_bottom_left
-	reservation = SSmapping.RequestPocketBlockReservation(padded_width, padded_height, preferred_bottom_left = preferred_bottom_left)
+	reservation = SSmapping.RequestPocketBlockReservation(
+		padded_width,
+		padded_height,
+		type = /datum/turf_reservation/pocket_dimension,
+		preferred_bottom_left = preferred_bottom_left,
+	)
 	if(!reservation)
 		return FALSE
+
+	var/datum/turf_reservation/pocket_dimension/pocket_reservation = reservation
+	pocket_reservation.pocket_instance_ref = WEAKREF(src)
 
 	load_turf = locate(
 		reservation.bottom_left_coords[1] + template.padding,
