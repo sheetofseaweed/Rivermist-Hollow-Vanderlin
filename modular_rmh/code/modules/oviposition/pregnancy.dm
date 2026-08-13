@@ -786,5 +786,10 @@
 		carrier.Stun(40, TRUE, TRUE)
 		carrier.adjust_stamina(90)
 
-	holder.release(TRUE)
+	if(!holder.release(FALSE))
+		return FALSE
+	if(!silent && iscarbon(carrier))
+		var/mob/living/carbon/birth_carrier = carrier
+		birth_carrier.record_oviposition_birth()
+	qdel(holder)
 	return TRUE

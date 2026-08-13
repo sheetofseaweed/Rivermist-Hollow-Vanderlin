@@ -150,6 +150,12 @@
 	if(climax_context)
 		var/obj/item/organ/receiver = climax_context["receiver"]
 		var/force = climax_context["force"]
+		if(iscarbon(receiver.owner))
+			var/mob/living/carbon/receiver_owner = receiver.owner
+			if(!receiver_owner.can_receive_oviposition_implant(TRUE))
+				if(receiver_owner != carrier)
+					to_chat(carrier, span_warning("[receiver_owner]'s body is still recovering from too many recent births and rejects another implantation."))
+				return FALSE
 		if(lay_egg(receiver, force))
 			return TRUE
 
@@ -230,6 +236,12 @@
 /datum/component/ovipositor/proc/try_place_egg_in_host(obj/item/organ/receiver, obj/item/oviposition_egg/egg, force = FALSE)
 	if(!receiver || !egg || !receiver.owner)
 		return FALSE
+	if(iscarbon(receiver.owner))
+		var/mob/living/carbon/receiver_owner = receiver.owner
+		if(!receiver_owner.can_receive_oviposition_implant(TRUE))
+			if(receiver_owner != carrier)
+				to_chat(carrier, span_warning("[receiver_owner]'s body is still recovering from too many recent births and rejects another implantation."))
+			return FALSE
 
 	var/fit_result = SEND_SIGNAL(receiver, COMSIG_BODYSTORAGE_TRY_INSERT, egg, STORAGE_LAYER_DEEP, force)
 	switch(fit_result)

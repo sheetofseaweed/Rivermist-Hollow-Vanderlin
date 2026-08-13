@@ -457,6 +457,22 @@
 		break
 	return apply_status_effect(debuff_type, null, severity)
 
+/// Hands back every point of stacked trauma Endurance loss past DEFEAT_TRAUMA_ENDURANCE_PENALTY_CAP.
+/// Physical traumas each carry their own id, so without this their penalties add up without limit.
+/mob/living/proc/refresh_defeat_trauma_endurance_cap()
+	var/total_penalty = 0
+	for(var/datum/status_effect/debuff/defeat/trauma as anything in status_effects)
+		if(!istype(trauma))
+			continue
+		total_penalty += nulltozero(trauma.effectedstats[STAT_ENDURANCE])
+	// Penalties are negative, so the carried loss is the negation of the sum.
+	var/excess = max(0, -total_penalty - DEFEAT_TRAUMA_ENDURANCE_PENALTY_CAP)
+	if(excess)
+		set_stat_modifier(DEFEAT_TRAUMA_ENDURANCE_CAP_SOURCE, list(STAT_ENDURANCE = excess))
+	else
+		remove_stat_modifier(DEFEAT_TRAUMA_ENDURANCE_CAP_SOURCE)
+	return excess
+
 /mob/living/proc/defeat_treat_trauma(mob/living/helper, treatment_type = DEFEAT_TREATMENT_MEDICAL, datum/status_effect/debuff/defeat/exact_target)
 	if(!helper || helper.stat == DEAD)
 		return FALSE
@@ -615,9 +631,10 @@
 /// Returns the aggregate major-damage ceiling used by bounded defeat stabilization. It is always
 /// below both the user's selected defeat threshold and the ordinary lethal health boundary.
 /mob/living/proc/defeat_damage_safety_cap()
-	var/threshold_cap = get_effective_defeat_threshold() - DEFEAT_DAMAGE_SAFETY_MARGIN
+	// A flat margin left victims one hit from falling again, carrying brute enough to keep shock climbing.
+	var/threshold_cap = get_effective_defeat_threshold() * DEFEAT_WAKE_DAMAGE_FRACTION
 	var/death_cap = maxHealth - HEALTH_THRESHOLD_DEAD - DEFEAT_DAMAGE_SAFETY_MARGIN
-	return max(0, min(threshold_cap, death_cap))
+	return max(0, round(min(threshold_cap, death_cap)))
 
 /// Reduce ordinary carbon injuries without deleting their datums. Keeping the injury records means
 /// the victim wakes with meaningful, treatable wounds instead of a hidden full heal.

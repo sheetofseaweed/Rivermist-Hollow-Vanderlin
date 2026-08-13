@@ -37,7 +37,8 @@
 	if(stat >= UNCONSCIOUS)
 		return
 
-	var/our_endurance = GET_MOB_ATTRIBUTE_VALUE(src, STAT_ENDURANCE)
+	// Floored: stacked debuffs can drive Endurance to zero, and it is a divisor below.
+	var/our_endurance = max(1, GET_MOB_ATTRIBUTE_VALUE(src, STAT_ENDURANCE))
 
 	/*
 	if(traumatic_shock >= (PAIN_GIVES_IN * (our_endurance/ATTRIBUTE_MIDDLING)))
@@ -135,6 +136,8 @@
 
 	var/previous_shock_stage = shock_stage
 	var/our_endurance = max(1, GET_MOB_ATTRIBUTE_VALUE(src, STAT_ENDURANCE))
+	// Endurance speeds shock gain and slows recovery, so an unbounded ratio compounds as 1/END^2.
+	var/endurance_scalar = clamp(ATTRIBUTE_MIDDLING / our_endurance, SHOCK_ENDURANCE_SCALAR_MIN, SHOCK_ENDURANCE_SCALAR_MAX)
 
 	//Cardiac arrest automatically throws us into sofcrit territory
 	if(undergoing_cardiac_arrest())
@@ -144,7 +147,7 @@
 		remove_movespeed_modifier(MOVESPEED_ID_CARDIAC_ARREST, TRUE)
 
 	if(traumatic_shock >= max(SHOCK_STAGE_2, 0.8 * shock_stage))
-		adjustShockStage(0.5 * delta_time * (ATTRIBUTE_MIDDLING/our_endurance))
+		adjustShockStage(0.5 * delta_time * endurance_scalar)
 	else if(!undergoing_cardiac_arrest())
 		setShockStage(min(shock_stage, SHOCK_STAGE_7))
 		var/recovery = 0.5 * delta_time
@@ -153,10 +156,10 @@
 			recovery += 0.5 * delta_time
 		if(traumatic_shock < 0.25 * shock_stage)
 			recovery += 0.5 * delta_time
-		adjustShockStage(-recovery * (our_endurance/ATTRIBUTE_MIDDLING))
+		adjustShockStage(-recovery / endurance_scalar)
 
 	//Shock makes us slow
-	if(shock_stage >= (SHOCK_STAGE_2 * (our_endurance/ATTRIBUTE_MIDDLING)))
+	if(shock_stage >= (SHOCK_STAGE_2 / endurance_scalar))
 		add_movespeed_modifier(MOVESPEED_ID_SHOCK, TRUE, multiplicative_slowdown = 0.25)
 	else
 		remove_movespeed_modifier(MOVESPEED_ID_SHOCK, TRUE)

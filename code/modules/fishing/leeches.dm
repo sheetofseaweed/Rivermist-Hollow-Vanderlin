@@ -829,6 +829,8 @@
 		return FALSE
 	if(!organ.supports_oviposition_pregnancy())
 		return FALSE
+	if(!H.can_receive_oviposition_implant(TRUE))
+		return FALSE
 	return TRUE
 
 /obj/item/natural/worms/leech/erotic/burrowing/proc/try_lay_leech_egg(mob/living/carbon/human/H, obj/item/organ/organ)

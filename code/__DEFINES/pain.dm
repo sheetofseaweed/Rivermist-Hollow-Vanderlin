@@ -24,6 +24,10 @@
 
 #define SHOCK_PENALTY_CAP 4
 
+/// Bounds on Endurance's shock scalar, holding the gain-to-recovery spread to 4x instead of 1/END^2.
+#define SHOCK_ENDURANCE_SCALAR_MIN 0.5
+#define SHOCK_ENDURANCE_SCALAR_MAX 2
+
 /// Above or equal this pain, affect DX and stuff intermittently
 #define PAIN_SHOCK_PENALTY 50
 /// Above or equal this pain, we cannot sleep intentionally
@@ -46,5 +50,7 @@
 /// Cooldown before resetting the injury penalty
 #define SHOCK_PENALTY_COOLDOWN_DURATION 5 SECONDS
 #define COOLDOWN_CARBON_ENDORPHINATION "carbon_endorphination"
+/// Floor on the endorphination roll requirement, so deep debuff stacks never zero out the body's own painkiller.
+#define ENDORPHINATION_MINIMUM_REQUIREMENT 6
 /// Cooldown before our body endorphinates itself again
 #define ENDORPHINATION_COOLDOWN_DURATION 2 MINUTES

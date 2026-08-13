@@ -162,13 +162,14 @@
 	for(var/datum/map_template/pocket/dungeon/pooled_template as anything in production_pool)
 		TEST_ASSERT(pooled_template.production_eligible, "Broad one-shot pools must never contain a test-only template ([pooled_template.id]).")
 
+	// Guardian counts mirror each template's .dmm landmarks - update both together.
 	var/list/harnesses = list(
-		/obj/structure/dungeon_entrance/bandit_hideout = list("template_id" = "singlet_bandit_hideout", "guardians" = 2, "guardian_type" = /mob/living/carbon/human/species/human/northern/bum/ambush),
+		/obj/structure/dungeon_entrance/bandit_hideout = list("template_id" = "singlet_bandit_hideout", "guardians" = 4, "guardian_type" = /mob/living/carbon/human/species/human/northern/bum/ambush),
 		/obj/structure/dungeon_entrance/bear_den = list("template_id" = "singlet_bear_den", "guardians" = 1, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/direbear),
-		/obj/structure/dungeon_entrance/ratfolk_camp = list("template_id" = "singlet_ratfolk_camp", "guardians" = 2, "guardian_type" = /mob/living/carbon/human/species/rousman/ambush),
-		/obj/structure/dungeon_entrance/spider_nursery = list("template_id" = "singlet_spider_nursery", "guardians" = 2, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/spider),
+		/obj/structure/dungeon_entrance/ratfolk_camp = list("template_id" = "singlet_ratfolk_camp", "guardians" = 5, "guardian_type" = /mob/living/carbon/human/species/rousman/ambush),
+		/obj/structure/dungeon_entrance/spider_nursery = list("template_id" = "singlet_spider_nursery", "guardians" = 3, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/spider),
 		/obj/structure/dungeon_entrance/werewolf_shrine = list("template_id" = "singlet_werewolf_shrine", "guardians" = 1, "guardian_type" = /mob/living/simple_animal/hostile/werewolf),
-		/obj/structure/dungeon_entrance/wolf_den = list("template_id" = "singlet_wolf_den", "guardians" = 2, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/wolf),
+		/obj/structure/dungeon_entrance/wolf_den = list("template_id" = "singlet_wolf_den", "guardians" = 3, "guardian_type" = /mob/living/simple_animal/hostile/retaliate/wolf),
 	)
 	var/turf/origin = run_loc_floor_bottom_left
 	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, origin)

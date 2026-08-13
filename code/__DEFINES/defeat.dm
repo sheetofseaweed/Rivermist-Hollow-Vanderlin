@@ -92,6 +92,8 @@
 #define DEFEAT_RUNE_SPEND_EMERGENCY "emergency"
 
 #define DEFEAT_DAMAGE_THRESHOLD_DEFAULT 200
+/// Burn counts partially toward the pooled threshold so a 50-damage fireball costs the same as a sword hit.
+#define DEFEAT_BURN_DAMAGE_WEIGHT 0.6
 /// Oxygen loss is kept out of the pooled defeat threshold: a fall from a higher z-level dumps a big
 /// oxy spike that would otherwise KO almost instantly, which isn't fun. Instead oxy only puts you down
 /// on its own once it reaches this near-lethal amount (roughly the kill limit).
@@ -100,8 +102,14 @@
 /// Recovery leaves this much room below the organ's death boundary so a following life tick cannot
 /// immediately kill the victim again. The damage itself is still carried as aftermath.
 #define DEFEAT_BRAIN_DAMAGE_MAX (BRAIN_DAMAGE_DEATH - 40)
-/// Damage is clamped below both the selected Defeat threshold and the normal death boundary.
+/// Margin held below the normal death boundary, and below the oxygen threshold.
 #define DEFEAT_DAMAGE_SAFETY_MARGIN 25
+/// Carried damage after stabilization, as a fraction of the selected Defeat threshold.
+#define DEFEAT_WAKE_DAMAGE_FRACTION 0.5
+/// Total Endurance that stacked Defeat traumas may take between them, however many are carried.
+#define DEFEAT_TRAUMA_ENDURANCE_PENALTY_CAP 6
+/// Stat-modifier source enforcing the cap above by handing back the excess.
+#define DEFEAT_TRAUMA_ENDURANCE_CAP_SOURCE "defeat_trauma_endurance_cap"
 /// A single non-oxygen pool is never allowed to consume more than half of a normal health bar after
 /// bounded stabilization. The aggregate cap is calculated from the selected threshold at runtime.
 #define DEFEAT_DAMAGE_POOL_CAP_FRACTION 0.5

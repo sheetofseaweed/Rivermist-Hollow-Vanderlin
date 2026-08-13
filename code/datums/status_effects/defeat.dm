@@ -278,7 +278,15 @@
 	var/penalty = defeat_penalty_for_severity(severity)
 	if(penalty)
 		effectedstats = defeat_stat_penalties(penalty)
-	return ..()
+	. = ..()
+	if(.)
+		// on_creation lists us before on_apply runs, so this sum already counts our own penalty.
+		owner.refresh_defeat_trauma_endurance_cap()
+
+/datum/status_effect/debuff/defeat/on_remove()
+	. = ..()
+	// Destroy unlists us before on_remove, so the recount correctly drops our penalty.
+	owner?.refresh_defeat_trauma_endurance_cap()
 
 /datum/status_effect/debuff/defeat/tick()
 	if(!owner || world.time < next_feedback_at)

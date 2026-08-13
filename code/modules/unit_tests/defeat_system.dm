@@ -210,9 +210,9 @@
 	var/datum/component/defeat_monitor/monitor = test_human.AddComponent(/datum/component/defeat_monitor)
 
 	// Neither pool reaches 150 on its own (so the old max-pool rule would NOT fire), but together
-	// they total 160 - the threshold is now total damage, so defeat should trigger.
+	// they total 160 after DEFEAT_BURN_DAMAGE_WEIGHT - the threshold is total damage, so defeat triggers.
 	test_human.setBruteLoss(100, FALSE, TRUE)
-	test_human.setFireLoss(60, FALSE, TRUE)
+	test_human.setFireLoss(100, FALSE, TRUE)
 	test_human.updatehealth()
 	monitor.check_defeat_triggers()
 	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Combined damage across pools should trigger defeat even when no single pool hits the threshold.")
@@ -1040,6 +1040,31 @@
 	var/mob/living/carbon/human/severe_patient = allocate(/mob/living/carbon/human)
 	var/datum/status_effect/debuff/defeat/severe_effect = severe_patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/concussion, null, DEFEAT_SEVERITY_SEVERE)
 	TEST_ASSERT_EQUAL(severe_effect.effectedstats[STAT_PERCEPTION], -5, "Severe concussion should scale perception up to -5.")
+
+/datum/unit_test/defeat_stacked_trauma_endurance_is_capped
+
+/datum/unit_test/defeat_stacked_trauma_endurance_is_capped/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/base_endurance = GET_MOB_ATTRIBUTE_VALUE(patient, STAT_ENDURANCE)
+
+	// Leg (-3) and body (-3) carry distinct ids, so they stack rather than fester into one another.
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/leg, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/body, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT_EQUAL(GET_MOB_ATTRIBUTE_VALUE(patient, STAT_ENDURANCE), base_endurance - 6, "Two stacked traumas should take their full 6 Endurance, which is exactly the cap.")
+
+	// A third and fourth push the raw total past -6, but the carried loss must stay pinned at the cap.
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/arm, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/burn, null, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(GET_MOB_ATTRIBUTE_VALUE(patient, STAT_ENDURANCE), base_endurance - DEFEAT_TRAUMA_ENDURANCE_PENALTY_CAP, "Stacked defeat traumas must never take more than the Endurance cap between them.")
+
+	// Curing back down below the cap must give the compensating modifier back, not leave a windfall.
+	patient.remove_status_effect(/datum/status_effect/debuff/defeat/physical/burn)
+	patient.remove_status_effect(/datum/status_effect/debuff/defeat/physical/arm)
+	patient.remove_status_effect(/datum/status_effect/debuff/defeat/physical/body)
+	TEST_ASSERT_EQUAL(GET_MOB_ATTRIBUTE_VALUE(patient, STAT_ENDURANCE), base_endurance - 3, "Clearing traumas back under the cap should restore the remaining trauma's own penalty.")
+
+	patient.remove_status_effect(/datum/status_effect/debuff/defeat/physical/leg)
+	TEST_ASSERT_EQUAL(GET_MOB_ATTRIBUTE_VALUE(patient, STAT_ENDURANCE), base_endurance, "Clearing every trauma should leave no Endurance modifier behind.")
 
 /datum/unit_test/defeat_leg_injury_blocks_jump
 

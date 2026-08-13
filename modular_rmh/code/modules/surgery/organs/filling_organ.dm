@@ -64,6 +64,32 @@
 	var/oviposition_lay_verb = "lays"
 	var/oviposition_lay_action = "lay"
 
+/mob/living/carbon
+	/// Completed internal hatchling births, stored as world.time values for the rolling implantation limit.
+	var/list/recent_oviposition_births
+	/// Prevents repeated implantation attempts from spamming the recovery warning.
+	var/next_oviposition_birth_limit_warning = 0
+
+/// Returns whether another egg or embryo may be implanted under the rolling birth limit.
+/mob/living/carbon/proc/can_receive_oviposition_implant(show_feedback = FALSE)
+	var/birth_cutoff = world.time - OVIPOSITION_BIRTH_LIMIT_WINDOW
+	while(length(recent_oviposition_births) && recent_oviposition_births[1] <= birth_cutoff)
+		recent_oviposition_births.Cut(1, 2)
+
+	if(length(recent_oviposition_births) < OVIPOSITION_BIRTH_LIMIT)
+		return TRUE
+
+	if(show_feedback && world.time >= next_oviposition_birth_limit_warning)
+		var/unlock_birth_index = length(recent_oviposition_births) - OVIPOSITION_BIRTH_LIMIT + 1
+		var/time_until_recovered = recent_oviposition_births[unlock_birth_index] + OVIPOSITION_BIRTH_LIMIT_WINDOW - world.time
+		to_chat(src, span_warning("My body is still recovering from so many recent births. It cannot accept another egg or embryo for [DisplayTimeText(time_until_recovered)]."))
+		next_oviposition_birth_limit_warning = world.time + 1 MINUTES
+	return FALSE
+
+/// Records a successfully completed internal hatchling birth for the rolling implantation limit.
+/mob/living/carbon/proc/record_oviposition_birth()
+	LAZYADD(recent_oviposition_births, world.time)
+
 /obj/item/organ/guts
 	// Oral storage lives on guts, but oviposition messaging should read as stomach-based.
 	allows_oviposition_pregnancy = TRUE
@@ -549,6 +575,12 @@
 			if(!egg.requires_fertilization() && start_oviposition_egg_growth(egg, father, null, FALSE, father_features, father_name))
 				return TRUE
 
+	// Do not silently fall back to conventional pregnancy when a requested embryo implantation is birth-limited.
+	if(allow_embryo_pregnancy && spawn_embryo_on_fertilization && supports_oviposition_pregnancy() && iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		if(!carbon_owner.can_receive_oviposition_implant(TRUE))
+			return FALSE
+
 	if(try_start_fertilization_embryo_pregnancy(father, allow_embryo_pregnancy, embryo_hatch_result_type, father_features, father_name))
 		if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 			to_chat(owner, span_love("Something fertile settles deep in my [get_oviposition_location_name()]."))
@@ -606,6 +638,10 @@
 		return FALSE
 	if(!allow_embryo_pregnancy || !spawn_embryo_on_fertilization || !supports_oviposition_pregnancy())
 		return FALSE
+	if(iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		if(!carbon_owner.can_receive_oviposition_implant())
+			return FALSE
 	if(pregnant)
 		return FALSE
 	if(fertilization_embryo_limit <= 0)

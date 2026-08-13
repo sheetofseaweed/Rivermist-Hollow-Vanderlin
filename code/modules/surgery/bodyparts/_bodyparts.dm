@@ -923,8 +923,6 @@
 	if(!brute && !burn)
 		return FALSE
 
-	var/owner_endurance = GET_MOB_ATTRIBUTE_VALUE(owner, STAT_ENDURANCE)
-
 	// We get the pain values before we scale damage down
 	// Pain does not care about your feelings, nor if your limb was already damaged
 	// to it's maximum
@@ -954,6 +952,8 @@
 		if(prob(pain*0.5))
 			INVOKE_ASYNC(owner, TYPE_PROC_REF(/mob/living, emote), "scream")
 		//owner.flash_pain(pain)
+		// Floored: stacked debuffs can drive Endurance to zero, and it is the divisor here.
+		var/owner_endurance = max(1, GET_MOB_ATTRIBUTE_VALUE(owner, STAT_ENDURANCE))
 		var/shock_penalty = min(SHOCK_PENALTY_CAP, FLOOR(pain/owner_endurance, 1))
 		if(shock_penalty)
 			owner.update_shock_penalty(shock_penalty)

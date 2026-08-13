@@ -61,7 +61,8 @@
 	// maxHealth - threshold, regardless of how the damage is split across brute/burn/tox/clone. Oxygen is
 	// deliberately excluded - a fall from a higher z-level spikes oxy hard and would otherwise KO you
 	// almost instantly. It gets its own near-lethal bar below instead.
-	var/total_damage = carbon_parent.getBruteLoss() + carbon_parent.getFireLoss() + carbon_parent.getToxLoss() + carbon_parent.getCloneLoss()
+	// Burn is weighted down: it lands in bigger single lumps than brute, so raw parity fell far too fast.
+	var/total_damage = carbon_parent.getBruteLoss() + (carbon_parent.getFireLoss() * DEFEAT_BURN_DAMAGE_WEIGHT) + carbon_parent.getToxLoss() + carbon_parent.getCloneLoss()
 	maybe_warn_damage_defeat(carbon_parent, total_damage, selected_threshold)
 	if(total_damage >= selected_threshold)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)

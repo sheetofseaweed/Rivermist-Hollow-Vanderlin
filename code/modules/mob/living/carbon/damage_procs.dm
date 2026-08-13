@@ -247,13 +247,17 @@
 
 /mob/living/carbon/proc/endorphinate(forced = FALSE, silent = FALSE, local_sound = TRUE, flash = TRUE, special_sound)
 	var/endurance = GET_MOB_ATTRIBUTE_VALUE(src, STAT_ENDURANCE)
-	if(!forced && (TIMER_COOLDOWN_CHECK(src, COOLDOWN_CARBON_ENDORPHINATION) || (diceroll(endurance, context = DICE_CONTEXT_MENTAL) <= DICE_FAILURE)))
+	// 3d6 cannot roll under 3, so an unfloored requirement made this impossible when debuffs stacked deep.
+	var/roll_requirement = max(endurance, ENDORPHINATION_MINIMUM_REQUIREMENT)
+	if(!forced && (TIMER_COOLDOWN_CHECK(src, COOLDOWN_CARBON_ENDORPHINATION) || (diceroll(roll_requirement, context = DICE_CONTEXT_MENTAL) <= DICE_FAILURE)))
 		return
 
 	var/endorphin_amount = clamp(endurance, 5, 29)
 	reagents?.add_reagent(/datum/reagent/medicine/endorphin, endorphin_amount)
 	TIMER_COOLDOWN_START(src, COOLDOWN_CARBON_ENDORPHINATION, ENDORPHINATION_COOLDOWN_DURATION)
 	if(!silent)
+		// The rush was previously signalled by sound alone, leaving players unaware the mechanic exists.
+		to_chat(src, span_nicegreen("A warm rush floods through me - my own body answers the pain, and it dulls to a distant ache."))
 		var/final_sound = special_sound || 'sound/heart/combatcocktail.ogg'
 		if(local_sound)
 			playsound_local(src, final_sound, 80, FALSE)
