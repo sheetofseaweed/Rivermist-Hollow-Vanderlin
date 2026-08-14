@@ -117,6 +117,7 @@ GLOBAL_LIST_INIT(adventurers_positions, list(
 GLOBAL_PROTECT(adventurers_positions)
 
 GLOBAL_LIST_INIT(villains_positions, list(
+	/datum/job/bandit::title,
 	/datum/job/werewolf::title,
 	/datum/job/succubus::title,
 ))

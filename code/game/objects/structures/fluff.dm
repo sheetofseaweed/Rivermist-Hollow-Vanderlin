@@ -1053,6 +1053,52 @@
 
 	return ..()
 
+/obj/structure/fluff/statue/evil/mask
+	name = "faceless idol"
+	desc = "A hooded stone idol with a smooth, featureless face: a thieves' shrine to Mask. Bandit companies leave coin, finery, and stolen access at its feet."
+
+/obj/structure/fluff/statue/evil/mask/attackby(obj/item/W, mob/user, list/modifiers)
+	if(user.mind)
+		var/datum/antagonist/bandit/B = user.mind.has_antag_datum(/datum/antagonist/bandit)
+		if(B)
+			if(istype(W, /obj/item/key))
+				var/obj/item/key/offered_key = W
+				if(!B.record_offered_key(offered_key))
+					to_chat(user, span_warning("Mask has no use for this key right now."))
+					return
+				playsound(src, 'sound/misc/eat.ogg', rand(30, 60), TRUE)
+				qdel(offered_key)
+				return TRUE
+
+			var/offering_value = 0
+			if(istype(W, /obj/item/reagent_containers/lux))
+				offering_value = 120
+			else if(istype(W, /obj/item/coin))
+				offering_value = W.get_real_price()
+			else if(istype(W, /obj/item/gem) || istype(W, /obj/item/reagent_containers/glass/cup/silver) || istype(W, /obj/item/reagent_containers/glass/cup/golden) || istype(W, /obj/item/reagent_containers/glass/carafe) || istype(W, /obj/item/clothing/ring) || istype(W, /obj/item/clothing/head/crown/circlet) || istype(W, /obj/item/statue))
+				offering_value = W.get_real_price() / 2
+			if(offering_value <= 0)
+				to_chat(user, span_warning("The idol doesn't want this offering."))
+				return
+			var/has_tribute_contract = B.get_active_bandit_goal(/datum/contract_goal/bandit/tribute)
+			if(B.tri_amt >= 8 && !has_tribute_contract)
+				to_chat(user, span_warning("The idol has already granted me all it will, and the company owes no tribute right now."))
+				return
+
+			record_round_statistic(STATS_SHRINE_VALUE, offering_value)
+			B.record_contract_progress(/datum/contract_goal/bandit/tribute, offering_value)
+			if(B.tri_amt < 8)
+				B.contrib += offering_value
+				if(B.contrib >= 80)
+					give_rewards(B, user)
+				else
+					playsound(src, 'sound/items/matidol1.ogg', 50, TRUE)
+			playsound(src, 'sound/misc/eat.ogg', rand(30, 60), TRUE)
+			qdel(W)
+			return TRUE
+
+	return ..()
+
 /obj/structure/fluff/statue/evil/proc/give_rewards(datum/antagonist/bandit/offering_bandit, mob/user)
 	offering_bandit.tri_amt++
 	user.mind.adjust_triumphs(1)

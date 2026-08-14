@@ -39,8 +39,8 @@
 	if(progress >= target_amount)
 		progress = target_amount
 		complete()
-	else if(antag?.owner?.current)
-		to_chat(antag.owner.current, span_notice("[antag.contract_pool.patron_name] takes note. ([get_description()])"))
+	else
+		antag?.contract_party?.notify_members("[antag.contract_pool.patron_name] takes note. ([get_description()])")
 
 /// STATE goals override this to report their live condition; polled at cycle end
 /datum/contract_goal/proc/get_state_progress()
@@ -58,9 +58,8 @@
 	if(completed)
 		return
 	completed = TRUE
-	antag?.owner?.adjust_triumphs(triumph_reward, TRUE, "contract goal: [name]")
-	if(antag?.owner?.current)
-		to_chat(antag.owner.current, span_greentext("Fulfilled: [get_description()]"))
+	antag?.contract_party?.reward_members(triumph_reward, "contract goal: [name]")
+	antag?.contract_party?.notify_members(span_greentext("Fulfilled: [get_description()]"))
 	antag?.check_contract_early_completion()
 
 /datum/contract_goal/proc/get_description()

@@ -91,6 +91,54 @@
 	goal.evaluate()
 	TEST_ASSERT(goal.completed, "STATE goal must complete when evaluated at/above target")
 
+/datum/unit_test/shared_bandit_contract_party/Run()
+	var/datum/team/bandits/team = allocate(/datum/team/bandits)
+	team.contract_party.contract_pool.goal_templates = list(/datum/contract_goal/test_counter)
+	team.contract_party.contract_pool.goals_per_contract_min = 1
+	team.contract_party.contract_pool.goals_per_contract_max = 1
+
+	var/mob/living/carbon/human/first_body = allocate(/mob/living/carbon/human)
+	first_body.mind_initialize()
+	var/datum/antagonist/bandit/first_bandit = allocate(/datum/antagonist/bandit)
+	first_bandit.owner = first_body.mind
+	first_bandit.bandit_team = team
+	team.add_member(first_body.mind)
+	LAZYADD(first_body.mind.antag_datums, first_bandit)
+	first_bandit.setup_contracts()
+
+	var/mob/living/carbon/human/second_body = allocate(/mob/living/carbon/human)
+	second_body.mind_initialize()
+	var/datum/antagonist/bandit/second_bandit = allocate(/datum/antagonist/bandit)
+	second_bandit.owner = second_body.mind
+	second_bandit.bandit_team = team
+	team.add_member(second_body.mind)
+	LAZYADD(second_body.mind.antag_datums, second_bandit)
+	second_bandit.setup_contracts()
+
+	TEST_ASSERT_EQUAL(first_bandit.contract_party, team.contract_party, "the first bandit must use the team-owned contract party")
+	TEST_ASSERT_EQUAL(second_bandit.contract_party, team.contract_party, "every bandit must join the same contract party")
+	TEST_ASSERT_EQUAL(first_bandit.current_contract, second_bandit.current_contract, "bandit contract mirrors must point at one shared contract")
+	TEST_ASSERT_EQUAL(length(team.contract_party.antags), 2, "the shared party must register both bandit antagonist datums")
+
+	second_bandit.record_contract_progress(/datum/contract_goal/test_counter, 2)
+	var/datum/contract_goal/test_counter/shared_goal = first_bandit.current_contract.goals[1]
+	TEST_ASSERT(shared_goal.completed, "progress from a second bandit must complete the first bandit's visible shared goal")
+	TEST_ASSERT(first_bandit.current_contract.completed_early, "shared completion must use the party's early-completion state")
+
+	first_bandit.teardown_contracts()
+	TEST_ASSERT_EQUAL(second_bandit.contract_party, team.contract_party, "removing one bandit must not destroy the team's contract party")
+	TEST_ASSERT_EQUAL(shared_goal.antag, second_bandit, "shared goals must hand their antagonist hook to a remaining bandit")
+
+	second_bandit.teardown_contracts()
+	TEST_ASSERT_NULL(shared_goal.antag, "a shared party with no remaining antagonist must release its goal hook reference")
+	TEST_ASSERT(!QDELETED(team.contract_party), "the team must retain its contract history after its last active bandit is removed")
+	team.remove_member(first_body.mind)
+	team.remove_member(second_body.mind)
+	first_body.mind.antag_datums -= first_bandit
+	second_body.mind.antag_datums -= second_bandit
+	first_bandit.owner = null
+	second_bandit.owner = null
+
 /datum/unit_test/contract_boundary_math/Run()
 	var/datum/antagonist/test_contract_cycle_hook/antag = allocate(/datum/antagonist/test_contract_cycle_hook)
 	var/mob/living/carbon/human/contract_owner = allocate(/mob/living/carbon/human)
@@ -155,3 +203,13 @@
 	TEST_ASSERT(contract.completed_early, "single-goal contract must flag early completion")
 
 	antag.teardown_contracts()
+
+#ifdef FOCUS_ANTAG_CONTRACTS_TEST
+TEST_FOCUS(/datum/unit_test/contract_boundary_math)
+TEST_FOCUS(/datum/unit_test/contract_goal_idempotency)
+TEST_FOCUS(/datum/unit_test/contract_grading)
+TEST_FOCUS(/datum/unit_test/contract_pool_rolling)
+TEST_FOCUS(/datum/unit_test/contract_state_goal)
+TEST_FOCUS(/datum/unit_test/shared_bandit_contract_party)
+TEST_FOCUS(/datum/unit_test/werewolf_contract_feedthrough)
+#endif

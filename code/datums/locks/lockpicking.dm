@@ -60,6 +60,8 @@
 	user.visible_message(span_warning("[user] picks the lock of \the [src]!"), span_notice("I finish picking the lock of \the [src]."))
 	record_featured_stat(FEATURED_STATS_CRIMINALS, user)
 	record_round_statistic(STATS_LOCKS_PICKED)
+	var/datum/antagonist/bandit/bandit = user.mind?.has_antag_datum(/datum/antagonist/bandit)
+	bandit?.record_picked_lock(src)
 	being_picked = FALSE
 	return TRUE
 
