@@ -334,9 +334,6 @@
 /obj/item/grown/log/tree/stick,
 /turf/open/floor/dirt/road,
 /area/outdoors/rmh_field/oldmill)
-"agE" = (
-/turf/closed/wall/mineral/decowood,
-/area/indoors/town/rmh/loudmouth)
 "agG" = (
 /obj/structure/fluff/railing/wood/east,
 /obj/structure/fluff/railing/border,
@@ -893,6 +890,14 @@
 	},
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
+"apA" = (
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#522f26";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "apF" = (
 /obj/structure/fluff/railing/corner/south_west,
 /turf/open/floor/cobble,
@@ -977,11 +982,6 @@
 "aqJ" = (
 /turf/open/floor/wood,
 /area/outdoors/rmh_river)
-"aqO" = (
-/obj/structure/bed/wool,
-/obj/item/bedsheet/fabric,
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "aqU" = (
 /obj/structure/barricade/wooden/crude,
 /turf/closed/wall/mineral/wooddark,
@@ -1569,9 +1569,6 @@
 /obj/structure/flora/hotspring_rocks/grassy,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/north_mountain)
-"aCr" = (
-/turf/closed/wall/mineral/wooddark/horizontal,
-/area/indoors/town/rmh/loudmouth)
 "aCB" = (
 /obj/effect/decal/edge{
 	dir = 1;
@@ -1611,13 +1608,6 @@
 /obj/effect/decal/remains/human,
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_air)
-"aDh" = (
-/obj/structure/chair/wood/alt/fancy/chair5{
-	dir = 1
-	},
-/obj/effect/decal/carpet/kover_darkred,
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "aDj" = (
 /obj/structure/curtain/black,
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -2608,6 +2598,15 @@
 	dir = 4
 	},
 /area/outdoors/rmh_river)
+"aTE" = (
+/obj/structure/fluff/railing/wood/west,
+/obj/structure/fluff/railing/wood/north{
+	plane = -6;
+	pixel_y = 7
+	},
+/obj/structure/chair/stool,
+/turf/open/floor/ruinedwood/darker,
+/area/outdoors/town/rmh/roofs)
 "aTF" = (
 /turf/closed/wall/mineral/decostone/cand,
 /area/under/rmh_dungeon/jergal)
@@ -3765,14 +3764,6 @@
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobble,
 /area/under/rmh_dungeon/arena)
-"bnV" = (
-/obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "bnY" = (
 /obj/effect/decal/alizeria/decals/wooddecal6,
 /turf/open/floor/woodturned,
@@ -3831,9 +3822,6 @@
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/catacombs_town)
-"boT" = (
-/turf/open/openspace,
-/area/indoors/town/rmh/loudmouth)
 "boU" = (
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /obj/structure/table/wood/large/corner_new{
@@ -4192,6 +4180,16 @@
 /obj/structure/window/stained/silver/alt,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison)
+"buL" = (
+/obj/structure/window/openclose/reinforced{
+	dir = 1
+	},
+/obj/structure/curtain/dir{
+	dir = 1;
+	color = "#a32121"
+	},
+/turf/open/floor/ruinedwood/turned,
+/area/indoors/town/rmh/loudmouth)
 "buR" = (
 /turf/open/floor/tile/masonic{
 	dir = 8
@@ -4220,13 +4218,6 @@
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/indoors/town/rmh/witch)
-"bvn" = (
-/obj/structure/fake_machine/stockpile_withdraw{
-	pixel_y = 0;
-	pixel_x = 32
-	},
-/turf/open/floor/tile/brick,
-/area/indoors/town/rmh/farm/house)
 "bvw" = (
 /obj/effect/decal/edge{
 	dir = 2;
@@ -5208,10 +5199,7 @@
 /obj/structure/rack,
 /obj/item/natural/saddle,
 /turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "bNR" = (
 /obj/structure/fluff/railing/corner{
 	dir = 9
@@ -5393,6 +5381,13 @@
 "bPu" = (
 /turf/open/floor/herringbone,
 /area/indoors/town)
+"bPw" = (
+/obj/structure/fluff/railing/wood/north{
+	plane = -6;
+	pixel_y = 7
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/outdoors/town/rmh/roofs)
 "bPD" = (
 /obj/machinery/light/fueled/torchholder/c,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -5870,10 +5865,7 @@
 /area/indoors/town/rmh/tavern)
 "bWJ" = (
 /turf/open/floor/hay,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "bWN" = (
 /obj/structure/fluff/railing/border/north,
 /turf/open/openspace,
@@ -7435,6 +7427,13 @@
 	},
 /turf/open/floor/church,
 /area/under/rmh_dungeon/underdarkmaze)
+"cud" = (
+/obj/structure/table/wood/plain/alto,
+/obj/structure/noticeboard{
+	pixel_x = -32
+	},
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "cue" = (
 /obj/structure/table/wood/plain,
 /obj/effect/spawner/map_spawner/loot/dungeon/money,
@@ -8705,12 +8704,6 @@
 "cRf" = (
 /turf/closed/wall/mineral/craftstone,
 /area/under/town/rmh/basement/townhall)
-"cRj" = (
-/obj/structure/stairs{
-	dir = 4
-	},
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "cRl" = (
 /obj/effect/decal/cobbleedge{
 	dir = 8;
@@ -8781,9 +8774,6 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/ruinedwood,
 /area/outdoors/town/rmh)
-"cSQ" = (
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "cST" = (
 /obj/effect/decal/cleanable/blood/tracks,
 /turf/open/floor/crawl_space/fixed{
@@ -9848,13 +9838,6 @@
 	},
 /turf/open/floor/dirt,
 /area/under/town/rmh/sewer)
-"dkw" = (
-/obj/structure/fluff/railing/wood/north{
-	plane = -6;
-	pixel_y = 7
-	},
-/turf/open/floor/ruinedwood/darker,
-/area/outdoors/town/rmh/roofs)
 "dkL" = (
 /obj/effect/decal{
 	icon = 'icons/effects/96x96.dmi';
@@ -10578,6 +10561,10 @@
 /obj/machinery/light/fueled/wallfire/candle/l,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison)
+"dvP" = (
+/obj/structure/fake_machine/hailerboard/l,
+/turf/open/floor/cobblerock,
+/area/indoors/town/rmh/garrison)
 "dvW" = (
 /turf/open/floor/herringbone,
 /area/outdoors/mountains/rmh_mountains)
@@ -10629,6 +10616,9 @@
 /obj/structure/fluff/railing/border/east,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/indoors/town/rmh/garrison)
+"dwE" = (
+/turf/closed/wall/mineral/decowood,
+/area/indoors/town/rmh/loudmouth)
 "dwF" = (
 /turf/open/floor/rooftop{
 	dir = 4
@@ -10768,31 +10758,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/indoors/town/rmh/merchant)
-"dyc" = (
-/obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 8
-	},
-/obj/structure/table/wood/large/corner_new{
-	dir = 5
-	},
-/obj/structure/fermentation_keg/water{
-	icon_state = "barrel_tapped_ready";
-	pixel_y = 7;
-	pixel_x = -7
-	},
-/obj/item/reagent_containers/glass/carafe,
-/obj/item/reagent_containers/glass/cup/glassware{
-	pixel_y = -11;
-	pixel_x = -8
-	},
-/obj/item/reagent_containers/glass/cup/glassware{
-	pixel_y = -18;
-	pixel_x = -8
-	},
-/obj/machinery/light/fueled/wallfire/candle/l,
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "dyj" = (
 /obj/structure/fermentation_keg/water,
 /obj/structure/rack/rogue/shelf/alizeria/shelf1,
@@ -10879,6 +10844,21 @@
 /obj/item/natural/stone,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/southern)
+"dzZ" = (
+/obj/effect/decal/edge_corner{
+	dir = 1;
+	color = "#522f26";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
+"dAb" = (
+/obj/structure/chair/wood/alt/fancy/chair5{
+	dir = 1
+	},
+/obj/effect/decal/carpet/kover_darkred,
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "dAd" = (
 /obj/machinery/light/fueledstreet/orange/wall{
 	dir = 8
@@ -12576,6 +12556,12 @@
 	},
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/chapel/basement)
+"ebm" = (
+/obj/structure/fake_machine/hailerboard{
+	pixel_y = -32
+	},
+/turf/open/floor/herringbone,
+/area/outdoors/town/rmh)
 "ebq" = (
 /obj/machinery/light/fueled/hearth{
 	pixel_y = 6
@@ -13316,6 +13302,10 @@
 	},
 /turf/open/floor/tile/masonic/single,
 /area/under/rmh_dungeon/jergal)
+"enF" = (
+/obj/structure/chair/stool,
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "enP" = (
 /obj/structure/flora/tree/newtree,
 /turf/open/floor/grass/healthy,
@@ -13556,6 +13546,33 @@
 /obj/item/candle/tin/lit,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison)
+"esg" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 6
+	},
+/obj/item/reagent_containers/glass/bucket/pot/copper,
+/obj/item/cooking/pan,
+/obj/item/kitchen/fork/pewter{
+	pixel_x = -12
+	},
+/obj/item/kitchen/fork/pewter{
+	pixel_x = -12
+	},
+/obj/item/kitchen/spoon/pewter{
+	pixel_x = -14
+	},
+/obj/item/kitchen/spoon/pewter{
+	pixel_x = -14
+	},
+/obj/machinery/light/fueled/wallfire/candle/l,
+/obj/effect/decal/edge_corner{
+	dir = 2;
+	color = "#522f26";
+	pixel_y = 0
+	},
+/obj/structure/fluff/railing/wood,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
 "esj" = (
 /obj/structure/fluff/railing/wood/north{
 	layer = 2.7;
@@ -14122,6 +14139,16 @@
 /obj/item/natural/feather,
 /turf/open/floor/desert/deserttile/tilewhitebluespecial,
 /area/indoors/town/rmh/bank)
+"eCI" = (
+/obj/structure/bed/wool,
+/obj/item/bedsheet/fabric,
+/obj/structure/mannequin/male{
+	density = 0;
+	pixel_y = 22;
+	pixel_x = 6
+	},
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "eCK" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
@@ -14616,13 +14643,6 @@
 /obj/structure/fluff/railing/wood/west,
 /turf/open/floor/dirt,
 /area/outdoors/exposed/town/rmh/farm)
-"eNR" = (
-/obj/structure/fluff/walldeco/customflag{
-	pixel_y = -32;
-	name = "rivermist hollow flag"
-	},
-/turf/open/floor/herringbone,
-/area/outdoors/town/rmh)
 "eNT" = (
 /turf/closed/wall/mineral/wooddark/end{
 	dir = 4
@@ -14853,15 +14873,6 @@
 /obj/structure/flora/new_shroom/cyanf,
 /turf/open/floor/mushroom/blue,
 /area/under/rmh_dungeon/underdarkmaze)
-"eSL" = (
-/obj/structure/fluff/railing/wood/west,
-/obj/structure/fluff/railing/wood/north{
-	plane = -6;
-	pixel_y = 7
-	},
-/obj/structure/chair/stool,
-/turf/open/floor/ruinedwood/darker,
-/area/outdoors/town/rmh/roofs)
 "eSN" = (
 /turf/closed/mineral/random/low_nonval,
 /area/indoors/cave/rmh_cave/east/wild/deep)
@@ -14946,6 +14957,16 @@
 	},
 /turf/open/floor/blocks/stonered,
 /area/under/town/rmh/basement/townhall)
+"eUg" = (
+/obj/structure/carpet/red,
+/obj/structure/fluff/pillow/red{
+	layer = 3.1;
+	dir = 4;
+	pixel_y = -2
+	},
+/obj/structure/fluff/railing/wood/west,
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "eUi" = (
 /obj/item/natural/bundle/plank{
 	amount = 6
@@ -14997,6 +15018,18 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/hexstone,
 /area/under/town/rmh/basement/blacksmith)
+"eVr" = (
+/obj/structure/fluff/railing/wood/east,
+/obj/structure/fluff/railing/wood/north{
+	plane = -6;
+	pixel_y = 7
+	},
+/obj/structure/dryclothes{
+	pixel_y = 23;
+	density = 0
+	},
+/turf/open/floor/ruinedwood/darker,
+/area/outdoors/town/rmh/roofs)
 "eVy" = (
 /obj/structure/flora/grass,
 /turf/open/floor/dirt/road,
@@ -15053,12 +15086,28 @@
 /turf/open/floor/tile/checker_green,
 /area/indoors/town/rmh/tavern)
 "eWw" = (
-/obj/item/grown/log/tree/stick,
-/turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/obj/item/fake_machine/mastermail,
+/obj/structure/table/vtable/v2,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper/scroll,
+/obj/item/paper,
+/obj/item/paper,
+/obj/item/paper,
+/obj/item/paper,
+/obj/item/paper,
+/obj/item/paper,
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#522f26"
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "eWB" = (
 /obj/structure/flora/newtree,
 /turf/open/floor/dirt/road,
@@ -15810,10 +15859,7 @@
 /obj/item/bin/water,
 /obj/item/rope,
 /turf/open/floor/hay,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "fls" = (
 /obj/effect/decal/cobblerockedge,
 /turf/open/floor/cobble/mossy,
@@ -15844,6 +15890,31 @@
 /obj/structure/fluff/railing/corner/south_east,
 /turf/open/floor/cobble/alt,
 /area/outdoors/town/rmh)
+"fmf" = (
+/obj/effect/decal/borderfall{
+	dir = 1;
+	pixel_y = 8
+	},
+/obj/structure/table/wood/large/corner_new{
+	dir = 5
+	},
+/obj/structure/fermentation_keg/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_y = 7;
+	pixel_x = -7
+	},
+/obj/item/reagent_containers/glass/carafe,
+/obj/item/reagent_containers/glass/cup/glassware{
+	pixel_y = -11;
+	pixel_x = -8
+	},
+/obj/item/reagent_containers/glass/cup/glassware{
+	pixel_y = -18;
+	pixel_x = -8
+	},
+/obj/machinery/light/fueled/wallfire/candle/l,
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "fmm" = (
 /obj/structure/flora/tree/pine{
 	icon_state = "pine3"
@@ -16001,6 +16072,15 @@
 /obj/effect/decal/cleanable/blood,
 /turf/open/floor/metal,
 /area/under/town/rmh/sewer)
+"foE" = (
+/obj/structure/fluff/festive_flags/red{
+	pixel_y = 32
+	},
+/obj/structure/call_bell/loudmouth{
+	pixel_y = 30
+	},
+/turf/open/floor/dirt/road,
+/area/outdoors/town/rmh)
 "foI" = (
 /turf/closed/wall/mineral/roofwall/middle{
 	dir = 4
@@ -17676,10 +17756,7 @@
 "fQK" = (
 /obj/structure/hay_stack,
 /turf/open/floor/hay,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "fQL" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
@@ -17932,10 +18009,6 @@
 "fTY" = (
 /turf/closed/wall/mineral/decostone/cand,
 /area/indoors/town/rmh/farm/ambar)
-"fTZ" = (
-/obj/structure/fake_machine/hailerboard,
-/turf/open/floor/cobble/mossy,
-/area/outdoors/town/rmh)
 "fUg" = (
 /obj/structure/rack/shelf/biggest,
 /obj/machinery/light/fueled/torchholder/r,
@@ -19812,6 +19885,13 @@
 "gzf" = (
 /turf/open/floor/dirt/road,
 /area/outdoors/rmh_field/camp)
+"gzo" = (
+/obj/structure/fluff/walldeco/customflag{
+	pixel_y = -32;
+	name = "rivermist hollow flag"
+	},
+/turf/open/floor/herringbone,
+/area/outdoors/town/rmh)
 "gzF" = (
 /obj/structure/fluff/railing/border/north,
 /obj/structure/fluff/littlebanners,
@@ -20094,11 +20174,17 @@
 /turf/open/openspace,
 /area/outdoors/rmh_magelake)
 "gFn" = (
-/turf/open/floor/cobblerock,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/obj/structure/curtain/dir{
+	dir = 2;
+	color = "#a32121"
+	},
+/obj/structure/door/fancy{
+	name = "Balcony"
+	},
+/obj/effect/mapping_helpers/access/keyset/rmh_town/townmouth,
+/obj/effect/mapping_helpers/access/locker,
+/turf/open/floor/ruinedwood/turned,
+/area/indoors/town/rmh/loudmouth)
 "gFp" = (
 /obj/structure/bed/inn/double,
 /obj/item/bedsheet/double_pelt,
@@ -20632,11 +20718,6 @@
 /obj/structure/flora/newtree,
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/west)
-"gOd" = (
-/obj/effect/decal/cleanable/dirt/dust,
-/obj/structure/chair/stool/bar,
-/turf/open/floor/ruinedwood/turned/darker,
-/area/outdoors/town/rmh)
 "gOi" = (
 /obj/item/natural/rock,
 /obj/structure/fluff/walldeco/vinez/offset,
@@ -20840,16 +20921,6 @@
 "gSo" = (
 /turf/open/water/sewer,
 /area/under/town/rmh/sewer)
-"gSq" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
-/obj/structure/curtain/dir{
-	dir = 2;
-	color = "#a32121"
-	},
-/turf/open/floor/ruinedwood/turned,
-/area/indoors/town/rmh/loudmouth)
 "gSv" = (
 /obj/structure/fluff/walldeco/bath/wallpipes/outie{
 	dir = 8
@@ -21088,18 +21159,6 @@
 /obj/effect/particle_effect/sparks,
 /turf/open/floor/metal,
 /area/under/town/rmh/sewer)
-"gWO" = (
-/obj/structure/fluff/railing/wood/east,
-/obj/structure/fluff/railing/wood/north{
-	plane = -6;
-	pixel_y = 7
-	},
-/obj/structure/dryclothes{
-	pixel_y = 23;
-	density = 0
-	},
-/turf/open/floor/ruinedwood/darker,
-/area/outdoors/town/rmh/roofs)
 "gWP" = (
 /obj/structure/flora/grass/swampweed,
 /turf/open/floor/grass,
@@ -21777,16 +21836,6 @@
 /obj/machinery/light/fueled/oven/south,
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/magician)
-"hhe" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 1
-	},
-/obj/structure/curtain/dir{
-	dir = 1;
-	color = "#a32121"
-	},
-/turf/open/floor/ruinedwood/turned,
-/area/indoors/town/rmh/loudmouth)
 "hhk" = (
 /obj/structure/fluff/statue/gargoyle/moss/candles,
 /obj/machinery/light/fueled/wallfire/floorcandle{
@@ -21946,6 +21995,10 @@
 	},
 /turf/open/floor/herringbone,
 /area/outdoors/town/rmh)
+"hkh" = (
+/obj/structure/fake_machine/hailerboard/l,
+/turf/open/floor/metal,
+/area/indoors/town/rmh/craft/artificer)
 "hkr" = (
 /obj/structure/flora/grass/herb/urtica,
 /turf/open/floor/grass/healthy,
@@ -22568,10 +22621,7 @@
 "huR" = (
 /obj/structure/hay_stack/rope,
 /turf/open/floor/cobblerock,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "huV" = (
 /obj/structure/bondage/gloryhole,
 /obj/structure/curtain/green{
@@ -22602,6 +22652,10 @@
 /obj/item/natural/feather,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/town_hall)
+"hvn" = (
+/obj/structure/fake_machine/hailerboard/r,
+/turf/open/floor/cobble,
+/area/outdoors/town/rmh)
 "hvq" = (
 /turf/open/floor/metal/barograte,
 /area/under/town/rmh/basement/tavern)
@@ -22858,6 +22912,13 @@
 	dir = 8
 	},
 /area/outdoors/town/rmh/roofs)
+"hAk" = (
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#522f26"
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "hAr" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
@@ -23263,6 +23324,14 @@
 /obj/machinery/light/fueled/wallfire/candle/weak/l,
 /turf/open/floor/metal/barograte,
 /area/under/town/rmh/sewer)
+"hGY" = (
+/obj/structure/closet/crate/drawer,
+/obj/item/key/loudmouth,
+/obj/item/scomstone,
+/obj/item/scomstone,
+/obj/item/flint,
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "hHg" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -23462,10 +23531,7 @@
 "hKB" = (
 /mob/living/simple_animal/hostile/retaliate/saiga/horse/brown/male/tame,
 /turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "hKG" = (
 /obj/structure/stairs{
 	dir = 4
@@ -24052,10 +24118,7 @@
 "hSY" = (
 /obj/machinery/light/fueled/torchholder/r,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "hTb" = (
 /obj/effect/decal/edge{
 	dir = 9;
@@ -24319,11 +24382,8 @@
 /turf/open/floor/carpet/red,
 /area/indoors/town/rmh/town_hall)
 "hYy" = (
-/turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/turf/closed/wall/mineral/wooddark/vertical,
+/area/indoors/town/rmh/loudmouth)
 "hYz" = (
 /obj/structure/roguerock,
 /turf/open/floor/cobblerock,
@@ -24716,6 +24776,10 @@
 	},
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/west)
+"ida" = (
+/obj/structure/table/wood/plain/alto,
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "ide" = (
 /obj/structure/flora/tree/pine{
 	icon_state = "pine4"
@@ -28759,10 +28823,7 @@
 /area/outdoors/rmh_air)
 "jol" = (
 /turf/closed/wall/mineral/wooddark/horizontal,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "jot" = (
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
@@ -30056,6 +30117,16 @@
 /obj/structure/fluff/canopy/booth/booth02,
 /turf/open/floor/cobble/mossy,
 /area/outdoors/town/rmh)
+"jKk" = (
+/obj/structure/window/openclose/reinforced{
+	dir = 2
+	},
+/obj/structure/curtain/dir{
+	dir = 2;
+	color = "#a32121"
+	},
+/turf/open/floor/ruinedwood/turned,
+/area/indoors/town/rmh/loudmouth)
 "jKt" = (
 /obj/structure/fluff/railing/stonewall,
 /turf/open/floor/grass,
@@ -30206,9 +30277,6 @@
 	},
 /turf/open/floor/volcanic,
 /area/indoors/cave/rmh_cave/minotaur)
-"jMY" = (
-/turf/closed/wall/mineral/wooddark,
-/area/indoors/town/rmh/loudmouth)
 "jNy" = (
 /obj/effect/decal/borderfall{
 	dir = 1;
@@ -30231,6 +30299,16 @@
 /obj/effect/particle_effect/sparks,
 /turf/open/floor/metal,
 /area/indoors/town/rmh/craft/artificer)
+"jNY" = (
+/obj/structure/window/openclose/reinforced{
+	dir = 8
+	},
+/obj/structure/curtain/dir{
+	dir = 8;
+	color = "#a32121"
+	},
+/turf/open/floor/ruinedwood/turned,
+/area/indoors/town/rmh/loudmouth)
 "jOk" = (
 /turf/closed/wall/mineral/pipe,
 /area/under/town/rmh/basement/townhall)
@@ -30449,10 +30527,7 @@
 "jRF" = (
 /mob/living/simple_animal/hostile/retaliate/saiga/horse/tame/saddled,
 /turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "jRL" = (
 /turf/closed/wall/mineral/wooddark/deco{
 	dir = 1
@@ -30522,14 +30597,6 @@
 /obj/structure/flora/mushroomcluster,
 /turf/open/floor/naturalstone,
 /area/under/town/rmh/basement/mages)
-"jTy" = (
-/obj/structure/closet/crate/drawer,
-/obj/item/key/loudmouth,
-/obj/item/scomstone,
-/obj/item/scomstone,
-/obj/item/flint,
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "jTA" = (
 /obj/structure/flora/grass/fullgrass,
 /obj/structure/flora/hotspring_rocks/grassy,
@@ -31999,6 +32066,9 @@
 /obj/structure/flora/ausbushes/ywflowers,
 /turf/open/floor/grass/healthy,
 /area/outdoors/town/rmh/livingquart)
+"kso" = (
+/turf/open/openspace,
+/area/indoors/town/rmh/loudmouth)
 "ksY" = (
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
@@ -32087,10 +32157,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/craft/apothecary)
-"kuG" = (
-/obj/effect/landmark/latejoin,
-/turf/open/floor/ruinedwood/darker,
-/area/outdoors/town/rmh)
 "kuQ" = (
 /obj/structure/fluff/railing/corner/south_east,
 /obj/effect/decal/alizeria/decals/wooddecal3,
@@ -32321,10 +32387,6 @@
 /obj/structure/ladder/hatch,
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/town/rmh/herbalist)
-"kxS" = (
-/obj/structure/fake_machine/hailerboard/l,
-/turf/open/floor/cobblerock,
-/area/indoors/town/rmh/garrison)
 "kxX" = (
 /obj/structure/flora/grass/crawlvines{
 	pixel_y = 32
@@ -32729,11 +32791,8 @@
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
 "kEH" = (
-/turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/turf/closed/wall/mineral/wooddark/horizontal,
+/area/indoors/town/rmh/loudmouth)
 "kEL" = (
 /obj/effect/decal/edge{
 	dir = 8;
@@ -34563,10 +34622,7 @@
 "lho" = (
 /obj/structure/door/swing,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "lhp" = (
 /obj/structure/fluff/traveltile{
 	aportalid = "SEWER1_2UP";
@@ -34893,14 +34949,6 @@
 	},
 /turf/open/floor/church,
 /area/indoors/town/rmh/cell)
-"lnB" = (
-/obj/structure/door/red{
-	name = "Town Mouth's Room"
-	},
-/obj/effect/mapping_helpers/access/keyset/rmh_town/townmouth,
-/obj/effect/mapping_helpers/access/locker,
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "lnG" = (
 /obj/structure/table/wood/reinforced_alter,
 /turf/open/floor/wood,
@@ -34989,10 +35037,7 @@
 "lpC" = (
 /mob/living/simple_animal/hostile/retaliate/saiga/horse/black/male/tame/saddled,
 /turf/open/floor/hay,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "lpE" = (
 /obj/effect/decal/edge{
 	dir = 8;
@@ -35441,6 +35486,13 @@
 	},
 /turf/open/floor/ruinedwood/herringbone,
 /area/under/town/rmh/basement/townhall)
+"lxj" = (
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#522f26"
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "lxs" = (
 /obj/effect/decal/cleanable/dirt/paper,
 /turf/open/floor/ruinedwood/darker,
@@ -35947,13 +35999,6 @@
 /obj/structure/flora/grass/water,
 /turf/open/floor/dirt/road,
 /area/under/town/rmh/basement/mages)
-"lGC" = (
-/obj/effect/decal/edge{
-	dir = 4;
-	color = "#522f26"
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "lGF" = (
 /turf/open/floor/dirt,
 /area/outdoors/town/rmh/roofs)
@@ -35973,13 +36018,6 @@
 /obj/effect/decal/cleanable/blood/tracks,
 /turf/open/floor/church/gold,
 /area/under/town/rmh/sewer)
-"lHq" = (
-/obj/effect/decal/edge_corner{
-	dir = 4;
-	color = "#522f26"
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "lHA" = (
 /obj/structure/rack/rogue/shelf/alizeria/shelf2,
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -37147,6 +37185,13 @@
 /obj/item/broom,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/chapel/basement)
+"lZG" = (
+/obj/effect/decal/edge{
+	dir = 4;
+	color = "#522f26"
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "lZQ" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
@@ -37578,14 +37623,6 @@
 /obj/structure/fluff/steamvent,
 /turf/open/floor/metal/barograte/open,
 /area/indoors/town/rmh/craft/artificer)
-"mgX" = (
-/obj/structure/closet/crate/drawer,
-/obj/item/key/loudmouth,
-/obj/item/scomstone,
-/obj/item/clothing/ring/gold/burden,
-/obj/item/flint,
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "mgY" = (
 /obj/structure/water_pipe{
 	plane = -10
@@ -38084,10 +38121,7 @@
 /obj/structure/fluff/railing/wood/north,
 /obj/structure/hay_stack,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "mpk" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/cleanable/blood/gibs/old,
@@ -38906,13 +38940,6 @@
 	},
 /turf/open/floor/carpet/red,
 /area/indoors/town/rmh/merchant)
-"mCz" = (
-/obj/effect/decal/edge{
-	dir = 2;
-	color = "#522f26"
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "mCC" = (
 /turf/open/water/clean,
 /area/outdoors/town/rmh)
@@ -39124,17 +39151,6 @@
 /obj/machinery/light/fueled/wallfire/floorcandle/pink,
 /turf/open/floor/ruinedwood/spiral,
 /area/under/town/rmh/basement/bdsm)
-"mGa" = (
-/obj/effect/decal/edge_corner{
-	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
-	},
-/obj/structure/fluff/statue/small{
-	pixel_y = 20
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "mGc" = (
 /obj/structure/closet/crate/chest/wicker,
 /obj/item/rope,
@@ -39148,6 +39164,17 @@
 	},
 /turf/open/floor/ruinedwood/turned,
 /area/outdoors/town/rmh)
+"mGi" = (
+/obj/effect/decal/edge_corner{
+	dir = 1;
+	color = "#522f26";
+	pixel_y = 0
+	},
+/obj/structure/fluff/statue/small{
+	pixel_y = 20
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "mGm" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -39786,10 +39813,7 @@
 /area/outdoors/rmh_field/north_mountain)
 "mSf" = (
 /turf/closed/wall/mineral/wooddark/vertical,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "mSk" = (
 /obj/effect/decal/cleanable/blood/tracks,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -40037,10 +40061,7 @@
 /obj/structure/fermentation_keg/water,
 /obj/item/rope,
 /turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "mWW" = (
 /obj/effect/decal/edge{
 	dir = 8;
@@ -40155,6 +40176,10 @@
 	},
 /turf/open/floor/churchrough,
 /area/indoors/town/rmh/chapel/basement)
+"mZB" = (
+/obj/structure/fake_machine/hailerboard/r,
+/turf/open/floor/cobblerock,
+/area/outdoors/town/rmh)
 "mZE" = (
 /obj/structure/fluff/railing/wood/west,
 /turf/open/floor/wood,
@@ -40681,10 +40706,6 @@
 /obj/machinery/light/fueled/wallfire/candle/weak/r,
 /turf/open/floor/ruinedwood/herringbone,
 /area/indoors/town/rmh/library)
-"nif" = (
-/obj/structure/fake_machine/hailerboard,
-/turf/open/floor/woodturned,
-/area/indoors/town/rmh/living)
 "niE" = (
 /obj/effect/decal/edge{
 	dir = 4;
@@ -40976,10 +40997,6 @@
 /obj/structure/fluff/littlebanners/greenred,
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh)
-"npe" = (
-/obj/structure/chair/stool,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "nph" = (
 /turf/open/openspace,
 /area/outdoors/rmh_field/west)
@@ -41794,29 +41811,6 @@
 /obj/item/natural/fibers,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/northern)
-"nDo" = (
-/obj/item/fake_machine/mastermail,
-/obj/structure/table/vtable/v2,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper/scroll,
-/obj/item/paper,
-/obj/item/paper,
-/obj/item/paper,
-/obj/item/paper,
-/obj/item/paper,
-/obj/item/paper,
-/obj/effect/decal/edge{
-	dir = 1;
-	color = "#522f26"
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "nDA" = (
 /obj/structure/flora/grass/herb/urtica,
 /turf/open/floor/grass/healthy,
@@ -42871,38 +42865,6 @@
 /obj/structure/flora/grass/bush/green,
 /turf/open/floor/dirt,
 /area/outdoors/rmh_field/north)
-"nXc" = (
-/obj/structure/table/wood/large/corner_new{
-	dir = 4
-	},
-/obj/item/weapon/knife/villager,
-/obj/structure/rack/rogue/shelf/alizeria/shelf1{
-	pixel_y = 0;
-	pixel_x = -32
-	},
-/obj/item/plate/pewter{
-	pixel_x = -26;
-	pixel_y = 2
-	},
-/obj/item/plate/pewter{
-	pixel_x = -26;
-	pixel_y = 2
-	},
-/obj/item/reagent_containers/glass/bowl/pewter{
-	pixel_y = 5;
-	pixel_x = -37
-	},
-/obj/item/reagent_containers/glass/bowl/pewter{
-	pixel_y = 5;
-	pixel_x = -37
-	},
-/obj/effect/decal/edge_corner{
-	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
-	},
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "nXd" = (
 /obj/effect/decal/alizeria/decals/wooddecal1,
 /turf/open/floor/ruinedwood/spiral,
@@ -43021,16 +42983,6 @@
 /obj/item/natural/rock/copper,
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/west)
-"nYW" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 8
-	},
-/obj/structure/curtain/dir{
-	dir = 8;
-	color = "#a32121"
-	},
-/turf/open/floor/ruinedwood/turned,
-/area/indoors/town/rmh/loudmouth)
 "nZf" = (
 /obj/structure/fluff/railing/corner{
 	dir = 9
@@ -43287,12 +43239,6 @@
 /obj/item/natural/bundle/stoneblock,
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/underdarkmaze)
-"ocH" = (
-/obj/structure/fake_machine/hailerboard{
-	pixel_y = -32
-	},
-/turf/open/floor/herringbone,
-/area/outdoors/town/rmh)
 "ocI" = (
 /obj/effect/decal/edge{
 	dir = 4;
@@ -43795,10 +43741,7 @@
 	layer = 3.1
 	},
 /turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "ojy" = (
 /obj/structure/table/wood/large/corner_new{
 	dir = 6
@@ -43962,10 +43905,7 @@
 /obj/structure/fluff/railing/wood/north,
 /obj/structure/fluff/railing/wood/east,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "omB" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobblerock,
@@ -44039,6 +43979,9 @@
 	color = "#b3afaf"
 	},
 /area/indoors/town/rmh/tavern)
+"onP" = (
+/turf/closed/wall/mineral/wooddark,
+/area/indoors/town/rmh/loudmouth)
 "onS" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/item/natural/stoneblock,
@@ -44118,10 +44061,6 @@
 /area/indoors/town/rmh/living)
 "ooI" = (
 /turf/closed/wall/mineral/decorstone,
-/area/outdoors/town/rmh)
-"ooK" = (
-/obj/structure/fake_machine/hailerboard/r,
-/turf/open/floor/cobble,
 /area/outdoors/town/rmh)
 "ooP" = (
 /turf/open/floor/cobblerock,
@@ -44601,13 +44540,6 @@
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh/roofs)
-"owI" = (
-/obj/effect/decal/edge{
-	dir = 1;
-	color = "#522f26"
-	},
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "owQ" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -44754,17 +44686,6 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/blocks,
 /area/indoors/cave/rmh_cave/southern)
-"oyJ" = (
-/obj/effect/decal/edge{
-	dir = 1;
-	color = "#522f26"
-	},
-/obj/structure/chair/stool{
-	pixel_x = 12;
-	pixel_y = -3
-	},
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "oyO" = (
 /obj/structure/fluff/railing/wood,
 /obj/machinery/light/fueled/firebowl/standing/blue{
@@ -45517,6 +45438,12 @@
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
+"oKE" = (
+/obj/structure/stairs{
+	dir = 4
+	},
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "oKH" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing{
 	pixel_x = -13;
@@ -45828,6 +45755,10 @@
 /obj/structure/curtain/black,
 /turf/open/floor/tile/tilerg,
 /area/indoors/town/rmh/craft/apothecary)
+"oPe" = (
+/obj/structure/fake_machine/hailerboard,
+/turf/open/floor/woodturned,
+/area/indoors/town/rmh/living)
 "oPq" = (
 /obj/structure/table/wood/reinforced_alter,
 /obj/item/reagent_containers/glass/bucket/wooden/alter{
@@ -46181,15 +46112,6 @@
 	},
 /turf/open/water/sewer,
 /area/under/town/rmh/sewer)
-"oWM" = (
-/obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 8
-	},
-/obj/structure/closet/crate/chest/wicker,
-/obj/structure/fake_machine/stockpile_withdraw,
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "oXe" = (
 /turf/open/floor/rooftop/green/west,
 /area/outdoors/rmh_air)
@@ -46641,10 +46563,7 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "peQ" = (
 /turf/closed/wall/mineral/wooddark,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "peT" = (
 /obj/item/storage/backpack/satchel/surgbag,
 /obj/structure/rack,
@@ -46684,10 +46603,7 @@
 "pft" = (
 /obj/structure/fluff/railing/wood/east,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "pfu" = (
 /obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/structure/fluff/walldeco/bath/wallpipes/outie,
@@ -47419,12 +47335,9 @@
 /turf/open/floor/churchrough,
 /area/indoors/town/rmh/chapel/basement)
 "prq" = (
-/obj/structure/fluff/railing/wood/north,
-/turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/obj/effect/landmark/latejoin,
+/turf/open/floor/ruinedwood/darker,
+/area/outdoors/town/rmh)
 "prS" = (
 /obj/structure/closet/crate/miningcar,
 /turf/open/floor/naturalstone,
@@ -48026,10 +47939,7 @@
 /obj/structure/fluff/railing/wood/east,
 /obj/structure/hay_stack/rope,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "pAP" = (
 /obj/machinery/light/fueled/hearth/vertical{
 	dir = 1
@@ -49133,6 +49043,11 @@
 	dir = 4
 	},
 /area/indoors/town/rmh/farm/house)
+"pSV" = (
+/obj/structure/bed/wool,
+/obj/item/bedsheet/fabric,
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "pSY" = (
 /obj/structure/fermentation_keg/water,
 /turf/open/floor/hexstone,
@@ -50015,23 +49930,6 @@
 /obj/structure/flora/ausbushes/ywflowers,
 /turf/open/floor/grass/healthy,
 /area/outdoors/rmh_field/west)
-"qit" = (
-/obj/structure/table/vtable,
-/obj/structure/fake_machine/mail{
-	mailtag = "Loudmouth"
-	},
-/obj/item/natural/feather,
-/obj/item/candle/candlestick/gold/single/lit{
-	pixel_x = -7;
-	pixel_y = 21
-	},
-/obj/effect/decal/edge_corner{
-	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
-	},
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "qiy" = (
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobble,
@@ -50727,10 +50625,6 @@
 /obj/structure/carpet/red,
 /turf/open/floor/tile/brick,
 /area/indoors/town/rmh/tavern)
-"qsp" = (
-/obj/structure/table/wood/plain/alto,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "qss" = (
 /turf/open/water/clean,
 /area/outdoors/rmh_magelake)
@@ -53283,9 +53177,6 @@
 /obj/item/natural/rock,
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/to_underdark)
-"rgi" = (
-/turf/closed/wall/mineral/wooddark/vertical,
-/area/indoors/town/rmh/loudmouth)
 "rgj" = (
 /obj/item/natural/stone,
 /obj/structure/fluff/railing/wood/west,
@@ -55386,33 +55277,6 @@
 /obj/structure/fluff/railing/wood/west,
 /turf/open/floor/dirt/road,
 /area/outdoors/rmh_field/druid)
-"rOe" = (
-/obj/structure/table/wood/large/corner_new{
-	dir = 6
-	},
-/obj/item/reagent_containers/glass/bucket/pot/copper,
-/obj/item/cooking/pan,
-/obj/item/kitchen/fork/pewter{
-	pixel_x = -12
-	},
-/obj/item/kitchen/fork/pewter{
-	pixel_x = -12
-	},
-/obj/item/kitchen/spoon/pewter{
-	pixel_x = -14
-	},
-/obj/item/kitchen/spoon/pewter{
-	pixel_x = -14
-	},
-/obj/machinery/light/fueled/wallfire/candle/l,
-/obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
-	},
-/obj/structure/fluff/railing/wood,
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "rOg" = (
 /obj/effect/decal/edge{
 	dir = 4;
@@ -55638,10 +55502,7 @@
 /area/outdoors/mountains/rmh_mountains)
 "rRS" = (
 /turf/closed/wall/mineral/wooddark/window,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "rRW" = (
 /obj/item/grown/log/tree/small,
 /turf/open/floor/ruinedwood/darker,
@@ -55699,6 +55560,10 @@
 /obj/structure/dye_bin,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/southern)
+"rTc" = (
+/obj/structure/carpet/red,
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "rTd" = (
 /obj/structure/bars/tough{
 	icon = 'icons/effects/effects.dmi';
@@ -56318,6 +56183,9 @@
 /obj/item/natural/stone,
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
+"sck" = (
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "scp" = (
 /obj/item/natural/rock/salt,
 /turf/open/floor/sand/sandstone,
@@ -56868,16 +56736,6 @@
 /mob/living/simple_animal/hostile/mirespider_lurker/mushroom,
 /turf/open/floor/church,
 /area/under/rmh_dungeon/underdarkmaze)
-"smI" = (
-/obj/structure/carpet/red,
-/obj/structure/fluff/pillow/red{
-	layer = 3.1;
-	dir = 4;
-	pixel_y = -2
-	},
-/obj/structure/fluff/railing/wood/west,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "smM" = (
 /obj/effect/decal/cobblerockedge{
 	dir = 9
@@ -57250,10 +57108,7 @@
 "stZ" = (
 /obj/item/bin/water,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "sue" = (
 /obj/structure/spider/stickyweb,
 /turf/open/floor/dirt/road,
@@ -57972,16 +57827,6 @@
 /obj/structure/chair/stool,
 /turf/open/floor/ruinedwood/alizeria/tiles/wood21,
 /area/indoors/town/rmh/tavern)
-"sEQ" = (
-/obj/item/bin/water,
-/obj/item/reagent_containers/glass/bucket/wooden/alter,
-/obj/effect/decal/edge_corner{
-	dir = 4;
-	color = "#522f26"
-	},
-/obj/structure/fluff/railing/wood,
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "sFb" = (
 /obj/structure/fermentation_keg/water,
 /obj/item/reagent_containers/glass/bucket/wooden/alter{
@@ -58585,6 +58430,17 @@
 /obj/item/natural/stone,
 /turf/open/floor/ruinedwood/herringbone_clear,
 /area/under/town/rmh/basement/basement)
+"sNR" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#522f26"
+	},
+/obj/structure/chair/stool{
+	pixel_x = 12;
+	pixel_y = -3
+	},
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "sNS" = (
 /obj/effect/decal/cleanable/blood/gibs/limb,
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
@@ -59262,6 +59118,15 @@
 	},
 /turf/open/floor/cobble,
 /area/outdoors/rmh_field)
+"tbb" = (
+/obj/effect/decal/borderfall{
+	dir = 1;
+	pixel_y = 8
+	},
+/obj/structure/closet/crate/chest/wicker,
+/obj/structure/fake_machine/stockpile_withdraw,
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "tbf" = (
 /turf/closed/wall/mineral/wooddark/deco{
 	dir = 4
@@ -59355,10 +59220,7 @@
 "tcN" = (
 /obj/structure/fluff/railing/wood,
 /turf/open/floor/dirt,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "tcO" = (
 /obj/effect/decal/edge{
 	color = "#575757";
@@ -59854,6 +59716,14 @@
 /obj/effect/decal/alizeria/decals/wooddecal5,
 /turf/open/floor/ruinedwood/alizeria/tiles/wood4,
 /area/under/town/rmh/basement/farm)
+"tkG" = (
+/obj/effect/decal/edge{
+	dir = 8;
+	color = "#522f26"
+	},
+/obj/structure/fake_machine/hailer/l,
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "tkP" = (
 /obj/structure/fluff/walldeco/bath/wallpipes,
 /obj/structure/bed/shit,
@@ -60773,10 +60643,7 @@
 	name = "trough"
 	},
 /turf/open/floor/hay,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "tyG" = (
 /obj/effect/landmark/latejoin,
 /turf/open/floor/cobble/mossy,
@@ -60788,10 +60655,7 @@
 "tyK" = (
 /obj/structure/hay_stack/rope,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "tyZ" = (
 /obj/structure/stockpile_storage,
 /turf/open/floor/concrete,
@@ -61012,6 +60876,10 @@
 /obj/structure/bed/wool/double,
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
+"tDh" = (
+/obj/structure/fake_machine/hailerboard,
+/turf/open/floor/cobble/mossy,
+/area/outdoors/town/rmh)
 "tDl" = (
 /obj/item/natural/wood/plank,
 /obj/effect/decal/cleanable/debris/wood,
@@ -61021,6 +60889,14 @@
 /obj/item/natural/bundle/stoneblock,
 /turf/open/floor/blocks,
 /area/indoors/cave/rmh_cave/southern)
+"tDr" = (
+/obj/structure/door/red{
+	name = "Town Mouth's Room"
+	},
+/obj/effect/mapping_helpers/access/keyset/rmh_town/townmouth,
+/obj/effect/mapping_helpers/access/locker,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
 "tDJ" = (
 /obj/structure/chair/bench/couch/middle/lord_secondary,
 /turf/open/floor/carpet/red,
@@ -62694,10 +62570,6 @@
 	},
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
-"ufh" = (
-/obj/structure/fake_machine/hailerboard/l,
-/turf/open/floor/metal,
-/area/indoors/town/rmh/craft/artificer)
 "ufk" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/spawner/map_spawner/loot/dungeon/weapons,
@@ -62884,14 +62756,6 @@
 /obj/structure/fluff/walldeco/vinez/blue,
 /turf/closed/mineral/sandstone,
 /area/indoors/cave/rmh_cave/wet/lake)
-"uiw" = (
-/obj/effect/decal/edge{
-	dir = 8;
-	color = "#522f26"
-	},
-/obj/structure/fake_machine/hailer/l,
-/turf/open/floor/tile/diamond,
-/area/indoors/town/rmh/loudmouth)
 "uiB" = (
 /obj/structure/flora/alizeria/decor/leavesr,
 /turf/open/floor/grass/healthy,
@@ -63079,10 +62943,7 @@
 /obj/structure/fluff/railing/wood/east,
 /obj/item/bin/water,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "ulh" = (
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/alizeria/decals/wooddecal1,
@@ -63736,6 +63597,38 @@
 	},
 /turf/open/floor/hexstone,
 /area/outdoors/rmh_field/rmh_mageporch)
+"uvT" = (
+/obj/structure/table/wood/large/corner_new{
+	dir = 4
+	},
+/obj/item/weapon/knife/villager,
+/obj/structure/rack/rogue/shelf/alizeria/shelf1{
+	pixel_y = 0;
+	pixel_x = -32
+	},
+/obj/item/plate/pewter{
+	pixel_x = -26;
+	pixel_y = 2
+	},
+/obj/item/plate/pewter{
+	pixel_x = -26;
+	pixel_y = 2
+	},
+/obj/item/reagent_containers/glass/bowl/pewter{
+	pixel_y = 5;
+	pixel_x = -37
+	},
+/obj/item/reagent_containers/glass/bowl/pewter{
+	pixel_y = 5;
+	pixel_x = -37
+	},
+/obj/effect/decal/edge_corner{
+	dir = 8;
+	color = "#522f26";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
 "uvX" = (
 /obj/structure/fluff/walldeco/church/line{
 	dir = 4
@@ -64326,18 +64219,6 @@
 	},
 /turf/open/floor/wood,
 /area/indoors/town/rmh/bank)
-"uGe" = (
-/obj/structure/curtain/dir{
-	dir = 2;
-	color = "#a32121"
-	},
-/obj/structure/door/fancy{
-	name = "Balcony"
-	},
-/obj/effect/mapping_helpers/access/keyset/rmh_town/townmouth,
-/obj/effect/mapping_helpers/access/locker,
-/turf/open/floor/ruinedwood/turned,
-/area/indoors/town/rmh/loudmouth)
 "uGh" = (
 /turf/closed/wall/mineral/wooddark,
 /area/indoors/cave/rmh_cave/northern)
@@ -65463,10 +65344,6 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/southern)
-"vaw" = (
-/obj/structure/fake_machine/hailerboard/r,
-/turf/open/floor/cobblerock,
-/area/outdoors/town/rmh)
 "vaz" = (
 /obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -65714,6 +65591,18 @@
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/tile/brick,
 /area/indoors/town/rmh/farm/house)
+"vdJ" = (
+/obj/machinery/light/fueled/hearth/mobilestove{
+	pixel_y = 7
+	},
+/obj/structure/table/wood/plain/alto,
+/obj/effect/decal/edge{
+	dir = 2;
+	color = "#522f26"
+	},
+/obj/structure/fluff/railing/wood,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
 "vdU" = (
 /obj/effect/decal/cobbleedge{
 	dir = 2
@@ -65894,6 +65783,16 @@
 	dir = 8
 	},
 /area/indoors/town/rmh/town_hall)
+"vha" = (
+/obj/item/bin/water,
+/obj/item/reagent_containers/glass/bucket/wooden/alter,
+/obj/effect/decal/edge_corner{
+	dir = 4;
+	color = "#522f26"
+	},
+/obj/structure/fluff/railing/wood,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
 "vhk" = (
 /obj/effect/decal/cleanable/blood/old,
 /obj/effect/decal/edge{
@@ -66406,14 +66305,6 @@
 "vsg" = (
 /turf/closed/mineral,
 /area/indoors/cave/rmh_cave/central/wild/warren)
-"vsl" = (
-/obj/effect/decal/edge_corner{
-	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
-	},
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "vsr" = (
 /obj/structure/flora/grass/sparegrass,
 /obj/structure/flora/ausbushes/ppflowers,
@@ -66676,6 +66567,11 @@
 /obj/effect/decal/cleanable/debris/wood,
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
+"vxk" = (
+/obj/effect/decal/cleanable/dirt/dust,
+/obj/structure/chair/stool/bar,
+/turf/open/floor/ruinedwood/turned/darker,
+/area/outdoors/town/rmh)
 "vxl" = (
 /obj/effect/decal/edge{
 	dir = 8;
@@ -67683,10 +67579,6 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/northern)
-"vOT" = (
-/obj/structure/carpet/red,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "vPa" = (
 /obj/structure/flora/ausbushes/ywflowers,
 /turf/open/floor/grass,
@@ -69535,10 +69427,7 @@
 /obj/structure/fluff/railing/wood/east,
 /obj/structure/fluff/railing/wood,
 /turf/open/floor/dirt/road,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "wsH" = (
 /obj/structure/door/fancy,
 /obj/effect/mapping_helpers/access/locker,
@@ -70872,6 +70761,13 @@
 "wMN" = (
 /turf/open/floor/wood,
 /area/indoors/town/rmh/craft/apothecary)
+"wMP" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#522f26"
+	},
+/turf/open/floor/tile/brownbrick,
+/area/indoors/town/rmh/loudmouth)
 "wMY" = (
 /obj/effect/decal/carpet{
 	dir = 4;
@@ -71171,6 +71067,23 @@
 /obj/item/natural/stone,
 /turf/open/floor/churchbrick,
 /area/under/rmh_dungeon/jergal)
+"wSa" = (
+/obj/structure/table/vtable,
+/obj/structure/fake_machine/mail{
+	mailtag = "Loudmouth"
+	},
+/obj/item/natural/feather,
+/obj/item/candle/candlestick/gold/single/lit{
+	pixel_x = -7;
+	pixel_y = 21
+	},
+/obj/effect/decal/edge_corner{
+	dir = 8;
+	color = "#522f26";
+	pixel_y = 0
+	},
+/turf/open/floor/tile/diamond,
+/area/indoors/town/rmh/loudmouth)
 "wSl" = (
 /obj/structure/fluff/walldeco/church/line{
 	dir = 1
@@ -71639,18 +71552,6 @@
 	},
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/tavern)
-"wZl" = (
-/obj/machinery/light/fueled/hearth/mobilestove{
-	pixel_y = 7
-	},
-/obj/structure/table/wood/plain/alto,
-/obj/effect/decal/edge{
-	dir = 2;
-	color = "#522f26"
-	},
-/obj/structure/fluff/railing/wood,
-/turf/open/floor/tile/brownbrick,
-/area/indoors/town/rmh/loudmouth)
 "wZv" = (
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
@@ -71824,15 +71725,6 @@
 /obj/structure/flora/alizeria/decor/leavesr,
 /turf/open/floor/grass,
 /area/outdoors/rmh_field/druid)
-"xcY" = (
-/obj/structure/fluff/festive_flags/red{
-	pixel_y = 32
-	},
-/obj/structure/call_bell/loudmouth{
-	pixel_y = 30
-	},
-/turf/open/floor/dirt/road,
-/area/outdoors/town/rmh)
 "xcZ" = (
 /obj/machinery/light/fueledstreet/orange/wall,
 /obj/structure/flora/grass/sparegrass,
@@ -71853,10 +71745,7 @@
 /obj/structure/rack,
 /obj/item/natural/saddle,
 /turf/open/floor/cobblerock,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "xdx" = (
 /obj/item/natural/rock,
 /turf/open/floor/dirt/road,
@@ -72092,10 +71981,7 @@
 "xid" = (
 /obj/structure/fermentation_keg/water,
 /turf/open/floor/cobblerock,
-/area/outdoors/town/rmh/livingquart{
-	first_time_text = "STABLES";
-	name = "Stables"
-	})
+/area/outdoors/town/rmh/livingquart)
 "xio" = (
 /obj/structure/fluff/traveltile/rmh_cc/werewolf,
 /turf/open/floor/naturalstone,
@@ -73479,6 +73365,10 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/church/pale,
 /area/under/rmh_dungeon/catacombs_town)
+"xEJ" = (
+/obj/structure/fluff/railing/wood,
+/turf/open/floor/ruinedwood/herringbone_clear,
+/area/indoors/town/rmh/loudmouth)
 "xER" = (
 /turf/open/floor/ruinedwood/darker,
 /area/indoors/town/rmh/farm/house)
@@ -73991,16 +73881,6 @@
 	},
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/merchant)
-"xMF" = (
-/obj/structure/bed/wool,
-/obj/item/bedsheet/fabric,
-/obj/structure/mannequin/male{
-	density = 0;
-	pixel_y = 22;
-	pixel_x = 6
-	},
-/turf/open/floor/carpet/red,
-/area/indoors/town/rmh/loudmouth)
 "xMJ" = (
 /obj/machinery/light/fueledstreet/orange/wall{
 	pixel_y = 0;
@@ -74344,6 +74224,13 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/hexstone,
 /area/under/town/rmh/basement/blacksmith)
+"xSc" = (
+/obj/structure/fake_machine/stockpile_withdraw{
+	pixel_y = 0;
+	pixel_x = 32
+	},
+/turf/open/floor/tile/brick,
+/area/indoors/town/rmh/farm/house)
 "xSf" = (
 /obj/structure/handcart{
 	dir = 8
@@ -74368,6 +74255,14 @@
 /obj/structure/carpet/red,
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/bath)
+"xSC" = (
+/obj/structure/closet/crate/drawer,
+/obj/item/key/loudmouth,
+/obj/item/scomstone,
+/obj/item/clothing/ring/gold/burden,
+/obj/item/flint,
+/turf/open/floor/carpet/red,
+/area/indoors/town/rmh/loudmouth)
 "xSG" = (
 /obj/effect/decal/alizeria/decals/wooddecal6,
 /turf/open/floor/ruinedwood/turned,
@@ -75088,13 +74983,6 @@
 "yem" = (
 /turf/closed/wall/mineral/wooddark/end,
 /area/indoors/town/rmh/town_hall)
-"yeq" = (
-/obj/structure/table/wood/plain/alto,
-/obj/structure/noticeboard{
-	pixel_x = -32
-	},
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "yew" = (
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/flora/ausbushes/ywflowers,
@@ -75499,10 +75387,6 @@
 /obj/item/natural/wood/plank,
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/jergal)
-"yli" = (
-/obj/structure/fluff/railing/wood,
-/turf/open/floor/ruinedwood/herringbone_clear,
-/area/indoors/town/rmh/loudmouth)
 "yll" = (
 /obj/item/natural/stone,
 /turf/open/water/clean/dirt,
@@ -164808,7 +164692,7 @@ ghh
 nBT
 nHx
 nHx
-ufh
+hkh
 rKU
 wPf
 nHx
@@ -169947,7 +169831,7 @@ upo
 mOG
 mOG
 idI
-fTZ
+tDh
 jHp
 jHp
 jHp
@@ -170710,7 +170594,7 @@ ump
 tLp
 wyB
 tLp
-nif
+oPe
 ksY
 nJg
 vCm
@@ -176908,7 +176792,7 @@ gIf
 mOG
 pMx
 jYP
-eNR
+gzo
 wQI
 nos
 aMb
@@ -177165,7 +177049,7 @@ gIf
 hMH
 jYP
 jYP
-ocH
+ebm
 lAz
 urL
 aMb
@@ -177422,7 +177306,7 @@ gIf
 jYP
 jYP
 jYP
-eNR
+gzo
 wQI
 nos
 mOG
@@ -178953,7 +178837,7 @@ fYT
 mOG
 fYT
 mOG
-vaw
+mZB
 oGm
 oGm
 oGm
@@ -181534,7 +181418,7 @@ tBD
 aMb
 aMb
 iDf
-ooK
+hvn
 fkI
 aMb
 mOG
@@ -183047,7 +182931,7 @@ poO
 poO
 vUY
 qRW
-gOd
+vxk
 hgS
 vUY
 dQA
@@ -183820,7 +183704,7 @@ poO
 poO
 mCC
 tFZ
-kuG
+prq
 bRI
 obo
 pBj
@@ -223436,7 +223320,7 @@ tBn
 jJs
 mSf
 fQK
-kEH
+ieQ
 mSf
 stZ
 tyK
@@ -223949,14 +223833,14 @@ tBn
 tBn
 jJs
 rRS
-hYy
-kEH
+ala
+ieQ
 rRS
 bWJ
 bWJ
 rRS
 bWJ
-kEH
+ieQ
 dkg
 mZM
 mBn
@@ -224462,15 +224346,15 @@ jJs
 jJs
 tBn
 jJs
-prq
-hYy
-gFn
-gFn
-hYy
-gFn
+nSk
+ala
+qGt
+qGt
+ala
+qGt
 xdr
-gFn
-kEH
+qGt
+ieQ
 xSL
 jaX
 qQQ
@@ -224720,13 +224604,13 @@ tBn
 jJs
 xub
 omv
-kEH
-gFn
-gFn
-gFn
-hYy
-gFn
-gFn
+ieQ
+qGt
+qGt
+qGt
+ala
+qGt
+qGt
 huR
 tLp
 uPf
@@ -224978,17 +224862,17 @@ jJs
 jJs
 rsj
 mpa
-gFn
-gFn
-hYy
-hYy
+qGt
+qGt
+ala
+ala
 hSY
-hYy
+ala
 tcN
 mWT
-gFn
-gFn
-gFn
+qGt
+qGt
+qGt
 aoh
 qDI
 tBn
@@ -225237,14 +225121,14 @@ qDI
 omv
 pft
 peQ
-kEH
-kEH
+ieQ
+ieQ
 peQ
 pAI
 wsB
 xid
-gFn
-kEH
+qGt
+ieQ
 eYh
 leW
 jJs
@@ -248106,7 +247990,7 @@ ipc
 pGF
 pGF
 nxD
-kxS
+dvP
 yan
 hkN
 nQv
@@ -252481,7 +252365,7 @@ ump
 ump
 gTJ
 jWc
-eWw
+atO
 jZk
 bKw
 iAv
@@ -300530,12 +300414,12 @@ lzI
 lzI
 lzI
 lzI
-jMY
-aCr
-aCr
-aCr
-aCr
-jMY
+onP
+kEH
+kEH
+kEH
+kEH
+onP
 jHp
 jHp
 jHp
@@ -300787,13 +300671,13 @@ lzI
 lzI
 lzI
 lzI
-rgi
-qit
-uiw
-bnV
-yeq
-rgi
-xcY
+hYy
+wSa
+tkG
+apA
+cud
+hYy
+foE
 mOG
 mOG
 jHp
@@ -301044,12 +300928,12 @@ lzI
 lzI
 lzI
 lzI
-rgi
-nDo
-aDh
-mCz
-cSQ
-lnB
+hYy
+eWw
+dAb
+hAk
+sck
+tDr
 mOG
 jHp
 mOG
@@ -301300,13 +301184,13 @@ lzI
 lzI
 lzI
 lzI
-eSL
-gSq
-mGa
-lGC
-lHq
-cRj
-rgi
+aTE
+jKk
+mGi
+lZG
+lxj
+oKE
+hYy
 mOG
 mOG
 jHp
@@ -301557,13 +301441,13 @@ lzI
 lzI
 lzI
 lzI
-dkw
-uGe
-cSQ
-vOT
-vOT
-smI
-rgi
+bPw
+gFn
+sck
+rTc
+rTc
+eUg
+hYy
 lyL
 lyL
 lyL
@@ -301814,13 +301698,13 @@ lzI
 lzI
 lzI
 lzI
-gWO
-gSq
-xMF
-jTy
-mgX
-aqO
-rgi
+eVr
+jKk
+eCI
+hGY
+xSC
+pSV
+hYy
 lyL
 lyL
 lyL
@@ -302072,12 +301956,12 @@ lzI
 lzI
 lzI
 lzI
-jMY
-nYW
-aCr
-aCr
-aCr
-jMY
+onP
+jNY
+kEH
+kEH
+kEH
+onP
 lyL
 lyL
 lyL
@@ -317257,7 +317141,7 @@ etm
 etm
 tEJ
 vdG
-bvn
+xSc
 rZH
 sYa
 hlp
@@ -366066,12 +365950,12 @@ lzI
 lzI
 lzI
 lzI
-jMY
-agE
-agE
-agE
-agE
-jMY
+onP
+dwE
+dwE
+dwE
+dwE
+onP
 lzI
 lzI
 lzI
@@ -366323,12 +366207,12 @@ lzI
 lzI
 lzI
 qdd
-agE
-dyc
-nXc
-rOe
-boT
-agE
+dwE
+fmf
+uvT
+esg
+kso
+dwE
 yiQ
 lzI
 lzI
@@ -366580,12 +366464,12 @@ lzI
 lzI
 lzI
 qdd
-gSq
-oyJ
-owI
-wZl
-boT
-agE
+jKk
+sNR
+wMP
+vdJ
+kso
+dwE
 yiQ
 lzI
 lzI
@@ -366837,12 +366721,12 @@ lzI
 lzI
 lzI
 qdd
-agE
-oWM
-vsl
-sEQ
-boT
-agE
+dwE
+tbb
+dzZ
+vha
+kso
+dwE
 yiQ
 lzI
 lzI
@@ -367094,12 +366978,12 @@ lzI
 lzI
 lzI
 qdd
-gSq
-npe
-cSQ
-yli
-cRj
-hhe
+jKk
+enF
+sck
+xEJ
+oKE
+buL
 yiQ
 lzI
 lzI
@@ -367351,12 +367235,12 @@ lzI
 lzI
 lzI
 qdd
-agE
-qsp
-npe
-cSQ
-cSQ
-agE
+dwE
+ida
+enF
+sck
+sck
+dwE
 yiQ
 lzI
 lzI
@@ -367608,12 +367492,12 @@ lzI
 lzI
 lzI
 lzI
-jMY
-agE
-agE
-agE
-agE
-jMY
+onP
+dwE
+dwE
+dwE
+dwE
+onP
 lzI
 lzI
 lzI
