@@ -9,16 +9,23 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 		// Reuse the panel for this viewer if their window is still open, so
 		// spam clicking "Examine Closer" refocuses it instead of stacking windows
 		var/datum/examine_panel/mob_examine_panel = LAZYACCESS(examine_panels, REF(usr))
-		if(!mob_examine_panel)
+		//RMH EDITED START - the wipe used to live only in the reuse branch, so a
+		// panel opened fresh (previous window closed) served whatever snapshot the
+		// last session left on the mob. Snapshot model: ANY examine starts clean.
+		var/reusing_panel = !isnull(mob_examine_panel)
+		if(!reusing_panel)
 			mob_examine_panel = new(src)
 			mob_examine_panel.holder = src
 			mob_examine_panel.viewing = usr
 			LAZYSET(examine_panels, REF(usr), mob_examine_panel)
-		else
-			// Snapshot model: re-examining refreshes the doll to the mob's current
-			// state. Wipe the cached snapshots so the panel rebuilds them.
-			reset_examine_preview()
+		reset_examine_preview()
 		mob_examine_panel.ui_interact(usr)
+		if(reusing_panel)
+			// ui_interact() only refocuses an already-open window - it pushes no
+			// payload - so without this the wiped snapshot was never rebuilt and
+			// the stale doll stayed on screen until the viewer hit rotate.
+			mob_examine_panel.update_static_data(usr)
+		//RMH EDITED END
 		return
 
 		/*if(!ismob(usr))

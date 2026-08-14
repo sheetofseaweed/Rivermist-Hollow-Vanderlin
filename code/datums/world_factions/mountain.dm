@@ -32,16 +32,16 @@
 	)
 	common_pool = list(
 		// Armor - Heavy focus on practical protective gear
-		/datum/supply_pack/armor/light/skullcap,
+		/datum/supply_pack/armor/iron/skullcap,
 		/datum/supply_pack/apparel/minershelm,
-		/datum/supply_pack/armor/light/poth,
+		/datum/supply_pack/armor/iron/poth,
 		/datum/supply_pack/armor/steel/nasalh,
-		/datum/supply_pack/armor/light/chaincoif_iron,
-		/datum/supply_pack/armor/light/bracers,
-		/datum/supply_pack/armor/light/chain_gloves_iron,
-		/datum/supply_pack/armor/light/chainlegs_iron,
-		/datum/supply_pack/armor/light/chainkilt_iron,
-		/datum/supply_pack/armor/light/light_armor_boots,
+		/datum/supply_pack/armor/iron/chaincoif_iron,
+		/datum/supply_pack/armor/iron/bracers,
+		/datum/supply_pack/armor/iron/chain_gloves_iron,
+		/datum/supply_pack/armor/iron/chainlegs_iron,
+		/datum/supply_pack/armor/iron/chainkilt_iron,
+		/datum/supply_pack/armor/iron/light_armor_boots,
 		// Apparel
 		/datum/supply_pack/apparel/hatfur,
 		/datum/supply_pack/apparel/leather_boots,
@@ -87,17 +87,17 @@
 	)
 	uncommon_pool = list(
 		// Better armor
-		/datum/supply_pack/armor/light/ifull_plate,
-		/datum/supply_pack/armor/light/chainmail_iron,
+		/datum/supply_pack/armor/iron/ifull_plate,
+		/datum/supply_pack/armor/iron/chainmail_iron,
 		/datum/supply_pack/armor/steel/chaincoif_steel,
 		/datum/supply_pack/armor/steel/chainlegs_steel,
 		/datum/supply_pack/armor/steel/chainkilt_steel,
-		/datum/supply_pack/armor/light/ihalf_plate,
+		/datum/supply_pack/armor/iron/ihalf_plate,
 		/datum/supply_pack/armor/light/heavy_gloves,
 		/datum/supply_pack/armor/steel/steel_boots,
 		/datum/supply_pack/armor/steel/pegasushelm,
 		/datum/supply_pack/apparel/tabardP,
-		/datum/supply_pack/armor/light/icuirass,
+		/datum/supply_pack/armor/iron/icuirass,
 		/datum/supply_pack/armor/light/shamaniccoat,
 		// Apparel
 		/datum/supply_pack/apparel/leather_vest_random,
@@ -146,7 +146,7 @@
 		/datum/supply_pack/armor/steel/sallet,
 		/datum/supply_pack/armor/steel/bracers,
 		/datum/supply_pack/armor/steel/hounskull,
-		/datum/supply_pack/armor/light/ifull_plate,
+		/datum/supply_pack/armor/iron/ifull_plate,
 		/datum/supply_pack/armor/steel/elvenhelm,
 		/datum/supply_pack/armor/steel/elvenplate,
 		// Apparel
