@@ -17,27 +17,20 @@
 	. = ..()
 	apply_paint_override()
 
-/obj/item/paint_brush/afterattack(atom/target, mob/living/user, proximity_flag, list/modifiers)
-	. = ..()
-
-	if(!proximity_flag)
-		return
-
+/obj/item/paint_brush/try_special_paint(atom/target, mob/living/user)
 	if(istype(target, /obj/item/reagent_containers/food/snacks/chocolate/egg))
-		if(paint_chocolate_egg(user, target))
-			return
+		return paint_chocolate_egg(user, target)
 
 	if(istype(target, /obj/item/reagent_containers/food/snacks/chocolate/egg_large))
-		if(paint_chocolate_egg_large(user, target))
-			return
+		return paint_chocolate_egg_large(user, target)
 
 	if(istype(target, /obj/item/reagent_containers/food/snacks/egg))
-		if(paint_food_egg(user, target))
-			return
+		return paint_food_egg(user, target)
 
 	if(istype(target, /obj/item/oviposition_egg))
-		if(paint_harpy_egg(user, target))
-			return
+		return paint_harpy_egg(user, target)
+
+	return ..()
 
 /obj/item/paint_brush/proc/paint_food_egg(mob/living/user, obj/item/reagent_containers/food/snacks/egg/E)
 	var/list/options = list(

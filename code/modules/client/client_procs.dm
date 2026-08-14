@@ -200,13 +200,16 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	if(href_list["delete_painting"])
 		if(!holder)
 			return
-		var/title = href_list["id"]
-		if(!title)
+		var/painting_id = href_list["id"]
+		if(!painting_id)
 			return
-		if(alert("Are you sure you want to delete the painting '[title]'?", "Confirm Deletion", "Yes", "No") == "Yes")
-			if(SSpaintings.del_player_painting(title))
-				message_admins("[key_name_admin(src)] has deleted player made painting called: '[title]'")
-				SSpaintings.update_paintings()
+		var/list/painting = SSpaintings.paintings[painting_id]
+		if(!islist(painting))
+			return
+		var/painting_title = painting["painting_title"]
+		if(alert("Are you sure you want to delete the painting '[painting_title]'?", "Confirm Deletion", "Yes", "No") == "Yes")
+			if(SSpaintings.del_player_painting(painting_id))
+				message_admins("[key_name_admin(src)] has deleted player made painting called: '[painting_title]' by [painting["author_ckey"]]")
 				manage_paintings()
 
 	if(href_list["delete_book"])

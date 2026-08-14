@@ -31,7 +31,6 @@
 		var/choice = input(user, "Do you want to add the painting to the archive?") in list("Yes", "No")
 		if(choice == "Yes")
 			upload_painting(user, M)
-			to_chat(user, span_notice("The painting has been uploaded."))
 		else
 			to_chat(user, span_notice("You decide not to upload the painting."))
 		return
@@ -179,7 +178,8 @@
 	SSlibrarian.update_books()
 
 /obj/machinery/printingpress/proc/upload_painting(mob/user, obj/item/canvas/M)
-	M.upload_painting()
+	var/result = M.upload_painting(user)
+	to_chat(user, span_info(result))
 
 /obj/machinery/printingpress/proc/print_bibble(mob/user)
 	// Creates a static book (Bibble)

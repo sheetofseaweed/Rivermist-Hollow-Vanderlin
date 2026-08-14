@@ -104,6 +104,7 @@
 #include "map_landmarks.dm"
 #include "mapping.dm"
 #include "mindbound_actions.dm"
+#include "painting_archive.dm"
 #include "pocket_access.dm"
 #include "pocket_dimensions.dm"
 #include "preferences_erp.dm"

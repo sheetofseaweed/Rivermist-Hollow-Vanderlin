@@ -941,30 +941,33 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 	dat += "<th style='padding: 10px 15px; text-align: left; color: #c72222;'>Delete</th>"
 	dat += "</tr>"
 
-	if(SSpaintings?.paintings && length(SSpaintings.paintings))
-		for(var/encoded_title in SSpaintings.paintings)
-			var/list/painting = SSpaintings.paintings[encoded_title]
-			if(!painting || !islist(painting))
-				continue
+	var/listed = 0
+	for(var/painting_id in SSpaintings?.paintings)
+		var/list/painting = SSpaintings.paintings[painting_id]
+		if(!islist(painting))
+			continue
 
-			var/raw_title = painting["painting_title"]
-			var/author = painting["author_ckey"]
-			var/disk_filename = SSpaintings.get_painting_filename(raw_title)
+		var/disk_filename = SSpaintings.get_painting_filename(painting_id)
+		if(!fexists(disk_filename))
+			continue
 
-			if(fexists(disk_filename))
-				var/icon/painting_icon = icon(disk_filename)
-				if(painting_icon)
-					var/res_name = "painting_[md5(raw_title)].png"
-					src << browse_rsc(painting_icon, res_name)
-					dat += "<tr>"
-					dat += "<td style='padding: 12px 15px;'><img src='[res_name]' height=64 width=64 style='display: block; margin: 0 auto;'></td>"
-					dat += "<td style='padding: 12px 15px;'>[raw_title]</td>"
-					dat += "<td style='padding: 12px 15px;'>[author]</td>"
-					dat += "<td style='padding: 12px 15px;'>"
-					dat += "<a href='?src=[REF(src)];delete_painting=1;id=[url_encode(raw_title)]'>Delete</a>"
-					dat += "</td>"
-					dat += "</tr>"
-	else
+		var/icon/painting_icon = icon(disk_filename)
+		if(!painting_icon)
+			continue
+
+		var/res_name = "painting_[painting_id].png"
+		src << browse_rsc(painting_icon, res_name)
+		dat += "<tr>"
+		dat += "<td style='padding: 12px 15px;'><img src='[res_name]' height=64 width=64 style='display: block; margin: 0 auto;'></td>"
+		dat += "<td style='padding: 12px 15px;'>[html_encode(painting["painting_title"])]</td>"
+		dat += "<td style='padding: 12px 15px;'>[html_encode(painting["author"])] ([painting["author_ckey"]])</td>"
+		dat += "<td style='padding: 12px 15px;'>"
+		dat += "<a href='?src=[REF(src)];delete_painting=1;id=[url_encode(painting_id)]'>Delete</a>"
+		dat += "</td>"
+		dat += "</tr>"
+		listed++
+
+	if(!listed)
 		dat += "<tr><td colspan='4' style='padding: 20px; text-align: center;'>No paintings found</td></tr>"
 
 	dat += "</table>"
