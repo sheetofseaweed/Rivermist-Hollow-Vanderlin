@@ -935,6 +935,7 @@
 /area/outdoors/rmh_darkforest)
 "gb" = (
 /obj/effect/landmark/kidnap/escape/tentacle,
+/obj/structure/tentacle_growth/floor,
 /turf/open/floor/grass/eora,
 /area/under/rmh_bogforest_caves/mindflayer)
 "gc" = (
@@ -1274,7 +1275,7 @@
 "ix" = (
 /obj/structure/dungeon_entrance/werewolf_shrine,
 /turf/open/floor/naturalstone,
-/area/under/rmh_bogforest_caves/wolf)
+/area/under/rmh_bogforest_caves/werewolf)
 "iy" = (
 /turf/closed/mineral/bedrock{
 	name = "solid rock"
@@ -1965,6 +1966,7 @@
 /area/outdoors/rmh_air)
 "mS" = (
 /obj/effect/landmark/kidnap/escape/tentacle,
+/obj/structure/tentacle_growth/floor,
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/mindflayer)
 "mT" = (
@@ -2638,6 +2640,10 @@
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/bog/rmh/travel/forest_to_main)
+"qZ" = (
+/obj/structure/tentacle_growth/floor,
+/turf/open/floor/grass/eora,
+/area/under/rmh_bogforest_caves/moistcaves)
 "ra" = (
 /obj/effect/decal/remains/fox,
 /turf/open/floor/grass/red,
@@ -3108,6 +3114,10 @@
 /obj/structure/vine,
 /turf/open/floor/dirt,
 /area/under/town/basement)
+"uh" = (
+/obj/structure/dungeon_entrance/bandit_hideout,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/moistcaves)
 "ui" = (
 /obj/machinery/light/fueled/torchholder{
 	dir = 1
@@ -5101,6 +5111,10 @@
 /mob/living/carbon/human/species/orc/ambush,
 /turf/open/floor/cobble,
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
+"Hu" = (
+/mob/living/simple_animal/hostile/retaliate/wolf,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/werewolf)
 "Hv" = (
 /obj/item/weapon/pick,
 /turf/open/floor/dirt,
@@ -5228,6 +5242,10 @@
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/dirt/road,
 /area/under/rmh_dungeon/goblindungeon)
+"Is" = (
+/obj/effect/decal/remains/saiga,
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/werewolf)
 "It" = (
 /obj/structure/stairs/stone,
 /turf/open/floor/naturalstone,
@@ -5666,6 +5684,11 @@
 /obj/machinery/light/fueled/firebowl/blackfire,
 /turf/open/floor/cobble,
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
+"KU" = (
+/obj/effect/landmark/kidnap/escape/tentacle,
+/obj/structure/tentacle_growth/floor,
+/turf/open/floor/sand,
+/area/under/rmh_bogforest_caves/mindflayer)
 "KV" = (
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
@@ -5858,6 +5881,7 @@
 /area/under/rmh_dungeon/orcpost)
 "Ma" = (
 /obj/structure/kneestingers,
+/obj/structure/tentacle_growth/floor,
 /turf/open/floor/grass/eora,
 /area/under/rmh_bogforest_caves/moistcaves)
 "Mc" = (
@@ -6251,6 +6275,9 @@
 /obj/structure/ladder,
 /turf/open/floor/ruinedwood,
 /area/indoors/rmh_darkforestbog/forest/hunterpost)
+"Ow" = (
+/turf/open/floor/naturalstone,
+/area/under/rmh_bogforest_caves/werewolf)
 "Oz" = (
 /obj/structure/vine,
 /turf/open/floor/cobblerock,
@@ -7724,6 +7751,7 @@
 /turf/open/floor/cobblerock,
 /area/under/rmh_bogforest_caves/cliffcaves)
 "Yi" = (
+/obj/structure/tentacle_growth/floor,
 /turf/open/floor/grass/eora,
 /area/under/rmh_bogforest_caves/mindflayer)
 "Yj" = (
@@ -31385,7 +31413,7 @@ qy
 qy
 qy
 qy
-qy
+ne
 qy
 qy
 qy
@@ -35875,7 +35903,7 @@ rv
 uM
 Nf
 Nf
-Dw
+qZ
 QH
 QH
 QH
@@ -36090,7 +36118,7 @@ rv
 rv
 uM
 uM
-Dw
+qZ
 Yi
 Yi
 QH
@@ -36306,11 +36334,11 @@ QH
 QH
 QH
 uM
-Dw
+qZ
 Yi
 Yi
-qy
-qy
+Pg
+Pg
 QH
 QH
 QH
@@ -36525,9 +36553,9 @@ QH
 QH
 QH
 Yi
-qy
-qy
-qy
+Pg
+Pg
+Pg
 QH
 QH
 QH
@@ -36741,10 +36769,10 @@ QH
 QH
 QH
 QH
-qy
-qy
-qy
-qy
+Pg
+Pg
+Pg
+Pg
 QH
 QH
 QH
@@ -36958,10 +36986,10 @@ QH
 QH
 QH
 QH
-ai
-ai
-qy
-qy
+VT
+VT
+Pg
+Pg
 QH
 QH
 QH
@@ -37173,9 +37201,9 @@ QH
 QH
 QH
 QH
-XB
-XB
-ai
+KU
+KU
+VT
 QH
 QH
 QH
@@ -37926,7 +37954,7 @@ QH
 QH
 Yi
 Yi
-Dw
+qZ
 uM
 QH
 QH
@@ -38142,7 +38170,7 @@ QH
 QH
 QH
 QH
-Dw
+qZ
 Kg
 Kg
 QH
@@ -46520,8 +46548,8 @@ QH
 QH
 QH
 QH
-Dw
-Dw
+qZ
+qZ
 Ma
 QH
 QH
@@ -46569,8 +46597,8 @@ uM
 rv
 uM
 QH
-Dw
-Dw
+qZ
+qZ
 QH
 QH
 QH
@@ -55082,7 +55110,7 @@ QH
 QH
 QH
 ix
-aM
+Ow
 QH
 QH
 QH
@@ -55297,10 +55325,10 @@ QH
 QH
 QH
 QH
-lO
-aM
-aM
-lO
+Hu
+Ow
+Ow
+Hu
 QH
 QH
 QH
@@ -55513,10 +55541,10 @@ QH
 QH
 QH
 QH
-aM
-TS
-aM
-aM
+Ow
+Is
+Ow
+Ow
 QH
 QH
 QH
@@ -55729,8 +55757,8 @@ QH
 QH
 QH
 QH
-aM
-aM
+Ow
+Ow
 QH
 QH
 QH
@@ -55945,8 +55973,8 @@ kA
 kA
 kA
 kA
-aM
-aM
+Ow
+Ow
 QH
 QH
 QH
@@ -111519,7 +111547,7 @@ Pe
 Pe
 Ce
 Ce
-uM
+uh
 uM
 Ce
 Ce

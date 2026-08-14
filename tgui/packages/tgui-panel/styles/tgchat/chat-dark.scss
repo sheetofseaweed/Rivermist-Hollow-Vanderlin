@@ -1713,3 +1713,45 @@ $border-width-px: $border-width * 1px;
     background-position: 200% 0;
   }
 }
+
+//RMH EDITED START - ported from Azure Peak: chat headshots zoom in on mouse hover.
+.chat_headshot {
+  position: relative;
+  display: inline-block;
+  width: min(100px, 100%);
+  height: min(100px, 100%);
+  max-width: 100px;
+  max-height: 100px;
+
+  // Breathing room so the enlarged image never sits flush against the
+  // "Examine Closer" link printed on the next line.
+  margin-bottom: 6px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    // Headshots are drawn art from an external link, not spritework - keep it smooth.
+    image-rendering: auto;
+    // Grow UP and RIGHT. The links examine prints underneath ("Examine Closer",
+    // "Recall Rumours & Gossip", "Look at Features") sit directly below the
+    // image, so a top-left origin scaled the doll straight over them and made
+    // them unclickable. Pinning the bottom edge keeps them clear.
+    // Not bottom-right (up + left): the image is flush with the message's left
+    // margin and tgchat sets overflow-x: hidden on body, so leftward growth
+    // would just be clipped off the panel edge.
+    transform-origin: bottom left;
+    transition: transform var(--transition-time-medium, 0.35s) ease;
+    will-change: transform;
+  }
+
+  &:hover {
+    z-index: 100;
+
+    img {
+      transform: scale(2.5);
+      border-radius: 2px;
+    }
+  }
+}
+//RMH EDITED END

@@ -16,16 +16,16 @@
 	allowed_turfs = list(/turf/open/floor/snow)
 	excluded_turfs = list(/turf/open/floor/dirt/road)
 	spawnableAtoms = list(/obj/structure/flora/grass/both = 15,
-	/obj/structure/flora/grass/brown = 20,
-	/obj/structure/flora/grass/green = 20,
-	/obj/item/grown/log/tree/stick = 16,
-	/obj/structure/flora/grass/pyroclasticflowers = 1,
-	///obj/structure/flora/grass/maneater/real=3,
-	/obj/structure/flora/grass/bush_meagre/tundra = 7,
-	/obj/structure/flora/grass/bush/wall/tundra = 7,
-	/obj/structure/flora/grass/bush/tundra = 73)
+						/obj/structure/flora/grass/brown = 20,
+						/obj/structure/flora/grass/green = 20,
+						/obj/item/grown/log/tree/stick = 16,
+						/obj/structure/flora/grass/pyroclasticflowers = 1,
+						///obj/structure/flora/grass/maneater/real=3,
+						/obj/structure/flora/grass/bush_meagre/tundra = 7,
+						/obj/structure/flora/grass/bush/wall/tundra = 7,
+						/obj/structure/flora/grass/bush/tundra = 73)
 	spawnableTurfs = list(/turf/open/floor/snow/patchy=15,
-	/turf/open/floor/snow/rough = 15)
+						/turf/open/floor/snow/rough = 15)
 	allowed_areas = list(/area/outdoors/mountains/rmh_mountains)
 
 /datum/mapGeneratorModule/rmh_mountainsroad

@@ -105,6 +105,9 @@ SUBSYSTEM_DEF(terrain_generation)
 /datum/controller/subsystem/terrain_generation/Initialize()
 	setup_biome_pools()
 	generate_init_terrain()
+	//RMH EDITED START - zone cave generation
+	run_area_map_generation()
+	//RMH EDITED END
 	return ..()
 
 /datum/controller/subsystem/terrain_generation/proc/get_difficulty()

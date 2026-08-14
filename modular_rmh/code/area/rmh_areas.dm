@@ -408,13 +408,14 @@
 	name = "Rivermist Hollow Sewers"
 	first_time_text = "RIVERMIST HOLLOW SEWERS"
 	icon_state = "sewer"
-	droning_index = DRONING_CAVE_WET
+	droning_index = DRONING_RAIN_SEWER
 	ambient_index = AMBIENCE_CAVE
 	//spookysounds = SPOOKY_RATS
 	//spookynight = SPOOKY_RATS
-	background_track = 'sound/music/area/sewers.ogg'
-	background_track_dusk = 'sound/music/area/sewers.ogg'
-	background_track_night = 'sound/music/area/sewers.ogg'
+	background_track = 'modular_rmh/sound/music/area/sewers1.ogg'
+	background_track_dawn = 'modular_rmh/sound/music/area/sewers2.ogg'
+	background_track_dusk = 'modular_rmh/sound/music/area/sewers3.ogg'
+	background_track_night = 'modular_rmh/sound/music/area/sewers4.ogg'
 	//ambientrain = RAIN_SEWER
 	soundenv = 21
 	converted_type = /area/outdoors/exposed/under/rmh/sewer
@@ -922,12 +923,115 @@
 	name = "Southern Caves"
 	first_time_text = "Southern Caves"
 
-/area/indoors/cave/rmh_cave/southern
-	name = "Southern Caves"
-	first_time_text = "Southern Caves"
-	ambush_times = null
-	ambush_types = null
-	ambush_mobs = null
+/area/indoors/cave/rmh_cave/west/wild
+	map_generator = /datum/map_generator/caves/mixed
+	ambush_times = list("night","dawn","dusk","day")
+	ambush_types = list(
+				/turf/open/floor/naturalstone,
+				/turf/open/floor/dirt,
+				/turf/open/floor/cobblerock)
+	ambush_mobs = list(
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 45,
+				/mob/living/carbon/human/species/goblin/npc/ambush = 25,
+				/datum/ambush_config/goblin_ambush_party = 15,
+				/mob/living/simple_animal/hostile/retaliate/bigrat = 15)
+
+/area/indoors/cave/rmh_cave/west/wild/warren
+	map_generator = /datum/map_generator/caves/warren
+
+/area/indoors/cave/rmh_cave/west/wild/cavern
+	map_generator = /datum/map_generator/caves/cavern
+
+/area/indoors/cave/rmh_cave/west/wild/deep
+	map_generator = /datum/map_generator/caves/deep
+
+/area/indoors/cave/rmh_cave/east/wild
+	map_generator = /datum/map_generator/caves/mixed
+	ambush_times = list("night","dawn","dusk","day")
+	ambush_types = list(
+				/turf/open/floor/naturalstone,
+				/turf/open/floor/dirt,
+				/turf/open/floor/cobblerock)
+	ambush_mobs = list(
+				/mob/living/simple_animal/hostile/retaliate/bigrat = 40,
+				/mob/living/simple_animal/hostile/retaliate/mole = 25,
+				/datum/ambush_config/mole_pack = 15,
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 20)
+
+/area/indoors/cave/rmh_cave/east/wild/warren
+	map_generator = /datum/map_generator/caves/warren
+
+/area/indoors/cave/rmh_cave/east/wild/cavern
+	map_generator = /datum/map_generator/caves/cavern
+
+/area/indoors/cave/rmh_cave/east/wild/deep
+	map_generator = /datum/map_generator/caves/deep
+
+/area/indoors/cave/rmh_cave/central/wild
+	map_generator = /datum/map_generator/caves/mixed
+	ambush_times = list("night","dawn","dusk","day")
+	ambush_types = list(
+				/turf/open/floor/naturalstone,
+				/turf/open/floor/dirt,
+				/turf/open/floor/cobblerock)
+	ambush_mobs = list(
+				/mob/living/simple_animal/hostile/retaliate/spider = 35,
+				/mob/living/simple_animal/hostile/retaliate/spider/mutated = 20,
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 30,
+				/mob/living/simple_animal/hostile/retaliate/bigrat = 15)
+
+/area/indoors/cave/rmh_cave/central/wild/warren
+	map_generator = /datum/map_generator/caves/warren
+
+/area/indoors/cave/rmh_cave/central/wild/cavern
+	map_generator = /datum/map_generator/caves/cavern
+
+/area/indoors/cave/rmh_cave/central/wild/deep
+	map_generator = /datum/map_generator/caves/deep
+
+/area/indoors/cave/rmh_cave/northern/wild
+	map_generator = /datum/map_generator/caves/mixed
+	ambush_times = list("night","dawn","dusk","day")
+	ambush_types = list(
+				/turf/open/floor/naturalstone,
+				/turf/open/floor/dirt,
+				/turf/open/floor/cobblerock)
+	ambush_mobs = list(
+				/mob/living/carbon/human/species/skeleton/npc/ambush = 40,
+				/datum/ambush_config/medium_skeleton_party = 15,
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 25,
+				/mob/living/simple_animal/hostile/retaliate/bigrat = 20)
+
+/area/indoors/cave/rmh_cave/northern/wild/warren
+	map_generator = /datum/map_generator/caves/warren
+
+/area/indoors/cave/rmh_cave/northern/wild/cavern
+	map_generator = /datum/map_generator/caves/cavern
+
+/area/indoors/cave/rmh_cave/northern/wild/deep
+	map_generator = /datum/map_generator/caves/deep
+
+/area/indoors/cave/rmh_cave/southern/wild
+	map_generator = /datum/map_generator/caves/mixed
+	ambush_times = list("night","dawn","dusk","day")
+	ambush_types = list(
+				/turf/open/floor/naturalstone,
+				/turf/open/floor/dirt,
+				/turf/open/floor/cobblerock)
+	ambush_mobs = list(
+				/mob/living/simple_animal/hostile/retaliate/troll/cave = 25,
+				/mob/living/simple_animal/hostile/retaliate/elemental/crawler = 25,
+				/mob/living/carbon/human/species/goblin/npc/ambush/cave = 30,
+				/mob/living/simple_animal/hostile/retaliate/bigrat = 20)
+
+/area/indoors/cave/rmh_cave/southern/wild/warren
+	map_generator = /datum/map_generator/caves/warren
+
+/area/indoors/cave/rmh_cave/southern/wild/cavern
+	map_generator = /datum/map_generator/caves/cavern
+
+/area/indoors/cave/rmh_cave/southern/wild/deep
+	map_generator = /datum/map_generator/caves/deep
 
 /area/indoors/cave/rmh_cave/cave_druid
 	name = "Druid's Caves"

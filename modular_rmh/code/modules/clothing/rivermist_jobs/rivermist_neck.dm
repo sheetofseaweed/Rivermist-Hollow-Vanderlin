@@ -6,7 +6,7 @@
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/sune
-	name = "amulet of Selune"
+	name = "amulet of Sune"
 	desc = "Love, beauty, and passion unbound. Cherish desire, inspire hearts, and delight in life."
 	icon_state = "eora"
 	resistance_flags = FIRE_PROOF

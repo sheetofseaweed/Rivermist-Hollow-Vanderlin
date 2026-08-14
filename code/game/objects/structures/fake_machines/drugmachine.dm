@@ -156,6 +156,17 @@
 			message_admins("APOTHECARY [usr.key] IS TRYING TO BUY A [path] WITH THE GOLDFACE. THIS IS AN EXPLOIT.")
 			return
 		var/datum/supply_pack/PA = SSmerchant.supply_packs[path]
+		//RMH EDITED START
+		// Abstract packs never enter SSmerchant.supply_packs, so a valid-looking
+		// path can still resolve to null and runtime on PA.cost below.
+		if(!PA)
+			return
+		// This is an href UI: the buy link can be forged with any pack type.
+		// Only sell what this machine actually stocks.
+		if(!(PA.group in available_categories))
+			say("We don't deal in that here!")
+			return
+		//RMH EDITED END
 		var/cost = PA.cost
 		var/tax_amt=round(SStreasury.tax_value * cost)
 		cost=cost+tax_amt
@@ -176,7 +187,12 @@
 		var/pathi = pick(PA.contains)
 		var/obj/item/I = new pathi(get_turf(src))
 		human_mob.put_in_hands(I)
-		qdel(PA)
+		//RMH EDITED START
+		// Do NOT qdel(PA). Supply packs are shared singletons owned by
+		// SSmerchant; the list keeps referencing it, so this only produced a
+		// hard delete per purchase and corrupted the catalogue for every other
+		// vendor reading the same datum.
+		//RMH EDITED END
 	if(href_list["change"])
 		if(budget > 0)
 			budget2change(budget, usr)

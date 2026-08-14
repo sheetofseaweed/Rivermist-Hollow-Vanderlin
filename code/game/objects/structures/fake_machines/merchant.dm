@@ -246,7 +246,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	var/tariff_evaded = 0
 	//RMH EDITED END
 	// this is the list of supply groups that you can purchase with this machine
-	var/list/unlocked_cats = list("Apparel","Storage","Armor(Light)","Armor(Steel)","Food","Drinks","Jewelry","Luxury","Tools","Seeds","Shields","Medicine","Raw Materials",
+	var/list/unlocked_cats = list("Apparel","Storage","Armor(Light)","Armor(Iron)","Armor(Steel)","Food","Drinks","Jewelry","Luxury","Tools","Seeds","Shields","Medicine","Raw Materials",
 								"Weapons (Iron)","Weapons (Steel)","Weapons (Ranged)","Ammunition",MERCHANT_CAT_MISC)
 
 /obj/structure/fake_machine/merchantvend/Initialize()
@@ -273,6 +273,15 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 /// The effective service-fee multiplier for this machine (0 on GOLDFACE).
 /obj/structure/fake_machine/merchantvend/proc/get_effective_fee()
 	return extra_fee
+
+/// TRUE only if this machine is allowed to stock that pack's category.
+/// Single source of truth for browsing, searching AND buying, so the search
+/// can never surface (or sell) goods outside the machine's own trade.
+/obj/structure/fake_machine/merchantvend/proc/pack_in_stock(datum/supply_pack/P)
+	if(!P)
+		return FALSE
+	var/pack_cat = length(P.group) ? P.group : MERCHANT_CAT_MISC
+	return (pack_cat in unlocked_cats)
 
 /// Shared price calc so the display and the buy path can never disagree.
 /// The service fee is a markup on the good; import tax is charged on the
@@ -358,6 +367,9 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 		var/list/matched = list()
 		for(var/pack in SSmerchant.supply_packs)
 			var/datum/supply_pack/P = SSmerchant.supply_packs[pack]
+			// Never leave this machine's own catalogue, search included.
+			if(!pack_in_stock(P))
+				continue
 			if(searching)
 				if(!findtext(P.name, search))
 					continue
@@ -434,6 +446,11 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 			var/datum/supply_pack/picked_pack = SSmerchant.supply_packs[path]
 			if(!picked_pack)
 				return TRUE
+			// Server-side stock check: a stale UI or a spoofed ref cannot buy
+			// goods this machine does not trade in.
+			if(!pack_in_stock(picked_pack))
+				say("We don't deal in that here!")
+				return TRUE
 			base_price = round(picked_pack.cost + (picked_pack.cost * get_effective_fee()))
 			taxes = round(SStreasury.tax_value * picked_pack.cost)
 			final_price = round(base_price + taxes)
@@ -458,7 +475,10 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 			else
 				for(var/obj/item/packitem as anything in picked_pack.contains)
 					new packitem(get_turf(human_mob))
-			qdel(picked_pack)
+			// NOTE: do NOT qdel(picked_pack) here. Supply packs are shared
+			// singletons owned by SSmerchant; deleting one hard-deletes a datum
+			// that stays referenced in SSmerchant.supply_packs and the faction
+			// pools, and would corrupt the catalogue for every other vendor.
 			playsound(src, 'sound/misc/beep.ogg', 100, FALSE, -1)
 			return TRUE
 //RMH EDITED END
@@ -508,8 +528,10 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 /obj/structure/fake_machine/merchantvend/public/smith
 	name = "Smithy's SILVERFACE"
 	desc = "A public SILVERFACE stocked with the wares of the smithing trade."
+	// Metalwork only: every piece here needs a bar on the anvil, even the ones
+	// that also use leather or cloth (splint, chain, etc).
 	unlocked_cats = list(
-		"Armor",
+		"Armor(Iron)",
 		"Armor(Steel)",
 		"Shields",
 		"Weapons (Iron)",
@@ -521,6 +543,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 /obj/structure/fake_machine/merchantvend/public/tailor
 	name = "Tailor's SILVERFACE"
 	desc = "A public SILVERFACE stocked with garments and light protection."
+	// Cloth and leather only: nothing here carries a scrap of metal.
 	unlocked_cats = list(
 		"Apparel",
 		"Armor(Light)",
