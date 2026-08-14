@@ -131,6 +131,23 @@
 /mob/living/carbon/human/proc/reset_examine_preview()
 	examine_preview_cache = null
 
+//RMH EDITED START - snapshot invalidation was only driven by Topic(), so a doll
+// cached while the mob was dressed survived undressing, re-examining and even a
+// panel reopen (the fresh-panel branch never wiped it). Every worn-item overlay
+// change funnels through apply_overlay/remove_overlay, so hook both: nulling one
+// var is free next to the icon work these procs already do, and it guarantees the
+// next flatten reflects the mob as it is now, in every direction.
+/mob/living/carbon/human/apply_overlay(cache_index)
+	if(examine_preview_cache)
+		examine_preview_cache = null
+	return ..()
+
+/mob/living/carbon/human/remove_overlay(cache_index)
+	if(examine_preview_cache)
+		examine_preview_cache = null
+	return ..()
+//RMH EDITED END
+
 #undef EXAMINE_PREVIEW_CANVAS
 
 // -------------------------------------------------------------------------
@@ -328,11 +345,23 @@ GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
  */
 /datum/examine_panel/ui_data(mob/user)
 	. = list()
-	if(!preview_requested || !ishuman(holder))
+	//RMH EDITED START - the doll used to be built and sent unconditionally while
+	// only the gear slots respected the examine radius, so a viewer across the
+	// room still got a full-detail render. Both now sit behind the same gate, and
+	// the UI is told why it has nothing to draw instead of showing an endless
+	// "Loading character..." spinner.
+	// NB: do not name a local "in_range" - is_helpers.dm defines it as a
+	// function-like macro, and DM's preprocessor chokes on the bare identifier.
+	var/is_human_holder = ishuman(holder)
+	var/in_preview_range = viewer_in_range()
+	.["preview_available"] = is_human_holder
+	.["preview_in_range"] = in_preview_range
+	if(!preview_requested || !is_human_holder || !in_preview_range)
 		return
 	var/mob/living/carbon/human/human_holder = holder
 	.["preview_image"] = human_holder.get_examine_preview(preview_dir)
-	.["worn_items"] = viewer_in_range() ? get_worn_items_data() : list("slots" = list(), "hands" = list())
+	.["worn_items"] = get_worn_items_data()
+	//RMH EDITED END
 
 /datum/examine_panel/ui_static_data(mob/user)
 	return collect_examine_data(user)

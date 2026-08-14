@@ -11,39 +11,18 @@
 	crate_name = "merchant guild's crate"
 	crate_type = /obj/structure/closet/crate/chest/merchant
 
-// IRON GEAR
+//RMH EDITED START
+// Armour is grouped by what the piece is actually built out of, so each vendor
+// can stock only its own trade:
+//   Armor(Light) - cloth and/or leather, no metal at all. Tailor's goods.
+//   Armor(Iron)  - anything that needs an iron bar on the anvil, even when it
+//                  also uses leather or cloth (splint, chain, etc). Smith's goods.
+//   Armor(Steel) - the smith's higher tier, unchanged.
+
+// CLOTH & LEATHER GEAR
 
 /datum/supply_pack/armor/light
 	group = "Armor(Light)"
-
-// HELMETS
-
-/datum/supply_pack/armor/light/skullcap
-	name = "Skullcap Helmet"
-	cost = 25
-	contains = /obj/item/clothing/head/helmet/skullcap
-
-/datum/supply_pack/armor/light/poth
-	name = "Pot Helmet"
-	cost = 25
-	contains = /obj/item/clothing/head/helmet/ironpot
-
-/datum/supply_pack/armor/light/lakkariancap
-	name = "Crowned Cap"
-	cost = 45
-	contains = /obj/item/clothing/head/helmet/ironpot/lakkariancap
-
-// MASK COIF NECK
-
-/datum/supply_pack/armor/light/imask
-	name = "Iron Facemask"
-	cost = 25
-	contains = /obj/item/clothing/face/facemask
-
-/datum/supply_pack/armor/light/chaincoif_iron
-	name = "Iron Chain Coif"
-	cost = 25
-	contains = /obj/item/clothing/neck/chaincoif/iron
 
 // ARMOR
 
@@ -52,30 +31,10 @@
 	cost = 15
 	contains = /obj/item/clothing/armor/leather
 
-/datum/supply_pack/armor/light/splint
-	name = "Splint Armor"
-	cost = 45
-	contains = /obj/item/clothing/armor/leather/splint
-
 /datum/supply_pack/armor/light/studleather
 	name = "Hardened Leather Armor"
 	cost = 50
 	contains = /obj/item/clothing/armor/leather/advanced
-
-/datum/supply_pack/armor/light/icuirass
-	name = "Iron Cuirass"
-	cost = 50
-	contains = /obj/item/clothing/armor/cuirass/iron
-
-/datum/supply_pack/armor/light/ihalf_plate
-	name = "Iron Half-plate"
-	cost = 65
-	contains = /obj/item/clothing/armor/plate/iron
-
-/datum/supply_pack/armor/light/ifull_plate
-	name = "Iron Plate Armor"
-	cost = 80
-	contains = /obj/item/clothing/armor/plate/full/iron
 
 /datum/supply_pack/armor/light/lakkarianarmor
 	name = "Padded Jupon"
@@ -97,18 +56,6 @@
 	cost = 30
 	contains = /obj/item/clothing/armor/leather/heavy/atgervi
 
-// SHIRT ARMOR
-
-/datum/supply_pack/armor/light/chainmail_iron
-	name = "Iron Chainmail"
-	cost = 39
-	contains = /obj/item/clothing/armor/chainmail/iron
-
-/datum/supply_pack/armor/light/haukberk
-	name = "Iron hauberk"
-	cost = 50
-	contains = /obj/item/clothing/armor/chainmail/hauberk/iron
-
 // ARMS
 
 /datum/supply_pack/armor/light/leather_bracers
@@ -116,39 +63,110 @@
 	cost = 15
 	contains = /obj/item/clothing/wrists/bracers/leather
 
-/datum/supply_pack/armor/light/bracers
-	name = "Iron Vambraces"
-	cost = 25
-	contains = /obj/item/clothing/wrists/bracers/iron
-
 /datum/supply_pack/armor/light/heavy_gloves
 	name = "Heavy Leather Gloves"
 	cost = 20
 	contains = /obj/item/clothing/gloves/angle
 
-/datum/supply_pack/armor/light/chain_gloves_iron
+// IRON GEAR
+
+/datum/supply_pack/armor/iron
+	group = "Armor(Iron)"
+
+// HELMETS
+
+/datum/supply_pack/armor/iron/skullcap
+	name = "Skullcap Helmet"
+	cost = 25
+	contains = /obj/item/clothing/head/helmet/skullcap
+
+/datum/supply_pack/armor/iron/poth
+	name = "Pot Helmet"
+	cost = 25
+	contains = /obj/item/clothing/head/helmet/ironpot
+
+/datum/supply_pack/armor/iron/lakkariancap
+	name = "Crowned Cap"
+	cost = 45
+	contains = /obj/item/clothing/head/helmet/ironpot/lakkariancap
+
+// MASK COIF NECK
+
+/datum/supply_pack/armor/iron/imask
+	name = "Iron Facemask"
+	cost = 25
+	contains = /obj/item/clothing/face/facemask
+
+/datum/supply_pack/armor/iron/chaincoif_iron
+	name = "Iron Chain Coif"
+	cost = 25
+	contains = /obj/item/clothing/neck/chaincoif/iron
+
+// ARMOR
+
+/datum/supply_pack/armor/iron/splint
+	name = "Splint Armor"
+	cost = 45
+	contains = /obj/item/clothing/armor/leather/splint
+
+/datum/supply_pack/armor/iron/icuirass
+	name = "Iron Cuirass"
+	cost = 50
+	contains = /obj/item/clothing/armor/cuirass/iron
+
+/datum/supply_pack/armor/iron/ihalf_plate
+	name = "Iron Half-plate"
+	cost = 65
+	contains = /obj/item/clothing/armor/plate/iron
+
+/datum/supply_pack/armor/iron/ifull_plate
+	name = "Iron Plate Armor"
+	cost = 80
+	contains = /obj/item/clothing/armor/plate/full/iron
+
+// SHIRT ARMOR
+
+/datum/supply_pack/armor/iron/chainmail_iron
+	name = "Iron Chainmail"
+	cost = 39
+	contains = /obj/item/clothing/armor/chainmail/iron
+
+/datum/supply_pack/armor/iron/haukberk
+	name = "Iron hauberk"
+	cost = 50
+	contains = /obj/item/clothing/armor/chainmail/hauberk/iron
+
+// ARMS
+
+/datum/supply_pack/armor/iron/bracers
+	name = "Iron Vambraces"
+	cost = 25
+	contains = /obj/item/clothing/wrists/bracers/iron
+
+/datum/supply_pack/armor/iron/chain_gloves_iron
 	name = "Iron Chain Gloves"
 	cost = 25
 	contains = /obj/item/clothing/gloves/chain/iron
 
 // PANTS
 
-/datum/supply_pack/armor/light/chainlegs_iron
+/datum/supply_pack/armor/iron/chainlegs_iron
 	name = "Iron Chain Chausses"
 	cost = 25
 	contains = /obj/item/clothing/pants/chainlegs/iron
 
-/datum/supply_pack/armor/light/chainkilt_iron
+/datum/supply_pack/armor/iron/chainkilt_iron
 	name = "Iron Chain Kilt"
 	cost = 25
 	contains = /obj/item/clothing/pants/chainlegs/kilt/iron
 
 // BOOTS
 
-/datum/supply_pack/armor/light/light_armor_boots
+/datum/supply_pack/armor/iron/light_armor_boots
 	name = "Iron Boots"
 	cost = 25
 	contains = /obj/item/clothing/shoes/boots/armor/light
+//RMH EDITED END
 
 // STEEL GEAR
 

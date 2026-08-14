@@ -23,10 +23,10 @@
 	keys = list(/obj/item/key/merchant, /obj/item/key/steward, /obj/item/key/vault, /obj/item/key/warehouse)
 
 /obj/item/storage/keyring/adventurers_guild
-	keys = list(/obj/item/key/gaffer, /obj/item/key/mercenary)
+	keys = list(/obj/item/key/gaffer, /obj/item/key/mercenary, /obj/item/key/guildroomi, /obj/item/key/guildroomii, /obj/item/key/guildroomiii)
 
 /obj/item/storage/keyring/guild_artisan
 	keys = list(/obj/item/key/artificer, /obj/item/key/blacksmith, /obj/item/key/tailor, /obj/item/key/miner)
 
 /obj/item/storage/keyring/tavern_keeper
-	keys = list(/obj/item/key/tavern, /obj/item/key/roomi, /obj/item/key/roomii, /obj/item/key/roomiii, /obj/item/key/roomiv, /obj/item/key/roomv)
+	keys = list(/obj/item/key/tavern, /obj/item/key/roomi, /obj/item/key/roomii, /obj/item/key/roomiii, /obj/item/key/roomiv, /obj/item/key/roomv, /obj/item/key/roomvi, /obj/item/key/roomvii, /obj/item/key/roomviii, /obj/item/key/roomix)

@@ -20,6 +20,11 @@ export type ExaminePanelData = {
   has_nsfw_headshot: boolean;
   preview_image: string;
   worn_items: WornItemsData;
+  //RMH EDITED START - preview gating state, so the UI can tell "still rendering"
+  // apart from "out of examine range" and "this holder has no in-game body".
+  preview_available: boolean;
+  preview_in_range: boolean;
+  //RMH EDITED END
 };
 
 export type ExamineItem = {

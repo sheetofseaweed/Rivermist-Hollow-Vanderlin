@@ -92,6 +92,23 @@ const qualityColor = (q: number): string =>
 const HATCH =
   "repeating-linear-gradient(45deg, rgba(90,70,50,0.35) 0px, rgba(90,70,50,0.35) 2px, transparent 2px, transparent 6px)";
 
+//RMH EDITED START - tooltip layering + frosted backdrop.
+// The hovered slot is lifted to this layer so its tooltip escapes the grid; the
+// slot frames themselves sit at 2 and the doll at 0.
+const TOOLTIP_LAYER = 40;
+// A slot whose tooltip is only lingering on the close bridge drops one layer, so
+// a tooltip the user just opened is always painted over the one on its way out.
+const TOOLTIP_LAYER_CLOSING = TOOLTIP_LAYER - 1;
+// Translucent so the blur behind it is actually visible. backdrop-filter is a
+// no-op on the legacy IE-based BYOND browser, which just leaves the flat tint -
+// still readable, so no separate fallback is needed.
+const TOOLTIP_SURFACE = {
+  background: "rgba(22,16,9,0.72)",
+  backdropFilter: "blur(6px) saturate(140%)",
+  WebkitBackdropFilter: "blur(6px) saturate(140%)",
+} as const;
+//RMH EDITED END
+
 const ItemTooltip = (props: {
   item: ExamineItem;
   label: string;
@@ -136,12 +153,12 @@ const ItemTooltip = (props: {
         // their own bottom edge so it grows upward and never clips past the box
         ...(vAlign === "top" ? { top: "0" } : { bottom: "0" }),
         [side === "right" ? "left" : "right"]: `${SLOT + 6}px`,
-        zIndex: 30,
+        zIndex: 1,
         width: expanded ? "248px" : "212px",
         maxHeight: "230px",
         overflowY: "auto",
         padding: "8px 10px",
-        background: "#161009f8",
+        ...TOOLTIP_SURFACE, // RMH EDITED - frosted backdrop instead of a flat fill
         border: `2px solid ${frameColor}`,
         borderRadius: "4px",
         boxShadow: "0 2px 10px rgba(0,0,0,0.85)",
@@ -182,10 +199,10 @@ const SimpleTooltip = (props: {
         position: "absolute",
         ...(vAlign === "top" ? { top: "0" } : { bottom: "0" }),
         [side === "right" ? "left" : "right"]: `${SLOT + 6}px`,
-        zIndex: 30,
+        zIndex: 1,
         width: "140px",
         padding: "6px 9px",
-        background: "#161009f8",
+        ...TOOLTIP_SURFACE, // RMH EDITED - frosted backdrop instead of a flat fill
         border: "2px solid #5a4632",
         borderRadius: "4px",
         boxShadow: "0 2px 10px rgba(0,0,0,0.85)",
@@ -206,6 +223,8 @@ const SimpleTooltip = (props: {
 const GearSlot = (props: { slotId: string; slot: WornSlot }) => {
   const { slotId, slot } = props;
   const [hovered, setHovered] = useState(false);
+  // RMH EDITED - true while the tooltip is only alive because of the close bridge
+  const [closing, setClosing] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pos = SLOT_POS[slotId];
   const side = TOOLTIP_SIDE[slotId] ?? "right";
@@ -231,6 +250,7 @@ const GearSlot = (props: { slotId: string; slot: WornSlot }) => {
       clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
+    setClosing(false); // RMH EDITED - back to the full layer, the cursor returned
     setHovered(true);
   };
   const scheduleClose = () => {
@@ -245,7 +265,13 @@ const GearSlot = (props: { slotId: string; slot: WornSlot }) => {
       setHovered(false);
       return;
     }
-    closeTimer.current = setTimeout(() => setHovered(false), 120);
+    // RMH EDITED - step down a layer for the duration of the bridge so this
+    // outgoing tooltip cannot cover one the cursor has already moved on to.
+    setClosing(true);
+    closeTimer.current = setTimeout(() => {
+      setHovered(false);
+      setClosing(false);
+    }, 120);
   };
 
   const posStyle: Record<string, string> = {};
@@ -259,7 +285,10 @@ const GearSlot = (props: { slotId: string; slot: WornSlot }) => {
       style={{
         position: "absolute",
         ...posStyle,
-        zIndex: 2,
+        // RMH EDITED - a slot with a z-index is its own stacking context, so the
+        // tooltip's own z-index could never lift it above sibling slots painted
+        // later in DOM order. Raise the whole slot while it is hovered instead.
+        zIndex: hovered ? (closing ? TOOLTIP_LAYER_CLOSING : TOOLTIP_LAYER) : 2,
         width: `${SLOT}px`,
         height: `${SLOT}px`,
         border: `2px solid ${frameColor}`,
@@ -309,6 +338,7 @@ const GearSlot = (props: { slotId: string; slot: WornSlot }) => {
 const HandSlot = (props: { item?: HeldItem; label: string; left: number }) => {
   const { item, label, left } = props;
   const [hovered, setHovered] = useState(false);
+  const [closing, setClosing] = useState(false); // RMH EDITED - see GearSlot
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filled = !!item;
   const frameColor = filled ? qualityColor(item!.quality) : "#5a4632";
@@ -318,6 +348,7 @@ const HandSlot = (props: { item?: HeldItem; label: string; left: number }) => {
       clearTimeout(closeTimer.current);
       closeTimer.current = null;
     }
+    setClosing(false); // RMH EDITED - see GearSlot
     setHovered(true);
   };
   const scheduleClose = () => {
@@ -329,7 +360,12 @@ const HandSlot = (props: { item?: HeldItem; label: string; left: number }) => {
       setHovered(false);
       return;
     }
-    closeTimer.current = setTimeout(() => setHovered(false), 120);
+    // RMH EDITED - see GearSlot
+    setClosing(true);
+    closeTimer.current = setTimeout(() => {
+      setHovered(false);
+      setClosing(false);
+    }, 120);
   };
   return (
     <div
@@ -337,7 +373,8 @@ const HandSlot = (props: { item?: HeldItem; label: string; left: number }) => {
         position: "absolute",
         left: `${left}px`,
         top: `${BOTTOM_ROW_TOP}px`,
-        zIndex: 2,
+        // RMH EDITED - see GearSlot
+        zIndex: hovered ? (closing ? TOOLTIP_LAYER_CLOSING : TOOLTIP_LAYER) : 2,
         width: `${SLOT}px`,
         height: `${SLOT}px`,
         border: `2px solid ${frameColor}`,
@@ -385,6 +422,8 @@ const CharacterPortrait = (props: { nsfw: boolean }) => {
     has_nsfw_headshot,
     preview_image,
     worn_items,
+    preview_available,
+    preview_in_range,
   } = data;
   const hasShot = props.nsfw ? has_nsfw_headshot : has_headshot;
   const shot = props.nsfw
@@ -394,12 +433,20 @@ const CharacterPortrait = (props: { nsfw: boolean }) => {
   const [showPreview, setShowPreview] = useState(!hasShot);
   const previewActive = showPreview || !hasShot;
 
+  //RMH EDITED START - the backend now refuses to render the doll for a viewer
+  // outside examine range, so treat an empty preview_image as a real state
+  // rather than a perpetual "Loading character...", and don't keep asking the
+  // server for a render it will never produce.
+  // Undefined means the first payload hasn't landed yet - assume renderable.
+  const canRender = preview_available !== false && preview_in_range !== false;
+
   // Ask the server to flatten the character the first time the preview is shown
   useEffect(() => {
-    if (previewActive && !preview_image) {
+    if (previewActive && canRender && !preview_image) {
       act("generate_preview");
     }
-  }, [previewActive, preview_image]);
+  }, [previewActive, canRender, preview_image]);
+  //RMH EDITED END
 
   return (
     <Stack vertical g={0.5}>
@@ -460,9 +507,20 @@ const CharacterPortrait = (props: { nsfw: boolean }) => {
                 }}
               />
             ) : (
-              <Box color="gray" italic>
-                Loading character...
+              //RMH EDITED START - distinguish the three empty states.
+              <Box
+                color="gray"
+                italic
+                textAlign="center"
+                style={{ maxWidth: "240px" }}
+              >
+                {!preview_available
+                  ? "No in-game character to show."
+                  : !preview_in_range
+                    ? "Too far away to make out any detail."
+                    : "Loading character..."}
               </Box>
+              //RMH EDITED END
             )
           ) : (
             <img
@@ -480,6 +538,8 @@ const CharacterPortrait = (props: { nsfw: boolean }) => {
             <Stack.Item>
               <Button
                 icon="rotate-left"
+                // RMH EDITED - nothing to rotate when the doll isn't rendered
+                disabled={!canRender}
                 tooltip="Rotate counterclockwise"
                 onClick={() => act("rotate", { clockwise: false })}
               />
@@ -505,6 +565,8 @@ const CharacterPortrait = (props: { nsfw: boolean }) => {
             <Stack.Item>
               <Button
                 icon="rotate-right"
+                // RMH EDITED - nothing to rotate when the doll isn't rendered
+                disabled={!canRender}
                 tooltip="Rotate clockwise"
                 onClick={() => act("rotate", { clockwise: true })}
               />

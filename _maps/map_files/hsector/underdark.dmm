@@ -1129,10 +1129,6 @@
 "os" = (
 /turf/closed/wall/mineral/stone/window/moss/blue,
 /area/under/underdark/rmh/main)
-"ot" = (
-/obj/effect/spawner/map_spawner/loot/coin/absurd,
-/turf/open/floor/cobblerock/alt,
-/area/under/underdark/rmh/shar)
 "ov" = (
 /obj/structure/fluff/traveltile{
 	aportalgoesto = "desertunderdark";
@@ -86512,7 +86508,7 @@ Qu
 be
 be
 aH
-ot
+aH
 aH
 be
 DA

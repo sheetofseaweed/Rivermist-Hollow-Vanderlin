@@ -110,7 +110,7 @@
 		if(W.reagents.holder_full())
 			to_chat(user, "<span class='warning'>[W] is full.</span>")
 			return
-		if(do_after(user, 6 SECONDS, src))
+		if(do_after(user, 2 SECONDS, src)) // RMH EDITED - 6 seconds its too long
 			//RMH EDITED START
 			// BUGFIX: filled a fixed 100 units, which only half-fills containers whose
 			// volume is above 100 (e.g. the 200-volume iron pot). add_reagent clamps to

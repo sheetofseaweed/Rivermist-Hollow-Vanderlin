@@ -53,5 +53,10 @@
 /// Makes a horizontal line with text in the middle
 #define separator_hr(str) ("<div class='separator'>" + str + "</div>")
 
+//RMH EDITED START - ported from Azure Peak: headshots in chat zoom in on mouse hover.
+/// Wraps a headshot image URL into a chat container that scales up on hover. Sizing lives in tgchat SCSS.
+#define chat_headshot(str) ("<div class='chat_headshot'><img src='" + str + "'/></div>")
+//RMH EDITED END
+
 /// Emboldens runechat messages
 #define RUNECHAT_BOLD(str) "+[str]+"

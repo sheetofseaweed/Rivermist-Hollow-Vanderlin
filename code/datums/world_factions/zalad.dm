@@ -29,7 +29,7 @@
 	)
 	common_pool = list(
 		// Light armor for desert travel
-		/datum/supply_pack/armor/light/imask,
+		/datum/supply_pack/armor/iron/imask,
 		/datum/supply_pack/armor/steel/smask,
 		// Apparel suited for desert nomads
 		/datum/supply_pack/apparel/headband,
@@ -80,8 +80,8 @@
 	)
 	uncommon_pool = list(
 		// Better armor
-		/datum/supply_pack/armor/light/splint,
-		/datum/supply_pack/armor/light/haukberk,
+		/datum/supply_pack/armor/iron/splint,
+		/datum/supply_pack/armor/iron/haukberk,
 		// Apparel
 		/datum/supply_pack/apparel/raincloak_random,
 		/datum/supply_pack/apparel/leather_gloves,
@@ -137,7 +137,7 @@
 		/datum/supply_pack/apparel/robe,
 		/datum/supply_pack/apparel/armordress,
 		/datum/supply_pack/armor/light/studleather,
-		/datum/supply_pack/armor/light/lakkariancap,
+		/datum/supply_pack/armor/iron/lakkariancap,
 		/datum/supply_pack/armor/light/lakkarianarmor,
 		/datum/supply_pack/armor/light/stepperobes,
 		/datum/supply_pack/armor/light/steppehidearmor,
