@@ -27,7 +27,7 @@
 	icon_state = "brownkey"
 	lockids = list("roomviii")
 
-/obj/item/key/roomvix
+/obj/item/key/roomix
 	name = "room IX key"
 	desc = "The key to the ninth room."
 	icon_state = "brownkey"
