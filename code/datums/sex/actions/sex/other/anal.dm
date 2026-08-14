@@ -3,7 +3,7 @@
 	user_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	hole_id = ORGAN_SLOT_ANUS
-	stamina_cost = 1.0
+	stamina_cost = 0.5
 	aggro_grab_instead_same_tile = FALSE
 
 /datum/sex_action/sex/other/anal/shows_on_menu(mob/living/user, mob/living/target)

@@ -461,6 +461,8 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define MAGE_HAND_OVERLAY_ICON 'modular_rmh/icons/mob/overlays/mage_hands.dmi'
 /// Blindness source held by a conjured blindfold.
 #define MAGE_HAND_BLIND_TRAIT "mage_hand_blindfold"
+/// 25% transparent, so the hands read as conjured rather than solid.
+#define MAGE_HAND_OVERLAY_ALPHA 190
 
 /// Mage Hand zone to icon_state suffix. A zone missing from this list draws nothing.
 GLOBAL_LIST_INIT(mage_hand_zone_sprites, list(

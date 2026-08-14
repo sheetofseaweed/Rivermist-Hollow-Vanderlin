@@ -93,7 +93,7 @@
 	/// How long each iteration takes
 	var/do_time = 3.3 SECONDS
 	/// Stamina cost per iteration
-	var/stamina_cost = 0.5
+	var/stamina_cost = 0.1
 	/// Whether to check if user is incapacitated
 	var/check_incapacitated = TRUE
 	/// Whether participants must be on same tile

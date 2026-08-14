@@ -336,7 +336,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_ALLURE = span_love("People notice me the moment I enter a room!"),
 	TRAIT_DARKLING = span_info("I am a creature of the dark and am sensitive to the light. The hateful sun is especially harsh on my eyes."),
 	TRAIT_WILDMAGIC = span_info("Unruly magic sparks and fizzes through my veins. Each time I cast a spell, my magic might surge and trigger a random magical effect.."),
-	TRAIT_DRUNKMASTER = span_info("You are Immune to the negative effects of being drunk. It makes you only stronger!"),
+	TRAIT_DRUNKMASTER = span_info("While perfectly drunk, I become stronger and cannot stumble. Too much drink breaks my balance."),
 	TRAIT_PONYGIRL_RIDEABLE = span_notice("Willing or not, I've been trained to carry other people's burdens."),
 ))
 

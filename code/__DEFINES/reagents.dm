@@ -52,3 +52,8 @@
 #define RANDOM_PILL_STYLE 22 //Dont change this one though
 
 #define ALCOHOL_RATE 0.005 //The rate at which alcohol affects you
+
+/// Drunk Masters enter perfect balance within this drunkenness range.
+#define DRUNK_MASTER_MIN_DRUNKENNESS 21
+#define DRUNK_MASTER_MAX_DRUNKENNESS 60
+#define DRUNK_MASTER_GRACE_DURATION 15 SECONDS

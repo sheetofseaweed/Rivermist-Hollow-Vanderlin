@@ -27,28 +27,26 @@
 		<h2> Items with internal energy </h2>
 	"}
 
-	for(var/obj/item/natural/item as anything in subtypesof(/obj/item/natural))
-		if(!initial(item.attunement_values))
-			continue
-		var/obj/item/natural/new_item = new item
-		html += "<h3>[new_item.name]</h3><br>"
-		html += "[icon2html(new_item, user)]<br>"
-		for(var/datum/attunement/attunement as anything in new_item.attunement_values)
-			if(new_item.attunement_values[attunement] > 0)
-				html += "[initial(attunement.name)] - Increase<br>"
-			else
-				html += "[initial(attunement.name)] - Decrease<br>"
+	html += attunement_listing(user, subtypesof(/obj/item/natural))
+	html += attunement_listing(user, subtypesof(/obj/item/alch))
 
-	for(var/obj/item/natural/item as anything in subtypesof(/obj/item/alch))
-		if(!initial(item.attunement_values))
-			continue
-		var/obj/item/natural/new_item = new item
-		html += "<h3>[new_item.name]</h3><br>"
-		html += "[icon2html(new_item, user)]<br>"
-		for(var/datum/attunement/attunement as anything in new_item.attunement_values)
-			if(new_item.attunement_values[attunement] > 0)
-				html += "[initial(attunement.name)] - Increase<br>"
-			else
-				html += "[initial(attunement.name)] - Decrease<br>"
+	return html
 
+/// Lists every type in item_types carrying attunement values, probed via a throwaway instance.
+/datum/book_entry/attunement/proc/attunement_listing(mob/user, list/item_types)
+	var/html = ""
+	for(var/obj/item/item_type as anything in item_types)
+		// initial() reads null on list vars, so the values only exist on a real instance
+		var/obj/item/item = new item_type
+		if(QDELETED(item)) // some types delete themselves during Initialize
+			continue
+		if(length(item.attunement_values))
+			html += "<h3>[item.name]</h3><br>"
+			html += "[icon2html(item, user)]<br>"
+			for(var/datum/attunement/attunement as anything in item.attunement_values)
+				if(item.attunement_values[attunement] > 0)
+					html += "[initial(attunement.name)] - Increase<br>"
+				else
+					html += "[initial(attunement.name)] - Decrease<br>"
+		qdel(item)
 	return html

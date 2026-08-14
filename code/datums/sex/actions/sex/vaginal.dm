@@ -1,7 +1,7 @@
 /datum/sex_action/sex/vaginal
 	name = "Fuck their pussy"
 	hole_id = ORGAN_SLOT_VAGINA
-	stamina_cost = 1.0
+	stamina_cost = 0.5
 
 /datum/sex_action/sex/vaginal/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)

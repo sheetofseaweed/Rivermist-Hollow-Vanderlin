@@ -1,7 +1,7 @@
 /datum/sex_action/sex/anal
 	name = "Fuck their ass"
 	hole_id = ORGAN_SLOT_ANUS
-	stamina_cost = 1.0
+	stamina_cost = 0.5
 
 /datum/sex_action/sex/anal/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)

@@ -53,26 +53,14 @@
 
 /datum/status_effect/buff/drunk_master
 	id = "drunk master"
-	alert_type = /atom/movable/screen/alert/status_effect/buff/drunk
-	effectedstats = list(STATKEY_STR = 3, STATKEY_PER = 3, STATKEY_CON = 3, STATKEY_END = 3, STATKEY_SPD = 3, STATKEY_LCK = 3)
-	duration = 12 MINUTES
+	alert_type = /atom/movable/screen/alert/status_effect/buff/drunk_master
+	effectedstats = list(STATKEY_STR = 2, STATKEY_PER = 1, STATKEY_END = 2, STATKEY_SPD = 1, STATKEY_LCK = 1)
+	duration = DRUNK_MASTER_GRACE_DURATION
 
 /atom/movable/screen/alert/status_effect/buff/drunk_master
-	name = "Drunk Master"
-	desc = span_nicegreen("I feel drunkly strong!")
+	name = "Perfectly Drunk"
+	desc = span_nicegreen("I have found the perfect balance between discipline and drink. I am stronger, more alert, and cannot stumble.")
 	icon_state = "drunk"
-
-/datum/status_effect/buff/drunk_master/on_apply()
-	. = ..()
-	if(iscarbon(owner))
-		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stress_event/drunk)
-
-/datum/status_effect/buff/drunk_master/on_remove()
-	. = ..()
-	if(iscarbon(owner))
-		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stress_event/drunk)
 
 //BATTLESONG
 

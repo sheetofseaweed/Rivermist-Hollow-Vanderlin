@@ -1766,9 +1766,10 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					to_chat(user, "<span class='notice'>Please use an image of the head and shoulder area to maintain immersion level. Lastly, ["<span class='bold'>do not use a real life photo or use any image that is less than serious.</span>"]</span>")
 					to_chat(user, "<span class='notice'>If the photo doesn't show up properly in-game, ensure that it's a direct image link that opens properly in a browser.</span>")
 					to_chat(user, "<span class='notice'>Keep in mind that the photo will be downsized to 325x325 pixels, so the more square the photo, the better it will look.</span>")
-					var/new_headshot_link = tgui_input_text(user, "Input the headshot link (https, hosts: gyazo, lensdump, imgbox, catbox):", "Headshot", headshot_link, encode = FALSE)
-					if(new_headshot_link == null)
+					var/new_headshot_link = tgui_input_text(user, "Input the headshot link (https, hosts: gyazo, lensdump, imgbox, catbox, postimages, freeimage, imagechest, pixhost):", "Headshot", headshot_link, max_length = MAX_MESSAGE_LEN, encode = FALSE)
+					if(isnull(new_headshot_link))
 						return
+					new_headshot_link = trim(new_headshot_link, MAX_MESSAGE_LEN)
 					if(new_headshot_link == "")
 						headshot_link = null
 						update_menu_data(user)
@@ -1972,9 +1973,10 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					log_game("[user] has set their flavortext'.")
 				if("nsfw_headshot")
 					to_chat(user, "<span class='notice'>Finally a place to show it all.</span>")
-					var/new_nsfw_headshot_link = tgui_input_text(user, "Input the nsfw headshot link (https, hosts: gyazo, lensdump, imgbox, catbox):", "NSFW Headshot", nsfw_headshot_link, encode = FALSE)
-					if(new_nsfw_headshot_link == null)
+					var/new_nsfw_headshot_link = tgui_input_text(user, "Input the nsfw headshot link (https, hosts: gyazo, lensdump, imgbox, catbox, imagechest, pixhost):", "NSFW Headshot", nsfw_headshot_link, max_length = MAX_MESSAGE_LEN, encode = FALSE)
+					if(isnull(new_nsfw_headshot_link))
 						return
+					new_nsfw_headshot_link = trim(new_nsfw_headshot_link, MAX_MESSAGE_LEN)
 					if(new_nsfw_headshot_link == "")
 						nsfw_headshot_link = null
 						update_menu_data(user)
@@ -2111,8 +2113,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					to_chat(user, "<font color = '#d6d6d6'>Leave blank to clear your current song.</font>")
 					to_chat(user, "<font color ='red'>Abuse of this will get you banned.</font>")
 					var/new_song_link = tgui_input_text(user, "Input the accessory link (https, hosts: catbox):", "Song URL", song_link, encode = FALSE)
-					if(new_song_link == null)
+					if(isnull(new_song_link))
 						return
+					new_song_link = trim(new_song_link, MAX_MESSAGE_LEN)
 					if(new_song_link == "")
 						new_song_link = null
 						song_link = null
@@ -2120,19 +2123,14 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 						update_menu_data(user)
 						return
 					var/static/list/valid_extensions = list("mp3")
-					if(!is_valid_headshot_link(user, new_song_link, FALSE, valid_extensions))
+					if(!is_valid_media_link(user, new_song_link, FALSE, valid_extensions))
 						new_song_link = null
 						update_menu_data(user)
 						return
 
-					var/list/value_split = splittext(new_song_link, ".")
-
-					// extension will always be the last entry
-					var/extension = value_split[length(value_split)]
-					if((extension in valid_extensions))
-						song_link = new_song_link
-						to_chat(user, "<span class='notice'>Successfully updated Song URL.</span>")
-						log_game("[user] has set their Song URL to '[song_link]'.")
+					song_link = new_song_link
+					to_chat(user, "<span class='notice'>Successfully updated Song URL.</span>")
+					log_game("[user] has set their Song URL to '[song_link]'.")
 
 				if("img_gallery")
 					add_gallery_image(user, FALSE)
@@ -2609,13 +2607,16 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	to_chat(user, "<span class='notice'>You can only have a maximum of ["<span class='bold'>THREE IMAGES</span>"] in each gallery at a time.</span>")
 
 	var/title = nsfw_gallery ? "NSFW Gallery Image" : "Gallery Image"
-	var/new_galleryimg = tgui_input_text(user, "Input the image link (https, hosts: gyazo, lensdump, imgbox, catbox):", title, encode = FALSE)
-	if(new_galleryimg == null)
+	var/host_list = nsfw_gallery ? "gyazo, lensdump, imgbox, catbox, imagechest, pixhost" : "gyazo, lensdump, imgbox, catbox, postimages, freeimage, imagechest, pixhost"
+	var/new_galleryimg = tgui_input_text(user, "Input the image link (https, hosts: [host_list]):", title, max_length = MAX_MESSAGE_LEN, encode = FALSE)
+	if(isnull(new_galleryimg))
 		return FALSE
+	new_galleryimg = trim(new_galleryimg, MAX_MESSAGE_LEN)
 	if(new_galleryimg == "")
 		return FALSE
-	if(!is_valid_headshot_link(user, new_galleryimg))
-		to_chat(user, "<span class='notice'>Invalid image link. Make sure it's a direct link from a valid host (gyazo, lensdump, imgbox, catbox).</span>")
+	var/is_valid_link = nsfw_gallery ? is_valid_nsfw_headshot_link(user, new_galleryimg) : is_valid_headshot_link(user, new_galleryimg)
+	if(!is_valid_link)
+		to_chat(user, "<span class='notice'>Invalid image link. Make sure it's a direct link from a valid host ([host_list]).</span>")
 		return FALSE
 
 	gallery += new_galleryimg
@@ -3460,78 +3461,135 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			"}
 
 /datum/preferences/proc/is_valid_headshot_link(mob/user, value, silent = FALSE, list/valid_extensions = list("jpg", "png", "jpeg", "gif"))
-	var/static/list/allowed_hosts = list("i.gyazo.com", "a.l3n.co", "b.l3n.co", "c.l3n.co", "images2.imgbox.com", "thumbs2.imgbox.com", "files.catbox.moe")
+	var/static/list/allowed_hosts = list(
+		"i.gyazo.com",
+		"a.l3n.co",
+		"b.l3n.co",
+		"c.l3n.co",
+		"lensdump.com",
+		"i.lensdump.com",
+		"images2.imgbox.com",
+		"thumbs2.imgbox.com",
+		"files.catbox.moe",
+		"i.postimg.cc",
+		"iili.io",
+		"cdn.imgchest.com",
+	)
+	var/static/list/allowed_host_suffixes = list(".pixhost.to", ".pixhost.cc", ".pixho.st")
 
-	if(!length(value))
+	return is_valid_external_asset_link(user, value, silent, valid_extensions, allowed_hosts, allowed_host_suffixes, "image")
+
+/datum/preferences/proc/is_valid_nsfw_headshot_link(mob/user, value, silent = FALSE)
+	var/static/list/valid_extensions = list("jpg", "png", "jpeg", "gif")
+	var/static/list/allowed_hosts = list(
+		"i.gyazo.com",
+		"a.l3n.co",
+		"b.l3n.co",
+		"c.l3n.co",
+		"lensdump.com",
+		"i.lensdump.com",
+		"images2.imgbox.com",
+		"thumbs2.imgbox.com",
+		"files.catbox.moe",
+		"cdn.imgchest.com",
+	)
+	var/static/list/allowed_host_suffixes = list(".pixhost.to", ".pixhost.cc", ".pixho.st")
+
+	return is_valid_external_asset_link(user, value, silent, valid_extensions, allowed_hosts, allowed_host_suffixes, "image")
+
+/datum/preferences/proc/is_valid_media_link(mob/user, value, silent = FALSE, list/valid_extensions)
+	var/static/list/allowed_hosts = list(
+		"i.gyazo.com",
+		"a.l3n.co",
+		"b.l3n.co",
+		"c.l3n.co",
+		"images2.imgbox.com",
+		"thumbs2.imgbox.com",
+		"files.catbox.moe",
+	)
+	var/static/list/allowed_host_suffixes = list()
+
+	return is_valid_external_asset_link(user, value, silent, valid_extensions, allowed_hosts, allowed_host_suffixes, "file")
+
+/datum/preferences/proc/is_valid_external_asset_link(mob/user, value, silent, list/valid_extensions, list/allowed_hosts, list/allowed_host_suffixes, asset_name)
+	var/static/list/unsafe_url_characters = list("'", "\"", "<", ">", "\[", "]", "\\")
+	var/static/list/authority_delimiters = list("/", "?", "#")
+
+	if(!istext(value) || !length(value))
 		return FALSE
 
-	// Ensure link starts with "https://"
 	if(findtext(value, "https://") != 1)
 		if(!silent)
 			to_chat(user, "<span class='warning'>Your link must be https!</span>")
 		return FALSE
 
-	// Extract domain from the URL
-	var/start_index = length("https://") + 1
-	var/end_index = findtext(value, "/", start_index)
-	var/domain = (end_index ? copytext(value, start_index, end_index) : copytext(value, start_index))
+	for(var/character_index in 1 to length(value))
+		if(text2ascii(value, character_index) <= 32)
+			if(!silent)
+				to_chat(user, "<span class='warning'>Invalid [asset_name] link!</span>")
+			return FALSE
 
-	// Check if domain is in the allowed list
-	if(!(domain in allowed_hosts))
+	for(var/unsafe_character in unsafe_url_characters)
+		if(findtext(value, unsafe_character))
+			if(!silent)
+				to_chat(user, "<span class='warning'>Invalid [asset_name] link!</span>")
+			return FALSE
+
+	var/authority_start = length("https://") + 1
+	var/authority_end = length(value) + 1
+	for(var/delimiter in authority_delimiters)
+		var/delimiter_index = findtext(value, delimiter, authority_start)
+		if(delimiter_index && delimiter_index < authority_end)
+			authority_end = delimiter_index
+
+	var/path_start = findtext(value, "/", authority_start)
+	if(!path_start || path_start != authority_end)
 		if(!silent)
-			to_chat(user, "<span class='warning'>The image must be hosted on an approved site.</span>")
+			to_chat(user, "<span class='warning'>The [asset_name] link must include a direct file path.</span>")
 		return FALSE
 
-	// Extract the filename and extension
-	var/list/path_split = splittext(value, "/")
-	var/filename = path_split[length(path_split)]
+	var/hostname = lowertext(copytext(value, authority_start, authority_end))
+	if(!length(hostname) || findtext(hostname, "@") || findtext(hostname, ":"))
+		if(!silent)
+			to_chat(user, "<span class='warning'>Invalid [asset_name] link!</span>")
+		return FALSE
+
+	var/is_allowed_host = (hostname in allowed_hosts)
+	if(!is_allowed_host)
+		for(var/allowed_suffix in allowed_host_suffixes)
+			if(length(hostname) > length(allowed_suffix) && copytext(hostname, length(hostname) - length(allowed_suffix) + 1) == allowed_suffix)
+				is_allowed_host = TRUE
+				break
+
+	if(!is_allowed_host)
+		if(!silent)
+			to_chat(user, "<span class='warning'>The [asset_name] must be hosted on an approved site.</span>")
+		return FALSE
+
+	var/path_end = length(value) + 1
+	var/query_start = findtext(value, "?", path_start)
+	if(query_start)
+		path_end = query_start
+	var/fragment_start = findtext(value, "#", path_start)
+	if(fragment_start && fragment_start < path_end)
+		path_end = fragment_start
+
+	var/path = copytext(value, path_start, path_end)
+	var/list/path_parts = splittext(path, "/")
+	var/filename = path_parts[length(path_parts)]
 	var/list/file_parts = splittext(filename, ".")
-
 	if(length(file_parts) < 2)
+		if(!silent)
+			to_chat(user, "<span class='warning'>The [asset_name] link must include a file extension.</span>")
 		return FALSE
 
-	var/extension = file_parts[length(file_parts)]
-
-	// Validate extension
+	var/extension = lowertext(file_parts[length(file_parts)])
 	if(!(extension in valid_extensions))
 		if(!silent)
-			to_chat(user, "<span class='warning'>The image must be one of the following extensions: '[english_list(valid_extensions)]'</span>")
+			to_chat(user, "<span class='warning'>The [asset_name] must be one of the following extensions: '[english_list(valid_extensions)]'</span>")
 		return FALSE
 
 	return TRUE
-
-/proc/is_valid_nsfw_headshot_link(mob/user, value, silent = FALSE) //TA edit
-	var/static/link_regex = regex("i.gyazo.com|a.l3n.co|b.l3n.co|c.l3n.co|images2.imgbox.com|thumbs2.imgbox.com|files.catbox.moe") //gyazo, discord, lensdump, imgbox, catbox
-	var/static/list/valid_extensions = list("jpg", "png", "jpeg") // Regex works fine, if you know how it works
-
-	if(!length(value))
-		return FALSE
-
-	var/find_index = findtext(value, "https://")
-	if(find_index != 1)
-		if(!silent)
-			to_chat(user, "<span class='warning'>Your link must be https!</span>")
-		return FALSE
-
-	if(!findtext(value, "."))
-		if(!silent)
-			to_chat(user, "<span class='warning'>Invalid link!</span>")
-		return FALSE
-	var/list/value_split = splittext(value, ".")
-
-	// extension will always be the last entry
-	var/extension = value_split[length(value_split)]
-	if(!(extension in valid_extensions))
-		if(!silent)
-			to_chat(usr, "<span class='warning'>The image must be one of the following extensions: '[english_list(valid_extensions)]'</span>")
-		return FALSE
-
-	find_index = findtext(value, link_regex)
-	if(find_index != 9)
-		if(!silent)
-			to_chat(usr, "<span class='warning'>The image must be hosted on one of the following sites: 'Gyazo, Lensdump, Imgbox, Catbox'</span>")
-		return FALSE
-	return TRUE //TA edit end
 
 
 /datum/preferences/proc/resolve_loadout_to_color(item_path)

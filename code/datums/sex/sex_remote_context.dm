@@ -305,6 +305,7 @@
 
 	var/state = "[get_overlay_prefix(remote_target)]_[animate_start ? "start_" : ""][sprite]"
 	var/mutable_appearance/hand_overlay = mutable_appearance(MAGE_HAND_OVERLAY_ICON, state, ABOVE_MOB_LAYER)
+	hand_overlay.alpha = MAGE_HAND_OVERLAY_ALPHA
 	active_overlays[zone] = hand_overlay
 	remote_target.add_overlay(hand_overlay)
 

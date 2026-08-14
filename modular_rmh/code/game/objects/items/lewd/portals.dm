@@ -576,7 +576,7 @@
 
 /datum/sex_action/portal_base/portal_penis_base
 	abstract_type = /datum/sex_action/portal_base/portal_penis_base
-	stamina_cost = 1.0
+	stamina_cost = 0.5
 	scene_interaction = SEX_SCENE_INTERACTION_PENETRATION
 	scene_user_role = SEX_SCENE_ROLE_GIVER
 	scene_user_slot = ORGAN_SLOT_PENIS
@@ -675,7 +675,7 @@
 
 /datum/sex_action/portal_base/portal_vagina_base
 	abstract_type = /datum/sex_action/portal_base/portal_vagina_base
-	stamina_cost = 0.8
+	stamina_cost = 0.4
 	var/required_user_organ = ORGAN_SLOT_VAGINA
 	var/start_message_user = "You press yourself against the portal, reaching your target."
 	var/start_message_target = "You feel a slick warmth rubbing against you through the portal!"

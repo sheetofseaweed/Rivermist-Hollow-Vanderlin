@@ -113,7 +113,8 @@
 
 	if(!HAS_TRAIT(src, TRAIT_FACELESS))
 		if(client?.is_donator() && headshot_link)
-			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<img src=[headshot_link] width=100 height=100/>")
+			var/safe_headshot_link = html_encode(headshot_link)
+			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<img src='[safe_headshot_link]' width=100 height=100/>")
 		if(flavortext || headshot_link || ooc_extra_link)
 			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='?src=[REF(src)];task=view_flavor_text;'>Examine Closer</a>")
 		if((do_i_know || O) && (length(rumour) || length(noble_gossip)))

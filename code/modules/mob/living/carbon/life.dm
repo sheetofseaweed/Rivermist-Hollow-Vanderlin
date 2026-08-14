@@ -326,6 +326,11 @@ All effects don't start immediately, but rather get worse over time; the rate is
 
 	if(drunkenness)
 		drunkenness = max(drunkenness - (drunkenness * 0.04) - 0.01, 0)
+		if(HAS_TRAIT(src, TRAIT_DRUNKMASTER))
+			if(drunkenness >= DRUNK_MASTER_MIN_DRUNKENNESS && drunkenness <= DRUNK_MASTER_MAX_DRUNKENNESS)
+				apply_status_effect(/datum/status_effect/buff/drunk_master)
+			else if(drunkenness > DRUNK_MASTER_MAX_DRUNKENNESS)
+				remove_status_effect(/datum/status_effect/buff/drunk_master)
 		if(drunkenness >= 1)
 			SEND_SIGNAL(src, COMSIG_DRUG_INDULGE)
 			if(has_quirk(/datum/quirk/vice/alcoholic))
@@ -333,10 +338,6 @@ All effects don't start immediately, but rather get worse over time; the rate is
 		if(drunkenness >= 3)
 			if(prob(3))
 				slurring += 2
-			if(HAS_TRAIT(src, TRAIT_DRUNKMASTER))
-				apply_status_effect(/datum/status_effect/buff/drunk_master)
-			else
-				apply_status_effect(/datum/status_effect/buff/drunk)
 			adjust_jitter(-6 SECONDS)
 			apply_status_effect(/datum/status_effect/buff/drunk)
 		else

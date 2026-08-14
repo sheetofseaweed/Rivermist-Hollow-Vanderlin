@@ -20,13 +20,14 @@
 /datum/job/advclass/combat/adventurer_monk/drunk_master
 	title = "Drunk Master"
 	tutorial = "With the unpredictable lurches of a tippler, you hiccup your way through battle, \
-	frustrating foes with carefully executed movements concealed beneath a façade of incompetence."
+	frustrating foes with carefully executed movements concealed beneath a façade of incompetence. \
+	Maintain moderate drunkenness to find your perfect balance, but overindulgence will break your focus."
 
 	outfit = /datum/outfit/adventurer_monk/drunk_master
 	category_tags = list(CAT_ADVENTURER_MONK)
 	give_bank_account = TRUE
 
-	total_positions = 0
+	total_positions = 1
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/combat/adventurer_monk/drunk_master
 
@@ -35,7 +36,6 @@
 		TRAIT_DODGEEXPERT,
 		TRAIT_STEELHEARTED,
 		TRAIT_CRITICAL_RESISTANCE,
-		TRAIT_NOPAINSTUN,
 		TRAIT_NOSEGRAB,
 		TRAIT_NUTCRACKER,
 		TRAIT_BLINDFIGHTING,

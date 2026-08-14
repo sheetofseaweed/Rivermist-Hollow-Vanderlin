@@ -54,7 +54,7 @@
 	owner.visible_message(span_warning("[owner] stumbles drunkenly and falls over!"), span_warning("You stumble and fall over!"))
 
 /datum/status_effect/buff/drunk/proc/get_stumble_chance(mob/living/carbon/drunkard)
-	if(HAS_TRAIT(drunkard, TRAIT_DRUNKMASTER))
+	if(drunkard.has_status_effect(/datum/status_effect/buff/drunk_master))
 		return 0
 	var/drunkenness_factor = get_stumble_drunkenness_factor(drunkard)
 	if(drunkenness_factor <= 0)

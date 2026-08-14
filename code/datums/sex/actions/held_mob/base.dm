@@ -16,7 +16,7 @@
 	check_same_tile = FALSE
 	user_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
-	stamina_cost = 1.5
+	stamina_cost = 0.5
 	do_time = 3 SECONDS
 
 	var/obj/item/mob_holder/selected_holder
