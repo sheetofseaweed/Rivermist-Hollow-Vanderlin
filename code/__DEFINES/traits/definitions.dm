@@ -567,6 +567,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_NEEDS_TWO_HANDS "needstwohands"
 /// This item can't be pickpocketed
 #define TRAIT_HARD_TO_STEAL "hard_to_steal"
+/// This organ's passive liquid leakage is temporarily plugged.
+#define TRAIT_PASSIVE_LEAK_BLOCKED "passive_leak_blocked"
 
 // ************* turf traits
 /// Turf trait for when a turf is transparent

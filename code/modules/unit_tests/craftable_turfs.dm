@@ -1,3 +1,8 @@
+/datum/unit_test/turf_coverage
+#ifdef FOCUS_TURF_COVERAGE
+	focus = TRUE
+#endif
+
 /datum/unit_test/turf_coverage/Run()
 	var/list/all_turfs = subtypesof(/turf)
 	var/list/all_blueprint_recipes = subtypesof(/datum/blueprint_recipe)
@@ -145,7 +150,8 @@
 	+ typesof(/turf/open/water) \
 	+ typesof(/turf/open/lava) \
 	+ typesof(/turf/open/floor/carpet) \
-	+ typesof(/turf/closed/wall/mineral/desert_sandstone)
+	+ typesof(/turf/closed/wall/mineral/desert_sandstone) \
+	+ typesof(/turf/open/floor/crawl_space) //mapper-placed tunnels, nothing builds them
 	used_turfs |= blacklisted_turfs
 
 	// Find unused turfs

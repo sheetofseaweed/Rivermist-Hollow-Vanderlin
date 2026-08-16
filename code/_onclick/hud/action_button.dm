@@ -23,7 +23,8 @@
 /atom/movable/screen/movable/action_button/Destroy()
 	if(our_hud)
 		var/mob/viewer = our_hud.mymob
-		our_hud.hide_action(src)
+		if(location != SCRN_OBJ_DEFAULT) // Never placed, so no group is holding us
+			our_hud.hide_action(src)
 		viewer?.client?.screen -= src
 		linked_action.viewers -= our_hud
 		viewer.update_action_buttons()
@@ -95,22 +96,31 @@
 		var/atom/movable/screen/action_landing/reserve = over_object
 		reserve.hit_by(src)
 		our_hud.hide_landings()
+		reveal_if_palette()
 		save_position()
 		return
 
 	our_hud.hide_landings()
 	if(istype(over_object, /atom/movable/screen/button_palette) || istype(over_object, /atom/movable/screen/palette_scroll))
 		our_hud.position_action(src, SCRN_OBJ_IN_PALETTE)
+		reveal_if_palette()
 		save_position()
 		return
 	if(istype(over_object, /atom/movable/screen/movable/action_button))
 		var/atom/movable/screen/movable/action_button/button = over_object
 		our_hud.position_action_relative(src, button)
+		reveal_if_palette()
 		save_position()
 		return
 	. = ..()
 	our_hud.position_action(src, screen_loc)
 	save_position()
+
+/// Opens the palette if a drop just put us inside it, otherwise we'd silently vanish
+/atom/movable/screen/movable/action_button/proc/reveal_if_palette()
+	if(location != SCRN_OBJ_IN_PALETTE)
+		return
+	our_hud?.toggle_palette?.set_expanded(TRUE)
 
 /atom/movable/screen/movable/action_button/proc/save_position()
 	var/mob/user = our_hud.mymob
@@ -348,15 +358,17 @@ GLOBAL_LIST_INIT(palette_removed_matrix, list(1.4,0,0,0, 0.7,0.4,0,0, 0.4,0,0.6,
 	our_group.refresh_actions()
 	update_appearance()
 
-	if(!usr.client)
+	// Our owner, not usr, since actions get removed by code with nobody clicking
+	var/mob/viewer = our_hud.mymob
+	if(!viewer?.client)
 		return
 
 	if(expanded)
-		RegisterSignal(usr.client, COMSIG_CLIENT_CLICK, PROC_REF(clicked_while_open))
+		RegisterSignal(viewer.client, COMSIG_CLIENT_CLICK, PROC_REF(clicked_while_open))
 	else
-		UnregisterSignal(usr.client, COMSIG_CLIENT_CLICK)
+		UnregisterSignal(viewer.client, COMSIG_CLIENT_CLICK)
 
-	closeToolTip(usr) //Our tooltips are now invalid, can't seem to update them in one frame, so here, just close them
+	closeToolTip(viewer) //Our tooltips are now invalid, can't seem to update them in one frame, so here, just close them
 
 /atom/movable/screen/palette_scroll
 	icon = 'icons/hud/screen_gen.dmi'

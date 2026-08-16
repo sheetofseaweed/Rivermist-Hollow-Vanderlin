@@ -1,5 +1,5 @@
 /datum/pocket_dimension/dungeon
-	/// TRUE once every guardian is dead
+	/// TRUE once every guardian is dead or defeated
 	var/cleared = FALSE
 	/// Number of rooms cleared before this one in an infinite run; 0 for one-bite dungeons
 	var/depth = 0
@@ -409,6 +409,7 @@
 	// Re-assert ours after any such timer has fired.
 	addtimer(CALLBACK(src, PROC_REF(assert_guardian_faction), WEAKREF(guardian)), 2 SECONDS)
 	RegisterSignals(guardian, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING), PROC_REF(on_guardian_death))
+	RegisterSignal(guardian, COMSIG_LIVING_DEFEATED, PROC_REF(on_guardian_defeated))
 	// Dungeon natives haul defeated prey to a larder keyed to this run, and the
 	// dungeon profile releases them back into the party's break room - never to
 	// an overworld lair, which would strand them outside the run.
@@ -440,12 +441,19 @@
 		return
 	on_guardian_death(source)
 
+/// A knockout only clears a guardian when one of the defeat statuses is actually present.
+/datum/pocket_dimension/dungeon/proc/on_guardian_defeated(mob/living/source)
+	SIGNAL_HANDLER
+	if(!source.has_status_effect(/datum/status_effect/defeat_knockout) && !source.has_status_effect(/datum/status_effect/mob_horny_knockout))
+		return
+	on_guardian_death(source)
+
 /datum/pocket_dimension/dungeon/proc/on_guardian_death(mob/living/source)
 	SIGNAL_HANDLER
 	var/source_ref = "[REF(source)]"
 	if(!guardian_refs || !guardian_refs[source_ref])
 		return // already counted (e.g. downed into crit, then killed)
-	UnregisterSignal(source, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING, COMSIG_LIVING_HEALTH_UPDATE))
+	UnregisterSignal(source, list(COMSIG_LIVING_DEATH, COMSIG_PARENT_QDELETING, COMSIG_LIVING_HEALTH_UPDATE, COMSIG_LIVING_DEFEATED))
 	if(keyholder_drops[source_ref])
 		var/turf/drop_turf = get_turf(source)
 		if(drop_turf)

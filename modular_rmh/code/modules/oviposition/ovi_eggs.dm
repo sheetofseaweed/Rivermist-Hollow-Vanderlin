@@ -114,8 +114,8 @@
 	requires_fertilization = FALSE
 	poll_for_ghost = FALSE
 	require_ghost_to_hatch = FALSE
-	internal_hatch_holder_bulk = 3.5
-	incubation_stage_duration = 3 MINUTES
+	internal_hatch_holder_bulk = 6
+	incubation_stage_duration = 1.5 MINUTES
 	ready_message = "The tentacle egg in my %CONTAINER% squirms with impatient coils."
 	hatch_message = "%EGG% splits with a wet tear, spilling out a writhing tentacle mass!"
 

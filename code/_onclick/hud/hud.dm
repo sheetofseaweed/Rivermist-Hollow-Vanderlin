@@ -438,6 +438,7 @@ GLOBAL_LIST_INIT(available_ui_styles, sortList(list(
 	QDEL_NULL(bloodpool)
 
 /datum/hud/proc/position_action(atom/movable/screen/movable/action_button/button, position)
+	var/was_at = button.screen_loc // hide_action clears this, but a re-float needs to land where it already was
 	if(button.location != SCRN_OBJ_DEFAULT)
 		hide_action(button)
 	switch(position)
@@ -449,7 +450,16 @@ GLOBAL_LIST_INIT(available_ui_styles, sortList(list(
 			listed_actions.insert_action(button)
 		if(SCRN_OBJ_IN_PALETTE)
 			palette_actions.insert_action(button)
+		if(SCRN_OBJ_FLOATING) // Floating with no coords of its own, so stay where we were
+			if(!was_at)
+				position_action(button, button.linked_action.default_button_position)
+				return
+			floating_actions += button
+			button.screen_loc = was_at
 		else // If we don't have it as a define, this is a screen_loc, and we should be floating
+			if(!position) // A blank position would strand the button with no screen_loc at all
+				position_action(button, button.linked_action.default_button_position)
+				return
 			floating_actions += button
 			button.screen_loc = position
 			position = SCRN_OBJ_FLOATING
@@ -465,20 +475,29 @@ GLOBAL_LIST_INIT(available_ui_styles, sortList(list(
 		if(SCRN_OBJ_IN_PALETTE)
 			palette_actions.insert_action(button, palette_actions.index_of(relative_to))
 		if(SCRN_OBJ_FLOATING) // If we don't have it as a define, this is a screen_loc, and we should be floating
-			floating_actions += button
 			var/client/our_client = mymob.client
 			if(!our_client)
 				position_action(button, button.linked_action.default_button_position)
 				return
-			button.screen_loc = get_valid_screen_location(relative_to.screen_loc, world.icon_size, our_client.view_size.getView()) // Asks for a location adjacent to our button that won't overflow the map
+			// Asks for a location adjacent to our button that won't overflow the map
+			var/adjacent_loc = get_valid_screen_location(relative_to.screen_loc, world.icon_size, our_client.view_size.getView())
+			if(!adjacent_loc) // Nothing adjacent fits, don't blank the button out
+				position_action(button, button.linked_action.default_button_position)
+				return
+			floating_actions += button
+			button.screen_loc = adjacent_loc
+		else // Our target was never placed anywhere, so we have nothing to be relative to
+			position_action(button, button.linked_action.default_button_position)
+			return
 
 	button.location = relative_to.location
 
 /// Removes the passed in action from its current position on the screen
 /datum/hud/proc/hide_action(atom/movable/screen/movable/action_button/button)
 	switch(button.location)
-		if(SCRN_OBJ_DEFAULT) // Invalid
-			CRASH("We just tried to hide an action buttion that somehow has the default position as its location, you done fucked up")
+		if(SCRN_OBJ_DEFAULT) // Invalid, but crashing here aborts our caller and leaks the button
+			stack_trace("Tried to hide an action button that still has the default position as its location")
+			return
 		if(SCRN_OBJ_FLOATING)
 			floating_actions -= button
 		if(SCRN_OBJ_IN_LIST)

@@ -287,6 +287,10 @@
 
 		border_turf.ChangeTurf(/turf/closed/indestructible/pocket_border, /turf/closed/indestructible/pocket_border)
 
+/// Render machinery the turf owns and recreates on its own. Never our content, never a visitor's cargo.
+/datum/pocket_dimension/proc/is_turf_render_movable(atom/movable/movable)
+	return istype(movable, /atom/movable/lighting_object) || istype(movable, /atom/movable/outdoor_effect)
+
 /datum/pocket_dimension/proc/should_track_native_movable(atom/movable/movable)
 	if(!movable || QDELETED(movable) || ismob(movable))
 		return FALSE
@@ -360,6 +364,9 @@
 			qdel(exit_marker)
 
 		for(var/atom/movable/movable as anything in current_turf)
+			// Lighting objects churn constantly, so holding one here strands a dead ref until round end.
+			if(is_turf_render_movable(movable))
+				continue
 			native_movables[movable] = TRUE
 			if(!should_track_native_movable(movable))
 				continue
@@ -580,6 +587,8 @@
 
 /datum/pocket_dimension/proc/should_preserve_foreign_movable(atom/movable/movable, items_only = FALSE)
 	if(!movable || QDELETED(movable) || is_native_snapshot_movable(movable) || ismob(movable))
+		return FALSE
+	if(is_turf_render_movable(movable))
 		return FALSE
 	if(items_only && !isitem(movable))
 		return FALSE

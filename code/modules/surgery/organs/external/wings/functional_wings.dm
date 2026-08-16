@@ -276,7 +276,7 @@
 	RegisterSignal(owner, COMSIG_MOVABLE_MOVED, PROC_REF(check_movement))
 	RegisterSignal(owner, COMSIG_LIVING_SET_BODY_POSITION, PROC_REF(check_laying))
 	RegisterSignal(owner, COMSIG_MOVABLE_UNBUCKLE, PROC_REF(drop_passenger))
-	RegisterSignals(owner, SIGNAL_ADDTRAIT(TRAIT_IMMOBILIZED), PROC_REF(fall))
+	RegisterSignal(owner, SIGNAL_ADDTRAIT(TRAIT_IMMOBILIZED), PROC_REF(fall))
 
 // Stop flying normally
 /datum/action/item_action/organ_action/use/flight/proc/stop_flying()

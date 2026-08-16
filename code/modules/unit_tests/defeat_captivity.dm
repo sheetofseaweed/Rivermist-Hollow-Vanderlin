@@ -208,6 +208,35 @@
 	victim.kidnap_protected_until = world.time
 	TEST_ASSERT(first_captor.is_kidnap_candidate(victim), "The victim should become claimable again when recapture grace expires.")
 
+/datum/unit_test/defeat_captivity_physical_anchor/Run()
+	var/turf/nest_turf = run_loc_floor_bottom_left
+	var/mob/living/carbon/human/captor = allocate(/mob/living/carbon/human, get_step(nest_turf, WEST))
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human, nest_turf)
+	var/obj/structure/tentacle_growth/nest/nest = allocate(/obj/structure/tentacle_growth/nest, nest_turf)
+	var/obj/item/rope/spider_silk/tentacle_resin/restraints = allocate(/obj/item/rope/spider_silk/tentacle_resin)
+	victim.apply_status_effect(/datum/status_effect/defeat_knockout)
+
+	TEST_ASSERT(restraints.apply_cuffs(victim), "The guardian fixture should resin-bind its victim before nesting them.")
+	TEST_ASSERT(nest.buckle_mob(victim, TRUE), "The physical nest should accept the defeated victim.")
+	TEST_ASSERT(victim.kidnap_at_physical_anchor(/datum/defeat_captivity_profile/shared/unit_test, captor, null, "unit_test_physical", nest), "A buckled victim should enter physical-anchor captivity without a pocket.")
+	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
+	TEST_ASSERT_NOTNULL(captivity, "Physical capture should attach the ordinary captivity component.")
+	TEST_ASSERT_NULL(captivity.resolve_instance(), "Physical capture must not create a pocket instance.")
+	TEST_ASSERT(captivity.is_physical_anchor(nest), "The captivity component should retain its physical restraint as a weak anchor.")
+	TEST_ASSERT_EQUAL(get_turf(victim), nest_turf, "Physical capture must not teleport its victim.")
+
+	captivity.release_from_knockout()
+	var/datum/action/innate/defeat_refuse_advances/refuse = locate(/datum/action/innate/defeat_refuse_advances) in victim.actions
+	TEST_ASSERT_NOTNULL(refuse, "Waking in a physical nest should grant Refuse Advances.")
+	refuse.Activate()
+	TEST_ASSERT(HAS_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES), "Refuse Advances should protect a physically restrained captive from horny targeting.")
+
+	nest.unbuckle_mob(victim, force = TRUE)
+	TEST_ASSERT_NULL(victim.GetComponent(/datum/component/kidnap_captivity), "Leaving the physical restraint should end captivity.")
+	TEST_ASSERT(!HAS_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES), "Leaving the physical restraint should clear the opt-out trait.")
+	TEST_ASSERT(!(locate(/datum/action/innate/defeat_refuse_advances) in victim.actions), "Leaving the physical restraint should remove Refuse Advances.")
+	TEST_ASSERT(victim.kidnap_protected_until > world.time, "Leaving the physical restraint should grant recapture grace.")
+
 #ifdef FOCUS_DEFEAT_CAPTIVITY_TEST
 TEST_FOCUS(/datum/unit_test/defeat_captivity_shared_reuse_and_exit)
 TEST_FOCUS(/datum/unit_test/defeat_captivity_capacity)
@@ -216,4 +245,5 @@ TEST_FOCUS(/datum/unit_test/defeat_captivity_per_captive_and_delete_paths)
 TEST_FOCUS(/datum/unit_test/defeat_captivity_wilds_first_and_forced_move_cleanup)
 TEST_FOCUS(/datum/unit_test/defeat_captivity_rune_cleanup_and_rejection_aftermath)
 TEST_FOCUS(/datum/unit_test/defeat_kidnap_reservation_and_grace)
+TEST_FOCUS(/datum/unit_test/defeat_captivity_physical_anchor)
 #endif

@@ -8,7 +8,7 @@
 	if(!can_knot)
 		return FALSE
 
-	return SEND_SIGNAL(target, COMSIG_SEX_TRY_KNOT, user, force)
+	return SEND_SIGNAL(target, COMSIG_SEX_TRY_KNOT, user, force, src)
 
 /datum/sex_action/sex/other/can_perform(mob/living/user, mob/living/target)
 	. = ..()

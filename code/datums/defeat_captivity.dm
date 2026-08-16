@@ -393,6 +393,33 @@
 	)
 	return TRUE
 
+/// Attach ordinary Defeat captivity to a restraint that already holds the victim in the physical world.
+/// No pocket is created and no movement occurs; releasing the restraint must end the component.
+/mob/living/proc/kidnap_at_physical_anchor(profile_spec, mob/living/captor, list/captor_faction = null, stable_key = null, atom/movable/physical_anchor)
+	if(!has_status_effect(/datum/status_effect/defeat_knockout))
+		return FALSE
+	if(GetComponent(/datum/component/kidnap_captivity))
+		return FALSE
+	if(!ispath(profile_spec, /datum/defeat_captivity_profile) || QDELETED(physical_anchor) || buckled != physical_anchor)
+		return FALSE
+
+	var/datum/defeat_captivity_profile/profile = new profile_spec(stable_key)
+	var/datum/component/kidnap_captivity/captivity = AddComponent( \
+		/datum/component/kidnap_captivity, \
+		profile, \
+		null, \
+		captor, \
+		captor_faction, \
+		stable_key, \
+		null, \
+		physical_anchor, \
+	)
+	if(!istype(captivity) || !captivity.enter_pocket())
+		if(captivity)
+			qdel(captivity)
+		return FALSE
+	return TRUE
+
 /// Compatibility name retained for callers and old escape landmarks; destination order now belongs
 /// to the active profile, including the mandatory wilds-first per-captive policy.
 /mob/living/proc/kidnap_escape_to_wilds(datum/component/kidnap_captivity/captivity)
@@ -413,6 +440,8 @@
 	var/datum/weakref/captor_ref
 	/// Physical entrance used instead of a pocket instance. Kept weak so map cleanup cannot be pinned.
 	var/datum/weakref/mapped_entrance_ref
+	/// In-world restraint which owns this captivity state. Kept weak and watched for deletion.
+	var/datum/weakref/physical_anchor_ref
 	var/turf/saved_origin
 	var/list/captor_faction
 	var/captive_since = 0
@@ -427,7 +456,7 @@
 	var/surrender_timer
 	var/choice_prompt_open = FALSE
 
-/datum/component/kidnap_captivity/Initialize(profile_spec, datum/pocket_dimension/defeat_captivity/instance, mob/living/captor, list/captor_faction = null, stable_key = null, obj/effect/landmark/kidnap/entrance/mapped_entrance)
+/datum/component/kidnap_captivity/Initialize(profile_spec, datum/pocket_dimension/defeat_captivity/instance, mob/living/captor, list/captor_faction = null, stable_key = null, obj/effect/landmark/kidnap/entrance/mapped_entrance, atom/movable/physical_anchor)
 	if(!isliving(parent))
 		return COMPONENT_INCOMPATIBLE
 	if(istype(profile_spec, /datum/defeat_captivity_profile))
@@ -440,7 +469,7 @@
 		if(!ispath(profile_spec, /datum/defeat_captivity_profile))
 			return COMPONENT_INCOMPATIBLE
 		profile = new profile_spec(stable_key)
-	if(!instance)
+	if(!instance && !mapped_entrance && !physical_anchor)
 		instance = profile.get_or_create_instance(captor, parent)
 	lair_tag = stable_key || profile.stable_key
 	src.captor_faction = captor_faction?.Copy()
@@ -450,6 +479,12 @@
 	captive_since = world.time
 	if(mapped_entrance)
 		mapped_entrance_ref = WEAKREF(mapped_entrance)
+		return ..()
+	if(physical_anchor)
+		if(QDELETED(physical_anchor) || !get_turf(physical_anchor))
+			QDEL_NULL(profile)
+			return COMPONENT_INCOMPATIBLE
+		physical_anchor_ref = WEAKREF(physical_anchor)
 		return ..()
 
 	if(!instance || !profile.can_admit(instance))
@@ -468,6 +503,9 @@
 	RegisterSignal(parent, COMSIG_SEX_CLIMAX, PROC_REF(on_captive_climax))
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(on_captive_moved))
 	RegisterSignal(parent, COMSIG_PARENT_QDELETING, PROC_REF(on_captive_qdeleting))
+	var/atom/movable/physical_anchor = resolve_physical_anchor()
+	if(physical_anchor)
+		RegisterSignal(physical_anchor, COMSIG_PARENT_QDELETING, PROC_REF(on_physical_anchor_qdeleting))
 
 /datum/component/kidnap_captivity/UnregisterFromParent()
 	deltimer(ko_release_timer)
@@ -475,6 +513,9 @@
 	ko_release_timer = null
 	surrender_timer = null
 	UnregisterSignal(parent, list(COMSIG_SEX_CLIMAX, COMSIG_MOVABLE_MOVED, COMSIG_PARENT_QDELETING))
+	var/atom/movable/physical_anchor = resolve_physical_anchor()
+	if(physical_anchor)
+		UnregisterSignal(physical_anchor, COMSIG_PARENT_QDELETING)
 	var/mob/living/victim = parent
 	if(victim)
 		REMOVE_TRAIT(victim, TRAIT_DEFEAT_REFUSE_ADVANCES, KIDNAP_TRAIT)
@@ -489,6 +530,7 @@
 		instance?.unregister_captive(src, profile?.delete_when_empty)
 	instance_ref = null
 	mapped_entrance_ref = null
+	physical_anchor_ref = null
 	return ..()
 
 /datum/component/kidnap_captivity/Destroy(force)
@@ -496,6 +538,7 @@
 	QDEL_NULL(profile)
 	captor_ref = null
 	mapped_entrance_ref = null
+	physical_anchor_ref = null
 	saved_origin = null
 	captor_faction = null
 	return .
@@ -521,8 +564,20 @@
 	mapped_entrance_ref = null
 	return null
 
+/datum/component/kidnap_captivity/proc/resolve_physical_anchor()
+	var/atom/movable/physical_anchor = physical_anchor_ref?.resolve()
+	if(istype(physical_anchor) && !QDELETED(physical_anchor))
+		return physical_anchor
+	return null
+
+/datum/component/kidnap_captivity/proc/is_physical_anchor(atom/movable/physical_anchor)
+	return physical_anchor && physical_anchor == resolve_physical_anchor()
+
 /datum/component/kidnap_captivity/proc/is_mapped_lair()
 	return !isnull(mapped_entrance_ref)
+
+/datum/component/kidnap_captivity/proc/is_physical_captivity()
+	return !isnull(physical_anchor_ref)
 
 /datum/component/kidnap_captivity/proc/get_saved_origin()
 	if(isturf(saved_origin) && !QDELETED(saved_origin))
@@ -531,6 +586,15 @@
 
 /datum/component/kidnap_captivity/proc/enter_pocket()
 	var/mob/living/victim = parent
+	var/atom/movable/physical_anchor = resolve_physical_anchor()
+	if(is_physical_captivity())
+		if(!victim || QDELETED(victim) || !physical_anchor || victim.buckled != physical_anchor)
+			return FALSE
+		admitted = TRUE
+		to_chat(victim, span_userdanger("<b>YOU HAVE BEEN CAPTURED.</b><br>\
+			Defeat will hold you helpless for about one minute, but you can still speak, emote, and call for help.<br>\
+			When that hold loosens, use Refuse Advances to make the lair's denizens leave you alone while you struggle out of your restraint."))
+		return TRUE
 	var/obj/effect/landmark/kidnap/entrance/mapped_entrance = resolve_mapped_entrance()
 	if(mapped_entrance)
 		var/turf/entrance_turf = get_turf(mapped_entrance)
@@ -558,6 +622,14 @@
 	SIGNAL_HANDLER
 	if(ending || !admitted)
 		return
+	if(is_physical_captivity())
+		var/mob/living/physical_victim = parent
+		if(physical_victim?.buckled == resolve_physical_anchor())
+			return
+		ending = TRUE
+		physical_victim?.grant_kidnap_release_grace()
+		qdel(src)
+		return
 	var/obj/effect/landmark/kidnap/entrance/mapped_entrance = resolve_mapped_entrance()
 	if(mapped_entrance)
 		var/turf/captive_turf = get_turf(parent)
@@ -582,8 +654,17 @@
 	ending = TRUE
 	qdel(src)
 
+/datum/component/kidnap_captivity/proc/on_physical_anchor_qdeleting(datum/source)
+	SIGNAL_HANDLER
+	if(ending)
+		return
+	ending = TRUE
+	var/mob/living/victim = parent
+	victim?.grant_kidnap_release_grace()
+	qdel(src)
+
 /datum/component/kidnap_captivity/proc/get_contextual_destination()
-	if(is_mapped_lair())
+	if(is_mapped_lair() || is_physical_captivity())
 		return get_turf(parent)
 	return profile?.get_ejection_destination(src, resolve_instance())
 
@@ -658,7 +739,10 @@
 		return
 	grant_refuse_advances(victim)
 	grant_captivity_choices(victim)
-	to_chat(victim, span_warning("The grip of defeat loosens - you can move, fight, and seek the profile's way out."))
+	if(is_physical_captivity())
+		to_chat(victim, span_warning("The grip of defeat loosens. Use Refuse Advances to make the lair's denizens leave you alone, then struggle out of your restraint."))
+	else
+		to_chat(victim, span_warning("The grip of defeat loosens - you can move, fight, and seek the profile's way out."))
 	INVOKE_ASYNC(src, PROC_REF(offer_release_choice))
 
 /// Reconciles external/admin recovery with captivity. Shared exits are permissive as a second line of

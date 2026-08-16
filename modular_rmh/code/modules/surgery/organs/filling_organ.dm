@@ -201,7 +201,7 @@
 		return
 	if(reagents.total_volume && absorbing) //slowly inject to your blood if they have reagents. Will not work if refilling because i cant properly seperate the reagents for which to keep which to dump.
 		reagents.trans_to(owner, absorbrate, absorbmult, TRUE, FALSE)
-	if(!length(contents)) //if nothing is plugging the hole, stuff will drip out.
+	if(!length(contents) && !HAS_TRAIT(src, TRAIT_PASSIVE_LEAK_BLOCKED)) //if nothing is plugging the hole, stuff will drip out.
 		var/tempdriprate = driprate
 		//the fuller the organ, the faster it leaks: ramps from base rate at DRIP_PRESSURE_THRESHOLD up to DRIP_PRESSURE_MAX_MULT when full.
 		var/fullness = reagents.maximum_volume ? (reagents.total_volume / reagents.maximum_volume) : 0

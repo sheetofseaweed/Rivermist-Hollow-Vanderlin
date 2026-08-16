@@ -23,7 +23,8 @@
 /obj/effect/decal/HandleTurfChange(turf/T)
 	..()
 	if(T == loc && NeverShouldHaveComeHere(T))
-		qdel(src)
+		// Worldgen carves turfs before SSatoms runs, so a plain qdel here kills us before Initialize.
+		SSatoms.prepare_deletion(src)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

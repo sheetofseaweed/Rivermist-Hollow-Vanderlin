@@ -176,6 +176,7 @@
 	ADD_TRAIT(owner, TRAIT_HANDS_BLOCKED, TRAIT_STATUS_EFFECT(id))
 	ADD_TRAIT(owner, TRAIT_PACIFISM, TRAIT_STATUS_EFFECT(id))
 	owner.ai_controller?.set_ai_status(AI_STATUS_OFF)
+	SEND_SIGNAL(owner, COMSIG_LIVING_DEFEATED)
 	owner.visible_message(span_userdanger("[owner] sinks down, overwhelmed and spent!"))
 	cleanup_timer = addtimer(CALLBACK(src, PROC_REF(mob_horny_ko_cleanup_check)), DEFEAT_MOB_HORNY_KO_DURATION, TIMER_STOPPABLE)
 

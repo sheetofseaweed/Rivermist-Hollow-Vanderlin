@@ -62,7 +62,9 @@
 //Keep this sorted alphabetically
 
 // BEGIN_INCLUDE
+#include "action_button_positions.dm"
 #include "ai_combat_flow.dm"
+#include "ai_hazard_avoidance.dm"
 #include "ai_idle_detection.dm"
 #include "ai_targeting_allegiances.dm"
 #include "alchemy_medicine.dm"
@@ -116,6 +118,7 @@
 #include "reagent_id_typos.dm"
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
+#include "reflection_tracking.dm"
 #include "required_map_items.dm"
 #include "resist.dm"
 #include "resurrection_rune.dm"

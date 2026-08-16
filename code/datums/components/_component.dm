@@ -189,6 +189,10 @@
 
 /// Registers multiple signals to the same proc.
 /datum/proc/RegisterSignals(datum/target, list/signal_types, proctype, override = FALSE)
+	// A bare signal string iterates zero times here, silently registering nothing. Catch it loudly.
+	if(!islist(signal_types))
+		stack_trace("RegisterSignals got a single signal instead of a list, use RegisterSignal")
+		signal_types = list(signal_types)
 	for(var/signal_type in signal_types)
 		RegisterSignal(target, signal_type, proctype, override)
 

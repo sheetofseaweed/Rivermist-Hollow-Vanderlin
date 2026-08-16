@@ -94,6 +94,8 @@
  * * relay_plane: plane we are relaying this plane master to
  */
 /atom/movable/screen/plane_master/proc/relay_render_to_plane(mob/mymob, relay_plane)
+	if(!mymob?.client) //no screen to relay onto
+		return
 	if(relay in mymob.client.screen) //backdrop can be called multiple times
 		return
 	if(!render_target && generate_render_target)

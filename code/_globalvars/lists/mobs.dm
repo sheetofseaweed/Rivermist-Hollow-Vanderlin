@@ -88,6 +88,34 @@ GLOBAL_LIST_INIT(dangerous_turfs, typecacheof(list(
 	/turf/open/water/acid,
 	)))
 
+/// Hazards that sit on a turf as objects instead of being turf types themselves.
+/// GLOB.dangerous_turfs is matched against the turf's own type, so it can never catch these -
+/// which is why wandering AI walked straight into bushes and fires and wore itself to death.
+GLOBAL_LIST_INIT(dangerous_turf_contents, typecacheof(list(
+	/obj/structure/flora/grass/bush,
+	/obj/effect/abstract/fire,
+	/obj/structure/trap,
+	)))
+
+/**
+ * TRUE if an AI pawn stepping onto target_turf would hurt itself.
+ *
+ * destination is the turf the mob is actually trying to reach. Object hazards are ignored there so a
+ * mob can still close on prey hiding inside a bush; genuinely lethal turfs (lava, openspace) are
+ * refused regardless of where the mob wanted to go.
+ */
+/proc/ai_turf_is_hazardous(turf/target_turf, turf/destination)
+	if(!target_turf)
+		return FALSE
+	if(is_type_in_typecache(target_turf, GLOB.dangerous_turfs))
+		return TRUE
+	if(destination && target_turf == destination)
+		return FALSE
+	for(var/atom/movable/thing as anything in target_turf)
+		if(is_type_in_typecache(thing, GLOB.dangerous_turf_contents))
+			return TRUE
+	return FALSE
+
 /proc/update_config_movespeed_type_lookup(update_mobs = TRUE)
 	var/list/mob_types = list()
 	var/list/entry_value = CONFIG_GET(keyed_list/multiplicative_movespeed)

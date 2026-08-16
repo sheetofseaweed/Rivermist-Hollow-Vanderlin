@@ -29,6 +29,7 @@
 							/obj/structure/flora/gemcrystals/topaz = 0.5,
 							/obj/structure/flora/gemcrystals/topaz/small = 0.5,
 							/obj/structure/flora/gemcrystals/lapiz = 0.5,
+							/obj/structure/flora/grass/maneater/real = 0.5,
 							/obj/structure/flora/gemcrystals/sapphiresmall = 0.5)
 
 /datum/mapGeneratorModule/underdarkmud

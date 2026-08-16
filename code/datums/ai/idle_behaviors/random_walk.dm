@@ -27,7 +27,7 @@
 	if(prob(walk_chance) && !HAS_TRAIT(living_pawn, TRAIT_IMMOBILIZED) && isturf(living_pawn.loc) && !living_pawn.pulledby)
 		var/move_dir = pick(GLOB.alldirs)
 		var/turf/step_turf = get_step(living_pawn, move_dir)
-		if(is_type_in_typecache(step_turf, GLOB.dangerous_turfs))
+		if(ai_turf_is_hazardous(step_turf))
 			return
 		living_pawn.Move(step_turf, move_dir)
 

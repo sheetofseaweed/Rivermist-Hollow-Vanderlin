@@ -49,6 +49,24 @@
 	TEST_ASSERT(SSpocket_dimensions.delete_instance(instance, null, origin), "Dungeon should collapse with a live guardian inside.")
 	TEST_ASSERT(QDELETED(guardian), "Live native guardian must be deleted on collapse, not ejected.")
 
+/datum/unit_test/dungeon_defeated_guardian_clears_room/Run()
+	var/turf/origin = run_loc_floor_bottom_left
+	var/datum/pocket_dimension/dungeon/instance = SSpocket_dimensions.get_or_create_instance("[REF(src)]::defeated_guardian", /datum/map_template/pocket/dungeon/test_onebite, POCKET_LIFECYCLE_COLLAPSE, 0)
+	TEST_ASSERT_NOTNULL(instance, "Defeat-test dungeon instance should be created.")
+
+	var/mob/living/guardian
+	for(var/guardian_ref in instance.guardian_refs)
+		var/datum/weakref/ref = instance.guardian_refs[guardian_ref]
+		guardian = ref.resolve()
+	TEST_ASSERT_NOTNULL(guardian, "Defeat-test guardian should resolve.")
+
+	SEND_SIGNAL(guardian, COMSIG_LIVING_DEFEATED)
+	TEST_ASSERT(!instance.cleared, "A defeat signal without a defeat status must not clear the room.")
+	guardian.apply_status_effect(/datum/status_effect/mob_horny_knockout)
+	TEST_ASSERT(instance.cleared, "A guardian with a defeat status should clear the room without dying.")
+
+	SSpocket_dimensions.delete_instance(instance, null, origin)
+
 /datum/unit_test/dungeon_drow_theme_harness/Run()
 	var/list/expected_rooms = list(
 		"drow_break_veiled_refuge" = list("kind" = DUNGEON_ROOM_BREAK),

@@ -374,6 +374,8 @@
 
 /obj/item/paper/scroll/quest/werewolf_hidden/Initialize(mapload, datum/antagonist/werewolf/owner_werewolf)
 	if(!mapload && !owner_werewolf)
+		// Still has to run the parent, or we count as an atom that never initialized.
+		. = ..()
 		return INITIALIZE_HINT_QDEL
 	if(owner_werewolf)
 		owner_werewolf_ref = WEAKREF(owner_werewolf)

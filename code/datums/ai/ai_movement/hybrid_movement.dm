@@ -89,7 +89,7 @@
 
 			var/current_loc = get_turf(movable_pawn)
 
-			if(!is_type_in_typecache(target_turf, GLOB.dangerous_turfs) && can_move)
+			if(!ai_turf_is_hazardous(target_turf, end_turf) && can_move)
 				step_to(movable_pawn, target_turf, controller.blackboard[BB_CURRENT_MIN_MOVE_DISTANCE], controller.movement_delay)
 
 				// Check if movement was successful

@@ -63,8 +63,11 @@ SUBSYSTEM_DEF(atoms)
 		testing("Late initialized [length(late_loaders)] atoms")
 		late_loaders.Cut()
 
-	for(var/queued_deletion in queued_deletions)
-		qdel(queued_deletion)
+	// These are weakrefs, so qdel'ing the entry itself would only kill the weakref and leave the atom behind.
+	for(var/datum/weakref/queued_deletion as anything in queued_deletions)
+		var/atom/doomed = queued_deletion.resolve()
+		if(doomed)
+			qdel(doomed)
 
 	testing("[length(queued_deletions)] atoms were queued for deletion.")
 	queued_deletions.Cut()

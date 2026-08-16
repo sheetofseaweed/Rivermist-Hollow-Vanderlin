@@ -67,5 +67,8 @@
 	buckled_mob.pixel_x = buckled_mob.get_standard_pixel_x_offset()
 	buckled_mob.pixel_y = buckled_mob.get_standard_pixel_y_offset()
 	buckled_mob.layer = initial(buckled_mob.layer)
+	var/datum/component/kidnap_captivity/captivity = buckled_mob.GetComponent(/datum/component/kidnap_captivity)
+	if(captivity?.is_physical_anchor(src))
+		captivity.end_captivity()
 	buckled_mob.grant_kidnap_release_grace()
 	cut_overlay(nest_overlay)

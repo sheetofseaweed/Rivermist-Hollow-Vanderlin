@@ -326,6 +326,10 @@
 	if(!nest.buckle_mob(victim, TRUE, check_loc = FALSE))
 		victim.clear_kidnap_reservation(src)
 		return FALSE
+	if(!victim.kidnap_at_physical_anchor(/datum/defeat_captivity_profile/shared/tentacle, src, faction, "tentacle_nest", nest))
+		nest.unbuckle_mob(victim, force = TRUE)
+		victim.clear_kidnap_reservation(src)
+		return FALSE
 
 	victim.clear_kidnap_reservation(src)
 	visible_message(

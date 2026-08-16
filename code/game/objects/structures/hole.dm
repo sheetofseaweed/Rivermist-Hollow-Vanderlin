@@ -27,6 +27,8 @@
 /obj/structure/closet/dirthole/Initialize()
 	var/turf/open/floor/dirt/T = loc
 	if(!istype(T))
+		// Still has to run the parent, or we count as an atom that never initialized.
+		. = ..()
 		return INITIALIZE_HINT_QDEL
 	if(T.muddy)
 		if(!(locate(/obj/item/natural/worms) in T))
