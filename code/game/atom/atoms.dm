@@ -338,20 +338,6 @@
 			return TRUE
 	return !density
 
-/atom/proc/make_shiny(_shine = SHINE_REFLECTIVE)
-	if(total_reflection_mask)
-		if(shine != _shine)
-			cut_overlay(total_reflection_mask)
-		else
-			return
-	total_reflection_mask = mutable_appearance('icons/turf/overlays.dmi', "whiteFull", plane = REFLECTIVE_DISPLACEMENT_PLANE)
-	add_overlay(total_reflection_mask)
-	shine = _shine
-
-/atom/proc/make_unshiny()
-	cut_overlay(total_reflection_mask)
-	shine = SHINE_MATTE
-
 /**
  * Ensure a list of atoms/reagents exists inside this atom
  *

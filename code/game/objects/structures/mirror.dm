@@ -27,7 +27,6 @@
 			reflection_matrix = reflection_matrix, \
 			can_reflect = CALLBACK(src, PROC_REF(can_reflect)), \
 			update_signals = list(COMSIG_ATOM_BREAK), \
-			check_reflect_signals = list(SIGNAL_ADDTRAIT(TRAIT_NO_REFLECTION), SIGNAL_REMOVETRAIT(TRAIT_NO_REFLECTION)), \
 		)
 
 /obj/structure/mirror/fancy/Initialize(mapload)
@@ -42,19 +41,14 @@
 			reflection_matrix = reflection_matrix_fancymirror, \
 			can_reflect = CALLBACK(src, PROC_REF(can_reflect)), \
 			update_signals = list(COMSIG_ATOM_BREAK), \
-			check_reflect_signals = list(SIGNAL_ADDTRAIT(TRAIT_NO_REFLECTION), SIGNAL_REMOVETRAIT(TRAIT_NO_REFLECTION)), \
 		)
 /obj/structure/mirror/proc/can_reflect(atom/movable/target)
 	///I'm doing it this way too, because the signal is sent before the broken variable is set to TRUE.
 	if(atom_integrity <= integrity_failure * max_integrity)
 		return FALSE
-	if(obj_broken || !isliving(target) || HAS_TRAIT(target, TRAIT_NO_REFLECTION))
+	if(obj_broken)
 		return FALSE
-	if(ishuman(target))
-		var/mob/living/carbon/human/h_target = target
-		if(!h_target.has_reflection)
-			return FALSE
-	return TRUE
+	return target.casts_reflection()
 
 /obj/structure/mirror/attack_hand(mob/user)
 	. = ..()

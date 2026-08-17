@@ -403,7 +403,8 @@
 	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner), SUCCUBUS_CORRUPTION_MARRIED, "a married partner must receive the oath-corruption multiplier")
 	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner, TRUE), SUCCUBUS_CORRUPTION_VIRGIN, "virgin corruption must supersede the smaller marriage multiplier")
 
-	partner.mind.assigned_role = allocate(/datum/job/acolyte)
+	// The shared job, not an allocated one - the mind outlives the test and would strand a ref to a deleted job.
+	partner.mind.assigned_role = SSjob.GetJobType(/datum/job/acolyte)
 	TEST_ASSERT_EQUAL(antag.get_corruption_multiplier(partner, TRUE), SUCCUBUS_CORRUPTION_CLERGY, "special corruption multipliers must use clergy as the highest value instead of compounding")
 
 /datum/unit_test/succubus_essence_cap/Run()

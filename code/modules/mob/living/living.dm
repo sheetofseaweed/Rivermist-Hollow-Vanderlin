@@ -24,8 +24,12 @@
 	GLOB.mob_living_list += src
 	AddElement(/datum/element/movetype_handler)
 	init_faith()
-	if(has_reflection)
-		create_reflection()
+	RegisterSignals(src, list(
+		SIGNAL_ADDTRAIT(TRAIT_NO_REFLECTION),
+		SIGNAL_REMOVETRAIT(TRAIT_NO_REFLECTION),
+		COMSIG_LIVING_POST_UPDATE_TRANSFORM,
+	), PROC_REF(on_reflection_dirtied))
+	update_reflection()
 	if(fovangle)
 		LoadComponent(/datum/component/field_of_vision, FOV_90_DEGREES, get_fov_angle(FOV_90_DEGREES))
 		update_fov_angles()
@@ -37,6 +41,7 @@
 			AddComponent(/datum/component/arousal)
 
 /mob/living/Destroy()
+	clear_reflection()
 	clear_hostile_grab_resist_timer()
 	clear_hostile_grab_horny_hostility_timer()
 	QDEL_NULL(defeat_recovery_channel)
@@ -72,44 +77,8 @@
 	. = ..()
 	update_reflection()
 
-/mob/living/proc/create_reflection()
-	//Add custom reflection image
-	reflective_icon = copy_appearance_filter_overlays(appearance)
-	if(render_target)
-		reflective_icon.render_source = render_target
-	reflective_icon.plane = REFLECTION_PLANE
-	reflective_icon.pixel_y = -32
-	reflective_icon.transform = matrix().Scale(1, -1)
-	reflective_icon.vis_flags = VIS_INHERIT_DIR
-	//filters
-	var/icon/I = icon('icons/turf/overlays.dmi', "whiteOverlay")
-	I.Flip(NORTH)
-	reflective_icon.filters += filter(type = "alpha", icon = I)
-	add_overlay(reflective_icon)
-
 /mob/living/carbon/human/dummy
 	has_reflection = FALSE
-
-/mob/living/carbon/human/dummy/update_reflection()
-	return
-
-/mob/living/proc/update_reflection()
-	if(!has_reflection)
-		return
-	if(!reflective_icon)
-		create_reflection()
-	cut_overlay(reflective_icon)
-	reflective_icon = copy_appearance_filter_overlays(appearance)
-	if(render_target)
-		reflective_icon.render_source = render_target
-	reflective_icon.plane = REFLECTION_PLANE
-	reflective_icon.pixel_y = -32
-	reflective_icon.transform = matrix().Scale(1, -1)
-	reflective_icon.vis_flags = VIS_INHERIT_DIR
-	var/icon/I = icon('icons/turf/overlays.dmi', "whiteOverlay")
-	I.Flip(NORTH)
-	reflective_icon.filters += filter(type = "alpha", icon = I)
-	add_overlay(reflective_icon)
 
 /mob/living/onZImpact(turf/impacted_turf, levels, impact_flags = NONE)
 	if(!isgroundlessturf(impacted_turf))

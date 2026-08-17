@@ -31,6 +31,10 @@
 	///List of signals registered on reflected atoms to update their reflections.
 	var/list/check_reflect_signals
 	var/mutable_appearance/copied_appearance
+	/// How far away we still draw a reflection. Past this it has already faded to nothing.
+	var/reflection_range = 2
+	/// How long a reflection takes to fade in or out, so walking up to a mirror eases rather than snaps.
+	var/reflection_fade_time = 0.3 SECONDS
 
 /**
  * Init Args
@@ -51,7 +55,8 @@
 		COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON = PROC_REF(on_movable_entered_or_initialized),
 		COMSIG_ATOM_EXITED = PROC_REF(on_movable_exited)
 	)
-	AddComponent(/datum/component/connect_range, parent, connections, 1, works_in_containers = FALSE)
+	// One tile wider than we draw, so a reflection is always already invisible before we stop tracking it.
+	AddComponent(/datum/component/connect_range, parent, connections, reflection_range + 1, works_in_containers = FALSE)
 	// Always supplied to check_reflect_signals
 	var/list/default_can_reflect_signals = list(
 		COMSIG_ATOM_POST_DIR_CHANGE,
@@ -59,6 +64,7 @@
 		COMSIG_LIVING_APPLY_OVERLAY,
 		COMSIG_LIVING_REMOVE_OVERLAY,
 		COMSIG_LIVING_POST_UPDATE_TRANSFORM,
+		COMSIG_LIVING_REFLECTION_CHANGED,
 	)
 	// Always supplied to update_signals
 	var/list/default_update_signals = list(
@@ -111,20 +117,35 @@
 	// clean slate
 	for(var/atom/movable/tracked in reflected_movables)
 		nuke_reflection(tracked)
-	// find anything adjacent, if we can't see it that's fine (we check view later)
-	for(var/atom/movable/target in range(1, source))
+	// find anything nearby, if we can't see it that's fine (we check view later)
+	for(var/atom/movable/target in range(reflection_range + 1, source))
 		track_reflection(target)
 
 ///Checks if the target movable can be reflected or not.
 /datum/component/reflection/proc/check_can_reflect(atom/movable/target)
-	if(target == parent || !(target in view(1, parent)))
-		return FALSE
+	return get_reflection_alpha(target) > 0
+
+/**
+ * How strongly the target shows up in the glass right now, 0 for not at all.
+ *
+ * Standing on the mirror's own tile or directly in front is full strength; further out inside the
+ * reflected arc dims with distance so the reflection eases in as you approach instead of popping.
+ */
+/datum/component/reflection/proc/get_reflection_alpha(atom/movable/target)
 	var/atom/movable/mov_parent = parent
-	if(target.loc != mov_parent.loc && get_dir(mov_parent, target) != reflected_dir)
-		return FALSE
+	if(target == parent || !(target in view(reflection_range, parent)))
+		return 0
 	if(can_reflect && !can_reflect.Invoke(target))
-		return FALSE
-	return TRUE
+		return 0
+	if(target.loc == mov_parent.loc)
+		return 255
+	// Bitwise, so approaching diagonally counts as being in front rather than blinking on at the last step.
+	if(!(get_dir(mov_parent, target) & reflected_dir))
+		return 0
+	var/distance = get_dist(mov_parent, target)
+	if(distance <= 1)
+		return 255
+	return round(255 * (1 - ((distance - 1) / reflection_range)))
 
 ///Called when a movable enters a turf within the connected range
 /datum/component/reflection/proc/on_movable_entered_or_initialized(atom/movable/source, atom/movable/arrived)
@@ -135,9 +156,9 @@
 	// this stuff really shouldn't be tracked
 	if(QDELETED(target) || target == parent || target.loc == parent)
 		return
-	// i don't really want to do this but there's a bunch of abstract effects we should ignore...
-	// we can revisit this later when we actually have an object that wants to reflect this stuff
-	if(iseffect(target))
+	// Living is the only type casts_reflection() can ever be true for, and unlike the trait it can't
+	// change under us. Widen this if you widen that, but never track things we could never draw.
+	if(!isliving(target))
 		return
 	if(!LAZYFIND(reflected_movables, target)) // not lazyaccess - value may be null
 		LAZYSET(reflected_movables, target, null)
@@ -214,18 +235,32 @@
 	SIGNAL_HANDLER
 
 	var/obj/effect/abstract/reflection = LAZYACCESS(reflected_movables, source)
-	if(!check_can_reflect(source))
-		// temporarily hide any reflection
-		reflection?.vis_flags |= VIS_HIDE
+	var/target_alpha = get_reflection_alpha(source)
+	if(!target_alpha)
+		if(reflection)
+			animate(reflection, alpha = 0, time = reflection_fade_time)
 		return
 	// Lazy init the reflection
 	if(!reflection)
 		// If the loc is null, only a black (or grey depending on alpha) silhouette of the target will be rendered
 		// Just putting this information here in case you want something like that in the future.
 		reflection = new(parent)
+		// Born invisible so the first frame is the start of a fade, not a flash.
+		reflection.alpha = 0
 		reflection_holder.vis_contents += reflection
 		LAZYSET(reflected_movables, source, reflection)
 
-	// technically redundant (...because copying appearance copies vis flags), but good to be explicit
-	reflection.vis_flags &= ~VIS_HIDE
+	// Copying the appearance overwrites alpha, so carry the fade across appearance changes ourselves.
+	var/faded_to = reflection.alpha
 	copy_appearance_to_reflection(reflection, source)
+	reflection.alpha = faded_to
+	slide_reflection_to(reflection, source)
+	animate(reflection, alpha = target_alpha, time = reflection_fade_time)
+
+/// Tracks the target across the glass, so they drift in from the edge rather than being pinned dead centre.
+/datum/component/reflection/proc/slide_reflection_to(atom/movable/reflection, atom/movable/target)
+	var/atom/movable/mov_parent = parent
+	if(reflected_dir & (NORTH|SOUTH))
+		reflection.pixel_x += (target.x - mov_parent.x) * world.icon_size
+	else
+		reflection.pixel_y += (target.y - mov_parent.y) * world.icon_size

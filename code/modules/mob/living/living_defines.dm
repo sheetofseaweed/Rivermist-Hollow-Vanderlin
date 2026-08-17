@@ -269,10 +269,11 @@
 	///are we skinned?
 	var/skinned = FALSE
 
-	///our reflection child
+	///half of the reflection gate, flipped directly by things like vampirism. See casts_reflection().
 	var/has_reflection = TRUE
 
-	var/mutable_appearance/reflective_icon
+	///the stencil backend's flipped copy of us, null whenever we cast no reflection
+	var/obj/effect/overlay/reflection/reflective_icon
 
 	var/list/mob_offsets = list()
 

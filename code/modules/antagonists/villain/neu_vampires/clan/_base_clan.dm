@@ -126,7 +126,7 @@ And it also helps for the character set panel
 
 		// Apply vampire-specific changes
 		H.has_reflection = FALSE
-		H.cut_overlay(H.reflective_icon)
+		H.update_reflection()
 		H.mob_biotypes |= MOB_UNDEAD
 		H.physiology?.bleed_mod /= 2
 
@@ -291,7 +291,6 @@ And it also helps for the character set panel
 		qdel(disguise_comp)
 
 	vampire.has_reflection = TRUE
-	vampire.create_reflection()
 	vampire.update_reflection()
 	vampire.physiology?.bleed_mod *= 2
 	vampire.mob_biotypes &= ~MOB_UNDEAD

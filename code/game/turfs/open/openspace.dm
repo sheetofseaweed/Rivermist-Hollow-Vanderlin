@@ -1,4 +1,5 @@
 GLOBAL_DATUM_INIT(openspace_backdrop_one_for_all, /atom/movable/openspace_backdrop, new)
+GLOBAL_DATUM_INIT(openspace_reflection_dimmer_one_for_all, /atom/movable/openspace_reflection_dimmer, new)
 
 /atom/movable/openspace_backdrop
 	name = "openspace_backdrop"
@@ -6,6 +7,25 @@ GLOBAL_DATUM_INIT(openspace_backdrop_one_for_all, /atom/movable/openspace_backdr
 	icon_state = "grey"
 	anchored = TRUE
 	plane = OPENSPACE_BACKDROP_PLANE
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	vis_flags = VIS_INHERIT_ID
+
+/**
+ * The backdrop above dims a hole by multiplying grey over it, but it lives on OPENSPACE_BACKDROP_PLANE,
+ * which composites below REFLECTION_PLANE - so it can darken the level below without ever touching the
+ * reflections cast down there, leaving them brighter than the mobs casting them. Openspace turfs carry no
+ * colour of their own to inherit either, so nothing else dims them. This does the same multiply, with the
+ * same grey, on the reflection plane itself and only over the hole's own tile.
+ */
+/atom/movable/openspace_reflection_dimmer
+	name = "openspace_reflection_dimmer"
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "grey"
+	anchored = TRUE
+	plane = REFLECTION_PLANE
+	// Above any reflection appearance, which carry the layer of the mob that cast them.
+	layer = OPENSPACE_LAYER
+	blend_mode = BLEND_MULTIPLY
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	vis_flags = VIS_INHERIT_ID
 
@@ -28,6 +48,7 @@ GLOBAL_DATUM_INIT(openspace_backdrop_one_for_all, /atom/movable/openspace_backdr
 /turf/open/openspace/Initialize() // handle plane and layer here so that they don't cover other obs/turfs in Dream Maker
 	. = ..()
 	vis_contents += GLOB.openspace_backdrop_one_for_all //Special grey square for projecting backdrop darkness filter on it.
+	vis_contents += GLOB.openspace_reflection_dimmer_one_for_all //Same darkness, but on the plane reflections escape to.
 	return INITIALIZE_HINT_LATELOAD
 
 /turf/open/openspace/LateInitialize()

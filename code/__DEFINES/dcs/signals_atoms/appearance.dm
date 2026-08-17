@@ -26,3 +26,5 @@
 #define COMSIG_LIVING_APPLY_OVERLAY	"living_apply_overlay"		//from /mob/living/apply_overlay(cache_index) : (cache_index)
 #define COMSIG_LIVING_REMOVE_OVERLAY "living_remove_overlay"	//from /mob/living/remove_overlay(cache_index) : (cache_index)
 #define COMSIG_LIVING_POST_UPDATE_TRANSFORM "living_post_update_transform" ///from base of mob/update_transform()
+///from /mob/living/update_reflection(): whether we still cast one has been recalculated
+#define COMSIG_LIVING_REFLECTION_CHANGED "living_reflection_changed"
