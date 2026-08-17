@@ -39,11 +39,11 @@
 	L.remove_chem_effect(CE_STABLE, "[type]")
 
 /datum/reagent/medicine/atropine/on_mob_life(mob/living/carbon/affected_mob, efficiency)
-	if(affected_mob.health <= affected_mob.crit_threshold)
-		affected_mob.adjustToxLoss(-2 * REM * efficiency , FALSE)
-		affected_mob.adjustBruteLoss(-2* REM * efficiency, FALSE)
-		affected_mob.adjustFireLoss(-2 * REM * efficiency, FALSE)
-		affected_mob.adjustOxyLoss(-5 * REM * efficiency, FALSE)
+	if(affected_mob.health <= 35)
+		affected_mob.adjustToxLoss(-5 * REM * efficiency , FALSE)
+		affected_mob.adjustBruteLoss(-15* REM * efficiency, FALSE)
+		affected_mob.adjustFireLoss(-15 * REM * efficiency, FALSE)
+		affected_mob.adjustOxyLoss(-15 * REM * efficiency, FALSE)
 		. = TRUE
 	if(prob(10))
 		affected_mob.set_dizzy(10 SECONDS * efficiency)
@@ -56,3 +56,45 @@
 	affected_mob.set_dizzy(2 SECONDS * REM)
 	affected_mob.adjust_jitter(2 SECONDS * REM)
 	..()
+
+/datum/reagent/medicine/charcoal
+	name = "Charcoal"
+	description = "Heals mild toxin damage as well as slowly removing any other chemicals the patient has in their bloodstream."
+	reagent_state = LIQUID
+	taste_description = "ash"
+	color = "#000000"
+	random_reagent_color = FALSE
+	metabolization_rate = 0.50 * REAGENTS_METABOLISM
+
+/datum/reagent/medicine/charcoal/on_mob_life(mob/living/affected_mob, efficiency)
+	. = ..()
+	affected_mob.adjustToxLoss(-1 * REM, 0)
+	for(var/datum/reagent/R in affected_mob.reagents.reagent_list)
+		if(R != src)
+			affected_mob.reagents.remove_reagent(R.type,0.75)
+
+/datum/reagent/medicine/pregplus
+	name = "PregPlus"
+	description = "A special substance that makes your eggs work in a frenzy"
+	reagent_state = LIQUID
+	taste_description = "lime"
+	color = "#914127"
+	random_reagent_color = FALSE
+	metabolization_rate = 0.01
+
+/datum/reagent/medicine/vertplus
+	name = "VertPlus"
+	description = "A special substance that makes your sperm be insanely fertile"
+	reagent_state = LIQUID
+	taste_description = "Thick orange"
+	color = "#b94d0c"
+	random_reagent_color = FALSE
+	metabolization_rate = 0.05
+	var/vitilty_factor = 1
+
+/datum/reagent/medicine/vertplus/on_mob_metabolize(mob/living/M)
+	. = ..()
+	vitilty_factor = 100
+/datum/reagent/medicine/vertplus/on_mob_end_metabolize(mob/living/M)
+	. = ..()
+	vitilty_factor = 1

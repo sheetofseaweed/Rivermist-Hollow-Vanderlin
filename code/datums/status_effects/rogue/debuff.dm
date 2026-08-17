@@ -602,3 +602,8 @@
 	name = "Cursed"
 	desc = "Necra has punished me by my blasphemous deeds with terribly bad luck."
 	icon_state = "debuff"
+
+/datum/status_effect/debuff/dumb
+	id = "dumb"
+	effectedstats = list(STAT_INTELLIGENCE = -20)
+	duration = 5 MINUTES
