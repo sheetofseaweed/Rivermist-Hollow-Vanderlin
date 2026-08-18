@@ -23,12 +23,30 @@
 	grid_width = 32
 	dropshrink = 0.9
 	var/obj/item/to_grind
+	/// Number of herbs represented by the current extract mixture.
+	var/herbal_batch_count = 0
+	/// Therapeutic tags contributed by the herbs in the current mixture.
+	var/list/herbal_support_tags
+	/// Maps each extracted reagent type to the tags which can support it.
+	var/list/herbal_reagent_tags
+	/// Optional essence consumed to stabilize the next concentration.
+	var/datum/thaumaturgical_essence/herbal_catalyst
+	/// Prevents reagent callbacks from clearing batch data mid-concentration.
+	var/herbal_processing = FALSE
 
 /obj/item/reagent_containers/glass/mortar/Destroy()
 	if(!QDELETED(to_grind))
 		to_grind.forceMove(get_turf(src))
 	to_grind = null
+	herbal_support_tags = null
+	herbal_reagent_tags = null
+	herbal_catalyst = null
 	return ..()
+
+/obj/item/reagent_containers/glass/mortar/on_reagent_change(changetype)
+	. = ..()
+	if(!herbal_processing && !reagents.total_volume)
+		reset_herbal_batch()
 
 /obj/item/reagent_containers/glass/mortar/attack_hand_secondary(mob/user, list/modifiers)
 	if(!to_grind)
@@ -49,6 +67,9 @@
 	if(istype(weapon, /obj/item/pestle))
 		if(!to_grind)
 			to_chat(user, span_warning("There's nothing to grind."))
+			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+		if(istype(to_grind, /obj/item/alch/herb))
+			grind_herb(user)
 			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 		if((!to_grind.grind_results && !to_grind.juice_results))
 			to_chat(user, span_warning("I cannot juice this ingredient."))
@@ -79,6 +100,9 @@
 /obj/item/reagent_containers/glass/mortar/attackby(obj/item/I, mob/living/carbon/human/user, list/modifiers)
 	if(istype(I,/obj/item/pestle))
 		if(!to_grind)
+			if(try_concentrate_herbs(user))
+				user.changeNext_move(CLICK_CD_FAST)
+				return TRUE
 			if(user.try_recipes(src, I, user))
 				user.changeNext_move(CLICK_CD_FAST)
 				return TRUE
@@ -122,6 +146,10 @@
 			if(user.mind)
 				user.adjust_experience(/datum/attribute/skill/craft/alchemy, GET_MOB_ATTRIBUTE_VALUE(user, STAT_INTELLIGENCE) * user.get_learning_boon(/datum/attribute/skill/craft/alchemy), FALSE)
 		return
+
+	if(istype(I, /obj/item/essence_vial))
+		try_add_herbal_catalyst(I, user)
+		return TRUE
 
 	if(to_grind)
 		to_chat(user, span_warning("[src] is full!"))

@@ -74,6 +74,7 @@
 	var/total_freshness = 0
 	var/ingredient_count = 0
 	var/highest_food_quality = 0
+	var/highest_herbal_quality = 0
 	var/highest_input_reagent_quality = 0
 	var/total_reagent_volume = 0
 
@@ -94,6 +95,10 @@
 						total_reagent_volume += R.volume
 						highest_input_reagent_quality = max(highest_input_reagent_quality, R.recipe_quality)
 
+	// Dried herbs retain their existing recipe behavior while contributing better material quality.
+	for(var/obj/item/alch/herb/herb in removing_items)
+		highest_herbal_quality = max(highest_herbal_quality, herb.herbal_preparation_quality)
+
 	// Check reagent qualities already in the crafter container (like the water)
 	if(crafter.reagents && crafter.reagents.reagent_list)
 		for(var/datum/reagent/R in crafter.reagents.reagent_list)
@@ -110,7 +115,7 @@
 	// Use the quality calculator to determine final quality
 	var/datum/quality_calculator/cooking/cook_calc = new(
 		base_qual = 0,
-		mat_qual = max(highest_food_quality, highest_input_reagent_quality), // Use the higher of food or reagent quality
+		mat_qual = max(highest_food_quality, highest_input_reagent_quality, highest_herbal_quality), // Use the best prepared material
 		skill_qual = cooking_skill,
 		perf_qual = 0,
 		diff_mod = 0,
