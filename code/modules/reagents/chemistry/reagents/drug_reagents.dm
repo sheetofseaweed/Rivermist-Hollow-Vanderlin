@@ -86,3 +86,73 @@
 	M.adjustOxyLoss(1.1*REM, 0)
 	..()
 	. = 1
+
+/datum/reagent/drug/skum
+	name = "Skum"
+	description = "A mixture of ozium and pure moon dust, a highly addictive and rewarding drug"
+	color = "#878178"
+	taste_description = "Bliss"
+	overdose_threshold = 10
+	metabolization_rate = 0.2
+
+/datum/reagent/drug/skum/on_mob_life(mob/living/carbon/M, efficiency)
+	. = ..()
+	M.set_drugginess(90 SECONDS * efficiency)
+	if(prob(5))
+		if(M.gender == FEMALE)
+			M.emote(pick("giggle", "twitch_s"))
+		else
+			M.emote(pick("chuckle", "twitch_s"))
+
+/datum/reagent/drug/skum/on_mob_metabolize(mob/living/M)
+	..()
+	M.set_drugginess(90 SECONDS)
+	M.apply_status_effect(/datum/status_effect/buff/skum)
+	M.overlay_fullscreen("weedsm", /atom/movable/screen/fullscreen/weedsm)
+
+/datum/reagent/drug/skum/on_mob_end_metabolize(mob/living/M)
+	M.set_drugginess(0)
+	M.clear_fullscreen("weedsm")
+	M.remove_status_effect(/datum/status_effect/buff/skum)
+
+/datum/reagent/drug/skum/overdose_process(mob/living/M)
+	M.adjustOrganLoss(ORGAN_SLOT_HEART,0.25*REM, 0)
+	. = ..()
+
+/datum/reagent/drug/skum/overdose_start(mob/living/M)
+	M.playsound_local(get_turf(M), 'sound/misc/heroin_rush.ogg', 100, FALSE)
+	M.visible_message(span_warning("Blood runs from [M]'s nose."))
+
+/datum/reagent/drug/bimb
+	name = "Bimb"
+	description = "A light pink substance that turns you into an incredibly dumb creature"
+	color = "#f594ef"
+	taste_description = "Dumb-pink"
+	overdose_threshold = 25
+	metabolization_rate = 0.1
+
+/datum/reagent/drug/bimb/on_mob_metabolize(mob/living/M)
+	. = ..()
+	M.apply_status_effect(/datum/status_effect/debuff/dumb)
+
+/datum/reagent/drug/bimb/on_mob_end_metabolize(mob/living/M)
+	. = ..()
+	M.remove_status_effect(/datum/status_effect/debuff/dumb)
+
+/datum/reagent/drug/madness
+	name = "Madness"
+	description = "A mixture of mushrooms and an unknown liquid"
+	color = "#9a1e54"
+	taste_description = "Mushroom"
+	metabolization_rate = 0.5
+	var/hallucination_prob = 25
+	var/atom/movable/screen/fullscreen/maniac/hallucinations
+
+/datum/reagent/drug/madness/on_mob_metabolize(mob/living/M)
+	. = ..()
+	hallucinations = M.overlay_fullscreen("maniac", /atom/movable/screen/fullscreen/maniac)
+
+/datum/reagent/drug/madness/on_mob_end_metabolize(mob/living/M)
+	. = ..()
+	hallucinations = null
+

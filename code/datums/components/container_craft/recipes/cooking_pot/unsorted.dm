@@ -31,6 +31,24 @@
 	var/remaining_water = crafter.reagents.get_reagent_amount(/datum/reagent/water) - CEILING(crafter.reagents.get_reagent_amount(/datum/reagent/water) * water_conversion, 1)
 	crafter.reagents.add_reagent(/datum/reagent/water/spicy, remaining_water)
 
+/datum/container_craft/cooking/drugs/skum
+	name = "Skum"
+	created_reagent = /datum/reagent/drug/skum
+	requirements = list(
+		/datum/reagent/ozium = 1,
+		/datum/reagent/moondust_purest = 1
+	)
+	max_optionals = 0
+	finished_smell = /datum/pollutant/food/druqks
+	crafting_time = 50 SECONDS
+	pollute_amount = 100
+	water_conversion = 0.45
+
+/datum/container_craft/cooking/drugs/skum/after_craft(atom/created_output, obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)
+	. = ..()
+	var/remaining_water = crafter.reagents.get_reagent_amount(/datum/reagent/water) - CEILING(crafter.reagents.get_reagent_amount(/datum/reagent/water) * water_conversion, 1)
+	crafter.reagents.add_reagent(/datum/reagent/water/spicy, remaining_water)
+
 /datum/container_craft/cooking/drugs/ozium
 	name = "Ozium"
 	created_reagent = /datum/reagent/ozium
