@@ -67,15 +67,25 @@
 	qdel(src)
 
 /obj/item/reagent_containers/pill/atropine
-	name = "CRITE pill"
-	desc = "An effective pill for people in serious condition."
+	name = "Nightshade Mercy pill"
+	desc = "A measured rescue dose for the gravely wounded."
 	icon_state = "pinkb"
-
-	list_reagents = list(/datum/reagent/medicine/atropine = 20)
+	list_reagents = list(/datum/reagent/medicine/atropine = 5)
 
 /obj/item/reagent_containers/pill/charcoal
-	name = "CHARCOAL pill"
-	desc = "A green pill for the rapid elimination of substances from the body"
-
+	name = "Black Draught tablet"
+	desc = "A pressed charcoal tablet that indiscriminately purges substances from the body."
 	icon_state = "pillg"
 	list_reagents = list(/datum/reagent/medicine/charcoal = 10)
+
+/obj/item/reagent_containers/pill/devour
+	name = "DEVOUR pill"
+	desc = "Devours thaumiel blood to forcibly induce the triggering of chimeric organs."
+	icon_state = "pillg"
+	list_reagents = list(/datum/reagent/devour = 10)
+
+/obj/item/reagent_containers/pill/sate
+	name = "SATE pill"
+	desc = "Prevents the loss of thaumiel blood."
+	icon_state = "pinkb"
+	list_reagents = list(/datum/reagent/sate = 50)

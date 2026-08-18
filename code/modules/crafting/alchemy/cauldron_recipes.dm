@@ -6,6 +6,7 @@
 	var/list/output_reagents = list()
 	var/list/output_items = list()
 	var/list/required_essences = list()
+	var/skill_required = SKILL_RANK_NONE
 
 /datum/alch_cauldron_recipe/proc/matches_essences(list/available_essences)
 	for(var/essence_type in required_essences)
@@ -262,3 +263,25 @@ Keep them reasonable to make
 		/datum/thaumaturgical_essence/light = 3,
 		/datum/thaumaturgical_essence/water = 3,
 	)
+
+/datum/alch_cauldron_recipe/yondallas_quickening
+	recipe_name = "Pregnancy Potion"
+	smells_like = "fresh grain and spring rain"
+	output_reagents = list(/datum/reagent/medicine/pregplus = 10)
+	required_essences = list(
+		/datum/thaumaturgical_essence/life = 4,
+		/datum/thaumaturgical_essence/cycle = 3,
+		/datum/thaumaturgical_essence/water = 2,
+	)
+	skill_required = SKILL_RANK_JOURNEYMAN
+
+/datum/alch_cauldron_recipe/lathanders_seed
+	recipe_name = "Vertil"
+	smells_like = "honeyed citrus and warm dawn air"
+	output_reagents = list(/datum/reagent/medicine/vertplus = 10)
+	required_essences = list(
+		/datum/thaumaturgical_essence/life = 4,
+		/datum/thaumaturgical_essence/energia = 2,
+		/datum/thaumaturgical_essence/motion = 2,
+	)
+	skill_required = SKILL_RANK_JOURNEYMAN

@@ -1054,7 +1054,7 @@
 
 /datum/status_effect/buff/skum
 	id = "skum"
-	alert_type = /atom/movable/screen/alert/status_effect/buff/druqks
+	alert_type = /atom/movable/screen/alert/status_effect/buff/moonlily
 	effectedstats = list(STAT_INTELLIGENCE = -4, STAT_PERCEPTION = 2, STAT_ENDURANCE = 2)
 	duration = 2 MINUTES
 
@@ -1071,3 +1071,28 @@
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		C.remove_stress(/datum/stress_event/ozium)
+
+/atom/movable/screen/alert/status_effect/buff/moonlily
+	name = "Moonlily"
+	desc = span_nicegreen("Pain feels distant beneath a cold, moonlit bliss.")
+	icon_state = "acid"
+
+/datum/status_effect/buff/yondallas_quickening
+	id = "yondallas_quickening"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/yondallas_quickening
+	duration = -1
+
+/atom/movable/screen/alert/status_effect/buff/yondallas_quickening
+	name = "Yondalla's Quickening"
+	desc = "The Nurturing Matriarch's fertile blessing runs strongly within me."
+	icon_state = "buff"
+
+/datum/status_effect/buff/lathanders_seed
+	id = "lathanders_seed"
+	alert_type = /atom/movable/screen/alert/status_effect/buff/lathanders_seed
+	duration = -1
+
+/atom/movable/screen/alert/status_effect/buff/lathanders_seed
+	name = "Lathander's Seed"
+	desc = "The Morninglord's vitality burns warmly within me."
+	icon_state = "buff"

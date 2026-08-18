@@ -125,7 +125,7 @@
 			return testes.owner
 	return father
 
-/datum/reagent/consumable/cum/on_transfer(atom/A, method, trans_volume, mob/transfered_by = null,)
+/datum/reagent/consumable/cum/on_transfer(atom/A, method, trans_volume, mob/transfered_by = null)
 	. = ..()
 	if(istype(A, /obj/item/organ/genitals/filling_organ) && virile)
 		var/obj/item/organ/genitals/filling_organ/forgan = A
@@ -135,7 +135,9 @@
 			return
 		var/allow_embryo_pregnancy = triggers_embryo_pregnancy || parent_triggers_oviposition_embryo_pregnancy(father)
 		if(forgan.can_attempt_impregnation(allow_embryo_pregnancy))
-			if(prob(20 * vitilty_factor) || forgan.owner.has_reagent(/datum/reagent/medicine/pregplus) || father.has_reagent(/datum/reagent/medicine/vertplus))
+			var/recipient_is_quickened = forgan.owner?.has_reagent(/datum/reagent/medicine/pregplus)
+			var/donor_is_quickened = father?.has_reagent(/datum/reagent/medicine/vertplus)
+			if(prob(20 * vitilty_factor) || recipient_is_quickened || donor_is_quickened)
 				var/list/father_features = get_parent_features_from_transfer(father)
 				var/father_name = get_parent_name_from_transfer(father)
 				var/embryo_hatch_result_type = get_parent_hatch_result_type_from_transfer(father)

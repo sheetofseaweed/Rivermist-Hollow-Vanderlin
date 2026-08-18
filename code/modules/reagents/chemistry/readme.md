@@ -211,6 +211,14 @@ Recipes are simple datums that contain a list of required reagents and a result.
 			This is the required temperature.
 ```
 
+## Heated alchemical refinements
+
+Alchemy that needs physical ingredients, a skill requirement, and deliberate heating should use a subtype of
+`/datum/container_craft/cooking/alchemical_refinement`. These recipes run through the normal cooking-pot container
+craft flow, consume their exact `reagent_requirements` and item `requirements`, and produce a fixed `created_volume`.
+Set `minimum_skill` on the recipe; the inherited `used_skill` is alchemy. Ordinary cooking-pot recipes keep their
+existing water-conversion behavior.
+
 # About the Tools:
 By default, all atom have a reagents var - but its empty. if you want to use an object for the chem. system you'll need to add something like this in its new proc:
 ```

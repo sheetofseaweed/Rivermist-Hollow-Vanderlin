@@ -88,48 +88,63 @@
 	. = 1
 
 /datum/reagent/drug/skum
-	name = "Skum"
-	description = "A mixture of ozium and pure moon dust, a highly addictive and rewarding drug"
+	name = "Moonlily"
+	description = "A moon-pale refinement of ozium and pure moondust. It grants blissful endurance and freedom from pain at a steep cost."
 	color = "#878178"
-	taste_description = "Bliss"
+	taste_description = "cold bliss"
 	overdose_threshold = 10
+	addiction_threshold = 6
 	metabolization_rate = 0.2
 
 /datum/reagent/drug/skum/on_mob_life(mob/living/carbon/M, efficiency)
-	. = ..()
+	SEND_SIGNAL(M, COMSIG_DRUG_INDULGE)
+	if(M.has_quirk(/datum/quirk/vice/junkie))
+		M.sate_addiction(/datum/quirk/vice/junkie)
 	M.set_drugginess(90 SECONDS * efficiency)
 	if(prob(5))
 		if(M.gender == FEMALE)
 			M.emote(pick("giggle", "twitch_s"))
 		else
 			M.emote(pick("chuckle", "twitch_s"))
+	. = ..()
 
 /datum/reagent/drug/skum/on_mob_metabolize(mob/living/M)
-	..()
+	. = ..()
 	M.set_drugginess(90 SECONDS)
 	M.apply_status_effect(/datum/status_effect/buff/skum)
 	M.overlay_fullscreen("weedsm", /atom/movable/screen/fullscreen/weedsm)
 
 /datum/reagent/drug/skum/on_mob_end_metabolize(mob/living/M)
-	M.set_drugginess(0)
+	. = ..()
 	M.clear_fullscreen("weedsm")
 	M.remove_status_effect(/datum/status_effect/buff/skum)
 
 /datum/reagent/drug/skum/overdose_process(mob/living/M)
-	M.adjustOrganLoss(ORGAN_SLOT_HEART,0.25*REM, 0)
+	M.adjustOrganLoss(ORGAN_SLOT_HEART, 0.25 * REM, 0)
 	. = ..()
 
 /datum/reagent/drug/skum/overdose_start(mob/living/M)
+	. = ..()
 	M.playsound_local(get_turf(M), 'sound/misc/heroin_rush.ogg', 100, FALSE)
 	M.visible_message(span_warning("Blood runs from [M]'s nose."))
 
 /datum/reagent/drug/bimb
-	name = "Bimb"
-	description = "A light pink substance that turns you into an incredibly dumb creature"
+	name = "Blush"
+	description = "A treacherously sweet pink draught that smothers reason and leaves the drinker profoundly foolish."
 	color = "#f594ef"
-	taste_description = "Dumb-pink"
+	taste_description = "cloying rose and bitter nightshade"
 	overdose_threshold = 25
 	metabolization_rate = 0.1
+
+/datum/reagent/drug/bimb/on_mob_life(mob/living/carbon/M, efficiency)
+	SEND_SIGNAL(M, COMSIG_DRUG_INDULGE)
+	if(M.has_quirk(/datum/quirk/vice/junkie))
+		M.sate_addiction(/datum/quirk/vice/junkie)
+	if(prob(10 * efficiency))
+		M.adjust_confusion(2 SECONDS * efficiency)
+	if(prob(5 * efficiency))
+		M.emote(pick("giggle", "twitch_s"))
+	. = ..()
 
 /datum/reagent/drug/bimb/on_mob_metabolize(mob/living/M)
 	. = ..()
@@ -139,20 +154,48 @@
 	. = ..()
 	M.remove_status_effect(/datum/status_effect/debuff/dumb)
 
+/datum/reagent/drug/bimb/overdose_process(mob/living/carbon/M)
+	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, 0.5 * REM, 0)
+	M.adjust_drowsiness(4 SECONDS)
+	M.adjust_confusion(3 SECONDS)
+	. = ..()
+
 /datum/reagent/drug/madness
-	name = "Madness"
-	description = "A mixture of mushrooms and an unknown liquid"
+	name = "Grave Dream"
+	description = "A wine-dark corpse-cap draught whose visions drag waking minds through terror and delirium."
 	color = "#9a1e54"
-	taste_description = "Mushroom"
+	taste_description = "mushrooms and old graves"
 	metabolization_rate = 0.5
+	overdose_threshold = 15
 	var/hallucination_prob = 25
+	var/next_hallucination = 0
 	var/atom/movable/screen/fullscreen/maniac/hallucinations
 
 /datum/reagent/drug/madness/on_mob_metabolize(mob/living/M)
 	. = ..()
 	hallucinations = M.overlay_fullscreen("maniac", /atom/movable/screen/fullscreen/maniac)
 
+/datum/reagent/drug/madness/on_mob_life(mob/living/carbon/M, efficiency)
+	SEND_SIGNAL(M, COMSIG_DRUG_INDULGE)
+	if(M.has_quirk(/datum/quirk/vice/junkie))
+		M.sate_addiction(/datum/quirk/vice/junkie)
+	M.set_drugginess(60 SECONDS * efficiency)
+	M.set_dizzy(8 SECONDS * efficiency)
+	if(world.time >= next_hallucination && prob(hallucination_prob * efficiency))
+		hallucinations?.jumpscare(M)
+		next_hallucination = world.time + rand(8 SECONDS, 15 SECONDS)
+	. = ..()
+
 /datum/reagent/drug/madness/on_mob_end_metabolize(mob/living/M)
 	. = ..()
+	M.clear_fullscreen("maniac")
 	hallucinations = null
+	next_hallucination = 0
+
+/datum/reagent/drug/madness/overdose_process(mob/living/carbon/M)
+	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, 0.25 * REM, 0)
+	M.adjust_confusion(4 SECONDS)
+	if(prob(10))
+		hallucinations?.jumpscare(M, fade_in = 0.1 SECONDS, duration = 1 SECONDS)
+	. = ..()
 

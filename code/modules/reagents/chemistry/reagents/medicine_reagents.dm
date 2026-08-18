@@ -9,8 +9,8 @@
 	. = ..()
 
 /datum/reagent/medicine/atropine
-	name = "Atropine"
-	description = "If a patient is in critical condition, rapidly heals all damage types as well as regulating oxygen in the body. Excellent for stabilizing wounded patients, and said to neutralize blood-activated internal explosives found amongst clandestine black op agents."
+	name = "Nightshade Mercy"
+	description = "A carefully measured nightshade tincture that steadies failing hearts and breathing. It is a rescue medicine, not a substitute for proper treatment."
 	reagent_state = LIQUID
 	color = "#1D3535" //slightly more blue, like epinephrine
 	random_reagent_color = FALSE
@@ -40,10 +40,11 @@
 
 /datum/reagent/medicine/atropine/on_mob_life(mob/living/carbon/affected_mob, efficiency)
 	if(affected_mob.health <= 35)
-		affected_mob.adjustToxLoss(-5 * REM * efficiency , FALSE)
-		affected_mob.adjustBruteLoss(-15* REM * efficiency, FALSE)
-		affected_mob.adjustFireLoss(-15 * REM * efficiency, FALSE)
-		affected_mob.adjustOxyLoss(-15 * REM * efficiency, FALSE)
+		var/rescue_multiplier = affected_mob.health <= affected_mob.crit_threshold ? 2 : 1
+		affected_mob.adjustToxLoss(-1 * REM * efficiency * rescue_multiplier, FALSE)
+		affected_mob.adjustBruteLoss(-1 * REM * efficiency * rescue_multiplier, FALSE)
+		affected_mob.adjustFireLoss(-1 * REM * efficiency * rescue_multiplier, FALSE)
+		affected_mob.adjustOxyLoss(-4 * REM * efficiency * rescue_multiplier, FALSE)
 		. = TRUE
 	if(prob(10))
 		affected_mob.set_dizzy(10 SECONDS * efficiency)
@@ -58,43 +59,51 @@
 	..()
 
 /datum/reagent/medicine/charcoal
-	name = "Charcoal"
-	description = "Heals mild toxin damage as well as slowly removing any other chemicals the patient has in their bloodstream."
+	name = "Black Draught"
+	description = "A suspension of finely prepared wood charcoal. It eases mild poisoning while indiscriminately drawing other substances from the blood."
 	reagent_state = LIQUID
-	taste_description = "ash"
+	taste_description = "coal"
 	color = "#000000"
 	random_reagent_color = FALSE
 	metabolization_rate = 0.50 * REAGENTS_METABOLISM
 
 /datum/reagent/medicine/charcoal/on_mob_life(mob/living/affected_mob, efficiency)
 	. = ..()
-	affected_mob.adjustToxLoss(-1 * REM, 0)
+	affected_mob.adjustToxLoss(-1 * REM * efficiency, 0)
 	for(var/datum/reagent/R in affected_mob.reagents.reagent_list)
 		if(R != src)
-			affected_mob.reagents.remove_reagent(R.type,0.75)
+			affected_mob.reagents.remove_reagent(R.type, 0.5 * efficiency)
 
 /datum/reagent/medicine/pregplus
-	name = "PregPlus"
-	description = "A special substance that makes your eggs work in a frenzy"
+	name = "Pregnancy Potion"
+	description = "An essence draught invoking the Nurturing Matriarch's fertile blessing for a brief, certain season."
 	reagent_state = LIQUID
-	taste_description = "lime"
+	taste_description = "warm grain and spring water"
 	color = "#914127"
 	random_reagent_color = FALSE
-	metabolization_rate = 0.01
+	metabolization_rate = 0.04 * REAGENTS_METABOLISM
+
+/datum/reagent/medicine/pregplus/on_mob_metabolize(mob/living/M)
+	. = ..()
+	M.apply_status_effect(/datum/status_effect/buff/yondallas_quickening)
+
+/datum/reagent/medicine/pregplus/on_mob_end_metabolize(mob/living/M)
+	. = ..()
+	M.remove_status_effect(/datum/status_effect/buff/yondallas_quickening)
 
 /datum/reagent/medicine/vertplus
-	name = "VertPlus"
-	description = "A special substance that makes your sperm be insanely fertile"
+	name = "Vertil"
+	description = "An essence draught kindled with the Morninglord's vigor, granting a brief season of certain virility."
 	reagent_state = LIQUID
-	taste_description = "Thick orange"
+	taste_description = "honeyed citrus and warm spice"
 	color = "#b94d0c"
 	random_reagent_color = FALSE
-	metabolization_rate = 0.05
-	var/vitilty_factor = 1
+	metabolization_rate = 0.06 * REAGENTS_METABOLISM
 
 /datum/reagent/medicine/vertplus/on_mob_metabolize(mob/living/M)
 	. = ..()
-	vitilty_factor = 100
+	M.apply_status_effect(/datum/status_effect/buff/lathanders_seed)
+
 /datum/reagent/medicine/vertplus/on_mob_end_metabolize(mob/living/M)
 	. = ..()
-	vitilty_factor = 1
+	M.remove_status_effect(/datum/status_effect/buff/lathanders_seed)

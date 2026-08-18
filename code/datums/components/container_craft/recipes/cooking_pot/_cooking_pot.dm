@@ -200,3 +200,34 @@
 		result_amount = CEILING((result_amount * water_conversion), 1)
 	html += "[UNIT_FORM_STRING(result_amount)] of [initial(created_reagent.name)]<br>"
 	return html
+
+/**
+ * A cooking-pot recipe for exact alchemical inputs and a fixed-volume result.
+ * It reuses normal container crafting, heat checks, quality, and experience.
+ */
+/datum/container_craft/cooking/alchemical_refinement
+	abstract_type = /datum/container_craft/cooking/alchemical_refinement
+	category = "Alchemy"
+	craft_verb = "refining "
+	used_skill = /datum/attribute/skill/craft/alchemy
+	required_chem_temp = 300
+	crafting_time = 20 SECONDS
+	pollute_amount = 100
+	wording_choice = "traces of"
+	complete_message = "The refinement settles into a stable draught."
+	var/created_volume = 10
+
+/datum/container_craft/cooking/alchemical_refinement/create_item(obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)
+	var/calculated_quality = calculate_reagent_quality(crafter, initiator, removing_items)
+	var/list/quality_data = list("quality" = calculated_quality)
+	crafter.reagents.add_reagent(created_reagent, created_volume, quality_data)
+	after_craft(null, crafter, initiator, found_optional_requirements, found_optional_wildcards, found_optional_reagents, removing_items)
+
+	var/turf/pot_turf = get_turf(crafter)
+	if(finished_smell)
+		pot_turf?.pollute_turf(finished_smell, pollute_amount)
+	initiator.nobles_seen_servant_work()
+	playsound(pot_turf, "bubbles", 30, TRUE)
+
+/datum/container_craft/cooking/alchemical_refinement/extra_html()
+	return "[UNIT_FORM_STRING(created_volume)] of [initial(created_reagent.name)]<br>"

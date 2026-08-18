@@ -159,6 +159,13 @@
 	output = /obj/item/reagent_containers/food/snacks/bun
 	cooked_smell = /datum/pollutant/food/bun
 
+/datum/container_craft/oven/charcoal
+	name = "Charcoal"
+	requirements = list(/obj/item/grown/log/tree/small = 1)
+	output = /obj/item/ore/coal/charcoal
+	crafting_time = 1 MINUTES
+	complete_message = "The wood finishes roasting into charcoal."
+
 /datum/container_craft/oven/hardtack
 	name = "Hardtack"
 	requirements = list(/obj/item/reagent_containers/food/snacks/foodbase/hardtack_raw = 1)

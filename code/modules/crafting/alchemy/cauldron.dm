@@ -28,7 +28,7 @@
 	chem_splash(loc, 2, list(reagents))
 	playsound(src, pick('sound/foley/water_land1.ogg','sound/foley/water_land2.ogg', 'sound/foley/water_land3.ogg'), 100, FALSE)
 	lastuser = null
-	selected_recipe = null
+	QDEL_NULL(selected_recipe)
 	return ..()
 
 /obj/machinery/light/fueled/cauldron/examine(mob/user)
@@ -80,6 +80,9 @@
 
 	for(var/recipe_path in subtypesof(/datum/alch_cauldron_recipe))
 		var/datum/alch_cauldron_recipe/recipe = new recipe_path
+		if(GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/craft/alchemy) < recipe.skill_required)
+			qdel(recipe)
+			continue
 		recipes[initial(recipe.recipe_name)] = recipe_path
 		qdel(recipe)
 
@@ -89,12 +92,14 @@
 
 	var/recipe_path = recipes[choice]
 	if(!recipe_path)
-		selected_recipe = null
+		QDEL_NULL(selected_recipe)
 		auto_repeat = FALSE
 		to_chat(user, span_info("Recipe cleared."))
 		return
 
+	QDEL_NULL(selected_recipe)
 	selected_recipe = new recipe_path
+	lastuser = WEAKREF(user)
 	to_chat(user, span_info("Recipe set to: [initial(selected_recipe.recipe_name)]"))
 	to_chat(user, span_notice("Alt-click the cauldron to enable auto-repeat mode."))
 
@@ -340,6 +345,11 @@
 	return null
 
 /obj/machinery/light/fueled/cauldron/proc/calculate_max_batches(datum/alch_cauldron_recipe/recipe)
+	if(recipe.skill_required > SKILL_RANK_NONE)
+		var/mob/living/alchemist = lastuser?.resolve()
+		if(!alchemist || GET_MOB_SKILL_VALUE_OLD(alchemist, /datum/attribute/skill/craft/alchemy) < recipe.skill_required)
+			return 0
+
 	// Check if recipe matches at all first
 	if(!recipe.matches_essences(essence_contents))
 		return 0

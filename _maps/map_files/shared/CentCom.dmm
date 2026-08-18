@@ -9587,7 +9587,7 @@
 	pixel_y = 0;
 	dir = 8
 	},
-/obj/item/reagent_containers/pill/charcoal{
+/obj/item/storage/fancy/pilltin/charcoal{
 	pixel_x = -5;
 	pixel_y = 5
 	},

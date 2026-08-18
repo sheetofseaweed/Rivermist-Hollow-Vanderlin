@@ -51,6 +51,8 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 	///our completed message
 	var/complete_message = "Something smells good!"
 	var/datum/attribute/skill/used_skill = /datum/attribute/skill/craft/cooking
+	/// Minimum rank in used_skill required to begin this recipe.
+	var/minimum_skill = SKILL_RANK_NONE
 	var/quality_modifier = 1.0  // Default modifier, recipes can override this
 	///Path of looping_sound to use while cooking
 	var/datum/looping_sound/cooking_sound
@@ -165,12 +167,22 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 	if(isolation_craft && length(available_items))
 		return FALSE
 
+	// Reagent-only recipes still represent one craft. Reagent batching is validated
+	// again during completion, so they deliberately begin one operation at a time.
+	if(!highest_multiplier && length(reagent_requirements) && !length(requirements) && !length(wildcard_requirements))
+		highest_multiplier = 1
+
 	//if we don't have at least this nothing worked
 	if(highest_multiplier < 1)
 		return FALSE
 
 	if(!initiator)
 		initiator = get_mob_by_ckey(crafter.fingerprintslast)
+	if(minimum_skill > SKILL_RANK_NONE)
+		if(!isliving(initiator) || GET_MOB_SKILL_VALUE_OLD(initiator, used_skill) < minimum_skill)
+			if(initiator)
+				to_chat(initiator, span_warning("I lack the skill to prepare [name]."))
+			return FALSE
 	var/datum/callback/on_craft_start_ref = on_craft_start
 	var/datum/callback/on_craft_fail_ref = on_craft_failed
 	if(!on_craft_start_ref)

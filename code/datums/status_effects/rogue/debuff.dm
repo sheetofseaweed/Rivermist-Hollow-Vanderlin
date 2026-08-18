@@ -605,5 +605,11 @@
 
 /datum/status_effect/debuff/dumb
 	id = "dumb"
-	effectedstats = list(STAT_INTELLIGENCE = -20)
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/dumb
+	effectedstats = list(STAT_INTELLIGENCE = -8)
 	duration = 5 MINUTES
+
+/atom/movable/screen/alert/status_effect/debuff/dumb
+	name = "Blush"
+	desc = "My thoughts slip away before I can hold onto them."
+	icon_state = "debuff"

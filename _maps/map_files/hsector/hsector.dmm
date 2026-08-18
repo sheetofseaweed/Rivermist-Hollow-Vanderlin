@@ -5551,7 +5551,7 @@
 	pixel_y = 42;
 	pixel_x = -7
 	},
-/obj/item/storage/fancy/pilltin/atropine{
+/obj/item/reagent_containers/pill/atropine{
 	pixel_y = 37;
 	pixel_x = 4
 	},

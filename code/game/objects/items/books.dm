@@ -1698,6 +1698,13 @@ ____________End of Example*/
 	base_icon_state = "book8"
 	bookfile = "Neu_cooking.json"
 
+/obj/item/book/apothecarys_handbook
+	name = "The Field Apothecary's Handbook"
+	desc = "A practical handbook of herbal preparations, medicines, and restricted refinements. Compiled for the town physician's guild."
+	icon_state = "book4_0"
+	base_icon_state = "book4"
+	bookfile = "HerbalistHandbook.json"
+
 /obj/item/book/bibble/psy
 	name = "The AO Book"
 	icon_state = "bibble_0" // change when sprites avaliable
