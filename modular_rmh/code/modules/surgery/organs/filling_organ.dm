@@ -90,6 +90,40 @@
 /mob/living/carbon/proc/record_oviposition_birth()
 	LAZYADD(recent_oviposition_births, world.time)
 
+/// Ends every active pregnancy after a successful resurrection rune rescue.
+/// Embryo sacs are destroyed, while ordinary eggs remain implanted but dormant.
+/mob/living/carbon/proc/end_pregnancies_after_rune_resurrection()
+	var/ended_pregnancy = FALSE
+
+	for(var/obj/item/organ/organ as anything in internal_organs)
+		var/list/growing_eggs = organ.get_oviposition_eggs(TRUE)
+		if(!length(growing_eggs))
+			continue
+
+		var/datum/component/body_storage/storage = organ.get_oviposition_storage()
+		var/recalculate_storage_bulk = FALSE
+		for(var/obj/item/oviposition_egg/egg as anything in growing_eggs)
+			var/datum/component/pregnancy/pregnancy = egg.get_pregnancy_component()
+			if(!pregnancy)
+				continue
+
+			if(egg.egg_type == OVI_EGG_EMBRYO)
+				if(!pregnancy.remove_from_host(BODYSTORAGE_REMOVE_INTERNAL))
+					continue
+				qdel(egg)
+			else
+				qdel(pregnancy)
+				egg.apply_scale_to_appearance()
+				recalculate_storage_bulk = TRUE
+			ended_pregnancy = TRUE
+
+		if(recalculate_storage_bulk)
+			storage?.recalculate_current_bulk(organ)
+
+	if(ended_pregnancy)
+		to_chat(src, span_blue("The resurrection rune's magic stills every pregnancy within me."))
+	return ended_pregnancy
+
 /obj/item/organ/guts
 	// Oral storage lives on guts, but oviposition messaging should read as stomach-based.
 	allows_oviposition_pregnancy = TRUE

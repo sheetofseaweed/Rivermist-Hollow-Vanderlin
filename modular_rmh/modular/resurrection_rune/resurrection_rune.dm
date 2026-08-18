@@ -1000,6 +1000,7 @@
 			return
 	else
 		body.remove_status_effect(/datum/status_effect/defeat_knockout)
+	body.end_pregnancies_after_rune_resurrection()
 	body.clear_fullscreens()
 	body.reload_fullscreen()
 	body.update_cone_show()
