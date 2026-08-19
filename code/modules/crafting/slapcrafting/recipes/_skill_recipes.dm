@@ -20,6 +20,8 @@
 		return FALSE
 	for(var/obj/structure/fluff/traveltile/TT in range(7, T))
 		return FALSE
+	for(var/obj/structure/bandit_camp_entrance/BE in range(2, T))
+		return FALSE
 	for(var/obj/machinery/M in T)
 		if(M.density)
 			return FALSE
@@ -51,6 +53,8 @@
 		return FALSE
 	for(var/obj/structure/fluff/traveltile/TT in range(7, T))
 		return FALSE
+	for(var/obj/structure/bandit_camp_entrance/BE in range(2, T))
+		return FALSE
 	for(var/obj/machinery/M in T)
 		if(M.density)
 			return FALSE
@@ -80,6 +84,8 @@
 	if(istype(T, /turf/open/lava))
 		return FALSE
 	for(var/obj/structure/fluff/traveltile/TT in range(7, T))
+		return FALSE
+	for(var/obj/structure/bandit_camp_entrance/BE in range(2, T))
 		return FALSE
 	for(var/obj/machinery/M in T)
 		if(M.density)

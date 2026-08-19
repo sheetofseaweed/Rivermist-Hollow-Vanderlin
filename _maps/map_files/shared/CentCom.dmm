@@ -1967,6 +1967,10 @@
 	},
 /obj/structure/carpet/red,
 /obj/structure/carpet/purple,
+/obj/machinery/light/fueled/wallfire/candle/blue{
+	pixel_x = 4;
+	pixel_y = 41
+	},
 /turf/open/floor/wood,
 /area/indoors/succubus_lair)
 "ix" = (
@@ -2273,6 +2277,18 @@
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
+"jS" = (
+/obj/effect/decal/edge{
+	dir = 1;
+	color = "#3b3b3b"
+	},
+/obj/structure/carpet/red,
+/obj/machinery/light/fueled/wallfire/candle/blue{
+	pixel_x = -3;
+	pixel_y = 40
+	},
+/turf/open/floor/wood,
 /area/indoors/succubus_lair)
 "jT" = (
 /obj/structure/hotspring/border/seven,
@@ -3449,6 +3465,21 @@
 	color = "#3b3b3b";
 	pixel_y = 0
 	},
+/obj/structure/closet/crate/crafted_closet/dark,
+/obj/item/clothing/shirt/dress/maid,
+/obj/item/clothing/shirt/dress/skyrim_taven,
+/obj/item/clothing/shirt/dress/stewarddress/townhall,
+/obj/item/clothing/shirt/dress/skyrim_dress,
+/obj/item/clothing/shirt/dress/gen/sexy,
+/obj/item/clothing/shirt/dress/silkydress,
+/obj/item/clothing/shirt/maid_dress,
+/obj/item/clothing/shirt/ornate/dress,
+/obj/item/clothing/shirt/dress/gen/colored/black,
+/obj/item/clothing/shirt/dress/gen/colored/brown,
+/obj/item/clothing/shirt/dress/courtesan,
+/obj/item/clothing/head/crown/circlet/silverheaddress,
+/obj/item/clothing/head/sexy_nun_hat_alt,
+/obj/item/clothing/head/sexy_nun_hat,
 /turf/open/floor/tile/brownbrick,
 /area/indoors/succubus_lair)
 "oX" = (
@@ -4751,6 +4782,7 @@
 /obj/structure/table/map{
 	dir = 6
 	},
+/obj/item/clothing/head/hatfur,
 /turf/open/floor/tile/diamond/purple,
 /area/indoors/succubus_lair)
 "tQ" = (
@@ -5962,6 +5994,16 @@
 	pixel_y = 0
 	},
 /obj/structure/carpet/purple,
+/obj/structure/closet/crate/crafted_closet/dark,
+/obj/item/clothing/shirt/tunic/noblecoat,
+/obj/item/clothing/shirt/tunic/colored/red,
+/obj/item/clothing/shirt/tunic/colored/random,
+/obj/item/clothing/shirt/ornate/tunic,
+/obj/item/clothing/pants/tights/colored/random,
+/obj/item/clothing/pants/trou/leathertights,
+/obj/item/clothing/armor/leather/jacket/leathercoat/renegade,
+/obj/item/clothing/armor/leather/jacket/leathercoat/black,
+/obj/item/clothing/armor/gambeson/sophisticated_coat/colored/random,
 /turf/open/floor/tile/brownbrick,
 /area/indoors/succubus_lair)
 "yn" = (
@@ -8662,7 +8704,6 @@
 /turf/closed/wall/mineral/stonebrick,
 /area/indoors/town/rmh/manor/basement)
 "Jz" = (
-/obj/structure/fluff/traveltile/exit_bandit,
 /obj/effect/landmark/hammer/dev_text{
 	name = "ENTER/EXIT"
 	},
@@ -9347,8 +9388,8 @@
 /turf/open/floor/blocks,
 /area/indoors/town/rmh/manor)
 "Mh" = (
-/obj/machinery/light/fueled/wallfire/candle/r,
 /obj/item/natural/cloth,
+/obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/tile/bfloorz,
 /area/indoors/succubus_lair)
 "Mi" = (
@@ -9416,10 +9457,6 @@
 /obj/effect/landmark/start/werewolf,
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/werewolf)
-"MC" = (
-/obj/structure/fluff/traveltile/exit_bandit,
-/turf/open/floor/cobblerock,
-/area/outdoors/woods_safe)
 "MD" = (
 /mob/living/simple_animal/hostile/retaliate/fae/agriopylon/rosa,
 /turf/open/water/clean/dirt,
@@ -10961,6 +10998,11 @@
 /obj/structure/flora/ausbushes/brflowers,
 /turf/open/floor/grass/yel,
 /area/outdoors)
+"Sk" = (
+/obj/structure/window/harem2,
+/obj/machinery/light/fueled/wallfire/candle/r,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "Sl" = (
 /obj/structure/flora/grass/crawlvines{
 	dir = 4
@@ -11711,6 +11753,11 @@
 /obj/item/clothing/head/helmet/leather/orc,
 /turf/open/floor/carpet,
 /area/indoors)
+"Vf" = (
+/obj/structure/window/harem2,
+/obj/machinery/light/fueled/wallfire/candle/l,
+/turf/open/floor/tile/brownbrick,
+/area/indoors/succubus_lair)
 "Vg" = (
 /obj/effect/decal/edge{
 	dir = 4;
@@ -12329,6 +12376,7 @@
 /obj/structure/table/map{
 	dir = 10
 	},
+/obj/item/clothing/head/leather/duelhat,
 /turf/open/floor/tile/diamond/purple,
 /area/indoors/succubus_lair)
 "XA" = (
@@ -22357,7 +22405,7 @@ Nd
 iW
 EU
 EU
-qm
+Vf
 jQ
 wT
 wT
@@ -22761,7 +22809,7 @@ xn
 iw
 hn
 EU
-qm
+Sk
 QG
 ze
 PT
@@ -23162,7 +23210,7 @@ VJ
 sz
 nb
 KT
-RM
+jS
 qk
 EU
 tN
@@ -23367,7 +23415,7 @@ nb
 bn
 EU
 EU
-qm
+Vf
 jQ
 pt
 kW
@@ -23771,7 +23819,7 @@ bd
 iR
 iR
 iR
-qm
+Sk
 QG
 xN
 xN
@@ -31321,7 +31369,7 @@ tk
 gN
 gN
 aS
-MC
+od
 FS
 Nn
 Nn
@@ -33745,7 +33793,7 @@ dI
 gH
 dB
 dB
-MC
+od
 FS
 Nn
 Nn
@@ -35782,7 +35830,7 @@ tk
 gN
 gN
 aS
-MC
+od
 FS
 "}
 (114,1,1) = {"
@@ -38206,7 +38254,7 @@ dI
 gH
 dB
 dB
-MC
+od
 FS
 "}
 (126,1,1) = {"

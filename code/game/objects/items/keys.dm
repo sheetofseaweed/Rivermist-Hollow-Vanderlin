@@ -787,8 +787,10 @@
 	lockids = list("mansionvampire")
 
 /obj/item/key/bandit
+	name = "bandit camp key"
+	desc = "A dark iron key shared among the free company."
 	icon_state = "mazekey"
-	lockids = list("banditcamp")
+	lockids = list(ACCESS_BANDIT)
 
 
 ////// MINOR NOBLES

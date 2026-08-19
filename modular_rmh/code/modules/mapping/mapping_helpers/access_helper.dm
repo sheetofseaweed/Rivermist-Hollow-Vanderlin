@@ -16,5 +16,11 @@
 /obj/effect/mapping_helpers/access/keyset/rmh_outsider/witch
 	accesses = list(ACCESS_WITCH)
 
+/obj/effect/mapping_helpers/access/keyset/bandit
+	name = "bandit access helper"
+	color = "#3b302b"
+	difficulty = 4
+	accesses = list(ACCESS_BANDIT)
+
 
 

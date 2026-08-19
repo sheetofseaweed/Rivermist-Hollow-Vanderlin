@@ -784,7 +784,6 @@ export const SexScene = () => {
     <LabeledList.Item label={label}>
       <Button
         compact
-        selected={asBool(on)}
         color={asBool(on) ? 'good' : 'bad'}
         onClick={() => customField(field, 1)}
       >
@@ -1235,7 +1234,6 @@ export const SexScene = () => {
       <Button
         compact
         disabled={locked}
-        selected={asBool(pref.value as Booleanish)}
         color={asBool(pref.value as Booleanish) ? 'good' : 'bad'}
         onClick={() => erpAct(pref.type, 'toggle')}
       >

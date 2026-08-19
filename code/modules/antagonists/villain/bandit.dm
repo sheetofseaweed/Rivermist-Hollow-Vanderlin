@@ -43,6 +43,9 @@
 	owner.current?.purge_combat_knowledge()
 	finalize_bandit()
 	equip_bandit()
+	var/mob/living/bandit_body = owner.current
+	bandit_body?.review_patron_contract()
+	reveal_bandit_camp_entrances(bandit_body)
 	if(ishuman(owner.current))
 		addtimer(CALLBACK(owner.current, TYPE_PROC_REF(/mob/living/carbon/human, choose_name_popup), "BANDIT"), 5 SECONDS)
 
@@ -56,6 +59,7 @@
 /datum/antagonist/bandit/greet()
 	to_chat(owner.current, span_alert("I am a BANDIT!"))
 	to_chat(owner.current, span_info("I belong to a free company of thieves, scouts, and fences. Our contracts are shared: every bandit's work advances the same demands."))
+	to_chat(owner.current, span_info("I can review the company's current objectives and progress at any time with <b>IC → Review Contract</b>."))
 	to_chat(owner.current, span_warning("Rivermist Hollow permits only low-level conflict. I must steal, trespass, deceive, and escape without killing anyone."))
 	..()
 

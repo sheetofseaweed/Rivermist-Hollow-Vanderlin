@@ -87,9 +87,8 @@
 /turf/open/floor/naturalstone,
 /area/pocket_dimension/bandit_camp)
 "eL" = (
-/obj/structure/door/iron/bars{
-	lockid = "banditcamp"
-	},
+/obj/structure/door/iron/bars,
+/obj/effect/mapping_helpers/access/keyset/bandit,
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/naturalstone,
 /area/pocket_dimension/bandit_camp)
@@ -115,7 +114,6 @@
 /area/pocket_dimension/bandit_camp)
 "fJ" = (
 /obj/structure/flora/new_shroom/purplesmall,
-/mob/living/carbon/human/species/goblin/npc/ambush,
 /turf/open/floor/naturalstone,
 /area/pocket_dimension/bandit_camp)
 "gZ" = (
@@ -351,9 +349,9 @@
 "ta" = (
 /obj/structure/door/driftwood{
 	color = "#a6a6a6";
-	lock = /datum/lock/key;
-	lockid = "banditcamp"
+	lock = /datum/lock/key
 	},
+/obj/effect/mapping_helpers/access/keyset/bandit,
 /obj/effect/mapping_helpers/access/locker,
 /turf/open/floor/ruinedwood/darker,
 /area/pocket_dimension/bandit_camp)
@@ -404,9 +402,8 @@
 /turf/open/floor/twig,
 /area/pocket_dimension/bandit_camp)
 "uV" = (
-/obj/structure/door/iron/bars{
-	lockid = "banditcamp"
-	},
+/obj/structure/door/iron/bars,
+/obj/effect/mapping_helpers/access/keyset/bandit,
 /obj/effect/mapping_helpers/access/locker,
 /obj/effect/decal/cleanable/blood/tracks,
 /turf/open/floor/cobble/alt,
@@ -425,10 +422,6 @@
 	pixel_x = -28
 	},
 /turf/open/floor/ruinedwood/darker,
-/area/pocket_dimension/bandit_camp)
-"wk" = (
-/mob/living/carbon/human/species/goblin/npc/ambush,
-/turf/open/floor/mushroom,
 /area/pocket_dimension/bandit_camp)
 "xp" = (
 /obj/structure/fermentation_keg/random/water,
@@ -505,12 +498,6 @@
 	pixel_y = 32
 	},
 /turf/open/floor/ruinedwood/darker,
-/area/pocket_dimension/bandit_camp)
-"zG" = (
-/obj/effect/landmark/hammer/dev_text{
-	name = "ENTER/EXIT"
-	},
-/turf/open/floor/cobblerock,
 /area/pocket_dimension/bandit_camp)
 "Ab" = (
 /obj/structure/hotspring/border/two,
@@ -745,10 +732,6 @@
 	},
 /turf/open/floor/naturalstone,
 /area/pocket_dimension/bandit_camp)
-"JY" = (
-/mob/living/carbon/human/species/orc/npc/footsoldier,
-/turf/open/floor/naturalstone,
-/area/pocket_dimension/bandit_camp)
 "Kb" = (
 /obj/structure/hotspring,
 /turf/closed/mineral/bedrock,
@@ -969,6 +952,8 @@
 	pixel_x = 32
 	},
 /obj/item/flashlight/flare/torch/lantern,
+/obj/item/clothing/neck/slave_collar,
+/obj/item/clothing/ring/slave_control,
 /turf/open/floor/cobble/alt,
 /area/pocket_dimension/bandit_camp)
 "Sv" = (
@@ -1010,15 +995,6 @@
 /obj/effect/decal/cobblerockedge{
 	dir = 8
 	},
-/turf/open/floor/naturalstone,
-/area/pocket_dimension/bandit_camp)
-"UB" = (
-/obj/item/natural/stone,
-/mob/living/carbon/human/species/goblin/npc/ambush,
-/turf/open/floor/naturalstone,
-/area/pocket_dimension/bandit_camp)
-"Vn" = (
-/mob/living/carbon/human/species/goblin/npc/ambush,
 /turf/open/floor/naturalstone,
 /area/pocket_dimension/bandit_camp)
 "Wi" = (
@@ -1208,12 +1184,12 @@ za
 ua
 yh
 Db
-JY
+za
 Nz
-wk
+Nz
 Nz
 Gu
-zG
+RN
 RN
 "}
 (5,1,1) = {"
@@ -1239,9 +1215,9 @@ ua
 yh
 Db
 fJ
-UB
+rY
 za
-Vn
+za
 Gu
 Rn
 RN
@@ -1270,7 +1246,7 @@ yh
 CQ
 Zi
 za
-Vn
+za
 rL
 BO
 RN
@@ -1378,7 +1354,7 @@ js
 js
 RN
 RN
-rL
+NZ
 ua
 yh
 yh
@@ -1573,7 +1549,7 @@ yh
 re
 za
 Gu
-zG
+RN
 RN
 "}
 (17,1,1) = {"

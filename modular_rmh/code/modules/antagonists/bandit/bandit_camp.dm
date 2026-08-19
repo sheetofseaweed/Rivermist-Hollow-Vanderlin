@@ -49,25 +49,77 @@
 		return FALSE
 	if(QDELETED(src) || QDELETED(user) || !Adjacent(user) || user.pulling || !length(GLOB.bandit_player_insertions))
 		return FALSE
-	var/obj/structure/fluff/traveltile/bandit/destination = pick(GLOB.bandit_player_insertions)
+	var/obj/structure/bandit_camp_entrance/destination = pick(GLOB.bandit_player_insertions)
 	if(QDELETED(destination))
 		return FALSE
 	user.recent_travel = world.time
 	movable_travel_z_level(user, get_turf(destination))
 	return TRUE
 
-// The old overworld Bandit travel tile remains the map-facing trail mouth, but
-// now enters this player-only camp rather than the legacy shared CentCom space.
-/obj/structure/fluff/traveltile/bandit/Initialize()
+// The overworld mouth of the camp. Deliberately not a travel tile: it opens the pocket
+// dimension directly and owns no portal pairing, so nothing else can route mobs onto it.
+/obj/structure/bandit_camp_entrance
+	name = "hidden trail"
+	desc = "Trampled brush and a bent branch, set the way the free company marks its ways."
+	icon = 'icons/turf/floors.dmi'
+	icon_state = "travel"
+	layer = ABOVE_OPEN_TURF_LAYER
+	density = FALSE
+	anchored = TRUE
+	resistance_flags = INDESTRUCTIBLE
+	/// How long a bandit follows the trail before the camp takes them.
+	var/entry_time = 5 SECONDS
+
+/obj/structure/bandit_camp_entrance/Initialize()
 	. = ..()
 	GLOB.bandit_player_insertions += src
+	// Invisible to everyone; the alt appearance shows it back to trait holders only.
+	invisibility = INVISIBILITY_OBSERVER
+	var/image/trail_marks = image(icon = icon, icon_state = icon_state, layer = layer, loc = src)
+	add_alt_appearance(/datum/atom_hud/alternate_appearance/basic/traveltile, TRAIT_BANDITCAMP, trail_marks)
 
-/obj/structure/fluff/traveltile/bandit/Destroy()
+/obj/structure/bandit_camp_entrance/Destroy()
 	GLOB.bandit_player_insertions -= src
 	return ..()
 
-/obj/structure/fluff/traveltile/bandit/user_try_travel(mob/living/user)
-	if(!isbandit(user) || !can_go(user))
+/obj/structure/bandit_camp_entrance/proc/reveal_to(mob/living/user)
+	var/datum/atom_hud/alternate_appearance/trail_hud = LAZYACCESS(alternate_appearances, TRAIT_BANDITCAMP)
+	trail_hud?.add_hud_to(user)
+
+// Mob Initialize/Login only catch trait holders that already exist, so recruits need this on gain.
+/proc/reveal_bandit_camp_entrances(mob/living/user)
+	if(!istype(user))
+		return
+	for(var/obj/structure/bandit_camp_entrance/entrance as anything in GLOB.bandit_player_insertions)
+		entrance.reveal_to(user)
+
+/obj/structure/bandit_camp_entrance/attack_hand(mob/user, list/modifiers)
+	. = ..()
+	if(isliving(user))
+		INVOKE_ASYNC(src, PROC_REF(try_enter_camp), user)
+
+/obj/structure/bandit_camp_entrance/Crossed(atom/movable/AM, oldloc)
+	. = ..()
+	if(!isliving(AM))
+		return
+	var/mob/living/walker = AM
+	if(walker.stat != CONSCIOUS || walker.incapacitated(IGNORE_GRAB))
+		return
+	// Deferred a tick: entering in the crossing chain drops whatever the bandit is pulling.
+	addtimer(CALLBACK(src, PROC_REF(try_enter_camp), walker), 1)
+
+/obj/structure/bandit_camp_entrance/proc/can_enter(mob/living/user)
+	if(!isbandit(user))
+		return FALSE
+	if(user.pulledby)
+		return FALSE
+	// Shares the teleport cooldown with the camp exit, so the trail can't be ridden both ways.
+	if(user.recent_travel && world.time < user.recent_travel + 15 SECONDS)
+		return FALSE
+	return TRUE
+
+/obj/structure/bandit_camp_entrance/proc/try_enter_camp(mob/living/user)
+	if(!istype(user) || !can_enter(user))
 		return
 	if(leashed_by_other(user))
 		to_chat(user, span_warning("I cannot enter the hidden trail while someone holds my leash."))
@@ -79,9 +131,9 @@
 			to_chat(user, span_warning("The hidden trail is too narrow to bring [user.pulling] inside."))
 			return
 	to_chat(user, span_notice("I follow the signs known only to the free company..."))
-	if(!do_after(user, 5 SECONDS, src, IGNORE_HELD_ITEM))
+	if(!do_after(user, entry_time, src, IGNORE_HELD_ITEM))
 		return
-	if(QDELETED(src) || QDELETED(user) || !Adjacent(user) || !isbandit(user) || !can_go(user))
+	if(QDELETED(src) || QDELETED(user) || !Adjacent(user) || !can_enter(user))
 		return
 	if(pulled_victim && (QDELETED(pulled_victim) || user.pulling != pulled_victim || !user.Adjacent(pulled_victim)))
 		return

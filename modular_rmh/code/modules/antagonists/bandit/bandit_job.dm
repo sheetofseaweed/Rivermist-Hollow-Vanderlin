@@ -5,8 +5,8 @@ GLOBAL_LIST_EMPTY(bandit_player_insertions)
 	tutorial = "You belong to a hidden free company operating beyond Rivermist Hollow. Scout the town, trespass, steal valuables and access, and fulfill the contracts shared by every bandit. This is a low-level conflict role: evade, bargain, and escape; never kill for company business."
 	department_flag = VILLAINS
 	faction = FACTION_NEUTRAL
-	total_positions = 0
-	spawn_positions = 0
+	total_positions = 3
+	spawn_positions = 3
 	antag_job = TRUE
 	can_random = FALSE
 	selection_color = JCOLOR_VILLAINS
@@ -91,6 +91,7 @@ GLOBAL_LIST_EMPTY(bandit_player_insertions)
 	r_hand = null
 
 /datum/job/advclass/bandit
+	abstract_type = /datum/job/advclass/bandit
 	category_tags = list(CAT_BANDIT)
 	languages = list(/datum/language/thievescant)
 	exp_types_granted = list(EXP_TYPE_ANTAG)
@@ -130,6 +131,7 @@ GLOBAL_LIST_EMPTY(bandit_player_insertions)
 	beltr = /obj/item/weapon/mace/cudgel
 	backpack_contents = list(
 		/obj/item/book/bandit_casing_ledger = 1,
+		/obj/item/key/bandit = 1,
 		/obj/item/lockpick = 2,
 		/obj/item/weapon/knife/dagger/steel = 1,
 	)
@@ -170,6 +172,7 @@ GLOBAL_LIST_EMPTY(bandit_player_insertions)
 	beltr = /obj/item/weapon/knife/hunting
 	backpack_contents = list(
 		/obj/item/book/bandit_casing_ledger = 1,
+		/obj/item/key/bandit = 1,
 		/obj/item/lockpick = 1,
 	)
 
@@ -208,6 +211,7 @@ GLOBAL_LIST_EMPTY(bandit_player_insertions)
 	beltr = /obj/item/weapon/mace/cudgel
 	backpack_contents = list(
 		/obj/item/book/bandit_casing_ledger = 1,
+		/obj/item/key/bandit = 1,
 		/obj/item/lockpick = 1,
 		/obj/item/rope = 1,
 	)

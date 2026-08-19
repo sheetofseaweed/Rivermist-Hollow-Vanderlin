@@ -93,6 +93,7 @@
 #define ACCESS_APART_XX "apartment20"
 
 // Outsider
+#define ACCESS_BANDIT "bandit"
 #define ACCESS_WITCH "witchhut"
 
 // Extra

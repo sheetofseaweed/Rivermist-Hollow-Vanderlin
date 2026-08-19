@@ -423,13 +423,15 @@ type PrefRowProps = {
   value?: unknown;
   onClick?: () => void;
   disabled?: boolean;
+  /** Green/red switch state. Use for booleans; use selected for a pick within a group. */
+  on?: boolean;
   selected?: boolean;
   swatch?: string;
   tooltip?: string;
 };
 
 const PrefRow = (props: PrefRowProps) => {
-  const { icon, label, value, onClick, disabled, selected, swatch, tooltip } =
+  const { icon, label, value, onClick, disabled, on, selected, swatch, tooltip } =
     props;
   return (
     <Button
@@ -437,6 +439,7 @@ const PrefRow = (props: PrefRowProps) => {
       mb={0.5}
       disabled={disabled}
       selected={selected}
+      color={on === undefined ? undefined : on ? 'good' : 'bad'}
       tooltip={tooltip || label}
       onClick={onClick}
     >
@@ -1685,7 +1688,7 @@ export const PreferencesMenu = () => {
               <Stack.Item>
                 <Button
                   icon={enabled ? 'toggle-on' : 'toggle-off'}
-                  selected={enabled}
+                  color={enabled ? 'good' : 'bad'}
                   onClick={() => customizerAct(feature.key, 'toggle_missing')}
                 >
                   {enabled ? 'On' : 'Off'}
@@ -1736,7 +1739,7 @@ export const PreferencesMenu = () => {
           asBool(feature.can_disable) ? (
             <Button
               icon={enabled ? 'toggle-on' : 'toggle-off'}
-              selected={enabled}
+              color={enabled ? 'good' : 'bad'}
               onClick={() => customizerAct(feature.key, 'toggle_missing')}
             >
               {enabled ? 'On' : 'Off'}
@@ -2629,7 +2632,7 @@ export const PreferencesMenu = () => {
               mb={0.5}
               compact
               disabled={locked}
-              selected={asBool(flag.on)}
+              color={asBool(flag.on) ? 'good' : 'bad'}
               tooltip={flag.description || flag.name}
               onClick={() =>
                 erpGeneralAct(pref.type, 'toggle_flag', { flag: flag.bit })
@@ -2708,7 +2711,6 @@ export const PreferencesMenu = () => {
       <Button
         compact
         disabled={locked}
-        selected={asBool(pref.value as Booleanish)}
         color={asBool(pref.value as Booleanish) ? 'good' : 'bad'}
         onClick={() => erpGeneralAct(pref.type, 'toggle')}
       >
@@ -2733,7 +2735,6 @@ export const PreferencesMenu = () => {
               <Button
                 compact
                 disabled={locked}
-                selected={enabled}
                 color={enabled ? 'good' : 'bad'}
                 onClick={() => erpKinkAct(kink.name, 'toggle_enabled')}
               >
@@ -2842,26 +2843,26 @@ export const PreferencesMenu = () => {
     return (
       <>
         <Panel title="Interface" icon="desktop">
-          <PrefRow icon="keyboard" label="Hotkeys" value={asBool(game.hotkeys) ? 'ON' : 'OFF'} selected={asBool(game.hotkeys)} onClick={() => toggle('hotkeys')} />
-          <PrefRow icon="mouse-pointer" label="Action Buttons" value={asBool(game.buttons_locked) ? 'Locked' : 'Unlocked'} selected={asBool(game.buttons_locked)} onClick={() => toggle('action_buttons')} />
-          <PrefRow icon="window-restore" label="Fancy tgui" value={asBool(game.tgui_fancy) ? 'ON' : 'OFF'} selected={asBool(game.tgui_fancy)} onClick={() => toggle('tgui_fancy')} />
-          <PrefRow icon="lock" label="Lock tgui Layout" value={asBool(game.tgui_lock) ? 'ON' : 'OFF'} selected={asBool(game.tgui_lock)} onClick={() => toggle('tgui_lock')} />
-          <PrefRow icon="bolt" label="Window Flashing" value={asBool(game.windowflashing) ? 'ON' : 'OFF'} selected={asBool(game.windowflashing)} onClick={() => toggle('winflash')} />
+          <PrefRow icon="keyboard" label="Hotkeys" value={asBool(game.hotkeys) ? 'ON' : 'OFF'} on={asBool(game.hotkeys)} onClick={() => toggle('hotkeys')} />
+          <PrefRow icon="mouse-pointer" label="Action Buttons" value={asBool(game.buttons_locked) ? 'Locked' : 'Unlocked'} on={asBool(game.buttons_locked)} onClick={() => toggle('action_buttons')} />
+          <PrefRow icon="window-restore" label="Fancy tgui" value={asBool(game.tgui_fancy) ? 'ON' : 'OFF'} on={asBool(game.tgui_fancy)} onClick={() => toggle('tgui_fancy')} />
+          <PrefRow icon="lock" label="Lock tgui Layout" value={asBool(game.tgui_lock) ? 'ON' : 'OFF'} on={asBool(game.tgui_lock)} onClick={() => toggle('tgui_lock')} />
+          <PrefRow icon="bolt" label="Window Flashing" value={asBool(game.windowflashing) ? 'ON' : 'OFF'} on={asBool(game.windowflashing)} onClick={() => toggle('winflash')} />
         </Panel>
 
         <Panel title="Display" icon="eye">
-          <PrefRow icon="comments" label="See Non-mob Chat" value={asBool(game.see_chat_non_mob) ? 'ON' : 'OFF'} selected={asBool(game.see_chat_non_mob)} onClick={() => toggle('see_chat_non_mob')} />
-          <PrefRow icon="sun" label="Ambient Occlusion" value={asBool(game.ambientocclusion) ? 'ON' : 'OFF'} selected={asBool(game.ambientocclusion)} onClick={() => toggle('ambientocclusion')} />
-          <PrefRow icon="expand" label="Auto-fit Viewport" value={asBool(game.auto_fit_viewport) ? 'ON' : 'OFF'} selected={asBool(game.auto_fit_viewport)} onClick={() => toggle('auto_fit_viewport')} />
-          <PrefRow icon="tv" label="Widescreen" value={asBool(game.widescreenpref) ? 'ON' : 'OFF'} selected={asBool(game.widescreenpref)} onClick={() => toggle('widescreenpref')} />
+          <PrefRow icon="comments" label="See Non-mob Chat" value={asBool(game.see_chat_non_mob) ? 'ON' : 'OFF'} on={asBool(game.see_chat_non_mob)} onClick={() => toggle('see_chat_non_mob')} />
+          <PrefRow icon="sun" label="Ambient Occlusion" value={asBool(game.ambientocclusion) ? 'ON' : 'OFF'} on={asBool(game.ambientocclusion)} onClick={() => toggle('ambientocclusion')} />
+          <PrefRow icon="expand" label="Auto-fit Viewport" value={asBool(game.auto_fit_viewport) ? 'ON' : 'OFF'} on={asBool(game.auto_fit_viewport)} onClick={() => toggle('auto_fit_viewport')} />
+          <PrefRow icon="tv" label="Widescreen" value={asBool(game.widescreenpref) ? 'ON' : 'OFF'} on={asBool(game.widescreenpref)} onClick={() => toggle('widescreenpref')} />
           <PrefRow icon="search-plus" label="Pixel Size" value={game.pixel_size} onClick={() => toggle('pixel_size')} />
           <PrefRow icon="image" label="Scaling Method" value={game.scaling_method} onClick={() => toggle('scaling_method')} />
         </Panel>
 
         <Panel title="Audio & Round" icon="volume-up">
-          <PrefRow icon="music" label="Lobby Music" value={asBool(game.lobby_music) ? 'ON' : 'OFF'} selected={asBool(game.lobby_music)} onClick={() => toggle('lobby_music')} />
-          <PrefRow icon="music" label="Admin MIDIs" value={asBool(game.hear_midis) ? 'ON' : 'OFF'} selected={asBool(game.hear_midis)} onClick={() => toggle('hear_midis')} />
-          <PrefRow icon="user-secret" label="Midround Antag" value={asBool(game.allow_midround_antag) ? 'ON' : 'OFF'} selected={asBool(game.allow_midround_antag)} onClick={() => toggle('allow_midround_antag')} />
+          <PrefRow icon="music" label="Lobby Music" value={asBool(game.lobby_music) ? 'ON' : 'OFF'} on={asBool(game.lobby_music)} onClick={() => toggle('lobby_music')} />
+          <PrefRow icon="music" label="Admin MIDIs" value={asBool(game.hear_midis) ? 'ON' : 'OFF'} on={asBool(game.hear_midis)} onClick={() => toggle('hear_midis')} />
+          <PrefRow icon="user-secret" label="Midround Antag" value={asBool(game.allow_midround_antag) ? 'ON' : 'OFF'} on={asBool(game.allow_midround_antag)} onClick={() => toggle('allow_midround_antag')} />
         </Panel>
 
         <Panel title="Tools" icon="sliders-h">
@@ -3579,7 +3580,7 @@ export const PreferencesMenu = () => {
                         fluid
                         mb={0.5}
                         icon={asBool(data.preview_underwear) ? 'check-square' : 'square'}
-                        selected={asBool(data.preview_underwear)}
+                        color={asBool(data.preview_underwear) ? 'good' : 'bad'}
                         onClick={() => doPref('character_setup_preview_layer', undefined, { layer: 'underwear' })}
                       >
                         Underwear Layer
@@ -3588,7 +3589,7 @@ export const PreferencesMenu = () => {
                         fluid
                         mb={0.5}
                         icon={asBool(data.preview_clothes) ? 'check-square' : 'square'}
-                        selected={asBool(data.preview_clothes)}
+                        color={asBool(data.preview_clothes) ? 'good' : 'bad'}
                         onClick={() => doPref('character_setup_preview_layer', undefined, { layer: 'clothes' })}
                       >
                         Work Clothes Layer
