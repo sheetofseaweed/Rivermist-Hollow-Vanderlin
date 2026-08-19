@@ -13,7 +13,6 @@ GLOBAL_LIST_EMPTY(bandit_player_insertions)
 	job_flags = (JOB_EQUIP_RANK | JOB_SHOW_IN_CREDITS | JOB_NEW_PLAYER_JOINABLE)
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
 	allowed_races = ALL_RACES_LIST
-	job_whitelist_id = "bandit"
 	outfit = /datum/outfit/antagonist/bandit
 	antag_role = /datum/antagonist/bandit
 	display_order = JDO_BANDIT
