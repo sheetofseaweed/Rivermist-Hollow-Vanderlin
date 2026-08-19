@@ -69,9 +69,6 @@
 		icon_state = "ladder00"
 
 /obj/structure/ladder/proc/travel(going_up, mob/user, is_ghost, obj/structure/ladder/ladder)
-	if(is_ghost)
-		return
-
 	if(!is_ghost)
 		playsound(src, 'sound/foley/ladder.ogg', 100, FALSE)
 		if(!do_after(user, 3 SECONDS, src))
@@ -81,10 +78,7 @@
 		show_fluff_message(going_up, user)
 		ladder.add_fingerprint(user)
 	var/turf/T = get_turf(ladder)
-	if(isliving(user))
-		movable_travel_z_level(user, T)
-	else
-		user.forceMove(T)
+	movable_travel_z_level(user, T)
 
 /obj/structure/ladder/proc/use(mob/user, is_ghost=FALSE)
 	if(!in_range(src, user))

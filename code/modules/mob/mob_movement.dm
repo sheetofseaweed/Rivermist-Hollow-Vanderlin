@@ -634,7 +634,7 @@
 		return
 	. = TRUE
 	if(isobserver(mob))
-		mob.ghost_up()
+		mob.up()
 
 /client/proc/ghost_down()
 	set category = "Admin.Ghost"
@@ -643,34 +643,71 @@
 		return
 	. = TRUE
 	if(isobserver(mob))
-		mob.ghost_down()
+		mob.down()
 
-///Moves a mob upwards in z level
+/// Compatibility wrappers for the existing ghost HUD and verbs.
 /mob/proc/ghost_up()
-	if(zMove(UP, TRUE))
-		to_chat(src, "<span class='notice'>I move upwards.</span>")
+	return up()
 
-///Moves a mob down a z level
 /mob/proc/ghost_down()
-	if(zMove(DOWN, TRUE))
-		to_chat(src, "<span class='notice'>I move down.</span>")
+	return down()
 
-///Move a mob between z levels, if it's valid to move z's on this turf
-/mob/proc/zMove(dir, feedback = FALSE, swimming = FALSE)
-	if(dir != UP && dir != DOWN)
-		return FALSE
-	var/turf/target = get_step_multiz(src, dir)
-	if(!target)
-		if(feedback)
-			to_chat(src, "<span class='warning'>There's nothing in that direction!</span>")
-		return FALSE
-	if(!canZMove(dir, target, swimming))
-		if(feedback)
-			to_chat(src, "<span class='warning'>I couldn't move there!</span>")
-		return FALSE
-	forceMove(target)
-	return TRUE
+/// Shared upward movement entry point for ladders, swimming, flight, and observers.
+/mob/verb/up()
+	set name = "Move Upwards"
+	set category = "IC"
 
-/// Can this mob move between z levels
-/mob/proc/canZMove(direction, turf/target)
-	return FALSE
+	if(remote_control)
+		return remote_control.relaymove(src, UP)
+	if(ismovable(loc))
+		var/atom/movable/container = loc
+		return container.relaymove(src, UP)
+
+	var/turf/current_turf = get_turf(src)
+	var/obj/structure/ladder/current_ladder = locate() in current_turf
+	if(current_ladder?.up)
+		current_ladder.travel(TRUE, src, FALSE, current_ladder.up)
+		return
+
+	if(isliving(src) && istype(current_turf, /turf/open/water) && HAS_TRAIT(src, TRAIT_MOVE_SWIMMING))
+		var/turf/open/water/current_water = current_turf
+		current_water.try_z_swim(src, going_up = TRUE)
+		return
+
+	if(!can_z_move(UP, current_turf, z_move_flags = ZMOVE_CAN_FLY_CHECKS | ZMOVE_FEEDBACK))
+		return
+	balloon_alert(src, "moving up...")
+	if(!do_after(src, 1 SECONDS, hidden = TRUE))
+		return
+	if(zMove(UP, z_move_flags = ZMOVE_FLIGHT_FLAGS | ZMOVE_FEEDBACK))
+		to_chat(src, span_notice("You move upwards."))
+
+/// Shared downward movement entry point for ladders, swimming, flight, and observers.
+/mob/verb/down()
+	set name = "Move Downwards"
+	set category = "IC"
+
+	if(remote_control)
+		return remote_control.relaymove(src, DOWN)
+	if(ismovable(loc))
+		var/atom/movable/container = loc
+		return container.relaymove(src, DOWN)
+
+	var/turf/current_turf = get_turf(src)
+	var/obj/structure/ladder/current_ladder = locate() in current_turf
+	if(current_ladder?.down)
+		current_ladder.travel(FALSE, src, FALSE, current_ladder.down)
+		return
+
+	if(isliving(src) && istype(current_turf, /turf/open/water) && HAS_TRAIT(src, TRAIT_MOVE_SWIMMING))
+		var/turf/open/water/current_water = current_turf
+		current_water.try_z_swim(src, going_up = FALSE)
+		return
+
+	if(!can_z_move(DOWN, current_turf, z_move_flags = ZMOVE_CAN_FLY_CHECKS | ZMOVE_FEEDBACK))
+		return
+	balloon_alert(src, "moving down...")
+	if(!do_after(src, 1 SECONDS, hidden = TRUE))
+		return
+	if(zMove(DOWN, z_move_flags = ZMOVE_FLIGHT_FLAGS | ZMOVE_FEEDBACK))
+		to_chat(src, span_notice("You move downwards."))

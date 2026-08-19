@@ -169,6 +169,7 @@
 #define BB_CURRENTLY_SWIMMING "currently_swimming"
 ///key holds how long we will be swimming for
 #define BB_KEY_SWIMMER_COOLDOWN "key_swimmer_cooldown"
+#define BB_SEAL_NEXT_DIVE "seal_next_dive"
 
 #define BB_LEYLINE_SOURCE "leyline_source"
 #define BB_TELEPORT_COOLDOWN "teleport_cooldown"

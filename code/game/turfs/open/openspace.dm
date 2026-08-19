@@ -49,24 +49,42 @@ GLOBAL_DATUM_INIT(openspace_reflection_dimmer_one_for_all, /atom/movable/openspa
 	. = ..()
 	vis_contents += GLOB.openspace_backdrop_one_for_all //Special grey square for projecting backdrop darkness filter on it.
 	vis_contents += GLOB.openspace_reflection_dimmer_one_for_all //Same darkness, but on the plane reflections escape to.
+	RegisterSignal(src, COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON, PROC_REF(on_atom_created))
 	return INITIALIZE_HINT_LATELOAD
 
 /turf/open/openspace/LateInitialize()
 	. = ..()
 	AddElement(/datum/element/turf_z_transparency, is_openspace = TRUE)
 
+/turf/open/openspace/ChangeTurf(path, list/new_baseturfs, flags)
+	UnregisterSignal(src, COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON)
+	return ..()
+
+/// Mark ordinary Move() traversal so the fall starts only after the move finishes.
+/turf/open/openspace/Enter(atom/movable/movable, atom/oldloc)
+	. = ..()
+	if(.)
+		movable.set_currently_z_moving(CURRENTLY_Z_FALLING_FROM_MOVE)
+
+/// Make movables placed here by forceMove() fall without re-entering an active z-move.
+/turf/open/openspace/Entered(atom/movable/movable)
+	. = ..()
+	if(movable.set_currently_z_moving(CURRENTLY_Z_FALLING))
+		zFall(movable, falling_from_move = TRUE)
+
+/// Drop atoms created directly on open space after their initialization succeeds.
+/turf/open/openspace/proc/on_atom_created(datum/source, atom/created_atom)
+	SIGNAL_HANDLER
+	if(ismovable(created_atom))
+		zfall_if_on_turf(created_atom)
+
+/turf/open/openspace/proc/zfall_if_on_turf(atom/movable/movable)
+	if(QDELETED(movable) || movable.loc != src)
+		return
+	zFall(movable)
+
 /turf/open/openspace/can_traverse_safely(atom/movable/traveler)
-	var/turf/destination = GET_TURF_BELOW(src)
-	if(!destination)
-		return TRUE // this shouldn't happen
-	for(var/obj/structure/O in contents)
-		if(O.obj_flags & BLOCK_Z_OUT_DOWN)
-			return TRUE
-	if(!traveler.can_zTravel(destination, DOWN, src)) // something is blocking their fall!
-		return TRUE
-	if(!traveler.can_zFall(src, DOWN, destination)) // they can't fall!
-		return TRUE
-	return FALSE
+	return !traveler.can_z_move(DOWN, src, z_move_flags = ZMOVE_FALL_FLAGS)
 
 /turf/open/openspace/add_neighborlay(dir, edgeicon, offset = FALSE)
 	var/add
@@ -151,20 +169,20 @@ GLOBAL_DATUM_INIT(openspace_reflection_dimmer_one_for_all, /atom/movable/openspa
 		if(!target)
 			to_chat(user, "<span class='warning'>I can't climb there.</span>")
 			return
-		if(!user.can_zTravel(target, DOWN, src))
+		var/z_move_flags = (Z_MOVE_CLIMBING_FLAGS & ~ZMOVE_LYING_CHECKS) | ZMOVE_FEEDBACK
+		if(!L.can_z_move(DOWN, src, target, z_move_flags))
 			to_chat(user, "<span class='warning'>I can't climb here.</span>")
 			return
 		if(user.m_intent != MOVE_INTENT_SNEAK)
 			playsound(user, 'sound/foley/climb.ogg', 100, TRUE)
 		user.visible_message("<span class='warning'>[user] starts to climb down.</span>", "<span class='warning'>I start to climb down.</span>")
 		if(do_after(L, 3 SECONDS, src))
+			if(!L.can_z_move(DOWN, src, target, z_move_flags))
+				return
 			if(user.m_intent != MOVE_INTENT_SNEAK)
 				playsound(user, 'sound/foley/climb.ogg', 100, TRUE)
-			var/pulling = user.pulling
-			if(ismob(pulling))
-				user.pulling.forceMove(target)
-			user.forceMove(target)
-			user.start_pulling(pulling,suppress_message = TRUE)
+			L.set_currently_z_moving(CURRENTLY_Z_CLIMBING_DOWN)
+			L.zMove(DOWN, target, z_move_flags & ~ZMOVE_FEEDBACK)
 
 /turf/open/openspace/attack_ghost(mob/dead/observer/user)
 	var/turf/target = GET_TURF_BELOW(src)
@@ -173,6 +191,7 @@ GLOBAL_DATUM_INIT(openspace_reflection_dimmer_one_for_all, /atom/movable/openspa
 	if(!target)
 		to_chat(user, "<span class='warning'>I can't go there.</span>")
 		return
-	user.forceMove(target)
-	to_chat(user, "<span class='warning'>I glide down.</span>")
+	if(user.can_z_move(DOWN, src, target, ZMOVE_IGNORE_OBSTACLES | ZMOVE_FEEDBACK))
+		user.zMove(DOWN, target, ZMOVE_IGNORE_OBSTACLES)
+		to_chat(user, "<span class='warning'>I glide down.</span>")
 	. = ..()

@@ -319,7 +319,7 @@
 
 	/// cooldown for the next time this person can offer
 	COOLDOWN_DECLARE(offer_cooldown)
-	/// cooldown between vertical swim actions
+	/// Prevents concurrent vertical swim attempts during the swim action.
 	COOLDOWN_DECLARE(cd_zswim)
 
 	var/list/roundstart_quirks

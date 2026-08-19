@@ -142,6 +142,7 @@
 #include "subsystem_init.dm"
 #include "succubus.dm"
 #include "surgeries.dm"
+#include "swimming.dm"
 #include "swingdelay.dm"
 #include "tempo.dm"
 #include "thermal_vision_sight.dm"

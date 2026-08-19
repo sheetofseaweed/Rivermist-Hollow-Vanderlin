@@ -11,6 +11,19 @@
 	icon_state = "top"
 	layer = MID_TURF_LAYER
 
+/// Safely updates a water overlay after movement has finished settling.
+/proc/update_delayed_water_overlay(turf/possible_water, atom/movable/expected_occupant, target_layer, target_plane, require_empty)
+	var/turf/open/water/water = possible_water
+	if(!istype(water) || !water.water_overlay)
+		return
+	if(require_empty)
+		if(locate(/mob/living) in water)
+			return
+	else if(QDELETED(expected_occupant) || expected_occupant.loc != water)
+		return
+	water.water_overlay.layer = target_layer
+	water.water_overlay.plane = target_plane
+
 /turf/open/water
 	gender = PLURAL
 	name = "water"
@@ -21,6 +34,8 @@
 	slowdown = 20
 	var/obj/effect/overlay/water/water_overlay
 	var/obj/effect/overlay/water/top/water_top_overlay
+	/// Appearance used while a dynamic water tile is dry.
+	var/mutable_appearance/dry_overlay
 	bullet_sizzle = TRUE
 	bullet_bounce_sound = null //needs a splashing sound one day.
 	smoothing_flags = SMOOTH_EDGE
@@ -59,6 +74,23 @@
 	var/fake_bottomless = FALSE
 	/// for tiles that should always have a closed bottom
 	var/skip_bottom_check = FALSE
+	/// Map- or subtype-configured depth, before live multi-z topology is applied.
+	var/configured_water_height
+	/// Map- or subtype-configured swimming slowdown behavior.
+	var/configured_swim_skill
+	/// Appearance restored when this turf no longer has an open bottom.
+	var/configured_icon_state
+	var/configured_layer
+	var/configured_plane
+	var/configured_shine
+	/// Whether LateInitialize has made it safe to attach water-state elements.
+	var/water_elements_initialized = FALSE
+	/// Configuration of the currently attached water-state elements.
+	var/water_elements_active = FALSE
+	var/active_element_height
+	var/active_element_swimmable = FALSE
+	/// Whether this turf currently owns a z-transparency element.
+	var/water_transparency_active = FALSE
 	// A bitflag of blocked directions. ONLY works because we only allow cardinal flow.
 	var/blocked_flow_directions = 0
 
@@ -69,6 +101,108 @@
 	/// Fishing element for this specific water tile
 	var/datum/fish_source/fishing_datum = /datum/fish_source/water
 	flags_1 = CONDUCT_1
+
+/// Whether this turf currently immerses its contents.
+/turf/open/water/proc/is_immersing()
+	return water_volume >= 10 && water_height >= WATER_HEIGHT_ANKLE && !HAS_TRAIT(src, TRAIT_IMMERSE_STOPPED)
+
+/// Whether living mobs on this turf should receive the swimming status.
+/turf/open/water/proc/is_swimmable()
+	return is_immersing() && (water_height >= WATER_HEIGHT_DEEP || open_bottom || fake_bottomless)
+
+/// Recalculate the open bottom from the live turf below instead of initialization order.
+/turf/open/water/proc/refresh_water_depth(update_above = TRUE)
+	if(isnull(configured_water_height))
+		return
+
+	var/was_open_bottom = open_bottom
+	var/old_water_height = water_height
+	open_bottom = FALSE
+	water_height = configured_water_height
+	swim_skill = configured_swim_skill
+
+	if(!skip_bottom_check && water_volume >= 10)
+		var/turf/open/water/below = GET_TURF_BELOW(src)
+		if(istype(below) && below.water_volume >= 10 && below.water_height == WATER_HEIGHT_FULL && below.water_reagent == water_reagent)
+			open_bottom = TRUE
+			water_height = max(water_height, WATER_HEIGHT_DEEP)
+			swim_skill = TRUE
+
+	if(water_elements_initialized && (was_open_bottom != open_bottom || old_water_height != water_height))
+		sync_water_elements()
+		sync_water_transparency()
+
+	if(update_above)
+		var/turf/open/water/above = GET_TURF_ABOVE(src)
+		if(istype(above))
+			above.refresh_water_depth(update_above = FALSE)
+
+/// Attach exactly one immersion/wetness/swimming configuration for the current water state.
+/turf/open/water/proc/sync_water_elements()
+	if(!water_elements_initialized)
+		return
+
+	var/should_immerse = is_immersing()
+	var/should_swim = is_swimmable()
+	if(water_elements_active && active_element_height == water_height && active_element_swimmable == should_swim && should_immerse)
+		return
+
+	clear_water_elements()
+	if(!should_immerse)
+		ADD_TRAIT(src, TRAIT_IMMERSE_STOPPED, INNATE_TRAIT)
+		return
+
+	REMOVE_TRAIT(src, TRAIT_IMMERSE_STOPPED, INNATE_TRAIT)
+	AddElement(/datum/element/immerse, water_height, should_swim)
+	AddElement(/datum/element/watery_tile, water_height, cleanliness_factor)
+	if(should_swim)
+		var/stamina_cost = water_height == WATER_HEIGHT_FULL ? 10 : 5
+		AddElement(/datum/element/swimming_tile, stamina_cost, 2, water_height == WATER_HEIGHT_FULL)
+
+	water_elements_active = TRUE
+	active_element_height = water_height
+	active_element_swimmable = should_swim
+
+/// Detach water-state elements with the exact bespoke arguments used to attach them.
+/turf/open/water/proc/clear_water_elements()
+	if(!water_elements_active)
+		return
+
+	if(active_element_swimmable)
+		var/stamina_cost = active_element_height == WATER_HEIGHT_FULL ? 10 : 5
+		RemoveElement(/datum/element/swimming_tile, stamina_cost, 2, active_element_height == WATER_HEIGHT_FULL)
+	RemoveElement(/datum/element/watery_tile, active_element_height, cleanliness_factor)
+	RemoveElement(/datum/element/immerse, active_element_height, active_element_swimmable)
+	water_elements_active = FALSE
+	active_element_height = null
+	active_element_swimmable = FALSE
+
+/// Keep z-transparency paired with the live open-bottom state.
+/turf/open/water/proc/sync_water_transparency()
+	if(open_bottom == water_transparency_active)
+		return
+
+	if(open_bottom)
+		icon_state = "openspace"
+		AddElement(/datum/element/turf_z_transparency, TRUE)
+		water_transparency_active = TRUE
+		return
+
+	RemoveElement(/datum/element/turf_z_transparency, TRUE)
+	water_transparency_active = FALSE
+	icon_state = configured_icon_state
+	layer = configured_layer
+	plane = configured_plane
+
+/// Restore the normal wet overlay and reflection state after a dry tile refills.
+/turf/open/water/proc/restore_wet_appearance()
+	if(dry_overlay)
+		cut_overlay(dry_overlay)
+		dry_overlay = null
+	if(configured_shine)
+		make_shiny(configured_shine)
+	else
+		shine = configured_shine
 
 /turf/open/water/proc/set_watervolume(volume)
 	water_volume = volume
@@ -127,19 +261,24 @@
 		check_surrounding_water()
 
 /turf/open/water/proc/dryup(forced = FALSE)
-	if(!forced && water_volume < 10)
-		smoothing_flags = NONE
-		remove_neighborlays()
-		if(water_overlay)
-			QDEL_NULL(water_overlay)
-		if(water_top_overlay)
-			QDEL_NULL(water_top_overlay)
-		make_unshiny()
-		var/mutable_appearance/dirty = mutable_appearance('icons/turf/natural/liquids.dmi', "rock")
-		add_overlay(dirty)
-		for(var/obj/structure/waterwheel/rotator in contents)
-			rotator.set_rotational_direction_and_speed(null, 0)
-			rotator.set_stress_generation(0)
+	if(!forced && water_volume >= 10)
+		return
+
+	ADD_TRAIT(src, TRAIT_IMMERSE_STOPPED, INNATE_TRAIT)
+	clear_water_elements()
+	smoothing_flags = NONE
+	remove_neighborlays()
+	if(water_overlay)
+		QDEL_NULL(water_overlay)
+	if(water_top_overlay)
+		QDEL_NULL(water_top_overlay)
+	make_unshiny()
+	if(!dry_overlay)
+		dry_overlay = mutable_appearance('icons/turf/natural/liquids.dmi', "rock")
+		add_overlay(dry_overlay)
+	for(var/obj/structure/waterwheel/rotator in contents)
+		rotator.set_rotational_direction_and_speed(null, 0)
+		rotator.set_stress_generation(0)
 
 /turf/open/water/river/creatable
 	mapped = FALSE
@@ -148,9 +287,13 @@
 	baseturfs = /turf/open/openspace
 
 /turf/open/water/river/handle_water()
+	refresh_water_depth()
 	if(water_volume < 10)
 		dryup()
 	else if(water_volume)
+		restore_wet_appearance()
+		REMOVE_TRAIT(src, TRAIT_IMMERSE_STOPPED, INNATE_TRAIT)
+		sync_water_elements()
 		if(!water_overlay)
 			water_overlay = new(src)
 		if(!water_top_overlay)
@@ -235,13 +378,13 @@
 
 /turf/open/water/Initialize()
 	. = ..()
-
-	if(!skip_bottom_check)
-		var/turf/open/water/below = GET_TURF_BELOW(src)
-		if(istype(below) && below.water_height == WATER_HEIGHT_FULL && below.water_reagent == water_reagent)
-			open_bottom = TRUE
-			water_height = WATER_HEIGHT_DEEP
-			swim_skill = TRUE
+	configured_water_height = water_height
+	configured_swim_skill = swim_skill
+	configured_icon_state = icon_state
+	configured_layer = layer
+	configured_plane = plane
+	configured_shine = shine
+	refresh_water_depth()
 
 	if(!isnull(fishing_datum))
 		add_lazy_fishing(fishing_datum)
@@ -258,9 +401,10 @@
 
 /turf/open/water/LateInitialize()
 	. = ..()
-	if(open_bottom)
-		icon_state = "openspace"
-		AddElement(/datum/element/turf_z_transparency, is_openspace = TRUE)
+	water_elements_initialized = TRUE
+	refresh_water_depth()
+	sync_water_elements()
+	sync_water_transparency()
 	if(set_relationships_on_init)
 		check_surrounding_water()
 
@@ -291,9 +435,13 @@
 		dryup()
 
 /turf/open/water/proc/handle_water()
+	refresh_water_depth()
 	if(!water_volume || water_volume < 10)
 		dryup()
 		return
+	restore_wet_appearance()
+	REMOVE_TRAIT(src, TRAIT_IMMERSE_STOPPED, INNATE_TRAIT)
+	sync_water_elements()
 	if(!water_overlay)
 		water_overlay = new(src)
 	if(!water_top_overlay)
@@ -363,15 +511,6 @@
 			break
 
 	if(isliving(gone) && !gone.throwing)
-		var/mob/living/living = gone
-		if(HAS_TRAIT(living, TRAIT_SUBMERGED))
-			if(istype(new_loc, /turf/open/water))
-				var/turf/open/water/nextwater = new_loc
-				if(nextwater.water_volume < 10 || (nextwater.water_height != WATER_HEIGHT_FULL && !nextwater.open_bottom && !nextwater.fake_bottomless))
-					living.RemoveElement(/datum/element/submerged)
-			else
-				living.RemoveElement(/datum/element/submerged)
-			living.adjust_experience(GET_MOB_SKILL_VALUE_OLD(living, /datum/attribute/skill/misc/swimming), (GET_MOB_ATTRIBUTE_VALUE(living, STAT_INTELLIGENCE) * 0.3))
 		if(blocked_z_out_down)
 			return
 		if(water_overlay)
@@ -379,32 +518,21 @@
 				water_overlay.layer = BELOW_MOB_LAYER
 				water_overlay.plane = GAME_PLANE
 			else
-				spawn(6)
-					if(!locate(/mob/living) in src)
-						water_overlay.layer = BELOW_MOB_LAYER
-						water_overlay.plane = GAME_PLANE
-		for(var/D in GLOB.cardinals)
-			if(istype(get_step(new_loc, D), /turf/open/floor))
-				return
-		if(swim_skill && !HAS_TRAIT(gone, TRAIT_GOOD_SWIM))
-			if(swimdir && new_loc)
-				if(get_dir(src, new_loc) == dir)
-					return
-			if(!living.buckled)
-				var/drained = max(15 - (GET_MOB_SKILL_VALUE_OLD(living, /datum/attribute/skill/misc/swimming) * 5), 1)
-				drained += ENCUMBRANCE_TO_SIGMOID(living.encumbrance) * 50
-				if(!(water_height == WATER_HEIGHT_FULL ? living.adjust_stamina(drained, "drown") : living.adjust_stamina(drained)))
-					living.Immobilize(30)
-					addtimer(CALLBACK(living, TYPE_PROC_REF(/mob/living, Knockdown), 30), 10)
+				addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(update_delayed_water_overlay), src, null, BELOW_MOB_LAYER, GAME_PLANE, TRUE), 6)
 
 /turf/open/water/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_type = "blunt")
-	..()
+	. = ..()
+	if(water_volume < 10)
+		return
 	playsound(src, pick('sound/foley/water_land1.ogg','sound/foley/water_land2.ogg','sound/foley/water_land3.ogg'), 100, FALSE)
+	if(isobj(AM))
+		var/obj/object = AM
+		object.extinguish()
 
 /turf/open/water/can_zFall(atom/movable/A, levels = 1, turf/target)
 	if(!zPassOut(A, DOWN, target) || !target.zPassIn(A, DOWN, src))
 		return FALSE
-	if(!open_bottom)
+	if(!open_bottom && !fake_bottomless)
 		return FALSE
 	return HAS_TRAIT(A, TRAIT_SINKING)
 
@@ -415,9 +543,6 @@
 			return
 	if(water_volume < 10)
 		return
-	var/dirty_water_turf = FALSE
-	if(cleanliness_factor < 0)
-		dirty_water_turf = TRUE
 	if(istype(arrived, /obj/item/reagent_containers/food/snacks/fish))
 		var/obj/item/reagent_containers/food/snacks/fish/F = arrived
 		SEND_GLOBAL_SIGNAL(COMSIG_GLOBAL_FISH_RELEASED, F)
@@ -426,21 +551,7 @@
 		else
 			F.visible_message("<span class='warning'>[F] slowly sinks motionlessly into \the [src] and disappears...</span>")
 		qdel(F)
-	if(istype(arrived, /obj/item/clothing))
-		var/obj/item/clothing/cloth = arrived
-		if(cloth.wetable)
-			cloth.wet.add_water(20, dirty_water_turf)
 	if(isliving(arrived) && !arrived.throwing)
-		var/mob/living/L = arrived
-		if(L.body_position == LYING_DOWN || water_height >= WATER_HEIGHT_DEEP)
-			L.SoakMob(FULL_BODY, dirty_water_turf)
-			if((water_height == WATER_HEIGHT_FULL) || (open_bottom || fake_bottomless))
-				if(!HAS_TRAIT(L, TRAIT_SUBMERGED))
-					L.AddElement(/datum/element/submerged)
-		else if(water_height == WATER_HEIGHT_SHALLOW)
-			L.SoakMob(BELOW_CHEST, dirty_water_turf)
-		else if(water_height == WATER_HEIGHT_ANKLE)
-			L.SoakMob(FEET, dirty_water_turf)
 		if(water_overlay)
 			if(water_height > WATER_HEIGHT_ANKLE && !istype(old_loc, type))
 				playsound(arrived, 'sound/foley/waterenter.ogg', 100, FALSE)
@@ -450,10 +561,7 @@
 				water_overlay.layer = ABOVE_MOB_LAYER
 				water_overlay.plane = GAME_PLANE
 			else
-				spawn(6)
-					if(arrived.loc == src)
-						water_overlay.layer = ABOVE_MOB_LAYER
-						water_overlay.plane = GAME_PLANE
+				addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(update_delayed_water_overlay), src, arrived, ABOVE_MOB_LAYER, GAME_PLANE, FALSE), 6)
 
 /turf/open/water/attackby(obj/item/C, mob/user, list/modifiers)
 	if(user.used_intent.type == /datum/intent/fill)
@@ -499,12 +607,11 @@
 
 /turf/open/water/attack_hand(mob/user)
 	if(isliving(user))
-		var/mob/living/L = user
-		if(get_turf(L) != src)
+		if(get_turf(user) != src)
 			return
-		if(L.stat != CONSCIOUS)
+		if(user.stat != CONSCIOUS)
 			return
-		L.zSwim(DOWN)
+		try_z_swim(user, going_up = FALSE)
 
 /turf/open/water/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()
@@ -580,15 +687,15 @@
 	return TRUE
 
 /turf/open/water/Destroy()
-	. = ..()
-	dryup(forced = TRUE)
-
-/turf/open/water/hitby(atom/movable/AM, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum, damage_type = "blunt")
-	if(water_volume < 10)
-		return
-	if(isobj(AM))
-		var/obj/O = AM
-		O.extinguish()
+	STOP_PROCESSING(SSobj, src)
+	clear_water_elements()
+	if(water_transparency_active)
+		RemoveElement(/datum/element/turf_z_transparency, TRUE)
+		water_transparency_active = FALSE
+	QDEL_NULL(water_overlay)
+	QDEL_NULL(water_top_overlay)
+	dry_overlay = null
+	return ..()
 
 /turf/open/water/get_slowdown(mob/user)
 	. = ..()
@@ -599,13 +706,53 @@
 	if(swim_skill)
 		return max(0, . - (GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/misc/swimming)))
 
+/// Attempt voluntary vertical movement through connected water turfs.
+/turf/open/water/proc/try_z_swim(mob/living/swimming_mob, going_up)
+	if(QDELETED(swimming_mob) || get_turf(swimming_mob) != src)
+		return FALSE
+	if(!is_swimmable() || !HAS_TRAIT(swimming_mob, TRAIT_MOVE_SWIMMING))
+		return FALSE
+
+	var/direction = going_up ? UP : DOWN
+	if(water_height == WATER_HEIGHT_DEEP && direction == UP)
+		to_chat(swimming_mob, span_warning("I am already at the surface."))
+		return FALSE
+	if(water_height != WATER_HEIGHT_DEEP && water_height != WATER_HEIGHT_FULL)
+		return FALSE
+	if(direction == UP && HAS_TRAIT(swimming_mob, TRAIT_SINKING))
+		to_chat(swimming_mob, span_warningbig("I'm sinking and can't swim upwards!"))
+		return FALSE
+
+	var/z_move_flags = ZMOVE_SWIM_FLAGS | ZMOVE_FEEDBACK
+	if(!swimming_mob.can_z_move(direction, src, z_move_flags = z_move_flags))
+		return FALSE
+
+	var/swim_time = 3 SECONDS - ((1 DECISECONDS * GET_MOB_SKILL_VALUE_OLD(swimming_mob, /datum/attribute/skill/misc/swimming)) + (1 SECONDS * HAS_TRAIT(swimming_mob, TRAIT_GOOD_SWIM)))
+	if(!COOLDOWN_FINISHED(swimming_mob, cd_zswim))
+		return FALSE
+	COOLDOWN_START(swimming_mob, cd_zswim, max(swim_time, 1 DECISECONDS))
+	if(!do_after(swimming_mob, max(swim_time, 1 DECISECONDS), hidden = TRUE))
+		return FALSE
+	if(QDELETED(swimming_mob) || get_turf(swimming_mob) != src || !HAS_TRAIT(swimming_mob, TRAIT_MOVE_SWIMMING))
+		return FALSE
+
+	if(!swimming_mob.zMove(direction, z_move_flags = z_move_flags))
+		return FALSE
+	if(swimming_mob.stat == DEAD)
+		return TRUE
+	if(direction == UP)
+		to_chat(swimming_mob, span_notice("I swim upward."))
+	else
+		to_chat(swimming_mob, span_notice("I swim downward."))
+	return TRUE
+
 /turf/open/water/zPassIn(atom/movable/A, direction, turf/source)
 	if(direction == DOWN)
 		for(var/obj/O in contents)
 			if(O.obj_flags & BLOCK_Z_IN_DOWN)
 				return FALSE
 		return TRUE
-	if(direction == UP && open_bottom)
+	if(direction == UP && (open_bottom || fake_bottomless))
 		for(var/obj/O in contents)
 			if(O.obj_flags & BLOCK_Z_IN_UP)
 				return FALSE
@@ -615,7 +762,7 @@
 /turf/open/water/zPassOut(atom/movable/A, direction, turf/destination)
 	if(A.anchored && !isprojectile(A))
 		return FALSE
-	if(direction == DOWN && open_bottom)
+	if(direction == DOWN && (open_bottom || fake_bottomless))
 		for(var/obj/O in contents)
 			if(O.obj_flags & BLOCK_Z_OUT_DOWN)
 				return FALSE
@@ -829,6 +976,14 @@
 	swim_skill = TRUE
 	shine = SHINE_MATTE
 
+/turf/open/water/clean/under/handle_water()
+	. = ..()
+	if(!water_overlay)
+		return
+	// Full-depth water has no matching bottom4 state. Keep the lower level visible through a full-tile water texture.
+	water_overlay.icon_state = "together"
+	water_overlay.color = "#4f8199aa"
+
 /turf/open/water/clean/dirt
 	name = "water"
 	desc = "Fairly clear water, mostly untainted by surrounding soil."
@@ -840,6 +995,13 @@
 	water_height = WATER_HEIGHT_FULL
 	swim_skill = TRUE
 	shine = SHINE_MATTE
+
+/turf/open/water/clean/dirt/under/handle_water()
+	. = ..()
+	if(!water_overlay)
+		return
+	water_overlay.icon_state = "together"
+	water_overlay.color = "#4f8199aa"
 
 /turf/open/water/blood
 	name = "blood"

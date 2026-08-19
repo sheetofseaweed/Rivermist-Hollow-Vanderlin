@@ -13,6 +13,18 @@
 ///from base of datum/thrownthing/finalize(): (obj/thrown_object, datum/thrownthing) used for when a throw is finished
 #define COMSIG_MOVABLE_THROW_LANDED "movable_throw_landed"
 #define COMSIG_MOVABLE_Z_CHANGED "movable_ztransit" 			//from base of atom/movable/onTransitZ(): (old_z, new_z)
+/// From /atom/movable/proc/can_z_move(): (turf/start, turf/destination)
+#define COMSIG_CAN_Z_MOVE "movable_can_z_move"
+	/// Block the attempted z-move.
+	#define COMPONENT_CANT_Z_MOVE (1<<0)
+/// From /mob/living/can_z_move() when the mob is buckled to src.
+#define COMSIG_BUCKLED_CAN_Z_MOVE "ridden_pre_can_z_move"
+	/// The buckled atom supports moving between z-levels with its rider.
+	#define COMPONENT_RIDDEN_ALLOW_Z_MOVE (1<<0)
+	/// The buckled atom handles z-movement, but cannot do so right now.
+	#define COMPONENT_RIDDEN_STOP_Z_MOVE (1<<1)
+/// From /atom/movable/proc/onZImpact(): (turf/impacted_turf, levels)
+#define COMSIG_ATOM_ON_Z_IMPACT "movable_on_z_impact"
 #define COMSIG_MOVABLE_SECLUDED_LOCATION "movable_secluded" 	//called when the movable is placed in an unaccessible area, used for stationloving: ()
 /// from base of atom/movable/Hear(): (proc args list(message, atom/movable/speaker, message_language, raw_message, radio_freq, list/spans, list/message_mods = list()))
 #define COMSIG_MOVABLE_HEAR "movable_hear"

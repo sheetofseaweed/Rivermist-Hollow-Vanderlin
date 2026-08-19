@@ -176,7 +176,7 @@
 			if(!istype(target, /turf/open/openspace))
 				to_chat(user, "<span class='warning'>I can't climb here.</span>")
 				return
-			if(!L.can_zTravel(target, UP))
+			if(!L.can_z_move(UP, user_turf, target, Z_MOVE_CLIMBING_FLAGS | ZMOVE_FEEDBACK))
 				to_chat(user, "<span class='warning'>I can't climb there.</span>")
 				return
 			target = GET_TURF_ABOVE(src)
@@ -217,11 +217,11 @@
 				playsound(user, climbsound, 100, TRUE)
 			user.visible_message("<span class='warning'>[user] starts to climb [src].</span>", "<span class='warning'>I start to climb [src]...</span>")
 			if(do_after(L, used_time, src))
-				var/pulling = user.pulling
-				if(ismob(pulling))
-					user.pulling.forceMove(target)
-				user.forceMove(target)
-				user.start_pulling(pulling,suppress_message = TRUE)
+				if(!L.can_z_move(UP, get_turf(L), target, Z_MOVE_CLIMBING_FLAGS | ZMOVE_FEEDBACK))
+					return
+				L.set_currently_z_moving(CURRENTLY_Z_ASCENDING)
+				if(!L.zMove(UP, target, Z_MOVE_CLIMBING_FLAGS))
+					return
 				if(user.m_intent != MOVE_INTENT_SNEAK)
 					playsound(user, 'sound/foley/climb.ogg', 100, TRUE)
 				if(L.mind)
@@ -246,8 +246,9 @@
 	if(!istype(target, /turf/open/openspace))
 		to_chat(user, "<span class='warning'>I can't go there.</span>")
 		return
-	user.forceMove(target)
-	to_chat(user, "<span class='warning'>I crawl up the wall.</span>")
+	if(user.can_z_move(UP, get_turf(user), target, ZMOVE_IGNORE_OBSTACLES | ZMOVE_FEEDBACK))
+		user.zMove(UP, target, ZMOVE_IGNORE_OBSTACLES)
+		to_chat(user, "<span class='warning'>I crawl up the wall.</span>")
 	. = ..()
 
 /turf/closed/get_smooth_underlay_icon(mutable_appearance/underlay_appearance, turf/asking_turf, adjacency_dir)

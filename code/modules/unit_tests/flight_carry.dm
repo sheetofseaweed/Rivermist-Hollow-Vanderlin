@@ -11,7 +11,7 @@
 	ADD_TRAIT(carrier, TRAIT_MOVE_FLYING, ORGAN_TRAIT)
 	TEST_ASSERT(!rider.can_zFall(get_turf(rider), 1, landing, DOWN), "A rider carried by a flying mob fell out of their arms.")
 
-/// Flight must haul a carried passenger along by hand, keeping the pull (and so the grab) intact.
+/// Grouped z-movement must carry a buckled passenger while keeping the pull and grab intact.
 /datum/unit_test/flight_takeoff_carries_passenger/Run()
 	var/mob/living/carbon/human/carrier = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/rider = allocate(/mob/living/carbon/human)
@@ -29,8 +29,7 @@
 	fly.release_dragged()
 	TEST_ASSERT_EQUAL(carrier.pulling, rider, "Taking off let go of a rider that was being carried, not just dragged.")
 
-	carrier.forceMove(destination)
-	fly.move_carried_to(destination)
+	carrier.zMove(UP, destination, ZMOVE_FLIGHT_FLAGS)
 
 	TEST_ASSERT_EQUAL(get_turf(rider), destination, "The carried rider was left behind when the carrier changed loc.")
 	TEST_ASSERT_EQUAL(rider.buckled, carrier, "The carried rider was unbuckled by the move.")

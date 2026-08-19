@@ -55,7 +55,7 @@
 		if(!istype(target, /turf/open/openspace))
 			to_chat(user, "<span class='warning'>I can't climb here.</span>")
 			return
-		if(!L.can_zTravel(target, UP))
+		if(!L.can_z_move(UP, get_turf(L), target, Z_MOVE_CLIMBING_FLAGS | ZMOVE_FEEDBACK))
 			to_chat(user, "<span class='warning'>I can't climb there.</span>")
 			return
 		var/used_time = 0
@@ -74,11 +74,11 @@
 		playsound(user, 'sound/foley/climb.ogg', 100, TRUE)
 		user.visible_message("<span class='warning'>[user] starts to climb [src].</span>", "<span class='warning'>I start to climb [src]...</span>")
 		if(do_after(L, used_time, src))
-			var/pulling = user.pulling
-			if(ismob(pulling))
-				user.pulling.forceMove(target)
-			user.forceMove(target)
-			user.start_pulling(pulling,suppress_message = TRUE)
+			if(!L.can_z_move(UP, get_turf(L), target, Z_MOVE_CLIMBING_FLAGS | ZMOVE_FEEDBACK))
+				return
+			L.set_currently_z_moving(CURRENTLY_Z_ASCENDING)
+			if(!L.zMove(UP, target, Z_MOVE_CLIMBING_FLAGS))
+				return
 			playsound(user, 'sound/foley/climb.ogg', 100, TRUE)
 			if(L.mind)
 				L.adjust_experience(/datum/attribute/skill/misc/climbing, exp_to_gain, FALSE)

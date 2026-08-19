@@ -130,25 +130,9 @@
 		return TRUE
 	return FALSE
 
-/// A helper proc to handle chained atoms moving across Z-levels. Currently only handles mobs pulling movables.
-/proc/movable_travel_z_level(atom/movable/AM, turf/newtarg)
-	if(!isliving(AM))
-		AM.forceMove(newtarg)
-		return
-	var/mob/living/L = AM
-	var/atom/movable/pulling = L.pulling
-	var/was_pulled_buckled = FALSE
-	if(pulling)
-		if(pulling in L.buckled_mobs)
-			was_pulled_buckled = TRUE
-	L.forceMove(newtarg)
-	if(pulling)
-		L.stop_pulling()
-		pulling.forceMove(newtarg)
-		L.start_pulling(pulling, suppress_message = TRUE)
-		if(was_pulled_buckled)
-			var/mob/living/M = pulling
-			if(M.body_position != LYING_DOWN)	// piggyback carry
-				L.buckle_mob(pulling, TRUE, TRUE, FALSE, 0, 0)
-			else				// fireman carry
-				L.buckle_mob(pulling, TRUE, TRUE, 90, 0, 0)
+/// Move an atom and its attached riders or pulled atom as one z-movement group.
+/proc/movable_travel_z_level(atom/movable/movable, turf/new_target)
+	var/direction = get_dir_multiz(get_turf(movable), new_target)
+	if(direction & UP)
+		movable.set_currently_z_moving(CURRENTLY_Z_ASCENDING)
+	return movable.zMove(direction, new_target, ZMOVE_LADDER_FLAGS)

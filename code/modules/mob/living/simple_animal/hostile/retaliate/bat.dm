@@ -43,12 +43,12 @@
 	set category = "RoleUnique.Vampire Bat"
 	set name = "Move Up"
 
-	if(zMove(UP, TRUE))
+	if(zMove(UP, z_move_flags = ZMOVE_FLIGHT_FLAGS | ZMOVE_FEEDBACK))
 		to_chat(src, "<span class='notice'>I fly upwards.</span>")
 
 /mob/living/simple_animal/hostile/retaliate/bat/proc/bat_down()
 	set category = "RoleUnique.Vampire Bat"
 	set name = "Move Down"
 
-	if(zMove(DOWN, TRUE))
+	if(zMove(DOWN, z_move_flags = ZMOVE_FLIGHT_FLAGS | ZMOVE_FEEDBACK))
 		to_chat(src, "<span class='notice'>I fly down.</span>")

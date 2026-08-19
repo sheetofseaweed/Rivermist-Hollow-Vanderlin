@@ -266,8 +266,9 @@
 /datum/keybinding/living/lookup/down(client/user)
 	. = ..()
 	var/mob/living/L = user.mob
-	if(HAS_TRAIT(L, TRAIT_SUBMERGED))
-		L.zSwim(UP)
+	var/turf/open/water/current_water = get_turf(L)
+	if(istype(current_water) && HAS_TRAIT(L, TRAIT_MOVE_SWIMMING))
+		current_water.try_z_swim(L, going_up = TRUE)
 		return FALSE
 	if(!lastrest || world.time > lastrest + 15)
 		L.look_up()
@@ -308,7 +309,9 @@
 /datum/keybinding/living/swim_up/down(client/user)
 	. = ..()
 	var/mob/living/L = user.mob
-	L.zSwim(UP)
+	var/turf/open/water/current_water = get_turf(L)
+	if(istype(current_water))
+		current_water.try_z_swim(L, going_up = TRUE)
 
 /datum/keybinding/living/swim_down
 	hotkey_keys = list("ShiftV")
@@ -319,4 +322,6 @@
 /datum/keybinding/living/swim_down/down(client/user)
 	. = ..()
 	var/mob/living/L = user.mob
-	L.zSwim(DOWN)
+	var/turf/open/water/current_water = get_turf(L)
+	if(istype(current_water))
+		current_water.try_z_swim(L, going_up = FALSE)

@@ -179,8 +179,9 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 /mob/dead/observer/profane/Move(n, direct)
 	return
 
-/mob/dead/observer/profane/canZMove(direction, turf/target)
-	return
+/mob/dead/observer/profane/can_z_move(direction, turf/start, turf/destination, z_move_flags = NONE, mob/living/rider)
+	SHOULD_CALL_PARENT(FALSE)
+	return FALSE
 
 /mob/dead/observer/Initialize()
 	set_invisibility(GLOB.observer_default_invisibility)

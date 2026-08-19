@@ -146,7 +146,7 @@
 			start_flying()
 		return
 
-	if(!owner.can_zTravel(direction = DOWN))
+	if(!owner.can_z_move(DOWN, get_turf(owner), z_move_flags = ZMOVE_FLIGHT_FLAGS))
 		stop_flying()
 	else if(do_after(owner, 1 SECONDS, owner))
 		stop_flying()
@@ -157,8 +157,9 @@
 
 	// Only stop flight if there is somewhere to go
 	// This is so you can fly on the top Z level
-	var/turf/above_turf = GET_TURF_ABOVE(get_turf(owner))
-	if(above_turf && (!isopenspace(above_turf) || !owner.can_zTravel(direction = UP)))
+	var/turf/current_turf = get_turf(owner)
+	var/turf/above_turf = GET_TURF_ABOVE(current_turf)
+	if(above_turf && (!isopenspace(above_turf) || !owner.can_z_move(UP, current_turf, above_turf, ZMOVE_INCAPACITATED_CHECKS | ZMOVE_LYING_CHECKS)))
 		owner.balloon_alert(owner, "can't fly up!")
 		return FALSE
 
@@ -205,7 +206,7 @@
 		ADD_TRAIT(owner, TRAIT_MOVE_FLYING, ORGAN_TRAIT)
 
 		var/turf/above_turf = GET_TURF_ABOVE(turf)
-		if(owner.can_zTravel(direction = UP) && isopenspace(above_turf))
+		if(isopenspace(above_turf) && owner.can_z_move(UP, turf, above_turf, ZMOVE_FLIGHT_FLAGS))
 			turf = above_turf
 
 	if(flight_time)
@@ -229,27 +230,10 @@
 		animate(transform = original, time = 0.5 SECONDS, EASE_OUT)
 		owner.pixel_z = prev_pixel_z
 		owner.alpha = prev_alpha
-		owner.forceMove(turf)
-		move_carried_to(turf)
+		owner.set_currently_z_moving(CURRENTLY_Z_ASCENDING)
+		owner.zMove(UP, turf, ZMOVE_FLIGHT_FLAGS)
 
 	build_all_button_icons(update_flags = UPDATE_BUTTON_BACKGROUND)
-
-/**
- * forceMove() leaves buckled riders behind, so flight has to relocate whoever we are carrying by
- * hand on every z-change. pulledby is stashed across the move because forceMove() clears it, and
- * losing the pull destroys our grab item, which in turn unbuckles the passenger we just moved.
- */
-/datum/action/item_action/organ_action/use/flight/proc/move_carried_to(turf/destination)
-	if(!destination || !isliving(owner))
-		return
-	var/mob/living/carrier = owner
-	for(var/mob/living/passenger as anything in carrier.buckled_mobs)
-		var/pulled_along = (carrier.pulling == passenger)
-		if(pulled_along)
-			passenger.set_pulledby(null)
-		passenger.forceMove(destination)
-		if(pulled_along)
-			passenger.set_pulledby(carrier)
 
 /// Someone we are only dragging has nothing to hold onto once we leave the ground, and get_dist()
 /// ignores z so the pull would survive and yank them into the air every step. Let go instead.
@@ -289,7 +273,7 @@
 	var/turf/turf = get_turf(owner)
 	// If you can't fly up you can't fly down, drop like a rock
 	if(allows_z_rise)
-		if(isopenspace(turf) && owner.can_zTravel(direction = DOWN))
+		if(isopenspace(turf) && owner.can_z_move(DOWN, turf, z_move_flags = ZMOVE_FLIGHT_FLAGS))
 			turf = GET_TURF_BELOW(turf)
 
 	to_chat(owner, span_notice("I stop flying."))
@@ -302,8 +286,7 @@
 		owner.alpha = 0
 		owner.pixel_z = 156
 		owner.transform = matrix() * 8
-		owner.forceMove(turf)
-		move_carried_to(turf)
+		owner.zMove(DOWN, turf, ZMOVE_FLIGHT_FLAGS)
 		animate(owner, pixel_z = prev_pixel_z, alpha = prev_alpha, time = 1.2 SECONDS, easing = EASE_IN, flags = ANIMATION_PARALLEL)
 		animate(owner, transform = original, time = 1.2 SECONDS, easing = EASE_IN, flags = ANIMATION_PARALLEL)
 
@@ -333,9 +316,6 @@
 	var/turf/open = get_turf(owner)
 	if(isopenspace(open))
 		open.zFall(owner)
-		// zFall() only takes the flier, and the trait is already gone so our rider is no longer
-		// exempt from falling. Put them down wherever we ended up.
-		move_carried_to(get_turf(owner))
 
 	if(shadow)
 		QDEL_NULL(shadow)

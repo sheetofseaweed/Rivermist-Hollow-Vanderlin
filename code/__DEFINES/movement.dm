@@ -38,3 +38,47 @@ GLOBAL_VAR_INIT(glide_size_multiplier, 1.0)
 #define MOVEMENT_LOOP_IGNORE_PRIORITY (1<<1)
 
 #define DEFAULT_MOB_SNEAK_TIME 5 SECONDS
+
+/**
+ * Values stored in /atom/movable/currently_z_moving.
+ * Higher values take priority when movement causes another z-movement path to run.
+ */
+#define CURRENTLY_Z_CLIMBING_DOWN 0.5
+#define CURRENTLY_Z_FALLING 1
+#define CURRENTLY_Z_MOVING_GENERIC 2
+#define CURRENTLY_Z_FALLING_FROM_MOVE 3
+#define CURRENTLY_Z_ASCENDING 4
+
+/// Repair anything src is pulling after a grouped z-move.
+#define ZMOVE_CHECK_PULLING (1<<0)
+/// Repair src's relationship with its puller after a grouped z-move.
+#define ZMOVE_CHECK_PULLEDBY (1<<1)
+/// Apply fall-specific eligibility checks.
+#define ZMOVE_FALL_CHECKS (1<<2)
+/// Require the movable to be capable of flight.
+#define ZMOVE_CAN_FLY_CHECKS (1<<3)
+/// Apply living incapacitation checks. Interpreted by living overrides.
+#define ZMOVE_INCAPACITATED_CHECKS (1<<4)
+/// Require a living mover to be standing. Interpreted by living overrides.
+#define ZMOVE_LYING_CHECKS (1<<5)
+/// Skip zPassIn() and zPassOut() obstacle checks.
+#define ZMOVE_IGNORE_OBSTACLES (1<<6)
+/// Give the mover feedback when validation fails.
+#define ZMOVE_FEEDBACK (1<<7)
+/// Allow living movers to delegate movement to an atom they are buckled to.
+#define ZMOVE_ALLOW_BUCKLED (1<<8)
+/// Include pulled atoms in the grouped z-move.
+#define ZMOVE_INCLUDE_PULLED (1<<9)
+/// Skip the anchored check.
+#define ZMOVE_ALLOW_ANCHORED (1<<10)
+/// Require the destination to be a water turf.
+#define ZMOVE_WATER_CHECKS (1<<11)
+
+#define ZMOVE_CHECK_PULLS (ZMOVE_CHECK_PULLING|ZMOVE_CHECK_PULLEDBY)
+
+#define ZMOVE_FLIGHT_FLAGS (ZMOVE_CAN_FLY_CHECKS|ZMOVE_INCAPACITATED_CHECKS|ZMOVE_CHECK_PULLS|ZMOVE_ALLOW_BUCKLED|ZMOVE_INCLUDE_PULLED)
+#define ZMOVE_STAIRS_FLAGS (ZMOVE_CHECK_PULLEDBY|ZMOVE_ALLOW_BUCKLED)
+#define ZMOVE_LADDER_FLAGS (ZMOVE_CHECK_PULLEDBY|ZMOVE_ALLOW_BUCKLED|ZMOVE_INCLUDE_PULLED)
+#define Z_MOVE_CLIMBING_FLAGS (ZMOVE_LADDER_FLAGS|ZMOVE_INCAPACITATED_CHECKS|ZMOVE_LYING_CHECKS)
+#define ZMOVE_FALL_FLAGS (ZMOVE_FALL_CHECKS|ZMOVE_ALLOW_BUCKLED)
+#define ZMOVE_SWIM_FLAGS (ZMOVE_WATER_CHECKS|ZMOVE_INCAPACITATED_CHECKS|ZMOVE_CHECK_PULLS|ZMOVE_ALLOW_BUCKLED)

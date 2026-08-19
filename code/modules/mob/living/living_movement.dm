@@ -123,44 +123,61 @@
 		return FALSE
 	return ..()
 
-/mob/living/canZMove(dir, turf/target, swimming = FALSE)
-	if(!swimming)
-		return can_zTravel(target, dir) && (movement_type & FLYING)
-	if(!istype(target, /turf/open/water))
-		return FALSE
-	return can_zTravel(target, dir)
-
-/// Attempts to move the mob across z levels while swimming. Set forced TRUE if something other than the mob causes the move.
-/mob/living/proc/zSwim(dir, forced = FALSE)
-	if(!HAS_TRAIT(src, TRAIT_SUBMERGED))
+/mob/living/up()
+	if(stat >= UNCONSCIOUS || HAS_TRAIT(src, TRAIT_IMMOBILIZED))
 		return
-	if(!forced)
-		if(stat == DEAD)
-			return
-		if(HAS_TRAIT(src, TRAIT_IMMOBILIZED))
-			return
-		if(!COOLDOWN_FINISHED(src, cd_zswim))
-			return
-		if(dir == UP && HAS_TRAIT(src, TRAIT_SINKING))
-			to_chat(src, span_warning("You are sinking and cannot surface!"))
-		else if(zMove(dir, FALSE, TRUE))
-			var/zswim_time = 2 SECONDS - ((1 DECISECONDS * GET_MOB_SKILL_VALUE_OLD(src, /datum/attribute/skill/misc/swimming)) + (1 SECONDS * HAS_TRAIT(src, TRAIT_GOOD_SWIM)))
-			COOLDOWN_START(src, cd_zswim, zswim_time)
-			if(dir == UP)
-				to_chat(src, span_notice("You swim upward."))
-			else
-				to_chat(src, span_notice("You swim downward."))
+	return ..()
+
+/mob/living/down()
+	if(stat >= UNCONSCIOUS || HAS_TRAIT(src, TRAIT_IMMOBILIZED))
+		return
+	return ..()
+
+/// Relay z-movement to whatever we are riding, or dismount when the movement does not support buckled mobs.
+/mob/living/zMove(direction, turf/target, z_move_flags = ZMOVE_FLIGHT_FLAGS)
+	if(buckled)
+		if(buckled.currently_z_moving)
+			return FALSE
+		if(!(z_move_flags & ZMOVE_ALLOW_BUCKLED))
+			buckled.unbuckle_mob(src, force = TRUE)
 		else
-			if(dir == UP)
-				to_chat(src, span_warning("You are unable to swim any higher."))
-			else
-				to_chat(src, span_warning("You can't swim any further down."))
-	else
-		if(zMove(dir, FALSE, TRUE) && stat != DEAD)
-			if(dir == UP)
-				to_chat(src, span_warningbig("A strong current pushes you upward!"))
-			else
-				to_chat(src, span_warningbig("You sink beneath the water!"))
+			if(!target)
+				target = can_z_move(direction, get_turf(src), z_move_flags = z_move_flags, rider = src)
+				if(!target)
+					return FALSE
+			return buckled.zMove(direction, target, z_move_flags)
+	return ..()
+
+/// Apply living-specific posture and buckle policy before the generic z-movement checks.
+/mob/living/can_z_move(direction, turf/start, turf/destination, z_move_flags = ZMOVE_FLIGHT_FLAGS, mob/living/rider)
+	if((z_move_flags & ZMOVE_LYING_CHECKS) && body_position != STANDING_UP)
+		if(z_move_flags & ZMOVE_FEEDBACK)
+			to_chat(src, span_warning("I need to stand to do this!"))
+		return FALSE
+	if((z_move_flags & ZMOVE_INCAPACITATED_CHECKS) && incapacitated())
+		if(z_move_flags & ZMOVE_FEEDBACK)
+			to_chat(rider || src, span_warning("[rider ? src : "I"] can't do that right now!"))
+		return FALSE
+	if(!buckled || !(z_move_flags & ZMOVE_ALLOW_BUCKLED))
+		if(!(z_move_flags & ZMOVE_FALL_CHECKS) && incorporeal_move && (!rider || rider.incorporeal_move))
+			z_move_flags |= ZMOVE_IGNORE_OBSTACLES
+		return ..()
+	switch(SEND_SIGNAL(buckled, COMSIG_BUCKLED_CAN_Z_MOVE, direction, start, destination, z_move_flags, src))
+		if(COMPONENT_RIDDEN_ALLOW_Z_MOVE)
+			return buckled.can_z_move(direction, start, destination, z_move_flags, src)
+		if(COMPONENT_RIDDEN_STOP_Z_MOVE)
+			return FALSE
+		else
+			if(!(z_move_flags & ZMOVE_CAN_FLY_CHECKS) && !buckled.anchored)
+				return buckled.can_z_move(direction, start, destination, z_move_flags, src)
+			if(z_move_flags & ZMOVE_FEEDBACK)
+				to_chat(src, span_warning("Unbuckle from [buckled] first."))
+			return FALSE
+
+/mob/set_currently_z_moving(new_z_moving_value, forced = FALSE)
+	if(buckled && !forced)
+		return buckled.set_currently_z_moving(new_z_moving_value, forced)
+	return ..()
 
 /mob/living/can_safely_descend(turf/target)
 	target = GET_TURF_BELOW(target)

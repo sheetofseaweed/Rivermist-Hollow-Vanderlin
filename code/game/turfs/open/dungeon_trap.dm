@@ -22,6 +22,11 @@
 		return TRUE
 	return FALSE
 
+/turf/open/dungeon_trap/Entered(atom/movable/movable)
+	. = ..()
+	if(movable.set_currently_z_moving(CURRENTLY_Z_FALLING))
+		zFall(movable, falling_from_move = TRUE)
+
 /turf/open/dungeon_trap/zPassIn(atom/movable/A, direction, turf/source)
 	if(direction == DOWN)
 		for(var/obj/O in contents)
@@ -47,19 +52,30 @@
 		return FALSE
 	return zPassOut(A, DOWN, target) && target.zPassIn(A, DOWN, src)
 
-/turf/open/dungeon_trap/zFall(atom/movable/A, levels = 1, force = FALSE)
-	if(!isobj(A) && !ismob(A))
+/turf/open/dungeon_trap/zFall(atom/movable/falling, levels = 1, force = FALSE, falling_from_move = FALSE)
+	if(!isobj(falling) && !ismob(falling))
 		return FALSE
 	var/turf/target = get_dungeon_tile()
 	if(!target)
 		return FALSE
 	levels += (SSdungeon_generator.dungeon_z + 2) - target.z //if you fall on the lower dungeon level, you're falling 3+ levels. If you're falling on the upper level, you're falling 2+.
-	if(!force && (!can_zFall(A, levels, target) || !A.can_zFall(src, levels, target, DOWN)))
+	if(isliving(falling))
+		var/mob/living/falling_living = falling
+		if(falling_living.buckled)
+			falling = falling_living.buckled
+	if(!falling_from_move && falling.currently_z_moving)
 		return FALSE
-	A.atom_flags |= Z_FALLING
-	A.forceMove(target)
-	A.atom_flags &= ~Z_FALLING
-	target.zImpact(A, levels, src)
+	if(!force && (!can_zFall(falling, levels, target) || !falling.can_z_move(DOWN, src, target, ZMOVE_FALL_FLAGS)))
+		falling.set_currently_z_moving(FALSE, forced = TRUE)
+		return FALSE
+	falling.set_currently_z_moving(CURRENTLY_Z_FALLING)
+	falling.atom_flags |= Z_FALLING
+	if(!falling.zMove(DOWN, target, ZMOVE_CHECK_PULLEDBY))
+		falling.atom_flags &= ~Z_FALLING
+		falling.set_currently_z_moving(FALSE, forced = TRUE)
+		return FALSE
+	falling.atom_flags &= ~Z_FALLING
+	target.zImpact(falling, levels, src)
 	return TRUE
 
 /proc/get_dungeon_tile()

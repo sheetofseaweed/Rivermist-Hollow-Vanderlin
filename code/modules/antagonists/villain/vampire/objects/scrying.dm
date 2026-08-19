@@ -109,14 +109,14 @@
 	set category = "RoleUnique.Arcane Eye"
 	set name = "Move Up"
 
-	if(zMove(UP, TRUE))
+	if(zMove(UP, z_move_flags = ZMOVE_FEEDBACK))
 		to_chat(src, span_notice("I move upwards."))
 
 /mob/dead/observer/rogue/arcaneeye/proc/eye_down()
 	set category = "RoleUnique.Arcane Eye"
 	set name = "Move Down"
 
-	if(zMove(DOWN, TRUE))
+	if(zMove(DOWN, z_move_flags = ZMOVE_FEEDBACK))
 		to_chat(src, span_notice("I move down."))
 
 /mob/dead/observer/rogue/arcaneeye/Move(NewLoc, direct)
