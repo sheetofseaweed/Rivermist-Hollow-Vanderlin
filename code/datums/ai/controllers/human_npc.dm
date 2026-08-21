@@ -12,7 +12,11 @@
 
 		BB_HUMAN_NPC_ATTACK_ZONE_COUNTER = 0,  // how many times we've hit the same zone
 		BB_HUMAN_NPC_LAST_ATTACK_ZONE = null,  // last zone we attacked
-		BB_HUMAN_NPC_WEAKPOINT = null,         // cached weakpoint zone if we found one
+		BB_HUMAN_NPC_WEAKPOINT = null,         // cached weakpoint body zone
+		BB_HUMAN_NPC_WEAKPOINT_ARMOR_TYPE = null,
+		BB_HUMAN_NPC_WEAKPOINT_EXPIRES = 0,
+		BB_HUMAN_NPC_WEAKPOINT_SCAN_COOLDOWN = 0,
+		BB_HUMAN_NPC_WEAKPOINT_TARGET = null,
 		BB_HUMAN_NPC_JUMP_COOLDOWN = 0,        // world.time when we can next jump
 		BB_HUMAN_NPC_FLANK_ANGLE = null,       // our claimed flank direction (degrees, 0-359)
 		BB_HUMAN_NPC_FLANK_TARGET = null,      // the turf we're moving toward for flanking

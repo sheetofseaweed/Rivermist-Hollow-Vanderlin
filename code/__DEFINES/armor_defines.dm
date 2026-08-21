@@ -47,3 +47,32 @@
 // Armor integrity failure threshold (fraction of max_integrity at which armor enters broken state).
 // Mirrors the TA value; clothing base already sets integrity_failure = 0.1 so this is a named constant.
 #define ARMOR_INTEG_FAILURE 0.1
+
+// Fully blocked melee attacks can still transmit blunt trauma through armor.
+#define ARMOR_TRAUMA_MINIMUM 1.25
+#define ARMOR_TRAUMA_MAXIMUM 15
+#define ARMOR_TRAUMA_MAX_DELIVERY_MULT 2
+#define ARMOR_TRAUMA_ARMOR_TIER_SCALE 0.1
+#define ARMOR_TRAUMA_CON_SCALE 0.025
+#define ARMOR_TRAUMA_CON_MULT_MIN 0.7
+#define ARMOR_TRAUMA_CON_MULT_MAX 1.15
+
+// item_weight is stored in kilograms.
+#define ARMOR_TRAUMA_MASS_LIGHT 0.75
+#define ARMOR_TRAUMA_MASS_MEDIUM 1.5
+#define ARMOR_TRAUMA_MASS_HEAVY 2.5
+#define ARMOR_TRAUMA_MASS_VERY_HEAVY 4
+#define ARMOR_TRAUMA_MASS_EXTREME 7
+
+#define ARMOR_TRAUMA_IMPACT_LIGHT 2
+#define ARMOR_TRAUMA_IMPACT_MEDIUM 5
+#define ARMOR_TRAUMA_IMPACT_HEAVY 8
+#define ARMOR_TRAUMA_IMPACT_VERY_HEAVY 10
+#define ARMOR_TRAUMA_IMPACT_EXTREME 12
+
+#define ARMOR_TRAUMA_MULT_STAB 0.35
+#define ARMOR_TRAUMA_MULT_CUT 0.65
+#define ARMOR_TRAUMA_MULT_PICK 0.65
+#define ARMOR_TRAUMA_MULT_CHOP 0.85
+#define ARMOR_TRAUMA_MULT_BLUNT 1.1
+#define ARMOR_TRAUMA_MULT_SMASH 1.35

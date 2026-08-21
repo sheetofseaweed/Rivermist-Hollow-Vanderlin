@@ -179,6 +179,9 @@
 	return FALSE
 
 /mob/living/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
+	if(dodge_projectile(P))
+		return BULLET_ACT_FORCE_PIERCE
+
 	// Also hooked in /mob/living/carbon/human/bullet_act so deflection outranks
 	// species/martial-art/reflect handling there; safe to run twice.
 	if(guard_deflect_projectile(P))

@@ -1,4 +1,221 @@
 
+/mob/living/proc/get_dodge_recharge_time()
+	var/speed = GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED)
+	var/recharge_time = DODGE_RECHARGE_BASE - ((speed - 10) * 0.5 SECONDS)
+	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
+		recharge_time *= 0.75
+	return clamp(round(recharge_time), DODGE_RECHARGE_MIN, DODGE_RECHARGE_MAX)
+
+/mob/living/proc/get_manual_dodge_distance()
+	var/athletics = GET_MOB_SKILL_VALUE_OLD(src, /datum/attribute/skill/misc/athletics)
+	var/mobility_score = GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED) + athletics
+	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
+		mobility_score += 2
+
+	var/dodge_distance = 1
+	if(mobility_score >= DODGE_DISTANCE_TWO_THRESHOLD)
+		dodge_distance = 2
+	if(mobility_score >= DODGE_DISTANCE_THREE_THRESHOLD)
+		dodge_distance = 3
+
+	if(ishuman(src))
+		var/mob/living/carbon/human/human = src
+		switch(human.worn_armor_class)
+			if(AC_MEDIUM)
+				dodge_distance = min(dodge_distance, 2)
+			if(AC_HEAVY)
+				dodge_distance = 1
+	return dodge_distance
+
+/mob/living/proc/get_manual_dodge_stamina_cost()
+	var/speed = GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED)
+	var/stamina_cost = clamp(DODGE_STAMINA_BASE - (speed - 10), DODGE_STAMINA_MIN, DODGE_STAMINA_MAX)
+	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
+		stamina_cost -= 2
+
+	if(ishuman(src))
+		var/mob/living/carbon/human/human = src
+		stamina_cost += CEILING(human.getPainLoss() / 50, 1)
+		switch(human.worn_armor_class)
+			if(AC_LIGHT)
+				stamina_cost += 3
+			if(AC_MEDIUM)
+				stamina_cost += 7
+			if(AC_HEAVY)
+				stamina_cost += 12
+
+	stamina_cost -= get_tempo_bonus(TEMPO_TAG_STAMLOSS_DODGE)
+	return clamp(stamina_cost, DODGE_STAMINA_MIN, DODGE_STAMINA_MAX)
+
+/mob/living/proc/get_manual_dodge_grace_time()
+	var/athletics = GET_MOB_SKILL_VALUE_OLD(src, /datum/attribute/skill/misc/athletics)
+	var/grace_time = DODGE_GRACE_MIN
+	grace_time += floor((GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED) - 8) / 2)
+	grace_time += floor(athletics / 2)
+	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
+		grace_time += 1
+	return clamp(grace_time, DODGE_GRACE_MIN, DODGE_GRACE_MAX)
+
+/mob/living/proc/get_manual_dodge_success_chance()
+	if(HAS_TRAIT(src, TRAIT_EVASIVE))
+		return 100
+
+	var/athletics = GET_MOB_SKILL_VALUE_OLD(src, /datum/attribute/skill/misc/athletics)
+	var/success_chance = 55 + (GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED) * 2) + (athletics * 8)
+	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
+		success_chance += 15
+	return clamp(round(success_chance), 20, 100)
+
+/mob/living/proc/get_manual_dodge_destination(travel_direction, dodge_distance)
+	var/turf/current_turf = get_turf(src)
+	var/turf/last_safe_turf
+	for(var/step_number in 1 to dodge_distance)
+		var/turf/next_turf = get_step(current_turf, travel_direction)
+		if(!is_valid_dodge_turf(next_turf))
+			break
+		last_safe_turf = next_turf
+		current_turf = next_turf
+	return last_safe_turf
+
+/mob/living/proc/can_manual_dodge()
+	if(!client || !cmode)
+		return FALSE
+	if(!candodge || HAS_TRAIT(src, TRAIT_UNDODGING) || HAS_TRAIT(src, TRAIT_IMMOBILIZED))
+		return FALSE
+	if(stat || incapacitated() || body_position == LYING_DOWN || !(mobility_flags & MOBILITY_STAND) || throwing)
+		return FALSE
+	if(pulling || pulledby || buckled)
+		return FALSE
+	if(get_num_legs() < 2 || IsOffBalanced())
+		return FALSE
+	if(has_status_effect(/datum/status_effect/debuff/exposed) || has_status_effect(/datum/status_effect/debuff/vulnerable))
+		return FALSE
+	var/turf/current_turf = get_turf(src)
+	if(!current_turf || istype(current_turf, /turf/open/water))
+		return FALSE
+	if(ishuman(src))
+		var/mob/living/carbon/human/human = src
+		if(human.legcuffed || human.encumbrance >= ENCUMBRANCE_HEAVY)
+			return FALSE
+	return TRUE
+
+/mob/living/proc/update_dodge_charge_hud()
+	var/atom/movable/screen/cmode/combat_mode_button = hud_used?.cmode_button
+	combat_mode_button?.update_dodge_charges()
+
+/mob/living/proc/start_dodge_charge_recharge()
+	if(dodge_charge_timer || dodge_charges >= DODGE_CHARGE_MAX)
+		return
+	dodge_charge_timer = addtimer(CALLBACK(src, PROC_REF(restore_dodge_charge)), get_dodge_recharge_time(), TIMER_STOPPABLE)
+
+/mob/living/proc/restore_dodge_charge()
+	dodge_charge_timer = null
+	if(dodge_charges >= DODGE_CHARGE_MAX)
+		return
+	dodge_charges += 1
+	update_dodge_charge_hud()
+	start_dodge_charge_recharge()
+
+/mob/living/proc/use_dodge_charge()
+	if(dodge_charges <= 0)
+		return FALSE
+	dodge_charges -= 1
+	update_dodge_charge_hud()
+	start_dodge_charge_recharge()
+	return TRUE
+
+/mob/living/proc/clear_dodge_grace()
+	dodge_grace_available = FALSE
+	dodge_grace_until = 0
+
+/mob/living/proc/has_dodge_grace()
+	if(!dodge_grace_available || !cmode)
+		return FALSE
+	if(world.time > dodge_grace_until)
+		clear_dodge_grace()
+		return FALSE
+	return TRUE
+
+/mob/living/proc/consume_dodge_grace(datum/intent/intenty, mob/living/user)
+	if(!has_dodge_grace())
+		return FALSE
+	if(!candodge || HAS_TRAIT(src, TRAIT_UNDODGING))
+		return FALSE
+	if(intenty && !intenty.candodge)
+		return FALSE
+
+	clear_dodge_grace()
+	flash_fullscreen("blackflash2")
+	visible_message(span_warning("<b>[src]</b> slips clear of [user]'s attack!"), span_notice("I evade [user]'s attack!"))
+	if(user.used_intent)
+		user.aftermiss()
+	if(mind && user.mind)
+		var/attacking_item = user.get_active_held_item()
+		var/intent_name = intenty?.name ? intenty.name : "unknown"
+		log_defense(src, user, "dodged", attacking_atom = attacking_item, addition = "(INTENT:[uppertext(intent_name)])")
+	if(client)
+		record_round_statistic(STATS_DODGES)
+	return TRUE
+
+/mob/living/proc/dodge_projectile(obj/projectile/projectile)
+	if(!has_dodge_grace() || !projectile.dodgeable || !candodge || HAS_TRAIT(src, TRAIT_UNDODGING))
+		return FALSE
+	if(projectile.original == src && projectile.firer == src)
+		return FALSE
+
+	clear_dodge_grace()
+	flash_fullscreen("blackflash2")
+	visible_message(span_warning("<b>[src]</b> slips clear of [projectile]!"), span_notice("I evade [projectile]!"))
+	if(client)
+		record_round_statistic(STATS_DODGES)
+	return TRUE
+
+/mob/living/proc/try_manual_dodge(travel_direction)
+	if(!cmode)
+		balloon_alert(src, "combat mode required")
+		return FALSE
+	if(!can_manual_dodge())
+		balloon_alert(src, "cannot dodge")
+		return FALSE
+	if(dodge_charges <= 0)
+		balloon_alert(src, "no dodge charges")
+		return FALSE
+
+	if(!travel_direction)
+		var/facing = angle2dir_cardinal(dir2angle(dir))
+		travel_direction = REVERSE_DIR(facing)
+
+	var/dodge_distance = get_manual_dodge_distance()
+	var/turf/target_turf = get_manual_dodge_destination(travel_direction, dodge_distance)
+	if(!target_turf)
+		balloon_alert(src, "nowhere to dodge")
+		return FALSE
+
+	var/stamina_cost = get_manual_dodge_stamina_cost()
+	if(stamina + stamina_cost >= maximum_stamina)
+		balloon_alert(src, "too tired to dodge")
+		return FALSE
+	if(!adjust_stamina(stamina_cost))
+		balloon_alert(src, "too tired to dodge")
+		return FALSE
+	if(!use_dodge_charge())
+		return FALSE
+
+	var/success_chance = get_manual_dodge_success_chance()
+	if(!prob(success_chance))
+		visible_message(span_warning("<b>[src]</b> stumbles while trying to dodge!"), span_warning("I fumble my dodge!"))
+		return TRUE
+
+	stop_attack()
+	changeNext_move(CLICK_CD_FAST)
+	last_dodge = world.time
+	dodge_grace_available = TRUE
+	dodge_grace_until = world.time + get_manual_dodge_grace_time()
+	playsound(src, dodge_sound, 100, FALSE)
+	visible_message(span_warning("<b>[src]</b> dodges away!"), span_notice("I dodge away!"))
+	throw_at(target_turf, get_dist(src, target_turf), 1, src, spin = FALSE)
+	return TRUE
+
 /mob/living/proc/get_dodging_score(modifier = 0)
 	var/basic_speed = GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED)
 	var/current_encumbrance = encumbrance
@@ -192,16 +409,10 @@
  * @return TRUE if valid, FALSE otherwise
  */
 /mob/living/proc/is_valid_dodge_turf(turf/target_turf)
-	if(!target_turf || target_turf.density)
+	if(!target_turf || !target_turf.can_traverse_safely(src))
 		return FALSE
-
-	if(isopenspace(target_turf))
+	if(target_turf.is_blocked_turf(exclude_mobs = FALSE, source_atom = src))
 		return FALSE
-
-	for(var/atom/movable/AM in target_turf)
-		if(!AM.CanPass(src, target_turf))
-			return FALSE
-
 	return TRUE
 
 /**

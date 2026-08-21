@@ -29,9 +29,6 @@
 	quad_intents = new /atom/movable/screen/quad_intents(null, src)
 	static_inventory += quad_intents
 
-	def_intent = new /atom/movable/screen/def_intent(null, src)
-	static_inventory += def_intent
-
 	give_intent = new /atom/movable/screen/give_intent(null, src)
 	static_inventory += give_intent
 

@@ -72,11 +72,12 @@
 	quad_intents = new /atom/movable/screen/quad_intents(null, src)
 	static_inventory += quad_intents
 
-	def_intent = new /atom/movable/screen/def_intent(null, src)
-	def_intent.update_icon()
-	static_inventory += def_intent
+	combat_utilities = new /atom/movable/screen/combat_utilities(null, src)
+	static_inventory += combat_utilities
 
 	cmode_button = new /atom/movable/screen/cmode(null, src)
+	var/atom/movable/screen/cmode/combat_mode_screen = cmode_button
+	combat_mode_screen.update_dodge_charges()
 	static_inventory += cmode_button
 
 	give_intent = new /atom/movable/screen/give_intent(null, src)

@@ -213,6 +213,8 @@
 	return TRUE
 
 /mob/living/check_stamina(has_amount)
+	if(HAS_TRAIT(src, TRAIT_NOSTAMINA))
+		return TRUE
 	if(!has_amount || has_amount > maximum_stamina)
 		return FALSE
 	if((maximum_stamina - stamina) < has_amount)

@@ -2027,7 +2027,18 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 
 	if(!actual_damage)
 		nodmg = TRUE
-		H.next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
+		var/armor_trauma = 0
+		if(armor_block >= item_force)
+			armor_trauma = H.get_armor_trauma(I, user, item_force, affecting)
+		if(armor_trauma)
+			var/actual_trauma = apply_damage(armor_trauma, BRUTE, def_zone, 0, H, skip_dtype = TRUE)
+			if(actual_trauma)
+				affecting.bodypart_attacked_by(BCLASS_BLUNT, actual_trauma, user, selzone, crit_message = TRUE, incoming_germ = I.germ_level, pre_applied = TRUE, allow_minor_injury = TRUE)
+				H.next_attack_msg += " <span class='warning'>Armor stops the weapon, but the impact bruises through.</span>"
+			else
+				H.next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
+		else
+			H.next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
 		if(!QDELETED(I))
 			I.take_damage(1, BRUTE, I.damage_type)
 	else

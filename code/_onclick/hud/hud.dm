@@ -37,7 +37,7 @@ GLOBAL_LIST_INIT(available_ui_styles, sortList(list(
 	var/atom/movable/screen/mana_over
 	var/atom/movable/screen/quad_intents/quad_intents
 	var/atom/movable/screen/give_intent/give_intent
-	var/atom/movable/screen/def_intent/def_intent
+	var/atom/movable/screen/combat_utilities/combat_utilities
 	var/atom/movable/screen/fov_holder/fov_holder
 	var/atom/movable/screen/clock
 	var/atom/movable/screen/stress/stressies

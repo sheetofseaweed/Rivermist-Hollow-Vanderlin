@@ -45,7 +45,15 @@
 			playsound(src, pick(GLOB.unarmed_swingmiss), 100, FALSE)
 
 		var/intent_drain = used_intent.get_releasedrain()
-		adjust_stamina(ceil(intent_drain * rmb_stam_penalty))
+		var/stamina_cost = ceil(intent_drain * rmb_stam_penalty)
+		if(stamina_cost)
+			if(!check_stamina(stamina_cost))
+				if(client)
+					to_chat(src, span_warning("I'm too tired to attack!"))
+				changeNext_move(CLICK_CD_EXHAUSTED)
+				return TRUE
+			if(!adjust_stamina(stamina_cost))
+				return TRUE
 
 		if(L.checkmiss(src))
 			return TRUE

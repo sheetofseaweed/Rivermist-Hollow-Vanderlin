@@ -94,6 +94,87 @@
 		protection += physiology.armor.getRating(d_type)
 	return protection
 
+/// Returns the best protection tier covering a body part without triggering armor-hit effects.
+/mob/living/carbon/human/proc/get_armor_protection_tier(def_zone, attack_flag)
+	attack_flag = normalize_armor_attack_flag(attack_flag)
+	if(isbodypart(def_zone))
+		var/obj/item/bodypart/bodypart = def_zone
+		def_zone = bodypart.body_zone
+		if(def_zone == BODY_ZONE_PRECISE_MOUTH)
+			def_zone = BODY_ZONE_HEAD
+
+	var/protection_tier = ARMOR_TIER_NONE
+	var/list/worn_layers = list(skin_armor, head, wear_mask, wear_wrists, gloves, wear_neck, cloak, wear_armor, wear_shirt, shoes, wear_pants, backr, backl, belt, wear_ring)
+	for(var/layer in worn_layers)
+		if(!istype(layer, /obj/item/clothing))
+			continue
+		var/obj/item/clothing/armor_layer = layer
+		if(!zone2covered(def_zone, armor_layer.body_parts_covered))
+			continue
+		if(armor_layer.uses_integrity && armor_layer.get_integrity() <= 0)
+			continue
+		var/armor_rating = armor_layer.armor?.getRating(attack_flag)
+		protection_tier = max(protection_tier, normalize_armor_rating(attack_flag, armor_rating))
+
+	if(physiology)
+		var/innate_armor_rating = physiology.armor.getRating(attack_flag)
+		protection_tier = max(protection_tier, normalize_armor_rating(attack_flag, innate_armor_rating))
+
+	return protection_tier
+
+/// Returns the best blunt-protection tier covering a body part without damaging the armor.
+/mob/living/carbon/human/proc/get_armor_trauma_tier(def_zone)
+	return get_armor_protection_tier(def_zone, BLUNT)
+
+/// Calculates blunt trauma transmitted by a fully blocked held-item melee attack.
+/mob/living/carbon/human/proc/get_armor_trauma(obj/item/used_weapon, mob/living/attacker, delivered_damage, def_zone)
+	if(!used_weapon || !attacker || delivered_damage <= 0 || used_weapon.item_weight < ARMOR_TRAUMA_MASS_LIGHT)
+		return 0
+
+	var/mass_impact
+	if(used_weapon.item_weight < ARMOR_TRAUMA_MASS_MEDIUM)
+		mass_impact = ARMOR_TRAUMA_IMPACT_LIGHT
+	else if(used_weapon.item_weight < ARMOR_TRAUMA_MASS_HEAVY)
+		mass_impact = ARMOR_TRAUMA_IMPACT_MEDIUM
+	else if(used_weapon.item_weight < ARMOR_TRAUMA_MASS_VERY_HEAVY)
+		mass_impact = ARMOR_TRAUMA_IMPACT_HEAVY
+	else if(used_weapon.item_weight < ARMOR_TRAUMA_MASS_EXTREME)
+		mass_impact = ARMOR_TRAUMA_IMPACT_VERY_HEAVY
+	else
+		mass_impact = ARMOR_TRAUMA_IMPACT_EXTREME
+
+	var/impact_multiplier
+	switch(attacker.used_intent?.blade_class)
+		if(BCLASS_STAB)
+			impact_multiplier = ARMOR_TRAUMA_MULT_STAB
+		if(BCLASS_CUT, BCLASS_LASHING)
+			impact_multiplier = ARMOR_TRAUMA_MULT_CUT
+		if(BCLASS_PICK, BCLASS_DRILL)
+			impact_multiplier = ARMOR_TRAUMA_MULT_PICK
+		if(BCLASS_CHOP)
+			impact_multiplier = ARMOR_TRAUMA_MULT_CHOP
+		if(BCLASS_BLUNT)
+			impact_multiplier = ARMOR_TRAUMA_MULT_BLUNT
+		if(BCLASS_SMASH)
+			impact_multiplier = ARMOR_TRAUMA_MULT_SMASH
+	if(!impact_multiplier)
+		return 0
+
+	var/base_damage = used_weapon.force * (attacker.used_intent?.damfactor || 1)
+	if(base_damage <= 0)
+		return 0
+	var/delivery_multiplier = CLAMP(delivered_damage / base_damage, 0, ARMOR_TRAUMA_MAX_DELIVERY_MULT)
+
+	var/blunt_tier = get_armor_trauma_tier(def_zone)
+	var/armor_transmission = 1 / (1 + (ARMOR_TRAUMA_ARMOR_TIER_SCALE * blunt_tier))
+	var/constitution = GET_MOB_ATTRIBUTE_VALUE(src, STAT_CONSTITUTION)
+	var/constitution_multiplier = CLAMP(1 - ((constitution - 10) * ARMOR_TRAUMA_CON_SCALE), ARMOR_TRAUMA_CON_MULT_MIN, ARMOR_TRAUMA_CON_MULT_MAX)
+	var/trauma = mass_impact * impact_multiplier * delivery_multiplier * armor_transmission * constitution_multiplier
+	if(trauma < ARMOR_TRAUMA_MINIMUM)
+		return 0
+
+	return min(round(trauma, 1), ARMOR_TRAUMA_MAXIMUM)
+
 /proc/armor_integrity_percent(obj/item/clothing/armor)
 	if(!armor || armor.max_integrity <= 0)
 		return 0
@@ -170,6 +251,9 @@
 		dna.species.on_hit(P, src)
 
 /mob/living/carbon/human/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
+	if(dodge_projectile(P))
+		return BULLET_ACT_FORCE_PIERCE
+
 	// Duplicated from /mob/living/bullet_act so deflection outranks species/martial-art/reflect handling; safe to run twice.
 	if(guard_deflect_projectile(P))
 		return BULLET_ACT_BLOCK

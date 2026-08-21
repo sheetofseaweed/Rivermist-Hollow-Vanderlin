@@ -242,7 +242,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_BLINDFIGHTING = span_info("I have an incredible sense of awareness, allowing me to parry even when I can't see it coming... And I can not be sneak attacked."),
 	TRAIT_MEDIUMARMOR = "I can move freely in medium armor.",
 	TRAIT_HEAVYARMOR = "I can move freely in heavy armor.",
-	TRAIT_DODGEEXPERT = "I can dodge easily while only wearing light armor.",
+	TRAIT_DODGEEXPERT = "My quick reflexes make dodges more reliable, efficient, and faster to recover.",
 	TRAIT_VILLAIN = "I am a devious, conniving villain!",
 	TRAIT_CRITICAL_RESISTANCE = "I am resistant to wounds that would be life-threatening to others.",
 	TRAIT_CRITICAL_WEAKNESS = span_danger("I am weak to wounds that others could survive."),

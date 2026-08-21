@@ -18,7 +18,7 @@
 	var/stun_penalty = 0
 	if(incapacitated())
 		stun_penalty = 4
-	if(cmode && (d_intent == INTENT_PARRY))
+	if(cmode && (client || d_intent == INTENT_PARRY))
 		modifier += 2
 	return floor(max(0, 3 + GET_MOB_SKILL_VALUE(src, skill_used)/2 + modifier - stun_penalty - parrying_penalty))
 
@@ -135,7 +135,7 @@
 	var/obj/item/master = intenty.get_master_item()
 	if(master?.wbalance < 0 && GET_MOB_ATTRIBUTE_VALUE(user, STAT_STRENGTH) > GET_MOB_ATTRIBUTE_VALUE(src, STAT_STRENGTH))
 		drained = drained + (master.wbalance * ((GET_MOB_ATTRIBUTE_VALUE(user, STAT_STRENGTH) - GET_MOB_ATTRIBUTE_VALUE(src, STAT_STRENGTH)) * -5))
-	drained = max(drained, 5)
+	drained = max(drained, PARRY_STAMINA_MIN)
 
 	//reduce drain on exceptional parry
 	if(roll_result == DICE_CRIT_SUCCESS)

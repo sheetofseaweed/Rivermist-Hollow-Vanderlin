@@ -160,8 +160,18 @@
 
 	var/parrying_penalty = 0
 	var/parrying_penalty_timer = null
+	/// Whether a client is holding the key that temporarily disables passive parrying.
+	var/parry_suppressed = FALSE
 	var/dodging_penalty = 0
 	var/dodging_penalty_timer = null
+	/// Charges available for player-controlled dodges.
+	var/dodge_charges = DODGE_CHARGE_MAX
+	/// Stoppable timer restoring the next player dodge charge.
+	var/dodge_charge_timer = null
+	/// The current player dodge can avoid one direct hit until this world time.
+	var/dodge_grace_until = 0
+	/// Whether the current player dodge grace still has its one-hit protection.
+	var/dodge_grace_available = FALSE
 
 	//Speech
 	var/stuttering = 0

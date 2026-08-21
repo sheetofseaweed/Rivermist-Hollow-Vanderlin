@@ -660,7 +660,7 @@
 	if(dna?.species?.update_health_hud())
 		return
 	else
-		if(hud_used.bloods)
+		if(hud_used.bloods && !stamina_only)
 			var/bloodloss = ((BLOOD_VOLUME_NORMAL - blood_volume) / BLOOD_VOLUME_NORMAL) * 100
 
 			var/toxloss = getToxLoss()

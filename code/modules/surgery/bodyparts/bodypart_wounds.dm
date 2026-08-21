@@ -153,23 +153,28 @@
 	return bleed_rate
 
 /// Called in two cases, as an override to an attack after IE apply_damage on a zone. Or After an attack to return a wound.
-/obj/item/bodypart/proc/bodypart_attacked_by(bclass, dam, mob/living/user, zone_precise, silent = FALSE, crit_message = FALSE, list/modifiers = list(), incoming_germ, organ_bonus, pre_applied = FALSE)
+/// Minor injuries bypass the normal five-damage floor, but cannot cause critical or internal-organ wounds.
+/obj/item/bodypart/proc/bodypart_attacked_by(bclass, dam, mob/living/user, zone_precise, silent = FALSE, crit_message = FALSE, list/modifiers = list(), incoming_germ, organ_bonus, pre_applied = FALSE, allow_minor_injury = FALSE)
 	if(!bclass || !dam || !owner || (owner.status_flags & GODMODE))
 		return
 	dam *= damage_multiplier
-	if(dam < 5)
+	var/minor_injury = dam < 5
+	if(minor_injury && !allow_minor_injury)
 		if(CEILING(dam, 1) < 5)
 			return
 		dam = CEILING(dam, 1)
+		minor_injury = FALSE
 
-	var/do_crit = (modifiers[CRIT_MOD_CHANCE] <= -100) ? FALSE : TRUE
+	var/do_crit = !minor_injury
+	if(modifiers[CRIT_MOD_CHANCE] <= -100)
+		do_crit = FALSE
 	if(do_crit && ishuman(owner))
 		var/mob/living/carbon/human/human_owner = owner
 		if(human_owner.check_crit_armor(zone_precise, bclass))
 			do_crit = FALSE
 
 	if(user)
-		if(user.stat_roll(STAT_FORTUNE, 2, 10))
+		if(!minor_injury && user.stat_roll(STAT_FORTUNE, 2, 10))
 			dam += 10
 		if(ispath(user.rmb_intent?.type, /datum/rmb_intent/weak))
 			do_crit = FALSE
@@ -202,13 +207,23 @@
 	if((zone_precise in list(BODY_ZONE_PRECISE_L_EYE, BODY_ZONE_PRECISE_L_EYE)) && wounding_type == WOUND_PIERCE)
 		organ_bonus = CANT_ORGAN
 
-	if(organ_bonus != CANT_ORGAN)
+	if(!minor_injury && organ_bonus != CANT_ORGAN)
 		damage_internal_organs(wounding_type, dam, organ_bonus, 0, wound_messages = TRUE)
 
 	for(var/datum/injury/iter_injury as anything in injuries)
 		iter_injury.receive_damage(dam, 0, wounding_type)
 
-	var/datum/injury/injury = create_injury(wounding_type, dam)
+	var/datum/injury/injury
+	if(minor_injury)
+		for(var/datum/injury/existing_injury as anything in injuries)
+			if(!existing_injury.can_worsen(wounding_type, dam))
+				continue
+			existing_injury.open_injury(dam)
+			last_injury = existing_injury
+			injury = existing_injury
+			break
+	if(!injury)
+		injury = create_injury(wounding_type, dam)
 	//if(!istype(injury))
 		//stack_trace("spec_attacked_by failed to create injury with [dam] damage and [wounding_type] wounding type!")
 

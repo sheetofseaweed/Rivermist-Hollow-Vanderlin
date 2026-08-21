@@ -154,6 +154,8 @@
 
 	/// Can a clash guard deflect this projectile? Set TRUE on magic bolts for spell counterplay.
 	var/guard_deflectable = FALSE
+	/// Can a player-controlled dodge grace avoid this direct projectile hit?
+	var/dodgeable = TRUE
 
 /obj/projectile/proc/handle_drop()
 	return

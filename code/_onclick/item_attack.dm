@@ -311,13 +311,21 @@
 	if((M.body_position != LYING_DOWN))
 		if(M.checkmiss(user))
 			return
-	if(istype(user.rmb_intent, /datum/rmb_intent/strong))
-		user.adjust_stamina(10)
-	if(istype(user.rmb_intent, /datum/rmb_intent/swift))
-		user.adjust_stamina(10)
+	var/stamina_cost = user.used_intent.get_releasedrain()
+	if(istype(user.rmb_intent, /datum/rmb_intent/strong) || istype(user.rmb_intent, /datum/rmb_intent/swift))
+		stamina_cost += 10
+	if(stamina_cost)
+		if(!user.check_stamina(stamina_cost))
+			if(user.client)
+				to_chat(user, span_warning("I'm too tired to attack!"))
+			user.changeNext_move(CLICK_CD_EXHAUSTED)
+			return TRUE
+		if(!user.adjust_stamina(stamina_cost))
+			return TRUE
 	var/turf/turf_before = get_turf(M)
-	if(M.checkdefense(user.used_intent, user))
-		if(M.d_intent == INTENT_PARRY)
+	var/defense_result = M.checkdefense(user.used_intent, user)
+	if(defense_result)
+		if(defense_result & DEFENSE_PARRY)
 			if(!M.get_active_held_item() && !M.get_inactive_held_item()) //we parried with a bracer, redirect damage
 				if(M.active_hand_index == 1)
 					user.tempatarget = BODY_ZONE_L_ARM
@@ -332,7 +340,7 @@
 							playsound(M, "nodmg", get_clamped_volume(), FALSE, extrarange = stealthy_audio ? SILENCED_SOUND_EXTRARANGE : -1, falloff_distance = 0)
 				log_combat(user, M, "attacked", src.name, "(INTENT: [uppertext(user.used_intent.name)]) (DAMTYPE: [uppertext(damtype)])")
 				add_fingerprint(user)
-		if(M.d_intent == INTENT_DODGE)
+		if(defense_result & DEFENSE_DODGE)
 			// if(!user.used_intent.swingdelay)
 			if(get_dist(get_turf(user), get_turf(M)) <= user.used_intent.reach)
 				user.do_attack_animation(turf_before, visual_effect_icon = user.used_intent.animname, used_item = src, used_intent = user.used_intent)

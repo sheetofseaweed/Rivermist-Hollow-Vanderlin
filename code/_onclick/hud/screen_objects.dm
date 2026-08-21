@@ -560,30 +560,35 @@
 		else
 			icon_state = "take[giving]"
 
-/atom/movable/screen/def_intent
-	name = "defense intent"
-	icon_state = "def1n"
-	icon = 'icons/mob/roguehud.dmi'
+/atom/movable/screen/combat_utilities
+	name = "interact / extra items"
+	desc = "Use the upper half to open the interaction panel and the lower half to manage extra items."
+	icon_state = "combat_utilities"
+	icon = 'icons/mob/combat_utilities.dmi'
 	screen_loc = rogueui_def
 
-/atom/movable/screen/def_intent/update_icon_state()
-	. = ..()
-	icon_state = "def[hud.mymob.d_intent]n"
-
-/atom/movable/screen/def_intent/Click(location, control, params)
+/atom/movable/screen/combat_utilities/Click(location, control, params)
 	var/list/modifiers = params2list(params)
 	var/_y = text2num(LAZYACCESS(modifiers, ICON_Y))
+	var/mob/living/carbon/human/user = hud?.mymob
+	if(user != usr || !user.client)
+		return
 
-	if(_y>=0 && _y<17)
-		usr.def_intent_change(INTENT_DODGE)
-	else if(_y>16 && _y<=32)
-		usr.def_intent_change(INTENT_PARRY)
+	user.playsound_local(user, 'sound/misc/click.ogg', 100)
+	if(_y > 16 && _y <= 32)
+		user.open_interact_panel()
+	else if(_y >= 0 && _y <= 16)
+		user.remove_underwear()
 
 /atom/movable/screen/cmode
 	name = "combat mode"
+	desc = "Toggle combat mode. The marks above the button show available dodge charges."
 	icon_state = "combat0"
 	icon = 'icons/mob/roguehud.dmi'
 	screen_loc = rogueui_cmode
+	maptext_width = 32
+	maptext_height = 12
+	maptext_y = 21
 
 /atom/movable/screen/cmode/Click(location, control, params)
 	var/list/modifiers = params2list(params)
@@ -599,6 +604,17 @@
 /atom/movable/screen/cmode/update_icon_state()
 	. = ..()
 	icon_state = "combat[hud?.mymob?.cmode]"
+
+/atom/movable/screen/cmode/proc/update_dodge_charges()
+	var/mob/living/living_mob = hud?.mymob
+	if(!living_mob)
+		maptext = null
+		return
+
+	var/charge_text = ""
+	for(var/charge_number in 1 to DODGE_CHARGE_MAX)
+		charge_text += charge_number <= living_mob.dodge_charges ? "●" : "○"
+	maptext = "<div style='text-align:center;color:#e8d7a7;font-size:7px'>[charge_text]</div>"
 
 /atom/movable/screen/mov_intent
 	name = "run/walk toggle"

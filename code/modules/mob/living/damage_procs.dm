@@ -448,7 +448,7 @@
  * Check if defense is possible against an attack
  * @param datum/intent/intenty The intent used for the attack
  * @param mob/living/user The attacker
- * @return TRUE if defense successful, FALSE otherwise
+ * @return A DEFENSE_* result. DEFENSE_NONE is falsey for legacy callers.
  */
 /mob/living/proc/checkdefense(datum/intent/intenty, mob/living/user)
 	// Struck mid disruptable windup: the swing dies instead of any defense roll. (TA parity)
@@ -456,12 +456,18 @@
 	if(SW && !SW.is_disrupted && swing_state)
 		SW.attacked()
 		swing_state = FALSE
-		return FALSE
+		return DEFENSE_NONE
 
 	if(!cmode || stat || (!canparry && !candodge) || user == src || HAS_TRAIT(src, TRAIT_IMMOBILIZED))
-		return FALSE
+		return DEFENSE_NONE
 	if(client && used_intent && client.charging && used_intent.tranged && !used_intent.tshield)
-		return FALSE
+		return DEFENSE_NONE
+
+	// Client-controlled mobs dodge actively. Their short grace window resolves before passive parry.
+	if(client && consume_dodge_grace(intenty, user))
+		return DEFENSE_DODGE
+	if(client && parry_suppressed)
+		return DEFENSE_NONE
 
 	var/prob2defend = user.defprob
 	var/can_dodge_see = TRUE
@@ -469,8 +475,8 @@
 		prob2defend = 0
 
 	if(!can_see_cone(user)) //for future, if you can't see the attacker, parrying will be useless, unless you're on dodge intent. this also affect being blinded?
-		if(d_intent == INTENT_PARRY && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !get_tempo_bonus(TEMPO_TAG_NOLOS_PARRY))
-			return FALSE
+		if((client || d_intent == INTENT_PARRY) && !HAS_TRAIT(src, TRAIT_BLINDFIGHTING) && !get_tempo_bonus(TEMPO_TAG_NOLOS_PARRY))
+			return DEFENSE_NONE
 		if(!get_tempo_bonus(TEMPO_TAG_NOLOS_DODGE)) // high tempo: dodge without seeing the attacker
 			can_dodge_see = FALSE
 		prob2defend = max(prob2defend - 15, 0)
@@ -478,15 +484,20 @@
 	if(m_intent == MOVE_INTENT_RUN)
 		prob2defend = max(prob2defend - 15, 0)
 
-	// Handle defense based on intent
+	// Players passively parry while combat mode is active. NPCs retain their automatic intent behavior.
+	if(client)
+		if(!canparry || HAS_TRAIT(src, TRAIT_UNPARRYING))
+			return DEFENSE_NONE
+		return attempt_parry(intenty, user, prob2defend) ? DEFENSE_PARRY : DEFENSE_NONE
+
 	switch(d_intent)
 		if(INTENT_PARRY)
 			if(HAS_TRAIT(src, TRAIT_UNPARRYING))
-				return FALSE
-			return attempt_parry(intenty, user, prob2defend)
+				return DEFENSE_NONE
+			return attempt_parry(intenty, user, prob2defend) ? DEFENSE_PARRY : DEFENSE_NONE
 		if(INTENT_DODGE)
 			if(HAS_TRAIT(src, TRAIT_UNDODGING))
-				return FALSE
-			return attempt_dodge(intenty, user, can_dodge_see)
+				return DEFENSE_NONE
+			return attempt_dodge(intenty, user, can_dodge_see) ? DEFENSE_DODGE : DEFENSE_NONE
 
-	return FALSE
+	return DEFENSE_NONE

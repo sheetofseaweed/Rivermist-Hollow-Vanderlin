@@ -1,7 +1,14 @@
 #define HUMAN_NPC_BASE_JUKE_CHANCE              15
 #define HUMAN_NPC_JUKE_MIN_SPD                  10
 #define HUMAN_NPC_JUKE_PER_OVERSPD              5
-#define HUMAN_NPC_WEAKPOINT_SCAN_CHANCE         20
+#define HUMAN_NPC_WEAKPOINT_BASE_SCAN_CHANCE    20
+#define HUMAN_NPC_WEAKPOINT_PERCEPTION_SCALE    5
+#define HUMAN_NPC_WEAKPOINT_SNEAK_SCALE         5
+#define HUMAN_NPC_WEAKPOINT_FORTUNE_SCALE       2
+#define HUMAN_NPC_WEAKPOINT_MIN_SCAN_CHANCE     5
+#define HUMAN_NPC_WEAKPOINT_MAX_SCAN_CHANCE     80
+#define HUMAN_NPC_WEAKPOINT_AIM_CHANCE          65
+#define HUMAN_NPC_WEAKPOINT_SCAN_COOLDOWN       (8 SECONDS)
 #define HUMAN_NPC_WEAKPOINT_CACHE_DURATION      (6 SECONDS)
 #define HUMAN_NPC_WEAPON_SPECIAL_CHANCE         35
 #define HUMAN_NPC_INTENT_SWITCH_CHANCE          25  // chance per attack to start a new intent sequence
@@ -136,9 +143,6 @@
 
 	_try_wield_reach_weapon(pawn)
 	_choose_reach_capable_intent(pawn, target)
-
-	if(prob(HUMAN_NPC_WEAKPOINT_SCAN_CHANCE) && isliving(target))
-		_scan_for_weakpoint(controller, pawn, target)
 
 /datum/ai_behavior/basic_melee_attack/human_npc/perform(delta_time, datum/ai_controller/controller, target_key, targetting_datum_key, hiding_location_key)
 	controller.behavior_cooldowns[src] = world.time + get_cooldown(controller) //we don't wanna call parent tbh
@@ -275,8 +279,7 @@
 		pawn.next_click = world.time + (pawn.used_intent?.clickcd * (1 + rand(0.2, 0.4)))
 		SEND_SIGNAL(pawn, COMSIG_MOB_BREAK_SNEAK)
 
-	if(prob(HUMAN_NPC_WEAKPOINT_SCAN_CHANCE) && isliving(locked_target))
-		_scan_for_weakpoint(controller, pawn, locked_target)
+	_scan_for_weakpoint(controller, pawn, locked_target)
 
 	_try_backstep(pawn, locked_target)
 
@@ -375,16 +378,23 @@
 
 
 /datum/ai_behavior/basic_melee_attack/human_npc/proc/_choose_attack_zone(datum/ai_controller/controller, mob/living/carbon/human/pawn, mob/living/target)
-	var/list/wp = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT]
-	if(length(wp) < 3)
-		if(wp)
-			controller.clear_blackboard_key(BB_HUMAN_NPC_WEAKPOINT)
-		wp = null
-	if(wp && world.time < wp[2] && wp[3] == target)
-		var/aimheight = _zone_to_aimheight(wp[1])
-		if(aimheight)
-			pawn.aimheight_change(aimheight)
+	var/weakpoint_zone = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT]
+	var/weakpoint_target = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_TARGET]
+	var/weakpoint_expires = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_EXPIRES]
+	var/weakpoint_armor_type = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_ARMOR_TYPE]
+	var/current_armor_type = normalize_armor_attack_flag(pawn.used_intent?.blade_class || BCLASS_BLUNT)
+	var/valid_weakpoint = weakpoint_zone && weakpoint_target == target && world.time < weakpoint_expires && weakpoint_armor_type == current_armor_type
+
+	if(valid_weakpoint)
+		if(prob(HUMAN_NPC_WEAKPOINT_AIM_CHANCE))
+			var/aimheight = _zone_to_aimheight(weakpoint_zone)
+			if(aimheight)
+				pawn.aimheight_change(aimheight)
+				return
+		_choose_standard_attack_zone(pawn, target)
 		return
+	if(weakpoint_zone || weakpoint_target || weakpoint_expires || weakpoint_armor_type)
+		_clear_weakpoint_cache(controller)
 
 	var/counter = controller.blackboard[BB_HUMAN_NPC_ATTACK_ZONE_COUNTER]
 	if(counter < 4)
@@ -392,8 +402,9 @@
 		return
 
 	controller.set_blackboard_key(BB_HUMAN_NPC_ATTACK_ZONE_COUNTER, 0)
-	controller.clear_blackboard_key(BB_HUMAN_NPC_WEAKPOINT)
+	_choose_standard_attack_zone(pawn, target)
 
+/datum/ai_behavior/basic_melee_attack/human_npc/proc/_choose_standard_attack_zone(mob/living/carbon/human/pawn, mob/living/target)
 	// Parity with npc_choose_attack_zone aimheight picks
 	if(pawn.mind?.has_antag_datum(/datum/antagonist/zombie))
 		pawn.aimheight_change(pawn.deadite_get_aimheight(target))
@@ -436,121 +447,64 @@
 	var/success = pawn.rmb_intent.special_attack(pawn, target)
 	pawn.swap_rmb_intent(prev_intent)
 	return success
-
-/// Scan target bodyparts for wounded (brute/burn > 20) or unarmored zones.
-/// Caches as list(zone, expiry_time, target_ref).
+/// Attempts a read-only armor scan after a completed swing, then caches a real weakness.
 /datum/ai_behavior/basic_melee_attack/human_npc/proc/_scan_for_weakpoint(datum/ai_controller/controller, mob/living/carbon/human/pawn, mob/living/target)
 	if(!istype(target, /mob/living/carbon/human))
 		return
 	var/mob/living/carbon/human/htarget = target
+	var/armor_type = normalize_armor_attack_flag(pawn.used_intent?.blade_class || BCLASS_BLUNT)
+	var/cached_zone = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT]
+	var/cached_target = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_TARGET]
+	var/cache_expires = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_EXPIRES]
+	var/cached_armor_type = controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_ARMOR_TYPE]
+	if(cached_zone && cached_target == target && world.time < cache_expires && cached_armor_type == armor_type)
+		return
+	if(cached_zone || cached_target || cache_expires || cached_armor_type)
+		_clear_weakpoint_cache(controller)
 
-	// Resolve weapon skill and blade class from active intent
-	var/skill_type = null
-	var/bclass = null
-	var/intent_reach = 1
-	if(pawn.used_intent)
-		bclass = pawn.used_intent.blade_class
-		intent_reach = pawn.used_intent.reach || 1
-		// Walk held items to find associated_skill
-		for(var/obj/item/held in pawn.get_active_held_items())
-			if(held?.associated_skill)
-				skill_type = held.associated_skill
-				break
+	if(world.time < (controller.blackboard[BB_HUMAN_NPC_WEAKPOINT_SCAN_COOLDOWN] || 0))
+		return
+	controller.set_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_SCAN_COOLDOWN, world.time + HUMAN_NPC_WEAKPOINT_SCAN_COOLDOWN)
 
-	var/skill_level = skill_type ? GET_MOB_SKILL_VALUE_OLD(pawn, skill_type) : SKILL_RANK_NONE
-	var/armor_rating = bclass ? bclass_to_armor_rating(bclass) : "blunt"
+	var/perception = GET_MOB_ATTRIBUTE_VALUE(pawn, STAT_PERCEPTION)
+	var/target_sneaking = GET_MOB_SKILL_VALUE_OLD(htarget, /datum/attribute/skill/misc/sneaking)
+	var/target_fortune = GET_MOB_ATTRIBUTE_VALUE(htarget, STAT_FORTUNE)
+	var/scan_chance = HUMAN_NPC_WEAKPOINT_BASE_SCAN_CHANCE + ((perception - 10) * HUMAN_NPC_WEAKPOINT_PERCEPTION_SCALE) - (target_sneaking * HUMAN_NPC_WEAKPOINT_SNEAK_SCALE) - ((target_fortune - 10) * HUMAN_NPC_WEAKPOINT_FORTUNE_SCALE)
+	scan_chance = clamp(scan_chance, HUMAN_NPC_WEAKPOINT_MIN_SCAN_CHANCE, HUMAN_NPC_WEAKPOINT_MAX_SCAN_CHANCE)
+	if(!prob(scan_chance))
+		return
 
-	var/list/wounded  = list()
-	var/list/exposed  = list()
-	var/list/soft     = list() // armored but below meaningful resistance for our damage type
+	var/lowest_tier = INFINITY
+	var/highest_tier = ARMOR_TIER_NONE
+	var/list/weakest_zones = list()
 
 	for(var/obj/item/bodypart/part in htarget.bodyparts)
 		if(!part)
 			continue
+		var/protection_tier = htarget.get_armor_protection_tier(part.body_zone, armor_type)
+		highest_tier = max(highest_tier, protection_tier)
+		if(protection_tier < lowest_tier)
+			lowest_tier = protection_tier
+			weakest_zones = list(part.body_zone)
+		else if(protection_tier == lowest_tier)
+			weakest_zones += part.body_zone
 
-		//requires trained eye AND good perception
-		if(skill_level >= SKILL_RANK_JOURNEYMAN && GET_MOB_ATTRIBUTE_VALUE(pawn, STAT_PERCEPTION) >= 10)
-			if(part.brute_dam > 20 || part.burn_dam > 20)
-				wounded += part.body_zone
-
-		var/obj/item/worn = htarget.get_item_by_slot(part.body_zone)
-		if(!worn?.armor)
-			exposed += part.body_zone
-			continue
-
-		// Basic+ fighters read armor and seek soft coverage for their damage type
-		if(skill_level >= SKILL_RANK_NOVICE)
-			var/rating = worn.armor.getRating(armor_rating)
-			if(rating < 25)
-				soft += part.body_zone
-		// Unskilled fighters just notice bare skin
-		else if(!worn)
-			exposed += part.body_zone
-
-	// Priority: wounded > bare exposed > soft armor coverage > armored fallback (experts only)
-	var/chosen = null
-	var/read_message = null
-	if(length(wounded))
-		chosen = pick(wounded)
-		read_message = "eyes the wound"
-	else if(length(exposed))
-		chosen = pick(exposed)
-		read_message = "eyes an opening"
-	else if(length(soft))
-		chosen = pick(soft)
-		read_message = "tests the armor"
-	else if(skill_level >= SKILL_RANK_EXPERT)
-		// Expert fallback: just pick whatever zone has the lowest resistance for our damage type
-		var/lowest_rating = INFINITY
-		var/lowest_zone = null
-		for(var/obj/item/bodypart/part in htarget.bodyparts)
-			if(!part)
-				continue
-			var/obj/item/worn = htarget.get_item_by_slot(part.body_zone)
-			if(!worn?.armor)
-				continue
-			var/rating = worn.armor.getRating(armor_rating)
-			if(rating < lowest_rating)
-				lowest_rating = rating
-				lowest_zone = part.body_zone
-		chosen = lowest_zone
-		if(chosen)
-			read_message = "sizes up armor"
-
-	if(!chosen)
+	if(!length(weakest_zones) || highest_tier - lowest_tier < 1)
 		return
 
-	// Skill scales how long the targeting solution stays valid
-	//longer weapons can maintain solutions longer
-	// since the fighter isn't scrambling to stay close
-	var/cache_duration = HUMAN_NPC_WEAKPOINT_CACHE_DURATION
-	switch(skill_level)
-		if(SKILL_RANK_NONE)
-			cache_duration *= 0.1
-		if(SKILL_RANK_NOVICE)
-			cache_duration *= 0.5
-		if(SKILL_RANK_APPRENTICE)
-			cache_duration *= 0.75
-		if(SKILL_RANK_JOURNEYMAN)
-			cache_duration *= 1.0
-		if(SKILL_RANK_EXPERT)
-			cache_duration *= 1.5
-		if(SKILL_RANK_MASTER)
-			cache_duration *= 2.0
-		if(SKILL_RANK_LEGENDARY)
-			cache_duration *= 3.0
+	var/chosen_zone = pick(weakest_zones)
+	controller.set_blackboard_key(BB_HUMAN_NPC_WEAKPOINT, chosen_zone)
+	controller.set_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_ARMOR_TYPE, armor_type)
+	controller.set_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_EXPIRES, world.time + HUMAN_NPC_WEAKPOINT_CACHE_DURATION)
+	controller.set_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_TARGET, target)
+	pawn.balloon_alert_to_viewers("<font color='#d6b36a'>spots a gap — [parse_zone(chosen_zone)]!</font>", balloon_flag = DISABLE_BALLOON_COMBAT, y_offset = -8)
+	controller.set_blackboard_key(BB_HUMAN_NPC_COMBAT_BARK_COOLDOWN, world.time + HUMAN_NPC_COMBAT_BARK_COOLDOWN)
 
-	// Reach bonus: each point of reach beyond 1 adds 10% duration
-	// rationale: you're not fighting in a scramble, you have space to think
-	cache_duration *= (1 + ((intent_reach - 1) * 0.1))
-
-	controller.set_blackboard_key(BB_HUMAN_NPC_WEAKPOINT, list(
-		chosen,
-		world.time + cache_duration,
-		target,
-	))
-	if(read_message)
-		human_npc_combat_state_balloon(controller, pawn, read_message, 40)
+/datum/ai_behavior/basic_melee_attack/human_npc/proc/_clear_weakpoint_cache(datum/ai_controller/controller)
+	controller.clear_blackboard_key(BB_HUMAN_NPC_WEAKPOINT)
+	controller.clear_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_ARMOR_TYPE)
+	controller.clear_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_EXPIRES)
+	controller.clear_blackboard_key(BB_HUMAN_NPC_WEAKPOINT_TARGET)
 
 /// Zone string -> aimheight int.
 /datum/ai_behavior/basic_melee_attack/human_npc/proc/_zone_to_aimheight(zone)
@@ -637,21 +591,6 @@
 		return rand(1, 2) // Bite their ankles!
 	return pick(rand(11, 13), rand(14, 17), rand(5, 8)) // Chest, neck, and mouth; face and ears; arms and hands.
 
-///I couldn't find anything that does this
-/proc/bclass_to_armor_rating(bclass)
-	switch(bclass)
-		if(BCLASS_BLUNT, BCLASS_SMASH, BCLASS_PUNCH, BCLASS_LASHING)
-			return "blunt"
-		if(BCLASS_CUT, BCLASS_CHOP)
-			return "slash"
-		if(BCLASS_STAB, BCLASS_DRILL, BCLASS_PICK, BCLASS_TWIST, BCLASS_BITE)
-			return "stab"
-		if(BCLASS_PIERCE, BCLASS_SHOT)
-			return "piercing"
-		if(BCLASS_BURN)
-			return "fire"
-	return "blunt" // safest fallback - everything has some blunt resistance defined
-
 #undef HUMAN_NPC_BASE_JUKE_CHANCE
 #undef HUMAN_NPC_JUKE_MIN_SPD
 #undef HUMAN_NPC_JUKE_PER_OVERSPD
@@ -663,7 +602,14 @@
 #undef HUMAN_NPC_GAP_CLOSE_MAX_DIST
 #undef HUMAN_NPC_GAP_CLOSE_OPEN_CHANCE
 #undef HUMAN_NPC_COMBAT_BARK_COOLDOWN
-#undef HUMAN_NPC_WEAKPOINT_SCAN_CHANCE
+#undef HUMAN_NPC_WEAKPOINT_BASE_SCAN_CHANCE
+#undef HUMAN_NPC_WEAKPOINT_PERCEPTION_SCALE
+#undef HUMAN_NPC_WEAKPOINT_SNEAK_SCALE
+#undef HUMAN_NPC_WEAKPOINT_FORTUNE_SCALE
+#undef HUMAN_NPC_WEAKPOINT_MIN_SCAN_CHANCE
+#undef HUMAN_NPC_WEAKPOINT_MAX_SCAN_CHANCE
+#undef HUMAN_NPC_WEAKPOINT_AIM_CHANCE
+#undef HUMAN_NPC_WEAKPOINT_SCAN_COOLDOWN
 #undef HUMAN_NPC_WEAKPOINT_CACHE_DURATION
 #undef HUMAN_NPC_WEAPON_SPECIAL_CHANCE
 #undef HUMAN_NPC_INTENT_SWITCH_CHANCE

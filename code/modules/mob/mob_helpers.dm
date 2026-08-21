@@ -695,9 +695,6 @@
 		return
 	d_intent = input
 	playsound_local(src, 'sound/misc/click.ogg', 100)
-	if(hud_used)
-		if(hud_used.def_intent)
-			hud_used.def_intent.update_appearance(UPDATE_ICON_STATE)
 	update_inv_hands()
 
 
@@ -712,6 +709,7 @@
 	if(L.IsSleeping() || L.surrendering)
 		if(cmode)
 			cmode = FALSE
+			L.clear_dodge_grace()
 			L.reset_defense_cooldowns()
 			if(ishuman(L))
 				var/mob/living/carbon/human/H = L
@@ -723,6 +721,7 @@
 	if(cmode)
 		playsound_local(src, 'sound/misc/comboff.ogg', 100)
 		cmode = FALSE
+		L.clear_dodge_grace()
 		L.reset_defense_cooldowns()
 		if(ishuman(L))
 			var/mob/living/carbon/human/H = L

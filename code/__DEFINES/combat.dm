@@ -479,6 +479,8 @@ GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(
 
 /// Default penalty for parrying dicerolls, normally lasts PARRYING_PENALTY_COOLDOWN_DURATION
 #define PARRYING_PENALTY 2
+/// Minimum stamina spent on a successful parry after tempo modifiers.
+#define PARRY_STAMINA_MIN 3
 /// Default penalty for dodging dicerolls, normally lasts DODGING_PENALTY_COOLDOWN_DURATION
 #define DODGING_PENALTY 1
 /// A define so the cooldown on the baited status and the duration of the baitcd status are the same
@@ -502,6 +504,24 @@ GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(
 #define DEFENSE_CD_MIN 4
 #define DEFENSE_CD_MAX 30
 #define DEFENSE_CD_BUILDUP 2	// added per consecutive successful dodge
+
+// Defense resolution results. Non-zero values remain truthy for legacy callers.
+#define DEFENSE_NONE 0
+#define DEFENSE_PARRY (1<<0)
+#define DEFENSE_DODGE (1<<1)
+
+// Player-controlled dodge tuning.
+#define DODGE_CHARGE_MAX 2
+#define DODGE_RECHARGE_BASE 10 SECONDS
+#define DODGE_RECHARGE_MIN 5 SECONDS
+#define DODGE_RECHARGE_MAX 14 SECONDS
+#define DODGE_STAMINA_BASE 14
+#define DODGE_STAMINA_MIN 6
+#define DODGE_STAMINA_MAX 20
+#define DODGE_GRACE_MIN 3
+#define DODGE_GRACE_MAX 8
+#define DODGE_DISTANCE_TWO_THRESHOLD 12
+#define DODGE_DISTANCE_THREE_THRESHOLD 16
 
 // Tempo: escalating defensive buffs while engaged by multiple attackers. TRAIT_TEMPO gated.
 #define TEMPO_CULL_DELAY 12 SECONDS
