@@ -153,8 +153,8 @@
 /mob/proc/adjust_stamina(added as num)
 	return TRUE
 
-/// Positive added values deplete stamina. Negative added values restore stamina and deplete energy unless internal_regen is FALSE.
-/mob/living/adjust_stamina(added as num, emote_override, force_emote = TRUE, internal_regen = TRUE) //call update_stamina here and set last_fatigued, return false when not enough fatigue left
+/// Positive values deplete stamina and energy. Negative values restore stamina without spending energy.
+/mob/living/adjust_stamina(added as num, emote_override, force_emote = TRUE, internal_regen = TRUE, energy_loss_mult = 0.6) //call update_stamina here and set last_fatigued, return false when not enough fatigue left
 	if(HAS_TRAIT(src, TRAIT_NOSTAMINA))
 		return TRUE
 	var/energetic = get_chem_effect(CE_ENERGETIC) * 0.1
@@ -166,8 +166,8 @@
 
 	stamina = CLAMP(stamina+added, 0, maximum_stamina)
 	SEND_SIGNAL(src, COMSIG_LIVING_ADJUSTED, -added, STAMINA)
-	if(internal_regen && added < 0)
-		adjust_energy(added)
+	if(added > 0)
+		adjust_energy(-added * energy_loss_mult)
 	if(added >= 5)
 		if(energy <= 0)
 			if(iscarbon(src))
