@@ -1,7 +1,22 @@
 
 /mob/living/proc/get_dodge_recharge_time()
 	var/speed = GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED)
-	var/recharge_time = DODGE_RECHARGE_BASE - ((speed - 10) * 0.5 SECONDS)
+	var/recharge_time = clamp(
+		DODGE_RECHARGE_BASE - ((speed - 10) * DODGE_RECHARGE_SPEED_STEP),
+		DODGE_RECHARGE_MIN,
+		DODGE_RECHARGE_MAX,
+	)
+
+	if(ishuman(src))
+		var/mob/living/carbon/human/human = src
+		switch(human.worn_armor_class)
+			if(AC_LIGHT)
+				recharge_time *= DODGE_RECHARGE_LIGHT_MULTIPLIER
+			if(AC_MEDIUM)
+				recharge_time *= DODGE_RECHARGE_MEDIUM_MULTIPLIER
+			if(AC_HEAVY)
+				recharge_time *= DODGE_RECHARGE_HEAVY_MULTIPLIER
+
 	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
 		recharge_time *= 0.75
 	return clamp(round(recharge_time), DODGE_RECHARGE_MIN, DODGE_RECHARGE_MAX)
@@ -21,6 +36,8 @@
 	if(ishuman(src))
 		var/mob/living/carbon/human/human = src
 		switch(human.worn_armor_class)
+			if(AC_LIGHT)
+				dodge_distance = min(dodge_distance, 2)
 			if(AC_MEDIUM)
 				dodge_distance = min(dodge_distance, 2)
 			if(AC_HEAVY)
@@ -29,7 +46,7 @@
 
 /mob/living/proc/get_manual_dodge_stamina_cost()
 	var/speed = GET_MOB_ATTRIBUTE_VALUE(src, STAT_SPEED)
-	var/stamina_cost = clamp(DODGE_STAMINA_BASE - (speed - 10), DODGE_STAMINA_MIN, DODGE_STAMINA_MAX)
+	var/stamina_cost = DODGE_STAMINA_BASE - ((speed - 10) * DODGE_STAMINA_SPEED_STEP)
 	if(HAS_TRAIT(src, TRAIT_DODGEEXPERT))
 		stamina_cost -= 2
 
@@ -38,14 +55,14 @@
 		stamina_cost += CEILING(human.getPainLoss() / 50, 1)
 		switch(human.worn_armor_class)
 			if(AC_LIGHT)
-				stamina_cost += 3
+				stamina_cost += DODGE_STAMINA_LIGHT_PENALTY
 			if(AC_MEDIUM)
-				stamina_cost += 7
+				stamina_cost += DODGE_STAMINA_MEDIUM_PENALTY
 			if(AC_HEAVY)
-				stamina_cost += 12
+				stamina_cost += DODGE_STAMINA_HEAVY_PENALTY
 
 	stamina_cost -= get_tempo_bonus(TEMPO_TAG_STAMLOSS_DODGE)
-	return clamp(stamina_cost, DODGE_STAMINA_MIN, DODGE_STAMINA_MAX)
+	return clamp(round(stamina_cost), DODGE_STAMINA_MIN, DODGE_STAMINA_MAX)
 
 /mob/living/proc/get_manual_dodge_grace_time()
 	var/athletics = GET_MOB_SKILL_VALUE_OLD(src, /datum/attribute/skill/misc/athletics)
@@ -69,13 +86,19 @@
 /mob/living/proc/get_manual_dodge_destination(travel_direction, dodge_distance)
 	var/turf/current_turf = get_turf(src)
 	var/turf/last_safe_turf
+	var/can_cross_mobs = HAS_TRAIT(src, TRAIT_DODGE_THROUGH_MOBS)
 	for(var/step_number in 1 to dodge_distance)
 		var/turf/next_turf = get_step(current_turf, travel_direction)
-		if(!is_valid_dodge_turf(next_turf))
+		if(!is_valid_dodge_turf(next_turf, can_cross_mobs))
 			break
-		last_safe_turf = next_turf
+		if(!can_cross_mobs || !next_turf.is_blocked_turf(exclude_mobs = FALSE, source_atom = src))
+			last_safe_turf = next_turf
 		current_turf = next_turf
 	return last_safe_turf
+
+/mob/living/proc/end_manual_dodge(added_passmob)
+	if(added_passmob)
+		pass_flags &= ~PASSMOB
 
 /mob/living/proc/can_manual_dodge()
 	if(!client || !cmode)
@@ -213,7 +236,14 @@
 	dodge_grace_until = world.time + get_manual_dodge_grace_time()
 	playsound(src, dodge_sound, 100, FALSE)
 	visible_message(span_warning("<b>[src]</b> dodges away!"), span_notice("I dodge away!"))
-	throw_at(target_turf, get_dist(src, target_turf), 1, src, spin = FALSE)
+
+	var/added_passmob = FALSE
+	if(HAS_TRAIT(src, TRAIT_DODGE_THROUGH_MOBS) && !(pass_flags & PASSMOB))
+		pass_flags |= PASSMOB
+		added_passmob = TRUE
+	var/datum/callback/end_dodge_callback = CALLBACK(src, PROC_REF(end_manual_dodge), added_passmob)
+	if(!throw_at(target_turf, get_dist(src, target_turf), 1, src, spin = FALSE, callback = end_dodge_callback))
+		end_manual_dodge(added_passmob)
 	return TRUE
 
 /mob/living/proc/get_dodging_score(modifier = 0)
@@ -406,12 +436,13 @@
 /**
  * Check if a turf is valid for dodging into
  * @param turf/target_turf The turf to check
+ * @param exclude_mobs Whether mobs should be ignored while checking the route
  * @return TRUE if valid, FALSE otherwise
  */
-/mob/living/proc/is_valid_dodge_turf(turf/target_turf)
+/mob/living/proc/is_valid_dodge_turf(turf/target_turf, exclude_mobs = FALSE)
 	if(!target_turf || !target_turf.can_traverse_safely(src))
 		return FALSE
-	if(target_turf.is_blocked_turf(exclude_mobs = FALSE, source_atom = src))
+	if(target_turf.is_blocked_turf(exclude_mobs = exclude_mobs, source_atom = src))
 		return FALSE
 	return TRUE
 

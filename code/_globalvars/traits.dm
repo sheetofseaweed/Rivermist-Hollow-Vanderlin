@@ -243,6 +243,7 @@ GLOBAL_LIST_INIT(roguetraits, list(
 	TRAIT_MEDIUMARMOR = "I can move freely in medium armor.",
 	TRAIT_HEAVYARMOR = "I can move freely in heavy armor.",
 	TRAIT_DODGEEXPERT = "My quick reflexes make dodges more reliable, efficient, and faster to recover.",
+	TRAIT_DODGE_THROUGH_MOBS = "My footwork lets me dodge through other creatures without colliding with them.",
 	TRAIT_VILLAIN = "I am a devious, conniving villain!",
 	TRAIT_CRITICAL_RESISTANCE = "I am resistant to wounds that would be life-threatening to others.",
 	TRAIT_CRITICAL_WEAKNESS = span_danger("I am weak to wounds that others could survive."),
