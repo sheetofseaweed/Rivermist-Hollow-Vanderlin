@@ -187,7 +187,7 @@
 /turf/open/floor/grass
 	name = "grass"
 	desc = "Grass, sodden in mud and bogwater."
-	icon = 'icons/turf/natural/grasses.dmi'
+	icon = 'modular_rmh/icons/turf/natural/grasses.dmi'
 	icon_state = "grass"
 	heelstep = HEELSTEP_GRASS
 	footstep = FOOTSTEP_GRASS
@@ -242,10 +242,12 @@
 /turf/open/floor/grass/hell
 	name = "hell grass"
 	desc = "Grass, ominous and instilling uncomfort."
+	icon = 'icons/turf/natural/grasses.dmi'
 	icon_state = "hellgrass"
 	neighborlay = "hellgrass"
 
 /turf/open/floor/grass/eora
+	icon = 'icons/turf/natural/grasses.dmi'
 	icon_state = "hellgrass"
 	neighborlay = "hellgrass"
 
@@ -288,7 +290,7 @@
 /turf/open/floor/dirt
 	name = "dirt"
 	desc = "The dirt is pocked with the scars of countless wars."
-	icon = 'icons/turf/natural/soils.dmi'
+	icon = 'modular_rmh/icons/turf/natural/soils.dmi'
 	icon_state = "dirt"
 	heelstep = HEELSTEP_MUD
 	footstep = FOOTSTEP_GRASS
@@ -847,7 +849,7 @@
 	icon_state = "snowcobble[rand(1,3)]"
 
 /turf/open/floor/cobblerock
-	icon = 'icons/turf/constructed/stone.dmi'
+	icon = 'modular_rmh/icons/turf/constructed/stone.dmi'
 	icon_state = "cobblerock"
 	heelstep = HEELSTEP_STONE
 	footstep = FOOTSTEP_STONE
@@ -866,9 +868,11 @@
 	ScrapeAway(flags = CHANGETURF_INHERIT_AIR)
 
 /turf/open/floor/cobblerock/alt
+	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "cobblealt"
 
 /turf/open/floor/cobblerock/snow
+	icon = 'icons/turf/constructed/stone.dmi'
 	icon_state = "snowcobblerock"
 	neighborlay = "snowcobblerock"
 
@@ -892,7 +896,7 @@
 /obj/effect/decal/cobblerockedge
 	name = ""
 	desc = ""
-	icon = 'icons/turf/floors.dmi'
+	icon = 'modular_rmh/icons/turf/constructed/stone.dmi'
 	icon_state = "cobble_edges"
 	mouse_opacity = 0
 
@@ -1070,7 +1074,7 @@
 		. += span_warning("It's deeply gouged — not much is holding it together.")
 
 /turf/open/floor/naturalstone
-	icon = 'icons/turf/natural/stones.dmi'
+	icon = 'modular_rmh/icons/turf/natural/stones.dmi'
 	icon_state = "digstone"
 	max_integrity = 500
 	heelstep = HEELSTEP_STONE
