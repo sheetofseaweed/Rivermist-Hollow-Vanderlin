@@ -3358,6 +3358,8 @@
 #include "code\modules\mob\living\carbon\human\species_types\kobold\_kobold.dm"
 #include "code\modules\mob\living\carbon\human\species_types\other\aasimar.dm"
 #include "code\modules\mob\living\carbon\human\species_types\other\dragonborn.dm"
+#include "code\modules\mob\living\carbon\human\species_types\other\gnoll.dm"
+#include "code\modules\mob\living\carbon\human\species_types\other\gnoll_gear.dm"
 #include "code\modules\mob\living\carbon\human\species_types\other\halfdrow.dm"
 #include "code\modules\mob\living\carbon\human\species_types\other\halfelf.dm"
 #include "code\modules\mob\living\carbon\human\species_types\other\halforc.dm"
