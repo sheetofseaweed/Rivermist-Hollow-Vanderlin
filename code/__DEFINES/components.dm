@@ -300,6 +300,7 @@
 #define COMSIG_TRY_STORAGE_RETURN_INVENTORY "storage_return_inventory"	//(list/list_to_inject_results_into, recursively_search_inside_storages = TRUE)
 #define COMSIG_TRY_STORAGE_CAN_INSERT "storage_can_equip"				//(obj/item/insertion_candidate, mob/user, silent) - returns bool
 #define COMSIG_STORAGE_CLOSED "storage_close"
+#define COMSIG_ATOM_HEAT_SOURCE_LIT "atom_heat_source_lit"
 #define COMSIG_STORAGE_REMOVED "storage_item_removed"
 #define COMSIG_STORAGE_ADDED "storage_item_added"
 

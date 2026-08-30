@@ -77,6 +77,8 @@ All foods are distributed among various categories. Use common sense.
 
 	var/ingredient_size = 1
 	var/eat_effect
+	/// Skill-scaled duration multiplier applied when eat_effect status is applied
+	var/eat_effect_duration_mult = 1.0
 	var/rotprocess = FALSE
 	var/become_rot_type = null
 
@@ -431,10 +433,13 @@ All foods are distributed among various categories. Use common sense.
 
 	if(eat_effect && apply_effect)
 		if(islist(eat_effect))
-			for(var/effect in eat_effect)
-				eater.apply_status_effect(effect)
+			for(var/datum/status_effect/effect in eat_effect)
+				var/base_duration = initial(effect.duration)
+				eater.apply_status_effect(effect, (base_duration > 0) ? round(base_duration * eat_effect_duration_mult) : base_duration)
 		else
-			eater.apply_status_effect(eat_effect)
+			var/datum/status_effect/single_effect = eat_effect
+			var/base_duration = initial(single_effect.duration)
+			eater.apply_status_effect(single_effect, (base_duration > 0) ? round(base_duration * eat_effect_duration_mult) : base_duration)
 	eater.taste(reagents)
 
 	if(!reagents.total_volume)
@@ -636,10 +641,21 @@ All foods are distributed among various categories. Use common sense.
 			batch_time *= GET_MOB_SKILL_SPEED_MOD(user, used_slice_skill)
 		if(!do_after(user, batch_time, src))
 			return FALSE
-		var/reagents_per_slice = reagents.total_volume/slices_num
+		var/effective_slices_num = slices_num
+		if(istype(user) && user.mind)
+			var/prep_skill = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/craft/cooking/preparation)
+			if(ispath(slice_path, /obj/item/reagent_containers/food/snacks/veg))
+				if(prep_skill >= SKILL_RANK_EXPERT)
+					effective_slices_num++
+				if(prep_skill >= SKILL_RANK_LEGENDARY)
+					effective_slices_num++
+			else if(ispath(slice_path, /obj/item/reagent_containers/food/snacks/meat/mince))
+				if(prep_skill >= SKILL_RANK_LEGENDARY)
+					effective_slices_num++
+		var/reagents_per_slice = reagents.total_volume/effective_slices_num
 		if(used_slice_skill)
 			user.adjust_experience(used_slice_skill, (GET_MOB_ATTRIBUTE_VALUE(user, STAT_INTELLIGENCE)*0.5))
-		for(var/i in 1 to slices_num)
+		for(var/i in 1 to effective_slices_num)
 			var/obj/item/reagent_containers/food/snacks/slice = new slice_path(loc)
 			slice.filling_color = filling_color
 			initialize_slice(slice, reagents_per_slice)

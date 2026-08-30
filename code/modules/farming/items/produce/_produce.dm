@@ -371,7 +371,7 @@
 	seed = /obj/item/neuFarm/seed/onion
 	icon_state = "onion"
 	dropshrink = 0.9
-	slices_num = 1
+	slices_num = 2
 	slice_path = /obj/item/reagent_containers/food/snacks/veg/onion_sliced
 	tastes = list("onion" = 1)
 	filling_color = "#fdfaca"
@@ -400,7 +400,7 @@
 	icon_state = "potato"
 	tastes = list("potato" = 1)
 	filling_color = "#d8d8b6"
-	slices_num = 1
+	slices_num = 2
 	slice_path = /obj/item/reagent_containers/food/snacks/veg/potato_sliced
 	eat_effect = null
 	chopping_sound = TRUE
@@ -538,7 +538,7 @@
 	icon_state = "turnip"
 	tastes = list("dirt" = 1)
 	bitesize = 1
-	slices_num = 1
+	slices_num = 2
 	slice_path = /obj/item/reagent_containers/food/snacks/veg/turnip_sliced
 	foodtype = VEGETABLES
 	chopping_sound = TRUE

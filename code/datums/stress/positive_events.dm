@@ -103,6 +103,11 @@
 	stress_change = -2
 	desc = list(span_green("A meal fit for a god!"),span_green("Delicious!"))
 
+/datum/stress_event/pleasant_fragrance
+	timer = 8 MINUTES
+	stress_change = -1
+	desc = span_green("I smell lovely.")
+
 /datum/stress_event/prebel
 	timer = 5 MINUTES
 	stress_change = -5

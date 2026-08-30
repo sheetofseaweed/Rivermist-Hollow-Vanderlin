@@ -10,6 +10,8 @@
 	var/datum/pollutant/fragrance/fragrance_type
 	/// How many uses remaining has it got
 	var/uses_remaining = 10
+	/// Duration multiplier for the mood buff, set from Alchemy skill when brewed
+	var/mood_duration_mult = 1.0
 
 /obj/item/perfume/Initialize()
 	. = ..()
@@ -73,6 +75,11 @@
 	if(ismob(target))
 		var/mob/living/hygiene_target = target
 		hygiene_target.adjust_hygiene(10)
+		var/datum/stress_event/pleasant_fragrance/existing = hygiene_target.has_stress_type(/datum/stress_event/pleasant_fragrance)
+		hygiene_target.add_stress(/datum/stress_event/pleasant_fragrance)
+		var/datum/stress_event/pleasant_fragrance/applied = existing || hygiene_target.has_stress_type(/datum/stress_event/pleasant_fragrance)
+		if(applied && mood_duration_mult != 1.0)
+			applied.timer = world.time + (initial(applied.timer) * mood_duration_mult)
 
 	target.AddComponent(/datum/component/temporary_pollution_emission, fragrance_type, 5, 10 MINUTES)
 

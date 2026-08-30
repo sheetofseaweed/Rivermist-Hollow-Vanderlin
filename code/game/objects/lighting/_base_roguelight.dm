@@ -104,6 +104,7 @@
 		update_appearance(UPDATE_ICON_STATE)
 		if(soundloop)
 			soundloop.start()
+		SEND_SIGNAL(src, COMSIG_ATOM_HEAT_SOURCE_LIT)
 		return TRUE
 
 /obj/machinery/light/fueled/Crossed(atom/movable/AM, oldLoc)

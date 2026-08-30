@@ -454,6 +454,8 @@
 
 /obj/machinery/light/fueled/hearth/fire_act(added, maxstacks)
 	. = ..()
+	if(. && attachment)
+		SEND_SIGNAL(attachment, COMSIG_ATOM_HEAT_SOURCE_LIT)
 	if(food)
 		playsound(src, 'sound/misc/frying.ogg', 80, FALSE, extrarange = 2)
 

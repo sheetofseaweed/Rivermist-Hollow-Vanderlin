@@ -7,6 +7,7 @@
 	optional_reagent_requirements = list(/datum/reagent/consumable/milk = 5)
 	optional_requirements = list(/obj/item/reagent_containers/food/snacks/sugar = 1)
 	used_skill = /datum/attribute/skill/craft/cooking/fine_cuisine
+	requires_fire = FALSE
 
 
 /datum/container_craft/cooking/tea/after_craft(atom/created_output, obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)

@@ -26,10 +26,14 @@
 	var/datum/callback/on_craft_failed
 	/// Time with no progress before auto-aborting (in deciseconds)
 	var/timeout_period = 30 SECONDS // 30 seconds default
+	/// Grace window for crafts paused by recipe.can_progress()
+	var/paused_timeout_period = 2 MINUTES
 	///do we need the initator near us
 	var/requires_proximity = FALSE
 	///Path of looping_sound to use while cooking
 	var/datum/looping_sound/cooking_sound
+	/// TRUE while the craft is paused and the sound loop is stopped
+	var/sound_paused = FALSE
 
 /**
  * Initialize a new crafting operation
@@ -42,11 +46,9 @@
 	src.on_craft_start = on_craft_start
 	src.on_craft_failed = on_craft_failed
 
+	target_time = recipe.get_real_time(crafter, initiator, estimated_multiplier)
 	if(recipe.user_craft)
-		target_time = recipe.get_real_time(crafter, initiator, estimated_multiplier)
 		src.requires_proximity = TRUE
-	else
-		target_time = recipe.crafting_time
 
 	stored_items = list()
 
@@ -108,7 +110,7 @@
 		on_craft_start.InvokeAsync(crafter, initiator, estimated_multiplier)
 
 	if(cooking_sound)
-		src.cooking_sound = new cooking_sound(get_turf(crafter), TRUE)
+		src.cooking_sound = new cooking_sound(crafter, TRUE)
 
 /**
  * Process tick for crafting progress
@@ -128,6 +130,18 @@
 		if(QDELETED(item) || item.loc != crafter)
 			abort_craft("Requirements no longer met")
 			return
+
+	if(!recipe.can_progress(crafter))
+		if(cooking_sound && !sound_paused)
+			cooking_sound.stop()
+			sound_paused = TRUE
+		if((world.time - last_progress_time) > paused_timeout_period)
+			abort_craft("Craft paused for too long")
+		return
+	if(sound_paused)
+		sound_paused = FALSE
+		if(cooking_sound)
+			cooking_sound.start()
 
 	// Check for timeout (no progress in a while)
 	if((world.time - last_progress_time) > timeout_period)

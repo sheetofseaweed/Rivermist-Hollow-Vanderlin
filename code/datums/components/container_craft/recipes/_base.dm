@@ -126,14 +126,6 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 	if(length(fake_wildcards))
 		for(var/wildcard in fake_wildcards)
 			var/needed = fake_wildcards[wildcard]
-			//RMH EDITED START
-			// BUGFIX (cooking): the old loop broke as soon as it gathered `needed`
-			// matching items, so the multiplier for wildcard recipes was always 1.
-			// That made e.g. 4 steaks in a pan cook one-at-a-time (one per craft
-			// trigger) instead of all at once, unlike exact requirements which
-			// already scale via FLOOR(available / needed). Count the FULL available
-			// stock for the multiplier, then consume only one craft's worth for the
-			// isolation_craft leftover check (matching the exact-requirement path).
 			var/total_available = 0
 			for(var/obj/item/path as anything in available_items)
 				if(!ispath(path, wildcard))
@@ -162,7 +154,6 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 					available_items -= path
 				if(to_consume <= 0)
 					break
-			//RMH EDITED END
 
 	if(isolation_craft && length(available_items))
 		return FALSE
@@ -362,7 +353,8 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 
 		create_item(crafter, initiator, found_optional_requirements, found_optional_wildcards, found_optional_reagents, items_to_delete)
 
-		initiator.mind?.add_sleep_experience(used_skill, GET_MOB_ATTRIBUTE_VALUE(initiator, STAT_INTELLIGENCE) * 0.5)
+		if(initiator)
+			initiator.mind?.add_sleep_experience(used_skill, GET_MOB_ATTRIBUTE_VALUE(initiator, STAT_INTELLIGENCE) * 0.5)
 		// Remove all tracked items
 		for(var/obj/item/item_to_delete in items_to_delete)
 			qdel(item_to_delete)
@@ -400,9 +392,11 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 	var/average_freshness = (ingredient_count > 0) ? (total_freshness / ingredient_count) : 0
 
 	// Get the initiator's cooking skill
-	var/cooking_skill = GET_MOB_SKILL_VALUE_OLD(initiator, used_skill) + initiator.get_inspirational_bonus()
+	var/cooking_skill = 0
+	if(initiator)
+		cooking_skill = GET_MOB_SKILL_VALUE_OLD(initiator, used_skill) + initiator.get_inspirational_bonus()
 
-	if(HAS_TRAIT(initiator, TRAIT_LUCKY_COOK))
+	if(initiator && HAS_TRAIT(initiator, TRAIT_LUCKY_COOK))
 		// Every level above 9 increases the chance by 4%
 		if(initiator.stat_roll(STAT_FORTUNE, 4, 9))
 			output_amount++
@@ -454,10 +448,19 @@ GLOBAL_LIST_INIT(container_craft_to_singleton, init_container_crafts())
 	return
 
 /datum/container_craft/proc/get_real_time(atom/host, mob/user, estimated_multiplier)
-	return crafting_time * estimated_multiplier
+	var/real_time = crafting_time * estimated_multiplier
+	if(istype(user) && user.mind && used_skill)
+		real_time *= GET_MOB_SKILL_SPEED_MOD(user, used_skill)
+	return real_time
 
 /datum/container_craft/proc/check_failure(obj/item/crafter, mob/user)
 	return FALSE
+
+/**
+ * Whether an active craft may advance its progress this tick.
+ */
+/datum/container_craft/proc/can_progress(obj/item/crafter)
+	return TRUE
 
 /datum/container_craft/proc/extra_html()
 	return

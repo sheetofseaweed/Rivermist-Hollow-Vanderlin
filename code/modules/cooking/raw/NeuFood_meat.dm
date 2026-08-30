@@ -30,6 +30,7 @@
 	var/list/cannibalism_for = list()
 	tastes = list("meat" = 1)
 	gender = PLURAL
+	slice_skill = /datum/attribute/skill/craft/cooking/preparation
 
 /obj/item/reagent_containers/food/snacks/meat/on_consume(mob/living/eater)
 	var/reset_eat_effect = FALSE
