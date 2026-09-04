@@ -41,6 +41,7 @@
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(async_start))
 	RegisterSignal(parent, COMSIG_ATOM_ENTERED, PROC_REF(on_entered))
 	RegisterSignal(parent, COMSIG_ATOM_HEAT_SOURCE_LIT, PROC_REF(async_start))
+	RegisterSignal(parent, COMSIG_CONTAINER_CRAFT_ABORTED, PROC_REF(async_start))
 	if(temperature_listener)
 		RegisterSignal(parent, COMSIG_REAGENTS_EXPOSE_TEMPERATURE, PROC_REF(async_start))
 
@@ -52,12 +53,16 @@
 
 /**
  * Attempt to craft as soon as an item enters the container.
+ *
+ * Debounced: filling a container item-by-item would otherwise run a full recipe
+ * scan per insert (the cooking pot alone has ~105 recipe subtypes), so inserts
+ * are coalesced into a single pass.
  */
 /datum/component/container_craft/proc/on_entered(datum/source, atom/movable/arrived, atom/old_loc)
 	SIGNAL_HANDLER
 	if(!isitem(arrived))
 		return
-	INVOKE_ASYNC(src, PROC_REF(attempt_crafts), source, null)
+	addtimer(CALLBACK(src, PROC_REF(async_start), source, null), 0.5 SECONDS, TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_DELETE_ME)
 
 /**
  * Attempt to craft all possible recipes - try normal priority first, then fallbacks

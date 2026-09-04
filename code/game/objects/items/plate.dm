@@ -344,14 +344,13 @@
 	update_appearance(UPDATE_OVERLAYS)
 
 /obj/item/tray/proc/do_scatter(obj/item/I)
-	if(I)
-		for(var/i in 1 to rand(1, 2))
-			var/xOffset = rand(-16, 16)  // Adjust the range as needed
-			var/yOffset = rand(-16, 16)  // Adjust the range as needed
-			I.x = xOffset
-			I.y = yOffset
-
-			sleep(rand(2, 4))
+	if(QDELETED(I))
+		return
+	// This used to assign I.x / I.y, which are world coordinates, not visual
+	// offsets - it teleported everything off the tray to the map edge. Offset
+	// the sprite instead, the way plate/throw_impact already does.
+	I.pixel_x = I.base_pixel_x + rand(-16, 16)
+	I.pixel_y = I.base_pixel_y + rand(-16, 16)
 
 /obj/item/plate/update_overlays()
 	. = ..()

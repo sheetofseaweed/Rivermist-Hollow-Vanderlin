@@ -285,6 +285,7 @@
 #define COMSIG_NANITE_SYNC "nanite_sync"						//(datum/component/nanites, full_overwrite, copy_activation) Called to sync the target's nanites to a given nanite component
 
 #define COMSIG_CONTAINER_CRAFT_COMPLETE "container_craft_complete"
+#define COMSIG_CONTAINER_CRAFT_ABORTED "container_craft_aborted"
 // /datum/component/storage signals
 #define COMSIG_CONTAINS_STORAGE "is_storage"							//() - returns bool.
 #define COMSIG_TRY_STORAGE_INSERT "storage_try_insert"					//(obj/item/inserting, mob/user, silent, force) - returns bool

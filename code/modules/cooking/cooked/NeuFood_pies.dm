@@ -150,7 +150,7 @@
 	nutrition = PIEDOUGH_NUTRITION*COOK_MOD*SLICED_MOD
 	tastes = list("pie" = 1)
 	name = "pie slice"
-	desc = ""
+	desc = "A slice cut from a whole pie, still holding its shape."
 	icon_state = "slice"
 	dropshrink = 0.9
 	filling_color = "#FFFFFF"

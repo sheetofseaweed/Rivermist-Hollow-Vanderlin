@@ -48,6 +48,7 @@
 /obj/item/reagent_containers/food/snacks/dough_slice
 	item_weight = 150 GRAMS
 	name = "smalldough"
+	desc = "A palm-sized lump pinched off a larger batch of dough, waiting to be shaped into something worth baking."
 	icon_state = "doughslice"
 	w_class = WEIGHT_CLASS_NORMAL
 	slices_num = 0
@@ -346,6 +347,7 @@
 /obj/item/reagent_containers/food/snacks/raisindough
 	item_weight = 300 GRAMS
 	name = "dough of raisins"
+	desc = "Dough worked through with raisins, waiting for the oven to turn it into something sweeter."
 	icon_state = "dough_raisin"
 	slices_num = 0
 	w_class = WEIGHT_CLASS_NORMAL
@@ -445,6 +447,7 @@
 /*	.................   Raspberry Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/raspberrybutterdough
 	name = "raspberry butterdough"
+	desc = "Butterdough studded with dried raspberries, not yet fit to be called bread."
 	icon_state = "butterdough_raspberry"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -482,6 +485,7 @@
 /*	.................   Raisin Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/jacksberrybutterdough
 	name = "raisin butterdough"
+	desc = "Butterdough worked through with raisins, not yet baked."
 	icon_state = "butterdough_jacksberry"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -529,6 +533,7 @@
 /*	.................   Blackberry Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/blackberrybutterdough
 	name = "blackberry butterdough"
+	desc = "Butterdough worked through with dried blackberries, not yet baked."
 	icon_state = "butterdough_blackberry"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -566,6 +571,7 @@
 /*	.................   Pear Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/pearbutterdough
 	name = "pear butterdough"
+	desc = "Butterdough worked through with dried pear, not yet baked."
 	icon_state = "butterdough_pear"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -603,6 +609,7 @@
 /*	.................   Tangerine Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/tangerinebutterdough
 	name = "tangerine butterdough"
+	desc = "Butterdough worked through with dried tangerine, not yet baked."
 	icon_state = "butterdough_tangerine"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -640,6 +647,7 @@
 /*	.................   Plum Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/plumbutterdough
 	name = "plum butterdough"
+	desc = "Butterdough worked through with dried plum, not yet baked."
 	icon_state = "butterdough_plum"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -677,6 +685,7 @@
 /*	.................   Lemon Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/lemonbutterdough
 	name = "lemon butterdough"
+	desc = "Butterdough worked through with dried lemon, not yet baked."
 	icon_state = "butterdough_lemon"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -714,6 +723,7 @@
 /*	.................   Chocolate Bookbread   ................... */
 /obj/item/reagent_containers/food/snacks/chocolatebutterdough
 	name = "chocolate butterdough"
+	desc = "Butterdough worked through with rich chocolate, not yet baked."
 	icon_state = "butterdough_chocolate"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -728,6 +738,7 @@
 
 /obj/item/reagent_containers/food/snacks/choccy_chip_dough
 	name = "chocolate chip cookie dough"
+	desc = "A ball of raw cookie dough studded with chocolate, ready to be portioned and baked."
 	icon_state = "butterdough"
 	bitesize = 3
 	w_class = WEIGHT_CLASS_NORMAL
@@ -745,6 +756,7 @@
 
 /obj/item/reagent_containers/food/snacks/choccy_cookie_raw
 	name = "unbaked chocolate chip cookie"
+	desc = "A single portion of chocolate chip cookie dough, flattened and waiting for the oven."
 	icon_state = "uncookedcookie"
 	slices_num = 0
 	w_class = WEIGHT_CLASS_TINY
@@ -770,6 +782,7 @@
 
 /obj/item/reagent_containers/food/snacks/choco_butterdough_slice
 	name = "unbaked chocolate pastry"
+	desc = "A portion of chocolate butterdough, shaped and waiting for the oven."
 	icon_state = "butterdoughslicechoc"
 	slices_num = 0
 	w_class = WEIGHT_CLASS_NORMAL
@@ -784,6 +797,7 @@
 
 /obj/item/reagent_containers/food/snacks/choco_bun_raw
 	name = "unbaked chocolate bun"
+	desc = "A round of chocolate dough, rolled into shape and waiting for the oven."
 	icon_state = "butterdoughslicechoc"
 	slices_num = 0
 	w_class = WEIGHT_CLASS_NORMAL
@@ -1631,6 +1645,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/biscuit_raw
 	item_weight = 60 GRAMS
 	name = "uncooked raisin biscuit"
+	desc = "A round of raisin-studded dough, not yet baked into a biscuit."
 	icon_state = "biscuit_raw"
 	rotprocess = SHELFLIFE_DECENT
 	nutrition = BUTTERDOUGHSLICE_NUTRITION + RAISIN_NUTRITION
@@ -1666,6 +1681,7 @@
 /*	.................   Prezzel   ................... */
 /obj/item/reagent_containers/food/snacks/foodbase/prezzel_raw
 	name = "uncooked prezzel"
+	desc = "A twist of dough, not yet baked into a prezzel."
 	icon_state = "prezzel_raw"
 	dropshrink = 0.8
 	rotprocess = SHELFLIFE_DECENT
@@ -1703,6 +1719,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/fritter_raw
 	item_weight = 100 GRAMS
 	name = "uncooked apple fritter"
+	desc = "Dough studded with chunks of apple, not yet fried into a fritter."
 	icon_state = "applefritterraw"
 	dropshrink = 0.8
 
@@ -1779,6 +1796,7 @@
 /obj/item/reagent_containers/food/snacks/zybcake_ready
 	item_weight = 400 GRAMS
 	name = "unbaked zakhrani cake"
+	desc = "A honeyed cake batter, ready for the oven."
 	icon_state = "honeycakeuncook"
 	dropshrink = 0.8
 	slices_num = 0
@@ -1812,6 +1830,7 @@
 /obj/item/reagent_containers/food/snacks/zybcake_slice
 	item_weight = 100 GRAMS
 	name = "zakhra cake slice"
+	desc = "A slice of honey cake, sweet and dense."
 	icon_state = "hcake_slice"
 	base_icon_state = "hcake_slice"
 	dropshrink = 0.8
@@ -1830,6 +1849,7 @@
 /obj/item/reagent_containers/food/snacks/chescake_ready
 	item_weight = 400 GRAMS
 	name = "unbaked cake of cheese"
+	desc = "A rich cheese-filled batter, ready for the oven."
 	icon_state = "cheesecakeuncook"
 	dropshrink = 0.8
 	slices_num = 0
@@ -1868,6 +1888,7 @@
 /obj/item/reagent_containers/food/snacks/cheesecake_slice
 	item_weight = 100 GRAMS
 	name = "cheesecake slice"
+	desc = "A slice of baked cheesecake, dense and rich."
 	icon_state = "cheesecake_slice"
 	base_icon_state = "cheesecake_slice"
 	dropshrink = 0.8
@@ -1903,6 +1924,7 @@
 /obj/item/reagent_containers/food/snacks/strawbycake_ready
 	item_weight = 600 GRAMS
 	name = "unbaked strawberry cake"
+	desc = "A batter thick with strawberries, ready for the oven."
 	icon_state = "strawberrycakeuncooked"
 	dropshrink = 0.8
 	slices_num = 0
@@ -1934,6 +1956,7 @@
 /obj/item/reagent_containers/food/snacks/strawbycake_slice
 	item_weight = 100 GRAMS
 	name = "strawberry cake slice"
+	desc = "A slice of baked strawberry cake."
 	icon_state = "strawberrycakeslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -1964,6 +1987,7 @@
 /obj/item/reagent_containers/food/snacks/crimsoncake_ready
 	item_weight = 600 GRAMS
 	name = "unbaked crimson pine cake"
+	desc = "A dark, chocolate-laced batter, ready for the oven."
 	icon_state = "crimsonpinecakeraw"
 	slices_num = 0
 	w_class = WEIGHT_CLASS_NORMAL
@@ -1993,6 +2017,7 @@
 /obj/item/reagent_containers/food/snacks/crimsoncake_slice
 	item_weight = 100 GRAMS
 	name = "crimson pine cake slice"
+	desc = "A slice of dark, chocolate-laced cake."
 	icon_state = "crimsonpinecakeslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -2023,6 +2048,7 @@
 /obj/item/reagent_containers/food/snacks/tangerinecake_ready
 	item_weight = 600 GRAMS
 	name = "unbaked scarletharp cake"
+	desc = "A batter thick with tangerine, ready for the oven."
 	icon_state = "tangerinecakeraw"
 	dropshrink = 0.9
 	slices_num = 0
@@ -2054,6 +2080,7 @@
 /obj/item/reagent_containers/food/snacks/tangerinecake_slice
 	item_weight = 100 GRAMS
 	name = "scarletharp cake slice"
+	desc = "A slice of baked tangerine cake."
 	icon_state = "tangerinecakeslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -2075,6 +2102,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/scone_raw
 	item_weight = 70 GRAMS
 	name = "unbaked scone"
+	desc = "A wedge of buttery dough, shaped and waiting for the oven."
 	icon_state = "uncookedsconebase"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT
@@ -2099,6 +2127,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/scone_raw_tangerine
 	item_weight = 70 GRAMS
 	name = "unbaked tangerine scone"
+	desc = "A wedge of dough worked through with tangerine, waiting for the oven."
 	icon_state = "uncookedtangerinescone"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT
@@ -2122,6 +2151,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/scone_raw_plum
 	item_weight = 70 GRAMS
 	name = "unbaked plum scone"
+	desc = "A wedge of dough worked through with plum, waiting for the oven."
 	icon_state = "uncookedplumscone"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT
@@ -2149,6 +2179,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/griddlecake_raw
 	item_weight = 120 GRAMS
 	name = "raw griddlecake"
+	desc = "A pool of batter, not yet cooked into a griddlecake."
 	icon_state = "rawgriddlecake"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT
@@ -2173,6 +2204,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/lemongriddlecake_raw
 	item_weight = 120 GRAMS
 	name = "raw lemon griddlecake"
+	desc = "A pool of batter worked through with lemon, not yet cooked."
 	icon_state = "rawgriddlecakelemon"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT
@@ -2198,6 +2230,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/applegriddlecake_raw
 	item_weight = 120 GRAMS
 	name = "raw apple griddlecake"
+	desc = "A pool of batter studded with apple, not yet cooked."
 	icon_state = "rawgriddlecakeapple"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT
@@ -2223,6 +2256,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/berrygriddlecake_raw
 	item_weight = 120 GRAMS
 	name = "raw jacksberry griddlecake"
+	desc = "A pool of batter studded with jacksberries, not yet cooked."
 	icon_state = "rawgriddlecakeberry"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	rotprocess = SHELFLIFE_DECENT

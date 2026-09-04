@@ -402,12 +402,20 @@
 
 /datum/component/storage/concrete/grid/tray
 	max_w_class = WEIGHT_CLASS_BULKY
-	screen_max_rows = 6
-	screen_max_columns = 1
+	screen_max_rows = 3
+	screen_max_columns = 4
+	click_gather = TRUE
 
 /datum/component/storage/concrete/grid/tray/New(datum/P, ...)
 	. = ..()
-	set_holdable(list(/obj/item/plate))
+	set_holdable(list(
+		/obj/item/plate,
+		/obj/item/reagent_containers/glass/cup,
+		/obj/item/reagent_containers/food/snacks,
+		/obj/item/kitchen,
+		/obj/item/weapon/knife/villager,
+		/obj/item/weapon/knife/cleaver,
+	))
 
 /datum/component/storage/concrete/grid/bag_of_holding
 	screen_max_rows = 20

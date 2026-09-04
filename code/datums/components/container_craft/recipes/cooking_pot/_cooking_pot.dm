@@ -36,6 +36,13 @@
 		return TRUE
 	return FALSE
 
+/datum/container_craft/cooking/can_progress(obj/item/crafter)
+	if(length(reagent_requirements))
+		for(var/reagent_path in reagent_requirements)
+			if(!crafter.reagents.has_reagent(reagent_path, reagent_requirements[reagent_path], check_subtypes = subtype_reagents_allowed))
+				return FALSE
+	return TRUE
+
 /datum/container_craft/cooking/create_item(obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)
 	if(created_reagent)
 		var/turf/pot_turf = get_turf(crafter)
@@ -44,10 +51,6 @@
 
 		// Calculate reagent quality based on ingredients and cooking skill
 		var/calculated_quality = calculate_reagent_quality(crafter, initiator, removing_items)
-
-		if(initiator && initiator.mind)
-			var/skill_factor = min(GET_MOB_SKILL_VALUE_OLD(initiator, used_skill), 6) / 6
-			reagent_amount *= 1 + (skill_factor * 0.15)
 
 		for(var/j = 1 to output_amount)
 			// Create quality data for the new reagent
@@ -143,10 +146,12 @@
 	if(!found_product)
 		return
 
-	// Update reagent name with optional ingredients
+	found_product.name = initial(found_product.name)
+	found_product.taste_description = initial(found_product.taste_description)
+
 	if(length(found_optional_wildcards))
 		var/extra_string = " with [wording_choice] "
-		var/extra_taste = "with hints of "
+		var/extra_taste = " with hints of "
 		var/first_ingredient = TRUE
 		var/list/all_used_ingredients = list()
 		for(var/wildcard_type in found_optional_wildcards)
@@ -161,10 +166,13 @@
 			else
 				extra_string += " and [ingredient.name]"
 				extra_taste += " and [ingredient.name]"
-		found_product.name = initial(found_product.name) + extra_string
-		found_product.taste_description = initial(found_product.taste_description) + extra_taste
-		found_product.add_data("custom_name", found_product.name)
-		found_product.add_data("custom_tastes", found_product.taste_description)
+		found_product.name += extra_string
+		found_product.taste_description += extra_taste
+
+	if(!found_product.data)
+		found_product.data = list()
+	found_product.data["custom_name"] = found_product.name
+	found_product.data["custom_tastes"] = found_product.taste_description
 
 	// Optionally modify reagent properties based on quality
 	apply_quality_effects_to_reagent(found_product, initiator)

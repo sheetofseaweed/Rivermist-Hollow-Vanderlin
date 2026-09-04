@@ -581,6 +581,7 @@ All foods are distributed among various categories. Use common sense.
 
 /obj/item/reagent_containers/food/snacks/examine(mob/user)
 	. = ..()
+	. += get_food_info(user)
 	if(!in_container)
 		switch (bitecount)
 			if (0)
@@ -806,7 +807,7 @@ All foods are distributed among various categories. Use common sense.
 
 /obj/item/reagent_containers/food/snacks/badrecipe
 	name = "burned mess"
-	desc = ""
+	desc = "A charred, unidentifiable lump. Whatever it used to be, it isn't anymore."
 	icon_state = "badrecipe"
 	nutrition = SNACK_POOR
 	list_reagents = list(/datum/reagent/toxin/bad_food = 10)

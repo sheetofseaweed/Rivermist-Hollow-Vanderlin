@@ -92,9 +92,11 @@
 	obtained_from = list(list("Threshing wheat stalks", /obj/item/natural/chaff/wheat))
 
 /obj/item/reagent_containers/food/snacks/produce/grain/wheat/examine(mob/user)
-	var/farminglvl = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/labor/farming)
-	. += ..()
-	if(farminglvl >= 0)
+	. = ..()
+	// Ghosts and other non-living examiners have no usable attribute holder.
+	if(!isliving(user))
+		return
+	if(GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/labor/farming) >= 0)
 		. += "I can easily tell that these are wheat grains."
 
 /obj/item/reagent_containers/food/snacks/produce/grain/oat
@@ -113,9 +115,10 @@
 	obtained_from = list(list("Threshing oat stalks", /obj/item/natural/chaff/oat))
 
 /obj/item/reagent_containers/food/snacks/produce/grain/oat/examine(mob/user)
-	var/farminglvl = GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/labor/farming)
-	. += ..()
-	if(farminglvl >= 0)
+	. = ..()
+	if(!isliving(user))
+		return
+	if(GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/labor/farming) >= 0)
 		. += "I can easily tell that these are oat groats."
 
 // ^ PSA: next time you want to do this, make and run an updatepaths migration in tools/UpdatePaths

@@ -5,7 +5,6 @@
 	category = "Pan"
 
 	var/datum/pollutant/cooked_smell
-	cooking_sound = /datum/looping_sound/frying
 	used_skill = /datum/attribute/skill/craft/cooking/grilling
 
 /datum/container_craft/pan/after_craft(atom/created_output, obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)
