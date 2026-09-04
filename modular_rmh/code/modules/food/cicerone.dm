@@ -32,6 +32,26 @@
 	if(GET_MOB_SKILL_VALUE_OLD(src, /datum/attribute/skill/craft/alchemy) >= CICERONE_SKILL_RANK)
 		return TRUE
 
+/**
+ * Contents of a vessel that isn't see-through.
+ *
+ * Base examine only lists reagents through TRANSPARENT containers, so carafes,
+ * pots and shot glasses showed nothing at all. A trained palate reads them by
+ * nose, up close. Scoped to carried vessels on purpose: barrels and kegs are
+ * structures, so they stay unreadable and you must pour a measure out first.
+ */
+/obj/item/reagent_containers/proc/get_trained_palate_contents(mob/user)
+	if(!reagents || (reagents.flags & TRANSPARENT))
+		return null
+	if(!user?.can_see_reagents(src))
+		return null
+	if(!length(reagents.reagent_list))
+		return null
+	var/list/lines = list("A sniff tells me it holds:")
+	for(var/datum/reagent/listed as anything in reagents.reagent_list)
+		lines += "[(UNIT_FORM_STRING(listed.volume))] of <font color=[listed.color]>[listed.name]</font>"
+	return lines
+
 /datum/quirk/boon/cicerone
 	name = "Cicerone"
 	desc = "A lifetime spent around pots, casks, and apothecary shelves has sharpened your palate. A sip or a sniff is all it takes for you to name what's in a cup or bottle."

@@ -219,7 +219,7 @@
 		// One complaint per rejected type, and a type we can't hold never
 		// aborts the rest of the gather.
 		var/list/rejections = list()
-		for(var/obj/item/A as anything in things.Copy())
+		for(var/obj/item/A in things.Copy())
 			things -= A
 			if(A.loc != I.loc)
 				continue

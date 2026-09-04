@@ -411,6 +411,10 @@
 	set_holdable(list(
 		/obj/item/plate,
 		/obj/item/reagent_containers/glass/cup,
+		/obj/item/reagent_containers/glass/alchemical,
+		/obj/item/reagent_containers/glass/bottle,
+		/obj/item/reagent_containers/glass/bowl,
+		/obj/item/reagent_containers/glass/carafe,
 		/obj/item/reagent_containers/food/snacks,
 		/obj/item/kitchen,
 		/obj/item/weapon/knife/villager,

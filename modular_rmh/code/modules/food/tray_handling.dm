@@ -56,28 +56,75 @@
 	user.visible_message(span_notice("[user] sets out everything from [src] onto [table]."), span_notice("I set everything out onto [table]."))
 	update_appearance(UPDATE_OVERLAYS)
 
+/**
+ * Resolves what we're tipping food into. Clicking a hearth hits the hearth,
+ * not the pot hung on it, so unwrap the attachment.
+ */
+/obj/item/tray/proc/get_tip_target(atom/target)
+	if(istype(target, /obj/machinery/light/fueled/hearth))
+		var/obj/machinery/light/fueled/hearth/hearth = target
+		target = hearth.attachment
+	if(istype(target, /obj/item/cooking/pan))
+		return target
+	if(istype(target, /obj/item/reagent_containers/glass/bucket/pot))
+		return target
+	return null
+
 /obj/item/tray/pre_attack(atom/target, mob/living/user, list/modifiers)
-	if(!istype(target, /obj/item/cooking/pan) && !istype(target, /obj/item/reagent_containers/glass/bucket/pot))
+	var/obj/item/vessel = get_tip_target(target)
+	if(!vessel)
 		return ..()
 	if(!length(contents))
 		return ..()
 
 	var/tipped = 0
-	for(var/obj/item/reagent_containers/food/snacks/food as anything in contents.Copy())
+	for(var/obj/item/reagent_containers/food/snacks/food in contents.Copy())
 		if(!SEND_SIGNAL(src, COMSIG_TRY_STORAGE_TAKE, food, get_turf(user), TRUE))
 			continue
-		if(!SEND_SIGNAL(target, COMSIG_TRY_STORAGE_INSERT, food, user, TRUE, TRUE))
+		if(!SEND_SIGNAL(vessel, COMSIG_TRY_STORAGE_INSERT, food, user, TRUE, TRUE))
 			// Wouldn't fit after all - put it back rather than dropping it.
 			SEND_SIGNAL(src, COMSIG_TRY_STORAGE_INSERT, food, user, TRUE, TRUE)
 			continue
 		tipped++
 
 	if(!tipped)
-		to_chat(user, span_warning("Nothing on [src] will fit into [target]."))
+		to_chat(user, span_warning("Nothing on [src] will fit into [vessel]."))
 		return TRUE
 
-	user.visible_message(span_notice("[user] tips [tipped] thing\s from [src] into [target]."), span_notice("I tip [tipped] thing\s into [target]."))
+	user.visible_message(span_notice("[user] tips [tipped] thing\s from [src] into [vessel]."), span_notice("I tip [tipped] thing\s into [vessel]."))
 	update_appearance(UPDATE_OVERLAYS)
 	return TRUE
 
 #undef TRAY_MODE_COLOUR
+
+/**
+ * Draws what's on the tray.
+ *
+ * Offsets are laid out on a fixed grid rather than randomised, so an item does
+ * not jump to a new spot every time anything is added or taken off.
+ */
+/obj/item/tray/update_overlays()
+	. = ..()
+	var/index = 0
+	for(var/obj/item/carried in contents)
+		var/mutable_appearance/carried_appearance = new(carried)
+		// The grid storage paints its inventory-slot background into the item's
+		// underlays while it is stored (and clears it on removal). Copying the
+		// appearance verbatim drags that backing square onto the tray, so strip
+		// it and the stack-count maptext from our copy.
+		carried_appearance.underlays = null
+		carried_appearance.maptext = ""
+		carried_appearance.plane = FLOAT_PLANE
+		carried_appearance.layer = FLOAT_LAYER
+		carried_appearance.pixel_x = -9 + ((index % 4) * 6)
+		carried_appearance.pixel_y = 5 - (round(index / 4) * 7)
+		. += carried_appearance
+		index++
+
+/obj/item/tray/Entered(atom/movable/arrived, atom/old_loc)
+	. = ..()
+	update_appearance(UPDATE_OVERLAYS)
+
+/obj/item/tray/Exited(atom/movable/gone, atom/new_loc)
+	. = ..()
+	update_appearance(UPDATE_OVERLAYS)
