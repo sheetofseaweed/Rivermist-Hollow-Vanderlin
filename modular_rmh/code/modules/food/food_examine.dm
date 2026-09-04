@@ -16,11 +16,21 @@
 #define FOOD_INFO_COLOUR "#d4af37"
 
 /// ingredient typepath -> list of container_craft singletons taking it directly.
-GLOBAL_LIST_INIT(craft_recipes_by_ingredient, build_craft_ingredient_index())
+GLOBAL_LIST_EMPTY(craft_recipes_by_ingredient)
 /// wildcard ingredient typepath -> singletons, matched with ispath at lookup.
-GLOBAL_LIST_INIT(craft_recipes_by_wildcard, build_craft_wildcard_index())
+GLOBAL_LIST_EMPTY(craft_recipes_by_wildcard)
 /// concrete ingredient typepath -> list of hand-worked recipe results.
-GLOBAL_LIST_INIT(handcraft_results_by_ingredient, build_handcraft_index())
+GLOBAL_LIST_EMPTY(handcraft_results_by_ingredient)
+/// Set once the three indexes above have been populated.
+GLOBAL_VAR_INIT(food_recipe_indexes_built, FALSE)
+
+/proc/ensure_food_recipe_indexes()
+	if(GLOB.food_recipe_indexes_built)
+		return
+	GLOB.food_recipe_indexes_built = TRUE
+	GLOB.craft_recipes_by_ingredient = build_craft_ingredient_index()
+	GLOB.craft_recipes_by_wildcard = build_craft_wildcard_index()
+	GLOB.handcraft_results_by_ingredient = build_handcraft_index()
 
 /proc/build_craft_ingredient_index()
 	var/list/index = list()
@@ -104,6 +114,7 @@ GLOBAL_LIST_INIT(handcraft_results_by_ingredient, build_handcraft_index())
  */
 /obj/item/proc/get_preparation_lines()
 	. = list()
+	ensure_food_recipe_indexes()
 	var/list/by_verb = list()
 
 	for(var/datum/container_craft/recipe as anything in GLOB.craft_recipes_by_ingredient[type])
