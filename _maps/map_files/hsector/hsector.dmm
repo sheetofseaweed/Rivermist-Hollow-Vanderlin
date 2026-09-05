@@ -3619,13 +3619,10 @@
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/living)
 "bkX" = (
-/obj/structure/stairs{
-	dir = 1
-	},
+/obj/structure/fake_machine/scomm/r,
 /obj/structure/stairs/cw{
 	dir = 1
 	},
-/obj/structure/fake_machine/scomm/r,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/garrison)
 "bla" = (
@@ -19910,9 +19907,6 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "gzN" = (
-/obj/structure/stairs{
-	dir = 4
-	},
 /obj/structure/stairs/cw{
 	dir = 4
 	},
@@ -50807,10 +50801,7 @@
 /area/outdoors/rmh_field/rmh_mageporch)
 "qsR" = (
 /obj/structure/rack/rogue/shelf/alizeria/shelf2,
-/obj/structure/stairs,
-/obj/structure/stairs/ccw{
-	dir = 4
-	},
+/obj/structure/stairs/ccwdown,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/library)
 "qsW" = (
