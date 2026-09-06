@@ -1056,7 +1056,7 @@
 			. += "[A.type]"
 
 ///Can the mob see reagents inside of containers?
-/mob/proc/can_see_reagents()
+/mob/proc/can_see_reagents(atom/target)
 	return stat == DEAD || has_unlimited_silicon_privilege //Dead guys and silicons can always see reagents
 
 /mob/living/carbon/human/proc/get_role_title(ignore_pronouns = FALSE, steward_check = FALSE)

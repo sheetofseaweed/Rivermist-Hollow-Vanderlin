@@ -17,3 +17,8 @@
 	timer = 15 MINUTES
 	stress_change = -3
 	desc = "I c-couldn't hold it.."
+
+/datum/stress_event/pleasant_fragrance
+	timer = 8 MINUTES
+	stress_change = -1
+	desc = span_green("I smell lovely.")

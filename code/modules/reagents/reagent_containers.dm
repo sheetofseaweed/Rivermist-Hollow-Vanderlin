@@ -66,6 +66,7 @@
 
 /obj/item/reagent_containers/examine(mob/user)
 	. = ..()
+	. += get_trained_palate_contents(user)
 	if(has_variable_transfer_amount && length(possible_transfer_amounts) > 1)
 		. += span_notice("Alt Left-click or right-click in-hand to increase or decrease its transfer amount.")
 

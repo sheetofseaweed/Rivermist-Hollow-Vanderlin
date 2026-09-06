@@ -9,7 +9,7 @@
 /obj/item/reagent_containers/food/snacks/fat
 	item_weight = 230 GRAMS
 	name = "fat"
-	desc = ""
+	desc = "A slab of raw animal fat, greasy to the touch."
 	icon_state = "fat"
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	possible_item_intents = list(/datum/intent/food, /datum/intent/splash, /datum/intent/use)
@@ -91,6 +91,7 @@
 /obj/item/reagent_containers/food/snacks/spiderhoney
 	item_weight = 30 GRAMS
 	name = "spider honey"
+	desc = "A sticky lump of honey harvested from a giant spider's web. Sweet, if you can get past where it came from."
 	icon_state = "spiderhoney"
 	bitesize = 3
 	nutrition = HONEY_NUTRITION
@@ -218,6 +219,7 @@
 // -------------- SALO (salted fat) -----------------
 /obj/item/reagent_containers/food/snacks/fat/salo
 	name = "salo"
+	desc = "A slab of cured pork fat, salted and firm. Cut off a piece as you need it."
 	icon_state = "salo4"
 	bitesize = 4
 	nutrition = FAT_NUTRITION*2*DRIED_MOD
@@ -249,6 +251,7 @@
 /obj/item/reagent_containers/food/snacks/fat/salo/slice
 	item_weight = 30 GRAMS
 	name = "salo"
+	desc = "A thin slice of cured, salted pork fat."
 	icon_state = "saloslice"
 	bitesize = 2
 	slices_num = FALSE
@@ -264,6 +267,7 @@
 /obj/item/reagent_containers/food/snacks/raisins
 	item_weight = 5 GRAMS
 	name = "raisins"
+	desc = "A handful of sun-dried grapes, wrinkled and sweet."
 	icon = 'icons/roguetown/items/produce.dmi'
 	icon_state = "raisins"
 	base_icon_state = "raisins"
@@ -292,6 +296,7 @@
 /obj/item/reagent_containers/food/snacks/strawberry_dried
 	item_weight = 6 GRAMS
 	name = "dried strawberry"
+	desc = "A dried strawberry, shrunken and chewy but still sweet."
 	icon_state = "driedstrawberry"
 	dropshrink = 0.8
 	bitesize = 3
@@ -306,6 +311,7 @@
 /obj/item/reagent_containers/food/snacks/tangerine_dried
 	item_weight = 44 GRAMS
 	name = "dried tangerine"
+	desc = "A dried tangerine, its peel leathery and its flesh chewy."
 	icon_state = "driedtangerine"
 	dropshrink = 0.8
 	bitesize = 3
@@ -320,6 +326,7 @@
 /obj/item/reagent_containers/food/snacks/plum_dried
 	item_weight = 33 GRAMS
 	name = "dried plum"
+	desc = "A dried plum, wrinkled and sticky-sweet."
 	icon_state = "driedplum"
 	dropshrink = 0.8
 	bitesize = 3
@@ -334,6 +341,7 @@
 /obj/item/reagent_containers/food/snacks/apple_dried
 	item_weight = 91 GRAMS
 	name = "dried apple"
+	desc = "A ring of dried apple, leathery and concentrated in sweetness."
 	icon_state = "driedapple"
 	dropshrink = 0.8
 	bitesize = 3
@@ -348,6 +356,7 @@
 /obj/item/reagent_containers/food/snacks/pear_dried
 	item_weight = 86 GRAMS
 	name = "dried pear"
+	desc = "A dried pear, leathery and concentrated in sweetness."
 	icon_state = "driedpear"
 	dropshrink = 0.8
 	bitesize = 3
@@ -422,7 +431,7 @@
 /obj/item/reagent_containers/food/snacks/butter
 	item_weight = 150 GRAMS
 	name = "stick of butter"
-	desc = ""
+	desc = "A stick of pale yellow butter, softening in the hand."
 	icon_state = "butter6"
 	nutrition = BUTTER_NUTRITION
 	foodtype = DAIRY
@@ -461,6 +470,7 @@
 	item_weight = 25 GRAMS
 	icon_state = "butter_slice"
 	name = "butter"
+	desc = "A pat of butter, cut from a larger stick."
 	foodtype = DAIRY
 	eat_effect = /datum/status_effect/debuff/uncookedfood
 	nutrition = BUTTER_NUTRITION * SLICED_MOD
@@ -534,6 +544,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/cheesewheel_start
 	item_weight = 2.2 KILOGRAMS
 	name = "unfinished cheese wheel"
+	desc = "A loose curd pressed into a rough wheel, still soft and unfinished."
 	icon_state = "cheesewheel_1"
 	w_class = WEIGHT_CLASS_BULKY
 	do_random_pixel_offset = FALSE
@@ -559,6 +570,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/cheesewheel_two
 	item_weight = 2.5 KILOGRAMS
 	name = "unfinished cheese wheel"
+	desc = "A cheese wheel packed firmer with another round of curds, still unfinished."
 	icon_state = "cheesewheel_2"
 	w_class = WEIGHT_CLASS_BULKY
 	do_random_pixel_offset = FALSE
@@ -584,6 +596,7 @@
 /obj/item/reagent_containers/food/snacks/foodbase/cheesewheel_three
 	item_weight = 2.7 KILOGRAMS
 	name = "unfinished cheese wheel"
+	desc = "A dense, nearly-full cheese wheel, needing one more round of curds before it's ready to press."
 	icon_state = "cheesewheel_3"
 	w_class = WEIGHT_CLASS_BULKY
 	do_random_pixel_offset = FALSE
@@ -621,6 +634,7 @@
 /obj/item/reagent_containers/food/snacks/cheese
 	item_weight = 224 GRAMS
 	name = "fresh cheese"
+	desc = "A soft lump of fresh cheese, strained from curdled milk."
 	icon_state = "freshcheese"
 	bitesize = 1
 	nutrition = CHEESE_NUTRITION
@@ -635,10 +649,12 @@
 
 /obj/item/reagent_containers/food/snacks/cheese/gote
 	name = "fresh gote cheese"
+	desc = "A soft lump of fresh cheese, strained from goat's milk."
 
 /obj/item/reagent_containers/food/snacks/cheddar
 	item_weight = 3 KILOGRAMS
 	name = "wheel of cheese"
+	desc = "A whole wheel of pressed cheese, waxed and firm."
 	icon_state = "cheesewheel"
 	dropshrink = 0.8
 	bitesize = 6
@@ -659,6 +675,7 @@
 /obj/item/reagent_containers/food/snacks/cheddar/aged
 	item_weight = 3 KILOGRAMS
 	name = "wheel of aged cheese"
+	desc = "A wheel of cheese left to age, its rind veined with blue mould."
 	icon_state = "blue_cheese"
 	slice_path = /obj/item/reagent_containers/food/snacks/cheese_wedge/aged
 	become_rot_type = null
@@ -669,6 +686,7 @@
 /obj/item/reagent_containers/food/snacks/cheese_wedge
 	item_weight = 500 GRAMS
 	name = "wedge of cheese"
+	desc = "A wedge cut from a whole wheel of cheese."
 	icon_state = "cheese_wedge"
 	dropshrink = 0.8
 	nutrition = CHEESE_NUTRITION
@@ -689,6 +707,7 @@
 
 /obj/item/reagent_containers/food/snacks/cheese_wedge/aged
 	name = "wedge of aged cheese"
+	desc = "A wedge of cheese aged until it's veined with blue mould."
 	icon_state = "blue_cheese_wedge"
 	slice_path = /obj/item/reagent_containers/food/snacks/cheddarslice/aged
 	become_rot_type = null
@@ -699,6 +718,7 @@
 /obj/item/reagent_containers/food/snacks/cheddarslice
 	item_weight = 155 GRAMS
 	name = "slice of cheese"
+	desc = "A thin slice cut from a wedge of cheese."
 	icon_state = "cheese_slice"
 	bitesize = 1
 	dropshrink = 0.8
@@ -720,6 +740,7 @@
 
 /obj/item/reagent_containers/food/snacks/cheddarslice/aged
 	name = "slice of aged cheese"
+	desc = "A thin slice of cheese, veined through with blue mould."
 	icon_state = "blue_cheese_slice"
 	become_rot_type = null
 	rotprocess = null
@@ -753,6 +774,7 @@
 /obj/item/reagent_containers/food/snacks/jellyslice_base
 	item_weight = 950 GRAMS
 	name = "plain gelatine slice"
+	desc = "A wobbling slice of unflavoured gelatine."
 	icon_state = "basegelatinslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -790,6 +812,7 @@
 /obj/item/reagent_containers/food/snacks/jellyslice_apple
 	item_weight = 250 GRAMS
 	name = "apple gelatine slice"
+	desc = "A wobbling slice of gelatine, sweetened with apple."
 	icon_state = "applegelatineslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -825,6 +848,7 @@
 /obj/item/reagent_containers/food/snacks/jellyslice_tangerine
 	item_weight = 250 GRAMS
 	name = "tangerine gelatine slice"
+	desc = "A wobbling slice of gelatine, sweetened with tangerine."
 	icon_state = "tangerinegelatineslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -861,6 +885,7 @@
 /obj/item/reagent_containers/food/snacks/jellyslice_plum
 	item_weight = 250 GRAMS
 	name = "plum gelatine slice"
+	desc = "A wobbling slice of gelatine, sweetened with plum."
 	icon_state = "plumgelatineslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -896,6 +921,7 @@
 /obj/item/reagent_containers/food/snacks/jellyslice_lime
 	item_weight = 250 GRAMS
 	name = "lime gelatine slice"
+	desc = "A wobbling slice of gelatine, tart with lime."
 	icon_state = "limegelatineslice"
 	dropshrink = 0.8
 	slices_num = 0
@@ -931,6 +957,7 @@
 /obj/item/reagent_containers/food/snacks/jellyslice_pear
 	item_weight = 250 GRAMS
 	name = "pear gelatine slice"
+	desc = "A wobbling slice of gelatine, sweetened with pear."
 	icon_state = "peargelatineslice"
 	dropshrink = 0.8
 	slices_num = 0

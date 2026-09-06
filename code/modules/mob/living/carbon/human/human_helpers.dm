@@ -103,7 +103,7 @@
 	. = ..()
 	. += "[dna.species.type]"
 
-/mob/living/carbon/human/can_see_reagents()
+/mob/living/carbon/human/can_see_reagents(atom/target)
 	. = ..()
 	if(.) //No need to run through all of this if it's already true.
 		return

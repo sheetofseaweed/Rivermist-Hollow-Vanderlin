@@ -162,3 +162,9 @@
 			food_item.tastes = list()
 		for(var/taste in tastes)
 			food_item.tastes[taste] = tastes[taste]
+
+	var/skill_factor = min(skill_quality, 6) / 6
+	var/bonus_nutrition = round(food_item.nutrition * skill_factor * 0.15)
+	if(bonus_nutrition > 0)
+		food_item.reagents.add_reagent(/datum/reagent/consumable/nutriment, bonus_nutrition)
+	food_item.eat_effect_duration_mult = 1 + (skill_factor * 0.2)

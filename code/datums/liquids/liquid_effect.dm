@@ -316,7 +316,7 @@
 
 	examine_list +=  "<hr>"
 
-	if(examiner.can_see_reagents())
+	if(examiner.can_see_reagents(src))
 		examine_list +=  "<hr>"
 
 		if(length(liquid_group.reagents.reagent_list) == 1)

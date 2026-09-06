@@ -36,10 +36,15 @@
 /obj/structure/fluff/canopy/side/end
 	icon_state = "canopyb-side-end"
 
+/obj/structure/fluff/canopy/booth/Initialize(mapload)
+	. = ..()
+	var/static/list/loc_connections = list(COMSIG_ATOM_EXIT = PROC_REF(on_exit))
+	AddElement(/datum/element/connect_loc, loc_connections)
+
 /obj/structure/fluff/canopy/booth/CanPass(atom/movable/mover, turf/target)
 	SHOULD_CALL_PARENT(TRUE)
 	. = ..()
-	if(get_dir(mover.loc, loc) == dir)
+	if(get_dir(loc, mover.loc) == dir)
 		return 0
 	return .
 
@@ -48,12 +53,11 @@
 		return FALSE
 	return ..()
 
-/obj/structure/fluff/canopy/booth/Exit(atom/movable/O, turf/target)
-	SHOULD_CALL_PARENT(TRUE)
-	. = ..()
-	if(get_dir(O.loc, target) == dir)
-		return 0
-	return .
+/obj/structure/fluff/canopy/booth/proc/on_exit(datum/source, atom/movable/leaving, atom/new_location)
+	SIGNAL_HANDLER
+	if(get_dir(leaving.loc, new_location) == dir)
+		leaving.Bump(src)
+		return COMPONENT_ATOM_BLOCK_EXIT
 
 /obj/structure/fluff/canopy/MouseDrop(over_object, item_src, over_location)
 	. = ..()

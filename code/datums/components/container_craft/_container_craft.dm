@@ -39,10 +39,9 @@
 	on_craft_finished = success
 	RegisterSignal(parent, COMSIG_STORAGE_CLOSED, PROC_REF(async_start))
 	RegisterSignal(parent, COMSIG_MOVABLE_MOVED, PROC_REF(async_start))
-	// BUGFIX (cooking): COMSIG_STORAGE_CLOSED only fires when nobody is looking at the storage UI,
-	// so cooking never started while the player stood next to the oven/pan with the inventory open.
-	// React to items physically entering the container instead.
 	RegisterSignal(parent, COMSIG_ATOM_ENTERED, PROC_REF(on_entered))
+	RegisterSignal(parent, COMSIG_ATOM_HEAT_SOURCE_LIT, PROC_REF(async_start))
+	RegisterSignal(parent, COMSIG_CONTAINER_CRAFT_ABORTED, PROC_REF(async_start))
 	if(temperature_listener)
 		RegisterSignal(parent, COMSIG_REAGENTS_EXPOSE_TEMPERATURE, PROC_REF(async_start))
 
@@ -53,16 +52,17 @@
 	INVOKE_ASYNC(src, PROC_REF(attempt_crafts), source, user)
 
 /**
- * BUGFIX (cooking): an item was placed inside the container - try to start crafting
- * immediately, even if someone is still looking at the storage UI.
- * user is passed as null on purpose: attempt_crafts() will resolve the cook
- * via fingerprintslast (set by handle_item_insertion), so skill bonuses still apply.
+ * Attempt to craft as soon as an item enters the container.
+ *
+ * Debounced: filling a container item-by-item would otherwise run a full recipe
+ * scan per insert (the cooking pot alone has ~105 recipe subtypes), so inserts
+ * are coalesced into a single pass.
  */
 /datum/component/container_craft/proc/on_entered(datum/source, atom/movable/arrived, atom/old_loc)
 	SIGNAL_HANDLER
 	if(!isitem(arrived))
 		return
-	INVOKE_ASYNC(src, PROC_REF(attempt_crafts), source, null)
+	addtimer(CALLBACK(src, PROC_REF(async_start), source, null), 0.5 SECONDS, TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_DELETE_ME)
 
 /**
  * Attempt to craft all possible recipes - try normal priority first, then fallbacks
@@ -75,14 +75,6 @@
 	if(!istype(user))
 		user = get_mob_by_ckey(host.fingerprintslast)
 
-	//RMH EDITED START
-	// BUGFIX (cooking): the old code returned after the first successful craft, so a
-	// pan holding several different foods (e.g. mince + sausage + meat) only started
-	// one recipe per craft trigger and the rest waited for the next signal - they
-	// cooked one type at a time. Now every viable recipe is tried in a single pass,
-	// then fallbacks, so all distinct foods start cooking together. Quantity of a
-	// single food type is still handled by the craft multiplier, so each recipe only
-	// needs to start once here.
 	var/list/stored_items = get_unreserved_items(host)
 
 	for(var/datum/container_craft/recipe as anything in viable_recipe_types)
@@ -98,13 +90,10 @@
 			continue
 		if(singleton.try_craft(host, stored_items.Copy(), user, on_craft_start, on_craft_failed))
 			stored_items = get_unreserved_items(host)
-	//RMH EDITED END
 
-//RMH EDITED START
 /**
- * Returns a type -> count list of items in the container that are not already
- * reserved by an active crafting operation. Used so multiple recipes can start in
- * one attempt_crafts pass without two recipes claiming the same physical item.
+ * Returns a type -> count list of items in the container not already reserved
+ * by an active crafting operation.
  */
 /datum/component/container_craft/proc/get_unreserved_items(obj/item/host)
 	var/list/stored_items = list()
@@ -128,4 +117,3 @@
 					stored_items -= item_type
 
 	return stored_items
-//RMH EDITED END

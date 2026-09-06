@@ -454,6 +454,8 @@
 
 /obj/machinery/light/fueled/hearth/fire_act(added, maxstacks)
 	. = ..()
+	if(. && attachment)
+		SEND_SIGNAL(attachment, COMSIG_ATOM_HEAT_SOURCE_LIT)
 	if(food)
 		playsound(src, 'sound/misc/frying.ogg', 80, FALSE, extrarange = 2)
 
@@ -473,16 +475,31 @@
 		I.pixel_y = I.pixel_y
 		. += new /mutable_appearance(I)
 
+/// Hands the hung pan/pot back to the user, or drops it at their feet.
+/obj/machinery/light/fueled/hearth/proc/take_attachment(mob/user)
+	if(!attachment)
+		return FALSE
+	if(!user.put_in_active_hand(attachment))
+		attachment.forceMove(user.loc)
+	attachment = null
+	update_appearance(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
+	return TRUE
+
+/obj/machinery/light/fueled/hearth/MiddleClick(mob/user, list/modifiers)
+	. = ..()
+	if(!attachment || !user.CanReach(src))
+		return
+	// Right-click fans the fire now, so opening a hung pot/pan lives here.
+	SEND_SIGNAL(attachment, COMSIG_TRY_STORAGE_SHOW, user, TRUE)
+
 /obj/machinery/light/fueled/hearth/attack_hand(mob/user)
 	. = ..()
 	if(.)
 		return
 
 	if(attachment)
-		if(!user.put_in_active_hand(attachment))
-			attachment.forceMove(user.loc)
-		attachment = null
-		update_appearance(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
+		// Left-click lifts it off the fire; middle-click opens its contents.
+		take_attachment(user)
 	else
 		if(on)
 			var/mob/living/carbon/human/H = user

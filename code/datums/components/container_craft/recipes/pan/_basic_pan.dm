@@ -5,15 +5,7 @@
 	category = "Pan"
 
 	var/datum/pollutant/cooked_smell
-	cooking_sound = /datum/looping_sound/frying
 	used_skill = /datum/attribute/skill/craft/cooking/grilling
-
-/datum/container_craft/pan/get_real_time(atom/host, mob/user, estimated_multiplier)
-	var/real_cooking_time = crafting_time * estimated_multiplier
-	if(user.mind)
-		real_cooking_time /= 1 + (GET_MOB_SKILL_VALUE_OLD(user, used_skill) * 0.2)
-		real_cooking_time = round(real_cooking_time)
-	return real_cooking_time
 
 /datum/container_craft/pan/after_craft(atom/created_output, obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)
 	. = ..()
@@ -27,17 +19,23 @@
 	if(!istype(crafter.loc, /obj/machinery/light/fueled))
 		return FALSE
 	var/obj/machinery/light/fueled/fueled = crafter.loc
-	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - checked leftover fuel, so a snuffed hearth still started cooking
+	if(!fueled.on)
 		return FALSE
 	. = ..()
 
 /datum/container_craft/pan/check_failure(obj/item/crafter, mob/user)
-	if(!istype(crafter.loc, /obj/machinery/light/fueled))
-		return TRUE
-	var/obj/machinery/light/fueled/fueled = crafter.loc
-	if(!fueled.on) // BUGFIX: was `!fueled.fueluse` - a snuffed fire shouldn't finish cooking
-		return TRUE
 	return FALSE
+
+/**
+ * Frying only advances while the pan sits on a lit fire.
+ */
+/datum/container_craft/pan/can_progress(obj/item/crafter)
+	if(!istype(crafter.loc, /obj/machinery/light/fueled))
+		return FALSE
+	var/obj/machinery/light/fueled/fueled = crafter.loc
+	if(!fueled.on)
+		return FALSE
+	return TRUE
 
 
 /datum/container_craft/pan/fried_crow

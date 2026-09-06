@@ -30,6 +30,7 @@
 	var/list/cannibalism_for = list()
 	tastes = list("meat" = 1)
 	gender = PLURAL
+	slice_skill = /datum/attribute/skill/craft/cooking/preparation
 
 /obj/item/reagent_containers/food/snacks/meat/on_consume(mob/living/eater)
 	var/reset_eat_effect = FALSE
@@ -49,6 +50,7 @@
 	item_weight = 400 GRAMS
 	ingredient_size = 2
 	name = "raw meat"
+	desc = "A cut of raw meat, needing heat before it's fit to eat."
 	icon_state = "meat"
 	slices_num = 2
 	slice_path = /obj/item/reagent_containers/food/snacks/meat/mince/beef
@@ -58,6 +60,7 @@
 /obj/item/reagent_containers/food/snacks/meat/fatty
 	item_weight = 150 GRAMS
 	name = "raw pigflesh"
+	desc = "A fatty cut of pigflesh, needing heat before it's fit to eat."
 	icon_state = "pigflesh"
 	slices_num = 2
 	slice_path = /obj/item/reagent_containers/food/snacks/meat/mince/beef
@@ -67,6 +70,7 @@
 /obj/item/reagent_containers/food/snacks/meat/strange // Low-nutrient, kind of gross. Survival food.
 	item_weight = 150 GRAMS
 	name = "strange meat"
+	desc = "A slab of meat of uncertain origin. Best not to ask."
 	icon_state = "strange_meat"
 	slice_path = null
 	slices_num = 0
@@ -74,6 +78,7 @@
 /obj/item/reagent_containers/food/snacks/meat/poultry
 	item_weight = 800 GRAMS
 	name = "plucked bird"
+	desc = "A plucked and gutted bird, whole and raw."
 	icon_state = "poultry"
 	slice_path = /obj/item/reagent_containers/food/snacks/meat/poultry/cutlet
 	nutrition = RAWMEAT_NUTRITION * 2
@@ -85,6 +90,7 @@
 /obj/item/reagent_containers/food/snacks/meat/poultry/cutlet
 	item_weight = 200 GRAMS
 	name = "bird meat"
+	desc = "A cutlet carved from a bird, raw and needing heat."
 	icon_state = "chickencutlet"
 	ingredient_size = 2
 	slices_num = 2
@@ -112,6 +118,7 @@
 /obj/item/reagent_containers/food/snacks/meat/steak/human
 	item_weight = 250 GRAMS
 	name = "raw manflesh"
+	desc = "A cut of raw flesh, unmistakably human. Some things should not be eaten."
 	gender = PLURAL
 	foodtype = RAW | MEAT | GROSS
 	bitesize = 3
@@ -123,6 +130,7 @@
 /obj/item/reagent_containers/food/snacks/meat/fatty/dwarf
 	item_weight = 300 GRAMS
 	name = "fatty manflesh" // porky
+	desc = "A fatty cut of human flesh. Some things should not be eaten."
 	list_reagents = list(/datum/reagent/organpoison/human = 1)
 	grind_results = list(/datum/reagent/organpoison/human = 2)
 	nutrition = RAWMEAT_NUTRITION
@@ -133,6 +141,7 @@
 /obj/item/reagent_containers/food/snacks/meat/fatty/kobold
 	item_weight = 200 GRAMS
 	name = "raw wyrmflesh"
+	desc = "A cut of scaled kobold flesh. Some things should not be eaten."
 	foodtype = RAW | MEAT | GROSS
 	list_reagents = list(/datum/reagent/organpoison/kobold = 1)
 	grind_results = list(/datum/reagent/organpoison/kobold = 2)
@@ -144,6 +153,7 @@
 /obj/item/reagent_containers/food/snacks/meat/poultry/cutlet/harpy
 	item_weight = 200 GRAMS
 	name = "harpy cutlet"
+	desc = "A cutlet carved from a harpy, unsettlingly close to poultry."
 	list_reagents = list(/datum/reagent/organpoison/human = 1)
 	grind_results = list(/datum/reagent/organpoison/human = 2)
 	cannibalism = TRUE
@@ -152,6 +162,7 @@
 /obj/item/reagent_containers/food/snacks/meat/triton
 	item_weight = 200 GRAMS
 	name = "deepflesh"
+	desc = "A fillet of triton flesh, pale and cold from the deep water."
 	icon_state = "fishfillet"
 	slice_path = /obj/item/reagent_containers/food/snacks/meat/mince/fish
 	list_reagents = list(/datum/reagent/organpoison/human = 1)
@@ -164,6 +175,7 @@
 /obj/item/reagent_containers/food/snacks/meat/strange/inhumen
 	item_weight = 150 GRAMS
 	name = "foul manflesh"
+	desc = "A rank cut of human flesh, spoiled and foul-smelling. Some things should not be eaten."
 	cannibalism = TRUE
 	cannibalism_for = SPECIES_CANNIBAL_MEN
 	list_reagents = list(/datum/reagent/organpoison/human = 1)
@@ -173,6 +185,7 @@
 /obj/item/reagent_containers/food/snacks/meat/organ
 	item_weight = 150 GRAMS
 	name = "organ"
+	desc = "An internal organ, freshly carved out. Best eaten by nobody, but eaten all the same."
 	icon_state = "guts"
 	icon = 'icons/obj/surgery.dmi'
 	list_reagents = list(/datum/reagent/organpoison = 0.5)
@@ -197,6 +210,7 @@
 /obj/item/reagent_containers/food/snacks/meat/organ/heart
 	item_weight = 250 GRAMS
 	name = "heart"
+	desc = "A heart, still slick with blood."
 	icon_state = "heart"
 	list_reagents = list(/datum/reagent/organpoison = 1)
 	grind_results = list(/datum/reagent/organpoison = 2)
@@ -205,6 +219,7 @@
 /obj/item/reagent_containers/food/snacks/meat/organ/lungs
 	item_weight = 400 GRAMS
 	name = "lungs"
+	desc = "A pair of lungs, spongy and pale."
 	icon_state = "lungs"
 	list_reagents = list(/datum/reagent/organpoison = 1)
 	grind_results = list(/datum/reagent/organpoison = 2)
@@ -213,6 +228,7 @@
 /obj/item/reagent_containers/food/snacks/meat/organ/liver
 	item_weight = 300 GRAMS
 	name = "liver"
+	desc = "A liver, dark and heavy in the hand."
 	icon_state = "liver"
 	list_reagents = list(/datum/reagent/organpoison = 1)
 	grind_results = list(/datum/reagent/organpoison = 2)
@@ -256,10 +272,12 @@
 
 /obj/item/reagent_containers/food/snacks/meat/mince/beef
 	name = "minced meat"
+	desc = "Raw meat chopped fine, ready for the pan."
 	icon_state = "meatmince"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/beef/cooked
 	name = "cooked minced meat"
+	desc = "Minced meat, browned and cooked through."
 	eat_effect = null
 	foodtype = MEAT
 	rotprocess = SHELFLIFE_DECENT
@@ -268,10 +286,12 @@
 
 /obj/item/reagent_containers/food/snacks/meat/mince/fish
 	name = "minced fish"
+	desc = "Raw fish chopped fine, ready for the pan."
 	icon_state = "fishmince"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/fish/cooked
 	name = "cooked minced fish"
+	desc = "Minced fish, cooked through and flaking."
 	eat_effect = null
 	foodtype = MEAT
 	rotprocess = SHELFLIFE_DECENT
@@ -280,10 +300,12 @@
 
 /obj/item/reagent_containers/food/snacks/meat/mince/poultry
 	name = "minced poultry"
+	desc = "Raw poultry chopped fine, ready for the pan."
 	icon_state = "birdmince"
 
 /obj/item/reagent_containers/food/snacks/meat/mince/poultry/cooked
 	name = "cooked minced poultry"
+	desc = "Minced poultry, browned and cooked through."
 	eat_effect = null
 	foodtype = MEAT
 	rotprocess = SHELFLIFE_DECENT
@@ -319,6 +341,7 @@
 /obj/item/reagent_containers/food/snacks/meat/sausage
 	item_weight = 100 GRAMS
 	name = "raw sausage"
+	desc = "A link of raw sausage, needing heat before it's fit to eat."
 	icon_state = "raw_wiener"
 	ingredient_size = 1
 	become_rot_type = /obj/item/reagent_containers/food/snacks/rotten/sausage
@@ -327,6 +350,7 @@
 /obj/item/reagent_containers/food/snacks/meat/sausage/wiener
 	item_weight = 120 GRAMS
 	name = "raw wiener"
+	desc = "A slender raw sausage, needing heat before it's fit to eat."
 	nutrition = FATTYMEAT_NUTRITION
 
 

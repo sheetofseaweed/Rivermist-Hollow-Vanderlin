@@ -373,6 +373,19 @@
 	used_skill = /datum/attribute/skill/craft/alchemy
 	quality_modifier = 0.8
 
+/datum/container_craft/cooking/perfume/create_item(obj/item/crafter, mob/initiator, list/found_optional_requirements, list/found_optional_wildcards, list/found_optional_reagents, list/removing_items)
+	var/turf/pot_turf = get_turf(crafter)
+	var/skill_factor = 0
+	if(initiator && initiator.mind)
+		skill_factor = min(GET_MOB_SKILL_VALUE_OLD(initiator, used_skill), 6) / 6
+
+	for(var/j = 1 to output_amount)
+		var/obj/item/perfume/made = new created_reagent(pot_turf)
+		made.mood_duration_mult = 1 + (skill_factor * 0.2)
+		after_craft(made, crafter, initiator, found_optional_requirements, found_optional_wildcards, found_optional_reagents, removing_items)
+		if(finished_smell)
+			pot_turf.pollute_turf(finished_smell, pollute_amount)
+		initiator?.nobles_seen_servant_work()
 
 /datum/container_craft/cooking/perfume/rosa
 	name = "Rosa Perfume"

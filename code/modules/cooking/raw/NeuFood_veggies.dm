@@ -13,6 +13,7 @@
 /obj/item/reagent_containers/food/snacks/veg/onion_sliced
 	item_weight = 70 GRAMS
 	name = "sliced onion"
+	desc = "An onion cut into pieces, ready for the pot."
 	icon_state = "onion_sliced"
 	slices_num = 0
 	slice_skill = /datum/attribute/skill/craft/cooking/preparation
@@ -21,6 +22,7 @@
 /obj/item/reagent_containers/food/snacks/veg/cabbage_sliced
 	item_weight = 300 GRAMS
 	name = "shredded cabbage"
+	desc = "A head of cabbage shredded into thin ribbons."
 	icon_state = "cabbage_sliced"
 	slice_skill = /datum/attribute/skill/craft/cooking/preparation
 
@@ -28,6 +30,7 @@
 /obj/item/reagent_containers/food/snacks/veg/potato_sliced
 	item_weight = 70 GRAMS
 	name = "potato cuts"
+	desc = "A potato cut into chunks, ready for the pot."
 	icon_state = "potato_sliced"
 	slice_skill = /datum/attribute/skill/craft/cooking/preparation
 
@@ -35,6 +38,7 @@
 /obj/item/reagent_containers/food/snacks/veg/turnip_sliced
 	item_weight = 70 GRAMS
 	name = "cleaned turnip"
+	desc = "A turnip scrubbed and cut into pieces, ready for the pot."
 	icon_state = "turnip_sliced"
 	slice_skill = /datum/attribute/skill/craft/cooking/preparation
 

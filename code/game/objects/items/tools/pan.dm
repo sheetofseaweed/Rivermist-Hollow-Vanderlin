@@ -28,6 +28,15 @@
 	AddComponent(/datum/component/storage/concrete/grid/food/cooking/pan)
 	AddComponent(/datum/component/container_craft, subtypesof(/datum/container_craft/pan))
 	AddComponent(/datum/component/food_burner, 2 MINUTES, TRUE, CALLBACK(src, PROC_REF(can_burn)))
+	RegisterSignal(src, COMSIG_ATOM_ENTERED, PROC_REF(on_food_entered))
+
+/obj/item/cooking/pan/proc/on_food_entered(datum/source, atom/movable/arrived, atom/old_loc)
+	SIGNAL_HANDLER
+	if(!istype(arrived, /obj/item/reagent_containers/food/snacks))
+		return
+	if(!can_burn())
+		return
+	playsound(src, 'sound/misc/frying.ogg', 60, TRUE, -2)
 
 /obj/item/cooking/pan/examine(mob/user)
 	. = ..()

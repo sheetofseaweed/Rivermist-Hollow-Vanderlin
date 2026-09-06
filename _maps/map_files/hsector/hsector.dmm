@@ -3619,13 +3619,10 @@
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/living)
 "bkX" = (
-/obj/structure/stairs{
-	dir = 1
-	},
+/obj/structure/fake_machine/scomm/r,
 /obj/structure/stairs/cw{
 	dir = 1
 	},
-/obj/structure/fake_machine/scomm/r,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/garrison)
 "bla" = (
@@ -8223,9 +8220,6 @@
 /turf/open/floor/greenstone/runed,
 /area/outdoors/rmh_field/rmh_mageporch)
 "cIy" = (
-/obj/structure/stairs{
-	dir = 2
-	},
 /obj/structure/stairs/ccw,
 /turf/open/floor/ruinedwood/alizeria/tiles/wood4,
 /area/indoors/town/rmh/tavern)
@@ -10244,9 +10238,8 @@
 /turf/open/floor/concrete,
 /area/under/town/rmh/sewer)
 "doR" = (
-/obj/structure/stairs,
-/obj/structure/stairs/ccw,
 /obj/machinery/light/fueled/wallfire/candle/r,
+/obj/structure/stairs/ccw,
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/town/rmh/merchant)
 "doU" = (
@@ -12736,14 +12729,11 @@
 /turf/open/floor/church,
 /area/indoors/town/rmh/chapel/basement)
 "ecU" = (
-/obj/structure/stairs{
-	dir = 4
+/obj/structure/fluff/walldeco/bath/wallpipes/outie{
+	dir = 5
 	},
 /obj/structure/stairs/cw{
 	dir = 4
-	},
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 5
 	},
 /turf/open/floor/wood,
 /area/indoors/town/rmh/craft/artificer)
@@ -16161,9 +16151,6 @@
 /area/under/town/rmh/sewer)
 "fpZ" = (
 /obj/effect/decal/cleanable/dirt/dust,
-/obj/structure/stairs{
-	dir = 4
-	},
 /obj/structure/stairs/ccw{
 	dir = 1
 	},
@@ -19920,9 +19907,6 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "gzN" = (
-/obj/structure/stairs{
-	dir = 4
-	},
 /obj/structure/stairs/cw{
 	dir = 4
 	},
@@ -33918,9 +33902,6 @@
 /turf/open/floor/cobblerock,
 /area/indoors/town/rmh/living)
 "kWC" = (
-/obj/structure/stairs{
-	dir = 4
-	},
 /obj/structure/stairs/cw{
 	dir = 4
 	},
@@ -39084,9 +39065,6 @@
 /turf/open/floor/church,
 /area/under/rmh_dungeon/underdarkmaze)
 "mDt" = (
-/obj/structure/stairs{
-	dir = 8
-	},
 /obj/structure/stairs/cw{
 	dir = 8
 	},
@@ -46201,9 +46179,6 @@
 /turf/open/floor/tile/checkeralt,
 /area/indoors/town/vault)
 "oVI" = (
-/obj/structure/stairs{
-	dir = 1
-	},
 /obj/structure/stairs/ccw{
 	dir = 1
 	},
@@ -50826,10 +50801,7 @@
 /area/outdoors/rmh_field/rmh_mageporch)
 "qsR" = (
 /obj/structure/rack/rogue/shelf/alizeria/shelf2,
-/obj/structure/stairs,
-/obj/structure/stairs/ccw{
-	dir = 4
-	},
+/obj/structure/stairs/ccwdown,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/library)
 "qsW" = (
@@ -52190,9 +52162,6 @@
 /turf/open/floor/cobble/mossy,
 /area/outdoors/rmh_field/oldmill)
 "qPG" = (
-/obj/structure/stairs{
-	dir = 8
-	},
 /obj/structure/stairs/ccw{
 	dir = 8
 	},

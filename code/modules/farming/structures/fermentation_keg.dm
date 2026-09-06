@@ -467,7 +467,10 @@ GLOBAL_LIST_EMPTY(custom_fermentation_recipes)
 		reagents.remove_reagent(required_chem, selected_recipe.needed_reagents[required_chem])
 
 	soundloop.start()
-	brew_timer = addtimer(CALLBACK(src, PROC_REF(end_brew)), selected_recipe.brew_time, TIMER_STOPPABLE)
+	var/real_brew_time = selected_recipe.brew_time
+	if(istype(user) && user.mind && selected_recipe.brewing_skill)
+		real_brew_time *= GET_MOB_SKILL_SPEED_MOD(user, selected_recipe.brewing_skill)
+	brew_timer = addtimer(CALLBACK(src, PROC_REF(end_brew)), real_brew_time, TIMER_STOPPABLE)
 	if(closed_icon_state)
 		icon_state = closed_icon_state
 	start_time = world.time
