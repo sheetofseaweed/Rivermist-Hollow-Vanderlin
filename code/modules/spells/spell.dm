@@ -248,6 +248,12 @@
 	if(!owner)
 		return
 
+	if(dnd_use_spell_slots && ishuman(owner))
+		var/mob/living/carbon/human/caster = owner
+		if(!caster.dnd_spell_slots_max)
+			caster.setup_default_dnd_spell_slots()
+		caster.grant_dnd_spell_hud()
+
 	// Register some signals so our button's icon stays up to date
 	if(spell_requirements & SPELL_REQUIRES_STATION)
 		RegisterSignal(owner, COMSIG_MOVABLE_Z_CHANGED, PROC_REF(update_status_on_signal))
@@ -341,6 +347,9 @@
 /datum/action/cooldown/spell/proc/on_deactivation(mob/on_who, refund_cooldown = TRUE)
 	SHOULD_CALL_PARENT(TRUE)
 
+	if(dnd_use_spell_slots && !dnd_cast_paid)
+		dnd_cast_slot_level = null
+
 	if(refund_cooldown)
 		// Only send the "deactivation" message if they're willingly disabling the ability
 		to_chat(on_who, span_smallnotice("[deactive_msg]"))
@@ -375,6 +384,7 @@
 /datum/action/cooldown/spell/PreActivate(atom/target)
 	charged = FALSE
 	if(!is_valid_target(target))
+		dnd_cast_slot_level = null
 		if(charge_required && click_to_activate)
 			to_chat(owner, span_warning("I can't cast [src] on [target]!"))
 			RegisterSignal(owner.client, COMSIG_CLIENT_MOUSEDOWN, PROC_REF(start_casting), override = TRUE)
@@ -535,17 +545,26 @@
 /datum/action/cooldown/spell/Activate(atom/target)
 	SHOULD_NOT_OVERRIDE(TRUE)
 
+	if(dnd_use_spell_slots)
+		dnd_cast_slot_level = dnd_get_cast_level()
+
 	// Pre-casting of the spell
 	// Pre-cast is the very last chance for a spell to cancel
 	// Stuff like target input can go here.
 	var/precast_result = before_cast(target)
 	if(precast_result & SPELL_CANCEL_CAST)
+		dnd_cast_slot_level = null
 		if(charge_required)
 			cancel_casting()
 		return FALSE
 
 	// Extra safety
 	if(!check_cost())
+		dnd_cast_slot_level = null
+		return FALSE
+
+	if(dnd_use_spell_slots && !dnd_pay_cast())
+		dnd_cast_slot_level = null
 		return FALSE
 
 	// Spell is officially being cast
@@ -573,6 +592,8 @@
 	// And then proceed with the aftermath of the cast
 	// Final effects that happen after all the casting is done can go here
 	after_cast(target)
+	dnd_cast_slot_level = null
+	dnd_cast_paid = FALSE
 	build_all_button_icons()
 
 	return TRUE
@@ -728,6 +749,8 @@
 
 /// When we start charging the spell called from set_click_ability or start_casting
 /datum/action/cooldown/spell/proc/on_start_charge()
+	if(dnd_use_spell_slots)
+		dnd_cast_slot_level = dnd_get_cast_level()
 	currently_charging = TRUE
 	START_PROCESSING(SSaction_charge, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
@@ -759,6 +782,7 @@
 	if(success)
 		charged = TRUE
 		return
+	dnd_cast_slot_level = null
 	if(owner)
 		owner.balloon_alert(owner, "Channeling was interrupted!")
 
@@ -791,6 +815,7 @@
 /datum/action/cooldown/spell/proc/cancel_casting()
 	if(QDELETED(src)) // Timer
 		return
+	dnd_cast_slot_level = null
 	charged = FALSE
 	end_charging()
 
@@ -884,6 +909,8 @@
 
 /// Check if the spell is castable by cost
 /datum/action/cooldown/spell/proc/check_cost(cost_override, feedback = TRUE)
+	if(dnd_use_spell_slots)
+		return dnd_spell_slot_can_cast(feedback)
 	var/mob/living/caster = owner
 
 	var/used_cost = get_adjusted_cost(cost_override)
@@ -976,6 +1003,10 @@
 /datum/action/cooldown/spell/proc/invoke_cost(cost_override, type_override, re_run = FALSE)
 	if(!owner)
 		return
+
+	// Hybrid spells already paid at commitment. Only paid tiers grant casting XP.
+	if(dnd_use_spell_slots)
+		return dnd_cast_paid ? dnd_cast_slot_level * 10 : 0
 
 	var/used_cost = get_adjusted_cost(cost_override)
 

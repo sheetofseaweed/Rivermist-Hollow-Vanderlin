@@ -13,6 +13,7 @@
 	grant_dnd_spell_hud()
 
 	var/list/spells_to_grant = list(
+		/datum/action/cooldown/spell/conjure/familiar/dnd,
 		/datum/action/cooldown/spell/projectile/dnd_fireball,
 		/datum/action/cooldown/spell/projectile/dnd_fireball/greater,
 		/datum/action/cooldown/spell/projectile/acid_splash/dnd,

@@ -8,28 +8,11 @@
 	charge_drain = 0
 	projectile_type = /obj/projectile/magic/acidsplash/dnd
 
+	spell_flags = NONE
 	dnd_use_spell_slots = TRUE
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Acid Splash"
-
-/datum/action/cooldown/spell/projectile/acid_splash/dnd/can_cast_spell(feedback = TRUE)
-	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/projectile/acid_splash/dnd/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
 
 /datum/action/cooldown/spell/projectile/acid_splash/dnd/ready_projectile(obj/projectile/magic/acidsplash/dnd/to_fire, atom/target, mob/user, iteration)
 	. = ..()
@@ -65,10 +48,6 @@
 	if(user)
 		to_chat(user, span_notice("The Acid Splash forms at spell level [level]."))
 
-/datum/action/cooldown/spell/projectile/acid_splash/dnd/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()
-
 /obj/projectile/magic/acidsplash/dnd
 	name = "acid splash"
 	damage = 10
@@ -78,38 +57,26 @@
 
 /datum/action/cooldown/spell/projectile/frost_bolt/dnd
 	name = "DND Frost Bolt"
-	desc = "Shoot frost that scales with the selected DND spell slot."
+	desc = "Use a spell slot for scaling frost damage and frostbite, or select Minor for a 2-mana bolt without frostbite. Minor damage is 10 before attunement."
 	spell_cost = 0
 	charge_drain = 0
 	projectile_type = /obj/projectile/magic/frostbolt/dnd
+	dnd_minor_mana_cost = 2
+	dnd_minor_projectile_type = /obj/projectile/magic/dnd_frost
 
+	spell_flags = NONE
 	dnd_use_spell_slots = TRUE
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Frost Bolt"
 
-/datum/action/cooldown/spell/projectile/frost_bolt/dnd/can_cast_spell(feedback = TRUE)
-	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/projectile/frost_bolt/dnd/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
-
-/datum/action/cooldown/spell/projectile/frost_bolt/dnd/ready_projectile(obj/projectile/magic/frostbolt/dnd/to_fire, atom/target, mob/user, iteration)
+/datum/action/cooldown/spell/projectile/frost_bolt/dnd/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	. = ..()
 
 	var/level = dnd_get_cast_level()
+	if(level == DND_MINOR_TIER)
+		to_fire.damage = 10 * clamp(attuned_strength, 0.5, 1.5)
+		return
 
 	switch(level)
 		if(1)
@@ -128,13 +95,20 @@
 	if(user)
 		to_chat(user, span_notice("The Frost Bolt forms at spell level [level]."))
 
-/datum/action/cooldown/spell/projectile/frost_bolt/dnd/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()
-
 /obj/projectile/magic/frostbolt/dnd
 	name = "frost bolt"
 	damage = 25
+
+// Minor frost deals direct damage without the frostbite on-hit effect.
+/obj/projectile/magic/dnd_frost
+	name = "minor frost bolt"
+	icon_state = "ice_2"
+	damage = 10
+	damage_type = BURN
+	woundclass = BCLASS_BURN
+	nodamage = FALSE
+	range = 10
+	speed = 1
 
 
 /datum/action/cooldown/spell/projectile/lightning/dnd
@@ -144,28 +118,11 @@
 	charge_drain = 0
 	projectile_type = /obj/projectile/magic/lightning/dnd
 
+	spell_flags = NONE
 	dnd_use_spell_slots = TRUE
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Lightning Bolt"
-
-/datum/action/cooldown/spell/projectile/lightning/dnd/can_cast_spell(feedback = TRUE)
-	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/projectile/lightning/dnd/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
 
 /datum/action/cooldown/spell/projectile/lightning/dnd/ready_projectile(obj/projectile/magic/lightning/dnd/to_fire, atom/target, mob/user, iteration)
 	. = ..()
@@ -188,10 +145,6 @@
 
 	if(user)
 		to_chat(user, span_notice("The Lightning Bolt forms at spell level [level]."))
-
-/datum/action/cooldown/spell/projectile/lightning/dnd/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()
 
 /obj/projectile/magic/lightning/dnd
 	name = "lightning bolt"
