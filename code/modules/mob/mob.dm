@@ -485,7 +485,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 
 	DEFAULT_QUEUE_OR_CALL_VERB(VERB_CALLBACK(src, PROC_REF(run_examinate), examinify))
 
-/mob/proc/run_examinate(atom/examinify)
+/mob/proc/run_examinate(atom/examinify, force_examinate_more = FALSE)
 	if(QDELETED(examinify)) // since this can run async we might have had the atom get qdeleted already
 		return
 
@@ -539,6 +539,22 @@ GLOBAL_VAR_INIT(mobids, 1)
 					to_chat(examaniee, span_warning("[src] peeks at you!"))
 					found_ping(get_turf(src), examaniee.client, "hidden")
 
+	var/ref_to_atom = REF(examinify)
+	var/recent_examine_time = LAZYACCESS(client?.recent_examines, ref_to_atom)
+	if(force_examinate_more || (!isnull(recent_examine_time) && world.time - recent_examine_time < EXAMINE_MORE_WINDOW))
+		var/list/closer_result = examinify.examine_more(src)
+		if(!length(closer_result))
+			closer_result += span_notice("<i>I examine [examinify] closer, but find nothing of interest...</i>")
+		to_chat(src, examine_block("<span class='infoplain'>[closer_result.Join("<br>")]</span>"))
+		return
+
+	if(client)
+		LAZYINITLIST(client.recent_examines)
+		var/examined_at = world.time
+		client.recent_examines[ref_to_atom] = examined_at
+		addtimer(CALLBACK(src, PROC_REF(clear_from_recent_examines), ref_to_atom, examined_at), RECENT_EXAMINE_MAX_WINDOW)
+		handle_eye_contact(examinify)
+
 	var/list/result = examinify.examine(src)
 	if(LAZYLEN(result))
 		var/list/mechanics_result = examinify.get_mechanics_examine(src)
@@ -551,6 +567,55 @@ GLOBAL_VAR_INIT(mobids, 1)
 		for(var/i in 1 to (length(result) - 1))
 			result[i] += "\n"
 		to_chat(src, examine_block("<span class='infoplain'>[result.Join()]</span>"))
+
+/mob/proc/clear_from_recent_examines(ref_to_clear, examined_at)
+	if(!client || LAZYACCESS(client.recent_examines, ref_to_clear) != examined_at)
+		return
+	LAZYREMOVE(client.recent_examines, ref_to_clear)
+
+/// How far apart two mobs may be when reciprocal examination makes eye contact.
+#define EYE_CONTACT_RANGE 5
+
+/mob/proc/handle_eye_contact(mob/living/examined_mob)
+	return
+
+/mob/living/handle_eye_contact(mob/living/examined_mob)
+	if(!istype(examined_mob) || src == examined_mob || stat >= UNCONSCIOUS || examined_mob.stat >= UNCONSCIOUS || !client || is_blind())
+		return
+
+	var/turf/source_turf = get_turf(src)
+	var/turf/target_turf = get_turf(examined_mob)
+	if(!source_turf || !target_turf || source_turf.z != target_turf.z || get_dist(source_turf, target_turf) > EYE_CONTACT_RANGE)
+		return
+
+	var/imagined_eye_contact = FALSE
+	var/other_examine_time = LAZYACCESS(examined_mob.client?.recent_examines, REF(src))
+	if(isnull(other_examine_time) || world.time - other_examine_time >= RECENT_EXAMINE_MAX_WINDOW)
+		if(HAS_TRAIT(examined_mob, TRAIT_SHIFTY_EYES) && prob(max(10 - get_dist(source_turf, target_turf), 0)))
+			imagined_eye_contact = TRUE
+		else
+			return
+
+	if(examined_mob.can_eye_contact() && !(SEND_SIGNAL(src, COMSIG_MOB_EYECONTACT, examined_mob, TRUE) & COMSIG_BLOCK_EYECONTACT))
+		var/obj/item/clothing/other_eye_cover = examined_mob.is_eyes_covered()
+		if(!other_eye_cover || (!other_eye_cover.tint && !other_eye_cover.flash_protect))
+			var/message = span_smallnotice("I make eye contact with [examined_mob].")
+			addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), src, message), 0.3 SECONDS)
+
+	if(!imagined_eye_contact && can_eye_contact() && !examined_mob.is_blind() && !(SEND_SIGNAL(examined_mob, COMSIG_MOB_EYECONTACT, src, FALSE) & COMSIG_BLOCK_EYECONTACT))
+		var/obj/item/clothing/my_eye_cover = is_eyes_covered()
+		if(!my_eye_cover || (!my_eye_cover.tint && !my_eye_cover.flash_protect))
+			var/message = span_smallnotice("[src] makes eye contact with you.")
+			addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), examined_mob, message), 0.3 SECONDS)
+
+#undef EYE_CONTACT_RANGE
+
+/// Whether this mob's visible face permits eye contact.
+/mob/living/proc/can_eye_contact()
+	return TRUE
+
+/mob/living/carbon/can_eye_contact()
+	return is_human_part_visible(src, HIDEFACE)
 
 // Check if we notice an observer
 /mob/living/proc/peek_examine_check(mob/living/observer)

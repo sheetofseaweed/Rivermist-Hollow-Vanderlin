@@ -9,7 +9,7 @@
 	maximum = 5
 
 /datum/preference/numeric/rival_count/create_default_value()
-	return 1
+	return 0
 
 /datum/preference/numeric/rival_count/apply_to_human(mob/living/carbon/human/H, value, datum/preferences/prefs)
 	return

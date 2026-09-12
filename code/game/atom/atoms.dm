@@ -521,6 +521,20 @@
 						. += span_notice("I can identity this smell as [full_reagents.Join(", ")].")
 	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, user, .)
 
+/**
+ * Called when a mob examines this atom twice within EXAMINE_MORE_WINDOW.
+ *
+ * Extended examination is for optional detail that should not crowd the normal
+ * examination output. Listeners may append lines to the returned list.
+ */
+/atom/proc/examine_more(mob/user)
+	SHOULD_CALL_PARENT(TRUE)
+	RETURN_TYPE(/list)
+
+	. = list()
+	SEND_SIGNAL(src, COMSIG_ATOM_EXAMINE_MORE, user, .)
+	SEND_SIGNAL(user, COMSIG_MOB_EXAMINING_MORE, src, .)
+
 /atom/proc/get_mechanics_examine(mob/user)
 	return list()
 

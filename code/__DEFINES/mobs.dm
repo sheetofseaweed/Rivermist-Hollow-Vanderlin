@@ -397,6 +397,13 @@
 #define DOING_INTERACTION_WITH_TARGET(user, target) (LAZYACCESS(user.do_afters, target))
 #define DOING_INTERACTION_WITH_TARGET_LIMIT(user, target, max_interaction_count) ((LAZYACCESS(user.do_afters, target) || 0) >= max_interaction_count)
 
+/// How long an examination remains eligible for eye contact and yawn propagation.
+#define RECENT_EXAMINE_MAX_WINDOW (1.5 SECONDS)
+/// A second examination inside this window calls examine_more() instead of examine().
+#define EXAMINE_MORE_WINDOW (0.75 SECONDS)
+/// Looking at someone shortly before they yawn guarantees that their yawn spreads to you.
+#define YAWN_PROPAGATION_EXAMINE_WINDOW (1.5 SECONDS)
+
 //defense intents
 #define INTENT_DODGE 1
 #define INTENT_PARRY 2

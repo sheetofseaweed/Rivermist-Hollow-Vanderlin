@@ -563,7 +563,7 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 
 // ---- Examine ----
 
-/obj/item/clothing/neck/slave_collar/get_examine_string(mob/user, thats)
+/obj/item/clothing/neck/slave_collar/get_examine_string(mob/user, thats = FALSE, use_examine_name = FALSE)
 	. = ..()
 	if(!ishuman(user))
 		return

@@ -132,7 +132,22 @@
 			has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/noble_gossip))
 		if(has_known_gossip)
 			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='?src=[REF(src)];task=view_rumours_gossip;'>Recall Rumours & Gossip</a>")
-		LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];view_descriptors=1'>Look at Features</a>")
+
+/mob/living/carbon/human/examine_more(mob/user)
+	. = ..()
+	if(HAS_TRAIT(src, TRAIT_FACELESS) || (!isobserver(user) && !user.can_perform_action(src, NEED_LIGHT)))
+		return
+
+	var/obscure_name = name == "Unknown" || name == "Unknown Man" || name == "Unknown Woman"
+	if(isobserver(user))
+		obscure_name = FALSE
+
+	var/list/descriptors = get_mob_descriptors(obscure_name, user)
+	if(!length(descriptors))
+		return
+	var/list/description_lines = build_cool_description(descriptors, src)
+	if(length(description_lines))
+		. |= description_lines
 
 
 //You can include this in any mob's examine() to show the examine texts of status effects!

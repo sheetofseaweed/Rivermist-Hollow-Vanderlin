@@ -55,6 +55,7 @@
 
 /obj/item/clothing/face/spectacles/inq
 	name = "inquisitorial spectacles"
+	examine_name = "crimson spectacles"
 	icon_state = "bglasses"
 	desc = "Spectacles evoking the stained glass of imposing cathedrals."
 	attacked_sound = 'sound/combat/hits/onglass/glasshit.ogg'

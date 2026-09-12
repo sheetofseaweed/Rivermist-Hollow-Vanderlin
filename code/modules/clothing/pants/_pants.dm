@@ -63,7 +63,7 @@
 		M.update_inv_pants()
 
 
-/obj/item/clothing/pants/get_examine_string(mob/user, thats)
+/obj/item/clothing/pants/get_examine_string(mob/user, thats = FALSE, use_examine_name = FALSE)
 	. = ..()
 	if(attached_accessory)
 		. += " with [icon2html(attached_accessory, user)] \a [attached_accessory]"
