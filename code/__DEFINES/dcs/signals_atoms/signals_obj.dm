@@ -40,3 +40,8 @@
 #define COMSIG_MOB_FIRED_GUN "mob_fired_gun"
 ///called in /obj/item/gun/process_fire (user, target, list/modifiers, zone_override)
 #define COMSIG_GUN_FIRED "gun_fired"
+
+/// Sent to an item when it is placed on a secure relic spot: (secure_id)
+#define COMSIG_SECURE_SPOT_ACTIVATED "secure_spot_activated"
+/// Sent to an item when it leaves a secure relic spot: (secure_id)
+#define COMSIG_SECURE_SPOT_DEACTIVATED "secure_spot_deactivated"

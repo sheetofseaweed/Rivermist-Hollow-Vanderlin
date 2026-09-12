@@ -27,6 +27,8 @@
 #define COMSIG_GLOB_JOB_AFTER_SPAWN "!job_after_spawn"
 /// job datum has been called to deal with the aftermath of a latejoin spawn
 #define COMSIG_GLOB_JOB_AFTER_LATEJOIN_SPAWN "!job_after_latejoin_spawn"
+/// A crop was successfully harvested: (obj/structure/soil, mob/living/harvester, atom/drop_location)
+#define COMSIG_GLOB_PLANT_HARVESTED "!plant_harvested"
 
 /// a sound was played : (sound_player, sound_file)
 #define COMSIG_GLOB_SOUND_PLAYED "!sound_played"
