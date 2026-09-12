@@ -171,7 +171,7 @@
 			. += span_redtextbig("HERETIC! SHAME!")
 
 		// Outlaws
-		if(HAS_MIND_TRAIT(user, TRAIT_KNOWBANDITS) && (real_name in GLOB.outlawed_players))
+		if(HAS_CHARACTER_TRAIT(user, TRAIT_KNOWBANDITS) && (real_name in GLOB.outlawed_players))
 			. += span_boldred(mind?.special_role == "Bandit" ? "BANDIT!" : "OUTLAW!")
 
 		// Court Agents

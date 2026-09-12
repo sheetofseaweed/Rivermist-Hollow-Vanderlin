@@ -333,6 +333,10 @@
 
 	/// cooldown for the next time this person can offer
 	COOLDOWN_DECLARE(offer_cooldown)
+	/// Direction this mob is currently looking vertically.
+	var/looking_vertically = NONE
+	/// Movable eye target used while looking up or down so the view can follow movement.
+	var/atom/movable/looking_holder/looking_holder
 	/// Prevents concurrent vertical swim attempts during the swim action.
 	COOLDOWN_DECLARE(cd_zswim)
 

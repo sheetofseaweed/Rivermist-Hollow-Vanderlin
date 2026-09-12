@@ -99,7 +99,7 @@
 				. += span_info("[capitalize(P[THEYRE])] wearing black lipstick.")
 
 	if(!self_inspect)
-		if(family_datum == SSfamilytree.ruling_family && length(culinary_preferences) && HAS_MIND_TRAIT(user, TRAIT_ROYALSERVANT))
+		if(family_datum == SSfamilytree.ruling_family && length(culinary_preferences) && HAS_CHARACTER_TRAIT(user, TRAIT_ROYALSERVANT))
 			var/obj/item/reagent_containers/food/snacks/fav_food = culinary_preferences[CULINARY_FAVOURITE_FOOD]
 			var/datum/reagent/consumable/fav_drink = culinary_preferences[CULINARY_FAVOURITE_DRINK]
 			if(fav_food)

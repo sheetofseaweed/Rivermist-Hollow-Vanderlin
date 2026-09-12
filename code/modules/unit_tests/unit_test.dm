@@ -154,6 +154,8 @@ GLOBAL_LIST_EMPTY(required_map_items)
 		/obj/effect/temp_visual/target/meteor,
 		/obj/structure/meatvine/papameat,
 		/obj/effect/meatvine_controller,
+		// Single-use view holder requiring an owning mob.
+		/atom/movable/looking_holder,
 	)
 	///this does some wonky things that we don't want in a test area
 	ignore += typesof(/obj/structure/stockpile_storage,)

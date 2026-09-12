@@ -27,8 +27,10 @@
 	/// Dirtiness carried by this atom. Wounds and organs use this for infection checks.
 	var/germ_level = GERM_LEVEL_AMBIENT
 
-	///This atom's HUD (med/sec, etc) images. Associative list.
+	/// All of this atom's HUD images. An associative list of HUD category to one image or a list of images.
 	var/list/image/hud_list = null
+	/// The subset of this atom's HUD images currently available to HUD viewers.
+	var/list/image/active_hud_list = null
 	///HUD images that this atom can provide.
 	var/list/hud_possible
 
@@ -279,10 +281,10 @@
  */
 /atom/Destroy(force)
 	set_armor(null)
-	if(alternate_appearances)
-		for(var/K in alternate_appearances)
-			var/datum/atom_hud/alternate_appearance/AA = alternate_appearances[K]
-			AA.remove_from_hud(src)
+	if(length(alternate_appearances))
+		for(var/current_alternate_appearance in alternate_appearances)
+			var/datum/atom_hud/alternate_appearance/selected_alternate_appearance = alternate_appearances[current_alternate_appearance]
+			selected_alternate_appearance.remove_atom_from_hud(src)
 
 	if(reagents)
 		qdel(reagents)

@@ -367,6 +367,10 @@
 	for(var/trait in traits)
 		ADD_TRAIT(spawned, trait, JOB_TRAIT)
 
+	// Trait-gated alternate appearances must be evaluated after both job trait lists are applied.
+	for(var/datum/atom_hud/alternate_appearance/basic/traits/alt_hud in GLOB.active_alternate_appearances)
+		alt_hud.apply_to_new_mob(spawned)
+
 	for(var/datum/language/to_learn as anything in languages)
 		if(!spawned.has_language(to_learn))
 			spawned.grant_language(to_learn)
