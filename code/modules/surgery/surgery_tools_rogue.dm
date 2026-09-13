@@ -141,6 +141,12 @@
 
 	if(get_temperature() && iscarbon(interacting_with))
 		var/mob/living/carbon/C = interacting_with
+		//RMH EDITED START - Клеймо: a legendary healer burning a brand away must be
+		//handled before the wound checks below, which would answer "no wounds!" first.
+		var/brand_result = try_remove_brand(C, user)
+		if(brand_result != NONE)
+			return brand_result
+		//RMH EDITED END
 		var/obj/item/bodypart/part = C.get_bodypart(user.zone_selected)
 		if(!part || part.skeletonized)
 			balloon_alert(user, "nothing to cauterize!")

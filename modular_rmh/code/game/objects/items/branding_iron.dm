@@ -157,7 +157,12 @@
 
 	if(!do_after(user, brand_time, patient))
 		return
+	// Re-check everything: do_after only watches the user's own position, so the
+	// victim can break free, walk off or pull armour on in the meantime.
 	if(!heated || QDELETED(patient) || QDELETED(limb) || limb != patient.get_bodypart(limb.body_zone) || limb.brand_text)
+		return
+	if(!user.Adjacent(patient) || !is_held_still(patient, user))
+		to_chat(user, span_warning("[patient] broke away!"))
 		return
 	if(!get_location_accessible(patient, target_zone))
 		to_chat(user, span_warning("The clothing is in the way!"))

@@ -84,7 +84,12 @@
 
 	if(!do_after(caster, 4 SECONDS, patient))
 		return FALSE
+	// Re-check everything: do_after only watches the caster's own position, so the
+	// victim can break free, walk off or pull armour on while the prompt is open.
 	if(QDELETED(patient) || QDELETED(limb) || limb != patient.get_bodypart(limb.body_zone) || limb.brand_text)
+		return FALSE
+	if(!caster.Adjacent(patient) || !is_held_still(patient, caster) || !get_location_accessible(patient, target_zone))
+		to_chat(caster, span_warning("The branding is interrupted."))
 		return FALSE
 
 	limb.brand_text = chosen_text
