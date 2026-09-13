@@ -30,6 +30,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_IMMERSE_STOPPED "immerse_stopped"
 /// Disables the floating animation. See above.
 #define TRAIT_NO_FLOATING_ANIM "no-floating-animation"
+/// Prevents rot from being applied to or processed on an item or mob.
+#define TRAIT_NO_ROT "no_rot"
 
 // ************* mob traits
 

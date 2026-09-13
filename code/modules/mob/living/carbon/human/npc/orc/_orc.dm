@@ -211,6 +211,8 @@
 	return TRUE
 
 /datum/component/rot/corpse/orc/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	var/amt2add = 10
 	var/time_elapsed = last_process ? (world.time - last_process)/10 : 1
 	if(last_process)

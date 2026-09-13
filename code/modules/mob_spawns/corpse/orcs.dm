@@ -1,57 +1,53 @@
-
-
-/obj/effect/mob_spawn/human/orc/corpse/savageorc
-	mob_name = "Savage Orc"
-	name = "Savage Orc"
+/obj/effect/mob_spawn/corpse/orc
+	abstract_type = /obj/effect/mob_spawn/corpse/orc
+	mob_type = /mob/living/carbon/human/species/orc
 	skin_tone = SKIN_COLOR_GROONN
-	hairstyle = "Bald"
-	facial_hairstyle = "Shaved"
+	hair_style = "Bald"
+	facial_hair_style = "Shaved"
+	randomise_dna = FALSE
+
+/obj/effect/mob_spawn/corpse/orc/savage
+	name = "savage orc corpse spawner"
+	mob_name = "Savage Orc"
 	outfit = /datum/outfit/savageorc
 
-/obj/effect/mob_spawn/human/orc/corpse/savageorc2
-	mob_name = "Savage Orc"
-	name = "Savage Orc"
-	skin_tone = SKIN_COLOR_GROONN
-	hairstyle = "Bald"
-	facial_hairstyle = "Shaved"
+/obj/effect/mob_spawn/corpse/orc/savage/alt
 	outfit = /datum/outfit/savageorc2
 
 /datum/outfit/savageorc
+	name = "Savage Orc"
 	shirt = /obj/item/clothing/shirt/tribalrag
-	pants =	/obj/item/clothing/pants/loincloth/colored/brown
+	pants = /obj/item/clothing/pants/loincloth/colored/brown
 	shoes = /obj/item/clothing/shoes/boots/furlinedanklets
 
 /datum/outfit/savageorc2
+	name = "Savage Orc (Helmet)"
 	shirt = /obj/item/clothing/shirt/tribalrag
-	pants =	/obj/item/clothing/pants/loincloth/colored/brown
+	pants = /obj/item/clothing/pants/loincloth/colored/brown
 	shoes = /obj/item/clothing/shoes/boots/furlinedanklets
 	head = /obj/item/clothing/head/helmet/leather
 
-/obj/effect/mob_spawn/human/orc/corpse/orcmarauder
+/obj/effect/mob_spawn/corpse/orc/marauder
+	name = "orc marauder corpse spawner"
 	mob_name = "Orc Marauder"
-	name = "Orc Marauder"
-	skin_tone = SKIN_COLOR_GROONN
-	hairstyle = "Bald"
-	facial_hairstyle = "Shaved"
 	outfit = /datum/outfit/orcmarauder
 
 /datum/outfit/orcmarauder
+	name = "Orc Marauder"
 	armor = /obj/item/clothing/armor/chainmail
-	pants =	/obj/item/clothing/pants/chainlegs
+	pants = /obj/item/clothing/pants/chainlegs
 	shoes = /obj/item/clothing/shoes/boots/furlinedboots
 	head = /obj/item/clothing/head/helmet/leather
 
-/obj/effect/mob_spawn/human/orc/corpse/orcravager
+/obj/effect/mob_spawn/corpse/orc/ravager
+	name = "orc ravager corpse spawner"
 	mob_name = "Orc Ravager"
-	name = "Orc Ravager"
-	skin_tone = SKIN_COLOR_GROONN
-	hairstyle = "Bald"
-	facial_hairstyle = "Shaved"
 	outfit = /datum/outfit/orcravager
 
 /datum/outfit/orcravager
+	name = "Orc Ravager"
 	armor = /obj/item/clothing/armor/chainmail
-	pants =	/obj/item/clothing/pants/chainlegs
+	pants = /obj/item/clothing/pants/chainlegs
 	shoes = /obj/item/clothing/shoes/boots/armor
 	head = /obj/item/clothing/head/helmet/skullcap
 	gloves = /obj/item/clothing/gloves/chain

@@ -47,7 +47,7 @@
 	)
 
 	var/list/trader_outfits = list(
-		/obj/effect/mob_spawn/human/rakshari/trader
+		/obj/effect/mob_spawn/corpse/human/rakshari/trader
 	)
 
 /datum/nation/New()

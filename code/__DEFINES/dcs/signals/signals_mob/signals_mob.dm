@@ -36,3 +36,10 @@
 #define COMSIG_MOB_CHANGED_TYPE "mob_changed_type"
 /// After a mob successfully performs an emote: (datum/emote/emote)
 #define COMSIG_MOB_EMOTE "mob_emote"
+
+/// Sent from a mob spawner after it creates a mob: (mob/living/spawned_mob)
+#define COMSIG_SPAWNER_SPAWNED "spawner_spawned"
+/// Sent when a turf-peel spawn should use its default behavior.
+#define COMSIG_SPAWNER_SPAWNED_DEFAULT "spawner_spawned_default"
+/// Sent from a ghost-role spawner after a ghost receives its new mob: (mob/living/spawned_mob)
+#define COMSIG_GHOSTROLE_SPAWNED "ghostrole_spawned"
