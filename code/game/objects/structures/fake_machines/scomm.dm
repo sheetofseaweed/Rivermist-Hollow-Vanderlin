@@ -261,6 +261,13 @@
 		return "[minutes] minute[minutes == 1 ? "" : "s"] and [seconds] second[seconds == 1 ? "" : "s"]"
 	return "[seconds] second[seconds == 1 ? "" : "s"]"
 
+/obj/item/scomstone/proc/check_cooldown(mob/living/user)
+	if(!on_cooldown)
+		return FALSE
+	to_chat(user, span_warning("The gemstone inside still radiates heat from its last transmission. It will cool in [get_cooldown_text()]."))
+	playsound(loc, 'sound/misc/machineno.ogg', 100, FALSE, -1)
+	return TRUE
+
 /obj/item/scomstone/get_mechanics_examine(mob/user)
 	. = ..()
 	. += span_info("Most SCOMSTONEs function as handheld SCOMs. The only exception are HOUNDSTONES, which have access to an exclusive SCOMline for the Keep's royalty and guards.")
@@ -278,14 +285,17 @@
 	do_scom_broadcast(user)
 
 /obj/item/scomstone/proc/do_scom_broadcast(mob/living/user)
-	if(on_cooldown)
-		to_chat(user, span_warning("The gemstone inside still radiates heat from its last transmission. It will cool in [get_cooldown_text()]."))
-		playsound(loc, 'sound/misc/machineno.ogg', 100, FALSE, -1)
+	if(check_cooldown(user))
 		return
 	user.changeNext_move(CLICK_CD_MELEE)
 	visible_message(span_notice("[user] presses [user.p_their()] [src.name] against [user.p_their()] mouth."))
 	var/input_text = input(user, "Enter your message:", "Message")
 	if(!input_text)
+		return
+	//input() sleeps - recheck, or several prompts opened at once all fire
+	if(QDELETED(src) || !user)
+		return
+	if(check_cooldown(user))
 		return
 	//voice_color only exists on /mob/living/carbon/human, guard against generic mob/living
 	var/usedcolor = "a0a0a0"
@@ -397,9 +407,7 @@
 //fully replaces the general-line send instead of running both; fixes crownstone
 //always broadcasting uncolored on the general line regardless of garrisonline
 /obj/item/scomstone/garrison/do_scom_broadcast(mob/living/user)
-	if(on_cooldown)
-		to_chat(user, span_warning("The gemstone inside still radiates heat from its last transmission. It will cool in [get_cooldown_text()]."))
-		playsound(loc, 'sound/misc/machineno.ogg', 100, FALSE, -1)
+	if(check_cooldown(user))
 		return
 	if(!get_location_accessible(user, BODY_ZONE_PRECISE_MOUTH, grabs = TRUE))
 		to_chat(user, span_warning("My mouth is covered!"))
@@ -408,6 +416,11 @@
 	visible_message(span_notice("[user] presses [user.p_their()] [src.name] against [user.p_their()] mouth."))
 	var/input_text = input(user, "Enter your message:", "Message")
 	if(!input_text)
+		return
+	//input() sleeps - recheck, or several prompts opened at once all fire
+	if(QDELETED(src) || !user)
+		return
+	if(check_cooldown(user))
 		return
 	var/usedcolor = "a0a0a0"
 	if(ishuman(user))
