@@ -32,7 +32,7 @@
 	if(parent.stat >= UNCONSCIOUS || youngling.stat >= UNCONSCIOUS)
 		return
 
-	var/choice = input(youngling, "Do you wish to become [parent.name]'s apprentice?") as anything in list("Yes", "No")
+	var/choice = input(youngling, "Do you wish to become [parent.name]'s apprentice?") in list("Yes", "No")
 
 	// Re-check conditions after async input
 	if(LAZYLEN(apprentices) >= max_apprentices)

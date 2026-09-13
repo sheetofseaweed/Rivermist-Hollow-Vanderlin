@@ -254,7 +254,7 @@
 		/datum/plant_def/mushroom,
 	)
 
-	for(var/plant_def_type as anything in abstract_plant_defs)
+	for(var/plant_def_type in abstract_plant_defs)
 		var/obj/structure/wild_plant/plant = allocate(/obj/structure/wild_plant, run_loc_floor_bottom_left, plant_def_type, -1)
 		plant.yield_produce()
 		TEST_ASSERT(QDELETED(plant), "Wild plants should not try to spawn produce from abstract plant family definitions.")

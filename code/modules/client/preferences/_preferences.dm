@@ -283,15 +283,15 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	var/HTML = "<center>"
 	if(!length(SSjob.joinable_occupations))
-		HTML += "<center><a href='?_src_=prefs;preference=job;task=close'>Done</a></center><br>"
+		HTML += "<center><a href='byond://?_src_=prefs;preference=job;task=close'>Done</a></center><br>"
 	else
-		HTML += "<center><a href='?_src_=prefs;preference=job;task=close'>Done</a></center><br>"
+		HTML += "<center><a href='byond://?_src_=prefs;preference=job;task=close'>Done</a></center><br>"
 		var/joblessrole = read_preference(/datum/preference/choiced/joblessrole)
 		if(joblessrole != RETURNTOLOBBY && joblessrole != BERANDOMJOB)
 			joblessrole = RETURNTOLOBBY
 			write_preference(/datum/preference/choiced/joblessrole, joblessrole)
 
-		HTML += "<b>If Role Unavailable:</b><font color='purple'><a href='?_src_=prefs;preference=job;task=nojob'>[joblessrole]</a></font><BR>"
+		HTML += "<b>If Role Unavailable:</b><font color='purple'><a href='byond://?_src_=prefs;preference=job;task=nojob'>[joblessrole]</a></font><BR>"
 
 		var/datum/job/highest_pref
 		for(var/job in job_preferences)
@@ -299,9 +299,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				highest_pref = SSjob.GetJob(job)
 		if(isnull(highest_pref))
 			preview_subclass = null
-		HTML += "<div style='text-align: center'><br><b>Subclass Preview:</b><br> <a href='?_src_=prefs;preference=subclassoutfit;task=input'>[preview_subclass ? "[preview_subclass.title]" : "Change"]</a></div>"
+		HTML += "<div style='text-align: center'><br><b>Subclass Preview:</b><br> <a href='byond://?_src_=prefs;preference=subclassoutfit;task=input'>[preview_subclass ? "[preview_subclass.title]" : "Change"]</a></div>"
 
-		HTML += "<script type='text/javascript'>function setJobPrefRedirect(level, rank) { window.location.href='?_src_=prefs;preference=job;task=setJobLevel;level=' + level + ';text=' + encodeURIComponent(rank); return false; }</script>"
+		HTML += "<script type='text/javascript'>function setJobPrefRedirect(level, rank) { window.location.href='byond://?_src_=prefs;preference=job;task=setJobLevel;level=' + level + ';text=' + encodeURIComponent(rank); return false; }</script>"
 		HTML += {"
 			<script type='text/javascript'>
 				function update_job_preference() {
@@ -336,7 +336,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 							var jobTitle = data.jobTitle;
 
 							prefLink.innerHTML = '<font color=' + cfg.color + '>' + cfg.label + '</font>';
-							prefLink.href = '?_src_=prefs;preference=job;task=setJobLevel;level=' + cfg.upper + ';text=' + jobTitle;
+							prefLink.href = 'byond://?_src_=prefs;preference=job;task=setJobLevel;level=' + cfg.upper + ';text=' + jobTitle;
 							prefLink.setAttribute('oncontextmenu', 'javascript:return setJobPrefRedirect(' + cfg.lower + ', "' + jobTitle + '");');
 						}
 					}
@@ -503,7 +503,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					category_html += "<tr bgcolor='#000000'><td width='60%' align='right'>"
 
 					if(is_role_banned(user.ckey, job.title))
-						category_html += "[used_name]</td><td><a href='?_src_=prefs;bancheck=[rank]'> BANNED</a></td></tr>"
+						category_html += "[used_name]</td><td><a href='byond://?_src_=prefs;bancheck=[rank]'> BANNED</a></td></tr>"
 						continue
 					if(!job.player_old_enough(user.client))
 						var/available_in_days = job.available_in_days(user.client)
@@ -520,7 +520,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					var/job_display = used_name
 
 
-					category_html += "<div class='tutorialhover'> [job.class_setup_examine ? "<a href='?src=[REF(job)];explainjob=1'><font>[job_display]</font></a>" : "<font>[job_display]</font>"]</span>\
+					category_html += "<div class='tutorialhover'> [job.class_setup_examine ? "<a href='byond://?src=[REF(job)];explainjob=1'><font>[job_display]</font></a>" : "<font>[job_display]</font>"]</span>\
 						<span class='tutorial'>[job.tutorial]<br>\
 						Slots: [job.get_total_positions()]</span>\
 						</div>"
@@ -555,7 +555,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 							prefUpperLevel = 3
 							prefLowerLevel = 1
 
-					category_html += "<a class='white' id='job-pref-[job_id]' href='?_src_=prefs;preference=job;task=setJobLevel;level=[prefUpperLevel];text=[rank]' oncontextmenu='javascript:return setJobPrefRedirect([prefLowerLevel], \"[rank]\");'>"
+					category_html += "<a class='white' id='job-pref-[job_id]' href='byond://?_src_=prefs;preference=job;task=setJobLevel;level=[prefUpperLevel];text=[rank]' oncontextmenu='javascript:return setJobPrefRedirect([prefLowerLevel], \"[rank]\");'>"
 					category_html += "<font color=[prefLevelColor]>[prefLevelLabel]</font>"
 					category_html += "</a></td></tr>"
 
@@ -573,13 +573,13 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			HTML += "</div>"
 
 		if(user.client.prefs.lastclass)
-			HTML += "<center><br><a href='?_src_=prefs;preference=job;task=triumphthing'>PLAY AS [user.client.prefs.lastclass] AGAIN</a></center>"
+			HTML += "<center><br><a href='byond://?_src_=prefs;preference=job;task=triumphthing'>PLAY AS [user.client.prefs.lastclass] AGAIN</a></center>"
 		else
 			HTML += "<br>"
-		HTML += "<center><a href='?_src_=prefs;preference=job;task=reset'>Reset</a></center>"
-		HTML += "<br><center><a href='?_src_=prefs;preference=role_settings'>Role Specific Preferences</a></center>"
-		HTML += "<br><center><a href='?_src_=prefs;preference=family'>Family & Bonds</a></center>"
-		HTML += "<br><center><a href='?_src_=prefs;preference=relations_gossip'>Rivals, Gossip & Rumors</a></center>"
+		HTML += "<center><a href='byond://?_src_=prefs;preference=job;task=reset'>Reset</a></center>"
+		HTML += "<br><center><a href='byond://?_src_=prefs;preference=role_settings'>Role Specific Preferences</a></center>"
+		HTML += "<br><center><a href='byond://?_src_=prefs;preference=family'>Family & Bonds</a></center>"
+		HTML += "<br><center><a href='byond://?_src_=prefs;preference=relations_gossip'>Rivals, Gossip & Rumors</a></center>"
 
 	HTML += "</center>"
 
@@ -741,28 +741,28 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	dat += "<style>label { display: inline-block; width: 200px; }</style><body>"
 
-	dat += "<center><a href='?_src_=prefs;preference=keybinds;task=close'>Done</a></center><br>"
+	dat += "<center><a href='byond://?_src_=prefs;preference=keybinds;task=close'>Done</a></center><br>"
 	for (var/category in kb_categories)
 		for (var/i in kb_categories[category])
 			var/datum/keybinding/kb = i
 			if(!length(user_binds[kb.name]))
-				dat += "<label>[kb.full_name]</label> <a href ='?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name];old_key=["Unbound"]'>Unbound</a>"
+				dat += "<label>[kb.full_name]</label> <a href ='byond://?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name];old_key=["Unbound"]'>Unbound</a>"
 			//	var/list/default_keys = hotkeys ? kb.hotkey_keys : kb.classic_keys
 			//	if(LAZYLEN(default_keys))
 			//		dat += "| Default: [default_keys.Join(", ")]"
 				dat += "<br>"
 			else
 				var/bound_key = user_binds[kb.name][1]
-				dat += "<label>[kb.full_name]</label> <a href ='?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name];old_key=[bound_key]'>[bound_key]</a>"
+				dat += "<label>[kb.full_name]</label> <a href ='byond://?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name];old_key=[bound_key]'>[bound_key]</a>"
 				for(var/bound_key_index in 2 to length(user_binds[kb.name]))
 					bound_key = user_binds[kb.name][bound_key_index]
-					dat += " | <a href ='?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name];old_key=[bound_key]'>[bound_key]</a>"
+					dat += " | <a href ='byond://?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name];old_key=[bound_key]'>[bound_key]</a>"
 				if(length(user_binds[kb.name]) < MAX_KEYS_PER_KEYBIND)
-					dat += "| <a href ='?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name]'>Add Secondary</a>"
+					dat += "| <a href ='byond://?_src_=prefs;preference=keybinds;task=keybindings_capture;keybinding=[kb.name]'>Add Secondary</a>"
 				dat += "<br>"
 
 	dat += "<br><br>"
-	dat += "<a href ='?_src_=prefs;preference=keybinds;task=keybindings_reset'>\[Reset to default\]</a>"
+	dat += "<a href ='byond://?_src_=prefs;preference=keybinds;task=keybindings_reset'>\[Reset to default\]</a>"
 	dat += "</body>"
 
 	var/datum/browser/noclose/popup = new(user, "keybind_setup", "<div align='center'>Keybinds</div>", 600, 600) //no reason not to reuse the occupation window, as it's cleaner that way
@@ -773,14 +773,14 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 /datum/preferences/proc/set_antag(mob/user)
 	var/list/dat = list()
 	dat += "<style>label { display: inline-block; width: 200px; }</style><body>"
-	dat += "<center><a href='?_src_=prefs;preference=antag;task=close' style='display:block;margin-bottom:2px'>Done</a></center>"
+	dat += "<center><a href='byond://?_src_=prefs;preference=antag;task=close' style='display:block;margin-bottom:2px'>Done</a></center>"
 	dat += "<h2 style='margin:5;padding:5;line-height:1.2'>Villains</h2>"
 	if(is_total_antag_banned(user.ckey))
 		dat += "<font color=red><b>I am banned from antagonist roles.</b></font><br>"
 		src.be_special = list()
 	for (var/i in GLOB.special_roles_rogue)
 		if(is_antag_banned(user.ckey, i))
-			dat += "<b>[capitalize(i)]:</b> <a href='?_src_=prefs;bancheck=[i]'>BANNED</a><br>"
+			dat += "<b>[capitalize(i)]:</b> <a href='byond://?_src_=prefs;bancheck=[i]'>BANNED</a><br>"
 		else
 			var/days_remaining = null
 			if(ispath(GLOB.special_roles_rogue[i]) && CONFIG_GET(flag/use_age_restriction_for_jobs))
@@ -788,7 +788,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			if(days_remaining)
 				dat += "<b>[capitalize(i)]:</b> <font color=red> \[IN [days_remaining] DAYS__~~\]~~__</font><br>"
 			else
-				dat += "<b>[capitalize(i)]:</b> <a href='?_src_=prefs;preference=antag;task=be_special;be_special_type=[i]'>[(i in be_special) ? "Enabled" : "Disabled"]</a><br>"
+				dat += "<b>[capitalize(i)]:</b> <a href='byond://?_src_=prefs;preference=antag;task=be_special;be_special_type=[i]'>[(i in be_special) ? "Enabled" : "Disabled"]</a><br>"
 
 	var/list/vessel_ids = GLOB.vessel_ids
 	var/list/available_vessel_ids = list()
@@ -800,7 +800,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		dat += "<h2 style='margin:5;padding:5;line-height:1.2'>Vessels</h2>"
 		for(var/id in available_vessel_ids)
 			var/enabled = (id in be_special)
-			dat += "<b>[id]:</b> <a href='?_src_=prefs;preference=antag;task=be_special;be_special_type=[id]'>[enabled ? "Enabled" : "Disabled"]</a><br>"
+			dat += "<b>[id]:</b> <a href='byond://?_src_=prefs;preference=antag;task=be_special;be_special_type=[id]'>[enabled ? "Enabled" : "Disabled"]</a><br>"
 
 	dat += "</body>"
 	var/datum/browser/noclose/popup = new(user, "antag_setup", "<div align='center'>Special Roles</div>", 265, 340)
@@ -1873,19 +1873,19 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			<div class="panel">
 				<h2>[gallery_title]</h2>
 				<div class="tabs">
-					<a class="[regular_tab_class]" href='?_src_=prefs;preference=gallery;task=menu;tab=regular'>Regular</a>
-					<a class="[nsfw_tab_class]" href='?_src_=prefs;preference=gallery;task=menu;tab=nsfw'>NSFW</a>
+					<a class="[regular_tab_class]" href='byond://?_src_=prefs;preference=gallery;task=menu;tab=regular'>Regular</a>
+					<a class="[nsfw_tab_class]" href='byond://?_src_=prefs;preference=gallery;task=menu;tab=nsfw'>NSFW</a>
 				</div>
 				<div class="note">Direct image links from approved hosts are stored here. Each tab holds up to three images.</div>
 				<div class="toolbar">
 	"}
 
 	if(length(gallery) < 3)
-		dat += "<a class='button' href='?_src_=prefs;preference=gallery;task=add;tab=[selected_tab]'>Add Image</a>"
+		dat += "<a class='button' href='byond://?_src_=prefs;preference=gallery;task=add;tab=[selected_tab]'>Add Image</a>"
 	else
 		dat += "<span class='button disabled'>Gallery Full</span>"
 	if(length(gallery))
-		dat += "<a class='button danger' href='?_src_=prefs;preference=gallery;task=clear;tab=[selected_tab]'>Clear Tab</a>"
+		dat += "<a class='button danger' href='byond://?_src_=prefs;preference=gallery;task=clear;tab=[selected_tab]'>Clear Tab</a>"
 	dat += "<span>[length(gallery)]/3 images</span></div>"
 
 	if(length(gallery))
@@ -1899,7 +1899,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					<div class="preview"><img src="[safe_link]" alt="Gallery image #[i]"></div>
 					<div class="card-body">
 						<div class="url">[safe_link]</div>
-						<a class="remove" href='?_src_=prefs;preference=gallery;task=remove;tab=[selected_tab];index=[i]'>Remove</a>
+						<a class="remove" href='byond://?_src_=prefs;preference=gallery;task=remove;tab=[selected_tab];index=[i]'>Remove</a>
 					</div>
 				</div>
 			"}
@@ -2012,15 +2012,15 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	"}
 
 	dat += "<div class='section-title'>Body Details</div>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=markings;task=menu'>Markings<small>Edit scars, tattoos, body markings, and their colors.</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=underwear;task=menu'>Smallclothes<small>Choose underlayers and smallclothes preferences.</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=customizers;task=menu'>Features<small>Adjust available body accessories and feature colors.</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=markings;task=menu'>Markings<small>Edit scars, tattoos, body markings, and their colors.</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=underwear;task=menu'>Smallclothes<small>Choose underlayers and smallclothes preferences.</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=customizers;task=menu'>Features<small>Adjust available body accessories and feature colors.</small></a>"
 
 	if(pref_species?.use_skintones)
 		var/skin_color_value = pref_species.normalize_body_color(read_preference(/datum/preference/choiced/skin_tone)) || "000000"
 		dat += "<div class='section-title'>Skin</div>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=s_tone;task=input;return=body_customize'><span class='swatch' style='background-color: #[skin_color_value];'></span>[pref_species.skin_tone_wording]<small>Pick a predefined skin or scale color.</small></a>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=skin_color_ref_list;task=input'>Color Reference<small>Open the available skin color reference list.</small></a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=s_tone;task=input;return=body_customize'><span class='swatch' style='background-color: #[skin_color_value];'></span>[pref_species.skin_tone_wording]<small>Pick a predefined skin or scale color.</small></a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=skin_color_ref_list;task=input'>Color Reference<small>Open the available skin color reference list.</small></a>"
 
 	if(has_mutant_color_preferences())
 		dat += "<div class='section-title'>Mutant Colors</div>"
@@ -2029,7 +2029,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			if(!feature_key)
 				continue
 			var/color_value = pref_species.normalize_body_color(features[feature_key]) || "000000"
-			dat += "<a class='option-row' href='?_src_=prefs;preference=mutant_color[color_slot == 1 ? "" : color_slot];task=input;return=body_customize'><span class='swatch' style='background-color: #[color_value];'></span>Mutant Color #[color_slot]<small>Change this character color slot.</small></a>"
+			dat += "<a class='option-row' href='byond://?_src_=prefs;preference=mutant_color[color_slot == 1 ? "" : color_slot];task=input;return=body_customize'><span class='swatch' style='background-color: #[color_value];'></span>Mutant Color #[color_slot]<small>Change this character color slot.</small></a>"
 	else
 		dat += "<div class='section-title'>Mutant Colors</div>"
 		dat += "<div class='muted'>This species has no mutant color slots.</div>"
@@ -2041,18 +2041,18 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		var/taur_markings = read_preference(/datum/preference/color/taur_markings)
 		var/taur_tertiary = read_preference(/datum/preference/color/taur_tertiary)
 		dat += "<div class='section-title'>Taur Body</div>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=taur_type;task=input;return=body_customize'>Body Type<small>[taur_name]</small></a>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=taur_color;task=input;return=body_customize'><span class='swatch' style='background-color: #[taur_color];'></span>Taur Color</a>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=taur_markings;task=input;return=body_customize'><span class='swatch' style='background-color: #[taur_markings];'></span>Taur Markings</a>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=taur_tertiary;task=input;return=body_customize'><span class='swatch' style='background-color: #[taur_tertiary];'></span>Taur Tertiary</a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=taur_type;task=input;return=body_customize'>Body Type<small>[taur_name]</small></a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=taur_color;task=input;return=body_customize'><span class='swatch' style='background-color: #[taur_color];'></span>Taur Color</a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=taur_markings;task=input;return=body_customize'><span class='swatch' style='background-color: #[taur_markings];'></span>Taur Markings</a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=taur_tertiary;task=input;return=body_customize'><span class='swatch' style='background-color: #[taur_tertiary];'></span>Taur Tertiary</a>"
 
 	if(pref_species?.use_titles)
 		var/display_title = read_preference(/datum/preference/text/selected_title) || "None"
 		dat += "<div class='section-title'>Race Title</div>"
-		dat += "<a class='option-row' href='?_src_=prefs;preference=race_title;task=input;return=body_customize'>Race Title<small>[display_title]</small></a>"
+		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=race_title;task=input;return=body_customize'>Race Title<small>[display_title]</small></a>"
 
 	dat += {"
-				<div class="footer"><a href='?_src_=prefs;preference=misc;task=menu'>Extra Prefs</a></div>
+				<div class="footer"><a href='byond://?_src_=prefs;preference=misc;task=menu'>Extra Prefs</a></div>
 			</div>
 		</div>
 	</body>
@@ -2179,28 +2179,28 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	var/song_artist_display = song_artist ? html_encode(song_artist) : "No artist set"
 
 	dat += "<div class='section-title'>Personal</div>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=culinary;task=menu'>Food Preferences<small>Change favored foods and culinary preferences.</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=combat_music;task=input'>Combat Music<small>[musicname]</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=defeat_mode;task=input'>Defeat Mode<small>[defeat_mode_display_name(get_defeat_mode())] - bounded recovery, injuries and aftermath remain</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=defeat_threshold;task=input'>Defeat Damage Threshold<small>[get_defeat_damage_threshold()] pooled brute, burn, toxin and clone damage</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=culinary;task=menu'>Food Preferences<small>Change favored foods and culinary preferences.</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=combat_music;task=input'>Combat Music<small>[musicname]</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=defeat_mode;task=input'>Defeat Mode<small>[defeat_mode_display_name(get_defeat_mode())] - bounded recovery, injuries and aftermath remain</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=defeat_threshold;task=input'>Defeat Damage Threshold<small>[get_defeat_damage_threshold()] pooled brute, burn, toxin and clone damage</small></a>"
 
 	dat += "<div class='section-title'>Expression</div>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=relations_gossip'>Rivals, Rumours & Gossip<small>Author stories and configure roundstart rivals.</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=relations_gossip'>Rivals, Rumours & Gossip<small>Author stories and configure roundstart rivals.</small></a>"
 
 	dat += "<div class='section-title'>NSFW</div>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=nsfwflavortext;task=input'>NSFW Flavortext<small>Edit the private flavortext field.</small></a>"
-	dat += "<div class='inline-actions'><a href='?_src_=prefs;preference=formathelp;task=input'>Formatting Help</a></div>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=nsfwflavortext;task=input'>NSFW Flavortext<small>Edit the private flavortext field.</small></a>"
+	dat += "<div class='inline-actions'><a href='byond://?_src_=prefs;preference=formathelp;task=input'>Formatting Help</a></div>"
 
 	dat += "<div class='section-title'>Examine Song</div>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=song_link;task=input'>Song URL<small>[song_status]</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=change_title;task=input'>Song Title<small>[song_title_display]</small></a>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=change_artist;task=input'>Song Artist<small>[song_artist_display]</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=song_link;task=input'>Song URL<small>[song_status]</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=change_title;task=input'>Song Title<small>[song_title_display]</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=change_artist;task=input'>Song Artist<small>[song_artist_display]</small></a>"
 
 	dat += "<div class='section-title'>OOC</div>"
-	dat += "<a class='option-row' href='?_src_=prefs;preference=player_language;task=input'>Player's Language<small>Set the language you understand oocly and prefer to speak in if possible, this will be shown in your examine to other players.</small></a>"
+	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=player_language;task=input'>Player's Language<small>Set the language you understand oocly and prefer to speak in if possible, this will be shown in your examine to other players.</small></a>"
 
 	dat += {"
-				<div class="footer"><a href='?_src_=prefs;preference=body_customize;task=menu'>Customize Appearance</a></div>
+				<div class="footer"><a href='byond://?_src_=prefs;preference=body_customize;task=menu'>Customize Appearance</a></div>
 			</div>
 		</div>
 	</body>
@@ -2306,7 +2306,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			for(var/datum/role_ban_instance/ban as anything in bans.bans)
 				if(!ban.curses)
 					continue
-				for(var/curse_name as anything in ban.curses)
+				for(var/curse_name in ban.curses)
 					var/datum/curse/curse = GLOB.curse_names[curse_name]
 					character.add_curse(curse.type)
 
@@ -2597,7 +2597,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			to_chat(user, "<span class='warning'>The [asset_name] link must include a direct file path.</span>")
 		return FALSE
 
-	var/hostname = lowertext(copytext(value, authority_start, authority_end))
+	var/hostname = LOWER_TEXT(copytext(value, authority_start, authority_end))
 	if(!length(hostname) || findtext(hostname, "@") || findtext(hostname, ":"))
 		if(!silent)
 			to_chat(user, "<span class='warning'>Invalid [asset_name] link!</span>")
@@ -2632,7 +2632,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			to_chat(user, "<span class='warning'>The [asset_name] link must include a file extension.</span>")
 		return FALSE
 
-	var/extension = lowertext(file_parts[length(file_parts)])
+	var/extension = LOWER_TEXT(file_parts[length(file_parts)])
 	if(!(extension in valid_extensions))
 		if(!silent)
 			to_chat(user, "<span class='warning'>The [asset_name] must be one of the following extensions: '[english_list(valid_extensions)]'</span>")

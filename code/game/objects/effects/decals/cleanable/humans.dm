@@ -73,7 +73,7 @@
 		return
 	var/list/reagents_to_add
 	var/list/all_dna = GET_ATOM_BLOOD_DNA(src)
-	for(var/dna_sample as anything in all_dna)
+	for(var/dna_sample in all_dna)
 		var/datum/blood_type/blood = GLOB.blood_types[all_dna[dna_sample]]
 		if(blood)
 			LAZYADD(reagents_to_add, blood.reagent_type)
@@ -81,7 +81,7 @@
 		return
 	reagents.remove_all(reagents.total_volume)
 	var/num_reagents = length(reagents_to_add)
-	for(var/reagent_type as anything in reagents_to_add)
+	for(var/reagent_type in reagents_to_add)
 		reagents.add_reagent(reagent_type, round((bloodiness * 0.1) / num_reagents, 0.01))
 
 /obj/effect/decal/cleanable/blood/replace_decal(obj/effect/decal/cleanable/C)

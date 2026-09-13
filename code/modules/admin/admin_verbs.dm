@@ -885,8 +885,8 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 		dat += "<td style='padding: 12px 15px;'>[book["author"]]</td>"
 		dat += "<td style='padding: 12px 15px;'>[book["category"]]</td>"
 		dat += "<td style='padding: 12px 15px;'>"
-		dat += "<a href='?src=[REF(src)];show_book=1;id=[url_encode(encoded_title)]' style='margin-right: 10px;'>View</a>"
-		dat += "<a href='?src=[REF(src)];delete_book=1;author_ckey=[book["author_ckey"]];id=[url_encode(encoded_title)]'>Delete</a>"
+		dat += "<a href='byond://?src=[REF(src)];show_book=1;id=[url_encode(encoded_title)]' style='margin-right: 10px;'>View</a>"
+		dat += "<a href='byond://?src=[REF(src)];delete_book=1;author_ckey=[book["author_ckey"]];id=[url_encode(encoded_title)]'>Delete</a>"
 		dat += "</td>"
 		dat += "</tr>"
 
@@ -966,7 +966,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 		dat += "<td style='padding: 12px 15px;'>[html_encode(painting["painting_title"])]</td>"
 		dat += "<td style='padding: 12px 15px;'>[html_encode(painting["author"])] ([painting["author_ckey"]])</td>"
 		dat += "<td style='padding: 12px 15px;'>"
-		dat += "<a href='?src=[REF(src)];delete_painting=1;id=[url_encode(painting_id)]'>Delete</a>"
+		dat += "<a href='byond://?src=[REF(src)];delete_painting=1;id=[url_encode(painting_id)]'>Delete</a>"
 		dat += "</td>"
 		dat += "</tr>"
 		listed++

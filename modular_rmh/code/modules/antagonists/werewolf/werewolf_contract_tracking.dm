@@ -241,7 +241,7 @@
 			else if(is_tracked)
 				track_control = "<span class='track-label'>Currently tracking this quarry</span>"
 			else
-				track_control = "<a class='track-button' href='?src=[REF(src)];ww_contract_action=track;scroll_ref=[REF(hidden_scroll)]'>Track this quarry</a>"
+				track_control = "<a class='track-button' href='byond://?src=[REF(src)];ww_contract_action=track;scroll_ref=[REF(hidden_scroll)]'>Track this quarry</a>"
 
 			content += "<div class='[card_class]'>"
 			content += "<div class='contract-top'>"

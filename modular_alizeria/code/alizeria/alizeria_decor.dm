@@ -352,8 +352,8 @@
 	plane = GAME_PLANE
 
 /obj/structure/flora/alizeria/decor/leavesr/Initialize()
-    icon_state = "leaves[rand(1, 10)]"
-    . = ..()
+	icon_state = "leaves[rand(1, 10)]"
+	. = ..()
 
 // ЯЩИКИ И ШКАФЫ
 /obj/structure/closet/crate/roguecloset/inn/south/alizeria/closet1

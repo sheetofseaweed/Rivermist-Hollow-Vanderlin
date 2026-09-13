@@ -69,9 +69,6 @@
 /proc/_log(X, Y)
 	return log(X, Y)
 
-/proc/_lowertext(T)
-	return lowertext(T)
-
 /proc/_matrix(a, b, c, d, e, f)
 	return matrix(a, b, c, d, e, f)
 
@@ -222,4 +219,3 @@
 
 /proc/_remove_trait(datum/thing,trait,source)
 	REMOVE_TRAIT(thing,trait,source)
-

@@ -189,12 +189,12 @@
 	if(owner.client?.prefs?.read_preference(/datum/preference/toggle/crt))
 		scannies.alpha = 70
 
-	for(var/element as anything in PUTRID_ELEMENTS)
+	for(var/element in PUTRID_ELEMENTS)
 		using = new element()
 		using.set_new_hud(src)
 		static_inventory += using
 
-	for(var/element as anything in PERSONAL_PUTRID_ELEMENTS)
+	for(var/element in PERSONAL_PUTRID_ELEMENTS)
 		using = new element()
 		using.set_new_hud(src)
 		static_inventory += using

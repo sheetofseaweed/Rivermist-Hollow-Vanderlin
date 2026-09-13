@@ -460,7 +460,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		stored_language = user_client.vars["preferred_ui_language"]
 	if(!stored_language)
 		stored_language = "en"
-	var/selected_language = lowertext("[stored_language]")
+	var/selected_language = LOWER_TEXT("[stored_language]")
 	if(!(selected_language in list("en", "ru")))
 		return "en"
 	return selected_language

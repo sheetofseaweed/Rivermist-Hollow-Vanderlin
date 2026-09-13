@@ -44,7 +44,7 @@
 	var/mob/living/carbon/human/H = owner
 	if(!istype(H))
 		if(feedback && owner)
-			owner.balloon_alert(owner, "Only humans can use slots!")
+			owner.balloon_alert(owner, "only humans can use slots!")
 		return FALSE
 
 	var/level = H.get_selected_dnd_spell_slot_level()
@@ -54,7 +54,7 @@
 	if(level < min_level)
 		if(feedback)
 			to_chat(H, span_warning("[dnd_get_spell_label()] requires a level [min_level]+ spell slot."))
-			H.balloon_alert(H, "Needs level [min_level]+ slot")
+			H.balloon_alert(H, "needs level [min_level]+ slot")
 		return FALSE
 
 	level = clamp(round(level), min_level, max_level)
@@ -80,7 +80,7 @@
 
 	if(level < min_level)
 		to_chat(H, span_warning("[dnd_get_spell_label()] requires a level [min_level]+ spell slot."))
-		H.balloon_alert(H, "Needs level [min_level]+ slot")
+		H.balloon_alert(H, "needs level [min_level]+ slot")
 		return SPELL_CANCEL_CAST
 
 	level = clamp(round(level), min_level, max_level)

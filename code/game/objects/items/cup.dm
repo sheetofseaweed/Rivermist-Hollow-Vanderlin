@@ -242,7 +242,7 @@
 
 /obj/item/reagent_containers/glass/cup/clay/set_material_information()
 	. = ..()
-	name = "[lowertext(initial(main_material.name))] clay cup"
+	name = "[LOWER_TEXT(initial(main_material.name))] clay cup"
 
 /obj/item/reagent_containers/glass/cup/fancy_clay
 	item_weight = 130 GRAMS
@@ -254,7 +254,7 @@
 
 /obj/item/reagent_containers/glass/cup/fancy_clay/set_material_information()
 	. = ..()
-	name = "[lowertext(initial(main_material.name))] fancy clay cup"
+	name = "[LOWER_TEXT(initial(main_material.name))] fancy clay cup"
 
 /obj/item/reagent_containers/glass/cup/clay_mug
 	item_weight = 150 GRAMS
@@ -266,7 +266,7 @@
 
 /obj/item/reagent_containers/glass/cup/clay_mug/set_material_information()
 	. = ..()
-	name = "[lowertext(initial(main_material.name))] clay mug"
+	name = "[LOWER_TEXT(initial(main_material.name))] clay mug"
 
 // ----- Glassware -----
 

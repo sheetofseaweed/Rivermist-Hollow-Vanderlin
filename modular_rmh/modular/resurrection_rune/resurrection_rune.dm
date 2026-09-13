@@ -1462,7 +1462,7 @@
 		return
 
 	var/mob/living/carbon/carbon_user = user
-	var/choice = input(carbon_user, "What do you wish to do?", "Rune of Souls") as anything in list("Link Soul", "Revive a lost Soul", "Cancel")
+	var/choice = input(carbon_user, "What do you wish to do?", "Rune of Souls") in list("Link Soul", "Revive a lost Soul", "Cancel")
 	switch(choice)
 		if("Link Soul")
 			link_soul(carbon_user)
@@ -1561,7 +1561,7 @@
 		return
 
 	var/mob/living/carbon/carbon_user = user
-	var/choice = input(carbon_user, "What do you wish to do?", "Master Rune") as anything in list("Link Soul", "Manage a Rune", "Cancel")
+	var/choice = input(carbon_user, "What do you wish to do?", "Master Rune") in list("Link Soul", "Manage a Rune", "Cancel")
 	switch(choice)
 		if("Link Soul")
 			link_soul(carbon_user)
@@ -1678,7 +1678,7 @@
 		var/obj/structure/resurrection_rune/current_rune = find_resurrection_rune_by_mind(linked_mind)
 		current_link = current_rune ? current_rune.get_management_name() : "None"
 
-	return "<br>Resurrection Rune: [current_link] \[<a href='?_src_=holder;[HrefToken()];runeadminplayer=[REF(target)]'>Manage</a>\]"
+	return "<br>Resurrection Rune: [current_link] \[<a href='byond://?_src_=holder;[HrefToken()];runeadminplayer=[REF(target)]'>Manage</a>\]"
 
 /proc/handle_resurrection_rune_admin_topic(datum/admins/admin_holder, list/href_list)
 	if(!href_list["runeadminplayer"])

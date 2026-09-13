@@ -2,7 +2,7 @@
 	var/preferred_ui_language = "en"
 
 /proc/sanitize_preferred_ui_language(language)
-	var/selected_language = lowertext("[language || "en"]")
+	var/selected_language = LOWER_TEXT("[language || "en"]")
 	if(!(selected_language in list("en", "ru")))
 		return "en"
 	return selected_language

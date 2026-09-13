@@ -139,7 +139,7 @@
 	if(!map_file)
 		return null
 
-	return lowertext("[map_file]")
+	return LOWER_TEXT("[map_file]")
 
 /datum/antagonist/werewolf/proc/find_werewolf_lair_gate(area/target_area, turf/from_turf)
 	if(!target_area || !from_turf)
@@ -652,7 +652,7 @@
 	return TRUE
 
 /obj/structure/werewolf_lair_entrance/proc/find_werewolf_mind_by_name(search_name)
-	var/needle = lowertext(search_name)
+	var/needle = LOWER_TEXT(search_name)
 
 	for(var/datum/mind/werewolf_mind as anything in SSmapping.retainer.werewolves)
 		if(!werewolf_mind?.has_antag_datum(/datum/antagonist/werewolf))
@@ -661,7 +661,7 @@
 		var/mob/living/carbon/human/current_mob = werewolf_mind.current
 		if(!istype(current_mob))
 			continue
-		if(lowertext(current_mob.real_name) == needle || lowertext(current_mob.name) == needle)
+		if(LOWER_TEXT(current_mob.real_name) == needle || LOWER_TEXT(current_mob.name) == needle)
 			return werewolf_mind
 
 	return null
@@ -671,7 +671,7 @@
 	if(search_ckey in invited_werewolf_ckeys)
 		return search_ckey
 
-	var/needle = lowertext(search_name)
+	var/needle = LOWER_TEXT(search_name)
 	for(var/datum/mind/werewolf_mind as anything in SSmapping.retainer.werewolves)
 		if(!werewolf_mind?.has_antag_datum(/datum/antagonist/werewolf))
 			continue
@@ -679,7 +679,7 @@
 		var/mob/living/carbon/human/current_mob = werewolf_mind.current
 		if(!istype(current_mob) || !(current_mob.ckey in invited_werewolf_ckeys))
 			continue
-		if(lowertext(current_mob.real_name) == needle || lowertext(current_mob.name) == needle)
+		if(LOWER_TEXT(current_mob.real_name) == needle || LOWER_TEXT(current_mob.name) == needle)
 			return current_mob.ckey
 
 	return null

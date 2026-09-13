@@ -52,7 +52,7 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 
 /// Normalizes text for phrase comparison: lowercase, strip HTML, strip punctuation, trim.
 /proc/normalize_slave_phrase(text)
-	text = lowertext(strip_html(text))
+	text = LOWER_TEXT(strip_html(text))
 	text = strip_punctuation(text)
 	text = trim(text)
 	return text
@@ -574,7 +574,7 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 	if(bound_ring && controller_has_bound_ring(h_user))
 		can_read = TRUE
 	if(!can_read)
-		var/job_lower = lowertext(h_user.job)
+		var/job_lower = LOWER_TEXT(h_user.job)
 		if(job_lower == "town master" || job_lower == "consort")
 			can_read = TRUE
 	if(can_read)

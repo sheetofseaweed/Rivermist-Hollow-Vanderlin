@@ -917,10 +917,10 @@
 
 			<div class="section">
 				<h2>Quick Actions</h2>
-				<a href="?src=\ref[src];action=view_royal" class="button royal">View Royal Family</a>
-				<a href="?src=\ref[src];action=generate_test" class="button">Generate Test Family</a>
-				<a href="?src=\ref[src];action=generate_large" class="button large">Generate Large Dynasty</a>
-				<a href="?src=\ref[src];action=list_all" class="button">List All Families</a>
+				<a href="byond://?src=\ref[src];action=view_royal" class="button royal">View Royal Family</a>
+				<a href="byond://?src=\ref[src];action=generate_test" class="button">Generate Test Family</a>
+				<a href="byond://?src=\ref[src];action=generate_large" class="button large">Generate Large Dynasty</a>
+				<a href="byond://?src=\ref[src];action=list_all" class="button">List All Families</a>
 			</div>
 
 			<div class="section">

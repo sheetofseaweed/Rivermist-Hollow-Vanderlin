@@ -136,7 +136,7 @@
 	if(!map_file)
 		return null
 
-	return lowertext("[map_file]")
+	return LOWER_TEXT("[map_file]")
 
 /datum/quest/proc/get_nearest_tracked_atom(turf/reference_turf, include_held_items = TRUE, atom/movable/preferred_atom = null)
 	var/turf/origin_turf = reference_turf ? get_turf(reference_turf) : (quest_scroll ? get_turf(quest_scroll) : null)
@@ -312,7 +312,7 @@
 		"underdark.dmm" = "Underdark",
 	)
 
-	return supported_map_names[lowertext("[map_file]")]
+	return supported_map_names[LOWER_TEXT("[map_file]")]
 
 /datum/quest/proc/is_supported_map_file(map_file)
 	return get_supported_map_name(map_file) ? TRUE : FALSE

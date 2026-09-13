@@ -320,7 +320,7 @@
 				mobs_around++
 		if(mobs_around > 4)
 			skip_spelling = TRUE
-	for(var/letter as anything in remaining_strings)
+	for(var/letter in remaining_strings)
 		if(premature_end)
 			return
 		var/extra_delay = spelling_extra_delays(letter)

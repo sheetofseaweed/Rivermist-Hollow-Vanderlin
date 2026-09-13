@@ -23,7 +23,7 @@
 /mob/living/proc/check_slur(text)
 	if(!LAZYLEN(GLOB.slurs_all))
 		return
-	for(var/slur as anything in GLOB.slurs_all)
+	for(var/slur in GLOB.slurs_all)
 		if(findtext(text, slur))
 			record_featured_object_stat(FEATURED_STATS_SLURS, capitalize(slur))
 			record_round_statistic(STATS_SLURS_SPOKEN)
@@ -31,7 +31,7 @@
 /mob/living/carbon/check_slur(text)
 	if(!LAZYLEN(GLOB.slurs_all))
 		return
-	for(var/slur as anything in GLOB.slurs_all)
+	for(var/slur in GLOB.slurs_all)
 		if(findtext(text, slur))
 			record_featured_object_stat(FEATURED_STATS_SLURS, capitalize(slur))
 			record_round_statistic(STATS_SLURS_SPOKEN)
@@ -62,7 +62,7 @@
 	if(ic_blocked)
 		//The filter warning message shows the sanitized message though.
 		to_chat(src, "<span class='warning'>That message contained a word prohibited in IC chat! Consider reviewing the server rules.\n<span replaceRegex='show_filtered_ic_chat'>\"[message]\"</span></span>")
-		SSblackbox.record_feedback("tally", "ic_blocked_words", 1, lowertext(config.ic_filter_regex.match))
+		SSblackbox.record_feedback("tally", "ic_blocked_words", 1, LOWER_TEXT(config.ic_filter_regex.match))
 		return
 
 	var/list/message_mods = list()

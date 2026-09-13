@@ -37,10 +37,10 @@ GLOBAL_LIST_EMPTY(important_items)
 	if(!A)
 		return FALSE
 
-	var/search = lowertext(zone_filter)
-	if(findtext(lowertext("[A.type]"), search))
+	var/search = LOWER_TEXT(zone_filter)
+	if(findtext(LOWER_TEXT("[A.type]"), search))
 		return TRUE
-	if(findtext(lowertext(A.name), search))
+	if(findtext(LOWER_TEXT(A.name), search))
 		return TRUE
 
 	return FALSE

@@ -363,7 +363,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 		return knows(person)
 	if(name)
 		for(var/datum/relation/relation in relations)
-			if(relation.snapshot && lowertext(relation.snapshot["name"]) == lowertext(name))
+			if(relation.snapshot && LOWER_TEXT(relation.snapshot["name"]) == LOWER_TEXT(name))
 				return TRUE
 	return FALSE
 

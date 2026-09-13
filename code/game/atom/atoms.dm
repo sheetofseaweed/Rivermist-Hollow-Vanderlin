@@ -475,7 +475,7 @@
 	if(istype(src, /mob/living))
 		var/mob/living/L = src
 		if(L.has_status_effect(/datum/status_effect/leash_pet))
-			. += "<A href='?src=[REF(src)];'><span class='warning'>A leash is hooked to a collar!</span></A>"
+			. += "<A href='byond://?src=[REF(src)];'><span class='warning'>A leash is hooked to a collar!</span></A>"
 	var/examine_desc = get_examine_desc(user)
 	if(examine_desc)
 		. += "<span class='info'>[examine_desc]</span>"
@@ -518,7 +518,7 @@
 					var/list/full_reagents = list()
 					for(var/datum/reagent/R in reagents.reagent_list)
 						if(R.volume > 0)
-							full_reagents += "[lowertext(R.name)]"
+							full_reagents += "[LOWER_TEXT(R.name)]"
 					if(length(full_reagents))
 						. += span_notice("I can identity this smell as [full_reagents.Join(", ")].")
 	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, user, .)
@@ -1069,7 +1069,7 @@
 	. = ..()
 	var/refid = REF(src)
 	. += "[VV_HREF_TARGETREF(refid, VV_HK_AUTO_RENAME, "<b id='name'>[src]</b>")]"
-	. += "<br><font size='1'><a href='?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=left'><<</a> <a href='?_src_=vars;[HrefToken()];datumedit=[refid];varnameedit=dir' id='dir'>[dir2text(dir) || dir]</a> <a href='?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=right'>>></a></font>"
+	. += "<br><font size='1'><a href='byond://?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=left'><<</a> <a href='byond://?_src_=vars;[HrefToken()];datumedit=[refid];varnameedit=dir' id='dir'>[dir2text(dir) || dir]</a> <a href='byond://?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=right'>>></a></font>"
 
 ///Where atoms should drop if taken from this atom
 /atom/proc/drop_location()

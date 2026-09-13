@@ -11,10 +11,10 @@
 	var/search_params = browser_search ? ";search=[url_encode(browser_search)]" : ""
 	dat += "<div class='pagination'>"
 	if(current_page > 1)
-		dat += "<a class='button' href='?src=[REF(src)];page=[current_page - 1][search_params]'>Previous</a>"
+		dat += "<a class='button' href='byond://?src=[REF(src)];page=[current_page - 1][search_params]'>Previous</a>"
 	dat += "<span class='page-status'>Page [current_page] of [browser_page_count] ([browser_total_items] entries)</span>"
 	if(current_page < browser_page_count)
-		dat += "<a class='button' href='?src=[REF(src)];page=[current_page + 1][search_params]'>Next</a>"
+		dat += "<a class='button' href='byond://?src=[REF(src)];page=[current_page + 1][search_params]'>Next</a>"
 	dat += "</div>"
 	return dat.Join()
 
@@ -29,12 +29,12 @@
 	if(!istext(search_text) || !length(search_text))
 		return item_types.Copy()
 
-	var/search_lower = lowertext(search_text)
+	var/search_lower = LOWER_TEXT(search_text)
 	var/list/search_results = list()
 	for(var/item_path in item_types)
 		var/atom/item_atom = item_path
 		var/name_display = initial(item_atom.name) || item_path
-		if(findtext(lowertext("[name_display]"), search_lower) || findtext(lowertext("[item_path]"), search_lower))
+		if(findtext(LOWER_TEXT("[name_display]"), search_lower) || findtext(LOWER_TEXT("[item_path]"), search_lower))
 			search_results += item_path
 
 	return search_results

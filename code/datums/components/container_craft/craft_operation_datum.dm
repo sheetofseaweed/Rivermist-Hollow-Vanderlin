@@ -199,13 +199,13 @@
 /datum/container_craft_operation/proc/announce_stall()
 	if(QDELETED(crafter))
 		return
-	crafter.visible_message(span_warning("The [lowertext(recipe.name)] stops cooking."))
+	crafter.visible_message(span_warning("The [LOWER_TEXT(recipe.name)] stops cooking."))
 
 /// Told to the room when conditions recover and progress resumes.
 /datum/container_craft_operation/proc/announce_resume()
 	if(QDELETED(crafter))
 		return
-	crafter.visible_message(span_notice("The [lowertext(recipe.name)] starts cooking again."))
+	crafter.visible_message(span_notice("The [LOWER_TEXT(recipe.name)] starts cooking again."))
 
 /**
  * Lets outside code push progress into a running craft, e.g. fanning a fire.

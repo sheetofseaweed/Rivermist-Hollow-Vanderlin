@@ -34,7 +34,7 @@
 	..()
 	var/datum/customizer_entry/organ/genitals/butt/butt_entry = entry
 	var/list/butt_sizes = prefs.get_butt_size_choices()
-	dat += "<br>Butt size: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=butt_size''>[find_key_by_value(butt_sizes, butt_entry.butt_size)]</a>"
+	dat += "<br>Butt size: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=butt_size''>[find_key_by_value(butt_sizes, butt_entry.butt_size)]</a>"
 
 /datum/customizer_choice/organ/genitals/butt/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()

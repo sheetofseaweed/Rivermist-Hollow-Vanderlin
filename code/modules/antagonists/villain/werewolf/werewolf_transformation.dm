@@ -343,7 +343,7 @@
 	new_werewolf.name = wolfname
 	new_werewolf.skin_armor = new /obj/item/clothing/armor/regenerating/skin/werewolf_skin(new_werewolf)
 
-	for(var/werewolf_power_type as anything in werewolf_form_powers)
+	for(var/werewolf_power_type in werewolf_form_powers)
 		var/datum/action/werewolf_power = new werewolf_power_type(new_werewolf)
 		werewolf_power.Grant(new_werewolf)
 

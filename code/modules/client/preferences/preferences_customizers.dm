@@ -9,7 +9,7 @@
 	/// Check if we have any customizer entries that don't match.
 	for(var/datum/customizer_entry/entry as anything in customizer_entries)
 		var/validated = FALSE
-		for(var/customizer_type as anything in customizers)
+		for(var/customizer_type in customizers)
 			if(customizer_type != entry.customizer_type)
 				continue
 			var/datum/customizer/customizer = CUSTOMIZER(customizer_type)
@@ -25,7 +25,7 @@
 			customizer_entries -= entry
 
 	/// Check if we have any missing customizer entries
-	for(var/customizer_type as anything in customizers)
+	for(var/customizer_type in customizers)
 		var/found = FALSE
 		for(var/datum/customizer_entry/entry as anything in customizer_entries)
 			if(entry.customizer_type != customizer_type)
@@ -58,14 +58,14 @@
 		return
 	dat += "<div class='genital-set-card'>"
 	dat += "<div><b>Genital Set:</b> [get_current_genital_set_label()]</div>"
-	dat += "<a href='?_src_=prefs;task=change_customizer;customizer_task=toggle_genital_set'>Toggle Genitals</a>"
+	dat += "<a href='byond://?_src_=prefs;task=change_customizer;customizer_task=toggle_genital_set'>Toggle Genitals</a>"
 	if(has_extra_genital_customizer_unlock())
 		dat += "<small>Extra Genitals lets you mix and match genital features.</small>"
 	else
 		dat += "<small>You can swap between complete masculine and feminine sets.</small>"
 	dat += "</div>"
 	dat += "<div class='feature-grid'>"
-	for(var/customizer_type as anything in customizers)
+	for(var/customizer_type in customizers)
 		var/datum/customizer/customizer = CUSTOMIZER(customizer_type)
 		if(!customizer.is_allowed(src))
 			continue
@@ -81,13 +81,13 @@
 		dat += "<div class='[card_class]'>"
 		if(customizer.allows_disabling)
 			var/title_status = entry.disabled ? "Enable" : "Disable"
-			dat += "<a class='feature-title' href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_missing'>[customizer.name]<small>[title_status]</small></a>"
+			dat += "<a class='feature-title' href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_missing'>[customizer.name]<small>[title_status]</small></a>"
 		else
 			dat += "<div class='feature-title static'>[customizer.name]<small>Fixed</small></div>"
 		if(!entry.disabled)
 			var/choice_link
 			if(length(customizer.customizer_choices) > 1)
-				choice_link = "href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=change_choice'"
+				choice_link = "href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=change_choice'"
 			else
 				choice_link = "class='linkOff'"
 			if(length(customizer.customizer_choices) > 1)
@@ -419,7 +419,7 @@
 			for(var/choice_type in customizer.customizer_choices)
 				var/datum/customizer_choice/iter_choice = CUSTOMIZER_CHOICE(choice_type)
 				choice_list[iter_choice.name] = choice_type
-			var/chosen_input = input(user, "Choose your [lowertext(customizer.name)]:", "Character Preference")  as null|anything in choice_list
+			var/chosen_input = input(user, "Choose your [LOWER_TEXT(customizer.name)]:", "Character Preference")  as null|anything in choice_list
 			if(!chosen_input)
 				return
 			var/choice_type = choice_list[chosen_input]
@@ -655,7 +655,7 @@
 	"}
 	dat += print_customizers_page()
 	dat += {"
-				<div class="footer"><a href='?_src_=prefs;preference=body_customize;task=menu'>Customize Appearance</a></div>
+				<div class="footer"><a href='byond://?_src_=prefs;preference=body_customize;task=menu'>Customize Appearance</a></div>
 			</div>
 		</div>
 		<script>

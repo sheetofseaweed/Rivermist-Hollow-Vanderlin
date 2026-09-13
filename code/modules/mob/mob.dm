@@ -403,7 +403,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 	if(!slot_priority)
 		slot_priority = DEFAULT_SLOT_PRIORITY
 
-	for(var/slot as anything in slot_priority)
+	for(var/slot in slot_priority)
 		if(equip_to_slot_if_possible(equipping, slot, FALSE, TRUE, TRUE, initial = initial)) //qdel_on_fail = 0; disable_warning = 1; redraw_mob = 1
 			return TRUE
 
@@ -1451,7 +1451,7 @@ GLOBAL_VAR_INIT(mobids, 1)
 /mob/say_mod(input, list/message_mods = list())
 	var/customsayverb = findtext(input, "*")
 	if(customsayverb)
-		return lowertext(copytext(input, 1, customsayverb))
+		return LOWER_TEXT(copytext(input, 1, customsayverb))
 	. = ..()
 
 /atom/movable/proc/attach_spans(input, list/spans)

@@ -117,14 +117,14 @@
 	var/return_val = FALSE
 	if(!can_advance_pre && can_advance_post && !silent)
 		to_chat(mind.current, span_nicegreen(pick(list(
-			"I'm getting a better grasp at [lowertext(skillref.name)]...",
-			"With some rest, I feel like I can get better at [lowertext(skillref.name)]...",
+			"I'm getting a better grasp at [LOWER_TEXT(skillref.name)]...",
+			"With some rest, I feel like I can get better at [LOWER_TEXT(skillref.name)]...",
 			"[skillref.name] starts making more sense to me...",
 		))))
 		return_val = TRUE
 	if(!capped_pre && capped_post && !silent)
 		to_chat(mind.current, span_nicegreen(pick(list(
-			"My [lowertext(skillref.name)] is not gonna get any better without some rest...",
+			"My [LOWER_TEXT(skillref.name)] is not gonna get any better without some rest...",
 		))))
 	return return_val
 
@@ -412,7 +412,7 @@
 			skill_string += " and "
 		else if(i != 1)
 			skill_string += ", "
-		skill_string += lowertext(skill_name)
+		skill_string += LOWER_TEXT(skill_name)
 	to_chat(mind.current, span_notice("I feel inspired about [skill_string]..."))
 
 

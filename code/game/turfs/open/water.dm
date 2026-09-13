@@ -497,7 +497,7 @@
 	var/list/overlays = water_overlay?.neighborlay_list
 	if(!LAZYLEN(overlays))
 		return
-	for(var/key as anything in overlays)
+	for(var/key in overlays)
 		water_overlay.cut_overlay(overlays[key])
 		QDEL_NULL(overlays[key])
 		LAZYREMOVE(overlays, key)

@@ -59,7 +59,7 @@
 	apply_minimum_skill_ranks(human_owner, minimum_skill_ranks)
 	grant_stashed_items(human_owner, stashed_items)
 
-	for(var/spell_type as anything in granted_spells)
+	for(var/spell_type in granted_spells)
 		human_owner.add_spell(spell_type, source = src)
 
 /datum/quirk/boon/proc/apply_minimum_skill_ranks(mob/living/carbon/human/human_owner, list/skill_rank_minima)

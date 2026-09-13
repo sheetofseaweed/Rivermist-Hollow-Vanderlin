@@ -300,7 +300,7 @@
 	var/list/atoms = new/list()
 	var/rsq = radius * (radius + 0.5)
 
-	for(var/atom/checked_atom as anything in range(radius, center_turf))
+	for(var/atom/checked_atom in range(radius, center_turf))
 		var/dx = checked_atom.x - center_turf.x
 		var/dy = checked_atom.y - center_turf.y
 		if(dx * dx + dy * dy <= rsq)
@@ -315,7 +315,7 @@
 	var/list/atoms = new/list()
 	var/rsq = radius * (radius + 0.5)
 
-	for(var/atom/checked_atom as anything in view(radius, center_turf))
+	for(var/atom/checked_atom in view(radius, center_turf))
 		var/dx = checked_atom.x - center_turf.x
 		var/dy = checked_atom.y - center_turf.y
 		if(dx * dx + dy * dy <= rsq)

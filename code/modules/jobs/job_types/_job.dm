@@ -576,7 +576,7 @@
 	return generated_sheet
 
 /datum/job/proc/GetAntagRep()
-	. = CONFIG_GET(keyed_list/antag_rep)[lowertext(title)]
+	. = CONFIG_GET(keyed_list/antag_rep)[LOWER_TEXT(title)]
 	if(. == null)
 		return antag_rep
 
@@ -603,7 +603,7 @@
 			job_packs = equipping.job_packs[i]
 
 		var/list/reals = list()
-		for(var/pack as anything in job_packs)
+		for(var/pack in job_packs)
 			var/datum/job_pack/real_pack = GLOB.job_pack_singletons[pack]
 			if(!real_pack.can_pick_pack(src, previous_picked_types))
 				continue

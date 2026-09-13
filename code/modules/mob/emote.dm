@@ -14,7 +14,7 @@
 //The code execution of the emote datum is located at code/datums/emotes.dm
 /mob/proc/emote(act, m_type = null, message = null, intentional = FALSE, forced = FALSE, targetted = FALSE, custom_me = FALSE)
 	var/oldact = act
-	act = lowertext(act)
+	act = LOWER_TEXT(act)
 	if(intentional && client?.manual_afk)
 		client.set_manual_afk(FALSE, show_message = FALSE)
 	var/param = message

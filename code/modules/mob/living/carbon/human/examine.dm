@@ -52,14 +52,14 @@
 	/*var/datum/species/species = dna?.species
 	if(species?.use_skintones)
 		LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_SPECIES+0.6, \
-			"[capitalize(P[THEIR])] [lowertext(species.skin_tone_wording || "skin tone")] \
+			"[capitalize(P[THEIR])] [LOWER_TEXT(species.skin_tone_wording || "skin tone")] \
 			is [find_key_by_value(species.get_skin_list(), skin_tone) || "incomprehensible"].")*/
 
 	. = list()
 
 	if(culture)
 		if((do_i_know || O || istype(culture, H?.culture?.type)) && !istype(culture, /datum/culture/universal/ambiguous))
-			var/culture_msg = self_inspect ? P[THEYRE] : "I believe [lowertext(P[THEYRE])]"
+			var/culture_msg = self_inspect ? P[THEYRE] : "I believe [LOWER_TEXT(P[THEYRE])]"
 			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_SPECIES+0.6, "[culture_msg] from [culture.examined_string(src, user)].")
 		else if(!self_inspect)
 			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_SPECIES+0.6, "[P[THEY]] could be from anywhere.")
@@ -125,13 +125,13 @@
 			var/safe_headshot_link = html_encode(headshot_link)
 			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, chat_headshot(safe_headshot_link))
 		if(flavortext || headshot_link || ooc_extra_link)
-			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='?src=[REF(src)];task=view_flavor_text;'>Examine Closer</a>")
+			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];task=view_flavor_text;'>Examine Closer</a>")
 		var/has_known_gossip = length(user.mind?.get_gossip_about(mind))
 		if(O && client?.prefs)
 			has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/rumors))
 			has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/noble_gossip))
 		if(has_known_gossip)
-			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='?src=[REF(src)];task=view_rumours_gossip;'>Recall Rumours & Gossip</a>")
+			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];task=view_rumours_gossip;'>Recall Rumours & Gossip</a>")
 
 /mob/living/carbon/human/examine_more(mob/user)
 	. = ..()
