@@ -1490,6 +1490,7 @@
 #include "code\datums\quirks\boon\_boon.dm"
 #include "code\datums\quirks\boon\backstory.dm"
 #include "code\datums\quirks\peculiarity\_peculiarity.dm"
+#include "code\datums\quirks\peculiarity\forgotten_family.dm"
 #include "code\datums\quirks\vices\_vice.dm"
 #include "code\datums\quirks\vices\mental_vice.dm"
 #include "code\datums\quirks\vices\physical_vice.dm"

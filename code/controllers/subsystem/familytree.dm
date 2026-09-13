@@ -116,6 +116,148 @@ SUBSYSTEM_DEF(familytree)
 
 	return FALSE
 
+/// Returns an explanation when two players cannot establish this family bond, or null when it is valid.
+/datum/controller/subsystem/familytree/proc/GetRememberFamilyError(mob/living/carbon/human/person, mob/living/carbon/human/relative, relation_type)
+	if(!ishuman(person) || !ishuman(relative) || person == relative)
+		return "That memory cannot describe a real family bond."
+	if(!person.mind || !relative.mind)
+		return "Both people need an established identity to remember one another."
+	if(!(relation_type in list(FAMILY_MEMBER_PARENT, FAMILY_MEMBER_CHILD, FAMILY_MEMBER_SIBLING, FAMILY_MEMBER_SPOUSE)))
+		return "That kind of family bond is not supported."
+
+	var/datum/family_member/person_member = person.family_member_datum
+	var/datum/family_member/relative_member = relative.family_member_datum
+	if((person.family_datum && (!person_member || person_member.family != person.family_datum)) || (!person.family_datum && person_member))
+		return "Your family history is inconsistent. Please report this to an administrator."
+	if((relative.family_datum && (!relative_member || relative_member.family != relative.family_datum)) || (!relative.family_datum && relative_member))
+		return "Their family history is inconsistent. Please report this to an administrator."
+	if(person.family_datum && relative.family_datum && person.family_datum != relative.family_datum)
+		return "Your established family histories belong to different houses."
+
+	if(person_member && relative_member)
+		var/current_relation
+		if(relative_member in person_member.parents)
+			current_relation = FAMILY_MEMBER_PARENT
+		else if(relative_member in person_member.children)
+			current_relation = FAMILY_MEMBER_CHILD
+		else if(relative_member in person_member.spouses)
+			current_relation = FAMILY_MEMBER_SPOUSE
+		else if(person_member.AreSiblings(relative_member))
+			current_relation = FAMILY_MEMBER_SIBLING
+
+		if(current_relation == relation_type)
+			return "You already remember this family bond."
+		if(current_relation)
+			return "Your family tree already records a different close relation between you."
+
+	switch(relation_type)
+		if(FAMILY_MEMBER_PARENT, FAMILY_MEMBER_CHILD)
+			var/mob/living/carbon/human/parent = relation_type == FAMILY_MEMBER_PARENT ? relative : person
+			var/mob/living/carbon/human/child = relation_type == FAMILY_MEMBER_PARENT ? person : relative
+			var/datum/family_member/parent_member = parent.family_member_datum
+			var/datum/family_member/child_member = child.family_member_datum
+			if(!CanBeParentOf(parent.age, child.age))
+				return "Your ages do not support that parent and child relationship."
+			if(child_member && length(child_member.parents) >= 2)
+				return "The remembered child already has two parents in their family tree."
+			if(parent_member && child_member && child_member.IsAncestorOf(parent_member))
+				return "That memory would create a circular family tree."
+
+		if(FAMILY_MEMBER_SIBLING)
+			if(!CanBeSiblings(person.age, relative.age))
+				return "Your ages are too far apart for the family tree to treat you as siblings."
+			if(person_member && relative_member && (person_member.IsAncestorOf(relative_member) || relative_member.IsAncestorOf(person_member)))
+				return "Ancestors and descendants cannot also be siblings."
+			var/person_has_parent = person_member && length(person_member.parents)
+			var/relative_has_parent = relative_member && length(relative_member.parents)
+			if(person_has_parent && relative_member && length(relative_member.parents) >= 2)
+				if(relative_has_parent && person_member && length(person_member.parents) >= 2)
+					return "Neither family tree has room for a shared parent."
+
+		if(FAMILY_MEMBER_SPOUSE)
+			if(length(person_member?.spouses) || length(relative_member?.spouses) || person.spouse_mob || relative.spouse_mob)
+				return "One of you already remembers a current spouse."
+
+	var/datum/heritage/house = person.family_datum || relative.family_datum
+	var/additional_members = (person_member ? 0 : 1) + (relative_member ? 0 : 1)
+	if(relation_type == FAMILY_MEMBER_SIBLING)
+		var/person_has_known_parent = person_member && length(person_member.parents)
+		var/relative_has_known_parent = relative_member && length(relative_member.parents)
+		if(!person_has_known_parent && !relative_has_known_parent)
+			additional_members++ // Siblings need a shared historical parent in the authoritative tree.
+	if(length(house?.members) + additional_members > MAX_HOUSE_MEMBERS)
+		return "That house has no room for everyone needed by this memory."
+
+	return null
+
+/// Establishes a mutually accepted family bond in both the heritage graph and social relations.
+/datum/controller/subsystem/familytree/proc/RememberFamilyRelation(mob/living/carbon/human/person, mob/living/carbon/human/relative, relation_type)
+	if(GetRememberFamilyError(person, relative, relation_type))
+		return FALSE
+
+	var/datum/heritage/house = person.family_datum || relative.family_datum
+	if(!house)
+		if(relation_type == FAMILY_MEMBER_SIBLING)
+			house = new(null, null, person.dna?.species?.type)
+			house.housename = house.SurnameFormatting(person)
+			house.dominant_species = person.dna?.species?.type
+		else
+			var/mob/living/carbon/human/founder = relation_type == FAMILY_MEMBER_PARENT ? relative : person
+			house = new(founder)
+		families |= house
+
+	var/datum/family_member/person_member = house.GetFamilyMember(person)
+	if(!person_member)
+		person_member = house.CreateFamilyMember(person)
+	var/datum/family_member/relative_member = house.GetFamilyMember(relative)
+	if(!relative_member)
+		relative_member = house.CreateFamilyMember(relative)
+	if(!person_member || !relative_member)
+		return FALSE
+
+	switch(relation_type)
+		if(FAMILY_MEMBER_PARENT)
+			return person_member.AddParent(relative_member)
+
+		if(FAMILY_MEMBER_CHILD)
+			return relative_member.AddParent(person_member)
+
+		if(FAMILY_MEMBER_SPOUSE)
+			return house.MarryMembers(person_member, relative_member)
+
+		if(FAMILY_MEMBER_SIBLING)
+			// Prefer an existing parent so this memory extends the current tree naturally.
+			if(length(relative_member.parents) < 2)
+				for(var/datum/family_member/person_parent in person_member.parents)
+					if(relative_member.AddParent(person_parent))
+						return TRUE
+			if(length(person_member.parents) < 2)
+				for(var/datum/family_member/relative_parent in relative_member.parents)
+					if(person_member.AddParent(relative_parent))
+						return TRUE
+
+			// The graph derives siblinghood from shared parentage, so give two otherwise
+			// rootless siblings a historical parent rather than creating a cosmetic-only bond.
+			var/mob/living/carbon/human/dummy/unknown_parent = new()
+			unknown_parent.real_name = "Unknown Parent"
+			unknown_parent.gender = prob(50) ? MALE : FEMALE
+			unknown_parent.age = person.age == AGE_IMMORTAL || relative.age == AGE_IMMORTAL ? AGE_IMMORTAL : AGE_OLD
+			unknown_parent.stat = DEAD
+			var/species_type = house.dominant_species || person.dna?.species?.type
+			if(species_type)
+				set_species_type(unknown_parent, species_type)
+			var/datum/family_member/shared_parent = house.CreateFamilyMember(unknown_parent)
+			if(!shared_parent)
+				qdel(unknown_parent)
+				return FALSE
+			if(!house.founder)
+				house.founder = shared_parent
+			if(!person_member.AddParent(shared_parent) || !relative_member.AddParent(shared_parent))
+				return FALSE
+			return TRUE
+
+	return FALSE
+
 /datum/controller/subsystem/familytree/proc/DetermineAppropriateRole(datum/heritage/house, mob/living/carbon/human/person, adopted = FALSE)
 	if(person.setparent)
 		for(var/datum/family_member/member in house.members)
