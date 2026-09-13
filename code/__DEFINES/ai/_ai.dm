@@ -353,6 +353,10 @@
 /// For /datum/ai_behavior/find_potential_horny_targets, what if any field are we using currently
 #define BB_FIND_HORNY_TARGETS_FIELD(type) "bb_find_horny_targets_field_[type]"
 
+#define BB_WAVE_COORDINATOR "wave_coordinator"
+#define BB_WAVE_TARGET_POINT "wave_target_point"
+#define BB_WAVE_ATTACK_TARGET "wave_attack_target"
+
 #define ACTION_STATE_CONTINUE 1
 #define ACTION_STATE_COMPLETE 2
 #define ACTION_STATE_FAILED 3
@@ -390,3 +394,11 @@ GLOBAL_LIST_INIT(ai_item_flags, list(
 #define AI_INVENTORY_WATCHED_SLOTS (ITEM_SLOT_BELT | ITEM_SLOT_BACK_L | ITEM_SLOT_BACK_R | \
 	ITEM_SLOT_BELT_L | ITEM_SLOT_BELT_R | ITEM_SLOT_ARMOR | ITEM_SLOT_PANTS | \
 	ITEM_SLOT_SHIRT | ITEM_SLOT_CLOAK | ITEM_SLOT_BACK | ITEM_SLOT_NECK)
+
+#define WAVE_ADVANCING 1
+#define WAVE_OCCUPYING 2
+#define WAVE_COMPLETE 3
+#define WAVE_FAILED 4
+
+#define WAVE_DEFENSE_POINT_RADIUS 5
+#define WAVE_DEFENSE_MAX_TRAVEL_DISTANCE 100

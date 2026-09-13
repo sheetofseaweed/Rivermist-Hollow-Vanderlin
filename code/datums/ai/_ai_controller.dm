@@ -105,6 +105,9 @@ have ways of interacting with a specific atom and control it. They posses a blac
 		stack_trace("[pawn]'s current movement target is not an atom, rather a [target.type]! Did you accidentally set it to a weakref?")
 		CancelActions()
 		return
+	if(target != current_movement_target && istype(ai_movement, /datum/ai_movement/hybrid_pathing))
+		var/datum/ai_movement/hybrid_pathing/hybrid_movement = ai_movement
+		hybrid_movement.using_closest_approach -= WEAKREF(src)
 	movement_target_source = source
 	current_movement_target = target
 	if(!isnull(current_movement_target))
@@ -279,6 +282,10 @@ have ways of interacting with a specific atom and control it. They posses a blac
 
 /datum/ai_controller/proc/should_idle()
 	if(!can_idle || isnull(our_cells))
+		return FALSE
+	// Coordinated waves must keep planning even after every player leaves their
+	// spatial grid, otherwise waypoint advances can stall for several seconds.
+	if(blackboard_key_exists(BB_WAVE_COORDINATOR))
 		return FALSE
 	if((blackboard[BB_AI_ALERT_MODE_UNTIL] || 0) > world.time)
 		return FALSE
