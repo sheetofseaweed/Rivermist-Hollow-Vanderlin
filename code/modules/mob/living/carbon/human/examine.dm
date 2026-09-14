@@ -135,19 +135,28 @@
 
 /mob/living/carbon/human/examine_more(mob/user)
 	. = ..()
-	if(HAS_TRAIT(src, TRAIT_FACELESS) || (!isobserver(user) && !user.can_perform_action(src, NEED_LIGHT)))
+	if(!isobserver(user) && !user.can_perform_action(src, NEED_LIGHT))
 		return
 
-	var/obscure_name = name == "Unknown" || name == "Unknown Man" || name == "Unknown Woman"
-	if(isobserver(user))
-		obscure_name = FALSE
+	// Descriptors identify a person by their face, so a hidden face withholds
+	// them - but ink on a bare arm or leg is still there to be read, so tattoos
+	// are gathered separately rather than sharing the faceless early return.
+	if(!HAS_TRAIT(src, TRAIT_FACELESS))
+		var/obscure_name = name == "Unknown" || name == "Unknown Man" || name == "Unknown Woman"
+		if(isobserver(user))
+			obscure_name = FALSE
 
-	var/list/descriptors = get_mob_descriptors(obscure_name, user)
-	if(!length(descriptors))
-		return
-	var/list/description_lines = build_cool_description(descriptors, src)
-	if(length(description_lines))
-		. |= description_lines
+		var/list/descriptors = get_mob_descriptors(obscure_name, user)
+		if(length(descriptors))
+			var/list/description_lines = build_cool_description(descriptors, src)
+			if(length(description_lines))
+				. |= description_lines
+
+	// RMH EDITED START - self-written tattoos, listed head to feet after the description
+	var/list/tattoo_lines = get_tattoo_description_lines()
+	if(length(tattoo_lines))
+		. |= tattoo_lines
+	// RMH EDITED END
 
 
 //You can include this in any mob's examine() to show the examine texts of status effects!

@@ -1121,8 +1121,9 @@
 		if(!_target)
 			CRASH("Failed to get the turf under clickcatcher")
 
-	// Call this directly to do all the relevant checks and aim assist
-	InterceptClickOn(owner, modifiers, _target)
+	// Does all the relevant checks and aim assist. Async because we are a signal handler
+	// and several spells block inside cast()/before_cast(); the return value is unused here.
+	INVOKE_ASYNC(src, PROC_REF(InterceptClickOn), owner, modifiers, _target)
 	source.click_intercept_time = 0
 
 /datum/action/cooldown/spell/proc/signal_cancel()

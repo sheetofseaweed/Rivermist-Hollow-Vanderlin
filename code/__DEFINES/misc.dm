@@ -519,3 +519,7 @@ GLOBAL_LIST_INIT(pda_styles, sortList(list(MONO, VT, ORBITRON, SHARE)))
 #define IGNORE_USER_DOING (1<<6)
 
 #define MESSAGE_ADMINS_ROLES list(/datum/job/moon_priest, /datum/job/heart_priest)
+
+//RMH EDITED START - garrison SCOM ring integration
+#define GARRISON_SCOM_COLOR "#FF4242"
+//RMH EDITED END

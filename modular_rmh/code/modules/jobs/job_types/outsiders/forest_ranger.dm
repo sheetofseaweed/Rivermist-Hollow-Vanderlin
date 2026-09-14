@@ -40,6 +40,8 @@
 
 /datum/attribute_holder/sheet/job/advclass/forest_ranger/pathfinder
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 30,
+		/datum/attribute/skill/misc/tracking = 40,
 		STAT_STRENGTH = 2,
 		STAT_ENDURANCE = 3,
 		STAT_CONSTITUTION = 3,
@@ -129,6 +131,8 @@
 
 /datum/attribute_holder/sheet/job/advclass/forest_ranger/scout
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 20,
+		/datum/attribute/skill/misc/tracking = 40,
 		STAT_STRENGTH = -3,
 		STAT_ENDURANCE = 1,
 		STAT_PERCEPTION = 3,

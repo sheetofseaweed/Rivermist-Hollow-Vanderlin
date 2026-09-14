@@ -1,5 +1,7 @@
 /datum/attribute_holder/sheet/job/advclass/combat/adventurer_ranger/dwarf_ranger
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 20,
+		/datum/attribute/skill/misc/tracking = 20,
 		STAT_PERCEPTION = 3,
 		STAT_SPEED = 1,
 		// Fast... for a dwarf

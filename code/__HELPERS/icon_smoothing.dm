@@ -76,6 +76,8 @@ DEFINE_BITFIELD(smoothing_junction, list(
 	var/smooth_obj = (smoothing_flags & SMOOTH_OBJ)
 	var/smooth_edge = (smoothing_flags & SMOOTH_EDGE)
 
+	// Early exits use `break set_adj_in_dir` to leave the labelled block. Do not add an
+	// unconditional break at the end of the body: it makes `while(FALSE)` unreachable.
 	#define SET_ADJ_IN_DIR(direction, direction_flag) \
 		set_adj_in_dir: { \
 			do { \
@@ -134,7 +136,6 @@ DEFINE_BITFIELD(smoothing_junction, list(
 						}; \
 					}; \
 				}; \
-				break set_adj_in_dir; \
 			} while(FALSE) \
 		}
 
