@@ -153,7 +153,12 @@
 		return 0
 
 	var/obj/item/realtool = tool
-	return (realtool.toolspeed) * (implements[realtool.tool_behaviour] || is_type_in_list(realtool, implements, zebra = TRUE) || 0)
+	//RMH EDITED START - implements[null] indexes a list by null and runtimes with
+	//"list index out of bounds". Any item with no tool_behaviour hits this, which
+	//includes every touch-spell hand (searing palm, prestidigitation, orison...).
+	var/behaviour_quality = realtool.tool_behaviour ? implements[realtool.tool_behaviour] : null
+	return (realtool.toolspeed) * (behaviour_quality || is_type_in_list(realtool, implements, zebra = TRUE) || 0)
+	//RMH EDITED END
 
 /**
  * Return a radial slice, a list of radial slices, or an assoc list of radial slice to operation info

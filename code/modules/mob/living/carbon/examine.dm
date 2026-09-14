@@ -333,12 +333,20 @@
 /mob/living/carbon/proc/get_examine_body(mob/user, list/P, list/examine_list)
 	var/self_inspect = user == src
 	var/pl = self_inspect ? "" : p_s()
+	//RMH EDITED START - Клеймо: brands and handprints report here, not in the face
+	//pass, so a mask cannot hide a brand that sits on a bare arm.
+	var/list/brand_lines = get_brand_body_lines(user, P)
+	//RMH EDITED END
 	//var/mob/dead/observer/O = isobserver(user) ? user : null
 	var/mob/living/L = isliving(user) ? user : null
 	//var/mob/living/carbon/C = iscarbon(user) ? user : null
 	//var/mob/living/carbon/human/H = ishuman(user) ? user : null
 
 	. = list()
+	//RMH EDITED START - Клеймо
+	if(length(brand_lines))
+		. += brand_lines
+	//RMH EDITED END
 
 	// Species, just below the name
 	var/datum/species/species = dna?.species
