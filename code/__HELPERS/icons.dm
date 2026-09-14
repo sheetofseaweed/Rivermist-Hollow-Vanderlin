@@ -1401,10 +1401,24 @@ GLOBAL_LIST_INIT(freon_color_matrix, list("#2E5E69", "#60A2A8", "#A1AFB1", rgb(0
 		viewer = client.mob
 	if(!ismob(viewer))
 		CRASH("Invalid viewer passed to ma2html")
-	var/atom/movable/screen/container = viewer.send_appearance(appearance)
-	if(QDELETED(container))
-		CRASH("Failed to send appearance to client")
-	return "<img class='icon [extra_classes]' src='\ref[container]' style='image-rendering: pixelated; -ms-interpolation-mode: nearest-neighbor'>"
+	//RMH EDITED START - this used to hand the client an <img src='\ref[obj]'> pointing
+	//at a throwaway /atom/movable/screen that was dropped from vis_contents after 5
+	//seconds. Chat messages live forever, so once that object was collected its ref
+	//number got recycled onto some other object and old chat lines rendered whatever
+	//now owned the ref - lobby buttons instead of gear icons, or blank squares while
+	//the ref was still free. Flatten the appearance and serve it through the asset
+	//system instead: asset urls are content-hashed, cached, and never expire.
+	var/client/target = viewer.client
+	if(!target)
+		return ""
+	var/icon/flattened = getFlatIcon(appearance, no_anim = TRUE)
+	if(!flattened)
+		return ""
+	var/asset_url = icon2html(flattened, target, sourceonly = TRUE)
+	if(!asset_url)
+		return ""
+	return "<img class='icon [extra_classes]' src='[asset_url]' style='image-rendering: pixelated; -ms-interpolation-mode: nearest-neighbor'>"
+	//RMH EDITED END
 
 //Costlier version of icon2html() that uses getFlatIcon() to account for overlays, underlays, etc. Use with extreme moderation, ESPECIALLY on mobs.
 /proc/costly_icon2html(thing, target, sourceonly = FALSE)

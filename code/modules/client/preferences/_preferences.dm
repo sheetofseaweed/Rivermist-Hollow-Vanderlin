@@ -949,6 +949,11 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	else if(href_list["preference"] == "markings")
 		ShowMarkings(user)
 		return
+	// RMH EDITED START - custom self-written tattoos, separate from GLOB.body_markings
+	else if(href_list["preference"] == "tattoos")
+		ShowTattoos(user)
+		return
+	// RMH EDITED END
 	else if(href_list["preference"] == "underwear")
 		show_smallclothes_ui(user)
 		return
@@ -2013,6 +2018,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	dat += "<div class='section-title'>Body Details</div>"
 	dat += "<a class='option-row' href='?_src_=prefs;preference=markings;task=menu'>Markings<small>Edit scars, tattoos, body markings, and their colors.</small></a>"
+	// RMH EDITED START - custom self-written tattoos, separate from GLOB.body_markings
+	dat += "<a class='option-row' href='?_src_=prefs;preference=tattoos;task=menu'>Tattoos<small>Write in custom tattoos - lettering or a described design, in natural pigments.</small></a>"
+	// RMH EDITED END
 	dat += "<a class='option-row' href='?_src_=prefs;preference=underwear;task=menu'>Smallclothes<small>Choose underlayers and smallclothes preferences.</small></a>"
 	dat += "<a class='option-row' href='?_src_=prefs;preference=customizers;task=menu'>Features<small>Adjust available body accessories and feature colors.</small></a>"
 
@@ -2320,6 +2328,10 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		change_accent = length(pref_species.multiple_accents) > 0
 		character.accent = read_preference(/datum/preference/choiced/selected_accent)
 		apply_character_kinks(character)
+
+	// RMH EDITED START - self-written tattoos, applied after species/bodyparts are set up
+	apply_tattoos_to_human(character)
+	// RMH EDITED END
 
 	if(icon_updates)
 		character.update_body()

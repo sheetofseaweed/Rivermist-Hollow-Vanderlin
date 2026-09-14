@@ -132,7 +132,10 @@
 			has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/noble_gossip))
 		if(has_known_gossip)
 			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='?src=[REF(src)];task=view_rumours_gossip;'>Recall Rumours & Gossip</a>")
-		LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];view_descriptors=1'>Look at Features</a>")
+	// RMH EDITED START - Features is always reachable: a mask hides the face, but
+	// a bare torso, arms or legs still have features (and tattoos) worth reading.
+	LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];view_descriptors=1'>Look at Features</a>")
+	// RMH EDITED END
 
 
 //You can include this in any mob's examine() to show the examine texts of status effects!

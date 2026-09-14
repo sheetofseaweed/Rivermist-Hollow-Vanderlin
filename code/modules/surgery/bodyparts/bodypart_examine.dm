@@ -79,6 +79,9 @@
 		if(!observer_privilege && !location_accessible)
 			bodypart_status += "Obscured by clothing."
 	var/owner_ref = owner ? REF(owner) : REF(src)
+	//RMH EDITED START - Клеймо: brand and handprint lines for this limb.
+	bodypart_status += get_brand_examine_lines(user)
+	//RMH EDITED END
 	if(observer_privilege || location_accessible)
 		if(skeletonized)
 			bodypart_status += "[src] is skeletonized."

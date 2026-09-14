@@ -1,5 +1,7 @@
 /datum/attribute_holder/sheet/job/advclass/combat/adventurer_ranger/swampstalker
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 20,
+		/datum/attribute/skill/misc/tracking = 30,
 		STAT_STRENGTH = 1,
 		STAT_CONSTITUTION = 3,
 		STAT_SPEED = 1,

@@ -1,5 +1,7 @@
 /datum/attribute_holder/sheet/job/advclass/combat/adventurer_ranger/steppesman
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 30,
+		/datum/attribute/skill/misc/tracking = 20,
 		STAT_STRENGTH = 1,
 		STAT_ENDURANCE = 1,
 		STAT_PERCEPTION = 1,

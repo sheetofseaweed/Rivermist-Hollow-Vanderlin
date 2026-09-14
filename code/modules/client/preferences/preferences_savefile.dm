@@ -503,6 +503,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	validate_body_markings()
 
+	// RMH EDITED START - custom self-written tattoos, separate from GLOB.body_markings
+	S["tattoos"] >> tattoos
+	tattoos = SANITIZE_LIST(tattoos)
+	validate_tattoos()
+	// RMH EDITED END
+
 	S["descriptor_entries"] >> descriptor_entries
 	descriptor_entries = SANITIZE_LIST(descriptor_entries)
 	S["custom_descriptors"] >> custom_descriptors
@@ -609,6 +615,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["body_markings"], body_markings)
 	// Emissive body markings 								// RMH edit
 	WRITE_FILE(S["emissive_markings"], emissive_markings) 	// RMH edit
+	// RMH EDITED START - custom self-written tattoos, separate from GLOB.body_markings
+	WRITE_FILE(S["tattoos"], tattoos)
+	// RMH EDITED END
 	// Descriptor entries
 	WRITE_FILE(S["descriptor_entries"], descriptor_entries)
 	WRITE_FILE(S["custom_descriptors"], custom_descriptors)
