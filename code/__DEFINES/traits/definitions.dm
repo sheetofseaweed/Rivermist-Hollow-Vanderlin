@@ -638,6 +638,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SNOB				"snob"
 
 // Other RMH traits:
+//RMH EDITED START - garrison SCOM ring integration
+#define TRAIT_GARRISON_ITEM		"Garrison Item"
+//RMH EDITED END
 #define TRAIT_GOODLOVER			"Fabled Lover"
 #define TRAIT_NYMPHO_CURSE 		"Nymphs Curse"
 #define TRAIT_ALLURE 			"Allure"
