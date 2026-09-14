@@ -1,118 +1,70 @@
-// DND spell slot helpers.
-// Keep this file loaded before the DND spell files below.
-// It does not change normal spells unless a spell sets dnd_use_spell_slots = TRUE.
-
+// Opt-in hybrid casting. The base spell lifecycle owns validation and payment.
 /datum/action/cooldown/spell
 	var/dnd_use_spell_slots = FALSE
 	var/dnd_min_spell_slot_level = 1
 	var/dnd_max_spell_slot_level = 5
-	var/tmp/dnd_cast_slot_level = 0
+	/// Zero disables minor casting. Otherwise this is its attunement-adjusted mana cost.
+	var/dnd_minor_mana_cost = 0
+	var/obj/projectile/dnd_minor_projectile_type
+	/// Null means no cast is in progress; zero is a real, minor cast.
+	var/tmp/dnd_cast_slot_level = null
+	var/tmp/dnd_cast_paid = FALSE
 	var/dnd_spell_slot_label
 
-/datum/action/cooldown/spell/proc/dnd_get_min_slot_level()
-	if(!isnum(dnd_min_spell_slot_level))
-		dnd_min_spell_slot_level = 1
-
-	return clamp(round(dnd_min_spell_slot_level), 1, 5)
-
-/datum/action/cooldown/spell/proc/dnd_get_max_slot_level()
-	if(!isnum(dnd_max_spell_slot_level))
-		dnd_max_spell_slot_level = 5
-
-	return clamp(round(dnd_max_spell_slot_level), dnd_get_min_slot_level(), 5)
-
 /datum/action/cooldown/spell/proc/dnd_get_cast_level()
-	var/min_level = dnd_get_min_slot_level()
-	var/max_level = dnd_get_max_slot_level()
-
-	var/level = dnd_cast_slot_level
-	if(!isnum(level) || level <= 0)
-		level = min_level
-
-	return clamp(round(level), min_level, max_level)
+	if(!isnull(dnd_cast_slot_level))
+		return dnd_cast_slot_level
+	var/mob/living/carbon/human/caster = owner
+	if(!istype(caster))
+		return null
+	return caster.get_selected_dnd_spell_slot_level()
 
 /datum/action/cooldown/spell/proc/dnd_get_spell_label()
-	if(dnd_spell_slot_label)
-		return dnd_spell_slot_label
-
-	return name
+	return dnd_spell_slot_label || name
 
 /datum/action/cooldown/spell/proc/dnd_spell_slot_can_cast(feedback = TRUE)
-	if(!dnd_use_spell_slots)
+	var/mob/living/carbon/human/caster = owner
+	if(!istype(caster))
+		return FALSE
+	if(dnd_cast_paid)
 		return TRUE
 
-	var/mob/living/carbon/human/H = owner
-	if(!istype(H))
-		if(feedback && owner)
-			owner.balloon_alert(owner, "Only humans can use slots!")
-		return FALSE
-
-	var/level = H.get_selected_dnd_spell_slot_level()
-	var/min_level = dnd_get_min_slot_level()
-	var/max_level = dnd_get_max_slot_level()
-
-	if(level < min_level)
-		if(feedback)
-			to_chat(H, span_warning("[dnd_get_spell_label()] requires a level [min_level]+ spell slot."))
-			H.balloon_alert(H, "Needs level [min_level]+ slot")
-		return FALSE
-
-	level = clamp(round(level), min_level, max_level)
-
-	if(!H.can_spend_dnd_spell_slot(level, feedback))
-		return FALSE
-
-	return TRUE
-
-/datum/action/cooldown/spell/proc/dnd_spell_slot_before_cast(atom/cast_on)
-	dnd_cast_slot_level = 0
-
-	if(!dnd_use_spell_slots)
-		return NONE
-
-	var/mob/living/carbon/human/H = owner
-	if(!istype(H))
-		return SPELL_CANCEL_CAST
-
-	var/level = H.get_selected_dnd_spell_slot_level()
-	var/min_level = dnd_get_min_slot_level()
-	var/max_level = dnd_get_max_slot_level()
-
-	if(level < min_level)
-		to_chat(H, span_warning("[dnd_get_spell_label()] requires a level [min_level]+ spell slot."))
-		H.balloon_alert(H, "Needs level [min_level]+ slot")
-		return SPELL_CANCEL_CAST
-
-	level = clamp(round(level), min_level, max_level)
-
-	if(!H.can_spend_dnd_spell_slot(level, TRUE))
-		return SPELL_CANCEL_CAST
-
-	if(!H.spend_dnd_spell_slot(level))
-		to_chat(H, span_warning("My level [level] spell slot fizzles before [dnd_get_spell_label()] takes shape."))
-		return SPELL_CANCEL_CAST
-
-	dnd_cast_slot_level = level
-
-	var/current = H.get_dnd_spell_slots_current(level)
-	var/maximum = H.get_dnd_spell_slots_max(level)
-
-	to_chat(H, span_notice("I cast [dnd_get_spell_label()] using a level [level] spell slot. Charges left: [current]/[maximum]."))
-	H.balloon_alert(H, "[dnd_get_spell_label()] level [level]")
-
-	return NONE
-
-/datum/action/cooldown/spell/proc/dnd_spell_slot_after_cast()
-	dnd_cast_slot_level = 0
-
-/datum/action/cooldown/spell/proc/dnd_scale_number(list/table, fallback = 0)
 	var/level = dnd_get_cast_level()
-	var/value = fallback
+	if(level == DND_MINOR_TIER)
+		if(dnd_minor_mana_cost <= 0)
+			if(feedback)
+				to_chat(caster, span_warning("[dnd_get_spell_label()] requires a spell slot; it has no minor form."))
+			return FALSE
+		var/available_mana = 0
+		for(var/datum/mana_pool/pool as anything in caster.get_all_pools())
+			available_mana += pool.get_attuned_amount(attunements, caster)
+		if(available_mana < dnd_minor_mana_cost)
+			if(feedback)
+				caster.balloon_alert(caster, "Not enough mana for minor cast!")
+			return FALSE
+		return TRUE
 
-	if(table)
-		value = table[num2text(level)]
+	if(level < dnd_min_spell_slot_level || level > dnd_max_spell_slot_level)
+		if(feedback)
+			to_chat(caster, span_warning("[dnd_get_spell_label()] requires a level [dnd_min_spell_slot_level]-[dnd_max_spell_slot_level] slot."))
+		return FALSE
+	return caster.can_spend_dnd_spell_slot(level, feedback)
 
-	if(!isnum(value))
-		value = fallback
+/// Called after before_cast and final validation, before releasing the effect.
+/datum/action/cooldown/spell/proc/dnd_pay_cast()
+	if(dnd_cast_paid || !dnd_spell_slot_can_cast())
+		return FALSE
 
-	return value
+	var/mob/living/carbon/human/caster = owner
+	dnd_cast_slot_level = dnd_get_cast_level()
+	// HUD/mana signals can ask whether this action is available during payment.
+	dnd_cast_paid = TRUE
+	if(dnd_cast_slot_level == DND_MINOR_TIER)
+		caster.consume_mana(attunements, dnd_minor_mana_cost)
+		caster.balloon_alert(caster, "[dnd_get_spell_label()]: minor")
+	else
+		if(!caster.spend_dnd_spell_slot(dnd_cast_slot_level))
+			dnd_cast_paid = FALSE
+			return FALSE
+		caster.balloon_alert(caster, "[dnd_get_spell_label()]: level [dnd_cast_slot_level]")
+	return TRUE

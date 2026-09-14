@@ -93,6 +93,7 @@
 #include "defeat_horny_thresholds.dm"
 #include "defeat_system.dm"
 #include "defense_cooldowns.dm"
+#include "dnd_casting.dm"
 #include "dye_bin.dm"
 #include "excavation.dm"
 #include "faction_supply_packs.dm"
