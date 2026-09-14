@@ -1,5 +1,7 @@
 /datum/attribute_holder/sheet/job/advclass/combat/adventurer_ranger/ranger_hunter
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 30,
+		/datum/attribute/skill/misc/tracking = 30,
 		STAT_ENDURANCE = 1,
 		STAT_PERCEPTION = 3,
 		STAT_SPEED = 3,

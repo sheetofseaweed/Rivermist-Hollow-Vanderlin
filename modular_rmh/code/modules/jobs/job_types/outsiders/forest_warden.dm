@@ -1,5 +1,7 @@
 /datum/attribute_holder/sheet/job/forest_warden
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 40,
+		/datum/attribute/skill/misc/tracking = 40,
 		STAT_STRENGTH = 2,
 		STAT_PERCEPTION = 1,
 		STAT_INTELLIGENCE = 1,

@@ -1,5 +1,7 @@
 /datum/attribute_holder/sheet/job/advclass/combat/adventurer_ranger/steppe_wayfarer
 	raw_attribute_list = list(
+		/datum/attribute/skill/misc/hunting = 20,
+		/datum/attribute/skill/misc/tracking = 30,
 		STAT_PERCEPTION = 2,
 		STAT_ENDURANCE = 2,
 		/datum/attribute/skill/craft/crafting = 20,
