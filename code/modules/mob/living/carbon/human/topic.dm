@@ -64,6 +64,9 @@ GLOBAL_VAR_INIT(year_integer, text2num(year)) // = 2013???
 		if(isobserver(usr))
 			obscure_name = FALSE
 		var/list/lines = build_cool_description(get_mob_descriptors(obscure_name, usr), src)
+		// RMH EDITED START - self-written tattoos, listed head to feet after the description
+		lines += get_tattoo_description_lines()
+		// RMH EDITED END
 		to_chat(usr, span_info("[lines.Join("\n")]"))
 		return
 

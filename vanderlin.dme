@@ -4734,4 +4734,5 @@
 #include "modular_rmh\modular\resurrection_rune\resurrection_rune.dm"
 #include "modular_rmh\modular\selectable_moanpacks\emote.dm"
 #include "modular_rmh\modular\selectable_moanpacks\moanpacks_defs.dm"
+#include "modular_rmh\modular\tattoo\tattoo.dm"
 // END_INCLUDE
