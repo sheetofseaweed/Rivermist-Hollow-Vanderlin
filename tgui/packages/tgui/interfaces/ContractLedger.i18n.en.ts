@@ -10,6 +10,7 @@ const tierLabels = {
 const contractGroups = {
   'Guild Errands': 'Guild Errands',
   Bounties: 'Bounties',
+  'Player Commissions': 'Player Commissions',
 };
 
 const contractTypes = {
@@ -19,6 +20,7 @@ const contractTypes = {
   'Clear Out': 'Clear Out',
   Raid: 'Raid',
   Boss: 'Boss',
+  Commission: 'Commission',
 };
 
 const contractDescriptions = {
@@ -69,6 +71,14 @@ const resolveText = (key, args = {}) => {
       return `Insufficient balance funds. You need ${amount} amna in your meister.`;
     case 'notice.issued_contract':
       return `Issued ${contractTypes[contractType] || contractType} at ${tierLabels[tier] || 'unknown tier'}. Deposit charged: ${deposit} amna.`;
+    case 'notice.claimed_posting':
+      return `Claimed posted ${contractType}. Deposit charged: ${deposit} amna.`;
+    case 'notice.posting_unavailable':
+      return 'That posting is no longer available or you cannot claim it.';
+    case 'notice.commission_validated':
+      return 'The player commission has been validated. Its contractor can now turn it in.';
+    case 'notice.commission_returned':
+      return 'The player commission was returned to the shared board.';
     case 'notice.not_assigned':
       return 'You are not assigned to that contract.';
     case 'notice.no_completed_contract':
@@ -134,6 +144,25 @@ export default {
     abandonContract: 'Abandon Contract',
     printIssuedContracts: 'Print Issued Contracts',
     getContract: 'Get Contract',
+    contractsTab: 'Contracts',
+    postingsTab: 'Shared Postings',
+    managementTab: 'Commission Desk',
+    sharedPostings: 'Shared Contract Postings',
+    noPostings: 'No contracts are currently posted. The guild refreshes its postings periodically.',
+    issuer: 'Issuer',
+    reward: 'Reward',
+    deposit: 'Deposit',
+    expires: 'Expires',
+    noExpiry: 'No expiry',
+    claimPosting: 'Claim Posting',
+    playerCommission: 'Player commission',
+    guildPosting: "Mercenary's Guild",
+    commissionManagement: 'Active Player Commissions',
+    noManagedCommissions: 'No claimed player commissions currently need supervision.',
+    assignee: 'Contractor',
+    validate: 'Validate',
+    automaticValidation: 'This commission verifies its objective automatically.',
+    pledgeHelp: 'To create a player commission, craft a quest pledge from a parchment scroll and fibers, write it, pack any delivery items, and seal it with the promised reward. A quest handler can post the sealed pledge by using it on this ledger.',
   },
   contractGroups,
   contractTypes,
@@ -157,4 +186,8 @@ export default {
     'Choose a contract group and contract type to preview it.',
   hiddenTargets: (count) =>
     `And ${count} more possible targets for this selection.`,
+  formatExpiry: (seconds) => {
+    const minutes = Math.max(1, Math.ceil(seconds / 60));
+    return `${minutes} minute${minutes === 1 ? '' : 's'}`;
+  },
 };

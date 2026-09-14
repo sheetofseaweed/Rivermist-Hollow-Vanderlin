@@ -155,7 +155,7 @@
 		return FALSE
 
 	var/datum/quest/Q = quest_ref.resolve()
-	if(!Q || Q.complete || Q.being_destroyed || !istype(target_mob, Q.target_mob_type))
+	if(!Q || Q.complete || Q.being_destroyed || !Q.quest_receiver_reference || !istype(target_mob, Q.target_mob_type))
 		return FALSE
 
 	completion_counted = TRUE
@@ -211,7 +211,7 @@
 		return
 
 	var/datum/quest/Q = quest_ref.resolve()
-	if(!Q || Q.complete)
+	if(!Q || Q.complete || !Q.quest_receiver_reference)
 		return
 
 	var/turf/drop_turf = get_turf(dropped_item)
@@ -242,7 +242,7 @@
 
 /datum/component/quest_object/courier/on_item_dropped(obj/item/dropped_item, mob/user)
 	var/datum/quest/Q = quest_ref.resolve()
-	if(!Q || Q.complete)
+	if(!Q || Q.complete || !Q.quest_receiver_reference)
 		return
 
 	var/turf/drop_turf = get_turf(dropped_item)

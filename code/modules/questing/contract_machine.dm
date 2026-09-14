@@ -1,4 +1,5 @@
 GLOBAL_LIST_EMPTY(claimed_quest_compass_users)
+GLOBAL_LIST_EMPTY(contract_ledgers)
 GLOBAL_LIST_EMPTY(quest_preview_icon_states_cache)
 GLOBAL_LIST_EMPTY(quest_preview_state_cache)
 GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
@@ -25,11 +26,16 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 
 /obj/structure/fake_machine/contractledger/Initialize()
 	. = ..()
+	GLOB.contract_ledgers += src
 	input_point = locate(x, y - 1, z)
 	var/obj/effect/decal/marker_export/marker = new(get_turf(input_point))
 	marker.desc = "Place completed contract scrolls here to turn them in."
 	marker.layer = ABOVE_OBJ_LAYER
 	return INITIALIZE_HINT_LATELOAD
+
+/obj/structure/fake_machine/contractledger/Destroy()
+	GLOB.contract_ledgers -= src
+	return ..()
 
 /obj/structure/fake_machine/contractledger/LateInitialize()
 	if(GLOB.quest_preview_preload_bootstrapped)
@@ -47,6 +53,16 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	ui_interact(user)
 
 /obj/structure/fake_machine/contractledger/attackby(obj/item/P, mob/living/carbon/human/user, params)
+	if(istype(P, /obj/item/paper/scroll/quest/pledge))
+		var/obj/item/paper/scroll/quest/pledge/pledge = P
+		if(!supports_quest_postings())
+			to_chat(user, span_warning("This ledger does not accept public commissions."))
+			return
+		if(!is_quest_handler(user))
+			to_chat(user, span_warning("Only a quest handler can post a sealed pledge."))
+			return
+		pledge.post_to_ledger(user, src)
+		return
 	. = ..()
 	if(istype(P, /obj/item/paper/scroll/quest))
 		if(!can_user_access_ledger(user, TRUE))
@@ -127,6 +143,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		"spritesheet_css" = spritesheet_css_url,
 		"role_label" = get_role_label(user),
 		"is_handler" = is_quest_handler(user),
+		"supports_postings" = supports_quest_postings(),
 		"has_bank_account" = has_bank_account(user),
 		"active_contract_count" = get_active_contract_count(user),
 		"contract_limit" = get_contract_limit(user),
@@ -151,6 +168,8 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		"preview_entries" = preview_state["entries"],
 		"preview_message_key" = preview_state["message_key"],
 		"preview_hidden_count" = preview_state["hidden_count"],
+		"posted_contracts" = get_posted_contract_data(user),
+		"managed_commissions" = get_managed_commission_data(user),
 		"notice" = notice_state,
 	)
 
@@ -180,6 +199,10 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 			return TRUE
 		if("takecontract")
 			return create_selected_contract(user)
+		if("claim_posted_contract")
+			return claim_posted_contract(user, params["quest_ref"])
+		if("validate_commission")
+			return validate_commission(user, params["quest_ref"])
 		if("getcompass")
 			return issue_quest_compass(user)
 		if("turnincontract")
@@ -437,6 +460,83 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	if(!istype(quest))
 		return FALSE
 	return quest.can_turn_in_at_ledger(src)
+
+/obj/structure/fake_machine/contractledger/proc/supports_quest_postings()
+	return type == /obj/structure/fake_machine/contractledger && get_contract_ledger_id() == "guild_contracts"
+
+/obj/structure/fake_machine/contractledger/proc/get_posted_contract_data(mob/living/carbon/human/user)
+	var/list/entries = list()
+	if(!supports_quest_postings() || !SSquestboard)
+		return entries
+	for(var/datum/quest/posted_quest as anything in SSquestboard.get_all_posted_quests())
+		if(!can_accept_contract_quest(posted_quest))
+			continue
+		entries += list(list(
+			"ref" = REF(posted_quest),
+			"title" = posted_quest.get_title(),
+			"objective" = posted_quest.get_objective_text(),
+			"location" = posted_quest.get_location_text(),
+			"group" = posted_quest.contract_group,
+			"type" = posted_quest.player_commission ? posted_quest.commission_type : posted_quest.quest_type,
+			"tier" = posted_quest.threat_tier,
+			"reward" = posted_quest.reward_amount,
+			"deposit" = posted_quest.deposit_amount,
+			"issuer" = posted_quest.quest_giver_name,
+			"player_commission" = posted_quest.player_commission,
+			"expires_in" = posted_quest.expiry_time ? max(0, round((posted_quest.expiry_time - world.time) / 10)) : 0,
+			"can_claim" = can_claim_posted_contract(user, posted_quest),
+		))
+	return entries
+
+/obj/structure/fake_machine/contractledger/proc/get_managed_commission_data(mob/living/carbon/human/user)
+	var/list/entries = list()
+	if(!supports_quest_postings() || !is_quest_handler(user))
+		return entries
+	for(var/obj/item/paper/scroll/quest/quest_scroll as anything in GLOB.quest_scrolls)
+		var/datum/quest/custom/commission = quest_scroll.assigned_quest
+		if(!istype(commission) || commission.complete || !can_accept_contract_quest(commission))
+			continue
+		entries += list(list(
+			"ref" = REF(commission),
+			"title" = commission.get_title(),
+			"objective" = commission.get_objective_text(),
+			"assignee" = commission.quest_receiver_name,
+			"type" = commission.commission_type,
+			"tier" = commission.threat_tier,
+			"can_validate" = commission.requires_steward_validation,
+		))
+	return entries
+
+/obj/structure/fake_machine/contractledger/proc/can_claim_posted_contract(mob/living/carbon/human/user, datum/quest/posted_quest)
+	if(!supports_quest_postings() || !posted_quest || posted_quest.complete || !SSquestboard.is_posted(posted_quest))
+		return FALSE
+	if(get_consult_block_reason(user) || !can_accept_contract_quest(posted_quest))
+		return FALSE
+	return posted_quest.can_claim(user)
+
+/obj/structure/fake_machine/contractledger/proc/find_active_commission(commission_ref)
+	if(!commission_ref)
+		return null
+	for(var/obj/item/paper/scroll/quest/quest_scroll as anything in GLOB.quest_scrolls)
+		var/datum/quest/custom/commission = quest_scroll.assigned_quest
+		if(istype(commission) && REF(commission) == commission_ref)
+			return commission
+	return null
+
+/obj/structure/fake_machine/contractledger/proc/validate_commission(mob/living/carbon/human/user, commission_ref)
+	if(!supports_quest_postings() || !is_quest_handler(user))
+		return FALSE
+	var/datum/quest/custom/commission = find_active_commission(commission_ref)
+	if(!commission || !can_accept_contract_quest(commission) || commission.complete)
+		return FALSE
+	if(!commission.requires_steward_validation)
+		commission.on_validate_fail(user)
+		return FALSE
+	if(!commission.validate(user, input_point, src))
+		commission.on_validate_fail(user)
+		return FALSE
+	set_session_notice(user, "notice.commission_validated", "success")
+	return TRUE
 
 /obj/structure/fake_machine/contractledger/proc/requires_bank_account_for_contracts(mob/user)
 	return TRUE
@@ -1232,6 +1332,46 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	))
 	return TRUE
 
+/obj/structure/fake_machine/contractledger/proc/claim_posted_contract(mob/living/carbon/human/user, quest_ref)
+	var/datum/quest/posted_quest = SSquestboard?.find_posted_quest(quest_ref)
+	if(!can_claim_posted_contract(user, posted_quest))
+		set_session_notice(user, "notice.posting_unavailable", "warning")
+		return FALSE
+
+	posted_quest.deposit_amount = get_contract_deposit_amount(user, posted_quest)
+	var/obj/item/paper/scroll/quest/spawned_scroll = create_contract_token(user, posted_quest)
+	if(!spawned_scroll)
+		set_session_notice(user, "notice.invalid_contract", "warning")
+		return FALSE
+	spawned_scroll.base_icon_state = posted_quest.get_scroll_icon()
+
+	if(!charge_contract_deposit(user, posted_quest))
+		posted_quest.quest_scroll = null
+		posted_quest.quest_scroll_ref = null
+		spawned_scroll.assigned_quest = null
+		qdel(spawned_scroll)
+		return FALSE
+
+	if(!SSquestboard.remove_quest(posted_quest))
+		if(posted_quest.deposit_amount > 0)
+			SStreasury.bank_accounts[user] += posted_quest.deposit_amount
+			SStreasury.treasury_value -= posted_quest.deposit_amount
+		posted_quest.quest_scroll = null
+		posted_quest.quest_scroll_ref = null
+		spawned_scroll.assigned_quest = null
+		qdel(spawned_scroll)
+		return FALSE
+
+	posted_quest.on_claim(user)
+	posted_quest.on_issued_from_ledger(src, user)
+	on_contract_token_issued(user, posted_quest, spawned_scroll)
+	log_quest(user.ckey, user.mind, user, "Claim posted [posted_quest.quest_type]")
+	set_session_notice(user, "notice.claimed_posting", "success", list(
+		"contract_type" = posted_quest.player_commission ? posted_quest.commission_type : posted_quest.quest_type,
+		"deposit" = posted_quest.deposit_amount,
+	))
+	return TRUE
+
 /obj/structure/fake_machine/contractledger/proc/create_contract_token(mob/living/carbon/human/user, datum/quest/attached_quest)
 	if(!attached_quest)
 		return null
@@ -1402,7 +1542,9 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 
 		var/deposit_return = completed_quest.deposit_amount || completed_quest.calculate_deposit(completed_quest.reward_amount)
 
-		if(is_boss_raid_issuer(user))
+		if(completed_quest.player_commission)
+			reward += base_reward
+		else if(is_boss_raid_issuer(user))
 			reward += ROUND_UP(base_reward * QUEST_HANDLER_REWARD_MULTIPLIER)
 		else if(is_quest_handler(user))
 			reward += ROUND_UP(base_reward * QUEST_MINOR_HANDLER_REWARD_MULTIPLIER)
@@ -1459,6 +1601,22 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 
 	if(quest.complete)
 		turn_in_contract(user)
+		return
+
+	if(quest.player_commission)
+		var/datum/quest/custom/commission = quest
+		commission.on_return_to_board()
+		commission.quest_receiver_reference = null
+		commission.quest_receiver_name = ""
+		commission.accepted_time = 0
+		commission.quest_scroll = null
+		commission.quest_scroll_ref = null
+		abandoned_scroll.assigned_quest = null
+		SSquestboard.add_quest(commission)
+		qdel(abandoned_scroll)
+		log_quest(user.ckey, user.mind, user, "Return player commission to board: [commission.title]")
+		set_session_notice(user, "notice.commission_returned", "success")
+		to_chat(user, span_notice("The commission returns to the shared board for another contractor."))
 		return
 
 	var/quest_type_label = quest.quest_type
