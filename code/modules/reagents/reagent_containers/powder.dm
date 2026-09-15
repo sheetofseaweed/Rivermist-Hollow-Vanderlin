@@ -113,6 +113,7 @@
 	color = "#60A584" // rgb: 96, 165, 132
 	overdose_threshold = 16
 	metabolization_rate = 0.2
+	price_per_unit = 3
 
 /atom/movable/screen/fullscreen/druqks
 	icon_state = "spa"
@@ -172,6 +173,7 @@
 	color = "#60A584" // rgb: 96, 165, 132
 	overdose_threshold = 16
 	metabolization_rate = 0.2
+	price_per_unit = 6
 
 /datum/reagent/ozium/on_mob_metabolize(mob/living/L)
 	. = ..()
@@ -215,6 +217,7 @@
 	color = "#bfc3b5"
 	overdose_threshold = 50
 	metabolization_rate = 0.2
+	price_per_unit = 3
 
 /datum/reagent/moondust/on_mob_metabolize(mob/living/M)
 	animate(M.client, pixel_y = 1, time = 1, loop = -1, flags = ANIMATION_RELATIVE)
@@ -260,6 +263,7 @@
 	color = "#bfc3b5"
 	overdose_threshold = 50
 	metabolization_rate = 0.2
+	price_per_unit = 9
 
 /datum/reagent/moondust_purest/on_mob_metabolize(mob/living/M)
 	M.playsound_local(M, 'sound/ravein/small/hello_my_friend.ogg', 100, FALSE)

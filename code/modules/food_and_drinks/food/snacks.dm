@@ -234,7 +234,7 @@ All foods are distributed among various categories. Use common sense.
 	..()
 	if(QDELETED(src))
 		return PROCESS_KILL
-	if(rotprocess)
+	if(rotprocess && !HAS_TRAIT(src, TRAIT_NO_ROT))
 		var/turf/open/T = get_turf(src)
 		var/temp_modifier = 1.0
 		var/turf_temp =  T?.return_temperature()

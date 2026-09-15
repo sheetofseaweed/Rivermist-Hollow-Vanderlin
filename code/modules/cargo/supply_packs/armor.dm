@@ -10,6 +10,7 @@
 	group = "Armor"
 	crate_name = "merchant guild's crate"
 	crate_type = /obj/structure/closet/crate/chest/merchant
+	allowed_start = FALSE
 
 //RMH EDITED START
 // Armour is grouped by what the piece is actually built out of, so each vendor

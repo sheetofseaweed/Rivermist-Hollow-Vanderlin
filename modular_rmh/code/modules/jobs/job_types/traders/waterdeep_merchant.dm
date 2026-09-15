@@ -48,6 +48,18 @@
 		TRAIT_NOBLE
 	)
 
+/datum/job/waterdeep_merchant/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+	. = ..()
+	if(SSmerchant.merchant_preferences_applied || !player_client?.prefs)
+		return
+	SSmerchant.merchant_preferences_applied = TRUE
+	var/datum/preference/list_type/role_setting/picker/faction_standing/standing_preference = GLOB.preference_entries[/datum/preference/list_type/role_setting/picker/faction_standing]
+	if(standing_preference)
+		standing_preference.apply_to_market(player_client.prefs.read_preference(standing_preference.type))
+	var/datum/preference/list_type/role_setting/picker/supply_pack/supply_preference = GLOB.preference_entries[/datum/preference/list_type/role_setting/picker/supply_pack]
+	if(supply_preference)
+		supply_preference.apply_to_market(player_client.prefs.read_preference(supply_preference.type))
+
 /datum/outfit/waterdeep_merchant
 	name = "Waterdeep Guild Merchant"
 	head = /obj/item/clothing/head/chaperon/colored/greyscale/silk/random
@@ -70,6 +82,7 @@
 	r_hand = null
 
 	backpack_contents = list(
+		/obj/item/book/secret/ledger = 1,
 		/obj/item/storage/belt/pouch/coins/veryrich = 1,
 		/obj/item/merctoken = 1
 	)

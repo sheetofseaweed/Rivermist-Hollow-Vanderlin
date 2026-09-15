@@ -6,6 +6,7 @@
 
 	grid_width = 32
 	grid_height = 32
+	sellprice = 1
 	var/bundletype = null
 	var/quality = SMELTERY_LEVEL_NORMAL // To not ruin blacksmith recipes
 

@@ -256,6 +256,7 @@
 	scent_description = "dry air"
 	metabolization_rate = REAGENTS_METABOLISM
 	alpha = 173
+	price_per_unit = 0.5
 
 /datum/reagent/medicine/manapot/on_mob_life(mob/living/carbon/M, efficiency)
 	M.mana_pool.adjust_mana(4 * efficiency)
@@ -275,6 +276,7 @@
 	taste_description = "raw power"
 	scent_description = "dry air"
 	metabolization_rate = REAGENTS_METABOLISM * 3
+	price_per_unit = 3
 
 /datum/reagent/medicine/strongmana/on_mob_life(mob/living/carbon/M, efficiency)
 	M.mana_pool.adjust_mana(8 * efficiency)
@@ -290,6 +292,7 @@
 	scent_description = "grass"
 	metabolization_rate = REAGENTS_METABOLISM
 	alpha = 173
+	price_per_unit = 0.5
 
 /datum/reagent/medicine/stampot/on_mob_life(mob/living/carbon/M, efficiency)
 	if(!HAS_TRAIT(M,TRAIT_NOSTAMINA))
@@ -303,6 +306,7 @@
 	taste_description = "sparkly static"
 	scent_description = "grass"
 	metabolization_rate = REAGENTS_METABOLISM * 3
+	price_per_unit = 3
 
 /datum/reagent/medicine/strongstam/on_mob_life(mob/living/carbon/M, efficiency)
 	if(!HAS_TRAIT(M,TRAIT_NOSTAMINA))
