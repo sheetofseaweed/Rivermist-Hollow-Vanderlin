@@ -510,16 +510,10 @@ GLOBAL_VAR_INIT(mobids, 1)
 						zone_text = "breasts"
 				look_target_text = "[T]'s [zone_text]"
 			visible_message("<span class='emote'>[src] looks at [look_target_text].</span>")
-		else if(isliving(examinify))
-			var/mob/living/examaniee = examinify
-			if(examaniee.peek_examine_check(src))
-				to_chat(src, span_info("My peeking went unnoticed.."))
-			else
-				to_chat(src, span_warning("[examaniee] noticed me peeking!"))
-
-				if(examaniee.client) // only if they have a client to see it
-					to_chat(examaniee, span_warning("[src] peeks at you!"))
-					found_ping(get_turf(src), examaniee.client, "hidden")
+		else if(isliving(examinify) && zone_selected == BODY_ZONE_PRECISE_GROIN)
+			do_groin_peek_check(examinify)
+	else if(isliving(examinify) && zone_selected == BODY_ZONE_PRECISE_GROIN)
+		do_groin_peek_check(examinify)
 
 	var/ref_to_atom = REF(examinify)
 	var/recent_examine_time = LAZYACCESS(client?.recent_examines, ref_to_atom)
@@ -554,6 +548,22 @@ GLOBAL_VAR_INIT(mobids, 1)
 	if(!client || LAZYACCESS(client.recent_examines, ref_to_clear) != examined_at)
 		return
 	LAZYREMOVE(client.recent_examines, ref_to_clear)
+
+// RMH EDITED START - shared by both call sites in run_examinate() above
+/// Whether examinify notices src sneaking a look at their groin - shared logic for run_examinate().
+/mob/proc/do_groin_peek_check(atom/examinify)
+	if(!isliving(examinify))
+		return
+	var/mob/living/examaniee = examinify
+	if(examaniee.peek_examine_check(src))
+		to_chat(src, span_info("My peeking went unnoticed.."))
+	else
+		to_chat(src, span_warning("[examaniee] noticed me peeking!"))
+
+		if(examaniee.client) // only if they have a client to see it
+			to_chat(examaniee, span_warning("[src] peeks at you!"))
+			found_ping(get_turf(src), examaniee.client, "hidden")
+// RMH EDITED END
 
 /// How far apart two mobs may be when reciprocal examination makes eye contact.
 #define EYE_CONTACT_RANGE 5
