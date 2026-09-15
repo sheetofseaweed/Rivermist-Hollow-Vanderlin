@@ -4355,6 +4355,7 @@
 #include "modular_rmh\code\game\objects\structures\crates_lockers\chest.dm"
 #include "modular_rmh\code\game\objects\structures\fake_machines\heraldboard.dm"
 #include "modular_rmh\code\game\objects\structures\fake_machines\withdraw.dm"
+#include "modular_rmh\code\game\objects\structures\fake_machines\heraldboard.dm"
 #include "modular_rmh\code\game\turfs\crawl_space.dm"
 #include "modular_rmh\code\game\turfs\jaunt_block.dm"
 #include "modular_rmh\code\game\turfs\closed\mineral_vein.dm"
