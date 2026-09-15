@@ -952,7 +952,7 @@
 			var/old_z = (oldturf ? oldturf.z : null)
 			var/dest_z = (destturf ? destturf.z : null)
 			if (old_z != dest_z)
-				onTransitZ(old_z, dest_z)
+				onTransitZ(oldturf, destturf)
 			destination.Entered(src, oldloc)
 			if(destarea && old_area != destarea)
 				destarea.Entered(src, oldloc)
@@ -976,11 +976,10 @@
 
 	Moved(oldloc, NONE, TRUE)
 
-/atom/movable/proc/onTransitZ(old_z,new_z)
-	SEND_SIGNAL(src, COMSIG_MOVABLE_Z_CHANGED, old_z, new_z)
-	for (var/item in src) // Notify contents of Z-transition. This can be overridden IF we know the items contents do not care.
-		var/atom/movable/AM = item
-		AM.onTransitZ(old_z,new_z)
+/atom/movable/proc/onTransitZ(turf/old_turf, turf/new_turf)
+	SEND_SIGNAL(src, COMSIG_MOVABLE_Z_CHANGED, old_turf, new_turf)
+	for(var/atom/movable/movable_content as anything in src) // Notify contents of Z-transition. This can be overridden IF we know the items contents do not care.
+		movable_content.onTransitZ(old_turf, new_turf)
 
 /atom/movable/proc/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	set waitfor = 0

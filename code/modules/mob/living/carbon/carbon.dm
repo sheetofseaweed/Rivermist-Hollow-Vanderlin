@@ -93,7 +93,7 @@
 		selhand = (active_hand_index % held_items.len)+1
 
 	if(istext(selhand))
-		selhand = lowertext(selhand)
+		selhand = LOWER_TEXT(selhand)
 		if(selhand == "right" || selhand == "r")
 			selhand = 2
 		if(selhand == "left" || selhand == "l")
@@ -287,7 +287,7 @@
 
 	var/datum/status_effect/bugged/effect = has_status_effect(/datum/status_effect/bugged)
 	if(effect && HAS_TRAIT(user, TRAIT_INQUISITION))
-		dat += "<BR><A href='?src=[REF(src)];item=[effect.device]'>BUGGED</A>"
+		dat += "<BR><A href='byond://?src=[REF(src)];item=[effect.device]'>BUGGED</A>"
 
 	dat += {"
 	<BR>

@@ -47,7 +47,7 @@
 	)
 
 	var/list/trader_outfits = list(
-		/obj/effect/mob_spawn/human/rakshari/trader
+		/obj/effect/mob_spawn/corpse/human/rakshari/trader
 	)
 
 /datum/nation/New()
@@ -117,7 +117,7 @@
 	populate_lazyman()
 
 /datum/nation/proc/can_work_on(datum/trade/node)
-	for(var/requirement as anything in node.required_trades)
+	for(var/requirement in node.required_trades)
 		if(!(requirement in completed_trades))
 			return FALSE
 	return TRUE

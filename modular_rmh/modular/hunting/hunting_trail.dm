@@ -23,6 +23,9 @@
 #define HUNT_PARTY_GATHER_RANGE 5
 /// How far a hunter may drift from the current sign before dropping out of the party.
 #define HUNT_PARTY_KEEP_RANGE 9
+/// How long an unread personal link waits for its party before giving up. Only links
+/// handed to a party get this - a fresh trail head is meant to sit there until worked.
+#define HUNT_LINK_ABANDON_TIMEOUT (15 MINUTES)
 /// Share of the leader's experience everyone else earns.
 #define HUNT_PARTY_FOLLOWER_EXP 0.7
 /// Experience for reading one sign.
@@ -78,6 +81,8 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 	var/list/party_refs = list()
 	/// mob -> the image of this link that mob is being shown.
 	var/list/party_images = list()
+	/// Stoppable timer that removes this link if its party never comes to read it.
+	var/abandon_timer
 	/// What waits at the end.
 	var/target_animal_type
 	var/datum/hunting_category/hunt_category
@@ -97,6 +102,9 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 	pixel_y = rand(-8, 8)
 
 /obj/effect/hunting_track/Destroy()
+	if(abandon_timer)
+		deltimer(abandon_timer)
+		abandon_timer = null
 	clear_party_images()
 	party_refs.Cut()
 	hunter_ref = null
@@ -107,10 +115,33 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 	for(var/mob/living/member as anything in party_images)
 		if(!member)
 			continue
-		UnregisterSignal(member, COMSIG_MOB_LOGIN)
+		UnregisterSignal(member, list(COMSIG_MOB_LOGIN, COMSIG_PARENT_QDELETING))
 		if(member.client)
 			member.client.images -= party_images[member]
 	party_images.Cut()
+
+/**
+ * Drops one hunter from this link entirely - image, signals and party entry.
+ *
+ * party_images is keyed by the mob itself, so a hunter who is deleted while the
+ * link is still waiting would be held here indefinitely. Called from the
+ * deletion handler, where WEAKREF() already refuses to hand a reference back,
+ * so the mob's own cached weakref is what the party list is matched against.
+ */
+/obj/effect/hunting_track/proc/release_member(mob/living/member)
+	UnregisterSignal(member, list(COMSIG_MOB_LOGIN, COMSIG_PARENT_QDELETING))
+	var/image/personal = party_images[member]
+	if(personal)
+		if(member.client)
+			member.client.images -= personal
+		party_images -= member
+	if(member.weak_reference)
+		party_refs -= member.weak_reference
+
+/// Signal handler for a party member being deleted mid-trail.
+/obj/effect/hunting_track/proc/on_member_deleted(mob/living/member)
+	SIGNAL_HANDLER
+	release_member(member)
 
 /// Hides this link from the world and shows it to the hunting party only - everyone following,
 /// not just the leader, or a group hunt would have everyone but one person walking blind.
@@ -130,6 +161,15 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 		// left following a chain they can no longer see, with no way to get it back - the same
 		// defect the footprints had.
 		RegisterSignal(member, COMSIG_MOB_LOGIN, PROC_REF(on_member_login), override = TRUE)
+		// party_images keys on the mob, so a hunter deleted before this link is read has to be
+		// let go of explicitly.
+		RegisterSignal(member, COMSIG_PARENT_QDELETING, PROC_REF(on_member_deleted), override = TRUE)
+
+	// A party that wanders off would otherwise leave this link on the map forever while the
+	// trail head it grew from respawns, so an unread link eventually gives up.
+	if(abandon_timer)
+		deltimer(abandon_timer)
+	abandon_timer = addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(qdel), src), HUNT_LINK_ABANDON_TIMEOUT, TIMER_STOPPABLE)
 
 /// Hands a reconnecting hunter their view of this link back.
 /obj/effect/hunting_track/proc/on_member_login(mob/living/member)
@@ -361,6 +401,10 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 /obj/effect/hunting_track/proc/reveal_track(turf/target_turf)
 	if(!locked_track_icon)
 		locked_track_icon = pick(track_types)
+	// It has been read, so fade_and_die() owns its lifetime from here.
+	if(abandon_timer)
+		deltimer(abandon_timer)
+		abandon_timer = null
 	clear_party_images()
 
 	invisibility = 0
@@ -469,6 +513,7 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 #undef HUNT_SIGN_FADE
 #undef HUNT_PARTY_GATHER_RANGE
 #undef HUNT_PARTY_KEEP_RANGE
+#undef HUNT_LINK_ABANDON_TIMEOUT
 #undef HUNT_PARTY_FOLLOWER_EXP
 #undef HUNT_STEP_EXP
 #undef HUNT_QUARRY_EXP

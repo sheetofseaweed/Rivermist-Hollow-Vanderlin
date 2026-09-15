@@ -34,6 +34,10 @@
 	var/slap_damage = 5
 	var/handprint_duration = 3 MINUTES
 	var/max_brand_length = 20
+	/// TRUE while a branding prompt or do_after is outstanding. Branding sleeps
+	/// twice and spends the spell at the end, so a second attempt started in the
+	/// meantime could land after the hand and its cooldown were already used.
+	var/branding_in_progress = FALSE
 
 /datum/action/cooldown/spell/undirected/touch/searing_palm/is_valid_target(atom/cast_on)
 	return iscarbon(cast_on)
@@ -45,12 +49,40 @@
 
 	switch(caster.used_intent.type)
 		if(SEARING_BRAND)
-			return try_brand(patient, caster)
+			return try_brand(hand, patient, caster)
 		if(SEARING_SLAP)
 			return try_slap(patient, caster)
 	return FALSE
 
-/datum/action/cooldown/spell/undirected/touch/searing_palm/proc/try_brand(mob/living/carbon/patient, mob/living/carbon/caster)
+/**
+ * Is this still the same live flaming hand the branding started from?
+ *
+ * The text prompt and the do_after both sleep, so the hand can be dropped,
+ * swapped out, deleted or re-cast while a branding attempt is outstanding.
+ * Anything that lands afterwards has to come from the original hand, still
+ * held by the original caster, still owned by this spell.
+ */
+/datum/action/cooldown/spell/undirected/touch/searing_palm/proc/hand_still_ready(obj/item/melee/touch_attack/hand, mob/living/carbon/caster)
+	if(QDELETED(hand) || QDELETED(caster))
+		return FALSE
+	if(owner != caster || hand != attached_hand)
+		return FALSE
+	return (hand in caster.held_items)
+
+/// Serializes branding attempts so only one can be outstanding at a time. The
+/// flag is owned here, so do_brand() is free to return from anywhere.
+/datum/action/cooldown/spell/undirected/touch/searing_palm/proc/try_brand(obj/item/melee/touch_attack/hand, mob/living/carbon/patient, mob/living/carbon/caster)
+	if(branding_in_progress)
+		to_chat(caster, span_warning("I am already searing a sigil."))
+		return FALSE
+	if(!hand_still_ready(hand, caster))
+		return FALSE
+
+	branding_in_progress = TRUE
+	. = do_brand(hand, patient, caster)
+	branding_in_progress = FALSE
+
+/datum/action/cooldown/spell/undirected/touch/searing_palm/proc/do_brand(obj/item/melee/touch_attack/hand, mob/living/carbon/patient, mob/living/carbon/caster)
 	if(!is_held_still(patient, caster))
 		to_chat(caster, span_warning("[patient] would need to be restrained or helpless to hold still for this."))
 		return FALSE
@@ -77,6 +109,8 @@
 		return FALSE
 	if(QDELETED(patient) || QDELETED(limb) || limb != patient.get_bodypart(limb.body_zone) || limb.brand_text)
 		return FALSE
+	if(!hand_still_ready(hand, caster))
+		return FALSE
 
 	patient.visible_message(span_danger("[caster] presses a burning palm against [patient]'s [parse_zone(target_zone)]!"), \
 		span_userdanger("[caster] presses a burning palm against your [parse_zone(target_zone)]!"))
@@ -87,6 +121,9 @@
 	// Re-check everything: do_after only watches the caster's own position, so the
 	// victim can break free, walk off or pull armour on while the prompt is open.
 	if(QDELETED(patient) || QDELETED(limb) || limb != patient.get_bodypart(limb.body_zone) || limb.brand_text)
+		return FALSE
+	if(!hand_still_ready(hand, caster))
+		to_chat(caster, span_warning("The flame is no longer on my palm."))
 		return FALSE
 	if(!caster.Adjacent(patient) || !is_held_still(patient, caster) || !get_location_accessible(patient, target_zone))
 		to_chat(caster, span_warning("The branding is interrupted."))

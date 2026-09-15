@@ -76,6 +76,8 @@ DEFINE_BITFIELD(smoothing_junction, list(
 	var/smooth_obj = (smoothing_flags & SMOOTH_OBJ)
 	var/smooth_edge = (smoothing_flags & SMOOTH_EDGE)
 
+	// Early exits use `break set_adj_in_dir` to leave the labelled block. Do not add an
+	// unconditional break at the end of the body: it makes `while(FALSE)` unreachable.
 	#define SET_ADJ_IN_DIR(direction, direction_flag) \
 		set_adj_in_dir: { \
 			do { \
@@ -127,18 +129,17 @@ DEFINE_BITFIELD(smoothing_junction, list(
 					SET_SMOOTHING_GROUPS(neighbor_smoothing_groups); \
 				}; \
 				if(islist(neighbor_smoothing_groups)) { \
-					for(var/target as anything in smoothing_list) { \
+					for(var/target in smoothing_list) { \
 						if(smoothing_list[target] & neighbor_smoothing_groups[target]) { \
 							new_junction |= direction_flag; \
 							break set_adj_in_dir; \
 						}; \
 					}; \
 				}; \
-				break set_adj_in_dir; \
 			} while(FALSE) \
 		}
 
-	for(var/direction as anything in GLOB.cardinals) //Cardinal case first.
+	for(var/direction in GLOB.cardinals) //Cardinal case first.
 		SET_ADJ_IN_DIR(direction, direction)
 
 	if(smooth_edge)
@@ -228,7 +229,7 @@ DEFINE_BITFIELD(smoothing_junction, list(
 /turf/proc/remove_neighborlays()
 	if(!LAZYLEN(neighborlay_list))
 		return
-	for(var/key as anything in neighborlay_list)
+	for(var/key in neighborlay_list)
 		cut_overlay(neighborlay_list[key])
 		qdel(neighborlay_list[key])
 		neighborlay_list[key] = null

@@ -13,8 +13,15 @@
 
 //The code execution of the emote datum is located at code/datums/emotes.dm
 /mob/proc/emote(act, m_type = null, message = null, intentional = FALSE, forced = FALSE, targetted = FALSE, custom_me = FALSE)
+	// A targetted emote can open a blocking prompt, which is unsafe for the many
+	// automatic callers on Life() and signal handlers. This dispatcher has no
+	// meaningful return value, so it runs synchronously up to any such prompt and
+	// then lets the caller continue; run_emote()'s result still drives the signal
+	// and cooldown sequencing below.
+	set waitfor = FALSE
+
 	var/oldact = act
-	act = lowertext(act)
+	act = LOWER_TEXT(act)
 	if(intentional && client?.manual_afk)
 		client.set_manual_afk(FALSE, show_message = FALSE)
 	var/param = message

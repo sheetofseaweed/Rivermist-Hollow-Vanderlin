@@ -19,6 +19,14 @@
 	var/show_handler_advice = TRUE
 	var/complete = FALSE
 	var/being_destroyed = FALSE
+	/// When an unclaimed board posting expires. Player commissions do not expire.
+	var/expiry_time = 0
+	var/accepted_time = 0
+	/// Region captured when the objective is generated, used for completion feedback.
+	var/threat_region_name = ""
+	/// Player-funded commissions use their pledged payout exactly and never charge a deposit.
+	var/player_commission = FALSE
+	var/commission_type = ""
 
 	/// Progress tracking
 	var/progress_current = 0
@@ -136,7 +144,7 @@
 	if(!map_file)
 		return null
 
-	return lowertext("[map_file]")
+	return LOWER_TEXT("[map_file]")
 
 /datum/quest/proc/get_nearest_tracked_atom(turf/reference_turf, include_held_items = TRUE, atom/movable/preferred_atom = null)
 	var/turf/origin_turf = reference_turf ? get_turf(reference_turf) : (quest_scroll ? get_turf(quest_scroll) : null)
@@ -312,7 +320,7 @@
 		"underdark.dmm" = "Underdark",
 	)
 
-	return supported_map_names[lowertext("[map_file]")]
+	return supported_map_names[LOWER_TEXT("[map_file]")]
 
 /datum/quest/proc/is_supported_map_file(map_file)
 	return get_supported_map_name(map_file) ? TRUE : FALSE
@@ -462,6 +470,9 @@
 		requested_tier = get_effective_requested_tier(landmark)
 		threat_tier = requested_tier
 		apply_map_modifiers(get_turf(landmark))
+		var/datum/threat_region/target_region = SSregionthreat?.get_region_for_turf(get_turf(landmark))
+		if(target_region)
+			threat_region_name = target_region.region_name
 	return TRUE
 
 /// Apply map-specific difficulty and reward modifiers from quest_map_config
@@ -553,8 +564,33 @@
 
 /// Mark quest as complete
 /datum/quest/proc/mark_complete()
+	if(complete)
+		return
 	complete = TRUE
+	reduce_regional_threat()
 	quest_scroll?.update_quest_text()
+
+/datum/quest/proc/reduce_regional_threat()
+	if(issuing_ledger_id != "guild_contracts" || !threat_region_name)
+		return
+	var/datum/threat_region/target_region = SSregionthreat?.get_region(threat_region_name)
+	if(!target_region || target_region.fixed_ambush)
+		return
+
+	var/reduction = QUEST_THREAT_REDUCE_ROUTINE
+	switch(threat_tier)
+		if(QUEST_TIER_RISKY)
+			reduction = QUEST_THREAT_REDUCE_RISKY
+		if(QUEST_TIER_DANGEROUS)
+			reduction = QUEST_THREAT_REDUCE_DANGEROUS
+		if(QUEST_TIER_DEADLY)
+			reduction = QUEST_THREAT_REDUCE_DEADLY
+		if(QUEST_TIER_LETHAL)
+			reduction = QUEST_THREAT_REDUCE_LETHAL
+		if(QUEST_TIER_MYTHIC)
+			reduction = QUEST_THREAT_REDUCE_MYTHIC
+	target_region.reduce_latent_ambush(reduction)
+	log_game("Quest completion reduced threat in [threat_region_name] by [reduction] (quest: [title])")
 
 /// Base reward by contract type, without randomization.
 /datum/quest/proc/get_base_reward()
@@ -650,6 +686,7 @@
 /datum/quest/proc/on_claim(mob/user)
 	quest_receiver_reference = WEAKREF(user)
 	quest_receiver_name = user.real_name
+	accepted_time = world.time
 
 /datum/quest/proc/on_issued_from_ledger(obj/structure/fake_machine/contractledger/ledger, mob/living/carbon/human/user)
 	if(!ledger)

@@ -7,9 +7,9 @@
 //   whatever stopped it. A clean miss refunds the cooldown once, so it can immediately wheel
 //   around for a second pass - that is what missed_once tracks.
 
-/// Blackboard key the AI looks up the charge action under. Core's BB_* keys live in
-/// code/__DEFINES/ai/_ai.dm; this one is the pack's own, so it is declared here.
-#define BB_BOAR_CHARGE "bb_boar_charge"
+// The blackboard key the AI looks up the charge action under is BB_BOAR_CHARGE,
+// declared with the other creature keys in code/__DEFINES/ai/hostile.dm so this
+// file and hunting_boar.dm can be included in any order.
 
 /// How far the boar will run in one charge.
 #define BOAR_CHARGE_RANGE 7

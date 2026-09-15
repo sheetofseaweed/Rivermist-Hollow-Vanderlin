@@ -783,7 +783,7 @@
 
 		window.addEventListener('load', function() {
 			//we need to fetch data
-			window.location.href = '?src=\ref[src];action=get_initial_data';
+			window.location.href = 'byond://?src=\ref[src];action=get_initial_data';
 		});
 
 		(function() {
@@ -855,12 +855,12 @@
 
 		//this does shit all right now idk if we want it to though
 		function selectNode(nodeId) {
-			window.location.href = '?src=\ref[src];action=select_node;node=' + nodeId;
+			window.location.href = 'byond://?src=\ref[src];action=select_node;node=' + nodeId;
 		}
 
 		function activateAgreement(agreementId) {
 			event.stopPropagation();
-			window.location.href = '?src=\ref[src];action=activate_agreement;agreement=' + agreementId;
+			window.location.href = 'byond://?src=\ref[src];action=activate_agreement;agreement=' + agreementId;
 		}
 	</script>
 </body>

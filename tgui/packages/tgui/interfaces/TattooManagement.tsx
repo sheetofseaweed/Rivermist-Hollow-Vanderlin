@@ -71,9 +71,10 @@ const InkedText = (props: {
   pigment?: string;
 }) => {
   const { text, style, color, pigment } = props;
+  // A native span rather than Box: Box does not accept a title attribute, and
+  // the tooltip is the only place the true pigment is named.
   const ink = (
-    <Box
-      as="span"
+    <span
       title={pigment}
       style={{
         color: color,
@@ -81,7 +82,7 @@ const InkedText = (props: {
       }}
     >
       {text}
-    </Box>
+    </span>
   );
   return style === STYLE_DESIGN ? (
     ink
@@ -162,7 +163,7 @@ const AddTattooModal = (props: {
           </NoticeBox>
         )}
         {!!zoneFull && (
-          <NoticeBox warning mt={1} mb={0}>
+          <NoticeBox danger mt={1} mb={0}>
             There is no room left on the {selected?.name} — {maxPerZone} tattoos
             already.
           </NoticeBox>

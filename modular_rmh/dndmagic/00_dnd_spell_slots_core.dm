@@ -129,13 +129,13 @@
 	if(get_dnd_spell_slots_max(level) <= 0)
 		if(feedback)
 			to_chat(src, span_warning("I have no level [level] spell slots."))
-			balloon_alert(src, "No level [level] slots!")
+			balloon_alert(src, "no level [level] slots!")
 		return FALSE
 
 	if(get_dnd_spell_slots_current(level) <= 0)
 		if(feedback)
 			to_chat(src, span_warning("My level [level] spell slots are spent."))
-			balloon_alert(src, "Level [level] slots spent!")
+			balloon_alert(src, "level [level] slots spent!")
 		return FALSE
 
 	return TRUE
@@ -167,7 +167,7 @@
 	var/maximum = get_dnd_spell_slots_max(level)
 
 	to_chat(src, span_notice("Selected level [level] spell slot. Charges: [current]/[maximum]."))
-	balloon_alert(src, "Level [level] selected")
+	balloon_alert(src, "level [level] selected")
 
 	update_dnd_spell_slot_hud()
 	return TRUE
@@ -178,7 +178,7 @@
 
 	if(get_dnd_short_rest_current() <= 0)
 		to_chat(src, span_warning("I have no short rests left."))
-		balloon_alert(src, "No short rests!")
+		balloon_alert(src, "no short rests!")
 		return FALSE
 
 	var/restored_any = FALSE
@@ -208,10 +208,10 @@
 
 	if(restored_any)
 		to_chat(src, span_notice("I take a short rest and recover some spell slots."))
-		balloon_alert(src, "Short rest")
+		balloon_alert(src, "short rest")
 	else
 		to_chat(src, span_notice("I take a short rest, but my spell slots are already steady."))
-		balloon_alert(src, "No slots restored")
+		balloon_alert(src, "no slots restored")
 
 	return TRUE
 

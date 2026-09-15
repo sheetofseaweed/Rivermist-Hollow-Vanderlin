@@ -55,7 +55,7 @@
 /datum/component/dungeon_boss_abilities/Initialize(list/ability_types)
 	if(!isliving(parent))
 		return COMPONENT_INCOMPATIBLE
-	for(var/ability_type as anything in (ability_types || list(/datum/dungeon_boss_ability/lunge, /datum/dungeon_boss_ability/slam)))
+	for(var/ability_type in (ability_types || list(/datum/dungeon_boss_ability/lunge, /datum/dungeon_boss_ability/slam)))
 		abilities += new ability_type
 	START_PROCESSING(SSprocessing, src)
 

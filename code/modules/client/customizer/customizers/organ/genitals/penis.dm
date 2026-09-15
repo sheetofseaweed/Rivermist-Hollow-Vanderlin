@@ -30,8 +30,8 @@
 /datum/customizer_choice/organ/genitals/penis/generate_pref_choices(list/dat, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()
 	var/datum/customizer_entry/organ/genitals/penis/penis_entry = entry
-	dat += "<br>Penis size: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=penis_size''>[find_key_by_value(PENIS_SIZES_BY_NAME, penis_entry.penis_size)]</a>"
-	dat += "<br>Functional: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=functional''>[penis_entry.functional ? "YES" : "NO"]</a>"
+	dat += "<br>Penis size: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=penis_size''>[find_key_by_value(PENIS_SIZES_BY_NAME, penis_entry.penis_size)]</a>"
+	dat += "<br>Functional: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=functional''>[penis_entry.functional ? "YES" : "NO"]</a>"
 
 /datum/customizer_choice/organ/genitals/penis/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()

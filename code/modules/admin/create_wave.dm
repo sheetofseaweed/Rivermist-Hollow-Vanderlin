@@ -1068,31 +1068,31 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 
 			function addTrait() {
 				var trait = document.getElementById(\"traits_dropdown\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];add_trait=1;&\" + collectJobData({trait: trait});
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_trait=1;&\" + collectJobData({trait: trait});
 			}
 
 			function removeTrait(trait) {
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_trait=1;&\" + collectJobData({trait: trait});
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_trait=1;&\" + collectJobData({trait: trait});
 			}
 
 			function addSkill() {
 				var skill = document.getElementById(\"skills_dropdown\").value;
 				var level = document.getElementById(\"skills_level\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];add_skill=1;&\" + collectJobData({skill: skill, level: level});
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_skill=1;&\" + collectJobData({skill: skill, level: level});
 			}
 
 			function removeSkill(skill) {
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_skill=1;&\" + collectJobData({skill: skill});
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_skill=1;&\" + collectJobData({skill: skill});
 			}
 
 			function addStat() {
 				var stat = document.getElementById(\"stats_dropdown\").value;
 				var modifier = document.getElementById(\"stats_level\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];add_stat=1;&\" + collectJobData({stat: stat,  modifier: modifier});
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_stat=1;&\" + collectJobData({stat: stat,  modifier: modifier});
 			}
 
 			function removeStat(stat) {
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_stat=1;&\" + collectJobData({stat: stat});
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_stat=1;&\" + collectJobData({stat: stat});
 			}
 		</script>
 		<tr><th>Name:</th><td><input type='text' name='job_title'  id='job_title' value='[temp_job_title ? temp_job_title : "Custom Job"]'></td></tr>
@@ -1365,7 +1365,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 			<input type='text' id='job_title' value='[J.title]'
 				oninput='
 					var new_title = this.value;
-					window.location.href = "?src=[REF(src)];[HrefToken()];update_job_title=1;chosen_job_edit=[J.id];new_title=" + encodeURIComponent(new_title);
+					window.location.href = "byond://?src=[REF(src)];[HrefToken()];update_job_title=1;chosen_job_edit=[J.id];new_title=" + encodeURIComponent(new_title);
 				'>
 		</td></tr>
 		<tr>
@@ -1374,7 +1374,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				<textarea id='job_tutorial' style='width:400px'
 					oninput='
 						var new_tutorial = this.value;
-						window.location.href = "?src=[REF(src)];[HrefToken()];update_job_tutorial=1;chosen_job_edit=[J.id];new_tutorial=" + encodeURIComponent(new_tutorial);
+						window.location.href = "byond://?src=[REF(src)];[HrefToken()];update_job_tutorial=1;chosen_job_edit=[J.id];new_tutorial=" + encodeURIComponent(new_tutorial);
 					'>[J.tutorial]</textarea>
 			</td>
 		</tr>
@@ -1382,7 +1382,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		<td>
 			<select id='job_faction' onchange='
 				var new_faction = this.value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_faction=1;chosen_job_edit=[J.id];new_faction=\" + encodeURIComponent(new_faction);
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_faction=1;chosen_job_edit=[J.id];new_faction=\" + encodeURIComponent(new_faction);
 			'>
 				[generate_options(factions_list, J.faction)]
 			</select>
@@ -1391,7 +1391,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		<td>
 			<select id='job_outfit' onchange='
 				var new_outfit = this.value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_outfit=1;chosen_job_edit=[J.id];new_outfit=\" + encodeURIComponent(new_outfit);
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_outfit=1;chosen_job_edit=[J.id];new_outfit=\" + encodeURIComponent(new_outfit);
 			'>
 				[generate_options(outfits_list, J.outfit)]
 			</select>
@@ -1402,7 +1402,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				<input type='text' id='job_combat_song' value='[J.cmode_music]'
 					oninput='
 						var new_song = this.value;
-						window.location.href = "?src=[REF(src)];[HrefToken()];update_job_song=1;chosen_job_edit=[J.id];new_song=" + encodeURIComponent(new_song);
+						window.location.href = "byond://?src=[REF(src)];[HrefToken()];update_job_song=1;chosen_job_edit=[J.id];new_song=" + encodeURIComponent(new_song);
 					'>
 			</td>
 		</tr>
@@ -1410,7 +1410,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		<td>
 			<select id='job_antag' onchange='
 				var new_faction = this.value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_antag=1;chosen_job_edit=[J.id];new_antag=\" + encodeURIComponent(new_faction);
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_antag=1;chosen_job_edit=[J.id];new_antag=\" + encodeURIComponent(new_faction);
 			'>
 				[generate_options(antag_list, J.antag_role)]
 			</select>
@@ -1419,7 +1419,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		<td>
 			<select id='job_foreigner' onchange='
 				var new_value = this.value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_foreigner=1;chosen_job_edit=[J.id];new_foreigner=\" + encodeURIComponent(new_value);
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_foreigner=1;chosen_job_edit=[J.id];new_foreigner=\" + encodeURIComponent(new_value);
 			'>
 				[generate_boolean_option(FALSE, J.is_foreigner)]
 			</select>
@@ -1428,7 +1428,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		<td>
 			<select id='job_recognized' onchange='
 				var new_value = this.value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_recognized=1;chosen_job_edit=[J.id];new_recognized=\" + encodeURIComponent(new_value);
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_recognized=1;chosen_job_edit=[J.id];new_recognized=\" + encodeURIComponent(new_value);
 			'>
 				[generate_boolean_option(FALSE, J.is_recognized)]
 			</select>
@@ -1437,7 +1437,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		<td>
 			<select id='job_magick_user' onchange='
 				var new_value = this.value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_magick_user=1;chosen_job_edit=[J.id];new_magick_user=\" + encodeURIComponent(new_value);
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_magick_user=1;chosen_job_edit=[J.id];new_magick_user=\" + encodeURIComponent(new_value);
 			'>
 				[generate_boolean_option(FALSE, J.magic_user)]
 			</select>
@@ -1454,7 +1454,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 					document.querySelectorAll(\"input\[name=job_allowed_sexes\]:checked\").forEach(function(cb) {
 						selected.push(cb.value);
 					});
-					window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_allowed_sexes=1;chosen_job_edit=[J.id];new_allowed_sexes=\" + encodeURIComponent(selected.join(\",\"));
+					window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_allowed_sexes=1;chosen_job_edit=[J.id];new_allowed_sexes=\" + encodeURIComponent(selected.join(\",\"));
 				});
 			});
 		</script>
@@ -1469,7 +1469,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 					document.querySelectorAll(\"input\[name=job_allowed_races\]:checked\").forEach(function(cb) {
 						selected.push(cb.value);
 					});
-					window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_race=1;chosen_job_edit=[J.id];new_races=\" + encodeURIComponent(selected.join(\",\"));
+					window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_race=1;chosen_job_edit=[J.id];new_races=\" + encodeURIComponent(selected.join(\",\"));
 				});
 			});
 		</script>
@@ -1484,7 +1484,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 					document.querySelectorAll(\"input\[name=job_allowed_ages\]:checked\").forEach(function(cb) {
 						selected.push(cb.value);
 					});
-					window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_age=1;chosen_job_edit=[J.id];new_ages=\" + encodeURIComponent(selected.join(\",\"));
+					window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_age=1;chosen_job_edit=[J.id];new_ages=\" + encodeURIComponent(selected.join(\",\"));
 				});
 			});
 		</script>
@@ -1499,7 +1499,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 					document.querySelectorAll(\"input\[name=job_languages\]:checked\").forEach(function(cb) {
 						selected.push(cb.value);
 					});
-					window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_languages=1;chosen_job_edit=[J.id];new_languages=\" + encodeURIComponent(selected.join(\",\"));
+					window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_languages=1;chosen_job_edit=[J.id];new_languages=\" + encodeURIComponent(selected.join(\",\"));
 				});
 			});
 		</script>
@@ -1514,7 +1514,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 					document.querySelectorAll(\"input\[name=job_allowed_patrons\]:checked\").forEach(function(cb) {
 						selected.push(cb.value);
 					});
-					window.location.href = \"?src=[REF(src)];[HrefToken()];update_job_patron=1;chosen_job_edit=[J.id];new_patrons=\" + encodeURIComponent(selected.join(\",\"));
+					window.location.href = \"byond://?src=[REF(src)];[HrefToken()];update_job_patron=1;chosen_job_edit=[J.id];new_patrons=\" + encodeURIComponent(selected.join(\",\"));
 				});
 			});
 		</script>
@@ -1538,7 +1538,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 			qdel(S)
 			dat += {"<button type='button' onclick='
 				var chosen_job_edit = document.getElementById(\"chosen_job_edit\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_skill=1;skill=" + encodeURIComponent(\"[skill_path]\") +
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_skill=1;skill=" + encodeURIComponent(\"[skill_path]\") +
 					\";chosen_job_edit=\" + encodeURIComponent(chosen_job_edit);' '>
 				Remove</button></li>
 			"}
@@ -1551,7 +1551,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		var level = document.getElementById(\"skills_level\").value;
 		var chosen_job_edit = document.getElementById(\"chosen_job_edit\").value;
 
-		window.location.href = \"?src=[REF(src)];[HrefToken()];add_skill=1;\" +
+		window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_skill=1;\" +
 			\";skill=\" + encodeURIComponent(skill) +
 			\";level=\" + encodeURIComponent(level) +
 			\";chosen_job_edit=\" + encodeURIComponent(chosen_job_edit);' '>
@@ -1573,7 +1573,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 			dat += "<li>[trait] "
 			dat += {"<button type='button' onclick='
 				var chosen_job_edit = document.getElementById(\"chosen_job_edit\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_trait=1;trait=" + encodeURIComponent(\"[trait]\") +
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_trait=1;trait=" + encodeURIComponent(\"[trait]\") +
 					\";chosen_job_edit=\" + encodeURIComponent(chosen_job_edit);' '>
 
 				Remove</button></li>
@@ -1586,7 +1586,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		var trait = document.getElementById(\"traits_dropdown\").value;
 		var chosen_job_edit = document.getElementById(\"chosen_job_edit\").value;
 
-		window.location.href = \"?src=[REF(src)];[HrefToken()];add_trait=1;\" +
+		window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_trait=1;\" +
 			\";trait=\" + encodeURIComponent(trait) +
 			\";chosen_job_edit=\" + encodeURIComponent(chosen_job_edit);' '>
 
@@ -1608,7 +1608,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 			dat += "<li>[stats] Modifier: [modifier]"
 			dat += {"<button type='button' onclick='
 				var chosen_job_edit = document.getElementById(\"chosen_job_edit\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_stat=1;stats=" + encodeURIComponent(\"[stats]\") +
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_stat=1;stats=" + encodeURIComponent(\"[stats]\") +
 					\";chosen_job_edit=\" + encodeURIComponent(chosen_job_edit);' '>
 				Remove</button></li>
 			"}
@@ -1620,7 +1620,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		var stat = document.getElementById("stats_dropdown").value;
 		var modifier = document.getElementById("stats_level").value;
 		var chosen_job_edit = document.getElementById(\"chosen_job_edit\").value;
-		window.location.href = \"?src=[REF(src)];[HrefToken()];add_stat=1;\" +
+		window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_stat=1;\" +
 			\";stat=\" + encodeURIComponent(stat) +
 			\";modifier=\" + encodeURIComponent(modifier) +
 			\";chosen_job_edit=\" + encodeURIComponent(chosen_job_edit);' '>
@@ -1712,7 +1712,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				var name = document.getElementById(\"wave_t\").value;
 				var name_g = document.getElementById(\"wave_g\").value;
 				var name_mc = document.getElementById(\"wave_mc\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_job=1;job=" + encodeURIComponent(\"[job]\") +
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_job=1;job=" + encodeURIComponent(\"[job]\") +
 					\";name=\" + encodeURIComponent(name) +
 					\";name_g=\" + encodeURIComponent(name_g) +
 					\";name_mc=\" + encodeURIComponent(name_mc);
@@ -1730,7 +1730,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				var name = document.getElementById("wave_t").value;
 				var name_g = document.getElementById("wave_g").value;
 				var name_mc = document.getElementById("wave_mc").value;
-				window.location.href = "?src=[REF(src)];[HrefToken()];add_jobs=1;job=" + encodeURIComponent(job) + ";name=" + encodeURIComponent(name) + ";name_g=" + encodeURIComponent(name_g) + ";name_mc=" + encodeURIComponent(name_mc) + ";slots=" + encodeURIComponent(slots);
+				window.location.href = "byond://?src=[REF(src)];[HrefToken()];add_jobs=1;job=" + encodeURIComponent(job) + ";name=" + encodeURIComponent(name) + ";name_g=" + encodeURIComponent(name_g) + ";name_mc=" + encodeURIComponent(name_mc) + ";slots=" + encodeURIComponent(slots);
 			'>Add Job</button>
 	"}
 	dat+= "</td></tr>"
@@ -1834,7 +1834,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 			<input type='text' id='wave_t' value='[CW.name]'
 				oninput='
 					var new_name = this.value;
-					window.location.href = "?src=[REF(src)];[HrefToken()];update_wave_name=1;wave_ref=[REF(CW)];new_name=" + encodeURIComponent(new_name);
+					window.location.href = "byond://?src=[REF(src)];[HrefToken()];update_wave_name=1;wave_ref=[REF(CW)];new_name=" + encodeURIComponent(new_name);
 				'>
 		</td></tr>
 		<tr>
@@ -1843,7 +1843,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				<textarea id='wave_g' style='width:400px'
 					oninput='
 						var new_g = this.value;
-						window.location.href = "?src=[REF(src)];[HrefToken()];update_wave_greeting=1;wave_ref=[REF(CW)];new_g=" + encodeURIComponent(new_g);
+						window.location.href = "byond://?src=[REF(src)];[HrefToken()];update_wave_greeting=1;wave_ref=[REF(CW)];new_g=" + encodeURIComponent(new_g);
 					'>[CW.greeting_text]</textarea>
 			</td>
 		</tr>
@@ -1853,7 +1853,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				<input type='number' id='wave_mc' style='width:40px' value='[CW.min_pop]'
 					oninput='
 						var new_mc = this.value;
-						window.location.href = "?src=[REF(src)];[HrefToken()];update_wave_min_pop=1;wave_ref=[REF(CW)];new_mc=" + encodeURIComponent(new_mc);
+						window.location.href = "byond://?src=[REF(src)];[HrefToken()];update_wave_min_pop=1;wave_ref=[REF(CW)];new_mc=" + encodeURIComponent(new_mc);
 					'>
 			</td>
 		</tr>
@@ -1878,7 +1878,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 				var name_g = document.getElementById(\"wave_g\").value;
 				var name_mc = document.getElementById(\"wave_mc\").value;
 				var wave_ref = document.getElementById(\"wave_ref\").value;
-				window.location.href = \"?src=[REF(src)];[HrefToken()];remove_job=1;job=" + encodeURIComponent(\"[job]\") +
+				window.location.href = \"byond://?src=[REF(src)];[HrefToken()];remove_job=1;job=" + encodeURIComponent(\"[job]\") +
 					\";name=\" + encodeURIComponent(name) +
 					\";name_g=\" + encodeURIComponent(name_g) +
 					\";wave_ref=\" + encodeURIComponent(wave_ref) +
@@ -1898,7 +1898,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		var name_g = document.getElementById(\"wave_g\").value;
 		var name_mc = document.getElementById(\"wave_mc\").value;
 		var wave_ref = document.getElementById(\"wave_ref\").value;
-		window.location.href = \"?src=[REF(src)];[HrefToken()];add_jobs=1;job=\" + encodeURIComponent(job) +
+		window.location.href = \"byond://?src=[REF(src)];[HrefToken()];add_jobs=1;job=\" + encodeURIComponent(job) +
 			\";name=\" + encodeURIComponent(name) +
 			\";name_g=\" + encodeURIComponent(name_g) +
 			\";wave_ref=\" + encodeURIComponent(wave_ref) +
@@ -1991,7 +1991,7 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 		for(var/client/C in CW.candidates)
 			if(!C || !C.mob || !isdead(C.mob))
 				continue
-				to_chat(C, span_notice("The amount of player(s) didn't reach the minimum amount needed to deploy the wave."))
+			to_chat(C, span_notice("The amount of player(s) didn't reach the minimum amount needed to deploy the wave."))
 		CW.candidates = list()
 		CW.spawn_landmark = null
 		return

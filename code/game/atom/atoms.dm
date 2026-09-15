@@ -27,8 +27,10 @@
 	/// Dirtiness carried by this atom. Wounds and organs use this for infection checks.
 	var/germ_level = GERM_LEVEL_AMBIENT
 
-	///This atom's HUD (med/sec, etc) images. Associative list.
+	/// All of this atom's HUD images. An associative list of HUD category to one image or a list of images.
 	var/list/image/hud_list = null
+	/// The subset of this atom's HUD images currently available to HUD viewers.
+	var/list/image/active_hud_list = null
 	///HUD images that this atom can provide.
 	var/list/hud_possible
 
@@ -279,10 +281,10 @@
  */
 /atom/Destroy(force)
 	set_armor(null)
-	if(alternate_appearances)
-		for(var/K in alternate_appearances)
-			var/datum/atom_hud/alternate_appearance/AA = alternate_appearances[K]
-			AA.remove_from_hud(src)
+	if(length(alternate_appearances))
+		for(var/current_alternate_appearance in alternate_appearances)
+			var/datum/atom_hud/alternate_appearance/selected_alternate_appearance = alternate_appearances[current_alternate_appearance]
+			selected_alternate_appearance.remove_atom_from_hud(src)
 
 	if(reagents)
 		qdel(reagents)
@@ -473,7 +475,7 @@
 	if(istype(src, /mob/living))
 		var/mob/living/L = src
 		if(L.has_status_effect(/datum/status_effect/leash_pet))
-			. += "<A href='?src=[REF(src)];'><span class='warning'>A leash is hooked to a collar!</span></A>"
+			. += "<A href='byond://?src=[REF(src)];'><span class='warning'>A leash is hooked to a collar!</span></A>"
 	var/examine_desc = get_examine_desc(user)
 	if(examine_desc)
 		. += "<span class='info'>[examine_desc]</span>"
@@ -516,10 +518,24 @@
 					var/list/full_reagents = list()
 					for(var/datum/reagent/R in reagents.reagent_list)
 						if(R.volume > 0)
-							full_reagents += "[lowertext(R.name)]"
+							full_reagents += "[LOWER_TEXT(R.name)]"
 					if(length(full_reagents))
 						. += span_notice("I can identity this smell as [full_reagents.Join(", ")].")
 	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, user, .)
+
+/**
+ * Called when a mob examines this atom twice within EXAMINE_MORE_WINDOW.
+ *
+ * Extended examination is for optional detail that should not crowd the normal
+ * examination output. Listeners may append lines to the returned list.
+ */
+/atom/proc/examine_more(mob/user)
+	SHOULD_CALL_PARENT(TRUE)
+	RETURN_TYPE(/list)
+
+	. = list()
+	SEND_SIGNAL(src, COMSIG_ATOM_EXAMINE_MORE, user, .)
+	SEND_SIGNAL(user, COMSIG_MOB_EXAMINING_MORE, src, .)
 
 /atom/proc/get_mechanics_examine(mob/user)
 	return list()
@@ -1053,7 +1069,7 @@
 	. = ..()
 	var/refid = REF(src)
 	. += "[VV_HREF_TARGETREF(refid, VV_HK_AUTO_RENAME, "<b id='name'>[src]</b>")]"
-	. += "<br><font size='1'><a href='?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=left'><<</a> <a href='?_src_=vars;[HrefToken()];datumedit=[refid];varnameedit=dir' id='dir'>[dir2text(dir) || dir]</a> <a href='?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=right'>>></a></font>"
+	. += "<br><font size='1'><a href='byond://?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=left'><<</a> <a href='byond://?_src_=vars;[HrefToken()];datumedit=[refid];varnameedit=dir' id='dir'>[dir2text(dir) || dir]</a> <a href='byond://?_src_=vars;[HrefToken()];rotatedatum=[refid];rotatedir=right'>>></a></font>"
 
 ///Where atoms should drop if taken from this atom
 /atom/proc/drop_location()

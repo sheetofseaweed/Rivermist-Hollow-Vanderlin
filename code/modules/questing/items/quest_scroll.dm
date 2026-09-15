@@ -115,8 +115,7 @@ GLOBAL_LIST_EMPTY(quest_scrolls)
 		return
 
 	// Claim the quest
-	assigned_quest.quest_receiver_reference = WEAKREF(user)
-	assigned_quest.quest_receiver_name = user.real_name
+	assigned_quest.on_claim(user)
 
 	to_chat(user, span_notice("You claim this contract for yourself!"))
 	update_quest_text()
@@ -159,16 +158,18 @@ GLOBAL_LIST_EMPTY(quest_scrolls)
 		scroll_text += "<br><center><b>CONTRACT COMPLETE</b></center>"
 		scroll_text += "<br><b>Return this scroll to [turn_in_ledger_name] to claim your reward!</b>"
 		scroll_text += "<br><i>Place it on the marked area next to the book.</i>"
-		if(assigned_quest.quest_giver_reference)
-			scroll_text += "<br><br><i>Return this to [assigned_quest.quest_giver_name] for increased pay!</i>"
-		else if(assigned_quest.show_handler_advice)
-			scroll_text += "<br><br><i>Consider getting in touch with a Merchant, Banker, or Steward for your next quest for increased pay!</i>"
+		if(!assigned_quest.player_commission)
+			if(assigned_quest.quest_giver_reference)
+				scroll_text += "<br><br><i>Return this to [assigned_quest.quest_giver_name] for increased pay!</i>"
+			else if(assigned_quest.show_handler_advice)
+				scroll_text += "<br><br><i>Consider getting in touch with a Merchant, Banker, or Steward for your next quest for increased pay!</i>"
 	else
 		scroll_text += "<br><i>The magic in this scroll will update as you progress.</i>"
-		if(assigned_quest.quest_giver_reference)
-			scroll_text += "<br><br><i>Returning this to [assigned_quest.quest_giver_name] upon completion will yield increased pay!</i>"
-		else if(assigned_quest.show_handler_advice)
-			scroll_text += "<br><br><i>Consider getting in touch with a Merchant, Banker, or Steward for your next quest for increased pay!</i>"
+		if(!assigned_quest.player_commission)
+			if(assigned_quest.quest_giver_reference)
+				scroll_text += "<br><br><i>Returning this to [assigned_quest.quest_giver_name] upon completion will yield increased pay!</i>"
+			else if(assigned_quest.show_handler_advice)
+				scroll_text += "<br><br><i>Consider getting in touch with a Merchant, Banker, or Steward for your next quest for increased pay!</i>"
 		scroll_text += "<br><i>[compass_hint_text]</i>"
 
 	info = scroll_text

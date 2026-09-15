@@ -96,7 +96,7 @@
 	"ORANGE"="#b86f0c",
 	"Royal Majenta"="#962e5c")
 	var/mob/living/carbon/human/L = loc
-	var/choice = input(L, "Choose a color.", "COLORPLEX") as anything in colors
+	var/choice = input(L, "Choose a color.", "COLORPLEX") in colors
 	var/playerchoice = colors[choice]
 	picked = TRUE
 	detail_color = playerchoice

@@ -117,6 +117,11 @@
 	} while (0)
 
 #define HAS_TRAIT(target, trait) (target.status_traits?[trait] ? TRUE : FALSE)
+/// A simple helper for checking traits in a mob's mind.
+#define HAS_MIND_TRAIT(target, trait) (target.mind ? HAS_TRAIT(target.mind, trait) : FALSE)
+/// Checks both a mob and its mind for a trait.
+#define HAS_CHARACTER_TRAIT(target, trait) (HAS_TRAIT(target, trait) || (target.mind ? HAS_TRAIT(target.mind, trait) : FALSE))
+
 #define HAS_ANY_OF_TRAITS(target, traits) length(target.status_traits & traits)
 #define HAS_TRAIT_FROM(target, trait, source) (HAS_TRAIT(target, trait) && (source in target.status_traits[trait]))
 #define HAS_TRAIT_FROM_ONLY(target, trait, source) (HAS_TRAIT(target, trait) && (source in target.status_traits[trait]) && (length(target.status_traits[trait]) == 1))
@@ -126,5 +131,3 @@
 #define GET_TRAIT_SOURCES(target, trait) (target.status_traits?[trait] || list())
 /// Returns the amount of sources for a trait. useful if you don't want to have a "thing counter" stuck around all the time
 #define COUNT_TRAIT_SOURCES(target, trait) length(GET_TRAIT_SOURCES(target, trait))
-/// A simple helper for checking traits in a mob's mind
-#define HAS_MIND_TRAIT(target, trait) (HAS_TRAIT(target, trait) || (target.mind ? HAS_TRAIT(target.mind, trait) : FALSE))

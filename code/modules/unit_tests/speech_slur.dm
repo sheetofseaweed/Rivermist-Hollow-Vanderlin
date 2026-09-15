@@ -10,7 +10,7 @@
 
 	var/slurred = aroused_slur(message)
 	TEST_ASSERT(!findtext(uppertext(slurred), "BURP"), "Aroused slurring should not add drunk burps.")
-	TEST_ASSERT(!findtext(lowertext(slurred), "huuuhhh"), "Aroused slurring should not add drunk filler interjections.")
+	TEST_ASSERT(!findtext(LOWER_TEXT(slurred), "huuuhhh"), "Aroused slurring should not add drunk filler interjections.")
 
 /datum/unit_test/cumbrained_uses_aroused_slurring
 #ifdef FOCUS_SPEECH_SLUR_TEST

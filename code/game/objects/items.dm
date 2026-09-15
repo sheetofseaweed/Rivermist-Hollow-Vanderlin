@@ -5,6 +5,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /obj/item
 	name = "item"
+	/// Name shown only when this item is seen on another mob, allowing disguised equipment to conceal its exact identity.
+	var/examine_name
 	var/original_name = null // Stores the original name if item was renamed
 	icon = 'icons/obj/items_and_weapons.dmi'
 	pass_flags_self = PASSITEM
@@ -1742,6 +1744,17 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 				if(1 to 4)
 					if(alch_skill >= SKILL_LEVEL_EXPERT)
 						. += span_notice(" Smells faintly of [smell].")
+
+/obj/item/get_examine_string(mob/user, thats = FALSE, use_examine_name = FALSE)
+	if(!examine_name || !use_examine_name)
+		return ..()
+
+	var/display_name = article ? "[article] <b>[examine_name]</b>" : gender == PLURAL ? "some <b>[examine_name]</b>" : "\a <b>[examine_name]</b>"
+	// Seed signal overrides with the concealed name so decals such as blood do not reveal the real item.
+	var/list/override = list(article || (gender == PLURAL ? "some" : "a"), " ", "<b>[examine_name]</b>")
+	if(SEND_SIGNAL(src, COMSIG_ATOM_GET_EXAMINE_NAME, user, override) & COMPONENT_EXNAME_CHANGED)
+		display_name = override.Join("")
+	return "[thats ? ismob(src) ? "This is " : "That's " : ""][display_name]"
 
 /**
  * Returns the atom(either itself or an internal module) that will interact/attack the target on behalf of us

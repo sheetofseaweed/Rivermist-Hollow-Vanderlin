@@ -244,7 +244,7 @@ GLOBAL_LIST(teleport_runes)
 /obj/effect/decal/cleanable/roguerune/proc/invoke(list/invokers, datum/runerituals/runeritual)		//Generic invoke proc. This will be defined on every rune, along with effects.If you want to make an object, or provide a buff, do so through this proc., have both here.
 	rune_in_use = FALSE
 	var/list/atom/movable/atoms_in_range = list()
-	for(var/atom/close_atom as anything in range(runesize, src))
+	for(var/atom/close_atom in range(runesize, src))
 		if(!ismovable(close_atom))
 			continue
 		if(isitem(close_atom))

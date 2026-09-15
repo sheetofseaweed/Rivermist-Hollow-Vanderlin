@@ -132,7 +132,7 @@
 	if(owner.client?.prefs?.read_preference(/datum/preference/toggle/crt))
 		scannies.alpha = 70
 
-	for(var/element as anything in BROODMOTHER_HUD_ELEMENTS)
+	for(var/element in BROODMOTHER_HUD_ELEMENTS)
 		using = new element()
 		using.set_new_hud(src)
 		static_inventory += using

@@ -78,7 +78,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 /// This handles the application of special abilities
 /datum/antagonist/proc/apply_innate_effects(mob/living/mob_override)
 	var/mob/living/M = mob_override || owner.current
-	for(var/trait as anything in innate_traits)
+	for(var/trait in innate_traits)
 		ADD_TRAIT(M, trait, "[type]")
 
 /// This handles the removal of special abilities
@@ -86,7 +86,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 	var/mob/living/M = mob_override || owner.current
 	if(!istype(M))
 		return
-	for(var/trait as anything in innate_traits)
+	for(var/trait in innate_traits)
 		REMOVE_TRAIT(M, trait, "[type]")
 
 /// Adds the specified antag hud to the player. Usually called in an antag datum file
@@ -155,6 +155,7 @@ GLOBAL_LIST_EMPTY(antagonists)
 	remove_innate_effects()
 	clear_antag_stress()
 	remove_antag_hud(antag_hud_type, antag_hud_name)
+
 	if(owner)
 		LAZYREMOVE(owner.antag_datums, src)
 		if(owner.current)
@@ -165,9 +166,14 @@ GLOBAL_LIST_EMPTY(antagonists)
 				human_user.add_quirk(/datum/quirk/vice/pacifist)
 			if(!silent)
 				farewell()
+
 	var/datum/team/team = get_team()
 	if(team)
 		team.remove_member(owner)
+
+	if(owner.current)
+		SEND_SIGNAL(owner.current, COMSIG_MOB_ANTAGONIST_REMOVED, src)
+
 	qdel(src)
 
 /datum/antagonist/proc/greet()

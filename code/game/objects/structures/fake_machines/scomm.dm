@@ -165,7 +165,7 @@
 	if(H.voicecolor_override)
 		usedcolor = H.voicecolor_override
 	if(raw_message)
-		if(lowertext(raw_message) == "say laws")
+		if(LOWER_TEXT(raw_message) == "say laws")
 			dictate_laws()
 			return
 		//RMH EDITED START - garrison SCOM ring integration: designation tag + garrison-line routing
@@ -284,6 +284,37 @@
 	//subtypes can fully replace it without ..() re-running this general-line send
 	do_scom_broadcast(user)
 
+/**
+ * Everything that allowed the broadcast to start has to hold at the moment it
+ * actually goes out: input() sleeps for as long as the player leaves the prompt
+ * open, and the ring can be dropped, stolen or carried out of reach meanwhile.
+ */
+/obj/item/scomstone/proc/can_still_broadcast(mob/living/user)
+	if(QDELETED(src) || QDELETED(user))
+		return FALSE
+	if(!user.can_perform_action(src, FORBID_TELEKINESIS_REACH|NEED_DEXTERITY))
+		return FALSE
+	if(check_cooldown(user))
+		return FALSE
+	return TRUE
+
+/**
+ * Turns raw player input into something safe to hand every listener.
+ *
+ * The broadcast path writes this text straight into other people's chat without
+ * going through mob speech encoding, so it is encoded and length-capped here,
+ * before any server-owned markup is wrapped around it. Returns null for input
+ * that is empty once trimmed.
+ */
+/obj/item/scomstone/proc/format_scom_message(input_text)
+	var/message = trim(input_text, MAX_BROADCAST_LEN)
+	if(!length(message))
+		return null
+	// Measured before encoding: entities inflate the length of ordinary text
+	var/is_long = length(message) > 100
+	message = sanitize(message)
+	return is_long ? "<small>[message]</small>" : message
+
 /obj/item/scomstone/proc/do_scom_broadcast(mob/living/user)
 	if(check_cooldown(user))
 		return
@@ -293,9 +324,7 @@
 	if(!input_text)
 		return
 	//input() sleeps - recheck, or several prompts opened at once all fire
-	if(QDELETED(src) || !user)
-		return
-	if(check_cooldown(user))
+	if(!can_still_broadcast(user))
 		return
 	//voice_color only exists on /mob/living/carbon/human, guard against generic mob/living
 	var/usedcolor = "a0a0a0"
@@ -304,8 +333,9 @@
 		usedcolor = H.voice_color
 	if(user.voicecolor_override)
 		usedcolor = user.voicecolor_override
-	if(length(input_text) > 100)
-		input_text = "<small>[input_text]</small>"
+	input_text = format_scom_message(input_text)
+	if(!input_text)
+		return
 	for(var/obj/structure/fake_machine/scomm/S in SSroguemachine.scomm_machines)
 		S.repeat_message(input_text, src, usedcolor)
 	for(var/obj/item/scomstone/S in SSroguemachine.scomm_machines)
@@ -406,6 +436,16 @@
 //RMH EDITED START - overriding do_scom_broadcast (not attack_hand_secondary) so this
 //fully replaces the general-line send instead of running both; fixes crownstone
 //always broadcasting uncolored on the general line regardless of garrisonline
+/// A crownstone is spoken into, so a covered mouth blocks it - before the
+/// prompt and again after it, since a sack can go over the head meanwhile.
+/obj/item/scomstone/garrison/can_still_broadcast(mob/living/user)
+	if(!..())
+		return FALSE
+	if(!get_location_accessible(user, BODY_ZONE_PRECISE_MOUTH, grabs = TRUE))
+		to_chat(user, span_warning("My mouth is covered!"))
+		return FALSE
+	return TRUE
+
 /obj/item/scomstone/garrison/do_scom_broadcast(mob/living/user)
 	if(check_cooldown(user))
 		return
@@ -418,9 +458,7 @@
 	if(!input_text)
 		return
 	//input() sleeps - recheck, or several prompts opened at once all fire
-	if(QDELETED(src) || !user)
-		return
-	if(check_cooldown(user))
+	if(!can_still_broadcast(user))
 		return
 	var/usedcolor = "a0a0a0"
 	if(ishuman(user))
@@ -428,8 +466,9 @@
 		usedcolor = H.voice_color
 	if(user.voicecolor_override)
 		usedcolor = user.voicecolor_override
-	if(length(input_text) > 100)
-		input_text = "<small>[input_text]</small>"
+	input_text = format_scom_message(input_text)
+	if(!input_text)
+		return
 	playsound(loc, 'sound/misc/garrisonscom.ogg', 100, FALSE, -1)
 	if(garrisonline)
 		input_text = "<big><span style='color: [GARRISON_SCOM_COLOR]'>[input_text]</span></big>"

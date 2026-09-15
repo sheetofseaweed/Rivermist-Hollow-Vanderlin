@@ -125,6 +125,7 @@
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
 #include "reflection_tracking.dm"
+#include "relics.dm"
 #include "required_map_items.dm"
 #include "resist.dm"
 #include "resurrection_rune.dm"

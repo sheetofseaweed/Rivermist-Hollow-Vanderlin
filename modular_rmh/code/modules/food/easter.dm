@@ -51,7 +51,7 @@
 	E.icon_state = options[choice]
 	E.update_appearance()
 
-	to_chat(user, span_notice("You paint [E] [lowertext(choice)]."))
+	to_chat(user, span_notice("You paint [E] [LOWER_TEXT(choice)]."))
 	return TRUE
 
 // HARPY / OVIPOSITION EGG PAINTING
@@ -82,7 +82,7 @@
 	O.custom_painted_icon_state = options[choice]
 	O.custom_painted_color = null
 	O.update_appearance()
-	to_chat(user, span_notice("You carefully paint [O] [lowertext(choice)]."))
+	to_chat(user, span_notice("You carefully paint [O] [LOWER_TEXT(choice)]."))
 	return TRUE
 
 // CHOCOLATE EGGS

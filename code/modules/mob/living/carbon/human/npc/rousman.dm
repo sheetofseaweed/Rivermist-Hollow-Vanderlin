@@ -243,6 +243,8 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 	ADD_TRAIT(src, TRAIT_CRITICAL_WEAKNESS, TRAIT_GENERIC)
 
 /datum/component/rot/corpse/rousman/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	var/amt2add = 10 //1 second
 	var/time_elapsed = last_process ? (world.time - last_process)/10 : 1
 	if(last_process)

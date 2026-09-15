@@ -80,7 +80,7 @@
 		return
 	if(!picked)
 		var/list/icons = SKULLMET_ICONS
-		var/choice = input(user, "Choose a helmet design.", "Helmet designs") as anything in icons
+		var/choice = input(user, "Choose a helmet design.", "Helmet designs") in icons
 		var/playerchoice = icons[choice]
 		picked = TRUE
 		icon_state = playerchoice

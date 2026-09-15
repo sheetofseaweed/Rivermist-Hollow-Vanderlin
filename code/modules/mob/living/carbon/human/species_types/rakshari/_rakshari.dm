@@ -168,6 +168,8 @@
 	C.grant_language(/datum/language/zalad)
 	add_verb(C, /mob/living/carbon/human/species/rakshari/verb/emote_meow)
 	add_verb(C, /mob/living/carbon/human/species/rakshari/verb/emote_purr)
+	var/datum/action/cooldown/keen_nose/sniff_action = new(C)
+	sniff_action.Grant(C)
 	to_chat(C, "<span class='info'>I can speak Zakhara with ,z before my speech.</span>")
 
 /datum/species/rakshari/check_roundstart_eligible()
@@ -193,6 +195,9 @@
 /datum/species/rakshari/on_species_loss(mob/living/carbon/C)
 	. = ..()
 	UnregisterSignal(C, COMSIG_MOB_SAY)
+	for(var/datum/action/cooldown/keen_nose/sniff_action in C.actions)
+		if(sniff_action.target == C)
+			qdel(sniff_action)
 
 /datum/species/rakshari/qualifies_for_rank(rank, list/features)
 	return TRUE
@@ -229,4 +234,110 @@
 	"orange - rust" = "bc5e35",
 	"orange - flame" = "b24c2e",
 	))
+
+/datum/action/cooldown/keen_nose
+	name = "Sniff for scents"
+	desc = "Smell the air to detect living beings at a distance."
+	button_icon_state = "shieldsparkles"
+	check_flags = AB_CHECK_CONSCIOUS
+	cooldown_time = 30 SECONDS
+
+/datum/action/cooldown/keen_nose/proc/get_smell_message(mob/living/target)
+	if(ishuman(target))
+		var/mob/living/carbon/human/target_human = target
+		var/mob/living/carbon/human/sniffer = owner
+		var/datum/species/target_species = target_human.dna?.species
+		var/datum/species/sniffer_species = sniffer?.dna?.species
+
+		if(IS_WEREWOLF(target_human) && IS_WEREWOLF(sniffer))
+			return "You smell [target_human.name], a fellow werewolf"
+		if((target_human.mob_biotypes & MOB_UNDEAD) || target_human.stat == DEAD || target_human.hygiene <= HYGIENE_LEVEL_DIRTY)
+			return "Eugh! You smell something rotten"
+		if(!target_species || !sniffer_species)
+			return "You smell someone unfamiliar"
+		if(istype(target_species, /datum/species/rakshari) && istype(sniffer_species, /datum/species/rakshari))
+			return "You smell [target_human.name], a fellow rakshari"
+
+		var/static/list/animal_scent_species = list(
+			SPEC_ID_BEASTKIN,
+			SPEC_ID_BEASTKINSMALL,
+			SPEC_ID_DRAGONBORN,
+			SPEC_ID_FLUVIAN,
+			SPEC_ID_GNOLL,
+			SPEC_ID_GOBLIN,
+			SPEC_ID_HALF_BEASTKINSMALL,
+			SPEC_ID_HOLLOWKIN,
+			SPEC_ID_HUMAN_SPACE,
+			SPEC_ID_KOBOLD,
+			SPEC_ID_KOBOLD_FORMIKRAG,
+			SPEC_ID_LIZARDFOLK,
+			SPEC_ID_ORC,
+			SPEC_ID_RAKSHARI,
+			SPEC_ID_ROUSMAN,
+			SPEC_ID_TABAXI,
+			SPEC_ID_TAUR_KIN,
+			SPEC_ID_YUANTI,
+		)
+		if(target_species.id in animal_scent_species)
+			return "You smell an animal"
+		if(target_species.id in RACES_PLAYER_NONDISCRIMINATED)
+			return "You smell someone humanlike"
+		if(target_species.id in RACES_PLAYER_HERETICAL_RACE)
+			return "Ugh! You smell something tainted"
+		return "You smell someone unfamiliar"
+
+	if(istype(target, /mob/living/simple_animal))
+		return "You smell an animal"
+	if((target.mob_biotypes & MOB_UNDEAD) || target.stat == DEAD)
+		return "Eugh! You smell something rotten"
+	return "You smell something"
+
+/datum/action/cooldown/keen_nose/Activate(atom/target)
+	. = ..()
+	if(!owner)
+		return
+
+	var/list/smelled_targets = list()
+	for(var/mob/living/smell_target in range(20, owner))
+		if(smell_target != owner)
+			smelled_targets += smell_target
+
+	owner.visible_message(span_notice("[owner] sniffs the air!"))
+	playsound(owner, 'sound/items/sniff.ogg', 70, TRUE)
+	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(playsound), owner, 'sound/items/sniff.ogg', 70, TRUE), 0.5 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(finish_sniff), smelled_targets), 1.5 SECONDS)
+
+/datum/action/cooldown/keen_nose/proc/finish_sniff(list/smelled_targets)
+	if(QDELETED(owner) || QDELETED(src))
+		return
+
+	playsound(owner, 'sound/items/sniff.ogg', 100, TRUE)
+	if(!length(smelled_targets))
+		to_chat(owner, span_notice("You smell the air! No creatures are nearby, save yourself."))
+		return
+
+	var/turf/owner_turf = get_turf(owner)
+	if(!owner_turf)
+		return
+	for(var/mob/living/smell_target as anything in smelled_targets)
+		if(QDELETED(smell_target))
+			continue
+		var/turf/target_turf = get_turf(smell_target)
+		if(!target_turf || target_turf.z != owner_turf.z)
+			continue
+		var/distance = get_dist(owner_turf, target_turf)
+		var/direction = dir2text(get_dir(owner, smell_target))
+		var/distance_phrase
+		if(smell_target.loc == owner.loc)
+			distance_phrase = " right beside you"
+		else if(distance <= 6)
+			distance_phrase = " close to the [direction]"
+		else if(distance > 12)
+			distance_phrase = " far to the [direction]"
+		else
+			distance_phrase = " to the [direction]"
+
+		var/message = get_smell_message(smell_target)
+		if(message)
+			to_chat(owner, span_notice("[message][distance_phrase]!"))
 

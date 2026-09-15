@@ -159,7 +159,7 @@
 	reagents.add_reagent(herb.herbal_extract, extract_amount, list("quality" = extract_quality))
 	LAZYINITLIST(herbal_support_tags)
 	LAZYINITLIST(herbal_reagent_tags)
-	for(var/tag as anything in herb.herbal_tags)
+	for(var/tag in herb.herbal_tags)
 		herbal_support_tags[tag] = (herbal_support_tags[tag] || 0) + 1
 	if(!herbal_reagent_tags[herb.herbal_extract])
 		herbal_reagent_tags[herb.herbal_extract] = herb.herbal_tags.Copy()
@@ -226,7 +226,7 @@
 		return TRUE
 
 	var/support_count = 0
-	for(var/tag as anything in herbal_reagent_tags[selected_type])
+	for(var/tag in herbal_reagent_tags[selected_type])
 		support_count = max(support_count, herbal_support_tags[tag] || 0)
 	var/concentrated_quality = selected_reagent.recipe_quality
 	if(support_count >= 2)
@@ -270,7 +270,7 @@
 		return FALSE
 	var/has_beneficial_extract = FALSE
 	var/has_poisonous_extract = FALSE
-	for(var/reagent_type as anything in herbal_reagent_tags)
+	for(var/reagent_type in herbal_reagent_tags)
 		if(ispath(reagent_type, /datum/reagent/poison))
 			has_poisonous_extract = TRUE
 		else

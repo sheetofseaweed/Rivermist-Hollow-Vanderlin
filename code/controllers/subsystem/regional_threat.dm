@@ -27,6 +27,12 @@ SUBSYSTEM_DEF(regionthreat)
 			return TR
 	return null
 
+/datum/controller/subsystem/regionthreat/proc/get_region_for_turf(turf/target_turf)
+	var/area/target_area = get_area(target_turf)
+	if(!target_area?.threat_region)
+		return null
+	return get_region(target_area.threat_region)
+
 /datum/threat_region_display
 	var/region_name
 	var/danger_level

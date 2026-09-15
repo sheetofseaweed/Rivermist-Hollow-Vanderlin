@@ -183,7 +183,7 @@
 /datum/ai_behavior/find_aggro_targets/proc/new_turf_found(turf/found, datum/ai_controller/controller, datum/targetting_datum/strategy)
 	var/valid_found = FALSE
 	var/mob/pawn = controller.pawn
-	for(var/maybe_target as anything in found)
+	for(var/maybe_target in found)
 		if(atom_allowed(maybe_target, strategy, pawn, controller))
 			valid_found = TRUE
 			break
@@ -200,7 +200,7 @@
 	var/mob/living/pawn = controller.pawn
 	var/list/accepted_targets = list()
 
-	for(var/maybe_target as anything in found)
+	for(var/maybe_target in found)
 		if(atom_allowed(maybe_target, strategy, pawn, controller))
 			accepted_targets += maybe_target
 

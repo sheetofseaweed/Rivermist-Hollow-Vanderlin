@@ -522,7 +522,7 @@
 		return null
 
 	var/list/scored_action_types = list()
-	for(var/action_type as anything in valid_actions.Copy())
+	for(var/action_type in valid_actions.Copy())
 		if(action_type in scored_action_types)
 			continue
 		scored_action_types += action_type

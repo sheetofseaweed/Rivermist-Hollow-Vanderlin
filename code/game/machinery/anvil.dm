@@ -284,7 +284,7 @@
 			if(R.i_type == i_type_choice && istype(hingot, R::req_bar) && !isnull(R.name))
 				appro_recipe[R.name] = R
 
-	for(var/r_name as anything in appro_recipe)
+	for(var/r_name in appro_recipe)
 		var/datum/anvil_recipe/R = appro_recipe[r_name]
 		if(!R::req_bar)
 			appro_recipe -= r_name

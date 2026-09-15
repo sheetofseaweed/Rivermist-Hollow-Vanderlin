@@ -14,23 +14,42 @@ st=0
 
 # check for ripgrep
 if command -v rg >/dev/null 2>&1; then
-	grep=rg
+	grep_provider() {
+		rg "$@"
+	}
+	grep_name=rg
+	grep_path=$(command -v rg)
 	pcre2_support=1
 	if [ ! rg -P '' >/dev/null 2>&1 ] ; then
 		pcre2_support=0
 	fi
-	code_files="code/**/**.dm modular/**/**.dm modular_rmh/code/**/** modular_rmh/modular/**/**"
-	map_files="_maps/**/**.dmm"
-	code_x_515="code/**/!(__byond_version_compat).dm"
+	code_files=( . -g '*.dm' -g '!.claude/**' -g '!DMCompiler_linux-x64/**' -g '!tmp/**' -g '!tools/ci/od_lints.dm' -g '!tools/CatchUnescapedBrackets/**' -g '!html/changelogs/**' )
+	browser_script_files=( html/browser -g '*.js' )
+	map_files=( _maps -g '*.dmm' )
+	code_x_515=( code -g '*.dm' -g '!**/__byond_version_compat.dm' )
 else
+	grep_provider() {
+		local argument
+		for argument in "$@"; do
+			if [[ $argument == -*P* ]]; then
+				command grep "$@"
+				return
+			fi
+		done
+		command grep -E "$@"
+	}
+	grep_name=grep
+	grep_path=$(command -v grep)
 	pcre2_support=0
-	grep=grep
-	code_files="-r --include=code/**/**.dm --include=modular/**/**.dm --include=modular_rmh/code/**/**.dm --include=modular_rmh/modular/**/**.dm"
-	map_files="-r --include=_maps/**/**.dmm"
-	code_x_515="-r --include=code/**/!(__byond_version_compat).dm"
+	code_files=( -r --include='*.dm' --exclude-dir='.git' --exclude-dir='.claude' --exclude-dir='node_modules' --exclude-dir='tmp' --exclude-dir='DMCompiler_linux-x64' --exclude-dir='DMCompiler_win-x64' --exclude='od_lints.dm' --exclude-dir='CatchUnescapedBrackets' --exclude-dir='changelogs' . )
+	browser_script_files=( -r --include='*.js' html/browser )
+	map_files=( -r --include='*.dmm' _maps )
+	code_x_515=( -r --include='*.dm' --exclude='__byond_version_compat.dm' code )
 fi
 
-echo -e "${BLUE}Using grep provider at $(which $grep)${NC}"
+grep=grep_provider
+
+echo -e "${BLUE}Using grep provider at $grep_path${NC}"
 
 part=0
 section() {
@@ -47,61 +66,44 @@ part() {
 section "map issues"
 
 part "TGM"
-if $grep -U '^".+" = \(.+\)' $map_files;	then
+if $grep -U '^".+" = \(.+\)' "${map_files[@]}";	then
 	echo
     echo -e "${RED}ERROR: Non-TGM formatted map detected. Please convert it using Map Merger!${NC}"
     st=1
 fi;
 part "comments"
-if $grep '//' $map_files | $grep -v '//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE' | $grep -v 'name|desc'; then
+if $grep '[/][/]' "${map_files[@]}" | $grep -v '//MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE' | $grep -v 'name|desc'; then
 	echo
 	echo -e "${RED}ERROR: Unexpected commented out line detected in this map file. Please remove it.${NC}"
 	st=1
 fi;
 part "iconstate tags"
-if $grep '^\ttag = "icon' $map_files;	then
+if $grep '^\ttag = "icon' "${map_files[@]}";	then
 	echo
     echo -e "${RED}ERROR: Tag vars from icon state generation detected in maps, please remove them.${NC}"
     st=1
 fi;
 part "invalid map procs"
-if $grep '(new|newlist|icon|matrix|sound)\(.+\)' $map_files;	then
+if $grep '(new|newlist|icon|matrix|sound)\(.+\)' "${map_files[@]}";	then
 	echo
 	echo -e "${RED}ERROR: Using unsupported procs in variables in a map file! Please remove all instances of this.${NC}"
 	st=1
 fi;
 part "armor lists"
-if $grep '\tarmor = list' $map_files; then
+if $grep '\tarmor = list' "${map_files[@]}"; then
 	echo
 	echo -e "${RED}ERROR: Outdated armor list in map file.${NC}"
 	st=1
 fi;
-part "common spelling mistakes"
-if $grep -i 'nanotransen' $map_files; then
-	echo
-    echo -e "${RED}ERROR: Misspelling(s) of Nanotrasen detected in maps, please remove the extra N(s).${NC}"
-    st=1
-fi;
-if $grep 'NanoTrasen' $map_files; then
-	echo
-    echo -e "${RED}ERROR: Misspelling(s) of Nanotrasen detected in maps, please uncapitalize the T(s).${NC}"
-    st=1
-fi;
-if $grep -i'centcomm' $map_files; then
-	echo
-    echo -e "${RED}ERROR: Misspelling(s) of CentCom detected in maps, please remove the extra M(s).${NC}"
-    st=1
-fi;
-
 section "whitespace issues"
 part "space indentation"
-if $grep '(^ {2})|(^ [^ * ])|(^    +)' $code_files; then
+if $grep '(^ {2})|(^ [^ * ])|(^    +)' "${code_files[@]}"; then
 	echo
     echo -e "${RED}ERROR: Space indentation detected, please use tab indentation.${NC}"
     st=1
 fi;
 part "mixed indentation"
-if $grep '^\t+ [^ *]' $code_files; then
+if $grep '^\t+ [^ *]' "${code_files[@]}"; then
 	echo
     echo -e "${RED}ERROR: Mixed <tab><space> indentation detected, please stick to tab indentation.${NC}"
     st=1
@@ -119,67 +121,105 @@ fi;
 # 	st=1
 # fi;
 
+section "516 Href Styles"
+part "byond href styles"
+if $grep "href\s*=\s*['\"\\\\]*\?" "${code_files[@]}" || $grep "href\s*=\s*['\"\\\\]*\?" "${browser_script_files[@]}"; then
+	echo
+	echo -e "${RED}ERROR: BYOND requires internal href links to begin with \"byond://\".${NC}"
+	st=1
+fi;
+
 section "common mistakes"
 part "global vars"
-if $grep '^/*var/' $code_files; then
+if $grep '^/*var/' "${code_files[@]}"; then
 	echo
 	echo -e "${RED}ERROR: Unmanaged global var use detected in code, please use the helpers.${NC}"
 	st=1
 fi;
 
 part "proc args with var/"
-if $grep '^/[\w/]\S+\(.*(var/|, ?var/.*).*\)' $code_files; then
+if $grep '^/[\w/]\S+\(.*(var/|, ?var/.*).*\)' "${code_files[@]}"; then
 	echo
 	echo -e "${RED}ERROR: Changed files contains a proc argument starting with 'var'.${NC}"
 	st=1
 fi;
 
 part "src as a trait source" # ideally we'd lint / test for ANY datum reference as a trait source, but 'src' is the most common.
-if $grep -i '(add_trait|remove_trait)\(.+,\s*.+,\s*src\)' $code_files; then
+if $grep -i '(add_trait|remove_trait)\(.+,\s*.+,\s*src\)' "${code_files[@]}"; then
 	echo
 	echo -e "${RED}ERROR: Using 'src' as a trait source. Source must be a string key - dont't use references to datums as a source, perhaps use 'REF(src)'.${NC}"
 	st=1
 fi;
-if $grep -i '(add_traits|remove_traits)\(.+,\s*src\)' $code_files; then
+if $grep -i '(add_traits|remove_traits)\(.+,\s*src\)' "${code_files[@]}"; then
 	echo
 	echo -e "${RED}ERROR: Using 'src' as trait sources. Source must be a string key - dont't use references to datums as sources, perhaps use 'REF(src)'.${NC}"
 	st=1
 fi;
 
 part "improperly pathed static lists"
-if $grep -i 'var/list/static/.*' $code_files; then
+if $grep -i 'var/list/static/.*' "${code_files[@]}"; then
 	echo
 	echo -e "${RED}ERROR: Found incorrect static list definition 'var/list/static/', it should be 'var/static/list/' instead.${NC}"
 	st=1
 fi;
 
-# Disabled because I can't be assed to care about this, but it might be a nice change in the future.
-# part "ensure proper lowertext usage"
-# # lowertext() is a BYOND-level proc, so it can be used in any sort of code... including the TGS DMAPI which we don't manage in this repository.
-# # basically, we filter out any results with "tgs" in it to account for this edgecase without having to enforce this rule in that separate codebase.
-# # grepping the grep results is a bit of a sad solution to this but it's pretty much the only option in our existing linter framework
-# if $grep -i 'lowertext\(.+\)' $code_files | $grep -v 'UNLINT\(.+\)' | $grep -v '/modules/tgs/'; then
-# 	echo
-# 	echo -e "${RED}ERROR: Found a lowertext() proc call. Please use the LOWER_TEXT() macro instead. If you know what you are doing, wrap your text (ensure it is a string) in UNLINT().${NC}"
-# 	st=1
-# fi;
+part "ensure proper lowertext usage"
+# lowertext() is a BYOND-level proc, so it can be used in any sort of code... including the TGS DMAPI which we don't manage in this repository.
+# Filter those separately managed files, plus explicit UNLINT() uses, out of the results.
+if $grep -i 'lowertext\(.+\)' "${code_files[@]}" | $grep -v 'UNLINT\(.+\)' | $grep -v '[/\\]modules[/\\]tgs[/\\]'; then
+	echo
+	echo -e "${RED}ERROR: Found a lowertext() proc call. Please use the LOWER_TEXT() macro instead. If you know what you are doing, wrap your text (ensure it is a string) in UNLINT().${NC}"
+	st=1
+fi;
 
-part "common spelling mistakes"
-if $grep -i 'centcomm' $code_files; then
+part "balloon_alert sanity"
+if $grep 'balloon_alert\(".*"\)' "${code_files[@]}"; then
 	echo
-    echo -e "${RED}ERROR: Misspelling(s) of CentCom detected in code, please remove the extra M(s).${NC}"
-    st=1
+	echo -e "${RED}ERROR: Found a balloon alert with improper arguments.${NC}"
+	st=1
 fi;
-if $grep -ni 'nanotransen' $code_files; then
+
+if $grep 'balloon_alert\(.*span_' "${code_files[@]}"; then
 	echo
-    echo -e "${RED}ERROR: Misspelling(s) of Nanotrasen detected in code, please remove the extra N(s).${NC}"
-    st=1
+	echo -e "${RED}ERROR: Balloon alerts should never contain spans.${NC}"
+	st=1
 fi;
-if $grep 'NanoTrasen' $code_files; then
+
+part "balloon_alert idiomatic usage"
+if $grep 'balloon_alert\(.*?, ?"[A-Z]' "${code_files[@]}"; then
 	echo
-    echo -e "${RED}ERROR: Misspelling(s) of Nanotrasen detected in code, please uncapitalize the T(s).${NC}"
-    st=1
+	echo -e "${RED}ERROR: Balloon alerts should not start with capital letters. This includes text like 'AI'. If this is a false positive, wrap the text in UNLINT().${NC}"
+	st=1
 fi;
+
+part "update_icon_updates_onmob element usage"
+if $grep 'AddElement\(/datum/element/update_icon_updates_onmob.+ITEM_SLOT_HANDS' "${code_files[@]}"; then
+	echo
+	echo -e "${RED}ERROR: update_icon_updates_onmob automatically refreshes held-item overlays; ITEM_SLOT_HANDS is redundant.${NC}"
+	st=1
+fi;
+
+part "forceMove sanity"
+if $grep 'forceMove\(\s*(\w+\(\)|\w+)\s*,\s*(\w+\(\)|\w+)\s*\)' "${code_files[@]}"; then
+	echo
+	echo -e "${RED}ERROR: forceMove() takes one destination argument and must be called as x.forceMove(y).${NC}"
+	st=1
+fi;
+
+part "as anything on typeless loops"
+if $grep 'var/[^/]+ as anything' "${code_files[@]}"; then
+	echo
+	echo -e "${RED}ERROR: 'as anything' used in a typeless for loop. It has no effect and should be removed.${NC}"
+	st=1
+fi;
+
+part "as anything on internal functions"
+if $grep 'var/[^[:space:]]+/[^[:space:]]+ as anything in o?(view|range|hearers)\(' "${code_files[@]}"; then
+	echo
+	echo -e "${RED}ERROR: A typed loop over view/range/hearers uses 'as anything', disabling the built-in type filtering.${NC}"
+	st=1
+fi;
+
 part "map json naming"
 if ls _maps/*.json | $grep "[A-Z]"; then
 	echo
@@ -201,6 +241,13 @@ do
     done < <(jq -r '[.map_file] | flatten | .[]' $json)
 done
 
+part "Ineffective easing flags in animate()"
+if $grep 'easing\w*=\w*(EASE_IN|EASE_OUT|\(EASE_IN\w*\|\w*EASE_OUT\))' "${code_files[@]}"; then
+	echo
+	echo -e "${RED}ERROR: animate() uses EASE_IN/EASE_OUT with the default linear curve, where those flags have no effect.${NC}"
+	st=1
+fi;
+
 part "updatepaths validity"
 missing_txt_lines=$(find tools/UpdatePaths/Scripts -type f ! -name "*.txt" | wc -l)
 if [ $missing_txt_lines -gt 0 ]; then
@@ -219,7 +266,7 @@ fi;
 
 section "515 Proc Syntax"
 part "proc ref syntax"
-if $grep '\.proc/' $code_x_515 ; then
+if $grep '\.proc/' "${code_x_515[@]}" ; then
     echo
     echo -e "${RED}ERROR: Outdated proc reference use detected in code, please use proc reference helpers.${NC}"
     st=1
@@ -228,32 +275,32 @@ fi;
 if [ "$pcre2_support" -eq 1 ]; then
 	section "regexes requiring PCRE2"
 	part "empty variable values"
-	if $grep -PU '{\n\t},' $map_files; then
+	if $grep -PU '{\n\t},' "${map_files[@]}"; then
 		echo
 		echo -e "${RED}ERROR: Empty variable value list detected in map file. Please remove the curly brackets entirely.${NC}"
 		st=1
 	fi;
 	part "to_chat sanity"
-	if $grep -P 'to_chat\((?!.*,).*\)' $code_files; then
+	if $grep -P 'to_chat\((?!.*,).*\)' "${code_files[@]}"; then
 		echo
 		echo -e "${RED}ERROR: to_chat() missing arguments.${NC}"
 		st=1
 	fi;
 	part "timer flag sanity"
-	if $grep -P 'addtimer\((?=.*TIMER_OVERRIDE)(?!.*TIMER_UNIQUE).*\)' $code_files; then
+	if $grep -P 'addtimer\((?=.*TIMER_OVERRIDE)(?!.*TIMER_UNIQUE).*\)' "${code_files[@]}"; then
 		echo
 		echo -e "${RED}ERROR: TIMER_OVERRIDE used without TIMER_UNIQUE.${NC}"
 		st=1
 	fi
 	part "trailing newlines"
-	if $grep -PU '[^\n]$(?!\n)' $code_files; then
+	if $grep -PU '[^\n]$(?!\n)' "${code_files[@]}"; then
 		echo
 		echo -e "${RED}ERROR: File(s) with no trailing newline detected, please add one.${NC}"
 		st=1
 	fi
 	# Fuck it, I'll do this later, there's 1577 of these. Goddammit.
 	# part "improper atom initialize args"
-	# if $grep -P '^/(obj|mob|turf|area|atom)/.+/Initialize\((?!mapload).*\)' $code_files; then
+	# if $grep -P '^/(obj|mob|turf|area|atom)/.+/Initialize\((?!mapload).*\)' "${code_files[@]}"; then
 	# 	echo
 	# 	echo -e "${RED}ERROR: Initialize override without 'mapload' argument.${NC}"
 	# 	st=1
@@ -265,7 +312,7 @@ fi
 
 if [ $st = 0 ]; then
     echo
-    echo -e "${GREEN}No errors found using $grep!${NC}"
+    echo -e "${GREEN}No errors found using $grep_name!${NC}"
 fi;
 
 if [ $st = 1 ]; then

@@ -77,6 +77,10 @@
 #define BB_GATOR_DEATH_ROLL_COOLDOWN "BB_gator_death_roll_cooldown"
 #define BB_GATOR_PREFERRED_TERRITORY "BB_gator_preferred_territory"
 
+/// Key the bramblesnout's charge action is stored under. Lives here rather than
+/// beside the action so the boar and the action can be included in any order.
+#define BB_BOAR_CHARGE "bb_boar_charge"
+
 #define BB_DRAGON_ENRAGED "dragon_enraged"
 #define BB_DRAGON_SWOOPING "dragon_swooping"
 #define BB_DRAGON_RECOVERY_TIME "dragon_recovery_time"

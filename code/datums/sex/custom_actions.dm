@@ -723,8 +723,8 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 	rendered = replacetext(rendered, "{target_them}", html_encode(target.p_them()))
 	rendered = replacetext(rendered, "{user_theirs}", html_encode(user.p_their()))
 	rendered = replacetext(rendered, "{target_theirs}", html_encode(target.p_their()))
-	rendered = replacetext(rendered, "{user_part}", html_encode(lowertext(get_custom_sex_part_label(required_user_part))))
-	rendered = replacetext(rendered, "{target_part}", html_encode(lowertext(get_custom_sex_part_label(required_target_part))))
+	rendered = replacetext(rendered, "{user_part}", html_encode(LOWER_TEXT(get_custom_sex_part_label(required_user_part))))
+	rendered = replacetext(rendered, "{target_part}", html_encode(LOWER_TEXT(get_custom_sex_part_label(required_target_part))))
 	rendered = replacetext(rendered, "{force}", html_encode(get_custom_force_word()))
 	rendered = replacetext(rendered, "{speed}", html_encode(get_custom_speed_word()))
 	return rendered

@@ -114,7 +114,7 @@
 	else
 		if((REALTIMEOFDAY > lower_range) && (REALTIMEOFDAY < upper_range))
 			anvil_presses -= anvil_presses[choice]
-			user.balloon_alert(user, "Great Hit!")
+			user.balloon_alert(user, "great Hit!")
 			playsound(host_anvil, pick('sound/items/bsmith1.ogg','sound/items/bsmith2.ogg','sound/items/bsmith3.ogg','sound/items/bsmith4.ogg'), 100, FALSE)
 
 			// for(var/mob/player as anything in GLOB.player_list)

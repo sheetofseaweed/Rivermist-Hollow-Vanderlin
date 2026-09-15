@@ -261,7 +261,9 @@
 
 	SEND_SIGNAL(surgeon, COMSIG_LIVING_HEALED_OTHER, brute_healed + burn_healed)
 	patient.defeat_try_prepared_recovery(surgeon, "surgery", tool)
-	patient.defeat_treat_tool_physical_trauma(surgeon, list(
+	// This route passes interactive = FALSE, but the provider API can prompt on other
+	// paths and on_success must not sleep. Return value is unused either way.
+	INVOKE_ASYNC(patient, TYPE_PROC_REF(/mob/living, defeat_treat_tool_physical_trauma), surgeon, list(
 		/datum/status_effect/debuff/defeat/physical,
 		/datum/status_effect/debuff/defeat/physical/burn,
 		/datum/status_effect/debuff/defeat/physical/body,

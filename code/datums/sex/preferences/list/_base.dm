@@ -37,14 +37,14 @@
 		next_link = wrap_with_tooltip("<a class='linkOff'>&gt;</a>", lock_reason)
 		choice_link = wrap_with_tooltip("<a class='linkOff'>[html_encode("[current_value]")]</a>", lock_reason)
 	else if(length(choices) > 1)
-		prev_link = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=prev'>&lt;</a>"
-		next_link = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=next'>&gt;</a>"
+		prev_link = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=prev'>&lt;</a>"
+		next_link = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=next'>&gt;</a>"
 	else
 		prev_link = "<a class='linkOff'>&lt;</a>"
 		next_link = "<a class='linkOff'>&gt;</a>"
 
 	if(!length(choice_link) && length(choices) > 1)
-		choice_link = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=choose'>[html_encode("[current_value]")]</a>"
+		choice_link = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=choose'>[html_encode("[current_value]")]</a>"
 	else if(!length(choice_link))
 		choice_link = "<a class='linkOff'>[html_encode("[current_value]")]</a>"
 
@@ -56,7 +56,7 @@
 
 	switch(href_list["action"])
 		if("choose")
-			var/chosen = input(user, "Choose your [lowertext(name)]:", "ERP Preference") as null|anything in choices
+			var/chosen = input(user, "Choose your [LOWER_TEXT(name)]:", "ERP Preference") as null|anything in choices
 			if(chosen)
 				if(!ensure_editable(user, prefs))
 					return

@@ -35,7 +35,7 @@
 /datum/customizer_choice/bodypart_feature/body_hair/generate_pref_choices(list/dat, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()
 	var/datum/customizer_entry/body_hair/body_hair_entry = entry
-	dat += "<br>Growth: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_body_hair_growth'>[body_hair_entry.growth_enabled ? "Enabled" : "Disabled"]</a>"
+	dat += "<br>Growth: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_body_hair_growth'>[body_hair_entry.growth_enabled ? "Enabled" : "Disabled"]</a>"
 
 /datum/customizer_choice/bodypart_feature/body_hair/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()
@@ -76,8 +76,8 @@
 /datum/customizer_choice/bodypart_feature/pubic_hair/generate_pref_choices(list/dat, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()
 	var/datum/customizer_entry/pubic_hair/pubic_hair_entry = entry
-	dat += "<br>Growth: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_pubic_hair_growth'>[pubic_hair_entry.growth_enabled ? "Enabled" : "Disabled"]</a>"
-	dat += "<br>Grooming: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=pubic_hair_grooming'>[body_hair_grooming_name(pubic_hair_entry.grooming_state)]</a>"
+	dat += "<br>Growth: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_pubic_hair_growth'>[pubic_hair_entry.growth_enabled ? "Enabled" : "Disabled"]</a>"
+	dat += "<br>Grooming: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=pubic_hair_grooming'>[body_hair_grooming_name(pubic_hair_entry.grooming_state)]</a>"
 
 /datum/customizer_choice/bodypart_feature/pubic_hair/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()

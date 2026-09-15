@@ -52,7 +52,7 @@
 	. = ..()
 
 	var/weapons = list("Zweihander", "Musket",)
-	var/weapon_choice = input(H,"CHOOSE YOUR WEAPON.", "GO EARN SOME COIN.") as anything in weapons
+	var/weapon_choice = input(H,"CHOOSE YOUR WEAPON.", "GO EARN SOME COIN.") in weapons
 	switch(weapon_choice)
 		if("Zweihander")
 			H.equip_to_slot_or_del(new /obj/item/weapon/sword/long/greatsword/zwei, ITEM_SLOT_BACK_R, TRUE)

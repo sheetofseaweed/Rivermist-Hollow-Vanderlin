@@ -165,7 +165,7 @@ GLOBAL_LIST_INIT(inspiration_songs, list(\
 		var/datum/action/cooldown/spell/undirected/song/spell_item = possible_songs[i]
 		song_choices["[spell_item.name]"] = spell_item
 
-	var/choice = input("Choose a song") as anything in song_choices
+	var/choice = input("Choose a song") in song_choices
 	if(!choice) // user canceled;
 		return
 

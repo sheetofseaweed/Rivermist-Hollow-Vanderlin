@@ -305,7 +305,7 @@
 
 	var/list/choice_list = list()
 	var/choice_number = 0
-	for(var/choice_type as anything in customizer.customizer_choices)
+	for(var/choice_type in customizer.customizer_choices)
 		choice_number++
 		var/datum/customizer_choice/choice = CUSTOMIZER_CHOICE(choice_type)
 		var/choice_label = choice.name
@@ -593,11 +593,11 @@
 	dat += "<div class='extra-actions'>"
 	if(active)
 		if(!extra_genitals_committed || !is_extra_genitals_one_time_choice())
-			dat += "<a href='?src=[REF(src)];extra_genital_action=apply'>Update Set</a>"
+			dat += "<a href='byond://?src=[REF(src)];extra_genital_action=apply'>Update Set</a>"
 		if(can_manually_remove_extra_genitals())
-			dat += "<a class='danger' href='?src=[REF(src)];extra_genital_action=remove'>[remove_label]</a>"
+			dat += "<a class='danger' href='byond://?src=[REF(src)];extra_genital_action=remove'>[remove_label]</a>"
 	else
-		dat += "<a href='?src=[REF(src)];extra_genital_action=apply'>[apply_label]</a>"
+		dat += "<a href='byond://?src=[REF(src)];extra_genital_action=apply'>[apply_label]</a>"
 	dat += "</div>"
 	dat += "</div>"
 
@@ -633,7 +633,7 @@
 	dat += "<div class='extra-card'>"
 	dat += "<h2>[title]</h2>"
 	if(length(customizer.customizer_choices) > 1)
-		dat += "<a class='extra-choice' href='?src=[REF(src)];extra_genital_part=[part];extra_genital_task=change_choice'>[choice.name]</a>"
+		dat += "<a class='extra-choice' href='byond://?src=[REF(src)];extra_genital_part=[part];extra_genital_task=change_choice'>[choice.name]</a>"
 	else
 		dat += "<div class='extra-choice'>[choice.name]</div>"
 

@@ -23,7 +23,7 @@
 /datum/customizer_choice/organ/genitals/vagina/generate_pref_choices(list/dat, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()
 	var/datum/customizer_entry/organ/genitals/vagina/vagina_entry = entry
-	dat += "<br>Fertile: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=fertile''>[vagina_entry.fertility ? "Fertile" : "Sterile"]</a>"
+	dat += "<br>Fertile: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=fertile''>[vagina_entry.fertility ? "Fertile" : "Sterile"]</a>"
 
 /datum/customizer_choice/organ/genitals/vagina/imprint_organ_dna(datum/organ_dna/organ_dna, datum/customizer_entry/entry, datum/preferences/prefs)
 	..()

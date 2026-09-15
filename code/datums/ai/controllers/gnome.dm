@@ -98,7 +98,7 @@
 		return
 
 	var/static/list/boring_words = list("the", "and", "but", "for", "you", "are", "not", "can", "get", "put", "all", "any", "new", "now", "old", "see", "two", "way", "who", "boy", "did", "its", "let", "own", "say", "she", "too", "use")
-	var/list/words = splittext(lowertext(message), " ")
+	var/list/words = splittext(LOWER_TEXT(message), " ")
 
 	for(var/word in words)
 		word = trim(word)

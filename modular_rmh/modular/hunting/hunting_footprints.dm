@@ -124,9 +124,11 @@
 		return
 	// Login wipes client.images but leaves known_by intact, so someone who reconnects is still a
 	// knower with nothing to look at. Searching again has to hand the image back rather than
-	// skip them for already knowing.
+	// skip them for already knowing. The cached reference survives that wipe, so what actually
+	// decides is whether the current client is still carrying the image.
 	if(percepter in known_by)
-		if(!knower_images?[percepter])
+		var/image/personal = knower_images?[percepter]
+		if(!personal || !percepter.client || !(personal in percepter.client.images))
 			restore_image_for(percepter)
 		return
 	if(!check_reveal(percepter))
@@ -170,6 +172,11 @@
 /obj/effect/skill_tracker/footprint/proc/restore_image_for(mob/living/tracker)
 	if(!tracker?.client)
 		return
+	// Drop whatever was cached first, or a client that still holds the old image
+	// (a rebuild that was not caused by a reconnect) ends up with two.
+	var/image/stale = knower_images?[tracker]
+	if(stale)
+		tracker.client.images -= stale
 	var/image/personal = image(icon, src, get_state_for(tracker), BULLET_HOLE_LAYER, original_dir || dir)
 	personal.mouse_opacity = MOUSE_OPACITY_ICON
 	knower_images[tracker] = personal

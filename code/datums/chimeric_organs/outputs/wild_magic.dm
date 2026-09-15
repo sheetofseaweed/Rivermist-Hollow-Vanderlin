@@ -19,7 +19,7 @@
 	var/picked_type = pick(spell_types)
 	var/datum/action/cooldown/spell/picked_spell = new picked_type
 	var/list/atoms_in_range = list()
-	for(var/atom/close_atom as anything in range(3, hosted_carbon))
+	for(var/atom/close_atom in range(3, hosted_carbon))
 		if(isitem(close_atom))
 			continue
 		atoms_in_range |= close_atom

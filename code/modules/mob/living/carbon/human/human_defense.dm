@@ -870,7 +870,7 @@
 		status = "lightly hurt"
 		status_class = "warning"
 
-	var/organ_label = lowertext(organ.name)
+	var/organ_label = LOWER_TEXT(organ.name)
 	var/organ_zone = organ.current_zone || organ.zone
 	if(organ_zone)
 		organ_label += " ([parse_zone(organ_zone)])"
@@ -900,18 +900,18 @@
 			var/obj/item/organ/genitals/filling_organ/filling_organ = genital
 			if(filling_organ.reagents)
 				if(filling_organ.reagents.total_volume)
-					genital_lines += "[lowertext(filling_organ.name)] contains <bold>[filling_organ.reagents.total_volume]/[filling_organ.reagents.maximum_volume] units</bold> of fluid."
+					genital_lines += "[LOWER_TEXT(filling_organ.name)] contains <bold>[filling_organ.reagents.total_volume]/[filling_organ.reagents.maximum_volume] units</bold> of fluid."
 				else
-					genital_lines += "[lowertext(filling_organ.name)] has no fluids."
+					genital_lines += "[LOWER_TEXT(filling_organ.name)] has no fluids."
 
 		var/list/stored_items = genital.contents
 		if(length(stored_items))
-			genital_lines += "There is <bold>[english_list(stored_items)]</bold> in my [lowertext(genital.name)]."
+			genital_lines += "There is <bold>[english_list(stored_items)]</bold> in my [LOWER_TEXT(genital.name)]."
 
 		if(SEND_SIGNAL(genital, COMSIG_BODYSTORAGE_IS_ITEM_TYPE_IN, /obj/item/natural/worms/leech, STORAGE_LAYER_OUTER))
 			for(var/obj/item/natural/worms/leech/invader in genital.contents)
 				if(SEND_SIGNAL(genital, COMSIG_BODYSTORAGE_IS_ITEM_IN, invader, STORAGE_LAYER_OUTER))
-					genital_lines += "☼ <a href='byond://?src=[REF(src)];leech=[REF(invader)];organ=[REF(genital)]'>There's a leech on my [lowertext(genital.name)]!</a>"
+					genital_lines += "☼ <a href='byond://?src=[REF(src)];leech=[REF(invader)];organ=[REF(genital)]'>There's a leech on my [LOWER_TEXT(genital.name)]!</a>"
 
 	return get_self_check_details("Genitals", genital_lines)
 
