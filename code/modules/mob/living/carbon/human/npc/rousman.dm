@@ -16,6 +16,7 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 /mob/living/carbon/human/species/rousman/Initialize()
 	. = ..()
 	update_appearance(UPDATE_OVERLAYS)
+	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
 
 /mob/living/carbon/human/species/rousman/death(gibbed)
 	. = ..()
@@ -197,10 +198,6 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 	update_wearable()
 /mob/living/carbon/human/species/rousman/update_inv_armor()
 	update_wearable()
-
-/mob/living/carbon/human/species/rousman/Initialize()
-	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
 
 /mob/living/carbon/human/species/rousman/after_creation()
 	..()

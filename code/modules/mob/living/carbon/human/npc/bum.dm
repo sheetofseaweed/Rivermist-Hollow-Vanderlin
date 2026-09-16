@@ -13,15 +13,12 @@ GLOBAL_LIST_INIT(bum_aggro, world.file2list('strings/rt/bumaggrolines.txt'))
 /mob/living/carbon/human/species/human/northern/bum/Initialize()
 	. = ..()
 	AddElement(/datum/element/ai_retaliate)
+	AddComponent(/datum/component/ai_aggro_system)
+	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
 
 /mob/living/carbon/human/species/human/northern/bum/ambush
 	ai_controller = /datum/ai_controller/human_bum/aggressive
 	wander = TRUE
-
-/mob/living/carbon/human/species/human/northern/bum/Initialize()
-	. = ..()
-	AddComponent(/datum/component/ai_aggro_system)
-	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
 
 /mob/living/carbon/human/species/human/northern/bum/after_creation()
 	..()
