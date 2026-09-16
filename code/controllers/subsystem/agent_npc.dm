@@ -39,6 +39,10 @@ SUBSYSTEM_DEF(agent_npc)
 	var/tokens_spent = 0
 	/// Sum of live reservations. Admission counts this, not just settled spend.
 	var/tokens_reserved_total = 0
+	/// Reserved for work we walked away from. Possibly billed, cost unknown.
+	var/tokens_unsettled = 0
+	/// Transports we stopped draining before rust-g handed the result back.
+	var/drain_abandoned = 0
 	/// AGENT_REFUSE_* -> count. The first thing to read when something is wrong.
 	var/list/refusal_counts
 
@@ -88,6 +92,8 @@ SUBSYSTEM_DEF(agent_npc)
 	round_token_budget = SSagent_npc.round_token_budget
 	tokens_spent = SSagent_npc.tokens_spent
 	tokens_reserved_total = SSagent_npc.tokens_reserved_total
+	tokens_unsettled = SSagent_npc.tokens_unsettled
+	drain_abandoned = SSagent_npc.drain_abandoned
 
 /datum/controller/subsystem/agent_npc/Shutdown()
 	disable_all("world shutdown")
@@ -138,6 +144,7 @@ SUBSYSTEM_DEF(agent_npc)
 		if(world.time > draining[transport])
 			draining -= transport
 			note_refusal("drain_timeout")
+			drain_abandoned++
 			log_agent("gave up draining a transport after [AGENT_DRAIN_TIMEOUT / 10]s; its native job may be retained")
 			qdel(transport)
 			continue
@@ -163,8 +170,9 @@ SUBSYSTEM_DEF(agent_npc)
 			continue
 		note_refusal(AGENT_REFUSE_DEADLINE)
 		binding.record_result(AGENT_RESULT_EXPIRED, "deadline passed")
-		// A timeout is a transport failure: back off rather than retry instantly.
-		binding.note_failure(null)
+		// A timeout is a transport failure: back off rather than retry instantly,
+		// and restore the trigger the timed-out request was carrying.
+		binding.note_failure(binding.pending.sent_events?.Copy())
 		binding.abandon_pending("deadline")
 		in_flight -= binding
 		if(MC_TICK_CHECK)
@@ -182,16 +190,20 @@ SUBSYSTEM_DEF(agent_npc)
 		var/datum/agent_request/request = binding.pending
 		var/datum/agent_response/response = agent_validate_response(request, binding)
 
-		binding.settle_tokens(request.tokens_reserved, response.tokens_used)
-		release_global_reservation(request.tokens_reserved)
-		tokens_spent += response.tokens_used
+		// One close, both ledgers, with the real cost.
+		close_reservation(binding, request, response.tokens_used)
+
+		// The events this request carried, kept past the request's own life so
+		// a transport failure can restore the trigger rather than lose it.
+		var/list/sent_events = request.sent_events?.Copy()
+
 		in_flight -= binding
 		binding.pending = null
 		binding.state = AGENT_BINDING_IDLE
 		qdel(request.release_transport())
 		qdel(request)
 
-		handle_response(binding, response)
+		handle_response(binding, response, sent_events)
 		qdel(response)
 
 		if(round_token_budget > 0 && tokens_spent >= round_token_budget)
@@ -202,14 +214,17 @@ SUBSYSTEM_DEF(agent_npc)
 			return
 
 /// Decide what a validated response means, after re-checking the world.
-/datum/controller/subsystem/agent_npc/proc/handle_response(datum/agent_binding/binding, datum/agent_response/response)
+/datum/controller/subsystem/agent_npc/proc/handle_response(datum/agent_binding/binding, datum/agent_response/response, list/sent_events)
 	if(!response.ok)
 		binding.requests_refused++
 		note_refusal(response.refusal)
 		log_agent("refused [binding.pawn_id]: [response.refusal]")
 		// Transport-level failures are worth retrying; a bad payload is not.
 		if(response.refusal == AGENT_REFUSE_TRANSPORT)
-			binding.note_failure(null)
+			// Put the trigger back. take_events() emptied the ring at send, so
+			// without this a retry asks the agent what to do having forgotten
+			// the speech that prompted it.
+			binding.note_failure(sent_events)
 		return
 
 	binding.note_success()
@@ -242,6 +257,8 @@ SUBSYSTEM_DEF(agent_npc)
 	for(var/pawn_id in bindings)
 		if(started >= AGENT_MAX_STARTS_PER_FIRE || length(in_flight) >= max_concurrent)
 			return
+		if(!has_outstanding_capacity())
+			return
 
 		var/datum/agent_binding/binding = bindings[pawn_id]
 		if(QDELETED(binding) || !binding.can_start_request())
@@ -263,8 +280,48 @@ SUBSYSTEM_DEF(agent_npc)
 		return TRUE
 	return (tokens_spent + tokens_reserved_total + AGENT_TOKEN_ESTIMATE) <= round_token_budget
 
-/datum/controller/subsystem/agent_npc/proc/release_global_reservation(amount)
-	tokens_reserved_total = max(0, tokens_reserved_total - amount)
+/**
+ * Is there room for more outstanding work?
+ *
+ * max_concurrent bounds decisions we are waiting on. Draining holds transports
+ * we abandoned but which may still be running at the provider - real work that
+ * freeing a decision slot does not stop.
+ */
+/datum/controller/subsystem/agent_npc/proc/has_outstanding_capacity()
+	return (length(in_flight) + length(draining)) < AGENT_MAX_OUTSTANDING
+
+/**
+ * Open a reservation on both ledgers at once.
+ *
+ * Two ledgers with independent release calls is what produced the leak this
+ * replaces. Open and close are now the only two places either ledger moves.
+ */
+/datum/controller/subsystem/agent_npc/proc/open_reservation(datum/agent_binding/binding, datum/agent_request/request, amount)
+	request.tokens_reserved = amount
+	request.reservation_open = TRUE
+	binding.reserve_tokens(amount)
+	tokens_reserved_total += amount
+
+/**
+ * Close a reservation. Exactly once, on both ledgers.
+ *
+ * Returns TRUE only for the call that performed the release, so a double close
+ * cannot credit back tokens that were never held.
+ *
+ * unsettled marks work we walked away from: the hold is released so admission
+ * recovers, but the cost is recorded as unknown rather than assumed to be zero.
+ */
+/datum/controller/subsystem/agent_npc/proc/close_reservation(datum/agent_binding/binding, datum/agent_request/request, actual_tokens = 0, unsettled = FALSE)
+	if(QDELETED(request) || !request.reservation_open)
+		return FALSE
+	request.reservation_open = FALSE
+
+	binding?.settle_tokens(request.tokens_reserved, actual_tokens)
+	tokens_reserved_total = max(0, tokens_reserved_total - request.tokens_reserved)
+	tokens_spent += actual_tokens
+	if(unsettled)
+		tokens_unsettled += request.tokens_reserved
+	return TRUE
 
 /datum/controller/subsystem/agent_npc/proc/start_request(datum/agent_binding/binding)
 	binding.observation_revision++
@@ -277,20 +334,21 @@ SUBSYSTEM_DEF(agent_npc)
 
 	// Reserve before sending. Settling only completed spend lets concurrent
 	// requests overshoot the ceiling together.
-	request.tokens_reserved = AGENT_TOKEN_ESTIMATE
-	binding.reserve_tokens(AGENT_TOKEN_ESTIMATE)
-	tokens_reserved_total += AGENT_TOKEN_ESTIMATE
+	open_reservation(binding, request, AGENT_TOKEN_ESTIMATE)
 
 	if(!request.begin(endpoint, default_headers, body))
 		note_refusal(AGENT_REFUSE_TRANSPORT)
-		binding.release_reservation(AGENT_TOKEN_ESTIMATE)
-		release_global_reservation(AGENT_TOKEN_ESTIMATE)
+		// Nothing was sent, so nothing can have been billed: settle at zero.
+		close_reservation(binding, request, 0)
 		drain_transport(request.release_transport())
 		qdel(request)
 		// Submission never happened, so the trigger must not be lost.
 		binding.note_failure(events)
 		return FALSE
 
+	// Keep the events with the request. If it times out or the transport fails
+	// after submission, the trigger can be restored instead of vanishing.
+	request.sent_events = events
 	binding.pending = request
 	binding.state = AGENT_BINDING_PENDING
 	in_flight += binding
@@ -324,15 +382,16 @@ SUBSYSTEM_DEF(agent_npc)
 
 	switch(name)
 		if("wait")
-			binding.record_result(AGENT_RESULT_SUCCEEDED, "waiting")
+			// Choosing to wait ends the self-driven chain. Buffered events stay.
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "waiting", was_wait = TRUE)
 			return
 		if("say")
 			var/list/outcome = agent_execute_say(pawn, response.action["text"])
-			binding.record_result(outcome["state"], outcome["detail"])
+			binding.complete_action(outcome["state"], outcome["detail"])
 			return
 		if("emote")
 			var/list/outcome = agent_execute_emote(pawn, response.action["key"])
-			binding.record_result(outcome["state"], outcome["detail"])
+			binding.complete_action(outcome["state"], outcome["detail"])
 			return
 
 	// approach and use. The handle only becomes an authorised target here,

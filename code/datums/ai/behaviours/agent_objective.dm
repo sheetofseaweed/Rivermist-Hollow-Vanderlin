@@ -9,8 +9,6 @@
 /datum/ai_behavior/agent_approach
 	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM | AI_BEHAVIOR_CAN_PLAN_DURING_EXECUTION
 	required_distance = AGENT_REACH_DISTANCE
-	/// Terminal state handed back to the agent when this finishes.
-	var/outcome_detail = "approach"
 
 /datum/ai_behavior/agent_approach/setup(datum/ai_controller/controller, target_key)
 	. = ..()
@@ -104,7 +102,17 @@
 		finish_action(controller, FALSE, target_key)
 		return
 
+	// Snapshot enough to tell whether a pickup actually happened. Deliberately
+	// narrow: this verifies one specific outcome, it is not a general
+	// click-succeeded detector, and anything else stays unverified.
+	var/was_carried = isitem(target) && (target.loc == living_pawn)
+
 	controller.ai_interact(target = target, combat_mode = null, modifiers = list())
+
+	// On the blackboard, not on src: ai_behavior instances are singletons shared
+	// by every pawn, so a var here would leak one NPC's result into another's.
+	controller.set_blackboard_key(BB_AGENT_PICKED_UP,
+		isitem(target) && !was_carried && (target.loc == living_pawn))
 	finish_action(controller, TRUE, target_key)
 
 /**
@@ -118,7 +126,17 @@
 	var/datum/ai_controller/agent_social/agent = controller
 	if(!istype(agent) || !agent.binding || QDELETED(agent.binding))
 		return
-	agent.binding.finish_intent(
-		succeeded ? AGENT_RESULT_UNVERIFIED : AGENT_RESULT_FAILED,
-		succeeded ? "click dispatched; no postcondition to verify" : "could not reach it",
-	)
+	if(!succeeded)
+		agent.binding.finish_intent(AGENT_RESULT_FAILED, "could not reach it")
+		return
+
+	// A pickup has a checkable outcome, so say so honestly. Everything else is
+	// dispatched-and-unknown: ClickOn returns silently on cooldown, windup,
+	// obscuration, facing and incapacitation.
+	var/picked_up = agent.blackboard[BB_AGENT_PICKED_UP]
+	agent.clear_blackboard_key(BB_AGENT_PICKED_UP)
+	if(picked_up)
+		agent.binding.finish_intent(AGENT_RESULT_SUCCEEDED, "picked it up")
+		return
+
+	agent.binding.finish_intent(AGENT_RESULT_UNVERIFIED, "click dispatched; no postcondition to verify")

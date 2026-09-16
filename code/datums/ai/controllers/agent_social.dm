@@ -104,10 +104,15 @@
 		var/mob/living/living_speaker = speaker
 		speaker_name = living_speaker.get_visible_name()
 
+	// Speech from another agent NPC must not refresh the continuation budget.
+	// Two agents replenishing each other is a conversation with no end that no
+	// per-turn cap can stop. It is still heard; it just does not buy more turns.
+	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(speaker)]"])
+
 	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, list(
 		"speaker" = speaker_name,
 		"text" = understood,
-	))
+	), replenish = !from_another_agent)
 
 /datum/ai_controller/agent_social/Destroy(force, ...)
 	release_binding("controller destroyed")

@@ -18,7 +18,10 @@
 	lines += "endpoint: [SSagent_npc.endpoint || "unset"]"
 	lines += "session: [SSagent_npc.session_id]"
 	lines += "registered: [length(SSagent_npc.bindings)] | in flight: [length(SSagent_npc.in_flight)] | draining: [length(SSagent_npc.draining)]"
-	lines += "tokens spent: [SSagent_npc.tokens_spent] | reserved: [SSagent_npc.tokens_reserved_total] | budget: [SSagent_npc.round_token_budget || "unlimited"]"
+	lines += "tokens spent: [SSagent_npc.tokens_spent] | reserved: [SSagent_npc.tokens_reserved_total]"
+	lines += "unsettled: [SSagent_npc.tokens_unsettled] | budget: [SSagent_npc.round_token_budget || "unlimited"]"
+	lines += "outstanding: [length(SSagent_npc.in_flight) + length(SSagent_npc.draining)] / [AGENT_MAX_OUTSTANDING]"
+	lines += "drains abandoned: [SSagent_npc.drain_abandoned]"
 
 	if(length(SSagent_npc.refusal_counts))
 		var/list/refusals = list()

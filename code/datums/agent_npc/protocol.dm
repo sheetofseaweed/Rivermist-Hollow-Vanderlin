@@ -22,6 +22,12 @@
 	var/deadline = 0
 	var/started_at = 0
 	var/tokens_reserved = 0
+	/// TRUE while this request still holds a reservation on both ledgers.
+	/// The flag is what makes release exactly-once.
+	var/reservation_open = FALSE
+	/// The events this request carried. Kept so a post-submission failure can
+	/// put the player's original request back rather than losing it.
+	var/list/sent_events
 	var/datum/http_request/transport
 
 /datum/agent_request/Destroy(force, ...)
@@ -67,8 +73,24 @@
 		"observation" = observation,
 	)
 
+/// Options rust-g itself honours. Verified present in the shipped rust_g.dll.
+/proc/agent_transport_options()
+	return json_encode(list("timeout_seconds" = AGENT_TRANSPORT_TIMEOUT_SECONDS))
+
+/**
+ * A transport that gives up on its own.
+ *
+ * The DM-side deadline stops us waiting; it does not stop the native job. Only
+ * rust-g's own timeout bounds the work actually running at the provider.
+ */
+/datum/http_request/agent/build_options()
+	return agent_transport_options()
+
+/datum/agent_request/proc/build_transport_options()
+	return agent_transport_options()
+
 /datum/agent_request/proc/begin(url, list/headers, list/body)
-	transport = new /datum/http_request(RUSTG_HTTP_METHOD_POST, url, json_encode(body), headers)
+	transport = new /datum/http_request/agent(RUSTG_HTTP_METHOD_POST, url, json_encode(body), headers)
 	transport.begin_async()
 	// begin_async() stores rust-g's error text in id on failure, so a non-null id
 	// proves nothing. in_progress is only set when a real job was created.

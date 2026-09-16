@@ -81,9 +81,7 @@ class CodexSaleDecider(proto.Decider):
         super().__init__(dry_run=dry_run)
         self.model = model
         self.verbose = verbose
-        self.permitted = ["wait"]
         self.memory = proto.ConversationStore(max_turns=memory_turns)
-        self.last_user_text = ""
         self.base_url = base_url.rstrip("/")
         self.reasoning_effort = reasoning_effort
         self.requested_mode = output_mode
@@ -95,30 +93,28 @@ class CodexSaleDecider(proto.Decider):
 
     def describe(self):
         return {"adapter": self.name, "dry_run": self.dry_run,
-                "model": self.model, "output_mode": self.mode,
+                "model": self.model, "output_mode": self.current_mode(),
                 "base_url": self.base_url, "memory_turns": self.memory.max_turns}
 
-    def build_request(self, body):
+    def build_turn(self, body, mode=None):
         profile = body.get("profile") or {}
         permitted = profile.get("permitted_actions") or ["wait"]
-        # Remembered so interpret() can recover a shorthand reply against the
-        # same list this request was built from.
-        self.permitted = list(permitted)
+        mode = mode or self.current_mode()
+
         # Always describe the shape, even in json_schema mode.
         #
         # codex.sale accepts response_format json_schema without enforcing it,
         # so the model is free to answer in shorthand. A schema the server may
         # or may not honour must never be the only thing stating the format.
-        describe = True
-        self.last_user_text = proto.build_user_message(
+        user_text = proto.build_user_message(
             body.get("observation") or {}, body.get("events") or [])
 
         # System, then prior exchanges, then this turn. Keeping the system block
         # first and stable is also what makes it cacheable where caching exists.
         messages = [{"role": "system",
-                     "content": proto.build_system(profile, describe_schema=describe)}]
+                     "content": proto.build_system(profile, describe_schema=True)}]
         messages.extend(self.memory.history(body))
-        messages.append({"role": "user", "content": self.last_user_text})
+        messages.append({"role": "user", "content": user_text})
 
         request = {
             "model": self.model,
@@ -127,49 +123,64 @@ class CodexSaleDecider(proto.Decider):
         }
         if self.reasoning_effort:
             request["reasoning_effort"] = self.reasoning_effort
-        request.update(response_format_for(self.mode, permitted))
-        return request
+        request.update(response_format_for(mode, permitted))
+        return proto.Turn(body, request=request, user_text=user_text,
+                          permitted=permitted, mode=mode)
+
+    def current_mode(self):
+        """The negotiated mode. Shared, so read it under the lock."""
+        with self.lock:
+            return self.mode
+
+    def demote_mode(self, from_mode):
+        """Record that a mode was rejected, without clobbering a newer result."""
+        with self.lock:
+            if self.mode == from_mode:
+                self.mode = next_mode(from_mode) or from_mode
+            return self.mode
 
     def decide(self, body):
         """Try the current output mode, degrading on rejection.
 
-        Each attempt rebuilds the request from the original body rather than
-        patching the previous one. Patching loses the permitted-action list once
-        the schema is dropped, so a second degradation would describe the wrong
-        action set.
+        Each attempt builds a fresh Turn from the original body. Per-request
+        values live on that Turn and never on self: the server is threaded, and
+        a concurrent request would otherwise overwrite them between building the
+        prompt and recording the answer.
         """
-        modes = [self.mode]
-        if self.requested_mode == "auto":
-            modes = list(OUTPUT_MODES[OUTPUT_MODES.index(self.mode):])
+        if self.memory:
+            self.memory.reconcile(body)
 
-        last = (None, "no output mode was attempted", 0)
+        start = self.current_mode()
+        modes = [start]
+        if self.requested_mode == "auto":
+            modes = list(OUTPUT_MODES[OUTPUT_MODES.index(start):])
+
         for mode in modes:
-            self.mode = mode
-            request = self.build_request(body)
+            turn = self.build_turn(body, mode=mode)
             with self.lock:
-                self.last_request = request
+                self.last_request = turn.request
             if self.dry_run:
                 return {"name": "wait"}, None, 0
 
             status, payload = post_json(self.base_url + "/chat/completions",
-                                        request, self.api_key)
+                                        turn.request, self.api_key)
             # A 400 in auto mode usually means this output mode is unsupported.
             if status == 400 and self.requested_mode == "auto" and mode != modes[-1]:
+                nxt = self.demote_mode(mode)
                 sys.stderr.write("[codex-sale] %s rejected (%s); trying %s\n" % (
-                    mode, short_error(payload), next_mode(mode)))
+                    mode, short_error(payload), nxt))
                 continue
 
-            action, refusal, tokens = self.interpret(status, payload)
-            # Only successful turns enter the transcript. Recording refusals
-            # would teach the model that malformed answers are part of the
-            # conversation, and would pad every later prompt with noise.
-            if action:
-                self.memory.record(body, self.last_user_text, action)
+            action, refusal, tokens = self.interpret(status, payload, turn)
+            # Only successful turns are proposed. DM may still refuse the action,
+            # and reconcile() drops the proposal on the next turn if it does.
+            if action and self.memory:
+                self.memory.record(body, turn.user_text, action)
                 if self.verbose:
                     sys.stderr.write("[codex-sale] memory: %d exchanges for this character\n"
                                      % self.memory.depth(body))
             return action, refusal, tokens
-        return last
+        return None, "no output mode was attempted", 0
 
     def refuse(self, reason, tokens=0, raw=None):
         """Every refusal is logged.
@@ -187,7 +198,7 @@ class CodexSaleDecider(proto.Decider):
                 sys.stderr.write("[codex-sale]   (run with --verbose for the full text)\n")
         return None, reason, tokens
 
-    def interpret(self, status, body):
+    def interpret(self, status, body, turn):
         if status == 0:
             return self.refuse(str(body))
         if status == 401 or status == 403:
@@ -231,7 +242,7 @@ class CodexSaleDecider(proto.Decider):
             return self.refuse("model returned empty content (finish_reason=%s)" % finish,
                                tokens, raw=json.dumps(choice)[:2000])
 
-        permitted = self.permitted
+        permitted = turn.permitted
         parsed = proto.extract_json(text)
         if parsed is None:
             # Not JSON. Try the obvious shorthand before giving up; the game

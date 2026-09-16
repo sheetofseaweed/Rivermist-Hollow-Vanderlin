@@ -213,6 +213,34 @@ def parse_loose_action(text, permitted):
     return None
 
 
+class Turn:
+    """Everything one /decide call needs, owned by that call alone.
+
+    The HTTP server is threaded. Any per-request value held on the shared
+    decider can be overwritten by a concurrent request between building the
+    prompt and recording the answer, which silently files one character's reply
+    against another character's scene.
+    """
+
+    __slots__ = ("body", "request", "user_text", "permitted", "mode")
+
+    def __init__(self, body, request=None, user_text="", permitted=None, mode=None):
+        self.body = body
+        self.request = request
+        self.user_text = user_text
+        self.permitted = list(permitted or ["wait"])
+        self.mode = mode
+
+
+def latest_action_result(events):
+    """DM's verdict on the previous turn, or None if it did not report one."""
+    verdict = None
+    for event in events or []:
+        if event.get("event") == "action_result":
+            verdict = (event.get("detail") or {}).get("state")
+    return verdict
+
+
 class ConversationStore:
     """Per-character conversation history, held in the sidecar.
 
@@ -229,6 +257,8 @@ class ConversationStore:
         self.max_turns = max_turns
         self.lock = threading.Lock()
         self.sessions = {}
+        # Answers the model gave that DM has not yet ruled on.
+        self.proposals = {}
 
     @staticmethod
     def key(body):
@@ -241,20 +271,42 @@ class ConversationStore:
             return list(self.sessions.get(self.key(body), []))
 
     def record(self, body, user_text, action):
-        """Append one exchange once the action is known.
+        """Hold the model's answer as a proposal, not yet as history.
 
-        The assistant turn is stored as the canonical JSON rather than the raw
-        reply. That keeps the transcript clean, and on providers that do not
-        enforce a schema it also shows the model the format it should be using,
-        every turn, by example.
+        The model proposes; DM disposes. DM may refuse an action outright - an
+        unpermitted action, a handle it never offered, a pawn that is gone - and
+        a transcript claiming the character did something it never did is worse
+        than a shorter transcript.
+
+        The verdict arrives on the next request as an action_result event, so
+        the proposal is committed or dropped by reconcile() then.
         """
         if self.max_turns <= 0:
             return
         with self.lock:
+            self.proposals[self.key(body)] = {"user_text": user_text, "action": action}
+
+    def reconcile(self, body):
+        """Settle the previous proposal using DM's verdict, before building."""
+        if self.max_turns <= 0:
+            return
+        key = self.key(body)
+        with self.lock:
+            proposal = self.proposals.pop(key, None)
+        if not proposal:
+            return
+
+        # "rejected" means DM refused to execute it, so it never happened.
+        # "failed" and "interrupted" did happen and are worth remembering.
+        if latest_action_result(body.get("events")) == "rejected":
+            return
+
+        with self.lock:
             self.prune_other_sessions(body.get("session_id"))
-            turns = self.sessions.setdefault(self.key(body), [])
-            turns.append({"role": "user", "content": user_text})
-            turns.append({"role": "assistant", "content": json.dumps(as_wire_action(action))})
+            turns = self.sessions.setdefault(key, [])
+            turns.append({"role": "user", "content": proposal["user_text"]})
+            turns.append({"role": "assistant",
+                          "content": json.dumps(as_wire_action(proposal["action"]))})
             # Trim whole exchanges so the list never starts on an assistant turn.
             excess = len(turns) - (self.max_turns * 2)
             if excess > 0:
@@ -268,13 +320,17 @@ class ConversationStore:
         """
         if not current_session:
             return
-        stale = [k for k in self.sessions if k[0] != current_session]
-        for k in stale:
+        for k in [k for k in self.sessions if k[0] != current_session]:
             del self.sessions[k]
+        # Proposals belong to a session too, or a stale one could be committed
+        # into a later round's transcript.
+        for k in [k for k in self.proposals if k[0] != current_session]:
+            del self.proposals[k]
 
     def forget(self, body):
         with self.lock:
             self.sessions.pop(self.key(body), None)
+            self.proposals.pop(self.key(body), None)
 
     def depth(self, body):
         return len(self.history(body)) // 2
@@ -296,34 +352,40 @@ class Decider:
 
     def __init__(self, dry_run=False):
         self.dry_run = dry_run
+        # Diagnostic only, for GET /last-request. Never read back for logic.
         self.last_request = None
         self.lock = threading.Lock()
-        # Subclasses that want conversation history set these.
+        # Subclasses that want conversation history set this.
         self.memory = None
-        self.last_user_text = ""
 
     def describe(self):
         return {"adapter": self.name, "dry_run": self.dry_run}
 
-    def build_request(self, body):
+    def build_turn(self, body):
+        """Return a Turn. Must not store per-request state on self."""
         raise NotImplementedError
 
-    def call_provider(self, request):
+    def call_provider(self, turn):
         """Returns (action, refusal, tokens_used)."""
         raise NotImplementedError
 
     def decide(self, body):
-        request = self.build_request(body)
+        if self.memory:
+            # Settle the previous proposal before reading history, so this turn
+            # sees a transcript that matches what DM actually allowed.
+            self.memory.reconcile(body)
+
+        turn = self.build_turn(body)
         with self.lock:
-            self.last_request = request
+            self.last_request = turn.request
         if self.dry_run:
             return {"name": "wait"}, None, 0
 
-        action, refusal, tokens = self.call_provider(request)
-        # Only successful turns enter the transcript. Recording refusals would
-        # teach the model that malformed answers belong in the conversation.
+        action, refusal, tokens = self.call_provider(turn)
+        # Only successful turns are proposed. Recording refusals would teach the
+        # model that malformed answers belong in the conversation.
         if action and self.memory:
-            self.memory.record(body, self.last_user_text, action)
+            self.memory.record(body, turn.user_text, action)
         return action, refusal, tokens
 
 

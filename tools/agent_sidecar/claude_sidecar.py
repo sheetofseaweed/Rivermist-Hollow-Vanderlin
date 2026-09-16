@@ -53,7 +53,6 @@ class ClaudeDecider(proto.Decider):
         self.model = model
         self.client = None
         self.memory = proto.ConversationStore(max_turns=memory_turns)
-        self.last_user_text = ""
         if dry_run:
             return
 
@@ -73,18 +72,18 @@ class ClaudeDecider(proto.Decider):
         return {"adapter": self.name, "dry_run": self.dry_run, "model": self.model,
                 "memory_turns": self.memory.max_turns}
 
-    def build_request(self, body):
+    def build_turn(self, body):
         profile = body.get("profile") or {}
         permitted = profile.get("permitted_actions") or ["wait"]
-        self.last_user_text = proto.build_user_message(
+        user_text = proto.build_user_message(
             body.get("observation") or {}, body.get("events") or [])
 
         # Prior exchanges sit between the cached system block and this turn, so
         # the cacheable prefix stays first and stable.
         messages = list(self.memory.history(body))
-        messages.append({"role": "user", "content": self.last_user_text})
+        messages.append({"role": "user", "content": user_text})
 
-        return {
+        request = {
             "model": self.model,
             "max_tokens": MAX_TOKENS,
             "system": [{
@@ -98,13 +97,14 @@ class ClaudeDecider(proto.Decider):
                 "format": {"type": "json_schema", "schema": proto.action_schema(permitted)},
             },
         }
+        return proto.Turn(body, request=request, user_text=user_text, permitted=permitted)
 
-    def call_provider(self, request):
+    def call_provider(self, turn):
         try:
             response = self.client.beta.messages.create(
                 betas=[FALLBACK_BETA],
                 fallbacks=[{"model": FALLBACK_MODEL}],
-                **request
+                **turn.request
             )
         except self.anthropic.RateLimitError:
             return None, "rate limited", 0

@@ -33,8 +33,12 @@
 	var/intent_suspended = FALSE
 	/// Pending events, oldest first. Bounded by AGENT_MAX_EVENTS_PER_PAWN.
 	var/list/events
-	/// Set by external events only. Results never set it, or NPCs loop forever.
+	/// Set by external events, and by continuation while budget remains.
 	var/dirty = FALSE
+	/// Self-driven decisions left in this interaction. Refreshed by real events.
+	var/continuation_budget = 0
+	/// world.time at which the interaction lapses, budget or not.
+	var/continuation_expires_at = 0
 	/// Highest urgency currently buffered.
 	var/pending_urgency = AGENT_EVENT_LOW
 	/// world.time floor for the next request. Enforces pacing and backoff.
@@ -140,6 +144,8 @@
 	abandon_pending(reason)
 	current_intent = null
 	intent_suspended = FALSE
+	// A revoked binding must not keep driving itself.
+	end_continuation()
 	LAZYCLEARLIST(events)
 	dirty = FALSE
 	pending_urgency = AGENT_EVENT_LOW
@@ -158,9 +164,14 @@
 /datum/agent_binding/proc/abandon_pending(reason)
 	if(!pending)
 		return
-	// Release the budget reservation; the provider may still bill it, so this is
-	// optimistic. Conservative settlement is a phase 5 problem with a real bill.
-	release_reservation(pending.tokens_reserved)
+	// One close, both ledgers, exactly once. Releasing only the binding's side
+	// left the global reservation held forever, which eventually starved
+	// admission while nothing was actually in flight.
+	//
+	// Marked unsettled: the hold is released so admission recovers, but the
+	// provider may still bill work we walked away from, so the cost is recorded
+	// as unknown rather than assumed to be zero.
+	SSagent_npc?.close_reservation(src, pending, 0, unsettled = TRUE)
 	SSagent_npc?.drain_transport(pending.release_transport())
 	QDEL_NULL(pending)
 	if(state == AGENT_BINDING_PENDING)
@@ -178,7 +189,8 @@
 		return FALSE
 	current_intent = null
 	intent_suspended = FALSE
-	record_result(state_name, detail)
+	// A finished objective is a completed step, so it may continue the chain.
+	complete_action(state_name, detail)
 	return TRUE
 
 /**
@@ -196,6 +208,39 @@
 
 /datum/agent_binding/proc/resume_intent()
 	intent_suspended = FALSE
+
+/// Start or refresh a bounded interaction.
+/datum/agent_binding/proc/begin_interaction()
+	continuation_budget = AGENT_CONTINUATION_BUDGET
+	continuation_expires_at = world.time + AGENT_CONTINUATION_WINDOW
+
+/// Stop self-driven work. Buffered events are left alone on purpose: settling
+/// down must not erase something a player said while the NPC was busy.
+/datum/agent_binding/proc/end_continuation()
+	continuation_budget = 0
+	continuation_expires_at = 0
+
+/**
+ * Finish an action, and decide whether to keep going.
+ *
+ * A completed step schedules the next decision while budget remains, which is
+ * what lets "fetch the salt" run to completion unaided. `wait` ends the chain,
+ * so an NPC with nothing to do settles instead of spinning.
+ */
+/datum/agent_binding/proc/complete_action(state_name, detail, was_wait = FALSE)
+	if(!record_result(state_name, detail))
+		return FALSE
+
+	if(was_wait)
+		end_continuation()
+		return FALSE
+	if(continuation_budget <= 0 || world.time > continuation_expires_at)
+		end_continuation()
+		return FALSE
+
+	continuation_budget--
+	dirty = TRUE
+	return TRUE
 
 /// Append to the event ring without scheduling anything.
 /datum/agent_binding/proc/push_event(event_name, urgency = AGENT_EVENT_LOW, list/detail)
@@ -216,14 +261,22 @@
 	push_event("action_result", AGENT_EVENT_LOW, list("state" = state_name, "detail" = detail))
 	return TRUE
 
-/// Record an external event. High urgency abandons an in-flight request.
-/datum/agent_binding/proc/mark_dirty(event_name, urgency = AGENT_EVENT_LOW, list/detail)
+/**
+ * Record an external event. High urgency abandons an in-flight request.
+ *
+ * replenish refreshes the continuation budget. Speech from another agent NPC
+ * passes FALSE: two agents refreshing each other's budget is an unbounded
+ * conversation that no per-turn cap can stop.
+ */
+/datum/agent_binding/proc/mark_dirty(event_name, urgency = AGENT_EVENT_LOW, list/detail, replenish = TRUE)
 	if(state == AGENT_BINDING_DISABLED)
 		return FALSE
 
 	push_event(event_name, urgency, detail)
 	dirty = TRUE
 	pending_urgency = max(pending_urgency, urgency)
+	if(replenish)
+		begin_interaction()
 
 	if(urgency >= AGENT_EVENT_HIGH && state == AGENT_BINDING_PENDING)
 		abandon_pending("superseded by [event_name]")

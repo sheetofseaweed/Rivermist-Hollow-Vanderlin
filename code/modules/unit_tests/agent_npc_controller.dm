@@ -573,3 +573,99 @@
 	TEST_ASSERT_EQUAL(length(binding.events), 0, "A pawn must not treat its own speech as an event, or two agents can talk each other into a loop.")
 
 	agent_test_restore_subsystem(saved, binding)
+
+// ------------------------------------------------- bounded continuation
+
+/datum/unit_test/agent_npc_external_event_grants_continuation
+
+/datum/unit_test/agent_npc_external_event_grants_continuation/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	TEST_ASSERT_EQUAL(binding.continuation_budget, 0, "A fresh binding drives nothing on its own.")
+
+	binding.mark_dirty("heard_speech")
+
+	TEST_ASSERT_EQUAL(binding.continuation_budget, AGENT_CONTINUATION_BUDGET, "A real external event must start a bounded interaction.")
+	TEST_ASSERT(binding.continuation_expires_at > world.time, "The interaction must carry a deadline as well as a count.")
+
+/datum/unit_test/agent_npc_completed_action_continues_the_chain
+
+/datum/unit_test/agent_npc_completed_action_continues_the_chain/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+	TEST_ASSERT(!binding.dirty, "Setup failed: taking events should have cleared dirty.")
+
+	// This is the defect the whole feature exists for: the NPC walked to the
+	// salt, finished, and then sat there because results scheduled nothing.
+	var/continued = binding.complete_action(AGENT_RESULT_SUCCEEDED, "arrived")
+
+	TEST_ASSERT(continued, "A completed step must be able to ask for the next decision.")
+	TEST_ASSERT(binding.dirty, "Continuing means the binding is due for another request.")
+	TEST_ASSERT_EQUAL(binding.continuation_budget, AGENT_CONTINUATION_BUDGET - 1, "Each self-driven turn must consume budget.")
+
+/datum/unit_test/agent_npc_continuation_stops_at_the_cap
+
+/datum/unit_test/agent_npc_continuation_stops_at_the_cap/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+
+	for(var/i in 1 to AGENT_CONTINUATION_BUDGET)
+		TEST_ASSERT(binding.complete_action(AGENT_RESULT_SUCCEEDED, "step [i]"), "Step [i] should still be inside the budget.")
+
+	binding.take_events()
+	// Without a cap this is where an NPC talks to itself until the round ends.
+	TEST_ASSERT(!binding.complete_action(AGENT_RESULT_SUCCEEDED, "one too many"), "The chain must stop exactly at the cap.")
+	TEST_ASSERT(!binding.dirty, "A chain that has run out must not schedule another request.")
+
+/datum/unit_test/agent_npc_wait_ends_the_chain_but_keeps_events
+
+/datum/unit_test/agent_npc_wait_ends_the_chain_but_keeps_events/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+	binding.push_event("heard_speech", AGENT_EVENT_LOW, list("text" = "said while busy"))
+
+	binding.complete_action(AGENT_RESULT_SUCCEEDED, "waiting", was_wait = TRUE)
+
+	TEST_ASSERT_EQUAL(binding.continuation_budget, 0, "Choosing to wait must end the self-driven chain.")
+	TEST_ASSERT(length(binding.events) >= 1, "Settling down must not erase what a player said while the NPC was busy.")
+
+/datum/unit_test/agent_npc_expired_window_ends_the_chain
+
+/datum/unit_test/agent_npc_expired_window_ends_the_chain/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+	// Budget remains, but the interaction is long over.
+	binding.continuation_expires_at = world.time - 1
+
+	TEST_ASSERT(!binding.complete_action(AGENT_RESULT_SUCCEEDED, "late"), "A lapsed interaction must not continue on leftover budget.")
+	TEST_ASSERT(!binding.dirty, "A lapsed interaction must not schedule another request.")
+
+/datum/unit_test/agent_npc_agent_speech_does_not_replenish
+
+/datum/unit_test/agent_npc_agent_speech_does_not_replenish/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	binding.complete_action(AGENT_RESULT_SUCCEEDED, "spent one")
+	var/after_spending = binding.continuation_budget
+
+	// Another agent NPC speaking. Heard, but it must not buy more turns, or two
+	// agents refresh each other forever and no per-turn cap can stop them.
+	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, null, replenish = FALSE)
+
+	TEST_ASSERT_EQUAL(binding.continuation_budget, after_spending, "Agent-to-agent speech must not refresh the continuation budget.")
+
+	binding.mark_dirty("heard_speech")
+	TEST_ASSERT_EQUAL(binding.continuation_budget, AGENT_CONTINUATION_BUDGET, "A player speaking must still refresh it.")
+
+/datum/unit_test/agent_npc_revoke_ends_continuation
+
+/datum/unit_test/agent_npc_revoke_ends_continuation/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	TEST_ASSERT(binding.continuation_budget > 0, "Setup failed: the interaction should be live.")
+
+	binding.revoke("kill switch")
+
+	TEST_ASSERT_EQUAL(binding.continuation_budget, 0, "A revoked binding must not keep driving itself.")

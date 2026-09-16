@@ -58,6 +58,19 @@
 #define AGENT_DRAIN_TIMEOUT (60 SECONDS)
 /// Orphaned transports polled per fire.
 #define AGENT_MAX_DRAIN_PER_FIRE 8
+/**
+ * Ceiling on ALL outstanding work: live requests plus draining transports.
+ *
+ * max_concurrent bounds decisions we are waiting on. It does not bound work
+ * still running at the provider after we abandoned it, which is what draining
+ * holds. Without this, repeated supersession frees decision capacity while real
+ * outstanding operations keep climbing.
+ */
+#define AGENT_MAX_OUTSTANDING 12
+
+/// Seconds after which rust-g abandons the HTTP call itself.
+/// Verified present in the shipped rust_g.dll beside struct RequestOptions.
+#define AGENT_TRANSPORT_TIMEOUT_SECONDS 20
 
 /// world.time until which a scared agent NPC keeps running. Refreshed per hit.
 #define BB_AGENT_FLEE_UNTIL "BB_agent_flee_until"
@@ -79,6 +92,21 @@
 #define AGENT_OBJECTIVE_TIMEOUT (30 SECONDS)
 /// Tiles at which approach counts as arrived, and use may reach.
 #define AGENT_REACH_DISTANCE 1
+/// Per-controller result of the last `use`. Behaviors are singletons, so
+/// anything pawn-scoped must live on the blackboard, never on the behavior.
+#define BB_AGENT_PICKED_UP "BB_agent_picked_up"
+
+/**
+ * Self-driven decisions allowed after one external interaction.
+ *
+ * Without continuation an NPC completes one step and stops, because results
+ * deliberately do not schedule work. Without a cap, every reply produces a
+ * result which produces a reply and nothing external is ever needed. This is
+ * the bound between those two failures.
+ */
+#define AGENT_CONTINUATION_BUDGET 4
+/// An interaction lapses after this long regardless of remaining budget.
+#define AGENT_CONTINUATION_WINDOW (2 MINUTES)
 
 /// Low urgency events wait for the in-flight request to land.
 #define AGENT_EVENT_LOW 1
