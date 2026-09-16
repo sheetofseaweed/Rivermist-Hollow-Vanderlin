@@ -2444,6 +2444,7 @@
 #include "code\modules\admin\drags_special_requests\smitepie.dm"
 #include "code\modules\admin\role_ban\role_ban.dm"
 #include "code\modules\admin\role_ban\role_ban_panel.dm"
+#include "code\modules\admin\verbs\agent_npc.dm"
 #include "code\modules\admin\verbs\adminhelp.dm"
 #include "code\modules\admin\verbs\adminjump.dm"
 #include "code\modules\admin\verbs\adminpm.dm"

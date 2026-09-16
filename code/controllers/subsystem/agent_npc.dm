@@ -223,10 +223,15 @@ SUBSYSTEM_DEF(agent_npc)
 
 	if(binding.state == AGENT_BINDING_DISABLED)
 		note_refusal(AGENT_REFUSE_GENERATION)
+		log_agent("dropped a valid decision for [binding.pawn_id]: binding is disabled")
 		return
 
 	if(response.model_refusal)
-		binding.record_result(AGENT_RESULT_REJECTED, "model declined")
+		// Counted and logged. This is the likeliest way a working pipeline
+		// produces nothing in game, so it must never be silent.
+		note_refusal(AGENT_REFUSE_MODEL)
+		log_agent("model refusal for [binding.pawn_id]: [response.model_refusal]")
+		binding.record_result(AGENT_RESULT_REJECTED, response.model_refusal)
 		return
 
 	dispatch_decision(binding, response)

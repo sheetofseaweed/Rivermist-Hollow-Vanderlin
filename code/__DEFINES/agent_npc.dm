@@ -30,6 +30,8 @@
 #define AGENT_REFUSE_OVERSIZED "oversized_body"
 #define AGENT_REFUSE_PAWN "pawn_unavailable"
 #define AGENT_REFUSE_SCHEMA "schema_invalid"
+/// The sidecar reached the model but could not get a usable action out of it.
+#define AGENT_REFUSE_MODEL "model_refusal"
 
 /// Response bodies larger than this are discarded unparsed.
 #define AGENT_MAX_RESPONSE_BYTES 65536

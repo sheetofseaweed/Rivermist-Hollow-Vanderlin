@@ -388,6 +388,33 @@
 	qdel(response)
 	agent_test_restore_subsystem(saved, binding)
 
+/datum/unit_test/agent_npc_model_refusal_is_counted_and_reported
+
+/datum/unit_test/agent_npc_model_refusal_is_counted_and_reported/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/agent_binding/binding = controller.binding
+	binding.take_events()
+
+	// A sidecar that reached the model but could not get a usable action back.
+	// This returns HTTP 200, so from outside it looks like a working request.
+	var/datum/agent_response/response = new()
+	response.ok = TRUE
+	response.model_refusal = "model output was not json"
+
+	var/before = SSagent_npc.refusal_counts[AGENT_REFUSE_MODEL] || 0
+	SSagent_npc.handle_response(binding, response)
+
+	TEST_ASSERT_EQUAL(SSagent_npc.refusal_counts[AGENT_REFUSE_MODEL] || 0, before + 1, "A model refusal must be counted, or the likeliest failure mode is invisible in the status panel.")
+
+	var/list/entry = binding.events[length(binding.events)]
+	TEST_ASSERT_EQUAL(entry["detail"]["state"], AGENT_RESULT_REJECTED, "A model refusal must be reported as a rejection.")
+	TEST_ASSERT_EQUAL(entry["detail"]["detail"], "model output was not json", "The reported detail must carry the sidecar's reason, not a generic string.")
+
+	qdel(response)
+	agent_test_restore_subsystem(saved, binding)
+
 /datum/unit_test/agent_npc_missing_profile_permits_nothing
 
 /datum/unit_test/agent_npc_missing_profile_permits_nothing/Run()
