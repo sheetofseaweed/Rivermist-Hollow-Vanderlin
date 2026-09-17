@@ -67,9 +67,11 @@
 // BEGIN_INCLUDE
 #include "action_button_positions.dm"
 #include "agent_npc_accounting.dm"
+#include "agent_npc_breaker.dm"
 #include "agent_npc_controller.dm"
 #include "agent_npc_integration.dm"
 #include "agent_npc_protocol.dm"
+#include "agent_npc_telemetry.dm"
 #include "ai_combat_flow.dm"
 #include "ai_hazard_avoidance.dm"
 #include "ai_idle_detection.dm"

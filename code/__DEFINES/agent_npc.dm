@@ -37,22 +37,50 @@
 #define AGENT_MAX_RESPONSE_BYTES 65536
 /// Registry ceiling. Registration past this is refused and logged.
 #define AGENT_MAX_REGISTERED_PAWNS 32
-/// How long a decision stays valid. Server owned; the sidecar cannot extend it.
-#define AGENT_DEFAULT_DEADLINE (15 SECONDS)
+/**
+ * How long a decision stays valid. Server owned; the sidecar cannot extend it.
+ *
+ * This is the top of a ladder that must stay in this order:
+ *
+ *   sidecar upstream call  <  AGENT_TRANSPORT_TIMEOUT_SECONDS  <  this
+ *
+ * Inverted, a slow model answers after DM has stopped listening: the sidecar
+ * logs a 200 and the game shows nothing. That is exactly what happened on
+ * 2026-09-17, when the sidecar allowed the model 30s against a 15s deadline.
+ * The sidecar derives its own budget from the deadline_ds carried on the wire,
+ * so raising this value carries the rest of the ladder with it.
+ */
+#define AGENT_DEFAULT_DEADLINE (25 SECONDS)
 /// Requests started per fire, so one fire cannot serialise the whole registry.
 #define AGENT_MAX_STARTS_PER_FIRE 4
 
 /// Floor between two requests for one pawn. Stops result-driven request loops.
 #define AGENT_MIN_REQUEST_INTERVAL (2 SECONDS)
-/// Consecutive transport failures before a pawn stops retrying on its own.
+/// Consecutive transport failures before a pawn stops its ordinary retries.
 #define AGENT_MAX_CONSECUTIVE_FAILURES 3
 /// Base backoff after a transport failure. Multiplied by the failure count.
 #define AGENT_FAILURE_BACKOFF (5 SECONDS)
+
+/**
+ * Circuit breaker cooldown.
+ *
+ * Past the failure limit a pawn stops its ordinary retries, then sends exactly
+ * one probe per cooldown. Without a probe the limit is a grave: no request can
+ * start, so none can succeed, so the failure count never falls and the NPC is
+ * mute for the rest of the round. The cooldown grows with each failed probe.
+ */
+#define AGENT_BREAKER_COOLDOWN (60 SECONDS)
+/// Ceiling on the growing cooldown, so a long outage cannot park a pawn forever.
+#define AGENT_BREAKER_COOLDOWN_MAX (10 MINUTES)
 
 /// Reserved per request before sending, then settled against reported usage.
 #define AGENT_TOKEN_ESTIMATE 2000
 /// Reported usage outside 0..this is treated as a schema violation.
 #define AGENT_MAX_TOKENS_PER_RESPONSE 1000000
+
+/// Recent values kept per measured quantity. Bounds cost; percentiles are
+/// therefore about recent behaviour, not the whole round.
+#define AGENT_STAT_SAMPLES 64
 
 /// How long an orphaned transport is polled before its result is written off.
 #define AGENT_DRAIN_TIMEOUT (60 SECONDS)
@@ -70,7 +98,8 @@
 
 /// Seconds after which rust-g abandons the HTTP call itself.
 /// Verified present in the shipped rust_g.dll beside struct RequestOptions.
-#define AGENT_TRANSPORT_TIMEOUT_SECONDS 20
+/// Must stay below AGENT_DEFAULT_DEADLINE; see the ladder documented there.
+#define AGENT_TRANSPORT_TIMEOUT_SECONDS 22
 
 /// world.time until which a scared agent NPC keeps running. Refreshed per hit.
 #define BB_AGENT_FLEE_UNTIL "BB_agent_flee_until"

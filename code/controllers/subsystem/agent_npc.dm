@@ -45,12 +45,17 @@ SUBSYSTEM_DEF(agent_npc)
 	var/drain_abandoned = 0
 	/// AGENT_REFUSE_* -> count. The first thing to read when something is wrong.
 	var/list/refusal_counts
+	/// Measured latency, cost and outcome mix. Never null once initialised.
+	var/datum/agent_telemetry/telemetry
 
 /datum/controller/subsystem/agent_npc/Initialize()
 	bindings = list()
 	in_flight = list()
 	draining = list()
 	refusal_counts = list()
+	// Built before the config gate. Tests and the status verb read it whether or
+	// not the subsystem was allowed to turn on.
+	telemetry = new()
 	session_id = "[GLOB.round_id]-[world.timeofday]-[rand(1000, 9999)]"
 
 	if(!CONFIG_GET(flag/agent_npc_enabled))
@@ -86,6 +91,7 @@ SUBSYSTEM_DEF(agent_npc)
 	in_flight = SSagent_npc.in_flight
 	draining = SSagent_npc.draining
 	refusal_counts = SSagent_npc.refusal_counts
+	telemetry = SSagent_npc.telemetry
 	next_epoch = SSagent_npc.next_epoch
 	next_serial = SSagent_npc.next_serial
 	max_concurrent = SSagent_npc.max_concurrent
@@ -169,6 +175,11 @@ SUBSYSTEM_DEF(agent_npc)
 		if(!binding.pending.is_expired())
 			continue
 		note_refusal(AGENT_REFUSE_DEADLINE)
+		binding.requests_expired++
+		// Logged, because this is where a good answer goes to die. Anything the
+		// sidecar sends after this point is drained unread, so without a line
+		// here the only symptom is a 200 in the sidecar log and silence in game.
+		log_agent("expired [binding.pawn_id]: no reply within [AGENT_DEFAULT_DEADLINE / 10]s; a later answer will be discarded")
 		binding.record_result(AGENT_RESULT_EXPIRED, "deadline passed")
 		// A timeout is a transport failure: back off rather than retry instantly,
 		// and restore the trigger the timed-out request was carrying.
@@ -189,6 +200,10 @@ SUBSYSTEM_DEF(agent_npc)
 
 		var/datum/agent_request/request = binding.pending
 		var/datum/agent_response/response = agent_validate_response(request, binding)
+
+		// Read before the request is destroyed below. Every consumed reply is
+		// measured, refused or not: a refusal still costs the same wall time.
+		note_decision(world.time - request.started_at, response.tokens_used)
 
 		// One close, both ledgers, with the real cost.
 		close_reservation(binding, request, response.tokens_used)
@@ -328,6 +343,9 @@ SUBSYSTEM_DEF(agent_npc)
 	binding.requests_made++
 	binding.next_request_at = world.time + AGENT_MIN_REQUEST_INTERVAL
 
+	// Read before take_events(), which clears the clock it is measured from.
+	note_request_started(binding)
+
 	var/list/events = binding.take_events()
 	var/datum/agent_request/request = new()
 	var/list/body = request.prepare(binding, session_id, next_serial++, build_observation(binding), events, binding.profile_payload())
@@ -373,6 +391,10 @@ SUBSYSTEM_DEF(agent_npc)
 	var/mob/living/pawn = binding.resolve_pawn()
 	log_agent("decision [binding.pawn_id]: [name]")
 
+	// Counted before authorisation on purpose: a model repeatedly asking for an
+	// action its profile forbids is a prompt problem, and this is where it shows.
+	note_action(name)
+
 	// Authorisation check one: is this action permitted for this NPC's role?
 	// The action vocabulary is global; the profile narrows it per character.
 	if(!binding.profile_permits(name))
@@ -417,6 +439,61 @@ SUBSYSTEM_DEF(agent_npc)
 	if(!reason)
 		return
 	refusal_counts[reason] = (refusal_counts[reason] || 0) + 1
+
+/**
+ * Telemetry seam.
+ *
+ * Each of these null-checks telemetry explicitly rather than chaining `?.`. In
+ * DM the null-conditional guards only the access it is written on, so
+ * `telemetry?.round_trip.record(x)` still runtimes when telemetry is null.
+ */
+/datum/controller/subsystem/agent_npc/proc/note_decision(latency_ds, tokens_used)
+	if(!telemetry)
+		return FALSE
+	telemetry.note_decision(latency_ds, tokens_used)
+	return TRUE
+
+/datum/controller/subsystem/agent_npc/proc/note_queue_wait(wait_ds)
+	if(!telemetry)
+		return FALSE
+	return telemetry.queue_wait.record(wait_ds)
+
+/**
+ * Record the wait a starting request sat through.
+ *
+ * A probe is counted rather than timed. Its wait is the breaker cooldown, which
+ * would swamp the pacing figure the queue statistic exists to give.
+ */
+/datum/controller/subsystem/agent_npc/proc/note_request_started(datum/agent_binding/binding)
+	if(binding.is_probe())
+		return note_breaker_probe()
+	return note_queue_wait(binding.queued_time())
+
+/datum/controller/subsystem/agent_npc/proc/note_breaker_probe()
+	if(!telemetry)
+		return FALSE
+	telemetry.breaker_probes++
+	return TRUE
+
+/datum/controller/subsystem/agent_npc/proc/note_observation_age(age_ds)
+	if(!telemetry)
+		return FALSE
+	return telemetry.observation_age.record(age_ds)
+
+/datum/controller/subsystem/agent_npc/proc/note_chain_depth(depth)
+	if(!telemetry)
+		return FALSE
+	return telemetry.chain_depth.record(depth)
+
+/datum/controller/subsystem/agent_npc/proc/note_action(action_name)
+	if(!telemetry)
+		return FALSE
+	return telemetry.note_action(action_name)
+
+/datum/controller/subsystem/agent_npc/proc/note_result(state_name)
+	if(!telemetry)
+		return FALSE
+	return telemetry.note_result(state_name)
 
 /// Register a pawn. Called from the controller when the mob spawns.
 /datum/controller/subsystem/agent_npc/proc/register_pawn(mob/living/pawn, datum/ai_controller/controller)

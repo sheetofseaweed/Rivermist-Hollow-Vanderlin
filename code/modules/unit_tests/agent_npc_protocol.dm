@@ -597,17 +597,21 @@
 	TEST_ASSERT(binding.dirty, "A failed submission must leave the binding due for a retry.")
 	TEST_ASSERT(binding.next_request_at > world.time, "A failed submission must back off rather than retry instantly.")
 
-/datum/unit_test/agent_npc_repeated_failures_stop_retrying
+/datum/unit_test/agent_npc_repeated_failures_stop_rapid_retries
 
-/datum/unit_test/agent_npc_repeated_failures_stop_retrying/Run()
+/datum/unit_test/agent_npc_repeated_failures_stop_rapid_retries/Run()
 	var/datum/agent_binding/binding = agent_test_binding()
 
 	for(var/i in 1 to AGENT_MAX_CONSECUTIVE_FAILURES)
 		binding.mark_dirty("heard_speech")
 		binding.note_failure(null)
 
-	TEST_ASSERT(!binding.dirty, "After the retry ceiling a pawn must go quiet rather than hammer a dead sidecar forever.")
-	TEST_ASSERT(!binding.can_start_request(), "A pawn past the retry ceiling must not be startable.")
+	// Quiet, not dead. This test used to assert the binding went clean, which is
+	// what made the ceiling permanent. The cooldown is what stops the hammering
+	// now; staying dirty is what lets a later probe carry the trigger.
+	// See agent_npc_breaker.dm for the probe side.
+	TEST_ASSERT(!binding.can_start_request(), "A pawn past the retry ceiling must not be startable while its cooldown runs.")
+	TEST_ASSERT(binding.next_request_at >= world.time + AGENT_BREAKER_COOLDOWN, "The ceiling must impose a long cooldown, or the pawn hammers a sidecar that is down.")
 
 	binding.note_success()
 	binding.next_request_at = 0

@@ -29,19 +29,41 @@
 			refusals += "[reason]=[SSagent_npc.refusal_counts[reason]]"
 		lines += "refusals: [refusals.Join(", ")]"
 
+	var/datum/agent_telemetry/measured = SSagent_npc.telemetry
+	if(measured)
+		lines += "<b>measured</b> (decisions: [measured.decisions][measured.breaker_probes ? ", breaker probes: [measured.breaker_probes]" : ""])"
+		// Queue wait and round trip are split because the fixes differ: pacing
+		// and concurrency are ours, the round trip belongs to the provider.
+		lines += "&nbsp;&nbsp;queue wait: [measured.queue_wait.summary_ds()]"
+		lines += "&nbsp;&nbsp;round trip: [measured.round_trip.summary_ds()]"
+		lines += "&nbsp;&nbsp;observation age at objective end: [measured.observation_age.summary_ds()]"
+		lines += "&nbsp;&nbsp;tokens/decision: [measured.tokens.summary_plain()]"
+		if(measured.tokens.count < measured.decisions)
+			lines += "&nbsp;&nbsp;<i>[measured.decisions - measured.tokens.count] decision(s) reported no usage.</i>"
+		lines += "&nbsp;&nbsp;chain depth: [measured.chain_depth.summary_plain()]"
+		lines += "&nbsp;&nbsp;actions chosen: [measured.format_counts(measured.action_counts)]"
+		lines += "&nbsp;&nbsp;outcomes: [measured.format_counts(measured.result_counts)]"
+
 	for(var/pawn_id in SSagent_npc.bindings)
 		var/datum/agent_binding/binding = SSagent_npc.bindings[pawn_id]
 		if(QDELETED(binding))
 			continue
 		var/mob/living/pawn = binding.resolve_pawn()
 		var/list/intent = binding.current_intent
+		// A pawn past the failure limit is sending one probe per cooldown and is
+		// otherwise silent. Saying so plainly beats leaving it to be inferred.
+		var/breaker = ""
+		if(binding.is_probe())
+			var/wait_ds = max(0, binding.next_request_at - world.time)
+			breaker = " | <b>BREAKER OPEN</b>, probe in [round(wait_ds / 10, 1)]s"
+
 		lines += "&nbsp;&nbsp;[pawn ? pawn.name : "(gone)"] \
 			epoch [binding.epoch] gen [binding.generation] \
 			| state [binding.state] \
 			| intent [intent ? intent["name"] : "none"] \
 			| events [length(binding.events)] \
-			| requests [binding.requests_made] refused [binding.requests_refused] \
-			| failures [binding.consecutive_failures]"
+			| requests [binding.requests_made] refused [binding.requests_refused] expired [binding.requests_expired] \
+			| failures [binding.consecutive_failures][breaker]"
 
 	to_chat(src, "<span class='notice'>[lines.Join("<br>")]</span>")
 

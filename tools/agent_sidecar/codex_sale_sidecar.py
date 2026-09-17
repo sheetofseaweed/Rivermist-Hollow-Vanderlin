@@ -150,6 +150,10 @@ class CodexSaleDecider(proto.Decider):
         if self.memory:
             self.memory.reconcile(body)
 
+        # Stay inside the deadline DM sent. Outliving it means answering a
+        # request nobody is listening for any more.
+        timeout = proto.upstream_timeout(body, REQUEST_TIMEOUT)
+
         start = self.current_mode()
         modes = [start]
         if self.requested_mode == "auto":
@@ -163,7 +167,7 @@ class CodexSaleDecider(proto.Decider):
                 return {"name": "wait"}, None, 0
 
             status, payload = post_json(self.base_url + "/chat/completions",
-                                        turn.request, self.api_key)
+                                        turn.request, self.api_key, timeout=timeout)
             # A 400 in auto mode usually means this output mode is unsupported.
             if status == 400 and self.requested_mode == "auto" and mode != modes[-1]:
                 nxt = self.demote_mode(mode)

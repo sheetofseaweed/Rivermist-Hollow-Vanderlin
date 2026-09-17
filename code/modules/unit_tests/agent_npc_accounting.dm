@@ -91,6 +91,18 @@
 	for(var/entry in saved_drain)
 		SSagent_npc.draining[entry] = saved_drain[entry]
 
+/datum/unit_test/agent_npc_timeouts_form_a_ladder
+
+/datum/unit_test/agent_npc_timeouts_form_a_ladder/Run()
+	// The ordering that failed on 2026-09-17: the sidecar allowed the model 30s
+	// against a 15s deadline, so a good answer arrived after DM had stopped
+	// listening. The sidecar logged a 200 and the game showed nothing.
+	TEST_ASSERT(AGENT_TRANSPORT_TIMEOUT_SECONDS * 10 < AGENT_DEFAULT_DEADLINE, "rust-g must give up before the deadline. Above it, DM abandons a call that is still running and drains the answer unread.")
+
+	// The sidecar budgets its own call from the deadline_ds it is sent, less a
+	// margin for parsing and the trip home. Too tight a deadline leaves none.
+	TEST_ASSERT(AGENT_DEFAULT_DEADLINE >= (10 SECONDS), "The deadline must leave the sidecar a workable budget once its own margin is taken off.")
+
 /datum/unit_test/agent_npc_transport_carries_a_native_timeout
 
 /datum/unit_test/agent_npc_transport_carries_a_native_timeout/Run()

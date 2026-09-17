@@ -39,6 +39,37 @@ def verdict(state, **kw):
     return [{"event": "action_result", "detail": {"state": state}}]
 
 
+class DeadlineBudget(unittest.TestCase):
+    """The defect: the sidecar allowed the model 30s against a 15s deadline.
+
+    DM abandoned the request at 15s and drained whatever came later, so a good
+    answer produced a 200 in the sidecar log and silence in the game. Two
+    actions were lost that way on 2026-09-17 before anyone noticed, because
+    neither side logged the abandonment.
+    """
+
+    def test_budget_stays_inside_the_deadline(self):
+        # 250 deciseconds is a 25 second deadline.
+        budget = proto.upstream_timeout({"deadline_ds": 250}, 30)
+        self.assertLess(budget, 25.0, "The model budget must end before DM stops listening.")
+        self.assertEqual(budget, 25.0 - proto.UPSTREAM_MARGIN_SECONDS)
+
+    def test_a_tight_deadline_still_leaves_the_model_room(self):
+        # Squeezing to zero or negative would make every call fail instantly.
+        self.assertEqual(proto.upstream_timeout({"deadline_ds": 10}, 30),
+                         proto.MIN_UPSTREAM_TIMEOUT)
+
+    def test_a_missing_or_unusable_deadline_falls_back(self):
+        for body in ({}, {"deadline_ds": None}, {"deadline_ds": "soon"},
+                     {"deadline_ds": 0}, {"deadline_ds": -5}, None):
+            self.assertEqual(proto.upstream_timeout(body, 30), 30, repr(body))
+
+    def test_a_boolean_deadline_is_not_treated_as_a_number(self):
+        # In Python True is an int, so a naive isinstance check would read
+        # deadline_ds=True as a 0.1 second budget.
+        self.assertEqual(proto.upstream_timeout({"deadline_ds": True}, 30), 30)
+
+
 class RequestLocalState(unittest.TestCase):
     """The HTTP server is threaded; per-request values must not live on self."""
 

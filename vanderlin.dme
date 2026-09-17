@@ -603,6 +603,7 @@
 #include "code\datums\agent_npc\perception.dm"
 #include "code\datums\agent_npc\profile.dm"
 #include "code\datums\agent_npc\protocol.dm"
+#include "code\datums\agent_npc\telemetry.dm"
 #include "code\datums\antag_retainer.dm"
 #include "code\datums\armor\_armor_compare.dm"
 #include "code\datums\armor\_atom_helpers.dm"

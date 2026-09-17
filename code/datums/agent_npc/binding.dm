@@ -35,6 +35,11 @@
 	var/list/events
 	/// Set by external events, and by continuation while budget remains.
 	var/dirty = FALSE
+	/// world.time this binding most recently became dirty. 0 while clean.
+	/// Measures the wait a trigger sits through before a request is sent.
+	var/dirty_since = 0
+	/// world.time the observation now in play was built. Drives staleness.
+	var/observation_built_at = 0
 	/// Self-driven decisions left in this interaction. Refreshed by real events.
 	var/continuation_budget = 0
 	/// world.time at which the interaction lapses, budget or not.
@@ -51,7 +56,11 @@
 	var/tokens_reserved = 0
 	var/tokens_settled = 0
 	var/requests_made = 0
+	/// Responses that arrived and were rejected. A timeout is not one of these.
 	var/requests_refused = 0
+	/// Requests that never came back. Counted apart, or a pawn losing every
+	/// request reads as "refused 0" and looks healthy.
+	var/requests_expired = 0
 
 /datum/agent_binding/New(mob/living/new_pawn, datum/ai_controller/new_controller)
 	. = ..()
@@ -77,6 +86,30 @@
 /datum/agent_binding/proc/set_observation(datum/agent_observation/new_observation)
 	QDEL_NULL(last_observation)
 	last_observation = new_observation
+	observation_built_at = world.time
+
+/**
+ * Mark work pending, stamping the wait clock on the clean -> dirty edge only.
+ *
+ * Re-stamping on every event would measure the newest trigger. What matters is
+ * how long the oldest unserved one has been waiting, so the first stamp stands.
+ */
+/datum/agent_binding/proc/set_dirty()
+	if(!dirty)
+		dirty_since = world.time
+	dirty = TRUE
+
+/datum/agent_binding/proc/clear_dirty()
+	dirty = FALSE
+	dirty_since = 0
+
+/// How long the pending trigger has waited, in deciseconds.
+/datum/agent_binding/proc/queued_time()
+	return dirty_since ? max(0, world.time - dirty_since) : 0
+
+/// How stale the observation in play is, in deciseconds.
+/datum/agent_binding/proc/observation_age()
+	return observation_built_at ? max(0, world.time - observation_built_at) : 0
 
 /// Resolve a handle the model returned, against the observation it was shown.
 /datum/agent_binding/proc/resolve_handle(handle)
@@ -147,7 +180,7 @@
 	// A revoked binding must not keep driving itself.
 	end_continuation()
 	LAZYCLEARLIST(events)
-	dirty = FALSE
+	clear_dirty()
 	pending_urgency = AGENT_EVENT_LOW
 
 /// Re-enable after a revoke. The new generation means old replies stay dead.
@@ -158,6 +191,10 @@
 		return FALSE
 	generation++
 	state = AGENT_BINDING_IDLE
+	// An operator turning agents back on means a fresh start, so the breaker
+	// closes too. Otherwise re-enabling leaves a broken pawn still waiting.
+	consecutive_failures = 0
+	next_request_at = 0
 	return TRUE
 
 /// Drop the in-flight request. The transport is drained, never simply dropped.
@@ -171,6 +208,10 @@
 	// Marked unsettled: the hold is released so admission recovers, but the
 	// provider may still bill work we walked away from, so the cost is recorded
 	// as unknown rather than assumed to be zero.
+	//
+	// Logged for the same reason expire_pass logs: past this point the sidecar's
+	// answer is drained unread, so the loss is otherwise invisible from DM.
+	SSagent_npc?.log_agent("abandoned the in-flight request for [pawn_id]: [reason]")
 	SSagent_npc?.close_reservation(src, pending, 0, unsettled = TRUE)
 	SSagent_npc?.drain_transport(pending.release_transport())
 	QDEL_NULL(pending)
@@ -189,6 +230,9 @@
 		return FALSE
 	current_intent = null
 	intent_suspended = FALSE
+	// An objective finishes long after its observation was built, so this is the
+	// point where staleness at execution is real rather than theoretical.
+	SSagent_npc?.note_observation_age(observation_age())
 	// A finished objective is a completed step, so it may continue the chain.
 	complete_action(state_name, detail)
 	return TRUE
@@ -217,6 +261,10 @@
 /// Stop self-driven work. Buffered events are left alone on purpose: settling
 /// down must not erase something a player said while the NPC was busy.
 /datum/agent_binding/proc/end_continuation()
+	// Measure a chain that actually ran. One that never took a step is not a
+	// chain, and recording zeroes for it would flatten the average into noise.
+	if(continuation_expires_at && continuation_budget < AGENT_CONTINUATION_BUDGET)
+		SSagent_npc?.note_chain_depth(AGENT_CONTINUATION_BUDGET - continuation_budget)
 	continuation_budget = 0
 	continuation_expires_at = 0
 
@@ -239,7 +287,7 @@
 		return FALSE
 
 	continuation_budget--
-	dirty = TRUE
+	set_dirty()
 	return TRUE
 
 /// Append to the event ring without scheduling anything.
@@ -259,6 +307,9 @@
 	if(state == AGENT_BINDING_DISABLED)
 		return FALSE
 	push_event("action_result", AGENT_EVENT_LOW, list("state" = state_name, "detail" = detail))
+	// The single funnel every terminal state passes through, so the outcome mix
+	// is counted here rather than at each of the five call sites.
+	SSagent_npc?.note_result(state_name)
 	return TRUE
 
 /**
@@ -273,7 +324,7 @@
 		return FALSE
 
 	push_event(event_name, urgency, detail)
-	dirty = TRUE
+	set_dirty()
 	pending_urgency = max(pending_urgency, urgency)
 	if(replenish)
 		begin_interaction()
@@ -299,7 +350,7 @@
 /datum/agent_binding/proc/take_events()
 	var/list/taken = events?.Copy() || list()
 	LAZYCLEARLIST(events)
-	dirty = FALSE
+	clear_dirty()
 	pending_urgency = AGENT_EVENT_LOW
 	return taken
 
@@ -310,26 +361,49 @@
 	for(var/list/entry as anything in taken)
 		push_event(entry["event"], entry["urgency"], entry["detail"])
 
+/**
+ * May this binding send now?
+ *
+ * There is deliberately no permanent failure block here. The failure limit is
+ * enforced as a long wait on next_request_at instead, so a pawn past the limit
+ * still gets a probe. A hard block could never lift: no request could start,
+ * so none could succeed, so the failure count never fell.
+ */
 /datum/agent_binding/proc/can_start_request()
 	if(state != AGENT_BINDING_IDLE || !dirty || pawn_gone)
 		return FALSE
 	if(world.time < next_request_at)
 		return FALSE
-	if(consecutive_failures >= AGENT_MAX_CONSECUTIVE_FAILURES)
-		return FALSE
 	return TRUE
 
-/// Called after a transport-level failure. Retries, then gives up and stays quiet.
+/// Is the next request a lone probe against a provider we have given up on?
+/datum/agent_binding/proc/is_probe()
+	return consecutive_failures >= AGENT_MAX_CONSECUTIVE_FAILURES
+
+/// How long a broken binding waits before its next probe. Grows, then caps.
+/datum/agent_binding/proc/breaker_cooldown()
+	var/steps = max(0, consecutive_failures - AGENT_MAX_CONSECUTIVE_FAILURES)
+	return min(AGENT_BREAKER_COOLDOWN * (steps + 1), AGENT_BREAKER_COOLDOWN_MAX)
+
+/**
+ * Called after a transport-level failure.
+ *
+ * Under the limit this is ordinary backoff. At or past it the breaker opens: one
+ * probe per cooldown rather than silence. The events stay buffered and the
+ * binding stays dirty, so the probe carries the trigger we failed to answer.
+ */
 /datum/agent_binding/proc/note_failure(list/unsent_events)
 	consecutive_failures++
 	restore_events(unsent_events)
-	next_request_at = world.time + (AGENT_FAILURE_BACKOFF * consecutive_failures)
-	if(consecutive_failures >= AGENT_MAX_CONSECUTIVE_FAILURES)
-		dirty = FALSE
+	if(is_probe())
+		next_request_at = world.time + breaker_cooldown()
+		set_dirty()
 		return FALSE
-	dirty = TRUE
+	next_request_at = world.time + (AGENT_FAILURE_BACKOFF * consecutive_failures)
+	set_dirty()
 	return TRUE
 
+/// A reply of any kind closes the breaker. This is the only path that does.
 /datum/agent_binding/proc/note_success()
 	consecutive_failures = 0
 

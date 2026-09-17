@@ -19,6 +19,29 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PROTOCOL_VERSION = 1
 
+# Room left between giving up on the model and the deadline DM is holding us to:
+# time to parse the answer, build the envelope and get it back over the wire.
+UPSTREAM_MARGIN_SECONDS = 5.0
+# Never squeeze the model below this, however tight a deadline DM asks for.
+MIN_UPSTREAM_TIMEOUT = 5.0
+
+
+def upstream_timeout(body, fallback):
+    """Seconds to allow the model, kept inside the deadline DM sent.
+
+    DM abandons a request at its own deadline and discards whatever arrives
+    afterwards. Waiting longer than that produces a 200 in this log and silence
+    in the game, which looks exactly like the sidecar being down. Honouring
+    deadline_ds is what keeps the two sides agreeing on when to give up.
+    """
+    deadline_ds = body.get("deadline_ds") if isinstance(body, dict) else None
+    if isinstance(deadline_ds, bool) or not isinstance(deadline_ds, (int, float)):
+        return fallback
+    if deadline_ds <= 0:
+        return fallback
+    return max(MIN_UPSTREAM_TIMEOUT, (deadline_ds / 10.0) - UPSTREAM_MARGIN_SECONDS)
+
+
 # Identity fields DM checks on receipt. Echo them back unchanged; DM refuses a
 # reply whose echo does not match the request it is answering.
 ECHO_FIELDS = (

@@ -43,6 +43,8 @@ MAX_TOKENS = 2048
 EFFORT = "low"
 FALLBACK_MODEL = "claude-opus-4-8"
 FALLBACK_BETA = "server-side-fallback-2026-06-01"
+# Used only when a request carries no usable deadline_ds of its own.
+REQUEST_TIMEOUT = 30
 
 
 class ClaudeDecider(proto.Decider):
@@ -104,6 +106,9 @@ class ClaudeDecider(proto.Decider):
             response = self.client.beta.messages.create(
                 betas=[FALLBACK_BETA],
                 fallbacks=[{"model": FALLBACK_MODEL}],
+                # Stay inside the deadline DM sent, or the answer lands after
+                # DM has stopped listening and the game sees nothing.
+                timeout=proto.upstream_timeout(turn.body, REQUEST_TIMEOUT),
                 **turn.request
             )
         except self.anthropic.RateLimitError:
