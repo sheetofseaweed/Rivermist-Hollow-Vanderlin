@@ -263,7 +263,17 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 	var/list/quirk_names = list()
 	for(var/datum/quirk/Q in quirks)
 		if(Q.quirk_category == category)
-			quirk_names += Q.name
+			//RMH EDITED START - dotted-underline hover tooltip with the quirk's
+			// description. Uses span_tooltip_html() (code/__DEFINES/chat/span.dm)
+			// rather than plain span_tooltip() so the desc_hint paragraph gets an
+			// actual line break instead of a plain " — " separator - see
+			// modular_rmh/code/modules/clothing/armor_tooltip.dm for the full
+			// explanation of why the plain Tooltip can't render markup at all.
+			var/tooltip_text = Q.desc
+			if(Q.desc_hint)
+				tooltip_text += "<br><br>[Q.desc_hint]"
+			quirk_names += span_tooltip_html(tooltip_text, Q.name)
+			//RMH EDITED END
 	if(!length(quirk_names))
 		return "None"
 	return quirk_names.Join(", ")
@@ -274,8 +284,14 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 		if(!istype(status_effect, /datum/status_effect/debuff/addiction))
 			continue
 		var/atom/movable/screen/alert/status_effect/status_alert = status_effect.alert_type
-		var/addiction_name = initial(status_alert.name)
-		addiction_names += addiction_name || "Addiction"
+		var/addiction_name = initial(status_alert.name) || "Addiction"
+		//RMH EDITED START - same HTML tooltip treatment as the quirks above.
+		var/addiction_desc = initial(status_alert.desc)
+		if(addiction_desc)
+			addiction_names += span_tooltip_html(addiction_desc, addiction_name)
+		else
+			addiction_names += addiction_name
+		//RMH EDITED END
 	if(!length(addiction_names))
 		return "None active"
 	return addiction_names.Join(", ")

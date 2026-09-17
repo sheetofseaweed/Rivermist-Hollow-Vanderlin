@@ -118,12 +118,12 @@
 
 	var/datum/armor/item_armor = get_armor()
 	if(item_armor.has_any_armor())
-		. += "\n<u><b>DEFENSE:</b></u>\n"
-		var/list/defense_strings = list()
-		for(var/damage_key in ARMOR_LIST_DAMAGE)
-			var/rating = item_armor.get_rating(damage_key)
-			defense_strings += "<font color='[armor_to_color(rating)]'>[armor_to_protection_name(damage_key)] [armor_to_protection_class(rating)]</font>"
-		. += defense_strings.Join(" | ")
+		//RMH EDITED - real ABSORB/REDUCE/BLOCK breakdown (ported from Azure
+		// Peak / Twilight Axis's defense_examine()), replacing the old flat
+		// "DEFENSE:" list that used a cosmetic tier scale unconnected to
+		// actual combat math. See modular_rmh/code/modules/clothing/
+		// armor_tooltip.dm for the full explanation.
+		. += "\n" + get_armor_breakdown_html() + "\n"
 
 	if(length(prevent_crits))
 		. += "\n<u><b>PREVENT CRITS:</b></u>\n"

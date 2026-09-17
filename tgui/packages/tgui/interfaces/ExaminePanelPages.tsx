@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Image, Section, Stack } from "tgui-core/components";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Box, Button, Icon, Image, Section, Stack } from "tgui-core/components";
 
 import { resolveAsset } from "../assets";
 import { useBackend } from "../backend";
@@ -13,7 +13,6 @@ import type {
 const DESC_TRUNCATE_AT = 120;
 const SLOT = 44; // slot box size in px
 const BOTTOM_ROW_TOP = 310; // Y of the bottom corner+hands row inside the box
-const ROW = 48; // vertical spacing between stacked slots
 
 // Edge-anchored slot positions. Each slot hugs a real container edge (left/right
 // + top/bottom) so the layout stays glued to the frame no matter the container's
@@ -109,6 +108,168 @@ const TOOLTIP_SURFACE = {
 } as const;
 //RMH EDITED END
 
+// RMH EDITED - default (non-elevated-quality) name color: plain warm white,
+// matching BG3 showing Common-rarity item names in plain white and only
+// tinting the name once an item is actually special (see QUALITY_COLORS /
+// QUALITY_SUBTITLE_MIN_TIER below for where that cutoff is).
+const DEFAULT_NAME_COLOR = "#f0ece0";
+
+// Quality tier (0..6, quality_frame_index()) -> a short display word, shown
+// as the tooltip's subtitle for elevated tiers only (mirrors BG3 hiding the
+// rarity subtitle entirely for Common items). Tiers below FINE show none.
+const QUALITY_LABELS: Record<number, string> = {
+  4: "Fine",
+  5: "Flawless",
+  6: "Masterwork",
+};
+const QUALITY_SUBTITLE_MIN_TIER = 4;
+
+// Decorative/body font stack, matching the pair already established in
+// Throne.tsx (SERIF/"MedievalSharp") rather than introducing a new one -
+// both degrade to a plain serif if the named font isn't loaded, same as
+// that existing usage.
+const FONT_DISPLAY = '"MedievalSharp", Georgia, serif';
+const FONT_BODY = '"Lora", Georgia, serif';
+
+// Same disclaimer as above - guessed icon per weapon category.
+const WEAPON_CATEGORY_ICONS: Record<string, string> = {
+  // Swords
+  Sword: "khanda",
+  Longsword: "khanda",
+  Shortsword: "khanda",
+  Greatsword: "khanda",
+  Scimitar: "khanda",
+  Rapier: "khanda",
+  Sabre: "khanda",
+  Katana: "khanda",
+  Khopesh: "khanda",
+  Gladius: "khanda",
+  // Axes
+  Axe: "gavel",
+  Greataxe: "gavel",
+  // Blunt
+  Mace: "hammer",
+  Warhammer: "hammer",
+  // Bladed sidearms
+  Knife: "khanda",
+  Dagger: "khanda",
+  Sickle: "khanda",
+  // Polearms
+  Polearm: "khanda",
+  Halberd: "khanda",
+  Spear: "khanda",
+  // Other melee
+  Flail: "link",
+  Whip: "grip-lines",
+  Katar: "hand-fist",
+  Knuckles: "hand-fist",
+  "War Pick": "hammer",
+  // Shields
+  Shield: "shield",
+  "Tower Shield": "shield",
+  "Heater Shield": "shield-halved",
+  // Ranged
+  Bow: "bow-arrow",
+  Longbow: "bow-arrow",
+  Shortbow: "bow-arrow",
+  Crossbow: "crosshairs",
+  Musket: "crosshairs",
+  Pistol: "crosshairs",
+  Blowgun: "crosshairs",
+  Airgun: "crosshairs",
+  Firearm: "crosshairs",
+};
+
+// Same disclaimer - guessed icon per BG3-style property tag.
+const TAG_ICONS: Record<string, string> = {
+  Light: "feather",
+  "Extra Reach": "arrows-left-right",
+  "Two-Handed": "hands",
+  Versatile: "shuffle",
+};
+
+// Same disclaimer - guessed icon per actual attack-intent name (the
+// intent's own `name`, e.g. "chop"/"stab"/"pick" - see
+// get_weapon_intent_names()). Unmapped names fall back to a generic blade.
+const INTENT_ICONS: Record<string, string> = {
+  chop: "khanda",
+  cut: "khanda",
+  hack: "khanda",
+  rend: "khanda",
+  "long rend": "khanda",
+  "arc slash": "khanda",
+  "precision cut": "khanda",
+  stab: "arrow-right-long",
+  thrust: "arrow-right-long",
+  impale: "arrow-right-long",
+  lunge: "arrow-right-long",
+  spear: "arrow-right-long",
+  pick: "location-crosshairs",
+  drill: "location-crosshairs",
+  strike: "hammer",
+  smash: "hammer",
+  bash: "hammer",
+  "pommel strike": "hammer",
+  "pommel bash": "hammer",
+};
+const DEFAULT_INTENT_ICON = "khanda";
+
+// RMH EDITED - one color per grip state, so an intent that's only available
+// in a special grip doesn't look identical to the weapon's default moveset.
+// "normal" keeps the original color already used before this distinction
+// existed, so a plain weapon with no special grips looks unchanged.
+const GRIP_COLOR: Record<string, string> = {
+  normal: "#8fc97a", // same green as before
+  gripped: "#5fa8d3", // two-handed/wielded-only intents
+  alt: "#c98fd0", // alt-grip-only intents (right-click reversed grip, etc)
+};
+
+// RMH EDITED START - narrow, fixed-width hover hint for a weapon's special
+// attack description. The native `title` attribute this used to be doesn't
+// respect any CSS width constraint - some browsers/skins stretch it to
+// roughly half the screen for a couple sentences of text, which is what this
+// replaces. Positioned to open upward since this line sits near the bottom
+// of the stat block, right above the footer.
+const SpecialAttackHint = (props: { name: string; desc: string }) => {
+  const { name, desc } = props;
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Box
+      as="span"
+      style={{ position: "relative", display: "inline-block" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <Icon name="burst" mr={0.5} />
+      {name}
+      {hovered && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "100%",
+            left: 0,
+            marginBottom: "4px",
+            width: "200px",
+            zIndex: 2,
+            padding: "6px 8px",
+            ...TOOLTIP_SURFACE,
+            border: "1px solid rgba(201,167,111,0.6)",
+            borderRadius: "4px",
+            fontSize: "10px",
+            color: "#c7bba8",
+            lineHeight: 1.4,
+            whiteSpace: "normal",
+            pointerEvents: "none",
+          }}
+        >
+          {desc}
+        </div>
+      )}
+    </Box>
+  );
+};
+// RMH EDITED END
+
 const ItemTooltip = (props: {
   item: ExamineItem;
   label: string;
@@ -121,22 +282,91 @@ const ItemTooltip = (props: {
   const { item, label, side, vAlign, frameColor, onEnter, onLeave } = props;
   const [expanded, setExpanded] = useState(false);
   const expandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // RMH EDITED - runtime edge clamp, see the effect below for why this is
+  // needed in addition to picking "reasonable" width numbers.
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [clampOffsetX, setClampOffsetX] = useState(0);
 
-  // Only long descriptions get the truncate + delayed-expand behavior.
   const longDesc = item.desc.length > DESC_TRUNCATE_AT;
+  const hasTags = !!item.tags && item.tags.length > 0;
+  const hasIntents = !!item.intents && item.intents.length > 0;
+  const hasFooter = !!item.weight || !!item.price;
+  const hasExtra =
+    !!item.weaponDamage ||
+    !!item.armorClassLabel ||
+    !!item.weaponCategory ||
+    hasTags ||
+    hasIntents ||
+    !!item.specialAttack ||
+    hasFooter;
 
-  useEffect(() => {
-    if (!longDesc) {
+  // RMH EDITED - BG3-style rarity glow: a plain border at low quality tiers,
+  // a soft outer glow from FINE upward (quality_frame_index(), same source
+  // that already colors the doll slot frame - see armor_tooltip.dm's file
+  // header for why RMH doesn't have a separate "rarity" axis to draw on).
+  const hasGlow = item.quality >= QUALITY_SUBTITLE_MIN_TIER;
+  const qualityLabel = QUALITY_LABELS[item.quality];
+  // RMH EDITED - plain white until quality is actually elevated, same cutoff
+  // as the glow/subtitle above (BG3 doesn't tint Common item names either).
+  const nameColor = hasGlow ? frameColor : DEFAULT_NAME_COLOR;
+  // RMH EDITED - widen the expanded box when there's a lot of tag badges to
+  // fit (weapon category + property tags), and force an actual WIDTH (not
+  // just a maxWidth cap) once expanded - see the width prop below for why.
+  // Kept more conservative than a previous pass: going wider here doesn't
+  // help if there's no room for it - see the edge-clamp effect below, which
+  // is what actually keeps the box on-screen regardless of this number.
+  const tagCount = (item.weaponCategory ? 1 : 0) + (item.tags?.length ?? 0);
+  let expandedMaxWidth = "320px";
+  if (tagCount >= 3) {
+    expandedMaxWidth = "420px";
+  } else if (tagCount >= 1) {
+    expandedMaxWidth = "360px";
+  }
+
+  // RMH EDITED - clamp the tooltip back on-screen after layout. Widening
+  // this box (to fix it wrapping into a tall column) surfaced a worse bug:
+  // slots that open their tooltip "left" of the doll anchor their box via
+  // `right: <slot width>px`, so a wide box just grows further left - if the
+  // slot sits near the left edge of the examine panel (which itself isn't
+  // necessarily flush with the browser/game window's left edge), a wide
+  // enough box runs straight off the screen with no room to shrink. Picking
+  // "safe" fixed pixel widths can't account for where the panel actually
+  // sits on a given player's screen, so this measures the real rendered
+  // position after each layout that could move or resize the box (expanding,
+  // or a new item swapped in) and nudges it back on-screen with a transform
+  // if either edge is off-screen. Resets the transform before measuring so
+  // a previous correction doesn't get compounded into the next one.
+  useLayoutEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) {
       return;
     }
-    // After 2s of hovering, expand to show the full text regardless of length.
+    el.style.transform = "";
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    let offset = 0;
+    if (rect.left < margin) {
+      offset = margin - rect.left;
+    } else if (rect.right > window.innerWidth - margin) {
+      offset = window.innerWidth - margin - rect.right;
+    }
+    setClampOffsetX(offset);
+  }, [expanded, item.name, side, vAlign]);
+
+  useEffect(() => {
+    // Same "hold to see more" behavior as the old long-description-only
+    // expand, now covering the whole stat block: a quick hover just shows
+    // name + description, holding ~2s reveals damage/armor/proficiency/etc.
+    if (!longDesc && !hasExtra) {
+      return;
+    }
     expandTimer.current = setTimeout(() => setExpanded(true), 2000);
     return () => {
       if (expandTimer.current) {
         clearTimeout(expandTimer.current);
       }
     };
-  }, [longDesc]);
+  }, [longDesc, hasExtra]);
 
   const shownDesc =
     !longDesc || expanded
@@ -145,6 +375,7 @@ const ItemTooltip = (props: {
 
   return (
     <div
+      ref={wrapperRef}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       style={{
@@ -154,34 +385,217 @@ const ItemTooltip = (props: {
         ...(vAlign === "top" ? { top: "0" } : { bottom: "0" }),
         [side === "right" ? "left" : "right"]: `${SLOT + 6}px`,
         zIndex: 1,
-        width: expanded ? "248px" : "212px",
-        maxHeight: "230px",
-        overflowY: "auto",
-        padding: "8px 10px",
-        ...TOOLTIP_SURFACE, // RMH EDITED - frosted backdrop instead of a flat fill
-        border: `2px solid ${frameColor}`,
-        borderRadius: "4px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.85)",
-        // pointer events ON so the user can scroll long descriptions
+        // RMH EDITED - the edge-clamp correction from the effect above.
+        transform: clampOffsetX ? `translateX(${clampOffsetX}px)` : undefined,
+        // pointer events ON so the user can scroll long descriptions, and so
+        // hovering the bleeding icon below still counts as hovering the tooltip
         pointerEvents: "auto",
         textAlign: "left",
       }}
     >
-      <Box bold style={{ color: frameColor }} fontSize="13px">
+      {/* RMH EDITED START - item art bleeds past the tooltip's top-right
+          corner. Lives on this outer, overflow-free wrapper - not inside the
+          scrolling box below - because overflow-x can't be "visible" on a box
+          that also scrolls vertically (overflow-y: auto): the spec computes
+          the "visible" axis to "auto" too in that case, and since the icon
+          always pokes out past the border by design, that axis would always
+          have something to scroll - a permanent sliver of horizontal
+          scrollbar no matter how big the box is (this was the actual bug,
+          not the box being too small). Splitting the bleeding icon onto this
+          unclipped outer layer and keeping the border/scroll on the inner
+          box fixes it outright. */}
+      {!!item.icon && (
+        <Image
+          src={item.icon}
+          // RMH EDITED - bigger in the expanded state specifically (a small
+          // corner icon reads fine on the brief hover, but felt tiny once
+          // the box grows to show full stats) - collapsed stays as it was.
+          width={expanded ? "72px" : "40px"}
+          height={expanded ? "72px" : "40px"}
+          style={{
+            position: "absolute",
+            top: "-8px",
+            right: "-8px",
+            zIndex: 1,
+            imageRendering: "pixelated",
+            filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.7))",
+          }}
+        />
+      )}
+      <div
+        style={{
+          // RMH EDITED - an explicit width once expanded, not just a
+          // maxWidth cap. With only maxWidth set, this box has an "auto"
+          // (shrink-to-fit) width, and the intent/tag rows inside use
+          // flexWrap - a shrink-to-fit ancestor around wrapping flex content
+          // tends to collapse toward the narrowest arrangement that still
+          // fits (each row free to wrap early) rather than actually using
+          // the room maxWidth allows, which is exactly the "turns into a
+          // tall column" symptom. Forcing width to the same value makes the
+          // box actually occupy that space, so the badge rows wrap within a
+          // real width budget instead of the box shrinking around them.
+          width: expanded ? expandedMaxWidth : "auto",
+          minWidth: "190px",
+          maxWidth: expanded ? expandedMaxWidth : "230px",
+          maxHeight: "320px",
+          overflowY: "auto",
+          overflowX: "hidden",
+          padding: "10px 12px",
+          ...TOOLTIP_SURFACE, // frosted backdrop instead of a flat fill
+          // RMH EDITED - subtle bottom vignette, matching the BG3 reference's
+          // faint gradient before the weight/price footer. Only shown once
+          // expanded (the footer/tags it sits behind aren't rendered before
+          // that either) - showing it on the bare name+desc hover would just
+          // be a stray tint with nothing under it. Layered on top of
+          // TOOLTIP_SURFACE's flat background (a separate CSS property, not
+          // overridden by it) so it doesn't affect the other tooltip that
+          // reuses TOOLTIP_SURFACE (SimpleTooltip).
+          backgroundImage: expanded
+            ? "linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(74,26,74,0.4) 100%)"
+            : "none",
+          border: `2px solid ${frameColor}`,
+          borderRadius: "4px",
+          boxShadow: hasGlow
+            ? `0 0 10px ${frameColor}, 0 2px 10px rgba(0,0,0,0.85)`
+            : "0 2px 10px rgba(0,0,0,0.85)",
+        }}
+      >
+      {/* RMH EDITED END */}
+      <Box
+        bold
+        style={{
+          color: nameColor,
+          fontFamily: FONT_DISPLAY,
+          paddingRight: item.icon ? (expanded ? "76px" : "40px") : 0,
+          letterSpacing: "0.02em",
+          textTransform: "capitalize",
+        }}
+        fontSize="15px"
+      >
         {item.name}
       </Box>
-      <Box color="#8a7a66" fontSize="10px" italic mb={item.desc ? 0.5 : 0}>
+      {!!qualityLabel && (
+        <Box fontSize="10px" italic style={{ color: "#9a8f80" }}>
+          {qualityLabel}
+        </Box>
+      )}
+      <Box color="#8a7a66" fontSize="10px" italic mb={0.25}>
         {label}
       </Box>
+      <Box style={{ borderTop: "1px solid rgba(138,122,102,0.35)", margin: "4px 0" }} />
+      {expanded && !!item.weaponDamage && (
+        <Box bold fontSize="13px" style={{ color: "#8fc97a" }} mb={0.25}>
+          {item.weaponDamage.force} Damage
+        </Box>
+      )}
+      {expanded && hasIntents && (
+        <>
+          <Box fontSize="11px" style={{ color: "#7fa7c9" }}>
+            <Icon name="award" mr={0.5} />
+            Proficiency
+          </Box>
+          <Box style={{ display: "flex", flexWrap: "wrap", gap: "2px 10px" }} mb={0.25}>
+            {item.intents!.map((intent) => (
+              <Box
+                key={intent.name}
+                bold
+                fontSize="10px"
+                style={{ color: GRIP_COLOR[intent.grip] ?? GRIP_COLOR.normal }}
+              >
+                <Icon name={INTENT_ICONS[intent.name] ?? DEFAULT_INTENT_ICON} mr={0.5} />
+                {intent.name.toUpperCase()}
+              </Box>
+            ))}
+          </Box>
+        </>
+      )}
       {!!item.desc && (
         <Box
           color="#c7bba8"
           fontSize="11px"
-          style={{ lineHeight: "1.4", whiteSpace: "pre-wrap" }}
+          style={{ fontFamily: FONT_BODY, lineHeight: "1.4", whiteSpace: "pre-wrap" }}
+          mb={1}
         >
+          {/* RMH EDITED - small scroll glyph ahead of the flavor text, matching
+              the BG3 reference. Guessed icon name, same caveat as the others -
+              swap if "scroll" isn't in the compiled tgfont set. */}
+          <Icon name="scroll" mr={0.5} style={{ opacity: 0.7 }} />
           {shownDesc}
         </Box>
       )}
+      {expanded &&
+        (!!item.armorClassLabel || !!item.weaponCategory || hasTags || !!item.specialAttack) && (
+          <Box
+            style={{
+              display: "flex",
+              // RMH EDITED - always one row now, never wraps onto a second
+              // line. The width-forcing above already sizes the box to fit a
+              // typical tag count; overflowX here is just a safety net for an
+              // unusually tag-heavy item rather than letting it wrap or clip.
+              flexWrap: "nowrap",
+              overflowX: "auto",
+              gap: "2px 10px",
+            }}
+            mb={0.25}
+          >
+            {!!item.armorClassLabel && (
+              <Box fontSize="11px" style={{ color: "#7fa7c9", whiteSpace: "nowrap" }}>
+                <Icon name="shield-halved" mr={0.5} />
+                {item.armorClassLabel}
+              </Box>
+            )}
+            {!!item.weaponCategory && (
+              <Box fontSize="11px" style={{ color: "#7fa7c9", whiteSpace: "nowrap" }}>
+                <Icon name={WEAPON_CATEGORY_ICONS[item.weaponCategory] ?? "question"} mr={0.5} />
+                {item.weaponCategory}
+              </Box>
+            )}
+            {item.tags?.map((tag) => (
+              <Box key={tag} fontSize="11px" style={{ color: "#8a7a66", whiteSpace: "nowrap" }}>
+                <Icon name={TAG_ICONS[tag] ?? "question"} mr={0.5} />
+                {tag}
+              </Box>
+            ))}
+            {/* RMH EDITED - special attack joined into the same row instead of
+                its own line below; whiteSpace: nowrap keeps its name from
+                wrapping mid-row like the other badges. */}
+            {!!item.specialAttack && (
+              <Box fontSize="11px" style={{ color: "#c9a76f", whiteSpace: "nowrap" }}>
+                <SpecialAttackHint name={item.specialAttack.name} desc={item.specialAttack.desc} />
+              </Box>
+            )}
+          </Box>
+        )}
+      {expanded && hasFooter && (
+        <Box
+          mt={0.25}
+          pt={0.5}
+          style={{
+            borderTop: "1px solid rgba(138,122,102,0.35)",
+            display: "flex",
+            // RMH EDITED - both values clustered in the right corner instead
+            // of split left/right across the footer.
+            justifyContent: "flex-end",
+            gap: "12px",
+          }}
+          fontSize="10px"
+          color="#b8ae9c"
+        >
+          {!!item.weight && (
+            <span>
+              <Icon name="weight-hanging" mr={0.5} />
+              {item.weight}
+            </span>
+          )}
+          {!!item.price && (
+            <span>
+              <Icon name="coins" mr={0.5} />
+              {item.price} amna
+            </span>
+          )}
+        </Box>
+      )}
+      </div>
     </div>
   );
 };
