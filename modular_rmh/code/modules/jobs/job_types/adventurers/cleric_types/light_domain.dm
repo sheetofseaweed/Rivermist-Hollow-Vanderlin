@@ -43,8 +43,8 @@
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/divine_strike,
-		/datum/action/cooldown/spell/essence/purify_water,
-		/datum/action/cooldown/spell/essence/neutralize,
+		/datum/action/cooldown/spell/essence/purify_water/class_granted,
+		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
 	)
 

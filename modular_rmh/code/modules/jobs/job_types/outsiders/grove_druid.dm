@@ -60,9 +60,9 @@
 	spells = list(
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/healing/greater,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
-		/datum/action/cooldown/spell/essence/purify_water,
-		/datum/action/cooldown/spell/essence/neutralize,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
+		/datum/action/cooldown/spell/essence/purify_water/class_granted,
+		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/beast_tame,
 		/datum/action/cooldown/spell/undirected/touch/entangler,

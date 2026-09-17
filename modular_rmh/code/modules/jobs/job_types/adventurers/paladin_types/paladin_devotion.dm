@@ -42,7 +42,7 @@
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/orison,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/purify_water,
+		/datum/action/cooldown/spell/essence/purify_water/class_granted,
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/blade_ward,

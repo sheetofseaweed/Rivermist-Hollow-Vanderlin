@@ -42,7 +42,7 @@
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/orison,
 		/datum/action/cooldown/spell/healing,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
 		/datum/action/cooldown/spell/chill_touch,
 		/datum/action/cooldown/spell/cone/staggered/cone_of_cold/void,
 		/datum/action/cooldown/spell/control_undead,

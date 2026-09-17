@@ -40,8 +40,8 @@
 	spells = list(
 		/datum/action/cooldown/spell/cone/staggered/eldritch_blast,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/silence,
-		/datum/action/cooldown/spell/essence/neutralize,
+		/datum/action/cooldown/spell/pointed/silence,
+		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/status/infestation,
 		/datum/action/cooldown/spell/mimicry,
 		/datum/action/cooldown/spell/find_flaw,

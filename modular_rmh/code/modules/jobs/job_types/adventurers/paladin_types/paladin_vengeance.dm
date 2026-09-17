@@ -41,7 +41,7 @@
 
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/orison,
-		/datum/action/cooldown/spell/essence/silence,
+		/datum/action/cooldown/spell/pointed/silence,
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/sacred_flame,

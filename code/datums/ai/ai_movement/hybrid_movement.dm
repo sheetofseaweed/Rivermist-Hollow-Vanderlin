@@ -138,6 +138,8 @@
 			for(var/datum/ai_behavior/iter_behavior as anything in controller.current_behaviors)
 				if(iter_behavior.required_distance < minimum_distance)
 					minimum_distance = iter_behavior.required_distance
+			if(istype(controller.movement_target_source, /datum/action_state_manager))
+				minimum_distance = 1
 
 			if(get_dist(movable_pawn, controller.current_movement_target) <= minimum_distance)
 				using_closest_approach -= WEAKREF(controller)
@@ -279,6 +281,7 @@
 							SEND_SIGNAL(controller.pawn, COMSIG_AI_PATH_GENERATED, controller.movement_path)
 							continue
 					controller.CancelActions()
+					SEND_SIGNAL(controller, COMSIG_AI_PATHING_FAILED)
 					continue
 				// Target doesnt exist anymore or we picked it up already
 				if(QDELETED(controller.current_movement_target) || controller.current_movement_target.loc == movable_pawn)

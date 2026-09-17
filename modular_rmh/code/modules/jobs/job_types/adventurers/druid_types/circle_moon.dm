@@ -31,7 +31,7 @@
 
 	spells = list(
 		/datum/action/cooldown/spell/healing,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/beast_tame,
 		/datum/action/cooldown/spell/undirected/touch/entangler,
