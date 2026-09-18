@@ -323,7 +323,14 @@
 				. += " in [P[THEIR]] left ear."
 			if(ITEM_SLOT_EARRING_R)
 				. += " in [P[THEIR]] right ear."
-		. += "[I.get_examine_icon(user)] - [P[THEYVE]] [I.get_examine_string(user, use_examine_name = TRUE)][slot_title]."
+		// Worn armour gets a hover tooltip with its protection summary.
+		var/examine_phrase = I.get_examine_string(user, use_examine_name = TRUE)
+		if(istype(I, /obj/item/clothing))
+			var/obj/item/clothing/worn_clothing = I
+			var/armor_tip = worn_clothing.get_brief_armor_tip()
+			if(armor_tip)
+				examine_phrase = span_tooltip_html(armor_tip, examine_phrase)
+		. += "[I.get_examine_icon(user)] - [P[THEYVE]] [examine_phrase][slot_title]."
 	for(var/obj/item/I in held_items)
 		if(I.item_flags & ABSTRACT)
 			continue

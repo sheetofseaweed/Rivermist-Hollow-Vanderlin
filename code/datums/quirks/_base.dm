@@ -263,7 +263,11 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 	var/list/quirk_names = list()
 	for(var/datum/quirk/Q in quirks)
 		if(Q.quirk_category == category)
-			quirk_names += Q.name
+			// span_tooltip_html so desc_hint can sit in its own paragraph.
+			var/tooltip_text = Q.desc
+			if(Q.desc_hint)
+				tooltip_text += "<br><br>[Q.desc_hint]"
+			quirk_names += span_tooltip_html(tooltip_text, Q.name)
 	if(!length(quirk_names))
 		return "None"
 	return quirk_names.Join(", ")
@@ -274,8 +278,12 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 		if(!istype(status_effect, /datum/status_effect/debuff/addiction))
 			continue
 		var/atom/movable/screen/alert/status_effect/status_alert = status_effect.alert_type
-		var/addiction_name = initial(status_alert.name)
-		addiction_names += addiction_name || "Addiction"
+		var/addiction_name = initial(status_alert.name) || "Addiction"
+		var/addiction_desc = initial(status_alert.desc)
+		if(addiction_desc)
+			addiction_names += span_tooltip_html(addiction_desc, addiction_name)
+		else
+			addiction_names += addiction_name
 	if(!length(addiction_names))
 		return "None active"
 	return addiction_names.Join(", ")
