@@ -24,6 +24,7 @@
 @include meta.load-css('./interfaces/ListInput.scss');
 @include meta.load-css('./interfaces/Orbit.scss');
 @include meta.load-css('./interfaces/PreferencesMenu.scss');
+@include meta.load-css('./interfaces/QuestBoard.scss');
 @include meta.load-css('./interfaces/RecipeBook.scss');
 
 // Layouts
@@ -37,6 +38,7 @@
 
 // Themes
 @include meta.load-css('./themes/grim.scss');
+@include meta.load-css('./themes/grimoire.scss'); //RMH EDITED
 @include meta.load-css('./themes/parchment.scss'); //RMH EDITED
 @include meta.load-css('./themes/vanderlin.scss'); //RMH EDITED
 
