@@ -99,8 +99,8 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 /obj/structure/questboard
 	name = "quest board"
 	desc = "A wooden board bristling with pinned parchment notices."
-	icon = 'icons/obj/stationobjs.dmi'
-	icon_state = "nboard00"
+	icon = 'modular_rmh/icons/obj/structures/questboards32.dmi'
+	icon_state = "qboard00"
 	density = FALSE
 	anchored = TRUE
 	max_integrity = 150
@@ -178,9 +178,9 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 	return count
 
 /obj/structure/questboard/proc/update_board_sprite()
-	var/tier = round((length(tasks) / QUESTBOARD_MAX_TASKS) * 5)
-	tier = clamp(tier, 0, 5)
-	icon_state = "nboard0[tier]"
+	var/tier = round((length(tasks) / QUESTBOARD_MAX_TASKS) * 3)
+	tier = clamp(tier, 0, 3)
+	icon_state = "qboard0[tier]"
 
 /obj/structure/questboard/ui_state(mob/user)
 	return GLOB.human_adjacent_state
