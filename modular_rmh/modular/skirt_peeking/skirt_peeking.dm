@@ -1,5 +1,17 @@
 /**
- *  Skirt peeking
+ * ## Skirt peeking
+ *
+ * Lets an adjacent player peek under a skirt, kilt, loincloth or dress.
+ *
+ * A first examine adds a hint that peeking is possible. To actually peek, the
+ * peeker must have the groin selected in their HUD and take a second, closer
+ * look (examine_more) at the same target while still adjacent. Anything else
+ * worn that covers the groin blocks the peek; an apron never does.
+ *
+ * Reveals underwear, otherwise the target's genital descriptors, plus any
+ * stockings or garter that a normal look would not already show. Penis and
+ * vagina text is tinted from the target's body color toward a flushed tone as
+ * arousal rises, and pulses at maximum arousal.
  */
 /datum/element/skirt_peeking
 	element_flags = ELEMENT_DETACH
@@ -16,39 +28,30 @@
 	UnregisterSignal(source, list(COMSIG_PARENT_EXAMINE, COMSIG_ATOM_EXAMINE_MORE))
 	return ..()
 
-/**
- * If peeker is given and is sneaking, and announce_blockers is set, tells
- * the peeker privately what specifically is blocking the peek - a
- * testing/debug aid, only ever sent on the first look. Nothing is said
- * if there's simply nothing peekable to begin with.
- */
 /datum/element/skirt_peeking/proc/get_peekable_garment(mob/living/carbon/human/peeked, mob/living/peeker, announce_blockers = FALSE)
-	var/sneaking_peeker = announce_blockers && istype(peeker) && peeker.m_intent == MOVE_INTENT_SNEAK
+	var/list/worn_layers = list(peeked.wear_pants, peeked.wear_armor, peeked.wear_shirt, peeked.cloak)
 
-	var/obj/item/clothing/pants/worn_pants = peeked.wear_pants
-	var/pants_peekable = worn_pants && is_type_in_typecache(worn_pants.type, GLOB.skirt_peekable_pants)
+	var/obj/item/clothing/garment
+	for(var/obj/item/clothing/candidate in worn_layers)
+		if(is_type_in_typecache(candidate.type, GLOB.skirt_peekable_garments))
+			garment = candidate
+			break
 
-	var/obj/item/clothing/worn_armor = peeked.wear_armor
-	var/dress_peekable = worn_armor && is_type_in_typecache(worn_armor.type, GLOB.skirt_peekable_outerwear)
-
-	var/obj/item/clothing/garment = pants_peekable ? worn_pants : (dress_peekable ? worn_armor : null)
 	if(!garment)
 		return null
 
-	if(!dress_peekable && worn_armor && CHECK_BITFIELD(worn_armor.body_parts_covered, GROIN))
+	var/sneaking_peeker = announce_blockers && istype(peeker) && peeker.m_intent == MOVE_INTENT_SNEAK
+	for(var/obj/item/worn in worn_layers)
+		if(worn == garment || istype(worn, /obj/item/clothing/cloak/apron))
+			continue
+		if(!CHECK_BITFIELD(worn.body_parts_covered, GROIN))
+			continue
 		if(sneaking_peeker)
-			to_chat(peeker, span_notice("([peeked]'s [worn_armor.name] is blocking your view.)"))
-		return null
-
-	var/obj/item/cloak_worn = peeked.cloak
-	if(cloak_worn && !istype(cloak_worn, /obj/item/clothing/cloak/apron) && CHECK_BITFIELD(cloak_worn.body_parts_covered, GROIN))
-		if(sneaking_peeker)
-			to_chat(peeker, span_notice("([peeked]'s [cloak_worn.name] is blocking your view.)"))
+			to_chat(peeker, span_notice("([peeked]'s [worn.name] is blocking your view.)"))
 		return null
 
 	return garment
 
-/// First look: just a hint that peeking is possible.
 /datum/element/skirt_peeking/proc/on_examine(mob/living/carbon/human/peeked, mob/user, list/examine_list, list/P)
 	SIGNAL_HANDLER
 
@@ -62,14 +65,6 @@
 
 	LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_BODY, span_purple("[capitalize(P[THEY])] [P[ARE]] wearing [garment.name]! You could probably <b>peek</b> underneath..."))
 
-/**
- * Colors an organ's descriptor text based on the target's own body color,
- * pushed toward a more intense, flushed tone as arousal rises (never all
- * the way to black - just more saturated/vivid), matching the same
- * breakpoints code/datums/mob_descriptors/descriptors/other.dm uses for
- * its own wording (throbbing/turgid/stiffened/soft, gushing/slickened/wet).
- * At the highest tier the text also pulses - a smooth, fast CSS fade.
- */
 /datum/element/skirt_peeking/proc/color_by_arousal(text, mob/living/carbon/human/peeked, arousal)
 	if(!text)
 		return text
@@ -92,19 +87,14 @@
 	if(!base_rgb)
 		base_rgb = list(255, 255, 255)
 
-	var/flush_r = 235
-	var/flush_g = 30
-	var/flush_b = 60
-
-	var/r = round(base_rgb[1] * (1 - weight) + flush_r * weight)
-	var/g = round(base_rgb[2] * (1 - weight) + flush_g * weight)
-	var/b = round(base_rgb[3] * (1 - weight) + flush_b * weight)
+	var/r = round(base_rgb[1] * (1 - weight) + 235 * weight)
+	var/g = round(base_rgb[2] * (1 - weight) + 30 * weight)
+	var/b = round(base_rgb[3] * (1 - weight) + 60 * weight)
 
 	. = "<font color='[rgb(r, g, b)]'>[text]</font>"
 	if(pulsing)
 		. = "<style>@keyframes skirt_peek_pulse{0%{opacity:1}50%{opacity:0.4}100%{opacity:1}}</style><span style='animation:skirt_peek_pulse 0.4s ease-in-out infinite'>[.]</span>"
 
-/// Second, closer look within EXAMINE_MORE_WINDOW (engine-driven, see run_examinate()): the actual peek.
 /datum/element/skirt_peeking/proc/on_examine_more(mob/living/carbon/human/peeked, mob/user, list/examine_list)
 	SIGNAL_HANDLER
 
@@ -112,12 +102,11 @@
 		return
 	var/mob/living/peeker = user
 
-	var/obj/item/clothing/garment = get_peekable_garment(peeked, peeker)
-	if(!garment || !peeker.Adjacent(peeked))
+	if(peeker.zone_selected != BODY_ZONE_PRECISE_GROIN)
 		return
 
-	// Have to actually be aiming for it - anything else selected, nothing happens.
-	if(peeker.zone_selected != BODY_ZONE_PRECISE_GROIN)
+	var/obj/item/clothing/garment = get_peekable_garment(peeked, peeker)
+	if(!garment || !peeker.Adjacent(peeked))
 		return
 
 	var/obj/item/clothing/undies/undies = peeked.underwear
@@ -127,9 +116,6 @@
 	var/arousal = arousal_data["arousal"]
 
 	var/their = peeked.p_their()
-	var/theyre = peeked.p_theyre()
-	var/theyve = peeked.p_theyve()
-
 	var/list/seen = list()
 
 	if(undies)
@@ -138,15 +124,11 @@
 
 		if(arousal > VISIBLE_AROUSAL_THRESHOLD)
 			if(peeked.getorganslot(ORGAN_SLOT_PENIS))
-				seen += color_by_arousal("[capitalize(theyre)] pitching a tent in [their] [undies_display]", peeked, arousal)
+				seen += color_by_arousal("[capitalize(peeked.p_theyre())] pitching a tent in [their] [undies_display]", peeked, arousal)
 			else if(peeked.getorganslot(ORGAN_SLOT_VAGINA))
-				seen += color_by_arousal("[capitalize(theyve)] a wet spot on [their] [undies_display]", peeked, arousal)
+				seen += color_by_arousal("[capitalize(peeked.p_theyve())] a wet spot on [their] [undies_display]", peeked, arousal)
 	else
-		// Bare - describe every present organ in full, reusing the same
-		// descriptor singletons the rest of the game uses (size, type,
-		// pubic hair, and for penis/vagina, arousal wording all included).
-		var/obj/item/organ/genitals/butt/buttie = peeked.getorganslot(ORGAN_SLOT_BUTT)
-		if(buttie)
+		if(peeked.getorganslot(ORGAN_SLOT_BUTT))
 			var/datum/mob_descriptor/butt/descriptor = MOB_DESCRIPTOR(/datum/mob_descriptor/butt)
 			var/text = descriptor.get_description(peeked)
 			if(text)
@@ -173,10 +155,6 @@
 		if(!length(seen))
 			seen += "nothing in particular"
 
-	// Stockings/garter: only worth mentioning if a normal look wouldn't
-	// already show them (i.e. they're currently obscured by something) -
-	// otherwise peeking reveals nothing new about them. Color preserved
-	// same as underwear.
 	var/list/obscured_slots = peeked.check_obscured_slots()
 
 	var/obj/item/clothing/legwears/socks = peeked.legwear_socks
@@ -187,30 +165,30 @@
 	if(garter_worn && CHECK_MULTIPLE_BITFIELDS(obscured_slots[SLOT_CHECK_EXTRA], ITEM_SLOT_GARTER))
 		seen += garter_worn.color ? "<font color='[garter_worn.color]'>[garter_worn.name]</font>" : garter_worn.name
 
-	var/string = "You peek under [garment.name] at [peeked]. You see [english_list(seen, and_text = " and ")]."
+	examine_list += span_purple("You peek under [garment.name] at [peeked]. You see [english_list(seen, and_text = " and ")].")
 
-	examine_list += span_purple(string)
+GLOBAL_LIST_EMPTY(skirt_peekable_garments)
 
-GLOBAL_LIST_EMPTY(skirt_peekable_pants)
-#define SKIRT_PEEKABLE_PANTS_KEYWORDS list("skirt", "kilt", "loincloth")
+#define SKIRT_PEEKABLE_KEYWORDS list("skirt", "kilt", "loincloth", "dress")
+
+/proc/register_skirt_peekable(obj/item/clothing/garment)
+	if(is_type_in_typecache(garment.type, GLOB.skirt_peekable_garments))
+		return
+	var/type_path_text = "[garment.type]"
+	for(var/keyword in SKIRT_PEEKABLE_KEYWORDS)
+		if(findtext(type_path_text, keyword))
+			GLOB.skirt_peekable_garments[garment.type] = TRUE
+			return
+
+#undef SKIRT_PEEKABLE_KEYWORDS
 
 /obj/item/clothing/pants/Initialize(mapload)
 	. = ..()
-	if(!is_type_in_typecache(type, GLOB.skirt_peekable_pants))
-		var/type_path_text = "[type]"
-		for(var/keyword in SKIRT_PEEKABLE_PANTS_KEYWORDS)
-			if(findtext(type_path_text, keyword))
-				GLOB.skirt_peekable_pants[type] = TRUE
-				break
-
-#undef SKIRT_PEEKABLE_PANTS_KEYWORDS
-
-GLOBAL_LIST_EMPTY(skirt_peekable_outerwear)
+	register_skirt_peekable(src)
 
 /obj/item/clothing/shirt/Initialize(mapload)
 	. = ..()
-	if(!is_type_in_typecache(type, GLOB.skirt_peekable_outerwear) && findtext("[type]", "dress"))
-		GLOB.skirt_peekable_outerwear[type] = TRUE
+	register_skirt_peekable(src)
 
 GLOBAL_DATUM_INIT(skirt_peeking_glue, /datum/skirt_peeking_glue, new)
 
