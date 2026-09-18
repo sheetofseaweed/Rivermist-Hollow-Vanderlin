@@ -110,7 +110,7 @@
 	minimum_skill = SKILL_RANK_JOURNEYMAN
 	reagent_requirements = list(
 		/datum/reagent/poison/herbal/weak_atropa = 10,
-		/datum/reagent/poison/herbal/matricaria_irritant = 10,
+		/datum/reagent/medicine/herbal/decoction/matricaria = 10,
 		/datum/reagent/medicine/herbal/simple_rosa = 5,
 	)
 	required_chem_temp = 320

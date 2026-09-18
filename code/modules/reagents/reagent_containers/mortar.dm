@@ -25,31 +25,13 @@
 	var/list/obj/item/to_grind = list()
 	/// Total w_class units allowed.
 	var/max_grind_capacity = 13
-	/// Number of herbs represented by the current extract mixture.
-	var/herbal_batch_count = 0
-	/// Therapeutic tags contributed by the herbs in the current mixture.
-	var/list/herbal_support_tags
-	/// Maps each extracted reagent type to the tags which can support it.
-	var/list/herbal_reagent_tags
-	/// Optional essence consumed to stabilize the next concentration.
-	var/datum/thaumaturgical_essence/herbal_catalyst
-	/// Prevents reagent callbacks from clearing batch data mid-concentration.
-	var/herbal_processing = FALSE
 
 /obj/item/reagent_containers/glass/mortar/Destroy()
 	for(var/obj/item/I in to_grind)
 		if(!QDELETED(I))
 			I.forceMove(get_turf(src))
 	to_grind = null
-	herbal_support_tags = null
-	herbal_reagent_tags = null
-	herbal_catalyst = null
 	return ..()
-
-/obj/item/reagent_containers/glass/mortar/on_reagent_change(changetype)
-	. = ..()
-	if(!herbal_processing && !reagents.total_volume)
-		reset_herbal_batch()
 
 /obj/item/reagent_containers/glass/mortar/Exited(atom/movable/gone, direction)
 	. = ..()
@@ -75,10 +57,6 @@
 	if(user.cmode)
 		return NONE
 
-	if(istype(tool, /obj/item/essence_vial))
-		try_add_herbal_catalyst(tool, user)
-		return ITEM_INTERACT_SUCCESS
-
 	if(!istype(tool, /obj/item/pestle)) // Make this storage based
 		if((grind_load() + tool.w_class) > max_grind_capacity)
 			balloon_alert(user, "full!")
@@ -90,10 +68,10 @@
 		to_grind += tool
 		return ITEM_INTERACT_SUCCESS
 
+	if(try_prepare_herbal_paste(user))
+		return ITEM_INTERACT_SUCCESS
+
 	if(!length(to_grind))
-		if(try_concentrate_herbs(user))
-			user.changeNext_move(CLICK_CD_FAST)
-			return ITEM_INTERACT_SUCCESS
 		if(user.try_recipes(src, tool))
 			user.changeNext_move(CLICK_CD_FAST)
 			return ITEM_INTERACT_SUCCESS
@@ -161,6 +139,10 @@
 /obj/item/reagent_containers/glass/mortar/item_interaction_secondary(mob/living/user, obj/item/tool, list/modifiers)
 	if(!istype(tool, /obj/item/pestle))
 		return NONE
+	if(user.cmode)
+		return NONE
+	if(try_prepare_herbal_paste(user))
+		return ITEM_INTERACT_SUCCESS
 
 	if(!length(to_grind))
 		balloon_alert(user, "nothing to grind!")
