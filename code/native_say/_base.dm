@@ -10,6 +10,7 @@
 	var/max_length = MAX_MESSAGE_LEN
 	var/window_open = FALSE
 	var/list/received_entries = list()
+	var/list/entry_chunks = list()
 
 	// Window sizing
 	var/window_width = 300
@@ -259,15 +260,19 @@
 			Object.keys(params).forEach(function(key) {
 				url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params\[key\]);
 			});
-			// Avoid navigation replacement and encoded URL limits.
-			if (window.cef_to_byond) {
-				window.cef_to_byond('byond://' + url);
-			} else {
-				const xhr = new XMLHttpRequest();
-				xhr.open('GET', url);
-				xhr.send();
-			}
+			window.location = 'byond://' + url;
 		}
+
+		window.sendEntryChunk = function(id, index) {
+			const item = window.chatHistory.find(function(entry) { return entry.id === id; });
+			if (!item || item.status === 'received') return;
+			index = Number(index);
+			const chars = Array.from(item.text);
+			const chunkSize = 100;
+			sendNativeTopic({ action: 'entry_chunk', id: id, channel: item.channel,
+				index: index, count: Math.ceil(chars.length / chunkSize),
+				entry: chars.slice(index * chunkSize, (index + 1) * chunkSize).join('') });
+		};
 
 		function showDeliveryStatus(message) {
 			deliveryStatus.textContent = message;
@@ -545,6 +550,7 @@
 		// ===== WINDOW CONTROL =====
 		function openWindow(channel) {
 			if (window.windowOpen) {
+				cycleToChannel(channel);
 				return;
 			}
 
@@ -593,14 +599,8 @@
 			window.location = 'byond://winset?id=:map&focus=true';
 
 			clearTimeout(window.typingTimeout);
-			try {
-				sendNativeTopic({ action: 'close' });
-			} catch (error) {
-				// Closing must not prevent the message submission.
-			}
-
 			setTimeout(function() {
-				window.location = 'byond://winset?id=:map&focus=true';
+				sendNativeTopic({ action: 'close' });
 			}, 50);
 
 		}
@@ -669,11 +669,7 @@
 				refreshDeliveryStatus();
 			}, RECEIPT_TIMEOUT_MS);
 			closeWindow();
-			try {
-				sendNativeTopic({ action: 'entry', channel: item.channel, entry: item.text, id: item.id });
-			} catch (error) {
-				window.receiveEntryReceipt(item.id, 'unconfirmed');
-			}
+			setTimeout(function() { window.sendEntryChunk(item.id, 0); }, 100);
 		}
 
 		// ===== EVENT HANDLERS =====
@@ -1024,6 +1020,8 @@
 				handle_close()
 			if("entry")
 				handle_entry(href_list["channel"], href_list["entry"], href_list["id"])
+			if("entry_chunk")
+				handle_entry_chunk(href_list)
 			if("thinking")
 				handle_thinking(text2num(href_list["visible"]))
 			if("typing")
@@ -1043,6 +1041,37 @@
 /datum/native_say/proc/handle_close()
 	window_open = FALSE
 	stop_thinking()
+
+/datum/native_say/proc/handle_entry_chunk(list/params)
+	var/submission_id = params["id"]
+	var/index = text2num(params["index"])
+	var/count = text2num(params["count"])
+	var/chunk = params["entry"]
+	if(!istext(submission_id) || !length(submission_id) || length(submission_id) > NATIVE_SAY_SUBMISSION_ID_LIMIT)
+		return
+	if(!isnum(index) || !isnum(count) || index != round(index) || count != round(count) || index < 0 || index >= count || count > max_length || !istext(chunk))
+		return
+	if(submission_id in received_entries)
+		client << output(list2params(list(submission_id, "received")), "native_say.browser:receiveEntryReceipt")
+		return
+	if(index == 0)
+		if(length(entry_chunks) >= NATIVE_SAY_RECEIPT_HISTORY_LIMIT)
+			entry_chunks.Cut(1, 2)
+		entry_chunks[submission_id] = list("text" = "", "index" = 0, "count" = count, "channel" = params["channel"])
+	var/list/pending = entry_chunks[submission_id]
+	if(!pending || pending["index"] != index || pending["count"] != count || pending["channel"] != params["channel"])
+		return
+	pending["text"] += chunk
+	if(length(pending["text"]) >= max_length)
+		entry_chunks -= submission_id
+		client << output(list2params(list(submission_id, "rejected")), "native_say.browser:receiveEntryReceipt")
+		return
+	pending["index"] = index + 1
+	if(index + 1 == count)
+		entry_chunks -= submission_id
+		handle_entry(pending["channel"], pending["text"], submission_id)
+	else
+		client << output(list2params(list(submission_id, index + 1)), "native_say.browser:sendEntryChunk")
 
 /datum/native_say/proc/handle_entry(channel_name, entry, submission_id)
 	if(!istext(submission_id) || !length(submission_id) || length(submission_id) > NATIVE_SAY_SUBMISSION_ID_LIMIT)
@@ -1097,17 +1126,6 @@
 	return client.start_typing()
 
 /datum/native_say/proc/open_say_window(channel_name)
-	if(window_open)
-		// Use the same focus logic as the Tab macro
-
-		winset(client, "native_say", "focus=true")
-		winset(client, "native_say.browser", "focus=true")
-		client << output(null, "native_say.browser:editor.focus()")
-
-		if(channel_name)
-			client << output(null, "native_say.browser:cycleToChannel('[channel_name]')")
-		return
-
 	var/datum/say_channel/channel = current_channel
 	if(channel_name)
 		for(var/datum/say_channel/ch in available_channels)

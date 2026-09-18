@@ -37,17 +37,26 @@ function fixture(chromium = true) {
 		},
 	};
 	context.window = context;
+	Object.defineProperty(context, 'location', { set(url) { requests.push(url); } });
 	if (chromium) context.cef_to_byond = url => requests.push(url);
 	vm.createContext(context);
 	vm.runInContext(script, context);
-	return { context, requests, timers, elements };
+	function flushSubmit() {
+		for (const [id, timer] of [...timers]) {
+			if (timer.delay > 100) continue;
+			timers.delete(id);
+			timer.fn();
+		}
+	}
+	return { context, requests, timers, elements, flushSubmit };
 }
 
 for (const chromium of [true, false]) {
-	const { context: c, requests, timers, elements } = fixture(chromium);
+	const { context: c, requests, timers, elements, flushSubmit } = fixture(chromium);
 	c.openSayWindow('Me');
 	c.realText = 'a'.repeat(1500);
 	c.submitEntry();
+	flushSubmit();
 	assert.equal(c.windowOpen, false, 'submission closes immediately');
 	assert.equal(c.chatHistory[0].text.length, 1500);
 	assert.equal(c.chatHistory[0].status, 'pending');
@@ -63,9 +72,10 @@ for (const chromium of [true, false]) {
 
 	c.realText = 'é'.repeat(900);
 	c.submitEntry();
+	flushSubmit();
 	const unicodeRequest = requests.find(url => url.includes('%C3%A9'));
-	assert.ok(unicodeRequest.length > 2048, 'encoded request exceeds navigation limit');
-	assert.equal(new URLSearchParams(unicodeRequest.split('?')[1]).get('entry'), 'é'.repeat(900));
+	assert.ok(unicodeRequest.length < 2048, 'encoded chunks stay below navigation limit');
+	assert.equal(new URLSearchParams(unicodeRequest.split('?')[1]).get('entry'), 'é'.repeat(100));
 	const pending = c.chatHistory[0];
 	timers.get(pending.timer).fn();
 	assert.equal(pending.status, 'unconfirmed');
@@ -90,15 +100,22 @@ for (const chromium of [true, false]) {
 }
 
 {
-	const { context: c, requests } = fixture();
-	c.cef_to_byond = url => {
-		if (url.includes('action=close')) throw new Error('close failed');
-		requests.push(url);
-	};
+	const { context: c, requests, flushSubmit } = fixture();
 	c.openSayWindow('Say');
-	c.realText = 'send despite close failure';
+	c.realText = '😀'.repeat(500);
 	c.submitEntry();
-	assert.ok(requests.some(url => url.includes('action=entry')));
+	flushSubmit();
+	const item = c.chatHistory[0];
+	for (let index = 1; index < 5; index++) c.sendEntryChunk(item.id, index);
+	const chunks = requests.filter(url => url.includes('action=entry_chunk'));
+	assert.equal(chunks.length, 5);
+	assert.ok(chunks.every(url => url.length < 2048));
+	assert.equal(chunks.map(url => new URLSearchParams(url.split('?')[1]).get('entry')).join(''), item.text);
+	c.openSayWindow('Say');
+	c.realText = 'preserve while focusing';
+	c.openSayWindow('Me');
+	assert.equal(c.realText, 'preserve while focusing');
+	assert.equal(c.currentChannel, 'Me');
 }
 
 {
