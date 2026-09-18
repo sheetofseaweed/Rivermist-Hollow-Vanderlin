@@ -2,7 +2,7 @@
 	savefile_key = "selected_title"
 	savefile_identifier = PREF_CHARACTER
 	category = "character"
-	maximum_value_length = 64
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_apply = FALSE
 

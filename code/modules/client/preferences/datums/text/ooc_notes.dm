@@ -3,7 +3,7 @@
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
 	can_randomize = FALSE
-	maximum_value_length = 1024
+	maximum_value_length = 0
 	should_update_preview = FALSE
 
 /datum/preference/text/ooc_notes/deserialize(input, datum/preferences/prefs)
@@ -14,7 +14,7 @@
 
 /datum/preference/text/ooc_notes/handle_link(datum/preferences/prefs, mob/user)
 	to_chat(user, span_notice("["<span class='bold'>Do not put anything NSFW here. This feature is for stuff that wouldn't fit in the flavortext.</span>"]"))
-	var/new_ooc_notes = input(user, "Input your OOC preferences:", "OOC notes", prefs.read_preference(/datum/preference/text/ooc_notes)) as message|null
+	var/new_ooc_notes = tgui_input_text(user, "Input your OOC preferences:", "OOC notes", prefs.read_preference(/datum/preference/text/ooc_notes), multiline = TRUE, encode = FALSE)
 	if(new_ooc_notes == null)
 		return
 	if(new_ooc_notes == "")

@@ -38,6 +38,53 @@
 
 	fdel(savefile_path)
 
+/datum/unit_test/preferences_uncapped_flavor_text/Run()
+	var/savefile_path = "data/unit_test_uncapped_flavor_text.sav"
+	fdel(savefile_path)
+
+	// Every string here is far past the caps upstream's preference rework put on these fields.
+	var/long_flavortext = repeat_string(400, "Tall, scarred, and plainly tired. ")
+	var/long_ooc_notes = repeat_string(400, "Happy to play out anything slow. ")
+	var/long_nsfwflavortext = repeat_string(400, "Details best left to the panel. ")
+	var/long_erpprefs_flavor = repeat_string(400, "Ask first, and mind the limits. ")
+	var/long_flavortext_display = "<b>[repeat_string(600, "Tall, scarred, and plainly tired. ")]</b><BR>"
+
+	var/savefile/legacy_save = new /savefile(savefile_path)
+	legacy_save.cd = "/character1"
+	WRITE_FILE(legacy_save["version"], 32)
+	WRITE_FILE(legacy_save["species"], SPEC_ID_HUMEN)
+	WRITE_FILE(legacy_save["flavortext"], long_flavortext)
+	WRITE_FILE(legacy_save["flavortext_display"], long_flavortext_display)
+	WRITE_FILE(legacy_save["ooc_notes"], long_ooc_notes)
+	WRITE_FILE(legacy_save["nsfwflavortext"], long_nsfwflavortext)
+	WRITE_FILE(legacy_save["erpprefs_flavor"], long_erpprefs_flavor)
+
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	prefs.path = savefile_path
+	prefs.default_slot = 1
+	TEST_ASSERT(prefs.load_character(1), "Expected the legacy character slot to load.")
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/text/flavortext), long_flavortext, "Expected long flavor text to survive migration uncut.")
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/text/flavortext_display), long_flavortext_display, "Expected long rendered flavor text to survive migration uncut.")
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/text/ooc_notes), long_ooc_notes, "Expected long OOC notes to survive migration uncut.")
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/text/nsfwflavortext), long_nsfwflavortext, "Expected long NSFW flavor text to survive migration uncut.")
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/text/erpprefs_flavor), long_erpprefs_flavor, "Expected long ERP preferences to survive migration uncut.")
+
+	// A fresh write has to keep them whole too, not just the migration path.
+	TEST_ASSERT(prefs.write_preference(/datum/preference/text/flavortext, long_ooc_notes), "Expected a long flavor text write to be accepted.")
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/text/flavortext), long_ooc_notes, "Expected a long flavor text write to be stored uncut.")
+
+	TEST_ASSERT(prefs.save_character(), "Expected the migrated character slot to save.")
+	var/savefile/migrated_save = new /savefile(savefile_path)
+	migrated_save.cd = "/character1"
+	var/saved_ooc_notes
+	var/saved_nsfwflavortext
+	migrated_save["ooc_notes"] >> saved_ooc_notes
+	migrated_save["nsfwflavortext"] >> saved_nsfwflavortext
+	TEST_ASSERT_EQUAL(saved_ooc_notes, long_ooc_notes, "Expected long OOC notes to remain intact after saving.")
+	TEST_ASSERT_EQUAL(saved_nsfwflavortext, long_nsfwflavortext, "Expected long NSFW flavor text to remain intact after saving.")
+
+	fdel(savefile_path)
+
 /datum/unit_test/preferences_accent_reset_migration/Run()
 	var/savefile_path = "data/unit_test_accent_reset.sav"
 	fdel(savefile_path)
