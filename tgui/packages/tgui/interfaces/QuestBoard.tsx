@@ -3,6 +3,7 @@ import { Box, Button, Input, Section, Stack, TextArea } from 'tgui-core/componen
 
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
+import { sanitizeHTML } from '../sanitize';
 
 type BoardTask = {
   ref: string;
@@ -201,7 +202,7 @@ const TaskCard = (props: {
       <div className="QuestBoard__CardTitle">{task.title}</div>
       <div
         className="QuestBoard__CardObjective"
-        dangerouslySetInnerHTML={{ __html: task.description }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHTML(task.description) }}
       />
       <div className="QuestBoard__CardRow">
         <span className="QuestBoard__CardLabel">{t.fieldPayment}:</span>

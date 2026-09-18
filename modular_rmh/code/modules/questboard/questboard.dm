@@ -12,7 +12,6 @@
 #define QUESTBOARD_PAYMENT_MAX 35
 #define QUESTBOARD_DESC_MAX 500
 #define QUESTBOARD_HISTORY_MAX 50
-#define QUESTBOARD_VISIBLE_SLOTS 3
 
 GLOBAL_LIST_EMPTY(questboard_active_takers)
 
@@ -32,12 +31,24 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 /datum/board_task/Destroy()
 	var/mob/taker = taker_ref?.resolve()
 	if(taker)
+		UnregisterSignal(taker, COMSIG_PARENT_QDELETING)
 		GLOB.questboard_active_takers -= taker
 	poster_ref = null
 	taker_ref = null
 	copy_ref = null
 	board_ref = null
 	return ..()
+
+/datum/board_task/proc/register_taker(mob/taker)
+	taker_ref = WEAKREF(taker)
+	RegisterSignal(taker, COMSIG_PARENT_QDELETING, PROC_REF(on_taker_qdeleting))
+
+/datum/board_task/proc/on_taker_qdeleting(datum/source)
+	SIGNAL_HANDLER
+	GLOB.questboard_active_takers -= source
+	var/obj/structure/questboard/board = board_ref?.resolve()
+	if(board)
+		board.void_orphaned_task(src)
 
 /obj/item/paper/scroll/quest_board_copy
 	desc = "A sealed record of a job taken from a quest board."
@@ -67,6 +78,12 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 
 /obj/item/paper/scroll/quest_board_copy/attackby(obj/item/attacking_item, mob/living/carbon/human/user, list/modifiers)
 	if(istype(attacking_item, /obj/item/natural/feather))
+		if(!open)
+			to_chat(user, span_warning("Open me."))
+			return TRUE
+		if(!user.is_literate())
+			to_chat(user, span_warning("I can't read or write."))
+			return TRUE
 		var/datum/board_task/task = task_ref?.resolve()
 		var/obj/structure/questboard/board = task?.board_ref?.resolve()
 		if(QDELETED(task) || !board)
@@ -151,7 +168,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 	if(cap && count_own_tasks(user) >= cap)
 		to_chat(user, span_warning("You already have [cap] notices of your own up - clear one before pinning another."))
 		return
-	pending_post["[user.ckey]"] = WEAKREF(parchment)
+	pending_post[user] = WEAKREF(parchment)
 	to_chat(user, span_notice("You ready [parchment] to pin a new notice."))
 	ui_interact(user)
 
@@ -195,7 +212,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 	var/list/data = list()
 	var/is_role = is_board_role(user)
 	var/datum/board_task/pending_task = GLOB.questboard_active_takers[user]
-	var/datum/weakref/pending_parchment = pending_post["[user.ckey]"]
+	var/datum/weakref/pending_parchment = pending_post[user]
 	var/own_cap = get_own_task_cap(user)
 	data["board_title"] = name
 	data["lang"] = get_ui_language(user)
@@ -282,7 +299,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 			submit_post(user, params["title"], params["description"], params["payment"])
 			return TRUE
 		if("cancel_post")
-			pending_post -= "[user.ckey]"
+			pending_post -= user
 			return TRUE
 		if("update_task")
 			update_task(user, params["ref"], params["title"], params["description"], params["payment"])
@@ -300,11 +317,11 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 /obj/structure/questboard/proc/submit_post(mob/living/carbon/human/user, title, description, payment)
 	if(!is_board_role(user))
 		return
-	var/datum/weakref/parchment_ref = pending_post["[user.ckey]"]
+	var/datum/weakref/parchment_ref = pending_post[user]
 	var/obj/item/paper/parchment = parchment_ref?.resolve()
 	if(!parchment_ref || QDELETED(parchment) || !(parchment in user.GetAllContents()))
 		to_chat(user, span_warning("You need a blank parchment in hand to post a notice."))
-		pending_post -= "[user.ckey]"
+		pending_post -= user
 		return
 	if(length(tasks) >= QUESTBOARD_MAX_TASKS)
 		to_chat(user, span_warning("The board is full."))
@@ -329,7 +346,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 	task.poster_name = user.real_name
 	task.board_ref = WEAKREF(src)
 	tasks += task
-	pending_post -= "[user.ckey]"
+	pending_post -= user
 	qdel(parchment)
 	user.visible_message(span_notice("[user] pins a new notice to \the [src]."), span_notice("You pin the notice to \the [src]."))
 	playsound(src, 'sound/items/inqslip_sealed.ogg', 40, TRUE, -1)
@@ -338,6 +355,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 /obj/structure/questboard/proc/update_task(mob/living/carbon/human/user, ref, title, description, payment)
 	var/datum/board_task/task = locate(ref) in tasks
 	if(!istype(task) || task.taker_ref)
+		to_chat(user, span_warning("That notice was taken or removed before your edit went through."))
 		return
 	if(!is_board_role(user) || task.poster_ref?.resolve() != user)
 		to_chat(user, span_warning("This isn't your notice to change."))
@@ -357,6 +375,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 /obj/structure/questboard/proc/remove_task(mob/living/carbon/human/user, ref)
 	var/datum/board_task/task = locate(ref) in tasks
 	if(!istype(task) || task.taker_ref)
+		to_chat(user, span_warning("That notice was already taken or removed."))
 		return
 	if(!is_board_role(user) || task.poster_ref?.resolve() != user)
 		to_chat(user, span_warning("This isn't your notice to remove."))
@@ -371,6 +390,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 /obj/structure/questboard/proc/take_task(mob/living/carbon/human/user, ref)
 	var/datum/board_task/task = locate(ref) in tasks
 	if(!istype(task) || task.taker_ref)
+		to_chat(user, span_warning("Someone beat you to that notice."))
 		return
 	if(GLOB.questboard_active_takers[user])
 		to_chat(user, span_warning("You already have a job to attend to."))
@@ -378,7 +398,7 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 	if(is_board_role(user) && task.poster_ref?.resolve() == user)
 		to_chat(user, span_warning("You cannot take your own notice."))
 		return
-	task.taker_ref = WEAKREF(user)
+	task.register_taker(user)
 	task.taker_name = user.real_name
 	task.taken_at = world.time
 	var/obj/item/paper/scroll/quest_board_copy/copy = new(get_turf(user))
@@ -394,6 +414,17 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 	GLOB.questboard_active_takers[user] = task
 	to_chat(user, span_notice("You take up the notice: [task.title]."))
 
+/obj/structure/questboard/proc/void_orphaned_task(datum/board_task/task)
+	if(!istype(task) || !(task in tasks))
+		return
+	var/obj/item/paper/scroll/quest_board_copy/copy = task.copy_ref?.resolve()
+	if(!QDELETED(copy))
+		qdel(copy)
+	tasks -= task
+	qdel(task)
+	update_board_sprite()
+	SStgui.update_uis(src)
+
 /obj/structure/questboard/proc/cancel_taken(mob/living/carbon/human/user, ref)
 	var/datum/board_task/task = locate(ref) in tasks
 	if(!istype(task) || !task.taker_ref)
@@ -407,7 +438,6 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 		qdel(copy)
 	if(taker)
 		to_chat(taker, span_warning("Your job, \"[task.title]\", has been cancelled by [user.real_name]."))
-		GLOB.questboard_active_takers -= taker
 	tasks -= task
 	qdel(task)
 	update_board_sprite()
@@ -423,18 +453,23 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 		return
 	if(QDELETED(task) || !(task in tasks))
 		return
+	if(QDELETED(user) || !is_board_role(user))
+		to_chat(user, span_warning("You're no longer authorized to sign this off."))
+		return
+	var/obj/item/paper/scroll/quest_board_copy/signing_copy = task.copy_ref?.resolve()
+	if(QDELETED(signing_copy) || !((signing_copy in user.GetAllContents()) || user.Adjacent(signing_copy)))
+		to_chat(user, span_warning("You need the scroll in hand or nearby to sign it."))
+		return
 	var/leader_signature = is_leader_role(user)
 	var/mob/taker = task.taker_ref.resolve()
-	var/obj/item/paper/scroll/quest_board_copy/copy = task.copy_ref?.resolve()
-	if(!QDELETED(copy))
-		copy.completed = TRUE
-		copy.signed_by_leader = leader_signature
-		copy.signed_by_name = user.real_name
-		copy.info += " - Signed complete by [user.real_name]."
-		copy.update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
+	if(!QDELETED(signing_copy))
+		signing_copy.completed = TRUE
+		signing_copy.signed_by_leader = leader_signature
+		signing_copy.signed_by_name = user.real_name
+		signing_copy.info += " - Signed complete by [user.real_name]."
+		signing_copy.update_appearance(UPDATE_ICON_STATE | UPDATE_NAME)
 	if(taker)
 		to_chat(taker, span_boldnotice("[user.real_name] has signed off on \"[task.title]\" as complete."))
-		GLOB.questboard_active_takers -= taker
 	history += list(list(
 		"title" = task.title,
 		"poster_name" = task.poster_name,
@@ -481,4 +516,3 @@ GLOBAL_LIST_EMPTY(questboard_active_takers)
 #undef QUESTBOARD_PAYMENT_MAX
 #undef QUESTBOARD_DESC_MAX
 #undef QUESTBOARD_HISTORY_MAX
-#undef QUESTBOARD_VISIBLE_SLOTS

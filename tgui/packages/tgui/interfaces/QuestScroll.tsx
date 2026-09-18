@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
+import { sanitizeHTML } from '../sanitize';
 
 type Data = {
   quest_title: string;
@@ -146,7 +147,7 @@ export const QuestScroll = () => {
           <div style={title}>{data.quest_title}</div>
           <div
             style={objective}
-            dangerouslySetInnerHTML={{ __html: data.description }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHTML(data.description) }}
           />
           <div style={infoBox}>
             <div style={row}>
