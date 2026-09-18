@@ -13,6 +13,7 @@
 	metabolization_rate = 0.5 * REAGENTS_METABOLISM
 	liquid_fire_power = 10
 	hydration_factor = 10
+	boiling_point = T0C + 78 // Ethanol boils at 78.4C
 	var/boozepwr = 65 //Higher numbers equal higher hardness, higher hardness equals more intense alcohol poisoning
 	var/datum/reagent/age_path
 	var/age_time = 10 MINUTES
@@ -51,14 +52,6 @@
 	. = ..()
 	L.decrease_chem_effect(CE_PAINKILLER, boozepwr/2, "[type]")
 
-/datum/reagent/consumable/ethanol/reaction_obj(obj/O, reac_volume)
-	. = ..()
-	O.adjust_germ_level(-boozepwr * reac_volume)
-
-/datum/reagent/consumable/ethanol/reaction_obj(obj/O, reac_volume)
-	. = ..()
-	O.adjust_germ_level(-boozepwr * reac_volume)
-
 /datum/reagent/consumable/ethanol/proc/age_beer()
 	var/old_volume = volume
 	var/datum/reagents/old_holder = holder
@@ -94,6 +87,8 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	return ..()
 
 /datum/reagent/consumable/ethanol/reaction_obj(obj/O, reac_volume)
+	. = ..()
+	O.adjust_germ_level(-boozepwr * reac_volume)
 	if(istype(O, /obj/item/paper))
 		var/obj/item/paper/paperaffected = O
 		paperaffected.clearpaper()

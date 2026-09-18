@@ -32,6 +32,8 @@
 
 
 /datum/enchantment/mana_capacity/proc/on_drop(datum/source, mob/living/carbon/user)
+	if(enchanted_item.loc == user)
+		return
 	if(!(source in affecting_mobs))
 		affecting_mobs |= source
 		affecting_mobs[source] = list()

@@ -94,6 +94,7 @@
 #include "container_intents.dm"
 #include "craftable_clothes.dm"
 #include "craftable_turfs.dm"
+#include "crawl_space.dm"
 #include "create_and_destroy.dm"
 #include "defeat_captivity.dm"
 #include "defeat_horny_thresholds.dm"

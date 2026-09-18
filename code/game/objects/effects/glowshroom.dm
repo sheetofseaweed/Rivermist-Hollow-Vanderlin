@@ -13,11 +13,6 @@
 	blade_dulling = DULLING_CUT
 	resistance_flags = FLAMMABLE
 
-/obj/structure/kneestingers/Initialize()
-	. = ..()
-	var/turf/turf = get_turf(src)
-	turf.path_weight += 50
-
 /obj/structure/kneestingers/Destroy()
 	var/turf/turf = get_turf(src)
 	turf.path_weight -= 50
@@ -56,6 +51,9 @@
 
 /obj/structure/kneestingers/Initialize(mapload, obj/item/neuFarm/seed/newseed, mutate_stats)
 	. = ..()
+
+	var/turf/turf = get_turf(src)
+	turf.path_weight += 50
 
 	set_light(1.5, 1.5, 1.5, l_color ="#d4fcac")
 

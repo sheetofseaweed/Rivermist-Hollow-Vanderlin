@@ -115,6 +115,10 @@
 	var/list/healing_items
 	/// The above, but for tool behaviors
 	var/list/healing_tools = list(TOOL_SUTURE)
+	/// Damage thresholds that natural healing cannot cross without an organ-regeneration effect.
+	var/list/self_heal_thresholds = list(0.3, 0.6, 0.9)
+	/// This chemical effect allows natural healing to cross damage thresholds.
+	var/self_healing_effect = CE_ORGAN_REGEN
 
 /obj/item/organ/Initialize()
 	. = ..()
@@ -582,16 +586,15 @@
 	/// Handle blood
 	handle_blood(delta_time, times_fired, in_bleedout)
 
+	if(damage > 0 && can_self_heal(delta_time, times_fired, in_bleedout))
+		handle_self_healing(delta_time, times_fired)
+
 	if(is_failing())
 		handle_failing_organ(delta_time, times_fired)
 	else
 		// Decrease failure time while healthy
 		if(failure_time > 0)
 			failure_time = max(0, failure_time - delta_time)
-
-		// Damage decrements by a percent of maxhealth
-		if(can_heal(delta_time, times_fired, in_bleedout) && damage)
-			handle_healing(delta_time, times_fired)
 	consider_processing(in_bleedout)
 	if(old_damage != damage)
 		. |= ORGAN_PROCESS_UPDATE_HEALTH
@@ -605,15 +608,17 @@
 	organ_failure(delta_time)
 
 
-/// healing checks
-/obj/item/organ/proc/can_heal(delta_time, times_fired, in_bleedout)
+/// Returns whether this organ can heal naturally during this processing tick.
+/obj/item/organ/proc/can_self_heal(delta_time, times_fired, in_bleedout)
 	. = TRUE
 	if(!owner)
 		return FALSE
 	if(healing_factor <= 0)
 		return FALSE
-	if((damage > maxHealth/5) && !owner.get_chem_effect(CE_ORGAN_REGEN))
+	if(damage <= 0)
 		return FALSE
+	if(self_healing_effect && owner.get_chem_effect(self_healing_effect))
+		return TRUE
 	if(is_dead())
 		return FALSE
 	if(current_blood <= 0)
@@ -622,14 +627,28 @@
 		return FALSE
 	if(owner.get_chem_effect(CE_TOXIN))
 		return FALSE
+	if(owner.stat >= DEAD)
+		return FALSE
 
-/obj/item/organ/proc/handle_healing(delta_time, times_fired)
-	if(damage <= 0)
+/obj/item/organ/proc/handle_self_healing(delta_time, times_fired)
+	var/healing_amount = healing_factor * delta_time * maxHealth
+	if(owner.satiety > 0)
+		healing_amount += healing_factor * (owner.satiety / MAX_SATIETY)
+
+	if(self_healing_effect && !owner.get_chem_effect(self_healing_effect))
+		var/threshold_healing_cap
+		for(var/threshold in self_heal_thresholds)
+			var/damage_limit = threshold * maxHealth
+			if(damage >= damage_limit)
+				threshold_healing_cap = damage - damage_limit
+		if(!isnull(threshold_healing_cap))
+			healing_amount = min(threshold_healing_cap, healing_amount)
+
+	if(healing_amount <= 0)
 		return
-	applyOrganDamage(-healing_factor * delta_time, damage)
-	//this doesn't seem very right at all...
-	owner.adjust_nutrition(-nutriment_req/100 * (0.5 * delta_time))
-	owner.adjust_hydration(-hydration_req/100 * (0.5 * delta_time))
+	applyOrganDamage(-healing_amount, damage)
+	owner.adjust_nutrition(-nutriment_req / 200 * delta_time)
+	owner.adjust_hydration(-hydration_req / 200 * delta_time)
 
 /** organ_failure
  * generic proc for handling dying organs

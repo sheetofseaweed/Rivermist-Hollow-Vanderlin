@@ -28,6 +28,11 @@
 #define COMSIG_MOB_SWAPPING_HANDS "mob_swapping_hands"
 	#define COMPONENT_BLOCK_SWAP (1<<0)
 
+/// Sent to an item when it becomes the active held item: (mob/living/carbon/holder)
+#define COMSIG_ITEM_NOW_ACTIVE "item_now_active"
+/// Sent to an item when it stops being the active held item: (mob/living/carbon/holder)
+#define COMSIG_ITEM_NOLONGER_ACTIVE "item_nolonger_active"
+
 /// from mob/get_status_tab_items(): (list/items)
 #define COMSIG_MOB_GET_STATUS_TAB_ITEMS "mob_get_status_tab_items"
 

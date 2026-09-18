@@ -1629,7 +1629,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				player.cache_multi_ready_characters()
 			return TRUE
 		if("changeslot")
-			write_preference(/datum/preference/choiced/selected_accent, ACCENT_DEFAULT)
+			write_preference(/datum/preference/choiced/selected_accent, ACCENT_NONE)
 			var/list/slot_choices = list()
 			if(path)
 				var/savefile/save = new /savefile(path)

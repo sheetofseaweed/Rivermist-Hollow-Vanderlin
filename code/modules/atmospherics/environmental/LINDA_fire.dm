@@ -52,11 +52,6 @@
 	GLOB.weather_act_upon_list |= src
 	GLOB.active_fires |= src
 
-/obj/effect/hotspot/Destroy()
-	. = ..()
-	GLOB.weather_act_upon_list -= src
-	GLOB.active_fires -= src
-
 /obj/effect/hotspot/weather_act_on(weather_trait, severity)
 	if(weather_trait != PARTICLEWEATHER_RAIN)
 		return
@@ -160,6 +155,8 @@
 /obj/effect/hotspot/Destroy()
 	set_light(0)
 	SShotspots.hotspots -= src
+	GLOB.weather_act_upon_list -= src
+	GLOB.active_fires -= src
 	var/turf/open/T = loc
 	if(istype(T) && T.active_hotspot == src)
 		T.active_hotspot = null

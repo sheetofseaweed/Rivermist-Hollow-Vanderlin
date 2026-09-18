@@ -21,11 +21,20 @@
 		return
 	else
 		active_item = TRUE
-		ADD_TRAIT(user, TRAIT_ZJUMP, TRAIT_GENERIC)
+		ADD_TRAIT(user, TRAIT_ZJUMP, "[REF(i)]")
 		to_chat(user, span_notice("My legs feel much stronger."))
 
 /datum/enchantment/leaping/proc/on_drop(obj/item/i, mob/living/user)
+	if(enchanted_item.loc == user)
+		return
 	if(active_item)
 		active_item = FALSE
-		REMOVE_TRAIT(user, TRAIT_ZJUMP, TRAIT_GENERIC)
+		REMOVE_TRAIT(user, TRAIT_ZJUMP, "[REF(i)]")
 		to_chat(user, span_notice("I feel mundane once more."))
+
+/datum/enchantment/leaping/unregister_triggers()
+	if(active_item && isliving(enchanted_item?.loc))
+		var/mob/living/user = enchanted_item.loc
+		REMOVE_TRAIT(user, TRAIT_ZJUMP, "[REF(enchanted_item)]")
+	active_item = FALSE
+	return ..()

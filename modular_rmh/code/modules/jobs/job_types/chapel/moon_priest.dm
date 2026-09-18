@@ -72,7 +72,7 @@
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/cure_rot,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
 		/datum/action/cooldown/spell/undirected/touch/darkvision,
 		/datum/action/cooldown/spell/undirected/secondsight,
 		/datum/action/cooldown/spell/undirected/touch/non_detection,
@@ -87,7 +87,7 @@
 		/datum/action/cooldown/spell/projectile/moonlit_dagger,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/divine_strike,
-		/datum/action/cooldown/spell/essence/silence,
+		/datum/action/cooldown/spell/pointed/silence,
 	)
 
 /datum/job/moon_priest/after_spawn(mob/living/carbon/human/spawned, client/player_client)

@@ -429,7 +429,7 @@
 
 	return data
 
-/datum/essence_infusion_recipe/return_recipe_data()
+/datum/infusion_recipe/return_recipe_data()
 	var/list/data = list()
 	data["type"] = "essence_infusion"
 	data["name"] = name

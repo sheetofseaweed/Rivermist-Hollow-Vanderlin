@@ -107,6 +107,8 @@
 
 	/// Assoc list of [datum/attunement] to value.
 	var/list/attunements
+	/// Essence type paths accepted as the cost of an essence spell.
+	var/list/essences
 	/// Value summed from caster and spell attunements to adjust some spell effects.
 	var/attuned_strength
 
@@ -937,20 +939,16 @@
 			return TRUE
 
 		if(SPELL_ESSENCE)
-			//SEAWEED PLEASE LOOK HERE//DISABLED UNTIL DEVOTION AND SPELLS REWORK//
-			//var/obj/item/clothing/gloves/essence_gauntlet/gaunt = target
-			//if(QDELETED(target) || !istype(target))
-			//	stack_trace("Essence spell checking cost without being assigned to an essence gauntlet!")
-			//	return FALSE
-			//if(!gaunt.check_gauntlet_validity(owner))
-			//	return FALSE
-			// Ditto
-			//if(!length(gaunt.stored_vials))
-			//	return FALSE
-			//if(!gaunt.can_consume_essence(used_cost, attunements))
-			//	if(feedback)
-			//		owner.balloon_alert(owner, "not enough essence!")
-			//	return FALSE
+			var/obj/item/clothing/gloves/essence_gauntlet/gauntlet = target
+			if(QDELETED(gauntlet) || !istype(gauntlet))
+				stack_trace("Essence spell checking cost without being assigned to an essence gauntlet!")
+				return FALSE
+			if(!gauntlet.is_worn_by(owner))
+				return FALSE
+			if(!gauntlet.can_consume_essence(used_cost, essences))
+				if(feedback)
+					owner.balloon_alert(owner, "not enough essence!")
+				return FALSE
 
 			return TRUE
 
@@ -1011,13 +1009,14 @@
 			H.rage_datum?.update_rage(-used_cost)
 
 		if(SPELL_ESSENCE)
-			var/obj/item/clothing/gloves/essence_gauntlet/gaunt = target
-			if(!istype(gaunt))
+			var/obj/item/clothing/gloves/essence_gauntlet/gauntlet = target
+			if(!istype(gauntlet) || !gauntlet.is_worn_by(owner))
 				return
-			if(!gaunt?.check_gauntlet_validity(owner))
+			if(!gauntlet.can_consume_essence(used_cost, essences))
+				owner.balloon_alert(owner, "not enough essence!")
 				return
 
-			gaunt.consume_essence(used_cost, attunements)
+			gauntlet.consume_essence(used_cost, essences)
 
 		if(SPELL_BLOOD)
 			var/mob/living/caster = owner

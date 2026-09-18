@@ -165,6 +165,10 @@
 		var/mob/M = A
 		if(MobBump(M))
 			return
+	if(isturf(A))
+		var/turf/bump_turf = A
+		if(TurfBump(bump_turf))
+			return
 	if(isobj(A))
 		var/obj/O = A
 		if(ObjBump(O))
@@ -184,6 +188,15 @@
 	spreadFire(M)
 
 	if(now_pushing)
+		return TRUE
+
+	if(get_chem_effect(CE_BOUNCY))
+		visible_message(span_warning("[src] bounces off [M]!"))
+		var/atom/throw_target = get_edge_target_turf(src, get_dir(M, src))
+		var/atom/other_throw_target = get_edge_target_turf(M, get_dir(src, M))
+		throw_at(throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
+		if(get_chem_effect(CE_BOUNCY) > 5)
+			M.throw_at(other_throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
 		return TRUE
 
 	var/they_can_move = TRUE
@@ -342,7 +355,20 @@
 				return
 //Called when we bump onto an obj
 /mob/living/proc/ObjBump(obj/O)
+	if(get_chem_effect(CE_BOUNCY))
+		visible_message(span_warning("[src] bounces off [O]!"))
+		var/atom/throw_target = get_edge_target_turf(src, get_dir(O, src))
+		throw_at(throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
+		return TRUE
 	return
+
+/mob/living/proc/TurfBump(turf/bumped_turf)
+	if(!get_chem_effect(CE_BOUNCY))
+		return FALSE
+	visible_message(span_warning("[src] bounces off [bumped_turf]!"))
+	var/atom/throw_target = get_edge_target_turf(src, get_dir(bumped_turf, src))
+	throw_at(throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
+	return TRUE
 
 //Called when we want to push an atom/movable
 /mob/living/proc/PushAM(atom/movable/AM, force = move_force)

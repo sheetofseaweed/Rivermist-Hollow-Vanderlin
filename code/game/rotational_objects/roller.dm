@@ -201,32 +201,6 @@
 	if(!next_roller || !next_roller.operating)
 		stop_conveying(exiting_atom)
 
-/obj/structure/roller/wrench_act(mob/living/user, obj/item/tool)
-	tool.play_tool_sound(src, 50)
-	setDir(turn(dir, 90))
-	to_chat(user, span_notice("You rotate [src]."))
-
-	connected_rollers = list()
-	build_roller_chain()
-	return ITEM_INTERACT_SUCCESS
-
-/obj/structure/roller/update_appearance()
-	. = ..()
-	if(operating && rotations_per_minute > 0)
-		update_animation_effect()
-
-/obj/structure/roller/update_animation_effect()
-	if(!rotation_network || rotation_network.overstressed || !rotations_per_minute)
-		animate(src, icon_state = "roller", time = 1)
-		return
-
-	var/frame_time = 1 / ((rotations_per_minute / 60) * 4)
-
-	animate(src, icon_state = "roller1", time = frame_time, loop = -1)
-	animate(icon_state = "roller2", time = frame_time)
-	animate(icon_state = "roller3", time = frame_time)
-	animate(icon_state = "roller4", time = frame_time)
-
 /obj/structure/roller_sorter
 	name = "roller sorter"
 	desc = "A specialized roller that can sort items based on type."

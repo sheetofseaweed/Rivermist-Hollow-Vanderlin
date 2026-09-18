@@ -1,3 +1,11 @@
+/mob/living/proc/update_effect_scaling()
+	var/new_scale = max(0.2, 1 + ((get_chem_effect(CE_ENLARGING) - get_chem_effect(CE_SHRINKING)) * 0.1))
+	if(new_scale == chemical_scale)
+		return
+	resize = new_scale / chemical_scale
+	chemical_scale = new_scale
+	update_transform()
+
 /mob/living/regenerate_icons()
 	if(HAS_TRAIT(src, TRAIT_NO_TRANSFORM))
 		return 1

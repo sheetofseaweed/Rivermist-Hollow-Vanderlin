@@ -10,14 +10,6 @@
 	. = ..()
 	AddComponent(/datum/component/ghost_vessel)
 
-/mob/living/carbon/human/species/automaton/vessel/LateInitialize()
-	. = ..()
-	AddComponent(/datum/component/ghost_vessel, /obj/item/reagent_containers/lux)
-
-/mob/living/carbon/human/species/automaton/prefilled_vessel/LateInitialize()
-	. = ..()
-	AddComponent(/datum/component/ghost_vessel)
-
 /datum/attribute_holder/sheet/job/species/automaton
 	raw_attribute_list = list(
 		STAT_STRENGTH = 5,

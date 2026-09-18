@@ -4,7 +4,7 @@
 	var/datum/callback/get_user_callback
 	var/datum/callback/get_essence_required_callback
 
-	var/list/datum/attunement/attunements
+	var/list/datum/thaumaturgical_essence/essence_types
 	var/essence_required
 
 	var/pre_use_check_with_feedback_comsig
@@ -18,7 +18,7 @@
 	pre_use_check_comsig,
 	post_use_comsig,
 	datum/callback/essence_required,
-	list/datum/attunement/attunements,
+	list/datum/thaumaturgical_essence/essence_types,
 )
 	. = ..()
 
@@ -37,7 +37,7 @@
 	else if (isnum(essence_required))
 		src.essence_required = essence_required
 
-	src.attunements = attunements
+	src.essence_types = essence_types
 	src.pre_use_check_with_feedback_comsig = pre_use_check_with_feedback_comsig
 	src.pre_use_check_comsig = pre_use_check_comsig
 	src.post_use_comsig = post_use_comsig
@@ -82,7 +82,7 @@
 		return FALSE
 
 	var/required_essence = get_essence_required(arglist(args))
-	return gauntlet.can_consume_essence(required_essence, attunements)
+	return gauntlet.can_consume_essence(required_essence, essence_types)
 
 /datum/component/uses_essence/proc/drain_essence(...)
 	var/obj/item/clothing/gloves/essence_gauntlet/gauntlet = get_essence_gauntlet()
@@ -90,7 +90,7 @@
 		return
 
 	var/essence_consumed = get_essence_required(arglist(args))
-	gauntlet.consume_essence(essence_consumed, attunements)
+	gauntlet.consume_essence(essence_consumed, essence_types)
 
 /datum/component/uses_essence/proc/can_activate(...)
 	return is_essence_sufficient(arglist(list(get_parent_user()) + args))

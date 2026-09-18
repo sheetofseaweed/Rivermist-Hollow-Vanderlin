@@ -222,7 +222,8 @@
 /mob/living/carbon/human/proc/IsWedded(mob/living/carbon/human/wedder)
 	if(wedder)
 		return RomanticPartner(wedder)
-	return !!length(family_member_datum?.spouses)
+	// spouse_mob is the basic marriage link and can exist without a family datum.
+	return !!length(family_member_datum?.spouses) || !isnull(spouse_mob)
 
 //Instead of putting the spouse variable everywhere its all funneled through this proc.
 /mob/living/carbon/human/proc/MarryTo(mob/living/carbon/human/spouse)

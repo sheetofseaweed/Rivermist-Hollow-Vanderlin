@@ -454,7 +454,7 @@ GLOBAL_LIST_EMPTY(hunting_area_lookup)
 			secret_map_influence = null
 
 	var/list/cat_weights = list()
-	for(var/cat_type as anything in subtypesof(/datum/hunting_category))
+	for(var/cat_type in subtypesof(/datum/hunting_category))
 		var/datum/hunting_category/category = new cat_type()
 		if(!category.can_spawn_in_area(here))
 			continue
