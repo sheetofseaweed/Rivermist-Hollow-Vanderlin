@@ -60,9 +60,9 @@
 	spells = list(
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/healing/greater,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
-		/datum/action/cooldown/spell/essence/purify_water,
-		/datum/action/cooldown/spell/essence/neutralize,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
+		/datum/action/cooldown/spell/essence/purify_water/class_granted,
+		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/beast_tame,
 		/datum/action/cooldown/spell/undirected/touch/entangler,
@@ -78,14 +78,6 @@
 		/datum/action/cooldown/spell/aoe/lightning_lure,
 		/datum/action/cooldown/spell/projectile/lightning,
 	)
-
-/datum/job/grove_druid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
-	. = ..()
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
 
 /datum/outfit/grove_druid
 	name = "Grove Druid"
@@ -114,6 +106,11 @@
 
 /datum/job/grove_druid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
+	var/holder = spawned.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_cleric()
+		devotion.grant_to(spawned)
 	spawned.update_sight()
 	var/shapes = list("Crow", "Cat", "Fox", "Mole", "Raccoon", "Saiga", "Smallrat", "Spider", "Wolf", "Direbear")
 	var/shape_choice = browser_input_list(spawned, "CHOOSE YOUR WILD SHAPE.", "WHO ARE YOU", shapes)

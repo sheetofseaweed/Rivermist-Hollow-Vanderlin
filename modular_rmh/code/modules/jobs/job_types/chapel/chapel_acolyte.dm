@@ -124,7 +124,7 @@
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/purify_water,
+		/datum/action/cooldown/spell/essence/purify_water/class_granted,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
 	)
 
@@ -278,10 +278,10 @@
 		/datum/action/cooldown/spell/attach_bodypart,
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/healing_spring,
+		/datum/action/cooldown/spell/essence/healing_spring/class_granted,
 		/datum/action/cooldown/spell/instill_perfection,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
 		/datum/action/cooldown/spell/enrapture,
 		/datum/action/cooldown/spell/forced_orgasm,
 	)
@@ -362,7 +362,7 @@
 		/datum/action/cooldown/spell/attach_bodypart,
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/healing_spring,
+		/datum/action/cooldown/spell/essence/healing_spring/class_granted,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
 	)
 
@@ -442,7 +442,7 @@
 		/datum/action/cooldown/spell/attach_bodypart,
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/healing_spring,
+		/datum/action/cooldown/spell/essence/healing_spring/class_granted,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
 	)
 
@@ -527,7 +527,7 @@
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/divine_strike,
 		/datum/action/cooldown/spell/aoe/churn_undead,
-		/datum/action/cooldown/spell/essence/silence,
+		/datum/action/cooldown/spell/pointed/silence,
 		/datum/action/cooldown/spell/undirected/longstrider,
 	)
 
@@ -612,7 +612,7 @@
 	spells = list(/datum/action/cooldown/spell/undirected/touch/orison,
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/healing_spring,
+		/datum/action/cooldown/spell/essence/healing_spring/class_granted,
 		/datum/action/cooldown/spell/instill_perfection,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
 		/datum/action/cooldown/spell/enrapture,

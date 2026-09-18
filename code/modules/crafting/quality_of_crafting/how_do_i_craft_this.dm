@@ -601,8 +601,8 @@
 		qdel(recipe)
 
 /datum/recipe_tree_interface/proc/scan_essence_infusion_recipes()
-	for(var/recipe_path in subtypesof(/datum/essence_infusion_recipe))
-		var/datum/essence_infusion_recipe/recipe = new recipe_path()
+	for(var/recipe_path in subtypesof(/datum/infusion_recipe))
+		var/datum/infusion_recipe/recipe = new recipe_path()
 
 		if(!recipe.result_type)
 			qdel(recipe)

@@ -12,6 +12,7 @@
 	#define ELASCAT_CRAFTING "crafting"
 	#define ELASCAT_ECONOMY "economy"
 	#define ELASCAT_STORYTELLER "storyteller"
+	#define ELASCAT_ENCHANTING "enchanting"
 
 	#define ELASCAT_RUNTIMES "runtimes"
 

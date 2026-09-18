@@ -86,6 +86,12 @@
 
 	update_a_intents()
 
+	var/obj/item/new_held_item = get_active_held_item()
+	if(item_in_hand)
+		SEND_SIGNAL(item_in_hand, COMSIG_ITEM_NOLONGER_ACTIVE, src)
+	if(new_held_item)
+		SEND_SIGNAL(new_held_item, COMSIG_ITEM_NOW_ACTIVE, src)
+
 	return TRUE
 
 /mob/living/carbon/activate_hand(selhand) //l/r OR 1-held_items.len

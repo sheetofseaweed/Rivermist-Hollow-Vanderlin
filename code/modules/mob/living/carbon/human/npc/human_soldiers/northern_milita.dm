@@ -27,6 +27,8 @@
 	if(organ_eyes)
 		organ_eyes.eye_color = pick("27becc", "35cc27", "000000")
 	update_body()
+	var/obj/item/bodypart/head/head = get_bodypart(BODY_ZONE_HEAD)
+	head.sellprice = 20 // Gobbo sellprice
 
 /datum/attribute_holder/sheet/job/npc/militia
 	attribute_variance = list(
@@ -122,8 +124,3 @@
 
 /mob/living/carbon/human/species/human/northern/militia/deserter // Bad deserter, trash mob
 	faction = list("viking", "station")
-
-/mob/living/carbon/human/species/human/northern/militia/after_creation()
-	..()
-	var/obj/item/bodypart/head/head = get_bodypart(BODY_ZONE_HEAD)
-	head.sellprice = 20 // Gobbo sellprice

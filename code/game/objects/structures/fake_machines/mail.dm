@@ -68,6 +68,7 @@ GLOBAL_LIST_EMPTY(letters_sent)
 
 /obj/structure/fake_machine/mail/examine(mob/user)
 	. = ..()
+	. += "<a href='byond://?src=[REF(src)];directory=1'>Directory:</a> [mailtag]"
 	. += span_info("Load a coin inside, then right click to send a letter.")
 	. += span_info("Left click with a paper to send a prewritten letter for free.")
 	if(HAS_TRAIT(user, TRAIT_INQUISITION))
@@ -675,19 +676,6 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		. += mutable_appearance(icon, "mail-s")
 		set_light(1, 1, 1, l_color = "#ff0d0d")
 
-/obj/structure/fake_machine/mail/examine(mob/user)
-	. = ..()
-	. += "<a href='byond://?src=[REF(src)];directory=1'>Directory:</a> [mailtag]"
-
-/obj/structure/fake_machine/mail/Topic(href, href_list)
-	..()
-
-	if(!usr)
-		return
-
-	if(href_list["directory"])
-		view_directory(usr)
-
 /obj/structure/fake_machine/mail/proc/view_directory(mob/user)
 	var/dat
 	for(var/obj/structure/fake_machine/mail/X in SSroguemachine.hermailers)
@@ -831,6 +819,9 @@ GLOBAL_LIST_EMPTY(letters_sent)
 
 /obj/structure/fake_machine/mail/Topic(href, href_list)
 	..()
+	if(usr && href_list["directory"])
+		view_directory(usr)
+
 	if(href_list["eject"])
 		if(inqcoins <= 0)
 			return

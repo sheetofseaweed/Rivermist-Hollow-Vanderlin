@@ -81,22 +81,17 @@
 	/// Defines for damage sounds, see [_DEFINES/clothing] and [pick_damage_sound]
 	var/material_category = ARMOR_MAT_FABRIC
 
-/obj/item/clothing/Initialize()
+/obj/item/clothing/Initialize(mapload, ...)
+	AddElement(/datum/element/update_icon_updates_onmob, slot_flags)
+	if(wetable)
+		wet = new(src)
 	. = ..()
 	if(ispath(pocket_storage_component_path))
 		LoadComponent(pocket_storage_component_path)
 	if(length(prevent_crits) || armor_class)
 		has_inspect_verb = TRUE
-
 	if(hoodtype)
 		MakeHood()
-
-
-/obj/item/clothing/Initialize(mapload, ...)
-	AddElement(/datum/element/update_icon_updates_onmob, slot_flags)
-	if(wetable)
-		wet = new(src)
-	return ..()
 
 /obj/item/clothing/Destroy()
 	user_vars_remembered = null //Oh god somebody put REFERENCES in here? not to worry, we'll clean it up
@@ -118,12 +113,8 @@
 
 	var/datum/armor/item_armor = get_armor()
 	if(item_armor.has_any_armor())
-		. += "\n<u><b>DEFENSE:</b></u>\n"
-		var/list/defense_strings = list()
-		for(var/damage_key in ARMOR_LIST_DAMAGE)
-			var/rating = item_armor.get_rating(damage_key)
-			defense_strings += "<font color='[armor_to_color(rating)]'>[armor_to_protection_name(damage_key)] [armor_to_protection_class(rating)]</font>"
-		. += defense_strings.Join(" | ")
+		// ABSORB/REDUCE/BLOCK breakdown; see modular_rmh armor_tooltip.dm.
+		. += "\n" + get_armor_breakdown_html() + "\n"
 
 	if(length(prevent_crits))
 		. += "\n<u><b>PREVENT CRITS:</b></u>\n"
@@ -287,17 +278,6 @@
 /obj/item/clothing/proc/step_action() //this was made to rewrite clown shoes squeaking
 	SEND_SIGNAL(src, COMSIG_CLOTHING_STEP_ACTION)
 
-/obj/item/clothing/dropped(mob/living/user)
-	..()
-	for(var/trait in clothing_traits)
-		REMOVE_CLOTHING_TRAIT(user, trait)
-	if(hoodtype)
-		RemoveHood()
-	if(adjustable > 0)
-		ResetAdjust()
-	if(wetable)
-		UnregisterSignal(user, COMSIG_MOVABLE_MOVED)
-
 /obj/item/clothing/MouseDrop(atom/over_object)
 	. = ..()
 	var/mob/M = usr
@@ -351,27 +331,20 @@
 	..()
 	if(!istype(user))
 		return
+	for(var/trait in clothing_traits)
+		REMOVE_CLOTHING_TRAIT(user, trait)
+	if(hoodtype)
+		RemoveHood()
+	if(adjustable > 0)
+		ResetAdjust()
+	if(wetable)
+		UnregisterSignal(user, COMSIG_MOVABLE_MOVED)
 	if(LAZYLEN(user_vars_remembered))
 		for(var/variable in user_vars_remembered)
 			if(variable in user.vars)
 				if(user.vars[variable] == user_vars_to_edit[variable]) //Is it still what we set it to? (if not we best not change it)
 					user.vars[variable] = user_vars_remembered[variable]
 		user_vars_remembered = initial(user_vars_remembered) // Effectively this sets it to null.
-
-/obj/item/clothing/equipped(mob/user, slot)
-	..()
-	if (!istype(user))
-		return
-	if(slot_flags & slot) //Was equipped to a valid slot for this item?
-		for(var/trait in clothing_traits)
-			ADD_CLOTHING_TRAIT(user, trait)
-		if (LAZYLEN(user_vars_to_edit))
-			for(var/variable in user_vars_to_edit)
-				if(variable in user.vars)
-					LAZYSET(user_vars_remembered, variable, user.vars[variable])
-					user.vv_edit_var(variable, user_vars_to_edit[variable])
-		if(wetable)
-			RegisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(on_user_move), override = TRUE)
 
 /**
  * Inserts a trait (or multiple traits) into the clothing traits list
@@ -529,12 +502,24 @@ BLIND     // can't see anything
 	prevent_crits = initial(prevent_crits)
 	gas_transfer_coefficient = initial(gas_transfer_coefficient)
 
-/obj/item/clothing/equipped(mob/living/carbon/user, slot)
+/obj/item/clothing/equipped(mob/user, slot)
 	if(hoodtype && !(slot & (ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK)))
 		RemoveHood()
 	if(adjustable > 0)
 		ResetAdjust(user)
 	..()
+	if(!istype(user))
+		return
+	if(slot_flags & slot) //Was equipped to a valid slot for this item?
+		for(var/trait in clothing_traits)
+			ADD_CLOTHING_TRAIT(user, trait)
+		if(LAZYLEN(user_vars_to_edit))
+			for(var/variable in user_vars_to_edit)
+				if(variable in user.vars)
+					LAZYSET(user_vars_remembered, variable, user.vars[variable])
+					user.vv_edit_var(variable, user_vars_to_edit[variable])
+		if(wetable)
+			RegisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(on_user_move), override = TRUE)
 
 /obj/item/clothing/proc/RemoveHood()
 	if(!hood)

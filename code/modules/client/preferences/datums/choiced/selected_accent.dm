@@ -8,13 +8,13 @@
 	return GLOB.accent_list
 
 /datum/preference/choiced/selected_accent/create_default_value(datum/preferences/prefs)
-	return ACCENT_DEFAULT
+	return ACCENT_NONE
 
 /datum/preference/choiced/selected_accent/apply_to_human(mob/living/carbon/human/H, value, datum/preferences/prefs)
 	H.accent = value
 
 /datum/preference/choiced/selected_accent/handle_link(datum/preferences/prefs, mob/user)
-	var/list/available = list(ACCENT_DEFAULT)
+	var/list/available = list(ACCENT_NONE)
 
 	// Accent selection is free for everyone on RMH. Keep culture support generic so
 	// cultures can opt into it without importing upstream's English accent content.

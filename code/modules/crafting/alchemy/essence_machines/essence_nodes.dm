@@ -29,11 +29,11 @@ GLOBAL_LIST_EMPTY(essence_nodes)
 		essence_type = pick_random_essence_type()
 	switch(tier)
 		if(0)
-			max_essence = rand(50, 150)
-			recharge_rate = rand(1, 3)
+			max_essence = rand(100, 150)
+			recharge_rate = rand(2, 3)
 			max_integrity = 100
 		if(1)
-			max_essence = rand(200, 400)
+			max_essence = rand(300, 400)
 			recharge_rate = rand(3, 6)
 			max_integrity = 200
 
@@ -90,58 +90,62 @@ GLOBAL_LIST_EMPTY(essence_nodes)
 /obj/structure/essence_node/proc/can_be_extracted()
 	return TRUE
 
-/obj/structure/essence_node/attackby(obj/item/I, mob/user, list/modifiers)
-	if(istype(I, /obj/item/essence_vial))
-		var/obj/item/essence_vial/vial = I
+/obj/structure/essence_node/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	if(user.cmode)
+		return NONE
+	if(istype(tool, /obj/item/essence_vial))
+		var/obj/item/essence_vial/vial = tool
 
 		if(!can_harvest())
 			to_chat(user, span_warning("The node has no essence to harvest."))
-			return
+			return ITEM_INTERACT_BLOCKING
 
 		if(!vial.can_hold_essence())
 			to_chat(user, span_warning("The vial is already full."))
-			return
+			return ITEM_INTERACT_BLOCKING
 
-		var/harvest_amount = min(current_essence, vial.get_available_space(), rand(5, 10))
+		if(vial.contained_essence && vial.contained_essence.type != essence_type.type)
+			to_chat(user, span_warning("The vial contains a different type of essence."))
+			return ITEM_INTERACT_BLOCKING
+
+		var/harvest_amount = min(current_essence, vial.get_available_space(), vial.extract_amount)
 		if(harvest_amount <= 0)
-			return
+			return ITEM_INTERACT_BLOCKING
 
 		var/harvested = harvest_essence(harvest_amount)
 
 		if(!vial.contained_essence)
 			vial.contained_essence = new essence_type.type
 			vial.essence_amount = harvested
-		else if(vial.contained_essence.type == essence_type.type)
-			vial.essence_amount += harvested
 		else
-			to_chat(user, span_warning("The vial contains a different type of essence."))
-			current_essence += harvested // Refund
-			return
+			vial.essence_amount += harvested
 
 		vial.update_appearance(UPDATE_OVERLAYS)
 
 		var/datum/thaumaturgical_essence/temp_essence = new essence_type.type
 		to_chat(user, span_info("You harvest [harvested] units of [temp_essence.name] from the node."))
 		qdel(temp_essence)
-		return
+		return ITEM_INTERACT_SUCCESS
 
-	if(istype(I, /obj/item/essence_node_jar))
-		var/obj/item/essence_node_jar/jar = I
+	if(istype(tool, /obj/item/essence_node_jar))
+		var/obj/item/essence_node_jar/jar = tool
 
 		if(jar.contained_node)
 			to_chat(user, span_warning("The jar already contains a node."))
-			return
+			return ITEM_INTERACT_BLOCKING
 
 		if(tier > jar.max_tier)
 			to_chat(user, span_warning("This jar cannot contain such a powerful node."))
-			return
+			return ITEM_INTERACT_BLOCKING
 
 		if(!can_be_extracted())
 			to_chat(user, span_warning("The node cannot be extracted right now."))
-			return
+			return ITEM_INTERACT_BLOCKING
 
 		if(!do_after(user, 5 SECONDS, src))
-			return
+			return ITEM_INTERACT_BLOCKING
+		if(QDELETED(src) || jar.contained_node || !(jar in user.contents) || tier > jar.max_tier)
+			return ITEM_INTERACT_BLOCKING
 
 		var/obj/item/essence_node_portable/portable_node = new(src.loc)
 		portable_node.essence_type = essence_type
@@ -152,6 +156,7 @@ GLOBAL_LIST_EMPTY(essence_nodes)
 		portable_node.update_appearance(UPDATE_ICON_STATE)
 
 		portable_node.forceMove(jar)
+		STOP_PROCESSING(SSobj, portable_node)
 		jar.contained_node = portable_node
 		jar.update_appearance(UPDATE_OVERLAYS)
 
@@ -160,9 +165,9 @@ GLOBAL_LIST_EMPTY(essence_nodes)
 		qdel(temp)
 
 		qdel(src)
-		return
+		return ITEM_INTERACT_SUCCESS
 
-	return ..()
+	return NONE
 
 /obj/structure/essence_node/examine(mob/user)
 	. = ..()
@@ -172,7 +177,6 @@ GLOBAL_LIST_EMPTY(essence_nodes)
 	else
 		. += span_notice("This node generates essence smelling of [temp_essence.smells_like].")
 
-	. += span_notice("This node generates [temp_essence.name].")
 	. += span_notice("Essence: [current_essence]/[max_essence] units")
 	. += span_notice("Tier: [tier] ([tier ? "Rare" : "Common"])")
 	. += span_notice("Recharge Rate: [recharge_rate] essence per minute")

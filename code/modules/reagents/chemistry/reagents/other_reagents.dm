@@ -313,12 +313,6 @@
 	glass_name = "glass of lighter fuel"
 	glass_desc = ""
 
-/datum/reagent/fuel/reaction_mob(mob/living/M, method=TOUCH, reac_volume)//Splashing people with welding fuel to make them easy to ignite!
-	if((method & TOUCH) || (method & VAPOR))
-		M.adjust_fire_stacks(reac_volume / 10)
-		return
-	..()
-
 /datum/reagent/fuel/on_mob_life(mob/living/carbon/M)
 	M.adjustToxLoss(1, 0)
 	..()
@@ -330,6 +324,26 @@
 	reagent_state = LIQUID
 	color = "#515151"
 	taste_description = "ash"
+
+/datum/reagent/tree_sap
+	name = "Tree Sap"
+	description = "A thick substance left behind by dendor's blessed creations."
+	reagent_state = LIQUID
+	color = "#b85900"
+	taste_description = "sap"
+
+/datum/reagent/thorn_essence
+	name = "Thorn Essence"
+	description = "A component used in further refinement, sourced from thorns."
+	color = "#26490e"
+	taste_description = "the bog"
+
+/datum/reagent/caveweep
+	name = "Psydonian Tears"
+	description = "Tears from a caveweep. It has its uses in modern alchemy."
+	taste_description = "everything"
+	color = "#334274"
+	boiling_point = T0C + 150
 
 /datum/reagent/soap
 	name = "Soap"

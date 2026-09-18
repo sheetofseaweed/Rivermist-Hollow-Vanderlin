@@ -45,7 +45,7 @@
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/cure_rot,
 		/datum/action/cooldown/spell/revive,
-		/datum/action/cooldown/spell/essence/healing_spring,
+		/datum/action/cooldown/spell/essence/healing_spring/class_granted,
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/blade_ward,

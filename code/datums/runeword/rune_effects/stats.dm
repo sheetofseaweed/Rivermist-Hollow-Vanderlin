@@ -27,7 +27,7 @@
 /datum/rune_effect/stat/rarity
 	name = "increased item rarity"
 
-/datum/rune_effect/stat/throw_force/apply_stat_effect(datum/component/modifications/source, obj/item/item)
+/datum/rune_effect/stat/rarity/apply_stat_effect(datum/component/modifications/source, obj/item/item)
 	item.rarity_mod += increase
 
 /datum/rune_effect/stat/lightweight

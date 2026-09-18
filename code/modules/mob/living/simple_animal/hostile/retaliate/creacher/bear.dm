@@ -121,10 +121,6 @@
 	ai_controller = /datum/ai_controller/direbear
 	can_buckle = TRUE
 
-/mob/living/simple_animal/hostile/retaliate/direbear/Initialize(mapload)
-	. = ..()
-	AddComponent(/datum/component/ai_aggro_system)
-
 /mob/living/simple_animal/hostile/retaliate/direbear/tamed(mob/user)
 	. = ..()
 	if(.)
@@ -152,6 +148,7 @@
 
 /mob/living/simple_animal/hostile/retaliate/direbear/Initialize(mapload)
 	. = ..()
+	AddComponent(/datum/component/ai_aggro_system)
 	var/datum/action/cooldown/mob_cooldown/bear_swipe/swipe = new(src)
 	swipe.Grant(src)
 	ai_controller.set_blackboard_key(BB_TARGETED_ACTION, swipe)

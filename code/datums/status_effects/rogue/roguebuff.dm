@@ -795,18 +795,6 @@
 /atom/movable/screen/alert/status_effect/bardbuff/awaken
 	name = "Awaken!"
 
-/datum/status_effect/bardicbuff/awaken/tick()
-	for (var/mob/living/carbon/human/H in hearers(7, owner))
-		if (!H.client)
-			continue
-		if(!H.can_hear())
-			continue
-		if(H.mind?.has_antag_datum(/datum/antagonist))
-			if(!H.mind?.isactuallygood())
-				continue
-		H.adjust_energy(H.max_energy * 0.002)
-		H.adjust_stamina(-H.maximum_stamina * 0.02, internal_regen = FALSE)
-
 /datum/status_effect/buff/magicknowledge
 	tick_interval = STATUS_EFFECT_NO_TICK
 	id = "intelligence"
@@ -952,8 +940,8 @@
 		if(H.mind?.has_antag_datum(/datum/antagonist))
 			if(!H.mind?.isactuallygood())
 				continue
-		H.adjust_energy(1)
-		H.adjust_stamina(-0.5, internal_regen = FALSE)
+		H.adjust_energy(H.max_energy * 0.002)
+		H.adjust_stamina(-H.maximum_stamina * 0.02, internal_regen = FALSE)
 
 /datum/status_effect/debuff/cold
 	tick_interval = STATUS_EFFECT_NO_TICK

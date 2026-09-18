@@ -186,6 +186,11 @@
 // No italics
 #define span_tooltip_alt(tip, main_text) ("<span data-component=\"Tooltip\" data-content=\"" + html_encode("[tip]") + "\" class=\"tooltip_alt\">" + main_text + "</span>")
 
+// Like span_tooltip(), but the tip is rendered as HTML rather than plain
+// text, so colour and line breaks survive. Sanitised client-side, but only
+// feed it markup built in code - never raw player input.
+#define span_tooltip_html(tip, main_text) ("<span data-component=\"TooltipHTML\" data-html=\"" + html_encode("[tip]") + "\" class=\"tooltip\">" + main_text + "</span>")
+
 /// Helper which creates a chat message which may have a tooltip in some contexts, but not others.
 #define conditional_tooltip(normal_text, tooltip_text, condition) (condition ? span_tooltip(tooltip_text, normal_text) : normal_text)
 

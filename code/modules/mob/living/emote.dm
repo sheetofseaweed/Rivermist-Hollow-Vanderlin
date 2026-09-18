@@ -586,13 +586,6 @@
 			to_chat(H, "<span class='warning'>I feel inexplicably repelled!</span>")
 			H.cursed_freak_out()
 			return
-
-/datum/emote/living/hug/adjacentaction(mob/user, mob/target)
-	. = ..()
-	if(!user || !target)
-		return
-	if(ishuman(target))
-		var/mob/living/carbon/H = target
 		H.add_stress(/datum/stress_event/hug)
 		playsound(target, pick('sound/vo/hug.ogg'), 100, FALSE, -1)
 

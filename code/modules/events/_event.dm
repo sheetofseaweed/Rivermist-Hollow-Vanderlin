@@ -63,21 +63,6 @@
 		earliest_start = CEILING(earliest_start * CONFIG_GET(number/events_min_time_mul), 1)
 		min_players = CEILING(min_players * CONFIG_GET(number/events_min_players_mul), 1)
 
-/datum/round_event_control/Topic(href, href_list)
-	..()
-
-	if(!check_rights(NONE))
-		return
-
-	if(href_list["cancel"])
-		if(!triggering)
-			to_chat(usr, "<span class='admin'>I am too late to cancel that event</span>")
-			return
-		triggering = FALSE
-		message_admins("[key_name_admin(usr)] cancelled event [name].")
-		log_admin_private("[key_name(usr)] cancelled event [name].")
-		SSblackbox.record_feedback("tally", "event_admin_cancelled", 1, typepath)
-
 /datum/round_event_control/proc/valid_for_map()
 	return TRUE
 
@@ -379,6 +364,16 @@
 
 	if(QDELETED(src))
 		return
+
+	if(href_list["cancel"])
+		if(!triggering)
+			to_chat(usr, "<span class='admin'>I am too late to cancel that event</span>")
+			return
+		triggering = FALSE
+		message_admins("[key_name_admin(usr)] cancelled event [name].")
+		log_admin_private("[key_name(usr)] cancelled event [name].")
+		SSblackbox.record_feedback("tally", "event_admin_cancelled", 1, typepath)
+
 	switch(href_list["action"])
 		if("schedule")
 			message_admins("[key_name_admin(usr)] scheduled event [src.name].")

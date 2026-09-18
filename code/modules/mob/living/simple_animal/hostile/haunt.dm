@@ -58,10 +58,6 @@
 
 
 
-/mob/living/simple_animal/hostile/haunt/Initialize()
-	. = ..()
-	AddComponent(/datum/component/ai_aggro_system)
-
 /mob/living/simple_animal/hostile/haunt/electrocute_act(shock_damage, source, siemens_coeff = 1, flags = NONE)
 	return FALSE
 
@@ -180,6 +176,7 @@
 
 /mob/living/simple_animal/hostile/haunt/Initialize()
 	. = ..()
+	AddComponent(/datum/component/ai_aggro_system)
 	set_light(2, 2, 2, l_color = "#c0523f")
 	ADD_TRAIT(src, TRAIT_IGNOREDAMAGESLOWDOWN, TRAIT_GENERIC)
 	ADD_TRAIT(src, TRAIT_NOPAINSTUN, TRAIT_GENERIC)

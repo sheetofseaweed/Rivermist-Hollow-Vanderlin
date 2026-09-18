@@ -115,7 +115,7 @@
 	..()
 	set_light(3, 3, 3, l_color ="#2c92a0")
 
-/obj/structure/flora/new_shroom/cyan/Initialize()
+/obj/structure/flora/new_shroom/cyanf/Initialize()
 	. = ..()
 	dir = pick(GLOB.cardinals)
 
