@@ -108,10 +108,7 @@ const TOOLTIP_SURFACE = {
 } as const;
 //RMH EDITED END
 
-// RMH EDITED - default (non-elevated-quality) name color: plain warm white,
-// matching BG3 showing Common-rarity item names in plain white and only
-// tinting the name once an item is actually special (see QUALITY_COLORS /
-// QUALITY_SUBTITLE_MIN_TIER below for where that cutoff is).
+// Names stay plain white until the quality tier is actually elevated.
 const DEFAULT_NAME_COLOR = "#f0ece0";
 
 // Quality tier (0..6, quality_frame_index()) -> a short display word, shown
@@ -214,61 +211,35 @@ const INTENT_ICONS: Record<string, string> = {
 };
 const DEFAULT_INTENT_ICON = "khanda";
 
-// RMH EDITED - one color per grip state, so an intent that's only available
-// in a special grip doesn't look identical to the weapon's default moveset.
-// "normal" keeps the original color already used before this distinction
-// existed, so a plain weapon with no special grips looks unchanged.
+// One colour per grip, so grip-exclusive attacks stand out.
 const GRIP_COLOR: Record<string, string> = {
   normal: "#8fc97a", // same green as before
   gripped: "#5fa8d3", // two-handed/wielded-only intents
   alt: "#c98fd0", // alt-grip-only intents (right-click reversed grip, etc)
 };
 
-// RMH EDITED START - narrow, fixed-width hover hint for a weapon's special
-// attack description. The native `title` attribute this used to be doesn't
-// respect any CSS width constraint - some browsers/skins stretch it to
-// roughly half the screen for a couple sentences of text, which is what this
-// replaces. Positioned to open upward since this line sits near the bottom
-// of the stat block, right above the footer.
-const SpecialAttackHint = (props: { name: string; desc: string }) => {
-  const { name, desc } = props;
-  const [hovered, setHovered] = useState(false);
+// Label only. The description popup is rendered by ItemTooltip on its outer
+// wrapper instead of here: this badge sits in a row with overflow-x, and CSS
+// resolves the other axis to auto too, so a popup anchored inside the row
+// would be clipped by it regardless of z-index.
+const SpecialAttackBadge = (props: {
+  name: string;
+  onEnter: () => void;
+  onLeave: () => void;
+}) => {
+  const { name, onEnter, onLeave } = props;
   return (
     <Box
       as="span"
-      style={{ position: "relative", display: "inline-block" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      style={{ display: "inline-block" }}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
     >
       <Icon name="burst" mr={0.5} />
       {name}
-      {hovered && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: "100%",
-            left: 0,
-            marginBottom: "4px",
-            width: "200px",
-            zIndex: 2,
-            padding: "6px 8px",
-            ...TOOLTIP_SURFACE,
-            border: "1px solid rgba(201,167,111,0.6)",
-            borderRadius: "4px",
-            fontSize: "10px",
-            color: "#c7bba8",
-            lineHeight: 1.4,
-            whiteSpace: "normal",
-            pointerEvents: "none",
-          }}
-        >
-          {desc}
-        </div>
-      )}
     </Box>
   );
 };
-// RMH EDITED END
 
 const ItemTooltip = (props: {
   item: ExamineItem;
@@ -281,9 +252,9 @@ const ItemTooltip = (props: {
 }) => {
   const { item, label, side, vAlign, frameColor, onEnter, onLeave } = props;
   const [expanded, setExpanded] = useState(false);
+  const [specialHintOpen, setSpecialHintOpen] = useState(false);
   const expandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // RMH EDITED - runtime edge clamp, see the effect below for why this is
-  // needed in addition to picking "reasonable" width numbers.
+  // Runtime edge clamp; see the layout effect below.
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [clampOffsetX, setClampOffsetX] = useState(0);
 
@@ -300,21 +271,11 @@ const ItemTooltip = (props: {
     !!item.specialAttack ||
     hasFooter;
 
-  // RMH EDITED - BG3-style rarity glow: a plain border at low quality tiers,
-  // a soft outer glow from FINE upward (quality_frame_index(), same source
-  // that already colors the doll slot frame - see armor_tooltip.dm's file
-  // header for why RMH doesn't have a separate "rarity" axis to draw on).
+  // Quality tiers at or above the cutoff get a glow and a subtitle.
   const hasGlow = item.quality >= QUALITY_SUBTITLE_MIN_TIER;
   const qualityLabel = QUALITY_LABELS[item.quality];
-  // RMH EDITED - plain white until quality is actually elevated, same cutoff
-  // as the glow/subtitle above (BG3 doesn't tint Common item names either).
   const nameColor = hasGlow ? frameColor : DEFAULT_NAME_COLOR;
-  // RMH EDITED - widen the expanded box when there's a lot of tag badges to
-  // fit (weapon category + property tags), and force an actual WIDTH (not
-  // just a maxWidth cap) once expanded - see the width prop below for why.
-  // Kept more conservative than a previous pass: going wider here doesn't
-  // help if there's no room for it - see the edge-clamp effect below, which
-  // is what actually keeps the box on-screen regardless of this number.
+  // Wider box when there are more badges to fit on the single tag row.
   const tagCount = (item.weaponCategory ? 1 : 0) + (item.tags?.length ?? 0);
   let expandedMaxWidth = "320px";
   if (tagCount >= 3) {
@@ -323,19 +284,10 @@ const ItemTooltip = (props: {
     expandedMaxWidth = "360px";
   }
 
-  // RMH EDITED - clamp the tooltip back on-screen after layout. Widening
-  // this box (to fix it wrapping into a tall column) surfaced a worse bug:
-  // slots that open their tooltip "left" of the doll anchor their box via
-  // `right: <slot width>px`, so a wide box just grows further left - if the
-  // slot sits near the left edge of the examine panel (which itself isn't
-  // necessarily flush with the browser/game window's left edge), a wide
-  // enough box runs straight off the screen with no room to shrink. Picking
-  // "safe" fixed pixel widths can't account for where the panel actually
-  // sits on a given player's screen, so this measures the real rendered
-  // position after each layout that could move or resize the box (expanding,
-  // or a new item swapped in) and nudges it back on-screen with a transform
-  // if either edge is off-screen. Resets the transform before measuring so
-  // a previous correction doesn't get compounded into the next one.
+  // Slot-anchored tooltips can extend past the window edge, and no fixed
+  // width can account for where the panel sits on a given screen. Measure
+  // the rendered box and nudge it back inside. The reset keeps successive
+  // corrections from compounding.
   useLayoutEffect(() => {
     const el = wrapperRef.current;
     if (!el) {
@@ -385,7 +337,6 @@ const ItemTooltip = (props: {
         ...(vAlign === "top" ? { top: "0" } : { bottom: "0" }),
         [side === "right" ? "left" : "right"]: `${SLOT + 6}px`,
         zIndex: 1,
-        // RMH EDITED - the edge-clamp correction from the effect above.
         transform: clampOffsetX ? `translateX(${clampOffsetX}px)` : undefined,
         // pointer events ON so the user can scroll long descriptions, and so
         // hovering the bleeding icon below still counts as hovering the tooltip
@@ -393,23 +344,12 @@ const ItemTooltip = (props: {
         textAlign: "left",
       }}
     >
-      {/* RMH EDITED START - item art bleeds past the tooltip's top-right
-          corner. Lives on this outer, overflow-free wrapper - not inside the
-          scrolling box below - because overflow-x can't be "visible" on a box
-          that also scrolls vertically (overflow-y: auto): the spec computes
-          the "visible" axis to "auto" too in that case, and since the icon
-          always pokes out past the border by design, that axis would always
-          have something to scroll - a permanent sliver of horizontal
-          scrollbar no matter how big the box is (this was the actual bug,
-          not the box being too small). Splitting the bleeding icon onto this
-          unclipped outer layer and keeping the border/scroll on the inner
-          box fixes it outright. */}
+      {/* On the outer wrapper, not the scrolling box: an element that pokes
+          past the border would otherwise force a permanent scrollbar, since
+          overflow-x cannot stay visible while overflow-y scrolls. */}
       {!!item.icon && (
         <Image
           src={item.icon}
-          // RMH EDITED - bigger in the expanded state specifically (a small
-          // corner icon reads fine on the brief hover, but felt tiny once
-          // the box grows to show full stats) - collapsed stays as it was.
           width={expanded ? "72px" : "40px"}
           height={expanded ? "72px" : "40px"}
           style={{
@@ -424,16 +364,8 @@ const ItemTooltip = (props: {
       )}
       <div
         style={{
-          // RMH EDITED - an explicit width once expanded, not just a
-          // maxWidth cap. With only maxWidth set, this box has an "auto"
-          // (shrink-to-fit) width, and the intent/tag rows inside use
-          // flexWrap - a shrink-to-fit ancestor around wrapping flex content
-          // tends to collapse toward the narrowest arrangement that still
-          // fits (each row free to wrap early) rather than actually using
-          // the room maxWidth allows, which is exactly the "turns into a
-          // tall column" symptom. Forcing width to the same value makes the
-          // box actually occupy that space, so the badge rows wrap within a
-          // real width budget instead of the box shrinking around them.
+          // An explicit width, not just a cap: a shrink-to-fit box collapses
+          // around its content instead of using the room the cap allows.
           width: expanded ? expandedMaxWidth : "auto",
           minWidth: "190px",
           maxWidth: expanded ? expandedMaxWidth : "230px",
@@ -441,15 +373,8 @@ const ItemTooltip = (props: {
           overflowY: "auto",
           overflowX: "hidden",
           padding: "10px 12px",
-          ...TOOLTIP_SURFACE, // frosted backdrop instead of a flat fill
-          // RMH EDITED - subtle bottom vignette, matching the BG3 reference's
-          // faint gradient before the weight/price footer. Only shown once
-          // expanded (the footer/tags it sits behind aren't rendered before
-          // that either) - showing it on the bare name+desc hover would just
-          // be a stray tint with nothing under it. Layered on top of
-          // TOOLTIP_SURFACE's flat background (a separate CSS property, not
-          // overridden by it) so it doesn't affect the other tooltip that
-          // reuses TOOLTIP_SURFACE (SimpleTooltip).
+          ...TOOLTIP_SURFACE,
+          // Bottom vignette behind the stat block; only once expanded.
           backgroundImage: expanded
             ? "linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(74,26,74,0.4) 100%)"
             : "none",
@@ -460,7 +385,6 @@ const ItemTooltip = (props: {
             : "0 2px 10px rgba(0,0,0,0.85)",
         }}
       >
-      {/* RMH EDITED END */}
       <Box
         bold
         style={{
@@ -516,9 +440,6 @@ const ItemTooltip = (props: {
           style={{ fontFamily: FONT_BODY, lineHeight: "1.4", whiteSpace: "pre-wrap" }}
           mb={1}
         >
-          {/* RMH EDITED - small scroll glyph ahead of the flavor text, matching
-              the BG3 reference. Guessed icon name, same caveat as the others -
-              swap if "scroll" isn't in the compiled tgfont set. */}
           <Icon name="scroll" mr={0.5} style={{ opacity: 0.7 }} />
           {shownDesc}
         </Box>
@@ -528,10 +449,7 @@ const ItemTooltip = (props: {
           <Box
             style={{
               display: "flex",
-              // RMH EDITED - always one row now, never wraps onto a second
-              // line. The width-forcing above already sizes the box to fit a
-              // typical tag count; overflowX here is just a safety net for an
-              // unusually tag-heavy item rather than letting it wrap or clip.
+              // Single row; overflow only as a fallback for unusual tag counts.
               flexWrap: "nowrap",
               overflowX: "auto",
               gap: "2px 10px",
@@ -556,12 +474,13 @@ const ItemTooltip = (props: {
                 {tag}
               </Box>
             ))}
-            {/* RMH EDITED - special attack joined into the same row instead of
-                its own line below; whiteSpace: nowrap keeps its name from
-                wrapping mid-row like the other badges. */}
             {!!item.specialAttack && (
               <Box fontSize="11px" style={{ color: "#c9a76f", whiteSpace: "nowrap" }}>
-                <SpecialAttackHint name={item.specialAttack.name} desc={item.specialAttack.desc} />
+                <SpecialAttackBadge
+                  name={item.specialAttack.name}
+                  onEnter={() => setSpecialHintOpen(true)}
+                  onLeave={() => setSpecialHintOpen(false)}
+                />
               </Box>
             )}
           </Box>
@@ -573,8 +492,6 @@ const ItemTooltip = (props: {
           style={{
             borderTop: "1px solid rgba(138,122,102,0.35)",
             display: "flex",
-            // RMH EDITED - both values clustered in the right corner instead
-            // of split left/right across the footer.
             justifyContent: "flex-end",
             gap: "12px",
           }}
@@ -596,6 +513,29 @@ const ItemTooltip = (props: {
         </Box>
       )}
       </div>
+      {specialHintOpen && !!item.specialAttack && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "100%",
+            left: 0,
+            marginBottom: "4px",
+            width: "220px",
+            zIndex: 2,
+            padding: "6px 8px",
+            ...TOOLTIP_SURFACE,
+            border: "1px solid rgba(201,167,111,0.6)",
+            borderRadius: "4px",
+            fontSize: "10px",
+            color: "#c7bba8",
+            lineHeight: 1.4,
+            whiteSpace: "normal",
+            pointerEvents: "none",
+          }}
+        >
+          {item.specialAttack.desc}
+        </div>
+      )}
     </div>
   );
 };
@@ -616,7 +556,7 @@ const SimpleTooltip = (props: {
         zIndex: 1,
         width: "140px",
         padding: "6px 9px",
-        ...TOOLTIP_SURFACE, // RMH EDITED - frosted backdrop instead of a flat fill
+        ...TOOLTIP_SURFACE,
         border: "2px solid #5a4632",
         borderRadius: "4px",
         boxShadow: "0 2px 10px rgba(0,0,0,0.85)",

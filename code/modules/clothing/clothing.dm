@@ -118,11 +118,7 @@
 
 	var/datum/armor/item_armor = get_armor()
 	if(item_armor.has_any_armor())
-		//RMH EDITED - real ABSORB/REDUCE/BLOCK breakdown (ported from Azure
-		// Peak / Twilight Axis's defense_examine()), replacing the old flat
-		// "DEFENSE:" list that used a cosmetic tier scale unconnected to
-		// actual combat math. See modular_rmh/code/modules/clothing/
-		// armor_tooltip.dm for the full explanation.
+		// ABSORB/REDUCE/BLOCK breakdown; see modular_rmh armor_tooltip.dm.
 		. += "\n" + get_armor_breakdown_html() + "\n"
 
 	if(length(prevent_crits))

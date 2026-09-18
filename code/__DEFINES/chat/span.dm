@@ -186,18 +186,10 @@
 // No italics
 #define span_tooltip_alt(tip, main_text) ("<span data-component=\"Tooltip\" data-content=\"" + html_encode("[tip]") + "\" class=\"tooltip_alt\">" + main_text + "</span>")
 
-//RMH EDITED START - ported from Azure Peak's SPAN_TOOLTIP_DANGEROUS_HTML.
-// span_tooltip() above renders the tip as plain text client-side (see
-// tgui-panel/chat/renderer.tsx's plain Tooltip component) - <font color> or
-// <br> in "tip" show up as literal text, not markup. This variant instead
-// tags the span for the TooltipHTML component (tgui-panel/chat_components/
-// TooltipHTML.tsx, registered in chat/renderer.tsx's TGUI_CHAT_COMPONENTS),
-// which runs "tip" through sanitizeHTML() and renders it with
-// dangerouslySetInnerHTML - so real color and line breaks work. Only ever
-// feed it markup you built yourself (colors/tiers, not raw user input) -
-// it's sanitized, but "dangerouslySetInnerHTML" is dangerous for a reason.
+// Like span_tooltip(), but the tip is rendered as HTML rather than plain
+// text, so colour and line breaks survive. Sanitised client-side, but only
+// feed it markup built in code - never raw player input.
 #define span_tooltip_html(tip, main_text) ("<span data-component=\"TooltipHTML\" data-html=\"" + html_encode("[tip]") + "\" class=\"tooltip\">" + main_text + "</span>")
-//RMH EDITED END
 
 /// Helper which creates a chat message which may have a tooltip in some contexts, but not others.
 #define conditional_tooltip(normal_text, tooltip_text, condition) (condition ? span_tooltip(tooltip_text, normal_text) : normal_text)

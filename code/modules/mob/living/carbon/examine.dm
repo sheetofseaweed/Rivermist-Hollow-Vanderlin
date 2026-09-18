@@ -323,10 +323,7 @@
 				. += " in [P[THEIR]] left ear."
 			if(ITEM_SLOT_EARRING_R)
 				. += " in [P[THEIR]] right ear."
-		//RMH EDITED START - dotted-underline hover tooltip with a brief armor
-		// summary, ported from Azure Peak's generate_tooltip(): this is the
-		// actual "He's wearing X" narration Azure underlined (see
-		// modular_rmh/code/modules/clothing/armor_tooltip.dm for the shared logic).
+		// Worn armour gets a hover tooltip with its protection summary.
 		var/examine_phrase = I.get_examine_string(user, use_examine_name = TRUE)
 		if(istype(I, /obj/item/clothing))
 			var/obj/item/clothing/worn_clothing = I
@@ -334,7 +331,6 @@
 			if(armor_tip)
 				examine_phrase = span_tooltip_html(armor_tip, examine_phrase)
 		. += "[I.get_examine_icon(user)] - [P[THEYVE]] [examine_phrase][slot_title]."
-		//RMH EDITED END
 	for(var/obj/item/I in held_items)
 		if(I.item_flags & ABSTRACT)
 			continue

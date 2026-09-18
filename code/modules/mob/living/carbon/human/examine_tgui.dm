@@ -245,34 +245,10 @@ GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
 	clean = replacetext(clean, "\n\n\n", "\n")
 	return trim(clean)
 
-/// Unique damage types this weapon can deal - one per distinct intent, since
-/// e.g. a sword chopping deals slash but thrusting deals stab (both listed).
-/// Unique damage types this weapon can deal - one per distinct intent, since
-/// e.g. a sword chopping deals slash but thrusting deals stab (both listed).
-/// Same "every grip state" fix as get_weapon_intent_names() below - a flail's
-/// two-handed-only SMASH intent has its own damage type too, and would've
-/// been silently dropped by only checking possible_item_intents.
-/obj/item/proc/get_weapon_damage_types()
-	var/list/types = list()
-	var/list/all_intents = possible_item_intents + (gripped_intents || list()) + (alt_intents || list())
-	for(var/intent_type in all_intents)
-		var/dtype = initial(intent_type:item_damage_type)
-		if(dtype && !(dtype in types))
-			types += dtype
-	return types
-
-/// Display names of the actual attack intents this weapon has across every
-/// grip state - "chop", "stab", "pick", "bash", "pommel strike", etc (the
-/// intent's own `name`, not its damage type) - paired with which grip state
-/// each one belongs to ("normal"/"gripped"/"alt"), so the tooltip can color
-/// them differently: an intent that's only available in a special grip
-/// (two-handed wielded, or the reversed "alt grip" toggled by right-clicking
-/// the weapon - see toggle_altgrip()/altgripped in items.dm) looked
-/// identical to the weapon's normal moveset before, with nothing to tell the
-/// two apart. "normal" (possible_item_intents) wins over "gripped" wins over
-/// "alt" when the same intent name appears in more than one list, since an
-/// intent already visible in the default grip isn't actually exclusive to
-/// the special one - only what's NEW in a given grip gets tagged for it.
+/// Attack intents across every grip, tagged with which grip supplies them.
+/// update_a_intents() swaps possible_item_intents for gripped_intents while
+/// wielded, so a gripped-only attack is invisible without this. First list to
+/// name an intent owns it, so only genuinely grip-exclusive attacks get tagged.
 /obj/item/proc/get_weapon_intent_names()
 	var/list/result = list()
 	var/list/seen = list()
@@ -293,33 +269,31 @@ GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
 			result += list(list("name" = iname, "grip" = "alt"))
 	return result
 
-// get_weapon_category() moved to modular_rmh/code/modules/mob/living/carbon/human/weapon_categories.dm
+/// Longest tile reach among this weapon's intents, across every grip.
+/obj/item/proc/get_weapon_max_reach()
+	var/best = 1
+	var/list/all_intents = possible_item_intents + (gripped_intents || list()) + (alt_intents || list())
+	for(var/intent_type in all_intents)
+		var/intent_reach = initial(intent_type:reach)
+		if(isnum(intent_reach) && intent_reach > best)
+			best = intent_reach
+	return best
 
-/// Best-effort mapping of RMH weapon vars onto BG3-style property tags.
-/// There's no 1:1 analog for all of them:
-///   Light        - w_class <= WEIGHT_CLASS_SMALL (small/quick items)
-///   Extra Reach  - wlength is LONG or GREAT
-///   Two-Handed   - has a two_handed component with require_twohands = TRUE
-///   Versatile    - has a two_handed component, wield is optional (bonus force)
-/// "Finesse" has no RMH equivalent (no DEX/finesse-style stat exists) and is
-/// intentionally not mapped to anything.
+/// Property badges. "Extra Reach" is the intents' tile reach, not wlength -
+/// wlength only controls which bodyparts a downed target exposes.
 /obj/item/proc/get_weapon_tag_badges()
 	var/list/tags = list()
 	if(w_class <= WEIGHT_CLASS_SMALL)
 		tags += "Light"
-	if(wlength == WLENGTH_LONG || wlength == WLENGTH_GREAT)
+	if(get_weapon_max_reach() > 1)
 		tags += "Extra Reach"
 	var/datum/component/two_handed/twohand = GetComponent(/datum/component/two_handed)
 	if(twohand)
 		tags += twohand.require_twohands ? "Two-Handed" : "Versatile"
 	return tags
 
-/// Packs one item into the UI payload shape (sanitized so chat markup in descs
-/// like keyrings' "<span class=...>" never leaks into the tooltip).
-/// Price is gated on `viewing` (whoever has the Examine Closer window open)
-/// the same way get_displayed_price() gates it (TRAIT_SEEPRICES/simpleton_price)
-/// - but we send the raw number here, not that proc's HTML-wrapped span text,
-/// since the UI formats/localizes it itself.
+/// Packs one item for the Examine Closer tooltip. Text is stripped of chat
+/// markup; price follows the same gating as get_displayed_price().
 /datum/examine_panel/proc/pack_examine_item(obj/item/item)
 	var/list/packed = list(
 		"name" = sanitize_examine_text(item.name),
@@ -333,34 +307,21 @@ GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
 	if(real_price > 0 && (HAS_TRAIT(viewing, TRAIT_SEEPRICES) || item.simpleton_price))
 		packed["price"] = real_price
 
-	// Armor class label only ("Medium Armour" etc.) - the per-damage-type
-	// ABSORB/REDUCE/BLOCK breakdown is deliberately NOT sent here anymore;
-	// it's redundant with hovering the item in chat (get_examine_gear()'s
-	// tooltip / the {?} link already show it there), so the panel just
-	// states what weight class the armor is.
+	// Weight class only; the full ABSORB/REDUCE/BLOCK breakdown lives on the
+	// chat-side tooltip and the {?} popup instead.
 	if(istype(item, /obj/item/clothing))
 		var/obj/item/clothing/clothing_item = item
 		if(clothing_item.armor_class)
 			packed["armorClassLabel"] = armor_class_to_label(clothing_item.armor_class)
 
-	// Weapon damage row - only for items that actually deal force damage.
 	if(item.force)
-		var/list/dtypes = item.get_weapon_damage_types()
-		packed["weaponDamage"] = list(
-			"force" = item.force,
-			"types" = dtypes,
-		)
+		packed["weaponDamage"] = list("force" = item.force)
 		packed["weaponCategory"] = item.get_weapon_category()
+
+	if(item.force || item.associated_skill)
 		packed["intents"] = item.get_weapon_intent_names()
 
-	if(item.associated_skill)
-		packed["intents"] = item.get_weapon_intent_names()
-
-	// Unique "Strong" RMB-stance attack (/datum/rmb_intent/strong -> weapon_special).
-	// NOTE: this is the only generic, enumerable "uniqueness" system weapons
-	// have - a distinct "unique trait" field would need per-weapon inspection
-	// (godweapons.dm etc. override pre_attack/afterattack or add bespoke
-	// components ad hoc, there's no structured list to read off).
+	// The weapon's "Strong" RMB-stance attack.
 	if(isweapon(item))
 		var/obj/item/weapon/weap = item
 		if(weap.weapon_special)
