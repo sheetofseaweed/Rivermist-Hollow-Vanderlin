@@ -137,6 +137,15 @@
 /// An interaction lapses after this long regardless of remaining budget.
 #define AGENT_CONTINUATION_WINDOW (2 MINUTES)
 
+/// Where admin-authored profiles live between rounds. Hand-editable on purpose.
+#define AGENT_PROFILE_FILE "data/agent_profiles.json"
+/// Caps on admin-authored profile text. Every character is sent on every
+/// request, so an unbounded persona is a permanent per-decision token cost.
+#define AGENT_PROFILE_LABEL_MAX 48
+#define AGENT_PROFILE_TEXT_MAX 1000
+/// Attach targets are drawn from the admin's own view rather than the world.
+#define AGENT_ATTACH_RANGE 7
+
 /// Low urgency events wait for the in-flight request to land.
 #define AGENT_EVENT_LOW 1
 /// High urgency events abandon the in-flight request and force a new one.

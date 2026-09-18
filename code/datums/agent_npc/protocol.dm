@@ -197,15 +197,22 @@
 	result.ok = TRUE
 	return result
 
+/**
+ * Every action the protocol knows about.
+ *
+ * One list, so validation and the profile editor cannot drift apart. Adding an
+ * action here without teaching dispatch_decision about it gets you a profile
+ * that permits something the executor will reject.
+ */
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "approach", "use", "wait"))
+
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
-	var/static/list/allowed = list("say", "emote", "approach", "use", "wait")
-
 	if(!islist(action))
 		return null
 
 	var/name = action["name"]
-	if(!(name in allowed))
+	if(!(name in GLOB.agent_action_vocabulary))
 		return null
 
 	switch(name)

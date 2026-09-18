@@ -195,6 +195,7 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	/client/proc/cmd_admin_list_open_jobs,
 	/client/proc/agent_npc_status,
 	/client/proc/agent_npc_toggle,
+	/client/proc/agent_npc_profiles,
 	/client/proc/agent_npc_spawn,
 	/client/proc/agent_npc_poke,
 	/client/proc/Debug2,
