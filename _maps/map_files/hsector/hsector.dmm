@@ -1132,12 +1132,6 @@
 /obj/machinery/light/fueled/wallfire/candle/l{
 	pixel_y = -32
 	},
-/obj/structure/window/harem2{
-	name = "decorated wallframe";
-	density = 0;
-	opacity = 0;
-	pixel_y = -32
-	},
 /obj/structure/fluff/walldeco/selune_banner/ban7{
 	pixel_x = -32
 	},
@@ -19534,10 +19528,12 @@
 /area/indoors)
 "gpP" = (
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 1
+	dir = 1;
+	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
+	dir = 2;
+	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/maidensigil{
 	pixel_y = -32
@@ -28776,12 +28772,6 @@
 	name = "royal chair";
 	dir = 1
 	},
-/obj/structure/window/harem2{
-	name = "decorated wallframe";
-	density = 0;
-	opacity = 0;
-	pixel_y = -32
-	},
 /turf/open/floor/carpet/royalblack,
 /area/indoors/town/rmh/chapel/basement)
 "jjy" = (
@@ -34253,15 +34243,17 @@
 /area/indoors/town/rmh/tavern)
 "kZh" = (
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 1
+	dir = 1;
+	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
+	dir = 2;
+	layer = 2.1
 	},
-/obj/structure/bars/grille,
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
+/obj/structure/chair/alizeriadecor/stool2,
 /turf/open/floor/tile/tilerg,
 /area/indoors/town/rmh/bath)
 "kZj" = (
@@ -74342,6 +74334,29 @@
 	color = "#c2c1be"
 	},
 /area/indoors/town/rmh/cell)
+"xLg" = (
+/obj/structure/fluff/walldeco/bath/wallpipes/innie{
+	dir = 1;
+	layer = 2.1
+	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie{
+	dir = 2;
+	layer = 2.1
+	},
+/obj/structure/table/wood/nice/decorated_alt,
+/obj/item/paper{
+	pixel_x = -5;
+	pixel_y = 7
+	},
+/obj/item/dye_pack/cheap{
+	pixel_x = -6;
+	pixel_y = 8
+	},
+/obj/item/tattoo_machine{
+	pixel_x = 7
+	},
+/turf/open/floor/tile/tilerg,
+/area/indoors/town/rmh/bath)
 "xLk" = (
 /obj/structure/closet/crate/chest/wicker,
 /turf/open/floor/dirt/road,
@@ -108431,7 +108446,7 @@ xbr
 fUK
 xlG
 dKP
-vcv
+xLg
 aXq
 aXq
 hYN
@@ -111531,7 +111546,7 @@ hRW
 mfW
 wwO
 owb
-hsW
+koM
 nKe
 ccE
 ebY
