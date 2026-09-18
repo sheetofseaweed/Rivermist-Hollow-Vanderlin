@@ -1,3 +1,9 @@
+export type WeaponIntent = {
+  name: string;
+  /** Which grip supplies this attack; drives its colour in the tooltip. */
+  grip: "normal" | "gripped" | "alt";
+};
+
 export type ExaminePanelData = {
   // Identity
   character_name: string;
@@ -32,6 +38,21 @@ export type ExamineItem = {
   desc: string;
   icon: string;
   quality: number;
+  weight?: number | null;
+  /** Only present when the viewer is allowed to see prices. */
+  price?: number | null;
+  /** "Light Armour" / "Medium Armour" / "Heavy Armour", formatted server-side. */
+  armorClassLabel?: string | null;
+  /** Only present for items that deal force damage. */
+  weaponDamage?: { force: number } | null;
+  /** Weapon type name, or null if unclassified. */
+  weaponCategory?: string | null;
+  /** Attack intents across every grip. */
+  intents?: WeaponIntent[] | null;
+  /** The weapon's "Strong" RMB-stance attack, if any. */
+  specialAttack?: { name: string; desc: string } | null;
+  /** Property badges: Light / Extra Reach / Two-Handed / Versatile. */
+  tags?: string[] | null;
 };
 
 export type WornSlot = {

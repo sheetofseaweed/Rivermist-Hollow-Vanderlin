@@ -9,6 +9,7 @@ import { createLogger } from 'tgui/logging';
 import { Tooltip } from 'tgui-core/components';
 import { EventEmitter } from 'tgui-core/events';
 import { classes } from 'tgui-core/react';
+import { TooltipHTML } from '../chat_components/TooltipHTML';
 import { store } from '../events/store';
 import { scrollTrackingAtom } from './atom';
 import {
@@ -36,6 +37,11 @@ const SCROLL_TRACKING_TOLERANCE = 24;
 // List of injectable component names to the actual type
 export const TGUI_CHAT_COMPONENTS = {
   Tooltip,
+  // RMH EDITED - ported from Azure Peak: lets a chat tooltip render real HTML
+  // (color, <br>, etc) via TooltipHTML.tsx + sanitizeHTML(), instead of the
+  // plain-text-only Tooltip above. See span_tooltip_html() in
+  // code/__DEFINES/chat/span.dm for the DM side.
+  TooltipHTML,
 };
 
 // List of injectable attibute names mapped to their proper prop
@@ -43,6 +49,8 @@ export const TGUI_CHAT_COMPONENTS = {
 export const TGUI_CHAT_ATTRIBUTES_TO_PROPS = {
   position: 'position',
   content: 'content',
+  // RMH EDITED - for TooltipHTML's data-html attribute above.
+  html: 'html',
 };
 
 function createHighlightNode(text, color) {

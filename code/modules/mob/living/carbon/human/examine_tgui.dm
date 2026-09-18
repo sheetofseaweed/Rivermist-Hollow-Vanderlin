@@ -245,15 +245,96 @@ GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
 	clean = replacetext(clean, "\n\n\n", "\n")
 	return trim(clean)
 
-/// Packs one item into the UI payload shape (sanitized so chat markup in descs
-/// like keyrings' "<span class=...>" never leaks into the tooltip).
+/// Attack intents across every grip, tagged with which grip supplies them.
+/// update_a_intents() swaps possible_item_intents for gripped_intents while
+/// wielded, so a gripped-only attack is invisible without this. First list to
+/// name an intent owns it, so only genuinely grip-exclusive attacks get tagged.
+/obj/item/proc/get_weapon_intent_names()
+	var/list/result = list()
+	var/list/seen = list()
+	for(var/intent_type in possible_item_intents)
+		var/iname = initial(intent_type:name)
+		if(iname && !seen[iname])
+			seen[iname] = TRUE
+			result += list(list("name" = iname, "grip" = "normal"))
+	for(var/intent_type in (gripped_intents || list()))
+		var/iname = initial(intent_type:name)
+		if(iname && !seen[iname])
+			seen[iname] = TRUE
+			result += list(list("name" = iname, "grip" = "gripped"))
+	for(var/intent_type in (alt_intents || list()))
+		var/iname = initial(intent_type:name)
+		if(iname && !seen[iname])
+			seen[iname] = TRUE
+			result += list(list("name" = iname, "grip" = "alt"))
+	return result
+
+/// Longest tile reach among this weapon's intents, across every grip.
+/obj/item/proc/get_weapon_max_reach()
+	var/best = 1
+	var/list/all_intents = possible_item_intents + (gripped_intents || list()) + (alt_intents || list())
+	for(var/intent_type in all_intents)
+		var/intent_reach = initial(intent_type:reach)
+		if(isnum(intent_reach) && intent_reach > best)
+			best = intent_reach
+	return best
+
+/// Property badges. "Extra Reach" is the intents' tile reach, not wlength -
+/// wlength only controls which bodyparts a downed target exposes.
+/obj/item/proc/get_weapon_tag_badges()
+	var/list/tags = list()
+	if(w_class <= WEIGHT_CLASS_SMALL)
+		tags += "Light"
+	if(get_weapon_max_reach() > 1)
+		tags += "Extra Reach"
+	var/datum/component/two_handed/twohand = GetComponent(/datum/component/two_handed)
+	if(twohand)
+		tags += twohand.require_twohands ? "Two-Handed" : "Versatile"
+	return tags
+
+/// Packs one item for the Examine Closer tooltip. Text is stripped of chat
+/// markup; price follows the same gating as get_displayed_price().
 /datum/examine_panel/proc/pack_examine_item(obj/item/item)
-	return list(
+	var/list/packed = list(
 		"name" = sanitize_examine_text(item.name),
 		"desc" = sanitize_examine_text(item.desc),
 		"icon" = examine_item_icon_b64(item),
 		"quality" = quality_frame_index(item),
+		"weight" = item.item_weight,
 	)
+
+	var/real_price = item.get_real_price()
+	if(real_price > 0 && (HAS_TRAIT(viewing, TRAIT_SEEPRICES) || item.simpleton_price))
+		packed["price"] = real_price
+
+	// Weight class only; the full ABSORB/REDUCE/BLOCK breakdown lives on the
+	// chat-side tooltip and the {?} popup instead.
+	if(istype(item, /obj/item/clothing))
+		var/obj/item/clothing/clothing_item = item
+		if(clothing_item.armor_class)
+			packed["armorClassLabel"] = armor_class_to_label(clothing_item.armor_class)
+
+	if(item.force)
+		packed["weaponDamage"] = list("force" = item.force)
+		packed["weaponCategory"] = item.get_weapon_category()
+
+	if(item.force || item.associated_skill)
+		packed["intents"] = item.get_weapon_intent_names()
+
+	// The weapon's "Strong" RMB-stance attack.
+	if(isweapon(item))
+		var/obj/item/weapon/weap = item
+		if(weap.weapon_special)
+			packed["specialAttack"] = list(
+				"name" = initial(weap.weapon_special:name),
+				"desc" = initial(weap.weapon_special:desc),
+			)
+
+	var/list/tag_badges = item.get_weapon_tag_badges()
+	if(length(tag_badges))
+		packed["tags"] = tag_badges
+
+	return packed
 
 /**
  * Builds the fixed-slot equipment payload for the examine panel.
