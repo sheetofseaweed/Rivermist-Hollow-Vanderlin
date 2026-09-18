@@ -1,3 +1,6 @@
+#define NATIVE_SAY_RECEIPT_HISTORY_LIMIT 100
+#define NATIVE_SAY_SUBMISSION_ID_LIMIT 64
+
 /client/var/datum/native_say/native_say
 
 
@@ -6,6 +9,7 @@
 	var/list/hurt_phrases = list("GACK!", "GLORF!", "OOF!", "AUGH!", "OW!", "URGH!", "HRNK!")
 	var/max_length = MAX_MESSAGE_LEN
 	var/window_open = FALSE
+	var/list/received_entries = list()
 
 	// Window sizing
 	var/window_width = 300
@@ -166,7 +170,10 @@
 			flex: 1;
 			min-width: 0;
 			display: flex;
+			flex-direction: column;
 		}
+
+		#deliveryStatus { color: #ffcf80; font-size: 10px; }
 
 		.editor {
 			background: transparent;
@@ -211,6 +218,7 @@
 		<button class="button button-[default_channel]" id="channelBtn">[default_channel]</button>
 		<div class="textarea-container">
 			<div class="editor editor-[default_channel]" id="editor" contenteditable="true" spellcheck="false"></div>
+			<div id="deliveryStatus" role="status"></div>
 		</div>
 	</div>
 
@@ -229,6 +237,11 @@
 		window.tempMessage = '';
 		window.realText = '';
 		window.TYPING_THROTTLE = 2000;
+		window.submissionSequence = 0;
+		const MAX_ENTRY_BYTES = [max_length - 1];
+		const RECEIPT_TIMEOUT_MS = 15000;
+		const HISTORY_LIMIT = 20;
+		const submissionSession = Date.now().toString(36);
 
 		const channels = [channels_json];
 		const quietChannels = [quiet_json];
@@ -239,6 +252,41 @@
 		const shineEl = document.getElementById('shine');
 		const button = document.getElementById('channelBtn');
 		const editor = document.getElementById('editor');
+		const deliveryStatus = document.getElementById('deliveryStatus');
+
+		function sendNativeTopic(params) {
+			let url = '?src=' + encodeURIComponent('[ref(src)]');
+			Object.keys(params).forEach(function(key) {
+				url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params\[key\]);
+			});
+			// Avoid navigation replacement and encoded URL limits.
+			if (window.cef_to_byond) {
+				window.cef_to_byond('byond://' + url);
+			} else {
+				const xhr = new XMLHttpRequest();
+				xhr.open('GET', url);
+				xhr.send();
+			}
+		}
+
+		function showDeliveryStatus(message) {
+			deliveryStatus.textContent = message;
+			updateWindowSize();
+		}
+
+		function refreshDeliveryStatus() {
+			const rejected = window.chatHistory.some(function(item) { return item.status === 'rejected'; });
+			const unconfirmed = window.chatHistory.some(function(item) { return item.status === 'unconfirmed'; });
+			showDeliveryStatus(rejected ? 'Message rejected. Up arrow recovers text for editing.' : unconfirmed ? 'Delivery unconfirmed. Up arrow recovers text; check chat before resending.' : '');
+		}
+
+		window.receiveEntryReceipt = function(id, status) {
+			const item = window.chatHistory.find(function(entry) { return entry.id === id; });
+			if (!item) return;
+			clearTimeout(item.timer);
+			item.status = status === 'received' || status === 'rejected' ? status : 'unconfirmed';
+			refreshDeliveryStatus();
+		};
 
 		// ===== MARKDOWN PARSER =====
 		function parseMarkdownBasic(text, barebones) {
@@ -478,7 +526,7 @@
 			let len = window.realText.length;
 			let newSize = 'small';
 
-			if (len > lineLengths.medium) {
+			if (len > lineLengths.medium || deliveryStatus.textContent) {
 				newSize = 'large';
 			} else if (len > lineLengths.small) {
 				newSize = 'medium';
@@ -517,6 +565,7 @@
 			window.location = 'byond://winset?id=native_say&focus=true';
 			window.location = 'byond://winset?id=native_say&size=[300 * scale]x' + newHeight;
 			window.location = 'byond://winset?id=native_say.browser&size=[300 * scale]x' + newHeight;
+			refreshDeliveryStatus();
 
 			if (!quietChannels.includes(channel)) {
 				window.location = 'byond://?src=' + encodeURIComponent('[ref(src)]') + ';action=thinking;visible=1';
@@ -543,7 +592,12 @@
 			window.location = 'byond://winset?id=native_say&is-visible=0';
 			window.location = 'byond://winset?id=:map&focus=true';
 
-			window.location = 'byond://?src=' + encodeURIComponent('[ref(src)]') + ';action=close';
+			clearTimeout(window.typingTimeout);
+			try {
+				sendNativeTopic({ action: 'close' });
+			} catch (error) {
+				// Closing must not prevent the message submission.
+			}
 
 			setTimeout(function() {
 				window.location = 'byond://winset?id=:map&focus=true';
@@ -579,13 +633,47 @@
 
 		function submitEntry() {
 			let entry = window.realText.trim();
-			if (entry.length > 0 && entry.length < 1024) {
-				window.chatHistory.unshift(entry);
-				if (window.chatHistory.length > 5) window.chatHistory.pop();
-
-				window.location = 'byond://?src=' + encodeURIComponent('[ref(src)]') + ';action=entry;channel=' + encodeURIComponent(window.currentChannel) + ';entry=' + encodeURIComponent(entry);
+			if (!entry.length) {
+				closeWindow();
+				return;
 			}
+			let encoded;
+			try {
+				encoded = encodeURIComponent(entry);
+			} catch (error) {
+				showDeliveryStatus('Text contains an invalid Unicode character. Please remove it before sending.');
+				return;
+			}
+			const bytes = encoded.replace(/%\[0-9A-F\]{2}/g, 'x').length;
+			if (bytes > MAX_ENTRY_BYTES) {
+				showDeliveryStatus('Message too long: ' + bytes + '/' + MAX_ENTRY_BYTES + ' UTF-8 bytes. Please shorten it.');
+				return;
+			}
+			while (window.chatHistory.length >= HISTORY_LIMIT) {
+				const removable = window.chatHistory.map(function(item) { return item.status === 'received' || item.status === 'rejected'; }).lastIndexOf(true);
+				if (removable < 0) {
+					showDeliveryStatus('Too many unconfirmed messages. Check your connection and wait for receipts.');
+					return;
+				}
+				window.chatHistory.splice(removable, 1);
+			}
+			const item = {
+				id: submissionSession + '-' + (++window.submissionSequence),
+				text: entry,
+				channel: window.currentChannel,
+				status: 'pending'
+			};
+			window.chatHistory.unshift(item);
+			item.timer = setTimeout(function() {
+				item.status = 'unconfirmed';
+				refreshDeliveryStatus();
+			}, RECEIPT_TIMEOUT_MS);
 			closeWindow();
+			try {
+				sendNativeTopic({ action: 'entry', channel: item.channel, entry: item.text, id: item.id });
+			} catch (error) {
+				window.receiveEntryReceipt(item.id, 'unconfirmed');
+			}
 		}
 
 		// ===== EVENT HANDLERS =====
@@ -846,7 +934,8 @@
 				}
 				if (window.historyIndex < window.chatHistory.length - 1) {
 					window.historyIndex++;
-					window.realText = window.chatHistory\[window.historyIndex\];
+					window.realText = window.chatHistory\[window.historyIndex\].text;
+					cycleToChannel(window.chatHistory\[window.historyIndex\].channel);
 					editor.textContent = window.realText;
 					button.textContent = (window.historyIndex + 1).toString();
 					updatePreview();
@@ -856,7 +945,8 @@
 				e.preventDefault();
 				if (window.historyIndex > 0) {
 					window.historyIndex--;
-					window.realText = window.chatHistory\[window.historyIndex\];
+					window.realText = window.chatHistory\[window.historyIndex\].text;
+					cycleToChannel(window.chatHistory\[window.historyIndex\].channel);
 					editor.textContent = window.realText;
 					button.textContent = (window.historyIndex + 1).toString();
 					updatePreview();
@@ -923,6 +1013,8 @@
 </html>"}
 
 /datum/native_say/Topic(href, href_list)
+	if(usr?.client != client)
+		return
 	. = ..()
 	if(href_list["action"])
 		switch(href_list["action"])
@@ -931,7 +1023,7 @@
 			if("close")
 				handle_close()
 			if("entry")
-				handle_entry(href_list["channel"], href_list["entry"])
+				handle_entry(href_list["channel"], href_list["entry"], href_list["id"])
 			if("thinking")
 				handle_thinking(text2num(href_list["visible"]))
 			if("typing")
@@ -952,8 +1044,14 @@
 	window_open = FALSE
 	stop_thinking()
 
-/datum/native_say/proc/handle_entry(channel_name, entry)
-	if(!entry || length(entry) > max_length)
+/datum/native_say/proc/handle_entry(channel_name, entry, submission_id)
+	if(!istext(submission_id) || !length(submission_id) || length(submission_id) > NATIVE_SAY_SUBMISSION_ID_LIMIT)
+		return FALSE
+	if(submission_id in received_entries)
+		client << output(list2params(list(submission_id, "received")), "native_say.browser:receiveEntryReceipt")
+		return TRUE
+	if(!istext(entry) || !length(trim(entry)) || length(entry) >= max_length || !client?.mob)
+		client << output(list2params(list(submission_id, "rejected")), "native_say.browser:receiveEntryReceipt")
 		return FALSE
 
 	var/datum/say_channel/channel
@@ -963,11 +1061,16 @@
 			break
 
 	if(!channel)
+		client << output(list2params(list(submission_id, "rejected")), "native_say.browser:receiveEntryReceipt")
 		return FALSE
 
+	received_entries += submission_id
+	if(length(received_entries) > NATIVE_SAY_RECEIPT_HISTORY_LIMIT)
+		received_entries.Cut(1, 2)
+	// Receipt confirms transport, not permission to speak.
+	client << output(list2params(list(submission_id, "received")), "native_say.browser:receiveEntryReceipt")
 	channel.send(client, entry) // this is so we can add new channels for languages
 
-	handle_close()
 	return TRUE
 
 /datum/native_say/proc/handle_thinking(visible)
@@ -1040,3 +1143,6 @@
 		current_channel = available_channels[1]
 		current_channel_index = 1
 	reload_ui()
+
+#undef NATIVE_SAY_RECEIPT_HISTORY_LIMIT
+#undef NATIVE_SAY_SUBMISSION_ID_LIMIT

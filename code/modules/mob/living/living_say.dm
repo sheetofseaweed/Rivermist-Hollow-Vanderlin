@@ -88,7 +88,7 @@
 	if(check_emote(original_message, forced) || !can_speak_basic(original_message, ignore_spam, forced))
 		return
 
-	if(check_whisper(original_message, forced) || !can_speak_basic(original_message, ignore_spam, forced))
+	if(check_whisper(original_message, forced))
 		return
 
 	if(in_critical) // There are cheaper ways to do this, but they're less flexible, and this isn't ran all that often
