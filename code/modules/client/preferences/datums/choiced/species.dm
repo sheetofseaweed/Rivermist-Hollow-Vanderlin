@@ -49,7 +49,7 @@
 	H.set_species(value, FALSE, prefs)
 
 /datum/preference/choiced/species/handle_link(datum/preferences/prefs, mob/user)
-	prefs.write_preference(/datum/preference/choiced/selected_accent, ACCENT_DEFAULT)
+	prefs.write_preference(/datum/preference/choiced/selected_accent, ACCENT_NONE)
 
 	var/list/selectable = list()
 	for(var/species_id in GLOB.roundstart_species)
