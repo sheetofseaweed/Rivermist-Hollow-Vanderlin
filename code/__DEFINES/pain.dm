@@ -53,4 +53,4 @@
 /// Floor on the endorphination roll requirement, so deep debuff stacks never zero out the body's own painkiller.
 #define ENDORPHINATION_MINIMUM_REQUIREMENT 6
 /// Cooldown before our body endorphinates itself again
-#define ENDORPHINATION_COOLDOWN_DURATION 2 MINUTES
+#define ENDORPHINATION_COOLDOWN_DURATION 45 SECONDS

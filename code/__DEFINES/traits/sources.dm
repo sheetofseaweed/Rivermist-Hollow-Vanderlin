@@ -10,6 +10,7 @@
 #define TRAUMA_TRAIT "trauma"
 #define DISEASE_TRAIT "disease"
 #define SPECIES_TRAIT "species"
+#define STOCK_TRAIT "stock"
 #define ORGAN_TRAIT "organ"
 #define CRIT_TRAIT "crit"
 #define ASYSTOLE_TRAIT "no_pulse"
