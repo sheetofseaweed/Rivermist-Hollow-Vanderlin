@@ -115,12 +115,14 @@
 	unique_enzymes = generate_unique_enzymes()
 	holder?.reset_limb_fingerprints()
 
-/datum/dna/proc/initialize_dna(newblood_type = random_human_blood_type(), skip_index = FALSE)
+/datum/dna/proc/initialize_dna(newblood_type = random_human_blood_type(), create_mutation_blocks = TRUE, randomize_features = TRUE)
 	if(newblood_type)
 		human_blood_type = newblood_type
-	unique_enzymes = generate_unique_enzymes()
-	unique_identity = generate_unique_identity()
-	features = random_features()
+	if(create_mutation_blocks)
+		unique_enzymes = generate_unique_enzymes()
+		unique_identity = generate_unique_identity()
+	if(randomize_features)
+		features = random_features()
 
 
 /datum/dna/stored //subtype used by brain mob's stored_dna

@@ -16,6 +16,7 @@
 	. = ..()
 	alpha = 0
 	SSvis_overlays.add_vis_overlay(src, icon, icon_state, ABOVE_MOB_LAYER, plane, dir, add_appearance_flags = RESET_ALPHA) //you see mobs under it, but you hit them like they are above it
+	air_update_turf(TRUE)
 
 /obj/structure/plasticflaps/examine(mob/user)
 	. = ..()
@@ -73,10 +74,6 @@
 		var/mob/living/M = A
 		if((M.body_position != LYING_DOWN) && !M.ventcrawler && M.mob_size != MOB_SIZE_TINY)	//If your not laying down, or a ventcrawler or a small creature, no pass.
 			return FALSE
-
-/obj/structure/plasticflaps/Initialize()
-	. = ..()
-	air_update_turf(TRUE)
 
 /obj/structure/plasticflaps/Destroy()
 	var/atom/oldloc = loc

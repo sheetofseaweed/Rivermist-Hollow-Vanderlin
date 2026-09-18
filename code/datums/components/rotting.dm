@@ -22,6 +22,8 @@
 	return ..()
 
 /datum/component/rot/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	var/amt2add = rot_amount_per_process
 	if(last_process)
 		amt2add = ((world.time - last_process)/10) * amt2add
@@ -35,6 +37,8 @@
 	. = ..()
 
 /datum/component/rot/corpse/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	var/time_elapsed = last_process ? (world.time - last_process)/10 : 1
 	..()
 	if(has_world_trait(/datum/world_trait/pestra_mercy))
@@ -113,6 +117,8 @@
 	rot_amount_per_process = 5
 
 /datum/component/rot/simple/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	..()
 	var/mob/living/L = parent
 	var/datum/component/rot/R = src
@@ -140,6 +146,8 @@
 	var/static/list/clean_moodlets = list(/datum/stress_event/clean, /datum/stress_event/clean_plus)
 
 /datum/component/rot/stinky_person/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	..()
 	var/mob/living/L = parent
 	var/turf/open/T = L.loc

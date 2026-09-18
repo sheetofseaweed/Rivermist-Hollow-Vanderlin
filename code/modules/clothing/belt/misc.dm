@@ -335,6 +335,7 @@
 
 /obj/item/storage/backpack/satchel/otavan
 	name = "darkholdian leather satchel"
+	examine_name = "satchel"
 	desc = "A made to last leather bag from the Duskmar heart of Darkhold. It's Darkhold's finest."
 	icon_state = "osatchel"
 	item_state = "osatchel"

@@ -1,6 +1,6 @@
 /// Counts quirk
 /proc/cmp_quirk_cost(datum/quirk/A, datum/quirk/B)
-    return B.point_value - A.point_value
+	return B.point_value - A.point_value
 
 /// Penalize player for picking quirks that don't affect them for some reason and give free points
 /// Penalizes a player for picking a vice that didn't affect them, removing boons to compensate

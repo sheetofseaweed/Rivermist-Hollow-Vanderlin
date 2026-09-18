@@ -1996,6 +1996,9 @@ export const PreferencesMenu = () => {
       ) : (
         <ActionButton icon="paint-brush" label="Body Markings" onClick={() => doPref('markings', 'menu')} />
       )}
+      {!disguiseMode ? (
+        <ActionButton icon="pen-nib" label="Tattoos" onClick={() => doPref('tattoos', 'menu')} />
+      ) : null}
       {(data.mutant_colors ?? []).map((entry) => (
         <PrefRow
           key={entry.slot}

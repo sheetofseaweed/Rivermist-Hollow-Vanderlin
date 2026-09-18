@@ -350,12 +350,12 @@
 			owner.visible_message(span_danger("[owner] shrouds [wild_target ? wild_target : cast_on]'s eyes in darkness!"))
 			Bl.cast(wild_target ? wild_target : cast_on)
 		if(49)
-			var/datum/action/cooldown/spell/essence/silence/SIl = new
-			SIl.owner = owner
-			owner.visible_message(span_notice("[owner] creates a zone of absolute silence!"))
-			SIl.cast(wild_target ? wild_target : cast_on)
+			var/datum/action/cooldown/spell/essence/probability_warp/class_granted/probability_warp = new
+			probability_warp.owner = owner
+			owner.visible_message(span_notice("[owner] twists the odds around [wild_target ? wild_target : cast_on]!"))
+			probability_warp.cast(wild_target ? wild_target : cast_on)
 		if(50)
-			var/datum/action/cooldown/spell/essence/toxic_cleanse/Tc = new
+			var/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted/Tc = new
 			Tc.owner = owner
 			owner.visible_message(span_notice("[owner] cleanses all toxins from the area!"))
 			Tc.cast(wild_target)

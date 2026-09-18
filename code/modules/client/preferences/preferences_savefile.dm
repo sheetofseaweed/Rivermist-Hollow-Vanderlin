@@ -5,7 +5,7 @@
 //	You do not need to raise this if you are adding new values that have sane defaults.
 //	Only raise this value when changing the meaning/format/name/layout of an existing value
 //	where you would want the updater procs below to run
-#define SAVEFILE_VERSION_MAX 36
+#define SAVEFILE_VERSION_MAX 37
 
 /*
 SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Carn
@@ -152,6 +152,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		S["noble_gossip"] >> old_noble_gossip
 		if(istext(old_noble_gossip) && length(trim(old_noble_gossip)))
 			write_preference(/datum/preference/list_type/noble_gossip, list(copytext(trim(old_noble_gossip), 1, MAX_GOSSIP_LENGTH + 1)))
+
+	if(current_version < 37)
+		// Accents are opt-in now, so clear whatever the old default left on the slot.
+		write_preference(/datum/preference/choiced/selected_accent, ACCENT_NONE)
 
 /datum/preferences/proc/load_path(ckey,filename="preferences.sav")
 	if(!ckey)
@@ -503,6 +507,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	validate_body_markings()
 
+	// RMH EDITED START - custom self-written tattoos, separate from GLOB.body_markings
+	S["tattoos"] >> tattoos
+	tattoos = SANITIZE_LIST(tattoos)
+	validate_tattoos()
+	// RMH EDITED END
+
 	S["descriptor_entries"] >> descriptor_entries
 	descriptor_entries = SANITIZE_LIST(descriptor_entries)
 	S["custom_descriptors"] >> custom_descriptors
@@ -609,6 +619,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["body_markings"], body_markings)
 	// Emissive body markings 								// RMH edit
 	WRITE_FILE(S["emissive_markings"], emissive_markings) 	// RMH edit
+	// RMH EDITED START - custom self-written tattoos, separate from GLOB.body_markings
+	WRITE_FILE(S["tattoos"], tattoos)
+	// RMH EDITED END
 	// Descriptor entries
 	WRITE_FILE(S["descriptor_entries"], descriptor_entries)
 	WRITE_FILE(S["custom_descriptors"], custom_descriptors)

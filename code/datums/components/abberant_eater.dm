@@ -106,7 +106,7 @@
 	return TRUE
 
 /datum/component/abberant_eater/proc/get_edible_reagent(obj/item/source)
-	for(var/reagent_path as anything in extra_reagents)
+	for(var/reagent_path in extra_reagents)
 		var/datum/reagent/found_reagent = source.reagents.has_reagent(reagent_path, 0, FALSE, !excluding_subtypes)
 		if(found_reagent)
 			return found_reagent

@@ -69,7 +69,7 @@ Actual Adjacent procs :
 		path = list()
 	return path
 
-/proc/AStar(atom/movable/requester, _end, dist, maxnodes, maxnodedepth = 30, mintargetdist, adjacent = /turf/proc/reachableTurftest, id = null, turf/exclude = null, simulated_only = TRUE, check_z_levels = TRUE)
+/proc/AStar(atom/movable/requester, _end, dist, maxnodes, maxnodedepth = 30, mintargetdist, adjacent = /turf/proc/reachableTurftest, id = null, turf/exclude = null, simulated_only = TRUE, check_z_levels = TRUE, return_closest = FALSE)
 	var/turf/end = get_turf(_end)
 	var/turf/start = get_turf(requester)
 	if (!start || !end)
@@ -77,7 +77,7 @@ Actual Adjacent procs :
 		return FALSE
 	if (start == end)
 		return FALSE
-	if (maxnodes && start.Distance3D(end) > maxnodes)
+	if (maxnodes && !return_closest && start.Distance3D(end) > maxnodes)
 		return FALSE
 	if(maxnodes)
 		maxnodedepth = maxnodes
@@ -86,6 +86,8 @@ Actual Adjacent procs :
 	var/list/openc = new()  // turf -> node mapping for nodes in open list
 	var/list/closed = new()  // turf -> bitmask of blocked directions
 	var/list/path = null
+	var/list/best_node = null
+	var/best_heuristic = call(start, dist)(end, requester)
 	var/const/ALL_DIRS = NORTH|SOUTH|EAST|WEST
 
 	// Create initial node
@@ -102,6 +104,12 @@ Actual Adjacent procs :
 		var/turf/cur_turf = cur[ATURF]
 		openc -= cur_turf
 		closed[cur_turf] = ALL_DIRS
+
+		// Closest-approach paths must make actual progress. If every reachable
+		// node is farther away than the start, report no path instead of wandering.
+		if(return_closest && cur_turf != start && cur[HEURISTIC_H] < best_heuristic)
+			best_heuristic = cur[HEURISTIC_H]
+			best_node = cur
 
 		// Destination check - must be exact match or valid closeenough on same Z-level
 		var/is_destination = (cur_turf == end)
@@ -171,6 +179,13 @@ Actual Adjacent procs :
 
 		CHECK_TICK
 
+	if(!path && return_closest && best_node)
+		path = list(best_node[ATURF])
+		var/list/previous_node = best_node[PREV_NODE]
+		while(previous_node)
+			path.Add(previous_node[ATURF])
+			previous_node = previous_node[PREV_NODE]
+
 	if (path)
 		for (var/i = 1 to round(0.5 * path.len))
 			path.Swap(i, path.len - i + 1)
@@ -178,6 +193,22 @@ Actual Adjacent procs :
 	openc = null
 	closed = null
 	return path
+
+/**
+ * Finds a normal A* path, or a path to the closest reachable turf when the
+ * destination itself is blocked. The fallback never moves away from the goal.
+ */
+/proc/get_path_to_closest_approach(atom/movable/requester, atom/end, dist, maxnodes, maxnodedepth = 30, mintargetdist, adjacent = /turf/proc/reachableTurftest, id = null, turf/exclude = null, simulated_only = TRUE, check_z_levels = TRUE)
+	var/pathfinder_slot = SSpathfinder.mobs.getfree(requester)
+	while(!pathfinder_slot)
+		stoplag(3)
+		if(QDELETED(requester) || QDELETED(end))
+			return list()
+		pathfinder_slot = SSpathfinder.mobs.getfree(requester)
+
+	var/list/path = AStar(requester, end, dist, maxnodes, maxnodedepth, mintargetdist, adjacent, id, exclude, simulated_only, check_z_levels, return_closest = TRUE)
+	SSpathfinder.mobs.found(pathfinder_slot)
+	return path || list()
 
 /turf/proc/reachableTurftest(atom/movable/requester, turf/T, ID, simulated_only = TRUE, check_z_levels = TRUE)
 	if(!T || T.density)

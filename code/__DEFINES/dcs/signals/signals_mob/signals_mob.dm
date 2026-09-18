@@ -4,6 +4,8 @@
 ///from base of /mob/Logout(): ()
 #define COMSIG_MOB_LOGOUT "mob_logout"
 #define COMSIG_MOB_STATCHANGE "mob_statchange"
+/// Sent to a visiting merchant when the cargo boat reaches the city dock.
+#define COMSIG_MOB_CARGO_DOCKED "mob_cargo_docked"
 /// From /mob/proc/ranged_attack_secondary(): (atom/target, list/modifiers)
 #define COMSIG_MOB_ATTACK_RANGED_SECONDARY "mob_attack_ranged_secondary"
 
@@ -26,6 +28,11 @@
 #define COMSIG_MOB_SWAPPING_HANDS "mob_swapping_hands"
 	#define COMPONENT_BLOCK_SWAP (1<<0)
 
+/// Sent to an item when it becomes the active held item: (mob/living/carbon/holder)
+#define COMSIG_ITEM_NOW_ACTIVE "item_now_active"
+/// Sent to an item when it stops being the active held item: (mob/living/carbon/holder)
+#define COMSIG_ITEM_NOLONGER_ACTIVE "item_nolonger_active"
+
 /// from mob/get_status_tab_items(): (list/items)
 #define COMSIG_MOB_GET_STATUS_TAB_ITEMS "mob_get_status_tab_items"
 
@@ -36,3 +43,10 @@
 #define COMSIG_MOB_CHANGED_TYPE "mob_changed_type"
 /// After a mob successfully performs an emote: (datum/emote/emote)
 #define COMSIG_MOB_EMOTE "mob_emote"
+
+/// Sent from a mob spawner after it creates a mob: (mob/living/spawned_mob)
+#define COMSIG_SPAWNER_SPAWNED "spawner_spawned"
+/// Sent when a turf-peel spawn should use its default behavior.
+#define COMSIG_SPAWNER_SPAWNED_DEFAULT "spawner_spawned_default"
+/// Sent from a ghost-role spawner after a ghost receives its new mob: (mob/living/spawned_mob)
+#define COMSIG_GHOSTROLE_SPAWNED "ghostrole_spawned"

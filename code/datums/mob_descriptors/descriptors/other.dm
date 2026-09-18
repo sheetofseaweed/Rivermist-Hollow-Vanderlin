@@ -143,6 +143,8 @@
 		return
 	var/adjective
 	switch(buttie.organ_size)
+		if(0)
+			adjective = "a flat"
 		if(1)
 			adjective = "a small"
 		if(2)

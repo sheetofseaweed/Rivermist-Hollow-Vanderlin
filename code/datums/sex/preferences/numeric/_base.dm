@@ -36,9 +36,9 @@
 		var/value_link = wrap_with_tooltip("<a class='linkOff'>[html_encode("[current_value]")]</a>", lock_reason)
 		return "[dec_link][value_link][inc_link]"
 
-	var/dec_link = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=decrease'>&lt;</a>"
-	var/inc_link = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=increase'>&gt;</a>"
-	var/value_link = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=set'>[html_encode("[current_value]")]</a>"
+	var/dec_link = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=decrease'>&lt;</a>"
+	var/inc_link = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=increase'>&gt;</a>"
+	var/value_link = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=set'>[html_encode("[current_value]")]</a>"
 
 	return "[dec_link][value_link][inc_link]"
 

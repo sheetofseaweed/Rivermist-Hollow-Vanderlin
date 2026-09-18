@@ -68,6 +68,7 @@ GLOBAL_LIST_EMPTY(letters_sent)
 
 /obj/structure/fake_machine/mail/examine(mob/user)
 	. = ..()
+	. += "<a href='byond://?src=[REF(src)];directory=1'>Directory:</a> [mailtag]"
 	. += span_info("Load a coin inside, then right click to send a letter.")
 	. += span_info("Left click with a paper to send a prewritten letter for free.")
 	if(HAS_TRAIT(user, TRAIT_INQUISITION))
@@ -675,19 +676,6 @@ GLOBAL_LIST_EMPTY(letters_sent)
 		. += mutable_appearance(icon, "mail-s")
 		set_light(1, 1, 1, l_color = "#ff0d0d")
 
-/obj/structure/fake_machine/mail/examine(mob/user)
-	. = ..()
-	. += "<a href='?src=[REF(src)];directory=1'>Directory:</a> [mailtag]"
-
-/obj/structure/fake_machine/mail/Topic(href, href_list)
-	..()
-
-	if(!usr)
-		return
-
-	if(href_list["directory"])
-		view_directory(usr)
-
 /obj/structure/fake_machine/mail/proc/view_directory(mob/user)
 	var/dat
 	for(var/obj/structure/fake_machine/mail/X in SSroguemachine.hermailers)
@@ -783,10 +771,10 @@ GLOBAL_LIST_EMPTY(letters_sent)
 	contents = "<center>  THE ORATORIUM'S RELIQUARY  <BR>"
 	contents += "ERADICATE HERESY, SO THAT PSYDONIA MAY ENDURE <BR>"
 	if(HAS_TRAIT(user, TRAIT_PURITAN))
-		contents += "  <a href='?src=[REF(src)];locktoggle=1]'> PURITAN'S LOCK: [inqonly ? "YES":"NO"]</a>  <BR>"
+		contents += "  <a href='byond://?src=[REF(src)];locktoggle=1]'> PURITAN'S LOCK: [inqonly ? "YES":"NO"]</a>  <BR>"
 	else
 		contents += "  PURITAN'S LOCK: [inqonly ? "YES":"NO"]  <BR>"
-	contents += "<a href='?src=[REF(src)];eject=1'>MARQUES LOADED: [inqcoins]</a><BR>"
+	contents += "<a href='byond://?src=[REF(src)];eject=1'>MARQUES LOADED: [inqcoins]</a><BR>"
 
 	if(cat_current == "1")
 		contents += "<BR> <table style='width: 100%' line-height: 40px;'>"
@@ -794,19 +782,19 @@ GLOBAL_LIST_EMPTY(letters_sent)
 			for(var/i = 1, i <= inq_category.len, i++)
 				contents += "<tr>"
 				contents += "<td style='width: 100%; text-align: center;'>\
-					<a href='?src=[REF(src)];changecat=[inq_category[i]]'>[inq_category[i]]</a>\
+					<a href='byond://?src=[REF(src)];changecat=[inq_category[i]]'>[inq_category[i]]</a>\
 					</td>"
 				contents += "</tr>"*/
 		for(var/i = 1, i <= category.len, i++)
 			contents += "<tr>"
 			contents += "<td style='width: 100%; text-align: center;'>\
-				<a href='?src=[REF(src)];changecat=[category[i]]'>[category[i]]</a>\
+				<a href='byond://?src=[REF(src)];changecat=[category[i]]'>[category[i]]</a>\
 				</td>"
 			contents += "</tr>"
 		contents += "</table>"
 	else
 		contents += "<center>[cat_current]<BR></center>"
-		contents += "<center><a href='?src=[REF(src)];changecat=1'>\[RETURN\]</a><BR><BR></center>"
+		contents += "<center><a href='byond://?src=[REF(src)];changecat=1'>\[RETURN\]</a><BR><BR></center>"
 		contents += "<center>"
 		var/list/items = list()
 		for(var/datum/inqports/PA as anything in GLOB.inqsupplies)
@@ -819,7 +807,7 @@ GLOBAL_LIST_EMPTY(letters_sent)
 			if(inqonly && !HAS_TRAIT(user, TRAIT_PURITAN) || (PA.maximum && !PA.remaining) || inqcoins < PA.marquescost)
 				contents += "[name]<BR>"
 			else
-				contents += "<a href='?src=[REF(src)];buy=[PA.type]'>[name]</a><BR>"
+				contents += "<a href='byond://?src=[REF(src)];buy=[PA.type]'>[name]</a><BR>"
 		contents += "</center>"
 	var/datum/browser/popup = new(user, "VENDORTHING", "", 500, 600)
 	popup.set_content(contents)
@@ -831,6 +819,9 @@ GLOBAL_LIST_EMPTY(letters_sent)
 
 /obj/structure/fake_machine/mail/Topic(href, href_list)
 	..()
+	if(usr && href_list["directory"])
+		view_directory(usr)
+
 	if(href_list["eject"])
 		if(inqcoins <= 0)
 			return

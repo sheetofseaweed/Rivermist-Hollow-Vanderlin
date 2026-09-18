@@ -14,9 +14,9 @@
 	desc = span_green("Death. Hehe...")
 
 /datum/stress_event/wet_cloth_positive
-    stress_change = -1
-    desc = span_green("I am wearing wet clothes.. YAY.")
-    timer = 1 MINUTES
+	stress_change = -1
+	desc = span_green("I am wearing wet clothes.. YAY.")
+	timer = 1 MINUTES
 
 /datum/stress_event/viewdismembermaniac
 	timer = 2 MINUTES

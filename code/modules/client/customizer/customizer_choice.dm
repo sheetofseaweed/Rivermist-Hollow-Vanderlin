@@ -80,9 +80,9 @@
 		var/dropdown_button
 
 		if(length(sprite_accessories) > 1)
-			accessory_link = "href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=choose_acc'"
-			arrows_string = "<a class='accessory-arrow' href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=rotate;rotate=prev'>&lt;</a><a class='accessory-arrow' href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=rotate;rotate=next'>&gt;</a>"
-			dropdown_button = "<a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_dropdown'>View All</a>"
+			accessory_link = "href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=choose_acc'"
+			arrows_string = "<a class='accessory-arrow' href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=rotate;rotate=prev'>&lt;</a><a class='accessory-arrow' href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=rotate;rotate=next'>&gt;</a>"
+			dropdown_button = "<a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=toggle_dropdown'>View All</a>"
 		else
 			accessory_link = "class='linkOff'"
 			arrows_string = "<a class='accessory-arrow linkOff'>&lt;</a><a class='accessory-arrow linkOff'>&gt;</a>"
@@ -111,7 +111,7 @@
 				var/is_selected = (acc_type == entry.accessory_type)
 				var/card_class = is_selected ? "accessory-grid-card selected" : "accessory-grid-card"
 
-				dat += "<a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=select_acc;acc_type=[acc_type]'>"
+				dat += "<a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=select_acc;acc_type=[acc_type]'>"
 				dat += "<div class='[card_class]' data-icon='\ref[initial(acc.icon)]' data-state='[initial(acc.icon_state)]'>"
 				dat += "<img src='\ref[initial(acc.icon)]?state=[initial(acc.icon_state)]'/>"
 				dat += "<div class='accessory-grid-label'>[acc.name]</div>"
@@ -121,11 +121,11 @@
 			dat += "</div>"
 
 		if(allows_accessory_color_customization)
-			dat += "<br><a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=reset_colors'>Reset colors</a>"
+			dat += "<br><a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=reset_colors'>Reset colors</a>"
 			var/list/color_list = color_string_to_list(entry.accessory_colors)
 			for(var/index in 1 to accessory.color_keys)
 				var/named_index = (accessory.color_keys == 1) ? accessory.color_key_name : accessory.color_key_names[index]
-				dat += "<br>[named_index]: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=acc_color;color_index=[index]''><span class='color_holder_box' style='background-color:[color_list[index]]'></span></a>"
+				dat += "<br>[named_index]: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=acc_color;color_index=[index]''><span class='color_holder_box' style='background-color:[color_list[index]]'></span></a>"
 
 /datum/customizer_choice/proc/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	switch(href_list["customizer_task"])
@@ -150,7 +150,7 @@
 			for(var/choice_type in sprite_accessories)
 				var/datum/sprite_accessory/accessory = SPRITE_ACCESSORY(choice_type)
 				choice_list[accessory.name] = choice_type
-			var/chosen_input = browser_input_list(user, "Choose your [lowertext(name)] appearance:", "Character Preference", choice_list)
+			var/chosen_input = browser_input_list(user, "Choose your [LOWER_TEXT(name)] appearance:", "Character Preference", choice_list)
 			if(!chosen_input)
 				return
 			var/choice_type = choice_list[chosen_input]

@@ -221,7 +221,7 @@
 
 	var/list/dat = list()
 	dat += "<b>Enabled:</b> "
-	dat += "<a href='?_src_=prefs;task=erp_pref;preference=kink;kink_name=[url_encode(kink.name)];action=toggle_enabled'>"
+	dat += "<a href='byond://?_src_=prefs;task=erp_pref;preference=kink;kink_name=[url_encode(kink.name)];action=toggle_enabled'>"
 	dat += enabled ? "Yes" : "No"
 	dat += "</a><br>"
 
@@ -231,11 +231,11 @@
 			if(i == intensity)
 				dat += "<b>[i]</b> "
 			else
-				dat += "<a href='?_src_=prefs;task=erp_pref;preference=kink;kink_name=[url_encode(kink.name)];action=set_intensity;intensity=[i]'>[i]</a> "
+				dat += "<a href='byond://?_src_=prefs;task=erp_pref;preference=kink;kink_name=[url_encode(kink.name)];action=set_intensity;intensity=[i]'>[i]</a> "
 		dat += "<br>"
 
 		dat += "<b>Notes:</b> "
-		dat += "<a href='?_src_=prefs;task=erp_pref;preference=kink;kink_name=[url_encode(kink.name)];action=set_notes'>"
+		dat += "<a href='byond://?_src_=prefs;task=erp_pref;preference=kink;kink_name=[url_encode(kink.name)];action=set_notes'>"
 		dat += length(notes) ? "[copytext(notes, 1, 20)]..." : "None"
 		dat += "</a>"
 

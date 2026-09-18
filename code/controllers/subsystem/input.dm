@@ -54,10 +54,6 @@ VERB_MANAGER_SUBSYSTEM_DEF(input)
 		user.set_macros()
 		user.update_movement_keys()
 
-/datum/controller/subsystem/verb_manager/input/fire()
-	for(var/mob/user as anything in GLOB.player_list)
-		user.focus?.keyLoop(user.client)
-
 /datum/controller/subsystem/verb_manager/input/can_queue_verb(datum/callback/verb_callback/incoming_callback, control)
 	//make sure the incoming verb is actually something we specifically want to handle
 	if(control != "mapwindow.map")

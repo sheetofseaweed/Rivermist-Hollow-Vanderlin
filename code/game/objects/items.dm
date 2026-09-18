@@ -5,6 +5,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /obj/item
 	name = "item"
+	/// Name shown only when this item is seen on another mob, allowing disguised equipment to conceal its exact identity.
+	var/examine_name
 	var/original_name = null // Stores the original name if item was renamed
 	icon = 'icons/obj/items_and_weapons.dmi'
 	pass_flags_self = PASSITEM
@@ -1188,12 +1190,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 			playsound(src, drop_sound, YEET_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
 		return hit_atom.hitby(src, 0, itempush, throwingdatum=throwingdatum, damage_type = src.damage_type)
 
-/obj/item/throw_at(atom/target, range, speed, mob/thrower, spin=1, diagonals_first = 0, datum/callback/callback, force, gentle = FALSE)
-	thrownby = thrower
-	callback = CALLBACK(src, PROC_REF(after_throw), callback) //replace their callback with our own
-	. = ..(target, range, speed, thrower, spin, diagonals_first, callback, force)
-
-
 /obj/item/proc/after_throw(datum/callback/callback)
 	if (callback) //call the original callback
 		. = callback.Invoke()
@@ -1494,7 +1490,9 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 /obj/item/throw_at(atom/target, range, speed, mob/thrower, spin=TRUE, diagonals_first = FALSE, datum/callback/callback, force, gentle = FALSE)
 	if(HAS_TRAIT(src, TRAIT_NODROP))
 		return
-	return ..()
+	thrownby = thrower
+	callback = CALLBACK(src, PROC_REF(after_throw), callback) //replace their callback with our own
+	return ..(target, range, speed, thrower, spin, diagonals_first, callback, force)
 
 /obj/item/proc/embedded(atom/embedded_target, obj/item/bodypart/part)
 	return
@@ -1595,6 +1593,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 	impactee.apply_damage(impact_damage, BRUTE, target_zone, impactee.run_armor_check(target_zone, "blunt"))
 
 /obj/item/proc/on_consume(mob/living/eater)
+	SHOULD_CALL_PARENT(TRUE)
+	SEND_SIGNAL(src, COMSIG_ITEM_EATEN, eater)
 	return
 
 /obj/item/proc/on_anti_consume(mob/living/eater)
@@ -1742,6 +1742,17 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 				if(1 to 4)
 					if(alch_skill >= SKILL_LEVEL_EXPERT)
 						. += span_notice(" Smells faintly of [smell].")
+
+/obj/item/get_examine_string(mob/user, thats = FALSE, use_examine_name = FALSE)
+	if(!examine_name || !use_examine_name)
+		return ..()
+
+	var/display_name = article ? "[article] <b>[examine_name]</b>" : gender == PLURAL ? "some <b>[examine_name]</b>" : "\a <b>[examine_name]</b>"
+	// Seed signal overrides with the concealed name so decals such as blood do not reveal the real item.
+	var/list/override = list(article || (gender == PLURAL ? "some" : "a"), " ", "<b>[examine_name]</b>")
+	if(SEND_SIGNAL(src, COMSIG_ATOM_GET_EXAMINE_NAME, user, override) & COMPONENT_EXNAME_CHANGED)
+		display_name = override.Join("")
+	return "[thats ? ismob(src) ? "This is " : "That's " : ""][display_name]"
 
 /**
  * Returns the atom(either itself or an internal module) that will interact/attack the target on behalf of us

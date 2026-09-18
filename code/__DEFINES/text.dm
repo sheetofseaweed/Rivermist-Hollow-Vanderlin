@@ -29,4 +29,7 @@
 /// Removes everything enclose in < and > inclusive of the bracket, and limits the length of the message.
 #define STRIP_HTML_FULL(text, limit) (GLOB.html_tags.Replace(copytext_char(text, 1, limit), ""))
 
+/// BYOND's string procs don't support datum references, so ensure this proc always receives text.
+#define LOWER_TEXT(thing) lowertext(UNLINT("[thing]"))
+
 #define SANITIZE_HEAR_MESSAGE(text) (GLOB.hearing_stripped_chars.Replace(text, ""))

@@ -627,8 +627,9 @@ Traitors and the like can also be revived with the previous role mostly intact.
 
 	var/adding_hud = !has_antag_hud()
 
-	for(var/datum/atom_hud/antag/H in GLOB.huds) // add antag huds
-		(adding_hud) ? H.add_hud_to(usr) : H.remove_hud_from(usr)
+	for(var/key in GLOB.huds) // add antag huds
+		var/datum/atom_hud/antag/hud = GLOB.huds[key]
+		adding_hud ? hud.show_to(usr) : hud.hide_from(usr)
 
 	if(prefs.read_preference(/datum/preference/bitwise/toggles) & COMBOHUD_LIGHTING)
 		if(adding_hud)
@@ -646,7 +647,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 
 /client/proc/has_antag_hud()
 	var/datum/atom_hud/A = GLOB.huds[ANTAG_HUD_HIDDEN]
-	return A.hudusers[mob]
+	return A.hud_users_all_z_levels[mob]
 
 /client/proc/show_tip()
 	set category = "Admin.Admin"
@@ -874,7 +875,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 	var/list/msg = list()
 	msg += "<html><head><title>Playtime Report</title></head><body>Playtime:<BR><UL>"
 	for(var/client/C in GLOB.clients)
-		msg += "<LI> - [key_name_admin(C)]: <A href='?_src_=holder;[HrefToken()];getplaytimewindow=[REF(C.mob)]'>" + C.get_exp_living() + "</a></LI>"
+		msg += "<LI> - [key_name_admin(C)]: <A href='byond://?_src_=holder;[HrefToken()];getplaytimewindow=[REF(C.mob)]'>" + C.get_exp_living() + "</a></LI>"
 	msg += "</UL></BODY></HTML>"
 	src << browse(msg.Join(), "window=Player_playtime_check")
 
@@ -891,7 +892,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 	var/list/body = list()
 	body += "<html><head><title>Playtime for [C.key]</title></head><BODY><BR>Playtime:"
 	body += C.get_exp_report()
-	body += "<A href='?_src_=holder;[HrefToken()];toggleexempt=[REF(C)]'>Toggle Exempt status</a>"
+	body += "<A href='byond://?_src_=holder;[HrefToken()];toggleexempt=[REF(C)]'>Toggle Exempt status</a>"
 	body += "</BODY></HTML>"
 	usr << browse(body.Join(), "window=playerplaytime[C.ckey];size=550x615")
 

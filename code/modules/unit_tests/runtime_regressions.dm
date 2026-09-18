@@ -254,7 +254,7 @@
 		/datum/plant_def/mushroom,
 	)
 
-	for(var/plant_def_type as anything in abstract_plant_defs)
+	for(var/plant_def_type in abstract_plant_defs)
 		var/obj/structure/wild_plant/plant = allocate(/obj/structure/wild_plant, run_loc_floor_bottom_left, plant_def_type, -1)
 		plant.yield_produce()
 		TEST_ASSERT(QDELETED(plant), "Wild plants should not try to spawn produce from abstract plant family definitions.")
@@ -306,6 +306,8 @@
 	var/datum/quest/quest = allocate(/datum/quest)
 	quest.quest_type = QUEST_RETRIEVAL
 	quest.target_item_type = /obj/item/natural/stone
+	// Turn-in only counts for an accepted quest, so the quest needs a receiver.
+	quest.quest_receiver_reference = WEAKREF(allocate(/mob/living/carbon/human))
 	var/obj/item/natural/stone/stone = allocate(/obj/item/natural/stone, run_loc_floor_bottom_left)
 	var/datum/component/quest_object/retrieval/retrieval = stone.AddComponent(/datum/component/quest_object/retrieval, quest)
 	allocate(/obj/effect/decal/marker_export, run_loc_floor_bottom_left)

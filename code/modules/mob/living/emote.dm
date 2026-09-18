@@ -586,13 +586,6 @@
 			to_chat(H, "<span class='warning'>I feel inexplicably repelled!</span>")
 			H.cursed_freak_out()
 			return
-
-/datum/emote/living/hug/adjacentaction(mob/user, mob/target)
-	. = ..()
-	if(!user || !target)
-		return
-	if(ishuman(target))
-		var/mob/living/carbon/H = target
 		H.add_stress(/datum/stress_event/hug)
 		playsound(target, pick('sound/vo/hug.ogg'), 100, FALSE, -1)
 
@@ -1260,13 +1253,59 @@
 		playsound(user, pick('sound/vo/mobs/zombie/f/idle (1).ogg','sound/vo/mobs/zombie/f/idle (2).ogg','sound/vo/mobs/zombie/f/idle (3).ogg'), 80, FALSE, -1)
 
 
+/// Base chance for a yawn to spread to someone on the same tile.
+#define YAWN_PROPAGATE_CHANCE_BASE 20
+/// Chance lost per tile of distance from the yawning mob.
+#define YAWN_PROPAGATE_CHANCE_DECAY 4
+/// How long a mob must wait before its yawns can propagate again.
+#define YAWN_PROPAGATION_COOLDOWN (15 SECONDS)
+
 // ............... Y ..................
 /datum/emote/living/yawn
 	key = "yawn"
 	key_third_person = "yawns"
 	message = "yawns."
 	message_muffled = "makes a muffled yawn."
-	emote_type = EMOTE_AUDIBLE
+	emote_type = EMOTE_VISIBLE | EMOTE_AUDIBLE
+
+/datum/emote/living/yawn/run_emote(mob/user, params, type_override, intentional, targetted)
+	. = ..()
+	if(!. || !iscarbon(user))
+		return
+
+	var/mob/living/carbon/carbon_user = user
+	if(TIMER_COOLDOWN_RUNNING(carbon_user, COOLDOWN_YAWN_PROPAGATION))
+		return
+	TIMER_COOLDOWN_START(carbon_user, COOLDOWN_YAWN_PROPAGATION, YAWN_PROPAGATION_COOLDOWN)
+
+	if(!is_human_part_visible(carbon_user, HIDEFACE))
+		return
+
+	var/propagation_distance = carbon_user.client ? 5 : 2
+	for(var/mob/living/nearby_mob in view(carbon_user, propagation_distance))
+		if(IS_DEAD_OR_INCAP(nearby_mob) || TIMER_COOLDOWN_RUNNING(nearby_mob, COOLDOWN_YAWN_PROPAGATION))
+			continue
+
+		var/distance = get_dist(carbon_user, nearby_mob)
+		var/recently_examined = FALSE
+		var/examine_time = LAZYACCESS(nearby_mob.client?.recent_examines, REF(carbon_user))
+		if(!isnull(examine_time) && world.time - examine_time < YAWN_PROPAGATION_EXAMINE_WINDOW)
+			recently_examined = TRUE
+
+		if(!recently_examined && !prob(max(YAWN_PROPAGATE_CHANCE_BASE - YAWN_PROPAGATE_CHANCE_DECAY * distance, 0)))
+			continue
+
+		var/yawn_delay = rand(0.2 SECONDS, 0.7 SECONDS) * distance
+		addtimer(CALLBACK(src, PROC_REF(propagate_yawn), nearby_mob), yawn_delay)
+
+/datum/emote/living/yawn/proc/propagate_yawn(mob/living/user)
+	if(QDELETED(user) || TIMER_COOLDOWN_RUNNING(user, COOLDOWN_YAWN_PROPAGATION))
+		return
+	user.emote("yawn")
+
+#undef YAWN_PROPAGATE_CHANCE_BASE
+#undef YAWN_PROPAGATE_CHANCE_DECAY
+#undef YAWN_PROPAGATION_COOLDOWN
 
 /mob/living/carbon/human/verb/emote_yawn()
 	set name = "Yawn"

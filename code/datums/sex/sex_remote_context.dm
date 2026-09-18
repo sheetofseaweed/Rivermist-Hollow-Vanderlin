@@ -174,7 +174,7 @@
 /datum/sex_remote_context/mage_hand/proc/get_action_phrase(datum/sex_action/action, target_perspective = FALSE)
 	if(!action?.name)
 		return null
-	var/phrase = lowertext(action.name)
+	var/phrase = LOWER_TEXT(action.name)
 	var/mob/living/remote_target = get_target()
 	if(target_perspective)
 		phrase = replacetext(phrase, "their", "my")

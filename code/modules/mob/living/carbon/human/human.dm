@@ -201,9 +201,11 @@
 		AddComponent(/datum/component/arousal)
 
 /mob/living/carbon/human/Destroy()
-	remove_dnd_spell_hud()
 	QDEL_NULL(physiology)
 	culture = null
+	// The spell slot HUD buttons hold a strong owner_mob reference back to us,
+	// so they have to be torn down here or we hard delete.
+	remove_dnd_spell_hud()
 	GLOB.human_list -= src
 	return ..()
 
@@ -1162,6 +1164,11 @@
  */
 /mob/living/carbon/human/wash(clean_types)
 	. = ..()
+
+	// RMH EDITED START - tattoo fading from water/soap
+	if(process_tattoo_wash(clean_types))
+		. = TRUE
+	// RMH EDITED END
 
 	// Wash equipped stuff that cannot be covered
 	if(wear_armor?.wash(clean_types))

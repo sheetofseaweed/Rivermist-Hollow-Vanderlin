@@ -86,6 +86,12 @@
 
 	update_a_intents()
 
+	var/obj/item/new_held_item = get_active_held_item()
+	if(item_in_hand)
+		SEND_SIGNAL(item_in_hand, COMSIG_ITEM_NOLONGER_ACTIVE, src)
+	if(new_held_item)
+		SEND_SIGNAL(new_held_item, COMSIG_ITEM_NOW_ACTIVE, src)
+
 	return TRUE
 
 /mob/living/carbon/activate_hand(selhand) //l/r OR 1-held_items.len
@@ -93,7 +99,7 @@
 		selhand = (active_hand_index % held_items.len)+1
 
 	if(istext(selhand))
-		selhand = lowertext(selhand)
+		selhand = LOWER_TEXT(selhand)
 		if(selhand == "right" || selhand == "r")
 			selhand = 2
 		if(selhand == "left" || selhand == "l")
@@ -287,7 +293,7 @@
 
 	var/datum/status_effect/bugged/effect = has_status_effect(/datum/status_effect/bugged)
 	if(effect && HAS_TRAIT(user, TRAIT_INQUISITION))
-		dat += "<BR><A href='?src=[REF(src)];item=[effect.device]'>BUGGED</A>"
+		dat += "<BR><A href='byond://?src=[REF(src)];item=[effect.device]'>BUGGED</A>"
 
 	dat += {"
 	<BR>

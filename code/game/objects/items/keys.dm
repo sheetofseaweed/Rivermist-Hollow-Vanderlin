@@ -1,6 +1,7 @@
 /obj/item/key
 	item_weight = 20 GRAMS
 	name = "old key"
+	examine_name = "key"
 	desc = "A simple key of simple uses."
 	icon_state = "brownkey"
 	icon = 'icons/roguetown/items/keys.dmi'

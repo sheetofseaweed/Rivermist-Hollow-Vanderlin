@@ -304,15 +304,15 @@
 	while(counter>=1)
 		newletter=copytext_char(phrase,(leng-counter)+1,(leng-counter)+2)
 		if(rand(1,3)==3)
-			if(lowertext(newletter)=="o")
+			if(LOWER_TEXT(newletter)=="o")
 				newletter="u"
-			if(lowertext(newletter)=="s")
+			if(LOWER_TEXT(newletter)=="s")
 				newletter="ch"
-			if(lowertext(newletter)=="a")
+			if(LOWER_TEXT(newletter)=="a")
 				newletter="ah"
-			if(lowertext(newletter)=="u")
+			if(LOWER_TEXT(newletter)=="u")
 				newletter="oo"
-			if(lowertext(newletter)=="c")
+			if(LOWER_TEXT(newletter)=="c")
 				newletter="k"
 		if(include_drunk_interjections && rand(1,20)==20)
 			if(newletter==" ")
@@ -341,17 +341,17 @@
 	while(counter>=1)
 		newletter=copytext_char(phrase,(leng-counter)+1,(leng-counter)+2)
 		if(rand(1,2)==2)
-			if(lowertext(newletter)=="o")
+			if(LOWER_TEXT(newletter)=="o")
 				newletter="u"
-			if(lowertext(newletter)=="t")
+			if(LOWER_TEXT(newletter)=="t")
 				newletter="ch"
-			if(lowertext(newletter)=="a")
+			if(LOWER_TEXT(newletter)=="a")
 				newletter="ah"
-			if(lowertext(newletter)=="u")
+			if(LOWER_TEXT(newletter)=="u")
 				newletter="oo"
-			if(lowertext(newletter)=="c")
+			if(LOWER_TEXT(newletter)=="c")
 				newletter=" NAR "
-			if(lowertext(newletter)=="s")
+			if(LOWER_TEXT(newletter)=="s")
 				newletter=" SIE "
 		if(rand(1,4)==4)
 			if(newletter==" ")

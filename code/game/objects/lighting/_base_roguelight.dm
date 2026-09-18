@@ -28,12 +28,6 @@
 
 	. = ..()
 
-/obj/machinery/light/fueled/Destroy()
-	if(soundloop)
-		QDEL_NULL(soundloop)
-	remove_temp_effect()
-	return ..()
-
 /obj/machinery/light/fueled/seton(s)
 	. = ..()
 	// BUGFIX (fuel): re-add ourselves to SSmachines whenever the fire is turned on,
@@ -92,6 +86,7 @@
 
 /obj/machinery/light/fueled/Destroy()
 	QDEL_NULL(soundloop)
+	remove_temp_effect()
 	GLOB.fires_list -= src
 	. = ..()
 

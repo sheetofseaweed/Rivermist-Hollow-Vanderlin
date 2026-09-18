@@ -73,7 +73,7 @@
 /datum/ai_behavior/find_potential_horny_targets/proc/new_turf_found(turf/found, datum/ai_controller/controller, datum/targetting_datum/strategy)
 	var/valid_found = FALSE
 	var/mob/pawn = controller.pawn
-	for(var/maybe_target as anything in found)
+	for(var/maybe_target in found)
 		if(!resolve_horny_candidate_target(pawn, strategy, maybe_target))
 			continue
 		valid_found = TRUE
@@ -151,7 +151,7 @@
 
 	var/best_desirability = 0
 	var/list/scored_action_types = list()
-	for(var/action_type as anything in weighted_actions)
+	for(var/action_type in weighted_actions)
 		if(action_type in scored_action_types)
 			continue
 		scored_action_types += action_type

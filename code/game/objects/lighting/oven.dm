@@ -16,6 +16,7 @@
 	AddComponent(/datum/component/storage/concrete/grid/food/cooking/oven)
 	AddComponent(/datum/component/container_craft, subtypesof(/datum/container_craft/oven))
 	AddComponent(/datum/component/food_burner, 2 MINUTES, TRUE, CALLBACK(src, PROC_REF(can_burn)))
+	update_appearance(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
 
 /obj/machinery/light/fueled/oven/attack_hand(mob/living/carbon/human/user)
 	. = ..()
@@ -59,10 +60,6 @@
 /obj/machinery/light/fueled/oven/east
 	dir = EAST
 	SET_BASE_PIXEL(-32, 0)
-
-/obj/machinery/light/fueled/oven/Initialize()
-	. = ..()
-	update_appearance(UPDATE_ICON_STATE | UPDATE_OVERLAYS)
 
 /obj/machinery/light/fueled/oven/update_overlays()
 	. = ..()

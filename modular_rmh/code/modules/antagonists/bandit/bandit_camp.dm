@@ -73,10 +73,10 @@
 /obj/structure/bandit_camp_entrance/Initialize()
 	. = ..()
 	GLOB.bandit_player_insertions += src
-	// Invisible to everyone; the alt appearance shows it back to trait holders only.
-	invisibility = INVISIBILITY_OBSERVER
+	// Invisible to everyone; the alt appearance shows it back to trait holders and observers.
+	invisibility = INVISIBILITY_ABSTRACT
 	var/image/trail_marks = image(icon = icon, icon_state = icon_state, layer = layer, loc = src)
-	add_alt_appearance(/datum/atom_hud/alternate_appearance/basic/traveltile, TRAIT_BANDITCAMP, trail_marks)
+	add_alt_appearance(/datum/atom_hud/alternate_appearance/basic/traits, TRAIT_BANDITCAMP, trail_marks, NONE, list(TRAIT_BANDITCAMP))
 
 /obj/structure/bandit_camp_entrance/Destroy()
 	GLOB.bandit_player_insertions -= src
@@ -84,7 +84,8 @@
 
 /obj/structure/bandit_camp_entrance/proc/reveal_to(mob/living/user)
 	var/datum/atom_hud/alternate_appearance/trail_hud = LAZYACCESS(alternate_appearances, TRAIT_BANDITCAMP)
-	trail_hud?.add_hud_to(user)
+	if(trail_hud && !trail_hud.hud_users_all_z_levels[user])
+		trail_hud.show_to(user)
 
 // Mob Initialize/Login only catch trait holders that already exist, so recruits need this on gain.
 /proc/reveal_bandit_camp_entrances(mob/living/user)

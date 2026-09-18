@@ -34,4 +34,3 @@ GLOBAL_LIST_INIT(preferences_in_priority_order, build_preferences_in_priority_or
 			continue
 		flat += by_priority[i]
 	return flat
-

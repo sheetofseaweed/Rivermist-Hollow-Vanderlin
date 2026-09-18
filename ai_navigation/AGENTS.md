@@ -2,6 +2,11 @@
 
 This repository is meant to be handed to agents after a separate goal statement from the user.
 
+After DM source or `.dme` edits, run `python tools/dm_diagnostics.py` to read
+language-server and DreamChecker diagnostics directly. Fix newly introduced
+errors before finishing; do not ask the user to relay VS Code output. This checks
+saved files and complements the required BYOND build. See `tools/dm_diagnostics.md`.
+
 Terminology note:
 
 - `AI mapping` or `navigation layer` means the repository-orientation docs in `ai_navigation/` plus this file.

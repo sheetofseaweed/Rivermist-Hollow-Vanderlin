@@ -245,23 +245,35 @@
 		var/brute_heal_left = brute_healed
 		var/burn_heal_left = burn_healed
 		var/mob/living/carbon/carbon_patient = patient
-		for(var/datum/injury/injury as anything in carbon_patient.all_injuries)
+		var/list/obj/item/bodypart/healed_parts = list()
+		// Copied: healing an injury to zero qdels it, which mutates all_injuries mid-loop.
+		for(var/datum/injury/injury as anything in carbon_patient.all_injuries.Copy())
 			if(brute_heal_left <= 0 && burn_heal_left <= 0)
 				break
-			if(injury.required_status != required_bodytype)
+			if(QDELETED(injury) || injury.required_status != required_bodytype)
 				continue
 			if(!injury.can_heal() || injury.is_surgical())
 				continue
 
+			var/obj/item/bodypart/injured_part = injury.parent_bodypart
 			// Use injury.heal_damage() instead of heal_bodypart_damage() to return the amount of healing left over
 			if(brute_heal_left && injury.heals_as_brute_damage())
 				brute_heal_left = injury.heal_damage(brute_heal_left, TRUE, TRUE)
+				healed_parts |= injured_part
 			if(burn_heal_left && injury.damage_type == WOUND_BURN)
 				burn_heal_left = injury.heal_damage(burn_heal_left, TRUE, TRUE)
+				healed_parts |= injured_part
+
+		// brute_dam/burn_dam are derived from the injury list and stay stale without this.
+		for(var/obj/item/bodypart/healed_part as anything in healed_parts)
+			healed_part.post_damage_change(FALSE)
+		carbon_patient.updatehealth()
 
 	SEND_SIGNAL(surgeon, COMSIG_LIVING_HEALED_OTHER, brute_healed + burn_healed)
 	patient.defeat_try_prepared_recovery(surgeon, "surgery", tool)
-	patient.defeat_treat_tool_physical_trauma(surgeon, list(
+	// This route passes interactive = FALSE, but the provider API can prompt on other
+	// paths and on_success must not sleep. Return value is unused either way.
+	INVOKE_ASYNC(patient, TYPE_PROC_REF(/mob/living, defeat_treat_tool_physical_trauma), surgeon, list(
 		/datum/status_effect/debuff/defeat/physical,
 		/datum/status_effect/debuff/defeat/physical/burn,
 		/datum/status_effect/debuff/defeat/physical/body,

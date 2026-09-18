@@ -35,8 +35,8 @@
 	..()
 	var/datum/customizer_entry/organ/genitals/breasts/breasts_entry = entry
 	var/list/breast_sizes = prefs.get_breast_size_choices()
-	dat += "<br>Breast size: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=breast_size''>[find_key_by_value(breast_sizes, breasts_entry.breast_size)]</a>"
-	dat += "<br>Lactation: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=lactating''>[breasts_entry.lactating ? "Enabled" : "Disabled"]</a>"
+	dat += "<br>Breast size: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=breast_size''>[find_key_by_value(breast_sizes, breasts_entry.breast_size)]</a>"
+	dat += "<br>Lactation: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=lactating''>[breasts_entry.lactating ? "Enabled" : "Disabled"]</a>"
 
 /datum/customizer_choice/organ/genitals/breasts/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()

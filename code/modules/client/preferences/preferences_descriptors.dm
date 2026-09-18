@@ -56,7 +56,7 @@
 	for(var/i in 1 to CUSTOM_DESCRIPTOR_AMOUNT)
 		var/datum/custom_descriptor_entry/custom_entry = custom_descriptors[i]
 		custom_entry.prefix_type = sanitize_integer(custom_entry.prefix_type, 1, CUSTOM_PREFIX_AMOUNT, CUSTOM_PREFIX_HAS_A)
-		custom_entry.content_text = STRIP_HTML_SIMPLE(lowertext(custom_entry.content_text), CUSTOM_DESCRIPTOR_TEXT_LENGTH)
+		custom_entry.content_text = STRIP_HTML_SIMPLE(LOWER_TEXT(custom_entry.content_text), CUSTOM_DESCRIPTOR_TEXT_LENGTH)
 
 /datum/preferences/proc/reset_descriptors()
 	descriptor_entries = list()
@@ -108,7 +108,7 @@
 			var/new_content = browser_input_text(user, "DESCRIBE THE FEATURE", "THE SELF", custom_entry.content_text, CUSTOM_DESCRIPTOR_TEXT_LENGTH)
 			if(!new_content)
 				return
-			new_content = STRIP_HTML_SIMPLE(lowertext(new_content), CUSTOM_DESCRIPTOR_TEXT_LENGTH)
+			new_content = STRIP_HTML_SIMPLE(LOWER_TEXT(new_content), CUSTOM_DESCRIPTOR_TEXT_LENGTH)
 			custom_entry.content_text = new_content
 
 /datum/preferences/proc/print_descriptors_page()
@@ -142,7 +142,7 @@
 	var/static/list/translation = CUSTOM_PREFIX_TRANSLATION_LIST
 	var/list/dat = list()
 	var/datum/custom_descriptor_entry/custom_entry = custom_descriptors[index]
-	dat += "<br><b>Custom #[index]:</b> <a href='?_src_=prefs;index=[index];preference=custom_descriptor_prefix;task=change_descriptor'>[translation["[custom_entry.prefix_type]"]]</a><a href='?_src_=prefs;index=[index];preference=custom_descriptor_content;task=change_descriptor'>[custom_entry.content_text]</a>"
+	dat += "<br><b>Custom #[index]:</b> <a href='byond://?_src_=prefs;index=[index];preference=custom_descriptor_prefix;task=change_descriptor'>[translation["[custom_entry.prefix_type]"]]</a><a href='byond://?_src_=prefs;index=[index];preference=custom_descriptor_content;task=change_descriptor'>[custom_entry.content_text]</a>"
 	return dat
 
 /datum/preferences/proc/show_descriptors_ui(mob/user)

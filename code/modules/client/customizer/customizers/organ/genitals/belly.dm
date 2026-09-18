@@ -37,7 +37,7 @@
 	..()
 	var/datum/customizer_entry/organ/genitals/belly/belly_entry = entry
 	var/list/belly_sizes = prefs.get_belly_size_choices()
-	dat += "<br>Belly size: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=belly_size''>[find_key_by_value(belly_sizes, belly_entry.belly_size)]</a>"
+	dat += "<br>Belly size: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=belly_size''>[find_key_by_value(belly_sizes, belly_entry.belly_size)]</a>"
 
 /datum/customizer_choice/organ/genitals/belly/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()

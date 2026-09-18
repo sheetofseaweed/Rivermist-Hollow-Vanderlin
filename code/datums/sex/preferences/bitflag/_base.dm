@@ -9,11 +9,6 @@
 		CRASH("Bitflag preference [type] must define flags list")
 
 
-/datum/erp_preference/bitflag/New()
-	..()
-	if(!length(flags))
-		CRASH("Bitflag preference [type] must define flags list")
-
 /datum/erp_preference/bitflag/show_pref_ui(datum/preferences/prefs, lock_reason = null)
 	var/current_value = get_value(prefs)
 	var/list/output = list()
@@ -28,7 +23,7 @@
 		var/link_class = is_enabled ? "linkOn" : "linkOff"
 		var/description = flag_descriptions[flag_name] || ""
 		var/title_attr = description ? " title='[escape_html_attribute(description)]'" : ""
-		var/toggle_html = "<a href='?_src_=prefs;task=erp_pref;pref_type=[type];action=toggle_flag;flag=[flag_bit]' class='[link_class]'>[status_text]</a>"
+		var/toggle_html = "<a href='byond://?_src_=prefs;task=erp_pref;pref_type=[type];action=toggle_flag;flag=[flag_bit]' class='[link_class]'>[status_text]</a>"
 		if(lock_reason)
 			toggle_html = wrap_with_tooltip("<a class='linkOff'>[status_text]</a>", lock_reason)
 

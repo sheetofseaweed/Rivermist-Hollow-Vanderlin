@@ -16,6 +16,7 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 /mob/living/carbon/human/species/rousman/Initialize()
 	. = ..()
 	update_appearance(UPDATE_OVERLAYS)
+	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
 
 /mob/living/carbon/human/species/rousman/death(gibbed)
 	. = ..()
@@ -198,10 +199,6 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 /mob/living/carbon/human/species/rousman/update_inv_armor()
 	update_wearable()
 
-/mob/living/carbon/human/species/rousman/Initialize()
-	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(after_creation)), 1 SECONDS)
-
 /mob/living/carbon/human/species/rousman/after_creation()
 	..()
 	gender = MALE
@@ -243,6 +240,8 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 	ADD_TRAIT(src, TRAIT_CRITICAL_WEAKNESS, TRAIT_GENERIC)
 
 /datum/component/rot/corpse/rousman/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	var/amt2add = 10 //1 second
 	var/time_elapsed = last_process ? (world.time - last_process)/10 : 1
 	if(last_process)

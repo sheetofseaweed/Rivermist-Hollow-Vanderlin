@@ -210,7 +210,7 @@ GLOBAL_LIST_EMPTY(secret_door_managers)
 		return
 	if(isliving(user))
 		var/mob/living/L = user
-		if(HAS_MIND_TRAIT(user, accessor_trait))
+		if(HAS_CHARACTER_TRAIT(user, accessor_trait))
 			. += span_purple("There's a hidden door here...")
 		else
 			var/bonuses = (HAS_TRAIT(user, TRAIT_THIEVESGUILD) || HAS_TRAIT(user, TRAIT_ASSASSIN)) ? 2 : 0

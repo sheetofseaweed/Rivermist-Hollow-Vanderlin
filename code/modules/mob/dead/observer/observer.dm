@@ -253,11 +253,8 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 
 	GLOB.dead_mob_list += src
 
-	for(var/v in GLOB.active_alternate_appearances)
-		if(!v)
-			continue
-		var/datum/atom_hud/alternate_appearance/AA = v
-		AA.onNewMob(src)
+	for(var/datum/atom_hud/alternate_appearance/alt_hud as anything in GLOB.active_alternate_appearances)
+		alt_hud.apply_to_new_mob(src)
 
 	. = ..()
 
@@ -332,37 +329,28 @@ Works together with spawning an observer, noted above.
 */
 
 /mob/proc/ghostize(can_reenter_corpse = 1, force_respawn = FALSE, drawskip)
-	if(key)
-		stop_sound_channel(CHANNEL_HEARTBEAT) //Stop heartbeat sounds because You Are A Ghost Now
-		if(client)
-			if(client.holder)
-				var/mob/dead/observer/ghost = new(src)	// Transfer safety to observer spawning proc.
-				SStgui.on_transfer(src, ghost) // Transfer NanoUIs.
-				ghost.can_reenter_corpse = can_reenter_corpse
-				ghost.ghostize_time = world.time
-				ghost.key = key
-				return ghost
-//		if(client)
-//			var/S = sound('sound/ambience/creepywind.ogg', repeat = 1, wait = 0, volume = client.prefs.read_preference(/datum/preference/numeric/musicvol), channel = CHANNEL_MUSIC)
-//			play_priomusic(S)
-		var/mob/dead/observer/rogue/ghost	// Transfer safety to observer spawning proc.
-		if(drawskip)
-			ghost = new /mob/dead/observer/rogue/nodraw(src)
-		else
-			ghost = new(src)
-		ghost.ghostize_time = world.time
-		var/bnw = TRUE
-		if(client)
-			if(client.holder)
-				if(check_rights_for(client,R_WATCH))
-					bnw = FALSE
-		SStgui.on_transfer(src, ghost) // Transfer NanoUIs.
-		ghost.can_reenter_corpse = can_reenter_corpse
-		ghost.key = key
-		if(!bnw)
-			return ghost
+	if(!key)
+		return
+
+	stop_sound_channel(CHANNEL_HEARTBEAT)
+	var/mob/dead/observer/ghost
+	var/apply_monochrome = TRUE
+	if(client?.holder)
+		ghost = new(src)
+		apply_monochrome = FALSE
+	else if(drawskip)
+		ghost = new /mob/dead/observer/rogue/nodraw(src)
+	else
+		ghost = new(src)
+
+	ghost.ghostize_time = world.time
+	SStgui.on_transfer(src, ghost)
+	ghost.can_reenter_corpse = can_reenter_corpse
+	ghost.key = key
+	if(apply_monochrome)
 		ghost.add_client_colour(/datum/client_colour/monochrome)
-		return ghost
+	SEND_SIGNAL(src, COMSIG_MOB_GHOSTIZED)
+	return ghost
 
 /mob/living/carbon/human/ghostize(can_reenter_corpse = 1, force_respawn = FALSE, drawskip = FALSE)
 	if(mind)
@@ -553,7 +541,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 				A.add_overlay(source)
 				source.layer = old_layer
 				source.plane = old_plane
-	to_chat(src, "<span class='ghostalert'><a href=?src=[REF(src)];reenter=1>(Click to re-enter)</a></span>")
+	to_chat(src, "<span class='ghostalert'><a href=byond://?src=[REF(src)];reenter=1>(Click to re-enter)</a></span>")
 	if(sound)
 		SEND_SOUND(src, sound(sound))
 
@@ -917,12 +905,12 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/proc/show_data_huds()
 	for(var/hudtype in datahuds)
 		var/datum/atom_hud/H = GLOB.huds[hudtype]
-		H.add_hud_to(src)
+		H.show_to(src)
 
 /mob/dead/observer/proc/remove_data_huds()
 	for(var/hudtype in datahuds)
 		var/datum/atom_hud/H = GLOB.huds[hudtype]
-		H.remove_hud_from(src)
+		H.hide_from(src)
 
 /mob/dead/observer/verb/toggle_data_huds()
 	set name = "Toggle Sec/Med/Diag HUD"
@@ -1004,6 +992,8 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /mob/dead/observer/vv_edit_var(var_name, var_value)
 	. = ..()
+	if(var_name == "invisibility")
+		set_invisibility(invisibility) // updates light
 	switch(var_name)
 		if("icon")
 			ghostimage_default.icon = icon
@@ -1075,11 +1065,6 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		set_light(1, 1, 2)
 	else
 		set_light(0, 0, 0)
-
-/mob/dead/observer/vv_edit_var(var_name, var_value)
-	. = ..()
-	if(var_name == "invisibility")
-		set_invisibility(invisibility) // updates light
 
 /proc/set_observer_default_invisibility(amount, message=null)
 	for(var/mob/dead/observer/G in GLOB.player_list)

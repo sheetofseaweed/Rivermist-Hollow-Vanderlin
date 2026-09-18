@@ -41,8 +41,8 @@
 	..()
 	var/datum/customizer_entry/organ/genitals/testicles/testicles_entry = entry
 	if(can_customize_size)
-		dat += "<br>Ball size: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=ball_size''>[find_key_by_value(TESTICLE_SIZES_BY_NAME, testicles_entry.ball_size)]</a>"
-	dat += "<br>Virile: <a href='?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=virile''>[testicles_entry.virility ? "Virile" : "Sterile"]</a>"
+		dat += "<br>Ball size: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=ball_size''>[find_key_by_value(TESTICLE_SIZES_BY_NAME, testicles_entry.ball_size)]</a>"
+	dat += "<br>Virile: <a href='byond://?_src_=prefs;task=change_customizer;customizer=[customizer_type];customizer_task=virile''>[testicles_entry.virility ? "Virile" : "Sterile"]</a>"
 
 /datum/customizer_choice/organ/genitals/testicles/handle_topic(mob/user, list/href_list, datum/preferences/prefs, datum/customizer_entry/entry, customizer_type)
 	..()

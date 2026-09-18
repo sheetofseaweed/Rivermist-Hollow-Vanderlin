@@ -30,6 +30,8 @@ GLOBAL_LIST_INIT(name2reagent, build_name2reagent())
 	var/current_cycle = 0
 	var/volume = 0									//pretend this is moles
 	var/color = "#000000" // rgb: 0, 0, 0
+	/// Trade value for one unit when this reagent is sold through a merchant.
+	var/price_per_unit = 0
 	var/random_reagent_color = FALSE
 	var/alpha = 255
 	var/can_synth = TRUE // can this reagent be synthesized? (for example: odysseus syringe gun)
@@ -67,6 +69,8 @@ GLOBAL_LIST_INIT(name2reagent, build_name2reagent())
 	var/dead_head = TRUE
 	///if we are false we don't apply the liver efficiency to our metabolization
 	var/liver_chemical = TRUE
+	/// Boiling point in Kelvin. Used by chem_separator to determine distillation order.
+	var/boiling_point = T0C + 100
 
 /datum/reagent/Destroy() // This should only be called by the holder, so it's already handled clearing its references
 	. = ..()

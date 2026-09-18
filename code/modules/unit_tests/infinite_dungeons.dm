@@ -972,6 +972,21 @@
 	run.floor_config.stretches_per_floor = 1 // restore the shared test config
 	qdel(run)
 
+/// Kills guardians until the room reports cleared. Wave rooms spawn a fresh
+/// wave on each clear, so one pass is not enough.
+/datum/unit_test/proc/drain_dungeon_room(datum/pocket_dimension/dungeon/room)
+	for(var/pass in 1 to 12)
+		if(room.cleared)
+			return TRUE
+		if(!length(room.guardian_refs))
+			return room.cleared
+		for(var/g_ref in room.guardian_refs.Copy())
+			var/datum/weakref/g_wr = room.guardian_refs[g_ref]
+			var/mob/living/g_mob = g_wr?.resolve()
+			if(g_mob)
+				qdel(g_mob)
+	return room.cleared
+
 /datum/unit_test/dungeon_door_rewards/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)
 	var/mob/living/carbon/human/delver = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
@@ -988,16 +1003,14 @@
 	forward_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
 	forward_gate.reward_type = DUNGEON_REWARD_LOOT
 	forward_gate.sealed = FALSE
+	// A special room would roll trader/mystery/waves population and change the clear shape.
+	run.special_room_position = 0
+	run.special_room_kind = null
 	TEST_ASSERT(forward_gate.use_gate(delver), "Gate should transfer to the loot-door room.")
 	var/datum/pocket_dimension/dungeon/loot_room = forward_gate.destination_room
 	TEST_ASSERT_EQUAL(loot_room.promised_reward, DUNGEON_REWARD_LOOT, "Room should inherit the gate's reward promise.")
 	var/caches_before = length(loot_room.loot_caches)
-	for(var/g_ref in loot_room.guardian_refs.Copy())
-		var/datum/weakref/g_wr = loot_room.guardian_refs[g_ref]
-		var/mob/living/g_mob = g_wr?.resolve()
-		if(g_mob)
-			qdel(g_mob)
-	TEST_ASSERT(loot_room.cleared, "Loot-door room should clear.")
+	TEST_ASSERT(drain_dungeon_room(loot_room), "Loot-door room should clear.")
 	TEST_ASSERT(length(loot_room.loot_caches) > caches_before, "Clearing a LOOT door should spawn a bonus cache.")
 
 	// -- HEAL door: clearing heals present members --
@@ -1010,24 +1023,24 @@
 	next_gate.pre_rolled_template = SSpocket_dimensions.resolve_template("dungeon_test_combat")
 	next_gate.reward_type = DUNGEON_REWARD_HEAL
 	next_gate.sealed = FALSE
+	run.special_room_position = 0
+	run.special_room_kind = null
 	TEST_ASSERT(next_gate.use_gate(delver), "Gate should transfer to the heal-door room.")
 	var/datum/pocket_dimension/dungeon/heal_room = next_gate.destination_room
+	// The payout only fires on the clear, so the damage must land while the room is still held.
+	TEST_ASSERT(!heal_room.cleared, "Heal-door room should still be held when the delver is damaged.")
 	delver.adjustBruteLoss(50)
 	var/damage_before = delver.getBruteLoss()
 	TEST_ASSERT(damage_before > 0, "Delver should be damaged before the heal payout.")
-	for(var/g_ref in heal_room.guardian_refs.Copy())
-		var/datum/weakref/g_wr = heal_room.guardian_refs[g_ref]
-		var/mob/living/g_mob = g_wr?.resolve()
-		if(g_mob)
-			qdel(g_mob)
 	var/datum/map_template/pocket/dungeon/heal_template = heal_room.get_dungeon_template()
+	var/cleared_heal_room = drain_dungeon_room(heal_room)
 	var/list/lingering = list()
 	for(var/g_ref in heal_room.guardian_refs)
 		var/datum/weakref/g_wr = heal_room.guardian_refs[g_ref]
 		var/mob/living/g_mob = g_wr?.resolve()
 		lingering += g_mob ? "[g_mob.type](stat=[g_mob.stat])" : "unresolved:[g_ref]"
-	TEST_ASSERT(heal_room.cleared, "Heal-door room should clear (template=[heal_template?.id], pop=[heal_room.population_mode], waves=[heal_room.pending_waves], refs=[length(heal_room.guardian_refs)]: [lingering.Join(", ")]).")
-	TEST_ASSERT(delver.getBruteLoss() < damage_before, "Clearing a HEAL door should heal present members.")
+	TEST_ASSERT(cleared_heal_room, "Heal-door room should clear (template=[heal_template?.id], pop=[heal_room.population_mode], waves=[heal_room.pending_waves], refs=[length(heal_room.guardian_refs)]: [lingering.Join(", ")]).")
+	TEST_ASSERT(delver.getBruteLoss() < damage_before, "Clearing a HEAL door should heal present members (before=[damage_before], after=[delver.getBruteLoss()], members=[length(run.get_members_in_room(heal_room))]).")
 
 	qdel(run)
 

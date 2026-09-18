@@ -304,6 +304,8 @@
 			equipOutfit(O)
 
 /datum/component/rot/corpse/goblin/process()
+	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
+		return
 	var/amt2add = 10 //1 second
 	var/time_elapsed = last_process ? (world.time - last_process)/10 : 1
 	if(last_process)
@@ -517,7 +519,3 @@
 		return
 	spawning = TRUE
 	addtimer(CALLBACK(src, PROC_REF(creategob)), 2 SECONDS)
-
-/obj/structure/gob_portal/Destroy()
-	soundloop.stop()
-	. = ..()

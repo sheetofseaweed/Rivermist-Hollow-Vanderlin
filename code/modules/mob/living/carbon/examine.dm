@@ -171,7 +171,7 @@
 			. += span_redtextbig("HERETIC! SHAME!")
 
 		// Outlaws
-		if(HAS_MIND_TRAIT(user, TRAIT_KNOWBANDITS) && (real_name in GLOB.outlawed_players))
+		if(HAS_CHARACTER_TRAIT(user, TRAIT_KNOWBANDITS) && (real_name in GLOB.outlawed_players))
 			. += span_boldred(mind?.special_role == "Bandit" ? "BANDIT!" : "OUTLAW!")
 
 		// Court Agents
@@ -280,6 +280,9 @@
 	. = list()
 	var/list/unobscured = get_unobscured_items(FALSE)
 	for(var/obj/item/I as anything in unobscured)
+		// These are part of the wearer's body, despite using clothing slots internally.
+		if(istype(I, /obj/item/clothing/armor/regenerating/skin) || istype(I, /obj/item/clothing/shirt/undershirt/easttats))
+			continue
 		var/slot_title = null
 		switch(unobscured[I]) // this could probably be abstracted into its own proc at some point
 			if(ITEM_SLOT_SHIRT, ITEM_SLOT_ARMOR, ITEM_SLOT_PANTS, ITEM_SLOT_CLOAK, ITEM_SLOT_SHOES)
@@ -320,12 +323,19 @@
 				. += " in [P[THEIR]] left ear."
 			if(ITEM_SLOT_EARRING_R)
 				. += " in [P[THEIR]] right ear."
-		. += "[I.get_examine_icon(user)] - [P[THEYVE]] [I.get_examine_string(user)][slot_title]."
+		// Worn armour gets a hover tooltip with its protection summary.
+		var/examine_phrase = I.get_examine_string(user, use_examine_name = TRUE)
+		if(istype(I, /obj/item/clothing))
+			var/obj/item/clothing/worn_clothing = I
+			var/armor_tip = worn_clothing.get_brief_armor_tip()
+			if(armor_tip)
+				examine_phrase = span_tooltip_html(armor_tip, examine_phrase)
+		. += "[I.get_examine_icon(user)] - [P[THEYVE]] [examine_phrase][slot_title]."
 	for(var/obj/item/I in held_items)
 		if(I.item_flags & ABSTRACT)
 			continue
 		var/wielding = I.is_wielded()
-		. += "[I.get_examine_icon(user)] - [P[THEYRE]] [wielding ? "wielding" : "holding"] [I.get_examine_string(user)] in [P[THEIR]] [wielding ? "hands" : get_held_index_name(get_held_index_of_item(I))]."
+		. += "[I.get_examine_icon(user)] - [P[THEYRE]] [wielding ? "wielding" : "holding"] [I.get_examine_string(user, use_examine_name = TRUE)] in [P[THEIR]] [wielding ? "hands" : get_held_index_name(get_held_index_of_item(I))]."
 
 
 /// Things that are physical but do not need to see your face to establish.
@@ -333,12 +343,20 @@
 /mob/living/carbon/proc/get_examine_body(mob/user, list/P, list/examine_list)
 	var/self_inspect = user == src
 	var/pl = self_inspect ? "" : p_s()
+	//RMH EDITED START - Клеймо: brands and handprints report here, not in the face
+	//pass, so a mask cannot hide a brand that sits on a bare arm.
+	var/list/brand_lines = get_brand_body_lines(user, P)
+	//RMH EDITED END
 	//var/mob/dead/observer/O = isobserver(user) ? user : null
 	var/mob/living/L = isliving(user) ? user : null
 	//var/mob/living/carbon/C = iscarbon(user) ? user : null
 	//var/mob/living/carbon/human/H = ishuman(user) ? user : null
 
 	. = list()
+	//RMH EDITED START - Клеймо
+	if(length(brand_lines))
+		. += brand_lines
+	//RMH EDITED END
 
 	// Species, just below the name
 	var/datum/species/species = dna?.species

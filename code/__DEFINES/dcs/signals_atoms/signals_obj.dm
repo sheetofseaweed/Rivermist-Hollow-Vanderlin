@@ -23,12 +23,20 @@
 /// From base of [obj/item/afterattack_secondary()]: (atom/target, mob/user, list/modifiers)
 #define COMSIG_ITEM_AFTERATTACK_SECONDARY "item_afterattack_secondary"
 
+/// Sent to worn gloves after a successful unarmed attack: (mob/living/target, mob/living/attacker, damage)
+#define COMSIG_GLOVES_POST_ATTACK_HAND "glove_post_attackhand"
+
 /// From base of obj/item/attack_qdeleted(): (atom/target, mob/user, list/modifiers)
 #define COMSIG_ITEM_ATTACK_QDELETED "item_attack_qdeleted"
 /// From base of datum/species/proc/spec_attacked_by: (atom/target, mob/user, list/modifiers)
 #define COMSIG_ITEM_SPEC_ATTACKEDBY "item_spec_attackedby"
+/// Sent after an item damages a simple animal: (mob/living/target, mob/living/attacker, actual_damage)
+#define COMSIG_ITEM_POST_ATTACK_SIMPLE "item_post_attack_simple"
 
 #define COMSIG_ITEM_EQUIPPED "item_equip"						//from base of obj/item/equipped(): (/mob/equipper, slot)
+
+/// Sent after an item is consumed: (mob/living/eater)
+#define COMSIG_ITEM_EATEN "item_eaten"
 
 #define COMSIG_QUALITY_ADD_MATERIAL "quality_add_material"
 #define COMSIG_QUALITY_MODIFY "quality_modify"
@@ -40,3 +48,8 @@
 #define COMSIG_MOB_FIRED_GUN "mob_fired_gun"
 ///called in /obj/item/gun/process_fire (user, target, list/modifiers, zone_override)
 #define COMSIG_GUN_FIRED "gun_fired"
+
+/// Sent to an item when it is placed on a secure relic spot: (secure_id)
+#define COMSIG_SECURE_SPOT_ACTIVATED "secure_spot_activated"
+/// Sent to an item when it leaves a secure relic spot: (secure_id)
+#define COMSIG_SECURE_SPOT_DEACTIVATED "secure_spot_deactivated"

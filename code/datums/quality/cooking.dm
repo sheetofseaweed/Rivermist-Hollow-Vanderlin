@@ -104,11 +104,11 @@
 	var/tier_str = num2text(tier)
 	return quality_descriptors[tier_str]
 
-/datum/quality_calculator/cooking/apply_quality_to_item(obj/item/target, track_masterworks = FALSE)
+/datum/quality_calculator/cooking/apply_quality_to_item(obj/item/target, track_masterworks = FALSE, quality_override)
 	if(!istype(target, /obj/item/reagent_containers/food/snacks))
 		return FALSE
 
-	var/final_quality = calculate_final_quality()
+	var/final_quality = isnull(quality_override) ? calculate_final_quality() : quality_override
 	var/list/quality_data = get_quality_data(final_quality)
 
 	if(!quality_data)

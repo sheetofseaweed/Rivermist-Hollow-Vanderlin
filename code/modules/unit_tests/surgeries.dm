@@ -185,7 +185,6 @@
 	var/mob/living/carbon/human/surgeon = allocate(/mob/living/carbon/human)
 
 	var/obj/item/weapon/surgery/scalpel/scalpel = allocate(/obj/item/weapon/surgery/scalpel)
-	var/obj/item/bodypart/chest/chest = patient.get_bodypart(BODY_ZONE_CHEST)
 	var/list/operations
 
 	surgeon.put_in_active_hand(scalpel)

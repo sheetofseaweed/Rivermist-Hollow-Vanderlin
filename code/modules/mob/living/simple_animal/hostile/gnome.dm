@@ -43,29 +43,10 @@
 	var/hat_state
 
 	var/static/list/pet_commands = list(
-		/datum/pet_command/follow,
-		/datum/pet_command/idle,
-		/datum/pet_command/fetch,
-		/datum/pet_command/gnome/search_range,
-
-		/datum/pet_command/gnome/set_waypoint,
-		/datum/pet_command/gnome/set_waypoint/b,
-
-		/datum/pet_command/gnome/set_filter,
-		/datum/pet_command/gnome/clear_filter,
-
-		/datum/pet_command/gnome/use_splitter,
-		/datum/pet_command/gnome/stop_splitter,
-
-		/datum/pet_command/gnome/move_item,
-		/datum/pet_command/gnome/stop_move_item,
-
-		/datum/pet_command/gnome/tend_crops,
-		/datum/pet_command/gnome/stop_tending,
-
-		/datum/pet_command/gnome/select_recipe,
-		/datum/pet_command/gnome/start_alchemy,
-		/datum/pet_command/gnome/stop_alchemy,
+		/datum/pet_command/follow/gnome,
+		/datum/pet_command/idle/gnome,
+		/datum/pet_command/fetch/gnome,
+		/datum/pet_command/free/gnome,
 	)
 
 	var/list/gnome_friendship_levels = list(
@@ -213,4 +194,3 @@
 	SEND_SIGNAL(src, COMSIG_EMOTION_STORE, player, EMOTION_FUNNY, "played with me using [toy_item]!", 2)
 
 	say(pick("*giggle*", "Fun!", "*bounce*", "Play!"))
-

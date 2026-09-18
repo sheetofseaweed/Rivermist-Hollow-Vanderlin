@@ -162,20 +162,25 @@
 	return assemble_body_markings_from_set(GLOB.body_marking_sets_by_type[/datum/body_marking_set/tiger_dark], passed_features, src)
 
 /datum/species/tabaxi/on_species_gain(mob/living/carbon/C, datum/species/old_species)
-	..()
+	. = ..()
 	C.grant_language(/datum/language/common)
 	C.grant_language(/datum/language/zalad)
 	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
 	add_verb(C, /mob/living/carbon/human/species/rakshari/verb/emote_meow)
 	add_verb(C, /mob/living/carbon/human/species/rakshari/verb/emote_purr)
+	var/datum/action/cooldown/keen_nose/sniff_action = new(C)
+	sniff_action.Grant(C)
 	to_chat(C, "<span class='info'>I can speak Zakhara with ,z before my speech.</span>")
 
 /datum/species/tabaxi/on_species_loss(mob/living/carbon/C)
 	. = ..()
 	UnregisterSignal(C, COMSIG_MOB_SAY)
+	for(var/datum/action/cooldown/keen_nose/sniff_action in C.actions)
+		if(sniff_action.target == C)
+			qdel(sniff_action)
 
 /datum/species/tabaxi/after_creation(mob/living/carbon/C)
-	..()
+	. = ..()
 	C.grant_language(/datum/language/common)
 	C.grant_language(/datum/language/zalad)
 

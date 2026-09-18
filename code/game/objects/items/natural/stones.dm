@@ -153,6 +153,7 @@ GLOBAL_LIST_INIT(stone_personality_descs, list(
 	stone_lore()
 
 /obj/item/natural/stone/on_consume(mob/living/eater)
+	. = ..()
 	eater.extra_mob_weight += get_carry_weight(eater)
 	if(!magic_power)
 		return
@@ -261,7 +262,7 @@ GLOBAL_LIST_INIT(stone_personality_descs, list(
 			extra_intent_list -= cock // Remove it from the prev list
 
 	//Now that we have built the history and lore of this stone, we apply it to the main vars.
-	name = lowertext(stone_title)
+	name = LOWER_TEXT(stone_title)
 	desc = stone_desc
 	// force += bonus_force // This will result in a stone that has only 40 max at a extremely low chance damage at this time of this PR.
 	throwforce += bonus_force // It gets added to throw damage too

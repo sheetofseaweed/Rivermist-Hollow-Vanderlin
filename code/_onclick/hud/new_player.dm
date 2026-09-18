@@ -88,11 +88,6 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 		hud.mymob.playsound_local(soundin = 'sound/menu/button_press.ogg', vol = 50, vary = TRUE)
 	return TRUE
 
-/atom/movable/screen/lobby/button/MouseEntered(location, control, params)
-	. = ..()
-	if(!enabled)
-		return
-
 /atom/movable/screen/lobby/button/MouseEntered(location,control,params)
 	if(!usr.client)
 		return

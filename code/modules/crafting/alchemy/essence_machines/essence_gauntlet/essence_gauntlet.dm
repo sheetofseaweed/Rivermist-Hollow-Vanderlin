@@ -3,16 +3,50 @@
 	desc = "A gauntlet that can store alchemical essences and channel them into alchemical spells. Advanced combinations can unlock powerful effects."
 	icon_state = "essence_gauntlet"
 	var/list/obj/item/essence_vial/stored_vials = list()
+	var/list/datum/essence_combo/active_combos = list()
 	var/max_vials = 4
 
 /obj/item/clothing/gloves/essence_gauntlet/equipped(mob/user, slot)
 	. = ..()
 	if(slot & ITEM_SLOT_GLOVES)
-		grant_essence_spells(user)
+		refresh_combos(user)
 
 /obj/item/clothing/gloves/essence_gauntlet/dropped(mob/user)
+	clear_combos(user)
+	return ..()
+
+/obj/item/clothing/gloves/essence_gauntlet/Destroy()
+	var/mob/living/wearer = get_gauntlet_user()
+	if(wearer)
+		clear_combos(wearer)
+
+	var/atom/drop_target = drop_location()
+	var/list/vials_to_eject = stored_vials.Copy()
+	stored_vials.Cut()
+	for(var/obj/item/essence_vial/vial in vials_to_eject)
+		if(drop_target && !QDELETED(vial))
+			vial.forceMove(drop_target)
+
+	active_combos.Cut()
+	return ..()
+
+/obj/item/clothing/gloves/essence_gauntlet/handle_atom_del(atom/deleted_atom)
 	. = ..()
-	remove_essence_spells(user)
+	if(!(deleted_atom in stored_vials))
+		return
+	stored_vials -= deleted_atom
+	var/mob/living/wearer = get_gauntlet_user()
+	if(wearer)
+		refresh_combos(wearer)
+
+/obj/item/clothing/gloves/essence_gauntlet/Exited(atom/movable/gone, direction)
+	. = ..()
+	if(!(gone in stored_vials))
+		return
+	stored_vials -= gone
+	var/mob/living/wearer = get_gauntlet_user()
+	if(wearer)
+		refresh_combos(wearer)
 
 /obj/item/clothing/gloves/essence_gauntlet/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()
@@ -20,154 +54,190 @@
 		return
 	. = SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
+	if(!is_worn_by(user))
+		to_chat(user, span_warning("You must wear [src] to adjust its vials."))
+		return
 	if(!length(stored_vials))
-		to_chat(user, span_warning("[src] has no vials to remove!"))
+		to_chat(user, span_warning("[src] has no vials to remove."))
 		return
 
-	// Create radial menu for vial selection
 	var/list/radial_options = list()
-	var/list/vial_mapping = list()
+	var/list/vial_map = list()
 	for(var/i in 1 to length(stored_vials))
 		var/obj/item/essence_vial/vial = stored_vials[i]
-		var/vial_desc = "Vial [i]"
-		var/display_name = "Vial [i]"
-		if(vial.contained_essence && vial.essence_amount > 0)
-			if(HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST))
-				vial_desc += " - [vial.contained_essence.name] ([vial.essence_amount] units)"
-				display_name = "[vial.contained_essence.name]"
-			else
-				vial_desc += " - essence smelling of [vial.contained_essence.smells_like] ([vial.essence_amount] units)"
-				display_name = "Essence smelling of [vial.contained_essence.smells_like]"
-		else
-			vial_desc += " - empty"
-			display_name = "Empty vial"
-
+		var/label = vial_label(vial, user, i)
 		var/datum/radial_menu_choice/choice = new()
-		var/image/image = image(icon = 'icons/roguetown/misc/alchemy.dmi', icon_state = "essence")
-		if(vial.contained_essence && vial.essence_amount > 0)
-			image.color = vial.contained_essence.color
-		choice.image = image
-		choice.name = display_name
-		if(vial.contained_essence && vial.essence_amount > 0)
-			if(HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST))
-				choice.info = "Remove vial containing [vial.contained_essence.name] ([vial.essence_amount] units)"
-			else
-				choice.info = "Remove vial containing essence smelling of [vial.contained_essence.smells_like] ([vial.essence_amount] units)"
-		else
-			choice.info = "Remove empty vial"
-		radial_options[vial_desc] = choice
-		vial_mapping[vial_desc] = vial
+		choice.name = label
+		choice.image = vial_radial_image(vial)
+		radial_options[label] = choice
+		vial_map[label] = vial
 
-	var/choice = show_radial_menu(user, src, radial_options, custom_check = CALLBACK(src, PROC_REF(check_gauntlet_validity), user), radial_slice_icon = "radial_thaum")
-	if(!choice || !vial_mapping[choice])
+	var/picked = show_radial_menu(
+		user,
+		src,
+		radial_options,
+		custom_check = CALLBACK(src, PROC_REF(is_worn_by), user),
+		radial_slice_icon = "radial_thaum"
+	)
+	if(!picked || !is_worn_by(user))
 		return
-	var/obj/item/essence_vial/chosen_vial = vial_mapping[choice]
-	stored_vials -= chosen_vial
-	chosen_vial.forceMove(get_turf(user))
-	user.put_in_hands(chosen_vial)
-	to_chat(user, span_notice("You remove [chosen_vial] from [src]."))
-	// Update spells if currently equipped
-	if(ishuman(user) && user.get_item_by_slot(ITEM_SLOT_GLOVES) == src)
-		remove_essence_spells(user)
-		grant_essence_spells(user)
 
-/obj/item/clothing/gloves/essence_gauntlet/proc/check_gauntlet_validity(mob/user)
-	return user && src.loc == user
+	var/obj/item/essence_vial/chosen = vial_map[picked]
+	if(!chosen || !(chosen in stored_vials))
+		return
 
-/obj/item/clothing/gloves/essence_gauntlet/attackby(obj/item/I, mob/user, list/modifiers)
-	if(istype(I, /obj/item/essence_vial))
-		var/obj/item/essence_vial/vial = I
+	stored_vials -= chosen
+	chosen.forceMove(get_turf(user))
+	user.put_in_hands(chosen)
+	to_chat(user, span_notice("You remove [chosen] from [src]."))
+	refresh_combos(user)
+
+/obj/item/clothing/gloves/essence_gauntlet/proc/is_worn_by(mob/user)
+	if(!ishuman(user) || loc != user)
+		return FALSE
+	var/mob/living/carbon/human/human_user = user
+	return human_user.get_item_by_slot(ITEM_SLOT_GLOVES) == src
+
+/obj/item/clothing/gloves/essence_gauntlet/proc/vial_label(obj/item/essence_vial/vial, mob/user, index)
+	if(!vial.contained_essence || vial.essence_amount <= 0)
+		return "Empty Vial [index]"
+	if(HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST))
+		return "[vial.contained_essence.name] — [vial.essence_amount] ligulae"
+	return "Essence smelling of [vial.contained_essence.smells_like] — [vial.essence_amount] ligulae"
+
+/obj/item/clothing/gloves/essence_gauntlet/proc/vial_radial_image(obj/item/essence_vial/vial)
+	var/image/vial_image = image(icon = 'icons/roguetown/misc/alchemy.dmi', icon_state = "essence")
+	if(vial.contained_essence && vial.essence_amount > 0)
+		vial_image.color = vial.contained_essence.color
+	return vial_image
+
+/obj/item/clothing/gloves/essence_gauntlet/proc/refresh_combos(mob/user)
+	if(!isliving(user) || !is_worn_by(user))
+		return
+
+	var/mob/living/living_user = user
+	var/list/available = get_available_essence_types()
+	var/list/datum/essence_combo/new_combos = get_available_essence_combos(available, user)
+
+	for(var/datum/essence_combo/combo in active_combos.Copy())
+		if(combo in new_combos)
+			continue
+		combo.remove(src, living_user)
+		active_combos -= combo
+
+	for(var/datum/essence_combo/combo in new_combos)
+		if(combo in active_combos)
+			continue
+		combo.apply(src, living_user)
+		active_combos += combo
+
+/obj/item/clothing/gloves/essence_gauntlet/proc/clear_combos(mob/user)
+	if(!isliving(user))
+		active_combos.Cut()
+		return
+
+	var/mob/living/living_user = user
+	for(var/datum/essence_combo/combo in active_combos)
+		combo.remove(src, living_user)
+	active_combos.Cut()
+
+	// Remove any stale gauntlet spells left by an interrupted refresh.
+	living_user.remove_spells(source = src)
+
+/obj/item/clothing/gloves/essence_gauntlet/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	var/parent_result = ..()
+	if(parent_result)
+		return parent_result
+	if(!istype(tool, /obj/item/essence_vial) || user.cmode)
+		return NONE
+
+	var/obj/item/essence_vial/vial = tool
+	if(!vial.contained_essence || vial.essence_amount <= 0)
+		to_chat(user, span_warning("[vial] is empty!"))
+		return ITEM_INTERACT_BLOCKING
+	if(length(stored_vials) >= max_vials)
+		to_chat(user, span_warning("[src] is full!"))
+		return ITEM_INTERACT_BLOCKING
+	if(!user.transferItemToLoc(vial, src))
+		return ITEM_INTERACT_BLOCKING
+
+	stored_vials += vial
+	to_chat(user, span_notice("You slot [vial] into [src]."))
+	refresh_combos(user)
+	return ITEM_INTERACT_SUCCESS
+
+/// Returns TRUE if the gauntlet can cover the cost from vials matching the requested essence types.
+/obj/item/clothing/gloves/essence_gauntlet/proc/can_consume_essence(amount, list/essence_types = null)
+	if(amount <= 0)
+		return TRUE
+
+	var/available = 0
+	for(var/obj/item/essence_vial/vial in stored_vials)
 		if(!vial.contained_essence || vial.essence_amount <= 0)
-			to_chat(user, span_warning("[vial] is empty!"))
-			return
+			continue
+		if(essence_types && !(vial.contained_essence.type in essence_types))
+			continue
+		available += vial.essence_amount
+	return available >= amount
 
-		if(length(stored_vials) >= max_vials)
-			to_chat(user, span_warning("[src] cannot hold any more essence vials!"))
-			return
+/// Consumes essence, splitting the cost across each matching essence type.
+/// Returns TRUE on success without partially draining vials when the full cost is unavailable.
+/obj/item/clothing/gloves/essence_gauntlet/proc/consume_essence(amount, list/essence_types = null)
+	if(!can_consume_essence(amount, essence_types))
+		return FALSE
+	if(amount <= 0)
+		return TRUE
 
-		if(!user.transferItemToLoc(vial, src))
-			return
+	var/list/vials_by_essence = list()
+	for(var/obj/item/essence_vial/vial in stored_vials)
+		if(!vial.contained_essence || vial.essence_amount <= 0)
+			continue
+		var/essence_type = vial.contained_essence.type
+		if(essence_types && !(essence_type in essence_types))
+			continue
+		if(!vials_by_essence[essence_type])
+			vials_by_essence[essence_type] = list()
+		vials_by_essence[essence_type] += vial
 
-		stored_vials += vial
-		to_chat(user, span_notice("You insert [vial] into [src]."))
-
-		// Update spells if currently equipped
-		if(ishuman(user) && user.get_item_by_slot(ITEM_SLOT_GLOVES) == src)
-			remove_essence_spells(user)
-			grant_essence_spells(user)
-		return
-
-	return ..()
-
-/obj/item/clothing/gloves/essence_gauntlet/proc/can_consume_essence(required_amount, list/required_attunements)
-	var/total_available = 0
-
-	if(!required_attunements || !length(required_attunements))
-		for(var/obj/item/essence_vial/vial in stored_vials)
-			if(vial.contained_essence && vial.essence_amount > 0)
-				total_available += vial.essence_amount
-		return total_available >= required_amount
-
-	for(var/attunement_path in required_attunements)
-		var/essence_type = extract_essence_type(attunement_path)
-		for(var/obj/item/essence_vial/vial in stored_vials)
-			if(vial.contained_essence && vial.contained_essence.type == essence_type)
-				total_available += vial.essence_amount
-
-	return total_available >= required_amount
-
-/obj/item/clothing/gloves/essence_gauntlet/proc/consume_essence(amount, list/required_attunements)
-	var/remaining_to_consume = amount
-
-	if(!required_attunements || !length(required_attunements))
-		for(var/obj/item/essence_vial/vial in stored_vials)
-			if(remaining_to_consume <= 0)
+	var/remaining = amount
+	var/group_count = length(vials_by_essence)
+	if(group_count > 1)
+		var/share = CEILING(amount / group_count, 1)
+		for(var/essence_type in vials_by_essence)
+			if(remaining <= 0)
 				break
-			if(vial.contained_essence && vial.essence_amount > 0)
-				var/to_consume = min(vial.essence_amount, remaining_to_consume)
-				vial.essence_amount -= to_consume
-				remaining_to_consume -= to_consume
-				if(vial.essence_amount <= 0)
-					vial.contained_essence = null
-				vial.update_appearance(UPDATE_OVERLAYS)
-		return remaining_to_consume <= 0
-
-	for(var/attunement_path in required_attunements)
-		if(remaining_to_consume <= 0)
-			break
-		var/essence_type = extract_essence_type(attunement_path)
-		for(var/obj/item/essence_vial/vial in stored_vials)
-			if(remaining_to_consume <= 0)
-				break
-			if(vial.contained_essence && vial.contained_essence.type == essence_type && vial.essence_amount > 0)
-				var/to_consume = min(vial.essence_amount, remaining_to_consume)
-				vial.essence_amount -= to_consume
-				remaining_to_consume -= to_consume
+			var/to_draw = min(share, remaining)
+			for(var/obj/item/essence_vial/vial in vials_by_essence[essence_type])
+				if(to_draw <= 0)
+					break
+				var/drawn = min(vial.essence_amount, to_draw)
+				vial.essence_amount -= drawn
+				to_draw -= drawn
+				remaining -= drawn
 				if(vial.essence_amount <= 0)
 					vial.contained_essence = null
 				vial.update_appearance(UPDATE_OVERLAYS)
 
-	return remaining_to_consume <= 0
+	if(remaining > 0)
+		for(var/essence_type in vials_by_essence)
+			if(remaining <= 0)
+				break
+			for(var/obj/item/essence_vial/vial in vials_by_essence[essence_type])
+				if(remaining <= 0)
+					break
+				if(!vial.contained_essence || vial.essence_amount <= 0)
+					continue
+				var/drawn = min(vial.essence_amount, remaining)
+				vial.essence_amount -= drawn
+				remaining -= drawn
+				if(vial.essence_amount <= 0)
+					vial.contained_essence = null
+				vial.update_appearance(UPDATE_OVERLAYS)
 
-/obj/item/clothing/gloves/essence_gauntlet/proc/extract_essence_type(attunement_path)
-	switch(attunement_path)
-		if(/datum/attunement/aeromancy)
-			return /datum/thaumaturgical_essence/air
-		if(/datum/attunement/blood)
-			return /datum/thaumaturgical_essence/water
-		if(/datum/attunement/fire)
-			return /datum/thaumaturgical_essence/fire
-		if(/datum/attunement/earth)
-			return /datum/thaumaturgical_essence/earth
-		if(/datum/attunement/ice)
-			return /datum/thaumaturgical_essence/frost
-		if(/datum/attunement/light)
-			return /datum/thaumaturgical_essence/light
-		if(/datum/attunement/life)
-			return /datum/thaumaturgical_essence/life
-		if(/datum/attunement/polymorph)
-			return /datum/thaumaturgical_essence/chaos
-	return null
+	var/mob/living/wearer = get_gauntlet_user()
+	if(wearer)
+		refresh_combos(wearer)
+	return TRUE
 
 /obj/item/clothing/gloves/essence_gauntlet/proc/get_available_essence_types()
 	var/list/available_types = list()
@@ -176,77 +246,33 @@
 			available_types[vial.contained_essence.type] = TRUE
 	return available_types
 
-/obj/item/clothing/gloves/essence_gauntlet/proc/grant_essence_spells(mob/user)
-	if(!isliving(user))
-		return
-
-	var/list/available_essences = get_available_essence_types()
-
-	for(var/datum/essence_combo/combo in GLOB.essence_combos)
-		if(combo.can_activate(available_essences, user))
-			combo.apply_effects(src, user)
-
-/obj/item/clothing/gloves/essence_gauntlet/proc/remove_essence_spells(mob/user)
-	if(!isliving(user) || !user.mind)
-		return
-
-	var/list/available_essences = get_available_essence_types()
-
-	for(var/datum/essence_combo/combo in GLOB.essence_combos)
-		if(combo.can_activate(available_essences, user))
-			combo.remove_effects(src, user)
-
-	var/mob/living/living_user = user
-	living_user.remove_spells(source = src)
-
 /obj/item/clothing/gloves/essence_gauntlet/proc/essence_failure_feedback(mob/user)
 	to_chat(user, span_warning("[src] lacks sufficient essence to cast that spell!"))
 	return TRUE
 
 /obj/item/clothing/gloves/essence_gauntlet/proc/get_gauntlet_user()
-	return loc
+	if(!ishuman(loc))
+		return null
+	var/mob/living/carbon/human/human_user = loc
+	if(human_user.get_item_by_slot(ITEM_SLOT_GLOVES) != src)
+		return null
+	return human_user
 
 /obj/item/clothing/gloves/essence_gauntlet/examine(mob/user)
 	. = ..()
-	. += span_notice("Essence Vials ([length(stored_vials)]/[max_vials]):")
+	. += span_notice("Vials: [length(stored_vials)]/[max_vials]")
 
 	if(!length(stored_vials))
-		. += span_notice("- No vials inserted")
-		. += span_notice("Right-click to remove vials when available")
+		. += span_notice("No vials inserted.")
 		return
 
-	// Show stored vials
-	for(var/i in 1 to length(stored_vials))
-		var/obj/item/essence_vial/vial = stored_vials[i]
-		if(vial.contained_essence && vial.essence_amount > 0)
-			if(HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST))
-				. += span_notice("- [vial.essence_amount] units of [vial.contained_essence.name]")
-			else
-				. += span_notice("- [vial.essence_amount] units of essence smelling of [vial.contained_essence.smells_like]")
+	for(var/obj/item/essence_vial/vial in stored_vials)
+		if(!vial.contained_essence || vial.essence_amount <= 0)
+			. += span_notice("- Empty")
+			continue
+		if(HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST))
+			. += span_notice("- [vial.essence_amount] ligulae of [vial.contained_essence.name].")
 		else
-			. += span_notice("- Empty vial")
+			. += span_notice("- [vial.essence_amount] ligulae of essence smelling of [vial.contained_essence.smells_like].")
 
-	. += span_notice("Right-click to remove vials")
-
-	// Show available combos
-	var/list/available_essences = get_available_essence_types()
-	var/combo_count = 0
-	var/non_spell_combos = list()
-
-	for(var/datum/essence_combo/combo in GLOB.essence_combos)
-		if(combo.can_activate(available_essences, user))
-			combo_count++
-			if(!istype(combo, /datum/essence_combo/spell))
-				non_spell_combos += combo.name
-
-	if(combo_count > 0)
-		. += span_notice("\nActive Effects:")
-		if(length(non_spell_combos))
-			for(var/combo_name in non_spell_combos)
-				. += span_notice("- [combo_name]")
-
-		var/spell_combos = combo_count - length(non_spell_combos)
-		if(spell_combos > 0)
-			. += span_notice("- [spell_combos] spell effect[spell_combos > 1 ? "s" : ""] available")
-	else
-		. += span_notice("\nNo essence effects active")
+	. += span_notice("Right-click while wearing [src] to remove a vial.")

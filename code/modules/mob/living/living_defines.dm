@@ -122,6 +122,8 @@
 
 	/// Chem effects
 	var/list/chem_effects
+	/// Current multiplicative scale produced by chemical effects.
+	var/chemical_scale = 1
 	///How many legs does this mob have by default. This shouldn't change at runtime.
 	var/default_num_legs = 2
 	///How many legs does this mob currently have. Should only be changed through set_num_legs()
@@ -333,6 +335,10 @@
 
 	/// cooldown for the next time this person can offer
 	COOLDOWN_DECLARE(offer_cooldown)
+	/// Direction this mob is currently looking vertically.
+	var/looking_vertically = NONE
+	/// Movable eye target used while looking up or down so the view can follow movement.
+	var/atom/movable/looking_holder/looking_holder
 	/// Prevents concurrent vertical swim attempts during the swim action.
 	COOLDOWN_DECLARE(cd_zswim)
 

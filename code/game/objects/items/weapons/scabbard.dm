@@ -40,7 +40,7 @@
 
 /obj/item/weapon/scabbard/knife/apply_components()
 	. = ..()
-	AddElement(/datum/element/update_icon_updates_onmob, slot_flags|ITEM_SLOT_HANDS)
+	AddElement(/datum/element/update_icon_updates_onmob, slot_flags)
 	AddComponent(/datum/component/storage/concrete/scabbard/knife)
 
 /obj/item/weapon/scabbard/knife/getonmobprop(tag)
@@ -85,7 +85,7 @@
 
 /obj/item/weapon/scabbard/sword/apply_components()
 	. = ..()
-	AddElement(/datum/element/update_icon_updates_onmob, slot_flags|ITEM_SLOT_HANDS)
+	AddElement(/datum/element/update_icon_updates_onmob, slot_flags)
 	AddComponent(/datum/component/storage/concrete/scabbard/sword)
 
 /obj/item/weapon/scabbard/sword/getonmobprop(tag)
@@ -141,7 +141,7 @@
 
 /obj/item/weapon/scabbard/cane/apply_components()
 	. = ..()
-	AddElement(/datum/element/update_icon_updates_onmob, slot_flags|ITEM_SLOT_HANDS)
+	AddElement(/datum/element/update_icon_updates_onmob, slot_flags)
 	AddComponent(/datum/component/storage/concrete/scabbard/sword)
 	AddElement(/datum/element/walking_stick)
 
@@ -220,7 +220,7 @@
 
 /obj/item/weapon/scabbard/kazengun/apply_components()
 	. = ..()
-	AddElement(/datum/element/update_icon_updates_onmob, slot_flags|ITEM_SLOT_HANDS)
+	AddElement(/datum/element/update_icon_updates_onmob, slot_flags)
 	AddComponent(/datum/component/storage/concrete/scabbard/kazengun)
 
 /obj/item/weapon/scabbard/kazengun/steel

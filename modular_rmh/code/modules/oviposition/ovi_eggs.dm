@@ -186,9 +186,9 @@
 	display_color = "#d7a29d"
 	incubation_stage_duration = 8 MINUTES
 	stage_messages = list(
-    "Something fertile settles deep in my %CONTAINER%.",
-    "The embryo in my %CONTAINER% grows heavier and more alive.",
-    "A tight, restless pressure builds in my %CONTAINER%."
+		"Something fertile settles deep in my %CONTAINER%.",
+		"The embryo in my %CONTAINER% grows heavier and more alive.",
+		"A tight, restless pressure builds in my %CONTAINER%."
 	)
 	ready_message = "The embryo in my %CONTAINER% is fully grown and about to hatch inside me."
 	hatch_message = "Something alive hatches from %EGG% inside my %CONTAINER%!"

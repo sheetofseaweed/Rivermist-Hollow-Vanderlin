@@ -30,6 +30,8 @@
 //from SSatoms InitAtom - Only if the  atom was not deleted or failed initialization and has a loc
 #define COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON "atom_init_success_on"
 #define COMSIG_PARENT_EXAMINE "atom_examine"                    //from base of atom/examine(): (/mob)
+/// From /atom/proc/examine_more(): (mob/user, list/examine_list)
+#define COMSIG_ATOM_EXAMINE_MORE "atom_examine_more"
 #define COMSIG_POCKET_ACCESS_BUILD_INSTANCE_KEY "pocket_access_build_instance_key" // called by pocket access components: (mob/user, datum/component/pocket_access/access, list/context)
 	#define COMPONENT_POCKET_ACCESS_USE_CUSTOM_KEY (1<<0)
 #define COMSIG_POCKET_ACCESS_CAN_PERFORM_ACTION "pocket_access_can_perform_action" // called by pocket access components: (mob/user, action, datum/component/pocket_access/access, datum/pocket_dimension/instance, list/context)
@@ -120,6 +122,12 @@
 #define COMSIG_MOB_POSTATTACK_RANGED "mob_postattack_ranged"
 #define COMSIG_MOB_THROW "mob_throw"							//from /mob/living/carbon/throw_item(): (atom/movable/thrown_thing)
 #define COMSIG_MOB_EXAMINATE "mob_examinate"					//from base of /mob/verb/examinate(): (atom/target)
+/// From /atom/proc/examine_more(): (atom/examining, list/examine_list)
+#define COMSIG_MOB_EXAMINING_MORE "mob_examining_more"
+/// From /mob/living/proc/handle_eye_contact(): (mob/living/other_mob, active_examiner)
+#define COMSIG_MOB_EYECONTACT "mob_eyecontact"
+	/// Blocks the default eye-contact message to the signal owner.
+	#define COMSIG_BLOCK_EYECONTACT (1<<0)
 #define COMSIG_MOB_EXAMINATE_CARBON "mob_examinte_carbon"		//from base of mob/living/carbon/examine(): (mob/user, mob/target, list/pronouns, list/examine_strings)
 #define COMSIG_MOB_UPDATE_SIGHT "mob_update_sight"				//from base of /mob/update_sight(): ()
 #define COMSIG_MOB_SAY "mob_say" // from /mob/living/say(): ()

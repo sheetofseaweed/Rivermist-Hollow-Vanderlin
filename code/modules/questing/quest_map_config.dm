@@ -110,7 +110,7 @@ GLOBAL_LIST_EMPTY(quest_map_configs)
 	if(!map_file)
 		return null
 
-	var/key = lowertext("[map_file]")
+	var/key = LOWER_TEXT("[map_file]")
 
 	if(!length(GLOB.quest_map_configs))
 		initialize_quest_map_configs()
@@ -123,7 +123,7 @@ GLOBAL_LIST_EMPTY(quest_map_configs)
 		if(!config.map_file)
 			qdel(config)
 			continue
-		GLOB.quest_map_configs[lowertext("[config.map_file]")] = config
+		GLOB.quest_map_configs[LOWER_TEXT("[config.map_file]")] = config
 
 /proc/get_quest_map_config_for_turf(turf/target_turf)
 	if(!target_turf)

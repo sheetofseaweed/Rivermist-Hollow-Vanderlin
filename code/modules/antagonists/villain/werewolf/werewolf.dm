@@ -40,6 +40,7 @@
 		/datum/action/cooldown/spell/woundlick, \
 		/datum/action/cooldown/spell/lunge, \
 		/datum/action/cooldown/spell/throw_target, \
+		/datum/action/cooldown/keen_nose, \
 		/datum/action/cooldown/spell/werewolf_voluntary_bite
 	)
 	COOLDOWN_DECLARE(message_cooldown)

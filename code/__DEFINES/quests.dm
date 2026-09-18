@@ -1,5 +1,6 @@
 #define QUEST_GROUP_ERRANDS "Guild Errands"
 #define QUEST_GROUP_BOUNTIES "Bounties"
+#define QUEST_GROUP_COMMISSIONS "Player Commissions"
 
 #define QUEST_TIER_ROUTINE 1
 #define QUEST_TIER_RISKY 2
@@ -14,6 +15,30 @@
 #define QUEST_CLEAR_OUT "Clear Out"
 #define QUEST_RAID "Raid"
 #define QUEST_BOSS "Boss"
+#define QUEST_CUSTOM "Commission"
+
+#define CUSTOM_QUEST_PLEDGE (1<<0)
+
+#define QUEST_PLEDGE_BLANK "blank"
+#define QUEST_PLEDGE_FILLED "filled"
+#define QUEST_PLEDGE_SEALED "sealed"
+#define QUEST_PLEDGE_POSTED "posted"
+
+// Shared board population. Player commissions do not count against these limits.
+#define QUESTBOARD_POOL_MAX_ROUTINE 3
+#define QUESTBOARD_POOL_MAX_RISKY 3
+#define QUESTBOARD_POOL_MAX_DANGEROUS 2
+#define QUESTBOARD_POOL_MAX_DEADLY 2
+#define QUESTBOARD_POOL_MAX_LETHAL 1
+#define QUESTBOARD_POOL_MAX_MYTHIC 1
+
+// Regional threat removed when a quest tied to that region is completed.
+#define QUEST_THREAT_REDUCE_ROUTINE 2
+#define QUEST_THREAT_REDUCE_RISKY 4
+#define QUEST_THREAT_REDUCE_DANGEROUS 6
+#define QUEST_THREAT_REDUCE_DEADLY 8
+#define QUEST_THREAT_REDUCE_LETHAL 12
+#define QUEST_THREAT_REDUCE_MYTHIC 18
 
 #define QUEST_HANDLER_REWARD_MULTIPLIER 2
 #define QUEST_MINOR_HANDLER_REWARD_MULTIPLIER 1.2

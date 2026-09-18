@@ -441,7 +441,7 @@
 	var/body_rub_entries = 0
 	var/handjob_entries = 0
 	var/vaginal_entries = 0
-	for(var/action_type as anything in weighted_actions)
+	for(var/action_type in weighted_actions)
 		if(action_type == /datum/sex_action/npc/npc_body_rub)
 			body_rub_entries += 1
 		else if(action_type == /datum/sex_action/npc/npc_handjob)

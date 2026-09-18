@@ -21,7 +21,7 @@
 		return TRUE
 
 	if(feedback)
-		owner.balloon_alert(owner, "Only seelies can weave this glamour!")
+		owner.balloon_alert(owner, "only seelies can weave this glamour!")
 	return FALSE
 
 /datum/action/cooldown/spell/undirected/seelie_grand_glamour/cast(atom/cast_on)

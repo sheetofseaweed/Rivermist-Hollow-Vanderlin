@@ -48,6 +48,7 @@
 	clear_hostile_grab_resist_timer()
 	clear_hostile_grab_horny_hostility_timer()
 	QDEL_NULL(defeat_recovery_channel)
+	QDEL_NULL(looking_holder)
 	if(FACTION_MATTHIOS in faction)
 		SSmatthios_mobs.unregister_mob(src)
 	if(cached_island_id)
@@ -164,6 +165,10 @@
 		var/mob/M = A
 		if(MobBump(M))
 			return
+	if(isturf(A))
+		var/turf/bump_turf = A
+		if(TurfBump(bump_turf))
+			return
 	if(isobj(A))
 		var/obj/O = A
 		if(ObjBump(O))
@@ -183,6 +188,15 @@
 	spreadFire(M)
 
 	if(now_pushing)
+		return TRUE
+
+	if(get_chem_effect(CE_BOUNCY))
+		visible_message(span_warning("[src] bounces off [M]!"))
+		var/atom/throw_target = get_edge_target_turf(src, get_dir(M, src))
+		var/atom/other_throw_target = get_edge_target_turf(M, get_dir(src, M))
+		throw_at(throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
+		if(get_chem_effect(CE_BOUNCY) > 5)
+			M.throw_at(other_throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
 		return TRUE
 
 	var/they_can_move = TRUE
@@ -341,7 +355,20 @@
 				return
 //Called when we bump onto an obj
 /mob/living/proc/ObjBump(obj/O)
+	if(get_chem_effect(CE_BOUNCY))
+		visible_message(span_warning("[src] bounces off [O]!"))
+		var/atom/throw_target = get_edge_target_turf(src, get_dir(O, src))
+		throw_at(throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
+		return TRUE
 	return
+
+/mob/living/proc/TurfBump(turf/bumped_turf)
+	if(!get_chem_effect(CE_BOUNCY))
+		return FALSE
+	visible_message(span_warning("[src] bounces off [bumped_turf]!"))
+	var/atom/throw_target = get_edge_target_turf(src, get_dir(bumped_turf, src))
+	throw_at(throw_target, get_chem_effect(CE_BOUNCY) * 5, 3, force = 0)
+	return TRUE
 
 //Called when we want to push an atom/movable
 /mob/living/proc/PushAM(atom/movable/AM, force = move_force)
@@ -2312,9 +2339,9 @@
 		for(var/datum/ai_controller/controller as anything in GLOB.ai_controllers_by_zlevel[new_z])
 			controller.reset_ai_status()
 
-/mob/living/onTransitZ(old_z,new_z)
-	..()
-	update_z(new_z)
+/mob/living/onTransitZ(turf/old_turf, turf/new_turf)
+	. = ..()
+	update_z(new_turf?.z)
 
 /mob/living/MouseDrop(mob/over)
 	. = ..()
@@ -2502,12 +2529,12 @@
 	. += {"
 		<br><font size='1'>[VV_HREF_TARGETREF_1V(refid, VV_HK_BASIC_EDIT, "[ckey || "no ckey"]", NAMEOF(src, ckey))] / [VV_HREF_TARGETREF_1V(refid, VV_HK_BASIC_EDIT, "[real_name || "no real name"]", NAMEOF(src, real_name))]</font>
 		<br><font size='1'>
-			BRUTE:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=brute' id='brute'>[getBruteLoss()]</a>
-			FIRE:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=fire' id='fire'>[getFireLoss()]</a>
-			TOXIN:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=toxin' id='toxin'>[getToxLoss()]</a>
-			OXY:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=oxygen' id='oxygen'>[getOxyLoss()]</a>
-			CLONE:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=clone' id='clone'>[getCloneLoss()]</a>
-			BRAIN:<font size='1'><a href='?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=brain' id='brain'>[getOrganLoss(ORGAN_SLOT_BRAIN)]</a>
+			BRUTE:<font size='1'><a href='byond://?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=brute' id='brute'>[getBruteLoss()]</a>
+			FIRE:<font size='1'><a href='byond://?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=fire' id='fire'>[getFireLoss()]</a>
+			TOXIN:<font size='1'><a href='byond://?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=toxin' id='toxin'>[getToxLoss()]</a>
+			OXY:<font size='1'><a href='byond://?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=oxygen' id='oxygen'>[getOxyLoss()]</a>
+			CLONE:<font size='1'><a href='byond://?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=clone' id='clone'>[getCloneLoss()]</a>
+			BRAIN:<font size='1'><a href='byond://?_src_=vars;[HrefToken()];mobToDamage=[refid];adjustDamage=brain' id='brain'>[getOrganLoss(ORGAN_SLOT_BRAIN)]</a>
 		</font>
 	"}
 
@@ -2670,6 +2697,72 @@
 	REMOVE_TRAIT(src, TRAIT_UI_BLOCKED, TRAIT_HANDS_BLOCKED)
 	REMOVE_TRAIT(src, TRAIT_PULL_BLOCKED, TRAIT_HANDS_BLOCKED)
 
+/atom/movable/looking_holder
+	invisibility = INVISIBILITY_MAXIMUM
+	/// Direction in which the owner is looking.
+	var/look_direction
+	/// Top-level movable containing the owner, or the owner itself when standing on a turf.
+	var/atom/movable/container
+	/// Mob whose view this holder controls.
+	var/mob/living/owner
+	/// Horizontal offset from the owner to the opening being viewed through.
+	var/look_offset_x = 0
+	var/look_offset_y = 0
+
+/atom/movable/looking_holder/Initialize(mapload, mob/living/new_owner, direction, turf/look_origin)
+	. = ..()
+	owner = new_owner
+	look_direction = direction
+	var/turf/owner_turf = get_turf(owner)
+	if(owner_turf && look_origin)
+		look_offset_x = look_origin.x - owner_turf.x
+		look_offset_y = look_origin.y - owner_turf.y
+	update_container()
+
+/atom/movable/looking_holder/Destroy()
+	if(container)
+		UnregisterSignal(container, COMSIG_MOVABLE_MOVED)
+	if(owner && container != owner)
+		UnregisterSignal(owner, COMSIG_MOVABLE_MOVED)
+	container = null
+	owner = null
+	return ..()
+
+/atom/movable/looking_holder/proc/update_container()
+	SIGNAL_HANDLER
+
+	var/atom/movable/new_container = get_atom_on_turf(owner)
+	if(new_container == container)
+		return
+	if(container)
+		UnregisterSignal(container, COMSIG_MOVABLE_MOVED)
+	if(owner && container != owner)
+		UnregisterSignal(owner, COMSIG_MOVABLE_MOVED)
+
+	container = new_container
+	RegisterSignal(container, COMSIG_MOVABLE_MOVED, PROC_REF(mirror_move))
+	if(container != owner)
+		RegisterSignal(owner, COMSIG_MOVABLE_MOVED, PROC_REF(update_container))
+
+/atom/movable/looking_holder/proc/mirror_move(atom/movable/source, atom/oldloc, direction, forced, list/old_locs)
+	SIGNAL_HANDLER
+
+	if(!isturf(owner.loc))
+		update_container()
+
+	set_glide_size(container.glide_size)
+	var/turf/owner_turf = get_turf(owner)
+	if(!owner_turf)
+		owner.stop_looking()
+		return
+	var/turf/look_origin = locate(owner_turf.x + look_offset_x, owner_turf.y + look_offset_y, owner_turf.z)
+	var/turf/looking_turf = owner.get_looking_turf(look_direction, look_origin)
+	if(!looking_turf)
+		owner.stop_looking()
+		return
+
+	abstract_move(looking_turf)
+
 ///Checks if the user is incapacitated or on cooldown.
 /mob/living/proc/can_look_up()
 	return !((next_move > world.time) || incapacitated(IGNORE_RESTRAINTS|IGNORE_GRAB))
@@ -2754,7 +2847,7 @@
 					accessor_trait = door.accessor_trait
 					hidden_dc = door.hidden_dc
 				var/bonuses = (HAS_TRAIT(src, TRAIT_THIEVESGUILD) || HAS_TRAIT(src, TRAIT_ASSASSIN)) ? 2 : 0
-				if(GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) + bonuses >= hidden_dc || (accessor_trait && HAS_MIND_TRAIT(src, accessor_trait)))
+				if(GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) + bonuses >= hidden_dc || (accessor_trait && HAS_CHARACTER_TRAIT(src, accessor_trait)))
 					found_ping(get_turf(O), client, "hidden")
 		for(var/obj/effect/skill_tracker/potential_track in orange(7, src)) //Can't use view because they're invisible by default.
 			if(!can_see(src, potential_track, 10))
@@ -2771,6 +2864,72 @@
 	I.plane = ABOVE_LIGHTING_PLANE
 	flick_overlay(I, list(C), duration)
 
+/mob/living/proc/on_looking_z_level_change(turf/old_loc, turf/new_loc)
+	SEND_SIGNAL(src, COMSIG_LIVING_LOOK_Z_CHANGE, old_loc, new_loc)
+
+/mob/living/proc/get_looking_turf(direction, turf/center_turf, list/look_data)
+	var/turf/center = center_turf || get_turf(src)
+	if(!center)
+		return
+
+	var/turf/vertical_turf = get_step_multiz(center, direction)
+	if(!vertical_turf)
+		var/turf/current = get_turf(src)
+		if(direction == DOWN || !current?.can_see_sky())
+			to_chat(src, span_warning("There's nothing interesting there."))
+			return
+
+		switch(GLOB.forecast)
+			if("prerain")
+				to_chat(src, span_info("Dark clouds gather..."))
+			if("rain")
+				to_chat(src, span_info("The wet wind is blowing."))
+			if("rainbow")
+				to_chat(src, span_smallnotice("A beautiful rainbow!"))
+			if("fog")
+				to_chat(src, span_warning("I can't see anything, the fog has set in."))
+			else
+				to_chat(src, span_info("There is nothing special to say about this weather."))
+
+		do_time_change()
+		return
+
+	var/turf/check_turf = direction == DOWN ? center : vertical_turf
+	if(!istransparentturf(check_turf))
+		var/turf/front_hole = get_step(check_turf, dir)
+		if(istransparentturf(front_hole))
+			check_turf = front_hole
+		else
+			for(var/turf/check_hole in TURF_NEIGHBORS(check_turf))
+				if(istransparentturf(check_hole))
+					check_turf = check_hole
+					break
+		if(!istransparentturf(check_turf))
+			to_chat(src, span_warning("You can't see through the floor [direction == DOWN ? "below" : "above"] you."))
+			return
+
+	var/turf/looking_turf = direction == DOWN ? get_step_multiz(check_turf, DOWN) : check_turf
+	if(look_data && looking_turf)
+		if(direction == DOWN)
+			look_data["origin"] = check_turf
+		else
+			var/offset_x = check_turf.x - vertical_turf.x
+			var/offset_y = check_turf.y - vertical_turf.y
+			look_data["origin"] = locate(center.x + offset_x, center.y + offset_y, center.z)
+	return looking_turf
+
+/mob/living/proc/stop_looking()
+	if(client)
+		animate(client, pixel_x = 0, pixel_y = 0, 2, easing = SINE_EASING)
+	hud_used?.fov_holder?.screen_loc = "1,1"
+	update_cone_show()
+	reset_perspective()
+	looking_vertically = NONE
+	if(!looking_holder)
+		return
+	on_looking_z_level_change(looking_holder.loc, get_turf(src))
+	QDEL_NULL(looking_holder)
+
 /**
  * look_up Changes the perspective of the mob to any openspace turf above the mob
  *
@@ -2781,54 +2940,44 @@
 	return
 
 /mob/living/look_up()
-	if(client.perspective != MOB_PERSPECTIVE) //We are already looking up.
-		stop_looking()
+	if(looking_vertically == UP)
 		return
 	if(client.pixel_x || client.pixel_y)
 		stop_looking()
 		return
+	if(looking_vertically == DOWN)
+		stop_looking()
+		return
 	if(!can_look_up())
 		return
+
+	var/look_time = 1 SECONDS
+	if(GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) > 5)
+		look_time -= GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) - 5
+		look_time = max(look_time, 0)
+
+	if(!do_after(src, look_time))
+		return
+	if(QDELETED(src) || !client)
+		return
+
 	changeNext_move(CLICK_CD_MELEE)
+	var/turf/owner_turf = get_turf(src)
+	var/list/look_data = list()
+	var/turf/above_turf = get_looking_turf(UP, owner_turf, look_data)
+	if(!above_turf)
+		return
+
+	looking_vertically = UP
+	looking_holder = new(above_turf, src, UP, look_data["origin"] || owner_turf)
 	if(m_intent != MOVE_INTENT_SNEAK)
 		visible_message(span_info("[src] looks up."))
-	var/turf/ceiling = get_step_multiz(src, UP)
-	var/turf/T = get_turf(src)
-	if(isnull(ceiling)) //Can't check what isn't there
-		return
-	if(!istransparentturf(ceiling)) //There is no turf we can look through above us
-		to_chat(src, span_warning("A ceiling above my head."))
-		return
-
-	var/ttime = 1 SECONDS
-	if(GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) > 5)
-		ttime -= (GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) - 5)
-		if(ttime < 0)
-			ttime = 0
-
-	if(!do_after(src, ttime))
-		return
-	reset_perspective(ceiling)
+	reset_perspective(looking_holder)
 	update_cone_show()
-	if(T.can_see_sky())
-		switch(GLOB.forecast)
-			if("prerain")
-				to_chat(src, span_info("Dark clouds gather..."))
-				return
-			if("rain")
-				to_chat(src, span_info("The wet wind is blowing."))
-				return
-			if("rainbow")
-				to_chat(src, span_smallnotice("A beautiful rainbow!"))
-				return
-			if("fog")
-				to_chat(src, span_warning("I can't see anything, the fog has set in."))
-				return
-		to_chat(src, span_info("There is nothing special to say about this weather."))
-		do_time_change()
+	on_looking_z_level_change(owner_turf, above_turf)
 
 /mob/living/proc/look_further(turf/T)
-	if(client.perspective != MOB_PERSPECTIVE)
+	if(looking_vertically)
 		stop_looking()
 		return
 	if(client.pixel_x || client.pixel_y)
@@ -2839,8 +2988,8 @@
 	if(!istype(T))
 		return
 	changeNext_move(CLICK_CD_MELEE)
-	var/_x = T.x-loc.x
-	var/_y = T.y-loc.y
+	var/_x = T.x - loc.x
+	var/_y = T.y - loc.y
 	if(_x > 7 || _x < -7)
 		return
 	if(_y > 7 || _y < -7)
@@ -2852,55 +3001,51 @@
 			transition_time = 0
 	if(m_intent != MOVE_INTENT_SNEAK)
 		visible_message(span_info("[src] looks into the distance."))
-	var/x_offset = world.icon_size*_x
-	var/y_offset = world.icon_size*_y
+	var/x_offset = world.icon_size * _x
+	var/y_offset = world.icon_size * _y
 	animate(client, pixel_x = x_offset, pixel_y = y_offset, transition_time)
 	hud_used?.fov_holder?.screen_loc = "1:[-x_offset],1:[-y_offset]"
-	//update_cone_show()
 
 /mob/proc/look_down(turf/T)
 	return
 
-/mob/living/look_down(turf/T)
+/mob/living/look_down(turf/looking_into)
+	if(looking_vertically == DOWN)
+		return
 	if(client.pixel_x || client.pixel_y)
 		stop_looking()
 		return
-	if(client.perspective != MOB_PERSPECTIVE)
+	if(looking_vertically == UP)
 		stop_looking()
 		return
 	if(!can_look_up())
 		return
-	if(!istype(T))
+	if(!istype(looking_into))
 		return
 
-
-	var/turf/OS = get_step_multiz(T, DOWN)
-
-	if(!OS)
-		return
-	var/ttime = 1 SECONDS
+	var/look_time = 1 SECONDS
 	if(GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) > 5)
-		ttime -= (GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) - 5)
-		if(ttime < 0)
-			ttime = 0
+		look_time -= GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) - 5
+		look_time = max(look_time, 0)
 
-	visible_message("<span class='info'>[src] looks down through [T].</span>")
-
-	if(!do_after(src, ttime))
+	if(!do_after(src, look_time))
+		return
+	if(QDELETED(src) || !client || !looking_into.Adjacent(src))
 		return
 
 	changeNext_move(CLICK_CD_MELEE)
-	reset_perspective(OS)
-	update_cone_show()
-//	RegisterSignal(src, COMSIG_MOVABLE_PRE_MOVE, PROC_REF(stop_looking))
+	var/list/look_data = list()
+	var/turf/below_turf = get_looking_turf(DOWN, looking_into, look_data)
+	if(!below_turf)
+		return
 
-/mob/living/proc/stop_looking()
-	if(client)
-		animate(client, pixel_x = 0, pixel_y = 0, 2, easing = SINE_EASING)
-	hud_used?.fov_holder?.screen_loc = "1,1"
-	reset_perspective()
+	looking_vertically = DOWN
+	looking_holder = new(below_turf, src, DOWN, look_data["origin"] || looking_into)
+	if(m_intent != MOVE_INTENT_SNEAK)
+		visible_message(span_info("[src] looks down through [looking_into]."))
+	reset_perspective(looking_holder)
 	update_cone_show()
-
+	on_looking_z_level_change(get_turf(src), below_turf)
 
 /mob/living/set_stat(new_stat)
 	. = ..()

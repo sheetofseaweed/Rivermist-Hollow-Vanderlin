@@ -10,6 +10,7 @@ const tierLabels = {
 const contractGroups = {
   'Guild Errands': 'Поручения гильдии',
   Bounties: 'Охотничьи контракты',
+  'Player Commissions': 'Контракты игроков',
 };
 
 const contractTypes = {
@@ -19,6 +20,7 @@ const contractTypes = {
   'Clear Out': 'Зачистка',
   Raid: 'Налёт',
   Boss: 'Босс',
+  Commission: 'Заказ игрока',
 };
 
 const contractDescriptions = {
@@ -69,6 +71,14 @@ const resolveText = (key, args = {}) => {
       return `Недостаточно средств. Нужно ${amount} amna на вашем счёте.`;
     case 'notice.issued_contract':
       return `Выдан контракт ${contractTypes[contractType] || contractType} (${tierLabels[tier] || 'неизвестный тир'}). Залог: ${deposit} amna.`;
+    case 'notice.claimed_posting':
+      return `Взято опубликованное задание «${contractType}». Залог: ${deposit} amna.`;
+    case 'notice.posting_unavailable':
+      return 'Эта запись больше недоступна или вы не можете её взять.';
+    case 'notice.commission_validated':
+      return 'Заказ игрока подтверждён. Исполнитель теперь может сдать его.';
+    case 'notice.commission_returned':
+      return 'Заказ игрока возвращён в общий список.';
     case 'notice.not_assigned':
       return 'Этот контракт назначен не вам.';
     case 'notice.no_completed_contract':
@@ -134,6 +144,25 @@ export default {
     abandonContract: 'Отказаться от контракта',
     printIssuedContracts: 'Печать выданных контрактов',
     getContract: 'Получить контракт',
+    contractsTab: 'Контракты',
+    postingsTab: 'Общие записи',
+    managementTab: 'Стол заказов',
+    sharedPostings: 'Общие опубликованные контракты',
+    noPostings: 'Сейчас опубликованных контрактов нет. Гильдия периодически обновляет список.',
+    issuer: 'Заказчик',
+    reward: 'Награда',
+    deposit: 'Залог',
+    expires: 'Истекает через',
+    noExpiry: 'Без срока',
+    claimPosting: 'Взять контракт',
+    playerCommission: 'Заказ игрока',
+    guildPosting: 'Гильдия наёмников',
+    commissionManagement: 'Активные заказы игроков',
+    noManagedCommissions: 'Сейчас нет взятых заказов игроков, требующих надзора.',
+    assignee: 'Исполнитель',
+    validate: 'Подтвердить',
+    automaticValidation: 'Условия этого заказа проверяются автоматически.',
+    pledgeHelp: 'Чтобы создать заказ игрока, изготовьте бланк заказа из пергаментного свитка и волокон, заполните его, вложите предметы для доставки и запечатайте обещанной наградой. Квестодатель может опубликовать запечатанный бланк, применив его на этой книге.',
   },
   contractGroups,
   contractTypes,
@@ -157,4 +186,8 @@ export default {
     'Выберите группу и тип контракта, чтобы посмотреть предпросмотр.',
   hiddenTargets: (count) =>
     `И ещё ${count} возможных целей для этого выбора.`,
+  formatExpiry: (seconds) => {
+    const minutes = Math.max(1, Math.ceil(seconds / 60));
+    return `${minutes} мин.`;
+  },
 };

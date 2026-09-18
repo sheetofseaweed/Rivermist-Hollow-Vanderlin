@@ -13,7 +13,7 @@ GLOBAL_LIST_EMPTY(roundstart_court_agents)
 /proc/initialize_laws_of_the_land()
 	var/list/laws = strings("laws_of_the_land.json", "lawsets")
 	var/list/lawsets_weighted = list()
-	for(var/lawset_name as anything in laws)
+	for(var/lawset_name in laws)
 		var/list/lawset = laws[lawset_name]
 		lawsets_weighted[lawset_name] = lawset["weight"]
 	var/chosen_lawset = pickweight(lawsets_weighted)
@@ -420,7 +420,7 @@ GLOBAL_LIST_EMPTY(roundstart_court_agents)
 	possible_positions += GLOB.town_positions
 	possible_positions += GLOB.outsiders_positions
 	possible_positions += GLOB.adventurers_positions
-	var/new_pos = input(user, "Select their new position", src, null) as anything in possible_positions
+	var/new_pos = input(user, "Select their new position", src, null) in possible_positions
 	if(isnull(victim))
 		return
 
