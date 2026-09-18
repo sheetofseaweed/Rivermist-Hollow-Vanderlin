@@ -9,12 +9,16 @@
 	clawfootstep = FOOTSTEP_HARD_CLAW
 	heavyfootstep = FOOTSTEP_GENERIC_HEAVY
 	var/randomize_icon = TRUE
-	var/icon_variants = 3
+	var/icon_variants = 2
 
 /turf/open/floor/crawl_space/Initialize(mapload)
 	. = ..()
 	if(randomize_icon)
-		icon_state = "crawlspace_[rand(1, icon_variants)]"
+		icon_state = "concretefloor[rand(1, icon_variants)]"
+
+/// MOBILITY_STAND only clears on TRAIT_FLOORED, so voluntary resting needs the body_position check too.
+/turf/open/floor/crawl_space/proc/is_upright(mob/living/carbon/crawler)
+	return crawler.body_position != LYING_DOWN && (crawler.mobility_flags & MOBILITY_STAND)
 
 /turf/open/floor/crawl_space/CanAllowThrough(atom/movable/mover, turf/target)
 	. = ..()
@@ -23,7 +27,7 @@
 	if(!iscarbon(mover))
 		return
 	var/mob/living/carbon/crawler = mover
-	if(!(crawler.mobility_flags & MOBILITY_STAND))
+	if(!is_upright(crawler))
 		return
 	return FALSE
 
@@ -35,7 +39,7 @@
 	var/mob/living/carbon/crawler = bumped_atom
 	if(!crawler.client)
 		return
-	if(!(crawler.mobility_flags & MOBILITY_STAND))
+	if(!is_upright(crawler))
 		return
 	// Walking into a low ceiling fires Bumped every step the key is held, and a
 	// row of these tiles would otherwise print once per tile.
