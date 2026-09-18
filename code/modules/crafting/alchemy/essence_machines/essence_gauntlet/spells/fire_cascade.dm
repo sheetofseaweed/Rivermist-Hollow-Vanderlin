@@ -1,5 +1,5 @@
 /datum/action/cooldown/spell/essence/fire_cascade
-	name = "Fire Cascadec"
+	name = "Fire Cascade"
 	desc = "Unleash a spreading fan of slow-moving flame projectiles."
 	school = "evocation"
 	button_icon_state = "fireaura"

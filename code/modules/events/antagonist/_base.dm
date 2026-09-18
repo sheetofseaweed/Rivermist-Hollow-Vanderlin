@@ -26,6 +26,8 @@
 	exclusive_roles = typecacheof(exclusive_roles)
 	protected_roles = typecacheof(protected_roles)
 	needed_job = typecacheof(needed_job)
+	if(CONFIG_GET(flag/protect_roles_from_antagonist))
+		restricted_roles |= typecacheof(protected_roles)
 
 /datum/round_event_control/antagonist/canSpawnEvent(players_amt, gamemode, fake_check)
 	. = ..()
@@ -127,7 +129,3 @@
 		return return_players ? enemy_players : TRUE
 	return return_players ? enemy_players : FALSE
 
-/datum/round_event_control/antagonist/New()
-	. = ..()
-	if(CONFIG_GET(flag/protect_roles_from_antagonist))
-		restricted_roles |= typecacheof(protected_roles)

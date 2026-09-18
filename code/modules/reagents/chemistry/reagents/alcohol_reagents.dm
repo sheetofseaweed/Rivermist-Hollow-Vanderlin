@@ -52,14 +52,6 @@
 	. = ..()
 	L.decrease_chem_effect(CE_PAINKILLER, boozepwr/2, "[type]")
 
-/datum/reagent/consumable/ethanol/reaction_obj(obj/O, reac_volume)
-	. = ..()
-	O.adjust_germ_level(-boozepwr * reac_volume)
-
-/datum/reagent/consumable/ethanol/reaction_obj(obj/O, reac_volume)
-	. = ..()
-	O.adjust_germ_level(-boozepwr * reac_volume)
-
 /datum/reagent/consumable/ethanol/proc/age_beer()
 	var/old_volume = volume
 	var/datum/reagents/old_holder = holder
@@ -95,6 +87,8 @@ All effects don't start immediately, but rather get worse over time; the rate is
 	return ..()
 
 /datum/reagent/consumable/ethanol/reaction_obj(obj/O, reac_volume)
+	. = ..()
+	O.adjust_germ_level(-boozepwr * reac_volume)
 	if(istype(O, /obj/item/paper))
 		var/obj/item/paper/paperaffected = O
 		paperaffected.clearpaper()

@@ -35,11 +35,6 @@
 
 	var/frenzy_ready = TRUE
 
-/mob/living/simple_animal/hostile/retaliate/troll/broodmother/death(gibbed)
-	frenzy_off()
-	. = ..()
-	new /obj/item/reagent_containers/lux/pragmas (get_turf(src))
-
 /mob/living/simple_animal/hostile/retaliate/troll/broodmother/Initialize()
 	. = ..()
 
@@ -72,8 +67,10 @@
 	)
 
 /mob/living/simple_animal/hostile/retaliate/troll/broodmother/death(gibbed)
+	frenzy_off()
 	icon_state = initial(icon_state)
 	. = ..()
+	new /obj/item/reagent_containers/lux/pragmas (get_turf(src))
 
 /mob/living/simple_animal/hostile/retaliate/troll/broodmother/proc/frenzy_on()
 	if(!frenzy_ready)

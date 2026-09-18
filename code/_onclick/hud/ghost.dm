@@ -2,9 +2,6 @@
 	name = "Orbit"
 	icon_state = "orbit"
 
-/atom/movable/screen/ghost/orbit/Click()
-	var/mob/dead/observer/G = usr
-	G.follow()
 //skull
 /atom/movable/screen/ghost/orbit/rogue
 	name = "AFTER LIFE"

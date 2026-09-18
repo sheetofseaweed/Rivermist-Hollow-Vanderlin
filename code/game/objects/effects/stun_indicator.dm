@@ -30,10 +30,11 @@
 	update_indicator()
 
 /obj/effect/stun_indicator/Destroy(force)
+	for (var/client/C in viewers)
+		C.images -= indicator
 	viewers = null
 	victim = null
-	if(indicator)
-		QDEL_NULL(indicator)
+	QDEL_NULL(indicator)
 	return ..()
 
 /obj/effect/stun_indicator/proc/update_indicator()
@@ -86,10 +87,3 @@
 		if (4)
 			I.pixel_y = -8
 	return I
-
-/obj/effect/stun_indicator/Destroy()
-	for (var/client/C in viewers)
-		C.images -= indicator
-	indicator = null
-	victim = null
-	. = ..()

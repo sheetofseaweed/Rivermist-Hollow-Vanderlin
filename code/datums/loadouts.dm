@@ -382,25 +382,6 @@ GLOBAL_LIST_EMPTY(loadout_items)
 	item_path = /obj/item/clothing/shirt/tunic/silktunic
 	point_cost = 3
 
-/datum/loadout_item/tri_princess_dress/nobility_check(mob/C)
-	var/datum/preferences/P = C?.client?.prefs
-	if(!P)
-		return FALSE
-	// Check if user selected Nobility virtue
-	if(HAS_TRAIT(P, TRAIT_NOBLE))
-		return TRUE
-	// Check if user has high priority for any noble, courtier, or yeoman job
-	for(var/job_title in GLOB.lords_positions)
-		if(P.job_preferences[job_title] == JP_HIGH)
-			return TRUE
-	for(var/job_title in GLOB.keep_positions)
-		if(P.job_preferences[job_title] == JP_HIGH)
-			return TRUE
-	for(var/job_title in GLOB.townhall_positions)
-		if(P.job_preferences[job_title] == JP_HIGH)
-			return TRUE
-	return FALSE
-
 /datum/loadout_item/tri_lady_cloak
 	name = "Lady's Cloak"
 	item_path = /obj/item/clothing/cloak/lordcloak/ladycloak

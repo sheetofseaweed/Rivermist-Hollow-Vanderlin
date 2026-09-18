@@ -1,24 +1,31 @@
 /// Job-granted versions of alchemical utility spells are innate class abilities.
 /// They deliberately do not draw from an essence gauntlet; the base types still do.
 /datum/action/cooldown/spell/essence/healing_spring/class_granted
+	name = "Innate Healing Spring"
 	spell_type = NONE
 
 /datum/action/cooldown/spell/essence/neutralize/class_granted
+	name = "Innate Neutralize"
 	spell_type = NONE
 
 /datum/action/cooldown/spell/essence/probability_warp/class_granted
+	name = "Innate Probability Warp"
 	spell_type = NONE
 
 /datum/action/cooldown/spell/essence/purify_water/class_granted
+	name = "Innate Purify Water"
 	spell_type = NONE
 
 /datum/action/cooldown/spell/essence/spark/class_granted
+	name = "Innate Spark"
 	spell_type = NONE
 
 /datum/action/cooldown/spell/essence/toxic_cleanse/class_granted
+	name = "Innate Toxic Cleanse"
 	spell_type = NONE
 
 /datum/action/cooldown/spell/essence/fire_cascade/class_granted
+	name = "Innate Fire Cascade"
 	spell_type = NONE
 
 /// A functional replacement for the old cosmetic-only essence silence spell used by RMH classes.

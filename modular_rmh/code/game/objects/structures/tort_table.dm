@@ -96,21 +96,6 @@
 	playsound(get_turf(src), 'sound/foley/lever.ogg', 80, TRUE)
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
-/obj/structure/bondage/torture_table/lever/user_unbuckle_mob(mob/living/buckled_mob, mob/living/user)
-	if(latched)
-		if(isliving(user) && user.STASTR >= 18)
-			if(do_after(user, 2.5 SECONDS))
-				user.visible_message(span_warning("[user] breaks [src] open!"))
-				unlock()
-				latched = FALSE
-				return ..()
-		else
-			to_chat(user, span_warning("Unlatch it first!"))
-			return FALSE
-	else
-		return ..()
-	return ..()
-
 /obj/structure/bondage/torture_table/lever/post_buckle_mob(mob/living/M)
 	. = ..()
 	if(torture_active)

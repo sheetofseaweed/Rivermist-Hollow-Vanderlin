@@ -29,10 +29,6 @@
 	update_appearance(UPDATE_ICON_STATE)
 	START_PROCESSING(SSroguemachine, src)
 
-/obj/structure/fake_machine/vendor/Destroy(force)
-	STOP_PROCESSING(SSroguemachine, src)
-	return ..()
-
 /obj/structure/fake_machine/vendor/on_lock_add()
 	update_appearance(UPDATE_ICON_STATE)
 
@@ -57,6 +53,7 @@
 	update_appearance(UPDATE_ICON)
 
 /obj/structure/fake_machine/vendor/Destroy()
+	STOP_PROCESSING(SSroguemachine, src)
 	for(var/obj/item/I as anything in held_items)
 		I.forceMove(loc)
 		held_items -= I

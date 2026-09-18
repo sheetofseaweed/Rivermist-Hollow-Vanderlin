@@ -30,11 +30,3 @@
 	id = "elven_grace"
 	alert_type = /atom/movable/screen/alert/status_effect/elven_grace
 	duration = 300 SECONDS
-
-/datum/status_effect/buff/elven_grace/on_apply()
-	. = ..()
-	owner.add_movespeed_modifier(MOVESPEED_ID_STATUS_EFFECT(id), multiplicative_slowdown = -0.2)
-
-/datum/status_effect/buff/elven_grace/on_remove()
-	. = ..()
-	owner.remove_movespeed_modifier(MOVESPEED_ID_STATUS_EFFECT(id))

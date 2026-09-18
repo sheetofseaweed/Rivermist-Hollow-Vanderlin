@@ -31,12 +31,6 @@
 	if(length(C.bodyparts) && isbodypart(C.bodyparts[1]))
 		assign_bodypart(C.bodyparts[1])
 
-//No real location
-/datum/component/storage/concrete/organ/Destroy()
-	for(var/atom/atom in contents())
-		atom.mouse_opacity = initial(atom.mouse_opacity)
-	return ..()
-
 // Assign a bodypart to be affected
 /datum/component/storage/concrete/organ/proc/assign_bodypart(obj/item/bodypart/new_bodypart)
 	if(bodypart_affected)

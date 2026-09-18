@@ -1190,12 +1190,6 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 			playsound(src, drop_sound, YEET_SOUND_VOLUME, TRUE, ignore_walls = FALSE)
 		return hit_atom.hitby(src, 0, itempush, throwingdatum=throwingdatum, damage_type = src.damage_type)
 
-/obj/item/throw_at(atom/target, range, speed, mob/thrower, spin=1, diagonals_first = 0, datum/callback/callback, force, gentle = FALSE)
-	thrownby = thrower
-	callback = CALLBACK(src, PROC_REF(after_throw), callback) //replace their callback with our own
-	. = ..(target, range, speed, thrower, spin, diagonals_first, callback, force)
-
-
 /obj/item/proc/after_throw(datum/callback/callback)
 	if (callback) //call the original callback
 		. = callback.Invoke()
@@ -1496,7 +1490,9 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 /obj/item/throw_at(atom/target, range, speed, mob/thrower, spin=TRUE, diagonals_first = FALSE, datum/callback/callback, force, gentle = FALSE)
 	if(HAS_TRAIT(src, TRAIT_NODROP))
 		return
-	return ..()
+	thrownby = thrower
+	callback = CALLBACK(src, PROC_REF(after_throw), callback) //replace their callback with our own
+	return ..(target, range, speed, thrower, spin, diagonals_first, callback, force)
 
 /obj/item/proc/embedded(atom/embedded_target, obj/item/bodypart/part)
 	return

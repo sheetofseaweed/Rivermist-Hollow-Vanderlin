@@ -34,15 +34,6 @@
 	update_appearance(UPDATE_ICON_STATE)
 	//RMH EDITED END
 
-/obj/structure/fake_machine/scomm/Initialize()
-	. = ..()
-	ADD_TRAIT(src, TRAIT_SHAKY_SPEECH, TRAIT_GENERIC)
-	become_hearing_sensitive()
-
-/obj/structure/fake_machine/scomm/Destroy()
-	lose_hearing_sensitivity()
-	return ..()
-
 /obj/structure/fake_machine/scomm/r
 	SET_BASE_PIXEL(32, 0)
 
@@ -109,6 +100,8 @@
 
 /obj/structure/fake_machine/scomm/Initialize()
 	. = ..()
+	ADD_TRAIT(src, TRAIT_SHAKY_SPEECH, TRAIT_GENERIC)
+	become_hearing_sensitive()
 	START_PROCESSING(SSroguemachine, src)
 	SSroguemachine.scomm_machines += src
 	//RMH EDITED START - garrison SCOM ring integration: sequential designation number
@@ -136,6 +129,7 @@
 	listening = TRUE
 
 /obj/structure/fake_machine/scomm/Destroy()
+	lose_hearing_sensitivity()
 	SSroguemachine.scomm_machines -= src
 	STOP_PROCESSING(SSroguemachine, src)
 	set_light(0)

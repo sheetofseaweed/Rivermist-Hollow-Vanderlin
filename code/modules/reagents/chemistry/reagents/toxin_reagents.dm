@@ -352,7 +352,7 @@
 	L.add_chem_effect(CE_PULSE, -1, "[type]")
 	L.add_chem_effect(CE_BLOODRESTORE, - 2, "[type]")
 
-/datum/reagent/poison/soulbane_ichor/on_mob_metabolize(mob/living/L)
+/datum/reagent/poison/soulbane_ichor/on_mob_end_metabolize(mob/living/L)
 	. = ..()
 	L.remove_chem_effect(CE_PULSE, "[type]")
 	L.remove_chem_effect(CE_BLOODRESTORE, "[type]")

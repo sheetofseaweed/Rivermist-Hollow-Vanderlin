@@ -992,6 +992,8 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /mob/dead/observer/vv_edit_var(var_name, var_value)
 	. = ..()
+	if(var_name == "invisibility")
+		set_invisibility(invisibility) // updates light
 	switch(var_name)
 		if("icon")
 			ghostimage_default.icon = icon
@@ -1063,11 +1065,6 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		set_light(1, 1, 2)
 	else
 		set_light(0, 0, 0)
-
-/mob/dead/observer/vv_edit_var(var_name, var_value)
-	. = ..()
-	if(var_name == "invisibility")
-		set_invisibility(invisibility) // updates light
 
 /proc/set_observer_default_invisibility(amount, message=null)
 	for(var/mob/dead/observer/G in GLOB.player_list)

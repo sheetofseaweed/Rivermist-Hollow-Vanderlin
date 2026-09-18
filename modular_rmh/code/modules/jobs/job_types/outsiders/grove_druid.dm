@@ -79,14 +79,6 @@
 		/datum/action/cooldown/spell/projectile/lightning,
 	)
 
-/datum/job/grove_druid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
-	. = ..()
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
-
 /datum/outfit/grove_druid
 	name = "Grove Druid"
 	head = null
@@ -114,6 +106,11 @@
 
 /datum/job/grove_druid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
+	var/holder = spawned.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_cleric()
+		devotion.grant_to(spawned)
 	spawned.update_sight()
 	var/shapes = list("Crow", "Cat", "Fox", "Mole", "Raccoon", "Saiga", "Smallrat", "Spider", "Wolf", "Direbear")
 	var/shape_choice = browser_input_list(spawned, "CHOOSE YOUR WILD SHAPE.", "WHO ARE YOU", shapes)

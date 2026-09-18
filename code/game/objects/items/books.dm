@@ -848,18 +848,6 @@ ____________End of Example*/
 	desc = "Divine power flows through me."
 	icon_state = "buff"
 
-/datum/status_effect/buff/blessed/on_apply()
-	. = ..()
-	if(iscarbon(owner))
-		var/mob/living/carbon/C = owner
-		C.add_stress(/datum/stress_event/blessed)
-
-/datum/status_effect/buff/blessed/on_remove()
-	. = ..()
-	if(iscarbon(owner))
-		var/mob/living/carbon/C = owner
-		C.remove_stress(/datum/stress_event/blessed)
-
 /obj/item/book/rogue/howtogaffer
 	name = "Dont be a gaff, the guild masters manual"
 	desc = "The author page has rotted off with time."
