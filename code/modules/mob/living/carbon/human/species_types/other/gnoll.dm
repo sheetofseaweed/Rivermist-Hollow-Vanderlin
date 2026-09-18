@@ -59,45 +59,6 @@
 /datum/species/gnoll/check_roundstart_eligible()
 	return TRUE
 
-/datum/species/gnoll/on_species_gain(
-	mob/living/carbon/C,
-	datum/species/old_species,
-	datum/preferences/pref_load,
-)
-	. = ..()
-
-	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
-
-	C.grant_language(/datum/language/common)
-	C.grant_language(/datum/language/beast)
-
-	if(ishuman(C))
-		var/mob/living/carbon/human/H = C
-		H.icon = 'icons/roguetown/mob/monster/gnoll.dmi'
-		H.icon_state = "firepelt"
-		H.base_pixel_x = -8
-		H.pixel_x = -8
-		H.base_pixel_y = -4
-		H.pixel_y = -4
-
-		var/datum/action/cooldown/spell/undirected/howl/howl_action = new(H)
-		howl_action.use_language = TRUE
-		howl_action.Grant(H)
-
-	regenerate_icons()
-
-/datum/species/gnoll/on_species_loss(mob/living/carbon/C)
-	. = ..()
-
-	UnregisterSignal(C, COMSIG_MOB_SAY)
-
-	C.remove_language(/datum/language/common)
-	C.remove_language(/datum/language/beast)
-
-	var/datum/action/cooldown/spell/undirected/howl/howl_action = locate() in C.actions
-	if(howl_action)
-		qdel(howl_action)
-
 /datum/species/gnoll/send_voice(mob/living/carbon/human/H)
 	playsound(
 		get_turf(H),

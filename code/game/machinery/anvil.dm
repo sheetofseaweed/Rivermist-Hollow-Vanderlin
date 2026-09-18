@@ -24,14 +24,6 @@
 		if(hott)
 			. += "<span class='warning'>[hingot] is too hot to touch.</span>"
 
-/obj/machinery/anvil/attack_hand(mob/living/user, list/modifiers)
-	if(smithing)
-		to_chat(user, span_warning("[src] is currently being worked on!"))
-		return TRUE
-	if(hingot)
-		return hingot.attack_hand(user, modifiers)
-	return ..()
-
 /obj/machinery/anvil/attack_hand_secondary(mob/user, list/modifiers)
 	if(hingot && !smithing)
 		return hingot.attack_hand_secondary(user, modifiers)
@@ -304,20 +296,23 @@
 
 	return FALSE
 
-/obj/machinery/anvil/attack_hand(mob/user, list/modifiers)
+/obj/machinery/anvil/attack_hand(mob/living/user, list/modifiers)
 	if(smithing)
-		to_chat(user, "<span class='warning'>[src] is currently being worked on!</span>")
-		return
+		to_chat(user, span_warning("[src] is currently being worked on!"))
+		return TRUE
 	if(hingot)
+		// The ingot cannot see the anvil's heat, so this guard has to stay here.
 		if(hott)
-			to_chat(user, "<span class='warning'>It's too hot to handle with your hands.</span>")
-			return
-		else
-			var/obj/item/I = hingot
-			hingot = null
-			I.loc = user.loc
-			user.put_in_active_hand(I)
-			update_appearance(UPDATE_OVERLAYS)
+			to_chat(user, span_warning("It's too hot to handle with your hands."))
+			return TRUE
+		// Clear our reference and move it out before handing off, or the anvil keeps a phantom ingot.
+		var/obj/item/ingot/taken = hingot
+		hingot = null
+		taken.forceMove(user.loc)
+		. = taken.attack_hand(user, modifiers)
+		update_appearance(UPDATE_OVERLAYS)
+		return .
+	return ..()
 
 /obj/machinery/anvil/process()
 	if(hott)

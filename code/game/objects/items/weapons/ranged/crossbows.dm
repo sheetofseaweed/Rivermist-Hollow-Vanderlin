@@ -80,22 +80,6 @@
 	basetime = 20
 	chargedrain = 0
 
-/datum/intent/arc/crossbow/get_chargetime()
-	if(mastermob && chargetime)
-		var/mob/living/mob = mastermob.resolve()
-		var/newtime = chargetime
-		//skill block
-		newtime = newtime + basetime
-		newtime = newtime - (GET_MOB_SKILL_VALUE_OLD(mob, /datum/attribute/skill/combat/crossbows) * 20)
-		//per block
-		newtime = newtime + 20
-		newtime = newtime - ((GET_MOB_ATTRIBUTE_VALUE(mob, STAT_PERCEPTION))*1.5)
-		if(newtime > 0)
-			return newtime
-		else
-			return 10
-	return chargetime
-
 /datum/intent/shoot/puffer
 	chargedrain = 0 //no drain to aim a gun
 	charging_slowdown = 1

@@ -263,6 +263,7 @@
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/turbulenta/Initialize(mapload, ...)
 	. = ..()
 	AddElement(/datum/element/divine_intervention, /datum/patron/inhumen/baotha, PUNISHMENT_STRESS, /datum/stress_event/divine_punishment, TRUE)
+	FUCK = new(src)
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/turbulenta/getonmobprop(tag)
 	if(tag)
@@ -315,10 +316,6 @@
 					"eastabove" = FALSE,
 					"westabove" = FALSE,
 				)
-
-/obj/item/gun/ballistic/revolver/grenadelauncher/bow/turbulenta/Initialize(mapload, ...)
-	. = ..()
-	FUCK = new(src)
 
 /obj/item/gun/ballistic/revolver/grenadelauncher/bow/turbulenta/Destroy(force)
 	QDEL_NULL(FUCK)

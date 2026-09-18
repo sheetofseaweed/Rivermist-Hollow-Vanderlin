@@ -30,12 +30,12 @@
 	spells = list(
 		/datum/action/cooldown/spell/cone/staggered/eldritch_blast,
 		/datum/action/cooldown/spell/status/guidance,
-		/datum/action/cooldown/spell/essence/toxic_cleanse,
-		/datum/action/cooldown/spell/essence/silence,
-		/datum/action/cooldown/spell/essence/neutralize,
+		/datum/action/cooldown/spell/essence/toxic_cleanse/class_granted,
+		/datum/action/cooldown/spell/pointed/silence,
+		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/projectile/fire_flare,
 		/datum/action/cooldown/spell/projectile/fireball,
-		/datum/action/cooldown/spell/essence/flame_jet,
+		/datum/action/cooldown/spell/essence/fire_cascade/class_granted,
 		/datum/action/cooldown/spell/enrapture,
 		/datum/action/cooldown/spell/forced_orgasm,
 	)

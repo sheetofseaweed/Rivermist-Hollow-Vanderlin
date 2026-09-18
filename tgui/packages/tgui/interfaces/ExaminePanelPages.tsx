@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Image, Section, Stack } from "tgui-core/components";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Box, Button, Icon, Image, Section, Stack } from "tgui-core/components";
 
 import { resolveAsset } from "../assets";
 import { useBackend } from "../backend";
@@ -13,7 +13,6 @@ import type {
 const DESC_TRUNCATE_AT = 120;
 const SLOT = 44; // slot box size in px
 const BOTTOM_ROW_TOP = 310; // Y of the bottom corner+hands row inside the box
-const ROW = 48; // vertical spacing between stacked slots
 
 // Edge-anchored slot positions. Each slot hugs a real container edge (left/right
 // + top/bottom) so the layout stays glued to the frame no matter the container's
@@ -109,6 +108,139 @@ const TOOLTIP_SURFACE = {
 } as const;
 //RMH EDITED END
 
+// Names stay plain white until the quality tier is actually elevated.
+const DEFAULT_NAME_COLOR = "#f0ece0";
+
+// Quality tier (0..6, quality_frame_index()) -> a short display word, shown
+// as the tooltip's subtitle for elevated tiers only (mirrors BG3 hiding the
+// rarity subtitle entirely for Common items). Tiers below FINE show none.
+const QUALITY_LABELS: Record<number, string> = {
+  4: "Fine",
+  5: "Flawless",
+  6: "Masterwork",
+};
+const QUALITY_SUBTITLE_MIN_TIER = 4;
+
+// Decorative/body font stack, matching the pair already established in
+// Throne.tsx (SERIF/"MedievalSharp") rather than introducing a new one -
+// both degrade to a plain serif if the named font isn't loaded, same as
+// that existing usage.
+const FONT_DISPLAY = '"MedievalSharp", Georgia, serif';
+const FONT_BODY = '"Lora", Georgia, serif';
+
+// Same disclaimer as above - guessed icon per weapon category.
+const WEAPON_CATEGORY_ICONS: Record<string, string> = {
+  // Swords
+  Sword: "khanda",
+  Longsword: "khanda",
+  Shortsword: "khanda",
+  Greatsword: "khanda",
+  Scimitar: "khanda",
+  Rapier: "khanda",
+  Sabre: "khanda",
+  Katana: "khanda",
+  Khopesh: "khanda",
+  Gladius: "khanda",
+  // Axes
+  Axe: "gavel",
+  Greataxe: "gavel",
+  // Blunt
+  Mace: "hammer",
+  Warhammer: "hammer",
+  // Bladed sidearms
+  Knife: "khanda",
+  Dagger: "khanda",
+  Sickle: "khanda",
+  // Polearms
+  Polearm: "khanda",
+  Halberd: "khanda",
+  Spear: "khanda",
+  // Other melee
+  Flail: "link",
+  Whip: "grip-lines",
+  Katar: "hand-fist",
+  Knuckles: "hand-fist",
+  "War Pick": "hammer",
+  // Shields
+  Shield: "shield",
+  "Tower Shield": "shield",
+  "Heater Shield": "shield-halved",
+  // Ranged
+  Bow: "bow-arrow",
+  Longbow: "bow-arrow",
+  Shortbow: "bow-arrow",
+  Crossbow: "crosshairs",
+  Musket: "crosshairs",
+  Pistol: "crosshairs",
+  Blowgun: "crosshairs",
+  Airgun: "crosshairs",
+  Firearm: "crosshairs",
+};
+
+// Same disclaimer - guessed icon per BG3-style property tag.
+const TAG_ICONS: Record<string, string> = {
+  Light: "feather",
+  "Extra Reach": "arrows-left-right",
+  "Two-Handed": "hands",
+  Versatile: "shuffle",
+};
+
+// Same disclaimer - guessed icon per actual attack-intent name (the
+// intent's own `name`, e.g. "chop"/"stab"/"pick" - see
+// get_weapon_intent_names()). Unmapped names fall back to a generic blade.
+const INTENT_ICONS: Record<string, string> = {
+  chop: "khanda",
+  cut: "khanda",
+  hack: "khanda",
+  rend: "khanda",
+  "long rend": "khanda",
+  "arc slash": "khanda",
+  "precision cut": "khanda",
+  stab: "arrow-right-long",
+  thrust: "arrow-right-long",
+  impale: "arrow-right-long",
+  lunge: "arrow-right-long",
+  spear: "arrow-right-long",
+  pick: "location-crosshairs",
+  drill: "location-crosshairs",
+  strike: "hammer",
+  smash: "hammer",
+  bash: "hammer",
+  "pommel strike": "hammer",
+  "pommel bash": "hammer",
+};
+const DEFAULT_INTENT_ICON = "khanda";
+
+// One colour per grip, so grip-exclusive attacks stand out.
+const GRIP_COLOR: Record<string, string> = {
+  normal: "#8fc97a", // same green as before
+  gripped: "#5fa8d3", // two-handed/wielded-only intents
+  alt: "#c98fd0", // alt-grip-only intents (right-click reversed grip, etc)
+};
+
+// Label only. The description popup is rendered by ItemTooltip on its outer
+// wrapper instead of here: this badge sits in a row with overflow-x, and CSS
+// resolves the other axis to auto too, so a popup anchored inside the row
+// would be clipped by it regardless of z-index.
+const SpecialAttackBadge = (props: {
+  name: string;
+  onEnter: () => void;
+  onLeave: () => void;
+}) => {
+  const { name, onEnter, onLeave } = props;
+  return (
+    <Box
+      as="span"
+      style={{ display: "inline-block" }}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+    >
+      <Icon name="burst" mr={0.5} />
+      {name}
+    </Box>
+  );
+};
+
 const ItemTooltip = (props: {
   item: ExamineItem;
   label: string;
@@ -120,23 +252,73 @@ const ItemTooltip = (props: {
 }) => {
   const { item, label, side, vAlign, frameColor, onEnter, onLeave } = props;
   const [expanded, setExpanded] = useState(false);
+  const [specialHintOpen, setSpecialHintOpen] = useState(false);
   const expandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Runtime edge clamp; see the layout effect below.
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [clampOffsetX, setClampOffsetX] = useState(0);
 
-  // Only long descriptions get the truncate + delayed-expand behavior.
   const longDesc = item.desc.length > DESC_TRUNCATE_AT;
+  const hasTags = !!item.tags && item.tags.length > 0;
+  const hasIntents = !!item.intents && item.intents.length > 0;
+  const hasFooter = !!item.weight || !!item.price;
+  const hasExtra =
+    !!item.weaponDamage ||
+    !!item.armorClassLabel ||
+    !!item.weaponCategory ||
+    hasTags ||
+    hasIntents ||
+    !!item.specialAttack ||
+    hasFooter;
 
-  useEffect(() => {
-    if (!longDesc) {
+  // Quality tiers at or above the cutoff get a glow and a subtitle.
+  const hasGlow = item.quality >= QUALITY_SUBTITLE_MIN_TIER;
+  const qualityLabel = QUALITY_LABELS[item.quality];
+  const nameColor = hasGlow ? frameColor : DEFAULT_NAME_COLOR;
+  // Wider box when there are more badges to fit on the single tag row.
+  const tagCount = (item.weaponCategory ? 1 : 0) + (item.tags?.length ?? 0);
+  let expandedMaxWidth = "320px";
+  if (tagCount >= 3) {
+    expandedMaxWidth = "420px";
+  } else if (tagCount >= 1) {
+    expandedMaxWidth = "360px";
+  }
+
+  // Slot-anchored tooltips can extend past the window edge, and no fixed
+  // width can account for where the panel sits on a given screen. Measure
+  // the rendered box and nudge it back inside. The reset keeps successive
+  // corrections from compounding.
+  useLayoutEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) {
       return;
     }
-    // After 2s of hovering, expand to show the full text regardless of length.
+    el.style.transform = "";
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    let offset = 0;
+    if (rect.left < margin) {
+      offset = margin - rect.left;
+    } else if (rect.right > window.innerWidth - margin) {
+      offset = window.innerWidth - margin - rect.right;
+    }
+    setClampOffsetX(offset);
+  }, [expanded, item.name, side, vAlign]);
+
+  useEffect(() => {
+    // Same "hold to see more" behavior as the old long-description-only
+    // expand, now covering the whole stat block: a quick hover just shows
+    // name + description, holding ~2s reveals damage/armor/proficiency/etc.
+    if (!longDesc && !hasExtra) {
+      return;
+    }
     expandTimer.current = setTimeout(() => setExpanded(true), 2000);
     return () => {
       if (expandTimer.current) {
         clearTimeout(expandTimer.current);
       }
     };
-  }, [longDesc]);
+  }, [longDesc, hasExtra]);
 
   const shownDesc =
     !longDesc || expanded
@@ -145,6 +327,7 @@ const ItemTooltip = (props: {
 
   return (
     <div
+      ref={wrapperRef}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       style={{
@@ -154,33 +337,204 @@ const ItemTooltip = (props: {
         ...(vAlign === "top" ? { top: "0" } : { bottom: "0" }),
         [side === "right" ? "left" : "right"]: `${SLOT + 6}px`,
         zIndex: 1,
-        width: expanded ? "248px" : "212px",
-        maxHeight: "230px",
-        overflowY: "auto",
-        padding: "8px 10px",
-        ...TOOLTIP_SURFACE, // RMH EDITED - frosted backdrop instead of a flat fill
-        border: `2px solid ${frameColor}`,
-        borderRadius: "4px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.85)",
-        // pointer events ON so the user can scroll long descriptions
+        transform: clampOffsetX ? `translateX(${clampOffsetX}px)` : undefined,
+        // pointer events ON so the user can scroll long descriptions, and so
+        // hovering the bleeding icon below still counts as hovering the tooltip
         pointerEvents: "auto",
         textAlign: "left",
       }}
     >
-      <Box bold style={{ color: frameColor }} fontSize="13px">
+      {/* On the outer wrapper, not the scrolling box: an element that pokes
+          past the border would otherwise force a permanent scrollbar, since
+          overflow-x cannot stay visible while overflow-y scrolls. */}
+      {!!item.icon && (
+        <Image
+          src={item.icon}
+          width={expanded ? "72px" : "40px"}
+          height={expanded ? "72px" : "40px"}
+          style={{
+            position: "absolute",
+            top: "-8px",
+            right: "-8px",
+            zIndex: 1,
+            imageRendering: "pixelated",
+            filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.7))",
+          }}
+        />
+      )}
+      <div
+        style={{
+          // An explicit width, not just a cap: a shrink-to-fit box collapses
+          // around its content instead of using the room the cap allows.
+          width: expanded ? expandedMaxWidth : "auto",
+          minWidth: "190px",
+          maxWidth: expanded ? expandedMaxWidth : "230px",
+          maxHeight: "320px",
+          overflowY: "auto",
+          overflowX: "hidden",
+          padding: "10px 12px",
+          ...TOOLTIP_SURFACE,
+          // Bottom vignette behind the stat block; only once expanded.
+          backgroundImage: expanded
+            ? "linear-gradient(180deg, rgba(0,0,0,0) 65%, rgba(74,26,74,0.4) 100%)"
+            : "none",
+          border: `2px solid ${frameColor}`,
+          borderRadius: "4px",
+          boxShadow: hasGlow
+            ? `0 0 10px ${frameColor}, 0 2px 10px rgba(0,0,0,0.85)`
+            : "0 2px 10px rgba(0,0,0,0.85)",
+        }}
+      >
+      <Box
+        bold
+        style={{
+          color: nameColor,
+          fontFamily: FONT_DISPLAY,
+          paddingRight: item.icon ? (expanded ? "76px" : "40px") : 0,
+          letterSpacing: "0.02em",
+          textTransform: "capitalize",
+        }}
+        fontSize="15px"
+      >
         {item.name}
       </Box>
-      <Box color="#8a7a66" fontSize="10px" italic mb={item.desc ? 0.5 : 0}>
+      {!!qualityLabel && (
+        <Box fontSize="10px" italic style={{ color: "#9a8f80" }}>
+          {qualityLabel}
+        </Box>
+      )}
+      <Box color="#8a7a66" fontSize="10px" italic mb={0.25}>
         {label}
       </Box>
+      <Box style={{ borderTop: "1px solid rgba(138,122,102,0.35)", margin: "4px 0" }} />
+      {expanded && !!item.weaponDamage && (
+        <Box bold fontSize="13px" style={{ color: "#8fc97a" }} mb={0.25}>
+          {item.weaponDamage.force} Damage
+        </Box>
+      )}
+      {expanded && hasIntents && (
+        <>
+          <Box fontSize="11px" style={{ color: "#7fa7c9" }}>
+            <Icon name="award" mr={0.5} />
+            Proficiency
+          </Box>
+          <Box style={{ display: "flex", flexWrap: "wrap", gap: "2px 10px" }} mb={0.25}>
+            {item.intents!.map((intent) => (
+              <Box
+                key={intent.name}
+                bold
+                fontSize="10px"
+                style={{ color: GRIP_COLOR[intent.grip] ?? GRIP_COLOR.normal }}
+              >
+                <Icon name={INTENT_ICONS[intent.name] ?? DEFAULT_INTENT_ICON} mr={0.5} />
+                {intent.name.toUpperCase()}
+              </Box>
+            ))}
+          </Box>
+        </>
+      )}
       {!!item.desc && (
         <Box
           color="#c7bba8"
           fontSize="11px"
-          style={{ lineHeight: "1.4", whiteSpace: "pre-wrap" }}
+          style={{ fontFamily: FONT_BODY, lineHeight: "1.4", whiteSpace: "pre-wrap" }}
+          mb={1}
         >
+          <Icon name="scroll" mr={0.5} style={{ opacity: 0.7 }} />
           {shownDesc}
         </Box>
+      )}
+      {expanded &&
+        (!!item.armorClassLabel || !!item.weaponCategory || hasTags || !!item.specialAttack) && (
+          <Box
+            style={{
+              display: "flex",
+              // Single row; overflow only as a fallback for unusual tag counts.
+              flexWrap: "nowrap",
+              overflowX: "auto",
+              gap: "2px 10px",
+            }}
+            mb={0.25}
+          >
+            {!!item.armorClassLabel && (
+              <Box fontSize="11px" style={{ color: "#7fa7c9", whiteSpace: "nowrap" }}>
+                <Icon name="shield-halved" mr={0.5} />
+                {item.armorClassLabel}
+              </Box>
+            )}
+            {!!item.weaponCategory && (
+              <Box fontSize="11px" style={{ color: "#7fa7c9", whiteSpace: "nowrap" }}>
+                <Icon name={WEAPON_CATEGORY_ICONS[item.weaponCategory] ?? "question"} mr={0.5} />
+                {item.weaponCategory}
+              </Box>
+            )}
+            {item.tags?.map((tag) => (
+              <Box key={tag} fontSize="11px" style={{ color: "#8a7a66", whiteSpace: "nowrap" }}>
+                <Icon name={TAG_ICONS[tag] ?? "question"} mr={0.5} />
+                {tag}
+              </Box>
+            ))}
+            {!!item.specialAttack && (
+              <Box fontSize="11px" style={{ color: "#c9a76f", whiteSpace: "nowrap" }}>
+                <SpecialAttackBadge
+                  name={item.specialAttack.name}
+                  onEnter={() => setSpecialHintOpen(true)}
+                  onLeave={() => setSpecialHintOpen(false)}
+                />
+              </Box>
+            )}
+          </Box>
+        )}
+      {expanded && hasFooter && (
+        <Box
+          mt={0.25}
+          pt={0.5}
+          style={{
+            borderTop: "1px solid rgba(138,122,102,0.35)",
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "12px",
+          }}
+          fontSize="10px"
+          color="#b8ae9c"
+        >
+          {!!item.weight && (
+            <span>
+              <Icon name="weight-hanging" mr={0.5} />
+              {item.weight}
+            </span>
+          )}
+          {!!item.price && (
+            <span>
+              <Icon name="coins" mr={0.5} />
+              {item.price} amna
+            </span>
+          )}
+        </Box>
+      )}
+      </div>
+      {specialHintOpen && !!item.specialAttack && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: "100%",
+            left: 0,
+            marginBottom: "4px",
+            width: "220px",
+            zIndex: 2,
+            padding: "6px 8px",
+            ...TOOLTIP_SURFACE,
+            border: "1px solid rgba(201,167,111,0.6)",
+            borderRadius: "4px",
+            fontSize: "10px",
+            color: "#c7bba8",
+            lineHeight: 1.4,
+            whiteSpace: "normal",
+            pointerEvents: "none",
+          }}
+        >
+          {item.specialAttack.desc}
+        </div>
       )}
     </div>
   );
@@ -202,7 +556,7 @@ const SimpleTooltip = (props: {
         zIndex: 1,
         width: "140px",
         padding: "6px 9px",
-        ...TOOLTIP_SURFACE, // RMH EDITED - frosted backdrop instead of a flat fill
+        ...TOOLTIP_SURFACE,
         border: "2px solid #5a4632",
         borderRadius: "4px",
         boxShadow: "0 2px 10px rgba(0,0,0,0.85)",

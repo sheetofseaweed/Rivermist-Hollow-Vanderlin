@@ -34,7 +34,6 @@
 		return TRUE
 	return ..()
 
-/obj/item/storage/contents_explosion(severity, target)
 //Cyberboss says: "USE THIS TO FILL IT, NOT INITIALIZE OR NEW"
 
 /obj/item/storage/proc/populate_contents()

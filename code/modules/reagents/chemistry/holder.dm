@@ -176,7 +176,7 @@
 
 	return master
 
-/datum/reagents/proc/trans_to(obj/target, amount = 1, multiplier = 1, preserve_data = TRUE, no_react = FALSE, mob/transfered_by, remove_blacklisted = FALSE, method = null, show_message = TRUE, round_robin = FALSE, ignore_stomach = FALSE, list/ignored_reagents)
+/datum/reagents/proc/trans_to(datum/target, amount = 1, multiplier = 1, preserve_data = TRUE, no_react = FALSE, mob/transfered_by, remove_blacklisted = FALSE, method = null, show_message = TRUE, round_robin = FALSE, ignore_stomach = FALSE, list/ignored_reagents)
 	//if preserve_data=0, the reagents data will be lost. Usefull if you use data for some strange stuff and don't want it to be transferred.
 	//if round_robin=TRUE, so transfer 5 from 15 water, 15 sugar and 15 plasma becomes 10, 15, 15 instead of 13.3333, 13.3333 13.3333. Good if you hate floating point errors
 	if(isliving(target) && transfered_by != target)
@@ -197,6 +197,9 @@
 		R = target
 		target_atom = R.my_atom
 	else
+		var/atom/atom_target = target
+		if(!atom_target)
+			return
 		if(!ignore_stomach && (method & INGEST) && istype(target, /mob/living/carbon))
 			var/mob/living/carbon/eater = target
 			var/obj/item/organ/stomach/belly = eater.getorganslot(ORGAN_SLOT_STOMACH)
@@ -205,11 +208,11 @@
 				return
 			R = belly.reagents
 			target_atom = belly
-		else if(!target.reagents)
+		else if(!atom_target.reagents)
 			return
 		else
-			R = target.reagents
-			target_atom = target
+			R = atom_target.reagents
+			target_atom = atom_target
 
 	var/used_volume = src.total_volume
 	if(length(ignored_reagents))
@@ -303,32 +306,39 @@
 	src.handle_reactions()
 	return amount
 
-/datum/reagents/proc/trans_id_to(obj/target, reagent, amount=1, preserve_data=1)//Not sure why this proc didn't exist before. It does now! /N
+/datum/reagents/proc/trans_id_to(datum/target, reagent, amount = 1, preserve_data = TRUE)
 	var/list/cached_reagents = reagent_list
-	if (!target)
-		return
-	if (!target.reagents || src.total_volume<=0 || !src.get_reagent_amount(reagent))
-		return
-	if(amount < 0)
+	if(!target || total_volume <= 0 || !get_reagent_amount(reagent))
 		return
 
-	var/datum/reagents/R = target.reagents
-	if(src.get_reagent_amount(reagent)<amount)
-		amount = src.get_reagent_amount(reagent)
-	amount = min(amount, R.maximum_volume-R.total_volume)
+	var/datum/reagents/receiving_reagents
+	if(istype(target, /datum/reagents))
+		receiving_reagents = target
+	else if(istype(target, /atom))
+		var/atom/target_atom = target
+		receiving_reagents = target_atom.reagents
+	if(!receiving_reagents || amount < 0)
+		return
+
+	amount = min(amount, get_reagent_amount(reagent))
+	amount = min(amount, receiving_reagents.maximum_volume - receiving_reagents.total_volume)
+	if(amount <= 0)
+		return
+
 	var/trans_data = null
-	for (var/CR in cached_reagents)
-		var/datum/reagent/current_reagent = CR
-		if(current_reagent.type == reagent)
-			if(preserve_data)
-				trans_data = current_reagent.data
-			R.add_reagent(current_reagent.type, amount, trans_data, src.chem_temp)
-			remove_reagent(current_reagent.type, amount, 1)
-			break
+	for(var/datum/reagent/current_reagent as anything in cached_reagents)
+		if(current_reagent.type != reagent)
+			continue
+		if(preserve_data)
+			trans_data = copy_data(current_reagent)
+		receiving_reagents.add_reagent(current_reagent.type, amount, trans_data, chem_temp)
+		remove_reagent(current_reagent.type, amount, TRUE)
+		break
 
-	src.update_total()
-	R.update_total()
-	R.handle_reactions()
+	update_total()
+	receiving_reagents.update_total()
+	receiving_reagents.handle_reactions()
+	handle_reactions()
 	return amount
 
 /datum/reagents/proc/metabolize(mob/living/carbon/C, can_overdose = FALSE, liverless = FALSE, efficiency = 100, health_update = TRUE)

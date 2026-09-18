@@ -94,6 +94,11 @@
 		/datum/attunement/light = -0.1,
 	)
 
+/obj/item/alch/bone/Initialize(mapload)
+	. = ..()
+	create_reagents(20)
+	reagents.add_reagent(/datum/reagent/consumable/nutriment/bone_marrow, 20)
+
 /obj/item/alch/horn
 	item_weight = 95 GRAMS
 	name = "troll horn"

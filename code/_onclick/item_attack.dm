@@ -720,8 +720,11 @@
 				to_chat(src, span_userdanger("SNEAK ATTACK!!!"))
 				to_chat(user, span_userdanger("SNEAK ATTACK!!!"))
 				user.adjust_experience(/datum/skill/misc/sneaking, user.STAINT * 5, FALSE)
-	if(!apply_damage(newforce, I.damtype, hitlim, armor))
+	var/actual_damage = apply_damage(newforce, I.damtype, hitlim, armor)
+	if(!actual_damage)
 		nodmg = TRUE
+	else
+		SEND_SIGNAL(I, COMSIG_ITEM_POST_ATTACK_SIMPLE, src, user, actual_damage)
 	I.remove_bintegrity(1)
 	if(I.damtype == BRUTE && !nodmg)
 		if(HAS_TRAIT(src, TRAIT_SIMPLE_WOUNDS))

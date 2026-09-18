@@ -10,18 +10,6 @@
 		/datum/attunement/death = 0.2,
 	)
 
-/datum/action/cooldown/spell/remove_enchantment/can_cast_spell(feedback)
-	. = ..()
-	if(!.)
-		return
-	return owner.mind?.has_antag_datum(/datum/antagonist/overlord)
-
-/datum/action/cooldown/spell/remove_enchantment/is_valid_target(atom/cast_on)
-	. = ..()
-	if(!.)
-		return
-	return istype(cast_on, /obj/structure/door)
-
 /datum/action/cooldown/spell/enchant_door/cast(obj/structure/door/target_door)
 	. = ..()
 	var/datum/antagonist/overlord/overlord_datum = owner.mind.has_antag_datum(/datum/antagonist/overlord)

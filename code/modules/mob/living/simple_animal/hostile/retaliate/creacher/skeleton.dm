@@ -38,10 +38,6 @@
 
 	ai_controller = /datum/ai_controller/orc
 
-/mob/living/simple_animal/hostile/skeleton/Initialize(mapload, mob/user, cabal_affine)
-	. = ..()
-	AddComponent(/datum/component/ai_aggro_system)
-
 /mob/living/simple_animal/hostile/skeleton/axe
 	name = "Skeleton"
 	desc = ""
@@ -115,6 +111,7 @@
 
 /mob/living/simple_animal/hostile/skeleton/Initialize(mapload, mob/user, cabal_affine = FALSE)
 	. = ..()
+	AddComponent(/datum/component/ai_aggro_system)
 	if(user)
 		friends += user.name
 		if (cabal_affine)

@@ -50,7 +50,8 @@
 	display_pain(limb.owner, "I feel a stabbing in my [parse_zone(limb.body_zone)].")
 
 /datum/surgery_operation/limb/incise_skin/on_success(obj/item/bodypart/limb, mob/living/surgeon, obj/item/tool, list/operation_args)
-	limb.create_injury(WOUND_SLASH, BLEED_DAMAGE_RATIO / 6, surgical = TRUE)
+	// Must stay at or under the slash max_bleeding_stage, or get_incision() rejects the cut.
+	limb.create_injury(WOUND_SLASH, BLEED_DAMAGE_RATIO / 4, surgical = TRUE)
 
 	if(!limb.bleeds)
 		return ..()

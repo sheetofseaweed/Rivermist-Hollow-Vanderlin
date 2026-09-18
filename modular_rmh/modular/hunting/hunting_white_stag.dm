@@ -33,6 +33,7 @@
 	no_equip = list(ITEM_SLOT_SHIRT, ITEM_SLOT_HEAD, ITEM_SLOT_ARMOR, ITEM_SLOT_MASK, ITEM_SLOT_GLOVES, ITEM_SLOT_SHOES, ITEM_SLOT_PANTS, ITEM_SLOT_CLOAK, ITEM_SLOT_BELT)
 	nojumpsuit = TRUE
 	sexes = 1
+	changesource_flags = WABBAJACK
 
 /// Returning TRUE is the documented way to opt out: update_damage_overlays_real() bails before it
 /// paints the human wound sprites, which otherwise show up smeared over a stag.

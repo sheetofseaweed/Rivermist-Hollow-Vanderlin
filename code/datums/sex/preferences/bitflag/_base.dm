@@ -9,11 +9,6 @@
 		CRASH("Bitflag preference [type] must define flags list")
 
 
-/datum/erp_preference/bitflag/New()
-	..()
-	if(!length(flags))
-		CRASH("Bitflag preference [type] must define flags list")
-
 /datum/erp_preference/bitflag/show_pref_ui(datum/preferences/prefs, lock_reason = null)
 	var/current_value = get_value(prefs)
 	var/list/output = list()

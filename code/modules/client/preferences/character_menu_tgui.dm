@@ -376,7 +376,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 	var/saved_age = read_preference(/datum/preference/choiced/age)
 	var/saved_name = read_preference(/datum/preference/text/real_name)
-	write_preference(/datum/preference/choiced/selected_accent, ACCENT_DEFAULT)
+	write_preference(/datum/preference/choiced/selected_accent, ACCENT_NONE)
 	set_species_preference(new_species)
 	if(!LAZYLEN(pref_species.allowed_taur_types))
 		write_preference(/datum/preference/choiced/taur_type, null)

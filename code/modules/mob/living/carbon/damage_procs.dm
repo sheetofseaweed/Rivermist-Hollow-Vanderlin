@@ -454,22 +454,26 @@
 	while(length(parts) && (brute > 0 || burn > 0))
 		var/obj/item/bodypart/picked = pick(parts)
 		var/brute_per_part = rand(0, brute)
-		var/burn_per_part = rand(0, burn)
 
 		var/brute_was = picked.brute_dam
 		var/burn_was = picked.burn_dam
 		. += picked.get_damage()
 
-		if(damage_type || burn)
-			if(burn)
-				damage_type = BCLASS_BURN
+		var/list/mods = list()
+		if(no_crit)
+			mods = list(CRIT_MOD_CHANCE = -100)
+
+		// Each class lands on its own; folding them together turned every mixed hit into pure burn.
+		if(brute > 0)
+			if(damage_type)
+				update = TRUE
+				picked.bodypart_attacked_by(damage_type, brute, null, modifiers = mods)
+			else
+				update |= picked.receive_damage(brute_per_part, 0, blocked = FALSE, updating_health = FALSE, required_status = BODYPART_ORGANIC)
+
+		if(burn > 0)
 			update = TRUE
-			var/list/mods = list()
-			if(no_crit)
-				mods = list(CRIT_MOD_CHANCE = -100)
-			picked.bodypart_attacked_by(damage_type, brute + burn, null, modifiers = mods)
-		else
-			update |= picked.receive_damage(brute_per_part, burn_per_part, blocked = FALSE, updating_health = FALSE, required_status = BODYPART_ORGANIC)
+			picked.bodypart_attacked_by(BCLASS_BURN, burn, null, modifiers = mods)
 
 		. -= picked.get_damage() // return the net amount of damage healed
 
