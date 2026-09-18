@@ -1,0 +1,85 @@
+// RMH EDITED - new file: dark ledger/grimoire theme.
+// Ported from Azure Peak's `theme="grimoire"` (tgui/packages/tgui/styles/themes/grimoire.scss)
+// into Vanderlin's CSS-variable theme contract, the same way parchment.scss
+// was ported from Azure Peak's parchment theme.
+
+.theme-grimoire:root {
+  // Base
+  --color-base: #2a2118;
+  --color-primary: #4a3d28;
+  --color-text: #c0aa80;
+
+  --titlebar-text: #d4b888;
+
+  --font-size: 13px;
+  --font-family: 'Lora', Georgia, serif;
+  --line-height: 150%;
+
+  --color-good: #6a8a35;
+  --color-average: #b09060;
+  --color-bad: #8b2020;
+
+  --color-border-primary: rgba(160, 130, 80, 0.3);
+  --section-separator-color: rgba(120, 95, 55, 0.3);
+
+  // Title
+  .TitleBar {
+    background-color: #2a2118;
+    border-bottom: 1px solid rgba(160, 130, 80, 0.15);
+    box-shadow: none;
+
+    &__title {
+      color: #d4b888;
+      font-size: 13px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    &__close:hover {
+      color: rgba(200, 100, 100, 0.9);
+      background-color: rgba(200, 100, 100, 0.15);
+    }
+  }
+
+  .Section {
+    background-color: rgba(60, 48, 32, 0.25);
+    border: 1px solid rgba(120, 95, 55, 0.3);
+
+    &__title {
+      border-bottom: 1px solid rgba(120, 95, 55, 0.3);
+    }
+
+    &__titleText {
+      color: #c8b078;
+    }
+  }
+
+  .Button {
+    border-color: rgba(160, 130, 80, 0.2);
+    box-shadow: none;
+  }
+
+  .Button--color--default {
+    background-color: rgba(160, 130, 80, 0.15);
+    color: #c0aa80;
+
+    &:hover {
+      background-color: rgba(160, 130, 80, 0.3);
+      color: #e0cc9a;
+    }
+  }
+
+  // Force the ledger background across the whole window - the same trick
+  // parchment.scss uses, since some tgui-core chrome is otherwise painted
+  // with a hardcoded background regardless of the CSS variables above.
+  &,
+  .Window,
+  .Layout,
+  .Layout__content,
+  .Window__rest,
+  .Window__content,
+  .Window__contentPadding {
+    background: #2a2118 !important;
+    background-image: none !important;
+  }
+}
