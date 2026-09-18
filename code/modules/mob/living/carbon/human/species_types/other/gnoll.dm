@@ -1,251 +1,260 @@
-/mob/living/carbon/human/species/gnoll
-	race = /datum/species/gnoll
-	footstep_type = FOOTSTEP_MOB_HEAVY
+// Disabled: this monster gnoll shared /datum/species/gnoll with the playable anthro gnoll.
+// Its regenerate_icons forced a fixed monster sprite over that race's character creation.
+// Kept verbatim below for a future separate monstrous race under its own species type.
 
-/mob/living/carbon/human/species/gnoll/male
-	gender = MALE
+///mob/living/carbon/human/species/gnoll
+//	race = /datum/species/gnoll
+//	footstep_type = FOOTSTEP_MOB_HEAVY
 
-/mob/living/carbon/human/species/gnoll/female
-	gender = FEMALE
+///mob/living/carbon/human/species/gnoll/male
+//	gender = MALE
 
-/datum/species/gnoll
-	name = "Werewolf"
-	id = "gnoll"
+///mob/living/carbon/human/species/gnoll/female
+//	gender = FEMALE
 
-	species_traits = list(
-		NO_UNDERWEAR,
-		NO_ORGAN_FEATURES,
-		NO_BODYPART_FEATURES,
-	)
+///datum/species/gnoll
+//	name = "Werewolf"
+//	id = "gnoll"
 
-	inherent_traits = list(
-		TRAIT_LONGSTRIDER,
-		TRAIT_IGNORESLOWDOWN,
-		TRAIT_IGNOREDAMAGESLOWDOWN,
-		TRAIT_CRITICAL_RESISTANCE,
-		TRAIT_NOFALLDAMAGE1,
-		TRAIT_PIERCEIMMUNE,
-		TRAIT_HARDDISMEMBER,
-		TRAIT_NASTY_EATER,
-		TRAIT_ORGAN_EATER,
-		TRAIT_BREADY,
-		TRAIT_STEELHEARTED,
-		TRAIT_BASHDOORS,
-		TRAIT_ZJUMP,
-		TRAIT_STRONGBITE,
-		TRAIT_NUDIST,
-	)
+//	species_traits = list(
+//		NO_UNDERWEAR,
+//		NO_ORGAN_FEATURES,
+//		NO_BODYPART_FEATURES,
+//	)
 
-	inherent_biotypes = MOB_HUMANOID | MOB_BEAST
+//	inherent_traits = list(
+//		TRAIT_LONGSTRIDER,
+//		TRAIT_IGNORESLOWDOWN,
+//		TRAIT_IGNOREDAMAGESLOWDOWN,
+//		TRAIT_CRITICAL_RESISTANCE,
+//		TRAIT_NOFALLDAMAGE1,
+//		TRAIT_PIERCEIMMUNE,
+//		TRAIT_HARDDISMEMBER,
+//		TRAIT_NASTY_EATER,
+//		TRAIT_ORGAN_EATER,
+//		TRAIT_BREADY,
+//		TRAIT_STEELHEARTED,
+//		TRAIT_BASHDOORS,
+//		TRAIT_ZJUMP,
+//		TRAIT_STRONGBITE,
+//		TRAIT_NUDIST,
+//	)
 
-	sexes = TRUE
+//	inherent_biotypes = MOB_HUMANOID | MOB_BEAST
 
-	soundpack_m = /datum/voicepack/gnoll
-	soundpack_f = /datum/voicepack/gnoll
+//	sexes = TRUE
 
-	enflamed_icon = "widefire"
+//	soundpack_m = /datum/voicepack/gnoll
+//	soundpack_f = /datum/voicepack/gnoll
 
-	organs = list(
-		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,
-		ORGAN_SLOT_HEART = /obj/item/organ/heart,
-		ORGAN_SLOT_LUNGS = /obj/item/organ/lungs,
-		ORGAN_SLOT_EYES = /obj/item/organ/eyes/night_vision/werewolf,
-		ORGAN_SLOT_EARS = /obj/item/organ/ears,
-		ORGAN_SLOT_TONGUE = /obj/item/organ/tongue,
-		ORGAN_SLOT_LIVER = /obj/item/organ/liver,
-		ORGAN_SLOT_STOMACH = /obj/item/organ/stomach,
-	)
+//	enflamed_icon = "widefire"
 
-/datum/species/gnoll/check_roundstart_eligible()
-	return TRUE
+//	organs = list(
+//		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,
+//		ORGAN_SLOT_HEART = /obj/item/organ/heart,
+//		ORGAN_SLOT_LUNGS = /obj/item/organ/lungs,
+//		ORGAN_SLOT_EYES = /obj/item/organ/eyes/night_vision/werewolf,
+//		ORGAN_SLOT_EARS = /obj/item/organ/ears,
+//		ORGAN_SLOT_TONGUE = /obj/item/organ/tongue,
+//		ORGAN_SLOT_LIVER = /obj/item/organ/liver,
+//		ORGAN_SLOT_STOMACH = /obj/item/organ/stomach,
+//	)
 
-/datum/species/gnoll/send_voice(mob/living/carbon/human/H)
-	playsound(
-		get_turf(H),
-		pick(
-			'sound/vo/mobs/wwolf/wolftalk1.ogg',
-			'sound/vo/mobs/wwolf/wolftalk2.ogg',
-		),
-		100,
-		TRUE,
-		-1,
-	)
+///datum/species/gnoll/check_roundstart_eligible()
+//	return TRUE
 
-/datum/species/gnoll/regenerate_icons(mob/living/carbon/human/H)
-	H.icon = 'icons/roguetown/mob/monster/gnoll.dmi'
+///datum/species/gnoll/send_voice(mob/living/carbon/human/H)
+//	playsound(
+//		get_turf(H),
+//		pick(
+//			'sound/vo/mobs/wwolf/wolftalk1.ogg',
+//			'sound/vo/mobs/wwolf/wolftalk2.ogg',
+//		),
+//		100,
+//		TRUE,
+//		-1,
+//	)
 
-	if(!H.icon_state)
-		H.icon_state = "firepelt"
+///datum/species/gnoll/regenerate_icons(mob/living/carbon/human/H)
+//	H.icon = 'icons/roguetown/mob/monster/gnoll.dmi'
 
-	H.update_damage_overlays()
+//	if(!H.icon_state)
+//		H.icon_state = "firepelt"
 
-	return TRUE
+//	H.update_damage_overlays()
 
-/datum/species/gnoll/update_damage_overlays(mob/living/carbon/human/H)
-	H.remove_overlay(DAMAGE_LAYER)
+//	return TRUE
 
-	var/list/hands = list()
-	var/mutable_appearance/inhand_overlay = mutable_appearance(
-		"[H.icon_state]-dam",
-		layer = -DAMAGE_LAYER,
-	)
+///datum/species/gnoll/update_damage_overlays(mob/living/carbon/human/H)
+//	H.remove_overlay(DAMAGE_LAYER)
 
-	var/burnhead = 0
-	var/brutehead = 0
-	var/burnch = 0
-	var/brutech = 0
+//	var/list/hands = list()
+//	var/mutable_appearance/inhand_overlay = mutable_appearance(
+//		"[H.icon_state]-dam",
+//		layer = -DAMAGE_LAYER,
+//	)
 
-	var/obj/item/bodypart/affecting = H.get_bodypart(BODY_ZONE_HEAD)
+//	var/burnhead = 0
+//	var/brutehead = 0
+//	var/burnch = 0
+//	var/brutech = 0
 
-	if(affecting)
-		burnhead = affecting.burn_dam / affecting.max_damage
-		brutehead = affecting.brute_dam / affecting.max_damage
+//	var/obj/item/bodypart/affecting = H.get_bodypart(BODY_ZONE_HEAD)
 
-	affecting = H.get_bodypart(BODY_ZONE_CHEST)
+//	if(affecting)
+//		burnhead = affecting.burn_dam / affecting.max_damage
+//		brutehead = affecting.brute_dam / affecting.max_damage
 
-	if(affecting)
-		burnch = affecting.burn_dam / affecting.max_damage
-		brutech = affecting.brute_dam / affecting.max_damage
+//	affecting = H.get_bodypart(BODY_ZONE_CHEST)
 
-	var/usedloss = 0
+//	if(affecting)
+//		burnch = affecting.burn_dam / affecting.max_damage
+//		brutech = affecting.brute_dam / affecting.max_damage
 
-	if(burnhead > usedloss)
-		usedloss = burnhead
+//	var/usedloss = 0
 
-	if(brutehead > usedloss)
-		usedloss = brutehead
+//	if(burnhead > usedloss)
+//		usedloss = burnhead
 
-	if(burnch > usedloss)
-		usedloss = burnch
+//	if(brutehead > usedloss)
+//		usedloss = brutehead
 
-	if(brutech > usedloss)
-		usedloss = brutech
+//	if(burnch > usedloss)
+//		usedloss = burnch
 
-	inhand_overlay.alpha = 255 * usedloss
+//	if(brutech > usedloss)
+//		usedloss = brutech
 
-	hands += inhand_overlay
-	H.overlays_standing[DAMAGE_LAYER] = hands
-	H.apply_overlay(DAMAGE_LAYER)
+//	inhand_overlay.alpha = 255 * usedloss
 
-	return TRUE
+//	hands += inhand_overlay
+//	H.overlays_standing[DAMAGE_LAYER] = hands
+//	H.apply_overlay(DAMAGE_LAYER)
 
-/datum/species/gnoll/random_name(gender, unique, lastname)
-	return "[pick(strings("werewolf_names.json", "wolf_prefixes"))] [pick(strings("werewolf_names.json", "wolf_suffixes"))]"
+//	return TRUE
 
-/datum/voicepack/gnoll/get_sound(soundin, modifiers)
-	var/used
+///datum/species/gnoll/random_name(gender, unique, lastname)
+//	return "[pick(strings("werewolf_names.json", "wolf_prefixes"))] [pick(strings("werewolf_names.json", "wolf_suffixes"))]"
 
-	switch(soundin)
-		if("aggro")
-			used = 'sound/vo/mobs/wwolf/roar.ogg'
+///datum/voicepack/gnoll/get_sound(soundin, modifiers)
+//	var/used
 
-		if("rage")
-			used = 'sound/vo/mobs/wwolf/roar.ogg'
+//	switch(soundin)
+//		if("aggro")
+//			used = 'sound/vo/mobs/wwolf/roar.ogg'
 
-		if("deathgurgle")
-			used = 'sound/vo/mobs/wwolf/death.ogg'
+//		if("rage")
+//			used = 'sound/vo/mobs/wwolf/roar.ogg'
 
-		if("firescream")
-			used = 'sound/vo/mobs/wwolf/painscream.ogg'
+//		if("deathgurgle")
+//			used = 'sound/vo/mobs/wwolf/death.ogg'
 
-		if("painscream")
-			used = 'sound/vo/mobs/wwolf/painscream.ogg'
+//		if("firescream")
+//			used = 'sound/vo/mobs/wwolf/painscream.ogg'
 
-		if("agony")
-			used = 'sound/vo/mobs/wwolf/painscream.ogg'
+//		if("painscream")
+//			used = 'sound/vo/mobs/wwolf/painscream.ogg'
 
-		if("jump")
-			used = pick(
-				'sound/vo/mobs/wwolf/jump (1).ogg',
-				'sound/vo/mobs/wwolf/jump (2).ogg',
-				'sound/vo/mobs/wwolf/jump (3).ogg',
-			)
+//		if("agony")
+//			used = 'sound/vo/mobs/wwolf/painscream.ogg'
 
-		if("leap")
-			used = pick(
-				'sound/vo/mobs/wwolf/jump (1).ogg',
-				'sound/vo/mobs/wwolf/jump (2).ogg',
-				'sound/vo/mobs/wwolf/jump (3).ogg',
-			)
+//		if("jump")
+//			used = pick(
+//				'sound/vo/mobs/wwolf/jump (1).ogg',
+//				'sound/vo/mobs/wwolf/jump (2).ogg',
+//				'sound/vo/mobs/wwolf/jump (3).ogg',
+//			)
 
-		if("pain")
-			used = pick(
-				'sound/vo/mobs/wwolf/pain (1).ogg',
-				'sound/vo/mobs/wwolf/pain (2).ogg',
-				'sound/vo/mobs/wwolf/pain (3).ogg',
-			)
+//		if("leap")
+//			used = pick(
+//				'sound/vo/mobs/wwolf/jump (1).ogg',
+//				'sound/vo/mobs/wwolf/jump (2).ogg',
+//				'sound/vo/mobs/wwolf/jump (3).ogg',
+//			)
 
-		if("paincrit")
-			used = pick(
-				'sound/vo/mobs/wwolf/pain (1).ogg',
-				'sound/vo/mobs/wwolf/pain (2).ogg',
-				'sound/vo/mobs/wwolf/pain (3).ogg',
-			)
+//		if("pain")
+//			used = pick(
+//				'sound/vo/mobs/wwolf/pain (1).ogg',
+//				'sound/vo/mobs/wwolf/pain (2).ogg',
+//				'sound/vo/mobs/wwolf/pain (3).ogg',
+//			)
 
-		if("scream")
-			used = 'sound/vo/mobs/wwolf/roar.ogg'
+//		if("paincrit")
+//			used = pick(
+//				'sound/vo/mobs/wwolf/pain (1).ogg',
+//				'sound/vo/mobs/wwolf/pain (2).ogg',
+//				'sound/vo/mobs/wwolf/pain (3).ogg',
+//			)
 
-		if("howl")
-			used = pick(
-				'sound/vo/mobs/wwolf/howl (1).ogg',
-				'sound/vo/mobs/wwolf/howl (2).ogg',
-			)
+//		if("scream")
+//			used = 'sound/vo/mobs/wwolf/roar.ogg'
 
-		if("idle")
-			used = pick(
-				'sound/vo/mobs/wwolf/idle (1).ogg',
-				'sound/vo/mobs/wwolf/idle (2).ogg',
-				'sound/vo/mobs/wwolf/sniff.ogg',
-			)
+//		if("howl")
+//			used = pick(
+//				'sound/vo/mobs/wwolf/howl (1).ogg',
+//				'sound/vo/mobs/wwolf/howl (2).ogg',
+//			)
 
-		if("cackle")
-			used = 'sound/vo/mobs/wwolf/roar.ogg'
+//		if("idle")
+//			used = pick(
+//				'sound/vo/mobs/wwolf/idle (1).ogg',
+//				'sound/vo/mobs/wwolf/idle (2).ogg',
+//				'sound/vo/mobs/wwolf/sniff.ogg',
+//			)
 
-		if("chuckle")
-			used = 'sound/vo/mobs/wwolf/idle (1).ogg'
+//		if("cackle")
+//			used = 'sound/vo/mobs/wwolf/roar.ogg'
 
-		if("laugh")
-			used = 'sound/vo/mobs/wwolf/idle (2).ogg'
+//		if("chuckle")
+//			used = 'sound/vo/mobs/wwolf/idle (1).ogg'
 
-		if("whimper")
-			used = 'sound/vo/mobs/wwolf/pain (1).ogg'
+//		if("laugh")
+//			used = 'sound/vo/mobs/wwolf/idle (2).ogg'
 
-	return used
+//		if("whimper")
+//			used = 'sound/vo/mobs/wwolf/pain (1).ogg'
 
-/datum/species/gnoll/on_species_gain(
-	mob/living/carbon/C,
-	datum/species/old_species,
-	datum/preferences/pref_load,
-)
-	. = ..()
+//	return used
 
-	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
+///datum/species/gnoll/on_species_gain(
+//	mob/living/carbon/C,
+//	datum/species/old_species,
+//	datum/preferences/pref_load,
+//)
+//	. = ..()
 
-	C.grant_language(/datum/language/common)
-	C.grant_language(/datum/language/beast)
+//	RegisterSignal(C, COMSIG_MOB_SAY, PROC_REF(handle_speech))
 
-	C.add_spell(/datum/action/cooldown/spell/undirected/howl)
-	C.add_spell(/datum/action/cooldown/spell/undirected/claws)
-	C.add_spell(/datum/action/cooldown/spell/woundlick)
+//	C.grant_language(/datum/language/common)
+//	C.grant_language(/datum/language/beast)
 
-	if(ishuman(C))
-		var/mob/living/carbon/human/H = C
-		H.icon = 'icons/roguetown/mob/monster/gnoll.dmi'
-		H.icon_state = "firepelt"
-		H.base_pixel_x = -8
-		H.pixel_x = -8
-		H.base_pixel_y = -4
-		H.pixel_y = -4
-		regenerate_icons(H)
+//	C.add_spell(/datum/action/cooldown/spell/undirected/howl)
+//	C.add_spell(/datum/action/cooldown/spell/undirected/claws)
+//	C.add_spell(/datum/action/cooldown/spell/woundlick)
+//	var/datum/action/cooldown/keen_nose/sniff_action = new(C)
+//	sniff_action.Grant(C)
 
-/datum/species/gnoll/on_species_loss(mob/living/carbon/C)
-	. = ..()
+//	if(ishuman(C))
+//		var/mob/living/carbon/human/H = C
+//		H.icon = 'icons/roguetown/mob/monster/gnoll.dmi'
+//		H.icon_state = "firepelt"
+//		H.base_pixel_x = -8
+//		H.pixel_x = -8
+//		H.base_pixel_y = -4
+//		H.pixel_y = -4
+//		regenerate_icons(H)
 
-	UnregisterSignal(C, COMSIG_MOB_SAY)
+///datum/species/gnoll/on_species_loss(mob/living/carbon/C)
+//	. = ..()
 
-	C.remove_language(/datum/language/common)
-	C.remove_language(/datum/language/beast)
+//	UnregisterSignal(C, COMSIG_MOB_SAY)
 
-	C.remove_spell(/datum/action/cooldown/spell/undirected/howl)
-	C.remove_spell(/datum/action/cooldown/spell/undirected/claws)
-	C.remove_spell(/datum/action/cooldown/spell/woundlick)
+//	C.remove_language(/datum/language/common)
+//	C.remove_language(/datum/language/beast)
+
+//	C.remove_spell(/datum/action/cooldown/spell/undirected/howl)
+//	C.remove_spell(/datum/action/cooldown/spell/undirected/claws)
+//	C.remove_spell(/datum/action/cooldown/spell/woundlick)
+//	for(var/datum/action/cooldown/keen_nose/sniff_action in C.actions)
+//		if(sniff_action.target == C)
+//			qdel(sniff_action)

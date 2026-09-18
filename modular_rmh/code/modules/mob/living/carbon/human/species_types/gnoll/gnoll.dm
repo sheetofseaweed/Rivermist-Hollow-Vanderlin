@@ -158,6 +158,14 @@
 	. = ..()
 	C.grant_language(/datum/language/common)
 	C.grant_language(/datum/language/beast)
+	var/datum/action/cooldown/keen_nose/sniff_action = new(C)
+	sniff_action.Grant(C)
+
+/datum/species/gnoll/on_species_loss(mob/living/carbon/C)
+	. = ..()
+	for(var/datum/action/cooldown/keen_nose/sniff_action in C.actions)
+		if(sniff_action.target == C)
+			qdel(sniff_action)
 
 /datum/species/gnoll/after_creation(mob/living/carbon/C)
 	. = ..()
