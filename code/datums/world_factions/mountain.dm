@@ -207,11 +207,6 @@
 		/datum/supply_pack/portals_and_fleshlight
 	)
 
-	bounty_path_weights = list(
-		/obj/item/ingot = 500,
-		/obj/item/ore = 600,
-	)
-
 /datum/world_faction/mountain_clans/initialize_faction_stock()
 	..()
 	// Mountain clans value tools and metalwork

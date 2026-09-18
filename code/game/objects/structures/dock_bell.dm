@@ -23,7 +23,16 @@
 		return
 
 	var/datum/job/user_job = SSjob.GetJob(user.job)
-	if(user_job && !(initial(user_job.type) in approved_jobs) && (SSmapping.config.map_name != "Voyager"))
+	var/merchant_present = FALSE
+	for(var/mob/living/player in GLOB.player_list)
+		if(player.stat == DEAD)
+			continue
+		var/datum/job/player_job = SSjob.GetJob(player.job)
+		if(player_job && (player_job.type in approved_jobs))
+			merchant_present = TRUE
+			break
+
+	if(merchant_present && (!user_job || !(user_job.type in approved_jobs)) && (SSmapping.config.map_name != "Voyager"))
 		if(!COOLDOWN_FINISHED(src, outsider_ring_bell))
 			return
 
@@ -43,8 +52,8 @@
 	else if(SSmerchant.cargo_docked)
 		SSmerchant.prepare_cargo_shipment()
 
-	COOLDOWN_START(src, ring_bell, 30 SECONDS)
-	COOLDOWN_START(src, outsider_ring_bell, 10 MINUTES)
+	COOLDOWN_START(src, ring_bell, 60 SECONDS)
+	COOLDOWN_START(src, outsider_ring_bell, 5 MINUTES)
 
 /obj/structure/dock_bell/proc/recall_faction_traders()
 	for(var/mob/living/simple_animal/hostile/retaliate/trader/faction_trader/trader in SSmerchant.active_faction_traders)

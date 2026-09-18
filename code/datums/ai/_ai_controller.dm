@@ -63,6 +63,9 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	COOLDOWN_DECLARE(loot_scan_cooldown)
 	///AI paused time
 	var/paused_until = 0
+	/// Pawn signals which can end the current timed pause early.
+	var/list/pause_signals
+	var/pause_signal_timer
 	/// Updated by pause traits and timers, not by polling every tick.
 	var/able_to_run = FALSE
 	///Idle cooldown so that mobs dont run around like rockets
@@ -379,6 +382,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	SHOULD_CALL_PARENT(TRUE)
 	if(isnull(pawn))
 		return
+	clear_pause_signals()
 	set_ai_status(AI_STATUS_OFF)
 	clear_able_to_run()
 	UnregisterSignal(pawn, list(COMSIG_MOVABLE_Z_CHANGED, COMSIG_MOVABLE_MOVED, COMSIG_MOB_LOGIN, COMSIG_MOB_LOGOUT, COMSIG_MOB_STATCHANGE, COMSIG_ATOM_WAS_ATTACKED, COMSIG_PARENT_QDELETING))
@@ -479,7 +483,7 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	set_ai_status(get_expected_ai_status(), run_flags)
 
 /datum/ai_controller/proc/get_able_to_run()
-	if(QDELETED(pawn) || HAS_TRAIT(pawn, TRAIT_AI_PAUSED) || world.time < paused_until)
+	if(QDELETED(pawn) || HAS_TRAIT(pawn, TRAIT_AI_PAUSED) || world.time < paused_until || length(pause_signals))
 		return AI_UNABLE_TO_RUN
 	return NONE
 
@@ -666,6 +670,35 @@ have ways of interacting with a specific atom and control it. They posses a blac
 	paused_until = max(paused_until, world.time + time)
 	update_able_to_run()
 	addtimer(CALLBACK(src, PROC_REF(update_able_to_run)), max(0, paused_until - world.time), TIMER_UNIQUE|TIMER_OVERRIDE|TIMER_NO_HASH_WAIT|TIMER_DELETE_ME)
+
+/// Pause for at most `time`, waking as soon as the pawn receives `signal`.
+/datum/ai_controller/proc/PauseAiUntilSignal(signal, time = 1 HOURS)
+	if(!pawn || !signal)
+		return
+	clear_pause_signals()
+	pause_signals = list(signal)
+	RegisterSignal(pawn, signal, PROC_REF(resume_ai_from_signal))
+	update_able_to_run()
+	pause_signal_timer = addtimer(CALLBACK(src, PROC_REF(expire_signal_pause)), time, TIMER_STOPPABLE)
+
+/datum/ai_controller/proc/resume_ai_from_signal(datum/source)
+	SIGNAL_HANDLER
+	clear_pause_signals()
+	update_able_to_run()
+
+/// Remove signal wakeups without changing the controller's current pause deadline.
+/datum/ai_controller/proc/clear_pause_signals()
+	if(pause_signal_timer)
+		deltimer(pause_signal_timer)
+		pause_signal_timer = null
+	if(pawn && length(pause_signals))
+		UnregisterSignal(pawn, pause_signals)
+	pause_signals = null
+
+/datum/ai_controller/proc/expire_signal_pause()
+	pause_signal_timer = null
+	clear_pause_signals()
+	update_able_to_run()
 
 /datum/ai_controller/proc/modify_cooldown(datum/ai_behavior/behavior, new_cooldown)
 	behavior_cooldowns[behavior] = new_cooldown

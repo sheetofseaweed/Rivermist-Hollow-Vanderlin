@@ -2,6 +2,7 @@
 	group = "Tools"
 	crate_name = "merchant guild's crate"
 	crate_type = /obj/structure/closet/crate/chest/merchant
+	abstract_type = /datum/supply_pack/tools
 
 /datum/supply_pack/tools/rope
 	name = "Rope"

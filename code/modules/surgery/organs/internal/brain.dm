@@ -22,6 +22,7 @@
 
 	maxHealth = BRAIN_DAMAGE_DEATH
 	healing_factor = BRAIN_DAMAGE_DEATH/200
+	self_healing_effect = CE_BRAIN_REGEN
 	low_threshold = BRAIN_DAMAGE_DEATH * 0.25
 	high_threshold = BRAIN_DAMAGE_DEATH * 0.75
 
@@ -381,13 +382,15 @@
 		else if(brain_message)
 			return brain_message
 
-/obj/item/organ/brain/can_heal(delta_time, times_fired, in_bleedout)
+/obj/item/organ/brain/can_self_heal(delta_time, times_fired, in_bleedout)
 	. = TRUE
 	if(!owner || !iscarbon(owner))
 		return FALSE
 	var/mob/living/carbon/carbon_owner = owner
 	if(healing_factor <= 0)
 		return FALSE
+	if(self_healing_effect && carbon_owner.get_chem_effect(self_healing_effect))
+		return TRUE
 	if(is_dead())
 		return FALSE
 	if(current_blood <= 0)
@@ -401,8 +404,14 @@
 	if(!past_damage_threshold(3) && carbon_owner.get_chem_effect(CE_STABLE))
 		return TRUE
 	// else, we only naturally regen to basically get rounded
-	if(!(damage % damage_threshold_value) || carbon_owner.get_chem_effect(CE_BRAIN_REGEN))
+	if(!(damage % damage_threshold_value))
 		return FALSE
+
+/// Brains retain their existing flat healing rate instead of using the percentage-based organ rate.
+/obj/item/organ/brain/handle_self_healing(delta_time, times_fired)
+	applyOrganDamage(-healing_factor * delta_time, damage)
+	owner.adjust_nutrition(-nutriment_req / 200 * delta_time)
+	owner.adjust_hydration(-hydration_req / 200 * delta_time)
 
 /obj/item/organ/brain/proc/past_damage_threshold(threshold)
 	return (get_current_damage_threshold() > threshold)

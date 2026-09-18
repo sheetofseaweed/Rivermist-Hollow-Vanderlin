@@ -132,12 +132,18 @@
 	var/signedname
 	var/signedjob
 	var/list/orders = list()
-	var/list/reputation_orders = list()
+	/// Unit prices promised when the order was written; later market shifts cannot change a signed bill.
+	var/list/quoted_prices = list()
+	var/datum/world_faction/buying_from
+	/// TRUE when this order was written by a smuggler's manifest.
+	var/fence_order = FALSE
 	var/list/fufilled_orders = list()
 
 /obj/item/paper/scroll/cargo/Destroy()
 	for(var/datum/supply_pack/SO in orders)
 		orders -= SO
+	quoted_prices.Cut()
+	buying_from = null
 	return ..()
 
 /obj/item/paper/scroll/cargo/examine(mob/user)
@@ -192,10 +198,11 @@
 	if(orders.len)
 		info += "<ul>"
 		for(var/datum/supply_pack/A in orders)
+			var/unit_price = quoted_prices[A] || A.cost
 			if(!A.contraband)
-				info += "<li style='color:#06080F;font-size:11px;font-family:\"Segoe Script\"'>[A.name] x[orders[A]] - [A.cost * orders[A]] amnas</li><br/>"
+				info += "<li style='color:#06080F;font-size:11px;font-family:\"Segoe Script\"'>[A.name] x[orders[A]] - [unit_price * orders[A]] amnas</li><br/>"
 			else
-				info += "<li style='color:#610018;font-size:11px;font-family:\"Segoe Script\"'>[A.name] x[orders[A]] - [A.cost * orders[A]] amnas</li><br/>"
+				info += "<li style='color:#610018;font-size:11px;font-family:\"Segoe Script\"'>[A.name] x[orders[A]] - [unit_price * orders[A]] amnas</li><br/>"
 		info += "</ul>"
 
 	info += "<br/></font>"

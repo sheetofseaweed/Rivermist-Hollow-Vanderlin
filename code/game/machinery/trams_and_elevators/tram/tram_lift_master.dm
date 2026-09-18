@@ -113,6 +113,9 @@
 /datum/lift_master/tram/proc/tram_travel(obj/effect/landmark/tram/destination_platform, rapid = TRUE)
 	if(destination_platform == idle_platform)
 		return
+	if(travelling)
+		stack_trace("Tried to call tram_travel while already travelling!")
+		return
 
 	travel_direction = get_dir(idle_platform, destination_platform)
 	travel_distance = get_dist(idle_platform, destination_platform)
@@ -140,8 +143,24 @@
 
 	START_PROCESSING(SStramprocess, src)
 
+/datum/lift_master/tram/proc/is_at_destination()
+	var/turf/destination_turf = get_turf(idle_platform)
+	for(var/obj/structure/industrial_lift/tram/tram_part as anything in lift_platforms)
+		if(destination_turf in tram_part.locs)
+			return TRUE
+	return FALSE
+
+/datum/lift_master/tram/proc/recalculate_travel(obj/effect/landmark/tram/destination_platform)
+	var/obj/structure/industrial_lift/tram/anchor = lift_platforms[1]
+	travel_direction = get_dir(anchor, destination_platform)
+	travel_distance = get_dist(anchor, destination_platform)
+
 /datum/lift_master/tram/process()
 	if(!travel_distance)
+		if(!is_at_destination())
+			stack_trace("A tram ran out of travel distance without reaching its endpoint.")
+			recalculate_travel(idle_platform)
+			return
 		addtimer(CALLBACK(src, PROC_REF(unlock_controls), idle_platform), 2 SECONDS)
 		if(SEND_SIGNAL(callback_platform, COMSIG_TRAM_REACHED_PLATFORM, src))
 			return
