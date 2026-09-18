@@ -177,7 +177,34 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 			// so the beacon would keep selling coins - including its own change.
 			if(istype(I, /obj/item/coin))
 				continue
+			var/datum/world_faction/faction = SSmerchant.active_faction
+			var/market_modifier = faction?.return_sell_modifier(I.type) || 1
+			var/bounty_currency_before = SSmerchant.extra_currency
+			var/bounty_status = faction?.handle_selling(I)
+			var/bounty_reward = max(0, SSmerchant.extra_currency - bounty_currency_before)
+			if(bounty_reward)
+				// Bounty compensation is paid in full; it is not an export sale and is not taxed.
+				SSmerchant.extra_currency -= bounty_reward
+				E.budget2change(bounty_reward)
+				add_sale_history("[I.name] bounty", bounty_reward)
+				visible_message(span_boldnotice("[src] dispenses [bounty_reward] mammons in bounty compensation."))
+				sold_any = TRUE
+			if(bounty_status == TRUE)
+				I.visible_message(span_warning("[I] is sucked into the air!"))
+				qdel(I)
+				play_sound = TRUE
+				sold_any = TRUE
+				continue
+			if(bounty_status == FALSE_BUT_HANDLED)
+				continue
 			var/prize = I.get_real_price()
+			if(faction)
+				prize *= market_modifier
+				var/list/reagent_values = faction.get_reagent_sell_values(I)
+				for(var/reagent_name in reagent_values)
+					var/list/reagent_data = reagent_values[reagent_name]
+					prize += reagent_data[2]
+			prize = FLOOR(prize, 1)
 			if(prize >= 1)
 				gross += prize
 				add_sale_history(I.name, round(prize))
@@ -192,6 +219,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 		playsound(src, 'sound/misc/hiss.ogg', 100, FALSE, -1)
 	if(sold_any)
 		SStgui.update_uis(src)
+		SSmerchant.refresh_ledger_uis()
 
 #undef SALE_HISTORY_MAX
 //RMH EDITED END
@@ -280,14 +308,27 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 /obj/structure/fake_machine/merchantvend/proc/pack_in_stock(datum/supply_pack/P)
 	if(!P)
 		return FALSE
+	if(P.hidden || P.contraband || !P.unlocked || (P.special && !P.special_enabled))
+		return FALSE
 	var/pack_cat = length(P.group) ? P.group : MERCHANT_CAT_MISC
 	return (pack_cat in unlocked_cats)
+
+/// Resolve a base pack path to the active faction's independently priced market datum.
+/obj/structure/fake_machine/merchantvend/proc/get_market_pack(pack_type)
+	var/datum/world_faction/faction = SSmerchant.active_faction
+	if(!faction)
+		return null
+	if(istype(pack_type, /datum/supply_pack))
+		var/datum/supply_pack/pack = pack_type
+		pack_type = pack.type
+	return faction.faction_supply_packs[pack_type]
 
 /// Shared price calc so the display and the buy path can never disagree.
 /// The service fee is a markup on the good; import tax is charged on the
 /// raw pack cost only (mirrors the original GOLDFACE tax behaviour).
 /obj/structure/fake_machine/merchantvend/proc/get_pack_price(datum/supply_pack/PA, include_tax = TRUE)
-	if(!PA)
+	PA = get_market_pack(PA)
+	if(!pack_in_stock(PA))
 		return 0
 	var/cost = PA.cost + (PA.cost * get_effective_fee())
 	if(include_tax && !(upgrade_flags & UPGRADE_NOTAX))
@@ -365,8 +406,9 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	var/browsing_misc = (current_cat == MERCHANT_CAT_MISC)
 	if(searching || (current_cat && (current_cat in unlocked_cats)))
 		var/list/matched = list()
-		for(var/pack in SSmerchant.supply_packs)
-			var/datum/supply_pack/P = SSmerchant.supply_packs[pack]
+		var/datum/world_faction/faction = SSmerchant.active_faction
+		for(var/pack in faction?.faction_supply_packs)
+			var/datum/supply_pack/P = faction.faction_supply_packs[pack]
 			// Never leave this machine's own catalogue, search included.
 			if(!pack_in_stock(P))
 				continue
@@ -443,7 +485,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 			if(!ispath(path, /datum/supply_pack))
 				message_admins("MERCHANT [usr.key] IS TRYING TO BUY A [path] WITH THE GOLDFACE. THIS IS AN EXPLOIT.")
 				return TRUE
-			var/datum/supply_pack/picked_pack = SSmerchant.supply_packs[path]
+			var/datum/supply_pack/picked_pack = get_market_pack(path)
 			if(!picked_pack)
 				return TRUE
 			// Server-side stock check: a stale UI or a spoofed ref cannot buy
@@ -469,12 +511,17 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 			else
 				record_round_statistic(STATS_TAXES_EVADED, taxes)
 				tariff_evaded += taxes
-			if(ispath(picked_pack.contains))
-				var/obj/item/packitem = picked_pack.contains
-				new packitem(get_turf(human_mob))
-			else
-				for(var/obj/item/packitem as anything in picked_pack.contains)
-					new packitem(get_turf(human_mob))
+			for(var/spawn_type in picked_pack.contains)
+				var/atom/movable/purchased_item = new spawn_type(get_turf(human_mob))
+				if(picked_pack.admin_spawned)
+					purchased_item.flags_1 |= ADMIN_SPAWNED_1
+				if(isitem(purchased_item))
+					var/list/quality_result = SSmerchant.active_faction?.get_faction_quality_calculator(purchased_item)
+					if(quality_result)
+						create_quality_item(purchased_item, quality_result[1], quality_override = quality_result[2])
+			SSmerchant.active_faction?.apply_purchase_demand_pressure(picked_pack, 1)
+			SSmerchant.active_faction?.handle_supply_purchase(picked_pack)
+			SSmerchant.refresh_ledger_uis()
 			// NOTE: do NOT qdel(picked_pack) here. Supply packs are shared
 			// singletons owned by SSmerchant; deleting one hard-deletes a datum
 			// that stays referenced in SSmerchant.supply_packs and the faction

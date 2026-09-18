@@ -4,6 +4,8 @@
 ///from base of /mob/Logout(): ()
 #define COMSIG_MOB_LOGOUT "mob_logout"
 #define COMSIG_MOB_STATCHANGE "mob_statchange"
+/// Sent to a visiting merchant when the cargo boat reaches the city dock.
+#define COMSIG_MOB_CARGO_DOCKED "mob_cargo_docked"
 /// From /mob/proc/ranged_attack_secondary(): (atom/target, list/modifiers)
 #define COMSIG_MOB_ATTACK_RANGED_SECONDARY "mob_attack_ranged_secondary"
 

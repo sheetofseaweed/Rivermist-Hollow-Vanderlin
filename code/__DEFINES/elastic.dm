@@ -27,5 +27,8 @@
 		/// An underworld spirit has won a pit fight.
 		#define ELASDATA_FIGHT_REVIVES "fight_revives"
 	/* Economy */
+		#define ELASDATA_BOUNTIES_COMPLETED "bounties_completed"
+		#define ELASDATA_BOUNTIES_GENERATED "bounties_generated"
+		#define ELASDATA_BOUNTIES_REROLLED "bounties_rerolled"
 		#define ELASDATA_MAMMONS_GAINED "mammons_gained"
 		#define ELASDATA_MAMMONS_SPENT "mammons_spent"

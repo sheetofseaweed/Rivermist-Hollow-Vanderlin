@@ -119,6 +119,7 @@ GLOBAL_LIST_EMPTY(cache_timestamps) // Timestamps for each cache entry
 		return FALSE // Already tracking
 
 	tracked_items += item_ref
+	ADD_TRAIT(I, TRAIT_NO_ROT, STOCK_TRAIT)
 
 	// Register signals for movement and deletion
 	RegisterSignal(I, COMSIG_MOVABLE_MOVED, PROC_REF(on_item_moved))
@@ -133,6 +134,7 @@ GLOBAL_LIST_EMPTY(cache_timestamps) // Timestamps for each cache entry
 		return FALSE
 
 	tracked_items -= item_ref
+	REMOVE_TRAIT(I, TRAIT_NO_ROT, STOCK_TRAIT)
 
 	// Unregister signals
 	UnregisterSignal(I, list(COMSIG_MOVABLE_MOVED, COMSIG_PARENT_QDELETING, COMSIG_ITEM_PICKUP))
@@ -144,6 +146,7 @@ GLOBAL_LIST_EMPTY(cache_timestamps) // Timestamps for each cache entry
 		var/obj/item/I = item_ref.resolve()
 		if(I)
 			UnregisterSignal(I, list(COMSIG_MOVABLE_MOVED, COMSIG_PARENT_QDELETING, COMSIG_ITEM_PICKUP))
+			REMOVE_TRAIT(I, TRAIT_NO_ROT, STOCK_TRAIT)
 	tracked_items = list()
 
 /datum/stock/proc/on_item_moved(obj/item/source, atom/old_loc, direction, forced, list/old_locs, momentum_change)

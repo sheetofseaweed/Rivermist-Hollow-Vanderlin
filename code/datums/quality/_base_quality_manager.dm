@@ -7,11 +7,12 @@
 #define QUALITY_LEVEL_FLAWLESS "5"
 #define QUALITY_LEVEL_LEGENDARY "8"
 
-/proc/create_quality_item(obj/item/base_item, datum/quality_calculator/calculator)
+/proc/create_quality_item(obj/item/base_item, datum/quality_calculator/calculator, track_masterworks = FALSE, quality_override)
 	if(!calculator || !base_item)
 		return base_item
 
-	calculator.apply_quality_to_item(base_item)
+	calculator.apply_quality_to_item(base_item, track_masterworks, quality_override)
+	qdel(calculator)
 	return base_item
 
 /datum/quality_calculator
@@ -69,8 +70,8 @@
 	var/tier = get_quality_tier(quality_value)
 	return quality_descriptors[num2text(tier)]
 
-/datum/quality_calculator/proc/apply_quality_to_item(obj/item/target, track_masterworks = FALSE)
-	var/final_quality = calculate_final_quality()
+/datum/quality_calculator/proc/apply_quality_to_item(obj/item/target, track_masterworks = FALSE, quality_override)
+	var/final_quality = isnull(quality_override) ? calculate_final_quality() : quality_override
 	var/list/quality_data = get_quality_data(final_quality)
 
 	if(!quality_data || !quality_data["modifier"])
