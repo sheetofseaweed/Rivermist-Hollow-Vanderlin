@@ -377,8 +377,9 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 
 	if((player_prefs.lastclass == job.title) && !job.bypass_lastclass)
 		return JOB_UNAVAILABLE_LASTCLASS
-	var/patron_type = client.prefs.read_preference(/datum/preference/choiced/patron)
-	if(length(job.allowed_patrons) && !(patron_type in job.allowed_patrons))
+	// allowed_patrons holds typepaths, and the preference reads back a patron datum.
+	var/datum/patron/selected_patron = client.prefs.read_preference(/datum/preference/choiced/patron)
+	if(length(job.allowed_patrons) && !(selected_patron.type in job.allowed_patrons))
 		return JOB_UNAVAILABLE_DEITY
 	return JOB_AVAILABLE
 
