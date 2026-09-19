@@ -49,7 +49,7 @@
 	if(length(allowed_ages) && !(to_check.age in allowed_ages))
 		return FALSE
 
-	if(length(allowed_patrons) && !(to_check.patron.type in allowed_patrons))
+	if(length(allowed_patrons) && !(to_check.patron?.type in allowed_patrons))
 		return FALSE
 
 	if(!antags_can_pick && to_check.mind?.special_role)

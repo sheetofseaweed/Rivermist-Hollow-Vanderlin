@@ -164,7 +164,7 @@ SUBSYSTEM_DEF(job)
 			continue
 
 		var/datum/patron/selected_patron = player_prefs.read_preference(/datum/preference/choiced/patron)
-		if(length(job.allowed_patrons) && !(selected_patron.type in job.allowed_patrons))
+		if(length(job.allowed_patrons) && !(selected_patron?.type in job.allowed_patrons))
 			JobDebug("GRJ incompatible with patron, Player: [player], Job: [job.title], Species: [player_prefs.pref_species.name]")
 			continue
 
@@ -243,7 +243,7 @@ SUBSYSTEM_DEF(job)
 		return FALSE
 
 	var/datum/patron/selected_patron = player_prefs.read_preference(/datum/preference/choiced/patron)
-	if(length(job.allowed_patrons) && !(selected_patron.type in job.allowed_patrons))
+	if(length(job.allowed_patrons) && !(selected_patron?.type in job.allowed_patrons))
 		JobDebug("Eligibility failed: patron, Player: [player], Job: [job.title]")
 		return FALSE
 

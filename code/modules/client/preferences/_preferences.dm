@@ -698,7 +698,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	onclose(user, "capturekeypress", src)
 
 /datum/preferences/proc/reset_patron(mob/user, silent = FALSE)
-	write_preference(/datum/preference/choiced/patron, /datum/patron/divine/astrata)
+	write_preference(/datum/preference/choiced/patron, read_default_preference(/datum/preference/choiced/patron))
 	if(!silent)
 		to_chat(user, "<font color='red'>Patron reset.</font>")
 
@@ -2720,7 +2720,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			"<b>Sexes Needed:</b><br>[sexes_text]"
 		)
 	var/datum/patron/selected_patron = user.client.prefs.read_preference(/datum/preference/choiced/patron)
-	if(length(job.allowed_patrons) && !(selected_patron.type in job.allowed_patrons))
+	if(length(job.allowed_patrons) && !(selected_patron?.type in job.allowed_patrons))
 		var/list/patron_list = list()
 		for(var/mult_patron in job.allowed_patrons)
 			var/datum/patron/P = new mult_patron

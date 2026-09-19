@@ -1,3 +1,32 @@
+/datum/unit_test/preferences_patron_recovery/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	var/datum/preference/patron_preference = GLOB.preference_entries[/datum/preference/choiced/patron]
+	var/datum/patron/default_patron = prefs.read_default_preference(/datum/preference/choiced/patron)
+	TEST_ASSERT(istype(default_patron, /datum/patron/faerun/good_gods/Selune), "The default patron must be the registered Selune.")
+	TEST_ASSERT(patron_preference.is_valid(default_patron, prefs), "The default patron must pass preference validation.")
+	TEST_ASSERT(!patron_preference.is_valid(null, prefs), "A null patron must not pass validation.")
+
+	var/savefile/save = new
+	var/list/invalid_values = list(null, "", "invalid patron", /datum/patron/divine/astrata, 123)
+	for(var/invalid_value in invalid_values)
+		WRITE_FILE(save["selected_patron"], invalid_value)
+		prefs.preference_load_from_savefile(save, PREF_CHARACTER)
+		TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/choiced/patron), default_patron, "Missing and invalid saved patrons must recover to Selune.")
+
+	var/datum/patron/tyr = GLOB.patron_list[/datum/patron/faerun/good_gods/Tyr]
+	WRITE_FILE(save["selected_patron"], patron_preference.serialize(tyr))
+	prefs.preference_load_from_savefile(save, PREF_CHARACTER)
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/choiced/patron), tyr, "Loading must preserve a valid selected patron.")
+	prefs.reset_patron(null, silent = TRUE)
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/choiced/patron), default_patron, "Resetting the patron must restore Selune.")
+	prefs.preference_save_to_savefile(save, PREF_CHARACTER)
+	prefs.preference_load_from_savefile(save, PREF_CHARACTER)
+	TEST_ASSERT_EQUAL(prefs.read_preference(/datum/preference/choiced/patron), default_patron, "The repaired patron must survive a save/load round trip.")
+
+#ifdef FOCUS_PATRON_PREFERENCES_TEST
+TEST_FOCUS(/datum/unit_test/preferences_patron_recovery)
+#endif
+
 /datum/unit_test/preferences_legacy_rendered_html_migration/Run()
 	var/savefile_path = "data/unit_test_legacy_rendered_html.sav"
 	fdel(savefile_path)

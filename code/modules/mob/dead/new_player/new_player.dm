@@ -379,7 +379,7 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 		return JOB_UNAVAILABLE_LASTCLASS
 	// allowed_patrons holds typepaths, and the preference reads back a patron datum.
 	var/datum/patron/selected_patron = client.prefs.read_preference(/datum/preference/choiced/patron)
-	if(length(job.allowed_patrons) && !(selected_patron.type in job.allowed_patrons))
+	if(length(job.allowed_patrons) && !(selected_patron?.type in job.allowed_patrons))
 		return JOB_UNAVAILABLE_DEITY
 	return JOB_AVAILABLE
 
@@ -480,7 +480,11 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 			if(!job_datum)
 				continue
 			// Make sure hiv+ jobs always appear on list, even if unavailable
-			var/is_job_available = (IsJobUnavailable(job_datum.title, TRUE) == JOB_AVAILABLE)
+			var/unavailable_reason = IsJobUnavailable(job_datum.title, TRUE)
+			var/is_job_available = (unavailable_reason == JOB_AVAILABLE)
+			if(!is_job_available && CONFIG_GET(flag/log_job_debug))
+				var/datum/patron/selected_patron = client.prefs.read_preference(/datum/preference/choiced/patron)
+				log_job_debug("Latejoin unavailable, Player: [ckey], Job: [job_datum.title], Patron: [selected_patron?.type], Reason: [get_job_unavailable_error_message(unavailable_reason, job_datum.title)]")
 			if(job_datum.always_show_on_latechoices)
 				is_job_available = TRUE
 			if(is_job_available)

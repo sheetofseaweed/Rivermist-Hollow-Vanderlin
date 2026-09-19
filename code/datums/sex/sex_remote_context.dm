@@ -117,6 +117,11 @@
 	clear_from_scene()
 
 /datum/sex_remote_context/mage_hand
+	#define MAGE_HAND_RESIST_PROMPT_INTERVAL (12 SECONDS)
+	#define MAGE_HAND_RESIST_COOLDOWN (5 SECONDS)
+	#define MAGE_HAND_RESIST_STAMINA_FRACTION 0.1
+	#define MAGE_HAND_RESIST_COOLDOWN_REFUND (30 SECONDS)
+
 	var/list/active_overlay_counts = list()
 	var/list/mutable_appearance/active_overlays = list()
 	var/list/action_overlay_zones = list()
@@ -126,6 +131,8 @@
 	var/list/active_binds = list()
 	/// The caster's grip on every active bind. Losing it dispels them all.
 	var/obj/item/arcyne_binders/binder
+	var/next_resist_time = 0
+	var/next_resist_prompt_time = 0
 
 /datum/sex_remote_context/mage_hand/Destroy(force, ...)
 	release_all_binds()
@@ -441,6 +448,94 @@
 	remove_zone_overlay(zone)
 	if(!length(active_binds))
 		dispel_binder()
+
+/// Builds the target-only counterplay prompt for the active Mage Hand tether.
+/datum/sex_remote_context/mage_hand/proc/build_resist_prompt()
+	var/target = get_target()
+	if(!target)
+		return
+	return span_warning("A ghostly hand is exploring you. <a href='byond://?src=[REF(src)];pull_away=1'>Pull away!</a>")
+
+/// Sends the target a throttled prompt to resist the Mage Hand tether.
+/datum/sex_remote_context/mage_hand/proc/send_resist_prompt(force = FALSE)
+	if(QDELETED(src) || !is_valid(scene))
+		return
+	var/mob/living/remote_target = get_target()
+	if(!remote_target?.client)
+		return
+	if(!force && world.time < next_resist_prompt_time)
+		return
+	next_resist_prompt_time = world.time + MAGE_HAND_RESIST_PROMPT_INTERVAL
+	to_chat(remote_target, build_resist_prompt())
+
+/// Stops all active sexual actions using this remote context.
+/datum/sex_remote_context/mage_hand/proc/interrupt_remote_actions()
+	if(!scene || QDELETED(scene))
+		return
+	for(var/datum/sex_action/action as anything in scene.active_actions.Copy())
+		if(action.remote_context != src)
+			continue
+		scene.stop_action(action)
+
+/// Attempts to pull the target away from the Mage Hand tether.
+/datum/sex_remote_context/mage_hand/proc/try_pull_away(mob/living/resisting)
+	if(!resisting || resisting != get_target() || !is_valid(scene))
+		return FALSE
+	if(resisting.stat != CONSCIOUS)
+		return FALSE
+	if(world.time < next_resist_time)
+		to_chat(resisting, span_warning("I need a moment before I can pull away again."))
+		return FALSE
+	if(resisting.stamina >= resisting.maximum_stamina)
+		to_chat(resisting, span_warning("I am too exhausted to fight the ghostly hand effectively."))
+		return FALSE
+
+	next_resist_time = world.time + MAGE_HAND_RESIST_COOLDOWN
+	resisting.adjust_stamina(max(1, resisting.maximum_stamina * MAGE_HAND_RESIST_STAMINA_FRACTION))
+	var/result = roll_clench(resisting, get_caster())
+	interrupt_remote_actions()
+
+	if(result == CLENCH_RESULT_STOP)
+		var/mob/living/caster = get_caster()
+		var/datum/action/cooldown/spell/mage_hand/mage_hand
+		if(caster)
+			mage_hand = caster.get_spell(/datum/action/cooldown/spell/mage_hand, TRUE)
+		if(mage_hand)
+			mage_hand.next_use_time = max(world.time, mage_hand.next_use_time - MAGE_HAND_RESIST_COOLDOWN_REFUND)
+			mage_hand.build_all_button_icons()
+		resisting.visible_message(
+			span_warning("[resisting] tears free of the ghostly hand!"),
+			span_notice("I tear myself free of the ghostly hand!"),
+		)
+		if(caster)
+			to_chat(caster, span_warning("[resisting] tears free of my Mage Hand! Its cooldown recovers slightly."))
+		clear_from_scene()
+		return TRUE
+
+	if(result == CLENCH_RESULT_INTERRUPT)
+		resisting.visible_message(
+			span_warning("[resisting] shoves at the ghostly hand and breaks its rhythm!"),
+			span_notice("I shove at the ghostly hand and break its rhythm!"),
+		)
+		var/mob/living/caster = get_caster()
+		if(caster)
+			to_chat(caster, span_warning("[resisting] breaks the rhythm of my Mage Hand."))
+		send_resist_prompt(TRUE)
+		return TRUE
+
+	to_chat(resisting, span_warning("I struggle against the ghostly hand, but it keeps its hold."))
+	send_resist_prompt(TRUE)
+	return TRUE
+
+/datum/sex_remote_context/mage_hand/Topic(href, list/href_list)
+	. = ..()
+	if(href_list["pull_away"])
+		try_pull_away(usr)
+
+#undef MAGE_HAND_RESIST_PROMPT_INTERVAL
+#undef MAGE_HAND_RESIST_COOLDOWN
+#undef MAGE_HAND_RESIST_STAMINA_FRACTION
+#undef MAGE_HAND_RESIST_COOLDOWN_REFUND
 
 /// Puts a binder in the caster's hand if they aren't already holding one.
 /datum/sex_remote_context/mage_hand/proc/ensure_binder(mob/living/caster)

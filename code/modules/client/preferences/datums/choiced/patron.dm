@@ -11,7 +11,9 @@
 	return out
 
 /datum/preference/choiced/patron/is_valid(value, datum/preferences/prefs)
-	var/datum/patron/patron = istype(value, /datum/patron) ? value : deserialize(value, prefs)
+	if(!istype(value, /datum/patron))
+		return FALSE
+	var/datum/patron/patron = value
 	if(!patron || GLOB.patron_list[patron.type] != patron)
 		return FALSE
 	if(length(patron.allowed_races) && !(prefs?.pref_species.id in patron.allowed_races))
@@ -19,7 +21,7 @@
 	return TRUE
 
 /datum/preference/choiced/patron/create_default_value(datum/preferences/prefs)
-	return GLOB.patron_list[/datum/patron/divine/astrata]
+	return GLOB.patron_list[/datum/patron/faerun/good_gods/Selune]
 
 /datum/preference/choiced/patron/serialize(input)
 	if (istype(input, /datum/patron))
@@ -31,6 +33,8 @@
 	if(istype(input, /datum/patron))
 		var/datum/patron/patron = input
 		return GLOB.patron_list[patron.type] || create_default_value(prefs)
+	if(!ispath(input) && !istext(input))
+		return create_default_value(prefs)
 	var/path = ispath(input) ? input : text2path(input)
 	if (!(path in GLOB.patron_list))
 		return create_default_value(prefs)
@@ -41,18 +45,20 @@
 
 /datum/preference/choiced/patron/handle_link(datum/preferences/prefs, mob/user)
 	var/datum/patron/pref_patron = prefs.read_preference(/datum/preference/choiced/patron)
+	if(!is_valid(pref_patron, prefs))
+		prefs.reset_patron(user, silent = TRUE)
+		pref_patron = prefs.read_preference(/datum/preference/choiced/patron)
 	var/list/patrons_named = list()
-	for(var/datum/patron/patron as anything in GLOB.patrons_by_faith[pref_patron.associated_faith || /datum/patron/divine/astrata::associated_faith])
-		patron = GLOB.patron_list[patron]
+	for(var/datum/patron/patron as anything in GLOB.patrons_by_faith[pref_patron.associated_faith])
 		if(!patron.preference_accessible(prefs))
 			continue
-		if(!is_valid(patron.type, prefs))
+		if(!is_valid(patron, prefs))
 			continue
 		var/pref_name = patron.display_name ? patron.display_name : patron.name
 		patrons_named[pref_name] = patron
 
 	if(length(patrons_named))
-		var/datum/faith/current_faith = GLOB.faith_list[pref_patron.associated_faith] || GLOB.faith_list[/datum/patron/divine/astrata::associated_faith]
+		var/datum/faith/current_faith = GLOB.faith_list[pref_patron.associated_faith]
 		var/god_input = browser_input_list(user, "SELECT YOUR HERO'S PATRON GOD", uppertext("\The [current_faith.name]"), patrons_named, pref_patron)
 		if(god_input)
 			var/datum/patron/patron = patrons_named[god_input]
