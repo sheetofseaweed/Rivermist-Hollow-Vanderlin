@@ -18,15 +18,13 @@
 	)
 
 	var/tether_duration = 2 MINUTES
+	var/can_scrying = FALSE
 
 /datum/action/cooldown/spell/mage_hand/scrying
 	name = "Scrying Mage Hand"
 	desc = "Project Mage Hand through a scrying vision."
 	spell_cost = 0
 	cooldown_time = 0
-
-/datum/action/cooldown/spell/mage_hand/scrying/GiveAction(mob/viewer)
-	LAZYOR(viewer.actions, src)
 
 /datum/action/cooldown/spell/mage_hand/is_valid_target(atom/cast_on)
 	. = ..()
@@ -83,6 +81,7 @@
 	context.requires_range = requires_range
 	context.requires_line_of_sight = requires_line_of_sight
 	scene_controller.set_remote_context(context)
+	context.send_resist_prompt(TRUE)
 	if(show_ui)
 		scene_controller.show_ui()
 	return TRUE
@@ -96,7 +95,8 @@
 		return FALSE
 	if(!caster.loc || !target.loc)
 		return FALSE
-	if(!caster.get_spell(/datum/action/cooldown/spell/mage_hand/scrying, TRUE))
+	var/datum/action/cooldown/spell/mage_hand/mage_hand = caster.get_spell(/datum/action/cooldown/spell/mage_hand, TRUE)
+	if(!mage_hand?.can_scrying)
 		return FALSE
 	return TRUE
 

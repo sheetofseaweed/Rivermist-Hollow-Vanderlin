@@ -3,7 +3,7 @@
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
 	can_randomize = FALSE
-	maximum_value_length = 1024
+	maximum_value_length = 0
 	should_update_preview = FALSE
 
 /datum/preference/text/flavortext/deserialize(input, datum/preferences/prefs)
@@ -14,7 +14,8 @@
 
 /datum/preference/text/flavortext/handle_link(datum/preferences/prefs, mob/user)
 	to_chat(user, span_notice("["<span class='bold'>Flavortext should not include nonphysical nonsensory attributes such as backstory or the character's internal thoughts. NSFW descriptions are prohibited.</span>"]"))
-	var/new_flavortext = input(user, "Input your character description", "DESCRIBE YOURSELF", prefs.read_preference(/datum/preference/text/flavortext)) as message|null // browser_input_text sanitizes in the box itself, which makes it look kind of ugly when editing A LOT of FTs
+	// Keep this raw while editing; we encode it later for the rendered preview.
+	var/new_flavortext = tgui_input_text(user, "Input your character description", "DESCRIBE YOURSELF", prefs.read_preference(/datum/preference/text/flavortext), multiline = TRUE, encode = FALSE)
 	if(new_flavortext == null)
 		return
 	if(new_flavortext == "")

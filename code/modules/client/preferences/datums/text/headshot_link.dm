@@ -3,7 +3,7 @@
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
 	can_randomize = FALSE
-	maximum_value_length = 512
+	maximum_value_length = 0
 	should_update_preview = FALSE
 
 /datum/preference/text/headshot_link/is_valid(value, datum/preferences/prefs)
@@ -22,7 +22,7 @@
 	var/new_headshot_link = input(user, "Input the headshot link (https, hosts: gyazo, lensdump, imgbox, catbox):", "Headshot", prefs.read_preference(/datum/preference/text/headshot_link)) as text|null
 	if(isnull(new_headshot_link))
 		return
-	new_headshot_link = trim(new_headshot_link, maximum_value_length)
+	new_headshot_link = trim(new_headshot_link)
 	if(!length(new_headshot_link))
 		prefs.write_preference(/datum/preference/text/headshot_link, "")
 		return

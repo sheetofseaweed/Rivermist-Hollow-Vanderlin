@@ -110,33 +110,28 @@
 	finished_smell = /datum/pollutant/food/herb
 
 /datum/container_craft/cooking/herbal_tea/artemisia_luck
-	name = "Artemisia Fortune Tea"
-	created_reagent = /datum/reagent/buff/herbal/artemisia_luck
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Artemisia Bitter Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/decoction/artemisia
 	requirements = list(
 		/obj/item/alch/herb/artemisia = 2
 	)
-	optional_requirements = list(
-		/obj/item/alch/silverdust = 1 // Silver dust enhances luck
-	)
-	max_optionals = 1
 	finished_smell = /datum/pollutant/food/bitter
 
 /datum/container_craft/cooking/herbal_tea/euphorbia_strength
-	name = "Euphorbia Strength Tea"
-	created_reagent = /datum/reagent/buff/herbal/euphorbia_strength
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Euphorbia Restorative Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/decoction/euphorbia
 	requirements = list(
 		/obj/item/alch/herb/euphorbia = 2
 	)
-	optional_requirements = list(
-		/obj/item/alch/irondust = 1 // irondust enhances strength
-	)
-	max_optionals = 1
 	finished_smell = /datum/pollutant/food/bitter
 
 // Mild Poison Recipes
 /datum/container_craft/cooking/herbal_tea/weak_atropa
-	name = "Diluted Atropa Extract"
-	created_reagent = /datum/reagent/poison/herbal/weak_atropa
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Atropa Anodyne"
+	created_reagent = /datum/reagent/medicine/herbal/anodyne/atropa
 	requirements = list(
 		/obj/item/alch/herb/atropa = 1
 	)
@@ -145,8 +140,9 @@
 	complete_message = "The extract smells dangerous..."
 
 /datum/container_craft/cooking/herbal_tea/matricaria_irritant
-	name = "Matricaria Irritant"
-	created_reagent = /datum/reagent/poison/herbal/matricaria_irritant
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Matricaria Restorative Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/decoction/matricaria
 	requirements = list(
 		/obj/item/alch/herb/matricaria = 2
 	)
@@ -185,28 +181,50 @@
 
 // Benedictus Vigor Tea (stamina enhancement)
 /datum/container_craft/cooking/herbal_tea/benedictus_vigor
-	name = "Benedictus Vigor Tea"
-	created_reagent = /datum/reagent/buff/herbal/benedictus_vigor
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Benedictus Cleansing Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/decoction/benedictus
 	requirements = list(
 		/obj/item/alch/herb/benedictus = 2
 	)
-	optional_requirements = list(
-		/obj/item/alch/irondust = 1 // Iron enhances physical vigor
-	)
-	max_optionals = 1
 	finished_smell = /datum/pollutant/food/herb
 
 // Paris Numbing Poultice (topical anesthetic)
-/datum/container_craft/cooking/herbal_salve/paris_poultice
-	name = "Paris Numbing Poultice"
-	created_reagent = /datum/reagent/medicine/herbal/paris_poultice
-	requirements = list(
-		/obj/item/alch/herb/paris = 2,
-		/obj/item/alch/herb/calendula = 1
-	)
-	crafting_time = 18 SECONDS
+/datum/container_craft/cooking/herbal_tea/paris_poison
+	parent_type = /datum/container_craft/cooking/herbal_tea
+	name = "Paris Poison Decoction"
+	created_reagent = /datum/reagent/poison/herbal/paris_poison
+	requirements = list(/obj/item/alch/herb/paris = 2)
+	crafting_time = 10 SECONDS
 	finished_smell = /datum/pollutant/food/bitter
-	complete_message = "The poultice looks thick and medicinal."
+	complete_message = "The crow's-eye decoction smells dangerously bitter."
+
+/datum/container_craft/cooking/herbal_tea/artemisia_taraxacum
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Artemisia-Taraxacum Purifying Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/compound/purifying
+	requirements = list(
+		/obj/item/alch/herb/artemisia = 1,
+		/obj/item/alch/herb/taraxacum = 1
+	)
+
+/datum/container_craft/cooking/herbal_tea/mentha_hypericum
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Mentha-Hypericum Restorative Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/compound/restorative
+	requirements = list(
+		/obj/item/alch/herb/mentha = 1,
+		/obj/item/alch/herb/hypericum = 1
+	)
+
+/datum/container_craft/cooking/herbal_tea/rosa_valeriana
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Rosa-Valeriana Bloodroot Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/compound/bloodroot
+	requirements = list(
+		/obj/item/alch/herb/rosa = 1,
+		/obj/item/alch/herb/valeriana = 1
+	)
 
 // Complex Multi-Herb Recipes
 

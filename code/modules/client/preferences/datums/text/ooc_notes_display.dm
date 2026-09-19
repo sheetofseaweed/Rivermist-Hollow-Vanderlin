@@ -3,7 +3,7 @@
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
 	can_randomize = FALSE
-	maximum_value_length = 8192
+	maximum_value_length = 0
 	should_strip_html = FALSE
 	should_update_preview = FALSE
 

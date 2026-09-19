@@ -2,7 +2,7 @@
 	savefile_key = "nsfw_headshot_link"
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
-	maximum_value_length = 512
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_update_preview = FALSE
 
@@ -18,7 +18,7 @@
 	savefile_key = "nsfwflavortext"
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
-	maximum_value_length = 1024
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_update_preview = FALSE
 
@@ -29,7 +29,7 @@
 	savefile_key = "erpprefs_flavor"
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
-	maximum_value_length = 1024
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_update_preview = FALSE
 
@@ -40,7 +40,7 @@
 	savefile_key = "song_link"
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
-	maximum_value_length = 512
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_update_preview = FALSE
 
@@ -51,7 +51,7 @@
 	savefile_key = "song_artist"
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
-	maximum_value_length = 128
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_update_preview = FALSE
 
@@ -62,7 +62,7 @@
 	savefile_key = "song_title"
 	savefile_identifier = PREF_CHARACTER
 	category = "character_ooc"
-	maximum_value_length = 128
+	maximum_value_length = 0
 	can_randomize = FALSE
 	should_update_preview = FALSE
 

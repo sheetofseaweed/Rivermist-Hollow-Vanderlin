@@ -1,4 +1,5 @@
 /datum/preference/text
+	/// Cap on the stored value's length. Zero means no cap.
 	var/maximum_value_length = 256
 	var/should_strip_html = TRUE
 	abstract_type = /datum/preference/text
@@ -10,7 +11,9 @@
 	return ""
 
 /datum/preference/text/is_valid(value, datum/preferences/prefs)
-	return istext(value) && length(value) < maximum_value_length
+	if(!istext(value))
+		return FALSE
+	return !maximum_value_length || length(value) < maximum_value_length
 
 /datum/preference/text/compile_constant_data()
 	return list("maximum_length" = maximum_value_length)

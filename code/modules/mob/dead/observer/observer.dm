@@ -142,7 +142,8 @@ GLOBAL_LIST_INIT(ghost_verbs, list(
 	if(!client)
 		return
 	var/mob/living/caster = get_scrying_mage_hand_caster()
-	if(!caster || !caster.get_spell(/datum/action/cooldown/spell/mage_hand/scrying, TRUE))
+	var/datum/action/cooldown/spell/mage_hand/mage_hand = caster?.get_spell(/datum/action/cooldown/spell/mage_hand, TRUE)
+	if(!mage_hand?.can_scrying)
 		to_chat(src, span_warning("I don't know how to project Mage Hand through this vision."))
 		return
 
