@@ -541,8 +541,26 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 		/datum/natural_precursor,
 		/datum/infusion_recipe,
 		/datum/container_craft/cooking/herbal_salve,
+		/datum/container_craft/cooking/herbal_decoction,
 		/datum/container_craft/cooking/herbal_tea,
 		/datum/container_craft/cooking/herbal_oil,
+		/datum/blueprint_recipe/alchemy,
+		/datum/repeatable_crafting_recipe/alchemy,
+	)
+
+/obj/item/recipe_book/apothecarys_handbook
+	name = "The Field Apothecary's Handbook"
+	desc = "A practical handbook of herbal preparations, medicines, and restricted refinements. Compiled for the town physician's guild."
+	icon_state = "book4_0"
+	base_icon_state = "book4"
+	types = list(
+		/datum/herbal_mortar_recipe,
+		/datum/container_craft/cooking/herbal_decoction,
+		/datum/distillation_recipe/herbal_oil,
+		/datum/container_craft/cooking/herbal_salve,
+		/datum/container_craft/cooking/herbal_tea,
+		/datum/container_craft/cooking/herbal_oil,
+		/datum/container_craft/cooking/alchemical_refinement,
 		/datum/blueprint_recipe/alchemy,
 		/datum/repeatable_crafting_recipe/alchemy,
 	)

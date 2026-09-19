@@ -11,7 +11,8 @@
 	return out
 
 /datum/preference/choiced/faith/create_default_value(datum/preferences/prefs)
-	return GLOB.faith_list[/datum/patron/divine/astrata::associated_faith]
+	var/datum/patron/default_patron = prefs.read_default_preference(/datum/preference/choiced/patron)
+	return GLOB.faith_list[default_patron.associated_faith]
 
 /datum/preference/choiced/faith/is_valid(value, datum/preferences/prefs)
 	if(!istype(value, /datum/faith))

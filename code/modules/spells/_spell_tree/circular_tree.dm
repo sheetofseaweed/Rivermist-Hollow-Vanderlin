@@ -516,10 +516,9 @@
 	if(!isliving(user))
 		return
 	var/mob/living/living_user = user
-	var/spell_source = user.mind
-	if(!spell_source)
-		spell_source = user
-	living_user.add_spell(/datum/action/cooldown/spell/mage_hand/scrying, silent = TRUE, source = spell_source, override = TRUE)
+	var/datum/action/cooldown/spell/mage_hand/mage_hand = living_user.get_spell(/datum/action/cooldown/spell/mage_hand, TRUE)
+	if(mage_hand)
+		mage_hand.can_scrying = TRUE
 	to_chat(user, span_notice("My Mage Hand can now follow my scrying vision."))
 
 /datum/spell_node/frost_affinity

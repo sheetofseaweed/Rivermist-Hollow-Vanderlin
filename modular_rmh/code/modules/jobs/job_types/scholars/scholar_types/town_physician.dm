@@ -78,7 +78,7 @@
 	l_hand = /obj/item/clothing/gloves/leather/thaumgloves
 	r_hand = null
 	backpack_contents = list(
-		/obj/item/book/apothecarys_handbook = 1,
+		/obj/item/recipe_book/apothecarys_handbook = 1,
 	)
 
 /datum/outfit/town_scholar/town_physician/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)
