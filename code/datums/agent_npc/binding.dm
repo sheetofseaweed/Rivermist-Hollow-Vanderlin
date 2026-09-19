@@ -290,11 +290,20 @@
 	set_dirty()
 	return TRUE
 
+/// Is a bounded interaction still running? Used to read speech as a reply.
+/datum/agent_binding/proc/in_interaction()
+	return continuation_expires_at > world.time
+
 /// Append to the event ring without scheduling anything.
 /datum/agent_binding/proc/push_event(event_name, urgency = AGENT_EVENT_LOW, list/detail)
+	// A revoked binding accepts nothing. mark_dirty and record_result already
+	// check, but ambient pushes arrive here directly.
+	if(state == AGENT_BINDING_DISABLED)
+		return FALSE
 	LAZYINITLIST(events)
 	events += list(list("event" = event_name, "urgency" = urgency, "at" = world.time, "detail" = detail))
 	trim_events()
+	return TRUE
 
 /**
  * Record an outcome for the model to see next time it is asked.

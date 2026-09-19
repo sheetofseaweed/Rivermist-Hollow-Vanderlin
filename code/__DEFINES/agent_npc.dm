@@ -146,6 +146,15 @@
 /// Attach targets are drawn from the admin's own view rather than the world.
 #define AGENT_ATTACH_RANGE 7
 
+/**
+ * Within this many tiles, speech is assumed to be aimed at us.
+ *
+ * The whole directedness test errs toward hearing. A wasted decision costs a
+ * fraction of a penny; an NPC that ignores a player talking to it reads as
+ * broken, which is far more expensive.
+ */
+#define AGENT_DIRECT_SPEECH_RANGE 3
+
 /// Low urgency events wait for the in-flight request to land.
 #define AGENT_EVENT_LOW 1
 /// High urgency events abandon the in-flight request and force a new one.

@@ -109,10 +109,88 @@
 	// per-turn cap can stop. It is still heard; it just does not buy more turns.
 	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(speaker)]"])
 
-	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, list(
+	// Bounds checked: Hear() passes its whole args list, but callers that build
+	// one by hand stop at the four named HEARING_* fields. Indexing past the end
+	// runtimes, and a runtime in a signal handler loses the speech silently.
+	var/list/mods = (length(hearing_args) >= HEARING_MESSAGE_MODS) ? hearing_args[HEARING_MESSAGE_MODS] : null
+	var/whispered = islist(mods) && mods[WHISPER_MODE]
+	var/list/audience = read_audience(speaker, understood)
+
+	var/list/detail = list(
 		"speaker" = speaker_name,
 		"text" = understood,
-	), replenish = !from_another_agent)
+		"distance" = get_dist(living_pawn, speaker),
+		"whispered" = whispered,
+		"others_present" = audience["bystanders"],
+	)
+
+	if(!speech_is_directed(speaker, understood, whispered, audience))
+		// Overheard, not addressed. It still reaches the agent, folded into the
+		// next real decision, but it neither buys one nor extends the
+		// interaction. Two players chatting nearby used to do both.
+		detail["likely_to_you"] = FALSE
+		binding.push_event("overheard_speech", AGENT_EVENT_LOW, detail)
+		return
+
+	detail["likely_to_you"] = TRUE
+	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, detail, replenish = !from_another_agent)
+
+/**
+ * Who else could this have been meant for?
+ *
+ * One pass over the pawn's view, because both answers need the same walk:
+ * how many other people are in earshot, and whether the speaker named one of
+ * them. Signal handlers must not sleep, and view() does not.
+ */
+/datum/ai_controller/agent_social/proc/read_audience(atom/movable/speaker, text)
+	var/list/found = list("bystanders" = 0, "named_another" = FALSE)
+	for(var/mob/living/nearby in view(AGENT_VIEW_RANGE, pawn))
+		if(nearby == pawn || nearby == speaker)
+			continue
+		found["bystanders"]++
+		if(!found["named_another"] && name_appears_in(nearby.get_visible_name(), text))
+			found["named_another"] = TRUE
+	return found
+
+/// Does this name appear in the text? Matches the first word too, so "Isaac
+/// Brown" is addressed by "Isaac". findtext is already case insensitive.
+/datum/ai_controller/agent_social/proc/name_appears_in(who, text)
+	if(!istext(who) || !istext(text) || !length(who) || !length(text))
+		return FALSE
+	if(findtext(text, who))
+		return TRUE
+	var/list/parts = splittext(who, " ")
+	// Two letters or fewer matches far too much to be evidence of anything.
+	if(length(parts) > 1 && length(parts[1]) > 2 && findtext(text, parts[1]))
+		return TRUE
+	return FALSE
+
+/**
+ * Was that said to us?
+ *
+ * Deliberately lopsided. Every rule but two answers "yes", and the default is
+ * "yes", because the costs are not symmetric: a wasted decision is a fraction
+ * of a penny, while an NPC that ignores someone talking to it looks broken.
+ * Speech is only set aside on positive evidence that it belonged elsewhere.
+ */
+/datum/ai_controller/agent_social/proc/speech_is_directed(atom/movable/speaker, text, whispered, list/audience)
+	// Mid-conversation. A reply does not carry your name.
+	if(binding?.in_interaction())
+		return TRUE
+	if(whispered)
+		return TRUE
+	if(name_appears_in(pawn?.name, text))
+		return TRUE
+	// Evidence it went elsewhere: they named someone else who is standing here.
+	if(audience["named_another"])
+		return FALSE
+	// Nobody else could have been the audience.
+	if(audience["bystanders"] <= 0)
+		return TRUE
+	// Distant chatter in a room with other people in it.
+	if(get_dist(pawn, speaker) > AGENT_DIRECT_SPEECH_RANGE)
+		return FALSE
+	return TRUE
 
 /datum/ai_controller/agent_social/Destroy(force, ...)
 	release_binding("controller destroyed")
