@@ -113,84 +113,147 @@
 	// one by hand stop at the four named HEARING_* fields. Indexing past the end
 	// runtimes, and a runtime in a signal handler loses the speech silently.
 	var/list/mods = (length(hearing_args) >= HEARING_MESSAGE_MODS) ? hearing_args[HEARING_MESSAGE_MODS] : null
-	var/whispered = islist(mods) && mods[WHISPER_MODE]
-	var/list/audience = read_audience(speaker, understood)
+	var/list/context = build_speech_context(speaker, understood, hearing_args[HEARING_RAW_MESSAGE], mods)
 
 	var/list/detail = list(
 		"speaker" = speaker_name,
 		"text" = understood,
-		"distance" = get_dist(living_pawn, speaker),
-		"whispered" = whispered,
-		"others_present" = audience["bystanders"],
+		"distance" = context["distance"],
+		"whispered" = context["whispered"],
+		"shouted" = agent_speech_is_shouted(context["volume"]),
+		// Named for what it is: a cheap local estimate of the social scene, not
+		// the set of mobs the speech engine actually delivered to.
+		"nearby_people" = context["nearby_people"],
 	)
 
-	if(!speech_is_directed(speaker, understood, whispered, audience))
-		// Overheard, not addressed. It still reaches the agent, folded into the
-		// next real decision, but it neither buys one nor extends the
-		// interaction. Two players chatting nearby used to do both.
-		detail["likely_to_you"] = FALSE
-		binding.push_event("overheard_speech", AGENT_EVENT_LOW, detail)
-		return
+	var/classification = classify_speech(speaker, understood, context)
+	detail["addressing"] = classification
 
-	detail["likely_to_you"] = TRUE
-	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, detail, replenish = !from_another_agent)
+	route_speech(classification, speaker_name, understood, detail, from_another_agent)
 
 /**
- * Who else could this have been meant for?
+ * What does one classified line actually do?
  *
- * One pass over the pawn's view, because both answers need the same walk:
- * how many other people are in earshot, and whether the speaker named one of
- * them. Signal handlers must not sleep, and view() does not.
+ * Returns the route taken, so the decision can be tested without staging a
+ * hearing event. Nothing here is ever discarded: the worst outcome for a line
+ * is that it waits and rides along with the next real decision.
  */
-/datum/ai_controller/agent_social/proc/read_audience(atom/movable/speaker, text)
-	var/list/found = list("bystanders" = 0, "named_another" = FALSE)
+/datum/ai_controller/agent_social/proc/route_speech(classification, speaker_name, text, list/detail, from_another_agent = FALSE)
+	if(QDELETED(binding))
+		return "unbound"
+
+	// The same line, still waiting to be sent. Repeats should not push a
+	// player's actual question out of a ring that only holds twelve.
+	if(binding.speech_already_buffered(speaker_name, text))
+		return "duplicate"
+
+	// Overheard. It still reaches the agent, folded into the next real decision,
+	// but it neither buys one nor extends the interaction. Two players chatting
+	// nearby used to do both.
+	if(!agent_speech_wakes_us(classification))
+		binding.push_event("overheard_speech", AGENT_EVENT_LOW, detail)
+		return "buffered"
+
+	// Rationed, not silenced, and only ever for speech we could not classify.
+	// Directed lines and attacks never reach this branch.
+	if(classification == AGENT_SPEECH_AMBIGUOUS)
+		if(!binding.may_spend_on_ambiguous())
+			SSagent_npc?.note_ambiguous_deferred()
+			binding.push_event("overheard_speech", AGENT_EVENT_LOW, detail)
+			return "rationed"
+		binding.note_ambiguous_spend()
+
+	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, detail, replenish = !from_another_agent)
+	return "sent"
+
+/**
+ * Everything cheap and local we can say about one heard line.
+ *
+ * Built once, because the classifier, the event payload and the telemetry all
+ * want the same facts and view() is not free. Signal handlers must not sleep,
+ * and nothing here does.
+ */
+/datum/ai_controller/agent_social/proc/build_speech_context(atom/movable/speaker, text, raw_text, list/mods)
+	var/list/context = list(
+		"distance" = get_dist(pawn, speaker),
+		"whispered" = islist(mods) && mods[WHISPER_MODE],
+		// Read from the raw line, because volume is physical: you can hear that
+		// someone is shouting in a language you do not speak.
+		"volume" = say_test(raw_text),
+		// Which script the NPC is being spoken to in, so a failed name match in
+		// a script we cannot read is not mistaken for an absent name.
+		"script" = agent_text_script(text),
+		"nearby_people" = 0,
+		"named_someone_else" = FALSE,
+	)
+
 	for(var/mob/living/nearby in view(AGENT_VIEW_RANGE, pawn))
 		if(nearby == pawn || nearby == speaker)
 			continue
-		found["bystanders"]++
-		if(!found["named_another"] && name_appears_in(nearby.get_visible_name(), text))
-			found["named_another"] = TRUE
-	return found
+		// Someone who cannot hear is not an alternative audience.
+		if(nearby.stat >= UNCONSCIOUS || !nearby.can_hear())
+			continue
+		context["nearby_people"]++
+		if(!context["named_someone_else"] && agent_name_in_vocative(nearby.get_visible_name(), text))
+			context["named_someone_else"] = TRUE
+	return context
 
-/// Does this name appear in the text? Matches the first word too, so "Isaac
-/// Brown" is addressed by "Isaac". findtext is already case insensitive.
-/datum/ai_controller/agent_social/proc/name_appears_in(who, text)
-	if(!istext(who) || !istext(text) || !length(who) || !length(text))
-		return FALSE
-	if(findtext(text, who))
-		return TRUE
-	var/list/parts = splittext(who, " ")
-	// Two letters or fewer matches far too much to be evidence of anything.
-	if(length(parts) > 1 && length(parts[1]) > 2 && findtext(text, parts[1]))
-		return TRUE
-	return FALSE
+/// The name this NPC can legitimately be addressed by. get_visible_name honours
+/// disguise, so a hidden identity is not what wakes it.
+/datum/ai_controller/agent_social/proc/addressable_name()
+	var/mob/living/living_pawn = pawn
+	return isliving(living_pawn) ? living_pawn.get_visible_name() : "[pawn?.name]"
 
 /**
  * Was that said to us?
  *
- * Deliberately lopsided. Every rule but two answers "yes", and the default is
- * "yes", because the costs are not symmetric: a wasted decision is a fraction
- * of a penny, while an NPC that ignores someone talking to it looks broken.
- * Speech is only set aside on positive evidence that it belonged elsewhere.
+ * Three answers, not two. Only the first four rules claim to know; everything
+ * else is honestly ambiguous. The classifier stays lopsided — a wasted decision
+ * is a fraction of a penny, an NPC that ignores someone looks broken — so only
+ * positive evidence that a line belonged elsewhere produces `overheard`.
  */
-/datum/ai_controller/agent_social/proc/speech_is_directed(atom/movable/speaker, text, whispered, list/audience)
+/datum/ai_controller/agent_social/proc/classify_speech(atom/movable/speaker, text, list/context)
 	// Mid-conversation. A reply does not carry your name.
 	if(binding?.in_interaction())
-		return TRUE
-	if(whispered)
-		return TRUE
-	if(name_appears_in(pawn?.name, text))
-		return TRUE
-	// Evidence it went elsewhere: they named someone else who is standing here.
-	if(audience["named_another"])
-		return FALSE
+		return AGENT_SPEECH_DIRECTED
+
+	// A whisper carries one tile. Past that is the eavesdrop band, where what
+	// arrives is a starred copy, so hearing one proves proximity rather than
+	// intent. An eavesdropped whisper falls through to the ordinary rules.
+	if(context["whispered"] && context["distance"] <= AGENT_WHISPER_INTENDED_RANGE)
+		return AGENT_SPEECH_DIRECTED
+
+	if(agent_name_matches_loosely(addressable_name(), text))
+		return AGENT_SPEECH_DIRECTED
+
+	// The one confident suppression: they addressed someone else standing here.
+	if(context["named_someone_else"])
+		return AGENT_SPEECH_OVERHEARD
+
 	// Nobody else could have been the audience.
-	if(audience["bystanders"] <= 0)
-		return TRUE
-	// Distant chatter in a room with other people in it.
-	if(get_dist(pawn, speaker) > AGENT_DIRECT_SPEECH_RANGE)
-		return FALSE
-	return TRUE
+	if(context["nearby_people"] <= 0)
+		return AGENT_SPEECH_DIRECTED
+
+	// A shout is a deliberate attempt to be heard at distance, and the engine
+	// extends its range to match. Loud and public is not the same as ours, so
+	// this is worth attention rather than a claim of certainty.
+	if(agent_speech_is_shouted(context["volume"]))
+		return AGENT_SPEECH_AMBIGUOUS
+
+	// Ordinary distant chatter in a room with other people in it.
+	//
+	// Skipped when the line is in a script we cannot match a Latin name against.
+	// The name rule above is the escape hatch that lets a distant call through,
+	// so applying this without it silences exactly one language group.
+	if(context["distance"] > AGENT_DIRECT_SPEECH_RANGE && agent_script_is_matchable(context["script"]))
+		return AGENT_SPEECH_OVERHEARD
+
+	return AGENT_SPEECH_AMBIGUOUS
+
+/// Does this classification schedule a decision? Ambiguous still does: without
+/// an attention budget to bound it, silence is the worse failure.
+/proc/agent_speech_wakes_us(classification)
+	return classification != AGENT_SPEECH_OVERHEARD
 
 /datum/ai_controller/agent_social/Destroy(force, ...)
 	release_binding("controller destroyed")

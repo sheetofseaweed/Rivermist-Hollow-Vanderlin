@@ -35,6 +35,9 @@
 	var/list/events
 	/// Set by external events, and by continuation while budget remains.
 	var/dirty = FALSE
+	/// world.time of the last decision an ambiguous line bought. Rations the
+	/// cost of erring toward hearing without letting it silence real address.
+	var/ambiguous_at = 0
 	/// world.time this binding most recently became dirty. 0 while clean.
 	/// Measures the wait a trigger sits through before a request is sent.
 	var/dirty_since = 0
@@ -293,6 +296,38 @@
 /// Is a bounded interaction still running? Used to read speech as a reply.
 /datum/agent_binding/proc/in_interaction()
 	return continuation_expires_at > world.time
+
+/**
+ * May an ambiguous line buy a decision right now?
+ *
+ * Two bounds, both of which fail open when the subsystem is not measuring:
+ * being unable to check is not a reason to go quiet.
+ */
+/datum/agent_binding/proc/may_spend_on_ambiguous()
+	if(world.time < ambiguous_at + AGENT_AMBIGUOUS_INTERVAL)
+		return FALSE
+	if(SSagent_npc && !SSagent_npc.ambiguous_budget_left())
+		return FALSE
+	return TRUE
+
+/datum/agent_binding/proc/note_ambiguous_spend()
+	ambiguous_at = world.time
+	SSagent_npc?.note_ambiguous_request()
+
+/**
+ * Is this exact line already waiting to be sent?
+ *
+ * The ring holds twelve. Somebody repeating themselves, or two players talking
+ * quickly, should not push out the question a third player actually asked.
+ */
+/datum/agent_binding/proc/speech_already_buffered(speaker_name, text)
+	for(var/list/entry as anything in events)
+		var/list/detail = entry["detail"]
+		if(!islist(detail))
+			continue
+		if(detail["speaker"] == speaker_name && detail["text"] == text)
+			return TRUE
+	return FALSE
 
 /// Append to the event ring without scheduling anything.
 /datum/agent_binding/proc/push_event(event_name, urgency = AGENT_EVENT_LOW, list/detail)

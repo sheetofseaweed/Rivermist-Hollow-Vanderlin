@@ -155,6 +155,57 @@
  */
 #define AGENT_DIRECT_SPEECH_RANGE 3
 
+/**
+ * How far a whisper carries to its intended listener.
+ *
+ * send_speech sets message_range to 1 for a whisper and then adds
+ * EAVESDROP_EXTRA_RANGE on top, handing anyone in that extra band a stars()'d
+ * copy. So hearing a whisper proves we were close enough to overhear it, not
+ * that it was meant for us. Distance is what tells the two apart.
+ */
+#define AGENT_WHISPER_INTENDED_RANGE 1
+
+/**
+ * How a heard line was classified.
+ *
+ * Three states rather than two, because "we think this was ours" and "we have
+ * no idea" are different claims and should not be recorded as the same one.
+ * Ambiguous still wakes the NPC today; the distinction is what lets an
+ * attention budget rate-limit it later without silencing real address.
+ */
+#define AGENT_SPEECH_DIRECTED "directed"
+#define AGENT_SPEECH_AMBIGUOUS "ambiguous"
+#define AGENT_SPEECH_OVERHEARD "overheard"
+
+/// Scripts a Latin name can be matched against. Anything else and a failed
+/// match means nothing, so it must never count as evidence against the NPC.
+#define AGENT_SCRIPT_LATIN "latin"
+#define AGENT_SCRIPT_CYRILLIC "cyrillic"
+#define AGENT_SCRIPT_MIXED "mixed"
+#define AGENT_SCRIPT_OTHER "other"
+#define AGENT_SCRIPT_NONE "none"
+
+/**
+ * The bound on erring toward hearing.
+ *
+ * Ambiguous speech still wakes an NPC, because silence is the worse failure.
+ * Unbounded, though, a busy tavern is an unlimited stream of paid decisions:
+ * one pawn answering ambiguous chatter can outspend a whole round.
+ *
+ * Directed speech and attacks ignore both of these entirely. Only lines we
+ * genuinely could not classify are rationed.
+ *
+ * **These two numbers are starting points for measurement, not balance.** The
+ * telemetry counts ambiguous requests taken and deferred; tune from that.
+ */
+#define AGENT_AMBIGUOUS_INTERVAL (12 SECONDS)
+#define AGENT_AMBIGUOUS_ROUND_LIMIT 40
+
+/// Shorter than this and a folded name is too generic to match on.
+#define AGENT_FOLD_MIN_LENGTH 4
+/// Russian case endings are short: Исааку, Исааком. Allow that much trailing.
+#define AGENT_FOLD_MAX_SUFFIX 3
+
 /// Low urgency events wait for the in-flight request to land.
 #define AGENT_EVENT_LOW 1
 /// High urgency events abandon the in-flight request and force a new one.

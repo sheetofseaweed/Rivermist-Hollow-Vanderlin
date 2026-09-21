@@ -140,14 +140,22 @@ def describe_speech(event_name, detail):
     """
     speaker = detail.get("speaker", "someone")
     text = detail.get("text", "")
-    overheard = event_name == "overheard_speech" or detail.get("likely_to_you") is False
+    addressing = detail.get("addressing")
+    if addressing is None:
+        addressing = "overheard" if event_name == "overheard_speech" else "directed"
 
     notes = []
     if detail.get("whispered"):
-        notes.append("whispered to you")
-    elif overheard:
+        notes.append("whispered")
+    if addressing == "overheard":
         notes.append("not apparently to you")
-    others = detail.get("others_present")
+    elif addressing == "ambiguous":
+        # Said plainly rather than as a probability. The useful judgement is
+        # "was this mine to answer", which the model is better placed to make.
+        notes.append("unclear whether this was meant for you")
+    if detail.get("shouted"):
+        notes.append("shouted")
+    others = detail.get("nearby_people")
     if isinstance(others, int) and others > 0 and not isinstance(others, bool):
         notes.append("%d other %s nearby" % (others, "person" if others == 1 else "people"))
     distance = detail.get("distance")

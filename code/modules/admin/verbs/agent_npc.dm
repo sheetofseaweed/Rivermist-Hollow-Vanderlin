@@ -41,6 +41,9 @@
 		if(measured.tokens.count < measured.decisions)
 			lines += "&nbsp;&nbsp;<i>[measured.decisions - measured.tokens.count] decision(s) reported no usage.</i>"
 		lines += "&nbsp;&nbsp;chain depth: [measured.chain_depth.summary_plain()]"
+		// The ratio is what the ambiguous limits should be tuned from. A lot of
+		// deferrals means the NPC is in a busy room and being rationed.
+		lines += "&nbsp;&nbsp;unclear speech: [measured.ambiguous_requests] answered / [AGENT_AMBIGUOUS_ROUND_LIMIT] allowed, [measured.ambiguous_deferred] deferred"
 		lines += "&nbsp;&nbsp;actions chosen: [measured.format_counts(measured.action_counts)]"
 		lines += "&nbsp;&nbsp;outcomes: [measured.format_counts(measured.result_counts)]"
 

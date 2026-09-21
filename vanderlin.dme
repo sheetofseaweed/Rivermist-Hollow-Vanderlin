@@ -599,6 +599,7 @@
 #include "code\controllers\subsystem\triumph\codes\_generator.dm"
 #include "code\controllers\subsystem\triumph\codes\redeem_codes.dm"
 #include "code\datums\_verb_callback.dm"
+#include "code\datums\agent_npc\addressing.dm"
 #include "code\datums\agent_npc\binding.dm"
 #include "code\datums\agent_npc\executor.dm"
 #include "code\datums\agent_npc\perception.dm"

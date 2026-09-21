@@ -469,6 +469,29 @@ SUBSYSTEM_DEF(agent_npc)
 		return note_breaker_probe()
 	return note_queue_wait(binding.queued_time())
 
+/**
+ * Is there round budget left for speech we could not classify?
+ *
+ * Fails open when telemetry is absent. Not being able to count is not a reason
+ * for an NPC to start ignoring people.
+ */
+/datum/controller/subsystem/agent_npc/proc/ambiguous_budget_left()
+	if(!telemetry)
+		return TRUE
+	return telemetry.ambiguous_requests < AGENT_AMBIGUOUS_ROUND_LIMIT
+
+/datum/controller/subsystem/agent_npc/proc/note_ambiguous_request()
+	if(!telemetry)
+		return FALSE
+	telemetry.ambiguous_requests++
+	return TRUE
+
+/datum/controller/subsystem/agent_npc/proc/note_ambiguous_deferred()
+	if(!telemetry)
+		return FALSE
+	telemetry.ambiguous_deferred++
+	return TRUE
+
 /datum/controller/subsystem/agent_npc/proc/note_breaker_probe()
 	if(!telemetry)
 		return FALSE

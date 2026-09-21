@@ -87,6 +87,10 @@
 	/// Lone requests sent after the breaker opened. Counted, never timed: their
 	/// wait is the cooldown, which says nothing about pacing.
 	var/breaker_probes = 0
+	/// Decisions bought by speech we could not classify, and lines that wanted
+	/// one and were rationed. The ratio is what the ambiguous limits tune from.
+	var/ambiguous_requests = 0
+	var/ambiguous_deferred = 0
 	/// Queued to sent.
 	var/datum/agent_stat/queue_wait
 	/// Sent to consumed.
