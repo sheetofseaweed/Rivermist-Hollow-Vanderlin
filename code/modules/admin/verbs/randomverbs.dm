@@ -522,10 +522,16 @@ Traitors and the like can also be revived with the previous role mostly intact.
 	if(isobserver(M))
 		new /obj/effect/gibspawner/generic(get_turf(M))
 		return
+	var/mob/living/living_target = isliving(M) ? M : null
+	var/previous_bypass = living_target?.defeat_lethal_bypass
+	if(living_target)
+		living_target.defeat_lethal_bypass = TRUE
 	if(confirm == "Yes")
 		M.gib()
 	else
 		M.gib(1)
+	if(living_target && !QDELETED(living_target))
+		living_target.defeat_lethal_bypass = previous_bypass
 	SSblackbox.record_feedback("tally", "admin_verb", 1, "Gib") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 /client/proc/cmd_admin_gib_self()
@@ -537,6 +543,9 @@ Traitors and the like can also be revived with the previous role mostly intact.
 		log_admin("[key_name(usr)] used gibself.")
 		message_admins("<span class='adminnotice'>[key_name_admin(usr)] used gibself.</span>")
 		SSblackbox.record_feedback("tally", "admin_verb", 1, "Gib Self") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
+		if(isliving(mob))
+			var/mob/living/living_self = mob
+			living_self.defeat_lethal_bypass = TRUE
 		mob.gib(1, 1, 1)
 
 /client/proc/cmd_admin_check_contents(mob/living/M in GLOB.mob_list)
@@ -728,6 +737,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 		if(ADMIN_PUNISHMENT_BRAINDAMAGE)
 			target.adjustOrganLoss(ORGAN_SLOT_BRAIN, 199, 199)
 		if(ADMIN_PUNISHMENT_GIB)
+			target.defeat_lethal_bypass = TRUE
 			target.gib(FALSE)
 		if(ADMIN_PUNISHMENT_PSYDON)
 			sleep(60)
@@ -740,6 +750,9 @@ Traitors and the like can also be revived with the previous role mostly intact.
 			target.psydo_nyte()
 			target.playsound_local(target, 'sound/misc/psydong.ogg', 100, FALSE)
 			sleep(10)
+			if(QDELETED(target))
+				return
+			target.defeat_lethal_bypass = TRUE
 			target.gib(FALSE)
 
 		if(ADMIN_PUNISHMENT_BSA)

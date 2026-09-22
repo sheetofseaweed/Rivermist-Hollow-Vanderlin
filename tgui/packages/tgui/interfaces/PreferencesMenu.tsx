@@ -2186,16 +2186,17 @@ export const PreferencesMenu = () => {
           icon="skull"
           label="Defeat Mode"
           value={data.defeat_mode}
-          tooltip="Defeat stops lethal bleeding and brain danger without fully healing you. Manual, prepared, and campfire recovery can wake you with aftermath trauma; this setting controls whether rune return is also available."
+          tooltip="Knockout + Rune is recommended for rescue-focused adventures. Knockout Only uses in-world recovery. No Return uses lethal rules without defeat protection or automatic rune rescue. Changes apply on your next spawn."
           onClick={() => doPref('defeat_mode', 'input')}
         />
         <PrefRow
           icon="heart-broken"
           label="Defeat Threshold"
           value={data.defeat_threshold}
-          tooltip="The pooled brute, burn, toxin, and clone damage needed to fall into Defeat. Stabilization makes you safe; waking is a separate recovery step."
+          tooltip="Brute + 60% of burn + toxin + clone damage. Frail and Atrophy reduce this threshold. Oxygen loss, lethal blood loss, and brain damage have separate limits. Shock does not trigger Defeat; ordinary pain blackouts and knockdowns still apply."
           onClick={() => doPref('defeat_threshold', 'input')}
         />
+        <PrefRow icon="book" label="Defeat & Recovery Guide" value="Read" onClick={() => doPref('defeat_guide', 'input')} />
         <Box color="label" fontSize="12px" mt={0.5}>
           Horny Defeat resistance is deterministic and stat-based. During an
           active encounter, only you see your exact progress, threshold, and

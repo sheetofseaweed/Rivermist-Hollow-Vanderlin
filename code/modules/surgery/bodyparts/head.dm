@@ -61,6 +61,8 @@
 	return ..()
 
 /obj/item/bodypart/head/skeletonize(lethal = TRUE)
+	if(lethal && owner?.defeat_intercept_lethal())
+		return FALSE
 	. = ..()
 
 	sellprice = round((sellprice || 0) * 0.2)

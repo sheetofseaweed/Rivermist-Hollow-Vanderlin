@@ -840,6 +840,8 @@
 	skeletonized = TRUE
 
 /obj/item/bodypart/chest/skeletonize(lethal = TRUE)
+	if(lethal && owner?.defeat_intercept_lethal())
+		return FALSE
 	. = ..()
 	if(lethal && owner && !(NOBLOOD in owner.dna?.species?.species_traits))
 		owner.death()

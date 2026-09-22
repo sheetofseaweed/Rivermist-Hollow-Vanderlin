@@ -21,6 +21,8 @@ GLOBAL_LIST_EMPTY(last_words)
 	mind.pending_resurrection_trauma_name = recent_attacker_damage_name
 
 /mob/living/gib(no_brain, no_organs, no_bodyparts)
+	if(defeat_intercept_lethal())
+		return FALSE
 	var/prev_lying = lying_angle
 	if(stat != DEAD)
 		death(TRUE)
@@ -57,6 +59,8 @@ GLOBAL_LIST_EMPTY(last_words)
 	return
 
 /mob/living/dust(just_ash, drop_items, force)
+	if(defeat_intercept_lethal())
+		return FALSE
 	death(TRUE)
 
 	spill_embedded_objects()
@@ -80,6 +84,8 @@ GLOBAL_LIST_EMPTY(last_words)
 
 
 /mob/living/death(gibbed)
+	if(defeat_intercept_lethal())
+		return FALSE
 	var/was_dead_before = stat == DEAD
 	set_stat(DEAD)
 	unset_machine()

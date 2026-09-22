@@ -123,7 +123,7 @@
 	var/mob/living/carbon/human/caster = owner.current
 	var/outcome_committed = FALSE
 	if(yield_lifespark)
-		target.death()
+		target.defeat_explicit_death()
 		outcome_committed = target.stat == DEAD
 	else
 		outcome_committed = target.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_SEVERE, caster)

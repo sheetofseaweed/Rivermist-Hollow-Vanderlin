@@ -68,6 +68,8 @@
 
 /obj/item/organ/brain/Remove(mob/living/carbon/C, special = 0, no_id_transfer = FALSE)
 	. = ..()
+	if(owner)
+		return FALSE
 	for(var/datum/brain_trauma/BT as anything in traumas)
 		BT.on_lose(TRUE)
 		BT.owner = null
@@ -338,7 +340,8 @@
 			return
 		to_chat(owner, "<span class='danger'>The last spark of life in your brain fizzles out...</span>")
 		owner.death()
-		brain_death = TRUE
+		if(owner.stat == DEAD)
+			brain_death = TRUE
 
 /obj/item/organ/brain/check_damage_thresholds(mob/M)
 	. = ..()

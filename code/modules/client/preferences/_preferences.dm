@@ -239,6 +239,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 /datum/preferences/proc/show_choices(mob/user, tabchoice)
 	if(!user || !user.client)
 		return
+	if(isnewplayer(user) && !ensure_defeat_introduction(user))
+		return
 	if(slot_randomized)
 		load_character(default_slot)
 		slot_randomized = FALSE
@@ -1543,11 +1545,10 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				write_preference(/datum/preference/choiced/combat_music, selected_track.type)
 			return TRUE
 		if("defeat_mode")
-			var/list/defeat_mode_choices = defeat_mode_choice_map()
-			var/current_mode = read_preference(/datum/preference/choiced/defeat_mode)
-			var/selected_mode = tgui_input_list(user, defeat_mode_help_text(), "Defeat Mode", defeat_mode_choices, defeat_mode_display_name(current_mode))
-			if(selected_mode)
-				write_preference(/datum/preference/choiced/defeat_mode, defeat_mode_choices[selected_mode])
+			choose_defeat_mode(user)
+			return TRUE
+		if("defeat_guide")
+			user.show_defeat_recovery_guide()
 			return TRUE
 		if("defeat_threshold")
 			var/list/threshold_choices = defeat_threshold_choice_map()

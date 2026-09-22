@@ -368,6 +368,8 @@
 /obj/item/organ/proc/Remove(mob/living/M, special = FALSE, drop_if_replaced = TRUE)
 	if(!M)
 		return
+	if(!special && (organ_flags & ORGAN_VITAL) && M.defeat_intercept_lethal())
+		return FALSE
 	SEND_SIGNAL(src, COMSIG_ORGAN_REMOVED, M)
 	UnregisterSignal(owner, COMSIG_PARENT_EXAMINE)
 	var/initial_zone = current_zone
@@ -407,6 +409,8 @@
 
 /obj/item/organ/proc/remove_and_drop(mob/living/M, atom/drop_target, atom/throw_target = null, throw_range = 0, throw_speed = 0)
 	Remove(M)
+	if(owner)
+		return FALSE
 	return drop_onto_turf(drop_target, throw_target, throw_range, throw_speed)
 
 /obj/item/organ/proc/on_owner_examine(datum/source, mob/user, list/examine_list)
