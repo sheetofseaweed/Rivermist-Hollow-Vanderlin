@@ -962,9 +962,10 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 		var/res_name = "painting_[painting_id].png"
 		src << browse_rsc(painting_icon, res_name)
 		dat += "<tr>"
-		dat += "<td style='padding: 12px 15px;'><img src='[res_name]' height=64 width=64 style='display: block; margin: 0 auto;'></td>"
-		dat += "<td style='padding: 12px 15px;'>[html_encode(painting["painting_title"])]</td>"
-		dat += "<td style='padding: 12px 15px;'>[html_encode(painting["author"])] ([painting["author_ckey"]])</td>"
+		dat += "<td style='padding: 12px 15px;'><img src='[res_name]' height=64 width=64 style='display: block; margin: 0 auto; image-rendering: pixelated; -ms-interpolation-mode: nearest-neighbor;'></td>"
+		// signing already encodes, decoding first stops a second pass from showing entities
+		dat += "<td style='padding: 12px 15px;'>[html_encode(html_decode(painting["painting_title"]))]</td>"
+		dat += "<td style='padding: 12px 15px;'>[html_encode(html_decode(painting["author"]))] ([html_encode(painting["author_ckey"])])</td>"
 		dat += "<td style='padding: 12px 15px;'>"
 		dat += "<a href='byond://?src=[REF(src)];delete_painting=1;id=[url_encode(painting_id)]'>Delete</a>"
 		dat += "</td>"

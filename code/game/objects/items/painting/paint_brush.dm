@@ -78,14 +78,18 @@
 		if(!length(palette.colors))
 			to_chat(user, span_warning("[palette] is bare."))
 			return ITEM_INTERACT_BLOCKING
-		var/merge_color = browser_input_list(user, "Choose a color to blend", items = palette.colors)
+		var/color_name = browser_input_list(user, "Choose a color to blend", items = palette.colors)
+		if(!color_name || QDELETED(palette) || !user.Adjacent(palette))
+			return ITEM_INTERACT_BLOCKING
+		var/merge_color = palette.colors[color_name]
 		if(!merge_color)
 			return ITEM_INTERACT_BLOCKING
-		merge_color = palette.colors[merge_color]
 		if(!current_color)
 			current_color = merge_color
+			to_chat(user, span_notice("I take up some <font color='[current_color]'>[color_name]</font>."))
 		else
 			current_color = BlendRGB(current_color, merge_color, 0.5)
+			to_chat(user, span_notice("I blend in some [color_name], and the bristles turn <font color='[current_color]'>this shade</font>."))
 		update_appearance(UPDATE_OVERLAYS)
 		return ITEM_INTERACT_SUCCESS
 
