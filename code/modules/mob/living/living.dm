@@ -87,6 +87,8 @@
 	has_reflection = FALSE
 
 /mob/living/onZImpact(turf/impacted_turf, levels, impact_flags = NONE)
+	if(isgroundlessturf(impacted_turf) && defeat_rescue_from_hazard())
+		return
 	if(!isgroundlessturf(impacted_turf))
 		impact_flags |= ZImpactDamage(impacted_turf, levels)
 
@@ -772,11 +774,14 @@
 		if(istype(src.loc, /turf/open/water) && !HAS_TRAIT(src, TRAIT_NOBREATH) && body_position == LYING_DOWN && client)
 			record_round_statistic(STATS_PEOPLE_DROWNED)
 
+		var/previous_bypass = defeat_lethal_bypass
+		defeat_lethal_bypass = TRUE
 		adjustOxyLoss(201)
 		updatehealth()
 //		if(!whispered)
 //			to_chat(src, "<span class='userdanger'>I have given up life and succumbed to death.</span>")
 		death()
+		defeat_lethal_bypass = previous_bypass
 
 /**
  * Checks if a mob is incapacitated
@@ -1134,6 +1139,8 @@
  */
 /mob/living/proc/fully_heal(heal_flags = HEAL_ALL)
 	SHOULD_CALL_PARENT(TRUE)
+	if((heal_flags & HEAL_ADMIN) && !defeat_suppress_heal_cleanup)
+		defeat_final_death = FALSE
 
 	if(heal_flags & HEAL_TOX) //zero as second argument not automatically call updatehealth().
 		setToxLoss(0, FALSE, TRUE)

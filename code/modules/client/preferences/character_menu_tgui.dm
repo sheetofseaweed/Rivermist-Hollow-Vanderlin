@@ -585,6 +585,9 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 // ---- Lobby round flow ----
 
 /mob/dead/new_player/proc/character_setup_chargen_set_ready(new_ready)
+	if(new_ready == PLAYER_READY_TO_PLAY && !client?.prefs?.defeat_introduction_complete)
+		client?.prefs?.show_choices(src)
+		return FALSE
 	ready = new_ready
 	if(ready == PLAYER_READY_TO_PLAY)
 		cache_multi_ready_characters()

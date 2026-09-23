@@ -22,7 +22,8 @@
 //Dismember a limb
 /obj/item/bodypart/head/dismember(dam_type, bclass, mob/living/user, zone_precise)
 	. = ..()
-	add_abstract_elastic_data(ELASCAT_COMBAT, ELASDATA_DECAPITATIONS, 1)
+	if(.)
+		add_abstract_elastic_data(ELASCAT_COMBAT, ELASDATA_DECAPITATIONS, 1)
 
 /obj/item/bodypart/proc/dismember(dam_type = BRUTE, bclass = BCLASS_CUT, mob/living/user, zone_precise = src.body_zone)
 	if(!owner)
@@ -47,6 +48,8 @@
 				checked_armor.take_damage(checked_armor.max_integrity / 2, damage_flag = bclass)
 				return FALSE
 
+	if((limb_flags & BODYPART_VITAL) && C.defeat_intercept_lethal())
+		return FALSE
 	var/obj/item/bodypart/affecting = C.get_bodypart(BODY_ZONE_CHEST)
 	if(affecting && dismember_wound)
 		affecting.add_wound(dismember_wound)
@@ -122,6 +125,8 @@
 		return FALSE
 	if(HAS_TRAIT(C, TRAIT_NODISMEMBER))
 		return FALSE
+	if(C.defeat_intercept_lethal())
+		return FALSE
 	. = list()
 	var/organ_spilled = 0
 	var/turf/T = get_turf(C)
@@ -148,6 +153,8 @@
 //limb removal. The "special" argument is used for swapping a limb with a new one without the effects of losing a limb kicking in.
 /obj/item/bodypart/proc/drop_limb(special)
 	if(!owner)
+		return FALSE
+	if(!special && (limb_flags & BODYPART_VITAL) && owner.defeat_intercept_lethal())
 		return FALSE
 	var/atom/drop_location = owner.drop_location()
 	var/mob/living/carbon/was_owner = owner
@@ -197,7 +204,7 @@
 	was_owner.update_health_hud() //update the healthdoll
 	was_owner.update_body()
 
-	if(CHECK_BITFIELD(limb_flags, BODYPART_VITAL))
+	if(!special && CHECK_BITFIELD(limb_flags, BODYPART_VITAL))
 		was_owner.death()
 
 	// drop_location = null happens when a "dummy human" used for rendering icons on prefs screen gets its limbs replaced.
@@ -211,11 +218,15 @@
 //when a limb is dropped, the internal organs are removed from the mob and put into the limb
 /obj/item/organ/proc/transfer_to_limb(obj/item/bodypart/LB, mob/living/carbon/C)
 	Remove(C)
+	if(owner)
+		return FALSE
 	forceMove(LB)
 	return TRUE
 
 /obj/item/organ/brain/transfer_to_limb(obj/item/bodypart/head/LB, mob/living/carbon/human/C)
 	Remove(C) //Changeling brain concerns are now handled in Remove
+	if(owner)
+		return FALSE
 	forceMove(LB)
 	if(istype(LB))
 		LB.brain = src
@@ -340,6 +351,8 @@
 		C.update_inv_pants()
 
 /obj/item/bodypart/head/drop_limb(special)
+	if(!owner || (!special && owner.defeat_intercept_lethal()))
+		return FALSE
 	if(!special)
 		//Drop all worn head items
 		var/list/worn_items = list(

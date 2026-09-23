@@ -1,4 +1,6 @@
 /mob/living/carbon/death(gibbed)
+	if(defeat_intercept_lethal())
+		return FALSE
 	if(stat == DEAD)
 		return
 	stop_looking()
@@ -15,6 +17,8 @@
 		BT.on_death()
 
 /mob/living/carbon/dust(just_ash, drop_items, force)
+	if(defeat_intercept_lethal())
+		return FALSE
 	if(drop_items)
 		var/turf/T = get_turf(src)
 		if(T)
@@ -30,6 +34,8 @@
 	animate(src, time = 40, transform = M, easing = SINE_EASING)
 
 /mob/living/carbon/gib(no_brain, no_organs, no_bodyparts, safe_gib = FALSE)
+	if(defeat_intercept_lethal())
+		return FALSE
 	if(safe_gib) // If you want to keep all the mob's items and not have them deleted
 		for(var/obj/item/W in src)
 			dropItemToGround(W)
