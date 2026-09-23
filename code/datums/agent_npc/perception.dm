@@ -71,14 +71,20 @@
 		return list("observation" = observation, "payload" = list("entities" = entities, "blind" = TRUE))
 
 	var/list/seen = list()
+	// Kept apart with their own cap, so a furnished room cannot crowd out people.
+	var/list/fixtures_seen = list()
 	for(var/atom/movable/thing in view(AGENT_VIEW_RANGE, pawn))
 		if(thing == pawn)
 			continue
-		if(!ismob(thing) && !isitem(thing))
+		var/fixture = agent_is_fixture(thing)
+		if(!fixture && !ismob(thing) && !isitem(thing))
 			continue
 		if(!can_see(pawn, thing, AGENT_VIEW_RANGE))
 			continue
-		seen[thing] = get_dist(pawn, thing)
+		if(fixture)
+			fixtures_seen[thing] = get_dist(pawn, thing)
+		else
+			seen[thing] = get_dist(pawn, thing)
 
 	// Nearest first, so the cap drops the least relevant things.
 	sortTim(seen, GLOBAL_PROC_REF(cmp_numeric_asc), associative = TRUE)
@@ -90,19 +96,81 @@
 
 	var/turf/here = get_turf(pawn)
 	var/list/payload = list(
-		"self" = list(
-			"name" = pawn.get_visible_name(),
-			"condition" = agent_describe_condition(pawn),
-			"holding" = agent_item_name(pawn.get_active_held_item()),
-			"wearing" = agent_worn_names(pawn),
-			"standing" = pawn.body_position != LYING_DOWN,
-		),
+		"self" = agent_describe_self(pawn),
 		"here" = here ? "[here.name]" : "nowhere",
 		"entities" = entities,
+		"structures" = agent_describe_fixtures(pawn, fixtures_seen, observation),
 		"revision" = revision,
 	)
 
 	return list("observation" = observation, "payload" = payload)
+
+/// The NPC's own gear is character knowledge: both hands, every worn layer, and bag contents.
+/proc/agent_describe_self(mob/living/pawn)
+	var/list/myself = list(
+		"name" = pawn.get_visible_name(),
+		"condition" = agent_describe_condition(pawn),
+		"holding" = agent_held_names(pawn),
+		"wearing" = agent_worn_names(pawn),
+		"carrying" = agent_stored_names(pawn),
+		"standing" = pawn.body_position != LYING_DOWN,
+	)
+	if(pawn.buckled)
+		myself["on"] = "[pawn.buckled.name]"
+	return myself
+
+/// Furniture, doors and machines. Invisible-to-the-mouse fixtures are overlays and decals, not things.
+/proc/agent_is_fixture(atom/movable/thing)
+	if(!isstructure(thing) && !ismachinery(thing))
+		return FALSE
+	if(thing.mouse_opacity == MOUSE_OPACITY_TRANSPARENT)
+		return FALSE
+	return length("[thing.name]") > 0
+
+/// Nearest first. Same-named fixtures past the per-name cap are counted on the last one listed.
+/proc/agent_describe_fixtures(mob/living/pawn, list/fixtures_seen, datum/agent_observation/observation)
+	var/list/described = list()
+	if(!length(fixtures_seen))
+		return described
+	sortTim(fixtures_seen, GLOBAL_PROC_REF(cmp_numeric_asc), associative = TRUE)
+
+	var/list/shown_per_name = list()
+	var/list/last_of_name = list()
+	for(var/obj/thing as anything in fixtures_seen)
+		var/label = "[thing.name]"
+		if(shown_per_name[label] >= AGENT_STRUCTURE_HANDLES_PER_NAME)
+			var/list/last = last_of_name[label]
+			last["more"] = (last["more"] || 0) + 1
+			continue
+		if(length(described) >= AGENT_MAX_STRUCTURES)
+			continue
+		var/list/entry = list(
+			"handle" = observation.offer(thing),
+			"name" = label,
+			"distance" = fixtures_seen[thing],
+			"direction" = dir2text(get_dir(pawn, thing)),
+		)
+		var/state = agent_fixture_state(pawn, thing)
+		if(state)
+			entry["state"] = state
+		described += list(entry)
+		shown_per_name[label] = (shown_per_name[label] || 0) + 1
+		last_of_name[label] = entry
+	return described
+
+/// The one fact about a fixture that changes what can be done with it.
+/proc/agent_fixture_state(mob/living/pawn, obj/thing)
+	if(istype(thing, /obj/structure/door))
+		var/obj/structure/door/door = thing
+		return door.door_opened ? "open" : "closed"
+	if(istype(thing, /obj/structure/closet))
+		var/obj/structure/closet/closet = thing
+		return closet.opened ? "open" : "closed"
+	if(pawn.buckled == thing)
+		return "you are on it"
+	if(thing.has_buckled_mobs())
+		return "occupied"
+	return null
 
 /// Public description of one thing. No type paths, no refs, no internal state.
 /proc/agent_describe_entity(mob/living/pawn, atom/movable/thing, datum/agent_observation/observation)
@@ -119,7 +187,14 @@
 		described["kind"] = "person"
 		described["condition"] = agent_describe_condition(living_thing)
 		// Only what is visibly held. Pockets and bags are not character knowledge.
-		described["holding"] = agent_item_name(living_thing.get_active_held_item())
+		described["holding"] = agent_held_names(living_thing)
+		// Only what examine would show. Clothing hidden under other clothing stays hidden.
+		if(iscarbon(living_thing))
+			described["wearing"] = agent_visible_worn_names(living_thing)
+		if(living_thing.buckled)
+			described["posture"] = "on the [living_thing.buckled.name]"
+		else if(living_thing.body_position == LYING_DOWN)
+			described["posture"] = "lying down"
 		return described
 
 	described["name"] = "[thing.name]"
@@ -129,10 +204,72 @@
 /proc/agent_item_name(obj/item/held)
 	return QDELETED(held) ? null : "[held.name]"
 
+/// Both hands, the active one first. Only the active hand used to be listed.
+/proc/agent_held_names(mob/living/who)
+	var/list/names = list()
+	var/obj/item/active = who.get_active_held_item()
+	if(!QDELETED(active))
+		names += "[active.name]"
+	for(var/obj/item/held in who.held_items)
+		if(held == active || QDELETED(held))
+			continue
+		names += "[held.name]"
+	return names
+
+/// Skin and tattoos use clothing slots, but examine does not call them clothing, so neither do we.
+/proc/agent_item_is_body(obj/item/thing)
+	return istype(thing, /obj/item/clothing/armor/regenerating/skin) || istype(thing, /obj/item/clothing/shirt/undershirt/easttats)
+
+/// Everything the NPC itself wears, hidden layers included. It knows what it put on.
 /proc/agent_worn_names(mob/living/who)
 	var/list/names = list()
 	for(var/obj/item/worn as anything in who.get_equipped_items())
-		if(QDELETED(worn))
+		if(QDELETED(worn) || agent_item_is_body(worn))
 			continue
 		names += "[worn.name]"
 	return names
+
+/// What another person visibly wears. get_unobscured_items is what examine prints from.
+/proc/agent_visible_worn_names(mob/living/carbon/who)
+	var/list/names = list()
+	for(var/obj/item/worn as anything in who.get_unobscured_items(FALSE))
+		if(length(names) >= AGENT_MAX_WORN_SHOWN)
+			break
+		if(QDELETED(worn) || agent_item_is_body(worn))
+			continue
+		names += "[worn.name]"
+	return names
+
+/// Own containers, one level deep. Repeats are counted and the total capped, or a purse costs tokens per coin.
+/proc/agent_stored_names(mob/living/who)
+	var/list/containers = list()
+	var/list/sources = list()
+	for(var/obj/item/held in who.held_items)
+		sources += held
+	var/list/worn = who.get_equipped_items()
+	if(worn)
+		sources += worn
+
+	var/budget = AGENT_MAX_STORED_SHOWN
+	for(var/obj/item/container as anything in sources)
+		if(budget <= 0)
+			break
+		if(QDELETED(container))
+			continue
+		var/list/inside = list()
+		SEND_SIGNAL(container, COMSIG_TRY_STORAGE_RETURN_INVENTORY, inside, FALSE)
+		if(!length(inside))
+			continue
+		var/list/counts = list()
+		for(var/obj/item/stored in inside)
+			var/label = "[stored.name]"
+			counts[label] = (counts[label] || 0) + 1
+		var/list/names = list()
+		for(var/label in counts)
+			if(budget <= 0)
+				break
+			names += counts[label] > 1 ? "[label] x[counts[label]]" : label
+			budget--
+		if(length(names))
+			containers += list(list("in" = "[container.name]", "items" = names))
+	return containers

@@ -73,8 +73,8 @@
 /// Ceiling on the growing cooldown, so a long outage cannot park a pawn forever.
 #define AGENT_BREAKER_COOLDOWN_MAX (10 MINUTES)
 
-/// Reserved per request before sending, then settled against reported usage.
-#define AGENT_TOKEN_ESTIMATE 2000
+/// Reserved per request, settled against usage. Measured 2026-09-18: 3540 average, 4751 peak.
+#define AGENT_TOKEN_ESTIMATE 4000
 /// Reported usage outside 0..this is treated as a schema violation.
 #define AGENT_MAX_TOKENS_PER_RESPONSE 1000000
 
@@ -114,6 +114,16 @@
 #define AGENT_VIEW_RANGE 7
 /// Cap on entities in one observation, nearest first.
 #define AGENT_MAX_ENTITIES 40
+/// Structures and machines get their own cap, so a furnished room cannot crowd out people.
+#define AGENT_MAX_STRUCTURES 12
+/// Same-named fixtures past this many are counted, not listed. Ten tables are one table.
+#define AGENT_STRUCTURE_HANDLES_PER_NAME 2
+/// Garments listed per person seen. Outermost first, as examine orders them.
+#define AGENT_MAX_WORN_SHOWN 8
+/// Item names listed from the NPC's own bags and pouches, across all of them.
+#define AGENT_MAX_STORED_SHOWN 12
+/// Letters of an emote passed on. Custom emotes can run long; every letter is paid for.
+#define AGENT_EMOTE_TEXT_MAX 400
 
 /// Atom the current objective is aimed at. Resolved from a handle, never raw.
 #define BB_AGENT_OBJECTIVE_TARGET "BB_agent_objective_target"
@@ -124,6 +134,8 @@
 /// Per-controller result of the last `use`. Behaviors are singletons, so
 /// anything pawn-scoped must live on the blackboard, never on the behavior.
 #define BB_AGENT_PICKED_UP "BB_agent_picked_up"
+/// Per-controller outcome of the last `touch`, an agent_result list. On the blackboard for the same reason.
+#define BB_AGENT_TOUCH_RESULT "BB_agent_touch_result"
 
 /**
  * Self-driven decisions allowed after one external interaction.
@@ -143,6 +155,8 @@
 /// request, so an unbounded persona is a permanent per-decision token cost.
 #define AGENT_PROFILE_LABEL_MAX 48
 #define AGENT_PROFILE_TEXT_MAX 1000
+/// Other names an NPC answers to, like a Cyrillic spelling. Each is matched on every line heard.
+#define AGENT_MAX_ALIASES 4
 /// Attach targets are drawn from the admin's own view rather than the world.
 #define AGENT_ATTACH_RANGE 7
 
@@ -177,6 +191,24 @@
 #define AGENT_SPEECH_AMBIGUOUS "ambiguous"
 #define AGENT_SPEECH_OVERHEARD "overheard"
 
+/// What a routed line was. Speech and emotes share one route, rations and caps.
+#define AGENT_LINE_SPEECH "speech"
+#define AGENT_LINE_EMOTE "emote"
+
+/// Something done to the NPC's body. The last three are rough and cannot wait for a reply in flight.
+#define AGENT_STIMULUS_TOUCHED "touched"
+#define AGENT_STIMULUS_FED "fed"
+#define AGENT_STIMULUS_GRABBED "grabbed"
+#define AGENT_STIMULUS_SHOVED "shoved"
+#define AGENT_STIMULUS_STRUCK "struck"
+
+/// Ways the touch action may lay a hand on someone. Tap is the default.
+#define AGENT_TOUCH_TAP "tap"
+#define AGENT_TOUCH_HUG "hug"
+#define AGENT_TOUCH_HEADPAT "headpat"
+/// Help someone lying down: the game's own shake, which also rouses and stands them.
+#define AGENT_TOUCH_HELP "help"
+
 /// Scripts a Latin name can be matched against. Anything else and a failed
 /// match means nothing, so it must never count as evidence against the NPC.
 #define AGENT_SCRIPT_LATIN "latin"
@@ -200,6 +232,35 @@
  */
 #define AGENT_AMBIGUOUS_INTERVAL (12 SECONDS)
 #define AGENT_AMBIGUOUS_ROUND_LIMIT 40
+/// One NPC's share of the shared round limit, so a busy room cannot spend it for everyone.
+#define AGENT_AMBIGUOUS_PAWN_LIMIT 15
+
+/// Decisions one agent's lines may buy another before they are buffered. Two agents otherwise loop forever.
+#define AGENT_MAX_AGENT_EXCHANGES 3
+/// A quiet spell this long resets that count, so two NPCs may chat again later.
+#define AGENT_AGENT_EXCHANGE_WINDOW (5 MINUTES)
+
+/// How long a partner's line needs no name to count as a reply. Shorter than the continuation window.
+#define AGENT_REPLY_WINDOW (30 SECONDS)
+
+/// How near a player must be to turn to an NPC, and to keep speaking to it.
+#define AGENT_FOCUS_RANGE 7
+/// How long an unused Talk To lasts. Each line renews it, so it only lapses in silence.
+#define AGENT_FOCUS_DURATION (2 MINUTES)
+
+/// Letters sampled to decide a line's script. Reading every letter cost 4.3 ms per NPC, measured.
+#define AGENT_SCRIPT_SAMPLE 64
+/// Bytes, not letters: Cyrillic is two bytes a letter, so 32 of those.
+#define AGENT_NAME_WORD_MAX 64
+/// Word positions searched for a name, half from each end. Names are said at a line's edges.
+#define AGENT_NAME_WORDS_MAX 48
+
+/// How firmly a line addresses someone by name.
+#define AGENT_NAMED_NONE 0
+/// The name somewhere in the middle, which is usually talk ABOUT someone.
+#define AGENT_NAMED_WEAK 1
+/// A vocative, the first or last word, or the whole name.
+#define AGENT_NAMED_STRONG 2
 
 /// Shorter than this and a folded name is too generic to match on.
 #define AGENT_FOLD_MIN_LENGTH 4

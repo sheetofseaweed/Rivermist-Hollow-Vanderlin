@@ -40,6 +40,7 @@
 		"builtins" = agent_builtin_profiles(),
 		"labelMax" = AGENT_PROFILE_LABEL_MAX,
 		"textMax" = AGENT_PROFILE_TEXT_MAX,
+		"aliasMax" = AGENT_MAX_ALIASES,
 	)
 
 /datum/agent_profile_menu/ui_data(mob/user)
@@ -148,6 +149,13 @@
 				return TRUE
 			var/limit = (field == "label") ? AGENT_PROFILE_LABEL_MAX : AGENT_PROFILE_TEXT_MAX
 			profile.vars[field] = agent_clean_profile_text(params["value"], limit)
+			return TRUE
+
+		if("set_aliases")
+			var/datum/agent_profile/profile = GLOB.agent_custom_profiles[selected]
+			if(QDELETED(profile))
+				return TRUE
+			profile.aliases = agent_clean_profile_aliases(params["value"])
 			return TRUE
 
 		if("toggle_action")

@@ -91,6 +91,8 @@
 	/// one and were rationed. The ratio is what the ambiguous limits tune from.
 	var/ambiguous_requests = 0
 	var/ambiguous_deferred = 0
+	/// Agent-to-agent lines buffered past the exchange cap. Non-zero means two NPCs were left talking.
+	var/agent_exchanges_capped = 0
 	/// Queued to sent.
 	var/datum/agent_stat/queue_wait
 	/// Sent to consumed.

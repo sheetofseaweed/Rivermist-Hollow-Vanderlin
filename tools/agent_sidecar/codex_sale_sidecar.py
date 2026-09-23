@@ -179,7 +179,7 @@ class CodexSaleDecider(proto.Decider):
             # Only successful turns are proposed. DM may still refuse the action,
             # and reconcile() drops the proposal on the next turn if it does.
             if action and self.memory:
-                self.memory.record(body, turn.user_text, action)
+                self.memory.record(body, turn.history_text, action)
                 if self.verbose:
                     sys.stderr.write("[codex-sale] memory: %d exchanges for this character\n"
                                      % self.memory.depth(body))
@@ -298,6 +298,17 @@ def short_error(body):
     return str(body)[:200]
 
 
+def probe_honoured(mode, content, permitted):
+    """Did the reply prove the mode is enforced? Any JSON used to count, so "{}" passed as json_schema."""
+    parsed = proto.extract_json(content)
+    if mode == "json_schema":
+        return proto.matches_action_schema(parsed, permitted)
+    if mode == "json_object":
+        # This mode promises an object, never a shape.
+        return isinstance(parsed, dict)
+    return False
+
+
 def probe(model, base_url):
     """One tiny call per output mode, so capability is measured not assumed."""
     api_key = os.environ.get(KEY_ENV_VAR)
@@ -342,11 +353,11 @@ def probe(model, base_url):
 
         content = ((body.get("choices") or [{}])[0].get("message") or {}).get("content")
         content = content if isinstance(content, str) else ""
-        is_json = proto.extract_json(content) is not None
-        enforced[mode] = is_json
-        print("  %-12s accepted | returns JSON unprompted: %s" % (
-            mode, "yes" if is_json else "NO - not enforced"))
-        if not is_json:
+        honoured = probe_honoured(mode, content, permitted)
+        enforced[mode] = honoured
+        print("  %-12s accepted | shape honoured unprompted: %s" % (
+            mode, "yes" if honoured else "NO - not enforced"))
+        if not honoured:
             print("               model said: %r" % content.strip()[:120])
 
     print("")

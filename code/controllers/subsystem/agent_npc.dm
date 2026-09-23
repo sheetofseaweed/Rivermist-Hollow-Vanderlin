@@ -215,6 +215,7 @@ SUBSYSTEM_DEF(agent_npc)
 		in_flight -= binding
 		binding.pending = null
 		binding.state = AGENT_BINDING_IDLE
+		binding.update_thinking()
 		qdel(request.release_transport())
 		qdel(request)
 
@@ -369,6 +370,7 @@ SUBSYSTEM_DEF(agent_npc)
 	request.sent_events = events
 	binding.pending = request
 	binding.state = AGENT_BINDING_PENDING
+	binding.update_thinking()
 	in_flight += binding
 	return TRUE
 
@@ -402,6 +404,12 @@ SUBSYSTEM_DEF(agent_npc)
 		binding.record_result(AGENT_RESULT_REJECTED, "[name] is not permitted for this character")
 		return
 
+	// Answering makes a conversation, waiting declines it. After the permission check, so forbidden actions engage nobody.
+	if(name == "wait")
+		binding.decline_candidate()
+	else
+		binding.engage_candidate()
+
 	switch(name)
 		if("wait")
 			// Choosing to wait ends the self-driven chain. Buffered events stay.
@@ -416,13 +424,26 @@ SUBSYSTEM_DEF(agent_npc)
 			binding.complete_action(outcome["state"], outcome["detail"])
 			return
 
-	// approach and use. The handle only becomes an authorised target here,
-	// resolved against the observation that was actually sent.
+	// approach, use and touch. A handle is authorised only here, against the observation actually sent.
 	var/atom/target = binding.resolve_handle(response.action["handle"])
 	if(isnull(target))
 		note_refusal(AGENT_REFUSE_SCHEMA)
 		binding.record_result(AGENT_RESULT_REJECTED, "handle was never offered, or its target is gone")
 		return
+
+	// use clicks with whatever is held; on a person, a knife makes that a stab, and this NPC cannot fight.
+	if(name == "use" && isliving(target))
+		binding.record_result(AGENT_RESULT_REJECTED, "use is for things; to lay a hand on a person, use touch")
+		return
+
+	// Checked before walking anywhere, so a bad request costs no trip.
+	if(name == "touch")
+		if(!isliving(target) || target == pawn)
+			binding.record_result(AGENT_RESULT_REJECTED, "touch is for other people; use 'use' for things")
+			return
+		if(!(response.action["key"] in agent_touch_ways()))
+			binding.record_result(AGENT_RESULT_REJECTED, "not a way to touch someone")
+			return
 
 	var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
 	if(!istype(agent))
@@ -491,6 +512,31 @@ SUBSYSTEM_DEF(agent_npc)
 		return FALSE
 	telemetry.ambiguous_deferred++
 	return TRUE
+
+/datum/controller/subsystem/agent_npc/proc/note_agent_exchange_capped()
+	if(!telemetry)
+		return FALSE
+	telemetry.agent_exchanges_capped++
+	return TRUE
+
+/// Called by run_emote for every emote. Returns how many agent NPCs took it in, for tests.
+/datum/controller/subsystem/agent_npc/proc/notice_emote(mob/emoter, datum/emote/emote, text, intentional)
+	SHOULD_NOT_SLEEP(TRUE)
+	if(!length(bindings) || QDELETED(emoter) || !istext(text))
+		return 0
+	var/audible = emote && (emote.emote_type & EMOTE_AUDIBLE)
+	var/taken = 0
+	for(var/pawn_id in bindings)
+		var/datum/agent_binding/binding = bindings[pawn_id]
+		if(QDELETED(binding))
+			continue
+		var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
+		if(!istype(agent))
+			continue
+		var/route = agent.on_emote_perceived(emoter, text, intentional, audible)
+		if(route != "unseen" && route != "unbound")
+			taken++
+	return taken
 
 /datum/controller/subsystem/agent_npc/proc/note_breaker_probe()
 	if(!telemetry)

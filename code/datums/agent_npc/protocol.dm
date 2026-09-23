@@ -99,6 +99,13 @@
 /datum/agent_request/proc/is_expired()
 	return world.time > deadline
 
+/// Did this request already carry something urgent? Then another urgent event need not abandon it.
+/datum/agent_request/proc/carries_urgent()
+	for(var/list/entry as anything in sent_events)
+		if(entry["urgency"] >= AGENT_EVENT_HIGH)
+			return TRUE
+	return FALSE
+
 /datum/agent_request/proc/is_complete()
 	return transport?.is_complete()
 
@@ -204,7 +211,7 @@
  * action here without teaching dispatch_decision about it gets you a profile
  * that permits something the executor will reject.
  */
-GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "approach", "use", "wait"))
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "approach", "use", "touch", "wait"))
 
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
@@ -231,6 +238,15 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "approach", "use"
 			if(!istext(handle) || !length(handle))
 				return null
 			return list("name" = name, "handle" = handle)
+		if("touch")
+			var/handle = action["handle"]
+			if(!istext(handle) || !length(handle))
+				return null
+			// The way is checked at dispatch, against agent_touch_ways(); a missing one is a tap.
+			var/way = action["key"]
+			if(!istext(way) || !length(way))
+				way = AGENT_TOUCH_TAP
+			return list("name" = "touch", "handle" = handle, "key" = way)
 		if("wait")
 			// The quiescent outcome. Without it a conversation can never settle.
 			return list("name" = "wait")

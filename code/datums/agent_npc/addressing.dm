@@ -24,43 +24,118 @@
 		token = copytext_char(token, 1, -1)
 	return token
 
+/// Split a line once for the whole crowd: lowercased words, and those written as a comma vocative ("bob,").
+/proc/agent_prepare_words(text)
+	var/list/words = list()
+	var/list/vocatives = list()
+	if(istext(text))
+		var/list/raws = splittext(lowertext(text), " ")
+		var/count = length(raws)
+		var/half = AGENT_NAME_WORDS_MAX / 2
+		var/i = 0
+		while(i < count)
+			i++
+			// A long line's middle is skipped. For suppression that fails safe: a missed vocative means answering.
+			if(i > half && i <= count - half)
+				i = count - half
+				continue
+			var/raw = raws[i]
+			if(!agent_word_worth_reading(raw))
+				continue
+			var/word = agent_trim_punctuation(raw)
+			if(!length(word))
+				continue
+			words[word] = TRUE
+			if(copytext(raw, -1) == ",")
+				vocatives[word] = TRUE
+	return list("words" = words, "vocatives" = vocatives)
+
+/// Could this word be a name part at all? Too short or too long is skipped before per-letter work.
+/proc/agent_word_worth_reading(raw)
+	return length(raw) >= 3 && length(raw) <= AGENT_NAME_WORD_MAX
+
 /// Whole-word match. findtext alone is a substring test, which is how a short
 /// name swallows an ordinary word.
 /proc/agent_text_has_word(text, word)
 	if(!istext(text) || !istext(word) || !length(word))
 		return FALSE
-	var/needle = lowertext(word)
-	for(var/token in splittext(lowertext(text), " "))
-		if(agent_trim_punctuation(token) == needle)
-			return TRUE
-	return FALSE
+	var/list/prepared = agent_prepare_words(text)
+	var/list/words = prepared["words"]
+	return !!words[lowertext(word)]
 
-/// Name parts worth matching on. Two characters or fewer match far too much.
+/// Is this "Unknown Man" and the like? Matching those woke masked NPCs on every "man".
+/proc/agent_name_is_placeholder(who)
+	return !istext(who) || !length(who) || findtext(who, "Unknown") == 1
+
+/// Name parts worth matching on. Short parts and filler match too much: nobody calls "the goat" "the".
 /proc/agent_name_tokens(who)
+	var/static/list/filler = list("the", "and", "for", "with", "from")
 	var/list/useful = list()
-	if(!istext(who))
+	if(agent_name_is_placeholder(who))
 		return useful
 	for(var/part in splittext(who, " "))
-		if(length(part) > 2)
+		if(length_char(part) > 2 && !(lowertext(part) in filler))
 			useful += part
 	return useful
 
-/**
- * Loose: any part of the name, as a whole word.
- *
- * Only ever used to decide that WE were addressed, where being wrong costs a
- * single decision and being right is the difference between answering a player
- * and ignoring them.
- */
-/proc/agent_name_matches_loosely(who, text)
+/// Strong: vocative, first or last word, or the whole name. Weak: mid-sentence. Positive evidence only.
+/proc/agent_self_address_strength(who, text)
 	if(!istext(text))
-		return FALSE
-	for(var/part in agent_name_tokens(who))
-		if(agent_text_has_word(text, part))
-			return TRUE
-	// Only after a plain match fails, because folding is lossy and this is the
-	// path that decides we WERE addressed, where being wrong costs a decision.
-	return agent_name_matches_folded(who, text)
+		return AGENT_NAMED_NONE
+	var/list/parts = agent_name_tokens(who)
+	if(!length(parts))
+		return AGENT_NAMED_NONE
+
+	// Per name part, once: its folded form, and the letter a word must start with to be worth folding.
+	var/list/forms = list()
+	var/list/initials = list()
+	for(var/part in parts)
+		var/form = agent_fold_name(part)
+		forms[part] = (length(form) >= AGENT_FOLD_MIN_LENGTH) ? form : null
+		initials[copytext(forms[part] || lowertext(part), 1, 2)] = TRUE
+
+	// Positions count blanks too, so "I will go now" keeps "will" in the middle.
+	var/list/raws = splittext(text, " ")
+	var/last = length(raws)
+	var/half = AGENT_NAME_WORDS_MAX / 2
+	var/strength = AGENT_NAMED_NONE
+	var/list/parts_seen = list()
+
+	var/i = 0
+	while(i < last)
+		i++
+		// Names are said at the edges. A name missed mid-monologue reads as unclear, which still wakes the NPC.
+		if(i > half && i <= last - half)
+			i = last - half
+			continue
+		var/raw = raws[i]
+		if(!agent_word_worth_reading(raw))
+			continue
+		var/word = agent_trim_punctuation(raw)
+		if(!length(word))
+			continue
+		// One cheap letter per word decides whether any part could match.
+		if(!initials[agent_fold_initial(word)])
+			continue
+		var/matched
+		for(var/part in parts)
+			if(agent_word_is_name(word, part, forms[part]))
+				matched = part
+				break
+		if(!matched)
+			continue
+		parts_seen |= matched
+		if(i == 1 || i == last || (copytext(raw, -1) in list(",", "!", ":")))
+			return AGENT_NAMED_STRONG
+		strength = AGENT_NAMED_WEAK
+
+	if(length(parts) > 1 && length(parts_seen) == length(parts))
+		return AGENT_NAMED_STRONG
+	return strength
+
+/// Any mention at all. The classifier uses agent_self_address_strength directly.
+/proc/agent_name_matches_loosely(who, text)
+	return agent_self_address_strength(who, text) != AGENT_NAMED_NONE
 
 /**
  * Strict: the name in a vocative position, or the whole name present.
@@ -69,26 +144,29 @@
  * response. High precision and low recall on purpose. "Bob," is being spoken to;
  * "tell Bob" is prose, and a single common-word name in prose proves nothing.
  */
-/proc/agent_name_in_vocative(who, text)
+/proc/agent_name_in_vocative(who, text, list/prepared)
 	if(!istext(text))
 		return FALSE
 	var/list/parts = agent_name_tokens(who)
 	if(!length(parts))
 		return FALSE
 
-	var/list/tokens = splittext(lowertext(text), " ")
+	// Callers checking one line against a crowd pass it in, split once.
+	if(!prepared)
+		prepared = agent_prepare_words(text)
+	var/list/words = prepared["words"]
+	var/list/vocatives = prepared["vocatives"]
 
 	// "Bob, pass the ale". A trailing comma is the clearest vocative there is.
-	for(var/token in tokens)
-		for(var/part in parts)
-			if(token == "[lowertext(part)],")
-				return TRUE
+	for(var/part in parts)
+		if(vocatives[lowertext(part)])
+			return TRUE
 
 	// Or every part of a multi-part name. Two names rarely co-occur by accident.
 	if(length(parts) < 2)
 		return FALSE
 	for(var/part in parts)
-		if(!agent_text_has_word(text, part))
+		if(!words[lowertext(part)])
 			return FALSE
 	return TRUE
 
@@ -135,26 +213,29 @@
 /// Which script is this written in? Counted over the letters, because mixed
 /// lines like "Исаак, come here" are ordinary here.
 /proc/agent_text_script(text)
-	if(!istext(text) || !length_char(text))
+	if(!istext(text) || !length(text))
 		return AGENT_SCRIPT_NONE
 
 	var/list/cyrillic = agent_cyrillic_map()
 	var/latin_letters = 0
 	var/cyrillic_letters = 0
 
-	for(var/i in 1 to length_char(text))
-		var/glyph = copytext_char(text, i, i + 1)
+	// A sample decides it: copytext_char walks from the start, so reading every letter was quadratic.
+	var/sample = copytext_char(text, 1, AGENT_SCRIPT_SAMPLE + 1)
+	for(var/i in 1 to length_char(sample))
+		var/glyph = copytext_char(sample, i, i + 1)
 		if(cyrillic[glyph])
 			cyrillic_letters++
-			continue
 		// The empty-string entries are real letters that transliterate to
 		// nothing, so they must be counted before this falls through.
-		if(glyph in list("ъ", "ь", "Ъ", "Ь"))
+		else if(glyph in list("ъ", "ь", "Ъ", "Ь"))
 			cyrillic_letters++
-			continue
-		var/lowered = lowertext(glyph)
-		if(lowered >= "a" && lowered <= "z")
-			latin_letters++
+		else
+			var/lowered = lowertext(glyph)
+			if(lowered >= "a" && lowered <= "z")
+				latin_letters++
+		if(cyrillic_letters && latin_letters)
+			return AGENT_SCRIPT_MIXED
 
 	if(cyrillic_letters && latin_letters)
 		return AGENT_SCRIPT_MIXED
@@ -206,39 +287,27 @@
 		previous = letter
 	return folded
 
-/**
- * Does a folded form of this name appear in the text?
- *
- * Inflection tolerance is applied only to Cyrillic words. Russian case endings
- * are why it exists, and allowing a trailing suffix on Latin text would wake an
- * NPC named Mark every time somebody mentioned a market.
- */
-/proc/agent_name_matches_folded(who, text)
-	if(!istext(text))
-		return FALSE
+/// The letter a word folds to, from its first glyph. The gate: folding every word cost 2.3 ms, measured.
+/proc/agent_fold_initial(word)
+	var/glyph = copytext_char(word, 1, 2)
+	var/list/cyrillic = agent_cyrillic_map()
+	if(glyph in cyrillic)
+		glyph = cyrillic[glyph]
+	glyph = lowertext(copytext(glyph, 1, 2))
+	return glyph == "c" ? "k" : glyph
 
-	var/list/forms = list()
-	for(var/part in agent_name_tokens(who))
-		var/folded = agent_fold_name(part)
-		if(length(folded) >= AGENT_FOLD_MIN_LENGTH)
-			forms += folded
-	if(!length(forms))
+/// Is this word the name, spelled or transliterated? Case endings only on Cyrillic, or Mark answers "market".
+/proc/agent_word_is_name(word, part, form)
+	if(lowertext(word) == lowertext(part))
+		return TRUE
+	if(!form)
 		return FALSE
-
-	for(var/token in splittext(text, " "))
-		var/trimmed = agent_trim_punctuation(token)
-		var/folded_token = agent_fold_name(trimmed)
-		if(length(folded_token) < AGENT_FOLD_MIN_LENGTH)
-			continue
-		var/inflectable = agent_text_script(trimmed) == AGENT_SCRIPT_CYRILLIC
-		for(var/form in forms)
-			if(folded_token == form)
-				return TRUE
-			if(!inflectable)
-				continue
-			if(findtext(folded_token, form) == 1 && (length(folded_token) - length(form)) <= AGENT_FOLD_MAX_SUFFIX)
-				return TRUE
-	return FALSE
+	var/folded = agent_fold_name(word)
+	if(folded == form)
+		return TRUE
+	if(agent_text_script(word) != AGENT_SCRIPT_CYRILLIC)
+		return FALSE
+	return findtext(folded, form) == 1 && (length(folded) - length(form)) <= AGENT_FOLD_MAX_SUFFIX
 
 /**
  * Was that shouted?
@@ -250,3 +319,47 @@
  */
 /proc/agent_speech_is_shouted(volume)
 	return volume == "2" || volume == "3"
+
+/// An emote's words with case kept, possessives cut, same edge window as speech.
+/proc/agent_emote_words(text)
+	var/list/words = list()
+	if(!istext(text))
+		return words
+	var/list/raws = splittext(text, " ")
+	var/count = length(raws)
+	var/half = AGENT_NAME_WORDS_MAX / 2
+	var/i = 0
+	while(i < count)
+		i++
+		if(i > half && i <= count - half)
+			i = count - half
+			continue
+		var/raw = raws[i]
+		if(!agent_word_worth_reading(raw))
+			continue
+		var/word = agent_trim_punctuation(raw)
+		if(copytext(word, -2) == "'s")
+			word = copytext(word, 1, -2)
+		if(length(word))
+			words[word] = TRUE
+	return words
+
+/// Strict: an exact capitalised name part, or a Cyrillic word folding to one. "will" never names Will.
+/proc/agent_emote_mentions(who, list/words)
+	if(!length(words))
+		return FALSE
+	var/list/parts = agent_name_tokens(who)
+	for(var/part in parts)
+		// List keys compare case-sensitively, which is the whole point here.
+		if(words[part])
+			return TRUE
+		var/form = agent_fold_name(part)
+		if(length(form) < AGENT_FOLD_MIN_LENGTH)
+			continue
+		var/initial = copytext(form, 1, 2)
+		for(var/word in words)
+			if(agent_fold_initial(word) != initial)
+				continue
+			if(agent_text_script(word) == AGENT_SCRIPT_CYRILLIC && agent_word_is_name(word, part, form))
+				return TRUE
+	return FALSE

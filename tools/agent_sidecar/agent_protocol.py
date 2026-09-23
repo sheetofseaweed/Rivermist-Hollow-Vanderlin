@@ -63,12 +63,23 @@ def action_schema(permitted):
             "action": {"type": "string", "enum": list(permitted),
                        "description": "Which action to take."},
             "text": {"type": "string", "description": "Speech for 'say', else empty."},
-            "key": {"type": "string", "description": "Emote key for 'emote', else empty."},
-            "handle": {"type": "string", "description": "Handle for 'approach'/'use', else empty."},
+            "key": {"type": "string", "description": "Emote key for 'emote', or the way to 'touch' "
+                                                     "(tap, hug, headpat, help), else empty."},
+            "handle": {"type": "string", "description": "Handle for 'approach'/'use'/'touch', else empty."},
         },
         "required": ["action", "text", "key", "handle"],
         "additionalProperties": False,
     }
+
+
+def matches_action_schema(parsed, permitted):
+    """True only for what action_schema accepts: all four fields, all strings, a permitted action, nothing extra."""
+    fields = ("action", "text", "key", "handle")
+    if not isinstance(parsed, dict) or set(parsed) != set(fields):
+        return False
+    if not all(isinstance(parsed[field], str) for field in fields):
+        return False
+    return parsed["action"] in permitted
 
 
 def schema_prose(permitted):
@@ -81,8 +92,8 @@ def schema_prose(permitted):
     return (
         "Reply with a single JSON object and nothing else. No prose, no code "
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
-        '"text": speech for say else "", "key": emote key for emote else "", '
-        '"handle": handle for approach/use else ""}.')
+        '"text": speech for say else "", "key": emote key for emote, or tap/hug/headpat/help '
+        'for touch, else "", "handle": handle for approach/use/touch else ""}.')
 
 
 def build_system(profile, describe_schema=False):
@@ -92,8 +103,11 @@ def build_system(profile, describe_schema=False):
     enforce a schema server-side.
     """
     permitted = profile.get("permitted_actions") or ["wait"]
+    aliases = _names(profile.get("aliases"))
     parts = [
         profile.get("persona", ""),
+        # A player writing "Айзек" for Isaac must not read to the model as talking about a stranger.
+        ("People may also call you: %s." % ", ".join(aliases)) if aliases else "",
         profile.get("background", ""),
         profile.get("voice", ""),
         profile.get("limits", ""),
@@ -102,6 +116,10 @@ def build_system(profile, describe_schema=False):
         "do not invent activity to fill a turn.",
         "Only refer to things listed in the scene. To approach or use something, "
         "give the handle exactly as it appears there. Never invent a handle.",
+        # Only when permitted: describing an action the character lacks invites asking for it.
+        ("To lay a hand on a person gently, use 'touch' with their handle and a key: "
+         "'tap' on the shoulder, 'hug', 'headpat', or 'help' to help up someone lying down. "
+         "Use 'use' for things, never for people.") if "touch" in permitted else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -122,14 +140,90 @@ def build_system(profile, describe_schema=False):
     return "\n\n".join(p for p in parts if p)
 
 
+def _names(value):
+    """Names from a field that may be a list, a single string, or absent."""
+    if isinstance(value, str):
+        return [value] if value else []
+    if isinstance(value, list):
+        return [str(v) for v in value if v]
+    return []
+
+
+def _count(value):
+    """A positive int, or 0. In Python True is an int, so booleans are refused."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        return 0
+    return max(0, value)
+
+
+def _where(thing):
+    distance = thing.get("distance")
+    if distance == 0:
+        return "right here"
+    direction = thing.get("direction")
+    unit = "tile" if distance == 1 else "tiles"
+    if direction:
+        return "%s %s %s" % (distance, unit, direction)
+    return "%s %s away" % (distance, unit)
+
+
 def describe_entity(entity):
     bits = ["[%s] %s" % (entity.get("handle"), entity.get("name", "something"))]
     if entity.get("condition"):
         bits.append("(%s)" % entity["condition"])
-    if entity.get("holding"):
-        bits.append("holding %s" % entity["holding"])
-    bits.append("- %s tiles %s" % (entity.get("distance"), entity.get("direction")))
+    if entity.get("posture"):
+        bits.append(entity["posture"])
+    held = _names(entity.get("holding"))
+    if held:
+        bits.append("holding " + " and ".join(held))
+    # Present only for people who can wear things; empty means nothing shows.
+    if "wearing" in entity:
+        worn = _names(entity.get("wearing"))
+        bits.append("wearing " + (", ".join(worn) if worn else "nothing visible"))
+    bits.append("- " + _where(entity))
     return " ".join(str(b) for b in bits)
+
+
+def describe_structure(entry):
+    line = "[%s] %s" % (entry.get("handle"), entry.get("name", "something"))
+    if entry.get("state"):
+        line += " (%s)" % entry["state"]
+    line += " - " + _where(entry)
+    more = _count(entry.get("more"))
+    if more:
+        line += "; %d more like it further off" % more
+    return line
+
+
+def describe_emote(event_name, detail):
+    """One thing someone was seen or heard doing, with who it seemed aimed at."""
+    who = detail.get("speaker", "someone")
+    text = detail.get("text", "")
+    addressing = detail.get("addressing")
+    if addressing is None:
+        addressing = "overheard" if event_name == "noticed_emote" else "directed"
+
+    notes = []
+    if detail.get("involuntary"):
+        # A cough is not a remark; saying so keeps the model from answering it.
+        notes.append("involuntary")
+    else:
+        if detail.get("spoken_to_you"):
+            notes.append("while turned to you")
+        elif detail.get("from_partner"):
+            notes.append("continuing your conversation")
+        if addressing == "overheard":
+            notes.append("not apparently aimed at you")
+        elif addressing == "ambiguous":
+            notes.append("unclear whether this was aimed at you")
+    distance = _count(detail.get("distance"))
+    if distance > 2:
+        notes.append("%d tiles away" % distance)
+
+    line = "%s %s" % (who, text)
+    if notes:
+        line += " (%s)" % "; ".join(notes)
+    return line
 
 
 def describe_speech(event_name, detail):
@@ -145,6 +239,12 @@ def describe_speech(event_name, detail):
         addressing = "overheard" if event_name == "overheard_speech" else "directed"
 
     notes = []
+    # The one hint that is not a guess: the speaker chose you explicitly.
+    if detail.get("spoken_to_you"):
+        notes.append("said directly to you")
+    # A reply rarely repeats your name; without this a partner's bare "yes" reads as a remark to nobody.
+    elif detail.get("from_partner"):
+        notes.append("continuing your conversation")
     if detail.get("whispered"):
         notes.append("whispered")
     if addressing == "overheard":
@@ -168,14 +268,53 @@ def describe_speech(event_name, detail):
     return line
 
 
+_PHYSICAL = {
+    "touched": "touched you",
+    "grabbed": "grabbed you",
+    "shoved": "shoved you",
+    "struck": "struck you",
+    "fed": "fed you",
+}
+
+
+def _times(detail):
+    count = _count(detail.get("count"))
+    return " (%d times)" % count if count > 1 else ""
+
+
+def describe_physical(detail):
+    """Something done to the character's body, in plain words."""
+    did = _PHYSICAL.get(detail.get("what"), "laid hands on you")
+    line = "%s %s" % (detail.get("by", "someone"), did)
+    if detail.get("what") == "fed" and detail.get("item"):
+        line += " %s" % detail["item"]
+    return line + _times(detail) + "."
+
+
 def build_user_message(observation, events):
     """The turn. Scene, then what just happened, then the ask."""
     lines = []
     myself = observation.get("self") or {}
     lines.append("You are %s. You feel %s." % (
         myself.get("name", "someone"), myself.get("condition", "fine")))
-    if myself.get("holding"):
-        lines.append("You are holding %s." % myself["holding"])
+    held = _names(myself.get("holding"))
+    if held:
+        lines.append("You are holding %s." % " and ".join(held))
+    elif "holding" in myself:
+        lines.append("Your hands are empty.")
+    worn = _names(myself.get("wearing"))
+    if worn:
+        lines.append("You are wearing: %s." % ", ".join(worn))
+    for bag in myself.get("carrying") or []:
+        if not isinstance(bag, dict):
+            continue
+        stored = _names(bag.get("items"))
+        if stored:
+            lines.append("In your %s: %s." % (bag.get("in", "bag"), ", ".join(stored)))
+    if myself.get("on"):
+        lines.append("You are on the %s." % myself["on"])
+    elif myself.get("standing") is False:
+        lines.append("You are lying down.")
     lines.append("You are at: %s" % observation.get("here", "somewhere"))
 
     entities = observation.get("entities") or []
@@ -185,23 +324,48 @@ def build_user_message(observation, events):
     else:
         lines.append("\nYou can see nothing of note.")
 
-    if events:
+    structures = [s for s in observation.get("structures") or [] if isinstance(s, dict)]
+    if structures:
+        lines.append("\nAround you:")
+        lines.extend("  " + describe_structure(s) for s in structures)
+
+    happened = describe_events(events)
+    if happened:
         lines.append("\nSince you last acted:")
-        for event in events:
-            detail = event.get("detail") or {}
-            name = event.get("event")
-            if name in ("heard_speech", "overheard_speech"):
-                lines.append("  " + describe_speech(name, detail))
-            elif name == "attacked":
-                lines.append("  %s attacked you." % detail.get("by", "someone"))
-            elif name == "action_result":
-                lines.append("  Your last action: %s (%s)" % (
-                    detail.get("state"), detail.get("detail")))
-            else:
-                lines.append("  %s" % name)
+        lines.extend(happened)
 
     lines.append("\nChoose one action.")
     return "\n".join(lines)
+
+
+def describe_events(events):
+    """One indented line per event, oldest first."""
+    lines = []
+    for event in events or []:
+        detail = event.get("detail") or {}
+        name = event.get("event")
+        if name in ("heard_speech", "overheard_speech"):
+            lines.append("  " + describe_speech(name, detail))
+        elif name in ("saw_emote", "noticed_emote"):
+            lines.append("  " + describe_emote(name, detail))
+        elif name == "physical":
+            lines.append("  " + describe_physical(detail))
+        elif name == "attacked":
+            lines.append("  %s attacked you%s." % (detail.get("by", "someone"), _times(detail)))
+        elif name == "action_result":
+            lines.append("  Your last action: %s (%s)" % (
+                detail.get("state"), detail.get("detail")))
+        else:
+            lines.append("  %s" % name)
+    return lines
+
+
+def build_history_text(events):
+    """A past turn as memory keeps it: what happened, never the scene, which is resent every turn."""
+    happened = describe_events(events)
+    if not happened:
+        return "(Nothing new had happened.)"
+    return "What happened:\n" + "\n".join(happened)
 
 
 def to_dm_action(parsed):
@@ -215,6 +379,8 @@ def to_dm_action(parsed):
         return {"name": "emote", "key": parsed.get("key", "")}
     if name in ("approach", "use"):
         return {"name": name, "handle": parsed.get("handle", "")}
+    if name == "touch":
+        return {"name": "touch", "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
     if name == "wait":
         return {"name": "wait"}
     return None
@@ -275,6 +441,11 @@ def parse_loose_action(text, permitted):
                     return {"action": name, "text": "", "key": value, "handle": ""}
                 if name in ("approach", "use"):
                     return {"action": name, "text": "", "key": "", "handle": value}
+                if name == "touch":
+                    # "touch: h3 hug" or just "touch: h3", which is a tap.
+                    parts = value.split()
+                    return {"action": name, "text": "", "key": parts[1] if len(parts) > 1 else "",
+                            "handle": parts[0] if parts else ""}
                 return {"action": name, "text": "", "key": "", "handle": ""}
     return None
 
@@ -288,14 +459,18 @@ class Turn:
     against another character's scene.
     """
 
-    __slots__ = ("body", "request", "user_text", "permitted", "mode")
+    __slots__ = ("body", "request", "user_text", "permitted", "mode", "history_text")
 
-    def __init__(self, body, request=None, user_text="", permitted=None, mode=None):
+    def __init__(self, body, request=None, user_text="", permitted=None, mode=None, history_text=None):
         self.body = body
         self.request = request
         self.user_text = user_text
         self.permitted = list(permitted or ["wait"])
         self.mode = mode
+        # What memory keeps of this turn. Built here, per request, for the same threading reason.
+        if history_text is None:
+            history_text = build_history_text((body or {}).get("events"))
+        self.history_text = history_text
 
 
 def latest_action_result(events):
@@ -451,7 +626,7 @@ class Decider:
         # Only successful turns are proposed. Recording refusals would teach the
         # model that malformed answers belong in the conversation.
         if action and self.memory:
-            self.memory.record(body, turn.user_text, action)
+            self.memory.record(body, turn.history_text, action)
         return action, refusal, tokens
 
 

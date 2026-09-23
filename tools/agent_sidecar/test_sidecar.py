@@ -39,6 +39,191 @@ def verdict(state, **kw):
     return [{"event": "action_result", "detail": {"state": state}}]
 
 
+def heard(speaker, text):
+    return {"event": "heard_speech", "detail": {"speaker": speaker, "text": text, "addressing": "directed"}}
+
+
+class HistoryCondensation(unittest.TestCase):
+    """Memory keeps what happened, not the scene. The scene is resent fresh every turn."""
+
+    def busy_body(self):
+        body = envelope(events=[heard("Anna", "Where is the mill?")])
+        body["observation"]["entities"] = [
+            {"handle": "h%d" % i, "name": "villager %d" % i, "distance": 3, "direction": "north",
+             "wearing": ["tunic", "trousers", "boots"], "holding": ["basket"]} for i in range(1, 11)]
+        return body
+
+    def test_memory_keeps_what_happened_not_the_scene(self):
+        turn = cs.CodexSaleDecider(dry_run=True).build_turn(self.busy_body())
+        self.assertIn("Where is the mill?", turn.history_text)
+        self.assertNotIn("You can see", turn.history_text)
+        # Old handles in memory point at whatever they meant then. Not remembering them avoids that.
+        self.assertNotIn("[h1]", turn.history_text)
+
+    def test_a_remembered_turn_costs_far_less_than_the_scene(self):
+        # Measured 2026-09-18: 3540 tokens a decision once memory filled, mostly old scenes.
+        turn = cs.CodexSaleDecider(dry_run=True).build_turn(self.busy_body())
+        self.assertLess(len(turn.history_text) * 5, len(turn.user_text))
+
+    def test_a_quiet_turn_is_remembered_briefly(self):
+        self.assertEqual(proto.build_history_text([]), "(Nothing new had happened.)")
+
+
+class AddressingHints(unittest.TestCase):
+    """What the model is told about who a line was for.
+
+    DM decides whether a line buys a decision; the model decides how to answer.
+    It can only do that well if the hints DM worked out actually reach it.
+    """
+
+    def line(self, **detail):
+        detail.setdefault("speaker", "Ivan")
+        detail.setdefault("text", "hello")
+        return proto.describe_speech("heard_speech", detail)
+
+    def test_explicit_focus_is_stated(self):
+        self.assertIn("said directly to you", self.line(spoken_to_you=True, addressing="directed"))
+
+    def test_a_partner_reply_is_stated(self):
+        self.assertIn("continuing your conversation", self.line(from_partner=True, addressing="directed"))
+
+    def test_focus_is_not_also_called_a_partner_reply(self):
+        # One line, one reason. Both at once reads as the model being unsure.
+        rendered = self.line(spoken_to_you=True, from_partner=True, addressing="directed")
+        self.assertIn("said directly to you", rendered)
+        self.assertNotIn("continuing your conversation", rendered)
+
+    def test_unclear_and_overheard_are_distinguished(self):
+        self.assertIn("unclear whether this was meant for you", self.line(addressing="ambiguous"))
+        self.assertIn("not apparently to you", proto.describe_speech("overheard_speech", {"speaker": "Ivan", "text": "hello"}))
+
+    def test_a_plain_directed_line_carries_no_hedging(self):
+        rendered = self.line(addressing="directed")
+        self.assertNotIn("unclear", rendered)
+        self.assertNotIn("not apparently", rendered)
+
+
+class SceneRendering(unittest.TestCase):
+    """What the model is shown of the world. A field DM sends but this never prints is invisible."""
+
+    def turn(self, observation, events=None):
+        observation.setdefault("self", {"name": "Isaac"})
+        observation.setdefault("here", "tavern")
+        return proto.build_user_message(observation, events or [])
+
+    def test_structures_are_listed_with_state_and_count(self):
+        # The defect: a barstool the player pointed at did not exist for the model.
+        text = self.turn({"structures": [
+            {"handle": "h3", "name": "barstool", "distance": 1, "direction": "north", "more": 4},
+            {"handle": "h4", "name": "wooden door", "distance": 3, "direction": "east", "state": "closed"},
+        ]})
+        self.assertIn("[h3] barstool - 1 tile north; 4 more like it further off", text)
+        self.assertIn("[h4] wooden door (closed) - 3 tiles east", text)
+
+    def test_other_people_show_both_hands_and_clothing(self):
+        line = proto.describe_entity({"handle": "h1", "name": "Anna", "distance": 2, "direction": "west",
+                                      "holding": ["mug", "knife"], "wearing": ["bar dress", "boots"],
+                                      "posture": "on the barstool"})
+        self.assertIn("holding mug and knife", line)
+        self.assertIn("wearing bar dress, boots", line)
+        self.assertIn("on the barstool", line)
+
+    def test_a_person_showing_no_clothing_is_said_to(self):
+        line = proto.describe_entity({"handle": "h1", "name": "Anna", "distance": 2, "direction": "west", "wearing": []})
+        self.assertIn("wearing nothing visible", line)
+
+    def test_an_animal_is_not_described_as_naked(self):
+        # No wearing key means the thing cannot wear clothes, not that it wears none.
+        line = proto.describe_entity({"handle": "h1", "name": "cat", "distance": 2, "direction": "west"})
+        self.assertNotIn("wearing", line)
+
+    def test_the_old_single_hand_string_still_renders(self):
+        line = proto.describe_entity({"handle": "h1", "name": "Anna", "distance": 2, "direction": "west", "holding": "mug"})
+        self.assertIn("holding mug", line)
+
+    def test_own_inventory_is_shown(self):
+        # The defect: DM sent what the NPC wore, and this never printed it.
+        text = self.turn({"self": {"name": "Isaac", "holding": ["torch", "mug"], "wearing": ["shirt", "trousers"],
+                                   "carrying": [{"in": "pouch", "items": ["copper coin x3", "key"]}],
+                                   "on": "barstool"}})
+        self.assertIn("You are holding torch and mug.", text)
+        self.assertIn("You are wearing: shirt, trousers.", text)
+        self.assertIn("In your pouch: copper coin x3, key.", text)
+        self.assertIn("You are on the barstool.", text)
+
+    def test_empty_hands_are_said(self):
+        self.assertIn("Your hands are empty.", self.turn({"self": {"name": "Isaac", "holding": []}}))
+
+    def test_same_tile_reads_as_here(self):
+        line = proto.describe_structure({"handle": "h2", "name": "barstool", "distance": 0, "direction": None})
+        self.assertIn("right here", line)
+        self.assertNotIn("None", line)
+
+
+class EmoteRendering(unittest.TestCase):
+    """Emotes reach the model as things people did, with how aimed they seemed."""
+
+    def test_an_emote_event_is_rendered(self):
+        text = proto.build_user_message({"self": {"name": "Isaac"}}, [
+            {"event": "saw_emote", "detail": {"speaker": "Anna", "text": "waves at Isaac.", "addressing": "directed"}}])
+        self.assertIn("Anna waves at Isaac.", text)
+
+    def test_involuntary_is_marked_and_not_hedged(self):
+        line = proto.describe_emote("noticed_emote", {"speaker": "Anna", "text": "coughs.", "involuntary": True,
+                                                      "addressing": "overheard"})
+        self.assertIn("involuntary", line)
+        # One reason is enough. "Not aimed at you" on a cough is noise.
+        self.assertNotIn("aimed at you", line)
+
+    def test_unclear_and_overheard_are_distinguished(self):
+        self.assertIn("unclear whether this was aimed at you",
+                      proto.describe_emote("saw_emote", {"speaker": "Anna", "text": "smiles.", "addressing": "ambiguous"}))
+        self.assertIn("not apparently aimed at you",
+                      proto.describe_emote("noticed_emote", {"speaker": "Anna", "text": "smiles."}))
+
+
+class TouchAndStimuli(unittest.TestCase):
+    """The touch action on the way out, and hands laid on the NPC on the way in."""
+
+    def test_touch_maps_to_the_dm_shape(self):
+        self.assertEqual(proto.to_dm_action({"action": "touch", "handle": "h2", "key": "hug", "text": ""}),
+                         {"name": "touch", "handle": "h2", "key": "hug"})
+
+    def test_touch_shorthand_is_recovered(self):
+        got = proto.parse_loose_action("touch: h2 hug", ["touch", "wait"])
+        self.assertEqual(proto.to_dm_action(got), {"name": "touch", "handle": "h2", "key": "hug"})
+        # No way given is a tap; DM fills that in, so an empty key is correct here.
+        got = proto.parse_loose_action("touch: h2", ["touch", "wait"])
+        self.assertEqual(proto.to_dm_action(got), {"name": "touch", "handle": "h2", "key": ""})
+
+    def test_aliases_are_named_to_the_model(self):
+        profile = {"persona": "P", "permitted_actions": ["wait"], "aliases": ["Ike", "Айзек"]}
+        self.assertIn("People may also call you: Ike, Айзек.", proto.build_system(profile))
+        profile["aliases"] = []
+        self.assertNotIn("also call you", proto.build_system(profile))
+
+    def test_touch_is_explained_only_when_permitted(self):
+        profile = {"persona": "P", "permitted_actions": ["say", "touch", "wait"]}
+        self.assertIn("'touch'", proto.build_system(profile))
+        profile["permitted_actions"] = ["say", "wait"]
+        self.assertNotIn("'touch'", proto.build_system(profile))
+
+    def test_physical_events_read_plainly(self):
+        self.assertEqual(proto.describe_physical({"what": "touched", "by": "Anna"}), "Anna touched you.")
+        self.assertEqual(proto.describe_physical({"what": "fed", "by": "Anna", "item": "bread"}), "Anna fed you bread.")
+        self.assertEqual(proto.describe_physical({"what": "grabbed", "by": "Bob", "count": 3}), "Bob grabbed you (3 times).")
+
+    def test_counted_attacks_say_how_many(self):
+        text = proto.build_user_message({"self": {"name": "Isaac"}}, [
+            {"event": "attacked", "detail": {"by": "Bob", "count": 4}}])
+        self.assertIn("Bob attacked you (4 times).", text)
+
+    def test_a_physical_event_reaches_the_turn(self):
+        text = proto.build_user_message({"self": {"name": "Isaac"}}, [
+            {"event": "physical", "detail": {"what": "shoved", "by": "Bob"}}])
+        self.assertIn("Bob shoved you.", text)
+
+
 class DeadlineBudget(unittest.TestCase):
     """The defect: the sidecar allowed the model 30s against a 15s deadline.
 
@@ -76,16 +261,17 @@ class RequestLocalState(unittest.TestCase):
     def test_interleaved_builds_do_not_cross_characters(self):
         # Reproduced by review: Alice's stored turn began "You are Bob."
         decider = cs.CodexSaleDecider(dry_run=True, memory_turns=4)
-        alice, bob = envelope("mob_A", "Alice"), envelope("mob_B", "Bob")
+        alice = envelope("mob_A", "Alice", events=[heard("Ivan", "for Alice")])
+        bob = envelope("mob_B", "Bob", events=[heard("Ivan", "for Bob")])
 
         turn_a = decider.build_turn(alice)
         decider.build_turn(bob)           # a concurrent request lands in between
-        decider.memory.record(alice, turn_a.user_text, {"name": "say", "text": "hello"})
+        decider.memory.record(alice, turn_a.history_text, {"name": "say", "text": "hello"})
         decider.memory.reconcile(envelope("mob_A", "Alice", events=verdict("succeeded")))
 
         stored = decider.memory.history(alice)[0]["content"]
-        self.assertIn("You are Alice", stored)
-        self.assertNotIn("You are Bob", stored)
+        self.assertIn("for Alice", stored)
+        self.assertNotIn("for Bob", stored)
 
     def test_turn_carries_its_own_permitted_list(self):
         decider = cs.CodexSaleDecider(dry_run=True)
@@ -244,6 +430,31 @@ class ReplyParsing(unittest.TestCase):
         # The probe once treated any extractable JSON as proof of enforcement.
         self.assertIsNotNone(proto.extract_json("{}"))
         self.assertIsNone(proto.to_dm_action({}))
+
+
+class CapabilityProbe(unittest.TestCase):
+    """The probe once treated any extractable JSON as proof the schema was enforced."""
+
+    GOOD = '{"action":"say","text":"Well met.","key":"","handle":""}'
+
+    def test_only_the_full_shape_proves_json_schema(self):
+        self.assertTrue(cs.probe_honoured("json_schema", self.GOOD, ["say", "wait"]))
+        for bad in ('{}',
+                    '{"greeting": "hello"}',
+                    '{"action":"say","text":"hi"}',
+                    '{"action":"say","text":"hi","key":"","handle":"","mood":"warm"}',
+                    '{"action":"say","text":7,"key":"","handle":""}',
+                    '{"action":"dance","text":"","key":"","handle":""}',
+                    'Well met, traveller.'):
+            self.assertFalse(cs.probe_honoured("json_schema", bad, ["say", "wait"]), bad)
+
+    def test_json_object_needs_an_object_not_a_shape(self):
+        self.assertTrue(cs.probe_honoured("json_object", '{"greeting": "hello"}', ["say", "wait"]))
+        self.assertFalse(cs.probe_honoured("json_object", '[1, 2]', ["say", "wait"]))
+        self.assertFalse(cs.probe_honoured("json_object", "Well met.", ["say", "wait"]))
+
+    def test_text_mode_proves_nothing(self):
+        self.assertFalse(cs.probe_honoured("text", self.GOOD, ["say", "wait"]))
 
 
 class Interpretation(unittest.TestCase):

@@ -61,3 +61,46 @@
 	pawn.emote(key, intentional = TRUE)
 	// emote() reports nothing useful back, so this is dispatched, not verified.
 	return agent_result(AGENT_RESULT_UNVERIFIED, "emote dispatched")
+
+/// Every way the touch action may lay a hand on someone. Kisses and worse are not the model's to start.
+/proc/agent_touch_ways()
+	return list(AGENT_TOUCH_TAP, AGENT_TOUCH_HUG, AGENT_TOUCH_HEADPAT, AGENT_TOUCH_HELP)
+
+/// Lay a hand on someone without clicking them, so a held knife can never turn a pat into a stab.
+/proc/agent_execute_touch(mob/living/pawn, mob/living/target, way)
+	if(QDELETED(pawn) || QDELETED(target))
+		return agent_result(AGENT_RESULT_FAILED, "they are gone")
+	if(pawn.stat >= UNCONSCIOUS || HAS_TRAIT(pawn, TRAIT_HANDS_BLOCKED))
+		return agent_result(AGENT_RESULT_REJECTED, "cannot reach out right now")
+	if(!pawn.Adjacent(target))
+		return agent_result(AGENT_RESULT_FAILED, "not close enough to touch")
+
+	var/target_name = target.get_visible_name()
+	switch(way)
+		if(AGENT_TOUCH_HELP)
+			if(target.body_position != LYING_DOWN || !iscarbon(target) || !iscarbon(pawn))
+				return agent_result(AGENT_RESULT_REJECTED, "they are not lying down")
+			// Async: rescuing someone from defeat runs a do_after, and a behavior must not sleep.
+			INVOKE_ASYNC(target, TYPE_PROC_REF(/mob/living/carbon, help_shake_act), pawn)
+			return agent_result(AGENT_RESULT_UNVERIFIED, "reached down to help them")
+		if(AGENT_TOUCH_HUG, AGENT_TOUCH_HEADPAT)
+			var/datum/emote/gesture = agent_emote_datum(way)
+			if(!gesture)
+				return agent_result(AGENT_RESULT_REJECTED, "that gesture does not exist here")
+			// Emote first, the effect only if it happened: a refused hug must not play its sound.
+			if(!gesture.run_emote(pawn, target_name, null, TRUE))
+				return agent_result(AGENT_RESULT_FAILED, "could not [way] them")
+			gesture.adjacentaction(pawn, target)
+			return agent_result(AGENT_RESULT_SUCCEEDED, "[way] given")
+		if(AGENT_TOUCH_TAP)
+			var/datum/emote/custom = agent_emote_datum("me")
+			if(!custom || !custom.run_emote(pawn, "taps [target_name] on the shoulder.", null, TRUE))
+				return agent_result(AGENT_RESULT_FAILED, "could not tap them")
+			return agent_result(AGENT_RESULT_SUCCEEDED, "tapped them")
+	return agent_result(AGENT_RESULT_REJECTED, "not a way to touch someone")
+
+/// The emote datum behind a key, or null.
+/proc/agent_emote_datum(key)
+	for(var/datum/emote/candidate in GLOB.emote_list[key])
+		return candidate
+	return null

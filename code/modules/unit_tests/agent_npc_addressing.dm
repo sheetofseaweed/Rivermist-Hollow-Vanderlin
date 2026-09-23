@@ -8,8 +8,10 @@
 // scene exactly rather than depending on where allocate() happens to put a mob.
 
 /// A speech scene, described rather than staged.
-/datum/unit_test/proc/agent_test_speech_context(distance = 1, whispered = FALSE, volume = "0", nearby_people = 0, named_someone_else = FALSE, script = AGENT_SCRIPT_LATIN)
+/datum/unit_test/proc/agent_test_speech_context(distance = 1, whispered = FALSE, volume = "0", nearby_people = 0, named_someone_else = FALSE, script = AGENT_SCRIPT_LATIN, focused = FALSE, focused_elsewhere = FALSE)
 	return list(
+		"focused" = focused,
+		"focused_elsewhere" = focused_elsewhere,
 		"distance" = distance,
 		"whispered" = whispered,
 		"volume" = volume,
@@ -230,26 +232,199 @@
 
 	agent_test_restore_subsystem(saved, controller.binding)
 
-/datum/unit_test/agent_npc_speech_mid_conversation_is_ours
+/// A partner established the way play establishes one: asked, then answered.
+/datum/unit_test/proc/agent_test_engage(datum/agent_binding/binding, atom/movable/speaker)
+	binding.note_candidate(speaker)
+	return binding.engage_candidate()
 
-/datum/unit_test/agent_npc_speech_mid_conversation_is_ours/Run()
+/datum/unit_test/agent_npc_partner_reply_is_ours
+
+/datum/unit_test/agent_npc_partner_reply_is_ours/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/stranger = allocate(/mob/living/carbon/human)
+	var/list/crowded = agent_test_speech_context(distance = 1, nearby_people = 2)
+
+	TEST_ASSERT(agent_test_engage(controller.binding, partner), "Setup failed: answering should engage the speaker.")
+	TEST_ASSERT(controller.binding.is_partner(partner), "Setup failed: the speaker should now be the partner.")
+
+	// A reply does not carry your name.
+	TEST_ASSERT_EQUAL(controller.classify_speech(partner, "yes please", crowded), AGENT_SPEECH_DIRECTED, "A nameless line from the partner must be read as a reply.")
+
+	// The old bare timer made everyone in the room count as addressing the NPC once it spoke.
+	TEST_ASSERT_EQUAL(controller.classify_speech(stranger, "yes please", crowded), AGENT_SPEECH_AMBIGUOUS, "The same line from someone else must not borrow the partner's conversation.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_partner_turning_away_is_overheard
+
+/datum/unit_test/agent_npc_partner_turning_away_is_overheard/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	agent_test_engage(controller.binding, partner)
+	TEST_ASSERT(controller.binding.is_partner(partner), "Setup failed: the speaker should be the partner.")
+
+	// However recently they spoke to us, "Bob, pass the ale" is for Bob. The rule order is deliberate.
+	TEST_ASSERT_EQUAL(controller.classify_speech(partner, "Bob, pass the ale", agent_test_speech_context(distance = 1, nearby_people = 2, named_someone_else = TRUE)), AGENT_SPEECH_OVERHEARD, "A partner addressing someone else must be heard as talking to them.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_partner_lapses_after_silence
+
+/datum/unit_test/agent_npc_partner_lapses_after_silence/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	agent_test_engage(controller.binding, partner)
+
+	controller.binding.partner_until = world.time - 1
+
+	// Someone who walked off and came back later is not mid-sentence.
+	TEST_ASSERT(!controller.binding.is_partner(partner), "A conversation must lapse once its window has passed.")
+	TEST_ASSERT_EQUAL(controller.classify_speech(partner, "yes please", agent_test_speech_context(distance = 1, nearby_people = 2)), AGENT_SPEECH_AMBIGUOUS, "A lapsed partner must be treated like anyone else.")
+
+	// Speaking again inside the window keeps a live conversation open.
+	agent_test_engage(controller.binding, partner)
+	controller.binding.partner_until = world.time + 5
+	controller.binding.note_candidate(partner)
+	TEST_ASSERT(controller.binding.partner_until >= world.time + AGENT_REPLY_WINDOW, "The partner speaking again must extend the conversation.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_answering_engages_and_waiting_declines
+
+/datum/unit_test/agent_npc_answering_engages_and_waiting_declines/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/datum/agent_binding/binding = controller.binding
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	binding.end_conversation()
+	binding.end_continuation()
+
+	// Through the real dispatch path, where answering or waiting is actually decided.
+	var/datum/agent_response/waiting = new()
+	waiting.ok = TRUE
+	waiting.action = list("name" = "wait")
+	binding.note_candidate(speaker)
+	SSagent_npc.dispatch_decision(binding, waiting)
+
+	// Waiting declines the line, and a declined line must not engage through a later unrelated action.
+	TEST_ASSERT(!binding.is_partner(speaker), "Choosing to wait must not make the speaker a partner.")
+	TEST_ASSERT_NULL(binding.candidate_ref, "Waiting must drop the candidate, not leave it to engage later.")
+
+	var/datum/agent_response/answering = new()
+	answering.ok = TRUE
+	answering.action = list("name" = "say", "text" = "Good day to you.")
+	binding.note_candidate(speaker)
+	SSagent_npc.dispatch_decision(binding, answering)
+
+	TEST_ASSERT(binding.is_partner(speaker), "Answering must make the speaker the partner.")
+	TEST_ASSERT(binding.in_interaction(), "Answering must begin an interaction, so the NPC can follow through.")
+
+	qdel(waiting)
+	qdel(answering)
+	agent_test_restore_subsystem(saved, binding)
+
+/datum/unit_test/agent_npc_unclear_speech_buys_turns_only_when_answered
+
+/datum/unit_test/agent_npc_unclear_speech_buys_turns_only_when_answered/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	TEST_ASSERT_NOTNULL(SSagent_npc.telemetry, "Setup failed: the subsystem must hold telemetry.")
+	var/datum/agent_binding/binding = controller.binding
+	var/mob/living/carbon/human/stranger = allocate(/mob/living/carbon/human)
+	var/saved_requests = SSagent_npc.telemetry.ambiguous_requests
+	SSagent_npc.telemetry.ambiguous_requests = 0
+	binding.ambiguous_at = 0
+	binding.take_events()
+	binding.end_continuation()
+
+	var/route = controller.route_speech(AGENT_SPEECH_AMBIGUOUS, "Ivan", "hello there", list("speaker" = "Ivan", "text" = "hello there"), FALSE, stranger)
+	var/turns_on_hearing = binding.in_interaction()
+	var/engaged = binding.engage_candidate()
+	var/turns_on_answering = binding.in_interaction()
+	// Restored before asserting: a failed assertion returns from Run().
+	SSagent_npc.telemetry.ambiguous_requests = saved_requests
+
+	TEST_ASSERT_EQUAL(route, "sent", "Setup failed: the unclear line should buy its one decision.")
+
+	// A stranger's passing remark must not start a two-minute chain on its own.
+	TEST_ASSERT(!turns_on_hearing, "An unclear line must not buy self-driven turns just by being heard.")
+
+	// Answering is evidence it was ours, and a nameless "fetch the salt" needs its three steps.
+	TEST_ASSERT(engaged, "The unclear line's speaker must be the candidate.")
+	TEST_ASSERT(turns_on_answering, "Answering an unclear line must begin the interaction it did not get on hearing.")
+
+	agent_test_restore_subsystem(saved, binding)
+
+/datum/unit_test/agent_npc_directed_speech_buys_turns_on_hearing
+
+/datum/unit_test/agent_npc_directed_speech_buys_turns_on_hearing/Run()
 	var/list/saved = agent_test_arm_subsystem()
 	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
 	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
 	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
 	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
-	var/list/elsewhere = agent_test_speech_context(distance = 1, nearby_people = 2, named_someone_else = TRUE)
-
+	controller.binding.take_events()
 	controller.binding.end_continuation()
-	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Bob, pass the ale", elsewhere), AGENT_SPEECH_OVERHEARD, "Setup failed: this line should read as someone else's.")
 
-	controller.binding.begin_interaction()
-	TEST_ASSERT(controller.binding.in_interaction(), "Setup failed: begin_interaction should start one.")
+	TEST_ASSERT_EQUAL(controller.route_speech(AGENT_SPEECH_DIRECTED, "Ivan", "Isaac, fetch the salt", list("speaker" = "Ivan", "text" = "Isaac, fetch the salt"), FALSE, speaker), "sent", "Setup failed: a directed line should buy a decision.")
 
-	// A reply does not carry your name.
-	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Bob, pass the ale", elsewhere), AGENT_SPEECH_DIRECTED, "While a conversation is running, speech must be read as part of it.")
+	// Being named is the strongest evidence; the chain must not wait for the NPC to answer first.
+	TEST_ASSERT(controller.binding.in_interaction(), "Directed speech must buy self-driven turns as soon as it is heard.")
 
 	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_another_agent_is_never_given_turns
+
+/datum/unit_test/agent_npc_another_agent_is_never_given_turns/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/mob/living/carbon/human/species/human/northern/agent_social/other = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/ai_controller/agent_social/other_controller = other.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	TEST_ASSERT_NOTNULL(other_controller?.binding, "Setup failed: the other agent must be bound.")
+	TEST_ASSERT_NOTNULL(SSagent_npc.bindings["[REF(other)]"], "Setup failed: the other agent must be registered.")
+	controller.binding.end_continuation()
+
+	var/engaged = agent_test_engage(controller.binding, other)
+	var/given_turns = controller.binding.in_interaction()
+	SSagent_npc.unregister_pawn(other_controller.binding, "test teardown")
+
+	TEST_ASSERT(engaged, "Answering another agent must still be allowed.")
+
+	// Two agents buying each other turns never stops. Engaging is fine; the turns are not.
+	TEST_ASSERT(!given_turns, "Answering another agent must never begin an interaction.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_revoke_ends_the_conversation
+
+/datum/unit_test/agent_npc_revoke_ends_the_conversation/Run()
+	var/datum/agent_binding/binding = agent_test_binding("conversation-revoke")
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	agent_test_engage(binding, partner)
+	TEST_ASSERT(binding.is_partner(partner), "Setup failed: the speaker should be the partner.")
+
+	binding.revoke("test")
+
+	TEST_ASSERT(!binding.is_partner(partner), "A revoked binding must not keep a conversation open.")
+	TEST_ASSERT_NULL(binding.partner_ref, "Revoking must drop the partner reference.")
+
+	qdel(binding)
 
 /datum/unit_test/agent_npc_speech_alone_with_us_is_ours
 
@@ -474,3 +649,375 @@
 	TEST_ASSERT_EQUAL(length(binding.events), 0, "A revoked binding must not accumulate events.")
 
 	qdel(binding)
+
+// ------------------------------------------------------------- explicit focus
+
+/datum/unit_test/agent_npc_focus_outranks_every_rule
+
+/datum/unit_test/agent_npc_focus_outranks_every_rule/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	controller.binding.end_conversation()
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/list/elsewhere = agent_test_speech_context(distance = AGENT_DIRECT_SPEECH_RANGE + 2, nearby_people = 3, named_someone_else = TRUE)
+
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Bob, pass the ale", elsewhere), AGENT_SPEECH_OVERHEARD, "Setup failed: without focus this line belongs to Bob.")
+
+	// Talk To, checked by the server: the one answer to "who was this for" that is not a guess.
+	elsewhere["focused"] = TRUE
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Bob, pass the ale", elsewhere), AGENT_SPEECH_DIRECTED, "Explicit focus must outrank every inferred rule, including someone else being named.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_focus_elsewhere_is_overheard
+
+/datum/unit_test/agent_npc_focus_elsewhere_is_overheard/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	controller.binding.end_conversation()
+	pawn.name_override = "Anna Smith"
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/list/elsewhere = agent_test_speech_context(distance = 1, nearby_people = 2, focused_elsewhere = TRUE)
+
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "nice weather", agent_test_speech_context(distance = 1, nearby_people = 2)), AGENT_SPEECH_AMBIGUOUS, "Setup failed: without focus elsewhere this line is unclear.")
+
+	// The player picked another NPC. Two NPCs both answering is what Talk To exists to prevent.
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "nice weather", elsewhere), AGENT_SPEECH_OVERHEARD, "A line from a player focused on another NPC must be overheard.")
+
+	// Explicit focus outranks the whisper heuristic: standing close is not choosing.
+	var/list/whispered = agent_test_speech_context(distance = AGENT_WHISPER_INTENDED_RANGE, whispered = TRUE, nearby_people = 2, focused_elsewhere = TRUE)
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "nice weather", whispered), AGENT_SPEECH_OVERHEARD, "A whisper from a player focused elsewhere must still be overheard.")
+
+	// Our own name said strongly still wins: someone talking to Isaac who says "Anna, come here" means Anna.
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Anna, come here", elsewhere), AGENT_SPEECH_DIRECTED, "Our own name said strongly must outrank focus on someone else.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_focus_elsewhere_reaches_the_context
+
+/datum/unit_test/agent_npc_focus_elsewhere_reaches_the_context/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/chosen = agent_test_bound_pawn()
+	var/mob/living/carbon/human/species/human/northern/agent_social/other = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/chosen_controller = chosen.ai_controller
+	var/datum/ai_controller/agent_social/other_controller = other.ai_controller
+	TEST_ASSERT_NOTNULL(chosen_controller?.binding, "Setup failed: the chosen NPC must be bound.")
+	TEST_ASSERT_NOTNULL(other_controller?.binding, "Setup failed: the other NPC must be bound.")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+
+	TEST_ASSERT_NULL(agent_focus_on(speaker, chosen), "Setup failed: turning to the chosen NPC should succeed.")
+
+	var/list/at_chosen = chosen_controller.build_speech_context(speaker, "hello", "hello", null)
+	var/list/at_other = other_controller.build_speech_context(speaker, "hello", "hello", null)
+	var/counts_own_focus = agent_focus_held_elsewhere(speaker, chosen_controller.binding)
+
+	// Measured from the chosen NPC: walk away from it and everyone else must hear you again.
+	var/turf/here = get_turf(chosen)
+	var/turf/far = locate(here.x + AGENT_FOCUS_RANGE + 2, here.y, here.z)
+	var/list/after_leaving = null
+	if(far)
+		speaker.forceMove(far)
+		after_leaving = other_controller.build_speech_context(speaker, "hello", "hello", null)
+
+	SSagent_npc.unregister_pawn(other_controller.binding, "test teardown")
+
+	TEST_ASSERT(at_chosen["focused"], "The chosen NPC must read the line as focused on it.")
+	TEST_ASSERT(!at_chosen["focused_elsewhere"], "The chosen NPC must not read its own focus as elsewhere.")
+	TEST_ASSERT(!counts_own_focus, "A focus on this very NPC must not count as focus elsewhere.")
+	TEST_ASSERT(!at_other["focused"], "Another NPC must not read the line as focused on it.")
+	TEST_ASSERT(at_other["focused_elsewhere"], "Another NPC must know the player turned to someone else.")
+
+	TEST_ASSERT_NOTNULL(after_leaving, "Setup failed: need a turf beyond focus range.")
+	TEST_ASSERT(!after_leaving["focused_elsewhere"], "A player who walked away from the chosen NPC must be heard by others again.")
+
+	agent_test_restore_subsystem(saved, chosen_controller.binding)
+
+/datum/unit_test/agent_npc_focus_on_validates_the_target
+
+/datum/unit_test/agent_npc_focus_on_validates_the_target/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/target = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = target.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the target must be bound.")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/ordinary = allocate(/mob/living/carbon/human)
+
+	// Nothing the verb passes is trusted. Each of these is refused on the server.
+	TEST_ASSERT_NOTNULL(agent_focus_on(speaker, speaker), "A player must not be able to focus on themselves.")
+	// Wrapped: a runtime here would abort Run() and record a pass. try/catch is what sees it.
+	var/caught = FALSE
+	var/ordinary_refusal
+	try
+		ordinary_refusal = agent_focus_on(speaker, ordinary)
+	catch
+		caught = TRUE
+	TEST_ASSERT(!caught, "Focusing a mob with no agent controller must be refused cleanly, not runtime.")
+	TEST_ASSERT_NOTNULL(ordinary_refusal, "A mob with no agent controller must not accept focus.")
+	TEST_ASSERT_NOTNULL(agent_focus_on(speaker, null), "A missing target must be refused.")
+
+	speaker.stat = UNCONSCIOUS
+	var/unconscious_refusal = agent_focus_on(speaker, target)
+	speaker.stat = CONSCIOUS
+	TEST_ASSERT_NOTNULL(unconscious_refusal, "An unconscious player must not be able to start a conversation.")
+
+	TEST_ASSERT_NULL(agent_focus_on(speaker, target), "A conscious player beside an agent NPC must be able to turn to it.")
+	TEST_ASSERT(controller.binding.has_focus_from(speaker), "Accepted focus must be recorded on the NPC.")
+
+	// Distance is checked here too, not only at the moment of speech.
+	agent_focus_off(speaker)
+	var/turf/here = get_turf(target)
+	TEST_ASSERT_NOTNULL(here, "Setup failed: the target must be standing somewhere.")
+	var/turf/far = locate(here.x + AGENT_FOCUS_RANGE + 2, here.y, here.z)
+	TEST_ASSERT_NOTNULL(far, "Setup failed: need a turf beyond focus range.")
+	speaker.forceMove(far)
+	TEST_ASSERT_NOTNULL(agent_focus_on(speaker, target), "A target beyond focus range must be refused.")
+	TEST_ASSERT(!controller.binding.has_focus_from(speaker), "A refused focus must not be recorded.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_focus_is_one_at_a_time
+
+/datum/unit_test/agent_npc_focus_is_one_at_a_time/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/first = agent_test_bound_pawn()
+	var/mob/living/carbon/human/species/human/northern/agent_social/second = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/first_controller = first.ai_controller
+	var/datum/ai_controller/agent_social/second_controller = second.ai_controller
+	TEST_ASSERT_NOTNULL(first_controller?.binding, "Setup failed: the first NPC must be bound.")
+	TEST_ASSERT_NOTNULL(second_controller?.binding, "Setup failed: the second NPC must be bound.")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+
+	TEST_ASSERT_NULL(agent_focus_on(speaker, first), "Setup failed: focusing the first NPC should succeed.")
+	TEST_ASSERT_NULL(agent_focus_on(speaker, second), "Setup failed: focusing the second NPC should succeed.")
+
+	var/still_on_first = first_controller.binding.has_focus_from(speaker)
+	var/on_second = second_controller.binding.has_focus_from(speaker)
+	var/mob/living/current = agent_focus_target_of(speaker)
+	SSagent_npc.unregister_pawn(second_controller.binding, "test teardown")
+
+	// Otherwise both NPCs believe every line is meant for them.
+	TEST_ASSERT(!still_on_first, "Turning to a second NPC must release the first.")
+	TEST_ASSERT(on_second, "The second NPC must hold the focus.")
+	TEST_ASSERT(current == second, "The player's current focus must be the NPC they turned to last.")
+
+	agent_test_restore_subsystem(saved, first_controller.binding)
+
+/datum/unit_test/agent_npc_focus_lapses_in_silence
+
+/datum/unit_test/agent_npc_focus_lapses_in_silence/Run()
+	var/datum/agent_binding/binding = agent_test_binding("focus-lapse")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+
+	TEST_ASSERT(binding.set_focus(speaker), "Setup failed: focus should be accepted.")
+	TEST_ASSERT(binding.has_focus_from(speaker), "Setup failed: focus should be in force.")
+
+	binding.focusers[WEAKREF(speaker)] = world.time - 1
+
+	TEST_ASSERT(!binding.has_focus_from(speaker), "Focus must lapse once its time has passed.")
+	TEST_ASSERT(isnull(binding.focusers[WEAKREF(speaker)]), "A lapsed focus must be pruned, not kept forever.")
+
+	// Speaking keeps it alive: it lapses in silence, never mid-conversation.
+	binding.set_focus(speaker)
+	binding.focusers[WEAKREF(speaker)] = world.time + 5
+	binding.note_candidate(speaker)
+	TEST_ASSERT(binding.focusers[WEAKREF(speaker)] >= world.time + AGENT_FOCUS_DURATION, "Speaking under focus must renew it.")
+
+	qdel(binding)
+
+/datum/unit_test/agent_npc_focus_reaches_the_speech_context
+
+/datum/unit_test/agent_npc_focus_reaches_the_speech_context/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+
+	var/list/unfocused = controller.build_speech_context(speaker, "hello", "hello", null)
+	TEST_ASSERT_NOTNULL(unfocused, "Setup failed: a context must be built.")
+	TEST_ASSERT(!unfocused["focused"], "Speech from a player who has not turned to the NPC must not read as focused.")
+
+	controller.binding.set_focus(speaker)
+	var/list/focused = controller.build_speech_context(speaker, "hello", "hello", null)
+	TEST_ASSERT(focused["focused"], "Speech from a player who turned to the NPC must read as focused.")
+
+	// Walking away should end it, whatever the timer says.
+	var/turf/here = get_turf(pawn)
+	var/turf/far = locate(here.x + AGENT_FOCUS_RANGE + 2, here.y, here.z)
+	TEST_ASSERT_NOTNULL(far, "Setup failed: need a turf beyond focus range.")
+	speaker.forceMove(far)
+	var/list/walked_off = controller.build_speech_context(speaker, "hello", "hello", null)
+	TEST_ASSERT(!walked_off["focused"], "Focus must not count once the player is out of range.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_revoke_clears_focus
+
+/datum/unit_test/agent_npc_revoke_clears_focus/Run()
+	var/datum/agent_binding/binding = agent_test_binding("focus-revoke")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	binding.set_focus(speaker)
+	TEST_ASSERT(binding.has_focus_from(speaker), "Setup failed: focus should be in force.")
+
+	binding.revoke("test")
+
+	TEST_ASSERT(!binding.has_focus_from(speaker), "A revoked NPC must not keep anyone's focus.")
+
+	qdel(binding)
+
+/datum/unit_test/agent_npc_repeated_line_is_upgraded_not_dropped
+
+/datum/unit_test/agent_npc_repeated_line_is_upgraded_not_dropped/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	controller.binding.take_events()
+
+	TEST_ASSERT_EQUAL(controller.route_speech(AGENT_SPEECH_OVERHEARD, "Ivan", "hello", list("speaker" = "Ivan", "text" = "hello")), "buffered", "Setup failed: the first copy should be set aside.")
+
+	// Said again with Talk To. The old early duplicate check dropped it, silencing the NPC when it mattered most.
+	var/route = controller.route_speech(AGENT_SPEECH_DIRECTED, "Ivan", "hello", list("speaker" = "Ivan", "text" = "hello"), FALSE, speaker)
+
+	var/copies = 0
+	var/heard_copies = 0
+	for(var/list/entry as anything in controller.binding.events)
+		var/list/detail = entry["detail"]
+		if(!islist(detail) || detail["text"] != "hello")
+			continue
+		copies++
+		if(entry["event"] == "heard_speech")
+			heard_copies++
+
+	TEST_ASSERT_EQUAL(route, "sent", "A directed repeat of an overheard line must be sent, not dropped as a duplicate.")
+	TEST_ASSERT_EQUAL(copies, 1, "Exactly one copy of the line may be kept.")
+	TEST_ASSERT_EQUAL(heard_copies, 1, "The copy kept must be the one to answer, not the one set aside.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_rationed_repeats_are_not_kept_twice
+
+/datum/unit_test/agent_npc_rationed_repeats_are_not_kept_twice/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	controller.binding.take_events()
+	controller.binding.note_ambiguous_spend()
+
+	TEST_ASSERT_EQUAL(controller.route_speech(AGENT_SPEECH_AMBIGUOUS, "Ivan", "anyone there", list("speaker" = "Ivan", "text" = "anyone there")), "rationed", "Setup failed: the first copy should be rationed.")
+
+	// The duplicate check must still guard the rationed path after moving.
+	TEST_ASSERT_EQUAL(controller.route_speech(AGENT_SPEECH_AMBIGUOUS, "Ivan", "anyone there", list("speaker" = "Ivan", "text" = "anyone there")), "duplicate", "A rationed repeat must not be kept twice.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+// ----------------------------------------------- re-evaluation, 2026-09-23
+
+/datum/unit_test/agent_npc_placeholder_names_never_match
+
+/datum/unit_test/agent_npc_placeholder_names_never_match/Run()
+	// A hidden face reads "Unknown Man"; matching it woke a masked NPC on every "man".
+	TEST_ASSERT(!agent_name_matches_loosely("Unknown Man", "that man over there"), "A placeholder name must not wake the NPC on its ordinary words.")
+	TEST_ASSERT(!agent_name_matches_loosely("Unknown", "unknown to me"), "The bare placeholder must not match either.")
+
+	// Worse, a masked bystander made any line starting "Man," read as addressed to them.
+	TEST_ASSERT(!agent_name_in_vocative("Unknown Man", "Man, that was close"), "A placeholder bystander must never suppress a response.")
+	TEST_ASSERT(!agent_name_in_vocative("Unknown Woman", "Woman, come here"), "No placeholder form may suppress.")
+
+	TEST_ASSERT(agent_name_is_placeholder("Unknown Figure"), "Every placeholder form must be recognised.")
+	TEST_ASSERT(!agent_name_is_placeholder("Isaac Brown"), "A real name must not read as a placeholder.")
+
+/datum/unit_test/agent_npc_filler_words_are_not_name_parts
+
+/datum/unit_test/agent_npc_filler_words_are_not_name_parts/Run()
+	// Mob names carry articles. "the" is not how anyone addresses "the goat".
+	TEST_ASSERT(!agent_name_matches_loosely("the goat", "the weather is fine"), "An article in a mob's name must not match ordinary speech.")
+	TEST_ASSERT(agent_name_matches_loosely("the goat", "goat, come here"), "The real part of the name must still match.")
+
+/datum/unit_test/agent_npc_self_address_has_strength
+
+/datum/unit_test/agent_npc_self_address_has_strength/Run()
+	// Any match used to be directed, unrationed: an NPC named Will answered every "I will go now".
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "I will go now"), AGENT_NAMED_WEAK, "A common-word name in the middle of a sentence must be a weak mention.")
+
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "Will, come here"), AGENT_NAMED_STRONG, "A vocative must be strong.")
+	// Mid-sentence, so only the comma can make it strong.
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "hey Will, come here"), AGENT_NAMED_STRONG, "A vocative mid-sentence must be strong.")
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "come here Will"), AGENT_NAMED_STRONG, "The last word must be strong.")
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "Will you help me"), AGENT_NAMED_STRONG, "The first word must be strong.")
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "have you met Will Baker today"), AGENT_NAMED_STRONG, "The whole name must be strong wherever it falls.")
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Will Baker", "nothing to see here"), AGENT_NAMED_NONE, "No mention must be none.")
+
+	// Transliterated names get the same grading.
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Isaac Brown", "Исаак, подойди сюда"), AGENT_NAMED_STRONG, "A transliterated vocative must be strong.")
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Isaac Brown", "с Исааком всё хорошо"), AGENT_NAMED_WEAK, "A transliterated name mid-sentence must be weak.")
+
+/datum/unit_test/agent_npc_weak_mentions_are_rationed_not_certain
+
+/datum/unit_test/agent_npc_weak_mentions_are_rationed_not_certain/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	controller.binding.end_conversation()
+	pawn.name_override = "Will Baker"
+	TEST_ASSERT_EQUAL(controller.addressable_name(), "Will Baker", "Setup failed: the NPC should be called Will Baker.")
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/list/crowded = agent_test_speech_context(distance = 1, nearby_people = 3)
+	var/far = AGENT_DIRECT_SPEECH_RANGE + 3
+
+	// Unclear, so it still wakes the NPC, but through the ration.
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "I will go now", crowded), AGENT_SPEECH_AMBIGUOUS, "A weak mention must be unclear, not directed.")
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Will, come here", crowded), AGENT_SPEECH_DIRECTED, "A strong mention must still be directed.")
+
+	// People react to their own name, even in a line to someone else. Attention, not silence.
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Bob, I will ask him", agent_test_speech_context(distance = 1, nearby_people = 3, named_someone_else = TRUE)), AGENT_SPEECH_AMBIGUOUS, "Our name in a line to someone else must earn attention.")
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "Bob, pass the ale", agent_test_speech_context(distance = 1, nearby_people = 3, named_someone_else = TRUE)), AGENT_SPEECH_OVERHEARD, "A line to someone else without our name must stay overheard.")
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "I will go now", agent_test_speech_context(distance = far, nearby_people = 3)), AGENT_SPEECH_AMBIGUOUS, "Our name from across the room must earn attention.")
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "nice weather today", agent_test_speech_context(distance = far, nearby_people = 3)), AGENT_SPEECH_OVERHEARD, "Distant chatter without our name must stay overheard.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_masked_npc_ignores_its_placeholder
+
+/datum/unit_test/agent_npc_masked_npc_ignores_its_placeholder/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	controller.binding.end_conversation()
+	pawn.name_override = "Unknown Man"
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+
+	TEST_ASSERT_EQUAL(controller.classify_speech(speaker, "that man over there is odd", agent_test_speech_context(distance = 1, nearby_people = 3)), AGENT_SPEECH_AMBIGUOUS, "A masked NPC must not treat the word man as its own name.")
+
+	agent_test_restore_subsystem(saved, controller.binding)
+
+/datum/unit_test/agent_npc_long_lines_are_searched_at_the_edges
+
+/datum/unit_test/agent_npc_long_lines_are_searched_at_the_edges/Run()
+	var/list/filler = list()
+	for(var/i in 1 to 100)
+		filler += "word"
+	var/middle = filler.Join(" ") + " Isaac " + filler.Join(" ")
+	var/edges = "Isaac, " + filler.Join(" ") + " " + filler.Join(" ")
+
+	// Only the edges of a long line are searched. A name mid-monologue reads as unclear, which still wakes.
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Isaac Brown", middle), AGENT_NAMED_NONE, "The middle of a long line must not be searched.")
+	TEST_ASSERT_EQUAL(agent_self_address_strength("Isaac Brown", edges), AGENT_NAMED_STRONG, "The start of a long line must still be searched.")
+
+/datum/unit_test/agent_npc_script_is_decided_from_a_sample
+
+/datum/unit_test/agent_npc_script_is_decided_from_a_sample/Run()
+	var/latin = ""
+	for(var/i in 1 to AGENT_SCRIPT_SAMPLE + 10)
+		latin += "a"
+	// A sample decides the script; per-word matching still finds a late Cyrillic name.
+	TEST_ASSERT_EQUAL(agent_text_script(latin + " Исаак"), AGENT_SCRIPT_LATIN, "Script must be decided from the opening sample.")
+	TEST_ASSERT(agent_name_matches_loosely("Isaac Brown", latin + " Исаак"), "A transliterated name after the sample must still be recognised.")

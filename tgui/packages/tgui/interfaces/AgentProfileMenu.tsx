@@ -22,6 +22,7 @@ type Profile = {
   voice: string;
   limits: string;
   permitted_actions: string[];
+  aliases: string[];
 };
 
 type BuiltIn = Omit<Profile, 'name'> & { type: string };
@@ -44,6 +45,7 @@ type Data = {
   builtins: BuiltIn[];
   labelMax: number;
   textMax: number;
+  aliasMax: number;
 };
 
 /** The long text fields, in the order they read as a character brief. */
@@ -66,6 +68,7 @@ export function AgentProfileMenu(props) {
     builtins = [],
     labelMax,
     textMax,
+    aliasMax,
   } = data;
 
   const editing = profiles.find((profile) => profile.name === selected);
@@ -95,6 +98,7 @@ export function AgentProfileMenu(props) {
                 vocabulary={vocabulary}
                 labelMax={labelMax}
                 textMax={textMax}
+                aliasMax={aliasMax}
               />
             ) : (
               <ReadOnly template={template} />
@@ -205,6 +209,9 @@ function ReadOnly(props: { template?: BuiltIn }) {
       }
     >
       <Box mb={1}>Allowed: {template.permitted_actions.join(', ')}</Box>
+      {(template.aliases || []).length > 0 && (
+        <Box mb={1}>Also answers to: {template.aliases.join(', ')}</Box>
+      )}
       {TEXT_FIELDS.map((field) => (
         <Box key={field.key} mb={1}>
           <Box bold>{field.label}</Box>
@@ -222,9 +229,10 @@ function Editor(props: {
   vocabulary: string[];
   labelMax: number;
   textMax: number;
+  aliasMax: number;
 }) {
   const { act } = useBackend<Data>();
-  const { profile, vocabulary, labelMax, textMax } = props;
+  const { profile, vocabulary, labelMax, textMax, aliasMax } = props;
 
   return (
     <Section
@@ -264,6 +272,18 @@ function Editor(props: {
           />
         </Stack.Item>
       </Stack>
+
+      <Box bold>Also answers to</Box>
+      <Box color="label" fontSize="0.9em" mb={0.5}>
+        Up to {aliasMax} other names, comma separated: a nickname, or a
+        spelling players use, such as a Cyrillic one. Ignored while masked.
+      </Box>
+      <Input
+        fluid
+        mb={1}
+        value={(profile.aliases || []).join(', ')}
+        onBlur={(value) => act('set_aliases', { value })}
+      />
 
       <Box bold mb={0.5}>
         Permitted actions

@@ -44,6 +44,8 @@
 		// The ratio is what the ambiguous limits should be tuned from. A lot of
 		// deferrals means the NPC is in a busy room and being rationed.
 		lines += "&nbsp;&nbsp;unclear speech: [measured.ambiguous_requests] answered / [AGENT_AMBIGUOUS_ROUND_LIMIT] allowed, [measured.ambiguous_deferred] deferred"
+		// Non-zero means two NPCs were left talking to each other.
+		lines += "&nbsp;&nbsp;agent-to-agent lines held back: [measured.agent_exchanges_capped]"
 		lines += "&nbsp;&nbsp;actions chosen: [measured.format_counts(measured.action_counts)]"
 		lines += "&nbsp;&nbsp;outcomes: [measured.format_counts(measured.result_counts)]"
 
@@ -66,6 +68,7 @@
 			| intent [intent ? intent["name"] : "none"] \
 			| events [length(binding.events)] \
 			| requests [binding.requests_made] refused [binding.requests_refused] expired [binding.requests_expired] \
+			| unclear [binding.ambiguous_spent]/[AGENT_AMBIGUOUS_PAWN_LIMIT] \
 			| failures [binding.consecutive_failures][breaker]"
 
 	to_chat(src, "<span class='notice'>[lines.Join("<br>")]</span>")

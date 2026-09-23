@@ -45,6 +45,8 @@
 	var/datum/agent_profile/profile
 	/// Throttles registration retries for pawns that spawn before the subsystem.
 	COOLDOWN_DECLARE(register_cooldown)
+	/// Whether the thinking bubble is on the pawn. Our own flag: the typing indicator clears itself for clientless mobs.
+	var/thinking = FALSE
 
 /datum/ai_controller/agent_social/New(atom/new_pawn)
 	// An instance, not initial() on the typepath: initial() returns null for
@@ -55,11 +57,15 @@
 /datum/ai_controller/agent_social/PossessPawn(atom/new_pawn)
 	. = ..()
 	RegisterSignal(pawn, COMSIG_MOVABLE_HEAR, PROC_REF(on_pawn_heard))
+	RegisterSignal(pawn, COMSIG_ATOM_ATTACK_HAND, PROC_REF(on_pawn_touched))
+	RegisterSignal(pawn, COMSIG_MOB_FED, PROC_REF(on_pawn_fed))
 	ensure_registered()
 
 /datum/ai_controller/agent_social/UnpossessPawn(destroy)
 	if(pawn)
-		UnregisterSignal(pawn, COMSIG_MOVABLE_HEAR)
+		// Before letting go, or a detached mob keeps a bubble nothing will ever clear.
+		show_thinking(FALSE)
+		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED))
 	release_binding("pawn unpossessed")
 	return ..()
 
@@ -129,7 +135,11 @@
 	var/classification = classify_speech(speaker, understood, context)
 	detail["addressing"] = classification
 
-	route_speech(classification, speaker_name, understood, detail, from_another_agent)
+	// Said to the model plainly, so a nameless "yes" reads as the answer it is.
+	detail["from_partner"] = binding.is_partner(speaker)
+	detail["spoken_to_you"] = context["focused"]
+
+	route_speech(classification, speaker_name, understood, detail, from_another_agent, speaker)
 
 /**
  * What does one classified line actually do?
@@ -138,33 +148,59 @@
  * hearing event. Nothing here is ever discarded: the worst outcome for a line
  * is that it waits and rides along with the next real decision.
  */
-/datum/ai_controller/agent_social/proc/route_speech(classification, speaker_name, text, list/detail, from_another_agent = FALSE)
+/datum/ai_controller/agent_social/proc/route_speech(classification, speaker_name, text, list/detail, from_another_agent = FALSE, atom/movable/speaker = null, kind = AGENT_LINE_SPEECH)
 	if(QDELETED(binding))
 		return "unbound"
-
-	// The same line, still waiting to be sent. Repeats should not push a
-	// player's actual question out of a ring that only holds twelve.
-	if(binding.speech_already_buffered(speaker_name, text))
-		return "duplicate"
 
 	// Overheard. It still reaches the agent, folded into the next real decision,
 	// but it neither buys one nor extends the interaction. Two players chatting
 	// nearby used to do both.
 	if(!agent_speech_wakes_us(classification))
-		binding.push_event("overheard_speech", AGENT_EVENT_LOW, detail)
-		return "buffered"
+		return buffer_speech(speaker_name, text, detail, "buffered", kind)
 
 	// Rationed, not silenced, and only ever for speech we could not classify.
 	// Directed lines and attacks never reach this branch.
 	if(classification == AGENT_SPEECH_AMBIGUOUS)
 		if(!binding.may_spend_on_ambiguous())
 			SSagent_npc?.note_ambiguous_deferred()
-			binding.push_event("overheard_speech", AGENT_EVENT_LOW, detail)
-			return "rationed"
+			return buffer_speech(speaker_name, text, detail, "rationed", kind)
 		binding.note_ambiguous_spend()
 
-	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, detail, replenish = !from_another_agent)
+	// Two agents answering each other loop until one waits. A few exchanges are life; then they buffer.
+	if(from_another_agent)
+		if(!binding.agent_exchange_allowed(speaker))
+			SSagent_npc?.note_agent_exchange_capped()
+			return buffer_speech(speaker_name, text, detail, "capped", kind)
+		binding.note_agent_exchange(speaker)
+	else if(ismob(speaker))
+		// A player puts someone real in the scene. Clientless NPCs neither count nor reset anything.
+		var/mob/speaking_mob = speaker
+		if(speaking_mob.client)
+			binding.reset_agent_exchanges()
+
+	// This line buys a decision, so it replaces a waiting overheard copy rather than being dropped as one.
+	binding.drop_buffered_speech(speaker_name, text)
+
+	// Whoever bought this decision is who the NPC answers, if it does. Dispatch fixes the partner.
+	binding.note_candidate(speaker)
+
+	// Only directed lines buy turns on hearing. Unclear ones earn them in engage_candidate(), by being answered.
+	var/replenish = !from_another_agent && classification == AGENT_SPEECH_DIRECTED
+	binding.mark_dirty(agent_line_event(kind, TRUE), AGENT_EVENT_LOW, detail, replenish = replenish)
 	return "sent"
+
+/// The event name a routed line is recorded under: answered, or only kept for later.
+/proc/agent_line_event(kind, answered)
+	if(kind == AGENT_LINE_EMOTE)
+		return answered ? "saw_emote" : "noticed_emote"
+	return answered ? "heard_speech" : "overheard_speech"
+
+/// Keep a line for the next decision, once. This check once ran before routing and dropped answers.
+/datum/ai_controller/agent_social/proc/buffer_speech(speaker_name, text, list/detail, route, kind = AGENT_LINE_SPEECH)
+	if(binding.speech_already_buffered(speaker_name, text))
+		return "duplicate"
+	binding.push_event(agent_line_event(kind, FALSE), AGENT_EVENT_LOW, detail)
+	return route
 
 /**
  * Everything cheap and local we can say about one heard line.
@@ -174,6 +210,8 @@
  * and nothing here does.
  */
 /datum/ai_controller/agent_social/proc/build_speech_context(atom/movable/speaker, text, raw_text, list/mods)
+	// Range rechecked per line: a player who walks off is suspended, not ended, and counts again on return.
+	var/focused = binding?.has_focus_from(speaker) && get_dist(pawn, speaker) <= AGENT_FOCUS_RANGE
 	var/list/context = list(
 		"distance" = get_dist(pawn, speaker),
 		"whispered" = islist(mods) && mods[WHISPER_MODE],
@@ -183,10 +221,15 @@
 		// Which script the NPC is being spoken to in, so a failed name match in
 		// a script we cannot read is not mistaken for an absent name.
 		"script" = agent_text_script(text),
+		"focused" = focused,
+		// They explicitly turned to a different NPC and are still near it.
+		"focused_elsewhere" = !focused && agent_focus_held_elsewhere(speaker, binding),
 		"nearby_people" = 0,
 		"named_someone_else" = FALSE,
 	)
 
+	// Split once for the whole crowd; each nearby mob is checked against it.
+	var/list/prepared = agent_prepare_words(text)
 	for(var/mob/living/nearby in view(AGENT_VIEW_RANGE, pawn))
 		if(nearby == pawn || nearby == speaker)
 			continue
@@ -194,7 +237,7 @@
 		if(nearby.stat >= UNCONSCIOUS || !nearby.can_hear())
 			continue
 		context["nearby_people"]++
-		if(!context["named_someone_else"] && agent_name_in_vocative(nearby.get_visible_name(), text))
+		if(!context["named_someone_else"] && agent_name_in_vocative(nearby.get_visible_name(), text, prepared))
 			context["named_someone_else"] = TRUE
 	return context
 
@@ -203,6 +246,23 @@
 /datum/ai_controller/agent_social/proc/addressable_name()
 	var/mob/living/living_pawn = pawn
 	return isliving(living_pawn) ? living_pawn.get_visible_name() : "[pawn?.name]"
+
+/// The visible name, plus profile aliases only while the face is showing. A masked NPC answers to no nickname.
+/datum/ai_controller/agent_social/proc/addressable_names()
+	var/visible = addressable_name()
+	var/list/names = list(visible)
+	var/mob/living/living_pawn = pawn
+	if(!isliving(living_pawn) || visible != living_pawn.real_name || !length(profile?.aliases))
+		return names
+	return names + profile.aliases
+
+/// The strongest way any of our names was said. Aliases only ever add evidence of address.
+/datum/ai_controller/agent_social/proc/self_address_strength(text)
+	. = AGENT_NAMED_NONE
+	for(var/name in addressable_names())
+		. = max(., agent_self_address_strength(name, text))
+		if(. == AGENT_NAMED_STRONG)
+			return
 
 /**
  * Was that said to us?
@@ -213,9 +273,18 @@
  * positive evidence that a line belonged elsewhere produces `overheard`.
  */
 /datum/ai_controller/agent_social/proc/classify_speech(atom/movable/speaker, text, list/context)
-	// Mid-conversation. A reply does not carry your name.
-	if(binding?.in_interaction())
+	// Talk To is the one answer that is not a guess, and reads no text. It outranks everything below.
+	if(context["focused"])
 		return AGENT_SPEECH_DIRECTED
+
+	// Only a strong mention is certain. A weak one is usually talk about us, so it goes through the ration.
+	var/named = self_address_strength(text)
+	if(named == AGENT_NAMED_STRONG)
+		return AGENT_SPEECH_DIRECTED
+
+	// Talk To on another NPC outranks every guess below, but not our name said strongly.
+	if(context["focused_elsewhere"])
+		return AGENT_SPEECH_OVERHEARD
 
 	// A whisper carries one tile. Past that is the eavesdrop band, where what
 	// arrives is a starred copy, so hearing one proves proximity rather than
@@ -223,12 +292,13 @@
 	if(context["whispered"] && context["distance"] <= AGENT_WHISPER_INTENDED_RANGE)
 		return AGENT_SPEECH_DIRECTED
 
-	if(agent_name_matches_loosely(addressable_name(), text))
-		return AGENT_SPEECH_DIRECTED
-
-	// The one confident suppression: they addressed someone else standing here.
+	// They addressed someone here, even our partner's "Bob, pass the ale". A weak mention of us earns attention.
 	if(context["named_someone_else"])
-		return AGENT_SPEECH_OVERHEARD
+		return named == AGENT_NAMED_WEAK ? AGENT_SPEECH_AMBIGUOUS : AGENT_SPEECH_OVERHEARD
+
+	// Our partner's reply needs no name. Anyone else's line falls through to the rules below.
+	if(binding?.is_partner(speaker))
+		return AGENT_SPEECH_DIRECTED
 
 	// Nobody else could have been the audience.
 	if(context["nearby_people"] <= 0)
@@ -240,13 +310,9 @@
 	if(agent_speech_is_shouted(context["volume"]))
 		return AGENT_SPEECH_AMBIGUOUS
 
-	// Ordinary distant chatter in a room with other people in it.
-	//
-	// Skipped when the line is in a script we cannot match a Latin name against.
-	// The name rule above is the escape hatch that lets a distant call through,
-	// so applying this without it silences exactly one language group.
+	// Distant chatter in company. Skipped for scripts we cannot name-match, or one language group goes unheard.
 	if(context["distance"] > AGENT_DIRECT_SPEECH_RANGE && agent_script_is_matchable(context["script"]))
-		return AGENT_SPEECH_OVERHEARD
+		return named == AGENT_NAMED_WEAK ? AGENT_SPEECH_AMBIGUOUS : AGENT_SPEECH_OVERHEARD
 
 	return AGENT_SPEECH_AMBIGUOUS
 
@@ -254,6 +320,120 @@
 /// an attention budget to bound it, silence is the worse failure.
 /proc/agent_speech_wakes_us(classification)
 	return classification != AGENT_SPEECH_OVERHEARD
+
+/// visible_message skips clientless mobs, so emotes arrive here instead. Routed like speech; returns the route.
+/datum/ai_controller/agent_social/proc/on_emote_perceived(mob/emoter, text, intentional, audible)
+	SHOULD_NOT_SLEEP(TRUE)
+	if(!binding || QDELETED(binding))
+		return "unbound"
+	var/mob/living/living_pawn = pawn
+	if(!isliving(living_pawn) || QDELETED(emoter) || emoter == living_pawn)
+		return "unseen"
+	if(!agent_can_perceive_emote(living_pawn, emoter, audible))
+		return "unseen"
+	var/cleaned = agent_clean_emote_text(text)
+	if(!cleaned)
+		return "unseen"
+
+	var/emoter_name = "[emoter.name]"
+	if(isliving(emoter))
+		var/mob/living/living_emoter = emoter
+		emoter_name = living_emoter.get_visible_name()
+
+	var/list/context = build_emote_context(emoter, cleaned)
+	var/classification = classify_emote(emoter, intentional, context)
+	var/list/detail = list(
+		"speaker" = emoter_name,
+		"text" = cleaned,
+		"distance" = context["distance"],
+		"nearby_people" = context["nearby_people"],
+		"addressing" = classification,
+		"from_partner" = binding.is_partner(emoter),
+		"spoken_to_you" = context["focused"],
+	)
+	// Said plainly, so the model does not read a cough as a remark.
+	if(!intentional)
+		detail["involuntary"] = TRUE
+
+	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(emoter)]"])
+	return route_speech(classification, emoter_name, cleaned, detail, from_another_agent, emoter, AGENT_LINE_EMOTE)
+
+/// The facts classify_emote reads. Built once, like the speech context.
+/datum/ai_controller/agent_social/proc/build_emote_context(mob/emoter, text)
+	var/focused = binding?.has_focus_from(emoter) && get_dist(pawn, emoter) <= AGENT_FOCUS_RANGE
+	var/list/words = agent_emote_words(text)
+	var/named_us = AGENT_NAMED_NONE
+	// Capitalised or transliterated is strong; lowercase is weak, so "she will sit" never summons Will.
+	for(var/name in addressable_names())
+		if(agent_emote_mentions(name, words))
+			named_us = AGENT_NAMED_STRONG
+			break
+	if(named_us == AGENT_NAMED_NONE && self_address_strength(text) != AGENT_NAMED_NONE)
+		named_us = AGENT_NAMED_WEAK
+
+	var/list/context = list(
+		"distance" = get_dist(pawn, emoter),
+		"focused" = focused,
+		"focused_elsewhere" = !focused && agent_focus_held_elsewhere(emoter, binding),
+		"named_us" = named_us,
+		"nearby_people" = 0,
+		"named_someone_else" = FALSE,
+	)
+	for(var/mob/living/nearby in view(AGENT_VIEW_RANGE, pawn))
+		if(nearby == pawn || nearby == emoter || nearby.stat >= UNCONSCIOUS)
+			continue
+		context["nearby_people"]++
+		if(!context["named_someone_else"] && agent_emote_mentions(nearby.get_visible_name(), words))
+			context["named_someone_else"] = TRUE
+	return context
+
+/// Emotes name people mid-sentence, so any mention counts. Unaimed emotes in company are only noticed.
+/datum/ai_controller/agent_social/proc/classify_emote(mob/emoter, intentional, list/context)
+	// A cough, a sneeze, a pain scream. Kept, so it is not lost, but it buys nothing.
+	if(!intentional)
+		return AGENT_SPEECH_OVERHEARD
+	if(context["focused"])
+		return AGENT_SPEECH_DIRECTED
+	if(context["named_us"] == AGENT_NAMED_STRONG)
+		return AGENT_SPEECH_DIRECTED
+	if(context["focused_elsewhere"])
+		return AGENT_SPEECH_OVERHEARD
+	if(context["named_someone_else"])
+		return context["named_us"] == AGENT_NAMED_WEAK ? AGENT_SPEECH_AMBIGUOUS : AGENT_SPEECH_OVERHEARD
+	if(binding?.is_partner(emoter))
+		return AGENT_SPEECH_DIRECTED
+	// Nobody else close enough to have been the audience.
+	if(context["nearby_people"] <= 0 && context["distance"] <= AGENT_DIRECT_SPEECH_RANGE)
+		return AGENT_SPEECH_DIRECTED
+	if(context["named_us"] == AGENT_NAMED_WEAK)
+		return AGENT_SPEECH_AMBIGUOUS
+	// Right beside us, in company. Maybe ours; the ration decides.
+	if(context["distance"] <= AGENT_REACH_DISTANCE)
+		return AGENT_SPEECH_AMBIGUOUS
+	return AGENT_SPEECH_OVERHEARD
+
+/// Could this pawn perceive that emote? The sense matches the emote, and walls block both.
+/proc/agent_can_perceive_emote(mob/living/pawn, mob/emoter, audible)
+	if(pawn.stat >= UNCONSCIOUS)
+		return FALSE
+	var/turf/ours = get_turf(pawn)
+	var/turf/theirs = get_turf(emoter)
+	if(!ours || !theirs || ours.z != theirs.z)
+		return FALSE
+	if(get_dist(ours, theirs) > DEFAULT_MESSAGE_RANGE)
+		return FALSE
+	if(audible ? !pawn.can_hear() : pawn.is_blind())
+		return FALSE
+	if(emoter.invisibility > pawn.see_invisible)
+		return FALSE
+	return can_see(pawn, emoter, DEFAULT_MESSAGE_RANGE)
+
+/// Markup out, entities decoded, length capped. The model reads words, not HTML.
+/proc/agent_clean_emote_text(text)
+	if(!istext(text))
+		return null
+	var/cleaned = trim(html_decode(STRIP_HTML_FULL(text, AGENT_EMOTE_TEXT_MAX)))
+	return length(cleaned) ? cleaned : null
 
 /datum/ai_controller/agent_social/Destroy(force, ...)
 	release_binding("controller destroyed")
@@ -316,7 +496,58 @@
 	set_blackboard_key(BB_AGENT_FLEE_UNTIL, world.time + AGENT_FLEE_DURATION)
 
 	if(binding && !QDELETED(binding))
-		binding.mark_dirty("attacked", AGENT_EVENT_HIGH, list("by" = "[attacker.name]"))
+		var/list/detail = list("by" = "[attacker.name]")
+		// A flurry of blows is one event with a count, not twelve that push out everything else.
+		if(!binding.coalesce_event("attacked", detail))
+			binding.mark_dirty("attacked", AGENT_EVENT_HIGH, detail)
+
+/// An empty hand on us. In combat mode relay_attackers already reports it as an attack.
+/datum/ai_controller/agent_social/proc/on_pawn_touched(datum/source, mob/living/user, list/modifiers)
+	SIGNAL_HANDLER
+	if(!isliving(user) || user == pawn || user.cmode)
+		return
+	note_stimulus(agent_touch_kind(user), user)
+
+/datum/ai_controller/agent_social/proc/on_pawn_fed(datum/source, mob/feeder, obj/item/fed_with)
+	SIGNAL_HANDLER
+	if(!isliving(feeder) || feeder == pawn)
+		return
+	note_stimulus(AGENT_STIMULUS_FED, feeder, list("item" = "[fed_with?.name]"))
+
+/// Someone did something to us. Addressed like a word said to our face; rough handling cannot wait.
+/datum/ai_controller/agent_social/proc/note_stimulus(kind, mob/living/by, list/extra)
+	if(!binding || QDELETED(binding) || QDELETED(by))
+		return "unbound"
+	var/list/detail = list("what" = kind, "by" = by.get_visible_name())
+	if(extra)
+		detail += extra
+	if(binding.coalesce_event("physical", detail))
+		return "coalesced"
+	// An agent's `use` on another agent is an empty-hand click, so the same loop cap as speech applies.
+	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(by)]"])
+	if(from_another_agent)
+		if(!binding.agent_exchange_allowed(by))
+			SSagent_npc?.note_agent_exchange_capped()
+			binding.push_event("physical", AGENT_EVENT_LOW, detail)
+			return "capped"
+		binding.note_agent_exchange(by)
+	else if(by.client)
+		binding.reset_agent_exchanges()
+	binding.note_candidate(by)
+	var/urgency = (kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) ? AGENT_EVENT_HIGH : AGENT_EVENT_LOW
+	binding.mark_dirty("physical", urgency, detail, replenish = !from_another_agent)
+	return "sent"
+
+/// What an empty hand did, read from the intent it was used with. No intent is no evidence of harm.
+/proc/agent_touch_kind(mob/living/user)
+	var/intent_type = user.used_intent?.type
+	if(!intent_type || ispath(intent_type, INTENT_HELP))
+		return AGENT_STIMULUS_TOUCHED
+	if(ispath(intent_type, INTENT_GRAB))
+		return AGENT_STIMULUS_GRABBED
+	if(ispath(intent_type, INTENT_DISARM))
+		return AGENT_STIMULUS_SHOVED
+	return AGENT_STIMULUS_STRUCK
 
 /**
  * Is the pawn free to pursue an agent objective?
@@ -360,6 +591,23 @@
 			arguments += stored_arguments
 		current_behavior.finish_action(arglist(arguments))
 		. = TRUE
+
+/// A faint typing bubble while a decision is in flight, so a player can see they were heard.
+/datum/ai_controller/agent_social/proc/show_thinking(state)
+	// Fainter than a player's, which also keeps the two appearances from being confused.
+	var/static/mutable_appearance/thinking_indicator
+	if(!thinking_indicator)
+		thinking_indicator = mutable_appearance('icons/mob/talk.dmi', "default0", FLY_LAYER)
+		thinking_indicator.alpha = 140
+	var/atom/movable/body = pawn
+	state = !!state
+	if(QDELETED(body) || state == thinking)
+		return
+	thinking = state
+	if(state)
+		body.add_overlay(thinking_indicator)
+	else
+		body.cut_overlay(thinking_indicator)
 
 /// Drop a threat we have finished running from, so the pawn can settle.
 /datum/ai_controller/agent_social/proc/clear_threat()

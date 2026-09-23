@@ -81,8 +81,11 @@
 		return
 
 	binding.resume_intent()
-	agent.queue_behavior(
-		intent["name"] == "use" ? /datum/ai_behavior/agent_approach/use : /datum/ai_behavior/agent_approach,
-		BB_AGENT_OBJECTIVE_TARGET,
-	)
+	var/behavior_type = /datum/ai_behavior/agent_approach
+	switch(intent["name"])
+		if("use")
+			behavior_type = /datum/ai_behavior/agent_approach/use
+		if("touch")
+			behavior_type = /datum/ai_behavior/agent_approach/touch
+	agent.queue_behavior(behavior_type, BB_AGENT_OBJECTIVE_TARGET)
 	return SUBTREE_RETURN_FINISH_PLANNING

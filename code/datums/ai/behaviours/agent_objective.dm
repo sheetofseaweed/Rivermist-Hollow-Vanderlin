@@ -140,3 +140,39 @@
 		return
 
 	agent.binding.finish_intent(AGENT_RESULT_UNVERIFIED, "click dispatched; no postcondition to verify")
+
+/// Walk to someone, then touch them gently. Never a click: whatever is in hand, it stays a touch.
+/datum/ai_behavior/agent_approach/touch
+
+/datum/ai_behavior/agent_approach/touch/perform(delta_time, datum/ai_controller/controller, target_key)
+	var/mob/living/living_pawn = controller.pawn
+	var/mob/living/target = controller.blackboard[target_key]
+
+	if(!isliving(living_pawn) || !isliving(target) || QDELETED(target))
+		finish_action(controller, FALSE, target_key)
+		return
+
+	if(agent_objective_timed_out(controller))
+		finish_action(controller, FALSE, target_key)
+		return
+
+	// Distance, like use: a table between us is the executor's failure to report, not a reason to walk forever.
+	if(get_dist(living_pawn, target) > AGENT_REACH_DISTANCE)
+		set_movement_target(controller, target)
+		return
+
+	var/datum/ai_controller/agent_social/agent = controller
+	var/list/intent = istype(agent) ? agent.binding?.current_intent : null
+	controller.set_blackboard_key(BB_AGENT_TOUCH_RESULT, agent_execute_touch(living_pawn, target, intent ? intent["key"] : AGENT_TOUCH_TAP))
+	finish_action(controller, TRUE, target_key)
+
+/datum/ai_behavior/agent_approach/touch/report_outcome(datum/ai_controller/controller, succeeded)
+	var/datum/ai_controller/agent_social/agent = controller
+	if(!istype(agent) || !agent.binding || QDELETED(agent.binding))
+		return
+	var/list/outcome = agent.blackboard[BB_AGENT_TOUCH_RESULT]
+	agent.clear_blackboard_key(BB_AGENT_TOUCH_RESULT)
+	// Never got there: the parent tells a reflex interruption from a failure to reach.
+	if(!succeeded || !islist(outcome))
+		return ..()
+	agent.binding.finish_intent(outcome["state"], outcome["detail"])

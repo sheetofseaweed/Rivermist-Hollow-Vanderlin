@@ -38,6 +38,18 @@
 	/// world.time of the last decision an ambiguous line bought. Rations the
 	/// cost of erring toward hearing without letting it silence real address.
 	var/ambiguous_at = 0
+	/// Who this NPC is talking with. Weak, so a conversation never pins a mob.
+	var/datum/weakref/partner_ref
+	/// world.time the conversation lapses unless either side speaks again.
+	var/partner_until = 0
+	/// Whoever last bought a decision. Becomes the partner only if the NPC answers rather than waits.
+	var/datum/weakref/candidate_ref
+	/// Players who chose Talk To on this NPC: weakref -> expiry. The one signal chosen, not guessed.
+	var/list/focusers
+	/// Decisions unclear speech bought this NPC this round. Bounded by AGENT_AMBIGUOUS_PAWN_LIMIT.
+	var/ambiguous_spent = 0
+	/// Other agent NPCs' lines that bought us a decision: weakref -> list(count, last_at).
+	var/list/agent_exchanges
 	/// world.time this binding most recently became dirty. 0 while clean.
 	/// Measures the wait a trigger sits through before a request is sent.
 	var/dirty_since = 0
@@ -182,9 +194,11 @@
 	intent_suspended = FALSE
 	// A revoked binding must not keep driving itself.
 	end_continuation()
+	end_conversation()
 	LAZYCLEARLIST(events)
 	clear_dirty()
 	pending_urgency = AGENT_EVENT_LOW
+	update_thinking()
 
 /// Re-enable after a revoke. The new generation means old replies stay dead.
 /datum/agent_binding/proc/reinstate()
@@ -220,6 +234,13 @@
 	QDEL_NULL(pending)
 	if(state == AGENT_BINDING_PENDING)
 		state = AGENT_BINDING_IDLE
+	update_thinking()
+
+/// The thinking bubble shows exactly while a request is in flight. Called at every state change.
+/datum/agent_binding/proc/update_thinking()
+	var/datum/ai_controller/agent_social/agent = resolve_controller()
+	if(istype(agent))
+		agent.show_thinking(state == AGENT_BINDING_PENDING)
 
 /// Take on a new objective. Replaces any previous one.
 /datum/agent_binding/proc/begin_intent(list/action)
@@ -293,9 +314,94 @@
 	set_dirty()
 	return TRUE
 
-/// Is a bounded interaction still running? Used to read speech as a reply.
+/// Is a bounded interaction running? Governs self-driven turns only; who is talking to us is is_partner().
 /datum/agent_binding/proc/in_interaction()
 	return continuation_expires_at > world.time
+
+/// Is this our conversation partner? A bare timer here once made everyone's chatter count as addressed.
+/datum/agent_binding/proc/is_partner(atom/movable/speaker)
+	if(!speaker || world.time > partner_until)
+		return FALSE
+	return partner_ref?.resolve() == speaker
+
+/// Record who just asked us something. Not a partner until the NPC answers, in engage_candidate().
+/datum/agent_binding/proc/note_candidate(atom/movable/speaker)
+	if(QDELETED(speaker))
+		return FALSE
+	candidate_ref = WEAKREF(speaker)
+	// The partner speaking again keeps a live conversation open.
+	if(is_partner(speaker))
+		partner_until = world.time + AGENT_REPLY_WINDOW
+	// Likewise an explicit focus: it lapses in silence, never mid-conversation.
+	if(has_focus_from(speaker))
+		focusers[WEAKREF(speaker)] = world.time + AGENT_FOCUS_DURATION
+	return TRUE
+
+/// The NPC answered, which makes a conversation. Unclear lines buy self-driven turns here, never on hearing.
+/datum/agent_binding/proc/engage_candidate()
+	var/atom/movable/candidate = candidate_ref?.resolve()
+	candidate_ref = null
+	if(QDELETED(candidate))
+		return FALSE
+	partner_ref = WEAKREF(candidate)
+	partner_until = world.time + AGENT_REPLY_WINDOW
+	// Another agent may be answered but never buys turns: that is the two-agent loop.
+	if(isnull(SSagent_npc?.bindings?["[REF(candidate)]"]))
+		begin_interaction()
+	return TRUE
+
+/// The NPC chose to wait. A declined line must not engage later through some unrelated action.
+/datum/agent_binding/proc/decline_candidate()
+	candidate_ref = null
+
+/datum/agent_binding/proc/end_conversation()
+	partner_ref = null
+	candidate_ref = null
+	partner_until = 0
+	focusers = null
+	agent_exchanges = null
+
+/// A player turned to speak with us. Weakref keys are stable per mob, never pin it, never reused.
+/datum/agent_binding/proc/set_focus(mob/living/who)
+	if(QDELETED(who))
+		return FALSE
+	LAZYINITLIST(focusers)
+	// Pruned on set, over a copy: removing from a list while iterating it skips entries.
+	for(var/datum/weakref/key as anything in focusers.Copy())
+		// Typed first: QDELETED reads .gc_destroyed, which needs a static type.
+		var/datum/focuser = key.resolve()
+		if(world.time > focusers[key] || QDELETED(focuser))
+			focusers -= key
+	focusers[WEAKREF(who)] = world.time + AGENT_FOCUS_DURATION
+	return TRUE
+
+/datum/agent_binding/proc/clear_focus(mob/living/who)
+	if(!who || !focusers)
+		return
+	focusers -= WEAKREF(who)
+	if(!length(focusers))
+		focusers = null
+
+/// Has this speaker explicitly turned to us, and is it still in force?
+/datum/agent_binding/proc/has_focus_from(atom/movable/speaker)
+	if(!speaker || !focusers)
+		return FALSE
+	var/datum/weakref/key = WEAKREF(speaker)
+	var/until = focusers[key]
+	if(!until)
+		return FALSE
+	if(world.time > until)
+		focusers -= key
+		return FALSE
+	return TRUE
+
+/// Drop a waiting copy of this line when it returns as something to answer. One copy, strongest reading.
+/datum/agent_binding/proc/drop_buffered_speech(speaker_name, text)
+	for(var/i = length(events), i >= 1, i--)
+		var/list/entry = events[i]
+		var/list/detail = entry["detail"]
+		if(islist(detail) && detail["speaker"] == speaker_name && detail["text"] == text)
+			events.Cut(i, i + 1)
 
 /**
  * May an ambiguous line buy a decision right now?
@@ -306,13 +412,45 @@
 /datum/agent_binding/proc/may_spend_on_ambiguous()
 	if(world.time < ambiguous_at + AGENT_AMBIGUOUS_INTERVAL)
 		return FALSE
+	// Our share first: the round limit is shared, and one busy NPC could spend it for everyone.
+	if(ambiguous_spent >= AGENT_AMBIGUOUS_PAWN_LIMIT)
+		return FALSE
 	if(SSagent_npc && !SSagent_npc.ambiguous_budget_left())
 		return FALSE
 	return TRUE
 
 /datum/agent_binding/proc/note_ambiguous_spend()
 	ambiguous_at = world.time
+	ambiguous_spent++
 	SSagent_npc?.note_ambiguous_request()
+
+/// May another agent's line buy us a decision? Counted per speaker by weakref, like focus.
+/datum/agent_binding/proc/agent_exchange_allowed(atom/movable/speaker)
+	if(!speaker || !agent_exchanges)
+		return TRUE
+	var/list/entry = agent_exchanges[WEAKREF(speaker)]
+	if(!entry)
+		return TRUE
+	// A quiet spell starts the count again, so two NPCs can chat later.
+	if(world.time > entry[2] + AGENT_AGENT_EXCHANGE_WINDOW)
+		return TRUE
+	return entry[1] < AGENT_MAX_AGENT_EXCHANGES
+
+/datum/agent_binding/proc/note_agent_exchange(atom/movable/speaker)
+	if(!speaker)
+		return
+	LAZYINITLIST(agent_exchanges)
+	var/datum/weakref/key = WEAKREF(speaker)
+	var/list/entry = agent_exchanges[key]
+	if(!entry || world.time > entry[2] + AGENT_AGENT_EXCHANGE_WINDOW)
+		entry = list(0, 0)
+	entry[1]++
+	entry[2] = world.time
+	agent_exchanges[key] = entry
+
+/// A player engaged us, so someone real is in the scene and the agents' count starts again.
+/datum/agent_binding/proc/reset_agent_exchanges()
+	agent_exchanges = null
 
 /**
  * Is this exact line already waiting to be sent?
@@ -327,6 +465,18 @@
 			continue
 		if(detail["speaker"] == speaker_name && detail["text"] == text)
 			return TRUE
+	return FALSE
+
+/// Count a repeat of a buffered event instead of adding it. TRUE if it was already waiting.
+/datum/agent_binding/proc/coalesce_event(event_name, list/detail)
+	for(var/list/entry as anything in events)
+		if(entry["event"] != event_name)
+			continue
+		var/list/waiting = entry["detail"]
+		if(!islist(waiting) || waiting["by"] != detail["by"] || waiting["what"] != detail["what"])
+			continue
+		waiting["count"] = (waiting["count"] || 1) + 1
+		return TRUE
 	return FALSE
 
 /// Append to the event ring without scheduling anything.
@@ -373,7 +523,8 @@
 	if(replenish)
 		begin_interaction()
 
-	if(urgency >= AGENT_EVENT_HIGH && state == AGENT_BINDING_PENDING)
+	// Once per request: a reply already answering an emergency is worth waiting for, or every blow in a fight re-bills.
+	if(urgency >= AGENT_EVENT_HIGH && state == AGENT_BINDING_PENDING && !pending?.carries_urgent())
 		abandon_pending("superseded by [event_name]")
 	return TRUE
 

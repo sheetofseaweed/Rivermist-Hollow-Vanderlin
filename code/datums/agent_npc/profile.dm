@@ -22,6 +22,8 @@
 	var/list/permitted_actions = list("say", "emote", "wait")
 	/// Described to the model so it knows what it cannot do.
 	var/limits = "You cannot fight. If threatened you run. You do not know anything you have not seen or been told."
+	/// Other names this character answers to. Only ever evidence FOR being addressed, never against.
+	var/list/aliases = list()
 
 /// Wire form. Static per NPC, so the sidecar can cache a prompt built from it.
 /datum/agent_profile/proc/to_payload()
@@ -32,6 +34,7 @@
 		"voice" = voice,
 		"limits" = limits,
 		"permitted_actions" = permitted_actions.Copy(),
+		"aliases" = aliases.Copy(),
 	)
 
 /datum/agent_profile/proc/permits(action_name)
@@ -48,7 +51,7 @@
 		stranger is thinking."
 	voice = "You speak briefly, a sentence or two, in plain period language. \
 		You never narrate your own actions or describe yourself from outside."
-	permitted_actions = list("say", "emote", "approach", "use", "wait")
+	permitted_actions = list("say", "emote", "approach", "use", "touch", "wait")
 	limits = "You cannot fight, and you will not try. If you are attacked you \
 		run. You only know what you can see or have been told."
 

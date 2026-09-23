@@ -602,6 +602,7 @@
 #include "code\datums\agent_npc\addressing.dm"
 #include "code\datums\agent_npc\binding.dm"
 #include "code\datums\agent_npc\executor.dm"
+#include "code\datums\agent_npc\focus.dm"
 #include "code\datums\agent_npc\perception.dm"
 #include "code\datums\agent_npc\profile.dm"
 #include "code\datums\agent_npc\profile_library.dm"

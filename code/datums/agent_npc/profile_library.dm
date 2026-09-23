@@ -24,13 +24,29 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	copy.voice = voice
 	copy.limits = limits
 	copy.permitted_actions = permitted_actions.Copy()
+	copy.aliases = aliases.Copy()
 	return copy
 
-/// Cap and strip one authored field. Every character rides on every request.
+/// Names from a list or a comma-separated line, each capped, blanks and repeats dropped.
+/proc/agent_clean_profile_aliases(wanted)
+	var/list/raw = istext(wanted) ? splittext(wanted, ",") : wanted
+	var/list/cleaned = list()
+	if(!islist(raw))
+		return cleaned
+	for(var/entry in raw)
+		if(length(cleaned) >= AGENT_MAX_ALIASES)
+			break
+		var/name = trim(agent_clean_profile_text(entry, AGENT_PROFILE_LABEL_MAX))
+		if(length(name) && !(name in cleaned))
+			cleaned += name
+	return cleaned
+
+/// Plain text, brackets stripped, capped. Encoding it sent the model "&#39;" and grew on every save and load.
 /proc/agent_clean_profile_text(value, limit = AGENT_PROFILE_TEXT_MAX)
 	if(!istext(value))
 		return ""
-	return strip_html(value, limit)
+	// Tags out whole, then any stray bracket, so nothing written here can become markup in chat.
+	return trim(STRIP_HTML_SIMPLE(STRIP_HTML_FULL(html_decode(value), limit), limit))
 
 /**
  * Keep only real actions, and guarantee the one that ends a conversation.
@@ -63,6 +79,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	profile.voice = agent_clean_profile_text(payload["voice"])
 	profile.limits = agent_clean_profile_text(payload["limits"])
 	profile.permitted_actions = agent_clean_profile_actions(payload["permitted_actions"])
+	profile.aliases = agent_clean_profile_aliases(payload["aliases"])
 	return profile
 
 /// Every built-in profile, as payloads. Instantiated, never read via initial():
