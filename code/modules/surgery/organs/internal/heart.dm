@@ -106,6 +106,8 @@
 
 /obj/item/organ/heart/Remove(mob/living/carbon/old_owner, special = FALSE)
 	. = ..()
+	if(owner)
+		return FALSE
 	if(!special)
 		addtimer(CALLBACK(src, PROC_REF(stop_if_unowned)), 12 SECONDS)
 
@@ -521,6 +523,8 @@
 
 /obj/item/organ/heart/cursed/Remove(mob/living/carbon/M, special = FALSE, drop_if_replaced = TRUE)
 	. = ..()
+	if(owner)
+		return FALSE
 	M.remove_client_colour(/datum/client_colour/cursed_heart_blood)
 
 /datum/action/item_action/organ_action/cursed_heart

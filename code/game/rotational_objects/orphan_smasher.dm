@@ -25,6 +25,7 @@
 	var/progress = 0
 	var/needed_progress = 100
 
+	/// Shared recipe catalog; individual anvils must not delete its entries.
 	var/static/list/regular_recipes = list()
 
 	var/list/step_list = list()
@@ -47,11 +48,8 @@
 	START_PROCESSING(SSobj, src)
 
 /obj/structure/orphan_smasher/Destroy()
-	if(current)
-		QDEL_NULL(current)
-	for(var/datum/anvil_recipe/recipe as anything in regular_recipes)
-		LAZYREMOVE(regular_recipes, recipe)
-		QDEL_NULL(recipe)
+	STOP_PROCESSING(SSobj, src)
+	current = null
 	QDEL_NULL(bin)
 	current_requirements.Cut()
 	anvil_recipes_to_craft.Cut()
@@ -79,6 +77,8 @@
 	if(!working)
 		return
 	if(!length(anvil_recipes_to_craft))
+		return
+	if(QDELETED(bin))
 		return
 	try_set_recipe_stuff()
 
@@ -142,7 +142,7 @@
 		return
 
 	var/option = input(user, "Remove or Add a recipe?", src) as null|anything in list("Add", "Remove")
-	if(!option)
+	if(!option || QDELETED(src) || QDELETED(user) || !user.Adjacent(src))
 		return
 
 	if(option == "Add")
@@ -154,15 +154,16 @@
 			return
 
 		var/datum/anvil_recipe/choice = input(user, "Choose a recipe to add to the queue", src) as null|anything in options
-		if(!choice)
+		if(QDELETED(src) || QDELETED(user) || !user.Adjacent(src) || !(choice in regular_recipes))
 			return
 		anvil_recipes_to_craft |= choice
 	else
 		var/datum/anvil_recipe/choice = input(user, "Choose a recipe to remove from the queue", src) as null|anything in anvil_recipes_to_craft
-		if(!choice)
+		if(QDELETED(src) || QDELETED(user) || !user.Adjacent(src) || !(choice in anvil_recipes_to_craft))
 			return
 		if(choice == current)
 			current = null
+			current_requirements.Cut()
 			progress = 0
 		anvil_recipes_to_craft -= choice
 
@@ -329,6 +330,8 @@
 	AddComponent(/datum/component/storage/concrete/grid/anvil_bin)
 
 /obj/structure/material_bin/Destroy()
+	if(parent?.bin == src)
+		parent.bin = null
 	parent = null
 	return ..()
 

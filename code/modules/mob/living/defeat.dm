@@ -16,6 +16,61 @@
 	var/tmp/defeat_suppress_heal_cleanup = FALSE
 	/// The one recovery action currently being performed on this victim.
 	var/datum/defeat_recovery_channel/defeat_recovery_channel
+	/// Scoped bypass for explicit death choices and administrative destruction.
+	var/tmp/defeat_lethal_bypass = FALSE
+	/// Blocks automatic rune rescue after an explicitly final death.
+	var/defeat_final_death = FALSE
+
+/mob/living/proc/defeat_intercept_lethal(reason = DEFEAT_REASON_DEATH)
+	if(defeat_lethal_bypass || suiciding || stat == DEAD || !defeat_system_is_eligible())
+		return FALSE
+	if(has_status_effect(/datum/status_effect/defeat_knockout))
+		return TRUE
+	return enter_defeat(reason, DEFEAT_SEVERITY_SEVERE)
+
+/mob/living/proc/defeat_explicit_death(gibbed = FALSE)
+	defeat_final_death = TRUE
+	var/previous_bypass = defeat_lethal_bypass
+	defeat_lethal_bypass = TRUE
+	var/result = death(gibbed)
+	defeat_lethal_bypass = previous_bypass
+	return result
+
+/mob/living/proc/defeat_rescue_from_hazard()
+	if(!defeat_intercept_lethal(DEFEAT_REASON_HAZARD))
+		return FALSE
+	var/turf/destination
+	for(var/turf/candidate in range(DEFEAT_HAZARD_RESCUE_RADIUS, src))
+		if(!defeat_safe_recovery_turf(candidate))
+			continue
+		if(!destination || get_dist(src, candidate) < get_dist(src, destination))
+			destination = candidate
+	if(!destination)
+		for(var/obj/effect/landmark/start/start as anything in GLOB.start_landmarks_list)
+			var/turf/candidate = get_turf(start)
+			if(defeat_safe_recovery_turf(candidate))
+				destination = candidate
+				break
+	if(!destination)
+		log_game("Defeat hazard rescue could not find safe ground for [key_name(src)] at [AREACOORD(src)].")
+		return TRUE
+	if(buckled)
+		buckled.unbuckle_mob(src, force = TRUE)
+	stop_pulling()
+	if(pulledby)
+		pulledby.stop_pulling()
+	ExtinguishMob()
+	forceMove(destination)
+	to_chat(src, span_notice("A last thread of mercy carries you onto safe ground. You are defeated, but alive."))
+	return TRUE
+
+/proc/defeat_safe_recovery_turf(turf/candidate)
+	if(!isopenturf(candidate) || candidate.density || islava(candidate) || istype(candidate, /turf/open/openspace) || istype(candidate, /turf/open/water) || istype(candidate, /turf/open/dungeon_trap))
+		return FALSE
+	for(var/atom/movable/obstacle in candidate)
+		if(obstacle.density)
+			return FALSE
+	return TRUE
 
 /mob/living/proc/cache_defeat_preferences_from_prefs(datum/preferences/prefs)
 	if(!prefs)
@@ -56,6 +111,8 @@
 	AddComponent(/datum/component/defeat_monitor)
 
 /mob/living/proc/defeat_system_is_eligible()
+	if(defeat_lethal_bypass || defeat_final_death || suiciding)
+		return FALSE
 	if(defeat_mode == DEFEAT_MODE_NO_RETURN)
 		return FALSE
 	if(!iscarbon(src))
@@ -139,6 +196,8 @@
 	if(defeat_mode != DEFEAT_MODE_KO_RUNE)
 		return FALSE
 	var/datum/resurrection_rune_controller/controller = get_resurrection_rune_controller_for_user(src)
+	if(controller && (src in controller.resurrecting) && !controller.resurrections_disabled())
+		return TRUE
 	return controller?.can_offer_defeat_rune_return(src)
 
 /// Safeguard for KO+Rune players who fall with no working rune link (never linked, or their rune was
@@ -307,7 +366,7 @@
 		return FALSE
 	if(!perform_defeat_rescue(null, "struggle", /datum/defeat_recovery_profile/self_recovery/ko_only))
 		return FALSE
-	to_chat(src, span_userdanger("Gritting your teeth, you drag yourself up from defeat - broken, but alive. You will have to limp to the town clinic to be made whole."))
+	to_chat(src, span_userdanger("Gritting your teeth, you drag yourself up from defeat. You need [DisplayTimeText(DEFEAT_GRIEVOUS_RECOVERY_TIME)] to regain your fighting strength, or skilled medical trauma treatment to recover sooner."))
 	return TRUE
 
 /// Empty-handed revive channel length, scaled by the reviver's medicine skill: no skill takes the
@@ -391,11 +450,10 @@
 	var/turf/current_turf = get_turf(src)
 	if(!current_turf)
 		return FALSE
-	// Only lava/acid and open chasms are "unfair instant death" turfs worth an auto-rune - but only
-	// if the turf would actually claim us *right now*. can_traverse_safely already excludes anyone
-	// merely passing over: flying, floating, mid-jump (thrown), or phasing/shadow-walking. So a jump
-	// across a lava channel no longer triggers the rune - only genuinely standing in it does.
-	if(islava(current_turf) || istype(current_turf, /turf/open/openspace))
+	// Open space can be occupied while climbing. Being able to fall is not itself lethal;
+	// fall damage and groundless impacts handle defeat through their own paths.
+	// Lava/acid only counts when the mob is exposed, rather than passing safely over it.
+	if(islava(current_turf))
 		return !current_turf.can_traverse_safely(src)
 	return FALSE
 
@@ -433,25 +491,30 @@
 	blood_volume = max(0, blood_volume - drawn)
 	return drawn
 
-/mob/living/proc/apply_defeat_snapshot_debuffs(severity_override)
+/mob/living/proc/apply_defeat_snapshot_debuffs(severity_override, escalate_existing = TRUE)
 	var/datum/defeat_snapshot/snapshot = last_defeat_snapshot
 	if(!snapshot)
 		return FALSE
 	var/debuff_type = snapshot.defeat_debuff_type()
 	if(!debuff_type)
 		return FALSE
-	apply_defeat_trauma_status(debuff_type, severity_override || snapshot.severity)
+	var/datum/status_effect/debuff/defeat/aftermath = apply_defeat_trauma_status(debuff_type, severity_override || snapshot.severity, escalate_existing)
+	if(aftermath)
+		to_chat(src, span_notice("Aftermath: [aftermath.trauma_label] ([defeat_severity_label(aftermath.severity)]). Click its status alert for effects, recovery time, and treatment."))
 	return TRUE
 
-/mob/living/proc/apply_defeat_trauma_status(datum/status_effect/debuff/defeat/debuff_type, severity = DEFEAT_SEVERITY_NORMAL)
+/mob/living/proc/apply_defeat_trauma_status(datum/status_effect/debuff/defeat/debuff_type, severity = DEFEAT_SEVERITY_NORMAL, escalate_existing = TRUE)
 	var/new_rank = defeat_severity_rank(severity)
 	var/status_id = initial(debuff_type.id)
 	for(var/datum/status_effect/debuff/defeat/existing_trauma as anything in status_effects)
 		if(existing_trauma.id != status_id)
 			continue
+		// Prepared rescue preserves existing trauma and its remaining recovery time.
+		if(!escalate_existing && defeat_severity_rank(existing_trauma.severity) >= new_rank)
+			return existing_trauma
 		// Already carrying this trauma untreated -> it festers and escalates one stage past the worse
 		// of the two, capped at severe. Keep getting defeated without treatment and it only worsens.
-		var/escalated_rank = min(max(defeat_severity_rank(existing_trauma.severity), new_rank) + 1, defeat_severity_rank(DEFEAT_SEVERITY_SEVERE))
+		var/escalated_rank = min(max(defeat_severity_rank(existing_trauma.severity), new_rank) + (escalate_existing ? 1 : 0), defeat_severity_rank(DEFEAT_SEVERITY_SEVERE))
 		severity = defeat_severity_from_rank(escalated_rank)
 		qdel(existing_trauma)
 		break
@@ -1315,6 +1378,10 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	var/source_ckey
 	var/datum/weakref/source_weakref
 	var/created_at = 0
+	var/lethal_cause
+	var/blood_loss_defeat = FALSE
+	var/brain_damage_defeat = FALSE
+	var/oxygen_loss_defeat = FALSE
 
 /datum/defeat_snapshot/proc/capture_from(mob/living/carbon/target, new_reason, new_severity = DEFEAT_SEVERITY_NORMAL, mob/living/source)
 	if(!target)
@@ -1331,6 +1398,18 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	traumatic_shock = target.getShock()
 	shock_stage = target.shock_stage
 	created_at = world.time
+	blood_loss_defeat = target.blood_volume <= BLOOD_VOLUME_SURVIVE && !HAS_TRAIT(target, TRAIT_BLOODLOSS_IMMUNE)
+	brain_damage_defeat = target.getOrganLoss(ORGAN_SLOT_BRAIN) >= BRAIN_DAMAGE_DEATH
+	oxygen_loss_defeat = oxy_loss >= DEFEAT_OXY_THRESHOLD
+	if(reason == DEFEAT_REASON_DEATH)
+		if(blood_loss_defeat)
+			lethal_cause = "critical blood loss"
+		else if(brain_damage_defeat)
+			lethal_cause = "critical brain damage"
+		else if(oxygen_loss_defeat)
+			lethal_cause = "critical oxygen loss"
+		else
+			lethal_cause = "lethal accumulated damage"
 
 	if(source)
 		source_name = source.name
@@ -1346,6 +1425,20 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	return TRUE
 
 /datum/defeat_snapshot/proc/defeat_debuff_type()
+	// Lethal physiology takes precedence over an unrelated older limb injury.
+	if(reason == DEFEAT_REASON_DEATH)
+		if(blood_loss_defeat)
+			return /datum/status_effect/debuff/defeat/blood_loss
+		if(brain_damage_defeat)
+			return /datum/status_effect/debuff/defeat/physical/concussion
+		if(oxygen_loss_defeat)
+			return /datum/status_effect/debuff/defeat/breathless
+	if(reason == DEFEAT_REASON_DAMAGE || reason == DEFEAT_REASON_DEATH)
+		var/physical_damage = brute_loss + burn_loss * DEFEAT_BURN_DAMAGE_WEIGHT
+		if(tox_loss > 0 && tox_loss > physical_damage && tox_loss >= clone_loss)
+			return /datum/status_effect/debuff/defeat/poisoned
+		if(clone_loss > 0 && clone_loss > physical_damage && clone_loss > tox_loss)
+			return /datum/status_effect/debuff/defeat/body_strain
 	switch(reason)
 		if(DEFEAT_REASON_DAMAGE, DEFEAT_REASON_DEATH, DEFEAT_REASON_HAZARD)
 			// Burns always read as burn trauma regardless of where they land.
@@ -1368,15 +1461,22 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 		if(DEFEAT_REASON_PAIN)
 			return /datum/status_effect/debuff/defeat/pain
 		if(DEFEAT_REASON_HORNY)
-			return pick(
-				/datum/status_effect/debuff/defeat/horny/brainfog,
-				/datum/status_effect/debuff/defeat/horny/oversensitive,
-				/datum/status_effect/debuff/defeat/horny/wobble,
-				/datum/status_effect/debuff/defeat/horny/trembling,
-				/datum/status_effect/debuff/defeat/horny/breathless,
-				/datum/status_effect/debuff/defeat/horny/overcharge,
-			)
+			return /datum/status_effect/debuff/defeat/horny
 	return /datum/status_effect/debuff/defeat/physical
+
+/datum/defeat_snapshot/proc/cause_description()
+	switch(reason)
+		if(DEFEAT_REASON_DAMAGE)
+			return "accumulated injury damage"
+		if(DEFEAT_REASON_PAIN)
+			return shock_stage >= DEFEAT_SHOCK_HARD_STAGE ? "extreme pain shock" : "sustained pain shock"
+		if(DEFEAT_REASON_DEATH)
+			return lethal_cause || "a lethal condition"
+		if(DEFEAT_REASON_HAZARD)
+			return "deadly terrain"
+		if(DEFEAT_REASON_HORNY)
+			return "intimate exhaustion"
+	return "defeat"
 
 /proc/defeat_severity_rank(severity)
 	switch(severity)
@@ -1404,6 +1504,11 @@ GLOBAL_LIST_INIT(npc_distress_thanks, list(
 	return "Moderate"
 
 /datum/defeat_snapshot/proc/capture_worst_injury(mob/living/carbon/target)
+	worst_body_zone = null
+	worst_bodypart_name = null
+	worst_injury_type = null
+	worst_injury_stage = 0
+	worst_injury_damage = 0
 	for(var/datum/injury/injury as anything in target.all_injuries)
 		if(!injury || injury.damage < worst_injury_damage)
 			continue

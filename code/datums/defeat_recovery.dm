@@ -7,6 +7,7 @@
 	var/helper_stamina_cost = 0
 	var/aftermath_severity = DEFEAT_SEVERITY_NORMAL
 	var/apply_snapshot_aftermath = TRUE
+	var/escalates_existing_trauma = TRUE
 	var/additional_aftermath_type
 	var/additional_aftermath_severity = DEFEAT_SEVERITY_NORMAL
 	/// Passive sources use a stoppable channel-owned timer instead of requiring an incapacitated
@@ -52,7 +53,7 @@
 	if(!victim)
 		return FALSE
 	if(apply_snapshot_aftermath)
-		victim.apply_defeat_snapshot_debuffs(aftermath_severity)
+		victim.apply_defeat_snapshot_debuffs(aftermath_severity, escalates_existing_trauma)
 	if(additional_aftermath_type)
 		victim.apply_defeat_trauma_status(additional_aftermath_type, additional_aftermath_severity)
 	return TRUE
@@ -74,7 +75,7 @@
 	requires_helper = TRUE
 	requires_adjacent_helper = TRUE
 	helper_stamina_cost = DEFEAT_MANUAL_HELPER_STAMINA_COST
-	aftermath_severity = DEFEAT_SEVERITY_SEVERE
+	aftermath_severity = DEFEAT_SEVERITY_NORMAL
 
 /datum/defeat_recovery_profile/manual/recovery_time(datum/defeat_recovery_channel/channel)
 	var/mob/living/helper = channel.resolve_helper()
@@ -83,7 +84,8 @@
 /datum/defeat_recovery_profile/prepared
 	profile_id = DEFEAT_RECOVERY_PREPARED
 	requires_helper = TRUE
-	aftermath_severity = DEFEAT_SEVERITY_NORMAL
+	aftermath_severity = DEFEAT_SEVERITY_LIGHT
+	escalates_existing_trauma = FALSE
 
 /datum/defeat_recovery_profile/campfire
 	profile_id = DEFEAT_RECOVERY_CAMPFIRE
@@ -154,6 +156,7 @@
 	var/resources_consumed = FALSE
 	var/interrupt_signals_registered = FALSE
 	var/channel_started = FALSE
+	var/completes_at = 0
 	var/passive_completion_timer
 	var/victim_relay_attached = FALSE
 	var/helper_relay_attached = FALSE
@@ -300,6 +303,7 @@
 	profile.on_channel_started(src)
 
 	var/recovery_time = profile.recovery_time(src)
+	completes_at = world.time + recovery_time
 	if(recovery_time > 0)
 		register_interrupt_signals()
 		if(profile.uses_passive_timer)

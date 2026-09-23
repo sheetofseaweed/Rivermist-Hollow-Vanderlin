@@ -28,6 +28,8 @@
 				. -= L
 
 /mob/living/carbon/human/death(gibbed)
+	if(defeat_intercept_lethal())
+		return FALSE
 	if(stat == DEAD)
 		return
 
@@ -135,6 +137,8 @@
 	return mind.add_antag_datum(/datum/antagonist/zombie)
 
 /mob/living/carbon/human/gib(no_brain, no_organs, no_bodyparts, safe_gib = FALSE)
+	if(defeat_intercept_lethal())
+		return FALSE
 	record_round_statistic(STATS_PEOPLE_GIBBED)
 	for(var/mob/living/carbon/human/CA in viewers(7, src))
 		if(CA != src && !CA.is_blind())

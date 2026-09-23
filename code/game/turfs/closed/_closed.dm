@@ -217,7 +217,9 @@
 				playsound(user, climbsound, 100, TRUE)
 			user.visible_message("<span class='warning'>[user] starts to climb [src].</span>", "<span class='warning'>I start to climb [src]...</span>")
 			if(do_after(L, used_time, src))
-				if(!L.can_z_move(UP, get_turf(L), target, Z_MOVE_CLIMBING_FLAGS | ZMOVE_FEEDBACK))
+				// The passage is above the climber; target is the landing turf above the wall.
+				var/turf/current_turf = get_turf(L)
+				if(!L.can_z_move(UP, current_turf, GET_TURF_ABOVE(current_turf), Z_MOVE_CLIMBING_FLAGS | ZMOVE_FEEDBACK))
 					return
 				L.set_currently_z_moving(CURRENTLY_Z_ASCENDING)
 				if(!L.zMove(UP, target, Z_MOVE_CLIMBING_FLAGS))

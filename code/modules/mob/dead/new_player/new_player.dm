@@ -122,6 +122,9 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 
 	if(href_list["ready"])
 		var/tready = text2num(href_list["ready"])
+		if(tready == PLAYER_READY_TO_PLAY && !client.prefs.defeat_introduction_complete)
+			client.prefs.show_choices(src)
+			return
 		//Avoid updating ready if we're after PREGAME (they should use latejoin instead)
 		//This is likely not an actual issue but I don't have time to prove that this
 		//no longer is required
@@ -384,6 +387,9 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 	return JOB_AVAILABLE
 
 /mob/dead/new_player/proc/AttemptLateSpawn(rank)
+	if(!client?.prefs?.defeat_introduction_complete)
+		client?.prefs?.show_choices(src)
+		return FALSE
 	var/error = IsJobUnavailable(rank, TRUE)
 	if(error != JOB_AVAILABLE)
 		alert(src, get_job_unavailable_error_message(error, rank))
@@ -448,6 +454,9 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 
 
 /mob/dead/new_player/proc/LateChoices()
+	if(!client?.prefs?.defeat_introduction_complete)
+		client?.prefs?.show_choices(src)
+		return
 	var/list/dat = list("<div class='notice' style='font-style: normal; font-size: 14px; margin-bottom: 2px; padding-bottom: 0px'>Round Duration: [DisplayTimeText(world.time - SSticker.round_start_time, 1)]</div>")
 	for(var/datum/job/prioritized_job in SSjob.prioritized_jobs)
 		if(!prioritized_job.has_open_position(TRUE))
