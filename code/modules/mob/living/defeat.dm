@@ -450,11 +450,10 @@
 	var/turf/current_turf = get_turf(src)
 	if(!current_turf)
 		return FALSE
-	// Only lava/acid and open chasms are "unfair instant death" turfs worth an auto-rune - but only
-	// if the turf would actually claim us *right now*. can_traverse_safely already excludes anyone
-	// merely passing over: flying, floating, mid-jump (thrown), or phasing/shadow-walking. So a jump
-	// across a lava channel no longer triggers the rune - only genuinely standing in it does.
-	if(islava(current_turf) || istype(current_turf, /turf/open/openspace))
+	// Open space can be occupied while climbing. Being able to fall is not itself lethal;
+	// fall damage and groundless impacts handle defeat through their own paths.
+	// Lava/acid only counts when the mob is exposed, rather than passing safely over it.
+	if(islava(current_turf))
 		return !current_turf.can_traverse_safely(src)
 	return FALSE
 
