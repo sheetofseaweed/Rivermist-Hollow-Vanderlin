@@ -212,6 +212,7 @@ type DisguiseSlot = {
 
 type PrefsData = {
 	disguise_mode?: Booleanish;
+	ooze_mode?: Booleanish;
 	selected_slot?: number;
 	slot_cap?: number;
 	contract_tier?: number;
@@ -634,6 +635,7 @@ const FieldBlock = (props: {
 export const PreferencesMenu = () => {
   const { act, data } = useBackend<PrefsData>();
 	const disguiseMode = asBool(data.disguise_mode);
+	const oozeMode = asBool(data.ooze_mode);
 
   const mapTab = (tab: string) => (tab === 'game' ? 'settings' : 'identity');
   const [menuScale, setMenuScaleState] = useState(
@@ -2036,7 +2038,9 @@ export const PreferencesMenu = () => {
           </Box>
           {asBool(data.genital_extra_unlock) ? (
             <Box color="label" fontSize="11px">
-              Extra Genitals lets you mix and match genital features.
+              {data.species_id === 'ooze'
+                ? 'Oozes can mix and match genital features.'
+                : 'Extra Genitals lets you mix and match genital features.'}
             </Box>
           ) : null}
         </Stack.Item>
@@ -3100,7 +3104,19 @@ export const PreferencesMenu = () => {
       case 'voice':
         return renderDisguiseVoice();
       default:
-        return renderDisguiseIdentity();
+        return oozeMode ? (
+          <Panel title="Body" icon="user">
+            <PrefRow
+              icon="venus-mars"
+              label="Body Type"
+              value={data.gender}
+              onClick={() => doPref('gender')}
+            />
+            <Box color="label" mt={1}>
+              My name, species, age, and pronouns stay the same.
+            </Box>
+          </Panel>
+        ) : renderDisguiseIdentity();
     }
   };
 
@@ -3142,7 +3158,7 @@ export const PreferencesMenu = () => {
 
   if (disguiseMode) {
     const disguiseSections = [
-      { id: 'identity', label: 'Identity', icon: 'id-card' },
+      { id: 'identity', label: oozeMode ? 'Body' : 'Identity', icon: 'id-card' },
       { id: 'appearance', label: 'Appearance', icon: 'palette' },
       { id: 'voice', label: 'Voice', icon: 'volume-up' },
     ];
@@ -3150,11 +3166,11 @@ export const PreferencesMenu = () => {
     const selectedSlot =
       slots.find((slot) => slot.slot === data.selected_slot) ?? slots[0];
     const commitReason = data.commit_reason ||
-      (asBool(data.commit_available) ? 'Store this identity.' : 'This disguise cannot be stored right now.');
+      (asBool(data.commit_available) ? 'Ready to reshape.' : 'This body cannot be reshaped right now.');
 
     return (
       <Window
-        title="Create Disguise"
+        title={oozeMode ? 'Reshape Body' : 'Create Disguise'}
         width={1320}
         height={880}
         theme="vanderlin"
@@ -3169,16 +3185,18 @@ export const PreferencesMenu = () => {
                       {display(data.real_name, 'Unnamed Disguise')}
                     </Box>
                     <Box color="label">
-                      {display(data.species_name, 'Mortal')} / {display(data.gender)} / Tier{' '}
-                      {display(data.contract_tier, '1')}
+                      {display(data.species_name, 'Ooze')} / {display(data.gender)}
+                      {!oozeMode ? ` / Tier ${display(data.contract_tier, '1')}` : ''}
                     </Box>
                   </Stack.Item>
-                  <Stack.Item>
-                    <Box color="label">Essence</Box>
-                    <Box bold textAlign="right">
-                      {display(data.essence, '0')}
-                    </Box>
-                  </Stack.Item>
+                  {!oozeMode ? (
+                    <Stack.Item>
+                      <Box color="label">Essence</Box>
+                      <Box bold textAlign="right">
+                        {display(data.essence, '0')}
+                      </Box>
+                    </Stack.Item>
+                  ) : null}
                 </Stack>
               </Section>
             </Stack.Item>
@@ -3286,13 +3304,13 @@ export const PreferencesMenu = () => {
                             />
                           </Stack.Item>
                         </Stack>
-                        <Button
+                        {!oozeMode ? <Button
                           fluid
                           icon="dice"
                           onClick={() => doPref('randomiseappearanceprefs')}
                         >
                           Randomise Appearance
-                        </Button>
+                        </Button> : null}
                       </Stack.Item>
                     </Stack>
                   </Section>
@@ -3309,7 +3327,7 @@ export const PreferencesMenu = () => {
             <Stack.Item>
               <Section>
                 <Stack align="center">
-                  <Stack.Item grow>
+                  {!oozeMode ? <Stack.Item grow>
                     <Box color="label" mb={0.5}>
                       Created disguise slots
                     </Box>
@@ -3344,19 +3362,28 @@ export const PreferencesMenu = () => {
                         </Stack.Item>
                       ))}
                     </Stack>
-                  </Stack.Item>
+                  </Stack.Item> : null}
                   <Stack.Item basis="250px">
                     <Box color={asBool(data.commit_available) ? 'good' : 'average'}>
-                      {selectedSlot && asBool(selectedSlot.occupied)
+                      {oozeMode ? 'Reshape body' : selectedSlot && asBool(selectedSlot.occupied)
                         ? `Replace slot ${selectedSlot.slot}`
                         : `Store in slot ${selectedSlot?.slot ?? 1}`}
                     </Box>
                     <Box color="label" fontSize="11px">
-                      Cost: {display(data.creation_cost, '0')} essence. {commitReason}
+                      {oozeMode ? commitReason : `Cost: ${display(data.creation_cost, '0')} essence. ${commitReason}`}
                     </Box>
                   </Stack.Item>
+                  {oozeMode && <Stack.Item>
+                    <Button
+                      icon="rotate-left"
+                      tooltip="Restore the appearance saved for this character slot."
+                      onClick={() => act('ooze_reset')}
+                    >
+                      Restore Saved Body
+                    </Button>
+                  </Stack.Item>}
                   <Stack.Item>
-                    <Button icon="times" onClick={() => act('disguise_cancel')}>
+                    <Button icon="times" onClick={() => act(oozeMode ? 'ooze_cancel' : 'disguise_cancel')}>
                       Cancel
                     </Button>
                   </Stack.Item>
@@ -3366,7 +3393,7 @@ export const PreferencesMenu = () => {
                       color="green"
                       disabled={!asBool(data.commit_available)}
                       tooltip={commitReason}
-                      onClick={() => act('disguise_commit')}
+                      onClick={() => act(oozeMode ? 'ooze_commit' : 'disguise_commit')}
                     >
                       Commit
                     </Button>

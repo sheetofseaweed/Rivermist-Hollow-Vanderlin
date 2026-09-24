@@ -52,7 +52,10 @@
 		return FALSE
 	var/obj/item/bodypart/affecting = C.get_bodypart(BODY_ZONE_CHEST)
 	if(affecting && dismember_wound)
-		affecting.add_wound(dismember_wound)
+		if(istype(C.dna?.species, /datum/species/ooze))
+			C.visible_message(span_danger("[C]'s exposed ooze seals over."))
+		else
+			affecting.add_wound(dismember_wound)
 	playsound(C, pick(dismemsound), 50, FALSE, -1)
 	if(body_zone == BODY_ZONE_HEAD)
 		C.visible_message("<span class='danger'><B>[C] is [pick("BRUTALLY","VIOLENTLY","BLOODILY","MESSILY")] DECAPITATED!</B></span>")
@@ -278,6 +281,8 @@
 		if(!(C?.status_flags & BUILDING_ORGANS))
 			C.update_inv_gloves() //to remove the bloody hands overlay
 			C.update_inv_armor()
+	if(. && !special && istype(C?.dna?.species, /datum/species/ooze))
+		qdel(src)
 
 
 /obj/item/bodypart/l_arm/drop_limb(special)
@@ -299,6 +304,8 @@
 		if(!(C.status_flags & BUILDING_ORGANS))
 			C.update_inv_gloves() //to remove the bloody hands overlay
 			C.update_inv_armor()
+	if(. && !special && istype(C?.dna?.species, /datum/species/ooze))
+		qdel(src)
 
 /obj/item/bodypart/r_leg/drop_limb(special)
 	var/mob/living/carbon/C = owner
@@ -316,6 +323,8 @@
 		if(!(C.status_flags & BUILDING_ORGANS))
 			C.update_inv_shoes()
 			C.update_inv_pants()
+	if(. && !special && istype(C?.dna?.species, /datum/species/ooze))
+		qdel(src)
 
 /obj/item/bodypart/l_leg/drop_limb(special) //copypasta
 	var/mob/living/carbon/C = owner
@@ -333,6 +342,8 @@
 		if(!(C.status_flags & BUILDING_ORGANS))
 			C.update_inv_shoes()
 			C.update_inv_pants()
+	if(. && !special && istype(C?.dna?.species, /datum/species/ooze))
+		qdel(src)
 
 /obj/item/bodypart/taur/drop_limb(special) //copypasta
 	var/mob/living/carbon/C = owner

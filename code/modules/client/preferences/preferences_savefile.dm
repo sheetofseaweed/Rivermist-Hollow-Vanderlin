@@ -249,7 +249,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 
 /datum/preferences/proc/_load_species(S)
-	var/species_type = GLOB.species_list[S["species"]]
+	var/species_id = S["species"] == "slime" ? SPEC_ID_OOZE : S["species"]
+	var/species_type = GLOB.species_list[species_id]
 	if(!species_type)
 		species_type = /datum/species/human/northern
 	set_species_preference(species_type)

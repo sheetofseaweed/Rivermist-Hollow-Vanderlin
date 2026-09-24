@@ -201,6 +201,7 @@
 		AddComponent(/datum/component/arousal)
 
 /mob/living/carbon/human/Destroy()
+	QDEL_NULL(active_ooze_editor)
 	QDEL_NULL(physiology)
 	culture = null
 	// The spell slot HUD buttons hold a strong owner_mob reference back to us,

@@ -1,5 +1,7 @@
 //injury helpers
 /obj/item/bodypart/proc/get_injury_type(type, damage)
+	if(istype(owner?.dna?.species, /datum/species/ooze) && (type in list(WOUND_SLASH, WOUND_PIERCE, WOUND_BLUNT, WOUND_BITE, WOUND_LASH, WOUND_SCRATCH, WOUND_BURN)))
+		return /datum/injury/ooze
 	if(is_organic_limb())
 		switch(type)
 			if(WOUND_SLASH)

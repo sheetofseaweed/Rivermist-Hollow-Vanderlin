@@ -914,6 +914,7 @@ GLOBAL_LIST_EMPTY(cached_armsleeves_flat_icons)
 		/obj/item/clothing/legwears/stockings_wg/blue,
 		/obj/item/clothing/legwears/stockings_wg/red,
 		/obj/item/clothing/legwears/stockings_wg/purple,
+		/obj/item/clothing/legwears/foreign_habit_stockings,
 		)
 
 	var/list/legwear_types = typesof(/obj/item/clothing/legwears) - blacklisted_legwear
