@@ -24,6 +24,8 @@
 	var/limits = "You cannot fight. If threatened you run. You do not know anything you have not seen or been told."
 	/// Other names this character answers to. Only ever evidence FOR being addressed, never against.
 	var/list/aliases = list()
+	/// Exchanges the sidecar remembers for this character. Null uses the sidecar's own default.
+	var/memory_turns = null
 
 /// Wire form. Static per NPC, so the sidecar can cache a prompt built from it.
 /datum/agent_profile/proc/to_payload()
@@ -35,6 +37,7 @@
 		"limits" = limits,
 		"permitted_actions" = permitted_actions.Copy(),
 		"aliases" = aliases.Copy(),
+		"memory_turns" = memory_turns,
 	)
 
 /datum/agent_profile/proc/permits(action_name)
@@ -51,11 +54,11 @@
 		stranger is thinking."
 	voice = "You speak briefly, a sentence or two, in plain period language. \
 		You never narrate your own actions or describe yourself from outside."
-	permitted_actions = list("say", "emote", "approach", "use", "touch", "wait")
+	permitted_actions = list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "wait")
 	limits = "You cannot fight, and you will not try. If you are attacked you \
 		run. You only know what you can see or have been told."
 
 /// A talker. Same character, but it will not walk anywhere or touch anything.
 /// Worth using for a first supervised round, where less motion is less risk.
 /datum/agent_profile/villager/sedentary
-	permitted_actions = list("say", "emote", "wait")
+	permitted_actions = list("say", "emote", "me", "wait")

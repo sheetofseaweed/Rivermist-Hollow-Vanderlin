@@ -4,6 +4,7 @@ import {
   Dropdown,
   Input,
   NoticeBox,
+  NumberInput,
   Section,
   Stack,
   Table,
@@ -23,6 +24,7 @@ type Profile = {
   limits: string;
   permitted_actions: string[];
   aliases: string[];
+  memory_turns: number | null;
 };
 
 type BuiltIn = Omit<Profile, 'name'> & { type: string };
@@ -46,6 +48,8 @@ type Data = {
   labelMax: number;
   textMax: number;
   aliasMax: number;
+  memoryMax: number;
+  memoryStart: number;
 };
 
 /** The long text fields, in the order they read as a character brief. */
@@ -69,6 +73,8 @@ export function AgentProfileMenu(props) {
     labelMax,
     textMax,
     aliasMax,
+    memoryMax,
+    memoryStart,
   } = data;
 
   const editing = profiles.find((profile) => profile.name === selected);
@@ -99,6 +105,8 @@ export function AgentProfileMenu(props) {
                 labelMax={labelMax}
                 textMax={textMax}
                 aliasMax={aliasMax}
+                memoryMax={memoryMax}
+                memoryStart={memoryStart}
               />
             ) : (
               <ReadOnly template={template} />
@@ -212,6 +220,10 @@ function ReadOnly(props: { template?: BuiltIn }) {
       {(template.aliases || []).length > 0 && (
         <Box mb={1}>Also answers to: {template.aliases.join(', ')}</Box>
       )}
+      <Box mb={1}>
+        Memory:{' '}
+        {template.memory_turns ?? 'sidecar default'}
+      </Box>
       {TEXT_FIELDS.map((field) => (
         <Box key={field.key} mb={1}>
           <Box bold>{field.label}</Box>
@@ -230,9 +242,20 @@ function Editor(props: {
   labelMax: number;
   textMax: number;
   aliasMax: number;
+  memoryMax: number;
+  memoryStart: number;
 }) {
   const { act } = useBackend<Data>();
-  const { profile, vocabulary, labelMax, textMax, aliasMax } = props;
+  const {
+    profile,
+    vocabulary,
+    labelMax,
+    textMax,
+    aliasMax,
+    memoryMax,
+    memoryStart,
+  } = props;
+  const memory = profile.memory_turns;
 
   return (
     <Section
@@ -284,6 +307,38 @@ function Editor(props: {
         value={(profile.aliases || []).join(', ')}
         onBlur={(value) => act('set_aliases', { value })}
       />
+
+      <Box bold>Memory</Box>
+      <Box color="label" fontSize="0.9em" mb={0.5}>
+        Exchanges this character remembers, 0 to {memoryMax}. Each one is resent
+        on every request, so more memory costs more tokens per decision.
+      </Box>
+      <Box mb={1}>
+        {memory === null || memory === undefined ? (
+          <>
+            <Box inline color="label">
+              Sidecar default.
+            </Box>{' '}
+            <Button onClick={() => act('set_memory', { value: memoryStart })}>
+              Set my own
+            </Button>
+          </>
+        ) : (
+          <>
+            <NumberInput
+              width="4em"
+              value={memory}
+              minValue={0}
+              maxValue={memoryMax}
+              step={1}
+              onChange={(value: number) => act('set_memory', { value })}
+            />{' '}
+            <Button onClick={() => act('set_memory', { default: true })}>
+              Use sidecar default
+            </Button>
+          </>
+        )}
+      </Box>
 
       <Box bold mb={0.5}>
         Permitted actions

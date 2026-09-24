@@ -41,6 +41,8 @@
 		"labelMax" = AGENT_PROFILE_LABEL_MAX,
 		"textMax" = AGENT_PROFILE_TEXT_MAX,
 		"aliasMax" = AGENT_MAX_ALIASES,
+		"memoryMax" = AGENT_MAX_MEMORY_TURNS,
+		"memoryStart" = AGENT_MEMORY_TURNS_START,
 	)
 
 /datum/agent_profile_menu/ui_data(mob/user)
@@ -156,6 +158,14 @@
 			if(QDELETED(profile))
 				return TRUE
 			profile.aliases = agent_clean_profile_aliases(params["value"])
+			return TRUE
+
+		if("set_memory")
+			var/datum/agent_profile/profile = GLOB.agent_custom_profiles[selected]
+			if(QDELETED(profile))
+				return TRUE
+			// No value means back to the sidecar's default.
+			profile.memory_turns = params["default"] ? null : agent_clean_memory_turns(params["value"])
 			return TRUE
 
 		if("toggle_action")

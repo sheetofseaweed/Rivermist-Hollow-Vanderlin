@@ -224,6 +224,60 @@ class TouchAndStimuli(unittest.TestCase):
         self.assertIn("Bob shoved you.", text)
 
 
+class SitGiveTakeMe(unittest.TestCase):
+    """The four actions added 2026-09-24, and the notes that keep sneakers hidden."""
+
+    ALL = ["say", "me", "sit", "stand", "give", "take", "wait"]
+
+    def test_new_actions_map_to_the_dm_shape(self):
+        cases = [
+            ({"action": "me", "text": "wipes the bar."}, {"name": "me", "text": "wipes the bar."}),
+            ({"action": "sit", "handle": "h4"}, {"name": "sit", "handle": "h4"}),
+            ({"action": "stand"}, {"name": "stand"}),
+            ({"action": "give", "handle": "h2", "key": "h7"}, {"name": "give", "handle": "h2", "key": "h7"}),
+            ({"action": "take", "handle": "h2"}, {"name": "take", "handle": "h2"}),
+        ]
+        for parsed, expected in cases:
+            self.assertEqual(proto.to_dm_action(parsed), expected, parsed)
+
+    def test_new_shorthand_is_recovered(self):
+        self.assertEqual(proto.to_dm_action(proto.parse_loose_action("me: wipes the bar.", self.ALL)),
+                         {"name": "me", "text": "wipes the bar."})
+        self.assertEqual(proto.to_dm_action(proto.parse_loose_action("give: h2 h7", self.ALL)),
+                         {"name": "give", "handle": "h2", "key": "h7"})
+        self.assertEqual(proto.to_dm_action(proto.parse_loose_action("sit: h4", self.ALL)),
+                         {"name": "sit", "handle": "h4"})
+        self.assertEqual(proto.to_dm_action(proto.parse_loose_action("stand", self.ALL)), {"name": "stand"})
+
+    def test_each_action_is_explained_only_when_permitted(self):
+        wide = proto.build_system({"persona": "P", "permitted_actions": self.ALL})
+        narrow = proto.build_system({"persona": "P", "permitted_actions": ["say", "wait"]})
+        for phrase in ("'me'", "'sit'", "'give'"):
+            self.assertIn(phrase, wide)
+            self.assertNotIn(phrase, narrow)
+
+    def test_held_items_show_their_handles(self):
+        text = proto.build_user_message({"self": {"name": "Isaac", "holding": ["mug"],
+                                                  "held": [{"handle": "h9", "name": "mug"}]}}, [])
+        self.assertIn("You are holding [h9] mug.", text)
+
+    def test_an_offer_and_its_taking_read_plainly(self):
+        self.assertEqual(proto.describe_physical({"what": "offered", "by": "Anna", "item": "bread"}),
+                         "Anna is offering you bread.")
+        text = proto.build_user_message({"self": {"name": "Isaac"}}, [
+            {"event": "offer_taken", "detail": {"by": "Anna", "item": "mug"}}])
+        self.assertIn("Anna took the mug you held out.", text)
+
+    def test_unseen_is_said_everywhere(self):
+        # A sneaker the NPC has not spotted is heard and felt, never seen.
+        self.assertIn("you cannot see them", proto.describe_speech("heard_speech", {"speaker": "Bob", "text": "hi",
+                                                                                    "unseen": True}))
+        self.assertIn("you cannot see them", proto.describe_emote("saw_emote", {"speaker": "Bob", "text": "waves.",
+                                                                                 "unseen": True}))
+        self.assertIn("you cannot see them", proto.describe_physical({"what": "touched", "by": "Bob", "unseen": True}))
+        self.assertNotIn("cannot see", proto.describe_speech("heard_speech", {"speaker": "Bob", "text": "hi"}))
+
+
 class DeadlineBudget(unittest.TestCase):
     """The defect: the sidecar allowed the model 30s against a 15s deadline.
 
@@ -378,6 +432,64 @@ class MemoryKeying(unittest.TestCase):
         decider.memory.record(body, turn.user_text, {"name": "wait"})
         decider.memory.reconcile(envelope(events=verdict("succeeded")))
         self.assertEqual(decider.memory.depth(body), 0)
+
+
+class PerProfileMemory(unittest.TestCase):
+    """A profile may set its own memory length, so a social NPC can remember more than a guard."""
+
+    def body(self, memory=None, events=None):
+        body = envelope(events=events)
+        if memory is not None:
+            body["profile"]["memory_turns"] = memory
+        return body
+
+    def fill(self, store, memory, count):
+        for i in range(count):
+            store.record(self.body(memory), "turn %d" % i, {"name": "say", "text": "t%d" % i})
+            store.reconcile(self.body(memory, events=verdict("succeeded")))
+
+    def test_a_profile_can_remember_more_than_the_default(self):
+        store = proto.ConversationStore(max_turns=2)
+        self.fill(store, 5, 8)
+        self.assertEqual(store.depth(self.body(5)), 5)
+
+    def test_a_profile_can_remember_less(self):
+        store = proto.ConversationStore(max_turns=6)
+        self.fill(store, 1, 4)
+        self.assertEqual(store.depth(self.body(1)), 1)
+        self.assertEqual(store.history(self.body(1))[0]["role"], "user")
+
+    def test_no_value_means_the_default(self):
+        store = proto.ConversationStore(max_turns=3)
+        self.fill(store, None, 6)
+        self.assertEqual(store.depth(self.body()), 3)
+
+    def test_the_ceiling_holds_whatever_the_profile_asks(self):
+        store = proto.ConversationStore(max_turns=6)
+        self.assertEqual(store.limit(self.body(10000)), proto.MAX_MEMORY_TURNS)
+        self.assertEqual(store.limit(self.body(-4)), 0)
+        # In Python True is an int; a boolean is not a length.
+        self.assertEqual(store.limit(self.body(True)), 6)
+        self.assertEqual(store.limit(self.body("12")), 6)
+
+    def test_zero_on_the_command_line_still_turns_memory_off(self):
+        # The operator's switch outranks any profile.
+        store = proto.ConversationStore(max_turns=0)
+        self.assertEqual(store.limit(self.body(10)), 0)
+        self.fill(store, 10, 3)
+        self.assertEqual(store.depth(self.body(10)), 0)
+
+    def test_lowering_memory_mid_round_applies_at_once(self):
+        store = proto.ConversationStore(max_turns=6)
+        self.fill(store, 6, 6)
+        self.assertEqual(store.depth(self.body(2)), 2)
+        self.assertEqual(store.history(self.body(2))[0]["role"], "user")
+
+    def test_switching_memory_off_forgets(self):
+        store = proto.ConversationStore(max_turns=6)
+        self.fill(store, 6, 3)
+        store.reconcile(self.body(0, events=verdict("succeeded")))
+        self.assertEqual(store.depth(self.body(6)), 0, "turning it back on must not bring old turns back")
 
 
 class OutputShape(unittest.TestCase):

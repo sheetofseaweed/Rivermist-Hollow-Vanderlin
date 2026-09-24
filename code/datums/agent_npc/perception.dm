@@ -81,6 +81,10 @@
 			continue
 		if(!can_see(pawn, thing, AGENT_VIEW_RANGE))
 			continue
+		// A sneaker in the dark is seen only if spotted, by the roll hostile NPCs make. Spotting reveals them.
+		var/mob/living/living_thing = thing
+		if(isliving(living_thing) && agent_is_hidden(living_thing) && !pawn.npc_detect_sneak(living_thing))
+			continue
 		if(fixture)
 			fixtures_seen[thing] = get_dist(pawn, thing)
 		else
@@ -96,7 +100,7 @@
 
 	var/turf/here = get_turf(pawn)
 	var/list/payload = list(
-		"self" = agent_describe_self(pawn),
+		"self" = agent_describe_self(pawn, observation),
 		"here" = here ? "[here.name]" : "nowhere",
 		"entities" = entities,
 		"structures" = agent_describe_fixtures(pawn, fixtures_seen, observation),
@@ -105,8 +109,12 @@
 
 	return list("observation" = observation, "payload" = payload)
 
+/// Sneaking in the dark, or faded out. The same test the hostile AI uses before rolling to spot someone.
+/proc/agent_is_hidden(mob/living/who)
+	return who.rogue_sneaking || who.alpha <= 100
+
 /// The NPC's own gear is character knowledge: both hands, every worn layer, and bag contents.
-/proc/agent_describe_self(mob/living/pawn)
+/proc/agent_describe_self(mob/living/pawn, datum/agent_observation/observation)
 	var/list/myself = list(
 		"name" = pawn.get_visible_name(),
 		"condition" = agent_describe_condition(pawn),
@@ -117,6 +125,13 @@
 	)
 	if(pawn.buckled)
 		myself["on"] = "[pawn.buckled.name]"
+	// Handles for what is in hand, so give can say which. Only give accepts them.
+	if(observation)
+		var/list/held = list()
+		for(var/obj/item/item in pawn.held_items)
+			if(!QDELETED(item))
+				held += list(list("handle" = observation.offer(item), "name" = "[item.name]"))
+		myself["held"] = held
 	return myself
 
 /// Furniture, doors and machines. Invisible-to-the-mouse fixtures are overlays and decals, not things.

@@ -67,6 +67,7 @@
 // BEGIN_INCLUDE
 #include "action_button_positions.dm"
 #include "agent_npc_accounting.dm"
+#include "agent_npc_actions.dm"
 #include "agent_npc_addressing.dm"
 #include "agent_npc_aliases.dm"
 #include "agent_npc_breaker.dm"

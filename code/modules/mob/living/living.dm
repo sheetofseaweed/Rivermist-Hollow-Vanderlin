@@ -3469,6 +3469,8 @@
 		to_chat(offered_to, span_notice("[src] offers [offered_item] to me..."))
 
 	new /obj/effect/temp_visual/offered_item_effect(get_turf(src), offered_item, src, offered_to, stealthy)
+	// The receiver otherwise learns only through to_chat, which a clientless NPC never reads.
+	SEND_SIGNAL(offered_to, COMSIG_LIVING_ITEM_OFFERED, src, offered_item)
 
 	return TRUE
 

@@ -124,6 +124,8 @@
 #define AGENT_MAX_STORED_SHOWN 12
 /// Letters of an emote passed on. Custom emotes can run long; every letter is paid for.
 #define AGENT_EMOTE_TEXT_MAX 400
+/// Letters of the NPC's own custom emote. A gesture, not a paragraph.
+#define AGENT_ME_TEXT_MAX 200
 
 /// Atom the current objective is aimed at. Resolved from a handle, never raw.
 #define BB_AGENT_OBJECTIVE_TARGET "BB_agent_objective_target"
@@ -134,8 +136,12 @@
 /// Per-controller result of the last `use`. Behaviors are singletons, so
 /// anything pawn-scoped must live on the blackboard, never on the behavior.
 #define BB_AGENT_PICKED_UP "BB_agent_picked_up"
-/// Per-controller outcome of the last `touch`, an agent_result list. On the blackboard for the same reason.
-#define BB_AGENT_TOUCH_RESULT "BB_agent_touch_result"
+/// Per-controller outcome of the last touch, sit or give, an agent_result list. On the blackboard for the same reason.
+#define BB_AGENT_ACTION_RESULT "BB_agent_action_result"
+/// The seat the NPC chose to sit on. Being buckled there is not something to resist.
+#define BB_AGENT_SEAT "BB_agent_seat"
+/// The held item a give objective will offer, resolved at dispatch: handles go stale mid-walk.
+#define BB_AGENT_GIVE_ITEM "BB_agent_give_item"
 
 /**
  * Self-driven decisions allowed after one external interaction.
@@ -157,6 +163,10 @@
 #define AGENT_PROFILE_TEXT_MAX 1000
 /// Other names an NPC answers to, like a Cyrillic spelling. Each is matched on every line heard.
 #define AGENT_MAX_ALIASES 4
+/// Ceiling on a profile's own memory length, in exchanges. Each remembered exchange is resent every request.
+#define AGENT_MAX_MEMORY_TURNS 20
+/// Where the menu starts an override: the sidecar's shipped --memory-turns default.
+#define AGENT_MEMORY_TURNS_START 6
 /// Attach targets are drawn from the admin's own view rather than the world.
 #define AGENT_ATTACH_RANGE 7
 
@@ -201,6 +211,8 @@
 #define AGENT_STIMULUS_GRABBED "grabbed"
 #define AGENT_STIMULUS_SHOVED "shoved"
 #define AGENT_STIMULUS_STRUCK "struck"
+/// Someone holds an item out to the NPC. It can accept with take.
+#define AGENT_STIMULUS_OFFERED "offered"
 
 /// Ways the touch action may lay a hand on someone. Tap is the default.
 #define AGENT_TOUCH_TAP "tap"

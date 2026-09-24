@@ -34,6 +34,21 @@
 	if(!can_see(agent.pawn, target, AGENT_FLEE_SIGHT_RANGE))
 		agent.clear_threat()
 
+/// Resist as usual except out of a chosen seat. SHOULD_RESIST counts any buckle, so NPCs would never stay seated.
+/datum/ai_planning_subtree/generic_resist/agent
+
+/datum/ai_planning_subtree/generic_resist/agent/SelectBehaviors(datum/ai_controller/controller, seconds_per_tick)
+	var/mob/living/living_pawn = controller.pawn
+	var/atom/seat = controller.blackboard[BB_AGENT_SEAT]
+	if(!seat || living_pawn.buckled != seat)
+		return ..()
+	// Fire, restraints and a real grab still get resisted, and resisting will also stand the NPC up.
+	if(living_pawn.on_fire || HAS_TRAIT(living_pawn, TRAIT_RESTRAINED))
+		return ..()
+	if(living_pawn.pulledby && living_pawn.pulledby != living_pawn && living_pawn.pulledby.grab_state > GRAB_PASSIVE)
+		return ..()
+	controller.set_blackboard_key(BB_RESISTING, FALSE)
+
 /**
  * The agent's own slot in the plan.
  *
@@ -86,6 +101,10 @@
 		if("use")
 			behavior_type = /datum/ai_behavior/agent_approach/use
 		if("touch")
-			behavior_type = /datum/ai_behavior/agent_approach/touch
+			behavior_type = /datum/ai_behavior/agent_approach/act/touch
+		if("sit")
+			behavior_type = /datum/ai_behavior/agent_approach/act/sit
+		if("give")
+			behavior_type = /datum/ai_behavior/agent_approach/act/give
 	agent.queue_behavior(behavior_type, BB_AGENT_OBJECTIVE_TARGET)
 	return SUBTREE_RETURN_FINISH_PLANNING

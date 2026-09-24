@@ -19,6 +19,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PROTOCOL_VERSION = 1
 
+# Ceiling on a profile's own memory length. DM caps it too; this side pays for it, so it checks again.
+MAX_MEMORY_TURNS = 20
+
 # Room left between giving up on the model and the deadline DM is holding us to:
 # time to parse the answer, build the envelope and get it back over the wire.
 UPSTREAM_MARGIN_SECONDS = 5.0
@@ -62,10 +65,12 @@ def action_schema(permitted):
         "properties": {
             "action": {"type": "string", "enum": list(permitted),
                        "description": "Which action to take."},
-            "text": {"type": "string", "description": "Speech for 'say', else empty."},
-            "key": {"type": "string", "description": "Emote key for 'emote', or the way to 'touch' "
-                                                     "(tap, hug, headpat, help), else empty."},
-            "handle": {"type": "string", "description": "Handle for 'approach'/'use'/'touch', else empty."},
+            "text": {"type": "string", "description": "Speech for 'say', or the action for 'me', else empty."},
+            "key": {"type": "string", "description": "Emote key for 'emote', the way to 'touch' "
+                                                     "(tap, hug, headpat, help), or the held item's handle "
+                                                     "for 'give', else empty."},
+            "handle": {"type": "string", "description": "The person or thing for approach/use/touch/sit/"
+                                                        "give/take, else empty."},
         },
         "required": ["action", "text", "key", "handle"],
         "additionalProperties": False,
@@ -92,8 +97,9 @@ def schema_prose(permitted):
     return (
         "Reply with a single JSON object and nothing else. No prose, no code "
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
-        '"text": speech for say else "", "key": emote key for emote, or tap/hug/headpat/help '
-        'for touch, else "", "handle": handle for approach/use/touch else ""}.')
+        '"text": speech for say, or the action for me, else "", "key": emote key for emote, '
+        'tap/hug/headpat/help for touch, or the held item handle for give, else "", '
+        '"handle": the person or thing for approach/use/touch/sit/give/take, else ""}.')
 
 
 def build_system(profile, describe_schema=False):
@@ -120,6 +126,14 @@ def build_system(profile, describe_schema=False):
         ("To lay a hand on a person gently, use 'touch' with their handle and a key: "
          "'tap' on the shoulder, 'hug', 'headpat', or 'help' to help up someone lying down. "
          "Use 'use' for things, never for people.") if "touch" in permitted else "",
+        ("To show a small action in your own words, use 'me' with text in the third person without "
+         "your name, like 'wipes down the counter.' Words you speak go in 'say', never in 'me'.")
+        if "me" in permitted else "",
+        ("To sit on a chair, stool, bench or bed, use 'sit' with its handle; 'stand' gets up again. "
+         "Walking anywhere gets you up by itself.") if "sit" in permitted else "",
+        ("To hand someone what you hold, use 'give' with their handle and the item's handle in key; "
+         "they must take it. When someone offers you something, 'take' with their handle accepts it.")
+        if "give" in permitted or "take" in permitted else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -204,6 +218,8 @@ def describe_emote(event_name, detail):
         addressing = "overheard" if event_name == "noticed_emote" else "directed"
 
     notes = []
+    if detail.get("unseen"):
+        notes.append("you cannot see them")
     if detail.get("involuntary"):
         # A cough is not a remark; saying so keeps the model from answering it.
         notes.append("involuntary")
@@ -247,6 +263,8 @@ def describe_speech(event_name, detail):
         notes.append("continuing your conversation")
     if detail.get("whispered"):
         notes.append("whispered")
+    if detail.get("unseen"):
+        notes.append("you cannot see them")
     if addressing == "overheard":
         notes.append("not apparently to you")
     elif addressing == "ambiguous":
@@ -274,6 +292,7 @@ _PHYSICAL = {
     "shoved": "shoved you",
     "struck": "struck you",
     "fed": "fed you",
+    "offered": "is offering you",
 }
 
 
@@ -286,9 +305,12 @@ def describe_physical(detail):
     """Something done to the character's body, in plain words."""
     did = _PHYSICAL.get(detail.get("what"), "laid hands on you")
     line = "%s %s" % (detail.get("by", "someone"), did)
-    if detail.get("what") == "fed" and detail.get("item"):
+    if detail.get("what") in ("fed", "offered") and detail.get("item"):
         line += " %s" % detail["item"]
-    return line + _times(detail) + "."
+    line += _times(detail)
+    if detail.get("unseen"):
+        line += " (you cannot see them)"
+    return line + "."
 
 
 def build_user_message(observation, events):
@@ -297,10 +319,14 @@ def build_user_message(observation, events):
     myself = observation.get("self") or {}
     lines.append("You are %s. You feel %s." % (
         myself.get("name", "someone"), myself.get("condition", "fine")))
+    handled = [h for h in myself.get("held") or [] if isinstance(h, dict)]
     held = _names(myself.get("holding"))
-    if held:
+    if handled:
+        lines.append("You are holding %s." % " and ".join(
+            "[%s] %s" % (h.get("handle"), h.get("name", "something")) for h in handled))
+    elif held:
         lines.append("You are holding %s." % " and ".join(held))
-    elif "holding" in myself:
+    elif "holding" in myself or "held" in myself:
         lines.append("Your hands are empty.")
     worn = _names(myself.get("wearing"))
     if worn:
@@ -350,6 +376,9 @@ def describe_events(events):
             lines.append("  " + describe_emote(name, detail))
         elif name == "physical":
             lines.append("  " + describe_physical(detail))
+        elif name == "offer_taken":
+            lines.append("  %s took the %s you held out." % (
+                detail.get("by", "someone"), detail.get("item", "thing")))
         elif name == "attacked":
             lines.append("  %s attacked you%s." % (detail.get("by", "someone"), _times(detail)))
         elif name == "action_result":
@@ -377,12 +406,14 @@ def to_dm_action(parsed):
         return {"name": "say", "text": parsed.get("text", "")}
     if name == "emote":
         return {"name": "emote", "key": parsed.get("key", "")}
-    if name in ("approach", "use"):
+    if name in ("approach", "use", "sit", "take"):
         return {"name": name, "handle": parsed.get("handle", "")}
-    if name == "touch":
-        return {"name": "touch", "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
-    if name == "wait":
-        return {"name": "wait"}
+    if name in ("touch", "give"):
+        return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
+    if name == "me":
+        return {"name": "me", "text": parsed.get("text", "")}
+    if name in ("stand", "wait"):
+        return {"name": name}
     return None
 
 
@@ -435,14 +466,14 @@ def parse_loose_action(text, permitted):
             prefix = name + separator
             if first.lower().startswith(prefix.lower()):
                 value = first[len(prefix):].strip().strip('"')
-                if name == "say":
+                if name in ("say", "me"):
                     return {"action": name, "text": value, "key": "", "handle": ""}
                 if name == "emote":
                     return {"action": name, "text": "", "key": value, "handle": ""}
-                if name in ("approach", "use"):
+                if name in ("approach", "use", "sit", "take"):
                     return {"action": name, "text": "", "key": "", "handle": value}
-                if name == "touch":
-                    # "touch: h3 hug" or just "touch: h3", which is a tap.
+                if name in ("touch", "give"):
+                    # "touch: h3 hug", "give: h3 h7", or just the handle.
                     parts = value.split()
                     return {"action": name, "text": "", "key": parts[1] if len(parts) > 1 else "",
                             "handle": parts[0] if parts else ""}
@@ -494,7 +525,7 @@ class ConversationStore:
     """
 
     def __init__(self, max_turns=6):
-        # max_turns counts exchanges, so the message list holds twice that.
+        # The default length in exchanges; a profile may ask for its own. 0 turns memory off for everyone.
         self.max_turns = max_turns
         self.lock = threading.Lock()
         self.sessions = {}
@@ -505,11 +536,23 @@ class ConversationStore:
     def key(body):
         return (body.get("session_id"), body.get("pawn_id"), body.get("binding_epoch"))
 
-    def history(self, body):
+    def limit(self, body):
+        """Exchanges to keep for this character: its profile's own length, else the default."""
         if self.max_turns <= 0:
+            return 0
+        wanted = ((body or {}).get("profile") or {}).get("memory_turns")
+        if isinstance(wanted, bool) or not isinstance(wanted, int):
+            return self.max_turns
+        return max(0, min(wanted, MAX_MEMORY_TURNS))
+
+    def history(self, body):
+        limit = self.limit(body)
+        if limit <= 0:
             return []
         with self.lock:
-            return list(self.sessions.get(self.key(body), []))
+            turns = self.sessions.get(self.key(body), [])
+            # Sliced as well as trimmed, so lowering a profile's memory mid-round applies at once.
+            return list(turns[-limit * 2:])
 
     def record(self, body, user_text, action):
         """Hold the model's answer as a proposal, not yet as history.
@@ -522,18 +565,21 @@ class ConversationStore:
         The verdict arrives on the next request as an action_result event, so
         the proposal is committed or dropped by reconcile() then.
         """
-        if self.max_turns <= 0:
+        if self.limit(body) <= 0:
             return
         with self.lock:
             self.proposals[self.key(body)] = {"user_text": user_text, "action": action}
 
     def reconcile(self, body):
         """Settle the previous proposal using DM's verdict, before building."""
-        if self.max_turns <= 0:
-            return
         key = self.key(body)
+        limit = self.limit(body)
         with self.lock:
             proposal = self.proposals.pop(key, None)
+            # Memory switched off for this character: forget what it held, not just stop showing it.
+            if limit <= 0:
+                self.sessions.pop(key, None)
+                return
         if not proposal:
             return
 
@@ -549,7 +595,7 @@ class ConversationStore:
             turns.append({"role": "assistant",
                           "content": json.dumps(as_wire_action(proposal["action"]))})
             # Trim whole exchanges so the list never starts on an assistant turn.
-            excess = len(turns) - (self.max_turns * 2)
+            excess = len(turns) - (limit * 2)
             if excess > 0:
                 del turns[:excess]
 

@@ -141,14 +141,14 @@
 
 	agent.binding.finish_intent(AGENT_RESULT_UNVERIFIED, "click dispatched; no postcondition to verify")
 
-/// Walk to someone, then touch them gently. Never a click: whatever is in hand, it stays a touch.
-/datum/ai_behavior/agent_approach/touch
+/// Walk to something, then do one thing to it without clicking. Subtypes say what, in act_on().
+/datum/ai_behavior/agent_approach/act
 
-/datum/ai_behavior/agent_approach/touch/perform(delta_time, datum/ai_controller/controller, target_key)
+/datum/ai_behavior/agent_approach/act/perform(delta_time, datum/ai_controller/controller, target_key)
 	var/mob/living/living_pawn = controller.pawn
-	var/mob/living/target = controller.blackboard[target_key]
+	var/atom/target = controller.blackboard[target_key]
 
-	if(!isliving(living_pawn) || !isliving(target) || QDELETED(target))
+	if(!isliving(living_pawn) || QDELETED(target))
 		finish_action(controller, FALSE, target_key)
 		return
 
@@ -161,18 +161,46 @@
 		set_movement_target(controller, target)
 		return
 
-	var/datum/ai_controller/agent_social/agent = controller
-	var/list/intent = istype(agent) ? agent.binding?.current_intent : null
-	controller.set_blackboard_key(BB_AGENT_TOUCH_RESULT, agent_execute_touch(living_pawn, target, intent ? intent["key"] : AGENT_TOUCH_TAP))
+	controller.set_blackboard_key(BB_AGENT_ACTION_RESULT, act_on(controller, living_pawn, target))
 	finish_action(controller, TRUE, target_key)
 
-/datum/ai_behavior/agent_approach/touch/report_outcome(datum/ai_controller/controller, succeeded)
+/// Do the thing, once, beside the target. Returns an agent_result list.
+/datum/ai_behavior/agent_approach/act/proc/act_on(datum/ai_controller/controller, mob/living/pawn, atom/target)
+	return agent_result(AGENT_RESULT_REJECTED, "nothing to do")
+
+/datum/ai_behavior/agent_approach/act/report_outcome(datum/ai_controller/controller, succeeded)
 	var/datum/ai_controller/agent_social/agent = controller
 	if(!istype(agent) || !agent.binding || QDELETED(agent.binding))
 		return
-	var/list/outcome = agent.blackboard[BB_AGENT_TOUCH_RESULT]
-	agent.clear_blackboard_key(BB_AGENT_TOUCH_RESULT)
+	var/list/outcome = agent.blackboard[BB_AGENT_ACTION_RESULT]
+	agent.clear_blackboard_key(BB_AGENT_ACTION_RESULT)
 	// Never got there: the parent tells a reflex interruption from a failure to reach.
 	if(!succeeded || !islist(outcome))
 		return ..()
 	agent.binding.finish_intent(outcome["state"], outcome["detail"])
+
+/// Touch someone gently. Never a click: whatever is in hand, it stays a touch.
+/datum/ai_behavior/agent_approach/act/touch
+
+/datum/ai_behavior/agent_approach/act/touch/act_on(datum/ai_controller/controller, mob/living/pawn, atom/target)
+	var/datum/ai_controller/agent_social/agent = controller
+	var/list/intent = istype(agent) ? agent.binding?.current_intent : null
+	return agent_execute_touch(pawn, target, intent ? intent["key"] : AGENT_TOUCH_TAP)
+
+/// Sit on a chair, stool, bench or bed.
+/datum/ai_behavior/agent_approach/act/sit
+
+/datum/ai_behavior/agent_approach/act/sit/act_on(datum/ai_controller/controller, mob/living/pawn, atom/target)
+	return agent_execute_sit(controller, pawn, target)
+
+/// Hold the chosen item out to someone, then watch whether they take it.
+/datum/ai_behavior/agent_approach/act/give
+
+/datum/ai_behavior/agent_approach/act/give/act_on(datum/ai_controller/controller, mob/living/pawn, atom/target)
+	var/obj/item/item = controller.blackboard[BB_AGENT_GIVE_ITEM]
+	controller.clear_blackboard_key(BB_AGENT_GIVE_ITEM)
+	. = agent_execute_give(pawn, target, item)
+	var/datum/ai_controller/agent_social/agent = controller
+	var/list/outcome = .
+	if(istype(agent) && outcome["state"] == AGENT_RESULT_SUCCEEDED)
+		agent.watch_offer(item)

@@ -146,8 +146,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true",
                         help="build requests and always answer 'wait'; never calls the API")
     parser.add_argument("--memory-turns", type=int, default=6,
-                        help="exchanges of conversation kept per character (0 disables). "
-                             "Each one is resent every turn, so this is a direct token cost.")
+                        help="default exchanges kept per character; a profile's memory_turns overrides it "
+                             "(0 here disables memory for everyone). Each one is resent every turn.")
     args = parser.parse_args()
 
     if not args.dry_run and not (os.environ.get(KEY_ENV_VAR)

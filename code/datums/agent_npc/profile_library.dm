@@ -25,7 +25,17 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	copy.limits = limits
 	copy.permitted_actions = permitted_actions.Copy()
 	copy.aliases = aliases.Copy()
+	copy.memory_turns = memory_turns
 	return copy
+
+/// A whole number of exchanges within the ceiling, or null for the sidecar default.
+/proc/agent_clean_memory_turns(value)
+	if(istext(value))
+		value = text2num(value)
+	if(!isnum(value))
+		return null
+	// round() with one argument floors in DM; the second argument makes it round to nearest.
+	return clamp(round(value, 1), 0, AGENT_MAX_MEMORY_TURNS)
 
 /// Names from a list or a comma-separated line, each capped, blanks and repeats dropped.
 /proc/agent_clean_profile_aliases(wanted)
@@ -80,6 +90,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	profile.limits = agent_clean_profile_text(payload["limits"])
 	profile.permitted_actions = agent_clean_profile_actions(payload["permitted_actions"])
 	profile.aliases = agent_clean_profile_aliases(payload["aliases"])
+	profile.memory_turns = agent_clean_memory_turns(payload["memory_turns"])
 	return profile
 
 /// Every built-in profile, as payloads. Instantiated, never read via initial():

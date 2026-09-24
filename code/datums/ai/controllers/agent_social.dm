@@ -29,7 +29,7 @@
 		// REFLEX, indices 1..5. Never agent owned.
 		/datum/ai_planning_subtree/generic_stand,
 		/datum/ai_planning_subtree/generic_break_restraints,
-		/datum/ai_planning_subtree/generic_resist,
+		/datum/ai_planning_subtree/generic_resist/agent,
 		/datum/ai_planning_subtree/agent_flee_recovery,
 		/datum/ai_planning_subtree/flee_target,
 		// OBJECTIVE, index 6. The only agent owned slot.
@@ -47,6 +47,8 @@
 	COOLDOWN_DECLARE(register_cooldown)
 	/// Whether the thinking bubble is on the pawn. Our own flag: the typing indicator clears itself for clientless mobs.
 	var/thinking = FALSE
+	/// The item held out, watched until taken or the offer ends. Weak, so it never pins the item.
+	var/datum/weakref/watched_offer
 
 /datum/ai_controller/agent_social/New(atom/new_pawn)
 	// An instance, not initial() on the typepath: initial() returns null for
@@ -59,13 +61,16 @@
 	RegisterSignal(pawn, COMSIG_MOVABLE_HEAR, PROC_REF(on_pawn_heard))
 	RegisterSignal(pawn, COMSIG_ATOM_ATTACK_HAND, PROC_REF(on_pawn_touched))
 	RegisterSignal(pawn, COMSIG_MOB_FED, PROC_REF(on_pawn_fed))
+	RegisterSignal(pawn, COMSIG_LIVING_ITEM_OFFERED, PROC_REF(on_item_offered))
+	RegisterSignal(pawn, COMSIG_MOB_UNBUCKLED, PROC_REF(on_unbuckled))
 	ensure_registered()
 
 /datum/ai_controller/agent_social/UnpossessPawn(destroy)
 	if(pawn)
 		// Before letting go, or a detached mob keeps a bubble nothing will ever clear.
 		show_thinking(FALSE)
-		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED))
+		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_MOB_UNBUCKLED, COMSIG_LIVING_STOPPED_OFFERING_ITEM))
+		stop_watching_offer()
 	release_binding("pawn unpossessed")
 	return ..()
 
@@ -138,6 +143,9 @@
 	// Said to the model plainly, so a nameless "yes" reads as the answer it is.
 	detail["from_partner"] = binding.is_partner(speaker)
 	detail["spoken_to_you"] = context["focused"]
+	// Heard as players hear it, but the NPC must not act as if it can see the speaker.
+	if(isliving(speaker) && agent_is_hidden(speaker))
+		detail["unseen"] = TRUE
 
 	route_speech(classification, speaker_name, understood, detail, from_another_agent, speaker)
 
@@ -336,9 +344,14 @@
 		return "unseen"
 
 	var/emoter_name = "[emoter.name]"
+	var/unseen = FALSE
 	if(isliving(emoter))
 		var/mob/living/living_emoter = emoter
 		emoter_name = living_emoter.get_visible_name()
+		unseen = agent_is_hidden(living_emoter)
+		// Players past arm's length get a sneaking emoter's emote starred. So does the NPC.
+		if(!audible && living_emoter.m_intent == MOVE_INTENT_SNEAK && get_dist(living_pawn, living_emoter) > SNEAKY_EMOTE_VISIBLE_RANGE)
+			cleaned = stars(cleaned)
 
 	var/list/context = build_emote_context(emoter, cleaned)
 	var/classification = classify_emote(emoter, intentional, context)
@@ -354,6 +367,8 @@
 	// Said plainly, so the model does not read a cough as a remark.
 	if(!intentional)
 		detail["involuntary"] = TRUE
+	if(unseen)
+		detail["unseen"] = TRUE
 
 	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(emoter)]"])
 	return route_speech(classification, emoter_name, cleaned, detail, from_another_agent, emoter, AGENT_LINE_EMOTE)
@@ -494,6 +509,10 @@
 
 	set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, attacker)
 	set_blackboard_key(BB_AGENT_FLEE_UNTIL, world.time + AGENT_FLEE_DURATION)
+	// A chosen seat is not resisted, so nothing else would get the NPC up to run.
+	var/mob/living/living_pawn = pawn
+	if(isliving(living_pawn) && living_pawn.buckled && living_pawn.buckled == blackboard[BB_AGENT_SEAT])
+		agent_execute_stand(living_pawn)
 
 	if(binding && !QDELETED(binding))
 		var/list/detail = list("by" = "[attacker.name]")
@@ -521,6 +540,9 @@
 	var/list/detail = list("what" = kind, "by" = by.get_visible_name())
 	if(extra)
 		detail += extra
+	// Felt, not seen: the NPC must not describe someone it cannot see.
+	if(agent_is_hidden(by))
+		detail["unseen"] = TRUE
 	if(binding.coalesce_event("physical", detail))
 		return "coalesced"
 	// An agent's `use` on another agent is an empty-hand click, so the same loop cap as speech applies.
@@ -537,6 +559,47 @@
 	var/urgency = (kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) ? AGENT_EVENT_HIGH : AGENT_EVENT_LOW
 	binding.mark_dirty("physical", urgency, detail, replenish = !from_another_agent)
 	return "sent"
+
+/// Someone holds an item out to us. Directed, like being spoken to; take accepts it.
+/datum/ai_controller/agent_social/proc/on_item_offered(datum/source, mob/living/offerer, obj/offered_item)
+	SIGNAL_HANDLER
+	if(!isliving(offerer) || offerer == pawn)
+		return
+	note_stimulus(AGENT_STIMULUS_OFFERED, offerer, list("item" = "[offered_item?.name]"))
+
+/// Off the seat, whoever did it. A seat we were pulled from is no longer one we chose.
+/datum/ai_controller/agent_social/proc/on_unbuckled(datum/source, atom/movable/old_seat)
+	SIGNAL_HANDLER
+	if(blackboard[BB_AGENT_SEAT] == old_seat)
+		clear_blackboard_key(BB_AGENT_SEAT)
+
+/// After holding something out: tell the NPC if it was taken. One offer at a time, as the game allows.
+/datum/ai_controller/agent_social/proc/watch_offer(obj/item/item)
+	stop_watching_offer()
+	if(QDELETED(item) || QDELETED(pawn))
+		return
+	watched_offer = WEAKREF(item)
+	RegisterSignal(item, COMSIG_OBJ_HANDED_OVER, PROC_REF(on_offer_taken))
+	RegisterSignal(pawn, COMSIG_LIVING_STOPPED_OFFERING_ITEM, PROC_REF(on_offer_ended))
+
+/datum/ai_controller/agent_social/proc/stop_watching_offer()
+	var/obj/item/item = watched_offer?.resolve()
+	if(item)
+		UnregisterSignal(item, COMSIG_OBJ_HANDED_OVER)
+	watched_offer = null
+	if(pawn)
+		UnregisterSignal(pawn, COMSIG_LIVING_STOPPED_OFFERING_ITEM)
+
+/// Ridden along with the next decision rather than buying one: a thank-you is the taker's to start.
+/datum/ai_controller/agent_social/proc/on_offer_taken(obj/item/item, mob/living/taker, mob/living/offerer)
+	SIGNAL_HANDLER
+	if(binding && !QDELETED(binding) && isliving(taker))
+		binding.push_event("offer_taken", AGENT_EVENT_LOW, list("by" = taker.get_visible_name(), "item" = "[item.name]"))
+	stop_watching_offer()
+
+/datum/ai_controller/agent_social/proc/on_offer_ended(datum/source)
+	SIGNAL_HANDLER
+	stop_watching_offer()
 
 /// What an empty hand did, read from the intent it was used with. No intent is no evidence of harm.
 /proc/agent_touch_kind(mob/living/user)

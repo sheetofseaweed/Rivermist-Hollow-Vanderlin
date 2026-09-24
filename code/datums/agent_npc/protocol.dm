@@ -211,7 +211,7 @@
  * action here without teaching dispatch_decision about it gets you a profile
  * that permits something the executor will reject.
  */
-GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "approach", "use", "touch", "wait"))
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "wait"))
 
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
@@ -233,7 +233,21 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "approach", "use"
 			if(!istext(key) || !length(key))
 				return null
 			return list("name" = "emote", "key" = key)
-		if("approach", "use")
+		if("me")
+			var/text = action["text"]
+			if(!istext(text) || !length(text))
+				return null
+			return list("name" = "me", "text" = text)
+		if("stand")
+			return list("name" = "stand")
+		if("give")
+			var/handle = action["handle"]
+			if(!istext(handle) || !length(handle))
+				return null
+			// The item's handle is optional: without one, whatever is in the active hand.
+			var/item_handle = action["key"]
+			return list("name" = "give", "handle" = handle, "key" = istext(item_handle) ? item_handle : "")
+		if("approach", "use", "sit", "take")
 			var/handle = action["handle"]
 			if(!istext(handle) || !length(handle))
 				return null

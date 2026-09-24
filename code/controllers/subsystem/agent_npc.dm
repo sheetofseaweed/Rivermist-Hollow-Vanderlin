@@ -423,12 +423,35 @@ SUBSYSTEM_DEF(agent_npc)
 			var/list/outcome = agent_execute_emote(pawn, response.action["key"])
 			binding.complete_action(outcome["state"], outcome["detail"])
 			return
+		if("me")
+			var/list/outcome = agent_execute_me(pawn, response.action["text"])
+			binding.complete_action(outcome["state"], outcome["detail"])
+			return
+		if("stand")
+			var/list/outcome = agent_execute_stand(pawn)
+			binding.complete_action(outcome["state"], outcome["detail"])
+			return
 
-	// approach, use and touch. A handle is authorised only here, against the observation actually sent.
+	// Every action from here names a handle, authorised only here against the observation actually sent.
 	var/atom/target = binding.resolve_handle(response.action["handle"])
 	if(isnull(target))
 		note_refusal(AGENT_REFUSE_SCHEMA)
 		binding.record_result(AGENT_RESULT_REJECTED, "handle was never offered, or its target is gone")
+		return
+
+	// Carried items get handles so give can name them. They are never somewhere to walk or click.
+	var/atom/movable/movable_target = target
+	if(ismovable(movable_target) && movable_target.loc == pawn)
+		binding.record_result(AGENT_RESULT_REJECTED, "that is in your own hands")
+		return
+
+	// The offerer is already beside us and must stay there, so taking is immediate.
+	if(name == "take")
+		if(!isliving(target) || target == pawn)
+			binding.record_result(AGENT_RESULT_REJECTED, "take accepts what a person is offering you")
+			return
+		var/list/taken = agent_execute_take(pawn, target)
+		binding.complete_action(taken["state"], taken["detail"])
 		return
 
 	// use clicks with whatever is held; on a person, a knife makes that a stab, and this NPC cannot fight.
@@ -445,15 +468,36 @@ SUBSYSTEM_DEF(agent_npc)
 			binding.record_result(AGENT_RESULT_REJECTED, "not a way to touch someone")
 			return
 
+	if(name == "sit" && !agent_is_seat(target))
+		binding.record_result(AGENT_RESULT_REJECTED, "that is not something to sit on")
+		return
+
+	// Resolved now and kept on the blackboard: by the time the NPC arrives, the handle may mean something else.
+	var/obj/item/give_item
+	if(name == "give")
+		if(!isliving(target) || target == pawn)
+			binding.record_result(AGENT_RESULT_REJECTED, "give hands something to a person")
+			return
+		var/item_handle = response.action["key"]
+		give_item = length(item_handle) ? binding.resolve_handle(item_handle) : pawn.get_active_held_item()
+		if(!isitem(give_item) || !(give_item in pawn.held_items))
+			binding.record_result(AGENT_RESULT_REJECTED, "you are not holding that")
+			return
+
 	var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
 	if(!istype(agent))
 		binding.record_result(AGENT_RESULT_REJECTED, "this pawn cannot act on objectives")
 		return
 
-	// Retargeting cancels only the agent's own behavior. CancelActions() would
-	// also finish an active resist or restraint break.
+	// Walking anywhere means getting up first. Sitting down on the seat already taken does not.
+	if(pawn.buckled && agent_is_seat(pawn.buckled) && !(name == "sit" && pawn.buckled == target))
+		agent_execute_stand(pawn)
+
+	// Only the agent's own behavior is cancelled: CancelActions() would also end a resist or restraint break.
 	agent.cancel_agent_objective()
 	agent.set_blackboard_key(BB_AGENT_OBJECTIVE_TARGET, target)
+	if(give_item)
+		agent.set_blackboard_key(BB_AGENT_GIVE_ITEM, give_item)
 	binding.begin_intent(response.action)
 
 /datum/controller/subsystem/agent_npc/proc/note_refusal(reason)

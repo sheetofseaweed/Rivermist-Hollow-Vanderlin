@@ -257,3 +257,35 @@
 	// This mob type declares the agent controller as its own, so a naive restore
 	// would immediately re-attach the thing it was just asked to remove.
 	TEST_ASSERT(!istype(pawn.ai_controller, /datum/ai_controller/agent_social), "Detaching must not restore the agent controller it just removed.")
+
+/datum/unit_test/agent_npc_memory_turns_are_cleaned
+
+/datum/unit_test/agent_npc_memory_turns_are_cleaned/Run()
+	TEST_ASSERT_NULL(agent_clean_memory_turns(null), "No value must stay no value: the sidecar default applies.")
+	TEST_ASSERT_NULL(agent_clean_memory_turns("lots"), "A non-number must fall back to the sidecar default.")
+	TEST_ASSERT_EQUAL(agent_clean_memory_turns(8), 8, "A sane number must survive.")
+	TEST_ASSERT_EQUAL(agent_clean_memory_turns("8"), 8, "The window may send text; it must still read as a number.")
+	TEST_ASSERT_EQUAL(agent_clean_memory_turns(7.6), 8, "Exchanges are whole.")
+	// Every remembered exchange is resent on every request, so the ceiling is a cost bound.
+	TEST_ASSERT_EQUAL(agent_clean_memory_turns(500), AGENT_MAX_MEMORY_TURNS, "Memory must stop at the ceiling.")
+	TEST_ASSERT_EQUAL(agent_clean_memory_turns(-3), 0, "Memory cannot be negative.")
+
+/datum/unit_test/agent_npc_memory_turns_reach_the_wire
+
+/datum/unit_test/agent_npc_memory_turns_reach_the_wire/Run()
+	var/datum/agent_profile/original = new /datum/agent_profile/villager()
+	var/list/default_payload = original.to_payload()
+	original.memory_turns = 12
+	var/list/payload = original.to_payload()
+	var/datum/agent_profile/copy = original.clone()
+	var/datum/agent_profile/rebuilt = agent_profile_from_payload(payload)
+	var/copied = copy.memory_turns
+	var/reloaded = rebuilt.memory_turns
+	qdel(original)
+	qdel(copy)
+	qdel(rebuilt)
+
+	TEST_ASSERT_NULL(default_payload["memory_turns"], "A profile that sets nothing must leave the sidecar default in charge.")
+	TEST_ASSERT_EQUAL(payload["memory_turns"], 12, "The sidecar can only honour a length it is sent.")
+	TEST_ASSERT_EQUAL(copied, 12, "A clone must carry the memory length.")
+	TEST_ASSERT_EQUAL(reloaded, 12, "The memory length must survive a save and load.")
