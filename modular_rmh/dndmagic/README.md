@@ -9,8 +9,8 @@ and Frost Bolt also support an explicitly selected **Minor** mode using mana.
 1. Use the existing admin **Give Spell** tool to grant **DND Fireball**, **DND
    Frost Bolt**, **DND Healing**, and **DND Familiar** to a human character.
    Granting the first variant initializes slots and adds the HUD automatically.
-   The hidden, debug-rights-only **Grant DND Spell Pack** verb grants the whole
-   experimental set and resets its reserves.
+   Admins with debug rights can use **Grant DND Spell Pack** to grant the whole
+   experimental set and reset its reserves.
 2. Select **MIN** beside the numbered slot buttons to cast minor spells. The
    selected button is gold and its tooltip says **Selected**. Selection remains
    available while numbered slots remain; there is no automatic fallback or

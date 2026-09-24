@@ -232,6 +232,8 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	/client/proc/set_tod_override,
 	/client/proc/check_timer_sources,
 	/client/proc/debug_spell_requirements,
+	/client/proc/debug_grant_dnd_spell_pack,
+	/client/proc/debug_grant_dnd_fireball_v2,
 	/client/proc/cmd_regenerate_asset_cache,
 	/client/proc/cmd_clear_smart_asset_cache,
 	/client/proc/select_job_pack_debug,
