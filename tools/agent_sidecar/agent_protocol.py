@@ -123,7 +123,8 @@ def build_system(profile, describe_schema=False):
         "Use 'wait' when nothing is worth doing. Waiting is a normal choice; "
         "do not invent activity to fill a turn.",
         "Only refer to things listed in the scene. To approach or use something, "
-        "give the handle exactly as it appears there. Never invent a handle.",
+        "give the handle exactly as it appears there: the code in brackets, like h3, "
+        "never the name. Never invent a handle.",
         # Only when permitted: describing an action the character lacks invites asking for it.
         ("To lay a hand on a person gently, use 'touch' with their handle and a key: "
          "'tap' on the shoulder, 'hug', 'headpat', or 'help' to help up someone lying down. "

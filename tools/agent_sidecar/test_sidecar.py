@@ -633,6 +633,16 @@ class Interpretation(unittest.TestCase):
         self.assertIsNone(action)
         self.assertIn("empty", refusal)
 
+    def test_running_out_of_tokens_says_what_to_change(self):
+        _, refusal, _ = self.decider.interpret(200, self.reply("", finish="length"), self.turn)
+        self.assertIn("--reasoning-effort", refusal)
+        _, refusal, _ = self.decider.interpret(200, self.reply(""), self.turn)
+        self.assertNotIn("--reasoning-effort", refusal)
+
+    def test_the_prompt_says_a_handle_is_not_a_name(self):
+        # A live model wrote "Lexus" for h1 and every approach and fight was rejected.
+        self.assertIn("never the name", proto.build_system({"persona": "P", "permitted_actions": ["approach"]}))
+
     def test_transport_failures_refuse_with_a_reason(self):
         for status, expect in ((401, "api key"), (429, "rate limited"), (500, "provider error")):
             action, refusal, _ = self.decider.interpret(status, {"error": "x"}, self.turn)

@@ -243,7 +243,9 @@ class CodexSaleDecider(proto.Decider):
                     break
 
         if not text:
-            return self.refuse("model returned empty content (finish_reason=%s)" % finish,
+            # A reasoning model can spend the whole budget thinking and never answer.
+            hint = "; its reasoning used up max_tokens, try --reasoning-effort low" if finish == "length" else ""
+            return self.refuse("model returned empty content (finish_reason=%s%s)" % (finish, hint),
                                tokens, raw=json.dumps(choice)[:2000])
 
         permitted = turn.permitted

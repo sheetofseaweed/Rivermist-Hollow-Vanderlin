@@ -25,12 +25,17 @@ GLOBAL_LIST_INIT(agent_combat_actions, list("fight", "stop"))
 	var/pooled = who.getBruteLoss() + (who.getFireLoss() * DEFEAT_BURN_DAMAGE_WEIGHT) + who.getToxLoss() + who.getCloneLoss()
 	return clamp(pooled / who.get_effective_defeat_threshold(), 0, 1)
 
-/// Hurt enough that any fight is abandoned for running. Bleeding out counts as much as bruises.
+/// Hurt enough that any fight is abandoned for running. Bleeding out and pain count as much as bruises.
 /proc/agent_combat_too_hurt(mob/living/who)
 	if(agent_combat_beaten(who) >= AGENT_COMBAT_FLEE_BEATEN)
 		return TRUE
 	var/mob/living/carbon/body = who
-	if(!iscarbon(body) || (NOBLOOD in body.dna?.species?.species_traits))
+	if(!iscarbon(body))
+		return FALSE
+	// Pain floors a carbon long before the damage pool fills, so waiting for the pool means never running.
+	if(max(body.traumatic_shock, body.shock_stage) >= AGENT_COMBAT_FLEE_SHOCK)
+		return TRUE
+	if(NOBLOOD in body.dna?.species?.species_traits)
 		return FALSE
 	return body.blood_volume < BLOOD_VOLUME_OKAY
 
@@ -200,16 +205,21 @@ GLOBAL_LIST_INIT(agent_combat_actions, list("fight", "stop"))
 		return "you would not go further than [limit] with them"
 	var/current = (blackboard[BB_AGENT_COMBAT_TARGET] == target) ? blackboard[BB_AGENT_COMBAT_LEVEL] : AGENT_COMBAT_NONE
 	var/current_rank = max(agent_combat_rank(current), 0)
-	// Whoever started it may be met at any rung the limit allows. A stranger climbs the ladder.
-	if(!is_aggressor(target) && rank > current_rank + 1)
+	// Whoever started it may be met at any rung the limit allows, at once. A stranger climbs the ladder slowly.
+	if(is_aggressor(target))
+		return null
+	if(rank > current_rank + 1)
 		return current_rank ? "escalate one step at a time, from [current]" : "start with a brawl"
 	if(rank > current_rank && current_rank && world.time < blackboard[BB_AGENT_COMBAT_SINCE] + AGENT_COMBAT_ESCALATION_DELAY)
 		return "too soon to escalate further"
 	return null
 
-/// Begin or change a fight. The melee is DM's; the model only chooses who and how hard.
+/// Begin or change a fight; FALSE if it was already this fight. The melee is DM's; the model chooses who and how hard.
 /datum/ai_controller/agent_social/proc/start_combat(mob/living/target, level, reason)
 	var/changing = blackboard[BB_AGENT_COMBAT_TARGET] == target
+	// The fight already running: every blow of it is not a new one, and must not restart the escalation clock.
+	if(changing && blackboard[BB_AGENT_COMBAT_LEVEL] == level)
+		return FALSE
 	set_blackboard_key(BB_AGENT_COMBAT_TARGET, target)
 	set_blackboard_key(BB_AGENT_COMBAT_LEVEL, level)
 	set_blackboard_key(BB_AGENT_COMBAT_SINCE, world.time)

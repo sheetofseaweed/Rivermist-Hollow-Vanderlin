@@ -504,6 +504,9 @@
 	// The single funnel every terminal state passes through, so the outcome mix
 	// is counted here rather than at each of the five call sites.
 	SSagent_npc?.note_result(state_name)
+	// Success shows in the game itself. Anything else is invisible there, so it goes in the log.
+	if(state_name != AGENT_RESULT_SUCCEEDED)
+		SSagent_npc?.log_agent("[state_name] [pawn_id]: [detail]")
 	return TRUE
 
 /**

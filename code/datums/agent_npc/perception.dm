@@ -11,14 +11,18 @@
 	var/built_at = 0
 	/// handle -> /datum/weakref. Weak, so an observation never pins an atom.
 	var/list/handles
+	/// Lowercased name of a person shown -> their handle, or "" when two shown people share it.
+	var/list/person_names
 
 /datum/agent_observation/New()
 	. = ..()
 	handles = list()
+	person_names = list()
 	built_at = world.time
 
 /datum/agent_observation/Destroy(force, ...)
 	handles = null
+	person_names = null
 	return ..()
 
 /// Resolve a handle offered by this observation. Null means never offered.
@@ -28,14 +32,32 @@
 		return null
 	var/datum/weakref/reference = handles[handle]
 	if(!reference)
+		var/meant = handle_meant_by(handle)
+		reference = meant && handles[meant]
+	if(!reference)
 		return null
 	var/atom/resolved = reference.resolve()
 	return QDELETED(resolved) ? null : resolved
+
+/// Models write "[h3] Lexus" or just "Lexus" for h3. Either still names only what this observation showed.
+/datum/agent_observation/proc/handle_meant_by(text)
+	var/static/regex/handle_in_text = regex(@"\bh(\d+)\b", "i")
+	if(handle_in_text.Find(text))
+		return "h[handle_in_text.group[1]]"
+	// A shared name is ambiguous and resolves to nobody.
+	return person_names[LOWER_TEXT(trim(text))] || null
 
 /datum/agent_observation/proc/offer(atom/thing)
 	var/handle = "h[length(handles) + 1]"
 	handles[handle] = WEAKREF(thing)
 	return handle
+
+/// Let a shown person be named by the name the model saw. Two people of one name cancel it.
+/datum/agent_observation/proc/offer_name(name, handle)
+	var/key = LOWER_TEXT(trim(name))
+	if(!length(key))
+		return
+	person_names[key] = (key in person_names) ? "" : handle
 
 /// Coarse state only. Exact health is server truth, not character knowledge.
 /proc/agent_describe_condition(mob/living/target)
@@ -203,6 +225,7 @@
 		var/mob/living/living_thing = thing
 		// get_visible_name honours disguise, so an unidentified face stays unidentified.
 		described["name"] = living_thing.get_visible_name()
+		observation.offer_name(described["name"], described["handle"])
 		described["kind"] = "person"
 		described["condition"] = agent_describe_condition(living_thing)
 		// Only what is visibly held. Pockets and bags are not character knowledge.

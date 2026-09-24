@@ -391,7 +391,9 @@ SUBSYSTEM_DEF(agent_npc)
 /datum/controller/subsystem/agent_npc/proc/dispatch_decision(datum/agent_binding/binding, datum/agent_response/response)
 	var/name = response.action["name"]
 	var/mob/living/pawn = binding.resolve_pawn()
-	log_agent("decision [binding.pawn_id]: [name]")
+	// Handle and key, never the text: enough to see what it aimed at without copying speech twice.
+	var/aimed = jointext(list(response.action["handle"], response.action["key"]) - list(null, ""), " ")
+	log_agent("decision [binding.pawn_id]: [name][aimed ? " [aimed]" : ""]")
 
 	// Counted before authorisation on purpose: a model repeatedly asking for an
 	// action its profile forbids is a prompt problem, and this is where it shows.
@@ -463,8 +465,8 @@ SUBSYSTEM_DEF(agent_npc)
 		if(refusal)
 			binding.record_result(AGENT_RESULT_REJECTED, refusal)
 			return
-		fighter.start_combat(target, level, "chosen")
-		binding.complete_action(AGENT_RESULT_SUCCEEDED, "fighting them: [level]")
+		var/started = fighter.start_combat(target, level, "chosen")
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, "[started ? "fighting" : "already fighting"] them: [level]")
 		return
 
 	// The offerer is already beside us and must stay there, so taking is immediate.

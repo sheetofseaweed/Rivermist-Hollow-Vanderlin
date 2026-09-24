@@ -17,6 +17,8 @@
 	who.stat = CONSCIOUS
 	who.surrendering = FALSE
 	who.setToxLoss(0)
+	who.traumatic_shock = 0
+	who.shock_stage = 0
 
 // ------------------------------------------------------------------ the ladder
 
@@ -394,3 +396,64 @@
 
 	// Humans lack the element that turns hits into COMSIG_ATOM_WAS_ATTACKED, so this was dead in play.
 	TEST_ASSERT_EQUAL(fighting, attacker, "A real blow must reach the NPC's attack handler.")
+
+/datum/unit_test/agent_npc_blows_in_a_fight_do_not_restart_it
+
+/datum/unit_test/agent_npc_blows_in_a_fight_do_not_restart_it/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_fighter(retaliate = AGENT_COMBAT_DOWNED)
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human/species/human/northern)
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+
+	controller.on_pawn_attacked(pawn, attacker, 5)
+	var/first_level = controller.blackboard[BB_AGENT_COMBAT_LEVEL]
+	// Time does not pass inside a test, so mark the start and see whether the next blow moves it.
+	var/began = world.time - 5 SECONDS
+	controller.set_blackboard_key(BB_AGENT_COMBAT_SINCE, began)
+	controller.on_pawn_attacked(pawn, attacker, 5)
+	var/since_after_blow = controller.blackboard[BB_AGENT_COMBAT_SINCE]
+	var/chosen_again = controller.start_combat(attacker, first_level, "chosen")
+	var/since_after_choice = controller.blackboard[BB_AGENT_COMBAT_SINCE]
+	var/escalation = controller.combat_refusal(attacker, AGENT_COMBAT_DOWNED)
+	controller.end_combat("test", report = FALSE)
+	agent_test_restore_subsystem(saved, controller.binding)
+
+	TEST_ASSERT_EQUAL(first_level, AGENT_COMBAT_BRAWL, "Setup failed: fists must earn a brawl.")
+	TEST_ASSERT_EQUAL(since_after_blow, began, "Another blow in the same fight must not restart it.")
+	TEST_ASSERT(!chosen_again, "Choosing the fight already running must not start it again.")
+	TEST_ASSERT_EQUAL(since_after_choice, began, "Nor restart its clock.")
+	TEST_ASSERT_NULL(escalation, "Whoever started it may be met harder at once, without waiting out the ladder's delay.")
+
+/datum/unit_test/agent_npc_pain_breaks_off_a_fight
+
+/datum/unit_test/agent_npc_pain_breaks_off_a_fight/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_fighter(retaliate = AGENT_COMBAT_BRAWL)
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human/species/human/northern)
+	var/datum/ai_planning_subtree/agent_combat/subtree = new()
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+
+	controller.on_pawn_attacked(pawn, attacker, 5)
+	var/fought = controller.in_combat()
+	pawn.traumatic_shock = AGENT_COMBAT_FLEE_SHOCK
+	var/beaten = agent_combat_beaten(pawn)
+	subtree.SelectBehaviors(controller, 1)
+	var/fighting_on = controller.in_combat()
+	var/fleeing_from = controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET]
+	controller.clear_threat()
+	pawn.traumatic_shock = 0
+	pawn.shock_stage = AGENT_COMBAT_FLEE_SHOCK
+	var/lingering = controller.retaliate(attacker)
+	controller.clear_threat()
+	agent_test_reset_mob(pawn)
+	qdel(subtree)
+	agent_test_restore_subsystem(saved, controller.binding)
+
+	TEST_ASSERT(fought, "Setup failed: the NPC must fight back while unhurt.")
+	TEST_ASSERT(beaten < AGENT_COMBAT_FLEE_BEATEN, "Setup failed: only pain may be high here, not damage.")
+	// Pain floors a body well before the damage pool fills, and a floored NPC cannot run.
+	TEST_ASSERT(!fighting_on, "Pain that will soon floor the NPC must break off the fight.")
+	TEST_ASSERT_EQUAL(fleeing_from, attacker, "Breaking off in pain means running from them.")
+	TEST_ASSERT_NULL(lingering, "A shock stage still high from the beating must stop it fighting back.")

@@ -340,3 +340,40 @@
 	var/list/detail = entry["detail"]
 	// Players past arm's length get a starred copy. The NPC must not read more than they do.
 	TEST_ASSERT(detail["text"] != "signals quietly to the others waiting behind the wall", "A sneaking emote past arm's length must arrive blurred.")
+
+// ------------------------------------------------------------------ naming targets
+
+/datum/unit_test/agent_npc_a_shown_name_stands_for_its_handle
+
+/datum/unit_test/agent_npc_a_shown_name_stands_for_its_handle/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/agent_binding/binding = controller?.binding
+	var/mob/living/carbon/human/lexus = allocate(/mob/living/carbon/human/species/human/northern)
+	var/mob/living/carbon/human/namesake = allocate(/mob/living/carbon/human/species/human/northern)
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the pawn must be bound.")
+	lexus.real_name = "Lexus"
+	lexus.name = "Lexus"
+	TEST_ASSERT_EQUAL(lexus.get_visible_name(), "Lexus", "Setup failed: the face must show the name.")
+
+	var/handle = agent_test_handle_of(binding, pawn, lexus)
+	var/by_name = binding.resolve_handle("lexus ")
+	var/as_shown = binding.resolve_handle("\[[handle]\] Lexus")
+	var/nobody = binding.resolve_handle("Tarik")
+	SSagent_npc.dispatch_decision(binding, agent_test_decision(list("name" = "approach", "handle" = "Lexus")))
+	var/approached = controller.blackboard[BB_AGENT_OBJECTIVE_TARGET]
+	controller.cancel_agent_objective()
+
+	namesake.real_name = "Lexus"
+	namesake.name = "Lexus"
+	agent_test_handle_of(binding, pawn, lexus)
+	var/shared = binding.resolve_handle("Lexus")
+	agent_test_restore_subsystem(saved, binding)
+
+	// Live models wrote "Lexus" for h1 and every approach and fight was rejected.
+	TEST_ASSERT_EQUAL(by_name, lexus, "A shown person's name must stand for their handle, in any case.")
+	TEST_ASSERT_EQUAL(as_shown, lexus, "A handle written the way the scene shows it must still resolve.")
+	TEST_ASSERT_NULL(nobody, "A name nobody in the scene has must resolve to nobody.")
+	TEST_ASSERT_EQUAL(approached, lexus, "Approaching by name must walk to them.")
+	TEST_ASSERT_NULL(shared, "A name two shown people share must resolve to neither.")

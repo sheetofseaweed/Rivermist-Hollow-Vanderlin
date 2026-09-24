@@ -296,6 +296,8 @@
 #define AGENT_COMBAT_LETHAL "no_quarter"
 /// Beaten this far towards a defeat knockout, the NPC breaks off and runs, whatever the level.
 #define AGENT_COMBAT_FLEE_BEATEN 0.7
+/// Pain this high breaks off too. Past it the shock stage climbs to where the body is floored and cannot run.
+#define AGENT_COMBAT_FLEE_SHOCK SHOCK_STAGE_3
 /// A brawl ends once its target is beaten this far towards a defeat knockout.
 #define AGENT_BRAWL_STOP_BEATEN 0.5
 /// Tiles a fight is chased before the target counts as out of reach.
