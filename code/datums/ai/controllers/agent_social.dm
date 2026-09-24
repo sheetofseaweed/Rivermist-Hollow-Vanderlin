@@ -1,15 +1,4 @@
-/**
- * # Agent social controller
- *
- * The pilot pawn for agent-driven NPCs. Purpose built rather than reskinned
- * from a hostile, because every existing humanoid controller carries branches
- * that are unsafe as an unsupervised fallback: human_bum has mug and loot, and
- * every human_npc user in the tree is a hostile.
- *
- * It cannot fight. Attacked, it stands, resists, breaks restraints and runs.
- * That is the whole autonomous repertoire, which is what makes the sidecar
- * outage fallback safe by construction rather than by hope.
- */
+/// Agent NPC controller. Its reflexes need no model: stand, resist, run, or fight back only as its profile allows.
 /datum/ai_controller/agent_social
 	movement_delay = 0.5 SECONDS
 	max_target_distance = 9
@@ -20,19 +9,22 @@
 	can_idle = FALSE
 
 	blackboard = list(
-		// It never fights, so any target it holds is something to run from.
+		// This key only ever holds a threat to run from; fights keep their own keys.
 		BB_BASIC_MOB_FLEEING = TRUE,
 		BB_AGENT_FLEE_UNTIL = 0,
+		BB_AGENT_COMBAT_TARGETTING = new /datum/targetting_datum/agent_combat(),
 	)
 
 	planning_subtrees = list(
-		// REFLEX, indices 1..5. Never agent owned.
+		// REFLEX. Never agent owned.
 		/datum/ai_planning_subtree/generic_stand,
 		/datum/ai_planning_subtree/generic_break_restraints,
 		/datum/ai_planning_subtree/generic_resist/agent,
 		/datum/ai_planning_subtree/agent_flee_recovery,
 		/datum/ai_planning_subtree/flee_target,
-		// OBJECTIVE, index 6. The only agent owned slot.
+		// COMBAT. Only fights the profile allows, and only while the NPC is fit to.
+		/datum/ai_planning_subtree/agent_combat,
+		// OBJECTIVE. The only slot the model's errands run in.
 		/datum/ai_planning_subtree/agent_intent,
 	)
 
@@ -49,6 +41,8 @@
 	var/thinking = FALSE
 	/// The item held out, watched until taken or the offer ends. Weak, so it never pins the item.
 	var/datum/weakref/watched_offer
+	/// Who laid hands on this NPC lately: weakref -> world.time. They started it.
+	var/list/aggressors
 
 /datum/ai_controller/agent_social/New(atom/new_pawn)
 	// An instance, not initial() on the typepath: initial() returns null for
@@ -63,6 +57,8 @@
 	RegisterSignal(pawn, COMSIG_MOB_FED, PROC_REF(on_pawn_fed))
 	RegisterSignal(pawn, COMSIG_LIVING_ITEM_OFFERED, PROC_REF(on_item_offered))
 	RegisterSignal(pawn, COMSIG_MOB_UNBUCKLED, PROC_REF(on_unbuckled))
+	// Humans never get this by default, so without it on_pawn_attacked never fired in play at all.
+	pawn.AddElement(/datum/element/relay_attackers)
 	ensure_registered()
 
 /datum/ai_controller/agent_social/UnpossessPawn(destroy)
@@ -71,6 +67,7 @@
 		show_thinking(FALSE)
 		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_MOB_UNBUCKLED, COMSIG_LIVING_STOPPED_OFFERING_ITEM))
 		stop_watching_offer()
+		end_combat("pawn released", report = FALSE)
 	release_binding("pawn unpossessed")
 	return ..()
 
@@ -507,15 +504,22 @@
 	if(attacker == pawn || QDELETED(attacker) || !isliving(attacker))
 		return
 
-	set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, attacker)
-	set_blackboard_key(BB_AGENT_FLEE_UNTIL, world.time + AGENT_FLEE_DURATION)
-	// A chosen seat is not resisted, so nothing else would get the NPC up to run.
-	var/mob/living/living_pawn = pawn
-	if(isliving(living_pawn) && living_pawn.buckled && living_pawn.buckled == blackboard[BB_AGENT_SEAT])
-		agent_execute_stand(living_pawn)
+	var/mob/living/living_attacker = attacker
+	note_aggressor(living_attacker)
+	// Already fighting someone else: keep that fight rather than thrash between two.
+	var/fighting_back = (in_combat() && blackboard[BB_AGENT_COMBAT_TARGET] != attacker) ? blackboard[BB_AGENT_COMBAT_LEVEL] : retaliate(living_attacker)
+	if(!fighting_back)
+		set_blackboard_key(BB_BASIC_MOB_CURRENT_TARGET, attacker)
+		set_blackboard_key(BB_AGENT_FLEE_UNTIL, world.time + AGENT_FLEE_DURATION)
+		// A chosen seat is not resisted, so nothing else would get the NPC up to run.
+		var/mob/living/living_pawn = pawn
+		if(isliving(living_pawn) && living_pawn.buckled && living_pawn.buckled == blackboard[BB_AGENT_SEAT])
+			agent_execute_stand(living_pawn)
 
 	if(binding && !QDELETED(binding))
 		var/list/detail = list("by" = "[attacker.name]")
+		if(fighting_back)
+			detail["fighting_back"] = fighting_back
 		// A flurry of blows is one event with a count, not twelve that push out everything else.
 		if(!binding.coalesce_event("attacked", detail))
 			binding.mark_dirty("attacked", AGENT_EVENT_HIGH, detail)
@@ -547,6 +551,9 @@
 		return "coalesced"
 	// An agent's `use` on another agent is an empty-hand click, so the same loop cap as speech applies.
 	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(by)]"])
+	// Rough hands mean they started it, whatever the NPC decides to do about it.
+	if(kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK))
+		note_aggressor(by)
 	if(from_another_agent)
 		if(!binding.agent_exchange_allowed(by))
 			SSagent_npc?.note_agent_exchange_capped()
@@ -626,7 +633,7 @@
 		return FALSE
 	if(living_pawn.body_position == LYING_DOWN)
 		return FALSE
-	if(blackboard[BB_BASIC_MOB_CURRENT_TARGET])
+	if(blackboard[BB_BASIC_MOB_CURRENT_TARGET] || in_combat())
 		return FALSE
 	var/mob/living/carbon/carbon_pawn = living_pawn
 	if(iscarbon(carbon_pawn) && (carbon_pawn.handcuffed || carbon_pawn.legcuffed))

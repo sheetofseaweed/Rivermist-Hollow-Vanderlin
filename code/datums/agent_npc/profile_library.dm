@@ -26,6 +26,8 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	copy.permitted_actions = permitted_actions.Copy()
 	copy.aliases = aliases.Copy()
 	copy.memory_turns = memory_turns
+	copy.combat_retaliate = combat_retaliate
+	copy.combat_initiate = combat_initiate
 	return copy
 
 /// A whole number of exchanges within the ceiling, or null for the sidecar default.
@@ -71,6 +73,9 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 		for(var/entry in wanted)
 			if(!istext(entry) || !(entry in GLOB.agent_action_vocabulary))
 				continue
+			// Granted by the combat limits instead, so a saved list cannot smuggle them in.
+			if(entry in GLOB.agent_combat_actions)
+				continue
 			if(entry in cleaned)
 				continue
 			cleaned += entry
@@ -91,6 +96,8 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	profile.permitted_actions = agent_clean_profile_actions(payload["permitted_actions"])
 	profile.aliases = agent_clean_profile_aliases(payload["aliases"])
 	profile.memory_turns = agent_clean_memory_turns(payload["memory_turns"])
+	profile.combat_retaliate = agent_clean_combat_level(payload["combat_retaliate"])
+	profile.combat_initiate = agent_clean_combat_level(payload["combat_initiate"])
 	return profile
 
 /// Every built-in profile, as payloads. Instantiated, never read via initial():

@@ -278,6 +278,39 @@ class SitGiveTakeMe(unittest.TestCase):
         self.assertNotIn("cannot see", proto.describe_speech("heard_speech", {"speaker": "Bob", "text": "hi"}))
 
 
+class CombatProtocol(unittest.TestCase):
+    """The fight and stop actions, and what the model is told about the ladder."""
+
+    def test_fight_and_stop_map_to_the_dm_shape(self):
+        self.assertEqual(proto.to_dm_action({"action": "fight", "handle": "h3", "key": "brawl"}),
+                         {"name": "fight", "handle": "h3", "key": "brawl"})
+        self.assertEqual(proto.to_dm_action({"action": "stop"}), {"name": "stop"})
+        got = proto.parse_loose_action("fight: h3 until_downed", ["fight", "stop", "wait"])
+        self.assertEqual(proto.to_dm_action(got), {"name": "fight", "handle": "h3", "key": "until_downed"})
+
+    def test_the_ladder_is_explained_with_this_characters_limits(self):
+        profile = {"persona": "P", "permitted_actions": ["say", "fight", "stop", "wait"],
+                   "combat_retaliate": "until_downed", "combat_initiate": "brawl"}
+        text = proto.build_system(profile)
+        self.assertIn("'no_quarter'", text)
+        self.assertIn("fight back as far as: until they are down", text)
+        self.assertIn("start a fight as far as: a brawl", text)
+
+    def test_a_pacifist_hears_nothing_of_fighting(self):
+        self.assertNotIn("'fight'", proto.build_system({"persona": "P", "permitted_actions": ["say", "wait"]}))
+
+    def test_combat_state_reads_plainly(self):
+        text = proto.build_user_message(
+            {"self": {"name": "Isaac", "fighting": {"name": "Bob", "level": "brawl"}},
+             "entities": [{"handle": "h2", "name": "Bob", "distance": 1, "direction": "north", "hostile": True}]},
+            [{"event": "attacked", "detail": {"by": "Bob", "fighting_back": "brawl"}},
+             {"event": "combat_ended", "detail": {"with": "Bob", "reason": "they yielded"}}])
+        self.assertIn("You are fighting Bob (brawl).", text)
+        self.assertIn("(attacked you recently)", text)
+        self.assertIn("Bob attacked you; you are fighting back (brawl).", text)
+        self.assertIn("Your fight with Bob is over: they yielded.", text)
+
+
 class DeadlineBudget(unittest.TestCase):
     """The defect: the sidecar allowed the model 30s against a 15s deadline.
 

@@ -285,3 +285,35 @@
 #define AGENT_EVENT_HIGH 2
 /// Per-pawn event ring size. Overflow drops oldest low-urgency entries first.
 #define AGENT_MAX_EVENTS_PER_PAWN 12
+
+/// How hard an agent NPC fights, least to most violent. Strangers get the ladder one rung at a time.
+#define AGENT_COMBAT_NONE "none"
+/// Fists only. Ends when they fall, yield, or are half beaten.
+#define AGENT_COMBAT_BRAWL "brawl"
+/// Weapons allowed. Ends when they are down: crit, defeated, knocked flat and helpless, or yielding.
+#define AGENT_COMBAT_DOWNED "until_downed"
+/// To the death. Only death, or a defeat the game will not let turn into death, ends it.
+#define AGENT_COMBAT_LETHAL "no_quarter"
+/// Beaten this far towards a defeat knockout, the NPC breaks off and runs, whatever the level.
+#define AGENT_COMBAT_FLEE_BEATEN 0.7
+/// A brawl ends once its target is beaten this far towards a defeat knockout.
+#define AGENT_BRAWL_STOP_BEATEN 0.5
+/// Tiles a fight is chased before the target counts as out of reach.
+#define AGENT_COMBAT_CHASE_RANGE 9
+/// Out of sight or reach this long and the fight is over: they got away.
+#define AGENT_COMBAT_LOST_TIMEOUT (8 SECONDS)
+/// Least time between two rungs of the ladder, so no NPC leaps from a shove to murder.
+#define AGENT_COMBAT_ESCALATION_DELAY (10 SECONDS)
+/// How long someone who laid hands on the NPC is remembered as having started it.
+#define AGENT_AGGRESSOR_MEMORY (5 MINUTES)
+/// Who the NPC is fighting, and how hard. Set only through start_combat() and end_combat().
+#define BB_AGENT_COMBAT_TARGET "BB_agent_combat_target"
+#define BB_AGENT_COMBAT_LEVEL "BB_agent_combat_level"
+/// world.time the current level began. Escalation waits AGENT_COMBAT_ESCALATION_DELAY from it.
+#define BB_AGENT_COMBAT_SINCE "BB_agent_combat_since"
+/// world.time the target was first out of reach, or null while it is in reach.
+#define BB_AGENT_COMBAT_LOST_AT "BB_agent_combat_lost_at"
+/// The melee behavior's copy of the target. It clears this on a missed swing; the fight itself survives.
+#define BB_AGENT_COMBAT_SWING "BB_agent_combat_swing"
+#define BB_AGENT_COMBAT_HIDING "BB_agent_combat_hiding"
+#define BB_AGENT_COMBAT_TARGETTING "BB_agent_combat_targetting"

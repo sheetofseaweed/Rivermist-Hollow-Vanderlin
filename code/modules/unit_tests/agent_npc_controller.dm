@@ -216,11 +216,13 @@
 /datum/unit_test/agent_npc_observation_hides_exact_health/Run()
 	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
 
-	target.health = target.maxHealth
-	TEST_ASSERT_EQUAL(agent_describe_condition(target), "unhurt", "A healthy mob should read as unhurt.")
+	TEST_ASSERT_EQUAL(agent_describe_condition(target), "unhurt", "A fresh mob should read as unhurt.")
 
-	target.health = target.maxHealth * 0.3
-	TEST_ASSERT_EQUAL(agent_describe_condition(target), "badly hurt", "Condition must be a coarse band, never an exact figure.")
+	// Toxin pools like brute does, and unlike brute it can be set directly in a test.
+	target.setToxLoss(target.get_effective_defeat_threshold() * 0.6)
+	var/beaten_band = agent_describe_condition(target)
+	target.setToxLoss(0)
+	TEST_ASSERT_EQUAL(beaten_band, "badly hurt", "Condition must be a coarse band of the beating, never an exact figure.")
 
 	target.stat = DEAD
 	TEST_ASSERT_EQUAL(agent_describe_condition(target), "dead", "A dead mob should read as dead regardless of its health value.")

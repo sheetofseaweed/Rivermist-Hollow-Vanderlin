@@ -25,6 +25,8 @@ type Profile = {
   permitted_actions: string[];
   aliases: string[];
   memory_turns: number | null;
+  combat_retaliate: string;
+  combat_initiate: string;
 };
 
 type BuiltIn = Omit<Profile, 'name'> & { type: string };
@@ -50,7 +52,18 @@ type Data = {
   aliasMax: number;
   memoryMax: number;
   memoryStart: number;
+  combatLevels: string[];
 };
+
+/** Plain words for each rung of the combat ladder. */
+const COMBAT_LABELS: Record<string, string> = {
+  none: 'never',
+  brawl: 'brawl (fists, until they fall)',
+  until_downed: 'until downed (weapons)',
+  no_quarter: 'no quarter (to the death)',
+};
+
+const combatLabel = (level: string) => COMBAT_LABELS[level] ?? level;
 
 /** The long text fields, in the order they read as a character brief. */
 const TEXT_FIELDS: { key: keyof Profile; label: string; hint: string }[] = [
@@ -224,6 +237,10 @@ function ReadOnly(props: { template?: BuiltIn }) {
         Memory:{' '}
         {template.memory_turns ?? 'sidecar default'}
       </Box>
+      <Box mb={1}>
+        Fights back: {combatLabel(template.combat_retaliate)}. Starts fights:{' '}
+        {combatLabel(template.combat_initiate)}.
+      </Box>
       {TEXT_FIELDS.map((field) => (
         <Box key={field.key} mb={1}>
           <Box bold>{field.label}</Box>
@@ -340,6 +357,8 @@ function Editor(props: {
         )}
       </Box>
 
+      <CombatLimits profile={profile} />
+
       <Box bold mb={0.5}>
         Permitted actions
       </Box>
@@ -376,6 +395,43 @@ function Editor(props: {
         </Box>
       ))}
     </Section>
+  );
+}
+
+function CombatLimits(props: { profile: Profile }) {
+  const { act, data } = useBackend<Data>();
+  const { profile } = props;
+  const options = (data.combatLevels ?? []).map((level) => ({
+    displayText: combatLabel(level),
+    value: level,
+  }));
+  const pick = (kind: string, current: string) => (
+    <Dropdown
+      width="100%"
+      options={options}
+      selected={options.find((option) => option.value === current) ?? null}
+      onSelected={(value) => act('set_combat', { kind, value })}
+    />
+  );
+
+  return (
+    <Box mb={1}>
+      <Box bold>Combat</Box>
+      <Box color="label" fontSize="0.9em" mb={0.5}>
+        How hard this character fights. Strangers are met one step at a time,
+        and it always breaks off to run when badly hurt.
+      </Box>
+      <Stack>
+        <Stack.Item basis="50%">
+          <Box mb={0.5}>When attacked, fights back:</Box>
+          {pick('retaliate', profile.combat_retaliate)}
+        </Stack.Item>
+        <Stack.Item basis="50%">
+          <Box mb={0.5}>Starts fights when provoked:</Box>
+          {pick('initiate', profile.combat_initiate)}
+        </Stack.Item>
+      </Stack>
+    </Box>
   );
 }
 

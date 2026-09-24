@@ -211,7 +211,7 @@
  * action here without teaching dispatch_decision about it gets you a profile
  * that permits something the executor will reject.
  */
-GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "wait"))
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "wait"))
 
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
@@ -240,6 +240,17 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach",
 			return list("name" = "me", "text" = text)
 		if("stand")
 			return list("name" = "stand")
+		if("stop")
+			return list("name" = "stop")
+		if("fight")
+			var/handle = action["handle"]
+			if(!istext(handle) || !length(handle))
+				return null
+			// The level is checked at dispatch against the ladder and the profile; unnamed is a brawl.
+			var/level = action["key"]
+			if(!istext(level) || !length(level))
+				level = AGENT_COMBAT_BRAWL
+			return list("name" = "fight", "handle" = handle, "key" = level)
 		if("give")
 			var/handle = action["handle"]
 			if(!istext(handle) || !length(handle))

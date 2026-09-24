@@ -43,14 +43,14 @@
 		return "dead"
 	if(target.stat >= UNCONSCIOUS)
 		return "unconscious"
-	var/fraction = target.maxHealth > 0 ? (target.health / target.maxHealth) : 1
-	switch(fraction)
-		if(0.85 to INFINITY)
-			return "unhurt"
-		if(0.5 to 0.85)
-			return "hurt"
-		if(0.2 to 0.5)
-			return "badly hurt"
+	// Health ignores brute on carbons here, so read the beating the way combat and defeat do.
+	var/beaten = agent_combat_beaten(target)
+	if(beaten < 0.15)
+		return "unhurt"
+	if(beaten < 0.5)
+		return "hurt"
+	if(beaten < 0.8)
+		return "badly hurt"
 	return "near death"
 
 /**
@@ -125,6 +125,10 @@
 	)
 	if(pawn.buckled)
 		myself["on"] = "[pawn.buckled.name]"
+	var/datum/ai_controller/agent_social/agent = pawn.ai_controller
+	if(istype(agent) && agent.in_combat())
+		var/mob/living/foe = agent.blackboard[BB_AGENT_COMBAT_TARGET]
+		myself["fighting"] = list("name" = foe.get_visible_name(), "level" = agent.blackboard[BB_AGENT_COMBAT_LEVEL])
 	// Handles for what is in hand, so give can say which. Only give accepts them.
 	if(observation)
 		var/list/held = list()
@@ -206,7 +210,13 @@
 		// Only what examine would show. Clothing hidden under other clothing stays hidden.
 		if(iscarbon(living_thing))
 			described["wearing"] = agent_visible_worn_names(living_thing)
-		if(living_thing.buckled)
+		// Who started it matters to how hard the NPC may answer, so the model is told.
+		var/datum/ai_controller/agent_social/agent = pawn.ai_controller
+		if(istype(agent) && agent.is_aggressor(living_thing))
+			described["hostile"] = TRUE
+		if(living_thing.surrendering)
+			described["posture"] = "yielding"
+		else if(living_thing.buckled)
 			described["posture"] = "on the [living_thing.buckled.name]"
 		else if(living_thing.body_position == LYING_DOWN)
 			described["posture"] = "lying down"

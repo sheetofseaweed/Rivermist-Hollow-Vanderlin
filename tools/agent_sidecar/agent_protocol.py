@@ -67,10 +67,11 @@ def action_schema(permitted):
                        "description": "Which action to take."},
             "text": {"type": "string", "description": "Speech for 'say', or the action for 'me', else empty."},
             "key": {"type": "string", "description": "Emote key for 'emote', the way to 'touch' "
-                                                     "(tap, hug, headpat, help), or the held item's handle "
-                                                     "for 'give', else empty."},
+                                                     "(tap, hug, headpat, help), the held item's handle "
+                                                     "for 'give', or how hard to 'fight' (brawl, until_downed, "
+                                                     "no_quarter), else empty."},
             "handle": {"type": "string", "description": "The person or thing for approach/use/touch/sit/"
-                                                        "give/take, else empty."},
+                                                        "give/take/fight, else empty."},
         },
         "required": ["action", "text", "key", "handle"],
         "additionalProperties": False,
@@ -98,8 +99,9 @@ def schema_prose(permitted):
         "Reply with a single JSON object and nothing else. No prose, no code "
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
         '"text": speech for say, or the action for me, else "", "key": emote key for emote, '
-        'tap/hug/headpat/help for touch, or the held item handle for give, else "", '
-        '"handle": the person or thing for approach/use/touch/sit/give/take, else ""}.')
+        'tap/hug/headpat/help for touch, the held item handle for give, or brawl/until_downed/'
+        'no_quarter for fight, else "", "handle": the person or thing for approach/use/touch/sit/'
+        'give/take/fight, else ""}.')
 
 
 def build_system(profile, describe_schema=False):
@@ -134,6 +136,7 @@ def build_system(profile, describe_schema=False):
         ("To hand someone what you hold, use 'give' with their handle and the item's handle in key; "
          "they must take it. When someone offers you something, 'take' with their handle accepts it.")
         if "give" in permitted or "take" in permitted else "",
+        combat_brief(profile) if "fight" in permitted else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -181,12 +184,34 @@ def _where(thing):
     return "%s %s away" % (distance, unit)
 
 
+_COMBAT_WORDS = {
+    "none": "never",
+    "brawl": "a brawl",
+    "until_downed": "until they are down",
+    "no_quarter": "to the death",
+}
+
+
+def combat_brief(profile):
+    """The ladder in words, and how far this character may climb it."""
+    retaliate = _COMBAT_WORDS.get(profile.get("combat_retaliate"), "never")
+    initiate = _COMBAT_WORDS.get(profile.get("combat_initiate"), "never")
+    return ("Fighting has three levels, least to most violent: 'brawl' (fists only; it ends when they "
+            "fall or yield), 'until_downed' (weapons; it ends when they are down or yield) and 'no_quarter' "
+            "(to the death). To fight, use 'fight' with their handle and the level in key; 'stop' stands "
+            "down. Start strangers with a brawl and raise it one step at a time; warn before you fight, "
+            "and violence has consequences. When attacked you fight back as far as: %s. You may start a "
+            "fight as far as: %s." % (retaliate, initiate))
+
+
 def describe_entity(entity):
     bits = ["[%s] %s" % (entity.get("handle"), entity.get("name", "something"))]
     if entity.get("condition"):
         bits.append("(%s)" % entity["condition"])
     if entity.get("posture"):
         bits.append(entity["posture"])
+    if entity.get("hostile"):
+        bits.append("(attacked you recently)")
     held = _names(entity.get("holding"))
     if held:
         bits.append("holding " + " and ".join(held))
@@ -337,6 +362,10 @@ def build_user_message(observation, events):
         stored = _names(bag.get("items"))
         if stored:
             lines.append("In your %s: %s." % (bag.get("in", "bag"), ", ".join(stored)))
+    fighting = myself.get("fighting")
+    if isinstance(fighting, dict):
+        lines.append("You are fighting %s (%s)." % (fighting.get("name", "someone"),
+                                                   fighting.get("level", "brawl")))
     if myself.get("on"):
         lines.append("You are on the %s." % myself["on"])
     elif myself.get("standing") is False:
@@ -380,7 +409,13 @@ def describe_events(events):
             lines.append("  %s took the %s you held out." % (
                 detail.get("by", "someone"), detail.get("item", "thing")))
         elif name == "attacked":
-            lines.append("  %s attacked you%s." % (detail.get("by", "someone"), _times(detail)))
+            line = "  %s attacked you%s" % (detail.get("by", "someone"), _times(detail))
+            if detail.get("fighting_back"):
+                line += "; you are fighting back (%s)" % detail["fighting_back"]
+            lines.append(line + ".")
+        elif name == "combat_ended":
+            lines.append("  Your fight with %s is over: %s." % (
+                detail.get("with", "someone"), detail.get("reason", "it ended")))
         elif name == "action_result":
             lines.append("  Your last action: %s (%s)" % (
                 detail.get("state"), detail.get("detail")))
@@ -408,11 +443,11 @@ def to_dm_action(parsed):
         return {"name": "emote", "key": parsed.get("key", "")}
     if name in ("approach", "use", "sit", "take"):
         return {"name": name, "handle": parsed.get("handle", "")}
-    if name in ("touch", "give"):
+    if name in ("touch", "give", "fight"):
         return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
     if name == "me":
         return {"name": "me", "text": parsed.get("text", "")}
-    if name in ("stand", "wait"):
+    if name in ("stand", "stop", "wait"):
         return {"name": name}
     return None
 
@@ -472,8 +507,8 @@ def parse_loose_action(text, permitted):
                     return {"action": name, "text": "", "key": value, "handle": ""}
                 if name in ("approach", "use", "sit", "take"):
                     return {"action": name, "text": "", "key": "", "handle": value}
-                if name in ("touch", "give"):
-                    # "touch: h3 hug", "give: h3 h7", or just the handle.
+                if name in ("touch", "give", "fight"):
+                    # "touch: h3 hug", "give: h3 h7", "fight: h3 brawl", or just the handle.
                     parts = value.split()
                     return {"action": name, "text": "", "key": parts[1] if len(parts) > 1 else "",
                             "handle": parts[0] if parts else ""}

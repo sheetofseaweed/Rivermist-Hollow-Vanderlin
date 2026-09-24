@@ -26,22 +26,37 @@
 	var/list/aliases = list()
 	/// Exchanges the sidecar remembers for this character. Null uses the sidecar's own default.
 	var/memory_turns = null
+	/// How hard this character fights back when attacked, on the combat ladder. None means it runs.
+	var/combat_retaliate = AGENT_COMBAT_NONE
+	/// How hard it may start a fight itself. Strangers are met one rung at a time.
+	var/combat_initiate = AGENT_COMBAT_NONE
 
 /// Wire form. Static per NPC, so the sidecar can cache a prompt built from it.
 /datum/agent_profile/proc/to_payload()
+	var/list/actions = permitted_actions.Copy()
+	if(combat_enabled())
+		actions |= GLOB.agent_combat_actions
 	return list(
 		"label" = label,
 		"persona" = persona,
 		"background" = background,
 		"voice" = voice,
 		"limits" = limits,
-		"permitted_actions" = permitted_actions.Copy(),
+		"permitted_actions" = actions,
 		"aliases" = aliases.Copy(),
 		"memory_turns" = memory_turns,
+		"combat_retaliate" = combat_retaliate,
+		"combat_initiate" = combat_initiate,
 	)
 
 /datum/agent_profile/proc/permits(action_name)
+	// Fighting comes from the combat limits, so ticking it on a pacifist can never arm them.
+	if(action_name in GLOB.agent_combat_actions)
+		return combat_enabled()
 	return (action_name in permitted_actions)
+
+/datum/agent_profile/proc/combat_enabled()
+	return agent_combat_rank(combat_retaliate) > 0 || agent_combat_rank(combat_initiate) > 0
 
 /// The pilot profile: the four pilot actions plus wait.
 /datum/agent_profile/villager
@@ -62,3 +77,14 @@
 /// Worth using for a first supervised round, where less motion is less risk.
 /datum/agent_profile/villager/sedentary
 	permitted_actions = list("say", "emote", "me", "wait")
+
+/// A town guard: answers violence in kind, and will start a fight to keep the peace.
+/datum/agent_profile/guard
+	label = "guard"
+	persona = "You are a guard in a small medieval town. You keep the peace, and you use force when words fail."
+	background = "You know the town and its trouble-makers by sight. You only know what you have seen or been told."
+	voice = "You speak briefly and with authority, in plain period language. You never narrate your own actions."
+	permitted_actions = list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "wait")
+	limits = "Warn before you fight, and fight no harder than the trouble deserves. Stand down when someone yields."
+	combat_retaliate = AGENT_COMBAT_DOWNED
+	combat_initiate = AGENT_COMBAT_DOWNED

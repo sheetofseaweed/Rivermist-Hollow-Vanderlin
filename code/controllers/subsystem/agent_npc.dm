@@ -431,6 +431,13 @@ SUBSYSTEM_DEF(agent_npc)
 			var/list/outcome = agent_execute_stand(pawn)
 			binding.complete_action(outcome["state"], outcome["detail"])
 			return
+		if("stop")
+			var/datum/ai_controller/agent_social/peacemaker = binding.resolve_controller()
+			if(!istype(peacemaker) || !peacemaker.end_combat("you stood down", report = FALSE))
+				binding.record_result(AGENT_RESULT_REJECTED, "you are not fighting")
+				return
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "stood down")
+			return
 
 	// Every action from here names a handle, authorised only here against the observation actually sent.
 	var/atom/target = binding.resolve_handle(response.action["handle"])
@@ -443,6 +450,21 @@ SUBSYSTEM_DEF(agent_npc)
 	var/atom/movable/movable_target = target
 	if(ismovable(movable_target) && movable_target.loc == pawn)
 		binding.record_result(AGENT_RESULT_REJECTED, "that is in your own hands")
+		return
+
+	// The melee is DM's from here on; the model chose who and how hard, within the profile and the ladder.
+	if(name == "fight")
+		var/datum/ai_controller/agent_social/fighter = binding.resolve_controller()
+		if(!istype(fighter) || !isliving(target) || target == pawn)
+			binding.record_result(AGENT_RESULT_REJECTED, "fight is for people and creatures")
+			return
+		var/level = response.action["key"]
+		var/refusal = fighter.combat_refusal(target, level)
+		if(refusal)
+			binding.record_result(AGENT_RESULT_REJECTED, refusal)
+			return
+		fighter.start_combat(target, level, "chosen")
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, "fighting them: [level]")
 		return
 
 	// The offerer is already beside us and must stay there, so taking is immediate.
@@ -644,6 +666,10 @@ SUBSYSTEM_DEF(agent_npc)
 		binding.revoke(reason)
 		if(!controller)
 			continue
+		// No agent-authorised fight survives the kill switch either.
+		var/datum/ai_controller/agent_social/agent = controller
+		if(istype(agent))
+			agent.end_combat(reason, report = FALSE)
 		controller.CancelActions()
 		controller.set_movement_target(source = type, target = null)
 		// Clearing the target is not enough. A controller registered with the

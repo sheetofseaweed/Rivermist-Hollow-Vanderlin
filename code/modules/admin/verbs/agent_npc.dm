@@ -57,6 +57,11 @@
 		var/list/intent = binding.current_intent
 		// A pawn past the failure limit is sending one probe per cooldown and is
 		// otherwise silent. Saying so plainly beats leaving it to be inferred.
+		var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
+		var/fight = ""
+		if(istype(agent) && agent.in_combat())
+			var/mob/living/foe = agent.blackboard[BB_AGENT_COMBAT_TARGET]
+			fight = " | <b>FIGHTING</b> [foe] ([agent.blackboard[BB_AGENT_COMBAT_LEVEL]])"
 		var/breaker = ""
 		if(binding.is_probe())
 			var/wait_ds = max(0, binding.next_request_at - world.time)
@@ -69,7 +74,7 @@
 			| events [length(binding.events)] \
 			| requests [binding.requests_made] refused [binding.requests_refused] expired [binding.requests_expired] \
 			| unclear [binding.ambiguous_spent]/[AGENT_AMBIGUOUS_PAWN_LIMIT] \
-			| failures [binding.consecutive_failures][breaker]"
+			| failures [binding.consecutive_failures][breaker][fight]"
 
 	to_chat(src, "<span class='notice'>[lines.Join("<br>")]</span>")
 

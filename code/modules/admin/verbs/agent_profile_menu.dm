@@ -36,7 +36,9 @@
 
 /datum/agent_profile_menu/ui_static_data(mob/user)
 	return list(
-		"vocabulary" = GLOB.agent_action_vocabulary.Copy(),
+		// Fighting is set by the combat limits, never by a checkbox.
+		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions,
+		"combatLevels" = GLOB.agent_combat_ladder.Copy(),
 		"builtins" = agent_builtin_profiles(),
 		"labelMax" = AGENT_PROFILE_LABEL_MAX,
 		"textMax" = AGENT_PROFILE_TEXT_MAX,
@@ -166,6 +168,18 @@
 				return TRUE
 			// No value means back to the sidecar's default.
 			profile.memory_turns = params["default"] ? null : agent_clean_memory_turns(params["value"])
+			return TRUE
+
+		if("set_combat")
+			var/datum/agent_profile/profile = GLOB.agent_custom_profiles[selected]
+			if(QDELETED(profile))
+				return TRUE
+			var/level = agent_clean_combat_level(params["value"])
+			switch(params["kind"])
+				if("retaliate")
+					profile.combat_retaliate = level
+				if("initiate")
+					profile.combat_initiate = level
 			return TRUE
 
 		if("toggle_action")

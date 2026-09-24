@@ -71,6 +71,7 @@
 #include "agent_npc_addressing.dm"
 #include "agent_npc_aliases.dm"
 #include "agent_npc_breaker.dm"
+#include "agent_npc_combat.dm"
 #include "agent_npc_budget.dm"
 #include "agent_npc_controller.dm"
 #include "agent_npc_emotes.dm"

@@ -601,6 +601,7 @@
 #include "code\datums\_verb_callback.dm"
 #include "code\datums\agent_npc\addressing.dm"
 #include "code\datums\agent_npc\binding.dm"
+#include "code\datums\agent_npc\combat.dm"
 #include "code\datums\agent_npc\executor.dm"
 #include "code\datums\agent_npc\focus.dm"
 #include "code\datums\agent_npc\perception.dm"
