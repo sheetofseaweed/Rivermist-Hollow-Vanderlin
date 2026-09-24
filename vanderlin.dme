@@ -4839,6 +4839,7 @@
 #include "modular_rmh\modular\ceramics\ceramics_items.dm"
 #include "modular_rmh\modular\comfy\comfy.dm"
 #include "modular_rmh\modular\defeat_recovery\trauma_providers.dm"
+#include "modular_rmh\modular\falling_star\falling_star.dm"
 #include "modular_rmh\modular\fluids\milk.dm"
 #include "modular_rmh\modular\fluids\sex_liquids.dm"
 #include "modular_rmh\modular\helpers\lewd_helpers.dm"
