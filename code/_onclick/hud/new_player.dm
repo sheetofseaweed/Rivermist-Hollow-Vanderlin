@@ -191,6 +191,9 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	if(!.)
 		return
 	var/mob/dead/new_player/new_player = hud.mymob
+	if(!ready && !new_player.client?.prefs?.defeat_introduction_complete)
+		new_player.client?.prefs?.show_choices(new_player)
+		return
 	ready = !ready
 	if(ready)
 		new_player.ready = PLAYER_READY_TO_PLAY

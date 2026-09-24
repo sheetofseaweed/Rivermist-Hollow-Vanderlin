@@ -33,6 +33,10 @@
 	var/list/modified_areas = list()
 	var/list/overlay_to_index = list()
 	var/current_overlays = 0
+	/// a loaded picture whose cells have not been read back into modified_areas yet
+	var/cells_pending = FALSE
+	/// Eora pays once per canvas, and archive prints are not new work
+	var/art_credited = FALSE
 
 /obj/item/canvas/Initialize()
 	. = ..()
@@ -59,12 +63,13 @@
 	. += span_info("Left-click the surface to toggle drawing, then move the mouse across it.")
 	. += span_info("Right-click toggles erasing, alt+left-click toggles shading, ctrl+left-click picks a colour.")
 	. += span_info("Sign it with a feather, then feed it to a printing press to archive it.")
+	. += span_info("Feed a blank canvas to a printing press to take a print of an archived painting.")
 
 /obj/item/canvas/examine(mob/user)
 	. = ..()
 	if(author)
 		. += span_notice("Signed by [author].")
-	if(painting_id)
+	if(painting_id && SSpaintings.paintings[painting_id])
 		. += span_notice("It bears an archivist's mark.")
 
 /obj/item/canvas/attack_hand(mob/user)
@@ -103,10 +108,20 @@
 	return ITEM_INTERACT_SUCCESS
 
 /obj/item/canvas/proc/sign_painting(mob/living/user)
+	if(!SSpaintings.can_amend(painting_id, user.ckey))
+		to_chat(user, span_warning("[src] already bears [author || "another painter"]'s signature, and it is not mine to change."))
+		return
 	var/new_author = browser_input_text(user, "Who's the author of this painting?", "NAME YOURSELF", max_length = MAX_NAME_LEN)
 	var/new_title = browser_input_text(user, "What's the title of this painting?", "NAME YOUR MASTERPIECE", max_length = MAX_CHARTER_LEN)
-	if(!new_author && !new_title)
+	if(QDELETED(src) || !user.Adjacent(src))
 		return
+	apply_signature(user, new_author, new_title)
+
+/obj/item/canvas/proc/apply_signature(mob/living/user, new_author, new_title)
+	if(!new_author && !new_title)
+		return FALSE
+	if(!SSpaintings.can_amend(painting_id, user.ckey))
+		return FALSE
 	if(new_author)
 		author = new_author
 		author_ckey = user.ckey
@@ -114,7 +129,25 @@
 	if(new_title)
 		title = new_title
 		name = title
-	SEND_SIGNAL(user, COMSIG_ART_CREATED)
+	if(!art_credited && has_paint())
+		art_credited = TRUE
+		SEND_SIGNAL(user, COMSIG_ART_CREATED)
+	return TRUE
+
+/obj/item/canvas/proc/has_paint()
+	load_cells()
+	return length(modified_areas) > 0
+
+/// reads a loaded picture back into cells, so it can be erased, colour-picked and shaded
+/obj/item/canvas/proc/load_cells()
+	if(!cells_pending)
+		return
+	cells_pending = FALSE
+	for(var/cell_x in 0 to canvas_size_x - 1)
+		for(var/cell_y in 0 to canvas_size_y - 1)
+			var/cell_color = draw.GetPixel(cell_x + 1, cell_y + 1)
+			if(cell_color && cell_color != base.GetPixel(cell_x + 1, cell_y + 1))
+				modified_areas["[cell_x],[cell_y]"] = cell_color
 
 /obj/item/canvas/attack_atom(atom/attacked_atom, mob/living/user)
 	if(!isclosedturf(attacked_atom))
@@ -136,6 +169,7 @@
 		return
 	if(user in showers)
 		return
+	load_cells()
 	user.client.screen += used_canvas
 	showers |= user
 	RegisterSignal(user, list(COMSIG_MOVABLE_TURF_ENTERED, COMSIG_PARENT_QDELETING), PROC_REF(remove_shower))
@@ -176,8 +210,9 @@
 		cut_overlay(MA)
 		overlay_to_index -= key
 		current_overlays = max(current_overlays - 1, 0)
+	// restore the bare canvas rather than clearing, or archived images carry holes
 	if(was_painted)
-		draw.DrawBox(null, x + 1, y + 1)
+		draw.DrawBox(base.GetPixel(x + 1, y + 1), x + 1, y + 1)
 
 /// bakes pending pixel overlays into the item's own icon, server-side
 /obj/item/canvas/proc/flatten()
@@ -195,6 +230,8 @@
 /obj/item/canvas/proc/upload_painting(mob/user)
 	if(!author || !title)
 		return "This canvas isn't signed."
+	if(!has_paint())
+		return "There is nothing on this canvas worth archiving."
 	flatten()
 	used_canvas?.flatten()
 	if(!painting_id)
@@ -209,16 +246,23 @@
 	var/image_path = SSpaintings.get_painting_filename(loaded_id)
 	if(!fexists(image_path))
 		return FALSE
+	var/icon/picture = icon(image_path)
+	// pre-rewrite archives stored client renders, which need not match the canvas grid
+	if(picture.Width() != canvas_size_x || picture.Height() != canvas_size_y)
+		picture.Scale(canvas_size_x, canvas_size_y)
 
 	cut_overlays()
 	overlay_to_index = list()
 	modified_areas = list()
 	current_overlays = 0
+	cells_pending = TRUE
+	art_credited = TRUE
 
-	draw = icon(image_path)
+	draw = icon(base)
+	draw.Blend(picture, ICON_OVERLAY)
 	icon = draw
 
-	var/icon/surface = icon(image_path)
+	var/icon/surface = icon(draw)
 	surface.Scale(canvas_size_x * canvas_divider_x, canvas_size_y * canvas_divider_y)
 	if(used_canvas)
 		used_canvas.cut_overlays()
@@ -550,3 +594,12 @@
 	if(!chosen_id)
 		return
 	load_painting(chosen_id)
+
+/// map it on a wall tile, it removes itself instead of hanging blank when the archive is empty
+/obj/item/canvas/random_painting/mounted
+	anchored = TRUE
+
+/obj/item/canvas/random_painting/mounted/Initialize()
+	. = ..()
+	if(!painting_id)
+		return INITIALIZE_HINT_QDEL

@@ -607,6 +607,9 @@
 
 	if(!target)
 		return
+	if(target.defeat_lethal_bypass || target.defeat_final_death || target.suiciding)
+		clear_linked_user_rescue_state(target)
+		return
 	if(!sub_rune)
 		return
 	if(!sub_rune.is_main && !sub_rune.main_rune_link)
@@ -866,6 +869,8 @@
 /datum/resurrection_rune_controller/proc/can_queue_rescue_for(mob/living/carbon/user)
 	if(!user)
 		return FALSE
+	if(user.defeat_lethal_bypass || user.defeat_final_death || user.suiciding || user.defeat_mode == DEFEAT_MODE_NO_RETURN)
+		return FALSE
 	if(resurrections_disabled())
 		return FALSE
 	if(!(user in linked_users))
@@ -963,6 +968,12 @@
 
 /datum/resurrection_rune_controller/proc/complete_revival(mob/living/carbon/user, voluntary = FALSE, allow_outlaw_redirect = TRUE, list/rune_charge_result = null)
 	var/mob/living/carbon/body = user
+	if(resurrections_disabled())
+		resurrecting -= user
+		return
+	if(body?.defeat_final_death || body?.suiciding)
+		resurrecting -= user
+		return
 	if(QDELETED(body))
 		body = null
 	if(is_active_noncarbon_shapeshift_source_body(body))
@@ -1038,7 +1049,6 @@
 /datum/resurrection_rune_controller/proc/clear_rot_and_zombie_state(mob/living/carbon/target, was_zombie)
 	if(was_zombie)
 		target.mind.remove_antag_datum(/datum/antagonist/zombie)
-		target.death()
 
 	var/datum/component/rot/rot = target.GetComponent(/datum/component/rot)
 	if(rot)

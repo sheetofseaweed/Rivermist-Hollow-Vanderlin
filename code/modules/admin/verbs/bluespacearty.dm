@@ -15,6 +15,7 @@
 		T.break_tile()
 
 	if(target.health <= 1)
+		target.defeat_lethal_bypass = TRUE
 		target.gib(1, 1)
 	else
 		target.adjustBruteLoss(min(99,(target.health - 1)), damage_type = BCLASS_PIERCE)

@@ -197,6 +197,8 @@
 
 	if(isliving(burn_target))
 		var/mob/living/burn_living = burn_target
+		if(burn_living.defeat_rescue_from_hazard())
+			return FALSE
 		burn_living.adjust_fire_stacks(lava_firestacks)
 		burn_living.IgniteMob()
 		burn_living.adjustFireLoss(lava_damage)
@@ -226,6 +228,8 @@
 
 	if(isliving(burn_target))
 		var/mob/living/burn_living = burn_target
+		if(burn_living.defeat_rescue_from_hazard())
+			return FALSE
 		if(iscarbon(burn_target))
 			var/mob/living/carbon/burn_carbon = burn_target
 			//make this acid

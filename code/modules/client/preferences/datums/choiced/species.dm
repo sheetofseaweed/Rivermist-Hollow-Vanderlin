@@ -40,6 +40,8 @@
 	return "[input]"
 
 /datum/preference/choiced/species/deserialize(input, datum/preferences/prefs)
+	if(input == "slime")
+		input = SPEC_ID_OOZE
 	var/species_type = GLOB.species_list[input]
 	if (!species_type)
 		species_type = /datum/species/human/northern

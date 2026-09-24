@@ -1,5 +1,6 @@
 /datum/status_effect/defeat_knockout
 	id = "defeat_knockout"
+	tick_interval = DEFEAT_FALLBACK_CHECK_INTERVAL
 	duration = STATUS_EFFECT_PERMANENT
 	alert_type = /atom/movable/screen/alert/status_effect/defeat_knockout
 	remove_on_fullheal = FALSE
@@ -9,7 +10,16 @@
 	/// timer, and the granted action itself. All null unless this is a KO Only (no-rune) knockout.
 	var/struggle_offer_timer
 	var/struggle_auto_timer
+	var/self_recover_at = 0
+	var/struggle_offer_at = 0
+	var/struggle_auto_at = 0
 	var/datum/action/innate/defeat_struggle_up/struggle_action
+
+/datum/status_effect/defeat_knockout/tick()
+	if(owner && !QDELETED(owner) && !owner.GetComponent(/datum/component/kidnap_captivity))
+		if(owner.defeat_is_immediate_hazard())
+			owner.defeat_rescue_from_hazard()
+		owner.defeat_maybe_arm_struggle_up()
 
 /datum/status_effect/defeat_knockout/on_apply()
 	. = ..()
@@ -38,13 +48,14 @@
 		// existing "lovehud" overlay) floods over it, so it never looks like a plain beatdown.
 		owner.overlay_fullscreen("defeat_horny", /atom/movable/screen/fullscreen/love, 10)
 		// The light case: a horny knockout wears off on its own after a short while (unless kidnapped).
+		self_recover_at = world.time + DEFEAT_HORNY_SELF_RECOVER_TIME
 		self_recover_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_horny_self_recover)), DEFEAT_HORNY_SELF_RECOVER_TIME, TIMER_STOPPABLE)
 	else
 		// The self-rescue (Struggle to Your Feet) is armed later, from enter_defeat, once the rune logic
 		// has settled - so it only fires when no rune can answer (KO Only, or a depleted KO+Rune).
 		collapse_texts["self"] += " You can still speak, emote, and call for help - but darkness crowds in at the edges of your sight."
 	to_chat(owner, span_userdanger(collapse_texts["self"]))
-	to_chat(owner, span_notice("Another can bring you back: a curative potion fed to you, a healer's or holy hand, or other aid - but never your own doing. If the rune is yours to call, it may answer too."))
+	to_chat(owner, span_notice("Companions, prepared care, or a player-built campfire can help you recover. Rune and self-recovery options depend on your situation. Click the Defeated alert or use OOC > Defeat & Recovery for help."))
 	SEND_SIGNAL(owner, COMSIG_LIVING_DEFEATED)
 	owner.visible_message(span_userdanger(collapse_texts["visible"]))
 	owner.balloon_alert_to_viewers(collapse_texts["balloon"])
@@ -105,6 +116,9 @@
 /datum/status_effect/defeat_knockout/proc/arm_struggle_up()
 	if(struggle_offer_timer || struggle_auto_timer || struggle_action)
 		return
+	struggle_offer_at = world.time + DEFEAT_KO_ONLY_STRUGGLE_DELAY * owner.defeat_struggle_delay_mult
+	struggle_auto_at = world.time + DEFEAT_KO_ONLY_AUTO_RECOVER * owner.defeat_struggle_delay_mult
+	to_chat(owner, span_notice("No rune can answer right now. Struggle to Your Feet becomes available in [DisplayTimeText(DEFEAT_KO_ONLY_STRUGGLE_DELAY * owner.defeat_struggle_delay_mult)]; unaided recovery follows in [DisplayTimeText(DEFEAT_KO_ONLY_AUTO_RECOVER * owner.defeat_struggle_delay_mult)] if you remain outside captivity."))
 	struggle_offer_timer = addtimer(CALLBACK(src, PROC_REF(offer_struggle_up)), DEFEAT_KO_ONLY_STRUGGLE_DELAY * owner.defeat_struggle_delay_mult, TIMER_STOPPABLE)
 	struggle_auto_timer = addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, defeat_ko_only_self_recover)), DEFEAT_KO_ONLY_AUTO_RECOVER * owner.defeat_struggle_delay_mult, TIMER_STOPPABLE)
 
@@ -158,6 +172,10 @@
 	desc = "You are defeated. You can speak, emote, call for help, or call the rune if available."
 	icon_state = "paralysis"
 
+/atom/movable/screen/alert/status_effect/defeat_knockout/Click(location, control, params)
+	if(usr == mob_viewer)
+		mob_viewer.show_defeat_recovery_guide()
+
 /// Long KO for a clientless mob brought down by horny defeat. Immobilizes and pauses the AI, then after
 /// DEFEAT_MOB_HORNY_KO_DURATION deletes the mob if no player is watching, or holds the KO and re-checks
 /// while players remain. Deliberately does NOT add TRAIT_NODEATH: a downed mob can still be finished off.
@@ -209,11 +227,15 @@
 	desc = "Lingering harm from a recent defeat. A town healer, priest, or potent remedy can mend it - and it festers worse each time you are defeated untreated."
 	icon_state = "muscles"
 
+/atom/movable/screen/alert/status_effect/debuff/defeat_trauma/Click(location, control, params)
+	if(usr == mob_viewer)
+		mob_viewer.show_defeat_recovery_guide()
+
 /// Distinct icons per trauma family. The name and description are overwritten per trauma by
 /// refresh_trauma_alert(); these defaults only show if a subtype somehow never stamps itself.
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/horny
 	name = "Lewd Trauma"
-	desc = "A wrung-out afterglow that will not fade. A healer, a priest, or a potent remedy restores you."
+	desc = "A wrung-out afterglow. Spiritual care, time, or a potent remedy restores you."
 	icon_state = "hypnosis"
 
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/rune
@@ -266,8 +288,19 @@
 	if(!linked_alert)
 		return FALSE
 	linked_alert.name = "[trauma_category_label]: [trauma_label] ([defeat_severity_label(severity)])"
-	linked_alert.desc = trauma_desc
+	linked_alert.desc = "[trauma_desc]<br>[mechanics_description()]<br>Click for remaining recovery time and the Defeat & Recovery guide."
 	return TRUE
+
+/datum/status_effect/debuff/defeat/proc/mechanics_description()
+	var/list/penalties = list()
+	for(var/stat in effectedstats)
+		penalties += "[stat]: [effectedstats[stat]]"
+	var/treatment = trauma_category == DEFEAT_TRAUMA_CATEGORY_SPIRITUAL ? "Spiritual care at a shrine of solace, with holy training and silver." : "Medical care at a trauma treatment apparatus, with apprentice medicine and bandages."
+	if(DEFEAT_TRAUMA_PROVIDER_UNIVERSAL in accepted_provider_tags)
+		treatment += " Universal trauma remedies also work."
+	var/recovery = defeat_duration_for_severity(severity)
+	var/recovery_text = recovery == STATUS_EFFECT_PERMANENT ? "Requires treatment." : "Natural recovery: [DisplayTimeText(recovery)] when newly applied."
+	return "Effects: [penalties.Join(", ")]. [recovery_text] [treatment]"
 
 /datum/status_effect/debuff/defeat/remove_effect_on_heal(datum/source, heal_flags)
 	if((heal_flags & HEAL_ADMIN) && !owner.defeat_suppress_heal_cleanup)
@@ -466,6 +499,54 @@
 	trauma_label = "Lingering Pain"
 	trauma_desc = "Phantom aches roll back through you in waves, fraying nerve and focus. A town healer or a potent remedy will quiet them."
 
+/datum/status_effect/debuff/defeat/blood_loss
+	id = "defeat_blood_loss_trauma"
+	trauma_label = "Blood-Loss Weakness"
+	trauma_desc = "Your bleeding has been stabilized, but the ordeal has left you weak and slow. This aftermath does not cause additional bleeding."
+	treatment_description = "Treat weakness left by critical blood loss."
+
+/datum/status_effect/debuff/defeat/blood_loss/defeat_base_profile()
+	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -1, STAT_SPEED = -1)
+
+/datum/status_effect/debuff/defeat/blood_loss/defeat_apply_feedback()
+	to_chat(owner, span_warning("I still feel weak after losing so much blood."))
+
+/datum/status_effect/debuff/defeat/breathless
+	id = "defeat_breathless_trauma"
+	trauma_label = "Breathless Exhaustion"
+	trauma_desc = "Oxygen deprivation has left you exhausted and unfocused. This aftermath does not inflict further oxygen damage."
+	treatment_description = "Restore strength after oxygen deprivation."
+
+/datum/status_effect/debuff/defeat/breathless/defeat_base_profile()
+	return list(STAT_ENDURANCE = -2, STAT_PERCEPTION = -1)
+
+/datum/status_effect/debuff/defeat/breathless/defeat_apply_feedback()
+	to_chat(owner, span_warning("I pause to catch my breath."))
+
+/datum/status_effect/debuff/defeat/poisoned
+	id = "defeat_poisoned_trauma"
+	trauma_label = "Poisoning Aftereffects"
+	trauma_desc = "Poisoning has left your body weak and your thoughts sluggish. This aftermath does not add toxin damage; any poison still in your body needs separate treatment."
+	treatment_description = "Treat the lingering weakness left by poisoning."
+
+/datum/status_effect/debuff/defeat/poisoned/defeat_base_profile()
+	return list(STAT_ENDURANCE = -2, STAT_CONSTITUTION = -1, STAT_INTELLIGENCE = -1)
+
+/datum/status_effect/debuff/defeat/poisoned/defeat_apply_feedback()
+	to_chat(owner, span_warning("My body still feels drained by the poisoning."))
+
+/datum/status_effect/debuff/defeat/body_strain
+	id = "defeat_body_strain_trauma"
+	trauma_label = "Systemic Strain"
+	trauma_desc = "Damage throughout your body has left you weakened. This aftermath does not inflict further bodily damage."
+	treatment_description = "Treat systemic weakness after bodily deterioration."
+
+/datum/status_effect/debuff/defeat/body_strain/defeat_base_profile()
+	return list(STAT_ENDURANCE = -2, STAT_CONSTITUTION = -2)
+
+/datum/status_effect/debuff/defeat/body_strain/defeat_apply_feedback()
+	to_chat(owner, span_warning("My body needs time to regain its strength."))
+
 /datum/status_effect/debuff/defeat/pain/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_PERCEPTION = -2)
 
@@ -509,7 +590,7 @@
 	trauma_label = "Lewd Exhaustion"
 	trauma_category_label = "Lewd"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/horny
-	trauma_desc = "A wrung-out, trembling afterglow that will not fade, letting focus and luck slip through your fingers. A healer, a priest, or a potent remedy restores you."
+	trauma_desc = "A wrung-out, trembling afterglow lets focus and luck slip through your fingers. Spiritual care, time, or a potent remedy restores you."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
 	// Intimate defeat is spiritual trauma for routing purposes. Its own subtype and descriptive
 	// metadata still let shrines present it distinctly from rune backlash.
@@ -533,7 +614,7 @@
 // Post-Climax Brain-Fog ("Can't Think Straight")
 /datum/status_effect/debuff/defeat/horny/brainfog
 	trauma_label = "Afterglow Haze"
-	trauma_desc = "Your head swims in a thick, pleasured fog - thought comes slow and scattered. A healer, priest, or potent remedy will clear it."
+	trauma_desc = "Your head swims in a thick, pleasured fog - thought comes slow and scattered. Spiritual care, time, or a potent remedy will clear it."
 
 /datum/status_effect/debuff/defeat/horny/brainfog/defeat_base_profile()
 	return list(STAT_PERCEPTION = -3, STAT_INTELLIGENCE = -4, STAT_CONSTITUTION = -3)
@@ -546,7 +627,7 @@
 // Over-Sensitive Skin & Throbbing Heat ("Body on Fire")
 /datum/status_effect/debuff/defeat/horny/oversensitive
 	trauma_label = "Oversensitive Skin"
-	trauma_desc = "Raw, over-sensitive skin where every brush of cloth is far too much, sapping your strength and vigor. A healer, priest, or potent remedy will settle it."
+	trauma_desc = "Raw, over-sensitive skin where every brush of cloth is far too much, sapping your strength and vigor. Spiritual care, time, or a potent remedy will settle it."
 
 /datum/status_effect/debuff/defeat/horny/oversensitive/defeat_base_profile()
 	return list(STAT_ENDURANCE = -3, STAT_STRENGTH = -2, STAT_CONSTITUTION = -4, STAT_SPEED = -2)
@@ -557,7 +638,7 @@
 // Rubbery Legs / Aroused Wobble ("Can't Walk Straight") - random falls, can't jump.
 /datum/status_effect/debuff/defeat/horny/wobble
 	trauma_label = "Rubbery Legs"
-	trauma_desc = "Aroused, trembling legs that wobble and give out without warning - and cannot manage a jump. A healer, priest, or potent remedy will steady them."
+	trauma_desc = "Aroused, trembling legs that wobble and give out without warning - and cannot manage a jump. Spiritual care, time, or a potent remedy will steady them."
 
 /datum/status_effect/debuff/defeat/horny/wobble/defeat_base_profile()
 	return list(STAT_ENDURANCE = -3, STAT_STRENGTH = -3, STAT_SPEED = -4, STAT_FORTUNE = -2)
@@ -581,7 +662,7 @@
 // Trembling Hands & Weak Grip ("Can't Hold On") - random item drops.
 /datum/status_effect/debuff/defeat/horny/trembling
 	trauma_label = "Trembling Hands"
-	trauma_desc = "Weak, shaking hands with a failing grip - things slip from your fingers. A healer, priest, or potent remedy will still them."
+	trauma_desc = "Weak, shaking hands with a failing grip - things slip from your fingers. Spiritual care, time, or a potent remedy will still them."
 
 /datum/status_effect/debuff/defeat/horny/trembling/defeat_base_profile()
 	return list(STAT_ENDURANCE = -2, STAT_STRENGTH = -4, STAT_PERCEPTION = -1, STAT_SPEED = -2)
@@ -597,7 +678,7 @@
 // Panting & Breathless Craving ("Can't Breathe Right")
 /datum/status_effect/debuff/defeat/horny/breathless
 	trauma_label = "Breathless Craving"
-	trauma_desc = "Chest heaving, unable to catch your breath - your stamina drains fast. A healer, priest, or potent remedy will calm it."
+	trauma_desc = "Chest heaving, unable to catch your breath - your stamina drains fast. Spiritual care, time, or a potent remedy will calm it."
 
 /datum/status_effect/debuff/defeat/horny/breathless/defeat_base_profile()
 	return list(STAT_ENDURANCE = -5, STAT_SPEED = -2, STAT_CONSTITUTION = -3)
@@ -608,7 +689,7 @@
 // Lust-Mana Overcharge ("Horny Magic Burn") - one-time mana burn like the rune backlash.
 /datum/status_effect/debuff/defeat/horny/overcharge
 	trauma_label = "Lust-Burned Mana"
-	trauma_desc = "Lust-scorched magic crackles uselessly through you - your wits are dulled and your mana half-spent. A healer, priest, or potent remedy will mend it."
+	trauma_desc = "Lust-scorched magic crackles uselessly through you - your wits are dulled and your mana half-spent. Spiritual care, time, or a potent remedy will mend it."
 
 /datum/status_effect/debuff/defeat/horny/overcharge/defeat_base_profile()
 	return list(STAT_INTELLIGENCE = -4, STAT_CONSTITUTION = -3, STAT_FORTUNE = -2)
@@ -627,7 +708,7 @@
 
 /datum/action/innate/defeat_struggle_up
 	name = "Struggle to Your Feet"
-	desc = "Drag yourself up from defeat by sheer will. You will be gravely wounded - too broken to fight and barely able to walk - and must limp to the town clinic to be made whole."
+	desc = "Drag yourself up from defeat. Grievous Wounds prevent fighting and slow movement for fifteen minutes; medical trauma treatment can end them sooner."
 	button_icon_state = "shieldsparkles"
 
 /datum/action/innate/defeat_struggle_up/Activate()
@@ -636,10 +717,7 @@
 	var/mob/living/living_owner = owner
 	living_owner.defeat_ko_only_self_recover()
 
-// A guaranteed, harsh trauma laid on top of the usual injury when a KO Only victim rescues themselves.
-// Town-clinic care only: no fullheal cure, and medical providers are the only tag it accepts, so the
-// universal potion/spell and the shrine both bounce off it and the journey home is the point.
-// Festers on re-defeat like any trauma. Applied at severe by design.
+// Unaided physical recovery adds temporary convalescence, treatable only by medical providers.
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
 	name = "Grievous Wounds"
 	icon_state = "paralysis"
@@ -648,15 +726,14 @@
 	id = "defeat_grievous_trauma"
 	trauma_label = "Grievous Wounds"
 	trauma_category_label = "Grievous"
-	trauma_desc = "You clawed your way up from a defeat with no one to help. Barely able to stand, far too broken to fight, and slowed to a crawl - only a healer at the town clinic can truly set you right."
+	trauma_desc = "Recovering unaided has left you unable to fight and slowed to a limp. This convalescence fades after fifteen minutes; skilled medical trauma treatment can end it sooner."
 	remove_on_fullheal = FALSE
 	// Deliberately narrower than the base list: dropping the universal tag keeps field healing out.
 	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL)
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
 
-/// Never decays on its own - the town clinic cure is the only way out (design choice).
 /datum/status_effect/debuff/defeat/grievous/defeat_duration_for_severity(defeat_severity)
-	return STATUS_EFFECT_PERMANENT
+	return DEFEAT_GRIEVOUS_RECOVERY_TIME
 
 /datum/status_effect/debuff/defeat/grievous/defeat_base_profile()
 	return list(STAT_ENDURANCE = -4, STAT_STRENGTH = -3, STAT_SPEED = -4, STAT_CONSTITUTION = -3, STAT_PERCEPTION = -2)

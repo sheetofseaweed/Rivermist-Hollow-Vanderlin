@@ -331,6 +331,8 @@
 			return FALSE
 		if(!CHECK_BITFIELD(O.organ_flags, ORGAN_CUT_AWAY))
 			return FALSE
+		if((O.organ_flags & ORGAN_VITAL) && O.owner?.defeat_intercept_lethal())
+			return FALSE
 	. = ..()
 	if(.)
 		AM.mouse_opacity = initial(AM.mouse_opacity)

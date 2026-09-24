@@ -55,6 +55,11 @@
 		return FALSE
 	return TRUE
 
+/datum/wound/fracture/can_apply_to_bodypart(obj/item/bodypart/affected)
+	if(istype(affected?.owner?.dna?.species, /datum/species/ooze))
+		return FALSE
+	return ..()
+
 /datum/wound/fracture/on_mob_gain(mob/living/affected)
 	. = ..()
 	if(gain_emote)

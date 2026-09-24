@@ -177,6 +177,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		return FALSE
 
 	// Non-preference fields
+	var/stored_defeat_introduction_complete
+	S["defeat_introduction_complete"] >> stored_defeat_introduction_complete
+	// Existing accounts keep their character choices without a new onboarding prompt.
+	defeat_introduction_complete = isnull(stored_defeat_introduction_complete) ? TRUE : !!stored_defeat_introduction_complete
 	S["admin_ghost_icon"]	>> admin_ghost_icon
 	S["lastchangelog"]		>> lastchangelog
 	S["be_special"] 		>> be_special
@@ -226,6 +230,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["version"], SAVEFILE_VERSION_MAX)
 
 	// Non-preference fields
+	WRITE_FILE(S["defeat_introduction_complete"], defeat_introduction_complete)
 	WRITE_FILE(S["triumphs"], triumphs)
 	WRITE_FILE(S["admin_ghost_icon"], admin_ghost_icon)
 	WRITE_FILE(S["lastclass"], lastclass)
@@ -244,7 +249,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 
 /datum/preferences/proc/_load_species(S)
-	var/species_type = GLOB.species_list[S["species"]]
+	var/species_id = S["species"] == "slime" ? SPEC_ID_OOZE : S["species"]
+	var/species_type = GLOB.species_list[species_id]
 	if(!species_type)
 		species_type = /datum/species/human/northern
 	set_species_preference(species_type)

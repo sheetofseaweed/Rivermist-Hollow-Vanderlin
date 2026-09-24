@@ -151,6 +151,9 @@
 /// timeout after which a still-downed KO Only victim picks themselves up unaided (grievously wounded).
 #define DEFEAT_KO_ONLY_STRUGGLE_DELAY (2 MINUTES)
 #define DEFEAT_KO_ONLY_AUTO_RECOVER (3 MINUTES)
+#define DEFEAT_GRIEVOUS_RECOVERY_TIME (15 MINUTES)
+#define DEFEAT_HAZARD_RESCUE_RADIUS 7
+#define DEFEAT_FALLBACK_CHECK_INTERVAL (5 SECONDS)
 
 // --- Mob horny-defeat KO (clientless mobs) ---
 /// How long a clientless mob stays KO'd from a horny defeat before the cleanup check runs.

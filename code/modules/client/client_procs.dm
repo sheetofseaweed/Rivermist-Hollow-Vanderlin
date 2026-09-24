@@ -195,7 +195,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		if(!islist(painting))
 			return
 		var/painting_title = painting["painting_title"]
-		if(alert("Are you sure you want to delete the painting '[painting_title]'?", "Confirm Deletion", "Yes", "No") == "Yes")
+		if(alert("Are you sure you want to delete the painting '[html_decode(painting_title)]'?", "Confirm Deletion", "Yes", "No") == "Yes")
 			if(SSpaintings.del_player_painting(painting_id))
 				message_admins("[key_name_admin(src)] has deleted player made painting called: '[painting_title]' by [painting["author_ckey"]]")
 				manage_paintings()

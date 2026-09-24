@@ -254,29 +254,34 @@
 	test_human.blood_volume = BLOOD_VOLUME_NORMAL
 	TEST_ASSERT(!test_human.defeat_is_near_death(), "Restored blood should clear the near-death state.")
 
-/datum/unit_test/defeat_shock_sustain_and_hard_stage
+/datum/unit_test/defeat_shock_does_not_trigger_knockout
 
-/datum/unit_test/defeat_shock_sustain_and_hard_stage/Run()
+/datum/unit_test/defeat_shock_does_not_trigger_knockout/Run()
 	var/mob/living/carbon/human/test_human = allocate(/mob/living/carbon/human)
 	test_human.defeat_system_ai_opt_in = TRUE
 	var/datum/component/defeat_monitor/monitor = test_human.AddComponent(/datum/component/defeat_monitor)
 
 	test_human.setShockStage(SHOCK_STAGE_6, FALSE, TRUE)
 	monitor.check_defeat_triggers()
-	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Stage 6 shock should require sustained pain before defeat.")
+	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Stage 6 shock alone must not trigger Defeat.")
 
 	monitor.shock_defeat_started_at = world.time - DEFEAT_SHOCK_SUSTAIN_DURATION
 	monitor.check_defeat_triggers()
-	TEST_ASSERT_NOTNULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Stage 6 shock should trigger after the sustain window.")
-	TEST_ASSERT_EQUAL(test_human.last_defeat_snapshot.reason, DEFEAT_REASON_PAIN, "Sustained shock defeat should be recorded as pain defeat.")
+	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Sustained shock must not trigger Defeat even with an elapsed shock window.")
+	TEST_ASSERT_NULL(test_human.last_defeat_snapshot, "Shock alone must not capture a defeat snapshot.")
+	TEST_ASSERT_EQUAL(monitor.shock_warning_last_at, 0, "Disabled shock defeat must not emit its warning.")
 
 	var/mob/living/carbon/human/hard_shock_human = allocate(/mob/living/carbon/human)
 	hard_shock_human.defeat_system_ai_opt_in = TRUE
 	var/datum/component/defeat_monitor/hard_monitor = hard_shock_human.AddComponent(/datum/component/defeat_monitor)
 	hard_shock_human.setShockStage(SHOCK_STAGE_8, FALSE, TRUE)
 	hard_monitor.check_defeat_triggers()
-	TEST_ASSERT_NOTNULL(hard_shock_human.has_status_effect(/datum/status_effect/defeat_knockout), "Stage 8 shock should trigger immediate defeat.")
-	TEST_ASSERT_EQUAL(hard_shock_human.last_defeat_snapshot.severity, DEFEAT_SEVERITY_SEVERE, "Stage 8 shock should be severe.")
+	TEST_ASSERT_NULL(hard_shock_human.has_status_effect(/datum/status_effect/defeat_knockout), "Stage 8 shock alone must not trigger Defeat.")
+	TEST_ASSERT_EQUAL(hard_monitor.shock_warning_last_at, 0, "Extreme shock must not emit a defeat warning.")
+	hard_shock_human.setToxLoss(hard_shock_human.get_effective_defeat_threshold(), FALSE, TRUE)
+	hard_shock_human.updatehealth()
+	TEST_ASSERT_NOTNULL(hard_shock_human.has_status_effect(/datum/status_effect/defeat_knockout), "Disabling shock defeat must not disable injury defeat.")
+	TEST_ASSERT_EQUAL(hard_shock_human.last_defeat_snapshot.reason, DEFEAT_REASON_DAMAGE, "Injury defeat must retain its damage reason even at extreme shock.")
 
 /datum/unit_test/defeat_no_return_bypasses_new_routing
 
@@ -1105,18 +1110,43 @@
 	TEST_ASSERT_NULL(test_human.has_status_effect(/datum/status_effect/defeat_knockout), "Knockout should clear without runtime.")
 	TEST_ASSERT(!HAS_TRAIT(test_human, TRAIT_PACIFISM), "Clearing knockout should drop its pacifism.")
 
-/datum/unit_test/defeat_horny_debuff_variants_are_valid
+/datum/unit_test/defeat_intimate_aftermath_is_consistent
 
-/datum/unit_test/defeat_horny_debuff_variants_are_valid/Run()
-	// Loop so the random variant pick is exercised across multiple draws.
-	for(var/i in 1 to 12)
-		var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
-		patient.defeat_system_ai_opt_in = TRUE
-		patient.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL)
-		patient.apply_defeat_snapshot_debuffs()
-		var/datum/status_effect/debuff/defeat/horny/trauma = patient.has_status_effect(/datum/status_effect/debuff/defeat/horny)
-		TEST_ASSERT_NOTNULL(trauma, "A horny defeat should always produce a horny trauma variant.")
-		TEST_ASSERT(length(trauma.effectedstats) > 0, "Each horny debuff variant should carry a stat profile.")
+/datum/unit_test/defeat_intimate_aftermath_is_consistent/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	patient.defeat_system_ai_opt_in = TRUE
+	patient.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_defeat_snapshot_debuffs()
+	var/datum/status_effect/debuff/defeat/horny/trauma = patient.has_status_effect(/datum/status_effect/debuff/defeat/horny)
+	TEST_ASSERT_NOTNULL(trauma, "Intimate defeat should produce Lewd Exhaustion.")
+	TEST_ASSERT_EQUAL(trauma.type, /datum/status_effect/debuff/defeat/horny, "Intimate defeat must not roll unrelated movement, grip, or mana penalties.")
+	TEST_ASSERT_EQUAL(patient.last_defeat_snapshot.defeat_debuff_type(), trauma.type, "The aftermath preview must match the applied trauma.")
+
+/datum/unit_test/defeat_aftermath_prioritizes_cause/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/obj/item/bodypart/arm = patient.get_bodypart(BODY_ZONE_L_ARM)
+	arm.create_injury(WOUND_BLUNT, 10, TRUE)
+	patient.blood_volume = BLOOD_VOLUME_SURVIVE
+	var/datum/defeat_snapshot/snapshot = allocate(/datum/defeat_snapshot)
+	snapshot.capture_from(patient, DEFEAT_REASON_DEATH)
+	TEST_ASSERT_EQUAL(snapshot.defeat_debuff_type(), /datum/status_effect/debuff/defeat/blood_loss, "Blood-loss defeat must not inherit an unrelated arm injury.")
+	patient.blood_volume = BLOOD_VOLUME_NORMAL
+	patient.setOxyLoss(DEFEAT_OXY_THRESHOLD, FALSE, TRUE)
+	snapshot.capture_from(patient, DEFEAT_REASON_DEATH)
+	TEST_ASSERT_EQUAL(snapshot.defeat_debuff_type(), /datum/status_effect/debuff/defeat/breathless, "Oxygen defeat must produce breathless exhaustion.")
+	patient.setOxyLoss(0, FALSE, TRUE)
+	patient.setToxLoss(100, FALSE, TRUE)
+	snapshot.capture_from(patient, DEFEAT_REASON_DAMAGE)
+	TEST_ASSERT_EQUAL(snapshot.defeat_debuff_type(), /datum/status_effect/debuff/defeat/poisoned, "Predominant toxin damage must produce poisoning aftereffects.")
+	patient.setToxLoss(0, FALSE, TRUE)
+	patient.setCloneLoss(100, FALSE, TRUE)
+	snapshot.capture_from(patient, DEFEAT_REASON_DAMAGE)
+	TEST_ASSERT_EQUAL(snapshot.defeat_debuff_type(), /datum/status_effect/debuff/defeat/body_strain, "Predominant clone damage must produce systemic strain.")
+	var/mob/living/carbon/human/medic = allocate(/mob/living/carbon/human)
+	medic.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_EXPERT, TRUE)
+	for(var/trauma_type in list(/datum/status_effect/debuff/defeat/blood_loss, /datum/status_effect/debuff/defeat/breathless, /datum/status_effect/debuff/defeat/poisoned, /datum/status_effect/debuff/defeat/body_strain))
+		var/datum/status_effect/debuff/defeat/trauma = patient.apply_defeat_trauma_status(trauma_type)
+		TEST_ASSERT(patient.defeat_treat_trauma(medic, DEFEAT_TREATMENT_MEDICAL, trauma), "Cause-specific physical aftermath must be medically treatable.")
 
 /datum/unit_test/defeat_horny_threshold_uses_encounter_start_stats
 
@@ -1656,7 +1686,8 @@
 	TEST_ASSERT_EQUAL(manual.profile_id, DEFEAT_RECOVERY_MANUAL, "Empty-handed rescue should use the universal manual profile.")
 	TEST_ASSERT(manual.requires_helper, "Manual rescue should require another living helper.")
 	TEST_ASSERT(manual.helper_stamina_cost > 0, "Manual rescue should tax the helper's stamina on success.")
-	TEST_ASSERT_EQUAL(manual.aftermath_severity, DEFEAT_SEVERITY_SEVERE, "Manual rescue should leave the harsh aftermath.")
+	TEST_ASSERT_EQUAL(manual.aftermath_severity, DEFEAT_SEVERITY_NORMAL, "Manual rescue should leave moderate aftermath.")
+	TEST_ASSERT_EQUAL(prepared.aftermath_severity, DEFEAT_SEVERITY_LIGHT, "Prepared rescue should reward preparation with light aftermath.")
 	TEST_ASSERT_EQUAL(prepared.profile_id, DEFEAT_RECOVERY_PREPARED, "Prepared care should have an explicit profile.")
 	TEST_ASSERT(!prepared.requires_adjacent_helper, "Prepared care should allow range-capable completed treatments to recover a distant victim.")
 	TEST_ASSERT_EQUAL(campfire.profile_id, DEFEAT_RECOVERY_CAMPFIRE, "Campfire recovery should have a reusable profile before its interaction is added.")
@@ -1727,7 +1758,7 @@
 		manual_aftermath = trauma
 		break
 	TEST_ASSERT_NOTNULL(manual_aftermath, "Manual recovery should apply one physical Defeat aftermath selected from the snapshot.")
-	TEST_ASSERT_EQUAL(manual_aftermath.severity, DEFEAT_SEVERITY_SEVERE, "Manual recovery should use the profile's severe aftermath.")
+	TEST_ASSERT_EQUAL(manual_aftermath.severity, DEFEAT_SEVERITY_NORMAL, "Manual recovery should use the profile's moderate aftermath.")
 
 	var/mob/living/carbon/human/interrupted_victim = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/interrupted_helper = allocate(/mob/living/carbon/human)
@@ -2187,7 +2218,8 @@
 	TEST_ASSERT_NOTNULL(head.linked_alert, "A defeat trauma should own a status alert.")
 	TEST_ASSERT_NOTEQUAL(head.linked_alert.name, "Defeat Trauma", "A trauma alert must not keep the generic fallback name.")
 	TEST_ASSERT_EQUAL(head.linked_alert.name, "Injury: Concussion (Moderate)", "A physical trauma alert should read as a categorized injury.")
-	TEST_ASSERT_EQUAL(head.linked_alert.desc, head.trauma_desc, "A trauma alert should carry its own description.")
+	TEST_ASSERT(findtext(head.linked_alert.desc, head.trauma_desc), "A trauma alert should retain its own description.")
+	TEST_ASSERT(findtext(head.linked_alert.desc, head.mechanics_description()), "A trauma alert should disclose effects and treatment.")
 
 	var/datum/status_effect/debuff/defeat/horny/wobble/lewd = patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_SEVERE)
 	TEST_ASSERT_EQUAL(lewd.linked_alert.name, "Lewd: Rubbery Legs (Severe)", "A horny trauma alert should be labelled distinctly from an ordinary injury.")
@@ -2230,6 +2262,34 @@
 #endif
 
 #ifdef FOCUS_DEFEAT_RECOVERY_TEST
+/datum/unit_test/defeat_organ_lethality_modes
+	focus = TRUE
+/datum/unit_test/defeat_intimate_aftermath_is_consistent
+	focus = TRUE
+/datum/unit_test/defeat_aftermath_prioritizes_cause
+	focus = TRUE
+/datum/unit_test/defeat_snapshot_debuff_maps_worst_injury
+	focus = TRUE
+/datum/unit_test/defeat_shock_does_not_trigger_knockout
+	focus = TRUE
+/datum/unit_test/defeat_destructive_damage_preserves_body
+	focus = TRUE
+/datum/unit_test/defeat_explicit_death_and_no_return_stay_lethal
+	focus = TRUE
+/datum/unit_test/defeat_rune_loss_arms_fallback
+	focus = TRUE
+/datum/unit_test/defeat_hazard_extracts_without_rune
+	focus = TRUE
+/datum/unit_test/defeat_introduction_save_migration
+	focus = TRUE
+/datum/unit_test/defeat_trauma_alert_names_are_per_trauma
+	focus = TRUE
+/datum/unit_test/defeat_disconnected_mind_keeps_protection
+	focus = TRUE
+/datum/unit_test/defeat_recovery_resets_pain_and_preserves_prepared_trauma
+	focus = TRUE
+/datum/unit_test/defeat_grievous_convalescence_expires
+	focus = TRUE
 /datum/unit_test/defeat_healing_uses_explicit_recovery_profiles
 	focus = TRUE
 /datum/unit_test/defeat_recovery_profiles_are_explicit
@@ -2257,6 +2317,204 @@
 /datum/unit_test/defeat_bandage_stabilizes_without_waking
 	focus = TRUE
 #endif
+
+/datum/unit_test/defeat_disconnected_mind_keeps_protection/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.mind = allocate(/datum/mind, "defeat-offline-test")
+	victim.mind.current = victim
+	victim.ensure_defeat_monitor()
+	victim.setToxLoss(victim.defeat_damage_threshold, FALSE, TRUE)
+	victim.updatehealth()
+	TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A disconnected player's mind must retain damage defeat protection.")
+	victim.mind.current = null
+	victim.mind = null
+
+/datum/unit_test/defeat_organ_lethality_modes/Run()
+	for(var/mode in list(DEFEAT_MODE_KO_ONLY, DEFEAT_MODE_NO_RETURN, "npc"))
+		for(var/injury in list("brain", "artery", "extraction", "head", "skeletonize"))
+			var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+			victim.defeat_system_ai_opt_in = mode != "npc"
+			victim.defeat_mode = mode == "npc" ? DEFEAT_MODE_DEFAULT : mode
+			var/obj/item/organ/brain/brain = victim.getorganslot(ORGAN_SLOT_BRAIN)
+			var/obj/item/bodypart/head/head = victim.get_bodypart(BODY_ZONE_HEAD)
+			switch(injury)
+				if("brain")
+					victim.setOrganLoss(ORGAN_SLOT_BRAIN, BRAIN_DAMAGE_DEATH)
+				if("artery")
+					var/obj/item/organ/artery/neck/artery = locate(/obj/item/organ/artery/neck) in victim.internal_organs
+					TEST_ASSERT_NOTNULL(artery, "The fixture needs a neck artery.")
+					ADD_TRAIT(victim, TRAIT_CRITICAL_WEAKNESS, TRAIT_SOURCE_UNIT_TESTS)
+					artery.dissect()
+				if("extraction")
+					brain.remove_and_drop(victim, get_turf(victim))
+				if("head")
+					head.drop_limb()
+				if("skeletonize")
+					head.skeletonize()
+			if(mode == DEFEAT_MODE_KO_ONLY)
+				TEST_ASSERT(victim.stat != DEAD, "Protected [injury] must leave the character alive.")
+				TEST_ASSERT_NOTNULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Protected [injury] must enter Defeat.")
+				TEST_ASSERT(!brain.brain_death, "Intercepted injury must not mark the brain permanently dead.")
+			else
+				TEST_ASSERT_EQUAL(victim.stat, DEAD, "[mode] must retain ordinary lethal behavior for [injury].")
+				TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Unprotected [injury] must not add Defeat.")
+
+/datum/unit_test/defeat_destructive_damage_preserves_body/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_mode = DEFEAT_MODE_KO_ONLY
+	victim.death()
+	TEST_ASSERT(victim.stat != DEAD, "Direct ordinary death must convert to defeat.")
+	victim.gib()
+	TEST_ASSERT(!QDELETED(victim), "Gibbing a protected victim must preserve the body.")
+	victim.dust()
+	TEST_ASSERT(!QDELETED(victim), "Dusting a protected victim must preserve the body.")
+	var/obj/item/bodypart/head/head = victim.get_bodypart(BODY_ZONE_HEAD)
+	TEST_ASSERT(!head.drop_limb(), "A lethal head removal must be intercepted.")
+	TEST_ASSERT_EQUAL(head.owner, victim, "An intercepted decapitation must retain the head.")
+	var/obj/item/organ/brain/brain = victim.getorganslot(ORGAN_SLOT_BRAIN)
+	TEST_ASSERT(!brain.remove_and_drop(victim, get_turf(victim)), "Vital-organ extraction must not move the preserved organ.")
+	TEST_ASSERT_EQUAL(brain.owner, victim, "An intercepted extraction must retain the brain.")
+	TEST_ASSERT_NULL(brain.brainmob, "An intercepted extraction must not transfer identity into a brainmob.")
+	head.skeletonize()
+	TEST_ASSERT(!head.skeletonized, "Lethal skeletonization must be intercepted before stripping flesh.")
+	TEST_ASSERT(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Destructive attacks must leave a recoverable defeat.")
+	var/mob/living/carbon/human/artery_patient = allocate(/mob/living/carbon/human)
+	artery_patient.defeat_system_ai_opt_in = TRUE
+	artery_patient.defeat_mode = DEFEAT_MODE_KO_ONLY
+	var/obj/item/organ/artery/neck/neck_artery
+	for(var/obj/item/organ/artery/artery as anything in artery_patient.internal_organs)
+		if(istype(artery, /obj/item/organ/artery/neck))
+			neck_artery = artery
+			break
+	ADD_TRAIT(artery_patient, TRAIT_CRITICAL_WEAKNESS, "defeat-unit-test")
+	neck_artery.dissect()
+	TEST_ASSERT(artery_patient.stat != DEAD, "Critical neck-artery dissection must enter Defeat instead of bypassing through a direct death call.")
+	REMOVE_TRAIT(artery_patient, TRAIT_CRITICAL_WEAKNESS, "defeat-unit-test")
+	var/mob/living/carbon/human/fresh = allocate(/mob/living/carbon/human)
+	fresh.defeat_system_ai_opt_in = TRUE
+	fresh.defeat_mode = DEFEAT_MODE_KO_ONLY
+	fresh.gib()
+	TEST_ASSERT(!QDELETED(fresh) && fresh.has_status_effect(/datum/status_effect/defeat_knockout), "A first-hit gib must enter defeat before any body destruction.")
+	var/mob/living/carbon/human/fresh_dust = allocate(/mob/living/carbon/human)
+	fresh_dust.defeat_system_ai_opt_in = TRUE
+	fresh_dust.defeat_mode = DEFEAT_MODE_KO_ONLY
+	fresh_dust.dust()
+	TEST_ASSERT(!QDELETED(fresh_dust) && fresh_dust.has_status_effect(/datum/status_effect/defeat_knockout), "A first-hit dust must enter defeat before any body destruction.")
+
+/datum/unit_test/defeat_explicit_death_and_no_return_stay_lethal/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_mode = DEFEAT_MODE_KO_ONLY
+	victim.defeat_explicit_death()
+	TEST_ASSERT_EQUAL(victim.stat, DEAD, "Explicit character-ending death must bypass defeat.")
+	TEST_ASSERT(victim.defeat_final_death, "Explicit death must also block later automatic rune offers.")
+	var/mob/living/carbon/human/lethal = allocate(/mob/living/carbon/human)
+	lethal.defeat_system_ai_opt_in = TRUE
+	lethal.defeat_mode = DEFEAT_MODE_NO_RETURN
+	lethal.death()
+	TEST_ASSERT_EQUAL(lethal.stat, DEAD, "No Return must keep ordinary death lethal.")
+	lethal.gib()
+	TEST_ASSERT(QDELETED(lethal), "No Return must keep destructive death effective.")
+
+/datum/unit_test/defeat_rune_loss_arms_fallback/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.mind = allocate(/datum/mind, "defeat-rune-loss-test")
+	victim.mind.current = victim
+	var/obj/structure/resurrection_rune/rune = allocate(/obj/structure/resurrection_rune)
+	rune.rune_tag = "defeat_rune_loss_test"
+	rune.resrunecontroler.add_user(victim)
+	victim.enter_defeat()
+	var/datum/status_effect/defeat_knockout/knockout = victim.has_status_effect(/datum/status_effect/defeat_knockout)
+	TEST_ASSERT_NOTNULL(knockout, "A linked character should enter defeat.")
+	TEST_ASSERT_NULL(knockout.struggle_offer_timer, "A working rune should initially provide the safety net.")
+	rune.disabled_res = TRUE
+	knockout.tick()
+	TEST_ASSERT_NOTNULL(knockout.struggle_offer_timer, "Losing the rune after defeat must arm unaided recovery.")
+	var/first_timer = knockout.struggle_offer_timer
+	knockout.tick()
+	TEST_ASSERT_EQUAL(knockout.struggle_offer_timer, first_timer, "Fallback checks must not restart the recovery countdown.")
+	qdel(rune)
+	knockout.tick()
+	TEST_ASSERT_EQUAL(knockout.struggle_offer_timer, first_timer, "Rune deletion must retain the existing recovery countdown.")
+	victim.mind.current = null
+	victim.mind = null
+
+/datum/unit_test/defeat_hazard_extracts_without_rune/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	victim.defeat_mode = DEFEAT_MODE_KO_ONLY
+	var/turf/hazard = get_step(run_loc_floor_bottom_left, EAST)
+	var/original_type = hazard.type
+	var/list/original_baseturfs = hazard.baseturfs
+	hazard = hazard.ChangeTurf(/turf/open/lava/acid)
+	victim.forceMove(hazard)
+	var/turf/open/lava/acid/acid = hazard
+	acid.do_burn(victim)
+	var/was_safe = defeat_safe_recovery_turf(get_turf(victim))
+	var/was_defeated = victim.has_status_effect(/datum/status_effect/defeat_knockout)
+	var/obj/item/bodypart/head/head = victim.get_bodypart(BODY_ZONE_HEAD)
+	hazard.ChangeTurf(original_type, original_baseturfs)
+	TEST_ASSERT(was_safe, "An unlinked protected victim must be extracted onto safe ground.")
+	TEST_ASSERT(was_defeated && victim.stat != DEAD, "Hazard extraction must leave the victim alive and defeated.")
+	TEST_ASSERT(!head.skeletonized, "Acid protection must run before skeletonization.")
+
+/datum/unit_test/defeat_introduction_save_migration
+	var/save_path
+
+/datum/unit_test/defeat_introduction_save_migration/Destroy()
+	if(save_path)
+		fdel(save_path)
+	return ..()
+
+/datum/unit_test/defeat_introduction_save_migration/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	TEST_ASSERT(!prefs.defeat_introduction_complete, "New accounts must explicitly choose their defeat experience.")
+	save_path = "[GLOB.log_directory]/defeat_introduction_test.sav"
+	prefs.path = save_path
+	TEST_ASSERT(prefs.save_preferences(), "The introduction state should save.")
+	prefs.defeat_introduction_complete = TRUE
+	TEST_ASSERT(prefs.load_preferences(), "Saved account preferences should load.")
+	TEST_ASSERT(!prefs.defeat_introduction_complete, "An unfinished introduction must remain unfinished after reconnecting.")
+	prefs.defeat_introduction_complete = TRUE
+	prefs.save_preferences()
+	prefs.defeat_introduction_complete = FALSE
+	prefs.load_preferences()
+	TEST_ASSERT(prefs.defeat_introduction_complete, "A confirmed introduction must survive reconnecting.")
+	var/savefile/legacy_save = new(save_path)
+	WRITE_FILE(legacy_save["defeat_introduction_complete"], null)
+	prefs.defeat_introduction_complete = FALSE
+	prefs.load_preferences()
+	TEST_ASSERT(prefs.defeat_introduction_complete, "Existing accounts without an introduction flag should keep their settings without onboarding.")
+
+/datum/unit_test/defeat_recovery_resets_pain_and_preserves_prepared_trauma/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	victim.defeat_system_ai_opt_in = TRUE
+	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
+	var/datum/status_effect/debuff/defeat/pain/old_trauma = victim.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/pain, DEFEAT_SEVERITY_NORMAL)
+	var/old_expiry = old_trauma.duration
+	monitor.shock_defeat_started_at = world.time - DEFEAT_SHOCK_SUSTAIN_DURATION
+	TEST_ASSERT(victim.enter_defeat(DEFEAT_REASON_PAIN), "The test victim should enter pain defeat.")
+	TEST_ASSERT_EQUAL(monitor.shock_defeat_started_at, 0, "Defeat entry must clear the old sustained-pain window.")
+	monitor.shock_defeat_started_at = world.time - DEFEAT_SHOCK_SUSTAIN_DURATION
+	TEST_ASSERT(victim.defeat_try_prepared_recovery(helper, "test care"), "Prepared care should recover the victim.")
+	TEST_ASSERT_EQUAL(monitor.shock_defeat_started_at, 0, "Recovery must clear the sustained-pain window.")
+	TEST_ASSERT_EQUAL(victim.has_status_effect(/datum/status_effect/debuff/defeat/pain), old_trauma, "Prepared care must preserve existing trauma rather than escalate or replace it.")
+	TEST_ASSERT_EQUAL(old_trauma.duration, old_expiry, "Prepared care must not restart existing trauma's recovery clock.")
+	victim.setShockStage(DEFEAT_SHOCK_DEFEAT_STAGE, FALSE, TRUE)
+	monitor.check_defeat_triggers()
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A new pain episode must earn its own sustain window.")
+
+/datum/unit_test/defeat_grievous_convalescence_expires/Run()
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/datum/status_effect/debuff/defeat/grievous/trauma = victim.apply_defeat_trauma_status(/datum/status_effect/debuff/defeat/grievous, DEFEAT_SEVERITY_SEVERE)
+	TEST_ASSERT_EQUAL(trauma.initial_duration, DEFEAT_GRIEVOUS_RECOVERY_TIME, "Unaided convalescence must have a finite duration.")
+	TEST_ASSERT(HAS_TRAIT(victim, TRAIT_PACIFISM), "Convalescence should prevent immediate return to combat.")
+	trauma.duration = world.time - 1
+	trauma.process()
+	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "Expired convalescence must be removed.")
+	TEST_ASSERT(!HAS_TRAIT(victim, TRAIT_PACIFISM), "Natural recovery must restore the ability to fight.")
 
 #ifdef FOCUS_DEFEAT_TRAUMA_TREATMENT_TEST
 /datum/unit_test/defeat_treatment_clears_correct_trauma

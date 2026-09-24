@@ -26,9 +26,10 @@
 	RegisterSignal(parent, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(on_health_update))
 	RegisterSignal(parent, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
 	RegisterSignal(parent, COMSIG_LIVING_DEFEAT_RESCUED, PROC_REF(on_defeat_rescued))
+	RegisterSignal(parent, COMSIG_LIVING_DEFEATED, PROC_REF(on_defeated))
 
 /datum/component/defeat_monitor/UnregisterFromParent()
-	UnregisterSignal(parent, list(COMSIG_LIVING_HEALTH_UPDATE, COMSIG_SEX_CLIMAX, COMSIG_LIVING_DEFEAT_RESCUED))
+	UnregisterSignal(parent, list(COMSIG_LIVING_HEALTH_UPDATE, COMSIG_SEX_CLIMAX, COMSIG_LIVING_DEFEAT_RESCUED, COMSIG_LIVING_DEFEATED))
 
 /datum/component/defeat_monitor/proc/is_defeat_eligible()
 	var/mob/living/living_parent = parent
@@ -38,15 +39,13 @@
 	var/mob/living/carbon/carbon_parent = parent
 	if(!istype(carbon_parent))
 		return FALSE
-	// The damage/pain/hazard defeat flow is for players and explicitly opted-in test bodies only. A
-	// clientless horny-KO mob body must never fall into the player defeat flow off raw damage.
-	if(!carbon_parent.client && !carbon_parent.defeat_system_ai_opt_in)
-		return FALSE
 	if(!is_defeat_eligible())
 		reset_shock_defeat_window()
 		return FALSE
 	if(carbon_parent.has_status_effect(/datum/status_effect/defeat_knockout))
 		carbon_parent.defeat_stabilize_live_damage(FALSE)
+		if(carbon_parent.defeat_is_immediate_hazard())
+			carbon_parent.defeat_rescue_from_hazard()
 		return FALSE
 
 	if(carbon_parent.defeat_is_immediate_rune_hazard())
@@ -71,6 +70,8 @@
 	if(carbon_parent.getOxyLoss() >= DEFEAT_OXY_THRESHOLD)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DEATH, DEFEAT_SEVERITY_SEVERE)
 
+	// Shock-driven Defeat is disabled; ordinary pain effects remain active.
+	/*
 	var/current_shock_stage = carbon_parent.getShockStage()
 	maybe_warn_shock_defeat(current_shock_stage)
 	if(current_shock_stage >= DEFEAT_SHOCK_HARD_STAGE)
@@ -86,6 +87,7 @@
 
 	if(world.time - shock_defeat_started_at >= DEFEAT_SHOCK_SUSTAIN_DURATION)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_PAIN, DEFEAT_SEVERITY_NORMAL)
+	*/
 
 	return FALSE
 
@@ -150,7 +152,14 @@
 
 /datum/component/defeat_monitor/proc/on_defeat_rescued(datum/source, ...)
 	SIGNAL_HANDLER
+	reset_shock_defeat_window()
+	shock_warning_last_at = 0
+	damage_warning_last_at = 0
 	reset_horny_defeat_encounter()
+
+/datum/component/defeat_monitor/proc/on_defeated(datum/source, ...)
+	SIGNAL_HANDLER
+	reset_shock_defeat_window()
 
 /// A holy character (TRAIT_HOLY) bringing a downed victim to climax frees them - the design's
 /// "ERP with the saints" rescue (section 3.1). A holy one who is actively harming the victim
