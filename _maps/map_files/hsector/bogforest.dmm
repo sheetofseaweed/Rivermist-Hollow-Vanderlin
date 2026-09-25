@@ -9,7 +9,7 @@
 /area/outdoors/rmh_bog/north)
 "ac" = (
 /obj/structure/vine,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/south)
 "ad" = (
 /obj/structure/rack,
@@ -32,7 +32,7 @@
 /turf/open/floor/sand,
 /area/under/rmh_bogforest_caves/mindflayer)
 "aj" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "al" = (
 /obj/structure/fluff/railing/wood/north{
@@ -188,7 +188,7 @@
 "bc" = (
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/wild_plant/random,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "bd" = (
 /obj/machinery/light/fueled/torchholder/r,
@@ -196,7 +196,7 @@
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
 "be" = (
 /mob/living/carbon/human/species/goblin/npc/cave,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "bf" = (
 /obj/effect/decal/cobbleedge/alt{
@@ -208,7 +208,7 @@
 /area/under/town/basement)
 "bg" = (
 /obj/structure/wild_plant/random,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "bi" = (
 /obj/item/weapon/axe/boneaxe,
@@ -351,7 +351,7 @@
 /obj/structure/flora/tree/pine/dead{
 	icon_state = "dead2"
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "cd" = (
 /turf/closed/wall/mineral/wooddark/end{
@@ -370,7 +370,7 @@
 /area/under/rmh_dungeon/goblindungeon)
 "cm" = (
 /obj/structure/flora/grass/bush/wall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "co" = (
 /obj/effect/decal/cleanable/debris/stone,
@@ -443,7 +443,7 @@
 "cI" = (
 /obj/structure/flora/grass,
 /obj/structure/wild_plant/random,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "cJ" = (
 /obj/structure/rack,
@@ -452,7 +452,7 @@
 /area/indoors/rmh_darkforestbog/forest/forestranger)
 "cK" = (
 /obj/structure/flora/grass/bush/wall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "cN" = (
 /obj/effect/decal/cobblerockedge{
@@ -481,7 +481,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/rmh_darkforestbog/forest/abandonedvillage)
 "cW" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "cX" = (
 /obj/structure/table/wood/plain/alto,
@@ -629,7 +629,7 @@
 /area/under/rmh_dungeon/orcpost)
 "dO" = (
 /obj/structure/flora/grass/herb/euphorbia,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "dP" = (
 /turf/closed/wall/mineral/wooddark/window,
@@ -772,7 +772,7 @@
 "eS" = (
 /obj/structure/flora/newtree,
 /obj/structure/vine,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "eT" = (
 /obj/structure/bridge_stakes,
@@ -784,7 +784,7 @@
 /area/indoors/rmh_darkforestbog/bog/swampvillage)
 "eV" = (
 /obj/effect/landmark/quest_spawner,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "eW" = (
 /obj/structure/bars/steel,
@@ -840,7 +840,7 @@
 	},
 /area/indoors/rmh_darkforestbog/forest/hunterpost)
 "fj" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "fk" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -953,7 +953,7 @@
 /area/under/rmh_bogforest_caves/mindflayer)
 "gc" = (
 /obj/structure/flora/newtree,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "ge" = (
 /mob/living/simple_animal/hostile/skeleton/guard,
@@ -1082,7 +1082,7 @@
 /area/indoors/rmh_darkforestbog/forest/abandonedvillage)
 "hc" = (
 /obj/item/natural/wood/plank,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "hd" = (
 /turf/open/floor/cobblerock,
@@ -1104,7 +1104,7 @@
 /area/under/rmh_dungeon/goblindungeon)
 "hl" = (
 /obj/structure/flora/grass/bush/wall/tall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "hm" = (
 /obj/effect/decal/cleanable/debris/wood,
@@ -1368,7 +1368,7 @@
 /turf/open/floor/dirt,
 /area/outdoors/rmh_bog/south)
 "iW" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/under/rmh_bogforest_caves/moistcaves)
 "iX" = (
 /obj/item/natural/rock/random,
@@ -1512,7 +1512,7 @@
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
 "jV" = (
 /obj/structure/vine,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "jW" = (
 /obj/structure/rack,
@@ -1650,7 +1650,7 @@
 "kG" = (
 /obj/structure/flora/grass,
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "kH" = (
 /obj/structure/fluff/walldeco/vinez,
@@ -1684,7 +1684,7 @@
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/moistcaves/southeast)
 "kQ" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "kS" = (
 /obj/effect/decal/cleanable/blood/old,
@@ -1696,7 +1696,7 @@
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
 "kU" = (
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "kV" = (
 /obj/structure/chair/stool,
@@ -1775,7 +1775,7 @@
 	pixel_x = -6;
 	pixel_y = 5
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "lp" = (
 /obj/machinery/light/fueled/wallfire/candle/l{
@@ -1979,7 +1979,7 @@
 /area/outdoors/rmh_darkforest)
 "mM" = (
 /obj/structure/flora/grass/water/reeds,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "mN" = (
 /obj/effect/decal/cleanable/food/salt,
@@ -2012,7 +2012,7 @@
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "mZ" = (
 /obj/structure/well/climb_down,
@@ -2123,7 +2123,7 @@
 /area/under/rmh_dungeon/orcpost)
 "nC" = (
 /obj/structure/flora/grass/bush/wall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/bog/rmh/travel/forest_to_main)
 "nE" = (
 /obj/item/natural/brick,
@@ -2224,7 +2224,7 @@
 /area/outdoors/rmh_bog/south)
 "oi" = (
 /obj/item/natural/rock/random_ore,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "oj" = (
 /obj/structure/fluff/walldeco/vinez,
@@ -2324,7 +2324,7 @@
 /area/indoors/rmh_darkforestbog/forest/abandonedvillage)
 "oG" = (
 /obj/structure/dungeon_entrance/bandit_hideout,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "oH" = (
 /turf/open/floor/cobble,
@@ -2505,7 +2505,7 @@
 /area/indoors/rmh_darkforestbog/forest/forestranger)
 "pU" = (
 /obj/structure/flora/grass/thorn_bush,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "pV" = (
 /turf/open/floor/cobblerock,
@@ -2553,7 +2553,7 @@
 /area/under/town/basement)
 "qk" = (
 /obj/structure/flora/grass/bush,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "ql" = (
 /turf/open/floor/rooftop{
@@ -2612,7 +2612,7 @@
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "qA" = (
 /obj/effect/landmark/quest_spawner/hard,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "qB" = (
 /turf/open/floor/cobblerock/alt,
@@ -2923,7 +2923,7 @@
 "sv" = (
 /obj/structure/fluff/railing/wood/north,
 /obj/structure/wild_plant/random,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "sw" = (
 /obj/effect/decal/cleanable/debris/wood,
@@ -2937,7 +2937,7 @@
 /area/under/rmh_bogforest_caves/moistcaves)
 "sC" = (
 /obj/structure/ladder,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "sD" = (
 /obj/structure/fluff/traveltile{
@@ -2979,7 +2979,7 @@
 	name = "patch of straw";
 	desc = ""
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "sO" = (
 /turf/closed/wall/mineral/stone/moss/blue,
@@ -3084,7 +3084,7 @@
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
 "tI" = (
 /obj/structure/flora/grass/maneater/real,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "tK" = (
 /obj/effect/decal/cobbleedge/alt{
@@ -3510,7 +3510,7 @@
 /obj/structure/flora/tree/pine/dead{
 	icon_state = "dead3"
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "wk" = (
 /obj/structure/flora/tree/burnt,
@@ -3519,13 +3519,13 @@
 "wo" = (
 /obj/effect/decal/cleanable/blood/old,
 /obj/structure/flora/grass/bush/wall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "wq" = (
 /obj/structure/flora/tree/pine{
 	icon_state = "pine3"
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "wr" = (
 /obj/structure/flora/newleaf,
@@ -3563,7 +3563,7 @@
 /area/under/rmh_bogforest_caves/moistcaves)
 "wB" = (
 /obj/structure/vine,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "wC" = (
 /obj/structure/flora/grass/thorn_bush,
@@ -3861,7 +3861,7 @@
 /area/under/rmh_dungeon/goblindungeon)
 "yE" = (
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "yG" = (
 /obj/structure/ladder,
@@ -3875,7 +3875,7 @@
 /area/outdoors/rmh_bog/south)
 "yI" = (
 /obj/structure/flora/tree/burnt,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "yJ" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -3910,7 +3910,7 @@
 /area/indoors/rmh_darkforestbog/bogpass)
 "yU" = (
 /obj/item/natural/rock/random_ore,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "yW" = (
 /obj/effect/decal/cleanable/dirt/dust,
@@ -3923,11 +3923,11 @@
 /area/indoors/rmh_darkforestbog/bog/swampvillage)
 "yY" = (
 /obj/item/natural/stone,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "za" = (
 /obj/machinery/light/fueled/firebowl/stump,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "ze" = (
 /turf/open/floor/grass/red,
@@ -4079,7 +4079,7 @@
 /area/outdoors/bog/rmh/travel/forest_to_main)
 "zW" = (
 /obj/structure/flora/hotspring_rocks/grassy,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "zX" = (
 /turf/open/floor/ruinedwood,
@@ -4174,7 +4174,7 @@
 "Ay" = (
 /obj/structure/vine,
 /obj/structure/fluff/railing/wood/east,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Az" = (
 /obj/structure/flora/grass/bush/wall,
@@ -4426,7 +4426,7 @@
 /area/outdoors/rmh_bog)
 "Cx" = (
 /obj/effect/decal/remains/wolf,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Cz" = (
 /obj/structure/flora/grass/bush/wall,
@@ -4495,7 +4495,7 @@
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "De" = (
 /turf/closed/wall/mineral/craftstone,
@@ -4809,7 +4809,7 @@
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
 "EV" = (
 /obj/effect/decal/remains/wolf,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/bog/rmh/travel/forest_to_main)
 "EW" = (
 /obj/structure/fermentation_keg/random/beer,
@@ -4890,7 +4890,7 @@
 /area/indoors/rmh_darkforestbog/forest/forestranger)
 "FE" = (
 /obj/structure/tent_wall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "FF" = (
 /obj/structure/trap/spike,
@@ -5040,7 +5040,7 @@
 "Gw" = (
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "Gx" = (
 /obj/structure/bars/grille{
@@ -5101,7 +5101,7 @@
 /obj/structure/flora/tree/pine{
 	icon_state = "pine4"
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "GJ" = (
 /obj/structure/flora/grass/mushroom,
@@ -5122,7 +5122,7 @@
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "GQ" = (
 /obj/item/natural/stone,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "GU" = (
 /turf/closed/dungeon_void{
@@ -5239,7 +5239,7 @@
 /area/under/rmh_dungeon/goblindungeon)
 "HF" = (
 /obj/structure/flora/newtree,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "HG" = (
 /turf/open/water/swamp/deep,
@@ -5308,7 +5308,7 @@
 /area/outdoors/rmh_darkforest)
 "Ib" = (
 /obj/structure/flora/grass/bush/wall,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "Id" = (
 /obj/item/natural/rock,
@@ -5363,7 +5363,7 @@
 "Iv" = (
 /obj/effect/decal/remains/human,
 /obj/effect/spawner/map_spawner/loot/medium,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Iw" = (
 /obj/structure/stairs/stone{
@@ -5494,11 +5494,11 @@
 /area/outdoors/rmh_darkforest/goblincampfire)
 "Jf" = (
 /obj/structure/barricade/wooden/crude,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "Ji" = (
 /obj/structure/flora/ausbushes/reedbush,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Jk" = (
 /turf/open/floor/cobblerock,
@@ -5533,7 +5533,7 @@
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Jt" = (
 /turf/open/floor/sand,
@@ -5570,7 +5570,7 @@
 /turf/open/floor/cobble,
 /area/under/rmh_dungeon/orcpost)
 "JF" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/south)
 "JG" = (
 /obj/effect/decal/cobblerockedge{
@@ -5614,7 +5614,7 @@
 /turf/open/floor/naturalstone,
 /area/under/rmh_bogforest_caves/mindflayer)
 "JQ" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/bog/rmh/travel/forest_to_main)
 "JR" = (
 /obj/structure/fluff/railing/wood/north{
@@ -5885,7 +5885,7 @@
 "Lu" = (
 /obj/structure/fluff/railing/wood/east,
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "Lv" = (
 /obj/structure/flora/newleaf,
@@ -5965,7 +5965,7 @@
 "LX" = (
 /obj/structure/vine,
 /obj/structure/fluff/walldeco/vinez,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "LZ" = (
 /mob/living/carbon/human/species/halforc/base/skilled/naked,
@@ -6032,7 +6032,7 @@
 /area/under/rmh_dungeon/orcpost)
 "Mn" = (
 /obj/effect/decal/cleanable/debris/stone,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "Mq" = (
 /obj/item/natural/stone,
@@ -6224,7 +6224,7 @@
 /area/outdoors/rmh_bog)
 "Nn" = (
 /obj/structure/flora/tree,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Np" = (
 /turf/closed/wall/mineral/stonebrick,
@@ -6529,7 +6529,7 @@
 "Pn" = (
 /obj/effect/decal/remains/human,
 /obj/effect/spawner/map_spawner/loot/decrepit_equipment_spawner,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Po" = (
 /obj/structure/fluff/railing/tall/palisade{
@@ -6547,7 +6547,7 @@
 /obj/structure/flora/tree/pine{
 	icon_state = "pine2"
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Pt" = (
 /obj/effect/decal/remains/human,
@@ -6623,7 +6623,7 @@
 /area/indoors/rmh_darkforestbog/bog/orcsdarfort)
 "PO" = (
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "PP" = (
 /obj/effect/decal/cobbleedge{
@@ -6646,10 +6646,10 @@
 "PR" = (
 /obj/structure/fluff/railing/wood/north,
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "PS" = (
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "PT" = (
 /obj/structure/flora/tree/pine/dead{
@@ -6659,7 +6659,7 @@
 /area/outdoors/rmh_bog/south)
 "PU" = (
 /obj/item/natural/rock,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "PX" = (
 /obj/structure/vine,
@@ -6712,7 +6712,7 @@
 /area/indoors/rmh_darkforestbog/forest/abandonedvillage)
 "Qo" = (
 /obj/structure/flora/grass/bush_meagre,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Qq" = (
 /obj/structure/flora/grass/water/reeds,
@@ -6789,7 +6789,7 @@
 	plane = -6;
 	pixel_y = 7
 	},
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "QQ" = (
 /obj/structure/flora/tree/dead_bush,
@@ -6932,7 +6932,7 @@
 "RI" = (
 /obj/structure/vine,
 /obj/structure/vine,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "RJ" = (
 /obj/structure/bars/tough{
@@ -6967,7 +6967,7 @@
 /area/outdoors/rmh_darkforest)
 "RR" = (
 /mob/living/carbon/human/species/goblin/npc/ambush/cave,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest/goblincampfire)
 "RT" = (
 /obj/effect/decal/cobbleedge/alt{
@@ -7054,7 +7054,7 @@
 /area/indoors/rmh_darkforestbog/forest/abandonedvillage)
 "SD" = (
 /obj/structure/roguetent/preopen,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/shelter/bog)
 "SE" = (
 /turf/open/floor/cobblerock,
@@ -7119,7 +7119,7 @@
 /area/outdoors/rmh_bog)
 "Th" = (
 /obj/structure/dungeon_entrance/wolf_den,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Ti" = (
 /obj/structure/vine,
@@ -7175,7 +7175,7 @@
 "TD" = (
 /obj/structure/flora/tree/burnt,
 /obj/structure/flora/grass,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "TE" = (
 /obj/effect/decal/remains/wolf,
@@ -7247,7 +7247,7 @@
 /area/under/town/basement)
 "Ub" = (
 /obj/structure/fluff/railing/wood/north,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/indoors/rmh_darkforestbog/forest/treehouse)
 "Uc" = (
 /turf/open/floor/cobblerock,
@@ -7734,7 +7734,7 @@
 /area/indoors/rmh_darkforestbog/forest/forestranger)
 "WX" = (
 /mob/living/simple_animal/hostile/retaliate/wolf,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "WY" = (
 /obj/structure/fluff/railing/tall/palisade{
@@ -7758,7 +7758,7 @@
 /area/under/cave)
 "Xg" = (
 /obj/effect/decal/cleanable/blood/old,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_darkforest)
 "Xh" = (
 /obj/item/natural/stone,
@@ -7969,7 +7969,7 @@
 /area/outdoors/rmh_bog)
 "YA" = (
 /obj/structure/flora/tree/pine/dead,
-/turf/open/floor/grass,
+/turf/open/floor/grass/yel,
 /area/outdoors/rmh_bog/north)
 "YB" = (
 /obj/effect/decal/cobblerockedge{

@@ -389,6 +389,9 @@
 
 // Supply
 
+/datum/supply_pack/rogue/wardrobe/suits
+	group = "Stockings"
+
 /datum/supply_pack/rogue/wardrobe/suits/stockings_white
 	name = "White Stockings"
 	cost = 10

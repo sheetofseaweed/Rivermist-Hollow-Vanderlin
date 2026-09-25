@@ -49,6 +49,12 @@
   --p-banner-bg-soft: rgba(180, 60, 40, 0.12);
   --p-badge-text: #f7eccb;
 
+  --input-background: #e6d6ab;
+  --input-color: #281a07;
+  --input-color-placeholder: rgba(40, 26, 7, 0.55);
+  --input-border-color: #6b5128;
+  --input-border-color-focus: #7a5616;
+
   // Force the parchment background across the whole window
   &,
   .Window,

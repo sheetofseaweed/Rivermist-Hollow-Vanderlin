@@ -1426,9 +1426,11 @@
 		return
 	if(stat)
 		return
-	surrendering = 1
-	if(!alert(src, "Yield in surrender?",,"YES","NO") == "YES")
+	if(alert(src, "Yield in surrender?",,"YES","NO") != "YES")
 		return
+	if(surrendering || stat)
+		return
+	surrendering = TRUE
 
 	record_round_statistic(STATS_YIELDS)
 	changeNext_move(CLICK_CD_EXHAUSTED)

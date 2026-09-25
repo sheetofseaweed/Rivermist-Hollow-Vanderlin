@@ -134,7 +134,11 @@
 		/datum/supply_pack/tools/medical/prlegr,
 		/datum/supply_pack/tools/medical/health,
 		/datum/supply_pack/tools/medical/antidote,
-		/datum/supply_pack/tools/medical/mana
+		/datum/supply_pack/tools/medical/mana,
+		/datum/supply_pack/tools/medical/bandage,
+		/datum/supply_pack/tools/branding_iron,
+		/datum/supply_pack/tools/branding_letters,
+		/datum/supply_pack/tools/tattoo_needle
 	)
 	rare_pool = list(
 		// Luxury apparel
@@ -143,6 +147,8 @@
 		/datum/supply_pack/apparel/hennin,
 		/datum/supply_pack/apparel/chaperon,
 		/datum/supply_pack/apparel/eastern1_gloves,
+		/datum/supply_pack/apparel/eastern2_gloves,
+		/datum/supply_pack/luxury/boar_signs,
 		/datum/supply_pack/apparel/east2_trousers,
 		/datum/supply_pack/apparel/east1_trousers,
 		/datum/supply_pack/apparel/easternhat,
@@ -218,6 +224,7 @@
 		/datum/supply_pack/jewelry/goldring,
 		/datum/supply_pack/jewelry/gemcirclet,
 		/datum/supply_pack/luxury/glassware_set,
+		/datum/supply_pack/luxury/white_stag_legend,
 		/datum/supply_pack/apparel/royaldyes,
 		/datum/supply_pack/narcotics/moondust,
 		/datum/supply_pack/weapons/ranged/tossbladesteel,

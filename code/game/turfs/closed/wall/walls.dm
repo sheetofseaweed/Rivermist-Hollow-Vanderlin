@@ -306,13 +306,6 @@
 	burn_power = 100
 	spread_chance = 1.8
 
-/turf/closed/wall/mineral/wooddark/OnCrafted(dirin, mob/user)
-	if(dirin == NORTH || dirin == SOUTH)
-		icon_state = "vertwooddark"
-	else
-		icon_state = "horizwooddark"
-	. = ..()
-
 /turf/closed/wall/mineral/wooddark/horizontal
 	icon_state = "horizwooddark"
 

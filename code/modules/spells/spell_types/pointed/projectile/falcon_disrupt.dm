@@ -42,7 +42,7 @@
 		to_chat(owner, span_warning("The falcon is confused... You know no one by that name."))
 		return FALSE
 	for(var/client/C in GLOB.clients)
-		if(C.mob?.real_name == recipient)
+		if(names_match(C.mob?.real_name, recipient))
 			target = C.mob
 			break
 	if(!target)

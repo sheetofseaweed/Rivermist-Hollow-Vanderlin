@@ -52,7 +52,7 @@
 		var/mob/M = C.mob
 		if(QDELETED(M))
 			continue
-		if(M.real_name == recipient)
+		if(names_match(M.real_name, recipient))
 			recipient_ref = WEAKREF(M)
 			break
 	if(!recipient_ref)

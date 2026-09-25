@@ -62,3 +62,13 @@
 	name = "Talkstone"
 	cost = 150
 	contains = /obj/item/clothing/neck/talkstone
+
+/datum/supply_pack/luxury/boar_signs
+	name = "Boar Signs"
+	cost = 150
+	contains = /obj/item/hunting_map/boars
+
+/datum/supply_pack/luxury/white_stag_legend
+	name = "Legend of the White Stag"
+	cost = 450
+	contains = /obj/item/hunting_map/white_stag

@@ -23,6 +23,7 @@
 	excluded_turfs = list(/turf/open/floor/dirt/road)
 	spawnableAtoms = list(
 		/obj/structure/flora/grass = 80,
+		/obj/structure/flora/grass/fullgrass_autumn = 95,
 		/obj/structure/flora/grass/thorn_bush = 6,
 		/obj/item/natural/rock = 6,
 		/obj/structure/flora/grass/herb/random = 5,
@@ -56,12 +57,12 @@
 	allowed_turfs = list(/turf/open/floor/dirt)
 	excluded_turfs = list(/turf/open/floor/dirt/road)
 	spawnableTurfs = list(/turf/open/floor/grass = 15)
-	allowed_areas = list(/area/outdoors/wilderness)
+	allowed_areas = list(/area/outdoors/rmh_darkforest) //RMH_EDIT
 
 /datum/mapGeneratorModule/forestgrass
 	clusterCheckFlags = CLUSTER_CHECK_SAME_ATOMS
 	allowed_turfs = list(/turf/open/floor/grass)
-	allowed_areas = list(/area/outdoors/wilderness)
+	allowed_areas = list(/area/outdoors/rmh_darkforest) //RMH_EDIT
 	spawnableAtoms = list(
 		/obj/structure/flora/grass = 80,
 		/obj/structure/flora/grass/bush_meagre = 7,
@@ -81,7 +82,7 @@
 /datum/mapGeneratorModule/forestwaterturf
 	clusterCheckFlags = CLUSTER_CHECK_SAME_ATOMS
 	allowed_turfs = list(/turf/open/water/clean)
-	allowed_areas = list(/area/outdoors/wilderness)
+	allowed_areas = list(/area/outdoors/rmh_darkforest) //RMH_EDIT
 	spawnableAtoms = list(
 		/obj/structure/flora/grass/water = 20,
 		/obj/structure/flora/grass/water/reeds = 25,
@@ -91,7 +92,7 @@
 /datum/mapGeneratorModule/forestswampwaterturf
 	clusterCheckFlags = CLUSTER_CHECK_SAME_ATOMS
 	allowed_turfs = list(/turf/open/water/swamp)
-	allowed_areas = list(/area/outdoors/wilderness)
+	allowed_areas = list(/area/outdoors/rmh_darkforest) //RMH_EDIT
 	spawnableAtoms = list(
 		/obj/structure/flora/grass/water = 20,
 		/obj/structure/flora/grass/water/reeds = 30,

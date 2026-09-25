@@ -172,8 +172,28 @@
 	cost = 30
 	contains = list(/obj/item/bottle_kit)
 
+/datum/supply_pack/tools/branding_iron
+	name = "Branding Iron"
+	cost = 75
+	contains = /obj/item/branding_iron
+
+/datum/supply_pack/tools/branding_letters
+	name = "Branding Letter Kit"
+	cost = 30
+	contains = /obj/item/branding_letters
+
+/datum/supply_pack/tools/tattoo_needle
+	name = "Tattoo Needle"
+	cost = 80
+	contains = /obj/item/tattoo_machine
+
 /datum/supply_pack/tools/medical
 	group = "Medicine"
+
+/datum/supply_pack/tools/medical/bandage
+	name = "Bandage"
+	cost = 35
+	contains = /obj/item/natural/cloth/bandage
 
 /datum/supply_pack/tools/medical/health
 	name = "Healing Potion"

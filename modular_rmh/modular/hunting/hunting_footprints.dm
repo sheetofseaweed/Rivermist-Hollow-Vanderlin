@@ -25,6 +25,8 @@
 #define TRACK_MARK_SKILL_REQ 4
 /// How long a footprint lingers before it is cleaned up.
 #define TRACK_LIFETIME (15 MINUTES)
+#define TRACK_REVEAL_DURATION (3 MINUTES)
+#define TRACK_AGE_DIFFICULTY_STEP (1 MINUTES)
 /// How far a look-around sweep reaches for tracks. Matches the 7-tile sweep look_around() uses.
 #define TRACK_SEARCH_RANGE 7
 /// Sneaking skill (0-6 scale) needed per +1 tracking difficulty on tracks left while sneaking.
@@ -77,6 +79,7 @@
 	/// mob -> the personal image that mob sees. One each, so a Marked highlight shown to the
 	/// hunter who owns the Mark does not change what everyone else is looking at.
 	var/list/knower_images = list()
+	var/list/knower_timers = list()
 
 /obj/effect/skill_tracker/footprint/Initialize(mapload, atom/parent)
 	. = ..()
@@ -153,11 +156,22 @@
 		knower_images[tracker] = personal
 		tracker.client.images += personal
 	RegisterSignal(tracker, COMSIG_PARENT_QDELETING, PROC_REF(remove_knower), override = TRUE)
+	var/old_timer = knower_timers[tracker]
+	if(old_timer)
+		deltimer(old_timer)
+	knower_timers[tracker] = addtimer(CALLBACK(src, PROC_REF(reveal_expired), tracker), TRACK_REVEAL_DURATION, TIMER_STOPPABLE)
+	if(deletion_timer && timeleft(deletion_timer) < TRACK_REVEAL_DURATION)
+		deltimer(deletion_timer)
+		deletion_timer = addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(qdel), src), TRACK_REVEAL_DURATION, TIMER_STOPPABLE)
 
 // No SIGNAL_HANDLER here: the base declares it on its own definition, and SpacemanDMM rejects
 // re-declaring the sleep contract on an override.
 /obj/effect/skill_tracker/footprint/remove_knower(mob/living/tracker)
 	UnregisterSignal(tracker, COMSIG_PARENT_QDELETING)
+	var/reveal_timer = knower_timers?[tracker]
+	if(reveal_timer)
+		deltimer(reveal_timer)
+		knower_timers -= tracker
 	var/image/personal = knower_images?[tracker]
 	if(personal)
 		if(tracker.client)
@@ -166,6 +180,37 @@
 	known_by -= tracker
 	if(creator == tracker)
 		creator = null
+
+/obj/effect/skill_tracker/footprint/proc/reveal_expired(mob/living/tracker)
+	knower_timers -= tracker
+	if(!(tracker in known_by))
+		return
+	var/was_creator = (creator == tracker)
+	remove_knower(tracker)
+	if(was_creator && !QDELETED(tracker))
+		creator = tracker
+		RegisterSignal(tracker, COMSIG_PARENT_QDELETING, TYPE_PROC_REF(/obj/effect/skill_tracker, clear_creator_reference))
+
+/obj/effect/skill_tracker/footprint/proc/can_see_track(mob/user)
+	if(!(user in known_by) || !user.client)
+		return FALSE
+	var/image/personal = knower_images?[user]
+	return personal && (personal in user.client.images)
+
+/obj/effect/skill_tracker/footprint/proc/get_age_penalty()
+	return round((world.time - creation_time) / TRACK_AGE_DIFFICULTY_STEP)
+
+/obj/effect/skill_tracker/footprint/check_reveal(mob/living/user)
+	var/age_penalty = get_age_penalty()
+	tracking_modifier += age_penalty
+	. = ..()
+	tracking_modifier -= age_penalty
+
+/obj/effect/skill_tracker/footprint/handle_revealing(mob/living/user)
+	var/age_penalty = get_age_penalty()
+	tracking_modifier += age_penalty
+	. = ..()
+	tracking_modifier -= age_penalty
 
 /// Rebuilds a knower's image from scratch - used when they had one and lost it, as happens on
 /// reconnect.
@@ -205,7 +250,7 @@
 	. = ..()
 	if(.)
 		return
-	if(!isliving(user) || !(user in known_by))
+	if(!isliving(user) || !can_see_track(user))
 		return
 	return try_conceal(user)
 
@@ -273,7 +318,7 @@
 	return footprint_marking.try_mark(user)
 
 /obj/effect/skill_tracker/footprint/proc/try_mark(mob/living/carbon/human/human_user)
-	if(!(human_user in known_by))
+	if(!can_see_track(human_user))
 		return
 	if(GET_MOB_SKILL_VALUE_OLD(human_user, /datum/attribute/skill/misc/tracking) < TRACK_MARK_SKILL_REQ)
 		to_chat(human_user, span_info("I am not skilled enough to tell one man's gait from another's."))
@@ -300,7 +345,7 @@
 		return
 	if(!footprint_marking || !isliving(user))
 		return
-	if(!(user in footprint_marking.known_by))
+	if(!footprint_marking.can_see_track(user))
 		return
 	return footprint_marking.try_conceal(user)
 
@@ -308,6 +353,8 @@
 	user.changeNext_move(CLICK_CD_MELEE)
 	to_chat(user, span_info("You start scuffing out the tracks..."))
 	if(!do_after(user, 4 SECONDS, target = src))
+		return
+	if(QDELETED(src) || !can_see_track(user))
 		return
 	to_chat(user, span_warning("Nobody should be able to follow these anymore."))
 	qdel(src)
@@ -414,5 +461,7 @@
 #undef ANALYSIS_PERFECT
 #undef TRACK_MARK_SKILL_REQ
 #undef TRACK_LIFETIME
+#undef TRACK_REVEAL_DURATION
+#undef TRACK_AGE_DIFFICULTY_STEP
 #undef TRACK_SEARCH_RANGE
 #undef TRACK_CONCEALMENT_PER_SKILL

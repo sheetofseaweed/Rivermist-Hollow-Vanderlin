@@ -90,16 +90,42 @@
 /datum/pocket_dimension/defeat_captivity/maneater
 
 /datum/pocket_dimension/defeat_captivity/maneater/Destroy(force)
+	var/obj/structure/flora/grass/maneater/real/maneater = get_owner_plant()
 	// Pocket teardown normally ejects every living occupant. Stomach flora belongs to the pocket
 	// instead, so remove it before the parent returns captives to the destroyed plant's turf.
 	for(var/mob/occupant as anything in get_occupants())
 		if(istype(occupant, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater))
 			qdel(occupant)
-	return ..()
+	. = ..()
+	maneater?.update_icon()
+
+/datum/pocket_dimension/defeat_captivity/maneater/register_captive(datum/component/kidnap_captivity/captivity)
+	. = ..()
+	var/obj/structure/flora/grass/maneater/real/maneater = get_owner_plant()
+	maneater?.update_icon()
+
+/datum/pocket_dimension/defeat_captivity/maneater/unregister_captive(datum/component/kidnap_captivity/captivity, delete_when_empty = TRUE)
+	. = ..()
+	var/obj/structure/flora/grass/maneater/real/maneater = get_owner_plant()
+	maneater?.update_icon()
+
+/datum/pocket_dimension/defeat_captivity/maneater/proc/get_owner_plant()
+	RETURN_TYPE(/obj/structure/flora/grass/maneater/real)
+	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/vines = carrier_ref?.resolve()
+	return vines?.get_maneater_owner()
 
 /datum/pocket_dimension/defeat_captivity/maneater/proc/ensure_stomach_guardians(atom/reference)
+	var/list/root_turfs = list()
+	for(var/turf/stomach_turf as anything in affected_turfs)
+		var/obj/effect/maneater_vine_root/root = locate() in stomach_turf
+		if(root)
+			root.regrow_vine()
+			root_turfs[stomach_turf] = TRUE
+
 	var/guardian_count = 0
 	for(var/mob/occupant as anything in get_occupants())
+		if(istype(occupant, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/big))
+			continue
 		if(istype(occupant, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater))
 			guardian_count++
 
@@ -109,12 +135,12 @@
 
 	var/list/valid_turfs = list()
 	for(var/turf/open/candidate as anything in RANGE_TURFS(3, reference))
-		if(!contains_turf(candidate) || candidate.is_blocked_turf(TRUE))
+		if(!contains_turf(candidate) || root_turfs[candidate] || candidate.is_blocked_turf(TRUE))
 			continue
 		valid_turfs += candidate
 	if(length(valid_turfs) < guardians_needed)
 		for(var/turf/open/candidate as anything in affected_turfs)
-			if((candidate in valid_turfs) || candidate.is_blocked_turf(TRUE))
+			if((candidate in valid_turfs) || root_turfs[candidate] || candidate.is_blocked_turf(TRUE))
 				continue
 			valid_turfs += candidate
 
@@ -127,12 +153,32 @@
 		new guardian_type(spawn_turf)
 		guardians_needed--
 
+/// Mapped spot where a greater stomach vine takes root; each swallow regrows a missing or dead one.
+/obj/effect/maneater_vine_root
+	name = "stomach vine root"
+	icon = 'modular_rmh/icons/mob/monster/maneater_big_vine.dmi'
+	icon_state = "vine_big_hide_on"
+	invisibility = INVISIBILITY_ABSTRACT
+	anchored = TRUE
+	var/datum/weakref/vine_ref
+
+/obj/effect/maneater_vine_root/proc/regrow_vine()
+	var/mob/living/vine = vine_ref?.resolve()
+	if(vine && !QDELETED(vine))
+		if(vine.stat != DEAD)
+			return vine
+		qdel(vine)
+	vine = new /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/big(get_turf(src))
+	vine_ref = WEAKREF(vine)
+	return vine
+
 //safer maneater
 /obj/structure/flora/grass/maneater
 	name = "grass"
 	desc = "Green and vivid. Was that a tendril?"
 	icon = 'icons/roguetown/mob/monster/maneater.dmi'
 	icon_state = "maneater-hidden"
+	num_random_icons = 0
 	max_integrity = 5
 
 /obj/structure/flora/grass/maneater/update_icon()
@@ -157,6 +203,18 @@
 	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/sex_proxy
 	var/swallow_timer
 	var/swallow_time = 30 SECONDS
+	/// Damage of an ordinary chew, which armor on the chewed limb can stop.
+	var/chew_damage = 10
+	/// Damage of a big bite, which ignores armor and feeds the plant.
+	var/bite_damage = 15
+	/// The plant spits its victim out once one meal has dealt more than this.
+	var/spit_threshold = 20
+	var/chew_interval = 2 SECONDS
+	/// How often the vines peel one garment off a victim being swallowed.
+	var/strip_interval = 3 SECONDS
+	var/strip_timer
+	/// This plant's stomach pocket, held weakly so a torn-down pocket is simply forgotten.
+	var/datum/weakref/stomach_ref
 
 /obj/structure/flora/grass/maneater/real/process()
 	if(seednutrition >= max_seednutrition)
@@ -215,7 +273,7 @@
 	var/mob/living/victim = AM
 	if(victim == planter)
 		return
-	if(!victim.ambushable())
+	if(!can_snatch(victim))
 		return
 	if(victim.m_intent == MOVE_INTENT_SNEAK)
 		return
@@ -225,7 +283,14 @@
 	if(victim_allows_horny_capture(victim))
 		begin_horny_swallow(victim)
 	else
-		begin_eat(victim)
+		// The meal sleeps between chews, so it must not run inside the victim's Move().
+		INVOKE_ASYNC(src, PROC_REF(begin_eat), victim)
+
+/// Mirrors ambushable() minus its five-minute post-ambush grace, so a recent ambush cannot shield the victim.
+/obj/structure/flora/grass/maneater/real/proc/can_snatch(mob/living/victim)
+	if(!victim.mind || victim.stat || (victim.status_flags & GODMODE))
+		return FALSE
+	return victim.ambushable && !HAS_TRAIT(victim, TRAIT_NOAMBUSH) && !HAS_TRAIT(victim, TRAIT_PACIFISM)
 
 /obj/structure/flora/grass/maneater/real/proc/victim_allows_horny_capture(mob/living/victim)
 	if(!ishuman(victim) || victim.stat == DEAD || victim.status_flags & GODMODE)
@@ -272,9 +337,38 @@
 		scene_controller.set_current_speed(rand(SEX_SPEED_MID, SEX_SPEED_MAX))
 
 	visible_message(span_warningbig("[src]'s flowering vines close around [victim] and begin drawing them toward its maw!"))
-	to_chat(victim, span_userdanger("The maneater's vines tease and restrain you while its throat slowly opens beneath you. You have [DisplayTimeText(swallow_time)] to break free!"))
+	to_chat(victim, span_userdanger("The maneater's vines tease and restrain you, peeling your clothes away while its throat slowly opens beneath you. You have [DisplayTimeText(swallow_time)] to break free!"))
 	swallow_timer = addtimer(CALLBACK(src, PROC_REF(complete_horny_swallow)), swallow_time, TIMER_STOPPABLE | TIMER_DELETE_ME)
+	strip_timer = addtimer(CALLBACK(src, PROC_REF(strip_next_garment)), strip_interval, TIMER_STOPPABLE | TIMER_DELETE_ME)
 	return TRUE
+
+/// Peels the outermost strippable garment off the victim being swallowed and flings it beside the plant.
+/obj/structure/flora/grass/maneater/real/proc/strip_next_garment()
+	strip_timer = null
+	var/mob/living/carbon/human/victim = horny_victim_ref?.resolve()
+	if(!istype(victim) || QDELETED(victim) || victim.buckled != src)
+		return FALSE
+	var/list/garments = list(victim.cloak, victim.wear_armor, victim.wear_shirt, victim.wear_pants, victim.head, victim.gloves, victim.shoes, victim.legwear_socks, victim.undershirt, victim.underwear)
+	for(var/obj/item/garment as anything in garments)
+		if(!garment || garment.loc != victim || !garment.canStrip(sex_proxy, victim))
+			continue
+		if(!victim.dropItemToGround(garment))
+			continue
+		visible_message(span_danger("[src]'s vines peel [victim]'s [garment.name] away and fling it aside!"))
+		var/list/landing_turfs = list()
+		for(var/turf/open/candidate in orange(2, src))
+			if(!candidate.is_blocked_turf(TRUE))
+				landing_turfs += candidate
+		if(length(landing_turfs))
+			garment.throw_at(pick(landing_turfs), 2, 1)
+		strip_timer = addtimer(CALLBACK(src, PROC_REF(strip_next_garment)), strip_interval, TIMER_STOPPABLE | TIMER_DELETE_ME)
+		return garment
+	return FALSE
+
+/obj/structure/flora/grass/maneater/real/proc/stop_stripping()
+	if(strip_timer)
+		deltimer(strip_timer)
+		strip_timer = null
 
 /obj/structure/flora/grass/maneater/real/proc/stop_horny_actions()
 	if(!sex_proxy || QDELETED(sex_proxy))
@@ -285,6 +379,7 @@
 	if(swallow_timer)
 		deltimer(swallow_timer)
 		swallow_timer = null
+	stop_stripping()
 	horny_victim_ref = null
 	stop_horny_actions()
 	if(delete_proxy)
@@ -292,6 +387,7 @@
 
 /obj/structure/flora/grass/maneater/real/proc/complete_horny_swallow()
 	swallow_timer = null
+	stop_stripping()
 	var/mob/living/victim = horny_victim_ref?.resolve()
 	horny_victim_ref = null
 	if(!victim || QDELETED(victim) || victim.buckled != src || victim.loc != loc || obj_broken)
@@ -315,59 +411,68 @@
 	var/datum/component/kidnap_captivity/captivity = victim.GetComponent(/datum/component/kidnap_captivity)
 	var/datum/pocket_dimension/defeat_captivity/maneater/stomach = captivity?.resolve_instance()
 	stomach?.ensure_stomach_guardians(victim)
+	stomach_ref = stomach ? WEAKREF(stomach) : null
+	update_icon()
 	last_eat = world.time
 	to_chat(victim, span_userdanger("Warm, yielding walls close around you. Hungry green vines stir nearby."))
 	return TRUE
+
+/obj/structure/flora/grass/maneater/real/post_buckle_mob(mob/living/buckled_mob)
+	. = ..()
+	update_icon()
 
 /obj/structure/flora/grass/maneater/real/post_unbuckle_mob(mob/living/unbuckled_mob)
 	. = ..()
 	if(unbuckled_mob == horny_victim_ref?.resolve())
 		reset_horny_capture()
+	update_icon()
 
-/obj/structure/flora/grass/maneater/real/proc/begin_eat(mob/living/victim, chew_factor = 1)
-	if(victim.loc != loc)
-		return
+/obj/structure/flora/grass/maneater/real/proc/begin_eat(mob/living/victim)
+	var/meal_damage = 0
+	var/bite_chance = 15
+	while(victim.buckled == src)
+		visible_message(span_warningbig("[src] begins to gnaw on [victim]!"))
+		if(!do_after(victim, chew_interval, progress = FALSE) || victim.buckled != src)
+			visible_message(span_warning("[src] stops chewing on [victim]!"))
+			return
+		if(meal_damage > spit_threshold)
+			maneater_spit_out(victim)
+			return
 
-	visible_message(span_warningbig("[src] begins to gnaw on [victim]!"))
-	if(!do_after(victim, 2 SECONDS, progress = FALSE))
-		visible_message(span_warning("[src] stops chewing on [victim]!"))
-		return
-	if(victim.getBruteLoss() > 20)
-		maneater_spit_out(victim)
+		playsound(src,'sound/misc/eat.ogg', rand(30,60), TRUE)
+		meal_damage += chew_victim(victim, bite_chance)
+		bite_chance *= 2
 
-	playsound(src,'sound/misc/eat.ogg', rand(30,60), TRUE)
-	if(!iscarbon(victim))
-		victim.adjustBruteLoss(20)
-	else
-		var/zone = pick(BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
-		var/obj/item/bodypart/limb = victim.get_bodypart(zone)
-		if(!limb)
-			begin_eat(victim)
-		victim.flash_fullscreen("redflash3")
-		playsound(src.loc, list('sound/vo/mobs/plant/attack (1).ogg','sound/vo/mobs/plant/attack (2).ogg','sound/vo/mobs/plant/attack (3).ogg','sound/vo/mobs/plant/attack (4).ogg'), 100, FALSE, -1)
-		if(prob(chew_factor * 15))
-			if(limb.receive_damage(25))
-				seednutrition += 25
-				//maneater_spit_out(victim)
-		else
-			victim.run_armor_check(zone, BCLASS_CUT, 20)
-
-	if(victim.stat == DEAD)
-		if(iscarbon(victim))
-			var/mob/living/carbon/c_victim = victim
-			if(c_victim.mind || c_victim.last_mind)
-				c_victim.gib()
-				seednutrition += 50
-				return
-		else
-			if(victim.mind)
+		if(victim.stat == DEAD)
+			var/mob/living/carbon/carbon_victim = iscarbon(victim) ? victim : null
+			if(victim.mind || carbon_victim?.last_mind)
 				victim.gib()
 				seednutrition += 50
-				return
+			else
+				maneater_spit_out(victim)
+			return
 
-		maneater_spit_out(victim)
+/// Chews a random limb, or the torso if none remain; returns the damage dealt after armor.
+/obj/structure/flora/grass/maneater/real/proc/chew_victim(mob/living/victim, bite_chance)
+	if(!iscarbon(victim))
+		victim.adjustBruteLoss(chew_damage)
+		return chew_damage
 
-	begin_eat(victim, chew_factor * 2)
+	var/mob/living/carbon/carbon_victim = victim
+	var/obj/item/bodypart/limb = carbon_victim.get_bodypart_complex(list(BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)) || carbon_victim.get_bodypart(BODY_ZONE_CHEST)
+	victim.flash_fullscreen("redflash3")
+	playsound(src.loc, list('sound/vo/mobs/plant/attack (1).ogg','sound/vo/mobs/plant/attack (2).ogg','sound/vo/mobs/plant/attack (3).ogg','sound/vo/mobs/plant/attack (4).ogg'), 100, FALSE, -1)
+
+	var/big_bite = prob(bite_chance)
+	var/damage = big_bite ? bite_damage : max(0, chew_damage - victim.run_armor_check(limb, BCLASS_CUT, damage = chew_damage))
+	if(!damage)
+		return 0
+	// Bodypart brute is rebuilt from the injury list, so receive_damage() would not last.
+	if(limb.create_injury(WOUND_BITE, damage) && big_bite)
+		seednutrition += 25
+	limb.update_damages()
+	victim.updatehealth()
+	return damage
 
 /obj/structure/flora/grass/maneater/real/proc/maneater_spit_out(mob/living/C)
 	if(!C)
@@ -384,12 +489,26 @@
 	playsound(src,'sound/misc/maneaterspit.ogg', 100)
 	return TRUE
 
+/obj/structure/flora/grass/maneater/real/proc/is_full()
+	var/datum/pocket_dimension/defeat_captivity/maneater/stomach = stomach_ref?.resolve()
+	if(!stomach || QDELETED(stomach) || stomach.teardown_started)
+		return FALSE
+	return stomach.captive_count() > 0
+
 /obj/structure/flora/grass/maneater/real/update_icon()
 	. = ..()
+	icon = initial(icon)
+	desc = initial(desc)
 	if(obj_broken)
 		name = "MANEATER"
 		desc = "This cunning creature is thankfully defeated."
 		icon_state = "maneater-dead"
+		return
+	if(is_full() && !has_buckled_mobs())
+		name = "MANEATER"
+		desc = "Its swollen pod heaves and bulges. Something inside is still moving."
+		icon = 'modular_rmh/icons/mob/monster/maneater_full.dmi'
+		icon_state = "maneater-full"
 		return
 	if(aggroed)
 		name = "MANEATER"

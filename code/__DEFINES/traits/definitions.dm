@@ -408,6 +408,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_CRITICAL_RESISTANCE "Critical Resistance"
 #define TRAIT_CRITICAL_WEAKNESS	"Critical Weakness"
 #define TRAIT_MANIAC_AWOKEN	"Awoken"
+/// Marks a demon assembled by admins for the falling star event.
+#define TRAIT_EVENT_HUNTER "Falling Star Hunter"
 /// Species changes are disguise shifts, not growth — suppresses species_stat_pick() on gain
 #define TRAIT_IDENTITY_SHIFTING "Identity Shifting"
 /// Multiplies horny-knockout thresholds by SUCCUBUS_HORNY_KO_MULT (heroic to tire out, not immune)
