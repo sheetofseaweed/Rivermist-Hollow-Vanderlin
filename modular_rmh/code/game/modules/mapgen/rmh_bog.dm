@@ -54,17 +54,33 @@
 	clusterCheckFlags = CLUSTER_CHECK_DIFFERENT_TURFS
 	allowed_turfs = list(/turf/open/floor/dirt)
 	excluded_turfs = list(/turf/open/floor/dirt/road)
-	spawnableTurfs = list(/obj/structure/flora/grass = 23)
+	spawnableTurfs = list() // Drops the parent's road and swamp turfs.
+	spawnableAtoms = list(/obj/structure/flora/grass = 23)
 	allowed_areas = list(/area/outdoors/rmh_bog/north, /area/outdoors/rmh_bog/south)
 
 /datum/mapGeneratorModule/rmh_bog/boggrass
 	clusterCheckFlags = CLUSTER_CHECK_ALL_ATOMS
-	allowed_turfs = list(/obj/structure/flora/grass)
-	excluded_turfs = list()
+	allowed_turfs = list(/turf/open/floor/dirt)
+	excluded_turfs = list(/turf/open/floor/dirt/road)
+	spawnableTurfs = list() // Drops the parent's road and swamp turfs.
 	clusterMax = 2
 	clusterMin = 0
 	allowed_areas = list(/area/outdoors/rmh_bog/north, /area/outdoors/rmh_bog/south)
-	spawnableAtoms = list(/obj/structure/kneestingers = 60)
+	spawnableAtoms = list(/obj/structure/kneestingers = 10)
+
+/// Kneestingers only take tiles with a plain grass tuft, and skip tiles hiding a maneater.
+/datum/mapGeneratorModule/rmh_bog/boggrass/checkPlaceAtom(turf/T)
+	. = ..()
+	if(!.)
+		return
+	var/has_tuft = FALSE
+	for(var/obj/structure/flora/grass/plant in T)
+		if(istype(plant, /obj/structure/flora/grass/maneater))
+			return FALSE
+		// Exact type: grass subtypes include bushes, swampweed and maneaters.
+		if(plant.type == /obj/structure/flora/grass)
+			has_tuft = TRUE
+	return has_tuft
 
 /datum/mapGeneratorModule/rmh_bog/bogwater
 	clusterCheckFlags = CLUSTER_CHECK_SAME_ATOMS

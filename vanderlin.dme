@@ -4427,6 +4427,7 @@
 #include "modular_rmh\code\game\objects\structures\fake_machines\withdraw.dm"
 #include "modular_rmh\code\game\turfs\crawl_space.dm"
 #include "modular_rmh\code\game\turfs\jaunt_block.dm"
+#include "modular_rmh\code\game\turfs\maneater_stomach.dm"
 #include "modular_rmh\code\game\turfs\closed\mineral_vein.dm"
 #include "modular_rmh\code\game\turfs\closed\walls\walls.dm"
 #include "modular_rmh\code\game\turfs\open\floor\azure_floors.dm"
