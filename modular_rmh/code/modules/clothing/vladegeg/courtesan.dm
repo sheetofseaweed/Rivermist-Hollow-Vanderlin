@@ -17,6 +17,7 @@
 	category = "Dress"
 
 /datum/supply_pack/apparel/courtesan
+	group = "Shirts & Dresses"
 	name = "Courtesan Dress"
 	cost = 20
 	contains = /obj/item/clothing/shirt/dress/courtesan

@@ -1,5 +1,6 @@
 #define MINIMUM_FLAVOR_TEXT		0
 #define MINIMUM_OOC_NOTES 		0
+#define MAX_FLAVOR_TEXT_LENGTH	8192
 
 //Preference toggles
 #define SOUND_ADMINHELP			(1<<0)

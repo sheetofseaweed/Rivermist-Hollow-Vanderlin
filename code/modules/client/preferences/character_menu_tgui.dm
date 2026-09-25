@@ -1130,6 +1130,13 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 			update_menu_data(user)
 			return TRUE
 
+		if("job_explain")
+			var/datum/job/explain_job = SSjob?.GetJob(params["job"])
+			if(!explain_job?.class_setup_examine)
+				return FALSE
+			explain_job.show_explain(user)
+			return FALSE
+
 		if("job_toggle_unavailable")
 			if(SSticker?.job_change_locked)
 				return FALSE

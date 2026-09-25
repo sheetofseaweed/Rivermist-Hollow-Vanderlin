@@ -24,6 +24,7 @@
 	category = "Dress"
 
 /datum/supply_pack/apparel/skyrim_taven
+	group = "Shirts & Dresses"
 	name = "Waitress Dress"
 	cost = 20
 	contains = /obj/item/clothing/shirt/dress/skyrim_taven

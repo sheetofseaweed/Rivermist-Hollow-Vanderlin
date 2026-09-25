@@ -10,6 +10,7 @@ type JobEntry = {
   title: string;
   tutorial: string;
   slots: number;
+  has_info?: boolean | number;
   title_choices: JobChoice[];
   honorary_choices: JobChoice[];
 };
@@ -220,7 +221,20 @@ export const PreferencesJobs = () => {
                       paddingLeft: '7px',
                     }}
                   >
-                    <Box bold={state.status === 'available'}>
+                    <Box
+                      bold={state.status === 'available'}
+                      style={
+                        job.has_info
+                          ? { textDecoration: 'underline', cursor: 'pointer' }
+                          : undefined
+                      }
+                      title={job.has_info ? 'Click for class details' : undefined}
+                      onClick={
+                        job.has_info
+                          ? () => act('job_explain', { job: job.title })
+                          : undefined
+                      }
+                    >
                       {state.status === 'available'
                         ? state.current_title
                         : state.display_name}

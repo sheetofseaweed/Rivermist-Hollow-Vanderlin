@@ -48,7 +48,10 @@
 		/datum/attribute/skill/misc/stealing = 20,
 		/datum/attribute/skill/labor/mathematics = 20,
 		/datum/attribute/skill/labor/butchering = 30,
-		/datum/attribute/skill/craft/cooking = 30
+		/datum/attribute/skill/craft/cooking = 30,
+		/datum/attribute/skill/craft/cooking/preparation = 20,
+		/datum/attribute/skill/craft/cooking/baking = 15,
+		/datum/attribute/skill/craft/cooking/grilling = 15
 	)
 
 /datum/job/advclass/servant/butler
@@ -108,7 +111,11 @@
 		/datum/attribute/skill/misc/sneaking = 30,
 		/datum/attribute/skill/misc/stealing = 20,
 		/datum/attribute/skill/labor/butchering = 20,
-		/datum/attribute/skill/craft/cooking = 40
+		/datum/attribute/skill/craft/cooking = 40,
+		/datum/attribute/skill/craft/cooking/preparation = 30,
+		/datum/attribute/skill/craft/cooking/baking = 25,
+		/datum/attribute/skill/craft/cooking/grilling = 20,
+		/datum/attribute/skill/craft/cooking/preservation = 20
 	)
 
 /datum/job/advclass/servant/maid

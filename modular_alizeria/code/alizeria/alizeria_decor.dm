@@ -381,18 +381,11 @@
 	pixel_y = 32
 	climb_offset = 0
 
-/obj/structure/rack/rogue/shelf/alizeria/attackby(obj/item/I, mob/user, list/modifiers)
-	if(!user.cmode)
-		if(!(I.item_flags & ABSTRACT))
-			if(user.transferItemToLoc(I, drop_location(), silent = FALSE))
-				var/icon_x = text2num(LAZYACCESS(modifiers, ICON_X))
-				var/icon_y = text2num(LAZYACCESS(modifiers, ICON_Y))
-				if(!icon_x || !icon_y)
-					return TRUE
-				I.pixel_x = I.base_pixel_x + CLAMP(icon_x - 16, -(world.icon_size/2), world.icon_size/2) + pixel_x
-				I.pixel_y = I.base_pixel_y + CLAMP(icon_y - 16, -(world.icon_size/2), world.icon_size/2) + pixel_y
-				return TRUE
-	return ..()
+/obj/structure/rack/rogue/shelf/item_interaction(mob/living/user, obj/item/tool, list/modifiers)
+	. = ..()
+	if(. & ITEM_INTERACT_SUCCESS)
+		tool.pixel_x += pixel_x
+		tool.pixel_y += pixel_y
 
 // ЗАБОР
 /obj/structure/bars/alizeria/decor/fence1

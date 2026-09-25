@@ -6,7 +6,6 @@
 	startTurfX = 1
 	startTurfY = 1
 
-
 /datum/mapGenerator/rmh_bog
 	modules = list(
 	/datum/mapGeneratorModule/rmh_bog,
@@ -15,7 +14,6 @@
 	/datum/mapGeneratorModule/rmh_bog/boggrass,
 	/datum/mapGeneratorModule/rmh_bog/bogwater
 	)
-
 
 /datum/mapGeneratorModule/rmh_bog
 	clusterCheckFlags = CLUSTER_CHECK_DIFFERENT_TURFS

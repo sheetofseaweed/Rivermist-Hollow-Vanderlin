@@ -142,6 +142,10 @@
 	if(!user)
 		return
 	var/position_info = user.client?.prefs?.action_buttons_screen_locs["[name]_[id]"] || SCRN_OBJ_DEFAULT
+	var/current_view = user.client?.view
+	if(current_view && !(position_info in list(SCRN_OBJ_DEFAULT, SCRN_OBJ_IN_LIST, SCRN_OBJ_IN_PALETTE, SCRN_OBJ_FLOATING)))
+		var/list/offsets = screen_loc_to_offset(position_info, current_view)
+		position_info = offset_to_screen_loc(offsets[1], offsets[2], view = current_view)
 	user.hud_used.position_action(src, position_info)
 
 /atom/movable/screen/movable/action_button/proc/dump_save()
