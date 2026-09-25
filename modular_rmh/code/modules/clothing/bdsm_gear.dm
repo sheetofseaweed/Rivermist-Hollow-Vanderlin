@@ -423,6 +423,8 @@
 	item_state = "leatherhalfsuit"
 	sleeved = null
 	allowed_race = SPECIES_BASE_BODY
+	color = CLOTHING_BLACK
+	dyeable = TRUE
 
 /obj/item/clothing/legwears/bdsm_leather
 	name = "leather stockings"
@@ -436,6 +438,8 @@
 	muteinmouth = FALSE
 	damaged_icon = null
 	damaged_overlay_icon = null
+	color = CLOTHING_BLACK
+	dyeable = TRUE
 
 /obj/item/clothing/gloves/bdsm_leather
 	name = "leather gloves"
@@ -446,6 +450,8 @@
 	item_state = "leathergloves"
 	sleeved = null
 	resistance_flags = FLAMMABLE
+	color = CLOTHING_BLACK
+	dyeable = TRUE
 
 /obj/item/clothing/gloves/bdsm_leather/attack_self(mob/living/user)
 	if(loc != user)

@@ -44862,6 +44862,10 @@
 	},
 /turf/open/floor/metal,
 /area/under/town/rmh/sewer)
+"nYa" = (
+/obj/item/canvas/random_painting/mounted,
+/turf/closed/wall/mineral/decorstone,
+/area/indoors/town/rmh/library)
 "nYl" = (
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/chapel/basement)
@@ -172688,7 +172692,7 @@ sTf
 pwt
 cKt
 uEP
-sTf
+nYa
 sTf
 mTv
 gLU
@@ -172939,7 +172943,7 @@ iOw
 uio
 hVx
 gLU
-sTf
+nYa
 iCG
 ssd
 nyR
@@ -172947,7 +172951,7 @@ vJH
 qnr
 qnr
 dMl
-sTf
+nYa
 sny
 tUk
 xZX
@@ -174489,7 +174493,7 @@ qJu
 oiP
 oiP
 hIh
-sTf
+nYa
 tUk
 sny
 xZX
@@ -174744,7 +174748,7 @@ sTf
 pwt
 boY
 szC
-sTf
+nYa
 sTf
 mTv
 gLU
