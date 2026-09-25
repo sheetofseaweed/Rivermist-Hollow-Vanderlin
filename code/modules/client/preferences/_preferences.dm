@@ -1581,7 +1581,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				"player_language" = /datum/preference/text/player_language,
 			)
 			var/text_link_type = text_link_types[action]
-			var/new_text = tgui_input_text(user, "Enter a new value. Leave blank to clear.", "Character Preference", read_preference(text_link_type), multiline = (action in list("ooc_extra", "nsfwflavortext")), encode = FALSE)
+			var/is_long_text = (action in list("ooc_extra", "nsfwflavortext"))
+			var/new_text = tgui_input_text(user, "Enter a new value. Leave blank to clear.", "Character Preference", read_preference(text_link_type), max_length = is_long_text ? MAX_FLAVOR_TEXT_LENGTH : null, multiline = is_long_text, encode = FALSE)
 			if(!isnull(new_text))
 				write_preference(text_link_type, new_text)
 			return TRUE

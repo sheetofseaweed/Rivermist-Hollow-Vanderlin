@@ -16,6 +16,7 @@
 	craftdiff = 5
 
 /datum/supply_pack/apparel/thaumgloves
+	group = "Gloves"
 	name = "Alchemist Gloves"
 	cost = 35
 	contains = /obj/item/clothing/gloves/leather/thaumgloves

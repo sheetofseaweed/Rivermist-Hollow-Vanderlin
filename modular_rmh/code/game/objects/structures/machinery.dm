@@ -95,3 +95,31 @@
 					maxore = initial(maxore)
 					cooking = 46
 					actively_smelting = FALSE
+
+GLOBAL_LIST_INIT(smelter_fallback_blacklist, typecacheof(list(
+	/obj/item/ingot,
+	/obj/item/gear,
+	/obj/item/statue,
+	/obj/item/clothing/face/facemask,
+	/obj/item/clothing/gloves/chain,
+	/obj/item/weapon/hoe/stone,
+	/obj/item/weapon/shovel/small,
+	/obj/item/weapon/tongs/stone,
+)))
+
+/obj/item/proc/get_material_smelt_result()
+	if(smeltresult)
+		return smeltresult
+	if(!ispath(melting_material, /datum/material) || is_type_in_typecache(src, GLOB.smelter_fallback_blacklist))
+		return null
+	var/datum/material/material = melting_material
+	return initial(material.ingot_type)
+
+/obj/machinery/light/fueled/smelter/try_add_item(obj/item/smelting_item, mob/living/user, obj/item/weapon/tongs/tongs_used)
+	if(!smelting_item.smeltresult && !istype(smelting_item, /obj/item/storage/crucible))
+		var/fallback_result = smelting_item.get_material_smelt_result()
+		if(!fallback_result)
+			to_chat(user, span_warning("[smelting_item] cannot be smelted."))
+			return FALSE
+		smelting_item.smeltresult = fallback_result
+	return ..()

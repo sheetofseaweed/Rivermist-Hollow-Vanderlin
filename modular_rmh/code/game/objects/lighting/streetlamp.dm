@@ -4,3 +4,4 @@
 	bulb_colour = "#e9a387"
 	base_state = "o_midlamp1"
 	state_suffix = "_nozap"
+	plane = -6

@@ -20,6 +20,7 @@
 	craftdiff = 2
 
 /datum/supply_pack/apparel/winter_coat
+	group = "Coats & Vests"
 	name = "Winter Coat"
 	cost = 40
 	contains = /obj/item/clothing/armor/gambeson/winter_coat

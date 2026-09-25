@@ -75,7 +75,7 @@
 
 /obj/structure/well/fountain/proc/drink_from(mob/living/user)
 	var/datum/reagents/reagents = new()
-	reagents.add_reagent(/datum/reagent/water/gross, 2)
+	reagents.add_reagent(/datum/reagent/water, 2) //RMH EDIT: Soft-mod
 	reagents.trans_to(user, reagents.total_volume, transfered_by = user, method = INGEST)
 	playsound(user,pick('sound/items/drink_gen (1).ogg','sound/items/drink_gen (2).ogg','sound/items/drink_gen (3).ogg'), 100, TRUE)
 

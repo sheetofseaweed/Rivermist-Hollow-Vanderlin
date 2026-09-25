@@ -18,6 +18,7 @@
 	output = /obj/item/clothing/shoes/toga_sandals
 
 /datum/supply_pack/apparel/toga_sandals
+	group = "Footwear"
 	name = "Fancy sandals"
 	cost = 5
 	contains = /obj/item/clothing/shoes/toga_sandals
