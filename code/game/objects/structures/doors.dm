@@ -1,7 +1,7 @@
 /obj/structure/door
 	name = "wooden door"
 	desc = "A door that can open and close."
-	icon = 'icons/roguetown/misc/doors.dmi'
+	icon = 'modular_rmh/icons/obj/structures/doors.dmi'
 	icon_state = "woodhandle"
 	density = TRUE
 	anchored = TRUE
@@ -18,6 +18,7 @@
 	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg', 'sound/combat/hits/onwood/woodimpact (2).ogg')
 	lock = /datum/lock/key
 	can_add_lock = TRUE
+	pixel_y = -12
 
 	var/omni_bolt = FALSE
 
@@ -487,6 +488,7 @@
 /obj/structure/door/swing
 	name = "swing door"
 	desc = "A door that swings."
+	icon = 'icons/roguetown/misc/doors.dmi'
 	icon_state = "swing"
 	windowed = TRUE
 	opacity = FALSE
@@ -495,14 +497,17 @@
 	bump_closed = TRUE
 	close_delay =  1 SECONDS
 	animate_time = 0.4 SECONDS
+	pixel_y = 0
 
 /obj/structure/door/weak
+	icon = 'icons/roguetown/misc/doors.dmi'
 	icon_state = "wood"
 	max_integrity = 500
 	kickthresh = 10
 	open_sound = 'sound/foley/doors/shittyopen.ogg'
 	close_sound = 'sound/foley/doors/shittyclose.ogg'
 	metalizer_result = null
+	pixel_y = 0
 
 /obj/structure/door/weak/bolt
 	icon_state = MAP_SWITCH("wood", "wooddir")
@@ -510,6 +515,7 @@
 	lock = /datum/lock
 
 /obj/structure/door/weak/bolt/shutter
+	icon = 'icons/roguetown/misc/doors.dmi'
 	name = "serving hatch"
 	desc = "Can be locked from the inside."
 	icon_state = "serving"
@@ -520,8 +526,10 @@
 	lock = /datum/lock/locked
 	animate_time = 2.1 SECONDS
 	omni_bolt = TRUE
+	pixel_y = 0
 
 /obj/structure/door/iron
+	icon = 'icons/roguetown/misc/doors.dmi'
 	name = "iron door"
 	icon_state = "donjon"
 	armor_type = /datum/armor/door/heavy
@@ -539,8 +547,10 @@
 	broken_repair = /obj/item/ingot/iron
 	repair_skill = /datum/attribute/skill/craft/blacksmithing
 	metalizer_result = null
+	pixel_y = 0
 
 /obj/structure/door/iron/bars
+	icon = 'icons/roguetown/misc/doors.dmi'
 	icon_state = "bars"
 	max_integrity = 1000
 	blade_dulling = DULLING_BASHCHOP
@@ -550,6 +560,7 @@
 	animate_time = 0.6 SECONDS
 	lock_sound = 'sound/foley/lock.ogg'
 	unlock_sound = 'sound/foley/unlock.ogg'
+	pixel_y = 0
 
 /obj/structure/door/iron/bars/cell
 	name = "cell door"
@@ -586,6 +597,7 @@
 	repair_skill = /datum/attribute/skill/craft/masonry
 	smeltresult = null
 	metalizer_result = null
+	pixel_y = 0
 
 /obj/structure/door/driftwood
 	name = "driftwood door"
@@ -598,3 +610,4 @@
 	bump_closed = TRUE
 	close_delay =  1 SECONDS
 	animate_time = 0.4 SECONDS
+	pixel_y = 0
