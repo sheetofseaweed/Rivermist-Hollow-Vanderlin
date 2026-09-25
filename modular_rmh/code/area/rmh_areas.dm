@@ -545,7 +545,7 @@
 	ambient_index = DRONING_INDOORS
 	ambient_index_night = DRONING_INDOORS
 	background_track = 'modular_rmh/sound/music/area/genericcalm.ogg'
-	background_track_dawn = 'modular_rmh/sound/music/area/generichill.ogg'
+	background_track_dawn = 'modular_rmh/sound/music/area/genericchill.ogg'
 	background_track_dusk = 'modular_rmh/sound/music/area/genericflutey.ogg'
 	background_track_night = 'modular_rmh/sound/music/area/genericrevelry.ogg'
 	converted_type = /area/outdoors/exposed/rmh/tavern
