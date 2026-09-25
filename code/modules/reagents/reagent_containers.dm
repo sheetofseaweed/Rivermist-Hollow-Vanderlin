@@ -342,6 +342,7 @@
 		target.visible_message(span_danger("[user] feeds [target] something."), \
 					span_danger("[user] feeds you something."))
 		log_combat(user, target, "fed", reagents.log_list())
+		SEND_SIGNAL(target, COMSIG_MOB_FED, user, src)
 
 	// check to see if we're a noble drinking soup
 	if(ishuman(user) && istype(src, /obj/item/reagent_containers/glass/bowl))
