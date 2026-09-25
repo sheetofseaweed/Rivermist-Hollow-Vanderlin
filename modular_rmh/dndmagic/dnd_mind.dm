@@ -6,30 +6,13 @@
 	spell_cost = 0
 	charge_drain = 0
 
+	spell_flags = NONE
 	dnd_use_spell_slots = TRUE
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Mind Spike"
 
 	var/tmp/dnd_pending_mind_spike_level = 0
-
-/datum/action/cooldown/spell/mind_spike/dnd/can_cast_spell(feedback = TRUE)
-	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/mind_spike/dnd/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
 
 /datum/action/cooldown/spell/mind_spike/dnd/cast(atom/cast_on)
 	dnd_pending_mind_spike_level = dnd_get_cast_level()
@@ -71,7 +54,3 @@
 		to_chat(L, "<span class='userdanger'>Psychic energy is driven into my skull!!</span>")
 
 	dnd_pending_mind_spike_level = 0
-
-/datum/action/cooldown/spell/mind_spike/dnd/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()

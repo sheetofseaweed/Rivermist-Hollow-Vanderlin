@@ -4833,6 +4833,7 @@
 #include "modular_rmh\dndmagic\dnd_mind.dm"
 #include "modular_rmh\dndmagic\dnd_projectiles.dm"
 #include "modular_rmh\dndmagic\dnd_spell_grant_debug.dm"
+#include "modular_rmh\dndmagic\dnd_summons.dm"
 #include "modular_rmh\modular\bush\bodyhair.dm"
 #include "modular_rmh\modular\bush\features.dm"
 #include "modular_rmh\modular\bush\misc.dm"
