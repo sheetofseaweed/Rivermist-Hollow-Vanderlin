@@ -17,7 +17,7 @@
 	highpop_tick = 2
 
 /datum/threat_region/rmh_bog
-	region_name = THREAT_REGION_NORTHERN_GROVE
+	region_name = THREAT_REGION_RMH_BOG
 	latent_ambush = DANGER_MODERATE_FLOOR
 	min_ambush = DANGER_SAFE_FLOOR
 	max_ambush = DANGER_DANGEROUS_LIMIT

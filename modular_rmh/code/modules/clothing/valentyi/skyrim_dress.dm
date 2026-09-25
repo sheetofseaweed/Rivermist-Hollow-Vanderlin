@@ -26,6 +26,7 @@
 	category = "Dress"
 
 /datum/supply_pack/apparel/skyrim_dress
+	group = "Shirts & Dresses"
 	name = "Light Blue Dress"
 	cost = 20
 	contains = /obj/item/clothing/shirt/dress/skyrim_dress
@@ -58,6 +59,7 @@
 	category = "Dress"
 
 /datum/supply_pack/apparel/hw_dress
+	group = "Shirts & Dresses"
 	name = "Salad Green Dress"
 	cost = 20
 	contains = /obj/item/clothing/shirt/dress/hw_dress

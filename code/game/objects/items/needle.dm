@@ -193,6 +193,9 @@
 /obj/item/needle/proc/sew_wounds(mob/living/carbon/target, mob/living/user)
 	if(!istype(user) || !istype(target))
 		return FALSE
+	if(istype(target.dna?.species, /datum/species/ooze))
+		to_chat(user, span_warning("Ooze membranes cannot be sewn; careful heat seals them instead."))
+		return FALSE
 	if(stringamt < 1)
 		to_chat(user, span_warning("The needle has no thread left!"))
 		return FALSE

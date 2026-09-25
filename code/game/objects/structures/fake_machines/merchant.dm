@@ -13,6 +13,10 @@
 /// merchant's own till to deposit the guild levy into.
 GLOBAL_LIST_EMPTY(goldface_vendors)
 
+GLOBAL_VAR_INIT(sky_handler_levy, 0.5)
+
+#define SKY_HANDLER_MIN_SELLER_SHARE 0.1
+
 /obj/item/fake_machine/merchant
 	name = "SKY HANDLER"
 	desc = "A machine that attracts the attention of trading balloons."
@@ -23,8 +27,6 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	var/next_airlift
 	anchored = TRUE
 	w_class = WEIGHT_CLASS_GIGANTIC
-	/// Merchant guild levy taken from every sale (0.5 = 50%). Paid to the merchant's GOLDFACE.
-	var/merchant_levy = 0.5
 	/// Tagline shown at the top of the TGUI window.
 	var/motto = "MERCHANT'S GUILD - Your goods, airborne."
 	/// Recent sales, oldest first: list of list("name", "value").
@@ -78,9 +80,11 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	data["motto"] = motto
 	data["can_read"] = user.can_read(src, TRUE) ? TRUE : FALSE
 	data["next_airlift_seconds"] = max(0, round((next_airlift - world.time) / 10))
-	data["guild_tax_percent"] = round(merchant_levy * 100)
-	data["lord_tax_percent"] = round(SStreasury.tax_value * 100)
-	data["total_tax_percent"] = round((merchant_levy + SStreasury.tax_value) * 100)
+	var/levy = GLOB.sky_handler_levy
+	var/lord_tax = get_lord_tax(levy)
+	data["guild_tax_percent"] = round(levy * 100)
+	data["lord_tax_percent"] = round(lord_tax * 100)
+	data["total_tax_percent"] = round((levy + lord_tax) * 100)
 	// TRUE if the viewer themselves is a guild member exempt from the guild levy.
 	data["viewer_exempt"] = is_guild_member(user) ? TRUE : FALSE
 	// Build the history newest-first for display.
@@ -89,6 +93,9 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 		hist += list(sale_history[i])
 	data["history"] = hist
 	return data
+
+/obj/item/fake_machine/merchant/proc/get_lord_tax(levy_rate)
+	return clamp(SStreasury.tax_value, 0, max(0, 1 - SKY_HANDLER_MIN_SELLER_SHARE - levy_rate))
 
 /// Finds the merchant's own (non-public) GOLDFACE till to receive the guild levy.
 /obj/item/fake_machine/merchant/proc/get_merchant_goldface()
@@ -126,8 +133,9 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 /// Splits a tile's gross sale value into guild levy, Lord's tax and seller payout.
 /// When guild_exempt is set the merchant/banker/assistant pays no guild levy.
 /obj/item/fake_machine/merchant/proc/settle_export(gross, obj/structure/fake_machine/balloon_pad/pad, guild_exempt = FALSE)
-	var/guild_levy = guild_exempt ? 0 : round(gross * merchant_levy)
-	var/lord_tax = round(gross * SStreasury.tax_value)
+	var/levy_rate = guild_exempt ? 0 : GLOB.sky_handler_levy
+	var/guild_levy = round(gross * levy_rate)
+	var/lord_tax = round(gross * get_lord_tax(levy_rate))
 	var/producer_net = gross - guild_levy - lord_tax
 	if(producer_net < 0)
 		producer_net = 0
@@ -221,6 +229,82 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 		SStgui.update_uis(src)
 		SSmerchant.refresh_ledger_uis()
 
+/proc/is_sky_levy_setter(mob/living/carbon/human/user)
+	if(!istype(user) || !user.job)
+		return FALSE
+	return istype(SSjob.GetJob(user.job), /datum/job/waterdeep_merchant)
+
+/proc/get_sky_levy_max_percent()
+	return max(0, 100 - round(SKY_HANDLER_MIN_SELLER_SHARE * 100) - round(SStreasury.tax_value * 100))
+
+/obj/structure/fake_machine/atm/MiddleClick(mob/user, list/modifiers)
+	. = ..()
+	if(!ishuman(user) || user.get_active_held_item() || !is_sky_levy_setter(user))
+		return
+	for(var/datum/tgui/open_ui as anything in user.tgui_open_uis)
+		if(istype(open_ui.src_object, /datum/sky_levy_panel))
+			return
+	var/datum/sky_levy_panel/panel = new(src)
+	panel.ui_interact(user)
+
+/datum/sky_levy_panel
+	var/obj/structure/fake_machine/atm/meister
+
+/datum/sky_levy_panel/New(obj/structure/fake_machine/atm/meister)
+	. = ..()
+	src.meister = meister
+
+/datum/sky_levy_panel/Destroy()
+	meister = null
+	return ..()
+
+/datum/sky_levy_panel/ui_status(mob/user, datum/ui_state/state)
+	if(QDELETED(meister) || !is_sky_levy_setter(user))
+		return UI_CLOSE
+	return GLOB.physical_state.can_use_topic(meister, user)
+
+/datum/sky_levy_panel/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		ui = new(user, src, "SkyLevy", "SKY HANDLER LEVY", 320, 230)
+		ui.open()
+
+/datum/sky_levy_panel/ui_close(mob/user)
+	. = ..()
+	qdel(src)
+
+/datum/sky_levy_panel/ui_data(mob/user)
+	var/list/data = list()
+	data["current_levy"] = round(GLOB.sky_handler_levy * 100)
+	data["lord_tax"] = round(SStreasury.tax_value * 100)
+	data["min_seller_share"] = round(SKY_HANDLER_MIN_SELLER_SHARE * 100)
+	data["max_levy"] = get_sky_levy_max_percent()
+	return data
+
+/datum/sky_levy_panel/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+	. = ..()
+	if(.)
+		return
+	var/mob/user = ui.user
+	switch(action)
+		if("set")
+			if(!is_sky_levy_setter(user))
+				return TRUE
+			var/new_levy = text2num("[params["value"]]")
+			if(!isnum(new_levy))
+				return TRUE
+			new_levy = clamp(round(new_levy), 0, get_sky_levy_max_percent())
+			var/old_levy = round(GLOB.sky_handler_levy * 100)
+			GLOB.sky_handler_levy = new_levy / 100
+			to_chat(user, span_notice("The merchant guild levy on the SKY HANDLER is now [new_levy]%."))
+			log_game("[key_name(user)] changed the SKY HANDLER guild levy from [old_levy]% to [new_levy]%.")
+			ui.close()
+			return TRUE
+		if("cancel")
+			ui.close()
+			return TRUE
+
+#undef SKY_HANDLER_MIN_SELLER_SHARE
 #undef SALE_HISTORY_MAX
 //RMH EDITED END
 
@@ -274,7 +358,7 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	var/tariff_evaded = 0
 	//RMH EDITED END
 	// this is the list of supply groups that you can purchase with this machine
-	var/list/unlocked_cats = list("Apparel","Storage","Armor(Light)","Armor(Iron)","Armor(Steel)","Food","Drinks","Jewelry","Luxury","Tools","Seeds","Shields","Medicine","Raw Materials",
+	var/list/unlocked_cats = list("Hats", "Masks", "Neckwear", "Cloaks", "Coats & Vests", "Shirts & Dresses", "Trousers", "Stockings", "Footwear", "Gloves", "Belts", "Dyes","Storage","Armor(Light)","Armor(Iron)","Armor(Steel)","Food","Drinks","Jewelry","Luxury","Tools","Seeds","Shields","Medicine","Raw Materials",
 								"Weapons (Iron)","Weapons (Steel)","Weapons (Ranged)","Ammunition",MERCHANT_CAT_MISC)
 
 /obj/structure/fake_machine/merchantvend/Initialize()
@@ -554,7 +638,6 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	value_record_key = STATS_SILVERFACE_VALUE_SPENT
 	motto = "SILVERFACE - Commerce for all."
 	unlocked_cats = list(
-		"Apparel",
 		"Storage",
 		"Drinks",
 		"Food",
@@ -592,7 +675,18 @@ GLOBAL_LIST_EMPTY(goldface_vendors)
 	desc = "A public SILVERFACE stocked with garments and light protection."
 	// Cloth and leather only: nothing here carries a scrap of metal.
 	unlocked_cats = list(
-		"Apparel",
+		"Hats",
+		"Masks",
+		"Neckwear",
+		"Cloaks",
+		"Coats & Vests",
+		"Shirts & Dresses",
+		"Trousers",
+		"Stockings",
+		"Footwear",
+		"Gloves",
+		"Belts",
+		"Dyes",
 		"Armor(Light)",
 		"Storage",
 	)

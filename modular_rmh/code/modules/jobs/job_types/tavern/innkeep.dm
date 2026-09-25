@@ -7,6 +7,9 @@
 		/datum/attribute/skill/combat/unarmed = 30,
 		/datum/attribute/skill/misc/reading = 20,
 		/datum/attribute/skill/craft/cooking = 30,
+		/datum/attribute/skill/craft/cooking/brewing = 35,
+		/datum/attribute/skill/craft/cooking/grilling = 25,
+		/datum/attribute/skill/craft/cooking/preparation = 20,
 		/datum/attribute/skill/misc/medicine = 10,
 		/datum/attribute/skill/combat/swords = 20,
 		/datum/attribute/skill/labor/mathematics = 20

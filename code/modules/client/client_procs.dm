@@ -1306,6 +1306,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 
 	SEND_SIGNAL(mob, COMSIG_MOB_CLIENT_CHANGE_VIEW, src, getviewsize(old_view), getviewsize(view))
 
+	mob?.hud_used?.view_audit_buttons()
 
 /client/proc/generate_clickcatcher()
 	if(!void)

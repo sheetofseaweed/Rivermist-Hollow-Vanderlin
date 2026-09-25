@@ -263,14 +263,13 @@
 				user.visible_message(span_warning("The deadite smashes through [src]!"))
 			return
 		if(locked())
-			var/obj/item/held = user.get_active_held_item()
-			if(held?.has_access())
+			var/obj/item/key = find_bump_key(user)
+			if(key)
 				user.visible_message(
-					span_warning("[user] fumbles with \the [held]..."),
-					span_notice("I fumble with my \the [held]...")
+					span_warning("[user] fumbles with [key]..."),
+					span_notice("I fumble with [key]...")
 				)
-				if(do_after(user, 0.5 SECONDS, src))
-					bump_unlock(user, held)
+				if(do_after(user, 0.5 SECONDS, src) && bump_unlock(user, key))
 					return
 			rattle()
 			return
@@ -283,13 +282,33 @@
 				else
 					addtimer(CALLBACK(src, PROC_REF(Close), FALSE), delay)
 
+/obj/structure/door/proc/find_bump_key(mob/user)
+	if(!istype(lock, /datum/lock/key))
+		return null
+	var/datum/lock/key/key_lock = lock
+	var/list/candidates = list(user.get_active_held_item(), user.get_inactive_held_item())
+	if(ishuman(user))
+		var/mob/living/carbon/human/human_user = user
+		candidates += human_user.get_item_by_slot(ITEM_SLOT_WRISTS)
+		candidates += human_user.get_item_by_slot(ITEM_SLOT_NECK)
+	for(var/obj/item/candidate in candidates)
+		if(candidate.has_access() && key_lock.check_access(candidate))
+			return candidate
+	return null
+
 /obj/structure/door/proc/bump_unlock(mob/user, obj/item/key)
-	if(!key)
-		return
+	if(QDELETED(src) || QDELETED(user) || QDELETED(key) || !user.Adjacent(src))
+		return FALSE
+	if(!locked() || !istype(lock, /datum/lock/key) || !pre_lock_interact(user))
+		return FALSE
+	var/datum/lock/key/key_lock = lock
+	if(!key_lock.check_access(key))
+		return FALSE
 	last_bumper = WEAKREF(user)
-	attackby(key, user)
+	key_lock.unlock(user, key, user.m_intent == MOVE_INTENT_SNEAK)
 	if(!locked())
 		Open()
+	return TRUE
 
 /obj/structure/door/CanAStarPass(ID, to_dir, datum/requester)
 	. = ..()

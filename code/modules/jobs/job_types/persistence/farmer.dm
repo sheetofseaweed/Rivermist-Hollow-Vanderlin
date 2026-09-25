@@ -19,7 +19,10 @@
 		/datum/attribute/skill/labor/butchering = 20,
 		/datum/attribute/skill/labor/fishing = 20,
 		/datum/attribute/skill/labor/taming = 20,
-		/datum/attribute/skill/combat/polearms = 20
+		/datum/attribute/skill/combat/polearms = 20,
+		/datum/attribute/skill/craft/cooking = 15,
+		/datum/attribute/skill/craft/cooking/preservation = 25,
+		/datum/attribute/skill/craft/cooking/preparation = 15
 	)
 
 /datum/job/persistence/farmer

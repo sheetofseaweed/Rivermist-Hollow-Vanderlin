@@ -363,9 +363,14 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 		return knows(person)
 	if(name)
 		for(var/datum/relation/relation in relations)
-			if(relation.snapshot && LOWER_TEXT(relation.snapshot["name"]) == LOWER_TEXT(name))
+			if(relation.snapshot && names_match(relation.snapshot["name"], name))
 				return TRUE
 	return FALSE
+
+/proc/names_match(name_a, name_b)
+	if(!name_a || !name_b)
+		return FALSE
+	return LOWER_TEXT(trim(html_decode("[name_a]"))) == LOWER_TEXT(trim(html_decode("[name_b]")))
 
 /datum/mind/proc/forget_source_identity(datum/mind/person)
 	if(!person || person == src)

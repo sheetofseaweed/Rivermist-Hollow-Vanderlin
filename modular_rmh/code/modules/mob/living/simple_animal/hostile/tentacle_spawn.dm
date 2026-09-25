@@ -498,6 +498,25 @@
 	melee_damage_upper = 7
 	leash_distance = 7
 
+/// Rooted in the stomach floor; it barely leaves its pit and regrows there after each swallow.
+/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/big
+	name = "greater maneater stomach vine"
+	desc = "A thick, thorny feeding vine rooted deep in the stomach floor. Its closed red bud twitches toward anything warm."
+	icon = 'modular_rmh/icons/mob/monster/maneater_big_vine.dmi'
+	icon_state = "vine_big"
+	icon_living = "vine_big"
+	icon_dead = "vine_big_dead"
+	health = 80
+	maxHealth = 80
+	base_constitution = 7
+	base_strength = 8
+	base_speed = 10
+	melee_damage_lower = 8
+	melee_damage_upper = 14
+	leash_distance = 1
+	hide_icon_state = "vine_big_hide_on"
+	emerge_icon_state = "vine_big_hide_off"
+
 /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/small
 	name = "lesser burrow tentacle"
 	desc = "A slim, furtive tentacle. Where one waits, several more are usually close by."

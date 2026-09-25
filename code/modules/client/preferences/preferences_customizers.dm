@@ -60,7 +60,7 @@
 	dat += "<div><b>Genital Set:</b> [get_current_genital_set_label()]</div>"
 	dat += "<a href='byond://?_src_=prefs;task=change_customizer;customizer_task=toggle_genital_set'>Toggle Genitals</a>"
 	if(has_extra_genital_customizer_unlock())
-		dat += "<small>Extra Genitals lets you mix and match genital features.</small>"
+		dat += (pref_species?.id == SPEC_ID_OOZE ? "<small>Oozes can mix and match genital features.</small>" : "<small>Extra Genitals lets you mix and match genital features.</small>")
 	else
 		dat += "<small>You can swap between complete masculine and feminine sets.</small>"
 	dat += "</div>"
@@ -135,7 +135,7 @@
 	return islist(quirks) && (quirk_type in quirks)
 
 /datum/preferences/proc/has_extra_genital_customizer_unlock()
-	return has_selected_quirk(/datum/quirk/peculiarity/extra_genitals)
+	return pref_species?.id == SPEC_ID_OOZE || has_selected_quirk(/datum/quirk/peculiarity/extra_genitals)
 
 /datum/preferences/proc/has_ovipositor_customizer_override()
 	return has_selected_quirk(/datum/quirk/peculiarity/ovipositor)

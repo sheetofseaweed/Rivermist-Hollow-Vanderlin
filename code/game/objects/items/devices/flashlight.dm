@@ -214,6 +214,22 @@
 			return TRUE
 
 /obj/item/flashlight/flare/torch/afterattack(atom/movable/A, mob/user, proximity, list/modifiers)
+	if(proximity && on && ishuman(A) && user.used_intent?.type == /datum/intent/use)
+		var/mob/living/carbon/human/patient = A
+		if(istype(patient.dna?.species, /datum/species/ooze))
+			var/obj/item/bodypart/part = patient.get_bodypart(check_zone(user.zone_selected))
+			var/datum/injury/ooze/membrasion = part ? locate(/datum/injury/ooze) in part.injuries : null
+			if(!membrasion)
+				to_chat(user, span_warning("There is no membrasion to seal there."))
+				return
+			user.visible_message(span_notice("[user] begins singeing [patient]'s wounded membrane closed."))
+			if(!do_after(user, 3 SECONDS, target = patient) || !on || part.owner != patient || QDELETED(membrasion))
+				return
+			membrasion.heal_damage(15)
+			part.heal_damage(10, 10, required_status = BODYPART_ORGANIC)
+			playsound(patient, 'sound/items/firelight.ogg', 75, TRUE)
+			user.visible_message(span_notice("[user] seals the membrasion with careful heat."))
+			return
 	. = ..()
 	if (!proximity)
 		return

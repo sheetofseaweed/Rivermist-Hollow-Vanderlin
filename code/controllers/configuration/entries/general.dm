@@ -522,7 +522,7 @@
  * This flag represents the maximum chunk count the server is willing to receive.
  */
 /datum/config_entry/number/tgui_max_chunk_count
-	config_entry_value = 32
+	config_entry_value = 64
 
 /datum/config_entry/flag/auto_profile
 

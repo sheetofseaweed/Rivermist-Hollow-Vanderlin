@@ -223,7 +223,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	for(var/mob/living/carbon/human/HL in GLOB.human_list)
 		if(HL.stat != DEAD)
 			continue
-		if(HL.real_name == paper_name)
+		if(names_match(HL.real_name, paper_name))
 			target = HL
 		else if(HAS_TRAIT(HL, TRAIT_ASSASSIN))
 			assassin_found = TRUE
@@ -326,7 +326,7 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	if(!input)
 		return
 	for(var/mob/living/carbon/human/HL in GLOB.human_list)
-		if(HL.real_name == input)
+		if(names_match(HL.real_name, input))
 			to_chat(HL, "<i>You hear a voice in your head... <b>[info]</i></b>")
 		qdel(P)
 

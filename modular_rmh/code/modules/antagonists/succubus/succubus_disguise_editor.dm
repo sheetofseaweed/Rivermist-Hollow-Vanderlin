@@ -552,5 +552,5 @@
 
 /datum/preferences/succubus_disguise/ui_close(mob/user)
 	. = ..()
-	if(!QDELETED(src))
+	if(!QDELETED(src) && !istype(src, /datum/preferences/ooze_body))
 		qdel(src)

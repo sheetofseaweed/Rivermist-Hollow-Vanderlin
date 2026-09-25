@@ -3134,11 +3134,6 @@
 	},
 /turf/open/floor/dirt,
 /area/outdoors/mountains/rmh_mountains/frozen/forsaken_village)
-"HM" = (
-/turf/closed/mineral/bedrock/cold{
-	name = "solid rock"
-	},
-/area/indoors/cave/rmh_cave/to_underdark)
 "HU" = (
 /obj/structure/closet/crate/chest/neu_iron,
 /obj/effect/spawner/map_spawner/loot/valuable_tableware_spawner,
@@ -14839,7 +14834,7 @@ bH
 Vz
 Vz
 Ni
-Ld
+Er
 Er
 Er
 Er
@@ -14968,7 +14963,7 @@ oz
 Qq
 SG
 Jq
-tH
+Er
 Er
 Er
 Er
@@ -15097,7 +15092,7 @@ SG
 oz
 SG
 Jq
-aU
+Er
 Ld
 Ld
 Ld
@@ -15226,7 +15221,7 @@ Jq
 SG
 oz
 Jq
-aU
+Er
 tH
 tH
 Ld
@@ -15355,7 +15350,7 @@ Jq
 Jq
 Jq
 Jq
-aU
+Er
 aU
 aU
 Ns
@@ -15484,7 +15479,7 @@ Jq
 Jq
 Jq
 Jq
-aU
+Er
 tH
 Ld
 Ns
@@ -15613,7 +15608,7 @@ Jq
 SG
 SG
 SG
-aU
+Er
 aU
 tH
 vQ
@@ -15742,7 +15737,7 @@ Jq
 SG
 oz
 oz
-aU
+Er
 aU
 tH
 vQ
@@ -15871,7 +15866,7 @@ Jq
 oz
 oz
 SG
-aU
+Er
 aU
 Ns
 Ns
@@ -16000,7 +15995,7 @@ Jq
 SG
 Jq
 Jq
-aU
+Er
 tH
 Ld
 Ns
@@ -16129,7 +16124,7 @@ Jq
 Jq
 Jq
 Jq
-aU
+Er
 tH
 Ld
 Ns
@@ -16258,7 +16253,7 @@ Qq
 Qq
 SG
 SG
-Ld
+Er
 Er
 Er
 Er
@@ -16387,7 +16382,7 @@ Vz
 Vz
 Vz
 Ni
-Ld
+Er
 Er
 Er
 Er
@@ -16516,7 +16511,7 @@ Vz
 Vz
 Vz
 bH
-HM
+Er
 Er
 Er
 Er

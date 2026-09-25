@@ -15,6 +15,7 @@
 				/obj/item/natural/fibers = 1)
 
 /datum/supply_pack/apparel/skyrim_mage
+	group = "Shirts & Dresses"
 	name = "Mage Robes"
 	cost = 15
 	contains = /obj/item/clothing/shirt/robe/skyrim_mage
