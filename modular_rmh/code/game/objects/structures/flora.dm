@@ -561,3 +561,15 @@
 	SET_BASE_PIXEL(-32, 0)
 	debris = list(/obj/item/grown/log/tree/stick = 3)
 	static_debris = list(/obj/item/grown/log/tree = 2)
+
+/obj/structure/flora/grass/fullgrass_autumn
+	name = "full grass"
+	desc = "Thick, yellowed clumps of grass."
+	icon = 'modular_rmh/icons/obj/flora/foliage.dmi'
+	icon_state = "autum_fullgrass_1"
+	base_icon_state = "autum_fullgrass_"
+	max_integrity = 6
+
+/obj/structure/flora/grass/fullgrass_autumn/Initialize()
+	. = ..()
+	icon_state = "autum_fullgrass_[rand(1,3)]"

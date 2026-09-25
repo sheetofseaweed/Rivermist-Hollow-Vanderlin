@@ -256,6 +256,7 @@
 				"slots" = job.get_total_positions(),
 				"title_choices" = get_job_alt_choices(job, "title"),
 				"honorary_choices" = get_job_alt_choices(job, "honorary"),
+				"has_info" = !!job.class_setup_examine,
 			))
 		if(length(job_entries))
 			categories += list(list(

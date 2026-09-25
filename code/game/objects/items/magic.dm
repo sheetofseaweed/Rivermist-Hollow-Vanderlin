@@ -48,7 +48,7 @@
 		to_chat(user, span_warning("I look into [src] but only see inky smoke. Maybe I should wait."))
 		return
 	for(var/mob/living/carbon/human/HL in GLOB.human_list)
-		if(HL.real_name == input)
+		if(names_match(HL.real_name, input))
 			var/turf/T = get_turf(HL)
 			if(!T)
 				continue
@@ -119,7 +119,7 @@
 			to_chat(user, "<span class='warning'>I don't know anyone by that name.</span>")
 			return
 		for(var/mob/living/carbon/human/HL in GLOB.human_list)
-			if(HL.real_name == input)
+			if(names_match(HL.real_name, input))
 				var/turf/T = get_turf(HL)
 				if(!T)
 					continue

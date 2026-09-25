@@ -26,7 +26,18 @@ SUBSYSTEM_DEF(merchant)
 		"Weapons (Steel)" = 5,
 		"Weapons (Ranged)" = 5,
 		"Ammunition" = 100,
-		"Apparel" = 10,
+		"Hats" = 10,
+		"Masks" = 10,
+		"Neckwear" = 10,
+		"Cloaks" = 10,
+		"Coats & Vests" = 10,
+		"Shirts & Dresses" = 10,
+		"Trousers" = 10,
+		"Stockings" = 10,
+		"Footwear" = 10,
+		"Gloves" = 10,
+		"Belts" = 10,
+		"Dyes" = 10,
 	)
 
 	var/list/supply_packs = list()

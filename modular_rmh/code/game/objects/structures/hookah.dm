@@ -153,7 +153,7 @@
 			return
 
 		playsound(get_turf(shisha), 'sound/foley/shisha_gurgle.ogg', rand(70, 100), FALSE, -1)
-		if(!do_after(user, list(shisha), 2 SECONDS) || QDELETED(shisha) || QDELETED(src))
+		if(!do_after(user, 2 SECONDS, shisha) || QDELETED(shisha) || QDELETED(src))
 			return
 
 		if(!istype(user))
@@ -168,7 +168,7 @@
 			shisha.reagents.remove_any(smoke_amount)
 
 		var/turf/my_turf = get_turf(user)
-		my_turf.pollute_turf(/datum/pollutant/smoke, 5)
+		my_turf.pollute_turf(/datum/pollutant/smoke, 45)
 		return FALSE
 
 /// Called when a mob holding this item moves. If we are too far away from parent shisha - it snaps back.

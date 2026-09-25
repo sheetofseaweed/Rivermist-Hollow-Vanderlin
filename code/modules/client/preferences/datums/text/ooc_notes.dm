@@ -14,7 +14,7 @@
 
 /datum/preference/text/ooc_notes/handle_link(datum/preferences/prefs, mob/user)
 	to_chat(user, span_notice("["<span class='bold'>Do not put anything NSFW here. This feature is for stuff that wouldn't fit in the flavortext.</span>"]"))
-	var/new_ooc_notes = tgui_input_text(user, "Input your OOC preferences:", "OOC notes", prefs.read_preference(/datum/preference/text/ooc_notes), multiline = TRUE, encode = FALSE)
+	var/new_ooc_notes = tgui_input_text(user, "Input your OOC preferences:", "OOC notes", prefs.read_preference(/datum/preference/text/ooc_notes), max_length = MAX_FLAVOR_TEXT_LENGTH, multiline = TRUE, encode = FALSE)
 	if(new_ooc_notes == null)
 		return
 	if(new_ooc_notes == "")
