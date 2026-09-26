@@ -1,6 +1,6 @@
 /datum/container_craft/cooking/herbal_tea
 	abstract_type = /datum/container_craft/cooking/herbal_tea
-	category = "Herbal Remedies"
+	category = "Traditional Alchemical Remedies"
 	crafting_time = 8 SECONDS
 	water_conversion = 1
 	reagent_requirements = list(
@@ -16,6 +16,7 @@
 
 // Symphitum Tea Recipe
 /datum/container_craft/cooking/herbal_tea/symphitum_tea
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Symphitum Tea"
 	created_reagent = /datum/reagent/medicine/herbal/symphitum_tea
 	requirements = list(
@@ -25,6 +26,7 @@
 
 // Taraxacum Extract Recipe
 /datum/container_craft/cooking/herbal_tea/taraxacum_extract
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Taraxacum Extract"
 	created_reagent = /datum/reagent/medicine/herbal/taraxacum_extract
 	requirements = list(
@@ -36,6 +38,7 @@
 
 // Urtica Brew Recipe
 /datum/container_craft/cooking/herbal_tea/urtica_brew
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Urtica Brew"
 	created_reagent = /datum/reagent/medicine/herbal/urtica_brew
 	requirements = list(
@@ -50,7 +53,7 @@
 // Calendula Salve Recipe (uses alcohol instead of water)
 /datum/container_craft/cooking/herbal_salve
 	abstract_type = /datum/container_craft/cooking/herbal_salve
-	category = "Herbal Remedies"
+	category = "Traditional Alchemical Remedies"
 	crafting_time = 15 SECONDS
 	water_conversion = 1
 	reagent_requirements = list(
@@ -75,6 +78,7 @@
 
 // Hypericum Tonic Recipe
 /datum/container_craft/cooking/herbal_tea/hypericum_tonic
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Hypericum Tonic"
 	created_reagent = /datum/reagent/medicine/herbal/hypericum_tonic
 	requirements = list(
@@ -88,6 +92,7 @@
 
 // Mentha Tea Recipe
 /datum/container_craft/cooking/herbal_tea/mentha_tea
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Mentha Tea"
 	created_reagent = /datum/reagent/medicine/herbal/mentha_tea
 	requirements = list(
@@ -149,6 +154,7 @@
 	finished_smell = /datum/pollutant/food/flower
 
 /datum/container_craft/cooking/herbal_tea/rosa_water
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Rosa Water"
 	created_reagent = /datum/reagent/medicine/herbal/simple_rosa
 	requirements = list(
@@ -160,7 +166,8 @@
 	isolation_craft = TRUE
 
 /datum/container_craft/cooking/herbal_tea/euphrasia_wash
-	name = "Euphrasia Eye Wash"
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Euphrasia Decoction"
 	created_reagent = /datum/reagent/medicine/herbal/euphrasia_eye_wash
 	requirements = list(
 		/obj/item/alch/herb/euphrasia = 2
@@ -169,6 +176,7 @@
 
 // Valeriana Sleep Draught (calming/sleep aid)
 /datum/container_craft/cooking/herbal_tea/valeriana_draught
+	parent_type = /datum/container_craft/cooking/herbal_decoction
 	name = "Valeriana Sleep Draught"
 	created_reagent = /datum/reagent/medicine/herbal/valeriana_draught
 	requirements = list(
@@ -225,6 +233,25 @@
 		/obj/item/alch/herb/rosa = 1,
 		/obj/item/alch/herb/valeriana = 1
 	)
+
+/datum/container_craft/cooking/herbal_tea/calendula_decoction
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Calendula Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/decoction/calendula
+	requirements = list(
+		/obj/item/alch/herb/calendula = 2
+	)
+	finished_smell = /datum/pollutant/food/flower
+
+/datum/container_craft/cooking/herbal_tea/calendula_matricaria
+	parent_type = /datum/container_craft/cooking/herbal_decoction
+	name = "Calendula-Matricaria Mending Decoction"
+	created_reagent = /datum/reagent/medicine/herbal/compound/mending
+	requirements = list(
+		/obj/item/alch/herb/calendula = 1,
+		/obj/item/alch/herb/matricaria = 1
+	)
+	finished_smell = /datum/pollutant/food/flower
 
 // Complex Multi-Herb Recipes
 

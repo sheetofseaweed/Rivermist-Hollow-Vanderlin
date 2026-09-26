@@ -37,3 +37,25 @@
 	)
 	output_amount = 1
 	finished_smell = /datum/pollutant/food/mint
+
+// Lavender Oil (herbal preparation enhancer)
+/datum/container_craft/cooking/herbal_oil/lavender_oil
+	name = "Crude Lavender Infusion"
+	created_reagent = /datum/reagent/herbal_infusion/lavender
+	water_conversion = 1
+	requirements = list(
+		/obj/item/alch/herb/lavender = 3
+	)
+	output_amount = 1
+	finished_smell = /datum/pollutant/fragrance/lavender
+
+// Salvia Oil (herbal preparation enhancer)
+/datum/container_craft/cooking/herbal_oil/salvia_oil
+	name = "Crude Salvia Infusion"
+	created_reagent = /datum/reagent/herbal_infusion/salvia
+	water_conversion = 1
+	requirements = list(
+		/obj/item/alch/herb/salvia = 3
+	)
+	output_amount = 1
+	finished_smell = /datum/pollutant/food/herb

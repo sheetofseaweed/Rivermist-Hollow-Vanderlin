@@ -54,9 +54,7 @@
 
 		for(var/j = 1 to output_amount)
 			// Create quality data for the new reagent
-			var/list/quality_data = list(
-				"quality" = calculated_quality,
-			)
+			var/list/quality_data = reagent_data(calculated_quality, removing_items)
 
 			// Add the reagent with quality data
 			crafter.reagents.add_reagent(created_reagent, reagent_amount * water_conversion, quality_data)
@@ -68,6 +66,10 @@
 		playsound(pot_turf, "bubbles", 30, TRUE)
 	else
 		..()
+
+/// Build preparation data before adding the product, so merging sees the new batch's properties.
+/datum/container_craft/cooking/proc/reagent_data(calculated_quality, list/removing_items)
+	return list("quality" = calculated_quality)
 
 /**
  * Calculates the quality of the reagent to be created based on ingredients and cooking skill
@@ -248,4 +250,7 @@
 	playsound(pot_turf, "bubbles", 30, TRUE)
 
 /datum/container_craft/cooking/alchemical_refinement/extra_html()
-	return "[UNIT_FORM_STRING(created_volume)] of [initial(created_reagent.name)]<br>"
+	. = "[UNIT_FORM_STRING(created_volume)] of [initial(created_reagent.name)]<br>"
+	. += "Heat the pot on a lit fire to at least [required_chem_temp - T0C]&deg;C."
+	if(reagent_requirements[/datum/reagent/poison/herbal/weak_atropa])
+		. += " Prepare Crude Atropa Extract in a mortar first; Atropa Anodyne cannot replace it."

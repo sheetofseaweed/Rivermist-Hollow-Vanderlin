@@ -217,7 +217,7 @@
 	name = "artemisia"
 	icon_state = "artemisia"
 
-/obj/item/alch/herb/lavender // Not obtainable currently, will correct later
+/obj/item/alch/herb/lavender
 	name = "lavender"
 	icon_state = "lavender"
 

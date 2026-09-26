@@ -117,6 +117,12 @@
 	produce_type = /obj/item/alch/herb/salvia
 	seed_identity = "salvia seeds"
 
+/datum/plant_def/alchemical/lavender
+	name = "lavender"
+	icon_state = "salvia" // No lavender crop sprite exists; salvia is the closest purple herb.
+	produce_type = /obj/item/alch/herb/lavender
+	seed_identity = "lavender seeds"
+
 /datum/plant_def/alchemical/hypericum
 	name = "hypericum"
 	icon_state = "hypericum"

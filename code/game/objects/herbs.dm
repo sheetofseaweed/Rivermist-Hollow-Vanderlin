@@ -72,7 +72,8 @@
 	/obj/structure/flora/grass/herb/urtica,/obj/structure/flora/grass/herb/salvia,
 	/obj/structure/flora/grass/herb/hypericum,/obj/structure/flora/grass/herb/benedictus,
 	/obj/structure/flora/grass/herb/valeriana,/obj/structure/flora/grass/herb/artemisia,
-	/obj/structure/wild_plant/nospread/poppy,/obj/structure/flora/grass/herb/euphorbia))
+	/obj/structure/wild_plant/nospread/poppy,/obj/structure/flora/grass/herb/euphorbia,
+	/obj/structure/flora/grass/herb/lavender))
 
 	var/obj/structure/boi = new type
 	boi.forceMove(get_turf(src))
@@ -179,3 +180,11 @@
 	icon_state = "euphorbia2"
 
 	herbtype = /obj/item/alch/herb/euphorbia
+
+/obj/structure/flora/grass/herb/lavender
+	name = "lavender"
+	// No lavender foliage sprite exists; salvia's purple bush is the closest match.
+	icon_state = "salvia2"
+	color = "#c8b4ff"
+
+	herbtype = /obj/item/alch/herb/lavender

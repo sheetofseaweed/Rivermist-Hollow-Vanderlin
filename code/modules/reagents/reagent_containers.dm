@@ -386,7 +386,8 @@
 		return FALSE
 	return defeat_try_potion_rescue(target, feeder, transferred * medicine_fraction)
 
-/obj/item/reagent_containers/proc/try_pour(mob/living/user, atom/to_pour)
+/// Pours up to max_transfers measures of amount_per_transfer_from_this into to_pour.
+/obj/item/reagent_containers/proc/try_pour(mob/living/user, atom/to_pour, max_transfers = 22)
 	if(!is_open_container() || !spillable)
 		return FALSE
 
@@ -414,7 +415,7 @@
 	if(!stealthy && poursounds)
 		playsound(user, pick(poursounds), 100, TRUE)
 
-	for(var/i in 1 to 22)
+	for(var/i in 1 to max_transfers)
 		if(!do_after(user, 8 DECISECONDS, to_pour, hidden = stealthy))
 			break
 		if(!reagents.total_volume)
