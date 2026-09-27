@@ -532,13 +532,13 @@
 			var/obj/item/organ/genitals/filling_organ/testicles/testes = mob.getorganslot(ORGAN_SLOT_TESTICLES)
 			if(testes)
 				if(testes.reagents)
-					var/cum_to_take = min(3, 10 * testes.organ_size)
+					var/cum_to_take = min(3, 10 * testes.organ_size) * testes.get_climax_multiplier()
 					deposit_cum_on_turf(turf, testes.reagents, cum_to_take)
 		// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 		if(mob.getorganslot(ORGAN_SLOT_VAGINA))
 			var/obj/item/organ/genitals/filling_organ/vagina/vag = mob.getorganslot(ORGAN_SLOT_VAGINA)
 			if(vag?.reagents)
-				vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+				vag.produce_climax_fluid()
 		after_ejaculation(FALSE, mob, null, action, action_initiator, action_target, action_performer)
 	else
 		var/return_type = action.handle_climax_message(mob, target, must_flip)
@@ -548,13 +548,13 @@
 				var/obj/item/organ/genitals/filling_organ/testicles/testes = mob.getorganslot(ORGAN_SLOT_TESTICLES)
 				if(testes)
 					if(testes.reagents)
-						var/cum_to_take = min(3, 10 * testes.organ_size)
+						var/cum_to_take = min(3, 10 * testes.organ_size) * testes.get_climax_multiplier()
 						deposit_cum_on_turf(turf, testes.reagents, cum_to_take)
 			// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 			if(mob.getorganslot(ORGAN_SLOT_VAGINA))
 				var/obj/item/organ/genitals/filling_organ/vagina/vag = mob.getorganslot(ORGAN_SLOT_VAGINA)
 				if(vag?.reagents)
-					vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+					vag.produce_climax_fluid()
 			after_ejaculation(FALSE, mob, target, action, action_initiator, action_target, action_performer)
 		else
 			handle_climax(action, return_type, mob, target, giving, action_initiator, action_target, action_performer)
@@ -598,7 +598,7 @@
 			var/turf/turf = get_turf(target)
 			if(testes)
 				if(testes.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/2), 1, 10 * testes.organ_size)
+					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/2), 1, 10 * testes.organ_size) * testes.get_climax_multiplier()
 					var/cum_transferred = route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
 					if(cum_transferred > 0)
 						climax_fluid_transferred = TRUE
@@ -606,7 +606,7 @@
 						target.apply_status_effect(/datum/status_effect/facial)
 			if(vag)
 				if(vag.reagents)
-					var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
+					var/femcum_to_take = min(8, vag.reagents.total_volume*0.3) * vag.get_climax_multiplier()
 					if(route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 			if(target && climax_fluid_transferred && (!action || !action.knot_on_finish))
@@ -625,11 +625,11 @@
 						if(ORGAN_SLOT_ANUS)
 							cameloc = target.getorganslot(ORGAN_SLOT_ANUS)
 				if(cameloc && cameloc.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, min(testes.reagents.total_volume, cameloc.reagents.maximum_volume - cameloc.reagents.total_volume))
+					var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4) * testes.get_climax_multiplier(), 1, min(testes.reagents.total_volume, cameloc.reagents.maximum_volume - cameloc.reagents.total_volume))
 					if(route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, cameloc, INGEST, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 				else if(target)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, testes.reagents.total_volume)
+					var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4) * testes.get_climax_multiplier(), 1, testes.reagents.total_volume)
 					if(route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, target, INGEST, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 			if(target && climax_fluid_transferred)
@@ -642,12 +642,12 @@
 			if(target && action)
 				if(user.getorganslot(ORGAN_SLOT_PENIS) && action.check_sex_lock(user, ORGAN_SLOT_PENIS))
 					if(testes && testes.reagents)
-						var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, min(testes.reagents.total_volume, target.reagents.maximum_volume - target.reagents.total_volume))
+						var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4) * testes.get_climax_multiplier(), 1, min(testes.reagents.total_volume, target.reagents.maximum_volume - target.reagents.total_volume))
 						if(route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, target, INGEST, action_initiator, action_target, action_performer) > 0)
 							climax_fluid_transferred = TRUE
 				if(user.getorganslot(ORGAN_SLOT_VAGINA) && action.check_sex_lock(user, ORGAN_SLOT_VAGINA))
 					if(vag && vag.reagents)
-						var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
+						var/femcum_to_take = min(8, vag.reagents.total_volume*0.3) * vag.get_climax_multiplier()
 						if(route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, target, INGEST, action_initiator, action_target, action_performer) > 0)
 							climax_fluid_transferred = TRUE
 			if(target && climax_fluid_transferred)
@@ -663,11 +663,11 @@
 			var/turf/turf = get_turf(target)
 			if(testes)
 				if(testes.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5), 1, testes.reagents.total_volume)
+					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5) * testes.get_climax_multiplier(), 1, testes.reagents.total_volume)
 					route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
 			// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 			if(vag?.reagents)
-				vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+				vag.produce_climax_fluid()
 
 		if(ORGASM_LOCATION_CONTAINER)
 			var/obj/item/container = action?.get_climax_container(user, target, action_initiator, action_target, action_performer)
@@ -675,22 +675,22 @@
 				// container is gone (dropped/swapped/full-removed); don't silently eat the climax, spill it like SELF.
 				var/turf/turf = get_turf(user)
 				if(testes?.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5), 1, testes.reagents.total_volume)
+					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5) * testes.get_climax_multiplier(), 1, testes.reagents.total_volume)
 					route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
 				// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 				if(vag?.reagents)
-					vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+					vag.produce_climax_fluid()
 			else
 				log_combat(user, user, "Ejaculated into [container]")
 				playsound(container, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
 				var/free_space = container.reagents.maximum_volume - container.reagents.total_volume
 				if(testes?.reagents && free_space > 0)
-					var/cum_to_take = min(max(testes.reagents.maximum_volume / 3, 1), testes.reagents.total_volume, free_space)
+					var/cum_to_take = min(max(testes.reagents.maximum_volume / 3, 1) * testes.get_climax_multiplier(), testes.reagents.total_volume, free_space)
 					if(cum_to_take > 0 && route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, container, INJECT, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 						free_space = container.reagents.maximum_volume - container.reagents.total_volume
 				if(vag?.reagents && free_space > 0)
-					var/femcum_to_take = min(8, vag.reagents.total_volume * 0.3, free_space)
+					var/femcum_to_take = min(8 * vag.get_climax_multiplier(), vag.reagents.total_volume * 0.3 * vag.get_climax_multiplier(), free_space)
 					if(femcum_to_take > 0 && route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, container, INJECT, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 				if(!climax_fluid_transferred)

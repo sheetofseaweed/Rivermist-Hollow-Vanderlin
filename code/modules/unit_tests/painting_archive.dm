@@ -46,11 +46,11 @@
 	// cell 4,4 lands on icon pixel 5,5
 	var/reloaded_pixel = reloaded.draw.GetPixel(5, 5)
 	TEST_ASSERT_NOTNULL(reloaded_pixel, "The reloaded picture is transparent where paint was laid.")
-	TEST_ASSERT_EQUAL(lowertext(reloaded_pixel), "#ff0000", "The reloaded picture lost its paint.")
+	TEST_ASSERT_EQUAL(LOWER_TEXT(reloaded_pixel), "#ff0000", "The reloaded picture lost its paint.")
 	TEST_ASSERT(reloaded.has_paint(), "A reloaded painting reads as blank.")
 	var/read_back = reloaded.modified_areas["4,4"]
 	TEST_ASSERT_NOTNULL(read_back, "Painted cells were not read back from the loaded picture.")
-	TEST_ASSERT_EQUAL(lowertext(read_back), "#ff0000", "A read back cell has the wrong colour.")
+	TEST_ASSERT_EQUAL(LOWER_TEXT(read_back), "#ff0000", "A read back cell has the wrong colour.")
 	TEST_ASSERT_NULL(reloaded.modified_areas["20,20"], "Bare canvas was read back as paint.")
 
 	TEST_ASSERT(!SSpaintings.del_player_painting("art_nosuchpainting_1_1"), "Deleting an unknown id reported success.")
@@ -138,7 +138,7 @@
 	canvas.flatten()
 	var/painted_pixel = canvas.draw.GetPixel(11, 11)
 	TEST_ASSERT_NOTNULL(painted_pixel, "Flattening left the painted cell transparent.")
-	TEST_ASSERT_EQUAL(lowertext(painted_pixel), "#ff0000", "Flattening did not bake the paint.")
+	TEST_ASSERT_EQUAL(LOWER_TEXT(painted_pixel), "#ff0000", "Flattening did not bake the paint.")
 
 	surface.draw_pixel(10, 10, null, TRUE, 1, FALSE, painter)
 	TEST_ASSERT_EQUAL(canvas.draw.GetPixel(11, 11), bare_pixel, "Erasing left a hole instead of bare canvas.")

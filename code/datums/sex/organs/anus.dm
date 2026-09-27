@@ -8,6 +8,7 @@
 	slot = ORGAN_SLOT_ANUS
 	accessory_type = /datum/sprite_accessory/none
 	max_reagents = 20 //less size than vagene in turn for more effective absorbtion
+	reagent_to_make = null
 	absorbing = TRUE
 	absorbmult = 1.5 //more effective absorb than others i guess.
 	allows_oviposition_pregnancy = TRUE
@@ -25,8 +26,6 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	if(!refilling)
-		reagents.clear_reagents()
 	add_bodystorage(M, null, /datum/component/body_storage/anus)
 
 /obj/item/organ/genitals/filling_organ/anus/Remove(mob/living/M, special, drop_if_replaced)

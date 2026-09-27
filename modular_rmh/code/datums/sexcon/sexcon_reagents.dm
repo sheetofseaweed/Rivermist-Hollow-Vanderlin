@@ -232,20 +232,14 @@
 	. = ..()
 	if(!ishuman(C))
 		return
-	var/obj/item/organ/genitals/filling_organ/breasts/breasts = C.getorganslot(ORGAN_SLOT_BREASTS)
-	if(!breasts)
-		return
 	if(C.get_erp_pref(/datum/erp_preference/boolean/allow_forced_lactation))
-		breasts.add_temporary_lactation_source(src)
+		C.add_fluid_modifier(/datum/fluid_modifier/induced_lactation, FLUID_SOURCE_LACTATION_INDUCER)
 	else
-		breasts.remove_temporary_lactation_source(src)
+		C.remove_fluid_modifier(/datum/fluid_modifier/induced_lactation, FLUID_SOURCE_LACTATION_INDUCER)
 
-/datum/reagent/consumable/lactation_inducer/on_mob_end_metabolize(mob/living/carbon/human/C)
+/datum/reagent/consumable/lactation_inducer/on_mob_end_metabolize(mob/living/C)
 	. = ..()
-	if(!ishuman(C))
-		return
-	var/obj/item/organ/genitals/filling_organ/breasts/breasts = C.getorganslot(ORGAN_SLOT_BREASTS)
-	breasts?.remove_temporary_lactation_source(src)
+	C.remove_fluid_modifier(/datum/fluid_modifier/induced_lactation, FLUID_SOURCE_LACTATION_INDUCER)
 
 /datum/supply_pack/narcotics/aphrodisiac
 	name = "Aphrodisiac"

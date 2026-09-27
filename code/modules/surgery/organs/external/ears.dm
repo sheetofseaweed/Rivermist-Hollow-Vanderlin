@@ -60,11 +60,19 @@
 	if(temporary_deafness)
 		adjust_temporary_deafness(-delta_time SECONDS)
 
+/obj/item/organ/ears/consider_processing(in_bleedout = FALSE)
+	if(..())
+		return TRUE
+	// Deafness counts down in on_life, so healthy ears must keep ticking until it ends.
+	needs_processing = temporary_deafness > 0
+	return needs_processing
+
 /// Adjusts temporary deafness without interfering with deafness from other sources.
 /obj/item/organ/ears/proc/adjust_temporary_deafness(amount)
 	if(amount > 0 && owner && (owner.status_flags & GODMODE))
 		return
 	temporary_deafness = max(temporary_deafness + (amount * damage_multiplier), 0)
+	consider_processing()
 	if(!owner)
 		return
 	if(temporary_deafness && !HAS_TRAIT_FROM(owner, TRAIT_DEAF, EAR_DAMAGE))

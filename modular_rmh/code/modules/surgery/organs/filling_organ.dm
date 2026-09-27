@@ -6,6 +6,18 @@
 #define DRIP_PRESSURE_THRESHOLD 0.6
 /// Drip rate multiplier reached (and capped at) when the organ is full or overfull.
 #define DRIP_PRESSURE_MAX_MULT 6
+/// Below this nutrition a hungry owner reabsorbs stored fluid instead of producing it.
+#define FLUID_HUNGER_NUTRITION (NUTRITION_LEVEL_HUNGRY - 25)
+/// Production needs more nutrition than this.
+#define FLUID_PRODUCTION_NUTRITION (NUTRITION_LEVEL_FED + 25)
+/// Production speed-up when well fed or free of hunger.
+#define FLUID_WELL_FED_MULTIPLIER 2
+/// Units of stored fluid spent per point of nutrition regained when hungry.
+#define FLUID_REABSORB_COST 4
+/// Capacity shifts smaller than this do not alert self-aware owners.
+#define FLUID_CAPACITY_ALERT_MIN_CHANGE 5
+/// Leak speed-up when a container under the owner collects the flow.
+#define FLUID_COLLECTOR_LEAK_MULTIPLIER 50
 
 //container organ that can refill self through nutrients etc.
 /obj/item/organ/genitals/filling_organ
@@ -15,28 +27,43 @@
 	healing_factor = STANDARD_ORGAN_HEALING*3
 	decay_factor = STANDARD_ORGAN_DECAY
 
-	//self generating liquid stuff, dont use with absorbing stuff
-	var/storage_per_size = 100 //added per organ size
-	var/datum/reagent/reagent_to_make = /datum/reagent/consumable/nutriment //naturally generated reagent
-	var/refilling = FALSE //slowly refills when not hungry
-	var/reagent_generate_rate = 3 //with refilling
-	var/hungerhelp = FALSE //if refilling, absorbs reagent_to_make as nutrients if hungry. Conversion is to nutrients direct even if you brew poison in there.
-	var/uses_nutrient = TRUE //incase someone for some reason wanna make an OP paradox i guess.
-	var/organ_sizeable = FALSE //if organ can be resized in prefs etc, SET THIS RIGHT, IT'S IMPORTANT.
-	var/max_reagents = 30 //use if organ not sizeable, it auto calculates with sizeable organs and uses it as a base.
+	/// Capacity added per organ size step when organ_sizeable.
+	var/storage_per_size = 100
+	/// Fixed capacity for organs that cannot be resized.
+	var/max_reagents = 30
+	/// TRUE if capacity scales with organ_size set in prefs.
+	var/organ_sizeable = FALSE
+	/// Reagent this organ produces; null for organs that only hold fluid.
+	var/datum/reagent/reagent_to_make = /datum/reagent/consumable/nutriment
+	/// Base setting for production; fluid modifiers can force or block it. Read is_producing().
+	var/produces_fluid = FALSE
+	/// Units produced per second while producing.
+	var/production_rate = 1.5
+	/// Nutrition spent per unit produced.
+	var/nutrition_per_unit = 1
+	/// A hungry owner reabsorbs this organ's own fluid as nutrition.
+	var/hungerhelp = FALSE
+	/// Fill to capacity when inserted at spawn, if producing.
 	var/startsfilled = FALSE
 
-	//absorbing etc content liquid stuff, non self generated.
-	var/absorbing = FALSE //absorbs liquids within slowly. Wont absorb reagent_to_make type, refilling and hungerhelp are irrelevant to this.
-	var/absorbrate = 1 //refilling and hungerhelp are irrelevant to this, each life tick. NO LESS THAN 1 DIGESTS RIGHT.
-	var/absorbmult = 1 //free gains
+	/// Moves foreign reagents into the owner's blood.
+	var/absorbing = FALSE
+	/// Units absorbed per flow interval.
+	var/absorbrate = 1
+	/// Multiplier on absorbed units reaching the blood.
+	var/absorbmult = 1
+	/// Units leaked per flow interval before pressure and modifiers.
 	var/driprate = 0.2
-	var/spiller = FALSE //toggles if it will spill its stored_items when not plugged.
-	var/blocker = ITEM_SLOT_SHIRT //pick an item slot
+	/// Leaks whenever it holds fluid; otherwise leaks only when overfull.
+	var/spiller = FALSE
+	/// Worn slot that covers the opening and stops leaks.
+	var/blocker = ITEM_SLOT_SHIRT
+	/// If set, underwear replaces the blocker slot item as the cover.
 	var/additional_blocker
-	var/max_femcum = 0
-	var/processspeed = 5 SECONDS//will apply the said seconds cooldown each time before any spill or absorb happens.
-	var/bloatable = FALSE //will it give bloat debuffs when filled, not good to use with refilling organs.
+	/// Interval between leak, absorb and stored-container exchanges.
+	var/processspeed = 5 SECONDS
+	/// Applies bloat debuffs when full.
+	var/bloatable = FALSE
 
 	//pregnancy vars
 	var/fertility = FALSE //can it be impregnated
@@ -132,17 +159,30 @@
 	oviposition_lay_verb = "coughs up"
 	oviposition_lay_action = "cough up"
 
-/obj/item/organ/genitals/filling_organ/Insert(mob/living/M, special, drop_if_replaced, new_zone = null) //update size cap n shit on insert
+/obj/item/organ/genitals/filling_organ/Insert(mob/living/M, special, drop_if_replaced, new_zone = null)
 	. = ..()
 	if(!.)
 		return FALSE
-	if(organ_sizeable)
-		max_reagents = storage_per_size + (storage_per_size * organ_size)
-	create_reagents(max_reagents)
-	if(!refilling && M.mind) //mind check so goblins etc have milk on spawn.
-		startsfilled = FALSE
-	if(special && startsfilled) // won't fill the organ if you insert this organ via surgery
-		reagents.add_reagent(reagent_to_make, reagents.maximum_volume)
+	// Stored fluid survives removal and reinsertion.
+	if(!reagents)
+		create_reagents(get_base_capacity())
+	reagents.maximum_volume = get_reagent_capacity()
+	if(pregnant)
+		start_pregnancy_lactation()
+	// Surgery passes special = FALSE, so only spawned bodies start full.
+	if(special && startsfilled && is_producing())
+		add_produced_fluid(reagents.maximum_volume)
+
+/obj/item/organ/genitals/filling_organ/Remove(mob/living/M, special, drop_if_replaced)
+	if(pregnant)
+		M?.remove_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
+	return ..()
+
+/obj/item/organ/genitals/filling_organ/consider_processing(in_bleedout = FALSE)
+	..()
+	// Fluid upkeep runs every life tick, not only while the organ is hurt.
+	needs_processing = TRUE
+	return TRUE
 
 /obj/item/organ/genitals/filling_organ/on_reagent_change(changetype)
 	. = ..()
@@ -155,21 +195,21 @@
 		return
 	spill_excess_reagents()
 
-/obj/item/organ/genitals/filling_organ/proc/get_reagent_capacity()
-	var/captarget
+/// Capacity from organ size alone, before modifiers, pregnancy and stored items.
+/obj/item/organ/genitals/filling_organ/proc/get_base_capacity()
 	if(organ_sizeable)
-		captarget = storage_per_size + (storage_per_size * organ_size)
-	else
-		captarget = max_reagents
-	if(fertility && pregnant)
-		captarget *= 0.5
-	else if(has_oviposition_pregnancy())
-		captarget *= 0.5
-	if(length(contents))
-		for(var/obj/item/thing as anything in contents)
-			if(thing.type != /obj/item/dildo/plug) //plugs wont take space as they are especially for this.
-				captarget -= thing.w_class * 10
-	return max(0, captarget)
+		return storage_per_size + (storage_per_size * organ_size)
+	return max_reagents
+
+/// The one source of truth for how much fluid this organ can hold right now.
+/obj/item/organ/genitals/filling_organ/proc/get_reagent_capacity()
+	var/capacity = get_base_capacity() * get_capacity_multiplier()
+	if((fertility && pregnant) || has_oviposition_pregnancy())
+		capacity *= 0.5
+	for(var/obj/item/thing in contents)
+		if(thing.type != /obj/item/dildo/plug) //plugs wont take space as they are especially for this.
+			capacity -= thing.w_class * 10
+	return max(0, capacity)
 
 /obj/item/organ/genitals/filling_organ/proc/spill_reagents(amount)
 	if(!reagents || amount <= 0)
@@ -217,98 +257,144 @@
 		target.add_liquid_from_reagents(drop.reagents, amount = drop.reagents.total_volume)
 		qdel(drop)
 
-/obj/item/organ/genitals/filling_organ/on_life()
-	var/mob/living/carbon/human/H = owner
+/obj/item/organ/genitals/filling_organ/on_life(delta_time, times_fired, in_bleedout, virus_immunity, antibiotics, immunity_weakness, passed_temp)
+	. = ..()
+	if(!owner || !reagents)
+		return
+	process_fluids(delta_time)
 
-	..()
-
-	//get arousal data
-	var/list/arousal_data = list()
-	SEND_SIGNAL(H, COMSIG_SEX_GET_AROUSAL, arousal_data)
-
-	update_reagent_capacity(H)
-	handle_bloat()
+/// One fluid tick: capacity and production every tick, leaking and absorbing on the slower flow interval.
+/obj/item/organ/genitals/filling_organ/proc/process_fluids(seconds)
+	update_reagent_capacity()
 	handle_overflow()
-	regenerate_reagents(H, arousal_data)
-
+	produce_fluid(seconds)
+	handle_bloat()
 	if(!COOLDOWN_FINISHED(src, liquidcd))
 		return
-	if(reagents.total_volume && absorbing) //slowly inject to your blood if they have reagents. Will not work if refilling because i cant properly seperate the reagents for which to keep which to dump.
-		reagents.trans_to(owner, absorbrate, absorbmult, TRUE, FALSE)
-	if(!length(contents) && !HAS_TRAIT(src, TRAIT_PASSIVE_LEAK_BLOCKED)) //if nothing is plugging the hole, stuff will drip out.
-		var/tempdriprate = driprate
-		//the fuller the organ, the faster it leaks: ramps from base rate at DRIP_PRESSURE_THRESHOLD up to DRIP_PRESSURE_MAX_MULT when full.
-		var/fullness = reagents.maximum_volume ? (reagents.total_volume / reagents.maximum_volume) : 0
-		var/pressure = clamp((fullness - DRIP_PRESSURE_THRESHOLD) / (1 - DRIP_PRESSURE_THRESHOLD), 0, 1)
-		tempdriprate *= 1 + (pressure * (DRIP_PRESSURE_MAX_MULT - 1))
-		if((reagents.total_volume && spiller) || (reagents.total_volume > reagents.maximum_volume)) //spiller or above it's capacity to leak.
-			var/obj/item/clothing/blockingitem = H.mob_slot_wearing(blocker)
-			if(!isnull(additional_blocker))
-				if(H.underwear)
-					blockingitem = H.underwear
-			if(!(blockingitem && !blockingitem.genital_access)) //we drippin
-				if(prob(5)) //with selfawaregeni quirk you got some chance to see what type of liquid is dripping from you.
-					if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
-						if(!MOBTIMER_FINISHED(H, "organ_drip", rand(20,120)))
-							return
-
-						MOBTIMER_SET(H, "organ_drip")
-						to_chat(H, pick(span_info("A little bit of [english_list(reagents.reagent_list)] drips from my [pick(altnames)]..."),
-							span_info("Some liquid drips from my [pick(altnames)]."),
-							span_info("My [pick(altnames)] spills some liquid."),
-							span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)].")))
-				var/obj/item/reagent_containers/the_bottle
-				if((owner.mobility_flags & MOBILITY_STAND))
-					for(var/obj/item/reagent_containers/bottle in owner.loc) //having a bottle under us speed up leak greatly and transfer the leak there instead.
-						if(bottle.reagents.total_volume >= bottle.reagents.maximum_volume)
-							continue
-						if(bottle.reagents.flags & REFILLABLE)
-							the_bottle = bottle
-							break
-				if(!the_bottle) //no bottle so just spill
-					var/turf/ownerloc = get_turf(owner)
-					if(ownerloc)
-						drip_to_turf(ownerloc, tempdriprate)
-				else
-					tempdriprate *= 50 //since default values are basically decimals.
-					reagents.trans_to(the_bottle, min(tempdriprate))
-					if(!MOBTIMER_FINISHED(H, "organ_drip", rand(20,120)))
-						return
-
-					MOBTIMER_SET(H, "organ_drip")
-					to_chat(owner, span_info("I collect the fluids dripping from me in \the [the_bottle]."))
-	else //we got something in contents
-		for(var/obj/item/reagent_containers/contentitem in contents) //we got a bottle inside
-			if(contentitem.reagents && contentitem.spillable)
-				if(contentitem.reagents.total_volume) //stir the pot
-					contentitem.reagents.trans_to(reagents, rand(4,8))
-				if(refilling && reagents.total_volume)
-					reagents.trans_to(contentitem, rand(4,8))
-
 	COOLDOWN_START(src, liquidcd, processspeed)
+	absorb_foreign_reagents()
+	if(length(contents))
+		exchange_with_stored_containers()
+	else if(!HAS_TRAIT(src, TRAIT_PASSIVE_LEAK_BLOCKED))
+		leak_reagents()
 
-/// Recalculates and applies the reagent capacity, alerting self-aware owners when it shifts.
-/obj/item/organ/genitals/filling_organ/proc/update_reagent_capacity(mob/living/carbon/human/H)
-	if(isanimal(H))
+/// Whether the organ makes fluid now: its base setting, forced or blocked by the owner's fluid modifiers.
+/obj/item/organ/genitals/filling_organ/proc/is_producing()
+	if(!get_produced_reagent())
+		return FALSE
+	var/forced = FALSE
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		if(modifier.blocks_production)
+			return FALSE
+		if(modifier.forces_production)
+			forced = TRUE
+	return produces_fluid || forced
+
+/obj/item/organ/genitals/filling_organ/proc/get_production_multiplier()
+	. = 1
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		. *= modifier.rate_multiplier
+
+/obj/item/organ/genitals/filling_organ/proc/get_capacity_multiplier()
+	. = 1
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		. *= modifier.capacity_multiplier
+
+/obj/item/organ/genitals/filling_organ/proc/get_nutrition_cost_multiplier()
+	. = 1
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		. *= modifier.nutrition_cost_multiplier
+
+/obj/item/organ/genitals/filling_organ/proc/get_leak_multiplier()
+	. = 1
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		. *= modifier.leak_multiplier
+
+/obj/item/organ/genitals/filling_organ/proc/get_climax_multiplier()
+	. = 1
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		. *= modifier.climax_multiplier
+
+/// Reagent the organ makes right now: an active swap, else its natural fluid.
+/obj/item/organ/genitals/filling_organ/proc/get_produced_reagent()
+	return LAZYACCESS(owner?.fluid_reagent_overrides, slot) || reagent_to_make
+
+/// Reagent types that count as the organ's own: its natural fluid and any active swap.
+/obj/item/organ/genitals/filling_organ/proc/get_own_fluid_types()
+	var/datum/reagent/produced = get_produced_reagent()
+	if(!produced)
+		return null
+	if(!reagent_to_make || produced == reagent_to_make)
+		return list(produced)
+	return list(reagent_to_make, produced)
+
+/obj/item/organ/genitals/filling_organ/proc/is_own_fluid(datum/reagent/reagent_type)
+	var/list/own_types = get_own_fluid_types()
+	return own_types && (reagent_type in own_types)
+
+/obj/item/organ/genitals/filling_organ/proc/get_own_fluid_amount()
+	. = 0
+	for(var/reagent_type in get_own_fluid_types())
+		. += reagents.get_reagent_amount(reagent_type)
+
+/// Nutrition per unit made; a swapped fluid never costs less than it feeds, so drinking it cannot profit.
+/obj/item/organ/genitals/filling_organ/proc/get_nutrition_cost_per_unit()
+	var/cost = nutrition_per_unit
+	var/datum/reagent/produced = get_produced_reagent()
+	if(produced != reagent_to_make)
+		var/datum/reagent/consumable/food = GLOB.chemical_reagents_list[produced]
+		if(istype(food))
+			cost = max(cost, food.nutriment_factor * FLUID_SWAP_NUTRITION_MARGIN)
+	return cost * get_nutrition_cost_multiplier()
+
+/obj/item/organ/genitals/filling_organ/proc/pay_for_fluid(amount)
+	if(amount <= 0 || HAS_TRAIT(owner, TRAIT_NOHUNGER))
 		return
-	var/captarget = get_reagent_capacity()
-	if(captarget == reagents.maximum_volume)
+	owner.adjust_nutrition(-amount * get_nutrition_cost_per_unit())
+
+/// Adds own fluid up to the free space and returns the units actually added.
+/obj/item/organ/genitals/filling_organ/proc/add_produced_fluid(amount)
+	var/datum/reagent/produced = get_produced_reagent()
+	if(!produced || !reagents)
+		return 0
+	amount = min(amount, reagents.maximum_volume - reagents.total_volume)
+	if(amount <= 0)
+		return 0
+	reagents.add_reagent(produced, amount)
+	return amount
+
+/// Switches the produced reagent and converts the stored own fluid, keeping the holder and capacity.
+/obj/item/organ/genitals/filling_organ/proc/set_reagent_to_make(datum/reagent/new_reagent)
+	if(!new_reagent || new_reagent == reagent_to_make)
 		return
-	//so that vaginas don't spam messages
-	if(reagents.has_reagent(/datum/reagent/consumable/femcum) && (reagents.get_reagent_amount(/datum/reagent/consumable/femcum) > captarget * 0.8))
+	var/datum/reagent/old_reagent = reagent_to_make
+	reagent_to_make = new_reagent
+	var/own_fluid = reagents?.get_reagent_amount(old_reagent)
+	if(own_fluid > 0)
+		reagents.remove_reagent(old_reagent, own_fluid)
+		reagents.add_reagent(new_reagent, own_fluid)
+
+/// Applies the current capacity, alerting self-aware owners about large shifts.
+/obj/item/organ/genitals/filling_organ/proc/update_reagent_capacity()
+	var/capacity = get_reagent_capacity()
+	var/change = abs(capacity - reagents.maximum_volume)
+	if(!change)
 		return
-	reagents.maximum_volume = captarget
-	if(H.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && world.time > last_size_alert + 12 SECONDS)
+	reagents.maximum_volume = capacity
+	if(change < FLUID_CAPACITY_ALERT_MIN_CHANGE || world.time <= last_size_alert + 12 SECONDS)
+		return
+	if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 		last_size_alert = world.time
-		to_chat(H, span_blue("My [pick(altnames)] hold a different amount now."))
+		to_chat(owner, span_blue("My [pick(altnames)] hold a different amount now."))
 
-/// Applies bloat debuffs when bloatable and sufficiently full.
+/// Applies bloat debuffs when bloatable and full of foreign fluid; own fluid never bloats.
 /obj/item/organ/genitals/filling_organ/proc/handle_bloat()
 	if(!bloatable) //we wont make removals because other organs may be conflicting and shit.
 		return
-	if(reagents.total_volume > (reagents.maximum_volume / 3) && !owner.has_status_effect(/datum/status_effect/debuff/bloattwo)) //more than 1/3 full, light bloat.
+	var/foreign_volume = reagents.total_volume - get_own_fluid_amount()
+	if(foreign_volume > (reagents.maximum_volume / 3) && !owner.has_status_effect(/datum/status_effect/debuff/bloattwo)) //more than 1/3 full, light bloat.
 		owner.apply_status_effect(/datum/status_effect/debuff/bloatone)
-	if(reagents.total_volume > (reagents.maximum_volume / 2)) //more than half full, heavy bloat.
+	if(foreign_volume > (reagents.maximum_volume / 2)) //more than half full, heavy bloat.
 		owner.apply_status_effect(/datum/status_effect/debuff/bloattwo)
 
 /// Spills reagents that no longer fit once the capacity has dropped below the stored volume.
@@ -322,49 +408,103 @@
 	var/spill_amount = min(reagents.total_volume, overflow_amount + 15)
 	spill_reagents(spill_amount)
 
-/// Generates or consumes the organ's reagent based on nutrition. Vagina overrides this for arousal-driven lube.
-/obj/item/organ/genitals/filling_organ/proc/regenerate_reagents(mob/living/carbon/human/H, list/arousal_data)
-	if(!HAS_TRAIT(src, TRAIT_NOHUNGER)) //if not nohunger
-		if(owner.nutrition < (NUTRITION_LEVEL_HUNGRY - 25) && hungerhelp) //consumes if hungry and uses nutrient, putting below the limit so person dont get stress message spam.
-			var/remove_amount = min(reagent_generate_rate, reagents.total_volume)
-			if(uses_nutrient) //add nutrient
-				owner.adjust_nutrition(remove_amount) //since hunger factor is so tiny compared to the nutrition levels it has to fill
-			reagents.remove_reagent(reagent_to_make, (remove_amount * 4)) //we consume our own reagents for food less efficently, allowing running out (may undo this multiplier later.)
-		else if((reagents.total_volume < reagents.maximum_volume) && refilling && owner.nutrition > (NUTRITION_LEVEL_FED + 25)) //if organ is not full.
-			var/max_restore = owner.nutrition > (NUTRITION_LEVEL_WELL_FED) ? reagent_generate_rate * 2 : reagent_generate_rate
-			var/restore_amount = min(max_restore, reagents.maximum_volume - reagents.total_volume) // amount restored if fed, capped by reagents.maximum_volume
-			if(uses_nutrient) //consume nutrient
-				owner.adjust_nutrition(-restore_amount)
-			reagents.add_reagent(reagent_to_make, restore_amount)
-	else //if nohunger, should just regenerate stuff for free no matter what, if refilling.
-		if((reagents.total_volume < reagents.maximum_volume) && refilling)
-			var/max_restore = reagent_generate_rate * 2
-			var/restore_amount = min(max_restore, reagents.maximum_volume - reagents.total_volume)
-			reagents.add_reagent(reagent_to_make, restore_amount)
-
-/// Vagina generates lube from arousal instead of nutrition, and may grow oviposition eggs.
-/obj/item/organ/genitals/filling_organ/vagina/regenerate_reagents(mob/living/carbon/human/H, list/arousal_data)
-	refilling = (arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
-	var/check_volume = 0
-	if(reagent_to_make in reagents.reagent_list)
-		check_volume = reagents.reagent_list[reagent_to_make].volume
-	else
-		check_volume = reagents.total_volume
-	if((check_volume < max_femcum) && refilling)
-		var/max_restore = reagent_generate_rate * 2
-		var/restore_amount = min(max_restore, reagents.maximum_volume - max_femcum)
-		reagents.add_reagent(reagent_to_make, restore_amount)
-	tag_femcum_donor()
-	try_generate_oviposition_egg()
-
-/// Stamp held femcum with its producer each tick, so the donor survives transfer out of the
-/// organ. All femcum self-fills land here first, so one site covers everything.
-/obj/item/organ/genitals/filling_organ/vagina/proc/tag_femcum_donor()
-	if(!owner || !reagents)
+/// Nutrition-driven production; a hungry owner reabsorbs fluid instead. Subtypes replace the drive.
+/obj/item/organ/genitals/filling_organ/proc/produce_fluid(seconds)
+	if(HAS_TRAIT(owner, TRAIT_NOHUNGER))
+		if(is_producing())
+			add_produced_fluid(production_rate * FLUID_WELL_FED_MULTIPLIER * get_production_multiplier() * seconds)
 		return
-	var/datum/reagent/consumable/femcum/nectar = reagents.get_reagent(reagent_to_make)
-	if(istype(nectar))
-		nectar.sync_femcum_parent(owner)
+	if(owner.nutrition < FLUID_HUNGER_NUTRITION)
+		if(hungerhelp)
+			reabsorb_for_nutrition(seconds)
+		return
+	if(owner.nutrition <= FLUID_PRODUCTION_NUTRITION || !is_producing())
+		return
+	var/amount = production_rate * get_production_multiplier() * seconds
+	if(owner.nutrition > NUTRITION_LEVEL_WELL_FED)
+		amount *= FLUID_WELL_FED_MULTIPLIER
+	pay_for_fluid(add_produced_fluid(amount))
+
+/// Turns this organ's own fluid back into nutrition, at a loss.
+/obj/item/organ/genitals/filling_organ/proc/reabsorb_for_nutrition(seconds)
+	var/own_fluid = reagents.get_reagent_amount(reagent_to_make)
+	var/nutrition_gain = min(production_rate * seconds, own_fluid / FLUID_REABSORB_COST)
+	if(nutrition_gain <= 0)
+		return
+	reagents.remove_reagent(reagent_to_make, nutrition_gain * FLUID_REABSORB_COST)
+	owner.adjust_nutrition(nutrition_gain)
+
+/// Moves foreign reagents into the owner's blood; the organ keeps its own fluid.
+/obj/item/organ/genitals/filling_organ/proc/absorb_foreign_reagents()
+	if(!absorbing || !reagents.total_volume)
+		return
+	reagents.trans_to(owner, absorbrate, absorbmult, TRUE, FALSE, ignored_reagents = get_own_fluid_types())
+
+/// Whether stored open containers get refilled from this organ.
+/obj/item/organ/genitals/filling_organ/proc/refills_stored_containers()
+	return is_producing()
+
+/// Stored open containers pour into the organ, and a producing organ refills them.
+/obj/item/organ/genitals/filling_organ/proc/exchange_with_stored_containers()
+	var/producing = refills_stored_containers()
+	for(var/obj/item/reagent_containers/container in contents)
+		if(!container.reagents || !container.spillable)
+			continue
+		if(container.reagents.total_volume)
+			container.reagents.trans_to(reagents, rand(4, 8))
+		if(producing && reagents.total_volume)
+			reagents.trans_to(container, rand(4, 8))
+
+/// Drips fluid out of an uncovered opening, into a container under the owner if there is one.
+/obj/item/organ/genitals/filling_organ/proc/leak_reagents()
+	if(!reagents.total_volume)
+		return
+	if(!spiller && reagents.total_volume <= reagents.maximum_volume)
+		return
+	if(is_opening_covered())
+		return
+	var/leak_amount = get_leak_amount()
+	var/obj/item/reagent_containers/collector = find_leak_collector()
+	if(collector)
+		reagents.trans_to(collector, leak_amount * FLUID_COLLECTOR_LEAK_MULTIPLIER)
+		if(MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
+			MOBTIMER_SET(owner, "organ_drip")
+			to_chat(owner, span_info("I collect the fluids dripping from me in \the [collector]."))
+		return
+	if(prob(5) && owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
+		MOBTIMER_SET(owner, "organ_drip")
+		to_chat(owner, pick(span_info("A little bit of [english_list(reagents.reagent_list)] drips from my [pick(altnames)]..."),
+			span_info("Some liquid drips from my [pick(altnames)]."),
+			span_info("My [pick(altnames)] spills some liquid."),
+			span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)].")))
+	drip_to_turf(get_turf(owner), leak_amount)
+
+/// Base drip rising with fullness, scaled by the owner's leak modifiers.
+/obj/item/organ/genitals/filling_organ/proc/get_leak_amount()
+	var/fullness = reagents.maximum_volume ? (reagents.total_volume / reagents.maximum_volume) : 0
+	var/pressure = clamp((fullness - DRIP_PRESSURE_THRESHOLD) / (1 - DRIP_PRESSURE_THRESHOLD), 0, 1)
+	return driprate * (1 + (pressure * (DRIP_PRESSURE_MAX_MULT - 1))) * get_leak_multiplier()
+
+/// TRUE if worn clothing without genital access covers the opening.
+/obj/item/organ/genitals/filling_organ/proc/is_opening_covered()
+	if(!iscarbon(owner))
+		return FALSE
+	var/mob/living/carbon/carbon_owner = owner
+	var/obj/item/clothing/cover = carbon_owner.mob_slot_wearing(blocker)
+	if(!isnull(additional_blocker) && carbon_owner.underwear)
+		cover = carbon_owner.underwear
+	return cover && !cover.genital_access
+
+/// Finds a refillable container under a standing owner to catch leaks.
+/obj/item/organ/genitals/filling_organ/proc/find_leak_collector()
+	if(!(owner.mobility_flags & MOBILITY_STAND))
+		return null
+	for(var/obj/item/reagent_containers/container in owner.loc)
+		if(!container.reagents || container.reagents.total_volume >= container.reagents.maximum_volume)
+			continue
+		if(container.reagents.flags & REFILLABLE)
+			return container
+	return null
 
 /obj/item/organ/genitals/filling_organ/proc/organ_jumped()
 	var/mob/living/carbon/human/H = owner
@@ -626,15 +766,14 @@
 		return FALSE
 	to_chat(owner, span_love("I feel a surge of warmth in my [src.name], I'm definitely pregnant!"))
 	owner.apply_status_effect(/datum/status_effect/debuff/impregnation)
-	reagents.maximum_volume *= 0.5
 	pregnant = TRUE
 	conventional_pregnancy_stage = 0
+	update_reagent_capacity()
 
-	if(owner.getorganslot(ORGAN_SLOT_BREASTS))
-		var/obj/item/organ/genitals/filling_organ/breasts/breasties = owner.getorganslot(ORGAN_SLOT_BREASTS)
-		if(!breasties.refilling)
-			breasties.refilling = TRUE
-			to_chat(owner, span_love("I feel damp warmness on my nipples, I'm definitely leaking milk..."))
+	var/obj/item/organ/genitals/filling_organ/breasts/breasties = owner.getorganslot(ORGAN_SLOT_BREASTS)
+	if(breasties && !breasties.is_producing())
+		to_chat(owner, span_love("I feel damp warmness on my nipples, I'm definitely leaking milk..."))
+	start_pregnancy_lactation()
 	conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), 3 HOURS, TIMER_STOPPABLE)
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
 	return TRUE
@@ -649,8 +788,20 @@
 
 	pregnant = FALSE
 	conventional_pregnancy_stage = 0
+	end_pregnancy_lactation()
 	to_chat(owner, span_love("I feel my [src] shrink to how it was before. Pregnancy is no more."))
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
+
+/obj/item/organ/genitals/filling_organ/proc/start_pregnancy_lactation()
+	owner?.add_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
+
+/// Milk keeps flowing for a while after the pregnancy ends.
+/obj/item/organ/genitals/filling_organ/proc/end_pregnancy_lactation()
+	if(!owner)
+		return
+	owner.remove_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
+	owner.add_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_POST_PREGNANCY)
+	addtimer(CALLBACK(owner, TYPE_PROC_REF(/mob/living, remove_fluid_modifier), /datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_POST_PREGNANCY), POST_PREGNANCY_LACTATION_TIME, TIMER_UNIQUE|TIMER_OVERRIDE)
 
 /obj/item/organ/genitals/filling_organ/proc/advance_conventional_pregnancy()
 	if(!pregnant || !owner)
@@ -791,3 +942,9 @@
 #undef LIQUID_DRIP_MAX_UNITS
 #undef DRIP_PRESSURE_THRESHOLD
 #undef DRIP_PRESSURE_MAX_MULT
+#undef FLUID_HUNGER_NUTRITION
+#undef FLUID_PRODUCTION_NUTRITION
+#undef FLUID_WELL_FED_MULTIPLIER
+#undef FLUID_REABSORB_COST
+#undef FLUID_CAPACITY_ALERT_MIN_CHANGE
+#undef FLUID_COLLECTOR_LEAK_MULTIPLIER

@@ -62,20 +62,15 @@
 
 /mob/living/proc/set_cum(cum_in) //haha come in
 	cum = cum_in
-	if(getorganslot(ORGAN_SLOT_TESTICLES))
-		var/obj/item/organ/genitals/filling_organ/testicles/testes = getorganslot(ORGAN_SLOT_TESTICLES)
-		testes.reagent_to_make = cum
-		testes.reagents.clear_reagents()
-		testes.create_reagents(testes.max_reagents/2)
+	var/obj/item/organ/genitals/filling_organ/testicles/testes = getorganslot(ORGAN_SLOT_TESTICLES)
+	if(testes)
+		testes.set_reagent_to_make(cum)
 		testes.sync_cum_source_data()
 
 /mob/living/proc/set_girlcum(femcum_in)
 	femcum = femcum_in
-	if(getorganslot(ORGAN_SLOT_VAGINA))
-		var/obj/item/organ/genitals/filling_organ/vagina/vag = getorganslot(ORGAN_SLOT_VAGINA)
-		vag.reagent_to_make = femcum
-		vag.reagents.clear_reagents()
-		//vag.create_reagents(vag.max_reagents/2)
+	var/obj/item/organ/genitals/filling_organ/vagina/vag = getorganslot(ORGAN_SLOT_VAGINA)
+	vag?.set_reagent_to_make(femcum)
 
 /datum/reagent/consumable/cum/elf
 	color = "#c6c6c6"

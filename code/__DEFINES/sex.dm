@@ -351,6 +351,19 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 /// Units of fluid a female climax adds into the vagina (instead of spawning a puddle); the organ's drip system leaks it out.
 #define FEMCUM_ORGASM_VOLUME 10
 
+// Fluid modifier sources. Sources are strings so they never hold a reference.
+#define FLUID_SOURCE_PREGNANCY "pregnancy"
+#define FLUID_SOURCE_POST_PREGNANCY "post_pregnancy"
+#define FLUID_SOURCE_LACTATION_INDUCER "lactation_inducer"
+/// How long milk keeps flowing after a conventional pregnancy ends.
+#define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
+/// Units of a fluid potion in the blood needed before it takes effect.
+#define FLUID_POTION_DOSE 4
+/// Least volume in stomach and blood that a swap potion accepts as its paired reagent.
+#define FLUID_SWAP_MIN_PAIR_VOLUME 5
+/// A swapped fluid costs this many times the nutrition it gives back, so drinking it never profits.
+#define FLUID_SWAP_NUTRITION_MARGIN 1.5
+
 /proc/build_sex_actions()
 	. = list()
 	for(var/datum/path as anything in typesof(/datum/sex_action))

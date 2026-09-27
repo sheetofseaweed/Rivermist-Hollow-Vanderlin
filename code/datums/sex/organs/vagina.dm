@@ -6,9 +6,9 @@
 	slot = ORGAN_SLOT_VAGINA
 	//var/fertility = TRUE
 	reagent_to_make = /datum/reagent/consumable/femcum
-	refilling = FALSE
-	reagent_generate_rate = 0.5
-	max_femcum = 5
+	produces_fluid = TRUE
+	production_rate = 0.5
+	nutrition_per_unit = 0
 	max_reagents = 40 //big cap, ordinary absorbtion.
 	altnames = list("vagina", "cunt", "womb", "pussy", "slit", "kitty", "snatch") //used in thought messages.
 	absorbing = TRUE
@@ -38,13 +38,15 @@
 	var/egg_scale = OVI_EGG_DEFAULT_SCALE
 	var/list/egg_traits = list()
 	var/resource_dependent_yield = FALSE
+	/// Own femcum held at full arousal; less arousal keeps it lower.
+	var/max_wetness = 10
 
 /obj/item/organ/genitals/filling_organ/vagina/Insert(mob/living/M, special, drop_if_replaced, new_zone = null)
+	if(M?.femcum)
+		set_reagent_to_make(M.femcum)
 	. = ..()
 	if(!.)
 		return FALSE
-	if(M.femcum)
-		reagent_to_make = M.femcum
 	add_bodystorage(M, null, /datum/component/body_storage/vagina)
 	next_oviposition_egg_generation = 0
 	if(isharpy(M))
@@ -54,6 +56,44 @@
 	. = ..()
 	var/datum/component/body_storage/vagina/comp = GetComponent(/datum/component/body_storage/vagina)
 	comp?.RemoveComponent()
+
+/obj/item/organ/genitals/filling_organ/vagina/process_fluids(seconds)
+	. = ..()
+	tag_femcum_donor()
+	try_generate_oviposition_egg()
+
+/// Arousal drives wetness instead of nutrition: own femcum tops up toward an arousal-scaled target.
+/obj/item/organ/genitals/filling_organ/vagina/produce_fluid(seconds)
+	if(!is_producing())
+		return
+	var/missing = get_wetness_target() - get_own_fluid_amount()
+	if(missing > 0)
+		pay_for_fluid(add_produced_fluid(min(production_rate * get_production_multiplier() * seconds, missing)))
+
+/// Zero at visible arousal, max_wetness at the climax threshold, scaled by capacity modifiers.
+/obj/item/organ/genitals/filling_organ/vagina/proc/get_wetness_target()
+	var/list/arousal_data = list()
+	SEND_SIGNAL(owner, COMSIG_SEX_GET_AROUSAL, arousal_data)
+	var/arousal_fraction = clamp((arousal_data["arousal"] - VISIBLE_AROUSAL_THRESHOLD) / (ACTIVE_EJAC_THRESHOLD - VISIBLE_AROUSAL_THRESHOLD), 0, 1)
+	return max_wetness * arousal_fraction * get_capacity_multiplier()
+
+/obj/item/organ/genitals/filling_organ/vagina/refills_stored_containers()
+	return ..() && get_wetness_target() > 0
+
+/// Adds the climax burst of own femcum and returns the units added.
+/obj/item/organ/genitals/filling_organ/vagina/proc/produce_climax_fluid()
+	if(!is_producing())
+		return 0
+	. = add_produced_fluid(FEMCUM_ORGASM_VOLUME * get_climax_multiplier())
+	pay_for_fluid(.)
+
+/// Stamps held femcum with its producer each tick, so the donor survives transfer out of the organ.
+/obj/item/organ/genitals/filling_organ/vagina/proc/tag_femcum_donor()
+	if(!owner || !reagents)
+		return
+	var/datum/reagent/consumable/femcum/nectar = reagents.get_reagent(reagent_to_make)
+	if(istype(nectar))
+		nectar.sync_femcum_parent(owner)
 
 /obj/item/organ/genitals/filling_organ/vagina/attack_self(mob/user, list/modifiers)
 	if(!ishuman(owner))

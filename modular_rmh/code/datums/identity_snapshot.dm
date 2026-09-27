@@ -26,7 +26,7 @@
 	. = ..()
 	var/datum/organ_dna/breasts/breasts_dna = organ_dna
 	breasts_dna.breast_size = organ_size
-	breasts_dna.lactating = refilling
+	breasts_dna.lactating = produces_fluid
 
 /obj/item/organ/genitals/filling_organ/vagina
 	organ_dna_type = /datum/organ_dna/vagina
