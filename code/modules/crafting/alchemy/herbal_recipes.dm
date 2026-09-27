@@ -434,27 +434,28 @@
 
 /datum/reagent/medicine/herbal/mercy_draught
 	name = "Mercy Draught"
-	description = "A rare draught used to draw one lingering defeat trauma out of the body or spirit."
+	description = "Drink five measures to cure one ordinary defeat trauma, most severe first. Does not heal wounds, wake the defeated, or cure Convalescence. Splashing it does not work."
 	reagent_state = LIQUID
 	color = "#b7d9c1"
 	metabolization_rate = REAGENTS_METABOLISM * 2
-	overdose_threshold = 20
 	taste_description = "cool mercy and bitter herbs"
 	scent_description = "clean herbs and rain"
 
-/datum/reagent/medicine/herbal/mercy_draught/on_mob_metabolize(mob/living/L)
+/datum/reagent/medicine/herbal/mercy_draught/on_transfer(atom/target, method = TOUCH, trans_volume, mob/transfered_by = null)
 	. = ..()
-	if(!L.has_any_defeat_trauma())
+	if(method != INGEST)
 		return
-	if(L.defeat_treat_trauma(L, DEFEAT_TREATMENT_UNIVERSAL))
-		to_chat(L, span_notice("The draught eases one lingering defeat trauma."))
-
-/datum/reagent/medicine/herbal/mercy_draught/reaction_mob(mob/living/M, method = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0, target_zone = null)
-	. = ..()
-	if(method != TOUCH || reac_volume < 5 || !M.has_any_defeat_trauma())
+	// trans_to has already deposited the swallowed liquid here. Consume real doses from the
+	// receiving stomach, never the source bottle or a reaction's estimated splash volume.
+	var/obj/item/organ/stomach/stomach = target
+	if(!istype(stomach) || QDELETED(stomach.owner) || QDELETED(stomach.reagents))
 		return
-	if(M.defeat_treat_trauma(M, DEFEAT_TREATMENT_UNIVERSAL) && show_message)
-		to_chat(M, span_notice("The draught draws out one lingering defeat trauma."))
+	var/mob/living/patient = stomach.owner
+	while(stomach.reagents.has_reagent(type, DEFEAT_MERCY_DRAUGHT_DOSE))
+		if(!patient.defeat_treat_trauma(patient, DEFEAT_TREATMENT_UNIVERSAL))
+			break
+		stomach.reagents.remove_reagent(type, DEFEAT_MERCY_DRAUGHT_DOSE)
+		to_chat(patient, span_notice("Five measures of Mercy Draught ease one lingering defeat trauma."))
 
 // Anti-Poison Blend
 

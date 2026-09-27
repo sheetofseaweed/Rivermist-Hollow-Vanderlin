@@ -149,7 +149,6 @@
 	miracles_extra += list(
 		/datum/action/cooldown/spell/undirected/touch/orison,
 		/datum/action/cooldown/spell/cure_rot,
-		/datum/action/cooldown/spell/defeat_absolution,
 		/datum/action/cooldown/spell/undirected/succubus_consecrate_refuge,
 		/datum/action/cooldown/spell/succubus_deliverance,
 		/datum/action/cooldown/spell/succubus_seal_rift,

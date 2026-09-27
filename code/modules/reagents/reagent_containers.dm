@@ -379,6 +379,9 @@
 
 	var/medicine_volume = 0
 	for(var/datum/reagent/medicine/medicine in reagents.reagent_list)
+		// Mercy Draught treats aftermath; it is not a curative drink for waking a defeated patient.
+		if(istype(medicine, /datum/reagent/medicine/herbal/mercy_draught))
+			continue
 		medicine_volume += medicine.volume
 	var/medicine_fraction = medicine_volume / reagents.total_volume
 	var/transferred = reagents.trans_to(target, min(amount_per_transfer_from_this, 5), TRUE, TRUE, FALSE, feeder, FALSE, INGEST)

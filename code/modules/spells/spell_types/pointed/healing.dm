@@ -282,8 +282,8 @@
 	is_profane = TRUE
 
 /datum/action/cooldown/spell/defeat_absolution
-	name = "Merciful Absolution"
-	desc = "Call on your patron to lift one lingering defeat trauma from yourself or another."
+	name = "Bear Their Burden"
+	desc = "Spend devotion to lift one ordinary defeat trauma from another person beside you. Light, moderate and severe trauma cost you 10, 20 or 30 bodily damage and two minutes of Sacrificial Exhaustion. Does not cure Convalescence, heal wounds or wake the defeated."
 	button_icon_state = "lesserheal"
 	sound = 'sound/magic/heal.ogg'
 	charge_sound = 'sound/magic/holycharging.ogg'
@@ -291,27 +291,97 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	charge_required = TRUE
-	charge_time = 2 SECONDS
+	// The treatment channels after diagnosis, so cancelling the choice never spends anything.
+	charge_required = FALSE
 	cooldown_time = 2 MINUTES
 	spell_cost = 100
-	self_cast_possible = TRUE
+	self_cast_possible = FALSE
+	var/datum/weakref/selected_trauma_ref
+	var/treating = FALSE
+
+/datum/action/cooldown/spell/defeat_absolution/Destroy()
+	selected_trauma_ref = null
+	return ..()
+
+/datum/action/cooldown/spell/defeat_absolution/check_cost(cost_override, feedback = TRUE)
+	// Miracle affordability is disabled in the shared spell code. Enforce this spell's own price.
+	var/mob/living/carbon/human/caster = owner
+	if(!istype(caster) || !caster.cleric?.check_devotion(get_adjusted_cost(cost_override)))
+		if(feedback)
+			to_chat(owner, span_warning("I need enough devotion to bear another's burden."))
+		return FALSE
+	return TRUE
+
+/datum/action/cooldown/spell/defeat_absolution/can_cast_spell(feedback = TRUE)
+	. = ..()
+	if(!.)
+		return FALSE
+	var/mob/living/caster = owner
+	if(caster.has_status_effect(/datum/status_effect/sacrificial_exhaustion))
+		if(feedback)
+			to_chat(caster, span_warning("I must recover from my last sacrifice first."))
+		return FALSE
+	return TRUE
 
 /datum/action/cooldown/spell/defeat_absolution/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)
 		return FALSE
-	return isliving(cast_on)
+	if(!isliving(cast_on) || cast_on == owner || !owner?.Adjacent(cast_on))
+		return FALSE
+	var/mob/living/patient = cast_on
+	if(patient.stat == DEAD)
+		return FALSE
+	for(var/datum/status_effect/debuff/defeat/trauma in patient.status_effects)
+		if(DEFEAT_TRAUMA_PROVIDER_UNIVERSAL in trauma.accepted_provider_tags)
+			return TRUE
+	return FALSE
+
+/datum/action/cooldown/spell/defeat_absolution/before_cast(atom/cast_on)
+	. = ..()
+	if((. & SPELL_CANCEL_CAST) || treating || !is_valid_target(cast_on))
+		return . | SPELL_CANCEL_CAST
+	treating = TRUE
+	selected_trauma_ref = null
+	var/mob/living/caster = owner
+	var/mob/living/patient = cast_on
+	var/datum/defeat_trauma_provider/universal/provider = new
+	provider.requires_adjacent = TRUE
+	var/list/choices = list()
+	for(var/datum/status_effect/debuff/defeat/condition as anything in provider.diagnose(patient))
+		choices["[condition.trauma_label] ([defeat_severity_label(condition.severity)])"] = condition
+	var/choice = input(caster, "Choose the trauma to bear.", name) as null|anything in choices
+	var/datum/status_effect/debuff/defeat/trauma = choices[choice]
+	if(!QDELETED(src) && owner == caster && provider.validate(patient, caster, trauma) && can_cast_spell(TRUE))
+		var/damage_cost = defeat_severity_rank(trauma.severity) * DEFEAT_BURDEN_DAMAGE_PER_SEVERITY
+		var/confirmation = alert(caster, "Lift [patient]'s [trauma.trauma_label] in six seconds? Success costs [get_adjusted_cost()] devotion, [damage_cost] bodily damage and two minutes of Sacrificial Exhaustion.", name, "Bear the burden", "Cancel")
+		if(confirmation == "Bear the burden" && !QDELETED(src) && owner == caster && provider.validate(patient, caster, trauma) && can_cast_spell(TRUE))
+			if(do_after(caster, 6 SECONDS, target = patient, extra_checks = CALLBACK(provider, TYPE_PROC_REF(/datum/defeat_trauma_provider, validate), patient, caster, trauma)))
+				if(!QDELETED(src) && owner == caster && provider.validate(patient, caster, trauma) && can_cast_spell(TRUE))
+					selected_trauma_ref = WEAKREF(trauma)
+	qdel(provider)
+	treating = FALSE
+	if(!selected_trauma_ref)
+		return . | SPELL_CANCEL_CAST
+	// The base cast chain ignores cast()'s return value. Commit costs only after the cure succeeds.
+	return . | SPELL_NO_IMMEDIATE_COST | SPELL_NO_IMMEDIATE_COOLDOWN
 
 /datum/action/cooldown/spell/defeat_absolution/cast(mob/living/cast_on)
 	. = ..()
 	var/mob/living/caster = owner
-	if(!cast_on.has_any_defeat_trauma())
-		to_chat(caster, span_warning("[cast_on] has no defeat trauma I can absolve."))
+	var/datum/status_effect/debuff/defeat/trauma = selected_trauma_ref?.resolve()
+	selected_trauma_ref = null
+	if(QDELETED(trauma) || trauma.owner != cast_on || !is_valid_target(cast_on) || !can_cast_spell(TRUE))
 		return FALSE
-	if(!cast_on.defeat_treat_trauma(caster, DEFEAT_TREATMENT_UNIVERSAL))
-		to_chat(caster, span_warning("The trauma resists my absolution."))
+	var/damage_cost = defeat_severity_rank(trauma.severity) * DEFEAT_BURDEN_DAMAGE_PER_SEVERITY
+	if(!cast_on.defeat_treat_trauma(caster, DEFEAT_TREATMENT_UNIVERSAL, trauma))
 		return FALSE
-	caster.visible_message(span_notice("[caster] absolves a lingering defeat trauma from [cast_on]."), span_notice("I absolve one lingering defeat trauma from [cast_on]."))
+	var/spent_cost = invoke_cost()
+	if(spent_cost)
+		handle_exp(spent_cost)
+	StartCooldown()
+	caster.apply_status_effect(/datum/status_effect/sacrificial_exhaustion)
+	caster.adjustBruteLoss(damage_cost)
+	caster.visible_message(span_notice("[caster] shudders as [cast_on]'s burden passes into them."), span_warning("I lift one trauma, taking [damage_cost] bodily damage in return."))
 	to_chat(cast_on, span_notice("A lingering defeat trauma loosens its hold on you."))
 	return TRUE
