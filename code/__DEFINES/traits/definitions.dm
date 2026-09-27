@@ -657,6 +657,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_RUNE_SEVERED		"runesevered"
 #define TRAIT_FREEZEHUNGER 		"Freeze Hunger"
 #define TRAIT_EGG_LAYER "vaginal_egg_layer"
+/// Breasts and balls visibly swell as they fill with fluid.
+#define TRAIT_FLUID_ENGORGEMENT "fluid_engorgement"
 /// This mob cannot cast spells
 #define TRAIT_NO_SELF_MAGIC 	"noselfmagic"
 

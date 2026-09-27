@@ -2161,6 +2161,14 @@ generate/load female uniform sprites matching all previously decided variables
 			. += feature.accessory_type
 			. += feature.accessory_colors
 
+		// Organ overlays are drawn into the cached limbs, so look-alike mobs need their sprite inputs here.
+		for(var/obj/item/organ/organ as anything in organs_by_zone[BP.body_zone])
+			if(!organ.visible_organ || !organ.accessory_type)
+				continue
+			. += organ.accessory_type
+			. += organ.accessory_colors
+			. += organ.get_render_key_state()
+
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "husk"
 

@@ -14,6 +14,10 @@
 	blocker = ITEM_SLOT_SHIRT
 	additional_blocker = "bra"
 	organ_sizeable = TRUE
+	can_engorge = TRUE
+	leaks_when_full = TRUE
+	drips_as_drops = TRUE
+	stain_zone = FLUID_STAIN_CHEST
 
 /obj/item/organ/genitals/filling_organ/breasts/Insert(mob/living/M, special, drop_if_replaced, new_zone = null)
 	if(M?.breast_milk)

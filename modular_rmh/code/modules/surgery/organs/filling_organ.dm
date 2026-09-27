@@ -18,6 +18,18 @@
 #define FLUID_CAPACITY_ALERT_MIN_CHANGE 5
 /// Leak speed-up when a container under the owner collects the flow.
 #define FLUID_COLLECTOR_LEAK_MULTIPLIER 50
+/// An engorged organ shrinks a step only this far below the step's threshold, so it does not flicker.
+#define FLUID_ENGORGEMENT_HYSTERESIS 0.05
+/// Examine text calls an organ full from this share of capacity.
+#define FLUID_LOOKS_FULL_RATIO 0.8
+/// Examine text calls an organ close to bursting from this share of capacity.
+#define FLUID_LOOKS_BURSTING_RATIO 0.95
+/// Organs that leak when full let down only at this share of capacity.
+#define FLUID_LETDOWN_FULL_RATIO 0.99
+/// Units in one let-down, and the random wait between let-downs; on average less than clothes dry off.
+#define FLUID_LETDOWN_AMOUNT 3
+#define FLUID_LETDOWN_MIN_INTERVAL (3 MINUTES)
+#define FLUID_LETDOWN_MAX_INTERVAL (6 MINUTES)
 
 //container organ that can refill self through nutrients etc.
 /obj/item/organ/genitals/filling_organ
@@ -64,6 +76,11 @@
 	var/processspeed = 5 SECONDS
 	/// Applies bloat debuffs when full.
 	var/bloatable = FALSE
+	/// Lets down a little fluid now and then while completely full, even if it is not a spiller.
+	var/leaks_when_full = FALSE
+	COOLDOWN_DECLARE(letdown_cooldown)
+	/// Where fluid leaked from this organ stains the clothes over it.
+	var/stain_zone = FLUID_STAIN_GROIN
 
 	//pregnancy vars
 	var/fertility = FALSE //can it be impregnated
@@ -81,6 +98,10 @@
 	var/last_damagespill_alert = 0
 	/// If TRUE, small dribbles (<= LIQUID_DRIP_MAX_UNITS) form a colored drop decal instead of pooling as a liquid puddle.
 	var/drips_as_drops = FALSE
+	/// Whether this organ can visibly swell when its owner has TRAIT_FLUID_ENGORGEMENT.
+	var/can_engorge = FALSE
+	/// Size steps currently added to the sprite by fullness; visual only.
+	var/engorgement_steps = 0
 
 	COOLDOWN_DECLARE(liquidcd)
 
@@ -176,6 +197,7 @@
 /obj/item/organ/genitals/filling_organ/Remove(mob/living/M, special, drop_if_replaced)
 	if(pregnant)
 		M?.remove_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
+	engorgement_steps = 0
 	return ..()
 
 /obj/item/organ/genitals/filling_organ/consider_processing(in_bleedout = FALSE)
@@ -233,25 +255,27 @@
 		return 0
 	return spill_reagents(excess_amount)
 
-/// Drips `amount` units of our reagents onto `target`. For organs flagged [drips_as_drops], small dribbles form a
-/// colored drop decal that grows and eventually pools into a real puddle; everything else pools immediately.
+/// Drips `amount` units of our reagents onto `target`, as drops for organs flagged [drips_as_drops].
 /obj/item/organ/genitals/filling_organ/proc/drip_to_turf(turf/target, amount)
-	if(!target || !reagents || amount <= 0)
+	spill_fluid_to_turf(target, reagents, amount, drips_as_drops && !owner?.has_quirk(/datum/quirk/peculiarity/free_flowing))
+
+/// Spills fluid onto a turf: small amounts form a colored drop that grows into a puddle, larger ones pool at once.
+/proc/spill_fluid_to_turf(turf/target, datum/reagents/source, amount, as_drops = TRUE)
+	if(!target || !source || amount <= 0)
 		return
-	amount = min(amount, reagents.total_volume)
+	amount = min(amount, source.total_volume)
 	if(amount <= 0)
 		return
 
-	//big dribble, a non-dropping organ, or an owner whose quirk forces raw puddles: pool as liquid, skipping the decal.
-	if(!drips_as_drops || amount > LIQUID_DRIP_MAX_UNITS || owner?.has_quirk(/datum/quirk/peculiarity/free_flowing))
-		target.add_liquid_from_reagents(reagents, amount = amount)
-		reagents.remove_all(amount)
+	if(!as_drops || amount > LIQUID_DRIP_MAX_UNITS)
+		target.add_liquid_from_reagents(source, amount = amount)
+		source.remove_all(amount)
 		return
 
 	var/obj/effect/decal/cleanable/liquid_drip/drop = locate() in target
 	if(!drop)
 		drop = new(target)
-	drop.absorb_drip(reagents, amount)
+	drop.absorb_drip(source, amount)
 	//once enough fluid has gathered in one spot, collapse the drop into a real liquid puddle.
 	if(drop.reagents?.total_volume > LIQUID_DRIP_MAX_UNITS)
 		target.add_liquid_from_reagents(drop.reagents, amount = drop.reagents.total_volume)
@@ -269,6 +293,7 @@
 	handle_overflow()
 	produce_fluid(seconds)
 	handle_bloat()
+	update_engorgement()
 	if(!COOLDOWN_FINISHED(src, liquidcd))
 		return
 	COOLDOWN_START(src, liquidcd, processspeed)
@@ -336,6 +361,79 @@
 	. = 0
 	for(var/reagent_type in get_own_fluid_types())
 		. += reagents.get_reagent_amount(reagent_type)
+
+/// Share of capacity filled with the organ's own fluid, from 0 to 1.
+/obj/item/organ/genitals/filling_organ/proc/get_own_fullness()
+	if(!reagents?.maximum_volume)
+		return 0
+	return min(get_own_fluid_amount() / reagents.maximum_volume, 1)
+
+/// Grows the sprite while full for owners with TRAIT_FLUID_ENGORGEMENT; redraws only when the step changes.
+/obj/item/organ/genitals/filling_organ/proc/update_engorgement()
+	var/target_steps = 0
+	if(can_engorge && HAS_TRAIT(owner, TRAIT_FLUID_ENGORGEMENT))
+		var/fullness = get_own_fullness()
+		target_steps = get_engorgement_steps_for(fullness)
+		if(target_steps < engorgement_steps && get_engorgement_steps_for(fullness + FLUID_ENGORGEMENT_HYSTERESIS) >= engorgement_steps)
+			target_steps = engorgement_steps
+	if(target_steps == engorgement_steps)
+		return
+	engorgement_steps = target_steps
+	if(iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		carbon_owner.update_body_parts(TRUE)
+
+/obj/item/organ/genitals/filling_organ/proc/get_engorgement_steps_for(fullness)
+	if(fullness >= FLUID_ENGORGEMENT_STEP_3)
+		return 3
+	if(fullness >= FLUID_ENGORGEMENT_STEP_2)
+		return 2
+	if(fullness >= FLUID_ENGORGEMENT_STEP_1)
+		return 1
+	return 0
+
+/// Size shown by sprites and examine text: organ_size plus engorgement, capped by the sprites that exist.
+/obj/item/organ/genitals/filling_organ/proc/get_visible_size()
+	if(!engorgement_steps)
+		return organ_size
+	var/datum/sprite_accessory/genitals/accessory = SPRITE_ACCESSORY(accessory_type)
+	if(!istype(accessory))
+		return organ_size
+	return max(organ_size, min(organ_size + engorgement_steps, accessory.get_max_size_state(src, owner)))
+
+/obj/item/organ/genitals/filling_organ/get_render_key_state()
+	return get_visible_size()
+
+/// Examine phrase for a visibly full organ, or null when it does not look full.
+/obj/item/organ/genitals/filling_organ/proc/get_fullness_description()
+	if(!reagents?.maximum_volume || !reagents.total_volume)
+		return null
+	var/fullness = reagents.total_volume / reagents.maximum_volume
+	if(fullness < FLUID_LOOKS_FULL_RATIO)
+		return null
+	var/datum/reagent/main_fluid = reagents.get_master_reagent()
+	var/fluid_name = LOWER_TEXT(main_fluid.name)
+	if(fullness >= FLUID_LOOKS_BURSTING_RATIO)
+		return "swollen near to bursting with [fluid_name]"
+	return "heavy with [fluid_name]"
+
+/// Units released at climax for a location, scaled by modifiers and fullness, capped by what is held and the space given.
+/obj/item/organ/genitals/filling_organ/proc/get_climax_release(climax_location, space_limit = INFINITY)
+	if(!reagents?.total_volume)
+		return 0
+	var/amount = get_base_climax_release(climax_location) * get_climax_multiplier() * get_pent_up_multiplier()
+	amount = max(amount, min(1, reagents.total_volume))
+	return max(0, min(amount, reagents.total_volume, space_limit))
+
+/// Units released at climax before modifiers; a null location is a quick climax with no partner.
+/obj/item/organ/genitals/filling_organ/proc/get_base_climax_release(climax_location)
+	return 0
+
+/obj/item/organ/genitals/filling_organ/proc/get_pent_up_multiplier()
+	return 1
+
+/obj/item/organ/genitals/filling_organ/proc/is_pent_up()
+	return FALSE
 
 /// Nutrition per unit made; a swapped fluid never costs less than it feeds, so drinking it cannot profit.
 /obj/item/organ/genitals/filling_organ/proc/get_nutrition_cost_per_unit()
@@ -455,22 +553,26 @@
 		if(producing && reagents.total_volume)
 			reagents.trans_to(container, rand(4, 8))
 
-/// Drips fluid out of an uncovered opening, into a container under the owner if there is one.
+/// Leaks fluid into covering clothes first; a bare opening drips into a container underneath or onto the floor.
 /obj/item/organ/genitals/filling_organ/proc/leak_reagents()
 	if(!reagents.total_volume)
 		return
-	if(!spiller && reagents.total_volume <= reagents.maximum_volume)
+	var/leak_amount = get_leak_amount() || try_letdown()
+	if(leak_amount <= 0)
 		return
-	if(is_opening_covered())
-		return
-	var/leak_amount = get_leak_amount()
-	var/obj/item/reagent_containers/collector = find_leak_collector()
-	if(collector)
-		reagents.trans_to(collector, leak_amount * FLUID_COLLECTOR_LEAK_MULTIPLIER)
-		if(MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
-			MOBTIMER_SET(owner, "organ_drip")
-			to_chat(owner, span_info("I collect the fluids dripping from me in \the [collector]."))
-		return
+	var/list/covers = get_opening_covers()
+	if(length(covers))
+		leak_amount = soak_into_covers(covers, leak_amount)
+		if(leak_amount <= 0)
+			return
+	else
+		var/obj/item/reagent_containers/collector = find_leak_collector()
+		if(collector)
+			reagents.trans_to(collector, leak_amount * FLUID_COLLECTOR_LEAK_MULTIPLIER)
+			if(MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
+				MOBTIMER_SET(owner, "organ_drip")
+				to_chat(owner, span_info("I collect the fluids dripping from me in \the [collector]."))
+			return
 	if(prob(5) && owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
 		MOBTIMER_SET(owner, "organ_drip")
 		to_chat(owner, pick(span_info("A little bit of [english_list(reagents.reagent_list)] drips from my [pick(altnames)]..."),
@@ -479,21 +581,55 @@
 			span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)].")))
 	drip_to_turf(get_turf(owner), leak_amount)
 
-/// Base drip rising with fullness, scaled by the owner's leak modifiers.
+/// Units leaked per flow interval: spillers and overfull organs push harder as they fill.
 /obj/item/organ/genitals/filling_organ/proc/get_leak_amount()
 	var/fullness = reagents.maximum_volume ? (reagents.total_volume / reagents.maximum_volume) : 0
+	if(!spiller && fullness <= 1)
+		return 0
 	var/pressure = clamp((fullness - DRIP_PRESSURE_THRESHOLD) / (1 - DRIP_PRESSURE_THRESHOLD), 0, 1)
 	return driprate * (1 + (pressure * (DRIP_PRESSURE_MAX_MULT - 1))) * get_leak_multiplier()
 
-/// TRUE if worn clothing without genital access covers the opening.
-/obj/item/organ/genitals/filling_organ/proc/is_opening_covered()
+/// A completely full leaky organ lets down a small burst now and then, so clothes get damp but dry off between.
+/obj/item/organ/genitals/filling_organ/proc/try_letdown()
+	if(!leaks_when_full || reagents.total_volume < reagents.maximum_volume * FLUID_LETDOWN_FULL_RATIO)
+		return 0
+	if(!COOLDOWN_FINISHED(src, letdown_cooldown))
+		return 0
+	COOLDOWN_START(src, letdown_cooldown, rand(FLUID_LETDOWN_MIN_INTERVAL, FLUID_LETDOWN_MAX_INTERVAL))
+	return FLUID_LETDOWN_AMOUNT * get_leak_multiplier()
+
+/// Worn garments without genital access over the opening, innermost first.
+/obj/item/organ/genitals/filling_organ/proc/get_opening_covers()
 	if(!iscarbon(owner))
-		return FALSE
+		return null
 	var/mob/living/carbon/carbon_owner = owner
-	var/obj/item/clothing/cover = carbon_owner.mob_slot_wearing(blocker)
-	if(!isnull(additional_blocker) && carbon_owner.underwear)
-		cover = carbon_owner.underwear
-	return cover && !cover.genital_access
+	var/list/covers = list()
+	if(additional_blocker == "bra")
+		covers += carbon_owner.bra
+		if(carbon_owner.underwear?.covers_breasts)
+			covers += carbon_owner.underwear
+	else if(additional_blocker)
+		covers += carbon_owner.underwear
+	covers += carbon_owner.mob_slot_wearing(blocker)
+	for(var/obj/item/clothing/cover as anything in covers.Copy())
+		if(!istype(cover) || cover.genital_access)
+			covers -= cover
+	return covers
+
+/// Soaks leaked fluid into the covers from the inside out and returns what drips through them all.
+/obj/item/organ/genitals/filling_organ/proc/soak_into_covers(list/covers, amount)
+	var/obj/item/clothing/outermost
+	for(var/obj/item/clothing/cover as anything in covers)
+		// A cover that does not soak holds the fluid in.
+		if(!cover.can_soak_fluid())
+			return 0
+		amount -= cover.soak_fluid(reagents, amount, stain_zone)
+		if(amount <= 0)
+			return 0
+		outermost = cover
+	if(iscarbon(owner))
+		outermost?.apply_wet_stress(owner)
+	return amount
 
 /// Finds a refillable container under a standing owner to catch leaks.
 /obj/item/organ/genitals/filling_organ/proc/find_leak_collector()
@@ -948,3 +1084,10 @@
 #undef FLUID_REABSORB_COST
 #undef FLUID_CAPACITY_ALERT_MIN_CHANGE
 #undef FLUID_COLLECTOR_LEAK_MULTIPLIER
+#undef FLUID_ENGORGEMENT_HYSTERESIS
+#undef FLUID_LOOKS_FULL_RATIO
+#undef FLUID_LOOKS_BURSTING_RATIO
+#undef FLUID_LETDOWN_FULL_RATIO
+#undef FLUID_LETDOWN_AMOUNT
+#undef FLUID_LETDOWN_MIN_INTERVAL
+#undef FLUID_LETDOWN_MAX_INTERVAL

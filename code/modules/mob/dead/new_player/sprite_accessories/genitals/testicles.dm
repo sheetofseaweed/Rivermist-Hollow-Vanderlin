@@ -31,8 +31,7 @@
 
 /datum/sprite_accessory/genitals/testicles/get_icon_state(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
 	var/obj/item/organ/genitals/filling_organ/testicles/testes = organ
-	var/fuck = "[icon_state]_[testes.organ_size]"
-	return fuck
+	return "[icon_state]_[testes.get_visible_size()]"
 
 /datum/sprite_accessory/genitals/testicles/proc/get_taur_icon_state(obj/item/organ/organ, mob/living/carbon/owner)
 	if(!is_taur_owner(owner) || !istype(organ, /obj/item/organ/genitals/filling_organ/testicles))
@@ -41,7 +40,12 @@
 		return null
 
 	var/obj/item/organ/genitals/filling_organ/testicles/testes = organ
-	return "m_testicles_pair_[testes.organ_size]_FRONT"
+	return "m_testicles_pair_[testes.get_visible_size()]_FRONT"
+
+/datum/sprite_accessory/genitals/testicles/get_max_size_state(obj/item/organ/organ, mob/living/carbon/owner)
+	if(is_taur_owner(owner) && icon_state == "pair")
+		return get_max_numbered_icon_state(TAUR_TESTICLES_ICON, "m_testicles_pair")
+	return ..()
 
 /datum/sprite_accessory/genitals/testicles/proc/build_taur_testicles_appearance(taur_icon_state, color_string, mob/living/carbon/owner)
 	color_string = sanitize_color_string(color_string)

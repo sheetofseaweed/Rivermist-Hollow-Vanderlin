@@ -18,6 +18,9 @@
 /obj/item/organ/genitals/penis/Initialize()
 	. = ..()
 
+/obj/item/organ/genitals/penis/get_render_key_state()
+	return "[organ_size]-[erect_state]-[sheath_type]"
+
 /obj/item/organ/genitals/penis/Insert(mob/living/M, special, drop_if_replaced, new_zone = null)
 	. = ..()
 	if(!.)
@@ -87,7 +90,6 @@
 	if(oldstate != erect_state && owner)
 		if(iscarbon(owner))
 			var/mob/living/carbon/carbon_owner = owner
-			// Visible organ overlays are not part of the normal limb render key.
 			carbon_owner.update_body_parts(TRUE)
 
 

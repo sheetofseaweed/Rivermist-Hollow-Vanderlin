@@ -363,6 +363,21 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define FLUID_SWAP_MIN_PAIR_VOLUME 5
 /// A swapped fluid costs this many times the nutrition it gives back, so drinking it never profits.
 #define FLUID_SWAP_NUTRITION_MARGIN 1.5
+/// Testicles holding this share of capacity release a pent-up load.
+#define FLUID_PENT_UP_RATIO 0.9
+/// Climax release scale for empty and for full testicles; half full releases the base amount.
+#define FLUID_PENT_UP_MIN_MULT 0.5
+#define FLUID_PENT_UP_MAX_MULT 1.5
+/// Units swallowed per lick of a soaked garment, and the least a garment must hold to be licked.
+#define FLUID_LICK_AMOUNT 2
+#define FLUID_LICK_MIN_VOLUME 0.5
+/// Where body fluid stains a garment.
+#define FLUID_STAIN_GROIN "groin"
+#define FLUID_STAIN_CHEST "chest"
+/// Fullness shares at which an engorging organ shows one more size step.
+#define FLUID_ENGORGEMENT_STEP_1 0.5
+#define FLUID_ENGORGEMENT_STEP_2 0.75
+#define FLUID_ENGORGEMENT_STEP_3 0.95
 
 /proc/build_sex_actions()
 	. = list()

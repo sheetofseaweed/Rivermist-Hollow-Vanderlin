@@ -77,6 +77,9 @@
 	var/arousal_fraction = clamp((arousal_data["arousal"] - VISIBLE_AROUSAL_THRESHOLD) / (ACTIVE_EJAC_THRESHOLD - VISIBLE_AROUSAL_THRESHOLD), 0, 1)
 	return max_wetness * arousal_fraction * get_capacity_multiplier()
 
+/obj/item/organ/genitals/filling_organ/vagina/get_base_climax_release(climax_location)
+	return min(8, reagents.total_volume * 0.3)
+
 /obj/item/organ/genitals/filling_organ/vagina/refills_stored_containers()
 	return ..() && get_wetness_target() > 0
 

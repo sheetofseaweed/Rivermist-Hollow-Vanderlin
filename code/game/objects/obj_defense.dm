@@ -122,6 +122,7 @@ GLOBAL_DATUM_INIT(acid_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 	if(istype(src, /obj/item/clothing))
 		var/obj/item/clothing/cloth = src
+		cloth.dry_soaked_fluid(round(added / 5))
 		if(cloth.wet)
 			var/dry_amount = round(added / 5)
 			cloth.wet.use_water(dry_amount)

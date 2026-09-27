@@ -16,6 +16,7 @@
 	blocker = ITEM_SLOT_PANTS
 	organ_sizeable  = TRUE
 	produces_fluid = TRUE
+	can_engorge = TRUE
 
 /obj/item/organ/genitals/filling_organ/testicles/invisible //so it can be surgically removed but still not visible on sprite
 	accessory_type = /datum/sprite_accessory/none
@@ -47,6 +48,25 @@
 /obj/item/organ/genitals/filling_organ/testicles/process_fluids(seconds)
 	. = ..()
 	sync_cum_source_data()
+
+/obj/item/organ/genitals/filling_organ/testicles/get_base_climax_release(climax_location)
+	switch(climax_location)
+		if(ORGASM_LOCATION_ONTO)
+			return min(reagents.maximum_volume / 2, 10 * organ_size)
+		if(ORGASM_LOCATION_INTO, ORGASM_LOCATION_ORAL)
+			return reagents.maximum_volume / 4
+		if(ORGASM_LOCATION_SELF)
+			return reagents.maximum_volume / 5
+		if(ORGASM_LOCATION_CONTAINER)
+			return reagents.maximum_volume / 3
+	return min(3, 10 * organ_size)
+
+/// Fuller testicles release more: the base amount at half full, up to half again when full.
+/obj/item/organ/genitals/filling_organ/testicles/get_pent_up_multiplier()
+	return FLUID_PENT_UP_MIN_MULT + get_own_fullness() * (FLUID_PENT_UP_MAX_MULT - FLUID_PENT_UP_MIN_MULT)
+
+/obj/item/organ/genitals/filling_organ/testicles/is_pent_up()
+	return get_own_fullness() >= FLUID_PENT_UP_RATIO
 
 /obj/item/organ/genitals/filling_organ/testicles/proc/sync_cum_source_data()
 	if(!owner || !reagents)

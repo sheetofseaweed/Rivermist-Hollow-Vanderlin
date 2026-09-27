@@ -150,7 +150,6 @@
 	target.update_organ_colors()
 	// updateappearance() re-derives gender from the DNA block, so gender is (re)applied AFTER it
 	target.updateappearance(mutcolor_update = TRUE)
-	// Visible organ overlays are outside the limb render key, so force a redraw to repaint genitals
 	target.update_body_parts(TRUE)
 	target.gender = gender
 	target.name = target.get_visible_name()

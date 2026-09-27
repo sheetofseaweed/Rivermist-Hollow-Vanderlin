@@ -19,6 +19,12 @@
 		owner.remove_fluid_modifier(/datum/fluid_modifier/extra_productive, "[type]")
 	return ..()
 
+/datum/quirk/peculiarity/swelling_glands
+	name = "Swelling Glands"
+	desc = "My breasts and balls visibly swell as they fill, and shrink back once emptied."
+	desc_hint = "Breasts and balls grow up to three sizes when full; balls stop where their sprites end."
+	traits_to_add = list(TRAIT_FLUID_ENGORGEMENT)
+
 /datum/quirk/peculiarity/relief_needed
 	name = "Relief Needed"
 	desc = "When my breasts or balls are full, I ache for release."
@@ -66,8 +72,13 @@
 
 /datum/stress_event/overfilled
 	stress_change = 2
-	desc = list("<span class='red'>I'm overfilled and aching for relief.</span>")
+	desc = span_red("I'm overfilled and aching for relief.")
 	timer = 3 MINUTES
+
+/datum/stress_event/pent_up_release
+	stress_change = -2
+	desc = span_green("That pent-up release felt incredible.")
+	timer = 5 MINUTES
 
 #undef RELIEF_NEEDED_FULL_RATIO
 #undef RELIEF_NEEDED_RELIEVED_RATIO

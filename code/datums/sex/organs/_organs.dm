@@ -9,6 +9,9 @@
 	. = ..()
 	body_storage_bulk *= organ_size
 
+/obj/item/organ/genitals/get_render_key_state()
+	return organ_size
+
 /obj/item/organ/genitals/can_decay()
 	if(owner?.is_player_character())
 		return FALSE
