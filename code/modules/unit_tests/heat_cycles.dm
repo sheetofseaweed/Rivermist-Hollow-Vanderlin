@@ -57,10 +57,12 @@
 	TEST_ASSERT(heat.is_rut, "A penis without a vagina should make it a rut.")
 	TEST_ASSERT_EQUAL(heat.linked_alert?.name, "In Rut", "The alert should say rut.")
 
+	var/turf/open/human_turf = get_turf(human)
+	// Earlier tests leave smells here, and a turf at its cap takes no more.
+	human_turf.pollution?.scrub_amount(human_turf.pollution.total_amount)
 	SEND_SIGNAL(human, COMSIG_SEX_SET_AROUSAL, 0)
 	heat.tick()
 	TEST_ASSERT(get_heat_test_arousal(human) > 0, "Heat should raise arousal.")
-	var/turf/open/human_turf = get_turf(human)
 	TEST_ASSERT(human_turf?.pollution?.pollutants[/datum/pollutant/heat_musk] > 0, "Heat should give off musk.")
 	for(var/i in 1 to 30)
 		heat.tick()

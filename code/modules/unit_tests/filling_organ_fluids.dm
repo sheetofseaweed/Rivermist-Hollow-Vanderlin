@@ -243,11 +243,30 @@
 	tick_organ_life(human, 1)
 	TEST_ASSERT(testicles.reagents.total_volume > peckish_amount * 5, "A well fed owner should make far more than a peckish one.")
 
-/datum/unit_test/filling_organ_milk_costs_more_than_it_feeds/Run()
+/datum/unit_test/filling_organ_fluids_cost_more_than_they_feed/Run()
+	for(var/organ_type in list(/obj/item/organ/genitals/filling_organ/breasts, /obj/item/organ/genitals/filling_organ/testicles))
+		var/mob/living/carbon/human/maker = allocate(/mob/living/carbon/human)
+		var/obj/item/organ/genitals/filling_organ/organ = allocate(organ_type)
+		organ.Insert(maker, TRUE, FALSE)
+		var/datum/reagent/fluid_type = organ.get_produced_reagent()
+
+		// Measured, not read from vars, so a flat bonus in the reagent's own tick is counted too.
+		var/mob/living/carbon/human/drinker = allocate(/mob/living/carbon/human)
+		drinker.nutrition = NUTRITION_LEVEL_HUNGRY
+		drinker.reagents.add_reagent(fluid_type, 10)
+		drinker.reagents.metabolize(drinker)
+		var/used = 10 - drinker.reagents.get_reagent_amount(fluid_type)
+		TEST_ASSERT(used > 0, "[initial(fluid_type.name)] should be metabolized.")
+		var/value_per_unit = (drinker.nutrition - NUTRITION_LEVEL_HUNGRY) / used
+		TEST_ASSERT(organ.get_nutrition_cost_per_unit() >= value_per_unit * 2, "Making [initial(fluid_type.name)] should cost at least twice what drinking it gives back, got [organ.get_nutrition_cost_per_unit()] for [value_per_unit].")
+
+/datum/unit_test/filling_organ_breasts_make_milk_at_a_cows_pace/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	human.nutrition = NUTRITION_LEVEL_WELL_FED
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = allocate(/obj/item/organ/genitals/filling_organ/breasts)
+	breasts.produces_fluid = TRUE
 	breasts.Insert(human, TRUE, FALSE)
-	var/datum/reagent/consumable/milk/milk = GLOB.chemical_reagents_list[/datum/reagent/consumable/milk]
-	// Drinking a unit gives its nutriment times the quality rate, since poor quality burns faster.
-	var/milk_value = milk.nutriment_factor * milk.get_quality_metabolization_modifier()
-	TEST_ASSERT(breasts.get_nutrition_cost_per_unit() >= milk_value * 2, "Making milk should cost at least twice what drinking it gives back.")
+	breasts.reagents.clear_reagents()
+	tick_organ_life(human, 1)
+	// A cow's udder makes 0.5 units per second.
+	TEST_ASSERT(abs(breasts.reagents.total_volume - 0.5) < 0.01, "Well fed breasts should make half a unit a second, got [breasts.reagents.total_volume].")

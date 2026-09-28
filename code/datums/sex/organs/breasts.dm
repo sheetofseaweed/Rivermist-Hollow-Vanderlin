@@ -8,6 +8,8 @@
 	reagent_to_make = /datum/reagent/consumable/milk
 	// Milk costs more than drinking it gives back, so it cannot feed its maker.
 	nutrition_per_unit = 2
+	// A cow's pace, so one person is no cheese factory.
+	production_rate = 0.5
 	hungerhelp = TRUE
 	absorbing = FALSE //funny liquid tanks
 	startsfilled = TRUE

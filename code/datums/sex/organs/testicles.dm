@@ -10,6 +10,8 @@
 	var/virility = TRUE
 	reagent_to_make = /datum/reagent/consumable/cum
 	production_rate = 3
+	// Seed costs more than drinking it gives back, so it cannot feed its maker.
+	nutrition_per_unit = 2
 	storage_per_size = 75
 	startsfilled = TRUE
 	allows_oviposition_pregnancy = FALSE

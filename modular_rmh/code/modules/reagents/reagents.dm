@@ -14,7 +14,8 @@
 	glass_icon_state = "glass_white"
 	glass_name = "glass of semen"
 	glass_desc = ""
-	nutriment_factor = 5 * REAGENTS_METABOLISM
+	// As filling as milk; it costs more to make than it gives back, so nobody lives off their own.
+	nutriment_factor = 1 * REAGENTS_METABOLISM
 	hydration_factor = 2
 	var/virile = TRUE
 	var/triggers_embryo_pregnancy = FALSE
@@ -148,9 +149,6 @@
 		M.heal_bodypart_damage(1,0, 0)
 	if(ishuman(M))
 		var/mob/living/carbon/human/H = M
-		if(!HAS_TRAIT(H, TRAIT_NOHUNGER))
-			H.adjust_hydration(5)
-			H.adjust_nutrition(5)
 		if(H.blood_volume < BLOOD_VOLUME_NORMAL)
 			H.blood_volume = min(H.blood_volume+10, BLOOD_VOLUME_NORMAL)
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(M)
