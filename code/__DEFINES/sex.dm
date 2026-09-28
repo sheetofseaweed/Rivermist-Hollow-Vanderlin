@@ -364,6 +364,15 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define HEAT_SOURCE_WEREWOLF "heat_werewolf"
 /// Heat pulls arousal up to here: half wet, and below the edging threshold.
 #define HEAT_AROUSAL_FLOOR 60
+
+// Body fluid reagent data keys: who made it, whether makers mixed, and a hint of their last meals.
+#define FLUID_DATA_DONOR "fluid_donor"
+#define FLUID_DATA_MIXED "fluid_mixed_donors"
+#define FLUID_DATA_DIET "fluid_diet_hint"
+/// Tasting the same maker again counts as a new visit only this long after the last one.
+#define FAMILIAR_TASTE_GAP (1 HOURS)
+/// Visits after which a familiar taste becomes a cherished one.
+#define FAMILIAR_TASTE_CHERISHED_VISITS 3
 /// How long milk keeps flowing after a conventional pregnancy ends.
 #define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
 /// Units of a fluid potion in the blood needed before it takes effect.

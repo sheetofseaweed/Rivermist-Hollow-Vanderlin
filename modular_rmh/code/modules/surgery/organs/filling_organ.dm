@@ -191,11 +191,15 @@
 	// Surgery passes special = FALSE, so only spawned bodies start full.
 	if(special && startsfilled && is_producing())
 		add_produced_fluid(reagents.maximum_volume)
+	if(reagent_to_make)
+		RegisterSignal(M, COMSIG_MOB_FOOD_EAT, PROC_REF(on_owner_ate))
 
 /obj/item/organ/genitals/filling_organ/Remove(mob/living/M, special, drop_if_replaced)
 	if(pregnant)
 		M?.remove_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
 	engorgement_steps = 0
+	if(M)
+		UnregisterSignal(M, COMSIG_MOB_FOOD_EAT)
 	return ..()
 
 /obj/item/organ/genitals/filling_organ/consider_processing(in_bleedout = FALSE)
@@ -291,6 +295,7 @@
 	update_reagent_capacity()
 	handle_overflow()
 	produce_fluid(seconds)
+	stamp_own_fluids()
 	handle_bloat()
 	update_engorgement()
 	if(!COOLDOWN_FINISHED(src, liquidcd))

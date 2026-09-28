@@ -115,6 +115,12 @@
 	. = ..()
 	reconcile_parent_data(current_parent_ref, current_parent_name, current_parent_features, current_hatch_result_type, incoming_data)
 
+/// The maker a taste can be recognised by; seed from several makers belongs to none of them.
+/datum/reagent/consumable/cum/get_fluid_donor()
+	if(data?[CUM_DATA_MIXED_PARENTS])
+		return null
+	return get_parent_from_transfer()
+
 /datum/reagent/consumable/cum/proc/get_impregnation_actor_from_transfer(mob/living/father = null, mob/transfered_by = null)
 	if(isliving(transfered_by))
 		return transfered_by
@@ -181,7 +187,23 @@
 	if(!data)
 		data = list()
 	data[FEMCUM_DATA_PARENT_REF] = WEAKREF(parent)
+	data -= FLUID_DATA_MIXED
 	return TRUE
+
+/// Nectar from two makers is marked mixed for tasting; the base merge already copies the newest parent.
+/datum/reagent/consumable/femcum/on_merge(list/incoming_data, other_volume)
+	var/datum/weakref/current_parent = data?[FEMCUM_DATA_PARENT_REF]
+	. = ..()
+	if(!islist(incoming_data))
+		return
+	var/datum/weakref/incoming_parent = incoming_data[FEMCUM_DATA_PARENT_REF]
+	if(current_parent && incoming_parent && current_parent != incoming_parent)
+		LAZYSET(data, FLUID_DATA_MIXED, TRUE)
+
+/datum/reagent/consumable/femcum/get_fluid_donor()
+	if(data?[FLUID_DATA_MIXED])
+		return null
+	return get_femcum_parent()
 
 /datum/reagent/consumable/femcum/proc/get_femcum_parent()
 	var/datum/weakref/parent_ref = data?[FEMCUM_DATA_PARENT_REF]
