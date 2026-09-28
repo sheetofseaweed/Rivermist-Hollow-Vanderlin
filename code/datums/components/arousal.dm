@@ -537,7 +537,8 @@
 			if(testes)
 				if(testes.reagents)
 					var/cum_to_take = testes.get_climax_release()
-					deposit_cum_on_turf(turf, testes.reagents, cum_to_take)
+					// Routed so worn catchers (pumps, condom leeches) get a chance before the floor.
+					route_climax_reagents(testes.reagents, cum_to_take, mob, target, action, ORGASM_LOCATION_SELF, turf, null, action_initiator, action_target, action_performer, TRUE)
 		// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 		if(mob.getorganslot(ORGAN_SLOT_VAGINA))
 			var/obj/item/organ/genitals/filling_organ/vagina/vag = mob.getorganslot(ORGAN_SLOT_VAGINA)
@@ -553,7 +554,7 @@
 				if(testes)
 					if(testes.reagents)
 						var/cum_to_take = testes.get_climax_release()
-						deposit_cum_on_turf(turf, testes.reagents, cum_to_take)
+						route_climax_reagents(testes.reagents, cum_to_take, mob, target, action, ORGASM_LOCATION_SELF, turf, null, action_initiator, action_target, action_performer, TRUE)
 			// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 			if(mob.getorganslot(ORGAN_SLOT_VAGINA))
 				var/obj/item/organ/genitals/filling_organ/vagina/vag = mob.getorganslot(ORGAN_SLOT_VAGINA)

@@ -111,13 +111,13 @@
 
 /// Rubbing a wet vagina with the garment soaks a little of it in.
 /datum/sex_action/garment_pleasure/proc/soak_wetness(mob/living/rubbed, obj/item/clothing/garment)
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina = rubbed.getorganslot(ORGAN_SLOT_VAGINA)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = get_free_organ(rubbed, ORGAN_SLOT_VAGINA)
 	if(vagina?.reagents?.total_volume)
 		garment.soak_fluid(vagina.reagents, GARMENT_RUB_SOAK_AMOUNT)
 
 /datum/sex_action/garment_pleasure/proc/get_rub_message(mob/living/performer, mob/living/rubbed, obj/item/clothing/garment)
 	var/whose = performer == rubbed ? performer.p_their() : "[rubbed]'s"
-	if(rubbed.getorganslot(ORGAN_SLOT_PENIS))
+	if(get_free_organ(rubbed, ORGAN_SLOT_PENIS))
 		return "strokes [whose] cock with \the [garment]"
 	return "rubs \the [garment] against [whose] pussy"
 
@@ -134,7 +134,7 @@
 /datum/sex_action/garment_pleasure/self/shows_on_menu(mob/living/user, mob/living/target)
 	if(user != target || !get_held_garment(user))
 		return FALSE
-	return user.getorganslot(ORGAN_SLOT_PENIS) || user.getorganslot(ORGAN_SLOT_VAGINA)
+	return get_free_organ(user, ORGAN_SLOT_PENIS) || get_free_organ(user, ORGAN_SLOT_VAGINA)
 
 /datum/sex_action/garment_pleasure/self/can_perform(mob/living/user, mob/living/target)
 	. = ..()
@@ -142,7 +142,7 @@
 		return FALSE
 	if(user != target || !get_held_garment(user))
 		return FALSE
-	if(!user.getorganslot(ORGAN_SLOT_PENIS) && !user.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!get_free_organ(user, ORGAN_SLOT_PENIS) && !get_free_organ(user, ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(!check_location_accessible(user, user, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
@@ -186,7 +186,7 @@
 /datum/sex_action/garment_pleasure/other/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target || !get_held_garment(user))
 		return FALSE
-	return target.getorganslot(ORGAN_SLOT_PENIS) || target.getorganslot(ORGAN_SLOT_VAGINA)
+	return get_free_organ(target, ORGAN_SLOT_PENIS) || get_free_organ(target, ORGAN_SLOT_VAGINA)
 
 /datum/sex_action/garment_pleasure/other/can_perform(mob/living/user, mob/living/target)
 	. = ..()
@@ -194,7 +194,7 @@
 		return FALSE
 	if(user == target || !get_held_garment(user))
 		return FALSE
-	if(!target.getorganslot(ORGAN_SLOT_PENIS) && !target.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!get_free_organ(target, ORGAN_SLOT_PENIS) && !get_free_organ(target, ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_PENIS) && check_sex_lock(target, ORGAN_SLOT_VAGINA))
 		return FALSE

@@ -227,7 +227,8 @@
 	if((fertility && pregnant) || has_oviposition_pregnancy())
 		capacity *= 0.5
 	for(var/obj/item/thing in contents)
-		if(thing.type != /obj/item/dildo/plug) //plugs wont take space as they are especially for this.
+		// Plugs and pumps sit in or over the opening, so they take no room inside.
+		if(thing.type != /obj/item/dildo/plug && !istype(thing, /obj/item/reagent_containers/glass/fluid_pump))
 			capacity -= thing.w_class * 10
 	return max(0, capacity)
 
@@ -549,7 +550,8 @@
 /obj/item/organ/genitals/filling_organ/proc/exchange_with_stored_containers()
 	var/producing = refills_stored_containers()
 	for(var/obj/item/reagent_containers/container in contents)
-		if(!container.reagents || !container.spillable)
+		// A pump draws on its own; exchanging would pour its catch back in.
+		if(!container.reagents || !container.spillable || istype(container, /obj/item/reagent_containers/glass/fluid_pump))
 			continue
 		if(container.reagents.total_volume)
 			container.reagents.trans_to(reagents, rand(4, 8))
@@ -562,6 +564,10 @@
 		return
 	var/leak_amount = get_leak_amount() || try_letdown()
 	if(leak_amount <= 0)
+		return
+	var/obj/item/reagent_containers/glass/fluid_pump/pump = get_leak_pump()
+	if(pump)
+		reagents.trans_to(pump, leak_amount, transfered_by = owner)
 		return
 	var/list/covers = get_opening_covers()
 	if(length(covers))
@@ -600,6 +606,16 @@
 		return 0
 	COOLDOWN_START(src, letdown_cooldown, rand(FLUID_LETDOWN_MIN_INTERVAL, FLUID_LETDOWN_MAX_INTERVAL))
 	return FLUID_LETDOWN_AMOUNT * get_leak_multiplier()
+
+/// A pump with room over this organ's opening; testicles leak through the penis, so its pump counts.
+/obj/item/organ/genitals/filling_organ/proc/get_leak_pump()
+	var/obj/item/organ/opening = slot == ORGAN_SLOT_TESTICLES ? owner?.getorganslot(ORGAN_SLOT_PENIS) : src
+	if(!opening)
+		return null
+	var/obj/item/reagent_containers/glass/fluid_pump/pump = locate() in opening.contents
+	if(!pump || pump.reagents.holder_full())
+		return null
+	return pump
 
 /// Worn garments without genital access over the opening, innermost first.
 /obj/item/organ/genitals/filling_organ/proc/get_opening_covers()

@@ -180,6 +180,9 @@
 	if(!incoming_item)
 		return FALSE
 
+	if(!incoming_item.can_enter_body_storage_layer(target_layer))
+		return FALSE
+
 	if(incoming_item.body_storage_bulk > max_insert_size)
 		return FALSE
 

@@ -342,6 +342,16 @@
 				if(G.limb_grabbed == LH || G.limb_grabbed == RH)
 					return TRUE
 
+/// TRUE when a worn device, such as a fluid pump, covers the organ in this slot.
+/mob/living/proc/is_organ_slot_blocked(slot)
+	var/obj/item/organ/organ = getorganslot(slot)
+	if(!organ)
+		return FALSE
+	for(var/obj/item/device in organ.contents)
+		if(device.blocks_organ_use())
+			return TRUE
+	return FALSE
+
 /mob/proc/get_erp_pref(pref_type)
 	if(!ispath(pref_type, /datum/erp_preference))
 		return FALSE

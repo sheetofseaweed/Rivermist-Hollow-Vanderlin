@@ -103,6 +103,7 @@
 #include "flight_carry.dm"
 #include "fluid_clothing.dm"
 #include "fluid_potions.dm"
+#include "fluid_pumps.dm"
 #include "focus_only_tests.dm"
 #include "guard_deflect.dm"
 #include "heat_cycles.dm"

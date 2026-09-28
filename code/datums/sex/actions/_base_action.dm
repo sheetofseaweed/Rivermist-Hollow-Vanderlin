@@ -153,6 +153,10 @@
 	/// Overlay zone used by Mage Hand while this action is active.
 	var/mage_hand_overlay_zone = null
 	var/sex_volume = 50 //volume for plaps
+	/// User organ slots this action works on beyond its hole and stored penis; a covered organ disables it.
+	var/list/uses_user_organs
+	/// Target organ slots this action works on; see uses_user_organs.
+	var/list/uses_target_organs
 
 /datum/sex_action/Destroy()
 	if(action_user)
@@ -650,6 +654,8 @@
 	if(requires_hole_storage)
 		if(!check_hole_storage_available(user, target))
 			return FALSE
+	if(get_blocked_organ_slot(user, target))
+		return FALSE
 	return TRUE
 
 /**
@@ -661,7 +667,32 @@
  */
 /datum/sex_action/proc/can_continue(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
-	return TRUE
+	// A device fitted mid-action, such as a pump, ends it.
+	return !get_blocked_organ_slot(user, target)
+
+/// The first organ slot this action needs that a worn device covers, or null when all are free.
+/datum/sex_action/proc/get_blocked_organ_slot(mob/living/user, mob/living/target)
+	var/mob/living/receiver = get_storage_receiver(user, target)
+	if(hole_id && receiver?.is_organ_slot_blocked(hole_id))
+		return hole_id
+	if(ispath(stored_item_type, /obj/item/organ/genitals/penis))
+		var/mob/living/insertor = get_storage_insertor(user, target)
+		if(insertor?.is_organ_slot_blocked(ORGAN_SLOT_PENIS))
+			return ORGAN_SLOT_PENIS
+	for(var/slot in uses_user_organs)
+		if(user?.is_organ_slot_blocked(slot))
+			return slot
+	for(var/slot in uses_target_organs)
+		if(target?.is_organ_slot_blocked(slot))
+			return slot
+	return null
+
+/// The holder's organ in the slot if it exists and no worn device covers it.
+/datum/sex_action/proc/get_free_organ(mob/living/holder, slot)
+	var/obj/item/organ/organ = holder?.getorganslot(slot)
+	if(!organ || holder.is_organ_slot_blocked(slot))
+		return null
+	return organ
 
 /datum/sex_action/proc/can_mage_hand_reach(mob/living/user, mob/living/target)
 	return user == action_user && target == action_target && can_remote_interact()
