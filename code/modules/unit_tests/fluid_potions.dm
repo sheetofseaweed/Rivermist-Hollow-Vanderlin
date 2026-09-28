@@ -171,6 +171,16 @@
 	var/list/arousal_data = list()
 	SEND_SIGNAL(human, COMSIG_SEX_GET_AROUSAL, arousal_data)
 	TEST_ASSERT(arousal_data["arousal"] > 0, "Full testicles should raise arousal.")
+	var/datum/stress_event/overfilled/first_ache = human.has_stress_type(/datum/stress_event/overfilled)
+	TEST_ASSERT_EQUAL(first_ache?.get_stress(), 2, "The first ache should cost 2 stress.")
+	TEST_ASSERT(quirk.next_ache_message > world.time, "The first ache should send a reminder.")
+	var/first_reminder = quirk.next_ache_message
+
+	quirk.next_ache = 0
+	quirk.on_life(human)
+	TEST_ASSERT_EQUAL(quirk.next_ache_message, first_reminder, "A second ache should stay silent until the reminder timer ends.")
+	var/datum/stress_event/overfilled/overfilled = human.has_stress_type(/datum/stress_event/overfilled)
+	TEST_ASSERT_EQUAL(overfilled?.get_stress(), 3, "An ignored ache should grow worse.")
 
 	testicles.reagents.remove_all(testicles.reagents.maximum_volume * 0.1)
 	quirk.on_life(human)
@@ -179,6 +189,11 @@
 	testicles.reagents.clear_reagents()
 	quirk.on_life(human)
 	TEST_ASSERT_NULL(human.has_stress_type(/datum/stress_event/overfilled), "Emptying the organ should bring relief.")
+
+	testicles.reagents.add_reagent(testicles.reagent_to_make, testicles.reagents.maximum_volume)
+	quirk.on_life(human)
+	TEST_ASSERT_NOTNULL(human.has_stress_type(/datum/stress_event/overfilled), "Refilling should bring the ache back at once.")
+	TEST_ASSERT_EQUAL(quirk.next_ache_message, first_reminder, "A quick refill should not repeat the reminder.")
 
 /datum/unit_test/fluid_potions_are_brewable_and_sold/Run()
 	var/list/potion_vials = list(

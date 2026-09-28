@@ -6,6 +6,8 @@
 	slot = ORGAN_SLOT_BREASTS
 	organ_size = DEFAULT_BREASTS_SIZE
 	reagent_to_make = /datum/reagent/consumable/milk
+	// Milk costs more than drinking it gives back, so it cannot feed its maker.
+	nutrition_per_unit = 2
 	hungerhelp = TRUE
 	absorbing = FALSE //funny liquid tanks
 	startsfilled = TRUE

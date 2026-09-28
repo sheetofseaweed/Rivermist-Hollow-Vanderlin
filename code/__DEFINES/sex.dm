@@ -355,6 +355,15 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define FLUID_SOURCE_PREGNANCY "pregnancy"
 #define FLUID_SOURCE_POST_PREGNANCY "post_pregnancy"
 #define FLUID_SOURCE_LACTATION_INDUCER "lactation_inducer"
+/// Modifiers every member of a species has, such as a small frame.
+#define FLUID_SOURCE_SPECIES "species"
+
+// Heat cycle sources, kept as TRAIT_HEAT_CYCLE sources. Species and werewolf heat need the ERP preference.
+#define HEAT_SOURCE_QUIRK "heat_quirk"
+#define HEAT_SOURCE_SPECIES "heat_species"
+#define HEAT_SOURCE_WEREWOLF "heat_werewolf"
+/// Heat pulls arousal up to here: half wet, and below the edging threshold.
+#define HEAT_AROUSAL_FLOOR 60
 /// How long milk keeps flowing after a conventional pregnancy ends.
 #define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
 /// Units of a fluid potion in the blood needed before it takes effect.

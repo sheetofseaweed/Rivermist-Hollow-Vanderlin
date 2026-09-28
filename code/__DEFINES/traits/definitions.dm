@@ -659,6 +659,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_EGG_LAYER "vaginal_egg_layer"
 /// Breasts and balls visibly swell as they fill with fluid.
 #define TRAIT_FLUID_ENGORGEMENT "fluid_engorgement"
+/// Goes into heat or rut now and then; each source is a HEAT_SOURCE_* define.
+#define TRAIT_HEAT_CYCLE "heat_cycle"
 /// This mob cannot cast spells
 #define TRAIT_NO_SELF_MAGIC 	"noselfmagic"
 

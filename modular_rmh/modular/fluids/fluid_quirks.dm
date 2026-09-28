@@ -4,6 +4,9 @@
 #define RELIEF_NEEDED_RELIEVED_RATIO 0.8
 /// Arousal added each time the ache flares.
 #define RELIEF_NEEDED_AROUSAL 5
+/// Random wait between ache reminders in chat; the ache itself flares more often, silently.
+#define RELIEF_NEEDED_MESSAGE_MIN (6 MINUTES)
+#define RELIEF_NEEDED_MESSAGE_MAX (10 MINUTES)
 
 /datum/quirk/peculiarity/extra_productive
 	name = "Productive Glands"
@@ -32,6 +35,8 @@
 	/// TRUE while an organ is overfilled, until every organ is relieved.
 	var/aching = FALSE
 	COOLDOWN_DECLARE(next_ache)
+	/// Not reset by relief, so a quick refill cannot repeat the reminder.
+	COOLDOWN_DECLARE(next_ache_message)
 
 /datum/quirk/peculiarity/relief_needed/on_life(mob/living/user)
 	var/obj/item/organ/genitals/filling_organ/full_organ = get_filled_organ(user, RELIEF_NEEDED_FULL_RATIO)
@@ -52,6 +57,9 @@
 /datum/quirk/peculiarity/relief_needed/proc/ache(mob/living/user, obj/item/organ/genitals/filling_organ/full_organ)
 	SEND_SIGNAL(user, COMSIG_SEX_ADJUST_AROUSAL, RELIEF_NEEDED_AROUSAL)
 	user.add_stress(/datum/stress_event/overfilled)
+	if(!COOLDOWN_FINISHED(src, next_ache_message))
+		return
+	COOLDOWN_START(src, next_ache_message, rand(RELIEF_NEEDED_MESSAGE_MIN, RELIEF_NEEDED_MESSAGE_MAX))
 	var/datum/reagent/fluid = full_organ.get_produced_reagent()
 	var/organ_name = pick(full_organ.altnames)
 	to_chat(user, span_love(pick(
@@ -70,8 +78,13 @@
 			return organ
 	return null
 
+/// Grows while the ache is ignored: 2, then 3, then 4 stress.
 /datum/stress_event/overfilled
 	stress_change = 2
+	// Base events start at 0 stacks, so the first hit would lose the extra-stack penalty; start at 1.
+	stacks = 1
+	max_stacks = 3
+	stress_change_per_extra_stack = 1
 	desc = span_red("I'm overfilled and aching for relief.")
 	timer = 3 MINUTES
 
@@ -83,3 +96,5 @@
 #undef RELIEF_NEEDED_FULL_RATIO
 #undef RELIEF_NEEDED_RELIEVED_RATIO
 #undef RELIEF_NEEDED_AROUSAL
+#undef RELIEF_NEEDED_MESSAGE_MIN
+#undef RELIEF_NEEDED_MESSAGE_MAX

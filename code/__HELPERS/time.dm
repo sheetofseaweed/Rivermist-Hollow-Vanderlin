@@ -50,6 +50,7 @@ GLOBAL_VAR_INIT(dayspassed, FALSE)
 			if(GLOB.dayspassed == 8)
 				GLOB.dayspassed = 1
 			SStreasury.distribute_estate_incomes()
+		SEND_GLOBAL_SIGNAL(COMSIG_GLOB_TIME_OF_DAY_CHANGED, GLOB.tod, oldtod)
 		for(var/mob/living/player in GLOB.mob_list)
 			if(player.stat != DEAD && player.client)
 				player.do_time_change()

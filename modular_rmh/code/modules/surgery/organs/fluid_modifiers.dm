@@ -43,6 +43,23 @@
 /datum/fluid_modifier/extra_productive
 	rate_multiplier = 1.5
 
+/// Species build: big bodies hold more.
+/datum/fluid_modifier/large_frame
+	capacity_multiplier = 1.5
+
+/// Species build: small bodies hold less.
+/datum/fluid_modifier/small_frame
+	capacity_multiplier = 0.75
+
+/// Species trait: seed comes faster.
+/datum/fluid_modifier/prolific_seed
+	affected_slots = list(ORGAN_SLOT_TESTICLES)
+	rate_multiplier = 1.5
+
+/datum/fluid_modifier/in_heat
+	rate_multiplier = 1.5
+	climax_multiplier = 1.25
+
 GLOBAL_LIST_INIT(fluid_modifiers, init_fluid_modifiers())
 
 /proc/init_fluid_modifiers()

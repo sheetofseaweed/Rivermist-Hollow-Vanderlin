@@ -22,6 +22,12 @@
 	default_value = TRUE
 	category = "General"
 
+/datum/erp_preference/boolean/allow_heat_cycles
+	name = "Heat Cycles"
+	description = "If your species or a curse can put you into heat or rut. The Heat Cycles quirk works either way"
+	default_value = TRUE
+	category = "General"
+
 /datum/erp_preference/boolean/allow_belly_inflation
 	name = "Belly Inflation"
 	description = "If fluids in your vagina or anus can visibly inflate your belly"

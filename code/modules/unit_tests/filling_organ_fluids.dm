@@ -216,3 +216,38 @@
 	vagina.reagents.add_reagent(/datum/reagent/water, vagina.reagents.maximum_volume * 0.5)
 	tick_organ_life(human, 1)
 	TEST_ASSERT(human.has_status_effect(/datum/status_effect/debuff/bloatone), "Foreign fluid should bloat.")
+
+/datum/unit_test/filling_organ_production_scales_with_nourishment/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = allocate(/obj/item/organ/genitals/filling_organ/testicles)
+	testicles.Insert(human, TRUE, FALSE)
+	TEST_ASSERT_NOTNULL(testicles.reagents, "Inserted testicles should have a reagent holder.")
+
+	human.nutrition = NUTRITION_LEVEL_HUNGRY
+	TEST_ASSERT_EQUAL(testicles.get_nourishment_multiplier(), 0, "A hungry owner should make nothing.")
+	human.nutrition = (NUTRITION_LEVEL_HUNGRY + NUTRITION_LEVEL_WELL_FED) / 2
+	TEST_ASSERT(abs(testicles.get_nourishment_multiplier() - 0.5) < 0.01, "Half way to well fed should make half as much.")
+	human.nutrition = NUTRITION_LEVEL_WELL_FED
+	TEST_ASSERT_EQUAL(testicles.get_nourishment_multiplier(), 1, "A well fed owner should make the normal amount.")
+	human.nutrition = NUTRITION_LEVEL_FULL
+	TEST_ASSERT(testicles.get_nourishment_multiplier() > 1, "A stuffed owner should make more.")
+
+	// A tenth of the way to well fed; smaller first drops fall under the 0.05 unit reagent floor.
+	human.nutrition = NUTRITION_LEVEL_HUNGRY + (NUTRITION_LEVEL_WELL_FED - NUTRITION_LEVEL_HUNGRY) / 10
+	testicles.reagents.clear_reagents()
+	tick_organ_life(human, 1)
+	var/peckish_amount = testicles.reagents.total_volume
+	TEST_ASSERT(peckish_amount > 0, "A slightly peckish owner should still make a little.")
+	human.nutrition = NUTRITION_LEVEL_WELL_FED
+	testicles.reagents.clear_reagents()
+	tick_organ_life(human, 1)
+	TEST_ASSERT(testicles.reagents.total_volume > peckish_amount * 5, "A well fed owner should make far more than a peckish one.")
+
+/datum/unit_test/filling_organ_milk_costs_more_than_it_feeds/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/breasts/breasts = allocate(/obj/item/organ/genitals/filling_organ/breasts)
+	breasts.Insert(human, TRUE, FALSE)
+	var/datum/reagent/consumable/milk/milk = GLOB.chemical_reagents_list[/datum/reagent/consumable/milk]
+	// Drinking a unit gives its nutriment times the quality rate, since poor quality burns faster.
+	var/milk_value = milk.nutriment_factor * milk.get_quality_metabolization_modifier()
+	TEST_ASSERT(breasts.get_nutrition_cost_per_unit() >= milk_value * 2, "Making milk should cost at least twice what drinking it gives back.")

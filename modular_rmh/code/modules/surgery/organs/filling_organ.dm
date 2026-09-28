@@ -8,10 +8,8 @@
 #define DRIP_PRESSURE_MAX_MULT 6
 /// Below this nutrition a hungry owner reabsorbs stored fluid instead of producing it.
 #define FLUID_HUNGER_NUTRITION (NUTRITION_LEVEL_HUNGRY - 25)
-/// Production needs more nutrition than this.
-#define FLUID_PRODUCTION_NUTRITION (NUTRITION_LEVEL_FED + 25)
-/// Production speed-up when well fed or free of hunger.
-#define FLUID_WELL_FED_MULTIPLIER 2
+/// Production speed-up when well fed or free of hunger; from hungry up to well fed it ramps from zero.
+#define FLUID_WELL_FED_MULTIPLIER 1.5
 /// Units of stored fluid spent per point of nutrition regained when hungry.
 #define FLUID_REABSORB_COST 4
 /// Capacity shifts smaller than this do not alert self-aware owners.
@@ -510,18 +508,23 @@
 /obj/item/organ/genitals/filling_organ/proc/produce_fluid(seconds)
 	if(HAS_TRAIT(owner, TRAIT_NOHUNGER))
 		if(is_producing())
-			add_produced_fluid(production_rate * FLUID_WELL_FED_MULTIPLIER * get_production_multiplier() * seconds)
+			add_produced_fluid(production_rate * get_nourishment_multiplier() * get_production_multiplier() * seconds)
 		return
 	if(owner.nutrition < FLUID_HUNGER_NUTRITION)
 		if(hungerhelp)
 			reabsorb_for_nutrition(seconds)
 		return
-	if(owner.nutrition <= FLUID_PRODUCTION_NUTRITION || !is_producing())
+	if(!is_producing())
 		return
-	var/amount = production_rate * get_production_multiplier() * seconds
-	if(owner.nutrition > NUTRITION_LEVEL_WELL_FED)
-		amount *= FLUID_WELL_FED_MULTIPLIER
-	pay_for_fluid(add_produced_fluid(amount))
+	var/amount = production_rate * get_production_multiplier() * get_nourishment_multiplier() * seconds
+	if(amount > 0)
+		pay_for_fluid(add_produced_fluid(amount))
+
+/// Production speed from how fed the owner is: none when hungry, full when well fed, faster beyond.
+/obj/item/organ/genitals/filling_organ/proc/get_nourishment_multiplier()
+	if(HAS_TRAIT(owner, TRAIT_NOHUNGER) || owner.nutrition > NUTRITION_LEVEL_WELL_FED)
+		return FLUID_WELL_FED_MULTIPLIER
+	return clamp((owner.nutrition - NUTRITION_LEVEL_HUNGRY) / (NUTRITION_LEVEL_WELL_FED - NUTRITION_LEVEL_HUNGRY), 0, 1)
 
 /// Turns this organ's own fluid back into nutrition, at a loss.
 /obj/item/organ/genitals/filling_organ/proc/reabsorb_for_nutrition(seconds)
@@ -1079,7 +1082,6 @@
 #undef DRIP_PRESSURE_THRESHOLD
 #undef DRIP_PRESSURE_MAX_MULT
 #undef FLUID_HUNGER_NUTRITION
-#undef FLUID_PRODUCTION_NUTRITION
 #undef FLUID_WELL_FED_MULTIPLIER
 #undef FLUID_REABSORB_COST
 #undef FLUID_CAPACITY_ALERT_MIN_CHANGE
