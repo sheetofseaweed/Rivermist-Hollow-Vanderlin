@@ -55,9 +55,8 @@
 	if(HAS_TRAIT(src, TRAIT_NOMOOD))
 		stress = 0
 	for(var/datum/stress_event/event as anything in stressors)
-		if(event.timer)
-			if(world.time >= event.timer)
-				remove_stress(event)
+		if(event.timer > 0 && world.time >= event.timer)
+			remove_stress(event)
 
 	if(stress != oldstress)
 		switch(stress)
@@ -148,7 +147,7 @@
 /mob/living/carbon/get_negative_stressors()
 	. = list()
 	for(var/datum/stress_event/event as anything in stressors)
-		if(event.get_stress(src) < 0)
+		if(event.get_stress(src) > 0)
 			. += event
 
 /mob/living/carbon/add_stress(event_type)
@@ -159,9 +158,11 @@
 		return FALSE
 
 	. = TRUE
+	var/duration = new_event.timer
 	var/datum/stress_event/existing_event = has_stress_type(event_type)
 	if(existing_event)
-		existing_event.timer = initial(existing_event.timer) + world.time // RESET THE TIMER
+		if(duration > 0)
+			existing_event.timer = world.time + duration // RESET THE TIMER
 		if(existing_event.stacks >= existing_event.max_stacks)
 			return
 		var/pre_stack = existing_event.get_stress()
@@ -170,7 +171,8 @@
 		adjust_stress(post_stack-pre_stack)
 		existing_event.on_apply(src)
 	else
-		new_event.timer += world.time
+		if(duration > 0)
+			new_event.timer = world.time + duration
 		stressors += new_event
 		adjust_stress(new_event.get_stress())
 		new_event.on_apply(src)

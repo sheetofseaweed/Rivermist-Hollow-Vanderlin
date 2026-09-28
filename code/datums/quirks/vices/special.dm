@@ -224,11 +224,6 @@
 		return
 	REMOVE_TRAIT(owner, TRAIT_TORTURED, "[type]")
 
-/datum/stress_event/tortured
-	desc = "<span class='danger'>The pain... it brings back memories.</span>\n"
-	stress_change = 4
-	timer = 5 MINUTES
-
 /datum/quirk/vice/weak_heart
 	name = "Weak Heart"
 	desc = "You were born with a weak heart. You can't handle stressful situations for fear of your heart giving out."

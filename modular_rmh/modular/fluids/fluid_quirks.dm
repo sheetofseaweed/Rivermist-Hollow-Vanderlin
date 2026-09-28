@@ -81,8 +81,6 @@
 /// Grows while the ache is ignored: 2, then 3, then 4 stress.
 /datum/stress_event/overfilled
 	stress_change = 2
-	// Base events start at 0 stacks, so the first hit would lose the extra-stack penalty; start at 1.
-	stacks = 1
 	max_stacks = 3
 	stress_change_per_extra_stack = 1
 	desc = span_red("I'm overfilled and aching for relief.")

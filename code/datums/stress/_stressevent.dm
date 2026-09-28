@@ -3,10 +3,10 @@
 	var/desc
 	/// Integer value for stress change
 	var/stress_change = 0
-	/// How long should this last
+	/// How long this lasts; 0 or less lasts until remove_stress() is called
 	var/timer = 0
-	/// Stacks of this event
-	var/stacks = 0
+	/// Stacks of this event; the first application counts as one
+	var/stacks = 1
 	/// Max stacks of this event
 	var/max_stacks = 1
 	/// Amount of stress each extra stack adds

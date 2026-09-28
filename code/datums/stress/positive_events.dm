@@ -258,11 +258,6 @@
 	desc = span_green("I love the night!")
 	timer = 20 MINUTES
 
-/datum/stress_event/hug
-	desc = "<span class='nicegreen'>Hugs are nice.</span>\n"
-	stress_change = -1
-	timer = 2 MINUTES
-
 /datum/stress_event/betterhug
 	desc = "<span class='nicegreen'>Someone was very nice to me.</span>\n"
 	stress_change = -3

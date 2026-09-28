@@ -1,7 +1,3 @@
-/datum/stress_event/drunk
-	stress_change = 3
-	desc = "<span class='nicegreen'>Everything just feels better after a drink or two.</span>\n"
-
 /datum/stress_event/quality_nice
 	desc = "<span class='nicegreen'>That drink wasn't bad at all.</span>\n"
 	stress_change = 2
