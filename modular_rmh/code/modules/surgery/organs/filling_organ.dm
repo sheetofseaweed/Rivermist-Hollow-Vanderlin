@@ -587,6 +587,9 @@
 				MOBTIMER_SET(owner, "organ_drip")
 				to_chat(owner, span_info("I collect the fluids dripping from me in \the [collector]."))
 			return
+		leak_amount = cling_to_skin(leak_amount)
+		if(leak_amount <= 0)
+			return
 	if(prob(5) && owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
 		MOBTIMER_SET(owner, "organ_drip")
 		to_chat(owner, pick(span_info("A little bit of [english_list(reagents.reagent_list)] drips from my [pick(altnames)]..."),

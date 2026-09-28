@@ -139,16 +139,6 @@
 		. += span_love(span_bold("[P[THEYVE]] quite a tempting appeal"))
 		user.add_stress(self_inspect ? /datum/stress_event/allure_self : /datum/stress_event/allure)
 
-	//Facial status
-	var/datum/status_effect/facial/facial = has_status_effect(/datum/status_effect/facial)
-	if(facial)
-		var/wet_or_dry = !facial?.has_dried_up ? "glazed with cum" : "plastered with dried cum"
-		if(user != src && isliving(user))
-			var/mob/living/L = user
-			. += (L.STAPER >= 8 && L.STAINT >= 5) ? span_info("[P[THEYRE]] [wet_or_dry]!") : span_warning("[P[THEYRE]] smeared with something glossy!")
-		else
-			. += span_info("[P[THEYRE]] [wet_or_dry]!")
-
 	// Self inspections
 	if(!self_inspect)
 		//Old Party
@@ -381,21 +371,14 @@
 		if(item)
 			. += span_tinynoticeital("You get the feeling [P[THEIR]] most valuable possession is [item.get_examine_name(user)].")
 
-	// Facial/creampie effect message
-	var/observer_privilege = isobserver(user)
-	var/datum/status_effect/facial/facial = has_status_effect(/datum/status_effect/facial)
+	// Fluid coats on bare skin, then a creampie
+	var/datum/component/fluid_coated/coated = GetComponent(/datum/component/fluid_coated)
+	if(coated)
+		. += coated.get_examine_lines(user, P)
 	var/datum/status_effect/facial/internal/creampie = null
-	if(observer_privilege || get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = TRUE))
+	if(isobserver(user) || get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = TRUE))
 		creampie = has_status_effect(/datum/status_effect/facial/internal)
-	if(facial && creampie)
-		var/facial_wet_or_dry = !facial?.has_dried_up ? "glazed" : "plastered"
-		var/creampie_wet_or_dry = !creampie?.has_dried_up ? "dripping out" : "stained with"
-		var/we_wet_or_dry = facial?.has_dried_up && creampie?.has_dried_up ? "dried cum" : "cum"
-		if(user != src && isliving(user))
-			. += (L.STAPER >= 8 && L.STAINT >= 5) ? span_info("[P[THEYRE]] [facial_wet_or_dry] and [creampie_wet_or_dry] [we_wet_or_dry]!") : span_warning("[P[THEYRE]] covered in something glossy!")
-		else
-			. += span_info("[P[THEYRE]] [facial_wet_or_dry] and [creampie_wet_or_dry] [we_wet_or_dry]!")
-	else if(creampie)
+	if(creampie)
 		var/wet_or_dry = !creampie?.has_dried_up ? "dripping out cum" : "stained with dried cum"
 		if(user != src && isliving(user))
 			. += (L.STAPER >= 8 && L.STAINT >= 5) ? span_info("[P[THEYRE]] [wet_or_dry]!") : span_warning("[P[THEYRE]] letting out some glossy stuff!")

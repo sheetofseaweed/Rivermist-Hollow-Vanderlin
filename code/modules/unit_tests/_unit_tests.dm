@@ -103,6 +103,7 @@
 #include "filling_organ_fluids.dm"
 #include "flight_carry.dm"
 #include "fluid_clothing.dm"
+#include "fluid_coats.dm"
 #include "fluid_potions.dm"
 #include "fluid_pumps.dm"
 #include "fluid_tastes.dm"

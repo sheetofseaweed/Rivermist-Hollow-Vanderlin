@@ -373,6 +373,23 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define FAMILIAR_TASTE_GAP (1 HOURS)
 /// Visits after which a familiar taste becomes a cherished one.
 #define FAMILIAR_TASTE_CHERISHED_VISITS 3
+
+// Body zones that body fluids can coat.
+#define FLUID_COAT_FACE "face"
+#define FLUID_COAT_CHEST "chest"
+#define FLUID_COAT_BELLY "belly"
+#define FLUID_COAT_GROIN "groin"
+#define FLUID_COAT_BACK "back"
+#define FLUID_COAT_THIGHS "thighs"
+#define FLUID_COAT_FEET "feet"
+/// Units one coat zone holds; the rest runs off to the floor.
+#define FLUID_COAT_CAPACITY 20
+/// A zone holding this much reads and draws as heavily coated.
+#define FLUID_COAT_HEAVY_UNITS 8
+/// Units spilled on the face when a climax goes into the mouth.
+#define FLUID_COAT_ORAL_SPILL 3
+/// Share of a bare leak that clings to the skin; the rest drips to the floor.
+#define FLUID_COAT_LEAK_SHARE 0.5
 /// How long milk keeps flowing after a conventional pregnancy ends.
 #define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
 /// Units of a fluid potion in the blood needed before it takes effect.

@@ -4846,6 +4846,7 @@
 #include "modular_rmh\modular\falling_star\falling_star.dm"
 #include "modular_rmh\modular\fluids\fluid_clothing.dm"
 #include "modular_rmh\modular\fluids\fluid_clothing_actions.dm"
+#include "modular_rmh\modular\fluids\fluid_coats.dm"
 #include "modular_rmh\modular\fluids\fluid_heels.dm"
 #include "modular_rmh\modular\fluids\fluid_potions.dm"
 #include "modular_rmh\modular\fluids\fluid_pump_actions.dm"

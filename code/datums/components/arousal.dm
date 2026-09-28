@@ -600,22 +600,17 @@
 		if(ORGASM_LOCATION_ONTO)
 			log_combat(user, target, "Came onto the target")
 			playsound(target, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
-			var/turf/turf = get_turf(target)
+			var/coat_zone = action ? action.get_climax_coat_zone(user) : FLUID_COAT_CHEST
 			if(testes)
 				if(testes.reagents)
 					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_ONTO)
-					var/cum_transferred = route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
-					if(cum_transferred > 0)
+					if(coat_climax_onto(testes.reagents, cum_to_take, user, target, action, climax_type, coat_zone, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
-					if(target && cum_transferred > 0)
-						target.apply_status_effect(/datum/status_effect/facial)
 			if(vag)
 				if(vag.reagents)
 					var/femcum_to_take = vag.get_climax_release(climax_type)
-					if(route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer) > 0)
+					if(coat_climax_onto(vag.reagents, femcum_to_take, user, target, action, climax_type, coat_zone, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
-			if(target && climax_fluid_transferred && (!action || !action.knot_on_finish))
-				apply_facial_effect(target)
 
 		if(ORGASM_LOCATION_INTO)
 			log_combat(user, target, "Came inside the target")
@@ -657,7 +652,7 @@
 							climax_fluid_transferred = TRUE
 			if(target && climax_fluid_transferred)
 				if(is_oral)
-					apply_facial_effect(target)
+					spill_climax_on_face(target, testes, vag)
 				else
 					apply_creampie_effect(target)
 
@@ -722,14 +717,30 @@
 		source_reagents.trans_to(destination, remaining, transfered_by = user, method = transfer_method)
 	return remaining
 
-/datum/component/arousal/proc/apply_facial_effect(mob/living/recipient)
-	if(!recipient)
+/// A climax onto a partner: worn catchers first, then their clothes or bare skin at the zone, the rest to the floor.
+/datum/component/arousal/proc/coat_climax_onto(datum/reagents/source_reagents, amount, mob/living/user, mob/living/target, datum/sex_action/action, climax_type, coat_zone, mob/living/action_initiator, mob/living/action_target, atom/action_performer)
+	if(!source_reagents || amount <= 0)
+		return 0
+	var/remaining = apply_sex_action_climax_effects(user, target, action, climax_type, source_reagents, amount, target, null, action_initiator, action_target, action_performer)
+	if(remaining <= 0)
+		return 0
+	var/leftover = remaining
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		leftover = human_target.coat_with_fluid(coat_zone, source_reagents, remaining)
+	if(leftover > 0)
+		deposit_cum_on_turf(get_turf(target || user), source_reagents, leftover)
+	return remaining
+
+/// An oral climax leaves a little on the partner's face.
+/datum/component/arousal/proc/spill_climax_on_face(mob/living/target, obj/item/organ/genitals/filling_organ/testes, obj/item/organ/genitals/filling_organ/vag)
+	if(!ishuman(target))
 		return
-	var/datum/status_effect/facial/facial_effect = recipient.has_status_effect(/datum/status_effect/facial)
-	if(facial_effect)
-		facial_effect.refresh_cum()
-	else
-		recipient.apply_status_effect(/datum/status_effect/facial)
+	var/mob/living/carbon/human/human_target = target
+	for(var/obj/item/organ/genitals/filling_organ/source_organ in list(testes, vag))
+		if(source_organ.reagents?.total_volume)
+			human_target.coat_with_fluid(FLUID_COAT_FACE, source_organ.reagents, FLUID_COAT_ORAL_SPILL)
+			return
 
 /datum/component/arousal/proc/apply_creampie_effect(mob/living/recipient)
 	if(!recipient)
