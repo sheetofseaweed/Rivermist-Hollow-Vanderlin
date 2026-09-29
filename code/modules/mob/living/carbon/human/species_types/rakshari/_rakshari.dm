@@ -312,6 +312,9 @@
 		return
 
 	playsound(owner, 'sound/items/sniff.ogg', 100, TRUE)
+	var/mob/living/sniffer = owner
+	if(istype(sniffer))
+		sniffer.reveal_fluid_scent_trails()
 	if(!length(smelled_targets))
 		to_chat(owner, span_notice("You smell the air! No creatures are nearby, save yourself."))
 		return
@@ -339,5 +342,5 @@
 
 		var/message = get_smell_message(smell_target)
 		if(message)
-			to_chat(owner, span_notice("[message][distance_phrase]!"))
+			to_chat(owner, span_notice("[message][get_fluid_scent_note(smell_target)][distance_phrase]!"))
 

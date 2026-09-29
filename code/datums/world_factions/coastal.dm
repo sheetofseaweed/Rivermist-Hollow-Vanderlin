@@ -214,6 +214,9 @@
 		/datum/supply_pack/seeds/dragonfruit,
 		/datum/supply_pack/seeds/poppy,
 		/datum/supply_pack/medicine/antipregpot,
+		/datum/supply_pack/medicine/moon_tea,
+		/datum/supply_pack/medicine/cold_seed,
+		/datum/supply_pack/medicine/seed_sachets,
 		// Rare restorative - the cure for lingering defeat trauma
 		/datum/supply_pack/tools/medical/mercydraught
 	)

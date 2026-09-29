@@ -204,6 +204,8 @@
 		/datum/reagent/fluid_potion/swap/milk = /obj/item/reagent_containers/glass/bottle/vial/milk_swap,
 		/datum/reagent/fluid_potion/swap/seed = /obj/item/reagent_containers/glass/bottle/vial/seed_swap,
 		/datum/reagent/fluid_potion/swap/nectar = /obj/item/reagent_containers/glass/bottle/vial/nectar_swap,
+		/datum/reagent/fluid_potion/contraceptive/moon_tea = /obj/item/reagent_containers/glass/bottle/vial/moon_tea,
+		/datum/reagent/fluid_potion/contraceptive/cold_seed = /obj/item/reagent_containers/glass/bottle/vial/cold_seed,
 	)
 	var/list/brewed = list()
 	for(var/recipe_type in subtypesof(/datum/alch_cauldron_recipe))

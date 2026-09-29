@@ -182,8 +182,13 @@
 	var/base_capacity = vagina.reagents.maximum_volume
 
 	TEST_ASSERT(vagina.be_impregnated(), "The test setup should start a conventional pregnancy.")
-	TEST_ASSERT(breasts.is_producing(), "Pregnancy should start lactation.")
-	TEST_ASSERT_EQUAL(vagina.reagents.maximum_volume, base_capacity * 0.5, "Pregnancy should halve capacity exactly once.")
+	TEST_ASSERT(!breasts.is_producing(), "A hidden pregnancy should not bring the milk in at once.")
+	TEST_ASSERT_EQUAL(vagina.get_reagent_capacity(), base_capacity, "Capacity should not shrink before the belly grows.")
+	vagina.advance_pregnancy_stage()
+	TEST_ASSERT(breasts.is_producing(), "The first belly stage should start lactation.")
+	vagina.advance_pregnancy_stage()
+	vagina.advance_pregnancy_stage()
+	TEST_ASSERT_EQUAL(vagina.reagents.maximum_volume, base_capacity * 0.5, "A full-term belly should halve capacity.")
 
 	vagina.clear_conventional_pregnancy()
 	TEST_ASSERT(breasts.is_producing(), "Lactation should continue for a while after pregnancy.")

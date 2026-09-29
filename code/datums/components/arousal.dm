@@ -529,9 +529,9 @@
 	if(climax_testes?.is_pent_up() && mob.getorganslot(ORGAN_SLOT_PENIS))
 		to_chat(mob, span_love("A pent-up load surges out of me!"))
 		mob.add_stress(/datum/stress_event/pent_up_release)
-	// A hand on the cock with an aim decides where a hand-driven climax lands.
-	var/obj/item/penis_grip/steering_grip = get_steering_grip(action)
-	if(steering_grip && climax_at_grip_aim(steering_grip, action, action_initiator, action_target, action_performer))
+	// An aim on the cock, from a hand or an NPC, decides where a hand-driven climax lands.
+	var/datum/climax_aim/steering_aim = get_steering_aim(action)
+	if(steering_aim && climax_at_aim(steering_aim, action, action_initiator, action_target, action_performer))
 		return
 	if(!action || !target)
 		mob.visible_message(span_love("[mob] orgasms!"))
@@ -608,7 +608,8 @@
 			if(testes)
 				if(testes.reagents)
 					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_ONTO)
-					if(coat_climax_onto(testes.reagents, cum_to_take, user, target, action, climax_type, coat_zone, action_initiator, action_target, action_performer) > 0)
+					// Spurts drift down the body from the zone the climax starts at.
+					if(spurt_onto(target, coat_zone, cum_to_take, action, action_initiator, action_target, action_performer))
 						climax_fluid_transferred = TRUE
 			if(vag)
 				if(vag.reagents)
@@ -713,6 +714,7 @@
 		return 0
 	if(isturf(destination))
 		var/turf/destination_turf = destination
+		leave_fluid_scent(destination_turf, user, get_fluid_scent_kind(source_reagents.get_master_reagent()))
 		if(use_fluid_decal) //spilled ejaculate forms a drip/puddle decal instead of a raw liquid puddle.
 			deposit_cum_on_turf(destination_turf, source_reagents, remaining)
 		else

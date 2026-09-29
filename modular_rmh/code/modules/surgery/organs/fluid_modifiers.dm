@@ -16,6 +16,10 @@
 	var/forces_production = FALSE
 	/// Stops production; wins over forces_production.
 	var/blocks_production = FALSE
+	/// Multiplies the chance that seed held in this organ conceives.
+	var/conception_multiplier = 1
+	/// Multiplies the virility of seed this organ gives.
+	var/virility_multiplier = 1
 
 /datum/fluid_modifier/proc/affects(obj/item/organ/genitals/filling_organ/organ)
 	return !affected_slots || (organ.slot in affected_slots)
@@ -59,6 +63,16 @@
 /datum/fluid_modifier/in_heat
 	rate_multiplier = 1.5
 	climax_multiplier = 1.25
+
+/// Moon Tea: seed held in the womb or rear rarely takes.
+/datum/fluid_modifier/barren_womb
+	affected_slots = list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS)
+	conception_multiplier = CONTRACEPTIVE_MULTIPLIER
+
+/// Cold Seed draught: seed given while it works rarely takes.
+/datum/fluid_modifier/cold_seed
+	affected_slots = list(ORGAN_SLOT_TESTICLES)
+	virility_multiplier = CONTRACEPTIVE_MULTIPLIER
 
 GLOBAL_LIST_INIT(fluid_modifiers, init_fluid_modifiers())
 

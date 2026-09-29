@@ -230,8 +230,11 @@
 /// The one source of truth for how much fluid this organ can hold right now.
 /obj/item/organ/genitals/filling_organ/proc/get_reagent_capacity()
 	var/capacity = get_base_capacity() * get_capacity_multiplier()
-	if((fertility && pregnant) || has_oviposition_pregnancy())
+	if(has_oviposition_pregnancy())
 		capacity *= 0.5
+	else if(fertility && pregnant)
+		// A hidden pregnancy takes room only as the belly grows, down to half when full term.
+		capacity *= 1 - 0.5 * (conventional_pregnancy_stage / 3)
 	for(var/obj/item/thing in contents)
 		// Plugs and pumps sit in or over the opening, so they take no room inside.
 		if(thing.type != /obj/item/dildo/plug && !istype(thing, /obj/item/reagent_containers/glass/fluid_pump))
@@ -599,6 +602,7 @@
 			span_info("Some liquid drips from my [pick(altnames)]."),
 			span_info("My [pick(altnames)] spills some liquid."),
 			span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)].")))
+	leave_fluid_scent(get_turf(owner), owner, get_fluid_scent_kind(reagents.get_master_reagent()))
 	drip_to_turf(get_turf(owner), leak_amount)
 
 /// Units leaked per flow interval: spillers and overfull organs push harder as they fill.
@@ -905,10 +909,7 @@
 	if(length(hosted_eggs))
 		var/obj/item/oviposition_egg/fertilized_egg = fertilize_oviposition_egg(father, null, father_features, father_name)
 		if(fertilized_egg)
-			if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
-				to_chat(owner, span_love("A warm pulse runs through one of the eggs in my [get_oviposition_location_name()]."))
-			else
-				to_chat(owner, span_love("Something in my [get_oviposition_location_name()] has been fertilized."))
+			hint_conception()
 			return TRUE
 
 		for(var/obj/item/oviposition_egg/egg as anything in hosted_eggs)
@@ -922,24 +923,15 @@
 			return FALSE
 
 	if(try_start_fertilization_embryo_pregnancy(father, allow_embryo_pregnancy, embryo_hatch_result_type, father_features, father_name))
-		if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
-			to_chat(owner, span_love("Something fertile settles deep in my [get_oviposition_location_name()]."))
-		else
-			to_chat(owner, span_love("Something in my [get_oviposition_location_name()] has taken root."))
+		hint_conception()
 		return TRUE
 
 	if(!allows_conventional_impregnation || pregnant)
 		return FALSE
-	to_chat(owner, span_love("I feel a surge of warmth in my [src.name], I'm definitely pregnant!"))
-	owner.apply_status_effect(/datum/status_effect/debuff/impregnation)
+	// Nothing announces it; signs come later, and a seed sachet can tell.
 	pregnant = TRUE
 	conventional_pregnancy_stage = 0
-	update_reagent_capacity()
-
-	var/obj/item/organ/genitals/filling_organ/breasts/breasties = owner.getorganslot(ORGAN_SLOT_BREASTS)
-	if(breasties && !breasties.is_producing())
-		to_chat(owner, span_love("I feel damp warmness on my nipples, I'm definitely leaking milk..."))
-	start_pregnancy_lactation()
+	start_hidden_pregnancy()
 	conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), 3 HOURS, TIMER_STOPPABLE)
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
 	return TRUE
@@ -952,9 +944,13 @@
 		deltimer(conventional_pregnancy_timer)
 		conventional_pregnancy_timer = null
 
+	stop_pregnancy_signs()
 	pregnant = FALSE
 	conventional_pregnancy_stage = 0
-	end_pregnancy_lactation()
+	// Milk only lingers if the pregnancy had got far enough to start it.
+	if(owner?.has_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY))
+		end_pregnancy_lactation()
+	update_reagent_capacity()
 	to_chat(owner, span_love("I feel my [src] shrink to how it was before. Pregnancy is no more."))
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
 
@@ -975,9 +971,7 @@
 		return
 
 	if(conventional_pregnancy_stage < 3 && prob(30))
-		conventional_pregnancy_stage += 1
-		to_chat(owner, span_love("I notice my belly has grown due to pregnancy..."))
-		SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
+		advance_pregnancy_stage()
 
 	if(conventional_pregnancy_stage < 3)
 		conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), 6 HOURS, TIMER_STOPPABLE)

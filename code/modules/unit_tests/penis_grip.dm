@@ -24,7 +24,7 @@
 	return TRUE
 
 /datum/unit_test/penis_grip_intent_plates_exist/Run()
-	for(var/intent_type in list(/datum/intent/penis_grip/aim, /datum/intent/penis_grip/slap))
+	for(var/intent_type in list(/datum/intent/penis_grip/aim, /datum/intent/penis_grip/slap, /datum/intent/penis_grip/edge))
 		var/datum/intent/intent = new intent_type
 		TEST_ASSERT(icon_exists(intent.hud_icon, intent.icon_state), "[intent_type] has no HUD plate '[intent.icon_state]' in [intent.hud_icon].")
 		qdel(intent)
@@ -113,7 +113,7 @@
 	partner.forceMove(locate(run_loc_floor_bottom_left.x + 1, run_loc_floor_bottom_left.y, run_loc_floor_bottom_left.z))
 	partner.setDir(EAST)
 	grip.aim_at(partner, owner)
-	TEST_ASSERT_EQUAL(grip.resolve_coat_zone(partner), FLUID_COAT_BACK, "A chest shot on someone facing away should land on the back.")
+	TEST_ASSERT_EQUAL(penis.climax_aim.resolve_zone(partner), FLUID_COAT_BACK, "A chest shot on someone facing away should land on the back.")
 	partner.forceMove(get_turf(owner))
 	partner.setDir(SOUTH)
 
@@ -121,9 +121,9 @@
 	var/datum/sex_action/stroking = controller.instantiate_action(/datum/sex_action/masturbate/penis)
 	TEST_ASSERT(stroking.bind_runtime(controller), "The jerk-off action should bind.")
 	grip.aim_at(partner, owner)
-	TEST_ASSERT_EQUAL(arousal.get_steering_grip(stroking), grip, "Jerking off should follow the grip's aim.")
+	TEST_ASSERT_EQUAL(arousal.get_steering_aim(stroking), penis.climax_aim, "Jerking off should follow the grip's aim.")
 	var/datum/sex_action/sex/vaginal/fucking = allocate(/datum/sex_action/sex/vaginal)
-	TEST_ASSERT_NULL(arousal.get_steering_grip(fucking), "A climax inside someone should ignore the grip.")
+	TEST_ASSERT_NULL(arousal.get_steering_aim(fucking), "A climax inside someone should ignore the grip.")
 	refill_penis_grip_test_testicles(owner)
 	TEST_ASSERT(penis_grip_test_climax(arousal, stroking, owner), "A steered action climax should not runtime.")
 	TEST_ASSERT(coated.coats[FLUID_COAT_CHEST], "Jerking off at the chest should coat it.")
@@ -136,7 +136,7 @@
 	refill_penis_grip_test_testicles(owner)
 	TEST_ASSERT(penis_grip_test_climax(arousal), "A climax with a lost aim should not runtime.")
 	TEST_ASSERT_EQUAL(bucket.reagents.total_volume, 0, "A bucket out of reach should stay empty.")
-	TEST_ASSERT_NULL(grip.aim_target, "An aim out of reach should be dropped.")
+	TEST_ASSERT_NULL(penis.climax_aim.target, "An aim out of reach should be dropped.")
 
 /datum/unit_test/penis_grip_slap_knockback_follows_heft/Run()
 	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)

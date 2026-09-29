@@ -1,4 +1,4 @@
-// A hand on a cock: a grab-like pseudo-item that aims the climax, slaps with it, and strokes it.
+// A hand on a cock: a grab-like pseudo-item that aims the climax, slaps, edges, and strokes it.
 
 /obj/item/organ/genitals/penis
 	/// The hand pseudo-item holding this cock, if any.
@@ -26,6 +26,12 @@
 	icon_state = "inslap"
 	hud_icon = 'modular_rmh/icons/hud/intents.dmi'
 
+/datum/intent/penis_grip/edge
+	name = "edge"
+	desc = "Squeeze the base to hold the climax back, or choke it off mid-spurt."
+	icon_state = "inedge"
+	hud_icon = 'modular_rmh/icons/hud/intents.dmi'
+
 /obj/item/penis_grip
 	name = "cock"
 	desc = "A firm hold on a cock. Aim it, slap with it, or use it in hand to stroke it."
@@ -34,7 +40,7 @@
 	w_class = WEIGHT_CLASS_HUGE
 	item_flags = ABSTRACT | DROPDEL
 	resistance_flags = EVERYTHING_PROOF
-	possible_item_intents = list(/datum/intent/penis_grip/aim, /datum/intent/penis_grip/slap)
+	possible_item_intents = list(/datum/intent/penis_grip/aim, /datum/intent/penis_grip/slap, /datum/intent/penis_grip/edge)
 	no_effect = TRUE
 	force = 0
 	throwforce = 0
@@ -48,13 +54,8 @@
 	var/datum/sex_action/stroke_action
 	/// TRUE when a stroking action made this grip, so the hand lets go when the stroking stops.
 	var/made_by_action = FALSE
-	/// Where the climax lands: a mob, a container, a garment or a turf.
-	var/atom/aim_target
-	/// Coat zone, or PENIS_AIM_MOUTH, when the aim is a mob.
-	var/aim_zone
-	/// Marker on the aim that only the holder sees.
-	var/image/aim_marker
 	COOLDOWN_DECLARE(slap_cooldown)
+	COOLDOWN_DECLARE(squeeze_cooldown)
 	COOLDOWN_DECLARE(aim_message_cooldown)
 
 /obj/item/penis_grip/Initialize(mapload, mob/living/carbon/new_holder, mob/living/carbon/new_owner, obj/item/organ/genitals/penis/new_penis)
@@ -76,7 +77,7 @@
 
 /obj/item/penis_grip/Destroy(force)
 	STOP_PROCESSING(SSobj, src)
-	clear_aim()
+	drop_aim()
 	if(penis?.grip == src)
 		penis.grip = null
 	var/datum/sex_action/stroking = stroke_action
@@ -126,6 +127,9 @@
 		if(isliving(target))
 			slap(target, user)
 		return TRUE
+	if(istype(user.used_intent, /datum/intent/penis_grip/edge))
+		squeeze(user)
+		return TRUE
 	aim_at(target, user)
 	return TRUE
 
@@ -150,9 +154,7 @@
 
 /// The cock can only reach what is next to its owner.
 /obj/item/penis_grip/proc/can_reach(atom/target)
-	var/turf/target_turf = get_turf(target)
-	var/turf/owner_turf = get_turf(owner)
-	return target_turf && owner_turf && target_turf.z == owner_turf.z && get_dist(target_turf, owner_turf) <= 1
+	return penis.get_climax_aim().can_reach(target)
 
 /obj/item/penis_grip/proc/get_cock_phrase(mob/living/subject, mob/living/victim)
 	if(owner == subject)
@@ -161,17 +163,15 @@
 		return "[victim.p_their()] own cock"
 	return "[owner]'s cock"
 
-/// "Bob's" for anyone else, "his own" when it is the holder.
-/obj/item/penis_grip/proc/get_whose(mob/living/aimed)
-	return aimed == holder ? "[holder.p_their()] own" : "[aimed]'s"
-
 // --- Aim ---
 
+/// Points the cock at a mob zone, a container, a garment or the floor; the aim lives on the cock.
 /obj/item/penis_grip/proc/aim_at(atom/target, mob/living/user)
 	if(penis.strapon)
 		to_chat(user, span_warning("A strapon has nothing to aim."))
 		return FALSE
-	if(!can_reach(target))
+	var/datum/climax_aim/aim = penis.get_climax_aim()
+	if(!aim.can_reach(target))
 		to_chat(user, span_warning("It won't reach that far."))
 		return FALSE
 	var/atom/new_aim
@@ -190,8 +190,8 @@
 		new_aim = get_turf(target)
 	if(!new_aim)
 		return FALSE
-	set_aim(new_aim, new_zone)
-	var/aim_text = get_aim_text()
+	aim.set_target(new_aim, new_zone, user)
+	var/aim_text = aim.get_text(user)
 	if(COOLDOWN_FINISHED(src, aim_message_cooldown))
 		COOLDOWN_START(src, aim_message_cooldown, PENIS_AIM_MESSAGE_COOLDOWN)
 		user.visible_message(span_love("[user] points [get_cock_phrase(user)] at [aim_text]."), span_love("I point [owner == user ? "my cock" : "[owner]'s cock"] at [aim_text]."))
@@ -199,107 +199,40 @@
 		to_chat(user, span_notice("I aim at [aim_text]."))
 	return TRUE
 
-/// An open container with room, such as a cup, a bucket or heels nobody wears.
-/obj/item/penis_grip/proc/is_aim_container(atom/target)
-	return isobj(target) && target.reagents && target.is_refillable()
+/// Letting go ends an aim this hand made.
+/obj/item/penis_grip/proc/drop_aim()
+	var/datum/climax_aim/aim = penis?.climax_aim
+	if(aim?.aimer == holder)
+		aim.clear()
 
-/obj/item/penis_grip/proc/is_aim_garment(atom/target)
-	var/obj/item/clothing/garment = target
-	return istype(garment) && garment.can_soak_fluid()
+// --- Edge ---
 
-/obj/item/penis_grip/proc/set_aim(atom/new_aim, new_zone)
-	clear_aim()
-	aim_target = new_aim
-	aim_zone = new_zone
-	if(needs_aim_signal(new_aim))
-		RegisterSignal(new_aim, COMSIG_PARENT_QDELETING, PROC_REF(on_aim_deleted))
-	show_aim_marker()
+/// Squeezing the base holds the climax back; mid-spurt it chokes the rest off.
+/obj/item/penis_grip/proc/squeeze(mob/living/user)
+	if(!COOLDOWN_FINISHED(src, squeeze_cooldown))
+		return FALSE
+	COOLDOWN_START(src, squeeze_cooldown, EDGE_SQUEEZE_COOLDOWN)
+	user.changeNext_move(CLICK_CD_MELEE)
+	var/datum/component/arousal/arousal = owner.GetComponent(/datum/component/arousal)
+	var/whose = owner == user ? "[user.p_their()] own" : "[owner]'s"
+	if(arousal?.active_spurts)
+		arousal.active_spurts.choke()
+		user.visible_message(span_love("[user] squeezes hard, choking off [whose] climax!"))
+		to_chat(owner, span_warning("It stops short, and leaves me aching for more."))
+		owner.add_stress(/datum/stress_event/ruined_orgasm)
+		SEND_SIGNAL(owner, COMSIG_SEX_SET_AROUSAL, RUINED_ORGASM_AROUSAL)
+		return TRUE
+	SEND_SIGNAL(owner, COMSIG_SEX_ADJUST_ORGASM_PROG, -EDGE_SQUEEZE_DRAIN)
+	SEND_SIGNAL(owner, COMSIG_SEX_ADJUST_EDGING, EDGE_SQUEEZE_EDGING)
+	user.visible_message(span_love("[user] squeezes the base of [get_cock_phrase(user)], holding it back."), span_love("I squeeze the base of [owner == user ? "my cock" : "[owner]'s cock"], holding it back."))
+	if(owner != user)
+		to_chat(owner, span_love("The squeeze pulls me back from the edge."))
+	return TRUE
 
-/obj/item/penis_grip/proc/clear_aim()
-	if(needs_aim_signal(aim_target))
-		UnregisterSignal(aim_target, COMSIG_PARENT_QDELETING)
-	if(aim_marker)
-		holder?.client?.images -= aim_marker
-		aim_marker = null
-	aim_target = null
-	aim_zone = null
-
-/// Owner and holder deletion already ends the grip, and turfs never go away.
-/obj/item/penis_grip/proc/needs_aim_signal(atom/target)
-	return target && !isturf(target) && target != owner && target != holder
-
-/obj/item/penis_grip/proc/on_aim_deleted(datum/source)
-	SIGNAL_HANDLER
-	clear_aim()
-
-/obj/item/penis_grip/proc/show_aim_marker()
-	if(!holder?.client || !aim_target)
-		return
-	var/static/list/zone_offsets = list(
-		PENIS_AIM_MOUTH = 8,
-		FLUID_COAT_FACE = 10,
-		FLUID_COAT_CHEST = 4,
-		FLUID_COAT_BACK = 4,
-		FLUID_COAT_BELLY = 0,
-		FLUID_COAT_GROIN = -3,
-		FLUID_COAT_THIGHS = -7,
-		FLUID_COAT_FEET = -13,
-	)
-	aim_marker = image('modular_rmh/icons/obj/genitals/penis_aim.dmi', aim_target, "aim", ABOVE_ALL_MOB_LAYER)
-	aim_marker.plane = GAME_PLANE_UPPER
-	aim_marker.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM | KEEP_APART
-	if(aim_zone)
-		aim_marker.pixel_y = zone_offsets[aim_zone]
-	holder.client.images += aim_marker
-
-/// The aim when it still exists and the cock can reach it, else null.
-/obj/item/penis_grip/proc/get_valid_aim()
-	if(QDELETED(aim_target) || !can_reach(aim_target))
-		return null
-	return aim_target
-
-/// A chest shot on someone facing away lands on their back.
-/obj/item/penis_grip/proc/resolve_coat_zone(mob/living/aimed)
-	if(aim_zone == FLUID_COAT_CHEST && aimed != owner && aimed.dir == get_dir(owner, aimed))
-		return FLUID_COAT_BACK
-	return aim_zone
-
-/// Heels on the aimed feet, which fill up like a cup.
-/obj/item/penis_grip/proc/get_worn_heels(mob/living/aimed, zone)
-	if(zone != FLUID_COAT_FEET || !ishuman(aimed))
-		return null
-	var/mob/living/carbon/human/wearer = aimed
-	var/obj/item/clothing/shoes/heels/heels = wearer.shoes
-	if(!istype(heels) || !heels.reagents)
-		return null
-	return heels
-
-/obj/item/penis_grip/proc/get_aim_text()
-	if(isliving(aim_target))
-		return "[get_whose(aim_target)] [get_fluid_coat_zone_name(resolve_coat_zone(aim_target), aim_target)]"
-	if(isturf(aim_target))
-		return "the floor"
-	return "\the [aim_target]"
-
-/proc/get_fluid_coat_zone_name(zone, mob/living/body)
-	switch(zone)
-		if(PENIS_AIM_MOUTH)
-			return "mouth"
-		if(FLUID_COAT_FACE)
-			return "face"
-		if(FLUID_COAT_CHEST)
-			return body?.getorganslot(ORGAN_SLOT_BREASTS) ? "tits" : "chest"
-		if(FLUID_COAT_BELLY)
-			return "belly"
-		if(FLUID_COAT_GROIN)
-			return "crotch"
-		if(FLUID_COAT_BACK)
-			return "back"
-		if(FLUID_COAT_THIGHS)
-			return "thighs"
-		if(FLUID_COAT_FEET)
-			return "feet"
-	return "body"
+/datum/stress_event/ruined_orgasm
+	stress_change = 2
+	desc = span_red("My climax was choked off. So close...")
+	timer = 5 MINUTES
 
 // --- Slap ---
 
@@ -508,95 +441,3 @@
 	grip.stroke_action = null
 	if(grip.made_by_action)
 		qdel(grip)
-
-// --- Climax ---
-
-/// The grip on the climaxer's cock when it has an aim and this climax comes from a hand on it.
-/datum/component/arousal/proc/get_steering_grip(datum/sex_action/action)
-	var/mob/living/climaxer = parent
-	var/obj/item/organ/genitals/penis/penis = climaxer.getorganslot(ORGAN_SLOT_PENIS)
-	var/obj/item/penis_grip/grip = penis?.grip
-	if(QDELETED(grip) || !grip.aim_target)
-		return null
-	if(action && action.get_grip_owner(action.action_user, action.action_target) != climaxer)
-		return null
-	return grip
-
-/// Lands a climax where the grip aims; FALSE when the aim is gone, so the normal routing runs.
-/datum/component/arousal/proc/climax_at_grip_aim(obj/item/penis_grip/grip, datum/sex_action/action, mob/living/action_initiator, mob/living/action_target, atom/action_performer)
-	var/mob/living/carbon/climaxer = parent
-	var/obj/item/organ/genitals/filling_organ/testicles/testes = climaxer.getorganslot(ORGAN_SLOT_TESTICLES)
-	if(!testes?.reagents)
-		return FALSE
-	var/atom/aim = grip.get_valid_aim()
-	if(!aim)
-		to_chat(grip.holder, span_warning("I lose my aim."))
-		grip.clear_aim()
-		return FALSE
-	var/datum/reagents/load = testes.reagents
-	var/mob/living/aimed_mob = isliving(aim) ? aim : null
-	var/zone = aimed_mob ? grip.resolve_coat_zone(aimed_mob) : null
-	var/obj/item/clothing/shoes/heels/heels = grip.get_worn_heels(aimed_mob, zone)
-	var/into_mouth = zone == PENIS_AIM_MOUTH && aimed_mob.mouth_is_free()
-	if(zone == PENIS_AIM_MOUTH && !into_mouth)
-		zone = FLUID_COAT_FACE
-	var/phrase
-	if(into_mouth)
-		phrase = "into [grip.get_whose(aimed_mob)] open mouth"
-	else if(heels)
-		phrase = "into [grip.get_whose(aimed_mob)] heels, where it pools around [aimed_mob.p_their()] toes"
-	else if(aimed_mob)
-		phrase = "all over [grip.get_whose(aimed_mob)] [get_fluid_coat_zone_name(zone, aimed_mob)]"
-	else if(isturf(aim))
-		phrase = "onto the floor"
-	else
-		phrase = "[grip.is_aim_container(aim) ? "into" : "onto"] \the [aim]"
-	if(grip.holder == climaxer)
-		climaxer.visible_message(span_love("[climaxer] shoots [climaxer.p_their()] load [phrase]!"))
-	else
-		grip.holder.visible_message(span_love("[grip.holder] aims [climaxer]'s cock as it shoots [phrase]!"))
-	log_combat(climaxer, aimed_mob || climaxer, "came [phrase], aimed by [key_name(grip.holder)]")
-
-	if(into_mouth)
-		var/release = testes.get_climax_release(ORGASM_LOCATION_ORAL)
-		var/swallowed = release * PENIS_AIM_MOUTH_SHARE
-		route_climax_reagents(load, swallowed, climaxer, aimed_mob, action, ORGASM_LOCATION_ORAL, aimed_mob, INGEST, action_initiator, action_target, action_performer)
-		coat_climax_onto(load, release - swallowed, climaxer, aimed_mob, action, ORGASM_LOCATION_ONTO, FLUID_COAT_FACE, action_initiator, action_target, action_performer)
-	else if(heels)
-		fill_aimed_container(heels, load, testes.get_climax_release(ORGASM_LOCATION_CONTAINER), climaxer, aimed_mob, action, action_initiator, action_target, action_performer)
-	else if(aimed_mob)
-		coat_climax_onto(load, testes.get_climax_release(ORGASM_LOCATION_ONTO), climaxer, aimed_mob, action, ORGASM_LOCATION_ONTO, zone, action_initiator, action_target, action_performer)
-	else if(grip.is_aim_container(aim))
-		fill_aimed_container(aim, load, testes.get_climax_release(ORGASM_LOCATION_CONTAINER), climaxer, null, action, action_initiator, action_target, action_performer)
-	else if(grip.is_aim_garment(aim))
-		soak_aimed_garment(aim, load, testes.get_climax_release(ORGASM_LOCATION_CONTAINER), climaxer, action, action_initiator, action_target, action_performer)
-	else
-		route_climax_reagents(load, testes.get_climax_release(ORGASM_LOCATION_SELF), climaxer, null, action, ORGASM_LOCATION_SELF, get_turf(aim), null, action_initiator, action_target, action_performer, TRUE)
-
-	var/obj/item/organ/genitals/filling_organ/vagina/vag = climaxer.getorganslot(ORGAN_SLOT_VAGINA)
-	if(vag?.reagents)
-		vag.produce_climax_fluid()
-	if(load.total_volume <= load.maximum_volume / 4)
-		to_chat(climaxer, span_info("Damn, my [pick(testes.altnames)] are pretty dry now."))
-	after_ejaculation(into_mouth, climaxer, aimed_mob, action, action_initiator, action_target, action_performer)
-	return TRUE
-
-/// Fills a container from the load and spills what does not fit under it; returns the units that went in.
-/datum/component/arousal/proc/fill_aimed_container(obj/container, datum/reagents/load, amount, mob/living/climaxer, mob/living/aimed_mob, datum/sex_action/action, mob/living/action_initiator, mob/living/action_target, atom/action_performer)
-	var/into = min(amount, container.reagents.maximum_volume - container.reagents.total_volume)
-	if(into > 0)
-		route_climax_reagents(load, into, climaxer, aimed_mob, action, ORGASM_LOCATION_CONTAINER, container, INJECT, action_initiator, action_target, action_performer)
-	var/overflow = amount - max(into, 0)
-	if(overflow > 0)
-		container.visible_message(span_warning("\The [container] overflows!"))
-		route_climax_reagents(load, overflow, climaxer, aimed_mob, action, ORGASM_LOCATION_SELF, get_turf(container), null, action_initiator, action_target, action_performer, TRUE)
-	return max(into, 0)
-
-/// Cloth soaks the load; what it cannot hold drips to the floor under it.
-/datum/component/arousal/proc/soak_aimed_garment(obj/item/clothing/garment, datum/reagents/load, amount, mob/living/climaxer, datum/sex_action/action, mob/living/action_initiator, mob/living/action_target, atom/action_performer)
-	var/remaining = apply_sex_action_climax_effects(climaxer, null, action, ORGASM_LOCATION_CONTAINER, load, amount, garment, null, action_initiator, action_target, action_performer)
-	if(remaining <= 0)
-		return
-	var/dripping = remaining - garment.soak_fluid(load, remaining)
-	if(dripping > 0)
-		deposit_cum_on_turf(get_turf(garment), load, dripping)

@@ -422,6 +422,39 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define CONCEPTION_FULL_SEED 10
 /// Conception chance multiplier while the carrier is in heat.
 #define CONCEPTION_HEAT_MULT 2
+/// Morning sickness starts this long after conception, somewhere in the range.
+#define PREGNANCY_SICKNESS_MIN_DELAY (30 MINUTES)
+#define PREGNANCY_SICKNESS_MAX_DELAY (60 MINUTES)
+/// How long morning sickness lasts if the belly has not grown first.
+#define PREGNANCY_SICKNESS_DURATION (2 HOURS)
+/// Time between bouts of morning sickness, somewhere in the range.
+#define PREGNANCY_SICKNESS_MIN_GAP (8 MINUTES)
+#define PREGNANCY_SICKNESS_MAX_GAP (15 MINUTES)
+/// Percent chance that a bout of morning sickness makes the carrier retch.
+#define PREGNANCY_RETCH_CHANCE 10
+/// A seed sachet only notices a pregnancy at least this old.
+#define PREGNANCY_TEST_MIN_AGE (10 MINUTES)
+/// Time for a wetted seed sachet to show its result.
+#define PREGNANCY_TEST_READ_TIME (3 MINUTES)
+/// Time to wet a seed sachet.
+#define PREGNANCY_TEST_WET_TIME (5 SECONDS)
+/// Conception chance or seed virility left under a contraceptive draught.
+#define CONTRACEPTIVE_MULTIPLIER 0.1
+/// How long one dose of a contraceptive draught lasts.
+#define CONTRACEPTIVE_DURATION (1 HOURS)
+/// A climax outside the body splits into two spurts from this many units, three above the next.
+#define CLIMAX_SPURT_TWO_UNITS 10
+#define CLIMAX_SPURT_THREE_UNITS 25
+/// Time between two spurts of one climax; long enough to re-aim between them.
+#define CLIMAX_SPURT_INTERVAL (1.2 SECONDS)
+/// Orgasm progress one edging squeeze takes back.
+#define EDGE_SQUEEZE_DRAIN 25
+/// Edging charge one squeeze adds.
+#define EDGE_SQUEEZE_EDGING 10
+/// Least time between two squeezes.
+#define EDGE_SQUEEZE_COOLDOWN (3 SECONDS)
+/// Arousal left after a climax choked off mid-spurt.
+#define RUINED_ORGASM_AROUSAL 90
 /// How long milk keeps flowing after a conventional pregnancy ends.
 #define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
 /// Units of a fluid potion in the blood needed before it takes effect.

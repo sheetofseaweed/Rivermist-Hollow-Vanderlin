@@ -183,7 +183,10 @@
 		/datum/supply_pack/narcotics/perfume/vanilla,
 		/datum/supply_pack/narcotics/perfume/pear,
 		/datum/supply_pack/narcotics/perfume/strawberry,
-		/datum/supply_pack/medicine/antipregpot
+		/datum/supply_pack/medicine/antipregpot,
+		/datum/supply_pack/medicine/moon_tea,
+		/datum/supply_pack/medicine/cold_seed,
+		/datum/supply_pack/medicine/seed_sachets
 	)
 	exotic_pool = list(
 		/datum/supply_pack/armor/steel/coatofplates,

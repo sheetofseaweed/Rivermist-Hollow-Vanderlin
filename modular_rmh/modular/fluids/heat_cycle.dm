@@ -144,6 +144,7 @@
 		COOLDOWN_START(src, next_musk, HEAT_MUSK_INTERVAL)
 		var/turf/owner_turf = get_turf(owner)
 		owner_turf?.pollute_turf(/datum/pollutant/heat_musk, HEAT_MUSK_AMOUNT, HEAT_MUSK_CAP)
+		leave_fluid_scent(owner_turf, owner, "musk")
 	if(owner.has_status_effect(/datum/status_effect/heat_sated))
 		return
 	pull_arousal()

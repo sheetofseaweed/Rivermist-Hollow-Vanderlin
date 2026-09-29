@@ -38,9 +38,11 @@
 	deposit.father_features = seed.get_parent_features_from_transfer(father)
 	deposit.hatch_result_type = seed.get_parent_hatch_result_type_from_transfer(father)
 	deposit.allow_embryo_pregnancy = allow_embryo_pregnancy
-	deposit.virility = seed.vitilty_factor
+	var/virility_multiplier = father ? father.get_seed_virility_multiplier() : 1
+	deposit.virility = seed.vitilty_factor * virility_multiplier
 	deposit.units += amount
-	deposit.quickened = deposit.quickened || quickened
+	// A contraceptive wins over a quickening draught.
+	deposit.quickened = deposit.quickened || (quickened && virility_multiplier >= 1)
 
 /obj/item/organ/genitals/filling_organ/proc/get_virile_seed_units()
 	. = 0
@@ -91,7 +93,7 @@
 			quickened[deposit] = weights[deposit]
 		total_units += deposit.units
 		total_weight += weights[deposit]
-	var/certain = length(quickened) || owner.has_reagent(/datum/reagent/medicine/pregplus)
+	var/certain = is_conception_certain(length(quickened))
 	var/datum/seed_deposit/chosen = pick_seed_deposit(length(quickened) ? quickened : weights)
 	if(!can_attempt_impregnation(chosen.allow_embryo_pregnancy))
 		return FALSE
@@ -114,9 +116,30 @@
 
 /// Percent chance for one check: base chance, scaled by how much seed there is, its virility, and heat.
 /obj/item/organ/genitals/filling_organ/proc/get_conception_chance(inside, average_virility)
-	. = CONCEPTION_BASE_CHANCE * min(1, inside / CONCEPTION_FULL_SEED) * average_virility
+	. = CONCEPTION_BASE_CHANCE * min(1, inside / CONCEPTION_FULL_SEED) * average_virility * get_conception_multiplier()
 	if(owner?.has_fluid_modifier(/datum/fluid_modifier/in_heat))
 		. *= CONCEPTION_HEAT_MULT
+
+/// Quickened seed or a quickened carrier conceives for sure, unless a contraceptive is at work.
+/obj/item/organ/genitals/filling_organ/proc/is_conception_certain(has_quickened_seed)
+	if(get_conception_multiplier() < 1)
+		return FALSE
+	return has_quickened_seed || owner?.has_reagent(/datum/reagent/medicine/pregplus)
+
+/// Contraceptives and other modifiers on the carrier that make held seed take less often.
+/obj/item/organ/genitals/filling_organ/proc/get_conception_multiplier()
+	. = 1
+	for(var/datum/fluid_modifier/modifier as anything in owner?.get_fluid_modifiers(src))
+		. *= modifier.conception_multiplier
+
+/// How strong this mob's seed is right now, from modifiers on its testicles.
+/mob/living/proc/get_seed_virility_multiplier()
+	. = 1
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = getorganslot(ORGAN_SLOT_TESTICLES)
+	if(!testicles)
+		return
+	for(var/datum/fluid_modifier/modifier as anything in get_fluid_modifiers(testicles))
+		. *= modifier.virility_multiplier
 
 /// Weighted pick that allows fractional weights.
 /obj/item/organ/genitals/filling_organ/proc/pick_seed_deposit(list/weights)

@@ -190,6 +190,9 @@
 			. += "[capitalize(P[THEIR])] [garment.name] [garment.gender == PLURAL ? "are" : "is"] soaked through."
 		else
 			. += "[capitalize(P[THEYVE])] a damp spot on [P[THEIR]] [garment.name]."
+	var/obj/item/clothing/shoes/heels/heels = shoes
+	if(istype(heels) && heels.is_squelching())
+		. += "[capitalize(P[THEIR])] heels squelch wetly."
 
 /// Body fluid held by a garment: it dries slowly, leaves a smelly stain until washed, and draws a grey wet spot.
 /datum/component/fluid_soaked

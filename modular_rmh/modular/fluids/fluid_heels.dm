@@ -7,6 +7,15 @@
 /// Units moved per pouring or filling step, and the time one step takes.
 #define HEEL_POUR_AMOUNT 5
 #define HEEL_POUR_STEP_TIME (8 DECISECONDS)
+/// Worn heels holding this much squelch as the wearer walks.
+#define HEEL_SQUELCH_MIN_UNITS 5
+/// Squelch volume; soft, like a step in mud.
+#define HEEL_SQUELCH_VOLUME 20
+/// Percent chance that a squelch spills a little onto the floor, and how much.
+#define HEEL_SQUELCH_DRIP_CHANCE 25
+#define HEEL_SQUELCH_DRIP_UNITS 0.5
+/// Least time between two squelch reminders to the wearer.
+#define HEEL_SQUELCH_MESSAGE_COOLDOWN (3 MINUTES)
 
 /obj/item/clothing/shoes/heels
 	// Cup intents: feed drinks or pours, fill scoops from a container, splash throws it.
@@ -14,6 +23,10 @@
 	default_item_intent = INTENT_POUR
 	/// Units of drink one pair of heels holds.
 	var/drink_capacity = 20
+	/// Steps since the last squelch, and steps until the next one.
+	var/squelch_steps = 0
+	var/next_squelch_step = 2
+	COOLDOWN_DECLARE(squelch_message_cooldown)
 
 /obj/item/clothing/shoes/heels/Initialize(mapload, ...)
 	. = ..()
@@ -134,6 +147,37 @@
 		user.visible_message(span_notice("[user] tips \the [src] to [drinker]'s lips."), span_notice("I tip \the [src] to [drinker]'s lips."), vision_distance = 2)
 	return TRUE
 
+/// Clothing already follows the wearer's steps; full heels squelch along with them.
+/obj/item/clothing/shoes/heels/on_user_move()
+	. = ..()
+	squelch_step()
+
+/obj/item/clothing/shoes/heels/proc/is_squelching()
+	return is_worn_as_shoes() && reagents?.total_volume >= HEEL_SQUELCH_MIN_UNITS
+
+/obj/item/clothing/shoes/heels/proc/squelch_step()
+	if(!is_squelching())
+		return
+	var/mob/living/wearer = loc
+	if(wearer.body_position == LYING_DOWN)
+		return
+	squelch_steps++
+	if(squelch_steps < next_squelch_step)
+		return
+	squelch_steps = 0
+	next_squelch_step = rand(2, 3)
+	playsound(wearer, pick('sound/foley/footsteps/FTMUD (1).ogg', 'sound/foley/footsteps/FTMUD (2).ogg', 'sound/foley/footsteps/FTMUD (3).ogg', 'sound/foley/footsteps/FTMUD (4).ogg', 'sound/foley/footsteps/FTMUD (5).ogg'), HEEL_SQUELCH_VOLUME, TRUE, -2)
+	if(prob(HEEL_SQUELCH_DRIP_CHANCE))
+		spill_fluid_to_turf(get_turf(wearer), reagents, HEEL_SQUELCH_DRIP_UNITS)
+	if(COOLDOWN_FINISHED(src, squelch_message_cooldown))
+		COOLDOWN_START(src, squelch_message_cooldown, HEEL_SQUELCH_MESSAGE_COOLDOWN)
+		to_chat(wearer, span_notice("My heels squelch with every step."))
+
+#undef HEEL_SQUELCH_MIN_UNITS
+#undef HEEL_SQUELCH_VOLUME
+#undef HEEL_SQUELCH_DRIP_CHANCE
+#undef HEEL_SQUELCH_DRIP_UNITS
+#undef HEEL_SQUELCH_MESSAGE_COOLDOWN
 #undef HEEL_SIP_AMOUNT
 #undef HEEL_FEED_TIME
 #undef HEEL_POUR_AMOUNT
