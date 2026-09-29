@@ -969,6 +969,7 @@
 			if(!try_store_in_hole(user, target))
 				return FALSE
 	lock_sex_object(user, target)
+	sync_penis_grip(user, target)
 	sex_volume = initial(sex_volume)
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
 		sex_volume *= 0.5
@@ -991,6 +992,7 @@
 			remove_from_hole(target, user)
 		else
 			remove_from_hole(user, target)
+	unlink_penis_grip()
 	unlock_sex_object(user, target)
 	sex_volume = initial(sex_volume)
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)

@@ -11,6 +11,10 @@
 	reagent_to_make = null
 	absorbing = TRUE
 	absorbmult = 1.5 //more effective absorb than others i guess.
+	// Slow drains so a load stays about four minutes, or about nine when held in.
+	absorbrate = 0.15
+	driprate = 0.15
+	can_hold_in = TRUE
 	allows_oviposition_pregnancy = TRUE
 	oviposition_storage_component_type = /datum/component/body_storage/anus
 	oviposition_location_name = "anus"

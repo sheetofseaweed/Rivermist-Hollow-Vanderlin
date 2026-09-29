@@ -1494,6 +1494,9 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	return
 
 /datum/species/proc/help(mob/living/carbon/human/user, mob/living/carbon/human/target, datum/martial_art/attacker_style)
+	if(user.try_grip_penis(target))
+		return TRUE
+
 	if(!(istype(user.rmb_intent, /datum/rmb_intent/weak)) && target.body_position == LYING_DOWN)
 		target.help_shake_act(user)
 		if(target != user)

@@ -12,6 +12,10 @@
 	max_reagents = 40 //big cap, ordinary absorbtion.
 	altnames = list("vagina", "cunt", "womb", "pussy", "slit", "kitty", "snatch") //used in thought messages.
 	absorbing = TRUE
+	// Slow drains so a load stays about eight minutes, or about fifteen when held in.
+	absorbrate = 0.15
+	driprate = 0.15
+	can_hold_in = TRUE
 	fertility = TRUE
 	allows_conventional_impregnation = TRUE
 	allows_oviposition_pregnancy = TRUE

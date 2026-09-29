@@ -417,13 +417,13 @@
 		lol++
 		switch(lol)
 			if(1)
-				intent1 = image(icon='icons/mob/roguehud.dmi',icon_state=intenty.icon_state, pixel_x = 64, pixel_y = 16, layer = layer+0.02)
+				intent1 = image(icon=intenty.hud_icon,icon_state=intenty.icon_state, pixel_x = 64, pixel_y = 16, layer = layer+0.02)
 			if(2)
-				intent2 = image(icon='icons/mob/roguehud.dmi',icon_state=intenty.icon_state, pixel_x = 96, pixel_y = 16, layer = layer+0.02)
+				intent2 = image(icon=intenty.hud_icon,icon_state=intenty.icon_state, pixel_x = 96, pixel_y = 16, layer = layer+0.02)
 			if(3)
-				intent3 = image(icon='icons/mob/roguehud.dmi',icon_state=intenty.icon_state, pixel_x = 64, layer = layer+0.02)
+				intent3 = image(icon=intenty.hud_icon,icon_state=intenty.icon_state, pixel_x = 64, layer = layer+0.02)
 			if(4)
-				intent4 = image(icon='icons/mob/roguehud.dmi',icon_state=intenty.icon_state, pixel_x = 96, layer = layer+0.02)
+				intent4 = image(icon=intenty.hud_icon,icon_state=intenty.icon_state, pixel_x = 96, layer = layer+0.02)
 	if(ismob(usr))
 		var/mob/M = usr
 		switch_intent(M.r_index, M.l_index, active)

@@ -144,11 +144,8 @@
 		if(forgan.can_attempt_impregnation(allow_embryo_pregnancy))
 			var/recipient_is_quickened = forgan.owner?.has_reagent(/datum/reagent/medicine/pregplus)
 			var/donor_is_quickened = father?.has_reagent(/datum/reagent/medicine/vertplus)
-			if(prob(20 * vitilty_factor) || recipient_is_quickened || donor_is_quickened)
-				var/list/father_features = get_parent_features_from_transfer(father)
-				var/father_name = get_parent_name_from_transfer(father)
-				var/embryo_hatch_result_type = get_parent_hatch_result_type_from_transfer(father)
-				forgan.be_impregnated(father, allow_embryo_pregnancy, embryo_hatch_result_type, father_features, father_name)
+			// Conception is rolled on timed checks while the seed stays inside, not here.
+			forgan.record_seed(src, trans_volume, allow_embryo_pregnancy, recipient_is_quickened || donor_is_quickened)
 
 /datum/reagent/consumable/cum/on_mob_life(mob/living/carbon/M)
 	if(M.getBruteLoss() && prob(20))

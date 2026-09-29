@@ -66,6 +66,8 @@
 	var/driprate = 0.2
 	/// Leaks whenever it holds fluid; otherwise leaks only when overfull.
 	var/spiller = FALSE
+	/// The owner can clench this opening to hold fluid in.
+	var/can_hold_in = FALSE
 	/// Worn slot that covers the opening and stops leaks.
 	var/blocker = ITEM_SLOT_SHIRT
 	/// If set, underwear replaces the blocker slot item as the cover.
@@ -298,6 +300,7 @@
 	stamp_own_fluids()
 	handle_bloat()
 	update_engorgement()
+	check_conception()
 	if(!COOLDOWN_FINISHED(src, liquidcd))
 		return
 	COOLDOWN_START(src, liquidcd, processspeed)
@@ -564,10 +567,10 @@
 			reagents.trans_to(container, rand(4, 8))
 
 /// Leaks fluid into covering clothes first; a bare opening drips into a container underneath or onto the floor.
-/obj/item/organ/genitals/filling_organ/proc/leak_reagents()
+/obj/item/organ/genitals/filling_organ/proc/leak_reagents(forced_amount)
 	if(!reagents.total_volume)
 		return
-	var/leak_amount = get_leak_amount() || try_letdown()
+	var/leak_amount = forced_amount || get_leak_amount() || try_letdown()
 	if(leak_amount <= 0)
 		return
 	var/obj/item/reagent_containers/glass/fluid_pump/pump = get_leak_pump()
@@ -604,7 +607,7 @@
 	if(!spiller && fullness <= 1)
 		return 0
 	var/pressure = clamp((fullness - DRIP_PRESSURE_THRESHOLD) / (1 - DRIP_PRESSURE_THRESHOLD), 0, 1)
-	return driprate * (1 + (pressure * (DRIP_PRESSURE_MAX_MULT - 1))) * get_leak_multiplier()
+	return driprate * (1 + (pressure * (DRIP_PRESSURE_MAX_MULT - 1))) * get_leak_multiplier() * get_retention_multiplier()
 
 /// A completely full leaky organ lets down a small burst now and then, so clothes get damp but dry off between.
 /obj/item/organ/genitals/filling_organ/proc/try_letdown()

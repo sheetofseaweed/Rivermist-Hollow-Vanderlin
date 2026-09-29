@@ -529,6 +529,10 @@
 	if(climax_testes?.is_pent_up() && mob.getorganslot(ORGAN_SLOT_PENIS))
 		to_chat(mob, span_love("A pent-up load surges out of me!"))
 		mob.add_stress(/datum/stress_event/pent_up_release)
+	// A hand on the cock with an aim decides where a hand-driven climax lands.
+	var/obj/item/penis_grip/steering_grip = get_steering_grip(action)
+	if(steering_grip && climax_at_grip_aim(steering_grip, action, action_initiator, action_target, action_performer))
+		return
 	if(!action || !target)
 		mob.visible_message(span_love("[mob] orgasms!"))
 		var/turf/turf = get_turf(mob)

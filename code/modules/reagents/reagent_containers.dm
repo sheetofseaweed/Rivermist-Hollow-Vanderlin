@@ -135,7 +135,8 @@
 		return NONE
 
 	if(is_open_container() && reagents.total_volume > 0 && !GetComponent(/datum/component/storage))
-		if(!istype(tool, /obj/item/reagent_containers) && !istype(tool, /obj/item/paper))
+		// Drink vessels, like heels used as cups, pour and scoop instead of being dunked.
+		if(!istype(tool, /obj/item/reagent_containers) && !istype(tool, /obj/item/paper) && !tool.is_refillable())
 			if(is_type_in_list(user.used_intent, list(INTENT_SOAK, INTENT_WRING)))
 				return NONE // special snowflake
 			if(tool.w_class > WEIGHT_CLASS_NORMAL || tool.w_class > w_class)

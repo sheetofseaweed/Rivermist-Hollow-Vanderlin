@@ -390,6 +390,38 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define FLUID_COAT_ORAL_SPILL 3
 /// Share of a bare leak that clings to the skin; the rest drips to the floor.
 #define FLUID_COAT_LEAK_SHARE 0.5
+/// Aim zone for a shot into the mouth rather than onto the face.
+#define PENIS_AIM_MOUTH "mouth"
+/// Share of a mouth shot that is swallowed when the mouth is free; the rest glazes the face.
+#define PENIS_AIM_MOUTH_SHARE 0.6
+/// Least time between two aim announcements from the same grip.
+#define PENIS_AIM_MESSAGE_COOLDOWN (3 SECONDS)
+/// Least time between two slaps with the same grip.
+#define PENIS_SLAP_COOLDOWN (1.5 SECONDS)
+/// Slap heft (size, body mismatch, force, stiffness) that knocks the target back a tile.
+#define PENIS_SLAP_KNOCKBACK_HEFT 1.5
+/// Arousal the cock's owner gets from one slap.
+#define PENIS_SLAP_AROUSAL 1
+/// Leak multiplier while the owner lies down; gravity helps less.
+#define FLUID_LYING_LEAK_MULT 0.5
+/// Leak multiplier for a vagina or anus while the owner holds it in.
+#define FLUID_HELD_LEAK_MULT 0.1
+/// Time between the stamina checks of holding fluids in.
+#define FLUID_HOLD_TICK (5 SECONDS)
+/// Fatigue per hold tick while something is held; far below natural recovery, so it lasts indefinitely.
+#define FLUID_HOLD_STAMINA_COST 1
+/// Share of the held fluid that gushes out when the hold gives out.
+#define FLUID_HOLD_GUSH_SHARE 0.25
+/// Time between conception checks while virile seed is inside.
+#define CONCEPTION_CHECK_INTERVAL (2 MINUTES)
+/// Percent chance per check for a full dose of average seed.
+#define CONCEPTION_BASE_CHANCE 10
+/// Virile seed units below which no check is made.
+#define CONCEPTION_MIN_SEED 2
+/// Virile seed units that count as a full dose; less scales the chance down.
+#define CONCEPTION_FULL_SEED 10
+/// Conception chance multiplier while the carrier is in heat.
+#define CONCEPTION_HEAT_MULT 2
 /// How long milk keeps flowing after a conventional pregnancy ends.
 #define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
 /// Units of a fluid potion in the blood needed before it takes effect.

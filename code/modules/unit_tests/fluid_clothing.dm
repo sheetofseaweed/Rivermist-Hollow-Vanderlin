@@ -204,6 +204,61 @@
 	TEST_ASSERT_EQUAL(heels.reagents.total_volume, 0, "Putting on full heels should spill the drink.")
 	TEST_ASSERT(!heels.is_refillable(), "Worn heels should not accept a drink.")
 
+/// Switches the user's intent to the held item's intent of this type; TRUE when it was offered.
+/proc/select_test_intent(mob/living/user, intent_type)
+	for(var/i in 1 to length(user.possible_a_intents))
+		var/datum/intent/intent = user.possible_a_intents[i]
+		if(intent.type == intent_type)
+			user.rog_intent_change(i)
+			return TRUE
+	return FALSE
+
+/datum/unit_test/fluid_heels_work_like_a_cup/Run()
+	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
+	user.mind_initialize()
+	var/obj/item/organ/stomach/stomach = user.getorganslot(ORGAN_SLOT_STOMACH)
+	var/obj/item/clothing/shoes/heels/color/courtesan/heels = allocate(/obj/item/clothing/shoes/heels/color/courtesan)
+	heels.reagents.add_reagent(/datum/reagent/consumable/milk, 15)
+	TEST_ASSERT(user.put_in_active_hand(heels, forced = TRUE), "The user should hold the heels.")
+	TEST_ASSERT_EQUAL(user.used_intent?.type, INTENT_POUR, "Held heels should default to the feed intent.")
+
+	user.zone_selected = BODY_ZONE_CHEST
+	heels.melee_attack_chain(user, user)
+	TEST_ASSERT_EQUAL(stomach.reagents.get_reagent_amount(/datum/reagent/consumable/milk), 5, "Feeding yourself from a heel should drink from it, whatever zone is aimed at.")
+
+	var/obj/item/reagent_containers/glass/bucket/bucket = allocate(/obj/item/reagent_containers/glass/bucket)
+	heels.melee_attack_chain(user, bucket)
+	TEST_ASSERT(bucket.reagents.get_reagent_amount(/datum/reagent/consumable/milk) > 0, "The feed intent should pour a heel into a container.")
+	var/in_bucket = bucket.reagents.total_volume
+
+	heels.reagents.add_reagent(/datum/reagent/consumable/milk, 5)
+	heels.melee_attack_chain(user, bucket)
+	TEST_ASSERT_EQUAL(bucket.reagents.total_volume, in_bucket + 5, "Heels should pour into a container that already holds liquid, not get dunked in it.")
+	in_bucket = bucket.reagents.total_volume
+
+	TEST_ASSERT(select_test_intent(user, INTENT_FILL), "Held heels should offer the fill intent.")
+	var/in_heels_before = heels.reagents.total_volume
+	heels.melee_attack_chain(user, bucket)
+	TEST_ASSERT(heels.reagents.total_volume > in_heels_before, "The fill intent should scoop a container back into the heel.")
+	TEST_ASSERT(bucket.reagents.total_volume < in_bucket, "Scooping should take from the container.")
+
+	user.dropItemToGround(heels, force = TRUE)
+	var/obj/item/reagent_containers/glass/bottle/bottle = allocate(/obj/item/reagent_containers/glass/bottle)
+	bottle.toggle_cork(user, FALSE)
+	TEST_ASSERT(user.put_in_active_hand(bottle, forced = TRUE), "The user should hold the bottle.")
+	TEST_ASSERT(select_test_intent(user, INTENT_FILL), "A held bottle should offer the fill intent.")
+	var/in_heels = heels.reagents.total_volume
+	TEST_ASSERT(in_heels > 0, "The heels should still hold some milk.")
+	bottle.melee_attack_chain(user, heels)
+	TEST_ASSERT(bottle.reagents.get_reagent_amount(/datum/reagent/consumable/milk) > 0, "A bottle should be able to drain the heels.")
+
+	user.dropItemToGround(bottle, force = TRUE)
+	heels.reagents.add_reagent(/datum/reagent/water, 5)
+	TEST_ASSERT(user.put_in_active_hand(heels, forced = TRUE), "The user should hold the heels again.")
+	TEST_ASSERT(select_test_intent(user, INTENT_SPLASH), "Held heels should offer the splash intent.")
+	heels.melee_attack_chain(user, get_turf(user))
+	TEST_ASSERT_EQUAL(heels.reagents.total_volume, 0, "Splashing should empty the heels.")
+
 /datum/unit_test/fluid_semen_coat_stays_until_washed/Run()
 	var/obj/item/clothing/undies/panties/panties = allocate(/obj/item/clothing/undies/panties)
 	var/mutable_appearance/standing = mutable_appearance(panties.mob_overlay_icon, "panties")
