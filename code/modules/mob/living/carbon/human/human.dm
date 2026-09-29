@@ -119,12 +119,16 @@
 		if(user.zone_selected == BODY_ZONE_PRECISE_GROIN)
 			if(!underwear)
 				return
+			if(underwear.locked())
+				to_chat(src, span_warning("\The [underwear] is locked on."))
+				return
 			var/under_clothes = get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = TRUE)
 			src.visible_message(span_notice("[src] begins to take off [underwear][under_clothes ? " from under their clothes" : ""]..."))
 			var/delay = under_clothes ? 20 : 40
 			if(do_after(user, delay, target = src))
-				src.dropItemToGround(underwear)
-				src.put_in_hands(underwear)
+				var/obj/item/clothing/undies/removed_underwear = underwear
+				if(removed_underwear && src.dropItemToGround(removed_underwear))
+					src.put_in_hands(removed_underwear)
 		if((user.zone_selected == BODY_ZONE_L_LEG) || (user.zone_selected == BODY_ZONE_R_LEG))
 			if(!legwear_socks)
 				return

@@ -59,6 +59,10 @@
 	flags_inv = HIDECROTCH
 	mob_overlay_icon = mob_overlay_icon_base
 
+/// TRUE when this worn item hides the organ in [slot], even genitals set to show through clothes.
+/obj/item/clothing/undies/proc/hides_organ_slot(slot)
+	return FALSE
+
 /obj/item/clothing/undies/bikini_bottom
 	name = "bikini bottom"
 	desc = "A perfect bathing garment."

@@ -17,6 +17,7 @@
 	resistance_flags = FLAMMABLE
 	strip_delay = 3 SECONDS
 	equip_delay_other = 3 SECONDS
+	abstract_type = /obj/item/clothing/face/bdsm_gag
 	var/fastened = TRUE
 	var/can_lower = TRUE
 	var/drool_chance = BDSM_GAG_DROOL_CHANCE
@@ -87,6 +88,9 @@
 				override_state += "_f"
 	return ..(age, default_layer, default_icon_file, isinhands, femaleuniform, override_state, coom, customi, sleeveindex, breast_size, clip_mask)
 
+/obj/item/clothing/face/bdsm_gag/muzzle
+	abstract_type = /obj/item/clothing/face/bdsm_gag/muzzle
+
 /obj/item/clothing/face/bdsm_gag/muzzle/black
 	name = "black leather muzzle"
 	icon_state = "black_muzzle"
@@ -98,6 +102,9 @@
 	icon_state = "brown_muzzle"
 	color = BDSM_BROWN_LEATHER
 	muffled_words = "Mmph..."
+
+/obj/item/clothing/face/bdsm_gag/ball
+	abstract_type = /obj/item/clothing/face/bdsm_gag/ball
 
 /obj/item/clothing/face/bdsm_gag/ball/black
 	name = "black ball gag"
@@ -118,6 +125,7 @@
 	body_parts_covered = FACE
 	muffled_words = "Ah... nnh..."
 	drool_chance = 20
+	abstract_type = /obj/item/clothing/face/bdsm_gag/ring
 
 /obj/item/clothing/face/bdsm_gag/ring/black
 	name = "black ring gag"
@@ -136,6 +144,7 @@
 	strip_delay = 6 SECONDS
 	equip_delay_other = 5 SECONDS
 	drool_chance = 10
+	abstract_type = /obj/item/clothing/face/bdsm_gag/harness
 
 /obj/item/clothing/face/bdsm_gag/harness/black
 	name = "black harness gag"
@@ -225,6 +234,7 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi'
 	dyeable = TRUE
 	leashable = TRUE
+	abstract_type = /obj/item/clothing/neck/leathercollar/bdsm
 	var/leash_side
 
 /obj/item/clothing/neck/leathercollar/bdsm/Initialize(mapload, ...)

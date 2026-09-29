@@ -2168,6 +2168,8 @@ generate/load female uniform sprites matching all previously decided variables
 			. += organ.accessory_type
 			. += organ.accessory_colors
 			. += organ.get_render_key_state()
+			if(underwear?.hides_organ_slot(organ.slot))
+				. += "underwear_hidden"
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "husk"

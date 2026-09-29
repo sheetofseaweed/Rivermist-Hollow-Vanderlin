@@ -348,9 +348,17 @@
 	if(!organ)
 		return FALSE
 	for(var/obj/item/device in organ.contents)
-		if(device.blocks_organ_use())
+		if(device.blocks_organ_use(slot))
 			return TRUE
 	return FALSE
+
+/// Worn underwear, such as a chastity device, can also cover organs.
+/mob/living/carbon/is_organ_slot_blocked(slot)
+	if(..())
+		return TRUE
+	if(!underwear || !getorganslot(slot))
+		return FALSE
+	return underwear.blocks_organ_use(slot)
 
 /mob/proc/get_erp_pref(pref_type)
 	if(!ispath(pref_type, /datum/erp_preference))

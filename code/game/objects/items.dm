@@ -417,8 +417,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 /obj/item/proc/can_enter_body_storage_layer(target_layer)
 	return TRUE
 
-/// Worn devices over an organ (pumps, later chastity) return TRUE so nothing else can use that organ.
-/obj/item/proc/blocks_organ_use()
+/// Worn devices over an organ (pumps, chastity) return TRUE so nothing else can use the organ in [slot].
+/obj/item/proc/blocks_organ_use(slot)
 	return FALSE
 
 /// Where this item physically sits while stored in [storage_organ]. An inserted organ moves itself to

@@ -70,6 +70,8 @@
 
 /datum/sprite_accessory/genitals/testicles/is_visible(obj/item/organ/genitals/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
 	draw_above_clothes = FALSE
+	if(owner?.underwear?.hides_organ_slot(organ.slot))
+		return FALSE
 	if(organ.visible_through_clothes)
 		if(organ.visible_through_clothes == DRAW_ABOVE)
 			draw_above_clothes = TRUE

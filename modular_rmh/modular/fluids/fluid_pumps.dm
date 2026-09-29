@@ -48,7 +48,7 @@
 	attached_organ = null
 	return ..()
 
-/obj/item/reagent_containers/glass/fluid_pump/blocks_organ_use()
+/obj/item/reagent_containers/glass/fluid_pump/blocks_organ_use(slot)
 	return TRUE
 
 /// Pumps only fit over an opening, never inside it.

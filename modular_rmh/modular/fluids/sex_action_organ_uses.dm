@@ -17,6 +17,9 @@
 /datum/sex_action/cunnilingus
 	uses_target_organs = list(ORGAN_SLOT_VAGINA)
 
+/datum/sex_action/facesitting
+	uses_user_organs = list(ORGAN_SLOT_ANUS)
+
 /datum/sex_action/foot_grind_vagina
 	uses_target_organs = list(ORGAN_SLOT_VAGINA)
 
@@ -32,6 +35,9 @@
 
 /datum/sex_action/hole_storage/boobs_remove
 	uses_target_organs = list(ORGAN_SLOT_BREASTS)
+
+/datum/sex_action/masturbate/anus
+	uses_user_organs = list(ORGAN_SLOT_ANUS)
 
 /datum/sex_action/masturbate/breasts
 	uses_user_organs = list(ORGAN_SLOT_BREASTS)
@@ -62,6 +68,9 @@
 
 /datum/sex_action/masturbate/penis_over
 	uses_user_organs = list(ORGAN_SLOT_PENIS)
+
+/datum/sex_action/masturbate/other/anus
+	uses_target_organs = list(ORGAN_SLOT_ANUS)
 
 /datum/sex_action/masturbate/other/breasts
 	uses_target_organs = list(ORGAN_SLOT_BREASTS)
@@ -102,6 +111,9 @@
 /datum/sex_action/npc/npc_handjob
 	uses_user_organs = list(ORGAN_SLOT_PENIS)
 
+/datum/sex_action/npc/npc_rimming
+	uses_target_organs = list(ORGAN_SLOT_ANUS)
+
 /datum/sex_action/npc/npc_throat_sex
 	uses_user_organs = list(ORGAN_SLOT_PENIS)
 
@@ -121,6 +133,9 @@
 
 /datum/sex_action/penis_head_worship
 	uses_target_organs = list(ORGAN_SLOT_PENIS)
+
+/datum/sex_action/rimming
+	uses_target_organs = list(ORGAN_SLOT_ANUS)
 
 /datum/sex_action/scissoring
 	uses_user_organs = list(ORGAN_SLOT_VAGINA)
