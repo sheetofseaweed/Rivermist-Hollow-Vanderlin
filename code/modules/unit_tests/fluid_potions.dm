@@ -222,6 +222,32 @@
 		TEST_ASSERT(brewed[reagent_type], "[reagent_type] should have a cauldron recipe.")
 		TEST_ASSERT(sold[potion_vials[reagent_type]], "[potion_vials[reagent_type]] should be sold in a supply pack.")
 
+/datum/unit_test/fluid_potions_have_herbal_brews/Run()
+	var/mob/living/carbon/human/brewer = allocate(/mob/living/carbon/human)
+	brewer.mind_initialize()
+	var/list/brewed = list()
+	for(var/datum/container_craft/cooking/herbal_tea/fluid_brew/recipe_type as anything in subtypesof(/datum/container_craft/cooking/herbal_tea/fluid_brew))
+		var/datum/container_craft/cooking/herbal_tea/fluid_brew/recipe = allocate(recipe_type)
+		var/obj/item/reagent_containers/glass/bucket/pot/pot = allocate(/obj/item/reagent_containers/glass/bucket/pot)
+		pot.reagents.add_reagent(/datum/reagent/water, 20)
+		for(var/herb_type in recipe.requirements)
+			for(var/i in 1 to recipe.requirements[herb_type])
+				allocate(herb_type, pot)
+		recipe.execute_craft_completion(pot, brewer, 1)
+		TEST_ASSERT_EQUAL(pot.reagents.get_reagent_amount(recipe.created_reagent), 10, "[recipe.name] should brew ten measures from twenty of water.")
+		brewed[recipe.created_reagent] = TRUE
+	for(var/reagent_type in list(
+		/datum/reagent/fluid_potion/surge,
+		/datum/reagent/fluid_potion/ebb,
+		/datum/reagent/fluid_potion/drought,
+		/datum/reagent/consumable/lactation_inducer,
+		/datum/reagent/fluid_potion/contraceptive/moon_tea,
+		/datum/reagent/fluid_potion/contraceptive/cold_seed,
+	))
+		TEST_ASSERT(brewed[reagent_type], "[reagent_type] should have a herbal brew.")
+	for(var/swap_type in subtypesof(/datum/reagent/fluid_potion/swap))
+		TEST_ASSERT(!brewed[swap_type], "[swap_type] should stay cauldron-only.")
+
 /datum/unit_test/fluid_potion_activation_purges_stomach/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
 	set_fluid_potion_pref(human, allocate(/datum/preferences), TRUE)
