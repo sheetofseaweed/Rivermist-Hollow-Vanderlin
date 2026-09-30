@@ -360,6 +360,18 @@
 		return FALSE
 	return underwear.blocks_organ_use(slot)
 
+/// TRUE for worn stand-ins, such as a strapon cock or a plug's false tail.
+/obj/item/organ/proc/is_false_organ()
+	return FALSE
+
+/obj/item/organ/genitals/penis/is_false_organ()
+	return strapon
+
+/// The organ in [slot] on [owner], or null when missing or only a worn stand-in.
+/proc/get_real_organ(mob/living/owner, slot)
+	var/obj/item/organ/organ = owner?.getorganslot(slot)
+	return organ?.is_false_organ() ? null : organ
+
 /mob/proc/get_erp_pref(pref_type)
 	if(!ispath(pref_type, /datum/erp_preference))
 		return FALSE

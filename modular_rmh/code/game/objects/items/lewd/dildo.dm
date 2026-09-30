@@ -44,11 +44,12 @@
 				penis.Insert(U)
 	. = ..()
 
-/obj/item/dildo/dropped() //called when belt removed so we can use it to remove the strapon
+/obj/item/dildo/dropped(mob/user, silent = FALSE) //called when belt removed so we can use it to remove the strapon
 	if(wearer) // so males who already have a penis dont get their dicks removed
-		var/obj/item/organ/genitals/penis = wearer.getorganslot(ORGAN_SLOT_PENIS)
-		if (penis)
-			penis.Remove(wearer)
+		// Only pull out our own strapon; the wearer may have gained a real penis since.
+		if(strapon && wearer.getorganslot(ORGAN_SLOT_PENIS) == strapon)
+			strapon.Remove(wearer)
+		wearer = null
 	. = ..()
 
 /obj/item/dildo/proc/customize(mob/living/user)

@@ -144,10 +144,13 @@
 #undef SACHET_SPROUTED
 #undef SACHET_SPENT
 
-/datum/repeatable_crafting_recipe/roguetown/seed_sachet
+// Use wheat seed on cloth, like sweet bait.
+/datum/repeatable_crafting_recipe/crafting/seed_sachet
 	name = "seed sachet"
 	output = /obj/item/pregnancy_test
 	requirements = list(/obj/item/natural/cloth = 1, /obj/item/neuFarm/seed/wheat = 1, /obj/item/neuFarm/seed/oat = 1)
+	starting_atom = /obj/item/neuFarm/seed/wheat
+	attacked_atom = /obj/item/natural/cloth
 	category = "Lewd"
 
 /datum/supply_pack/medicine/seed_sachets

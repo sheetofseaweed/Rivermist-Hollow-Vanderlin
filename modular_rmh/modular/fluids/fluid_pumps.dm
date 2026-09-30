@@ -205,23 +205,26 @@
 		"The brass pump wheezes, and the cup tugs at me again.",
 	)
 
-/datum/repeatable_crafting_recipe/roguetown/breast_pump
+// Use a bronze ingot on a bottle.
+/datum/repeatable_crafting_recipe/crafting/fluid_pump
+	abstract_type = /datum/repeatable_crafting_recipe/crafting/fluid_pump
+	requirements = list(/obj/item/ingot/bronze = 1, /obj/item/reagent_containers/glass/bottle = 1, /obj/item/natural/hide/cured = 1)
+	starting_atom = /obj/item/ingot/bronze
+	attacked_atom = /obj/item/reagent_containers/glass/bottle
+	allow_inverse_start = FALSE
+	category = "Lewd"
+
+/datum/repeatable_crafting_recipe/crafting/fluid_pump/breast_pump
 	name = "brass breast pump"
 	output = /obj/item/reagent_containers/glass/fluid_pump/breast
-	requirements = list(/obj/item/ingot/bronze = 1, /obj/item/reagent_containers/glass/bottle = 1, /obj/item/natural/hide/cured = 1)
-	category = "Lewd"
 
-/datum/repeatable_crafting_recipe/roguetown/cock_milker
+/datum/repeatable_crafting_recipe/crafting/fluid_pump/cock_milker
 	name = "brass milker"
 	output = /obj/item/reagent_containers/glass/fluid_pump/cock
-	requirements = list(/obj/item/ingot/bronze = 1, /obj/item/reagent_containers/glass/bottle = 1, /obj/item/natural/hide/cured = 1)
-	category = "Lewd"
 
-/datum/repeatable_crafting_recipe/roguetown/nectar_pump
+/datum/repeatable_crafting_recipe/crafting/fluid_pump/nectar_pump
 	name = "brass nectar pump"
 	output = /obj/item/reagent_containers/glass/fluid_pump/vagina
-	requirements = list(/obj/item/ingot/bronze = 1, /obj/item/reagent_containers/glass/bottle = 1, /obj/item/natural/hide/cured = 1)
-	category = "Lewd"
 
 #undef FLUID_PUMP_VOLUME
 #undef FLUID_PUMP_MESSAGE_MIN

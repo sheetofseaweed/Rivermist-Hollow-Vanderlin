@@ -73,14 +73,6 @@
 				/obj/item/reagent_containers/food/snacks/tallow = 1)
 	craftdiff = 4
 
-/datum/repeatable_crafting_recipe/leather/standalone/hlskirt
-	name = "hardened leather skirt"
-	output = /obj/item/clothing/pants/trou/leather/advanced/skirt
-	requirements = list(/obj/item/natural/hide/cured = 1,
-				/obj/item/natural/fibers = 1,
-				/obj/item/reagent_containers/food/snacks/tallow = 1)
-	craftdiff = 4
-
 /datum/anvil_recipe/armor/iron/studdedskirt
 	name = "Studded Skirt (+1 Leather Skirt)"
 	recipe_name = "studded leather skirt"
@@ -118,6 +110,7 @@
 ///CONVERSIONS
 
 /datum/repeatable_crafting_recipe/conversion
+	abstract_type = /datum/repeatable_crafting_recipe/conversion
 	tool_usage = list(
 		/obj/item/weapon/knife = list("starts to cut", "start to cut")
 	)
@@ -125,6 +118,11 @@
 	output_amount = 1
 	craftdiff = 0
 	subtypes_allowed = TRUE
+
+// Only the exact trousers convert; skirts and better chausses are subtypes and would match too.
+/datum/repeatable_crafting_recipe/conversion/create_blacklisted_paths()
+	if(attacked_atom)
+		blacklisted_paths = subtypesof(attacked_atom)
 
 /datum/repeatable_crafting_recipe/conversion/leatherskirtconv
 	name = "leather skirt"
@@ -141,5 +139,5 @@
 /datum/repeatable_crafting_recipe/conversion/leatherskirtconvthree
 	name = "masterwork leather skirt"
 	output = /obj/item/clothing/pants/trou/leather/masterwork/skirt
-	requirements = list(/obj/item/clothing/pants/trou/leather/masterwork/skirt = 1)
+	requirements = list(/obj/item/clothing/pants/trou/leather/masterwork = 1)
 	attacked_atom = /obj/item/clothing/pants/trou/leather/masterwork

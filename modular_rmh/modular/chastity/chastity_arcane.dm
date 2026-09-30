@@ -71,8 +71,8 @@
 
 /// Which sealed look fits the wearer, or "open" once any front opening the wearer has is open.
 /obj/item/clothing/undies/chastity/arcane/proc/get_worn_look()
-	var/has_penis = !!wearer?.getorganslot(ORGAN_SLOT_PENIS)
-	var/has_vagina = !!wearer?.getorganslot(ORGAN_SLOT_VAGINA)
+	var/has_penis = !!get_real_organ(wearer, ORGAN_SLOT_PENIS)
+	var/has_vagina = !!get_real_organ(wearer, ORGAN_SLOT_VAGINA)
 	if((has_penis && is_front_open(ORGAN_SLOT_PENIS)) || (has_vagina && is_front_open(ORGAN_SLOT_VAGINA)))
 		return "open"
 	if(has_penis && has_vagina)
@@ -118,8 +118,8 @@
 /// Front modes the wearer's body allows.
 /obj/item/clothing/undies/chastity/arcane/proc/get_valid_front_modes()
 	. = list(CHASTITY_FRONT_SEALED)
-	var/has_penis = !!wearer?.getorganslot(ORGAN_SLOT_PENIS)
-	var/has_vagina = !!wearer?.getorganslot(ORGAN_SLOT_VAGINA)
+	var/has_penis = !!get_real_organ(wearer, ORGAN_SLOT_PENIS)
+	var/has_vagina = !!get_real_organ(wearer, ORGAN_SLOT_VAGINA)
 	if(has_penis)
 		. += CHASTITY_FRONT_PENIS
 	if(has_vagina)
@@ -157,7 +157,7 @@
 		.["Seal rear"] = "rear_seal"
 	else
 		.["Open rear"] = "rear_open"
-	if(wearer?.getorganslot(ORGAN_SLOT_PENIS))
+	if(get_real_organ(wearer, ORGAN_SLOT_PENIS))
 		if(flat_cage)
 			.["Release cage"] = "flat_off"
 		else
@@ -210,8 +210,8 @@
 	var/vagina_was_open = is_front_open(ORGAN_SLOT_VAGINA)
 	front_mode = new_mode
 	update_arcane_state()
-	var/has_penis = !!wearer?.getorganslot(ORGAN_SLOT_PENIS)
-	var/has_vagina = !!wearer?.getorganslot(ORGAN_SLOT_VAGINA)
+	var/has_penis = !!get_real_organ(wearer, ORGAN_SLOT_PENIS)
+	var/has_vagina = !!get_real_organ(wearer, ORGAN_SLOT_VAGINA)
 	var/closed_something = (has_penis && penis_was_open && !is_front_open(ORGAN_SLOT_PENIS)) || (has_vagina && vagina_was_open && !is_front_open(ORGAN_SLOT_VAGINA))
 	if(wearer)
 		playsound(wearer, closed_something ? 'sound/foley/doors/windowdown.ogg' : 'sound/foley/doors/windowup.ogg', 50, TRUE)
@@ -229,7 +229,7 @@
 	return TRUE
 
 /obj/item/clothing/undies/chastity/arcane/proc/set_flat(should_flatten)
-	if(flat_cage == !!should_flatten || !wearer?.getorganslot(ORGAN_SLOT_PENIS))
+	if(flat_cage == !!should_flatten || !get_real_organ(wearer, ORGAN_SLOT_PENIS))
 		return FALSE
 	flat_cage = !!should_flatten
 	update_arcane_state()

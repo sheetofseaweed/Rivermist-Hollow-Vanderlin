@@ -41,11 +41,11 @@
 
 /// TRUE if the wearer has a cock this device cages.
 /obj/item/clothing/undies/chastity/proc/cages_cock()
-	return wearer?.getorganslot(ORGAN_SLOT_PENIS) && blocks_organ_use(ORGAN_SLOT_PENIS)
+	return get_real_organ(wearer, ORGAN_SLOT_PENIS) && blocks_organ_use(ORGAN_SLOT_PENIS)
 
 /// TRUE if the wearer has a pussy this device seals.
 /obj/item/clothing/undies/chastity/proc/seals_pussy()
-	return wearer?.getorganslot(ORGAN_SLOT_VAGINA) && blocks_organ_use(ORGAN_SLOT_VAGINA)
+	return get_real_organ(wearer, ORGAN_SLOT_VAGINA) && blocks_organ_use(ORGAN_SLOT_VAGINA)
 
 /// "intersex", "cock", "vagina", or null when nothing in front is locked away.
 /obj/item/clothing/undies/chastity/proc/get_front_anatomy()
@@ -159,7 +159,7 @@
 
 /// TRUE when a sealed pussy still holds someone's seed.
 /obj/item/clothing/undies/chastity/proc/holds_retained_seed()
-	var/obj/item/organ/genitals/filling_organ/vagina/pussy = wearer?.getorganslot(ORGAN_SLOT_VAGINA)
+	var/obj/item/organ/genitals/filling_organ/vagina/pussy = get_real_organ(wearer, ORGAN_SLOT_VAGINA)
 	if(!pussy?.reagents)
 		return FALSE
 	var/seed = 0

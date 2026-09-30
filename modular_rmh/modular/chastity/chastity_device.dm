@@ -51,6 +51,8 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	var/datum/weakref/generated_key_ref
 	/// Who wears the device right now.
 	var/mob/living/carbon/human/wearer
+	/// Whether an inward plug sits inside the device, for "Work their belt's insert".
+	var/has_insert = FALSE
 
 /obj/item/clothing/undies/chastity/Initialize(mapload, ...)
 	lockids = list("chastity_[++GLOB.chastity_lock_serial]")
@@ -75,11 +77,15 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	flags_inv = worn_flags_inv
 	set_wearer(null)
 
+/// TRUE if the wearer's [slot] holds a strapon, which rides outside the device.
+/obj/item/clothing/undies/chastity/proc/holds_strapon(slot)
+	return wearer?.getorganslot(slot) && !get_real_organ(wearer, slot)
+
 /obj/item/clothing/undies/chastity/blocks_organ_use(slot)
-	return (slot in blocked_organ_slots)
+	return (slot in blocked_organ_slots) && !holds_strapon(slot)
 
 /obj/item/clothing/undies/chastity/hides_organ_slot(slot)
-	return (slot in hidden_organ_slots)
+	return (slot in hidden_organ_slots) && !holds_strapon(slot)
 
 /obj/item/clothing/undies/chastity/examine(mob/user)
 	. = ..()
@@ -128,7 +134,7 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 			to_chat(fitter, span_warning("I want nothing to do with chastity play."))
 		return FALSE
 	for(var/slot in required_organ_slots)
-		if(!human_target.getorganslot(slot))
+		if(!get_real_organ(human_target, slot))
 			if(feedback)
 				to_chat(told, span_warning("\The [src] doesn't fit [whose] body."))
 			return FALSE
@@ -349,6 +355,7 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	blocked_organ_slots = list(ORGAN_SLOT_VAGINA)
 	hidden_organ_slots = list(ORGAN_SLOT_VAGINA)
 	required_organ_slots = list(ORGAN_SLOT_VAGINA)
+	has_insert = TRUE
 
 /obj/item/clothing/undies/chastity/insertable/shield
 	name = "insertable chastity belt with anal shield"

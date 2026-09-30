@@ -139,6 +139,8 @@
 				src.dropItemToGround(legwear_socks)
 				src.put_in_hands(legwear_socks)
 		if(user.zone_selected == BODY_ZONE_CHEST)
+			if(try_remove_own_nipple_clamps())
+				return
 			if(!piercings_item)
 				return
 			var/under_clothes = get_location_accessible(src, BODY_ZONE_CHEST, skipundies = TRUE)

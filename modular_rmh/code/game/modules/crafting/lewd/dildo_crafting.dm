@@ -1,8 +1,15 @@
-/datum/repeatable_crafting_recipe/roguetown/wood_dildo
+// Whittled from a small log with a knife.
+/datum/repeatable_crafting_recipe/crafting/wood_dildo
 	name = "wooden dildo"
 	requirements = list(
 		/obj/item/grown/log/tree/small = 1
 	)
+	tool_usage = list(
+		/obj/item/weapon/knife = list(span_notice("starts to whittle"), span_notice("start to whittle"), 'sound/items/wood_sharpen.ogg'),
+	)
+	starting_atom = /obj/item/weapon/knife
+	attacked_atom = /obj/item/grown/log/tree/small
+	allow_inverse_start = FALSE
 	output = /obj/item/dildo/wood
 	category = "Lewd"
 
@@ -36,16 +43,27 @@
 
 //plugs
 
-/datum/repeatable_crafting_recipe/roguetown/wood_plug
+// Whittled from a small log with a knife.
+/datum/repeatable_crafting_recipe/crafting/wood_plug
 	name = "wooden plug"
 	output = /obj/item/dildo/plug/wood
 	requirements = list(/obj/item/grown/log/tree/small = 1)
+	tool_usage = list(
+		/obj/item/weapon/knife = list(span_notice("starts to whittle"), span_notice("start to whittle"), 'sound/items/wood_sharpen.ogg'),
+	)
+	starting_atom = /obj/item/weapon/knife
+	attacked_atom = /obj/item/grown/log/tree/small
+	allow_inverse_start = FALSE
 	category = "Lewd"
 
-/datum/repeatable_crafting_recipe/roguetown/stone_plug
+// Knife on stone, like the stone mortar; a chisel on stone already cuts blocks.
+/datum/repeatable_crafting_recipe/crafting/stone_plug
 	name = "stone plug"
 	output = /obj/item/dildo/plug/stone
 	requirements = list(/obj/item/natural/stone = 1)
+	starting_atom = /obj/item/weapon/knife
+	attacked_atom = /obj/item/natural/stone
+	allow_inverse_start = FALSE
 	category = "Lewd"
 
 /datum/anvil_recipe/iron_plug
