@@ -21,6 +21,8 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	gendered = TRUE
 	loadout_blacklisted = TRUE
 	fluid_capacity = 0
+	// Metal never gets wet; wetable clothing would also claim the wearer's moved signal from the jingle.
+	wetable = FALSE
 	sewrepair = null
 	salvage_result = null
 	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
@@ -136,12 +138,16 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	if(wearer == new_wearer)
 		return
 	if(wearer)
-		UnregisterSignal(wearer, list(COMSIG_ATOM_ITEM_INTERACTION, COMSIG_PARENT_QDELETING))
+		UnregisterSignal(wearer, list(COMSIG_ATOM_ITEM_INTERACTION, COMSIG_PARENT_QDELETING, COMSIG_MOVABLE_MOVED))
+		clear_moods(wearer)
 	wearer = new_wearer
+	jingle_steps = 0
 	if(!wearer)
 		return
 	RegisterSignal(wearer, COMSIG_ATOM_ITEM_INTERACTION, PROC_REF(on_wearer_item_interaction))
 	RegisterSignal(wearer, COMSIG_PARENT_QDELETING, PROC_REF(on_wearer_deleted))
+	RegisterSignal(wearer, COMSIG_MOVABLE_MOVED, PROC_REF(on_wearer_moved))
+	refresh_moods()
 	var/obj/item/key/chastity/key = get_generated_key()
 	if(key)
 		key.name = "[wearer.real_name]'s chastity key"
@@ -155,6 +161,9 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	SIGNAL_HANDLER
 	if(user.cmode || user.zone_selected != BODY_ZONE_PRECISE_GROIN)
 		return NONE
+	if(!can_be_forced() && (istype(tool, /obj/item/weapon/chisel) || istype(tool, /obj/item/lockpick) || tool.can_lock_interact()))
+		to_chat(user, span_warning(pick_chastity_string("chastity_lock_messages.json", "arcane_denial")))
+		return ITEM_INTERACT_BLOCKING
 	if(istype(tool, /obj/item/weapon/chisel))
 		INVOKE_ASYNC(src, PROC_REF(try_chisel_off), user, tool)
 		return ITEM_INTERACT_SUCCESS
@@ -196,6 +205,8 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	var/verb_text = now_locked ? "locks" : "unlocks"
 	if(!silent)
 		playsound(src, now_locked ? lock_sound : unlock_sound, 50)
+	if(wearer)
+		to_chat(wearer, now_locked ? span_warning(pick_chastity_string("chastity_lock_messages.json", "lock_click")) : span_notice(pick_chastity_string("chastity_lock_messages.json", "unlock_click")))
 	if(!wearer)
 		user.visible_message(span_notice("[user] [verb_text] \the [src]."), span_notice("I [now_locked ? "lock" : "unlock"] \the [src]."))
 		return
@@ -206,7 +217,7 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 
 /obj/item/clothing/undies/chastity/lock_failed(mob/living/user, silent = FALSE, message)
 	if(!message && is_hardmode_active())
-		message = "\The [src] will open for nothing but its own key."
+		message = pick_chastity_string("chastity_lock_messages.json", "hardmode_denial")
 	return ..(user, silent, message)
 
 /obj/item/clothing/undies/chastity/can_be_picked()
@@ -221,6 +232,10 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	. = ..()
 	if(wearer && wearer != user)
 		to_chat(wearer, span_notice("Something clicks inside \the [src]. It is unlocked."))
+
+/// FALSE for devices that ignore keys, lockpicks and chisels.
+/obj/item/clothing/undies/chastity/proc/can_be_forced()
+	return TRUE
 
 /// Hard mode is the wearer's own choice, read fresh every time.
 /obj/item/clothing/undies/chastity/proc/is_hardmode_active()

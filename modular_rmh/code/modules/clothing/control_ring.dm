@@ -11,12 +11,15 @@
 	var/list/phrases_list = list()
 	var/ring_bound = FALSE
 	var/obj/item/clothing/neck/slave_collar/bound_collar
+	/// Arcane chastity device this ring commands.
+	var/obj/item/clothing/undies/chastity/arcane/bound_chastity
 	var/datum/weakref/worn_owner_ref
 	var/list/radial_viewers = list()
 
 /obj/item/clothing/ring/slave_control/Destroy()
 	clear_worn_owner()
 	clear_bound_collar()
+	bound_chastity?.clear_bound_ring()
 	radial_viewers = null
 	return ..()
 
@@ -71,12 +74,12 @@
 
 /obj/item/clothing/ring/slave_control/proc/on_worn_owner_mouse_hover(mob/living/wearer, atom/mouse_hovered)
 	SIGNAL_HANDLER
-	var/mob/living/carbon/human/bearer = get_bound_collar_bearer()
-	if(mouse_hovered == bearer)
-		display_linked_collar_menu(wearer)
+	if(!isliving(mouse_hovered))
 		return
-	if(isliving(mouse_hovered))
-		radial_viewers -= REF(wearer)
+	if(mouse_hovered in get_commanded_bearers())
+		display_linked_menu(wearer, mouse_hovered)
+		return
+	radial_viewers -= REF(wearer)
 
 /obj/item/clothing/ring/slave_control/proc/can_use_control_ring(mob/user, show_feedback = FALSE)
 	if(!ismob(user))
@@ -102,6 +105,21 @@
 		return null
 	return bound_collar.get_worn_bearer()
 
+/obj/item/clothing/ring/slave_control/proc/get_bound_chastity_wearer()
+	if(!bound_chastity || QDELETED(bound_chastity) || bound_chastity.bound_ring != src)
+		return null
+	return bound_chastity.wearer
+
+/// Everyone wearing something this ring commands.
+/obj/item/clothing/ring/slave_control/proc/get_commanded_bearers()
+	. = list()
+	var/mob/living/collar_bearer = get_bound_collar_bearer()
+	if(collar_bearer)
+		. += collar_bearer
+	var/mob/living/chastity_wearer = get_bound_chastity_wearer()
+	if(chastity_wearer)
+		. |= chastity_wearer
+
 /obj/item/clothing/ring/slave_control/proc/clear_bound_collar(clear_collar = TRUE)
 	var/obj/item/clothing/neck/slave_collar/old_collar = bound_collar
 	bound_collar = null
@@ -121,6 +139,9 @@
 		if(istype(I, /obj/item/clothing/neck/slave_collar))
 			var/obj/item/clothing/neck/slave_collar/sc = I
 			sc.bind_collar(src, user, istype(src, /obj/item/clothing/ring/slave_control/master))
+		var/obj/item/clothing/undies/chastity/arcane/device = H.underwear
+		if(istype(device) && device.bound_ring != src)
+			device.bind_ring(src, user)
 
 /obj/item/clothing/ring/slave_control/attackby(obj/item/I, mob/living/user)
 	if(!ismob(user))
@@ -129,17 +150,65 @@
 		var/obj/item/clothing/neck/slave_collar/sc = I
 		sc.bind_collar(src, user, istype(src, /obj/item/clothing/ring/slave_control/master))
 		return
+	if(istype(I, /obj/item/clothing/undies/chastity/arcane))
+		var/obj/item/clothing/undies/chastity/arcane/device = I
+		device.bind_ring(src, user)
+		return
 	return ..()
 
-/// Opens a radial menu of slave collar commands when middle-clicked.
+/// Opens a radial menu of commands for whatever the ring commands when middle-clicked.
 /obj/item/clothing/ring/slave_control/MiddleClick(mob/user, params)
 	if(!can_use_control_ring(user, TRUE))
 		return
-	if(!bound_collar)
-		to_chat(user, span_warning("The ring has no collar bound."))
+	if(!bound_collar && !bound_chastity)
+		to_chat(user, span_warning("The ring has nothing bound."))
 		return ..()
-	invoke_collar_command_radial(user, bound_collar)
+	invoke_ring_command_radial(user)
 	return
+
+/// Picks the collar or the chastity device when both answer, then opens that item's radial.
+/obj/item/clothing/ring/slave_control/proc/invoke_ring_command_radial(mob/user, mob/living/bearer = null, atom/menu_anchor = null, datum/callback/custom_check = null, radius = null, button_animation_flags = BUTTON_SLIDE_IN, display_close_button = TRUE)
+	var/list/targets = list()
+	if(bound_collar && !QDELETED(bound_collar) && (!bearer || get_bound_collar_bearer() == bearer))
+		targets["Collar"] = bound_collar
+	if(bound_chastity && !QDELETED(bound_chastity) && (!bearer || get_bound_chastity_wearer() == bearer))
+		targets["Chastity device"] = bound_chastity
+	if(!length(targets))
+		to_chat(user, span_warning("The ring has nothing bound."))
+		return
+	var/chosen_name = targets[1]
+	if(length(targets) > 1)
+		var/list/choices = list()
+		for(var/target_name in targets)
+			var/obj/item/target_item = targets[target_name]
+			choices[target_name] = image(icon = target_item.icon, icon_state = target_item.icon_state)
+		chosen_name = show_radial_menu(user, menu_anchor || src, choices, radius = radius, custom_check = custom_check, tooltips = TRUE, require_near = FALSE, button_animation_flags = button_animation_flags, display_close_button = display_close_button)
+		if(!chosen_name)
+			return
+	if(chosen_name == "Collar")
+		invoke_collar_command_radial(user, bound_collar, menu_anchor, custom_check, radius, button_animation_flags, display_close_button)
+		return
+	invoke_chastity_command_radial(user, bound_chastity, menu_anchor, custom_check, radius, button_animation_flags, display_close_button)
+
+/// Radial of arcane chastity commands for the bound device.
+/obj/item/clothing/ring/slave_control/proc/invoke_chastity_command_radial(mob/user, obj/item/clothing/undies/chastity/arcane/device, atom/menu_anchor = null, datum/callback/custom_check = null, radius = null, button_animation_flags = BUTTON_SLIDE_IN, display_close_button = TRUE)
+	if(!can_use_control_ring(user, TRUE))
+		return
+	if(!device || QDELETED(device) || device.bound_ring != src)
+		to_chat(user, span_warning("The ring has no chastity device bound."))
+		return
+	var/list/command_options = device.get_ring_command_options()
+	var/list/choices = list()
+	for(var/display_name in command_options)
+		choices[display_name] = image(icon = 'icons/hud/radial.dmi', icon_state = "radial_slice")
+	var/chosen = show_radial_menu(user, menu_anchor || src, choices, radius = radius, custom_check = custom_check, tooltips = TRUE, require_near = FALSE, button_animation_flags = button_animation_flags, display_close_button = display_close_button)
+	if(!chosen || QDELETED(device) || device.bound_ring != src || !can_use_control_ring(user))
+		return
+	var/command = command_options[chosen]
+	if(command && device.perform_ring_command(command, user))
+		to_chat(user, "<font size='1' color='grey'>The ring vibrates imperceptibly — the command was a success.</font>")
+	else
+		to_chat(user, "<font size='1' color='red'>The ring lies still — command failed to perform.</font>")
 
 /// Shared radial menu for invoking commands on a slave collar.
 /// Used by direct ring interaction and the shift-hover linked slave menu.
@@ -164,41 +233,38 @@
 	else
 		to_chat(user, "<font size='1' color='red'>The ring lies still — command failed to perform.</font>")
 
-/obj/item/clothing/ring/slave_control/proc/display_linked_collar_menu(mob/living/wearer)
+/obj/item/clothing/ring/slave_control/proc/display_linked_menu(mob/living/wearer, mob/living/bearer)
 	if(!is_worn_by(wearer) || wearer.stat != CONSCIOUS)
 		return
 	if(radial_viewers[REF(wearer)])
 		return
-	var/mob/living/carbon/human/bearer = get_bound_collar_bearer()
 	if(!bearer || !can_see(wearer, bearer, CONTROL_RING_VIEW_RANGE))
 		return
-	INVOKE_ASYNC(src, PROC_REF(display_linked_collar_radial), wearer)
+	INVOKE_ASYNC(src, PROC_REF(display_linked_radial), wearer, bearer)
 
-/obj/item/clothing/ring/slave_control/proc/display_linked_collar_radial(mob/living/wearer)
-	var/mob/living/carbon/human/bearer = get_bound_collar_bearer()
-	if(!bearer)
+/obj/item/clothing/ring/slave_control/proc/display_linked_radial(mob/living/wearer, mob/living/bearer)
+	if(QDELETED(bearer) || !(bearer in get_commanded_bearers()))
 		return
 	radial_viewers[REF(wearer)] = world.time + CONTROL_RING_RADIAL_LIFETIME
-	invoke_collar_command_radial(
+	invoke_ring_command_radial(
 		wearer,
-		bound_collar,
+		bearer,
 		menu_anchor = bearer,
-		custom_check = CALLBACK(src, PROC_REF(check_radial_viewer), wearer),
+		custom_check = CALLBACK(src, PROC_REF(check_radial_viewer), wearer, bearer),
 		radius = CONTROL_RING_RADIAL_RADIUS,
 		button_animation_flags = BUTTON_FADE_IN | BUTTON_FADE_OUT,
 		display_close_button = FALSE,
 	)
 	radial_viewers -= REF(wearer)
 
-/obj/item/clothing/ring/slave_control/proc/check_radial_viewer(mob/living/wearer)
+/obj/item/clothing/ring/slave_control/proc/check_radial_viewer(mob/living/wearer, mob/living/bearer)
 	if(QDELETED(wearer) || !radial_viewers[REF(wearer)])
 		return FALSE
 	if(world.time > radial_viewers[REF(wearer)])
 		return FALSE
 	if(!is_worn_by(wearer) || wearer.stat != CONSCIOUS)
 		return FALSE
-	var/mob/living/carbon/human/bearer = get_bound_collar_bearer()
-	if(!bearer || !can_see(wearer, bearer, CONTROL_RING_VIEW_RANGE))
+	if(QDELETED(bearer) || !(bearer in get_commanded_bearers()) || !can_see(wearer, bearer, CONTROL_RING_VIEW_RANGE))
 		return FALSE
 	return TRUE
 
@@ -208,6 +274,11 @@
 		. += span_notice("It is bound to [bound_collar.get_control_display_name()].")
 	else
 		. += span_warning("It is not bound to a collar.")
+	var/mob/living/chastity_wearer = get_bound_chastity_wearer()
+	if(chastity_wearer)
+		. += span_notice("It commands the [bound_chastity.name] worn by [chastity_wearer].")
+	else if(bound_chastity)
+		. += span_notice("It commands \a [bound_chastity], worn by no one.")
 	if(!length(phrases_list))
 		return
 	. += span_userdanger("You notice engraved phrases on the ring:")
@@ -263,17 +334,21 @@
 		return
 	var/mob/living/living_user = user
 	var/obj/item/clothing/neck/slave_collar/collar = wear_neck
-	if(!istype(collar))
+	var/obj/item/clothing/undies/chastity/arcane/device = underwear
+	if(!istype(collar) && !istype(device))
 		return
 	var/obj/item/clothing/ring/slave_control/master/ring = get_master_slave_control_ring(living_user)
 	if(!ring)
 		return
 	if(!can_see(living_user, src, CONTROL_RING_VIEW_RANGE))
-		to_chat(living_user, span_warning("The collar is too far away for the ring to bind."))
+		to_chat(living_user, span_warning("[src] is too far away for the ring to bind."))
 		return
 	if(!ring.can_use_control_ring(living_user, TRUE))
 		return
-	collar.bind_collar(ring, living_user, TRUE)
+	if(istype(collar))
+		collar.bind_collar(ring, living_user, TRUE)
+	if(istype(device) && device.bound_ring != ring)
+		device.bind_ring(ring, living_user)
 
 /datum/anvil_recipe/slave_control_master
 	name = "Master Slaver ring"

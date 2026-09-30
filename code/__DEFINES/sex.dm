@@ -618,3 +618,14 @@ GLOBAL_LIST_INIT(mage_hand_start_durations, list(
 #define CLENCH_RESULT_FAIL 0
 #define CLENCH_RESULT_INTERRUPT 1
 #define CLENCH_RESULT_STOP 2
+
+/// Arcane chastity front modes: which front openings the device leaves open.
+#define CHASTITY_FRONT_SEALED 0
+#define CHASTITY_FRONT_PENIS 1
+#define CHASTITY_FRONT_VAGINA 2
+#define CHASTITY_FRONT_ALL 3
+
+/// Directory holding the chastity message banks.
+#define CHASTITY_STRINGS_DIR "strings/chastity"
+/// A random line from a chastity message bank.
+#define pick_chastity_string(FILE, KEY) (pick(strings(FILE, KEY, CHASTITY_STRINGS_DIR)))
