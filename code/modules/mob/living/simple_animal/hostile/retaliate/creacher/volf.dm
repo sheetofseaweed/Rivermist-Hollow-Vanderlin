@@ -6,6 +6,8 @@
 	icon_state = "vv"
 	icon_living = "vv"
 	icon_dead = "vvd"
+	var/icon_state_prefix = "volf"
+	var/eye_icon_state = "volf_eyes"
 
 	faction = list(FACTION_ORCS, FACTION_WOLVES)
 	emote_hear = null
@@ -92,9 +94,9 @@
 	AddElement(/datum/element/ai_flee_while_injured, 0.75, retreat_health)
 
 	var/color = pick("brown", "black", "white")
-	icon_state = "volf_[color]"
-	icon_living = "volf_[color]"
-	icon_dead = "volf_[color]_dead"
+	icon_state = "[icon_state_prefix]_[color]"
+	icon_living = icon_state
+	icon_dead = "[icon_state_prefix]_[color]_dead"
 
 	gender = MALE
 	if(prob(33))
@@ -108,9 +110,9 @@
 
 /mob/living/simple_animal/hostile/retaliate/wolf/update_overlays()
 	. = ..()
-	if(stat == DEAD)
+	if(stat == DEAD || !eye_icon_state)
 		return
-	. += emissive_appearance(icon, "volf_eyes")
+	. += emissive_appearance(icon, eye_icon_state)
 
 /mob/living/simple_animal/hostile/retaliate/wolf/get_sound(input)
 	switch(input)
