@@ -72,9 +72,12 @@
 	var/turf/owner_turf = get_turf(get_owner())
 	return thing_turf && owner_turf && thing_turf.z == owner_turf.z && get_dist(thing_turf, owner_turf) <= 1
 
-/// The target when it still exists and is in reach, else null.
+/// The target when it still exists, is in reach, and still allows ERP if its player logged off; else null.
 /datum/climax_aim/proc/get_valid_target()
 	if(QDELETED(target) || !can_reach(target))
+		return null
+	var/mob/living/aimed = target
+	if(isliving(aimed) && aimed != get_owner() && aimed != aimer && !aimed.allows_player_erp_while_disconnected())
 		return null
 	return target
 

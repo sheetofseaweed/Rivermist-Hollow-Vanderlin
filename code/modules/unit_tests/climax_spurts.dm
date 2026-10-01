@@ -99,6 +99,29 @@
 	aim.clear()
 	TEST_ASSERT_NULL(partner.alerts["cock_aimed"], "The alert should go when the aim does.")
 
+/datum/unit_test/climax_aim_respects_logged_off_players/Run()
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_spurt_test_genitals(owner)
+	var/datum/climax_aim/aim = penis.get_climax_aim()
+	aim.set_target(partner, FLUID_COAT_FACE, owner)
+	TEST_ASSERT_EQUAL(aim.get_valid_target(), partner, "A clientless body with no player should be a valid aim.")
+
+	partner.mind_initialize()
+	partner.mind.key = "unit_test_partner"
+	TEST_ASSERT_NULL(aim.get_valid_target(), "A logged-off player who does not allow it should not be hit.")
+	partner.set_cached_erp_preferences(list(/datum/erp_preference/boolean/allow_player_erp_when_disconnected = TRUE))
+	TEST_ASSERT_EQUAL(aim.get_valid_target(), partner, "A logged-off player who allows it should still be a valid aim.")
+
+	var/mob/living/carbon/human/holder = allocate(/mob/living/carbon/human)
+	holder.zone_selected = BODY_ZONE_PRECISE_GROIN
+	holder.try_grip_penis(owner)
+	var/obj/item/penis_grip/grip = penis.grip
+	TEST_ASSERT(grip?.is_hold_valid(), "The hold should start out valid.")
+	owner.mind_initialize()
+	owner.mind.key = "unit_test_owner"
+	TEST_ASSERT(!grip.is_hold_valid(), "The hand should let go of a player who logs off without allowing it.")
+
 /datum/unit_test/npc_jerk_over_aims_for_the_horny_ai/Run()
 	var/mob/living/carbon/human/npc = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)

@@ -77,7 +77,7 @@
 
 /obj/item/dildo/plug/tail/proc/get_tail_name()
 	var/datum/sprite_accessory/tail/accessory = SPRITE_ACCESSORY(tail_accessory)
-	return lowertext(accessory?.name || "fur")
+	return LOWER_TEXT(accessory?.name || "fur")
 
 /// One copy of the fur colour for each colour key of the chosen tail.
 /obj/item/dildo/plug/tail/proc/get_tail_colors()

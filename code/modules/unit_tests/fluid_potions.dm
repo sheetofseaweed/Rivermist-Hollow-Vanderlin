@@ -315,3 +315,25 @@
 	vagina.reagents.add_reagent(/datum/reagent/consumable/cum, 5)
 	action.spill_fluids_to_floor(vagina, get_turf(human))
 	TEST_ASSERT_EQUAL(vagina.reagents.total_volume, 0, "Expelling onto the floor should clear every fluid.")
+
+/datum/unit_test/expel_fluids_comes_out_in_portions/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(human, TRUE, FALSE)
+	vagina.reagents.clear_reagents()
+	vagina.reagents.add_reagent(/datum/reagent/consumable/cum, 40)
+	var/datum/sex_action/hole_storage/expel_foreign_fluids/vaginal/action = allocate(/datum/sex_action/hole_storage/expel_foreign_fluids/vaginal)
+
+	human.toggle_holding_fluids_in()
+	action.on_start(human, human)
+	TEST_ASSERT(!human.is_holding_fluids_in(), "Starting to push should let go of the clench.")
+
+	action.on_perform(human, human)
+	TEST_ASSERT(abs(vagina.reagents.total_volume - 24) < 0.01, "One push should move only part of the load, got [vagina.reagents.total_volume] left.")
+	TEST_ASSERT(!action.is_finished(human, human), "Fluid is left, so the pushing should go on.")
+	var/pushes = 1
+	while(!action.is_finished(human, human) && pushes < 20)
+		action.on_perform(human, human)
+		pushes++
+	TEST_ASSERT_EQUAL(vagina.reagents.total_volume, 0, "Pushing on should empty it.")
+	TEST_ASSERT(pushes > 2 && pushes < 10, "It should take a handful of pushes, took [pushes].")

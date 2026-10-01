@@ -19,7 +19,6 @@
 	TRY_MIGRATE_PREF(/datum/preference/toggle/buttons_locked, "buttons_locked")
 	TRY_MIGRATE_PREF(/datum/preference/toggle/crt, "crt")
 	TRY_MIGRATE_PREF(/datum/preference/toggle/auto_fit_viewport, "auto_fit_viewport")
-	TRY_MIGRATE_PREF(/datum/preference/toggle/widescreenpref, "widescreenpref")
 	TRY_MIGRATE_PREF(/datum/preference/toggle/windowflashing, "windowflash") // note old key
 	TRY_MIGRATE_PREF(/datum/preference/toggle/ambientocclusion,"ambientocclusion")
 

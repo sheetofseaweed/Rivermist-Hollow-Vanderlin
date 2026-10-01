@@ -6,7 +6,7 @@
 	should_update_preview = FALSE
 	minimum = 0
 	maximum = 3
-	step = 1
+	step = 0.5
 
 /datum/preference/numeric/pixel_size/create_default_value(datum/preferences/prefs)
 	return 0

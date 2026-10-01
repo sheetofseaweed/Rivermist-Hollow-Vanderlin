@@ -118,6 +118,9 @@
 		return FALSE
 	if(holder != owner && !holder.adjacent_or_closet(owner))
 		return FALSE
+	// A player who logs off without allowing it is let go.
+	if(holder != owner && !owner.allows_player_erp_while_disconnected())
+		return FALSE
 	return owner.is_penis_grippable()
 
 /obj/item/penis_grip/melee_attack_chain(mob/user, atom/target, list/modifiers)

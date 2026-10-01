@@ -305,18 +305,17 @@
 		return
 	INVOKE_ASYNC(src, PROC_REF(run_runtime))
 
+/// Scene merges and splits move the action while it sleeps, so every stop goes through the current scene.
 /datum/sex_action/proc/run_runtime()
-	var/datum/sex_scene/action_scene = scene
 	if(!is_runtime_active() || !can_run(TRUE))
-		action_scene?.stop_action(src)
+		stop_runtime()
 		return
 
 	var/suppress_visible_messages = begin_remote_visible_message_suppression()
 	var/start_result = on_start(action_user, action_target)
 	end_remote_visible_message_suppression(suppress_visible_messages)
 	if(start_result == FALSE || !is_runtime_active())
-		if(!QDELETED(action_scene))
-			action_scene.stop_action(src)
+		stop_runtime()
 		return
 
 	var/datum/sex_remote_context/action_remote_context = get_valid_remote_context()
@@ -342,7 +341,7 @@
 		var/interaction_key = "sex_action_[REF(src)]"
 		// Mirrors can_run(): actions that opted out of proximity reach their target some other way.
 		if(check_distance && !action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
-			action_scene.stop_action(src)
+			stop_runtime()
 			return
 		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))
 			if(!cycle_interrupted)
@@ -350,7 +349,7 @@
 			cycle_interrupted = FALSE
 			continue
 
-		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
+		if(!is_runtime_active())
 			break
 		if(!can_run(TRUE))
 			break
@@ -365,7 +364,7 @@
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
 		send_clench_prompt()
-		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
+		if(!is_runtime_active())
 			break
 
 		action_remote_context = get_valid_remote_context()
@@ -382,8 +381,7 @@
 		if(is_finished(action_user, action_target) || !continous)
 			break
 
-	if(!QDELETED(action_scene) && scene == action_scene)
-		action_scene.stop_action(src)
+	stop_runtime()
 
 /datum/sex_action/proc/can_run(performing = FALSE)
 	if(!action_user || !action_target || QDELETED(action_user) || QDELETED(action_target))

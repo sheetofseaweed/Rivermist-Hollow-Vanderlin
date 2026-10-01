@@ -6,10 +6,10 @@
 	should_update_preview = FALSE
 
 /datum/preference/choiced/scaling_method/init_possible_values(datum/preferences/prefs)
-	return list("normal", "pixel_perfect", "distorted")
+	return list(SCALING_METHOD_NORMAL, SCALING_METHOD_DISTORT, SCALING_METHOD_BLUR)
 
 /datum/preference/choiced/scaling_method/create_default_value(datum/preferences/prefs)
-	return "normal"
+	return SCALING_METHOD_NORMAL
 
 /datum/preference/choiced/scaling_method/handle_link(datum/preferences/prefs, mob/user)
 	switch(prefs.read_preference(/datum/preference/choiced/scaling_method))

@@ -26,7 +26,6 @@
 #define TOGGLE_FULLSCREEN		(1<<20)
 #define SCHIZO_VOICE			(1<<21)
 #define UI_SCALE				(1<<22)
-#define AMBIENTOCCLUSION		(1<<23)
 
 #define TOGGLES_DEFAULT (SOUND_ADMINHELP|SOUND_MIDI|SOUND_AMBIENCE|SOUND_LOBBY|MIDROUND_ANTAG|SOUND_INSTRUMENTS|SOUND_SHIP_AMBIENCE|SOUND_PRAYERS|SOUND_ANNOUNCEMENTS)
 
@@ -230,28 +229,6 @@ GLOBAL_LIST_INIT(moanpack_types_list, list(MOANPACK_TYPE_DEF, MOANPACK_TYPE_MALE
 
 #define UI_PREFERENCE_LIGHT_MODE "light mode"
 #define UI_PREFERENCE_DARK_MODE "dark mode"
-
-// here because they are specfically for the prefences menu
-
-DEFINE_BITFIELD(toggles_default, list(
-	"Be voice" = SCHIZO_VOICE,
-	"Enable admin sounds" = SOUND_MIDI,
-	"Enable ambience" = SOUND_AMBIENCE,
-	"Enable background music" = SOUND_SHIP_AMBIENCE,
-	//"Enable instruments" = SOUND_INSTRUMENTS,
-	"Enable lobby music" = SOUND_LOBBY,
-	"Enable Ambient Occlusion" = AMBIENTOCCLUSION,
-))
-
-DEFINE_BITFIELD(toggles_maptext, list(
-	"Disable balloon alerts" = DISABLE_BALLOON_ALERTS,
-	//"Disable hover text" = DISABLE_HOVER_TEXT,
-	"Disable runechat" = DISABLE_RUNECHAT,
-))
-
-DEFINE_BITFIELD(toggles_gameplay, list(
-	"Disable random split personality" = DISABLE_SPLIT_PERSONALITY,
-))
 
 /// Species applies first so external organs and bodyparts can reference it.
 #define PREF_PRIORITY_SPECIES 1

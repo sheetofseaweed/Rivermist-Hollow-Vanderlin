@@ -1,14 +1,17 @@
-#define FLUID_EXPULSION_TIME (4 SECONDS)
-#define FLUID_EXPULSION_STAMINA_COST 10
-#define FLUID_EXPULSION_ENERGY_COST 10
+#define FLUID_EXPULSION_TIME (3 SECONDS)
+#define FLUID_EXPULSION_STAMINA_COST 3
+#define FLUID_EXPULSION_ENERGY_COST 3
 #define FLUID_EXPULSION_MIN_TRANSFER 0.0001
+/// Each push moves this share of what is held, but never less than the minimum.
+#define FLUID_EXPULSION_PORTION_SHARE 0.4
+#define FLUID_EXPULSION_MIN_PORTION 5
 
 /datum/sex_action/hole_storage/expel_foreign_fluids
 	abstract_type = /datum/sex_action/hole_storage/expel_foreign_fluids
 	name = "Expel fluids"
-	description = "Clear every liquid held inside into a container, a bucket, or onto the floor."
+	description = "Push every liquid held inside out a portion at a time, into a container, a bucket, or onto the floor."
 	requires_free_hands = FALSE
-	continous = FALSE
+	continous = TRUE
 	do_time = FLUID_EXPULSION_TIME
 	stamina_cost = 0
 	var/cavity_name = "cavity"
@@ -54,6 +57,9 @@
 /datum/sex_action/hole_storage/expel_foreign_fluids/on_start(mob/living/user, mob/living/target)
 	. = ..()
 	target_organ = get_action_organ(user, target)
+	// Pushing it out means letting go of the clench.
+	if(target.is_holding_fluids_in())
+		target.toggle_holding_fluids_in()
 	if(user == target)
 		to_chat(user, span_notice("I brace myself and start expelling retained fluid from my [cavity_name]."))
 		return
@@ -73,11 +79,12 @@
 		to_chat(user, span_warning("There is no retained fluid to clear."))
 		return
 
+	var/portion = get_expulsion_portion(filling_organ)
 	var/obj/item/reagent_containers/held_container = get_held_collection_container(user)
 	var/obj/item/reagent_containers/glass/bucket/ground_bucket = get_bucket_beneath_target(target, held_container)
-	var/container_collected = transfer_fluids_to_container(filling_organ, held_container, user)
-	var/bucket_collected = transfer_fluids_to_container(filling_organ, ground_bucket, user)
-	var/spilled_to_floor = spill_fluids_to_floor(filling_organ, get_turf(target))
+	var/container_collected = transfer_fluids_to_container(filling_organ, held_container, user, portion)
+	var/bucket_collected = transfer_fluids_to_container(filling_organ, ground_bucket, user, portion - container_collected)
+	var/spilled_to_floor = spill_fluids_to_floor(filling_organ, get_turf(target), portion - container_collected - bucket_collected, target)
 	var/total_moved = container_collected + bucket_collected + spilled_to_floor
 
 	if(total_moved <= FLUID_EXPULSION_MIN_TRANSFER)
@@ -87,6 +94,19 @@
 	target.adjust_stamina(FLUID_EXPULSION_STAMINA_COST)
 	target.adjust_energy(-FLUID_EXPULSION_ENERGY_COST)
 	announce_expulsion_result(user, target, held_container, ground_bucket, container_collected, bucket_collected, spilled_to_floor)
+	if(get_held_fluid_volume(filling_organ) <= FLUID_EXPULSION_MIN_TRANSFER)
+		to_chat(target, span_notice("That was the last of it."))
+
+/// Done once nothing is left inside.
+/datum/sex_action/hole_storage/expel_foreign_fluids/is_finished(mob/living/user, mob/living/target)
+	if(..())
+		return TRUE
+	return get_held_fluid_volume(get_action_organ(user, target)) <= FLUID_EXPULSION_MIN_TRANSFER
+
+/// Units one push moves: a share of what is held, at least the minimum, never more than is there.
+/datum/sex_action/hole_storage/expel_foreign_fluids/proc/get_expulsion_portion(obj/item/organ/genitals/filling_organ/filling_organ)
+	var/held = get_held_fluid_volume(filling_organ)
+	return min(held, max(FLUID_EXPULSION_MIN_PORTION, held * FLUID_EXPULSION_PORTION_SHARE))
 
 /datum/sex_action/hole_storage/expel_foreign_fluids/proc/get_action_organ(mob/living/user, mob/living/target)
 	RETURN_TYPE(/obj/item/organ/genitals/filling_organ)
@@ -147,18 +167,19 @@
 		return FALSE
 	return candidate.reagents.total_volume < candidate.reagents.maximum_volume
 
-/datum/sex_action/hole_storage/expel_foreign_fluids/proc/transfer_fluids_to_container(obj/item/organ/genitals/filling_organ/filling_organ, obj/item/reagent_containers/collection_container, mob/living/user)
-	if(!can_collect_into(collection_container) || !filling_organ.reagents?.total_volume)
+/datum/sex_action/hole_storage/expel_foreign_fluids/proc/transfer_fluids_to_container(obj/item/organ/genitals/filling_organ/filling_organ, obj/item/reagent_containers/collection_container, mob/living/user, limit = INFINITY)
+	if(limit <= 0 || !can_collect_into(collection_container) || !filling_organ.reagents?.total_volume)
 		return 0
-	var/collection_space = collection_container.reagents.maximum_volume - collection_container.reagents.total_volume
+	var/collection_space = min(limit, collection_container.reagents.maximum_volume - collection_container.reagents.total_volume)
 	return filling_organ.reagents.trans_to(collection_container, collection_space, transfered_by = user) || 0
 
-/datum/sex_action/hole_storage/expel_foreign_fluids/proc/spill_fluids_to_floor(obj/item/organ/genitals/filling_organ/filling_organ, turf/target_turf)
-	var/spill_amount = filling_organ.reagents?.total_volume
-	if(!target_turf || !spill_amount)
+/// Small pushes fall as drops, bigger ones pool; either way they leave a scent.
+/datum/sex_action/hole_storage/expel_foreign_fluids/proc/spill_fluids_to_floor(obj/item/organ/genitals/filling_organ/filling_organ, turf/target_turf, limit = INFINITY, mob/living/source)
+	var/spill_amount = min(limit, filling_organ.reagents?.total_volume)
+	if(!target_turf || spill_amount <= 0)
 		return 0
-	target_turf.add_liquid_from_reagents(filling_organ.reagents, amount = spill_amount)
-	filling_organ.reagents.remove_all(spill_amount)
+	leave_fluid_scent(target_turf, source, get_fluid_scent_kind(filling_organ.reagents.get_master_reagent()))
+	spill_fluid_to_turf(target_turf, filling_organ.reagents, spill_amount, filling_organ.drips_as_drops)
 	return spill_amount
 
 /datum/sex_action/hole_storage/expel_foreign_fluids/proc/build_expulsion_destination_text(obj/item/reagent_containers/held_container, obj/item/reagent_containers/glass/bucket/ground_bucket, container_collected, bucket_collected, spilled_to_floor)
@@ -178,16 +199,16 @@
 
 	if(user == target)
 		user.visible_message(
-			span_notice("[user] strains and clears retained fluid into [destination_text]."),
-			span_notice("I clear the retained fluid from my [cavity_name] into [destination_text].")
+			span_notice("[user] strains and pushes out some fluid into [destination_text]."),
+			span_notice("I push some fluid out of my [cavity_name] into [destination_text].")
 		)
 		return
 
 	user.visible_message(
-		span_notice("[user] helps [target] clear retained fluid into [destination_text]."),
-		span_notice("I help [target] clear the retained fluid from their [cavity_name] into [destination_text].")
+		span_notice("[user] helps [target] push out some fluid into [destination_text]."),
+		span_notice("I help [target] push some fluid out of their [cavity_name] into [destination_text].")
 	)
-	to_chat(target, span_notice("[user] helps me clear retained fluid into [destination_text]."))
+	to_chat(target, span_notice("[user] helps me push some fluid out into [destination_text]."))
 
 /datum/sex_action/hole_storage/expel_foreign_fluids/vaginal
 	name = "Expel fluids from pussy"
@@ -203,3 +224,5 @@
 #undef FLUID_EXPULSION_STAMINA_COST
 #undef FLUID_EXPULSION_ENERGY_COST
 #undef FLUID_EXPULSION_MIN_TRANSFER
+#undef FLUID_EXPULSION_PORTION_SHARE
+#undef FLUID_EXPULSION_MIN_PORTION

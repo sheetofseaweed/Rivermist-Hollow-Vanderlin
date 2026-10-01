@@ -72,6 +72,21 @@
 		controller.show_ui()
 	return controller
 
+/// Player-facing reason open_sex_scene() refused this pair. Mirrors its checks in the same order.
+/mob/living/proc/get_sex_scene_refusal(mob/living/target)
+	if(!target || QDELETED(target) || target.stat == DEAD)
+		return "[target || "They"] can't take part right now."
+	if(src != target && !target.allows_player_erp_while_disconnected())
+		return "[target] is away and does not allow this while disconnected."
+	var/list/combined_participants = list(src, target)
+	if(sex_scene && !QDELETED(sex_scene))
+		combined_participants |= sex_scene.participants
+	if(target.sex_scene && !QDELETED(target.sex_scene))
+		combined_participants |= target.sex_scene.participants
+	if(length(combined_participants) > SEX_SCENE_MAX_PARTICIPANTS)
+		return "That would put more than [SEX_SCENE_MAX_PARTICIPANTS] people in one scene."
+	return "I can't start a scene with [target]."
+
 /mob/living/proc/make_sucking_noise()
 	var/suckyvolume = 25
 	if(rogue_sneaking || alpha <= 100)
@@ -103,7 +118,7 @@
 		return
 
 	if(!user.open_sex_scene(target))
-		to_chat(user, "<span class='warning'>I'm already sexing.</span>")
+		to_chat(user, span_warning(user.get_sex_scene_refusal(target)))
 		return
 
 /mob/living/proc/has_hands()

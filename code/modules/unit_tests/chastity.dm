@@ -7,6 +7,10 @@
 		ORGAN_SLOT_ANUS = /obj/item/organ/genitals/filling_organ/anus,
 	)
 	for(var/slot in slots)
+		// Species can grant genitals, and getorganslot() picks randomly between duplicates.
+		for(var/obj/item/organ/existing as anything in human.getorganslotlist(slot))
+			existing.Remove(human, TRUE)
+			qdel(existing)
 		var/obj/item/organ/organ = allocate(organ_types[slot])
 		organ.Insert(human, TRUE, FALSE)
 
@@ -341,6 +345,7 @@
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
 	human.set_species(/datum/species/human/northern)
 	give_chastity_test_organs(human, list(ORGAN_SLOT_PENIS, ORGAN_SLOT_TESTICLES))
+	TEST_ASSERT_EQUAL(length(human.getorganslotlist(ORGAN_SLOT_TESTICLES)), 1, "The test body should hold exactly one pair of testicles.")
 	var/obj/item/organ/testes = human.getorganslot(ORGAN_SLOT_TESTICLES)
 	testes.reagents.clear_reagents()
 	testes.reagents.add_reagent(/datum/reagent/consumable/cum, 20)
