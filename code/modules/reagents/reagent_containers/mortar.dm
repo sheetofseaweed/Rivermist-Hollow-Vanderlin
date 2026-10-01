@@ -58,6 +58,18 @@
 		return NONE
 
 	if(!istype(tool, /obj/item/pestle)) // Make this storage based
+		// Cloth soaks up or wrings out the contents through its own intents.
+		if(istype(tool, /obj/item/natural/cloth) && is_type_in_list(user.used_intent, list(INTENT_SOAK, INTENT_WRING)))
+			return ..()
+		// Buckets, bottles and cups pour or fill through their own intents instead of going in whole.
+		if(istype(tool, /obj/item/reagent_containers/glass))
+			if(user.used_intent?.type != INTENT_POUR)
+				return ..()
+			// One selected measure per click, so exact herbal mixtures can be measured.
+			var/obj/item/reagent_containers/glass/container = tool
+			if(container.try_pour(user, src, max_transfers = 1))
+				return ITEM_INTERACT_SUCCESS
+			return ITEM_INTERACT_BLOCKING
 		if((grind_load() + tool.w_class) > max_grind_capacity)
 			balloon_alert(user, "full!")
 			return ITEM_INTERACT_BLOCKING
@@ -68,7 +80,7 @@
 		to_grind += tool
 		return ITEM_INTERACT_SUCCESS
 
-	if(try_prepare_herbal_paste(user))
+	if(try_prepare_herbal_recipe(user))
 		return ITEM_INTERACT_SUCCESS
 
 	if(!length(to_grind))
@@ -141,7 +153,7 @@
 		return NONE
 	if(user.cmode)
 		return NONE
-	if(try_prepare_herbal_paste(user))
+	if(try_prepare_herbal_recipe(user))
 		return ITEM_INTERACT_SUCCESS
 
 	if(!length(to_grind))
@@ -150,10 +162,8 @@
 
 	for(var/obj/item/grinding as anything in to_grind)
 		if(istype(grinding, /obj/item/alch/herb))
-			var/obj/item/alch/herb/herb = grinding
-			if(!herb.herbal_extract)
-				balloon_alert(user, "unknown preparation!")
-				return ITEM_INTERACT_BLOCKING
+			to_chat(user, span_warning("Herbal preparations need a measured mixture from the apothecary's handbook. Brew drinkable remedies in a cooking pot."))
+			return ITEM_INTERACT_BLOCKING
 		else if(!length(grinding.juice_results) && !length(grinding.grind_results) && !grinding.reagents?.total_volume)
 			balloon_alert(user, "can't grind [grinding]!")
 			return ITEM_INTERACT_BLOCKING
@@ -169,7 +179,6 @@
 
 	for(var/obj/item/grinding as anything in to_grind.Copy())
 		if(istype(grinding, /obj/item/alch/herb))
-			grind_herb(user, grinding, TRUE)
 			continue
 
 		if(length(grinding.juice_results))

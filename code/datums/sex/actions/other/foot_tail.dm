@@ -27,7 +27,7 @@
 /datum/sex_action/tailjob/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
-	if(!user.getorganslot(ORGAN_SLOT_TAIL))
+	if(!get_real_organ(user, ORGAN_SLOT_TAIL))
 		return FALSE
 	if(!target.getorganslot(target_organ_slot))
 		return FALSE
@@ -39,7 +39,7 @@
 		return FALSE
 	if(user == target)
 		return FALSE
-	if(!user.getorganslot(ORGAN_SLOT_TAIL))
+	if(!get_real_organ(user, ORGAN_SLOT_TAIL))
 		return FALSE
 	if(!target.getorganslot(target_organ_slot))
 		return FALSE

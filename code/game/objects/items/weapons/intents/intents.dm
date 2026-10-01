@@ -3,6 +3,8 @@
 	var/desc = ""
 //	icon = 'icons/mob/roguehud.dmi'		so you can find the icons
 	var/icon_state = "instrike"
+	/// Icon file holding this intent's HUD plate; modular intents point at their own file.
+	var/hud_icon = 'icons/mob/roguehud.dmi'
 	var/list/attack_verb = list("hits", "strikes")
 	/// Weakref to the item the mastermob is holding
 	var/datum/weakref/masteritem

@@ -239,6 +239,9 @@
 /obj/item/neuFarm/seed/salvia
 	plant_def_type = /datum/plant_def/alchemical/salvia
 
+/obj/item/neuFarm/seed/lavender
+	plant_def_type = /datum/plant_def/alchemical/lavender
+
 /obj/item/neuFarm/seed/hypericum
 	plant_def_type = /datum/plant_def/alchemical/hypericum
 

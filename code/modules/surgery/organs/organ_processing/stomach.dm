@@ -170,13 +170,24 @@
 	switch(owner.disgust)
 		if(0 to DISGUST_LEVEL_GROSS)
 			owner.clear_alert("disgust")
-			owner.remove_stress(/datum/stress_event/disgust)
+			owner.set_disgust_stress(null)
 		if(DISGUST_LEVEL_GROSS to DISGUST_LEVEL_VERYGROSS)
 			owner.throw_alert("disgust", /atom/movable/screen/alert/gross)
-			owner.add_stress(/datum/stress_event/gross)
+			owner.set_disgust_stress(/datum/stress_event/gross)
 		if(DISGUST_LEVEL_VERYGROSS to DISGUST_LEVEL_DISGUSTED)
 			owner.throw_alert("disgust", /atom/movable/screen/alert/verygross)
-			owner.add_stress(/datum/stress_event/verygross)
+			owner.set_disgust_stress(/datum/stress_event/verygross)
 		if(DISGUST_LEVEL_DISGUSTED to INFINITY)
 			owner.throw_alert("disgust", /atom/movable/screen/alert/disgusted)
-			owner.add_stress(/datum/stress_event/disgusted)
+			owner.set_disgust_stress(/datum/stress_event/disgusted)
+
+/// Keeps only the given disgust level's stress event; null clears every level.
+/mob/living/carbon/proc/set_disgust_stress(level_type)
+	var/static/list/disgust_levels = list(
+		/datum/stress_event/gross,
+		/datum/stress_event/verygross,
+		/datum/stress_event/disgusted,
+	)
+	remove_stress(disgust_levels - level_type)
+	if(level_type)
+		add_stress(level_type)

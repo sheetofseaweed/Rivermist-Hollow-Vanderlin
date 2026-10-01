@@ -17,6 +17,8 @@
 #define COMSIG_GLOB_VAR_EDIT "!var_edit"
 /// mob was created somewhere : (mob)
 #define COMSIG_GLOB_MOB_CREATED "!mob_created"
+/// from settod() when the time of day changes: (new_tod, old_tod)
+#define COMSIG_GLOB_TIME_OF_DAY_CHANGED "!time_of_day_changed"
 /// mob died somewhere : (mob , gibbed)
 #define COMSIG_GLOB_MOB_DEATH "!mob_death"
 /// global living say plug - use sparingly: (mob/speaker , message)

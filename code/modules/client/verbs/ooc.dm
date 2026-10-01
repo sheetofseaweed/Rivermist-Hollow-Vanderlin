@@ -584,6 +584,15 @@ GLOBAL_LIST_INIT(oocpronouns_required, list(
 
 	INVOKE_ASYNC(src, VERB_REF(fit_viewport))
 
+/// Map share of the main window split, matching the splitter default in skin.dmf.
+#define DEFAULT_MAP_SPLITTER_PERCENT 68
+
+/// Puts the map and chat divider back where the skin starts it.
+/client/proc/reset_viewport_split()
+	winset(src, "mainwindow.split", "splitter=[DEFAULT_MAP_SPLITTER_PERCENT]")
+
+#undef DEFAULT_MAP_SPLITTER_PERCENT
+
 /client/verb/policy()
 	set name = "Show Policy"
 	set desc = ""

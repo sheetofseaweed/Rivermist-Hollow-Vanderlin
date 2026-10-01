@@ -309,7 +309,7 @@
 			"name" = initial(path.name),
 			"icon" = "[initial(path.icon)]",
 			"icon_state" = "[initial(path.icon_state)]",
-			"time_s" = step_to_time[n] / 10,
+			"time_s" = get_step_time(n) / 10,
 		))
 	data["steps"] = steps
 

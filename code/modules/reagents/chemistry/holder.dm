@@ -919,7 +919,7 @@
 					else
 						tastes[taste] = amount
 			else
-				var/taste_desc = R.taste_description
+				var/taste_desc = R.get_taste_description()
 				var/taste_amount = R.volume * R.taste_mult
 				if(taste_desc in tastes)
 					tastes[taste_desc] += taste_amount

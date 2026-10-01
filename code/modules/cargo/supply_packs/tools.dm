@@ -212,8 +212,8 @@
 
 /datum/supply_pack/tools/medical/mercydraught
 	name = "Mercy Draught"
-	desc = "A rare restorative said to wash the lingering trauma of defeat clean away."
-	cost = 250 // Premium good - the rare cure for defeat trauma.
+	desc = "Five drinkable doses for ordinary defeat trauma. Each five-measure dose treats one condition; Convalescence requires a treatment station."
+	cost = 100
 	contains = /obj/item/reagent_containers/glass/bottle/vial/mercydraught
 
 /datum/supply_pack/tools/medical/surgerybag

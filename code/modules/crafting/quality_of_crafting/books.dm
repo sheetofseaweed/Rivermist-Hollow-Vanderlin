@@ -554,6 +554,7 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 	icon_state = "book4_0"
 	base_icon_state = "book4"
 	types = list(
+		/datum/book_entry/apothecary_methods,
 		/datum/herbal_mortar_recipe,
 		/datum/container_craft/cooking/herbal_decoction,
 		/datum/distillation_recipe/herbal_oil,

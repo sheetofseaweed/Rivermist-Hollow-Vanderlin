@@ -38,7 +38,7 @@
 /datum/sex_action/collect_fluid/self/shows_on_menu(mob/living/user, mob/living/target)
 	if(user != target)
 		return FALSE
-	if(!user.getorganslot(ORGAN_SLOT_PENIS) && !user.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!get_free_organ(user, ORGAN_SLOT_PENIS) && !get_free_organ(user, ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(!get_held_container(user))
 		return FALSE
@@ -52,7 +52,7 @@
 		return FALSE
 	if(!get_held_container(user))
 		return FALSE
-	if(!user.getorganslot(ORGAN_SLOT_PENIS) && !user.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!get_free_organ(user, ORGAN_SLOT_PENIS) && !get_free_organ(user, ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(!check_location_accessible(user, user, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
@@ -102,7 +102,7 @@
 /datum/sex_action/collect_fluid/other/shows_on_menu(mob/living/user, mob/living/target)
 	if(user == target)
 		return FALSE
-	if(!target.getorganslot(ORGAN_SLOT_PENIS) && !target.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!get_free_organ(target, ORGAN_SLOT_PENIS) && !get_free_organ(target, ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(!get_held_container(user))
 		return FALSE
@@ -116,7 +116,7 @@
 		return FALSE
 	if(!get_held_container(user))
 		return FALSE
-	if(!target.getorganslot(ORGAN_SLOT_PENIS) && !target.getorganslot(ORGAN_SLOT_VAGINA))
+	if(!get_free_organ(target, ORGAN_SLOT_PENIS) && !get_free_organ(target, ORGAN_SLOT_VAGINA))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_PENIS) && check_sex_lock(target, ORGAN_SLOT_VAGINA))
 		return FALSE

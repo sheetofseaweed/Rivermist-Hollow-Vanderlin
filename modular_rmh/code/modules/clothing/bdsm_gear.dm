@@ -1,13 +1,15 @@
 #define BDSM_GAG_DROOL_CHANCE 8
 #define BDSM_SERPENT_STRUGGLE_COOLDOWN 5 SECONDS
+#define BDSM_BLACK_LEATHER "#69656B"
+#define BDSM_BROWN_LEATHER "#965F4B"
 
-// The artist's sheets are imported as complete item and worn states by
-// modular_rmh/tools/import_bdsm_sprites.py.
+// The paired black/brown sprites separate dyeable leather from fixed details.
 /obj/item/clothing/face/bdsm_gag
 	name = "gag"
 	desc = "A fitted leather gag with adjustable straps."
-	icon = 'modular_rmh/icons/clothing/bdsm_items.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi'
+	dyeable = TRUE
 	modifies_speech = TRUE
 	clothing_flags = BLOCKS_SPEECH
 	flags_cover = MASKCOVERSMOUTH
@@ -15,10 +17,29 @@
 	resistance_flags = FLAMMABLE
 	strip_delay = 3 SECONDS
 	equip_delay_other = 3 SECONDS
+	abstract_type = /obj/item/clothing/face/bdsm_gag
 	var/fastened = TRUE
 	var/can_lower = TRUE
 	var/drool_chance = BDSM_GAG_DROOL_CHANCE
 	var/muffled_words = "Mmf..."
+
+/obj/item/clothing/face/bdsm_gag/Initialize(mapload, ...)
+	. = ..()
+	update_appearance(UPDATE_OVERLAYS)
+
+/obj/item/clothing/face/bdsm_gag/update_overlays()
+	. = ..()
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', icon_state)
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
+
+/obj/item/clothing/face/bdsm_gag/worn_overlays(mutable_appearance/standing, isinhands = FALSE, icon_file, dummy_block = FALSE)
+	. = ..()
+	if(isinhands)
+		return
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', standing.icon_state)
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
 
 /obj/item/clothing/face/bdsm_gag/AdjustClothes(mob/user)
 	if(!can_lower || loc != user)
@@ -67,24 +88,34 @@
 				override_state += "_f"
 	return ..(age, default_layer, default_icon_file, isinhands, femaleuniform, override_state, coom, customi, sleeveindex, breast_size, clip_mask)
 
+/obj/item/clothing/face/bdsm_gag/muzzle
+	abstract_type = /obj/item/clothing/face/bdsm_gag/muzzle
+
 /obj/item/clothing/face/bdsm_gag/muzzle/black
 	name = "black leather muzzle"
 	icon_state = "black_muzzle"
+	color = BDSM_BLACK_LEATHER
 	muffled_words = "Mmph..."
 
 /obj/item/clothing/face/bdsm_gag/muzzle/brown
 	name = "brown leather muzzle"
 	icon_state = "brown_muzzle"
+	color = BDSM_BROWN_LEATHER
 	muffled_words = "Mmph..."
+
+/obj/item/clothing/face/bdsm_gag/ball
+	abstract_type = /obj/item/clothing/face/bdsm_gag/ball
 
 /obj/item/clothing/face/bdsm_gag/ball/black
 	name = "black ball gag"
 	icon_state = "black_ballgag"
+	color = BDSM_BLACK_LEATHER
 	drool_chance = 14
 
 /obj/item/clothing/face/bdsm_gag/ball/brown
 	name = "brown ball gag"
 	icon_state = "brown_ballgag"
+	color = BDSM_BROWN_LEATHER
 	drool_chance = 14
 
 /obj/item/clothing/face/bdsm_gag/ring
@@ -94,14 +125,17 @@
 	body_parts_covered = FACE
 	muffled_words = "Ah... nnh..."
 	drool_chance = 20
+	abstract_type = /obj/item/clothing/face/bdsm_gag/ring
 
 /obj/item/clothing/face/bdsm_gag/ring/black
 	name = "black ring gag"
 	icon_state = "black_ringgag"
+	color = BDSM_BLACK_LEATHER
 
 /obj/item/clothing/face/bdsm_gag/ring/brown
 	name = "brown ring gag"
 	icon_state = "brown_ringgag"
+	color = BDSM_BROWN_LEATHER
 
 /obj/item/clothing/face/bdsm_gag/harness
 	name = "harness gag"
@@ -110,14 +144,17 @@
 	strip_delay = 6 SECONDS
 	equip_delay_other = 5 SECONDS
 	drool_chance = 10
+	abstract_type = /obj/item/clothing/face/bdsm_gag/harness
 
 /obj/item/clothing/face/bdsm_gag/harness/black
 	name = "black harness gag"
 	icon_state = "black_harnessgag"
+	color = BDSM_BLACK_LEATHER
 
 /obj/item/clothing/face/bdsm_gag/harness/brown
 	name = "brown harness gag"
 	icon_state = "brown_harnessgag"
+	color = BDSM_BROWN_LEATHER
 
 // A gag suppresses ordinary vocal speech in the base code. Its own speech
 // handler substitutes an audible muffled phrase, so allow that narrow case.
@@ -193,20 +230,42 @@
 /obj/item/clothing/neck/leathercollar/bdsm
 	name = "leashed leather collar"
 	desc = "A leather collar with a reinforced ring for a leash."
-	icon = 'modular_rmh/icons/clothing/bdsm_items.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi'
+	dyeable = TRUE
 	leashable = TRUE
+	abstract_type = /obj/item/clothing/neck/leathercollar/bdsm
 	var/leash_side
+
+/obj/item/clothing/neck/leathercollar/bdsm/Initialize(mapload, ...)
+	. = ..()
+	update_appearance(UPDATE_OVERLAYS)
+
+/obj/item/clothing/neck/leathercollar/bdsm/update_overlays()
+	. = ..()
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', icon_state)
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
+
+/obj/item/clothing/neck/leathercollar/bdsm/worn_overlays(mutable_appearance/standing, isinhands = FALSE, icon_file, dummy_block = FALSE)
+	. = ..()
+	if(isinhands)
+		return
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', standing.icon_state)
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
 
 /obj/item/clothing/neck/leathercollar/bdsm/black
 	name = "black leashed collar"
 	icon_state = "black_leashed_collar"
 	item_state = "black_leashed_collar"
+	color = BDSM_BLACK_LEATHER
 
 /obj/item/clothing/neck/leathercollar/bdsm/brown
 	name = "brown leashed collar"
 	icon_state = "brown_leashed_collar"
 	item_state = "brown_leashed_collar"
+	color = BDSM_BROWN_LEATHER
 
 /obj/item/clothing/neck/leathercollar/bdsm/build_worn_icon(age = AGE_ADULT, default_layer = 0, default_icon_file = null, isinhands = FALSE, femaleuniform = NO_FEMALE_UNIFORM, override_state = null, coom = FALSE, customi = null, sleeveindex, breast_size = 0, icon/clip_mask = null)
 	if(!isinhands)
@@ -292,15 +351,34 @@
 	var/front_bound = FALSE
 	var/worn_state
 
+/obj/item/rope/bdsm_shackles/Initialize(mapload, ...)
+	. = ..()
+	if(dyeable)
+		update_appearance(UPDATE_OVERLAYS)
+
 /obj/item/rope/bdsm_shackles/black
 	name = "black leather shackles"
 	icon_state = "black_shackles"
 	worn_state = "black_shackles"
+	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
+	color = BDSM_BLACK_LEATHER
+	dyeable = TRUE
 
 /obj/item/rope/bdsm_shackles/brown
 	name = "brown leather shackles"
 	icon_state = "brown_shackles"
 	worn_state = "brown_shackles"
+	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
+	color = BDSM_BROWN_LEATHER
+	dyeable = TRUE
+
+/obj/item/rope/bdsm_shackles/update_overlays()
+	. = ..()
+	if(!dyeable)
+		return
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', icon_state)
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
 
 /obj/item/rope/bdsm_shackles/iron
 	name = "iron shackles"
@@ -385,9 +463,16 @@
 		return
 	var/mutable_appearance/old_overlay = overlays_standing[HANDCUFF_LAYER]
 	remove_overlay(HANDCUFF_LAYER)
-	var/mutable_appearance/new_overlay = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi', bdsm_restraint_state(cuffs), -HANDCUFF_LAYER)
+	var/state = bdsm_restraint_state(cuffs)
+	var/icon_file = cuffs.dyeable ? 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi' : 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	var/mutable_appearance/new_overlay = mutable_appearance(icon_file, state, -HANDCUFF_LAYER)
 	new_overlay.pixel_x = old_overlay?.pixel_x
 	new_overlay.pixel_y = old_overlay?.pixel_y
+	if(cuffs.dyeable)
+		new_overlay.color = cuffs.color
+		var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', state)
+		fixed_details.appearance_flags = RESET_COLOR
+		new_overlay.overlays.Add(fixed_details)
 	overlays_standing[HANDCUFF_LAYER] = new_overlay
 	apply_overlay(HANDCUFF_LAYER)
 
@@ -397,7 +482,15 @@
 	if(!istype(cuffs))
 		return
 	remove_overlay(LEGCUFF_LAYER)
-	overlays_standing[LEGCUFF_LAYER] = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi', bdsm_restraint_state(cuffs), -LEGCUFF_LAYER)
+	var/state = bdsm_restraint_state(cuffs)
+	var/icon_file = cuffs.dyeable ? 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi' : 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	var/mutable_appearance/new_overlay = mutable_appearance(icon_file, state, -LEGCUFF_LAYER)
+	if(cuffs.dyeable)
+		new_overlay.color = cuffs.color
+		var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', state)
+		fixed_details.appearance_flags = RESET_COLOR
+		new_overlay.overlays.Add(fixed_details)
+	overlays_standing[LEGCUFF_LAYER] = new_overlay
 	apply_overlay(LEGCUFF_LAYER)
 
 /obj/item/clothing/shirt/undershirt/bdsm_nundorei
@@ -448,7 +541,7 @@
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
 	icon_state = "leathergloves"
 	item_state = "leathergloves"
-	sleeved = null
+	sleeved = 'modular_rmh/icons/clothing/onmob/bdsm_glove_sleeves.dmi'
 	resistance_flags = FLAMMABLE
 	color = CLOTHING_BLACK
 	dyeable = TRUE
@@ -461,3 +554,5 @@
 
 #undef BDSM_GAG_DROOL_CHANCE
 #undef BDSM_SERPENT_STRUGGLE_COOLDOWN
+#undef BDSM_BLACK_LEATHER
+#undef BDSM_BROWN_LEATHER

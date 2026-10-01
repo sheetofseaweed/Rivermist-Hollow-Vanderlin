@@ -41,6 +41,8 @@ type ControlsData = {
   lying_direction: string | null;
   cmode: Booleanish;
   auto_clench: Booleanish;
+  can_hold_it_in: Booleanish;
+  hold_it_in: Booleanish;
 };
 
 type ArousalData = {
@@ -510,6 +512,18 @@ export const SexScene = () => {
             Edge {asBool(controls.edging_other) ? 'On' : 'Off'}
           </Button>
         </Stack.Item>
+        {asBool(controls.can_hold_it_in) ? (
+          <Stack.Item>
+            <Button
+              compact
+              selected={asBool(controls.hold_it_in)}
+              tooltip="Clench to keep what is inside your holes from leaking out. Costs a little stamina while you hold something."
+              onClick={() => act('toggle_hold_it_in')}
+            >
+              Hold It In {asBool(controls.hold_it_in) ? 'On' : 'Off'}
+            </Button>
+          </Stack.Item>
+        ) : null}
         {asBool(controls.cmode) ? (
           <Stack.Item>
             <Button

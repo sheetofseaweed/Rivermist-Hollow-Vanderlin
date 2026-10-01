@@ -525,6 +525,14 @@
 		mob.visible_message(span_love("[mob] climaxes, yet nothing is released!"))
 		after_ejaculation(FALSE, parent, null, action, action_initiator, action_target, action_performer)
 		return
+	var/obj/item/organ/genitals/filling_organ/testicles/climax_testes = mob.getorganslot(ORGAN_SLOT_TESTICLES)
+	if(climax_testes?.is_pent_up() && mob.getorganslot(ORGAN_SLOT_PENIS))
+		to_chat(mob, span_love("A pent-up load surges out of me!"))
+		mob.add_stress(/datum/stress_event/pent_up_release)
+	// An aim on the cock, from a hand or an NPC, decides where a hand-driven climax lands.
+	var/datum/climax_aim/steering_aim = get_steering_aim(action)
+	if(steering_aim && climax_at_aim(steering_aim, action, action_initiator, action_target, action_performer))
+		return
 	if(!action || !target)
 		mob.visible_message(span_love("[mob] orgasms!"))
 		var/turf/turf = get_turf(mob)
@@ -532,13 +540,14 @@
 			var/obj/item/organ/genitals/filling_organ/testicles/testes = mob.getorganslot(ORGAN_SLOT_TESTICLES)
 			if(testes)
 				if(testes.reagents)
-					var/cum_to_take = min(3, 10 * testes.organ_size)
-					deposit_cum_on_turf(turf, testes.reagents, cum_to_take)
+					var/cum_to_take = testes.get_climax_release()
+					// Routed so worn catchers (pumps, condom leeches) get a chance before the floor.
+					route_climax_reagents(testes.reagents, cum_to_take, mob, target, action, ORGASM_LOCATION_SELF, turf, null, action_initiator, action_target, action_performer, TRUE)
 		// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 		if(mob.getorganslot(ORGAN_SLOT_VAGINA))
 			var/obj/item/organ/genitals/filling_organ/vagina/vag = mob.getorganslot(ORGAN_SLOT_VAGINA)
 			if(vag?.reagents)
-				vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+				vag.produce_climax_fluid()
 		after_ejaculation(FALSE, mob, null, action, action_initiator, action_target, action_performer)
 	else
 		var/return_type = action.handle_climax_message(mob, target, must_flip)
@@ -548,13 +557,13 @@
 				var/obj/item/organ/genitals/filling_organ/testicles/testes = mob.getorganslot(ORGAN_SLOT_TESTICLES)
 				if(testes)
 					if(testes.reagents)
-						var/cum_to_take = min(3, 10 * testes.organ_size)
-						deposit_cum_on_turf(turf, testes.reagents, cum_to_take)
+						var/cum_to_take = testes.get_climax_release()
+						route_climax_reagents(testes.reagents, cum_to_take, mob, target, action, ORGASM_LOCATION_SELF, turf, null, action_initiator, action_target, action_performer, TRUE)
 			// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 			if(mob.getorganslot(ORGAN_SLOT_VAGINA))
 				var/obj/item/organ/genitals/filling_organ/vagina/vag = mob.getorganslot(ORGAN_SLOT_VAGINA)
 				if(vag?.reagents)
-					vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+					vag.produce_climax_fluid()
 			after_ejaculation(FALSE, mob, target, action, action_initiator, action_target, action_performer)
 		else
 			handle_climax(action, return_type, mob, target, giving, action_initiator, action_target, action_performer)
@@ -595,22 +604,18 @@
 		if(ORGASM_LOCATION_ONTO)
 			log_combat(user, target, "Came onto the target")
 			playsound(target, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
-			var/turf/turf = get_turf(target)
+			var/coat_zone = action ? action.get_climax_coat_zone(user) : FLUID_COAT_CHEST
 			if(testes)
 				if(testes.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/2), 1, 10 * testes.organ_size)
-					var/cum_transferred = route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
-					if(cum_transferred > 0)
+					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_ONTO)
+					// Spurts drift down the body from the zone the climax starts at.
+					if(spurt_onto(target, coat_zone, cum_to_take, action, action_initiator, action_target, action_performer))
 						climax_fluid_transferred = TRUE
-					if(target && cum_transferred > 0)
-						target.apply_status_effect(/datum/status_effect/facial)
 			if(vag)
 				if(vag.reagents)
-					var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
-					if(route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer) > 0)
+					var/femcum_to_take = vag.get_climax_release(climax_type)
+					if(coat_climax_onto(vag.reagents, femcum_to_take, user, target, action, climax_type, coat_zone, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
-			if(target && climax_fluid_transferred && (!action || !action.knot_on_finish))
-				apply_facial_effect(target)
 
 		if(ORGASM_LOCATION_INTO)
 			log_combat(user, target, "Came inside the target")
@@ -625,11 +630,11 @@
 						if(ORGAN_SLOT_ANUS)
 							cameloc = target.getorganslot(ORGAN_SLOT_ANUS)
 				if(cameloc && cameloc.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, min(testes.reagents.total_volume, cameloc.reagents.maximum_volume - cameloc.reagents.total_volume))
+					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_INTO, cameloc.reagents.maximum_volume - cameloc.reagents.total_volume)
 					if(route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, cameloc, INGEST, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 				else if(target)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, testes.reagents.total_volume)
+					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_INTO)
 					if(route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, target, INGEST, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 			if(target && climax_fluid_transferred)
@@ -642,17 +647,17 @@
 			if(target && action)
 				if(user.getorganslot(ORGAN_SLOT_PENIS) && action.check_sex_lock(user, ORGAN_SLOT_PENIS))
 					if(testes && testes.reagents)
-						var/cum_to_take = CLAMP((testes.reagents.maximum_volume / 4), 1, min(testes.reagents.total_volume, target.reagents.maximum_volume - target.reagents.total_volume))
+						var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_ORAL, target.reagents.maximum_volume - target.reagents.total_volume)
 						if(route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, target, INGEST, action_initiator, action_target, action_performer) > 0)
 							climax_fluid_transferred = TRUE
 				if(user.getorganslot(ORGAN_SLOT_VAGINA) && action.check_sex_lock(user, ORGAN_SLOT_VAGINA))
 					if(vag && vag.reagents)
-						var/femcum_to_take = min(8, vag.reagents.total_volume*0.3)
+						var/femcum_to_take = vag.get_climax_release(climax_type)
 						if(route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, target, INGEST, action_initiator, action_target, action_performer) > 0)
 							climax_fluid_transferred = TRUE
 			if(target && climax_fluid_transferred)
 				if(is_oral)
-					apply_facial_effect(target)
+					spill_climax_on_face(target, testes, vag)
 				else
 					apply_creampie_effect(target)
 
@@ -663,11 +668,11 @@
 			var/turf/turf = get_turf(target)
 			if(testes)
 				if(testes.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5), 1, testes.reagents.total_volume)
+					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_SELF)
 					route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
 			// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 			if(vag?.reagents)
-				vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+				vag.produce_climax_fluid()
 
 		if(ORGASM_LOCATION_CONTAINER)
 			var/obj/item/container = action?.get_climax_container(user, target, action_initiator, action_target, action_performer)
@@ -675,22 +680,22 @@
 				// container is gone (dropped/swapped/full-removed); don't silently eat the climax, spill it like SELF.
 				var/turf/turf = get_turf(user)
 				if(testes?.reagents)
-					var/cum_to_take = CLAMP((testes.reagents.maximum_volume/5), 1, testes.reagents.total_volume)
+					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_SELF)
 					route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, turf, null, action_initiator, action_target, action_performer, TRUE)
 				// Female climax fills the vagina rather than spawning a puddle; the organ's drip system handles leakage.
 				if(vag?.reagents)
-					vag.reagents.add_reagent(vag.reagent_to_make, FEMCUM_ORGASM_VOLUME)
+					vag.produce_climax_fluid()
 			else
 				log_combat(user, user, "Ejaculated into [container]")
 				playsound(container, 'sound/misc/mat/endin.ogg', 50, TRUE, ignore_walls = FALSE)
 				var/free_space = container.reagents.maximum_volume - container.reagents.total_volume
 				if(testes?.reagents && free_space > 0)
-					var/cum_to_take = min(max(testes.reagents.maximum_volume / 3, 1), testes.reagents.total_volume, free_space)
+					var/cum_to_take = testes.get_climax_release(ORGASM_LOCATION_CONTAINER, free_space)
 					if(cum_to_take > 0 && route_climax_reagents(testes.reagents, cum_to_take, user, target, action, climax_type, container, INJECT, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 						free_space = container.reagents.maximum_volume - container.reagents.total_volume
 				if(vag?.reagents && free_space > 0)
-					var/femcum_to_take = min(8, vag.reagents.total_volume * 0.3, free_space)
+					var/femcum_to_take = vag.get_climax_release(ORGASM_LOCATION_CONTAINER, free_space)
 					if(femcum_to_take > 0 && route_climax_reagents(vag.reagents, femcum_to_take, user, target, action, climax_type, container, INJECT, action_initiator, action_target, action_performer) > 0)
 						climax_fluid_transferred = TRUE
 				if(!climax_fluid_transferred)
@@ -709,6 +714,7 @@
 		return 0
 	if(isturf(destination))
 		var/turf/destination_turf = destination
+		leave_fluid_scent(destination_turf, user, get_fluid_scent_kind(source_reagents.get_master_reagent()))
 		if(use_fluid_decal) //spilled ejaculate forms a drip/puddle decal instead of a raw liquid puddle.
 			deposit_cum_on_turf(destination_turf, source_reagents, remaining)
 		else
@@ -717,14 +723,30 @@
 		source_reagents.trans_to(destination, remaining, transfered_by = user, method = transfer_method)
 	return remaining
 
-/datum/component/arousal/proc/apply_facial_effect(mob/living/recipient)
-	if(!recipient)
+/// A climax onto a partner: worn catchers first, then their clothes or bare skin at the zone, the rest to the floor.
+/datum/component/arousal/proc/coat_climax_onto(datum/reagents/source_reagents, amount, mob/living/user, mob/living/target, datum/sex_action/action, climax_type, coat_zone, mob/living/action_initiator, mob/living/action_target, atom/action_performer)
+	if(!source_reagents || amount <= 0)
+		return 0
+	var/remaining = apply_sex_action_climax_effects(user, target, action, climax_type, source_reagents, amount, target, null, action_initiator, action_target, action_performer)
+	if(remaining <= 0)
+		return 0
+	var/leftover = remaining
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		leftover = human_target.coat_with_fluid(coat_zone, source_reagents, remaining)
+	if(leftover > 0)
+		deposit_cum_on_turf(get_turf(target || user), source_reagents, leftover)
+	return remaining
+
+/// An oral climax leaves a little on the partner's face.
+/datum/component/arousal/proc/spill_climax_on_face(mob/living/target, obj/item/organ/genitals/filling_organ/testes, obj/item/organ/genitals/filling_organ/vag)
+	if(!ishuman(target))
 		return
-	var/datum/status_effect/facial/facial_effect = recipient.has_status_effect(/datum/status_effect/facial)
-	if(facial_effect)
-		facial_effect.refresh_cum()
-	else
-		recipient.apply_status_effect(/datum/status_effect/facial)
+	var/mob/living/carbon/human/human_target = target
+	for(var/obj/item/organ/genitals/filling_organ/source_organ in list(testes, vag))
+		if(source_organ.reagents?.total_volume)
+			human_target.coat_with_fluid(FLUID_COAT_FACE, source_organ.reagents, FLUID_COAT_ORAL_SPILL)
+			return
 
 /datum/component/arousal/proc/apply_creampie_effect(mob/living/recipient)
 	if(!recipient)

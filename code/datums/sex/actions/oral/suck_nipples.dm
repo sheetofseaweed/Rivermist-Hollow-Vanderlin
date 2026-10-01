@@ -40,7 +40,7 @@
 	handle_passive_ejaculation(target)
 
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = target.getorganslot(ORGAN_SLOT_BREASTS)
-	if(!breasts || !breasts.refilling || !breasts.reagents || !user.reagents)
+	if(!breasts || !breasts.reagents || !user.reagents)
 		return
 	if(breasts.reagents.total_volume <= 0 || user.reagents.holder_full())
 		return

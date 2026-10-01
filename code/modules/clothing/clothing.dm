@@ -591,12 +591,17 @@ BLIND     // can't see anything
 			return
 
 	if(wet.water_stacks < 0)
-		if(COOLDOWN_FINISHED(src, wet_stress_cd))
-			COOLDOWN_START(src, wet_stress_cd, 60 SECONDS)
-			if(HAS_TRAIT(C, TRAIT_WATER_LOVER) || istriton(C))
-				C.add_stress(/datum/stress_event/wet_cloth_positive)
-			else
-				C.add_stress(/datum/stress_event/wet_cloth)
+		apply_wet_stress(C)
+
+/// Wet-clothes mood on a per-garment cooldown; water lovers enjoy it.
+/obj/item/clothing/proc/apply_wet_stress(mob/living/carbon/wearer)
+	if(!COOLDOWN_FINISHED(src, wet_stress_cd))
+		return
+	COOLDOWN_START(src, wet_stress_cd, 60 SECONDS)
+	if(HAS_TRAIT(wearer, TRAIT_WATER_LOVER) || istriton(wearer))
+		wearer.add_stress(/datum/stress_event/wet_cloth_positive)
+	else
+		wearer.add_stress(/datum/stress_event/wet_cloth)
 
 /obj/item/clothing/take_damage(damage_amount, damage_type, damage_flag, sound_effect, attack_dir, armor_penetration)
 	. = ..()

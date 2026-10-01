@@ -228,6 +228,9 @@ GLOBAL_LIST_INIT(name2reagent, build_name2reagent())
 	SHOULD_CALL_PARENT(TRUE)
 	if(!length(incoming_data))
 		return
+	// Incoming keys are copied below, so a reagent without data (like plain milk) needs a list first.
+	if(!data)
+		data = list()
 	if("quality" in incoming_data)
 		var/other_quality = incoming_data["quality"]
 

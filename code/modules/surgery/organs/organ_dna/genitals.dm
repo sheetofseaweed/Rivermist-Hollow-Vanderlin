@@ -28,8 +28,7 @@
 	..()
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts_organ = organ
 	breasts_organ.organ_size = breast_size
-	breasts_organ.refilling = lactating
-	breasts_organ.max_reagents = max(75, breasts_organ.organ_size * 100)
+	breasts_organ.produces_fluid = lactating
 
 /datum/organ_dna/vagina
 	var/fertility = TRUE

@@ -28,7 +28,7 @@
 	if(!reagents?.total_volume)
 		return NONE
 
-	if(!reagents.has_reagent(/datum/reagent/consumable/milk, 15) && !reagents.has_reagent(/datum/reagent/consumable/milk/gote, 15))
+	if(!length(get_saltable_milk_types()))
 		return NONE
 
 	to_chat(user, span_danger("Adding salt to the milk."))
@@ -37,17 +37,29 @@
 	if(!do_after(user, 2 SECONDS, src))
 		return ITEM_INTERACT_BLOCKING
 
-	if(reagents.has_reagent(/datum/reagent/consumable/milk, 15))
-		reagents.remove_reagent(/datum/reagent/consumable/milk, 15)
-		reagents.add_reagent(/datum/reagent/consumable/milk/salted, 15)
-
-	if(reagents.has_reagent(/datum/reagent/consumable/milk/gote, 15))
-		reagents.remove_reagent(/datum/reagent/consumable/milk/gote, 15)
-		reagents.add_reagent(/datum/reagent/consumable/milk/salted_gote, 15)
+	if(!salt_milks())
+		return ITEM_INTERACT_BLOCKING
 
 	qdel(tool)
 
 	return ITEM_INTERACT_SUCCESS
+
+/// Milk types in the bucket with enough volume to salt; species milk counts as well as cow and gote milk.
+/obj/item/reagent_containers/glass/bucket/proc/get_saltable_milk_types()
+	. = list()
+	for(var/datum/reagent/consumable/milk/milk in reagents?.reagent_list)
+		if(milk.volume >= 15 && milk.get_salted_type())
+			. += milk.type
+
+/// Salts 15 units of every saltable milk and returns how many kinds were salted.
+/obj/item/reagent_containers/glass/bucket/proc/salt_milks()
+	. = 0
+	for(var/datum/reagent/consumable/milk/milk_type as anything in get_saltable_milk_types())
+		var/datum/reagent/consumable/milk/milk = reagents.get_reagent(milk_type)
+		var/salted_type = milk.get_salted_type()
+		reagents.remove_reagent(milk_type, 15)
+		reagents.add_reagent(salted_type, 15)
+		.++
 
 /obj/item/reagent_containers/glass/bucket/wooden
 	name = "bucket"

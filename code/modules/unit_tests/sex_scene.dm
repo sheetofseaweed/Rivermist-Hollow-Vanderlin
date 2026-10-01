@@ -133,6 +133,8 @@
 	var/mob/living/carbon/human/overflow_joiner = allocate(/mob/living/carbon/human)
 	TEST_ASSERT_NULL(overflow_joiner.open_sex_scene(focus, show_ui = FALSE), "a participant beyond the configured cap should be rejected")
 	TEST_ASSERT_NULL(overflow_joiner.sex_scene, "a size-rejected participant must remain outside the scene")
+	var/refusal = overflow_joiner.get_sex_scene_refusal(focus)
+	TEST_ASSERT(findtext(refusal, "more than [SEX_SCENE_MAX_PARTICIPANTS] people"), "a size-rejected participant should be told the scene is full, got: [refusal]")
 
 	for(var/datum/sex_scene_controller/group_session as anything in group_sessions)
 		qdel(group_session)
@@ -265,6 +267,76 @@
 	TEST_ASSERT_NULL(context.scene, "direct context deletion should clear its scene back-reference")
 
 	qdel(controller)
+
+/// A merge moves a running action while its loop sleeps; the loop must follow it, not strand it.
+/datum/unit_test/sex_scene_merge_keeps_action_loop/Run()
+	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/third = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/fourth = allocate(/mob/living/carbon/human)
+	var/datum/sex_scene_controller/first_controller = first.open_sex_scene(second, show_ui = FALSE)
+	TEST_ASSERT_NOTNULL(first_controller, "the first pair should open a scene")
+	TEST_ASSERT_NOTNULL(third.open_sex_scene(fourth, show_ui = FALSE), "the second pair should open a scene")
+	first_controller.set_current_speed(SEX_SPEED_EXTREME)
+	var/datum/sex_action/action = first_controller.try_start_action(/datum/sex_action/rub_body, "unit_test")
+	TEST_ASSERT_NOTNULL(action, "the first pair's action should start")
+	var/interaction_key = "sex_action_[REF(action)]"
+	TEST_ASSERT(DOING_INTERACTION(first, interaction_key), "the action loop should be running before the merge")
+
+	TEST_ASSERT_NOTNULL(third.open_sex_scene(first, show_ui = FALSE), "the second scene should absorb the first")
+	TEST_ASSERT_EQUAL(action.scene, third.sex_scene, "the merge should move the running action")
+	sleep(2 SECONDS)
+	TEST_ASSERT(DOING_INTERACTION(first, interaction_key), "the action loop should survive the merge")
+
+	action.stop_runtime()
+	TEST_ASSERT(QDELETED(action), "the moved action should still stop cleanly")
+
+/// A split moves a running action into a new scene; the loop must follow it, not strand it.
+/datum/unit_test/sex_scene_split_keeps_action_loop/Run()
+	var/mob/living/carbon/human/first = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/second = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/third = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/fourth = allocate(/mob/living/carbon/human)
+	var/datum/sex_scene_controller/first_controller = first.open_sex_scene(second, show_ui = FALSE)
+	var/datum/sex_scene_controller/third_controller = third.open_sex_scene(fourth, show_ui = FALSE)
+	TEST_ASSERT_NOTNULL(first_controller, "the first pair should open a scene")
+	TEST_ASSERT_NOTNULL(third_controller, "the second pair should open a scene")
+	TEST_ASSERT_NOTNULL(first.open_sex_scene(third, show_ui = FALSE), "a bridge should join both pairs")
+	third_controller.set_current_speed(SEX_SPEED_EXTREME)
+	var/datum/sex_action/action = third_controller.try_start_action(/datum/sex_action/rub_body, "unit_test")
+	TEST_ASSERT_NOTNULL(action, "the second pair's action should start")
+	var/interaction_key = "sex_action_[REF(action)]"
+
+	first_controller.unlink_participant(third)
+	TEST_ASSERT(first.sex_scene != third.sex_scene, "removing the bridge should split the scene")
+	TEST_ASSERT_EQUAL(action.scene, third.sex_scene, "the split should move the running action")
+	sleep(2 SECONDS)
+	TEST_ASSERT(DOING_INTERACTION(third, interaction_key), "the action loop should survive the split")
+
+	action.stop_runtime()
+	TEST_ASSERT(QDELETED(action), "the moved action should still stop cleanly")
+
+/// Mage Hand pulls a busy target's scene into the caster's; the target's own action must keep running.
+/datum/unit_test/mage_hand_keeps_target_action_loop/Run()
+	var/mob/living/carbon/human/caster = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/caster_partner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/target_partner = allocate(/mob/living/carbon/human)
+	TEST_ASSERT_NOTNULL(caster.open_sex_scene(caster_partner, show_ui = FALSE), "the caster's pair should open a scene")
+	var/datum/sex_scene_controller/target_controller = target.open_sex_scene(target_partner, show_ui = FALSE)
+	TEST_ASSERT_NOTNULL(target_controller, "the target's pair should open a scene")
+	target_controller.set_current_speed(SEX_SPEED_EXTREME)
+	var/datum/sex_action/action = target_controller.try_start_action(/datum/sex_action/rub_body, "unit_test")
+	TEST_ASSERT_NOTNULL(action, "the target's action should start")
+	var/interaction_key = "sex_action_[REF(action)]"
+
+	TEST_ASSERT(start_mage_hand_tether(caster, target, 2 MINUTES, 7, TRUE, TRUE, FALSE), "the tether should start")
+	TEST_ASSERT_EQUAL(action.scene, caster.sex_scene, "the tether should merge the target's scene into the caster's")
+	sleep(2 SECONDS)
+	TEST_ASSERT(DOING_INTERACTION(target, interaction_key), "the target's action loop should survive the tether")
+
+	action.stop_runtime()
+	TEST_ASSERT(QDELETED(action), "the moved action should still stop cleanly")
 
 /datum/unit_test/sex_scene_recognizes_spitroast_pattern/Run()
 	var/mob/living/carbon/human/focus = allocate(/mob/living/carbon/human)

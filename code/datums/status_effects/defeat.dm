@@ -170,7 +170,9 @@
 /atom/movable/screen/alert/status_effect/defeat_knockout
 	name = "Defeated"
 	desc = "You are defeated. You can speak, emote, call for help, or call the rune if available."
-	icon_state = "paralysis"
+	icon_state = "debuff"
+	overlay_icon = 'modular_rmh/icons/hud/defeat_alerts.dmi'
+	overlay_state = "defeated"
 
 /atom/movable/screen/alert/status_effect/defeat_knockout/Click(location, control, params)
 	if(usr == mob_viewer)
@@ -224,8 +226,10 @@
 
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma
 	name = "Defeat Trauma"
-	desc = "Lingering harm from a recent defeat. A town healer, priest, or potent remedy can mend it - and it festers worse each time you are defeated untreated."
-	icon_state = "muscles"
+	desc = "Lingering harm from a recent defeat. A trauma treatment apparatus, a shrine of solace, or a field cure can mend it - and it festers worse each time you are defeated untreated."
+	icon_state = "debuff"
+	overlay_icon = 'modular_rmh/icons/hud/defeat_alerts.dmi'
+	overlay_state = "physical"
 
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/Click(location, control, params)
 	if(usr == mob_viewer)
@@ -236,12 +240,12 @@
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/horny
 	name = "Lewd Trauma"
 	desc = "A wrung-out afterglow. Spiritual care, time, or a potent remedy restores you."
-	icon_state = "hypnosis"
+	overlay_state = "exhaustion"
 
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/rune
 	name = "Rune Backlash"
-	desc = "Cold rune-weariness from being wrenched back. Only a priest's rite or a potent remedy soothes it."
-	icon_state = "drunk"
+	desc = "Cold rune-weariness from being wrenched back. A shrine of solace soothes it best; a trauma apparatus or a field cure also works."
+	overlay_state = "backlash"
 
 /datum/status_effect/debuff/defeat
 	id = "defeat_trauma"
@@ -251,18 +255,18 @@
 	/// Player-facing label shown on the status alert; subtypes override per injury.
 	var/trauma_label = "Defeat Trauma"
 	/// Category word prefixed onto the alert name, so an ordinary injury, a lewd trauma, a rune
-	/// backlash and a grievous wound are told apart at a glance instead of all reading "Defeat Trauma".
+	/// backlash and convalescence are told apart at a glance instead of all reading "Defeat Trauma".
 	var/trauma_category_label = "Injury"
 	/// Unique alert description per injury, so no two defeat traumas read alike. Subtypes override.
-	var/trauma_desc = "Lingering harm from a recent defeat. A town healer, a priest, or a potent remedy can mend it - and it festers worse each time you are defeated untreated."
-	/// Which skilled treatment cures this trauma (DEFEAT_TREATMENT_MEDICAL or _SPIRITUAL). Each trauma
-	/// registers itself here - defeat_treat_trauma matches on this, so new subtypes need no list edits.
-	/// (The universal path - potion or healing spell - clears any trauma regardless of class.)
+	var/trauma_desc = "Lingering harm from a recent defeat. A trauma treatment apparatus, a shrine of solace, or a field cure can mend it - and it festers worse each time you are defeated untreated."
+	/// Legacy treatment classification; provider eligibility uses the category and accepted tags below.
 	var/treatment_class = DEFEAT_TREATMENT_MEDICAL
 	/// Provider-driven treatment metadata. Providers diagnose by category/tag, select this exact
 	/// status datum, then revalidate it after the interruptible treatment before paying the cost.
+	/// Both treatment stations accept every ordinary trauma; the category only decides which station
+	/// treats it as its specialty. The narrower compatibility providers still filter by category.
 	var/trauma_category = DEFEAT_TRAUMA_CATEGORY_PHYSICAL
-	var/list/accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	var/list/accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
 	var/treatment_duration = 12 SECONDS
 	var/treatment_skill = /datum/attribute/skill/misc/medicine
 	var/treatment_skill_requirement = SKILL_RANK_APPRENTICE
@@ -295,9 +299,11 @@
 	var/list/penalties = list()
 	for(var/stat in effectedstats)
 		penalties += "[stat]: [effectedstats[stat]]"
-	var/treatment = trauma_category == DEFEAT_TRAUMA_CATEGORY_SPIRITUAL ? "Spiritual care at a shrine of solace, with holy training and silver." : "Medical care at a trauma treatment apparatus, with apprentice medicine and bandages."
+	var/treatment = "Treatment: [defeat_station_treatment_text(src)]"
 	if(DEFEAT_TRAUMA_PROVIDER_UNIVERSAL in accepted_provider_tags)
-		treatment += " Universal trauma remedies also work."
+		treatment += " Field cures also work: swallow [DEFEAT_MERCY_DRAUGHT_DOSE] measures of Mercy Draught or receive Bear Their Burden."
+	else
+		treatment += " Field cures cannot lift it."
 	var/recovery = defeat_duration_for_severity(severity)
 	var/recovery_text = recovery == STATUS_EFFECT_PERMANENT ? "Requires treatment." : "Natural recovery: [DisplayTimeText(recovery)] when newly applied."
 	return "Effects: [penalties.Join(", ")]. [recovery_text] [treatment]"
@@ -561,10 +567,10 @@
 	trauma_label = "Mana Backlash"
 	trauma_category_label = "Backlash"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/rune
-	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. Only a priest's rite or a potent remedy soothes it."
+	trauma_desc = "Cold rune-weariness from being wrenched back - your mind and will are dulled and your mana slow to return. A shrine of solace soothes it best; a trauma apparatus or a field cure also works."
 	treatment_class = DEFEAT_TREATMENT_SPIRITUAL
 	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
-	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
 	treatment_skill = /datum/attribute/skill/magic/holy
 	treatment_skill_requirement = SKILL_RANK_NOVICE
 	treatment_description = "Soothe the spiritual and magical backlash left by the resurrection rune."
@@ -595,7 +601,7 @@
 	// Intimate defeat is spiritual trauma for routing purposes. Its own subtype and descriptive
 	// metadata still let shrines present it distinctly from rune backlash.
 	trauma_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
-	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_SHRINE, DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_UNIVERSAL)
 	treatment_skill = /datum/attribute/skill/magic/holy
 	treatment_skill_requirement = SKILL_RANK_NOVICE
 	treatment_description = "Restore composure and spirit after an overwhelming intimate defeat."
@@ -704,11 +710,11 @@
 /datum/status_effect/debuff/defeat/horny/overcharge/defeat_apply_feedback()
 	to_chat(owner, span_warning("Lust-burned magic crackles uselessly through me."))
 
-// --- KO Only anti-softlock: struggle up unaided, at the price of grievous wounds ---
+// --- KO Only anti-softlock: struggle up unaided, at the price of Convalescence ---
 
 /datum/action/innate/defeat_struggle_up
 	name = "Struggle to Your Feet"
-	desc = "Drag yourself up from defeat. Grievous Wounds prevent fighting and slow movement for fifteen minutes; medical trauma treatment can end them sooner."
+	desc = "Drag yourself up from defeat. Convalescence prevents fighting and slows movement for fifteen minutes; a trauma treatment apparatus or shrine of solace can end it sooner. Field cures cannot."
 	button_icon_state = "shieldsparkles"
 
 /datum/action/innate/defeat_struggle_up/Activate()
@@ -717,19 +723,19 @@
 	var/mob/living/living_owner = owner
 	living_owner.defeat_ko_only_self_recover()
 
-// Unaided physical recovery adds temporary convalescence, treatable only by medical providers.
+// Unaided physical recovery adds convalescence. Both stations treat it; field cures do not.
 /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
-	name = "Grievous Wounds"
-	icon_state = "paralysis"
+	name = "Convalescence"
+	overlay_state = "convalescence"
 
 /datum/status_effect/debuff/defeat/grievous
 	id = "defeat_grievous_trauma"
-	trauma_label = "Grievous Wounds"
-	trauma_category_label = "Grievous"
-	trauma_desc = "Recovering unaided has left you unable to fight and slowed to a limp. This convalescence fades after fifteen minutes; skilled medical trauma treatment can end it sooner."
+	trauma_label = "Convalescence"
+	trauma_category_label = "Recovery"
+	trauma_desc = "Recovering unaided has left you unable to fight and slowed to a limp. This fades after fifteen minutes; either trauma station can end it sooner. Field cures cannot."
 	remove_on_fullheal = FALSE
 	// Deliberately narrower than the base list: dropping the universal tag keeps field healing out.
-	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL)
+	accepted_provider_tags = list(DEFEAT_TRAUMA_PROVIDER_MEDICAL, DEFEAT_TRAUMA_PROVIDER_SHRINE)
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/defeat_trauma/grievous
 
 /datum/status_effect/debuff/defeat/grievous/defeat_duration_for_severity(defeat_severity)
@@ -758,3 +764,18 @@
 	if(iscarbon(owner))
 		var/mob/living/carbon/carbon_owner = owner
 		carbon_owner.adjustPainLoss(severity == DEFEAT_SEVERITY_SEVERE ? 4 : 2)
+
+/// The price of a successful sacrifice cannot be cured by its own spell, a draught, or ordinary healing.
+/datum/status_effect/sacrificial_exhaustion
+	id = "sacrificial_exhaustion"
+	duration = DEFEAT_BURDEN_EXHAUSTION_TIME
+	tick_interval = STATUS_EFFECT_NO_TICK
+	remove_on_fullheal = FALSE
+	alert_type = /atom/movable/screen/alert/status_effect/sacrificial_exhaustion
+
+/atom/movable/screen/alert/status_effect/sacrificial_exhaustion
+	name = "Sacrificial Exhaustion"
+	desc = "You have borne another's suffering. Bear Their Burden cannot be cast again until two minutes have passed; healing and trauma treatments cannot shorten this recovery."
+	icon_state = "debuff"
+	overlay_icon = 'modular_rmh/icons/hud/defeat_alerts.dmi'
+	overlay_state = "exhaustion"

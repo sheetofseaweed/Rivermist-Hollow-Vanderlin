@@ -64,26 +64,26 @@
 
 	TEST_ASSERT(!milky.can_attach_to_organ(human, left_nipple), "Milky leeches should reject nipples when the host has no breasts to lactate.")
 
-/datum/unit_test/lactation_inducer_restores_refilling_state
+/datum/unit_test/lactation_modifier_leaves_base_setting_intact
 #ifdef FOCUS_LEECH_TEST
 	focus = TRUE
 #endif
 
-/datum/unit_test/lactation_inducer_restores_refilling_state/Run()
+/datum/unit_test/lactation_modifier_leaves_base_setting_intact/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = allocate(/obj/item/organ/genitals/filling_organ/breasts)
 	breasts.Insert(human, TRUE, FALSE)
-	breasts.refilling = FALSE
+	breasts.produces_fluid = FALSE
 
-	breasts.add_temporary_lactation_source("unit_test")
-	TEST_ASSERT(breasts.refilling, "Temporary lactation should enable breast refilling.")
-	breasts.remove_temporary_lactation_source("unit_test")
-	TEST_ASSERT(!breasts.refilling, "Temporary lactation should restore a previously disabled refilling state.")
+	human.add_fluid_modifier(/datum/fluid_modifier/induced_lactation, "unit_test")
+	TEST_ASSERT(breasts.is_producing(), "Induced lactation should make dormant breasts produce.")
+	human.remove_fluid_modifier(/datum/fluid_modifier/induced_lactation, "unit_test")
+	TEST_ASSERT(!breasts.is_producing(), "Removing induced lactation should leave dormant breasts dormant.")
 
-	breasts.refilling = TRUE
-	breasts.add_temporary_lactation_source("unit_test")
-	breasts.remove_temporary_lactation_source("unit_test")
-	TEST_ASSERT(breasts.refilling, "Temporary lactation should preserve a previously enabled refilling state.")
+	breasts.produces_fluid = TRUE
+	human.add_fluid_modifier(/datum/fluid_modifier/induced_lactation, "unit_test")
+	human.remove_fluid_modifier(/datum/fluid_modifier/induced_lactation, "unit_test")
+	TEST_ASSERT(breasts.is_producing(), "Removing induced lactation should not stop naturally lactating breasts.")
 
 /datum/unit_test/lactation_induced_breasts_refill_through_organ_life
 #ifdef FOCUS_LEECH_TEST
@@ -96,8 +96,8 @@
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = allocate(/obj/item/organ/genitals/filling_organ/breasts)
 	breasts.Insert(human, TRUE, FALSE)
 	breasts.reagents.clear_reagents()
-	breasts.refilling = FALSE
-	breasts.add_temporary_lactation_source("unit_test")
+	breasts.produces_fluid = FALSE
+	human.add_fluid_modifier(/datum/fluid_modifier/induced_lactation, "unit_test")
 
 	human.handle_organs(1, 1)
 
@@ -120,13 +120,13 @@
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = allocate(/obj/item/organ/genitals/filling_organ/breasts)
 	breasts.Insert(human, TRUE, FALSE)
 	breasts.reagents.clear_reagents()
-	breasts.refilling = FALSE
+	breasts.produces_fluid = FALSE
 	human.reagents.add_reagent(/datum/reagent/consumable/lactation_inducer, 1)
 
 	human.reagents.metabolize(human)
 	human.handle_organs(1, 1)
 
-	TEST_ASSERT(breasts.refilling, "The lactation inducer reagent should enable breast refilling while present.")
+	TEST_ASSERT(breasts.is_producing(), "The lactation inducer reagent should make breasts produce while present.")
 	TEST_ASSERT(breasts.reagents.total_volume > 0, "The lactation inducer reagent should let breasts refill through the normal organ life processing path.")
 
 /datum/unit_test/leech_important_feedback_bypasses_ambient_cooldown

@@ -516,6 +516,12 @@
 	else
 		last_pump = world.time
 
+/obj/item/organ/heart/cursed/consider_processing(in_bleedout = FALSE)
+	..()
+	// The pump demand runs every life tick, not only while the heart is hurt.
+	needs_processing = TRUE
+	return TRUE
+
 /obj/item/organ/heart/cursed/Insert(mob/living/carbon/M, special = FALSE, drop_if_replaced = TRUE, new_zone = null)
 	. = ..()
 	if(owner)

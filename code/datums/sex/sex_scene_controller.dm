@@ -78,6 +78,13 @@
 			var/list/item_effects = stored_item.get_sex_action_effects(context)
 			if(length(item_effects))
 				effects += item_effects
+	// Worn underwear, such as a chastity device, joins in as well.
+	var/obj/item/worn_underwear = human.underwear
+	if(worn_underwear && !(worn_underwear in seen_items))
+		seen_items += worn_underwear
+		var/list/underwear_effects = worn_underwear.get_sex_action_effects(context)
+		if(length(underwear_effects))
+			effects += underwear_effects
 
 /proc/qdel_sex_action_effects(list/effects)
 	for(var/datum/sex_action_effect/effect as anything in effects)

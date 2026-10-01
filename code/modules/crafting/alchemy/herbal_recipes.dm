@@ -10,65 +10,48 @@
 
 // Weak Health Potions (based on symphitum/taraxacum/urtica/calendula)
 /datum/reagent/medicine/herbal/symphitum_tea
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Symphitum Tea"
 	description = "A mild healing tea made from symphitum leaves."
 	color = "#8fbc8f"
 	taste_description = "earthy herbs"
 	scent_description = "green leaves"
+	brute_healing = 0.5
+	burn_healing = 0.5
 
 /datum/reagent/medicine/herbal/symphitum_tea/on_mob_life(mob/living/carbon/M, efficiency)
 	if(volume > 0.99)
-		M.adjustBruteLoss(-0.5*REM * efficiency, 0)
-		M.adjustFireLoss(-0.5*REM * efficiency, 0)
 		var/list/wCount = M.get_wounds()
 		if(wCount.len > 0 && prob(15 * efficiency))
-			M.heal_wounds(1 * efficiency)
+			M.heal_wounds(get_herbal_potency() * efficiency)
 	..()
 
 /datum/reagent/medicine/herbal/taraxacum_extract
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Taraxacum Extract"
 	description = "A bitter extract that cleanses minor toxins."
 	color = "#daa520"
 	taste_description = "bitter dandelion"
 	scent_description = "weeds"
-
-/datum/reagent/medicine/herbal/taraxacum_extract/on_mob_metabolize(mob/living/L)
-	. = ..()
-	L.add_chem_effect(CE_ANTIBIOTIC, 5, "[type]")
-
-/datum/reagent/medicine/herbal/taraxacum_extract/on_mob_end_metabolize(mob/living/L)
-	. = ..()
-	L.remove_chem_effect(CE_ANTIBIOTIC, "[type]")
-
-/datum/reagent/medicine/herbal/taraxacum_extract/on_mob_life(mob/living/carbon/M, efficiency)
-	if(volume > 0.99)
-		M.adjustToxLoss(-0.75, 0)
-		M.adjustBruteLoss(-0.25*REM, 0)
-	..()
+	toxin_healing = 0.75
+	brute_healing = 0.25
+	herbal_effects = list(CE_ANTIBIOTIC = 5)
 
 /datum/reagent/medicine/herbal/urtica_brew
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Urtica Brew"
 	description = "A stinging nettle brew that restores blood and energy."
 	color = "#4d6b3d"
 	taste_description = "stinging greens"
 	scent_description = "nettles"
-
-/datum/reagent/medicine/herbal/urtica_brew/on_mob_metabolize(mob/living/L)
-	. = ..()
-	L.add_chem_effect(CE_BLOODRESTORE, 2, "[type]")
-	L.add_chem_effect(CE_STIMULANT, 2, "[type]")
-
-/datum/reagent/medicine/herbal/urtica_brew/on_mob_end_metabolize(mob/living/L)
-	. = ..()
-	L.remove_chem_effect(CE_BLOODRESTORE, "[type]")
-	L.remove_chem_effect(CE_STIMULANT, "[type]")
+	herbal_effects = list(CE_BLOODRESTORE = 2, CE_STIMULANT = 2)
 
 /datum/reagent/medicine/herbal/urtica_brew/on_mob_life(mob/living/carbon/M, efficiency)
 	if(volume > 0.99)
 		if(M.blood_volume < BLOOD_VOLUME_NORMAL)
-			M.adjust_bloodvolume(8 * efficiency, BLOOD_VOLUME_NORMAL)
+			M.adjust_bloodvolume(8 * get_herbal_potency() * efficiency, BLOOD_VOLUME_NORMAL)
 		if(!HAS_TRAIT(M,TRAIT_NOSTAMINA))
-			M.adjust_stamina(-0.75, internal_regen = FALSE)
+			M.adjust_stamina(-0.75 * get_herbal_potency() * efficiency, internal_regen = FALSE)
 	..()
 
 /datum/reagent/medicine/herbal/calendula_salve
@@ -100,52 +83,36 @@
 
 // Weak Mana/Stamina Potions (based on hypericum/benedictus/mentha)
 /datum/reagent/medicine/herbal/hypericum_tonic
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Hypericum Tonic"
 	description = "A tonic that restores minor energy and stamina."
 	color = "#ffff99"
 	taste_description = "bitter herbs"
 	scent_description = "St. John's wort"
-
-/datum/reagent/medicine/herbal/hypericum_tonic/on_mob_metabolize(mob/living/L)
-	. = ..()
-	L.add_chem_effect(CE_BRAIN_REGEN, 1, "[type]")
-	L.add_chem_effect(CE_OXYGENATED, 1, "[type]")
-
-/datum/reagent/medicine/herbal/hypericum_tonic/on_mob_end_metabolize(mob/living/L)
-	. = ..()
-	L.remove_chem_effect(CE_BRAIN_REGEN, "[type]")
-	L.remove_chem_effect(CE_OXYGENATED, "[type]")
+	herbal_effects = list(CE_BRAIN_REGEN = 1, CE_OXYGENATED = 1)
 
 /datum/reagent/medicine/herbal/hypericum_tonic/on_mob_life(mob/living/carbon/M, efficiency)
 	if(volume > 0.99)
 		if(M.mana_pool)
-			M.mana_pool.adjust_mana(1.5)
+			M.mana_pool.adjust_mana(1.5 * get_herbal_potency() * efficiency)
 		if(!HAS_TRAIT(M,TRAIT_NOSTAMINA))
-			M.adjust_stamina(-0.5, internal_regen = FALSE)
+			M.adjust_stamina(-0.5 * get_herbal_potency() * efficiency, internal_regen = FALSE)
 	..()
 
 /datum/reagent/medicine/herbal/mentha_tea
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Mentha Tea"
 	description = "A refreshing mint tea that clears the mind."
 	color = "#90ee90"
 	taste_description = "cooling mint"
 	scent_description = "mint"
-
-/datum/reagent/medicine/herbal/mentha_tea/on_mob_metabolize(mob/living/L)
-	. = ..()
-	L.add_chem_effect(CE_ENERGETIC, 2, "[type]")
-	L.add_chem_effect(CE_STABLE, 1, "[type]")
-
-/datum/reagent/medicine/herbal/mentha_tea/on_mob_end_metabolize(mob/living/L)
-	. = ..()
-	L.remove_chem_effect(CE_ENERGETIC, "[type]")
-	L.remove_chem_effect(CE_STABLE, "[type]")
+	herbal_effects = list(CE_ENERGETIC = 2, CE_STABLE = 1)
 
 /datum/reagent/medicine/herbal/mentha_tea/on_mob_life(mob/living/carbon/M, efficiency)
 	if(volume > 0.99)
-		M.add_nausea(-1)
+		M.add_nausea(-get_herbal_potency() * efficiency)
 		if(M.mana_pool)
-			M.mana_pool.adjust_mana(1)
+			M.mana_pool.adjust_mana(get_herbal_potency() * efficiency)
 	..()
 
 // Mild Buff Potions (based on salvia/artemisia)
@@ -250,8 +217,8 @@
 	return ..()
 
 /datum/reagent/poison/herbal/weak_atropa
-	name = "Dilute Atropa Extract"
-	description = "A very diluted extract that causes mild discomfort."
+	name = "Crude Atropa Extract"
+	description = "A poisonous nightshade precursor for alchemical recipes. It is not medicinal Atropa Anodyne."
 	color = "#8b0000"
 	taste_description = "bitter nightshade"
 	scent_description = "danger"
@@ -292,39 +259,34 @@
 
 //Simple Herbal Recipes using single herbs
 /datum/reagent/medicine/herbal/simple_rosa
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Rosa Water"
 	description = "Simple rose petal water with very mild healing."
 	color = "#ffb6c1"
 	taste_description = "floral"
 	scent_description = "roses"
+	brute_healing = 0.1
+	burn_healing = 0.1
 
 /datum/reagent/medicine/herbal/simple_rosa/on_mob_life(mob/living/carbon/M, efficiency)
 	if(volume > 0.99)
-		M.adjustBruteLoss(-0.1*REM, 0)
-		M.adjustFireLoss(-0.1*REM, 0)
-		M.add_nausea(-1)
+		M.add_nausea(-get_herbal_potency() * efficiency)
 	..()
 
 /datum/reagent/medicine/herbal/euphrasia_eye_wash
-	name = "Euphrasia Eye Wash"
-	description = "An eye wash that slightly improves perception."
+	parent_type = /datum/reagent/medicine/herbal/decoction
+	name = "Euphrasia Decoction"
+	description = "An oral eyebright preparation that eases eye damage."
 	color = "#e6e6fa"
 	taste_description = "eyebright"
 	scent_description = "clean herbs"
-
-/datum/reagent/medicine/herbal/euphrasia_eye_wash/on_mob_metabolize(mob/living/L)
-	. = ..()
-	L.add_chem_effect(CE_OXYGENATED, 1, "[type]")
-
-/datum/reagent/medicine/herbal/euphrasia_eye_wash/on_mob_end_metabolize(mob/living/L)
-	. = ..()
-	L.remove_chem_effect(CE_OXYGENATED, "[type]")
+	herbal_effects = list(CE_OXYGENATED = 1)
 
 /datum/reagent/medicine/herbal/euphrasia_eye_wash/on_mob_life(mob/living/carbon/M, efficiency)
 	if(volume > 0.99)
-		M.adjustOrganLoss(ORGAN_SLOT_EYES, -0.1*REM)
+		M.adjustOrganLoss(ORGAN_SLOT_EYES, -0.1 * REM * get_herbal_potency() * efficiency)
 		if(!HAS_TRAIT(M,TRAIT_NOSTAMINA))
-			M.adjust_stamina(-0.1, internal_regen = FALSE)
+			M.adjust_stamina(-0.1 * get_herbal_potency() * efficiency, internal_regen = FALSE)
 
 	..()
 
@@ -333,6 +295,7 @@
 // Sleep and Calming Reagents
 
 /datum/reagent/medicine/herbal/valeriana_draught
+	parent_type = /datum/reagent/medicine/herbal/decoction
 	name = "Valeriana Sleep Draught"
 	description = "A deeply relaxing herbal draught that promotes restful sleep and calms the mind."
 	reagent_state = LIQUID
@@ -341,22 +304,12 @@
 	overdose_threshold = 40
 	taste_description = "deeply relaxing herbs"
 	var/sleep_power = 60 SECONDS
-
-/datum/reagent/medicine/herbal/valeriana_draught/on_mob_metabolize(mob/living/M)
-	. = ..()
-	M.add_stress(/datum/stress_event/herbal_calm)
-	M.add_chem_effect(CE_STABLE, 1, "[type]")
-
-/datum/reagent/medicine/herbal/valeriana_draught/on_mob_end_metabolize(mob/living/M)
-	. = ..()
-	M.remove_chem_effect(CE_STABLE, "[type]")
+	herbal_effects = list(CE_STABLE = 1)
 
 /datum/reagent/medicine/herbal/valeriana_draught/on_mob_life(mob/living/carbon/M, efficiency)
-	var/datum/status_effect/drowsiness = M.has_status_effect(/datum/status_effect/drowsiness)
-	if(istype(drowsiness))
-		if(drowsiness?.duration < sleep_power)
-			M.adjust_drowsiness_up_to(10 SECONDS, 60 SECONDS)
-	M.adjust_stamina(2)
+	if(volume >= 1)
+		M.adjust_drowsiness_up_to(10 SECONDS * get_herbal_potency() * efficiency, sleep_power * get_herbal_potency())
+		M.adjust_stamina(2 * get_herbal_potency() * efficiency)
 	. = ..()
 
 /datum/reagent/medicine/herbal/valeriana_draught/overdose_process(mob/living/M)
@@ -481,27 +434,28 @@
 
 /datum/reagent/medicine/herbal/mercy_draught
 	name = "Mercy Draught"
-	description = "A rare draught used to draw one lingering defeat trauma out of the body or spirit."
+	description = "Drink five measures to cure one ordinary defeat trauma, most severe first. Does not heal wounds, wake the defeated, or cure Convalescence. Splashing it does not work."
 	reagent_state = LIQUID
 	color = "#b7d9c1"
 	metabolization_rate = REAGENTS_METABOLISM * 2
-	overdose_threshold = 20
 	taste_description = "cool mercy and bitter herbs"
 	scent_description = "clean herbs and rain"
 
-/datum/reagent/medicine/herbal/mercy_draught/on_mob_metabolize(mob/living/L)
+/datum/reagent/medicine/herbal/mercy_draught/on_transfer(atom/target, method = TOUCH, trans_volume, mob/transfered_by = null)
 	. = ..()
-	if(!L.has_any_defeat_trauma())
+	if(method != INGEST)
 		return
-	if(L.defeat_treat_trauma(L, DEFEAT_TREATMENT_UNIVERSAL))
-		to_chat(L, span_notice("The draught eases one lingering defeat trauma."))
-
-/datum/reagent/medicine/herbal/mercy_draught/reaction_mob(mob/living/M, method = TOUCH, reac_volume, show_message = TRUE, touch_protection = 0, target_zone = null)
-	. = ..()
-	if(method != TOUCH || reac_volume < 5 || !M.has_any_defeat_trauma())
+	// trans_to has already deposited the swallowed liquid here. Consume real doses from the
+	// receiving stomach, never the source bottle or a reaction's estimated splash volume.
+	var/obj/item/organ/stomach/stomach = target
+	if(!istype(stomach) || QDELETED(stomach.owner) || QDELETED(stomach.reagents))
 		return
-	if(M.defeat_treat_trauma(M, DEFEAT_TREATMENT_UNIVERSAL) && show_message)
-		to_chat(M, span_notice("The draught draws out one lingering defeat trauma."))
+	var/mob/living/patient = stomach.owner
+	while(stomach.reagents.has_reagent(type, DEFEAT_MERCY_DRAUGHT_DOSE))
+		if(!patient.defeat_treat_trauma(patient, DEFEAT_TREATMENT_UNIVERSAL))
+			break
+		stomach.reagents.remove_reagent(type, DEFEAT_MERCY_DRAUGHT_DOSE)
+		to_chat(patient, span_notice("Five measures of Mercy Draught ease one lingering defeat trauma."))
 
 // Anti-Poison Blend
 

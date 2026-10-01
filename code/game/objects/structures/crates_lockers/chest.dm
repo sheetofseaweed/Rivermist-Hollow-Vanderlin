@@ -57,6 +57,7 @@
 		/obj/item/coin/silver/pile=4,
 		/obj/item/weapon/pick=23,
 		/obj/item/book/granter/spell_points=5,
+		/obj/item/book/granter/spell/magick/bear_burden=1,
 		/obj/item/riddleofsteel=2,
 		/obj/item/clothing/neck/talkstone=2
 		)

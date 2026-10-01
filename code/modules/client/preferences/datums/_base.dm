@@ -184,7 +184,7 @@
 		pref = GLOB.preference_entries[pref]
 	if(!istype(pref, /datum/preference/toggle))
 		CRASH(" toggle_preference() called with a non toggle preference [pref.type].")
-	var/old_value = read_preference(pref)
+	var/old_value = read_preference(pref.type)
 	var/typed = pref.deserialize(!old_value, src)
 	if (!pref.is_valid(typed, src))
 		return FALSE

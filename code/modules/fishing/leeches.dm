@@ -561,6 +561,8 @@
 		return FALSE
 	if(!organ.GetComponent(/datum/component/body_storage))
 		return FALSE
+	if(H.is_organ_slot_blocked(organ.slot))
+		return FALSE
 	return TRUE
 
 /obj/item/natural/worms/leech/erotic/proc/get_available_attach_organs(mob/living/carbon/human/H)

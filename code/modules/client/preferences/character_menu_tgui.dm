@@ -784,7 +784,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	var/windowflashing = read_preference(/datum/preference/toggle/windowflashing)
 	var/ambientocclusion = read_preference(/datum/preference/toggle/ambientocclusion)
 	var/auto_fit_viewport = read_preference(/datum/preference/toggle/auto_fit_viewport)
-	var/widescreenpref = read_preference(/datum/preference/toggle/widescreenpref)
+	var/toggles_maptext = read_preference(/datum/preference/bitwise/toggles_maptext)
 	var/pixel_size = read_preference(/datum/preference/numeric/pixel_size)
 	var/scaling_method = read_preference(/datum/preference/choiced/scaling_method)
 
@@ -1016,8 +1016,12 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 		"hear_midis" = !!(toggles & SOUND_MIDI),
 		"ambientocclusion" = !!ambientocclusion,
 		"auto_fit_viewport" = !!auto_fit_viewport,
-		"widescreenpref" = !!widescreenpref,
 		"allow_midround_antag" = !!(toggles & MIDROUND_ANTAG),
+		"ambience" = !!(toggles & SOUND_AMBIENCE),
+		"background_music" = !!(toggles & SOUND_SHIP_AMBIENCE),
+		"be_voice" = !!(toggles & SCHIZO_VOICE),
+		"balloon_alerts" = !(toggles_maptext & DISABLE_BALLOON_ALERTS),
+		"runechat" = !(toggles_maptext & DISABLE_RUNECHAT),
 		"pixel_size" = "[pixel_size]",
 		"scaling_method" = "[scaling_method]",
 	)

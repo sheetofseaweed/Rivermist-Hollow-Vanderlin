@@ -513,7 +513,7 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 
 // ---- Stuck / Lock Checks ----
 
-/obj/item/clothing/neck/slave_collar/proc/on_pre_unequip(force, atom/newloc, no_move, invdrop, silent)
+/obj/item/clothing/neck/slave_collar/proc/on_pre_unequip(datum/source, force, atom/newloc, no_move, invdrop, silent)
 	SIGNAL_HANDLER
 
 	if(force || !stuck)

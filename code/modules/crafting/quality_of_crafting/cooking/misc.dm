@@ -218,6 +218,10 @@
 	crafting_message = "mix the salt and seeds"
 	extra_chance = 100
 
+//RMH EDITED - the implicit parent registered a blank recipe
+/datum/repeatable_crafting_recipe/tallow
+	abstract_type = /datum/repeatable_crafting_recipe/tallow
+
 // Redtallow can be crafted using visceras (rendered from animal sinew)
 /datum/repeatable_crafting_recipe/tallow/red
 	name = "red tallow"

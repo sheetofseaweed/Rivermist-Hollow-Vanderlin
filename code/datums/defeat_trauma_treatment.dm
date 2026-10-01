@@ -2,6 +2,44 @@
 /proc/cmp_defeat_trauma_label_asc(datum/status_effect/debuff/defeat/first, datum/status_effect/debuff/defeat/second)
 	return sorttext(second.trauma_label, first.trauma_label)
 
+/// Field cures lift the heaviest burden first; equal severities fall back to the stable label order.
+/proc/cmp_defeat_trauma_severity_desc(datum/status_effect/debuff/defeat/first, datum/status_effect/debuff/defeat/second)
+	var/rank_difference = defeat_severity_rank(second.severity) - defeat_severity_rank(first.severity)
+	if(rank_difference)
+		return rank_difference
+	return cmp_defeat_trauma_label_asc(first, second)
+
+/proc/defeat_training_rank_label(rank)
+	switch(rank)
+		if(SKILL_RANK_NOVICE)
+			return "Novice"
+		if(SKILL_RANK_APPRENTICE)
+			return "Apprentice"
+		if(SKILL_RANK_JOURNEYMAN)
+			return "Journeyman"
+		if(SKILL_RANK_EXPERT)
+			return "Expert"
+		if(SKILL_RANK_MASTER)
+			return "Master"
+	return "Legendary"
+
+/// Station rules shown on every trauma alert. Built from the station providers themselves so the
+/// training, cost and time players read never drift from what the stations enforce.
+/proc/defeat_station_treatment_text(datum/status_effect/debuff/defeat/trauma)
+	var/static/list/station_providers
+	if(!station_providers)
+		station_providers = list(
+			new /datum/defeat_trauma_provider/medical/machine,
+			new /datum/defeat_trauma_provider/shrine/structure,
+		)
+	var/list/rules = list()
+	for(var/datum/defeat_trauma_provider/provider as anything in station_providers)
+		if(provider.can_target_trauma(trauma))
+			rules += provider.station_rule_text(trauma)
+	if(!length(rules))
+		return "No treatment station accepts it."
+	return rules.Join(" ")
+
 /// Contract shared by clinic care, shrines, tools, spells, and reagents. A provider diagnoses all
 /// compatible traumas, selects one exact status datum, validates it before and after the delay, pays
 /// only after success is certain, and removes only that selected datum.
@@ -17,11 +55,24 @@
 	var/list/allowed_trauma_types
 	var/requires_adjacent = FALSE
 	var/required_area_type
+	/// Falls back to each trauma's own skill requirement when the provider sets no training of its own.
 	var/use_trauma_skill = FALSE
+	/// Provider-owned training. When set it replaces the trauma's skill for every diagnosis.
+	var/datum/attribute/skill/required_skill
+	var/required_skill_rank = SKILL_RANK_NONE
+	/// Holy devotion (TRAIT_HOLY) satisfies the training requirement on its own.
+	var/holy_trait_qualifies = FALSE
+	/// Stations remain usable without the listed training, but take longer.
+	var/untrained_time_multiplier = 1
+	/// Traumas outside this category cost and take off_specialty_multiplier times as long. Null means none.
+	var/specialty_category
+	var/off_specialty_multiplier = 2
 	var/treatment_duration_override
 	var/resource_cost_override = 0
 	var/list/accepted_resource_types
 	var/resource_unit_name = "resource unit"
+	/// Player-facing station name used in trauma alerts; stations with a host use the host's own name.
+	var/station_name
 	var/datum/weakref/host_ref
 
 /datum/defeat_trauma_provider/New(datum/host)
@@ -65,6 +116,17 @@
 			diagnosed += trauma
 	sortTim(diagnosed, GLOBAL_PROC_REF(cmp_defeat_trauma_label_asc))
 	return diagnosed
+
+/// Every defeat trauma the patient carries, including ones this provider cannot treat, so station
+/// diagnosis can explain each blocked case instead of silently hiding it.
+/datum/defeat_trauma_provider/proc/all_diagnoses(mob/living/patient)
+	var/list/found = list()
+	if(QDELETED(patient))
+		return found
+	for(var/datum/status_effect/debuff/defeat/trauma in patient.status_effects)
+		found += trauma
+	sortTim(found, GLOBAL_PROC_REF(cmp_defeat_trauma_label_asc))
+	return found
 
 /datum/defeat_trauma_provider/proc/select_target(mob/living/patient, mob/living/helper, datum/status_effect/debuff/defeat/exact_target, interactive = FALSE, obj/item/reserved_resource)
 	if(QDELETED(patient) || QDELETED(helper))
@@ -114,9 +176,50 @@
 	var/suffix = cost == 1 ? "" : "s"
 	return "[cost] [resource_unit_name][suffix]"
 
-/// Complete pre-channel disclosure used by both the selection list and final confirmation.
+/datum/defeat_trauma_provider/proc/training_skill(datum/status_effect/debuff/defeat/target)
+	if(required_skill)
+		return required_skill
+	if(use_trauma_skill)
+		return target.treatment_skill
+	return null
+
+/datum/defeat_trauma_provider/proc/training_rank(datum/status_effect/debuff/defeat/target)
+	if(required_skill)
+		return required_skill_rank
+	return target.treatment_skill_requirement
+
+/datum/defeat_trauma_provider/proc/has_training(mob/living/helper, datum/status_effect/debuff/defeat/target)
+	var/skill = training_skill(target)
+	if(!skill)
+		return TRUE
+	if(holy_trait_qualifies && HAS_TRAIT(helper, TRAIT_HOLY))
+		return TRUE
+	return GET_MOB_SKILL_VALUE_OLD(helper, skill) >= training_rank(target)
+
+/datum/defeat_trauma_provider/proc/training_text(datum/status_effect/debuff/defeat/target)
+	var/datum/attribute/skill/skill = training_skill(target)
+	if(!skill)
+		return "none"
+	var/text = "[defeat_training_rank_label(training_rank(target))] [initial(skill.name)]"
+	if(holy_trait_qualifies)
+		text += " or holy devotion"
+	if(untrained_time_multiplier > 1)
+		text += " (without it, [untrained_time_multiplier]x treatment time)"
+	return text
+
+/datum/defeat_trauma_provider/proc/is_off_specialty(datum/status_effect/debuff/defeat/target)
+	return specialty_category && target.trauma_category != specialty_category
+
+/// Complete pre-channel disclosure used by the diagnosis list, the selection list and final confirmation.
 /datum/defeat_trauma_provider/proc/treatment_summary(mob/living/helper, datum/status_effect/debuff/defeat/target)
-	return "[target.trauma_label] ([defeat_severity_label(target.severity)]) - [target.treatment_description] Duration: [DisplayTimeText(treatment_time(helper, target))]. Cost: [resource_cost_text(target)]. Provider: [name] at [provider_location_text()]."
+	var/specialty_note = is_off_specialty(target) ? " Outside this provider's specialty: longer treatment and extra supplies." : ""
+	var/remaining = target.duration == STATUS_EFFECT_PERMANENT ? "requires treatment" : DisplayTimeText(max(0, target.duration - world.time))
+	return "[target.trauma_label] ([defeat_severity_label(target.severity)]) - [target.treatment_description][specialty_note] Natural recovery remaining: [remaining]. Treatment duration: [DisplayTimeText(treatment_time(helper, target))]. Cost: [resource_cost_text(target)]. Training: [training_text(target)]. Provider: [name] at [provider_location_text()]."
+
+/// One line for trauma alerts and the recovery guide; the time shown is before any skill reduction.
+/datum/defeat_trauma_provider/proc/station_rule_text(datum/status_effect/debuff/defeat/target)
+	var/specialty_note = is_off_specialty(target) ? ", outside its specialty" : ""
+	return "[capitalize(station_name || name)]: [training_text(target)], [resource_cost_text(target)], base [DisplayTimeText(treatment_time(null, target))][specialty_note]."
 
 /// Candidates a specific provider can actually begin with right now. Used when several nearby
 /// stations exist so callers never select an unusable first match.
@@ -127,41 +230,70 @@
 			usable += trauma
 	return usable
 
-/datum/defeat_trauma_provider/proc/validate(mob/living/patient, mob/living/helper, datum/status_effect/debuff/defeat/target, obj/item/reserved_resource)
-	if(!patient || QDELETED(patient) || patient.stat == DEAD || !helper || QDELETED(helper) || helper.stat == DEAD)
-		return FALSE
-	if(QDELETED(target) || target.owner != patient || !(target in patient.status_effects) || !can_target_trauma(target))
-		return FALSE
+/// The first unmet requirement for treating target right now, as player-facing text, or null when
+/// treatment can begin. validate() is exactly "no blocker".
+/datum/defeat_trauma_provider/proc/treatment_blocker(mob/living/patient, mob/living/helper, datum/status_effect/debuff/defeat/target, obj/item/reserved_resource)
+	if(QDELETED(patient) || patient.stat == DEAD)
+		return "The patient cannot be treated."
+	if(QDELETED(helper) || helper.stat == DEAD)
+		return "The helper cannot give treatment."
+	if(QDELETED(target) || target.owner != patient || !(target in patient.status_effects))
+		return "This trauma is no longer present."
+	if(!can_target_trauma(target))
+		return "This provider cannot treat it."
 	var/atom/host = resolve_host()
 	if(host_ref && !host)
-		return FALSE
+		return "The treatment station is gone."
 	if(host)
-		if(!helper.Adjacent(host) || !patient.Adjacent(host))
-			return FALSE
+		if(!helper.Adjacent(host))
+			return "Positioning: stand beside [host]."
+		if(!patient.Adjacent(host))
+			return "Positioning: the patient must be beside [host]."
 	else if(requires_adjacent && helper != patient && !helper.Adjacent(patient))
-		return FALSE
+		return "Positioning: stand beside the patient."
 	if(required_area_type && !istype(get_area(patient), required_area_type))
-		return FALSE
-	if(use_trauma_skill && target.treatment_skill)
-		var/has_role_training = provider_tag == DEFEAT_TRAUMA_PROVIDER_SHRINE && HAS_TRAIT(helper, TRAIT_HOLY)
-		if(!has_role_training && GET_MOB_SKILL_VALUE_OLD(helper, target.treatment_skill) < target.treatment_skill_requirement)
-			return FALSE
+		return "Positioning: the patient must be in the required treatment area."
+	if(untrained_time_multiplier <= 1 && !has_training(helper, target))
+		return "Training: requires [training_text(target)]."
 	if(reserved_resource && (QDELETED(reserved_resource) || helper.get_active_held_item() != reserved_resource))
-		return FALSE
-	return has_resources_for(target, reserved_resource)
+		return "Supplies: keep the offering in my active hand."
+	var/cost = resource_cost_for(target)
+	if(cost <= 0)
+		return null
+	if(!reserved_resource)
+		return "Supplies: hold [resource_cost_text(target)] in my active hand."
+	if(!accepts_resource(reserved_resource))
+		return "Supplies: [reserved_resource] is not accepted; hold [resource_cost_text(target)]."
+	var/held_amount = resource_value(reserved_resource)
+	if(held_amount < cost)
+		return "Supplies: needs [resource_cost_text(target)], holding only [held_amount]."
+	return null
 
+/datum/defeat_trauma_provider/proc/validate(mob/living/patient, mob/living/helper, datum/status_effect/debuff/defeat/target, obj/item/reserved_resource)
+	return !treatment_blocker(patient, helper, target, reserved_resource)
+
+/// Helper may be null for the skill-free baseline shown in alerts and the recovery guide.
 /datum/defeat_trauma_provider/proc/treatment_time(mob/living/helper, datum/status_effect/debuff/defeat/target)
 	if(!isnull(treatment_duration_override))
 		return treatment_duration_override
 	var/duration = target.treatment_duration
-	if(use_trauma_skill && target.treatment_skill)
-		duration -= GET_MOB_SKILL_VALUE_OLD(helper, target.treatment_skill) * 0.5 SECONDS
-	return max(2 SECONDS, duration)
+	var/skill = training_skill(target)
+	if(helper && skill)
+		duration -= GET_MOB_SKILL_VALUE_OLD(helper, skill) * 0.5 SECONDS
+	duration = max(2 SECONDS, duration)
+	if(is_off_specialty(target))
+		duration *= off_specialty_multiplier
+	if(helper && untrained_time_multiplier > 1 && !has_training(helper, target))
+		duration *= untrained_time_multiplier
+	return duration
 
 /datum/defeat_trauma_provider/proc/resource_cost_for(datum/status_effect/debuff/defeat/target)
 	if(!isnull(resource_cost_override))
 		return resource_cost_override
-	return target.treatment_resource_cost * defeat_severity_rank(target.severity)
+	var/cost = target.treatment_resource_cost * defeat_severity_rank(target.severity)
+	if(is_off_specialty(target))
+		cost *= off_specialty_multiplier
+	return cost
 
 /datum/defeat_trauma_provider/proc/has_resources_for(datum/status_effect/debuff/defeat/target, obj/item/reserved_resource)
 	var/cost = resource_cost_for(target)
@@ -221,6 +353,54 @@
 	SEND_SIGNAL(patient, COMSIG_LIVING_DEFEAT_TREATED, helper, treatment_type)
 	return TRUE
 
+/// Station click flow: pick an adjacent patient, report every trauma they carry (with the exact unmet
+/// requirement for blocked ones), then treat the chosen one. offering is the active-hand item, if any;
+/// it is only reserved, never spent, until treat() has passed its final validation.
+/datum/defeat_trauma_provider/proc/station_interact(mob/living/helper, obj/item/offering)
+	var/atom/host = resolve_host()
+	if(!host || QDELETED(helper))
+		return FALSE
+	var/list/candidates = list()
+	for(var/mob/living/candidate in view(1, host))
+		if(candidate.stat != DEAD)
+			candidates += candidate
+	if(!length(candidates))
+		to_chat(helper, span_warning("No living patient is beside [host]."))
+		return FALSE
+	var/mob/living/patient = candidates[1]
+	if(length(candidates) > 1)
+		patient = input(helper, "Who should [host] diagnose?", host.name) as null|anything in candidates
+	host = resolve_host()
+	if(!host || QDELETED(patient) || QDELETED(helper) || (offering && QDELETED(offering)))
+		return FALSE
+	var/list/traumas = all_diagnoses(patient)
+	if(!length(traumas))
+		to_chat(helper, span_notice("[host] finds no defeat aftermath on [patient]. It does not heal ordinary wounds or wake the defeated."))
+		return FALSE
+	var/list/report = list()
+	var/list/options = list()
+	for(var/datum/status_effect/debuff/defeat/trauma as anything in traumas)
+		var/blocker = treatment_blocker(patient, helper, trauma, offering)
+		report += "[treatment_summary(helper, trauma)] <b>[blocker ? "Blocked: [blocker]" : "Ready."]</b>"
+		var/option_name = "[trauma.trauma_label] ([defeat_severity_label(trauma.severity)]) - [blocker ? "blocked" : "ready"]"
+		if(options[option_name])
+			option_name = "[option_name] ([length(options) + 1])"
+		options[option_name] = trauma
+	to_chat(helper, span_notice("<b>[host] diagnosis for [patient]:</b><br>[report.Join("<br>")]"))
+	var/choice = input(helper, "Choose the exact trauma to treat. Blocked entries explain what is missing.", host.name) as null|anything in options
+	if(!choice || QDELETED(patient) || QDELETED(helper) || !resolve_host())
+		return FALSE
+	var/datum/status_effect/debuff/defeat/selected = options[choice]
+	var/blocker = treatment_blocker(patient, helper, selected, offering)
+	if(blocker)
+		to_chat(helper, span_warning("That treatment cannot begin. [blocker]"))
+		return FALSE
+	if(!treat(patient, helper, selected, interactive = TRUE, reserved_resource = offering))
+		to_chat(helper, span_warning("The treatment was not completed. Nothing was consumed."))
+		return FALSE
+	helper.visible_message(span_notice("[helper] completes a focused treatment for [patient] at [host]."), span_notice("I ease one defeat trauma from [patient] at [host]."))
+	return TRUE
+
 /datum/defeat_trauma_provider/proc/accepts_resource(obj/item/resource)
 	if(!resource)
 		return FALSE
@@ -260,10 +440,27 @@
 	treatment_duration_override = 0
 	requires_adjacent = FALSE
 
+/// The apparatus treats every trauma, including Convalescence. Physical aftermath is its specialty;
+/// spiritual aftermath needs one extra bandage and takes twice as long. A full roll holds four.
 /datum/defeat_trauma_provider/medical/machine
+	station_name = "trauma treatment apparatus"
+	accepted_categories = list(
+		DEFEAT_TRAUMA_CATEGORY_PHYSICAL,
+		DEFEAT_TRAUMA_CATEGORY_SPIRITUAL,
+	)
+	specialty_category = DEFEAT_TRAUMA_CATEGORY_PHYSICAL
+	use_trauma_skill = FALSE
+	required_skill = /datum/attribute/skill/misc/medicine
+	required_skill_rank = SKILL_RANK_APPRENTICE
+	untrained_time_multiplier = 2
 	accepted_resource_types = list(/obj/item/natural/cloth/bandage, /obj/item/natural/bundle/cloth/bandage)
 	resource_unit_name = "bandage"
 	resource_cost_override = null
+
+/datum/defeat_trauma_provider/medical/machine/resource_cost_for(datum/status_effect/debuff/defeat/target)
+	if(!isnull(resource_cost_override))
+		return resource_cost_override
+	return target.treatment_resource_cost * defeat_severity_rank(target.severity) + (is_off_specialty(target) ? 1 : 0)
 
 /datum/defeat_trauma_provider/shrine
 	name = "spiritual trauma treatment"
@@ -272,6 +469,7 @@
 	accepted_categories = list(DEFEAT_TRAUMA_CATEGORY_SPIRITUAL)
 	requires_adjacent = TRUE
 	use_trauma_skill = TRUE
+	holy_trait_qualifies = TRUE
 
 /datum/defeat_trauma_provider/shrine/church
 	required_area_type = /area/indoors/town/church
@@ -282,13 +480,32 @@
 	treatment_duration_override = 0
 	requires_adjacent = FALSE
 
+/// The shrine treats every trauma, including Convalescence. Spiritual aftermath is its specialty;
+/// physical aftermath costs and takes twice as long. Novice Miracles or holy devotion is always required.
 /datum/defeat_trauma_provider/shrine/structure
+	station_name = "shrine of solace"
+	accepted_categories = list(
+		DEFEAT_TRAUMA_CATEGORY_PHYSICAL,
+		DEFEAT_TRAUMA_CATEGORY_SPIRITUAL,
+	)
+	specialty_category = DEFEAT_TRAUMA_CATEGORY_SPIRITUAL
+	use_trauma_skill = FALSE
+	required_skill = /datum/attribute/skill/magic/holy
+	required_skill_rank = SKILL_RANK_NOVICE
+	untrained_time_multiplier = 2
 	accepted_resource_types = list(/obj/item/coin/silver)
 	resource_unit_name = "silver coin"
 	resource_cost_override = null
 
+/// Field cures: Mercy Draught doses and Bear Their Burden. Convalescence deliberately omits the
+/// universal tag, so these never reach it. Automatic selection lifts the most severe trauma first.
 /datum/defeat_trauma_provider/universal
 	name = "universal trauma treatment"
 	provider_tag = DEFEAT_TRAUMA_PROVIDER_UNIVERSAL
 	resource_cost_override = 0
 	treatment_duration_override = 0
+
+/datum/defeat_trauma_provider/universal/diagnose(mob/living/patient)
+	var/list/diagnosed = ..()
+	sortTim(diagnosed, GLOBAL_PROC_REF(cmp_defeat_trauma_severity_desc))
+	return diagnosed

@@ -170,6 +170,10 @@
 	valid_input = /obj/item/alch/herb/salvia
 	valid_outputs = list(/obj/item/neuFarm/seed/salvia = 1)
 
+/datum/alch_grind_recipe/lavender_seed
+	valid_input = /obj/item/alch/herb/lavender
+	valid_outputs = list(/obj/item/neuFarm/seed/lavender = 1)
+
 /datum/alch_grind_recipe/hypericum_seed
 	valid_input = /obj/item/alch/herb/hypericum
 	valid_outputs = list(/obj/item/neuFarm/seed/hypericum = 1)

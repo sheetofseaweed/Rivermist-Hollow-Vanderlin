@@ -170,7 +170,7 @@
 	// Heal brute and burn damage (representing restoration of beauty)
 	patient.heal_overall_damage(30, 30)
 
-	patient.add_stress(/datum/stress_event/beautiful)
+	patient.add_stress(/datum/stress_event/restored_beauty)
 
 	addtimer(CALLBACK(src, PROC_REF(deactivate), patient), 3 SECONDS)
 	owner.AddComponent(/datum/component/empathic_obsession, patient, 5 MINUTES)
@@ -186,7 +186,7 @@
 	timer = 5 MINUTES
 	quality_modifier = 4
 
-/datum/stress_event/beautiful
+/datum/stress_event/restored_beauty
 	desc = "I feel beautiful and radiant!"
 	stress_change = -2
 	timer = 10 MINUTES
