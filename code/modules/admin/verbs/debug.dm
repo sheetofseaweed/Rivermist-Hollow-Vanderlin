@@ -666,3 +666,332 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 	var/datum/job_pack/real_pack = GLOB.job_pack_singletons[pack]
 
 	real_pack.pick_pack(usr)
+
+/mob/living/carbon/verb/debug_social()
+	set name = "SOCIAL RECOGNITION"
+	set category = "Debug"
+
+	if(!check_rights(R_DEBUG))
+		return
+
+	if(!client)
+		return
+
+	var/mob/living/carbon/target = input(src, "Select a target to debug:", "Social Debug") as mob in view()
+
+	if(!target)
+		return
+
+	target.debug_social_recognition(src)
+
+/mob/living/carbon/proc/debug_social_recognition(mob/living/carbon/user)
+	if(!user)
+		return
+
+	var/datum/examine_social_context/context = build_social_context(user)
+
+	if(!context)
+		to_chat(user, span_warning("SOCIAL DEBUG: Failed to build social context."))
+		return
+
+	to_chat(user, span_boldnotice("=== SOCIAL RECOGNITION DEBUG ==="))
+
+	/*
+	 * ----------------------------------------------------------------------
+	 * CONTEXT
+	 * ----------------------------------------------------------------------
+	 */
+
+	to_chat(user, span_boldnotice("--- CONTEXT ---"))
+	to_chat(user, "Observer: [user]")
+	to_chat(user, "Target: [src]")
+
+	to_chat(user, "Target job: [context.target_job ? context.target_job.title : "NONE"]")
+	to_chat(user, "Target department: [context.target_job ? context.target_job.department_flag : "NONE"]")
+	to_chat(user, "Target wanted: [context.target_wanted ? "YES" : "NO"]")
+
+	to_chat(user, "Face visible: [context.target_face_visible ? "YES" : "NO"]")
+	to_chat(user, "Identity known: [context.identity_known ? "YES" : "NO"]")
+
+	to_chat(user, "Visible items: [length(context.visible_items)]")
+
+	if(length(context.visible_items))
+		for(var/obj/item/I as anything in context.visible_items)
+			if(!I)
+				continue
+
+			to_chat(user, "  ITEM: [I.type] - [I.name]")
+
+	/*
+	 * ----------------------------------------------------------------------
+	 * RAW SOCIAL CUES
+	 * ----------------------------------------------------------------------
+	 *
+	 * These are the actual appearance points supplied by the visible items.
+	 * The profile has not interpreted them yet.
+	 */
+
+	to_chat(user, span_boldnotice("--- VISIBLE SOCIAL CUES ---"))
+
+	if(!length(context.visible_social_cues))
+		to_chat(user, "No visible social cues.")
+	else
+		for(var/cue_key in context.visible_social_cues)
+			var/cue_value = context.visible_social_cues[cue_key]
+			to_chat(user, "  [cue_key]: [cue_value] points")
+
+	/*
+	 * ----------------------------------------------------------------------
+	 * PROFILES
+	 * ----------------------------------------------------------------------
+	 */
+
+	to_chat(user, span_boldnotice("--- PROFILES ---"))
+
+	for(var/datum/social_profile/profile as anything in GLOB.social_profiles)
+		if(!profile)
+			continue
+
+		var/actual_match = profile.matches_target(src)
+		var/faction_score = profile.get_faction_appearance_score(context)
+		var/rank_score = profile.get_rank_appearance_score(context)
+		var/specialization_score = profile.get_specialization_appearance_score(context)
+		var/can_recognize = profile.can_recognize(user, context)
+
+		to_chat(user, "")
+		to_chat(user, span_boldnotice("[profile.id]"))
+		to_chat(user, "  Display: [profile.display_name]")
+
+		/*
+		 * Objective target state.
+		 */
+		to_chat(user, "  Actual target match: [actual_match ? "YES" : "NO"]")
+
+		/*
+		 * Appearance evidence.
+		 */
+		to_chat(user, "  Faction appearance: [faction_score] / [profile.faction_threshold]")
+		to_chat(user, "  Rank appearance: [rank_score] / [profile.rank_threshold]")
+		to_chat(user, "  Specialization appearance: [specialization_score] / [profile.specialization_threshold]")
+
+		/*
+		 * Observer capabilities.
+		 */
+		to_chat(user, "  Recognition allowed: [can_recognize ? "YES" : "NO"]")
+
+		to_chat(
+			user,
+			"  Recognition trait: [profile.recognition_trait ? "[profile.recognition_trait]" : "NONE"]"
+		)
+
+		to_chat(
+			user,
+			"  Rank trait: [profile.rank_trait ? "[profile.rank_trait]" : "NONE"]"
+		)
+
+		to_chat(
+			user,
+			"  Specialization trait: [profile.specialization_trait ? "[profile.specialization_trait]" : "NONE"]"
+		)
+
+		/*
+		 * Compatibility / legacy profile information.
+		 */
+		to_chat(user, "  Legacy cosmetic threshold: [profile.cosmetic_threshold]")
+		to_chat(user, "  Legacy face required: [profile.face_required ? "YES" : "NO"]")
+		to_chat(user, "  Legacy specificity: [profile.specificity]")
+
+		/*
+		 * Actual resolved recognition.
+		 */
+		var/datum/social_recognition/recognition = \
+			resolve_social_profile(user, context, profile)
+
+		if(!recognition)
+			to_chat(user, span_warning("  RESULT: NOT RECOGNIZED"))
+			continue
+
+		to_chat(user, span_green("  RESULT: RECOGNIZED"))
+
+		to_chat(user, "    Source flags: [recognition.source]")
+		to_chat(user, "    Debug score: [recognition.score]")
+
+		/*
+		 * Actual state.
+		 */
+		to_chat(
+			user,
+			"    Actual faction: [recognition.actual_faction ? "YES" : "NO"]"
+		)
+
+		/*
+		 * Faction.
+		 */
+		to_chat(
+			user,
+			"    Known faction: [recognition.known_faction ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Apparent faction: [recognition.apparent_faction ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Faction appearance score: [recognition.faction_appearance_score]"
+		)
+
+		/*
+		 * Rank.
+		 */
+		to_chat(
+			user,
+			"    Known rank: [recognition.known_rank ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Apparent rank: [recognition.apparent_rank ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Rank appearance score: [recognition.rank_appearance_score]"
+		)
+
+		/*
+		 * Specialization.
+		 */
+		to_chat(
+			user,
+			"    Known specialization: [recognition.known_specialization ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Apparent specialization: [recognition.apparent_specialization ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Specialization appearance score: [recognition.specialization_appearance_score]"
+		)
+
+		/*
+		 * Personal identity.
+		 */
+		to_chat(
+			user,
+			"    Identity recognized: [recognition.identity_recognized ? "YES" : "NO"]"
+		)
+
+		/*
+		 * Compatibility flags.
+		 */
+		to_chat(
+			user,
+			"    Legacy faction recognized: [recognition.faction_recognized ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Legacy rank recognized: [recognition.rank_recognized ? "YES" : "NO"]"
+		)
+
+		to_chat(
+			user,
+			"    Legacy specialization recognized: [recognition.specialization_recognized ? "YES" : "NO"]"
+		)
+
+	/*
+	 * ----------------------------------------------------------------------
+	 * REACTIONS
+	 * ----------------------------------------------------------------------
+	 */
+
+	to_chat(user, "")
+	to_chat(user, span_boldnotice("--- REACTIONS ---"))
+
+	var/list/recognitions = get_social_recognitions(user, context)
+	var/list/reactions = list()
+
+	if(!length(recognitions))
+		to_chat(user, "No social recognitions available for reactions.")
+
+	for(var/datum/social_recognition/recognition as anything in recognitions)
+		if(!recognition)
+			continue
+
+		var/before_count = length(reactions)
+
+		recognition.profile.get_reactions(
+			user,
+			context,
+			recognition,
+			reactions
+		)
+
+		var/after_count = length(reactions)
+
+		to_chat(
+			user,
+			"Profile '[recognition.profile.id]' generated [after_count - before_count] reaction(s)."
+		)
+
+	if(!length(reactions))
+		to_chat(user, "No reactions generated.")
+	else
+		for(var/datum/examine_social_reaction/reaction as anything in reactions)
+			if(!reaction)
+				continue
+
+			to_chat(user, "")
+			to_chat(user, "REACTION: [reaction.type]")
+
+			if(!reaction.stress_type)
+				to_chat(user, "  Stress type: NONE")
+				to_chat(user, "  Stress value: N/A")
+				to_chat(user, "  Already active: N/A")
+				to_chat(user, "  Can apply: N/A")
+				to_chat(user, "  Phrase: [reaction.get_phrase() ? reaction.get_phrase() : "NONE"]")
+				continue
+
+			var/datum/stress_event/event = new reaction.stress_type
+			var/active = user.has_stress_type(reaction.stress_type)
+			var/can_apply = event.can_apply(user)
+			var/stress_value = event.get_stress(user)
+
+			to_chat(user, "  Stress type: [reaction.stress_type]")
+			to_chat(user, "  Stress value: [stress_value]")
+			to_chat(user, "  Absolute strength: [abs(stress_value)]")
+			to_chat(user, "  Already active: [active ? "YES" : "NO"]")
+			to_chat(user, "  Can apply: [can_apply ? "YES" : "NO"]")
+			to_chat(user, "  Phrase: [reaction.get_phrase() ? reaction.get_phrase() : "NONE"]")
+
+			qdel(event)
+
+	/*
+	 * ----------------------------------------------------------------------
+	 * STRONGEST REACTION
+	 * ----------------------------------------------------------------------
+	 */
+
+	var/datum/examine_social_reaction/best_reaction = \
+		resolve_strongest_social_reaction(user, reactions)
+
+	if(best_reaction)
+		to_chat(
+			user,
+			span_boldgreen("STRONGEST REACTION: [best_reaction.type]")
+		)
+
+		to_chat(user, "  Stress type: [best_reaction.stress_type]")
+	else
+		to_chat(
+			user,
+			span_boldwarning("STRONGEST REACTION: NONE")
+		)
+
+	to_chat(user, "")
+	to_chat(user, span_boldnotice("=== END SOCIAL DEBUG ==="))

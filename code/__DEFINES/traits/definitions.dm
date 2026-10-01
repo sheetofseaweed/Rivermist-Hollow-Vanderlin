@@ -679,3 +679,10 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_TADPOLECAVE		"Tadpole Cave"
 #define TRAIT_TENTACLECAVE		"Tentacle Cave"
 #define TRAIT_GHOSTHUB			"Ghost Hub"
+//Social traits for examining
+#define TRAIT_KNOW_WATCH "know_faction_members"
+#define TRAIT_KNOW_WATCH_RANK "know_social_rank"
+#define TRAIT_KNOW_WATCH_SPECIALIZATION "know_social_specialization"
+//Commanding system
+#define TRAIT_TOWNWATCH_COMMAND "townwatch_command"
+#define TOWNWATCH_COMMAND_TRAIT_SOURCE "townwatch_command_trait"

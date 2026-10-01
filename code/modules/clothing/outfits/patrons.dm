@@ -75,6 +75,7 @@
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
 	has_storage = TRUE
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5)
 
 /obj/item/clothing/cloak/graggar
 	name = "vicious cloak"
