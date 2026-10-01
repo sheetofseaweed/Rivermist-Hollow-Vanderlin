@@ -154,7 +154,11 @@
 	var/list/detail = entry["detail"]
 	TEST_ASSERT_EQUAL(detail["what"], AGENT_STIMULUS_TOUCHED, "A help-intent hand is a touch.")
 	TEST_ASSERT(was_dirty, "Being touched must buy a decision, like being spoken to.")
-	TEST_ASSERT_EQUAL(length(combat_events), 0, "A combat-mode hand is reported as an attack, not twice.")
+	// relay_attackers reports a combat-mode hand too; it must still arrive once, and as a touch.
+	TEST_ASSERT_EQUAL(length(combat_events), 1, "A touch in combat mode must reach the NPC once, not twice.")
+	var/list/combat_entry = combat_events[1]
+	var/list/combat_detail = combat_entry["detail"]
+	TEST_ASSERT_EQUAL(combat_detail["what"], AGENT_STIMULUS_TOUCHED, "Combat mode does not make a help-intent hand a blow.")
 
 /datum/unit_test/agent_npc_touch_kinds_follow_intent
 

@@ -26,6 +26,8 @@
 		/datum/ai_planning_subtree/agent_combat,
 		// OBJECTIVE. The only slot the model's errands run in.
 		/datum/ai_planning_subtree/agent_intent,
+		// HOME. Back to the post once nothing else wants the NPC.
+		/datum/ai_planning_subtree/agent_return_to_post,
 	)
 
 	/// A bound pawn keeps planning on z-levels the engine would otherwise idle.
@@ -489,22 +491,20 @@
 		return .
 	return AI_STATUS_ON
 
-/**
- * Turn being hit into an actual flee.
- *
- * flee_target needs both BB_BASIC_MOB_FLEEING and a live target, and the base
- * attacked handler sets neither: it only touches alert and status. Without this
- * the controller's reflex tier would look complete and never run.
- *
- * This is a reflex, so it must work with the sidecar down. Notifying the agent
- * is the last thing it does, and is optional.
- */
-/datum/ai_controller/agent_social/on_pawn_attacked(atom/source, atom/attacker, damage)
+/// Hit: fight back as the profile allows, else run. A reflex, so it must work with the sidecar down.
+/datum/ai_controller/agent_social/on_pawn_attacked(atom/source, atom/attacker, damage, attack_flags)
 	. = ..()
 	if(attacker == pawn || QDELETED(attacker) || !isliving(attacker))
 		return
 
 	var/mob/living/living_attacker = attacker
+	// Combat mode reports any hand as an attack, but only a blow is harm. The model judges touches, grabs, shoves.
+	if(attack_flags & ATTACKER_EMPTY_HAND)
+		var/kind = agent_touch_kind(living_attacker)
+		if(kind != AGENT_STIMULUS_STRUCK)
+			note_stimulus(kind, living_attacker)
+			return
+
 	note_aggressor(living_attacker)
 	// Already fighting someone else: keep that fight rather than thrash between two.
 	var/fighting_back = (in_combat() && blackboard[BB_AGENT_COMBAT_TARGET] != attacker) ? blackboard[BB_AGENT_COMBAT_LEVEL] : retaliate(living_attacker)
@@ -524,12 +524,31 @@
 		if(!binding.coalesce_event("attacked", detail))
 			binding.mark_dirty("attacked", AGENT_EVENT_HIGH, detail)
 
-/// An empty hand on us. In combat mode relay_attackers already reports it as an attack.
+/// An empty hand on us. In combat mode relay_attackers reports it instead, and on_pawn_attacked sorts it.
 /datum/ai_controller/agent_social/proc/on_pawn_touched(datum/source, mob/living/user, list/modifiers)
 	SIGNAL_HANDLER
 	if(!isliving(user) || user == pawn || user.cmode)
 		return
+	// A click at a stall is shopping, and the shop reports it as a customer instead.
+	var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
+	if(shop?.wants_click(user))
+		return
 	note_stimulus(agent_touch_kind(user), user)
+
+/// A customer at the stall, or a trade. Worth a word, unless the NPC is already talking to them.
+/datum/ai_controller/agent_social/proc/note_shop_event(event_name, mob/living/customer, list/detail)
+	if(!binding || QDELETED(binding) || QDELETED(customer))
+		return
+	detail = detail ? detail.Copy() : list()
+	detail["by"] = customer.get_visible_name()
+	if(event_name == AGENT_EVENT_CUSTOMER)
+		if(binding.coalesce_event(event_name, detail))
+			return
+		if(binding.is_partner(customer))
+			binding.push_event(event_name, AGENT_EVENT_LOW, detail)
+			return
+	binding.note_candidate(customer)
+	binding.mark_dirty(event_name, AGENT_EVENT_LOW, detail, replenish = !isnull(customer.client))
 
 /datum/ai_controller/agent_social/proc/on_pawn_fed(datum/source, mob/feeder, obj/item/fed_with)
 	SIGNAL_HANDLER

@@ -73,8 +73,8 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 		for(var/entry in wanted)
 			if(!istext(entry) || !(entry in GLOB.agent_action_vocabulary))
 				continue
-			// Granted by the combat limits instead, so a saved list cannot smuggle them in.
-			if(entry in GLOB.agent_combat_actions)
+			// Granted by the combat limits or a shop instead, so a saved list cannot smuggle them in.
+			if((entry in GLOB.agent_combat_actions) || (entry in GLOB.agent_shop_actions))
 				continue
 			if(entry in cleaned)
 				continue

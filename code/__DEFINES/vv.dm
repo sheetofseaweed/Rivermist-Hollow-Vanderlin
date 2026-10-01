@@ -110,6 +110,7 @@
 // /mob/living
 #define VV_HK_MODIFY_STATS "modstats"
 #define VV_HK_AGENT_CONTROL "agent_control"
+#define VV_HK_AGENT_SHOP "agent_shop"
 
 // /mob/living/carbon
 #define VV_HK_MODIFY_BODYPART "mod_bodypart"

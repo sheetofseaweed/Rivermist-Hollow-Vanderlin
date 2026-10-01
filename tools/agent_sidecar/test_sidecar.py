@@ -311,6 +311,76 @@ class CombatProtocol(unittest.TestCase):
         self.assertIn("Your fight with Bob is over: they yielded.", text)
 
 
+class ShopProtocol(unittest.TestCase):
+    """The haggle action, the stall in the scene, and trades as events."""
+
+    def test_haggle_maps_to_the_dm_shape(self):
+        self.assertEqual(proto.to_dm_action({"action": "haggle", "handle": "h3", "key": "10"}),
+                         {"name": "haggle", "handle": "h3", "key": "10"})
+        got = proto.parse_loose_action("haggle: h3 15", ["haggle", "wait"])
+        self.assertEqual(proto.to_dm_action(got), {"name": "haggle", "handle": "h3", "key": "15"})
+
+    def test_only_a_shopkeeper_hears_about_haggling(self):
+        keeper = proto.build_system({"persona": "P", "permitted_actions": ["say", "haggle", "wait"]})
+        self.assertIn("'haggle'", keeper)
+        self.assertIn("never act out taking payment", keeper)
+        self.assertNotIn("'haggle'", proto.build_system({"persona": "P", "permitted_actions": ["say", "wait"]}))
+
+    def test_a_dealers_stall_reads_plainly(self):
+        text = proto.build_user_message(
+            {"self": {"name": "Tarik", "shop": {
+                "kind": "dealer", "selling": [{"name": "iron sword", "price": 40}], "more": 2,
+                "buys": "most goods, paying about 50% of what they are worth", "purse": 80,
+                "discounts": {"Lexus": 10}}}},
+            [])
+        self.assertIn("Your stall sells, in mammons: iron sword (40) and 2 more.", text)
+        self.assertIn("You buy most goods, paying about 50% of what they are worth.", text)
+        self.assertIn("Your purse holds 80 mammons.", text)
+        self.assertIn("Better prices you have given: Lexus 10%.", text)
+
+    def test_a_supplier_says_it_buys_nothing(self):
+        text = proto.build_user_message(
+            {"self": {"name": "Tarik", "shop": {"kind": "supplier", "selling": [], "more": 0}}}, [])
+        self.assertIn("Your stall has nothing for sale right now.", text)
+        self.assertIn("You do not buy anything.", text)
+        self.assertNotIn("purse", text)
+
+    def test_trades_read_from_behind_the_counter(self):
+        lines = proto.describe_events([
+            {"event": "customer", "detail": {"by": "Lexus", "count": 2}},
+            {"event": "trade", "detail": {"by": "Lexus", "what": "bought", "item": "hardtack", "price": 9}},
+            {"event": "trade", "detail": {"by": "Lexus", "what": "sold", "item": "iron sword", "price": 20}},
+            {"event": "trade_refused", "detail": {"by": "Bob", "what": "buy", "item": "hardtack",
+                                                  "reason": "they could not pay 9 mammons"}},
+            {"event": "trade_refused", "detail": {"by": "Bob", "what": "sell", "item": "stick",
+                                                  "reason": "it is worthless"}},
+        ])
+        self.assertEqual(lines, [
+            "  Lexus opened your stall to look at your wares (2 times).",
+            "  Lexus bought the hardtack from you for 9 mammons.",
+            "  Lexus sold you the iron sword for 20 mammons.",
+            "  Bob could not buy the hardtack: they could not pay 9 mammons.",
+            "  Bob tried to sell you the stick, but you would not buy it: it is worthless.",
+        ])
+
+    def test_a_customer_at_the_stall_comes_with_offers(self):
+        # A live model promised to buy a worthless stick the stall then refused.
+        line = proto.describe_entity({
+            "handle": "h2", "name": "Bob", "distance": 1, "direction": "north",
+            "holding": ["iron sword", "stick"],
+            "offers": [{"item": "iron sword", "offer": 20},
+                       {"item": "stick", "refused": "it is worthless"}]})
+        self.assertIn("(you would pay 20 mammons for the iron sword; "
+                      "you would not buy the stick: it is worthless)", line)
+
+    def test_the_prompt_says_only_haggle_changes_a_price(self):
+        # A live model said fifty percent off; the stall, capped at twenty then, charged the old price.
+        text = proto.build_system({"persona": "P", "permitted_actions": ["say", "haggle", "wait"]})
+        self.assertIn("0 to 50", text)
+        self.assertIn("saying a price changes nothing", text)
+        self.assertIn("most bargains are 5 to 15 percent", text)
+
+
 class DeadlineBudget(unittest.TestCase):
     """The defect: the sidecar allowed the model 30s against a 15s deadline.
 

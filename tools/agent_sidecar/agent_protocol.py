@@ -68,10 +68,10 @@ def action_schema(permitted):
             "text": {"type": "string", "description": "Speech for 'say', or the action for 'me', else empty."},
             "key": {"type": "string", "description": "Emote key for 'emote', the way to 'touch' "
                                                      "(tap, hug, headpat, help), the held item's handle "
-                                                     "for 'give', or how hard to 'fight' (brawl, until_downed, "
-                                                     "no_quarter), else empty."},
+                                                     "for 'give', how hard to 'fight' (brawl, until_downed, "
+                                                     "no_quarter), or the percent for 'haggle' (0 to 50), else empty."},
             "handle": {"type": "string", "description": "The person or thing for approach/use/touch/sit/"
-                                                        "give/take/fight, else empty."},
+                                                        "give/take/fight/haggle, else empty."},
         },
         "required": ["action", "text", "key", "handle"],
         "additionalProperties": False,
@@ -99,9 +99,9 @@ def schema_prose(permitted):
         "Reply with a single JSON object and nothing else. No prose, no code "
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
         '"text": speech for say, or the action for me, else "", "key": emote key for emote, '
-        'tap/hug/headpat/help for touch, the held item handle for give, or brawl/until_downed/'
-        'no_quarter for fight, else "", "handle": the person or thing for approach/use/touch/sit/'
-        'give/take/fight, else ""}.')
+        'tap/hug/headpat/help for touch, the held item handle for give, brawl/until_downed/'
+        'no_quarter for fight, or 0 to 50 for haggle, else "", "handle": the person or thing for '
+        'approach/use/touch/sit/give/take/fight/haggle, else ""}.')
 
 
 def build_system(profile, describe_schema=False):
@@ -138,6 +138,17 @@ def build_system(profile, describe_schema=False):
          "they must take it. When someone offers you something, 'take' with their handle accepts it.")
         if "give" in permitted or "take" in permitted else "",
         combat_brief(profile) if "fight" in permitted else "",
+        # Only shopkeepers get haggle: DM grants it with the shop, never through the profile.
+        ("You keep a shop. Customers click you to open your stall and pick what to buy or sell there; "
+         "the coin and goods change hands by themselves, so never act out taking payment or handing "
+         "wares over. A price only changes when you use 'haggle' with their handle and key = how many "
+         "percent better prices they get, 0 to 50, where 0 takes it back; saying a price changes "
+         "nothing. Haggle like a merchant who needs to make a living: most bargains are 5 to 15 "
+         "percent, 20 is generous, and more is only for a close friend or a great favour. A deal lasts "
+         "a while and works both ways: they pay less, and you pay more for what they sell you. When "
+         "someone near you holds something, you are shown what you would pay for it or why you would "
+         "not buy it. Quote those offers, and never promise to buy what you would not.")
+        if "haggle" in permitted else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -216,6 +227,9 @@ def describe_entity(entity):
     held = _names(entity.get("holding"))
     if held:
         bits.append("holding " + " and ".join(held))
+    offers = [o for o in entity.get("offers") or [] if isinstance(o, dict)]
+    if offers:
+        bits.append("(%s)" % "; ".join(describe_offer(o) for o in offers))
     # Present only for people who can wear things; empty means nothing shows.
     if "wearing" in entity:
         worn = _names(entity.get("wearing"))
@@ -371,6 +385,9 @@ def build_user_message(observation, events):
         lines.append("You are on the %s." % myself["on"])
     elif myself.get("standing") is False:
         lines.append("You are lying down.")
+    shop = myself.get("shop")
+    if isinstance(shop, dict):
+        lines.extend(describe_shop(shop))
     lines.append("You are at: %s" % observation.get("here", "somewhere"))
 
     entities = observation.get("entities") or []
@@ -392,6 +409,51 @@ def build_user_message(observation, events):
 
     lines.append("\nChoose one action.")
     return "\n".join(lines)
+
+
+def describe_offer(offer):
+    """What the keeper would pay for one held item, or why it would not buy it."""
+    item = offer.get("item", "something")
+    if offer.get("refused"):
+        return "you would not buy the %s: %s" % (item, offer["refused"])
+    return "you would pay %s mammons for the %s" % (offer.get("offer", "?"), item)
+
+
+def describe_shop(shop):
+    """The stall as its keeper knows it: wares and prices, what it buys, the purse, and who got a deal."""
+    lines = []
+    wares = [w for w in shop.get("selling") or [] if isinstance(w, dict)]
+    if wares:
+        listed = ", ".join("%s (%s)" % (w.get("name", "something"), w.get("price", "?")) for w in wares)
+        more = _count(shop.get("more"))
+        lines.append("Your stall sells, in mammons: %s%s." % (listed, " and %d more" % more if more else ""))
+    else:
+        lines.append("Your stall has nothing for sale right now.")
+    buys = shop.get("buys")
+    lines.append("You buy %s." % buys if buys else "You do not buy anything.")
+    if isinstance(shop.get("purse"), (int, float)) and not isinstance(shop.get("purse"), bool):
+        lines.append("Your purse holds %d mammons." % shop["purse"])
+    discounts = shop.get("discounts")
+    if isinstance(discounts, dict) and discounts:
+        lines.append("Better prices you have given: %s." % ", ".join(
+            "%s %s%%" % (name, percent) for name, percent in discounts.items()))
+    return lines
+
+
+def describe_trade(name, detail):
+    """A trade at the stall, from the keeper's side of the counter."""
+    who = detail.get("by", "someone")
+    item = detail.get("item", "something")
+    if name == "customer":
+        return "%s opened your stall to look at your wares%s." % (who, _times(detail))
+    if name == "trade_refused":
+        reason = detail.get("reason", "it fell through")
+        if detail.get("what") == "sell":
+            return "%s tried to sell you the %s, but you would not buy it: %s." % (who, item, reason)
+        return "%s could not buy the %s: %s." % (who, item, reason)
+    if detail.get("what") == "sold":
+        return "%s sold you the %s for %s mammons." % (who, item, detail.get("price", "?"))
+    return "%s bought the %s from you for %s mammons." % (who, item, detail.get("price", "?"))
 
 
 def describe_events(events):
@@ -417,6 +479,8 @@ def describe_events(events):
         elif name == "combat_ended":
             lines.append("  Your fight with %s is over: %s." % (
                 detail.get("with", "someone"), detail.get("reason", "it ended")))
+        elif name in ("customer", "trade", "trade_refused"):
+            lines.append("  " + describe_trade(name, detail))
         elif name == "action_result":
             lines.append("  Your last action: %s (%s)" % (
                 detail.get("state"), detail.get("detail")))
@@ -444,7 +508,7 @@ def to_dm_action(parsed):
         return {"name": "emote", "key": parsed.get("key", "")}
     if name in ("approach", "use", "sit", "take"):
         return {"name": name, "handle": parsed.get("handle", "")}
-    if name in ("touch", "give", "fight"):
+    if name in ("touch", "give", "fight", "haggle"):
         return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
     if name == "me":
         return {"name": "me", "text": parsed.get("text", "")}
@@ -508,8 +572,8 @@ def parse_loose_action(text, permitted):
                     return {"action": name, "text": "", "key": value, "handle": ""}
                 if name in ("approach", "use", "sit", "take"):
                     return {"action": name, "text": "", "key": "", "handle": value}
-                if name in ("touch", "give", "fight"):
-                    # "touch: h3 hug", "give: h3 h7", "fight: h3 brawl", or just the handle.
+                if name in ("touch", "give", "fight", "haggle"):
+                    # "touch: h3 hug", "give: h3 h7", "fight: h3 brawl", "haggle: h3 10", or just the handle.
                     parts = value.split()
                     return {"action": name, "text": "", "key": parts[1] if len(parts) > 1 else "",
                             "handle": parts[0] if parts else ""}

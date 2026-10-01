@@ -454,6 +454,23 @@ SUBSYSTEM_DEF(agent_npc)
 		binding.record_result(AGENT_RESULT_REJECTED, "that is in your own hands")
 		return
 
+	// The menu runs every trade. Haggling only moves the prices one customer sees there.
+	if(name == "haggle")
+		var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
+		if(!shop || !isliving(target) || target == pawn)
+			binding.record_result(AGENT_RESULT_REJECTED, "haggle sets prices for a customer at your shop")
+			return
+		var/percent = agent_parse_percent(response.action["key"])
+		if(isnull(percent))
+			binding.record_result(AGENT_RESULT_REJECTED, "key must be a discount in percent, 0 to [AGENT_SHOP_MAX_DISCOUNT]")
+			return
+		var/mob/living/customer = target
+		var/given = shop.set_discount(customer, percent)
+		// Said back when capped, or the model goes on telling them a price the stall does not charge.
+		var/capped = given < percent ? ", the most you can give" : ""
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price")
+		return
+
 	// The melee is DM's from here on; the model chose who and how hard, within the profile and the ladder.
 	if(name == "fight")
 		var/datum/ai_controller/agent_social/fighter = binding.resolve_controller()
@@ -465,7 +482,7 @@ SUBSYSTEM_DEF(agent_npc)
 		if(refusal)
 			binding.record_result(AGENT_RESULT_REJECTED, refusal)
 			return
-		var/started = fighter.start_combat(target, level, "chosen")
+		var/started = fighter.start_combat(target, level, "chosen", binding.current_partner())
 		binding.complete_action(AGENT_RESULT_SUCCEEDED, "[started ? "fighting" : "already fighting"] them: [level]")
 		return
 

@@ -386,16 +386,94 @@
 	var/mob/living/carbon/human/attacker = allocate(/mob/living/carbon/human/species/human/northern)
 	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
 
-	// The real signal a combat-mode hand sends, not a direct call to the handler.
+	// The real signal a combat-mode punch sends, not a direct call to the handler.
 	attacker.cmode = TRUE
+	attacker.used_intent = new /datum/intent/unarmed/punch(attacker)
 	SEND_SIGNAL(pawn, COMSIG_ATOM_ATTACK_HAND, attacker, null)
 	attacker.cmode = FALSE
+	attacker.used_intent = null
 	var/fighting = controller.blackboard[BB_AGENT_COMBAT_TARGET]
 	controller.end_combat("test", report = FALSE)
 	agent_test_restore_subsystem(saved, controller.binding)
 
 	// Humans lack the element that turns hits into COMSIG_ATOM_WAS_ATTACKED, so this was dead in play.
 	TEST_ASSERT_EQUAL(fighting, attacker, "A real blow must reach the NPC's attack handler.")
+
+/datum/unit_test/agent_npc_rough_hands_are_not_blows
+
+/datum/unit_test/agent_npc_rough_hands_are_not_blows/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_fighter(retaliate = AGENT_COMBAT_BRAWL)
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/mob/living/carbon/human/handler = allocate(/mob/living/carbon/human/species/human/northern)
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	controller.binding.take_events()
+
+	// Players keep combat mode on, and then relay_attackers reports every hand on the NPC as an attack.
+	handler.cmode = TRUE
+	var/list/kinds = list()
+	var/fought = FALSE
+	var/fled = FALSE
+	for(var/intent_type in list(INTENT_HELP, INTENT_GRAB, INTENT_DISARM))
+		handler.used_intent = new intent_type(handler)
+		SEND_SIGNAL(pawn, COMSIG_ATOM_ATTACK_HAND, handler, null)
+		if(controller.in_combat())
+			fought = TRUE
+		if(controller.blackboard[BB_BASIC_MOB_CURRENT_TARGET])
+			fled = TRUE
+		for(var/list/entry as anything in agent_test_events_named(controller.binding.take_events(), "physical"))
+			var/list/detail = entry["detail"]
+			kinds += detail["what"]
+	var/rough_is_hostile = controller.is_aggressor(handler)
+	handler.used_intent = new /datum/intent/unarmed/punch(handler)
+	SEND_SIGNAL(pawn, COMSIG_ATOM_ATTACK_HAND, handler, null)
+	var/punched_back = controller.blackboard[BB_AGENT_COMBAT_TARGET]
+	handler.cmode = FALSE
+	handler.used_intent = null
+	controller.end_combat("test", report = FALSE)
+	agent_test_restore_subsystem(saved, controller.binding)
+
+	// Grabbing and moving an NPC drew fists in play. Contact is the model's to judge; only harm is a reflex.
+	TEST_ASSERT(!fought, "A touch, grab or shove must not start a fight by reflex.")
+	TEST_ASSERT(!fled, "Nor send the NPC running.")
+	TEST_ASSERT_EQUAL(jointext(kinds, ","), "[AGENT_STIMULUS_TOUCHED],[AGENT_STIMULUS_GRABBED],[AGENT_STIMULUS_SHOVED]", "Each must reach the model once, as what it was.")
+	TEST_ASSERT(rough_is_hostile, "Rough hands still mark who started it, so the model may answer them.")
+	TEST_ASSERT_EQUAL(punched_back, handler, "A punch is a blow, and is still answered by reflex.")
+
+/datum/unit_test/agent_npc_chosen_fights_name_the_persuader
+
+/datum/unit_test/agent_npc_chosen_fights_name_the_persuader/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_fighter(initiate = AGENT_COMBAT_BRAWL)
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/agent_binding/binding = controller?.binding
+	var/mob/living/carbon/human/persuader = allocate(/mob/living/carbon/human/species/human/northern)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human/species/human/northern)
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the pawn must be bound.")
+
+	// The persuader spoke and the NPC answered, which makes them its conversation partner.
+	binding.note_candidate(persuader)
+	binding.engage_candidate()
+	var/victim_handle = agent_test_handle_of(binding, pawn, victim)
+	SSagent_npc.dispatch_decision(binding, agent_test_decision(list("name" = "fight", "handle" = victim_handle, "key" = AGENT_COMBAT_BRAWL)))
+	var/fighting = controller.blackboard[BB_AGENT_COMBAT_TARGET]
+	var/npc_log = agent_test_attack_log(pawn)
+	var/persuader_log = agent_test_attack_log(persuader)
+	controller.end_combat("test", report = FALSE)
+	agent_test_restore_subsystem(saved, binding)
+
+	TEST_ASSERT_EQUAL(fighting, victim, "Setup failed: the fight must start.")
+	// Players can talk an NPC into violence. Without this, the log blames only the NPC.
+	TEST_ASSERT(findtext(npc_log, "while talking with [key_name(persuader)]"), "The NPC's fight log must name who it was talking with.")
+	TEST_ASSERT(findtext(persuader_log, key_name(victim)), "The persuader's own log must show the fight, where admins look first.")
+
+/// Everything in a mob's own attack log, as one text.
+/proc/agent_test_attack_log(mob/who)
+	var/list/entries = who.logging?["[LOG_ATTACK]"]
+	var/list/lines = list()
+	for(var/stamp in entries)
+		lines += "[entries[stamp]]"
+	return jointext(lines, "\n")
 
 /datum/unit_test/agent_npc_blows_in_a_fight_do_not_restart_it
 

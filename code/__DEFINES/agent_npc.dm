@@ -319,3 +319,30 @@
 #define BB_AGENT_COMBAT_SWING "BB_agent_combat_swing"
 #define BB_AGENT_COMBAT_HIDING "BB_agent_combat_hiding"
 #define BB_AGENT_COMBAT_TARGETTING "BB_agent_combat_targetting"
+
+// Shops and posts.
+
+/// Most the model may knock off a customer's prices, in percent. The prompt asks for far less.
+#define AGENT_SHOP_MAX_DISCOUNT 50
+/// People this close have what they hold priced for the keeper, so it can quote real offers.
+#define AGENT_SHOP_OFFER_RANGE 2
+/// How long a haggled discount holds.
+#define AGENT_SHOP_DISCOUNT_DURATION (10 MINUTES)
+/// Wares listed to the model. The menu shows them all; the prompt only needs enough to talk about.
+#define AGENT_SHOP_SHOWN_WARES 12
+/// Event names the shop sends: someone opened the stall, a trade went through, a trade fell through.
+#define AGENT_EVENT_CUSTOMER "customer"
+#define AGENT_EVENT_TRADE "trade"
+#define AGENT_EVENT_TRADE_REFUSED "trade_refused"
+/// The turf an NPC keeps to when idle, and the way it faces there.
+#define BB_AGENT_POST "BB_agent_post"
+#define BB_AGENT_POST_DIR "BB_agent_post_dir"
+/// world.time the NPC was first idle away from its post, or null.
+#define BB_AGENT_POST_IDLE_SINCE "BB_agent_post_idle_since"
+/// world.time before which a failed walk home is not tried again.
+#define BB_AGENT_POST_RETRY_AT "BB_agent_post_retry_at"
+/// Idle this long away from its post and the NPC walks back.
+#define AGENT_POST_RETURN_DELAY (20 SECONDS)
+/// A walk home that has not arrived by now gives up, and waits AGENT_POST_RETRY_DELAY before trying again.
+#define AGENT_POST_RETURN_TIMEOUT (60 SECONDS)
+#define AGENT_POST_RETRY_DELAY (30 SECONDS)

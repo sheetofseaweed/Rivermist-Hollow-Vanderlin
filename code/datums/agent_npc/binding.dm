@@ -136,13 +136,19 @@
 	var/datum/ai_controller/agent_social/agent = resolve_controller()
 	if(!istype(agent) || !agent.profile)
 		return null
-	return agent.profile.to_payload()
+	var/list/payload = agent.profile.to_payload()
+	// A shop grants haggling, the way combat limits grant fighting.
+	if(agent.pawn?.GetComponent(/datum/component/agent_shop))
+		payload["permitted_actions"] |= GLOB.agent_shop_actions
+	return payload
 
 /// A profile narrows the global action vocabulary. No profile, no objectives.
 /datum/agent_binding/proc/profile_permits(action_name)
 	var/datum/ai_controller/agent_social/agent = resolve_controller()
 	if(!istype(agent) || !agent.profile)
 		return FALSE
+	if(action_name in GLOB.agent_shop_actions)
+		return !isnull(agent.pawn?.GetComponent(/datum/component/agent_shop))
 	return agent.profile.permits(action_name)
 
 /// Flag only. Tearing a binding down inside another datum's Destroy is asking
@@ -320,9 +326,15 @@
 
 /// Is this our conversation partner? A bare timer here once made everyone's chatter count as addressed.
 /datum/agent_binding/proc/is_partner(atom/movable/speaker)
-	if(!speaker || world.time > partner_until)
-		return FALSE
-	return partner_ref?.resolve() == speaker
+	return speaker && current_partner() == speaker
+
+/// Who the NPC is talking with now, or null once the conversation has lapsed.
+/datum/agent_binding/proc/current_partner()
+	RETURN_TYPE(/atom/movable)
+	if(world.time > partner_until)
+		return null
+	var/atom/movable/partner = partner_ref?.resolve()
+	return QDELETED(partner) ? null : partner
 
 /// Record who just asked us something. Not a partner until the NPC answers, in engage_candidate().
 /datum/agent_binding/proc/note_candidate(atom/movable/speaker)

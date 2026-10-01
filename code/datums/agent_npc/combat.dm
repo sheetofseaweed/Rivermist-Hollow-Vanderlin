@@ -215,7 +215,7 @@ GLOBAL_LIST_INIT(agent_combat_actions, list("fight", "stop"))
 	return null
 
 /// Begin or change a fight; FALSE if it was already this fight. The melee is DM's; the model chooses who and how hard.
-/datum/ai_controller/agent_social/proc/start_combat(mob/living/target, level, reason)
+/datum/ai_controller/agent_social/proc/start_combat(mob/living/target, level, reason, atom/movable/persuader)
 	var/changing = blackboard[BB_AGENT_COMBAT_TARGET] == target
 	// The fight already running: every blow of it is not a new one, and must not restart the escalation clock.
 	if(changing && blackboard[BB_AGENT_COMBAT_LEVEL] == level)
@@ -230,8 +230,13 @@ GLOBAL_LIST_INIT(agent_combat_actions, list("fight", "stop"))
 	var/mob/living/living_pawn = pawn
 	if(living_pawn.buckled && living_pawn.buckled == blackboard[BB_AGENT_SEAT])
 		agent_execute_stand(living_pawn)
-	log_combat(living_pawn, target, "agent NPC [changing ? "changed its fight to" : "started a fight:"] [level] ([reason])")
-	SSagent_npc?.log_agent("[living_pawn] fights [target] at [level]: [reason]")
+	// Players can talk an NPC into a fight, so admins need to see who it was listening to.
+	var/talking_with = persuader ? " while talking with [key_name(persuader)]" : ""
+	log_combat(living_pawn, target, "agent NPC [changing ? "changed its fight to" : "started a fight:"] [level] ([reason][talking_with])")
+	SSagent_npc?.log_agent("[living_pawn] fights [target] at [level]: [reason][talking_with]")
+	// The persuader's own log too, where admins look first. A target already gets the fight in theirs.
+	if(persuader && persuader != target)
+		persuader.log_message("was talking with agent NPC [key_name(living_pawn)] when it chose to fight [key_name(target)] at [level]", LOG_ATTACK, color = "red")
 	return TRUE
 
 /// End the fight. Reported to the model unless the model itself chose to stop.

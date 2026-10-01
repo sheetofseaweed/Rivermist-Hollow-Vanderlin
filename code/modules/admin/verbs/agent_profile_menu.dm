@@ -37,7 +37,7 @@
 /datum/agent_profile_menu/ui_static_data(mob/user)
 	return list(
 		// Fighting is set by the combat limits, never by a checkbox.
-		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions,
+		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions - GLOB.agent_shop_actions,
 		"combatLevels" = GLOB.agent_combat_ladder.Copy(),
 		"builtins" = agent_builtin_profiles(),
 		"labelMax" = AGENT_PROFILE_LABEL_MAX,
@@ -280,14 +280,58 @@
 /mob/living/vv_get_dropdown()
 	. = ..()
 	VV_DROPDOWN_OPTION(VV_HK_AGENT_CONTROL, "Agent NPC - Attach / Detach")
+	VV_DROPDOWN_OPTION(VV_HK_AGENT_SHOP, "Agent NPC - Shop / Post")
 
 /mob/living/vv_do_topic(list/href_list)
 	. = ..()
-	if(!href_list[VV_HK_AGENT_CONTROL])
+	if(href_list[VV_HK_AGENT_CONTROL] && check_rights(R_DEBUG))
+		agent_vv_control(usr)
+	if(href_list[VV_HK_AGENT_SHOP] && check_rights(R_DEBUG))
+		agent_vv_shop(usr)
+
+/// Give this mob a shop, or a tile to keep to. How a shop gets onto an NPC spawned mid-round.
+/mob/living/proc/agent_vv_shop(mob/user)
+	var/static/remove_label = "--- remove the shop ---"
+	var/static/post_label = "--- keep to this tile, facing as now ---"
+	var/static/unpost_label = "--- no post ---"
+	var/list/choices = list()
+	for(var/datum/agent_stock/stock_type as anything in subtypesof(/datum/agent_stock))
+		var/label = initial(stock_type.shop_label)
+		if(label)
+			choices[label] = stock_type
+	if(GetComponent(/datum/component/agent_shop))
+		choices[remove_label] = remove_label
+	if(istype(ai_controller, /datum/ai_controller/agent_social))
+		choices[post_label] = post_label
+		choices[unpost_label] = unpost_label
+
+	var/picked = input(user, "Shop and post for [name]", "Agent NPC") as null|anything in choices
+	// input() sleeps, so the mob may be gone or changed by now.
+	if(!picked || QDELETED(src) || QDELETED(user))
 		return
-	if(!check_rights(R_DEBUG))
+	var/chosen = choices[picked]
+
+	if(chosen == post_label || chosen == unpost_label)
+		var/datum/ai_controller/agent_social/agent = ai_controller
+		if(!istype(agent))
+			to_chat(user, span_warning("[name] is no longer agent controlled."))
+			return
+		var/turf/here = get_turf(src)
+		agent.set_post(chosen == post_label ? here : null, dir)
+		to_chat(user, span_notice(chosen == post_label ? "[name] will keep to this tile when idle." : "[name] no longer keeps a post."))
+		log_admin("[key_name(user)] set [key_name(src)]'s agent post to [chosen == post_label ? AREACOORD(here) : "none"].")
 		return
-	agent_vv_control(usr)
+
+	var/refusal = agent_set_shop(src, chosen == remove_label ? null : chosen)
+	if(refusal)
+		to_chat(user, span_warning("Could not change the shop: [refusal]."))
+		return
+	if(chosen == remove_label)
+		to_chat(user, span_notice("[name] no longer keeps a shop."))
+	else
+		to_chat(user, span_notice("[name] now keeps a shop: [picked]. Players open it with an empty hand on help intent, out of combat mode."))
+	message_admins("[key_name_admin(user)] changed [name]'s agent shop to: [chosen == remove_label ? "none" : picked].")
+	log_admin("[key_name(user)] changed [key_name(src)]'s agent shop to: [chosen == remove_label ? "none" : picked].")
 
 /// Pick a profile for this mob, or take agent control off it.
 /mob/living/proc/agent_vv_control(mob/user)

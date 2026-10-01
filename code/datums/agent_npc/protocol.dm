@@ -211,7 +211,7 @@
  * action here without teaching dispatch_decision about it gets you a profile
  * that permits something the executor will reject.
  */
-GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "wait"))
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "haggle", "wait"))
 
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
@@ -272,6 +272,15 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach",
 			if(!istext(way) || !length(way))
 				way = AGENT_TOUCH_TAP
 			return list("name" = "touch", "handle" = handle, "key" = way)
+		if("haggle")
+			var/handle = action["handle"]
+			if(!istext(handle) || !length(handle))
+				return null
+			// The percent is parsed and clamped at dispatch, where a missing one is refused with the reason.
+			var/percent = action["key"]
+			if(isnum(percent))
+				percent = "[percent]"
+			return list("name" = "haggle", "handle" = handle, "key" = istext(percent) ? percent : "")
 		if("wait")
 			// The quiescent outcome. Without it a conversation can never settle.
 			return list("name" = "wait")

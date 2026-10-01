@@ -147,6 +147,9 @@
 	)
 	if(pawn.buckled)
 		myself["on"] = "[pawn.buckled.name]"
+	var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
+	if(shop)
+		myself["shop"] = shop.describe_for_agent()
 	var/datum/ai_controller/agent_social/agent = pawn.ai_controller
 	if(istype(agent) && agent.in_combat())
 		var/mob/living/foe = agent.blackboard[BB_AGENT_COMBAT_TARGET]
@@ -230,6 +233,12 @@
 		described["condition"] = agent_describe_condition(living_thing)
 		// Only what is visibly held. Pockets and bags are not character knowledge.
 		described["holding"] = agent_held_names(living_thing)
+		// A shopkeeper prices what a customer at the stall holds, so it never promises a deal the stall refuses.
+		var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
+		if(shop && get_dist(pawn, living_thing) <= AGENT_SHOP_OFFER_RANGE)
+			var/list/offers = shop.offers_for(living_thing)
+			if(length(offers))
+				described["offers"] = offers
 		// Only what examine would show. Clothing hidden under other clothing stays hidden.
 		if(iscarbon(living_thing))
 			described["wearing"] = agent_visible_worn_names(living_thing)
