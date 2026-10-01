@@ -85,6 +85,7 @@
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5)
 
 /obj/item/clothing/cloak/wardencloak/Initialize(mapload, ...)
 	. = ..()

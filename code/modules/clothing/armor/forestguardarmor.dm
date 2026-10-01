@@ -40,6 +40,7 @@
 	sleeved = 'icons/roguetown/clothing/special/onmob/forest_guard.dmi'
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5)
 
 /obj/item/clothing/cloak/wardencloak/Initialize(mapload, ...)
 	. = ..()
@@ -55,6 +56,7 @@
 	worn_x_dimension = 64
 	worn_y_dimension = 64
 	icon_state = "wardenhelm"
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5)
 
 /obj/item/clothing/head/helmet/medium
 	abstract_type = /obj/item/clothing/head/helmet/medium

@@ -37,11 +37,12 @@
 	block2add = FOV_BEHIND
 
 /obj/item/clothing/head/helmet/heavy/psydonhelm
-	name ="darkholdian armet"
-	desc = "Headwear commonly worn by Templars in service to the Oratorium Throni Vacui. PSYDON Endures."
+	name ="Watch darkholdian armet"
+	desc = "Headwear commonly worn by Templars in service to the Oratorium Throni Vacui. This trophy now serves the garrison."
 	icon_state = "psydonarmet"
 	item_state = "psydonarmet"
 	block2add = FOV_BEHIND
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:sergant" = 5, "specialization:Charm" = 3)
 
 //................ Iron Plate Helmet ............... //
 /obj/item/clothing/head/helmet/heavy/ironplate

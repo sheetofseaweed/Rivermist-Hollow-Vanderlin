@@ -22,6 +22,7 @@
 #define EXAMINE_SECT_HEALTH		8 // Things pertinent to health. Like whether you're bleeding or missing a limb.
 #define EXAMINE_SECT_LAST		9 // Things you wanna cram at the very end.
 #define EXAMINE_SECT_HEADSHOT	10 // The headshot / examine closer buttons.
+#define EXAMINE_SECT_SOCIALCONTEXT	11 // Social context info. This is a special case, and is only used by the examine proc.
 // If you add anything past this, the character won't be the only relevant headshot
 
 // used for weird cases with variable honorary titles to determine their position

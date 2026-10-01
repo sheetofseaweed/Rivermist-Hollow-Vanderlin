@@ -173,6 +173,7 @@
 	armor = ARMOR_MAILLE_IRON
 	body_parts_covered = COVERAGE_ALL_BUT_LEGS
 	salvage_result = /obj/item/natural/cloth
+	social_cues = list("faction:town_watch" = 5)
 
 /obj/item/clothing/armor/leather/jacket/gatemaster_jacket/armored
 	name = "gatemaster's coat"
