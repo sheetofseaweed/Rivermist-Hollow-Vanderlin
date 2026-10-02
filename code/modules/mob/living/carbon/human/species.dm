@@ -603,6 +603,9 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 /datum/species/proc/get_body_color(mob/living/carbon/human/H)
 	if(use_skintones)
 		if(H)
+			// Full-body mutant colors take precedence over the skin-tone palette.
+			if(MUTCOLORS in species_traits)
+				return normalize_body_color(H.dna?.features?["mcolor"]) || normalize_body_color(default_color)
 			. = normalize_body_color(H.skin_tone)
 			if(.)
 				return

@@ -1407,6 +1407,27 @@ export const PreferencesMenu = () => {
   };
 
   const renderAncestryPicker = () => {
+    if (data.mutant_colors?.length) {
+      return (
+        <Panel title="Mutant Colors" icon="palette">
+          {data.mutant_colors.map((entry) => (
+            <PrefRow
+              key={entry.slot}
+              icon="palette"
+              label={`Mutant Color #${entry.slot}`}
+              swatch={entry.color}
+              value={entry.color}
+              onClick={() =>
+                doPref('character_setup_mutant_color', undefined, {
+                  slot: entry.slot,
+                })
+              }
+            />
+          ))}
+        </Panel>
+      );
+    }
+
     const ancestryOptions = data.ancestry_options ?? [];
     const title = `Choose ${display(data.ancestry_label, 'Ancestry')}`;
 
@@ -2006,20 +2027,6 @@ export const PreferencesMenu = () => {
       {!disguiseMode ? (
         <ActionButton icon="pen-nib" label="Tattoos" onClick={() => doPref('tattoos', 'menu')} />
       ) : null}
-      {(data.mutant_colors ?? []).map((entry) => (
-        <PrefRow
-          key={entry.slot}
-          icon="palette"
-          label={`Mutant Color #${entry.slot}`}
-          swatch={entry.color}
-          value={entry.color}
-          onClick={() =>
-            doPref('character_setup_mutant_color', undefined, {
-              slot: entry.slot,
-            })
-          }
-        />
-      ))}
       {!disguiseMode && asBool(data.use_skintones) ? (
         <ActionButton icon="list" label="Skin Color Reference" onClick={() => doPref('skin_color_ref_list', 'input')} />
       ) : null}

@@ -507,6 +507,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	emissive_markings = SANITIZE_LIST(emissive_markings) 	// RMH edit
 	S["body_markings"] >> body_markings
 	body_markings = SANITIZE_LIST(body_markings)
+	sanitize_species_mutant_colors()
 	features["mcolor"]	= sanitize_hexcolor(features["mcolor"], 6, 0)
 	features["mcolor2"]	= sanitize_hexcolor(features["mcolor2"], 6, 0)
 	features["mcolor3"]	= sanitize_hexcolor(features["mcolor3"], 6, 0)

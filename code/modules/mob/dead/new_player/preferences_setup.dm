@@ -20,6 +20,11 @@
 		var/rando_race = pick(species_list)
 		set_species_preference(rando_race)
 
+	if(randomise_flags & RANDOMIZE_FEATURES)
+		features = pref_species.get_random_features()
+		sanitize_species_mutant_colors()
+		try_update_mutant_colors()
+
 	if(NOEYESPRITES in pref_species.species_traits)
 		randomise_flags &= ~RANDOMIZE_EYE_COLOR
 
@@ -94,9 +99,6 @@
 		write_preference(/datum/preference/choiced/taur_type, null)
 
 	validate_descriptors()
-
-	//if(randomise_flags & RANDOMIZE_FEATURES)
-		//features = random_features()
 
 /// Randomizes our character preferences according to enabled randomise preferences.
 /datum/preferences/proc/apply_character_randomization_prefs(antag_override = FALSE)

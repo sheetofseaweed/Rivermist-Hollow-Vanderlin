@@ -504,7 +504,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 /datum/preferences/proc/character_setup_ancestry_options()
 	. = list()
-	if(!pref_species)
+	if(!pref_species || has_mutant_color_preferences())
 		return
 	var/list/skins = pref_species.get_skin_list()
 	for(var/skin_name in skins)
@@ -571,7 +571,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return TRUE
 
 /datum/preferences/proc/character_setup_apply_ancestry(mob/user, ancestry_name)
-	if(!user || !pref_species || !ancestry_name)
+	if(!user || !pref_species || !ancestry_name || has_mutant_color_preferences())
 		return TRUE
 	var/list/skins = pref_species.get_skin_list()
 	if(!(ancestry_name in skins))
@@ -902,7 +902,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	data["age_tooltips"] = age_tooltips
 	data["pronouns"] = pronouns || "None"
 	data["domhand"] = (domhand == 1) ? "Left" : "Right"
-	data["ancestry_label"] = pref_species?.skin_tone_wording || "Ancestry"
+	data["ancestry_label"] = has_mutant_color_preferences() ? "Mutant Colors" : (pref_species?.skin_tone_wording || "Ancestry")
 	data["ancestry_value"] = character_setup_current_ancestry_name()
 	data["ancestry_options"] = heavy_cache["ancestry_options"]
 

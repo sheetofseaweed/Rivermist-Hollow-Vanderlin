@@ -1315,6 +1315,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	var/static/list/native_link_types = list(
 		"name" = /datum/preference/text/real_name,
+		"s_tone" = /datum/preference/choiced/skin_tone,
 		"gender" = /datum/preference/choiced/gender,
 		"pronouns" = /datum/preference/choiced/pronouns,
 		"domhand" = /datum/preference/choiced/domhand,
@@ -2004,7 +2005,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=underwear;task=menu'>Smallclothes<small>Choose underlayers and smallclothes preferences.</small></a>"
 	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=customizers;task=menu'>Features<small>Adjust available body accessories and feature colors.</small></a>"
 
-	if(pref_species?.use_skintones)
+	if(pref_species?.use_skintones && !has_mutant_color_preferences())
 		var/skin_color_value = pref_species.normalize_body_color(read_preference(/datum/preference/choiced/skin_tone)) || "000000"
 		dat += "<div class='section-title'>Skin</div>"
 		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=s_tone;task=input;return=body_customize'><span class='swatch' style='background-color: #[skin_color_value];'></span>[pref_species.skin_tone_wording]<small>Pick a predefined skin or scale color.</small></a>"
@@ -2017,7 +2018,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			if(!feature_key)
 				continue
 			var/color_value = pref_species.normalize_body_color(features[feature_key]) || "000000"
-			dat += "<a class='option-row' href='byond://?_src_=prefs;preference=mutant_color[color_slot == 1 ? "" : color_slot];task=input;return=body_customize'><span class='swatch' style='background-color: #[color_value];'></span>Mutant Color #[color_slot]<small>Change this character color slot.</small></a>"
+			dat += "<a class='option-row' href='byond://?_src_=prefs;preference=character_setup_mutant_color;slot=[color_slot];return=body_customize'><span class='swatch' style='background-color: #[color_value];'></span>Mutant Color #[color_slot]<small>Change this character color slot.</small></a>"
 	else
 		dat += "<div class='section-title'>Mutant Colors</div>"
 		dat += "<div class='muted'>This species has no mutant color slots.</div>"
@@ -2385,29 +2386,10 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	if(!has_mutant_color_preferences())
 		return
 
-	if(!pref_species.use_skintones)
-		return
-
-	var/feature_key = get_mutant_color_feature_key(1)
-	if(!feature_key)
-		return
-
-	var/feature_color = pref_species.normalize_body_color(features[feature_key])
-	if(feature_color)
-		features[feature_key] = feature_color
-		write_preference(/datum/preference/choiced/skin_tone, feature_color)
-		return
-
-	var/skin_color = pref_species.normalize_body_color(read_preference(/datum/preference/choiced/skin_tone))
-	if(skin_color)
-		write_preference(/datum/preference/choiced/skin_tone, skin_color)
-		features[feature_key] = skin_color
-		return
-
-	var/default_color = pref_species.normalize_body_color(pref_species.default_color)
-	if(default_color)
-		write_preference(/datum/preference/choiced/skin_tone, default_color)
-		features[feature_key] = default_color
+	var/default_color = pref_species.normalize_body_color(pref_species.default_color) || "FFFFFF"
+	for(var/color_slot in 1 to 3)
+		var/feature_key = get_mutant_color_feature_key(color_slot)
+		features[feature_key] = pref_species.normalize_body_color(features[feature_key]) || default_color
 
 /datum/preferences/proc/pick_mutant_color(mob/user, color_slot, prompt)
 	if(!has_mutant_color_preferences())
@@ -2420,16 +2402,15 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	if(!prompt)
 		prompt = "Choose your character's mutant #[color_slot] color:"
 
+	var/datum/species/picked_species = pref_species
 	var/new_mutant_color = tgui_color_picker(user, prompt, "Character Preference", "#[features[feature_key]]")
-	if(!new_mutant_color)
+	if(!new_mutant_color || QDELETED(src) || QDELETED(user) || pref_species != picked_species)
 		return
 
 	if(!is_body_color_picker_choice_valid(user, new_mutant_color))
 		return
 
 	features[feature_key] = sanitize_hexcolor(new_mutant_color)
-	if(color_slot == 1 && pref_species.use_skintones)
-		write_preference(/datum/preference/choiced/skin_tone, features[feature_key])
 
 	try_update_mutant_colors()
 
