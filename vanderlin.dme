@@ -4903,6 +4903,7 @@
 #include "modular_rmh\modular\playthings\nipple_clamps.dm"
 #include "modular_rmh\modular\playthings\shibari.dm"
 #include "modular_rmh\modular\playthings\tail_plugs.dm"
+#include "modular_rmh\modular\pref_badges\pref_badges.dm"
 #include "modular_rmh\modular\resurrection_rune\res_helpers.dm"
 #include "modular_rmh\modular\resurrection_rune\resurrection_rune.dm"
 #include "modular_rmh\modular\selectable_moanpacks\emote.dm"

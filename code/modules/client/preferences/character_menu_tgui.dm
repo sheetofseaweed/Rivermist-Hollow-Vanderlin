@@ -184,6 +184,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return list(
 		get_asset_datum(/datum/asset/spritesheet/character_setup_chargen),
 		get_asset_datum(/datum/asset/spritesheet/loadout_items),
+		get_asset_datum(/datum/asset/spritesheet/preference_badges),
 	)
 
 /datum/preferences/ui_static_data(mob/user)
@@ -906,6 +907,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	data["ancestry_options"] = heavy_cache["ancestry_options"]
 
 	data["erp"] = character_setup_erp_data(user)
+	data["preference_badges"] = preference_badges_ui_data()
 	data["genital_set_label"] = get_current_genital_set_label()
 	data["genital_extra_unlock"] = !!has_extra_genital_customizer_unlock()
 	data["headshot"] = headshot_link || null
@@ -1066,6 +1068,9 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 		return FALSE
 
 	switch(action)
+		if("pref_badge")
+			return handle_preference_badge_action(user, params)
+
 		if("pref")
 			if(!islist(params) || !params["preference"])
 				return FALSE

@@ -91,6 +91,7 @@
 	enable_client_mobs_in_contents(client)
 
 	SEND_SIGNAL(src, COMSIG_MOB_CLIENT_LOGIN, client)
+	update_preference_badge_visibility()
 
 	client.init_verbs()
 

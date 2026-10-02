@@ -25,6 +25,9 @@
 
 /mob/living/carbon/human/get_examine_list(mob/user, list/P)
 	. = ..()
+	var/badge_line = build_preference_badges(user)
+	if(badge_line)
+		LAZYADDASSOCLIST(., EXAMINE_SECT_NAME + 0.5, badge_line)
 	for(var/datum/quirk/Q in quirks)
 		Q.on_examined(user, P, .)
 
