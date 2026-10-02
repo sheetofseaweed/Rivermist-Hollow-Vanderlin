@@ -108,6 +108,7 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define COMSIG_BODYSTORAGE_CHANGED "hole_changed"			// (storage_component)
 #define COMSIG_BODYSTORAGE_FIND_ITEM_LAYER "hole_find_item_layer"	// ()
 #define COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND "hole_swap_layers"	// (target_layer, force)
+#define COMSIG_BODYSTORAGE_TRY_RESIZE "hole_try_resize"	// (stored_item, new_bulk, force)
 
 #define BODYSTORAGE_REMOVE_MANUAL "manual"
 #define BODYSTORAGE_REMOVE_RANDOM "random"
@@ -629,3 +630,12 @@ GLOBAL_LIST_INIT(mage_hand_start_durations, list(
 #define CHASTITY_STRINGS_DIR "strings/chastity"
 /// A random line from a chastity message bank.
 #define pick_chastity_string(FILE, KEY) (pick(strings(FILE, KEY, CHASTITY_STRINGS_DIR)))
+
+// Anal bead sizes; each /datum/bead_shape lists them from tip to ring.
+#define BEAD_SMALL 1
+#define BEAD_MEDIUM 2
+#define BEAD_LARGE 3
+#define BEAD_GIANT 4
+/// Push results beyond the body-storage insert feedback.
+#define BEADS_ALL_IN "beads_all_in"
+#define BEADS_TOO_DEEP "beads_too_deep"

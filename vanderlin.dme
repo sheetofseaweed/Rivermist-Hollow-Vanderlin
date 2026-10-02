@@ -4898,6 +4898,8 @@
 #include "modular_rmh\modular\piercing\piercing.dm"
 #include "modular_rmh\modular\piercing\piercings.dm"
 #include "modular_rmh\modular\piercing\supply.dm"
+#include "modular_rmh\modular\playthings\anal_beads.dm"
+#include "modular_rmh\modular\playthings\anal_beads_actions.dm"
 #include "modular_rmh\modular\playthings\blindfold.dm"
 #include "modular_rmh\modular\playthings\impact_toys.dm"
 #include "modular_rmh\modular\playthings\nipple_clamps.dm"

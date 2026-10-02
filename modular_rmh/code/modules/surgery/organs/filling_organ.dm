@@ -236,10 +236,19 @@
 		// A hidden pregnancy takes room only as the belly grows, down to half when full term.
 		capacity *= 1 - 0.5 * (conventional_pregnancy_stage / 3)
 	for(var/obj/item/thing in contents)
-		// Plugs and pumps sit in or over the opening, so they take no room inside.
-		if(thing.type != /obj/item/dildo/plug && !istype(thing, /obj/item/reagent_containers/glass/fluid_pump))
-			capacity -= thing.w_class * 10
+		capacity -= thing.get_fluid_displacement()
 	return max(0, capacity)
+
+/// Fluid room this item takes while stored inside a filling organ.
+/obj/item/proc/get_fluid_displacement()
+	return w_class * 10
+
+// Plugs and pumps sit in or over the opening, so they take no room inside.
+/obj/item/dildo/plug/get_fluid_displacement()
+	return 0
+
+/obj/item/reagent_containers/glass/fluid_pump/get_fluid_displacement()
+	return 0
 
 /obj/item/organ/genitals/filling_organ/proc/spill_reagents(amount)
 	if(!reagents || amount <= 0)
@@ -692,7 +701,7 @@
 	if(!isanimal(H) && H.mind)
 		if(length(contents))
 			for(var/obj/item/organ_stored_item as anything in contents)
-				if(istype(organ_stored_item, /obj/item/dildo)) //dildo keeps stuff in even if you have no pants ig
+				if(istype(organ_stored_item, /obj/item/dildo) || istype(organ_stored_item, /obj/item/anal_beads)) //dildo keeps stuff in even if you have no pants ig
 					return
 
 			var/obj/item/clothing/blockingitem = get_organ_blocker(H, zone)
