@@ -126,6 +126,8 @@
 		/datum/repeatable_crafting_recipe/leather/impact_toy/flogger = list(/obj/item/needle, /obj/item/natural/hide/cured, /obj/item/natural/hide/cured, /obj/item/grown/log/tree/stick),
 		/datum/repeatable_crafting_recipe/crafting/tail_plug = list(/obj/item/natural/fur, /obj/item/dildo/plug/wood),
 		/datum/repeatable_crafting_recipe/crafting/shibari = list(/obj/item/natural/fibers, /obj/item/rope, /obj/item/natural/fibers),
+		/datum/repeatable_crafting_recipe/crafting/anal_beads_wood = list(/obj/item/weapon/knife/hunting, /obj/item/grown/log/tree/small, /obj/item/natural/fibers),
+		/datum/repeatable_crafting_recipe/crafting/anal_beads_stone = list(/obj/item/weapon/knife/hunting, /obj/item/natural/stone, /obj/item/natural/fibers),
 	)
 	for(var/recipe_type in cases)
 		var/list/items = list()

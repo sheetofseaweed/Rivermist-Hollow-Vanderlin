@@ -48,6 +48,7 @@
 		/datum/action/cooldown/spell/undirected/shapeshift/smallrat,
 		/datum/action/cooldown/spell/undirected/shapeshift/spider,
 		/datum/action/cooldown/spell/undirected/shapeshift/wolf,
+		/datum/action/cooldown/spell/undirected/shapeshift/wolf/dire,
 		/datum/action/cooldown/spell/undirected/shapeshift/direbear,
 	)
 

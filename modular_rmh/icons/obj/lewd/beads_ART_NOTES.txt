@@ -1,0 +1,18 @@
+ART NOTES FOR beads.dmi AND beads_onmob.dmi
+
+beads.dmi (item icons, greyscale, tinted by material in code)
+- Delivered by our artists; used as-is. One state per shape (small, medium, large, giant,
+  medium_and_small, large_and_medium, pyramid_small, pyramid_medium, pyramid_large, straight,
+  snake, spiky) plus glass_main (cord and ring) and glass_overlay (the glass beads, tinted to
+  the colour the maker picks).
+- "spiky" is shown in game as "knobbled" (textured, no spikes).
+- In-hand sprites are made from these automatically.
+
+beads_onmob.dmi (worn, generated placeholder - please replace)
+- beads_anus_1/2/3 and beads_vagina_1/2/3: the ring and 1, 2 or 3+ beads hanging out of a partly
+  inserted string. Four directions; the anus string is hidden in the south view and the vagina
+  string in the north view, behind the body.
+- Greyscale, tinted to the string's colour in code.
+- A fully inserted string draws nothing, on purpose.
+- Anchors: anus opening at about x 14-15, y 20 (north view); vagina opening at about x 14-15,
+  y 21 (south view). Keep these if you redraw so the string meets the body.

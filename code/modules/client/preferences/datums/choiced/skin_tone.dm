@@ -24,6 +24,8 @@
 	H.update_body()
 
 /datum/preference/choiced/skin_tone/handle_link(datum/preferences/prefs, mob/user)
+	if(prefs.has_mutant_color_preferences())
+		return
 	var/list/listy = prefs.pref_species.get_skin_list()
 	var/new_s_tone = browser_input_list(user, "CHOOSE YOUR HERO'S [uppertext(prefs.pref_species.skin_tone_wording)]", "THE SUN", listy)
 	if(new_s_tone)

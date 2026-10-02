@@ -22,6 +22,7 @@
 	. += span_info("Strike a palette with it to take up a colour, striking again blends the two.")
 	. += span_info("Shift+right-click to widen the bristles, alt+right-click to narrow them.")
 	. += span_info("Use it in hand to wipe the colour off, or wash it in water.")
+	. += span_info("Target a body zone and click yourself to write on it with the loaded paint, or grab someone and keep hold to write on them. A damp rag or soap wipes the writing off.")
 
 /obj/item/paint_brush/update_overlays()
 	. = ..()

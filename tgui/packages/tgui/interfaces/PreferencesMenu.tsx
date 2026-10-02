@@ -13,6 +13,7 @@ import {
 } from 'tgui-core/components';
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
+import { PreferencesBadges } from './PreferencesBadges';
 import { PreferencesJobs } from './PreferencesJobs';
 
 type Booleanish = boolean | number;
@@ -1406,6 +1407,27 @@ export const PreferencesMenu = () => {
   };
 
   const renderAncestryPicker = () => {
+    if (data.mutant_colors?.length) {
+      return (
+        <Panel title="Mutant Colors" icon="palette">
+          {data.mutant_colors.map((entry) => (
+            <PrefRow
+              key={entry.slot}
+              icon="palette"
+              label={`Mutant Color #${entry.slot}`}
+              swatch={entry.color}
+              value={entry.color}
+              onClick={() =>
+                doPref('character_setup_mutant_color', undefined, {
+                  slot: entry.slot,
+                })
+              }
+            />
+          ))}
+        </Panel>
+      );
+    }
+
     const ancestryOptions = data.ancestry_options ?? [];
     const title = `Choose ${display(data.ancestry_label, 'Ancestry')}`;
 
@@ -2005,20 +2027,6 @@ export const PreferencesMenu = () => {
       {!disguiseMode ? (
         <ActionButton icon="pen-nib" label="Tattoos" onClick={() => doPref('tattoos', 'menu')} />
       ) : null}
-      {(data.mutant_colors ?? []).map((entry) => (
-        <PrefRow
-          key={entry.slot}
-          icon="palette"
-          label={`Mutant Color #${entry.slot}`}
-          swatch={entry.color}
-          value={entry.color}
-          onClick={() =>
-            doPref('character_setup_mutant_color', undefined, {
-              slot: entry.slot,
-            })
-          }
-        />
-      ))}
       {!disguiseMode && asBool(data.use_skintones) ? (
         <ActionButton icon="list" label="Skin Color Reference" onClick={() => doPref('skin_color_ref_list', 'input')} />
       ) : null}
@@ -2791,7 +2799,7 @@ export const PreferencesMenu = () => {
     );
   };
 
-  const [erpTab, setErpTab] = useState<'general' | 'kinks'>('general');
+  const [erpTab, setErpTab] = useState<'general' | 'kinks' | 'badges'>('general');
 
   const renderErp = () => {
     const erp = data.erp ?? {
@@ -2802,7 +2810,7 @@ export const PreferencesMenu = () => {
     const locked = !!erp.lock_reason;
     return (
       <>
-        {erp.lock_reason ? (
+        {erpTab === 'general' && erp.lock_reason ? (
           <Section mb={1}>
             <Box color="bad">{erp.lock_reason}</Box>
           </Section>
@@ -2820,31 +2828,41 @@ export const PreferencesMenu = () => {
           >
             Kinks
           </Tabs.Tab>
+          <Tabs.Tab
+            selected={erpTab === 'badges'}
+            onClick={() => setErpTab('badges')}
+          >
+            Badges
+          </Tabs.Tab>
         </Tabs>
-        {erpTab === 'general'
-          ? (erp.categories ?? []).map((category) => (
-              <Panel key={category.name} title={category.name} icon="sliders-h">
-                {(category.prefs ?? []).map((pref) => (
-                  <Stack key={pref.type} align="baseline" mb={0.75}>
-                    <Stack.Item grow basis={0}>
-                      <Box bold>{pref.name}</Box>
-                      <Box color="label" fontSize="11px">
-                        {pref.description}
-                      </Box>
-                    </Stack.Item>
-                    <Stack.Item basis="45%">
-                      {renderErpPrefControl(pref, locked)}
-                    </Stack.Item>
-                  </Stack>
-                ))}
-              </Panel>
-            ))
-          : (erp.kink_categories ?? []).map((category) => (
-              <Panel key={category.name} title={category.name} icon="heart">
-                {/* Kinks are editable at any time, matching the old window. */}
-                {(category.kinks ?? []).map((kink) => renderErpKink(kink, false))}
-              </Panel>
-            ))}
+        {erpTab === 'badges' ? (
+          <PreferencesBadges />
+        ) : erpTab === 'general' ? (
+          (erp.categories ?? []).map((category) => (
+            <Panel key={category.name} title={category.name} icon="sliders-h">
+              {(category.prefs ?? []).map((pref) => (
+                <Stack key={pref.type} align="baseline" mb={0.75}>
+                  <Stack.Item grow basis={0}>
+                    <Box bold>{pref.name}</Box>
+                    <Box color="label" fontSize="11px">
+                      {pref.description}
+                    </Box>
+                  </Stack.Item>
+                  <Stack.Item basis="45%">
+                    {renderErpPrefControl(pref, locked)}
+                  </Stack.Item>
+                </Stack>
+              ))}
+            </Panel>
+          ))
+        ) : (
+          (erp.kink_categories ?? []).map((category) => (
+            <Panel key={category.name} title={category.name} icon="heart">
+              {/* Kinks are editable at any time, matching the old window. */}
+              {(category.kinks ?? []).map((kink) => renderErpKink(kink, false))}
+            </Panel>
+          ))
+        )}
       </>
     );
   };

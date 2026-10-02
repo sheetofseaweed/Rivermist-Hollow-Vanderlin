@@ -87,6 +87,7 @@
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_UPDATE_SIZE, PROC_REF(update_size))
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, PROC_REF(find_item_layer))
 	RegisterSignal(parent, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, PROC_REF(rand_item_layer_swap))
+	RegisterSignal(parent, COMSIG_BODYSTORAGE_TRY_RESIZE, PROC_REF(try_resize_item))
 
 /datum/component/body_storage/UnregisterFromParent()
 	. = ..()
@@ -104,6 +105,7 @@
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_UPDATE_SIZE)
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER)
 	UnregisterSignal(parent, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND)
+	UnregisterSignal(parent, COMSIG_BODYSTORAGE_TRY_RESIZE)
 
 /datum/component/body_storage/Destroy()
 	for(var/obj/item/I as anything in outer_overlays)
@@ -330,6 +332,34 @@
 	if(istype(organ_storing, /obj/item/organ/genitals/filling_organ) || organ_storing.stretchable)
 		if(organ_storing.stretched_coefficient < max_stretching_mult)
 			organ_storing.get_stretched(size_diff)
+
+/// Grows or shrinks a stored item's bulk in place; growing follows the same fullness rules as an insertion.
+/datum/component/body_storage/proc/try_resize_item(datum/source, obj/item/stored_item, new_bulk, force = FALSE)
+	var/target_layer = find_item_layer(source, stored_item)
+	if(!target_layer)
+		return FALSE
+	var/old_bulk = stored_item.body_storage_bulk
+	var/max_bulk = layer_storage_max_bulk[target_layer]
+	var/new_total = layer_storage_cur_bulk[target_layer] - old_bulk + new_bulk
+	var/result = INSERT_FEEDBACK_OK
+	if(new_bulk > old_bulk)
+		if(new_total > max_bulk * 1.5)
+			return INSERT_FEEDBACK_STUFFED
+		if(new_total > max_bulk)
+			if(!force)
+				return INSERT_FEEDBACK_TRY_FORCE
+			result = INSERT_FEEDBACK_OK_FORCE
+		else if((max_bulk - new_total) / max_bulk < 0.2)
+			result = INSERT_FEEDBACK_ALMOST_FULL
+	stored_item.body_storage_bulk = new_bulk
+	layer_storage_cur_bulk[target_layer] = new_total
+	if(new_bulk > old_bulk && new_total > max_bulk)
+		handle_stretch(source, new_total - max_bulk)
+	if(iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		carbon_owner.update_carry_weight()
+	notify_storage_changed()
+	return result
 
 /**
  * Returns a 3d list of all the layers

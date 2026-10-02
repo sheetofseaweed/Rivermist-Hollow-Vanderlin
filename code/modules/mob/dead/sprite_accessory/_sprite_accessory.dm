@@ -284,9 +284,9 @@
 			else
 				used_define = default_define_for_color_key(i)
 			color = key_source_list[used_define]
-		if(!color)
-			color = "#FFFFFF"
-		color = sanitize_hexcolor(color, 6, TRUE)
+		// Expand shorthand defaults such as FFF before storing accessory colors.
+		var/list/rgb_values = ReadRGB(color)
+		color = rgb_values ? rgb(rgb_values[1], rgb_values[2], rgb_values[3]) : "#FFFFFF"
 		color_list += color
 	return color_list_to_string(color_list)
 

@@ -1,5 +1,7 @@
 /mob/Logout()
 	SEND_SIGNAL(src, COMSIG_MOB_LOGOUT)
+	GLOB.preference_badge_hud.hide_from(src, absolute = TRUE)
+	clear_preference_badge_image()
 	log_message("[key_name(src)] is no longer owning mob [src]([src.type])", LOG_OWNERSHIP)
 	SStgui.on_logout(src)
 	unset_machine()
