@@ -83,6 +83,10 @@
 
 
 /obj/item/soap/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
+	var/wipe_result = try_wipe_body_writing(interacting_with, user)
+	if(wipe_result)
+		return wipe_result
+
 	if(isobj(interacting_with))
 		if(try_dissolve(interacting_with, user))
 			return ITEM_INTERACT_SKIP_TO_ATTACK
