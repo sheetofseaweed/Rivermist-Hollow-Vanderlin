@@ -6,6 +6,10 @@
 	slot = ORGAN_SLOT_BREASTS
 	organ_size = DEFAULT_BREASTS_SIZE
 	reagent_to_make = /datum/reagent/consumable/milk
+	// Milk costs more than drinking it gives back, so it cannot feed its maker.
+	nutrition_per_unit = 2
+	// A cow's pace, so one person is no cheese factory.
+	production_rate = 0.5
 	hungerhelp = TRUE
 	absorbing = FALSE //funny liquid tanks
 	startsfilled = TRUE
@@ -14,17 +18,17 @@
 	blocker = ITEM_SLOT_SHIRT
 	additional_blocker = "bra"
 	organ_sizeable = TRUE
-	var/list/temporary_lactation_sources
-	var/temporary_lactation_original_refilling = FALSE
+	can_engorge = TRUE
+	leaks_when_full = TRUE
+	drips_as_drops = TRUE
+	stain_zone = FLUID_STAIN_CHEST
 
 /obj/item/organ/genitals/filling_organ/breasts/Insert(mob/living/M, special, drop_if_replaced, new_zone = null)
+	if(M?.breast_milk)
+		set_reagent_to_make(M.breast_milk)
 	. = ..()
 	if(!.)
 		return FALSE
-	if(M.breast_milk)
-		reagent_to_make = M.breast_milk
-	if(!refilling)
-		reagents.clear_reagents()
 	add_bodystorage(M, null, /datum/component/body_storage/breasts)
 	var/obj/item/organ/genitals/nipple/left/l_nip = new /obj/item/organ/genitals/nipple/left
 	var/obj/item/organ/genitals/nipple/right/r_nip = new /obj/item/organ/genitals/nipple/right
@@ -51,28 +55,6 @@
 	. = ..()
 	var/datum/component/body_storage/breasts/comp = GetComponent(/datum/component/body_storage/breasts)
 	comp?.RemoveComponent()
-
-/obj/item/organ/genitals/filling_organ/breasts/proc/add_temporary_lactation_source(source)
-	if(isnull(source))
-		return FALSE
-	if(!temporary_lactation_sources)
-		temporary_lactation_sources = list()
-		temporary_lactation_original_refilling = refilling
-	temporary_lactation_sources[source] = TRUE
-	refilling = TRUE
-	return TRUE
-
-/obj/item/organ/genitals/filling_organ/breasts/proc/remove_temporary_lactation_source(source)
-	if(isnull(source) || !temporary_lactation_sources)
-		return FALSE
-	temporary_lactation_sources -= source
-	if(length(temporary_lactation_sources))
-		refilling = TRUE
-		return TRUE
-	refilling = temporary_lactation_original_refilling
-	temporary_lactation_original_refilling = FALSE
-	temporary_lactation_sources = null
-	return TRUE
 
 /obj/item/organ/genitals/filling_organ/breasts/get_availability(datum/species/owner_species, mob/living/C, datum/preferences/pref_load)
 	if(issimple(C))

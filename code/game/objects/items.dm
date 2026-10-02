@@ -413,6 +413,14 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 /obj/item/proc/can_random_body_storage_layer_swap()
 	return TRUE
 
+/// Lets an item refuse a body storage layer, e.g. a device that only fits over an opening.
+/obj/item/proc/can_enter_body_storage_layer(target_layer)
+	return TRUE
+
+/// Worn devices over an organ (pumps, chastity) return TRUE so nothing else can use the organ in [slot].
+/obj/item/proc/blocks_organ_use(slot)
+	return FALSE
+
 /// Where this item physically sits while stored in [storage_organ]. An inserted organ moves itself to
 /// nullspace, so anything that needs get_turf() to keep resolving - a mob_holder with a live occupant,
 /// whose passenger would otherwise go black-screened - has to hang off [storage_owner] instead.

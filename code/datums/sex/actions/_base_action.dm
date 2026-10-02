@@ -153,6 +153,10 @@
 	/// Overlay zone used by Mage Hand while this action is active.
 	var/mage_hand_overlay_zone = null
 	var/sex_volume = 50 //volume for plaps
+	/// User organ slots this action works on beyond its hole and stored penis; a covered organ disables it.
+	var/list/uses_user_organs
+	/// Target organ slots this action works on; see uses_user_organs.
+	var/list/uses_target_organs
 
 /datum/sex_action/Destroy()
 	if(action_user)
@@ -301,18 +305,17 @@
 		return
 	INVOKE_ASYNC(src, PROC_REF(run_runtime))
 
+/// Scene merges and splits move the action while it sleeps, so every stop goes through the current scene.
 /datum/sex_action/proc/run_runtime()
-	var/datum/sex_scene/action_scene = scene
 	if(!is_runtime_active() || !can_run(TRUE))
-		action_scene?.stop_action(src)
+		stop_runtime()
 		return
 
 	var/suppress_visible_messages = begin_remote_visible_message_suppression()
 	var/start_result = on_start(action_user, action_target)
 	end_remote_visible_message_suppression(suppress_visible_messages)
 	if(start_result == FALSE || !is_runtime_active())
-		if(!QDELETED(action_scene))
-			action_scene.stop_action(src)
+		stop_runtime()
 		return
 
 	var/datum/sex_remote_context/action_remote_context = get_valid_remote_context()
@@ -338,7 +341,7 @@
 		var/interaction_key = "sex_action_[REF(src)]"
 		// Mirrors can_run(): actions that opted out of proximity reach their target some other way.
 		if(check_distance && !action_user.in_sex_interaction_range(action_target) && !can_remote_interact())
-			action_scene.stop_action(src)
+			stop_runtime()
 			return
 		if(!do_after(action_user, current_do_time, target = action_target, timed_action_flags = do_after_flags, interaction_key = interaction_key))
 			if(!cycle_interrupted)
@@ -346,7 +349,7 @@
 			cycle_interrupted = FALSE
 			continue
 
-		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
+		if(!is_runtime_active())
 			break
 		if(!can_run(TRUE))
 			break
@@ -361,7 +364,7 @@
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
 		send_clench_prompt()
-		if(!is_runtime_active() || QDELETED(action_scene) || scene != action_scene)
+		if(!is_runtime_active())
 			break
 
 		action_remote_context = get_valid_remote_context()
@@ -378,8 +381,7 @@
 		if(is_finished(action_user, action_target) || !continous)
 			break
 
-	if(!QDELETED(action_scene) && scene == action_scene)
-		action_scene.stop_action(src)
+	stop_runtime()
 
 /datum/sex_action/proc/can_run(performing = FALSE)
 	if(!action_user || !action_target || QDELETED(action_user) || QDELETED(action_target))
@@ -650,6 +652,8 @@
 	if(requires_hole_storage)
 		if(!check_hole_storage_available(user, target))
 			return FALSE
+	if(get_blocked_organ_slot(user, target))
+		return FALSE
 	return TRUE
 
 /**
@@ -661,7 +665,32 @@
  */
 /datum/sex_action/proc/can_continue(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
-	return TRUE
+	// A device fitted mid-action, such as a pump, ends it.
+	return !get_blocked_organ_slot(user, target)
+
+/// The first organ slot this action needs that a worn device covers, or null when all are free.
+/datum/sex_action/proc/get_blocked_organ_slot(mob/living/user, mob/living/target)
+	var/mob/living/receiver = get_storage_receiver(user, target)
+	if(hole_id && receiver?.is_organ_slot_blocked(hole_id))
+		return hole_id
+	if(ispath(stored_item_type, /obj/item/organ/genitals/penis))
+		var/mob/living/insertor = get_storage_insertor(user, target)
+		if(insertor?.is_organ_slot_blocked(ORGAN_SLOT_PENIS))
+			return ORGAN_SLOT_PENIS
+	for(var/slot in uses_user_organs)
+		if(user?.is_organ_slot_blocked(slot))
+			return slot
+	for(var/slot in uses_target_organs)
+		if(target?.is_organ_slot_blocked(slot))
+			return slot
+	return null
+
+/// The holder's organ in the slot if it exists and no worn device covers it.
+/datum/sex_action/proc/get_free_organ(mob/living/holder, slot)
+	var/obj/item/organ/organ = holder?.getorganslot(slot)
+	if(!organ || holder.is_organ_slot_blocked(slot))
+		return null
+	return organ
 
 /datum/sex_action/proc/can_mage_hand_reach(mob/living/user, mob/living/target)
 	return user == action_user && target == action_target && can_remote_interact()
@@ -938,6 +967,7 @@
 			if(!try_store_in_hole(user, target))
 				return FALSE
 	lock_sex_object(user, target)
+	sync_penis_grip(user, target)
 	sex_volume = initial(sex_volume)
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
 		sex_volume *= 0.5
@@ -960,6 +990,7 @@
 			remove_from_hole(target, user)
 		else
 			remove_from_hole(user, target)
+	unlink_penis_grip()
 	unlock_sex_object(user, target)
 	sex_volume = initial(sex_volume)
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)

@@ -17,6 +17,13 @@
 	if(!S)
 		return
 
+	if(read_saved_quirks(S))
+		validate_quirks()
+	if(pref_species && islist(customizer_entries))
+		validate_customizer_entries()
+
+/// Fills the quirk lists from the savefile without validating them. Returns FALSE when the slot has no quirk data.
+/datum/preferences/proc/read_saved_quirks(savefile/S)
 	quirks = list()
 	quirk_customizations = list()
 	quirk_extra_customizations = list()
@@ -36,10 +43,8 @@
 		/datum/quirk/vice/masochist = /datum/quirk/vice/addiction/masochist,
 	)
 
-	if(!quirk_data || !islist(quirk_data))
-		if(pref_species && islist(customizer_entries))
-			validate_customizer_entries()
-		return
+	if(!islist(quirk_data))
+		return FALSE
 
 	for(var/entry in quirk_data)
 		if(!islist(entry))
@@ -55,10 +60,7 @@
 				quirk_customizations[quirk_type] = custom_val
 			if(islist(extra_val) && length(extra_val))
 				quirk_extra_customizations[quirk_type] = extra_val.Copy()
-
-	validate_quirks()
-	if(pref_species && islist(customizer_entries))
-		validate_customizer_entries()
+	return TRUE
 
 
 /datum/preferences/proc/set_quirk_customization(quirk_type, value)

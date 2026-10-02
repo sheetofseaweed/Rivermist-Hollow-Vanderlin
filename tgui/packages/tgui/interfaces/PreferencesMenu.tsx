@@ -13,6 +13,7 @@ import {
 } from 'tgui-core/components';
 import { useBackend } from '../backend';
 import { Window } from '../layouts';
+import { PreferencesBadges } from './PreferencesBadges';
 import { PreferencesJobs } from './PreferencesJobs';
 
 type Booleanish = boolean | number;
@@ -323,8 +324,12 @@ type PrefsData = {
     hear_midis: Booleanish;
     ambientocclusion: Booleanish;
     auto_fit_viewport: Booleanish;
-    widescreenpref: Booleanish;
     allow_midround_antag: Booleanish;
+    ambience: Booleanish;
+    background_music: Booleanish;
+    be_voice: Booleanish;
+    balloon_alerts: Booleanish;
+    runechat: Booleanish;
     pixel_size: string;
     scaling_method: string;
   };
@@ -1402,6 +1407,27 @@ export const PreferencesMenu = () => {
   };
 
   const renderAncestryPicker = () => {
+    if (data.mutant_colors?.length) {
+      return (
+        <Panel title="Mutant Colors" icon="palette">
+          {data.mutant_colors.map((entry) => (
+            <PrefRow
+              key={entry.slot}
+              icon="palette"
+              label={`Mutant Color #${entry.slot}`}
+              swatch={entry.color}
+              value={entry.color}
+              onClick={() =>
+                doPref('character_setup_mutant_color', undefined, {
+                  slot: entry.slot,
+                })
+              }
+            />
+          ))}
+        </Panel>
+      );
+    }
+
     const ancestryOptions = data.ancestry_options ?? [];
     const title = `Choose ${display(data.ancestry_label, 'Ancestry')}`;
 
@@ -2001,20 +2027,6 @@ export const PreferencesMenu = () => {
       {!disguiseMode ? (
         <ActionButton icon="pen-nib" label="Tattoos" onClick={() => doPref('tattoos', 'menu')} />
       ) : null}
-      {(data.mutant_colors ?? []).map((entry) => (
-        <PrefRow
-          key={entry.slot}
-          icon="palette"
-          label={`Mutant Color #${entry.slot}`}
-          swatch={entry.color}
-          value={entry.color}
-          onClick={() =>
-            doPref('character_setup_mutant_color', undefined, {
-              slot: entry.slot,
-            })
-          }
-        />
-      ))}
       {!disguiseMode && asBool(data.use_skintones) ? (
         <ActionButton icon="list" label="Skin Color Reference" onClick={() => doPref('skin_color_ref_list', 'input')} />
       ) : null}
@@ -2787,7 +2799,7 @@ export const PreferencesMenu = () => {
     );
   };
 
-  const [erpTab, setErpTab] = useState<'general' | 'kinks'>('general');
+  const [erpTab, setErpTab] = useState<'general' | 'kinks' | 'badges'>('general');
 
   const renderErp = () => {
     const erp = data.erp ?? {
@@ -2798,7 +2810,7 @@ export const PreferencesMenu = () => {
     const locked = !!erp.lock_reason;
     return (
       <>
-        {erp.lock_reason ? (
+        {erpTab === 'general' && erp.lock_reason ? (
           <Section mb={1}>
             <Box color="bad">{erp.lock_reason}</Box>
           </Section>
@@ -2816,31 +2828,41 @@ export const PreferencesMenu = () => {
           >
             Kinks
           </Tabs.Tab>
+          <Tabs.Tab
+            selected={erpTab === 'badges'}
+            onClick={() => setErpTab('badges')}
+          >
+            Badges
+          </Tabs.Tab>
         </Tabs>
-        {erpTab === 'general'
-          ? (erp.categories ?? []).map((category) => (
-              <Panel key={category.name} title={category.name} icon="sliders-h">
-                {(category.prefs ?? []).map((pref) => (
-                  <Stack key={pref.type} align="baseline" mb={0.75}>
-                    <Stack.Item grow basis={0}>
-                      <Box bold>{pref.name}</Box>
-                      <Box color="label" fontSize="11px">
-                        {pref.description}
-                      </Box>
-                    </Stack.Item>
-                    <Stack.Item basis="45%">
-                      {renderErpPrefControl(pref, locked)}
-                    </Stack.Item>
-                  </Stack>
-                ))}
-              </Panel>
-            ))
-          : (erp.kink_categories ?? []).map((category) => (
-              <Panel key={category.name} title={category.name} icon="heart">
-                {/* Kinks are editable at any time, matching the old window. */}
-                {(category.kinks ?? []).map((kink) => renderErpKink(kink, false))}
-              </Panel>
-            ))}
+        {erpTab === 'badges' ? (
+          <PreferencesBadges />
+        ) : erpTab === 'general' ? (
+          (erp.categories ?? []).map((category) => (
+            <Panel key={category.name} title={category.name} icon="sliders-h">
+              {(category.prefs ?? []).map((pref) => (
+                <Stack key={pref.type} align="baseline" mb={0.75}>
+                  <Stack.Item grow basis={0}>
+                    <Box bold>{pref.name}</Box>
+                    <Box color="label" fontSize="11px">
+                      {pref.description}
+                    </Box>
+                  </Stack.Item>
+                  <Stack.Item basis="45%">
+                    {renderErpPrefControl(pref, locked)}
+                  </Stack.Item>
+                </Stack>
+              ))}
+            </Panel>
+          ))
+        ) : (
+          (erp.kink_categories ?? []).map((category) => (
+            <Panel key={category.name} title={category.name} icon="heart">
+              {/* Kinks are editable at any time, matching the old window. */}
+              {(category.kinks ?? []).map((kink) => renderErpKink(kink, false))}
+            </Panel>
+          ))
+        )}
       </>
     );
   };
@@ -2863,20 +2885,23 @@ export const PreferencesMenu = () => {
           <PrefRow icon="comments" label="See Non-mob Chat" value={asBool(game.see_chat_non_mob) ? 'ON' : 'OFF'} on={asBool(game.see_chat_non_mob)} onClick={() => toggle('see_chat_non_mob')} />
           <PrefRow icon="sun" label="Ambient Occlusion" value={asBool(game.ambientocclusion) ? 'ON' : 'OFF'} on={asBool(game.ambientocclusion)} onClick={() => toggle('ambientocclusion')} />
           <PrefRow icon="expand" label="Auto-fit Viewport" value={asBool(game.auto_fit_viewport) ? 'ON' : 'OFF'} on={asBool(game.auto_fit_viewport)} onClick={() => toggle('auto_fit_viewport')} />
-          <PrefRow icon="tv" label="Widescreen" value={asBool(game.widescreenpref) ? 'ON' : 'OFF'} on={asBool(game.widescreenpref)} onClick={() => toggle('widescreenpref')} />
           <PrefRow icon="search-plus" label="Pixel Size" value={game.pixel_size} onClick={() => toggle('pixel_size')} />
           <PrefRow icon="image" label="Scaling Method" value={game.scaling_method} onClick={() => toggle('scaling_method')} />
+          <PrefRow icon="comment-dots" label="Balloon Alerts" value={asBool(game.balloon_alerts) ? 'ON' : 'OFF'} on={asBool(game.balloon_alerts)} onClick={() => toggle('balloon_alerts')} />
+          <PrefRow icon="comment" label="Runechat" value={asBool(game.runechat) ? 'ON' : 'OFF'} on={asBool(game.runechat)} onClick={() => toggle('runechat')} tooltip="Speech shown as text above characters' heads." />
         </Panel>
 
         <Panel title="Audio & Round" icon="volume-up">
           <PrefRow icon="music" label="Lobby Music" value={asBool(game.lobby_music) ? 'ON' : 'OFF'} on={asBool(game.lobby_music)} onClick={() => toggle('lobby_music')} />
           <PrefRow icon="music" label="Admin MIDIs" value={asBool(game.hear_midis) ? 'ON' : 'OFF'} on={asBool(game.hear_midis)} onClick={() => toggle('hear_midis')} />
+          <PrefRow icon="wind" label="Ambience" value={asBool(game.ambience) ? 'ON' : 'OFF'} on={asBool(game.ambience)} onClick={() => toggle('ambience')} />
+          <PrefRow icon="compact-disc" label="Background Music" value={asBool(game.background_music) ? 'ON' : 'OFF'} on={asBool(game.background_music)} onClick={() => toggle('background_music')} />
           <PrefRow icon="user-secret" label="Midround Antag" value={asBool(game.allow_midround_antag) ? 'ON' : 'OFF'} on={asBool(game.allow_midround_antag)} onClick={() => toggle('allow_midround_antag')} />
+          <PrefRow icon="hands-helping" label="Be a Voice" value={asBool(game.be_voice) ? 'ON' : 'OFF'} on={asBool(game.be_voice)} onClick={() => toggle('be_voice')} tooltip="Receive and answer other players' meditations." />
         </Panel>
 
         <Panel title="Tools" icon="sliders-h">
           <PrefRow icon="globe" label="Player's Language" value="Set" onClick={() => doPref('player_language', 'input')} />
-          <ActionButton icon="toggle-on" label="Toggle Bitfields" onClick={() => doPref('toggles')} />
           <ActionButton icon="keyboard" label="Keybinds" onClick={() => doPref('keybinds', 'menu')} />
           <ActionButton icon="save" label="Save Preferences" onClick={() => doPref('save')} />
         </Panel>

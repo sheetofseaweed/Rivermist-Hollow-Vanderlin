@@ -13,6 +13,7 @@
 	ambush_types = list(
 				/turf/open/floor/snow/rough)
 	ambush_mobs = list(
+				new /datum/ambush_config/direvolf_pack = 8,
 				/mob/living/carbon/human/species/skeleton/npc/ambush = 11,
 				/mob/living/simple_animal/hostile/retaliate/direbear = 13,
 				/mob/living/simple_animal/hostile/retaliate/bobcat = 21,

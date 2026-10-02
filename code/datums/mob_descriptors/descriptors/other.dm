@@ -109,15 +109,22 @@
 	if(!testes)
 		return
 	var/adjective
-	switch(testes.organ_size)
+	switch(testes.get_visible_size())
 		if(1)
 			adjective = "a small"
 		if(2)
 			adjective = "an average"
 		if(3)
 			adjective = "a large"
+		if(4)
+			adjective = "a huge"
+		if(5)
+			adjective = "a massive"
+		if(6)
+			adjective = "an enormous"
 	var/pubic_hair_adjective = H.get_pubic_hair_organ_adjective()
-	return "[adjective][pubic_hair_adjective ? ", [pubic_hair_adjective]" : ""] pair of balls"
+	var/fullness = testes.get_fullness_description()
+	return "[adjective][pubic_hair_adjective ? ", [pubic_hair_adjective]" : ""] pair of balls[fullness ? ", [fullness]" : ""]"
 
 /datum/mob_descriptor/butt
 	name = "butt"
@@ -231,7 +238,7 @@
 	if(!breasts)
 		return
 	var/adjective
-	switch(breasts.organ_size)
+	switch(breasts.get_visible_size())
 		if(0)
 			adjective = "a flat"
 		if(1)
@@ -250,4 +257,5 @@
 			adjective = "a gigantic"
 		if(8)
 			adjective = "a titanic"
-	return "[adjective] pair of breasts"
+	var/fullness = breasts.get_fullness_description()
+	return "[adjective] pair of breasts[fullness ? ", [fullness]" : ""]"

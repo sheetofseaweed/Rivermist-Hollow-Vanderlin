@@ -44,6 +44,7 @@
 	name = "clay vase"
 	created_item = /obj/item/reagent_containers/glass/bottle/clayvase
 	recipe_steps = list(/obj/item/natural/clay, /obj/item/natural/clay)
+	step_to_time = list(4 SECONDS, 4 SECONDS)
 	difficulty = 2
 
 /* 3 diff */
@@ -51,6 +52,7 @@
 	name = "fancy clay vase"
 	created_item = /obj/item/reagent_containers/glass/bottle/clayfancyvase
 	recipe_steps = list(/obj/item/natural/clay, /obj/item/natural/clay)
+	step_to_time = list(4 SECONDS, 4 SECONDS)
 	difficulty = 3
 
 /datum/pottery_recipe/teacup

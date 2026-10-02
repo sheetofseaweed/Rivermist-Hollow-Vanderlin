@@ -1,8 +1,9 @@
-/// A resource-backed physical trauma provider. It is intentionally not mapped here: mappers can place
-/// it wherever it fits, and tune the provider datum without changing the interaction contract.
+/// A resource-backed trauma station. It is intentionally not mapped here: mappers can place it
+/// wherever it fits, and tune the provider datum without changing the interaction contract.
+/// Physical aftermath is its specialty; it also treats spiritual aftermath and Convalescence.
 /obj/machinery/defeat_medical_machine
 	name = "trauma treatment apparatus"
-	desc = "A compact medical frame for treating one precisely diagnosed defeat injury. It consumes one to three bandages according to the injury's severity."
+	desc = "A compact medical frame for diagnosing and treating one defeat aftermath at a time, including Convalescence. Without Apprentice Medicine, treatment takes twice as long. Physical aftermath costs one to three bandages by severity; spiritual aftermath needs one extra bandage and takes twice as long. Click to diagnose a patient beside it, or use bandages on it to treat."
 	icon = 'icons/roguetown/misc/machines.dmi'
 	icon_state = "lottery"
 	density = TRUE
@@ -18,26 +19,23 @@
 
 /obj/machinery/defeat_medical_machine/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
-	if(.)
+	if(. || QDELETED(treatment_provider))
 		return
-	to_chat(user, span_notice("Hold a bandage or bandage roll in my active hand and use it on [src] to begin treatment."))
+	treatment_provider.station_interact(user, user.get_active_held_item())
+	return TRUE
 
 /obj/machinery/defeat_medical_machine/attackby(obj/item/offering, mob/living/user, list/modifiers)
 	if(QDELETED(user) || QDELETED(offering) || QDELETED(treatment_provider) || !treatment_provider.accepts_resource(offering))
 		return ..()
-	var/mob/living/patient = input(user, "Who should the apparatus diagnose?", name) as null|mob in view(1, src)
-	if(!patient || QDELETED(patient) || QDELETED(user) || QDELETED(offering) || QDELETED(treatment_provider))
-		return
-	if(!treatment_provider.treat(patient, user, interactive = TRUE, reserved_resource = offering))
-		to_chat(user, span_warning("The treatment cannot be completed. Keep enough bandages in my active hand and remain beside [src] and [patient]."))
-		return
-	user.visible_message(span_notice("[user] completes a focused treatment for [patient] with [src]."), span_notice("I complete one focused trauma treatment for [patient]."))
+	treatment_provider.station_interact(user, offering)
+	return TRUE
 
-/// A resource-backed spiritual provider. Silver remains in the user's hand throughout diagnosis and
-/// the rite, and is debited only once the selected trauma has passed its final validation.
+/// A resource-backed trauma shrine. Silver remains in the user's hand throughout diagnosis and the
+/// rite, and is debited only once the selected trauma has passed its final validation. Spiritual
+/// aftermath is its specialty; it also treats physical aftermath and Convalescence.
 /obj/structure/defeat_trauma_shrine
 	name = "shrine of solace"
-	desc = "A small shrine that accepts one to three silver coins to soothe one chosen spiritual trauma."
+	desc = "A small shrine for soothing one defeat aftermath at a time. Without Novice Miracles or holy devotion, treatment takes twice as long. Spiritual aftermath costs one to three silver coins by severity; physical aftermath costs and takes twice as long. Click it to diagnose a patient beside it, or offer silver to begin a rite."
 	icon = 'icons/roguetown/misc/structure.dmi'
 	icon_state = "elfs"
 	density = TRUE
@@ -54,26 +52,22 @@
 
 /obj/structure/defeat_trauma_shrine/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
-	if(.)
+	if(. || QDELETED(treatment_provider))
 		return
-	to_chat(user, span_notice("Hold silver coins in my active hand and offer them to [src] to begin a rite."))
+	treatment_provider.station_interact(user, user.get_active_held_item())
+	return TRUE
 
 /obj/structure/defeat_trauma_shrine/attackby(obj/item/offering, mob/living/user, list/modifiers)
 	if(QDELETED(user) || QDELETED(offering) || QDELETED(treatment_provider) || !treatment_provider.accepts_resource(offering))
 		return ..()
-	var/mob/living/patient = input(user, "Who should receive the shrine's solace?", name) as null|mob in view(1, src)
-	if(!patient || QDELETED(patient) || QDELETED(user) || QDELETED(offering) || QDELETED(treatment_provider))
-		return
-	if(!treatment_provider.treat(patient, user, interactive = TRUE, reserved_resource = offering))
-		to_chat(user, span_warning("The rite cannot be completed. Keep enough silver in my active hand and remain beside [src] and [patient]."))
-		return
-	user.visible_message(span_notice("[user] offers silver at [src], easing one trauma from [patient]."), span_notice("I complete one focused rite for [patient]."))
+	treatment_provider.station_interact(user, offering)
+	return TRUE
 
 /// Both providers are ordinary blueprint constructions and therefore appear in the existing globally
 /// reachable construction browser. They require no map placement or special roundstart grant.
 /datum/blueprint_recipe/engineering/defeat_medical_machine
 	name = "trauma treatment apparatus"
-	desc = "A resource-backed apparatus for diagnosing and treating one physical defeat trauma."
+	desc = "A bandage-fed station that diagnoses and treats one defeat aftermath or Convalescence, specializing in physical harm."
 	result_type = /obj/machinery/defeat_medical_machine
 	required_materials = list(
 		/obj/item/ingot/iron = 2,
@@ -86,7 +80,7 @@
 
 /datum/blueprint_recipe/masonry/defeat_trauma_shrine
 	name = "shrine of solace"
-	desc = "A small resource-backed shrine for soothing one spiritual defeat trauma."
+	desc = "A silver-fed shrine that diagnoses and soothes one defeat aftermath or Convalescence, specializing in spiritual harm."
 	result_type = /obj/structure/defeat_trauma_shrine
 	required_materials = list(
 		/obj/item/natural/stone = 4,

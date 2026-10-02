@@ -16,6 +16,7 @@
 /datum/round_event/animal_migration/hostile
 	animals = list(
 		/mob/living/simple_animal/hostile/retaliate/wolf,
+		/mob/living/simple_animal/hostile/retaliate/wolf/dire,
 		/mob/living/simple_animal/hostile/retaliate/goat,
 		/mob/living/simple_animal/hostile/retaliate/bigrat,
 		/mob/living/simple_animal/hostile/retaliate/mole,

@@ -27,8 +27,8 @@
 	mob_overlay_icon_base = mob_overlay_icon
 
 /obj/item/clothing/undies/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
-	if(!ishuman(interacting_with))
-		return NONE
+	if(!ishuman(interacting_with) || (user.zone_selected == BODY_ZONE_PRECISE_MOUTH && has_soaked_fluid()))
+		return ..()
 
 	var/mob/living/carbon/human/target = interacting_with
 	if(target.underwear || !get_location_accessible(target, BODY_ZONE_PRECISE_GROIN))
@@ -58,6 +58,10 @@
 	. = ..()
 	flags_inv = HIDECROTCH
 	mob_overlay_icon = mob_overlay_icon_base
+
+/// TRUE when this worn item hides the organ in [slot], even genitals set to show through clothes.
+/obj/item/clothing/undies/proc/hides_organ_slot(slot)
+	return FALSE
 
 /obj/item/clothing/undies/bikini_bottom
 	name = "bikini bottom"

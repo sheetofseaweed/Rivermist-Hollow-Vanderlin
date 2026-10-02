@@ -696,7 +696,9 @@
 /datum/trader_data/medicine_merchant
 	name = "Healer"
 	base_type = list(/datum/supply_pack/narcotics)
-	initial_products = list()
+	initial_products = list(
+		/obj/item/reagent_containers/glass/bottle/vial/mercydraught = list(100, 5),
+	)
 	initial_wanteds = list(
 		/obj/item/natural/bundle/fibers = list(4, INFINITY, ""),
 		/obj/item/reagent_containers/glass = list(6, INFINITY, ""),

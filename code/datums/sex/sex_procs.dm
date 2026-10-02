@@ -72,6 +72,21 @@
 		controller.show_ui()
 	return controller
 
+/// Player-facing reason open_sex_scene() refused this pair. Mirrors its checks in the same order.
+/mob/living/proc/get_sex_scene_refusal(mob/living/target)
+	if(!target || QDELETED(target) || target.stat == DEAD)
+		return "[target || "They"] can't take part right now."
+	if(src != target && !target.allows_player_erp_while_disconnected())
+		return "[target] is away and does not allow this while disconnected."
+	var/list/combined_participants = list(src, target)
+	if(sex_scene && !QDELETED(sex_scene))
+		combined_participants |= sex_scene.participants
+	if(target.sex_scene && !QDELETED(target.sex_scene))
+		combined_participants |= target.sex_scene.participants
+	if(length(combined_participants) > SEX_SCENE_MAX_PARTICIPANTS)
+		return "That would put more than [SEX_SCENE_MAX_PARTICIPANTS] people in one scene."
+	return "I can't start a scene with [target]."
+
 /mob/living/proc/make_sucking_noise()
 	var/suckyvolume = 25
 	if(rogue_sneaking || alpha <= 100)
@@ -103,7 +118,7 @@
 		return
 
 	if(!user.open_sex_scene(target))
-		to_chat(user, "<span class='warning'>I'm already sexing.</span>")
+		to_chat(user, span_warning(user.get_sex_scene_refusal(target)))
 		return
 
 /mob/living/proc/has_hands()
@@ -341,6 +356,36 @@
 			for(var/obj/item/grabbing/G in src.grabbedby)
 				if(G.limb_grabbed == LH || G.limb_grabbed == RH)
 					return TRUE
+
+/// TRUE when a worn device, such as a fluid pump, covers the organ in this slot.
+/mob/living/proc/is_organ_slot_blocked(slot)
+	var/obj/item/organ/organ = getorganslot(slot)
+	if(!organ)
+		return FALSE
+	for(var/obj/item/device in organ.contents)
+		if(device.blocks_organ_use(slot))
+			return TRUE
+	return FALSE
+
+/// Worn underwear, such as a chastity device, can also cover organs.
+/mob/living/carbon/is_organ_slot_blocked(slot)
+	if(..())
+		return TRUE
+	if(!underwear || !getorganslot(slot))
+		return FALSE
+	return underwear.blocks_organ_use(slot)
+
+/// TRUE for worn stand-ins, such as a strapon cock or a plug's false tail.
+/obj/item/organ/proc/is_false_organ()
+	return FALSE
+
+/obj/item/organ/genitals/penis/is_false_organ()
+	return strapon
+
+/// The organ in [slot] on [owner], or null when missing or only a worn stand-in.
+/proc/get_real_organ(mob/living/owner, slot)
+	var/obj/item/organ/organ = owner?.getorganslot(slot)
+	return organ?.is_false_organ() ? null : organ
 
 /mob/proc/get_erp_pref(pref_type)
 	if(!ispath(pref_type, /datum/erp_preference))

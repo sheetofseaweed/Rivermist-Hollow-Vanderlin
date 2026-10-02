@@ -31,6 +31,9 @@
 			if(!breasts)
 				to_chat(user, span_warning("[human_target] cannot be milked!"))
 				return ITEM_INTERACT_BLOCKING
+			if(human_target.is_organ_slot_blocked(ORGAN_SLOT_BREASTS))
+				to_chat(user, span_warning("Something covers [human_target]'s breasts."))
+				return ITEM_INTERACT_BLOCKING
 			if(!breasts.reagents?.total_volume)
 				to_chat(user, span_warning("[human_target] is out of milk!"))
 				return ITEM_INTERACT_BLOCKING
@@ -55,6 +58,9 @@
 			var/obj/item/organ/genitals/filling_organ/vagina/vagina = human_target.getorganslot(ORGAN_SLOT_VAGINA)
 			if(!vagina)
 				to_chat(user, span_warning("[human_target] has nothing to collect from!"))
+				return ITEM_INTERACT_BLOCKING
+			if(human_target.is_organ_slot_blocked(ORGAN_SLOT_VAGINA))
+				to_chat(user, span_warning("Something covers [human_target]'s loins."))
 				return ITEM_INTERACT_BLOCKING
 			if(!vagina.reagents?.total_volume)
 				to_chat(user, span_warning("[human_target]'s loins are empty!"))

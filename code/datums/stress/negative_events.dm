@@ -219,9 +219,9 @@
 	desc = span_phobia("IT'S THE FUCKING DAEWALKER!!")
 
 /datum/stress_event/fishface/get_desc(mob/living/user)
-	if(HAS_TRAIT(src, TRAIT_FISHFACE))
+	if(HAS_TRAIT(user, TRAIT_FISHFACE))
 		return "Eh, I've seen worse faces than that."
-	if(HAS_TRAIT(src, TRAIT_TOLERANT))
+	if(HAS_TRAIT(user, TRAIT_TOLERANT))
 		return "Poor thing. It's how they look I guess."
 	if(is_helpless_child)
 		return span_phobia("I SAW A MONSTER!")
@@ -562,7 +562,7 @@
 
 /datum/stress_event/on_fire
 	desc = "<span class='boldwarning'>I'M ON FIRE!!!</span>\n"
-	stress_change = 12
+	stress_change = 5
 
 /datum/stress_event/suffocation
 	desc = "<span class='boldwarning'>CAN'T... BREATHE...</span>\n"
@@ -606,14 +606,9 @@
 	stress_change = 15
 	timer = 60 SECONDS
 
-/datum/stress_event/dismembered
-	desc = "<span class='boldwarning'>AHH! I WAS USING THAT LIMB!</span>\n"
-	stress_change = 10
-	timer = 8 MINUTES
-
 /datum/stress_event/embedded
 	desc = "<span class='boldwarning'>Pull it out!</span>\n"
-	stress_change = 7
+	stress_change = 3
 
 /datum/stress_event/table_headsmash
 	desc = "<span class='warning'>My fucking head, that hurt...</span>"
@@ -644,16 +639,6 @@
 /datum/stress_event/jittery
 	desc = "<span class='warning'>I'm nervous and on edge and I can't stand still!!</span>\n"
 	stress_change = 2
-
-/datum/stress_event/vomit
-	desc = "<span class='warning'>I just threw up. Gross.</span>\n"
-	stress_change = 2
-	timer = 2 MINUTES
-
-/datum/stress_event/vomitself
-	desc = "<span class='warning'>I just threw up all over myself. This is disgusting.</span>\n"
-	stress_change = 4
-	timer = 3 MINUTES
 
 /datum/stress_event/painful_medicine
 	desc = "<span class='warning'>Medicine may be good for me but right now it stings like hell.</span>\n"
@@ -775,7 +760,8 @@
 	hidden = TRUE
 	desc = span_red("I feel the malaguero of another.")
 
-/datum/stress_event/malaguero/on_apply(mob/living/user)
+// can_apply runs before add_stress counts the stress, so tieflings add none.
+/datum/stress_event/malaguero/can_apply(mob/living/user)
 	. = ..()
 	if(istiefling(user))
 		max_stacks = 1

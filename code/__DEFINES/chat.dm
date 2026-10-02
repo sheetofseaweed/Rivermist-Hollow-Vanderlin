@@ -44,18 +44,18 @@
 #define debug_world_log(msg) if (GLOB.Debug2) log_world("DEBUG: [msg]")
 
 /// Adds a generic box around whatever message you're sending in chat. Really makes things stand out.
-#define boxed_message(str) ("<div class='boxed_message'>" + str + "</div>")
+#define boxed_message(str) ("<div class='boxed_message'>" + (str) + "</div>")
 /// Adds a box around whatever message you're sending in chat. Can apply color and/or additional classes. Available colors: red, green, blue, purple. Use it like red_box
 
-#define custom_boxed_message(classes, str) ("<div class='boxed_message " + classes + "'>" + str + "</div>")
+#define custom_boxed_message(classes, str) ("<div class='boxed_message " + (classes) + "'>" + (str) + "</div>")
 /// Makes a fieldset with a neaty styled name. Can apply additional classes.
-#define fieldset_block(title, content, classes) ("<fieldset class='fieldset " + classes + "'><legend class='fieldset_legend'>" + title + "</legend>" + content + "</fieldset>")
+#define fieldset_block(title, content, classes) ("<fieldset class='fieldset " + (classes) + "'><legend class='fieldset_legend'>" + (title) + "</legend>" + (content) + "</fieldset>")
 /// Makes a horizontal line with text in the middle
-#define separator_hr(str) ("<div class='separator'>" + str + "</div>")
+#define separator_hr(str) ("<div class='separator'>" + (str) + "</div>")
 
 //RMH EDITED START - ported from Azure Peak: headshots in chat zoom in on mouse hover.
 /// Wraps a headshot image URL into a chat container that scales up on hover. Sizing lives in tgchat SCSS.
-#define chat_headshot(str) ("<div class='chat_headshot'><img src='" + str + "'/></div>")
+#define chat_headshot(str) ("<div class='chat_headshot'><img src='" + (str) + "'/></div>")
 //RMH EDITED END
 
 /// Emboldens runechat messages

@@ -721,6 +721,10 @@
 
 		unified_selection -= selected_entry
 
+	// Healers always carry a small supply of trauma medicine, regardless of their random wares.
+	if(istype(trader_data, /datum/trader_data/medicine_merchant))
+		var/datum/supply_pack/mercy_pack = /datum/supply_pack/tools/medical/mercydraught
+		faction_products[/obj/item/reagent_containers/glass/bottle/vial/mercydraught] = list(initial(mercy_pack.cost), 5)
 	if(length(faction_products))
 		trader_data.initial_products = faction_products
 	randomize_wanted_quantities(trader_data)

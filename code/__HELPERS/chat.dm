@@ -79,5 +79,5 @@ it will be sent to all connected chats.
 	world.TgsTargetedChatBroadcast(new /datum/tgs_message_content("[category] | [message]"), TRUE)
 
 /// Handles text formatting for item use hints in examine text
-#define EXAMINE_HINT(text) ("<b>" + text + "</b>")
+#define EXAMINE_HINT(text) ("<b>" + (text) + "</b>")
 

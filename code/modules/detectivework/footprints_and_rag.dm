@@ -21,6 +21,10 @@
 	return (OXYLOSS)
 
 /obj/item/reagent_containers/glass/rag/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
+	var/wipe_result = try_wipe_body_writing(interacting_with, user)
+	if(wipe_result)
+		return wipe_result
+
 	if(iscarbon(interacting_with) && interacting_with.reagents && reagents.total_volume)
 		var/mob/living/carbon/C = interacting_with
 		var/reagentlist = pretty_string_from_reagent_list(reagents)

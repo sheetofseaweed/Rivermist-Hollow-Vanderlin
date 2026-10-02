@@ -507,6 +507,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	emissive_markings = SANITIZE_LIST(emissive_markings) 	// RMH edit
 	S["body_markings"] >> body_markings
 	body_markings = SANITIZE_LIST(body_markings)
+	sanitize_species_mutant_colors()
 	features["mcolor"]	= sanitize_hexcolor(features["mcolor"], 6, 0)
 	features["mcolor2"]	= sanitize_hexcolor(features["mcolor2"], 6, 0)
 	features["mcolor3"]	= sanitize_hexcolor(features["mcolor3"], 6, 0)
@@ -541,11 +542,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	return TRUE
 
 /// Quirk availability is judged against the customizer entries, and the genital set rules are
-/// judged against the quirks, so the entries are sanitized first, the quirks are read second, and
+/// judged against the quirks, so the entries are sanitized first, the quirks are validated second, and
 /// load_quirks() runs the enforcing validation pass once both halves are present. Enforcing before
 /// the quirks are read strips the mixed genital set that Extra Genitals exists to allow.
 /datum/preferences/proc/load_customizer_and_quirk_data(savefile/S)
 	S["customizer_entries"] >> customizer_entries
+	// Body size caps read quirks, so the saved list must replace the previous slot's list first.
+	read_saved_quirks(S)
 	validate_customizer_entries(enforce_genital_rules = FALSE)
 	load_quirks(S)
 

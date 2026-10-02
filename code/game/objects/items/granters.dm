@@ -196,6 +196,26 @@
 	icon_state = "scrollpurple"
 	remarks = list("Pallium nihilum..", "Occultare veritatem..", "Veritatem removan menor..")
 
+/obj/item/book/granter/spell/magick/bear_burden
+	name = "Prayer of the Shared Burden"
+	desc = "A rare prayer teaching a devoted reader to take another's defeat trauma into their own flesh. The knowledge can be claimed only once."
+	spell = /datum/action/cooldown/spell/defeat_absolution
+	spellname = "Bear Their Burden"
+	icon_state = "scrollyellow"
+	remarks = list("Mercy asks something of the merciful.", "Their spirit steadies; my flesh pays.", "A burden borne must be rested from.")
+
+/obj/item/book/granter/spell/magick/bear_burden/already_known(mob/living/user)
+	var/mob/living/carbon/human/reader = user
+	if(!istype(reader) || !reader.cleric)
+		to_chat(user, span_warning("This prayer requires devotion to a patron."))
+		return TRUE
+	return ..()
+
+/obj/item/book/granter/spell/magick/bear_burden/on_reading_finished(mob/living/user)
+	if(QDELETED(user) || loc != user || used || already_known(user))
+		return
+	return ..()
+
 //scroll for giving the reader a spell point, this should be dungeon loot
 /obj/item/book/granter/spell_points
 	name = "Arcyne Insight"

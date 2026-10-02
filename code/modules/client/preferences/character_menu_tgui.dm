@@ -184,6 +184,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return list(
 		get_asset_datum(/datum/asset/spritesheet/character_setup_chargen),
 		get_asset_datum(/datum/asset/spritesheet/loadout_items),
+		get_asset_datum(/datum/asset/spritesheet/preference_badges),
 	)
 
 /datum/preferences/ui_static_data(mob/user)
@@ -503,7 +504,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 /datum/preferences/proc/character_setup_ancestry_options()
 	. = list()
-	if(!pref_species)
+	if(!pref_species || has_mutant_color_preferences())
 		return
 	var/list/skins = pref_species.get_skin_list()
 	for(var/skin_name in skins)
@@ -570,7 +571,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return TRUE
 
 /datum/preferences/proc/character_setup_apply_ancestry(mob/user, ancestry_name)
-	if(!user || !pref_species || !ancestry_name)
+	if(!user || !pref_species || !ancestry_name || has_mutant_color_preferences())
 		return TRUE
 	var/list/skins = pref_species.get_skin_list()
 	if(!(ancestry_name in skins))
@@ -784,7 +785,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	var/windowflashing = read_preference(/datum/preference/toggle/windowflashing)
 	var/ambientocclusion = read_preference(/datum/preference/toggle/ambientocclusion)
 	var/auto_fit_viewport = read_preference(/datum/preference/toggle/auto_fit_viewport)
-	var/widescreenpref = read_preference(/datum/preference/toggle/widescreenpref)
+	var/toggles_maptext = read_preference(/datum/preference/bitwise/toggles_maptext)
 	var/pixel_size = read_preference(/datum/preference/numeric/pixel_size)
 	var/scaling_method = read_preference(/datum/preference/choiced/scaling_method)
 
@@ -901,11 +902,12 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	data["age_tooltips"] = age_tooltips
 	data["pronouns"] = pronouns || "None"
 	data["domhand"] = (domhand == 1) ? "Left" : "Right"
-	data["ancestry_label"] = pref_species?.skin_tone_wording || "Ancestry"
+	data["ancestry_label"] = has_mutant_color_preferences() ? "Mutant Colors" : (pref_species?.skin_tone_wording || "Ancestry")
 	data["ancestry_value"] = character_setup_current_ancestry_name()
 	data["ancestry_options"] = heavy_cache["ancestry_options"]
 
 	data["erp"] = character_setup_erp_data(user)
+	data["preference_badges"] = preference_badges_ui_data()
 	data["genital_set_label"] = get_current_genital_set_label()
 	data["genital_extra_unlock"] = !!has_extra_genital_customizer_unlock()
 	data["headshot"] = headshot_link || null
@@ -1016,8 +1018,12 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 		"hear_midis" = !!(toggles & SOUND_MIDI),
 		"ambientocclusion" = !!ambientocclusion,
 		"auto_fit_viewport" = !!auto_fit_viewport,
-		"widescreenpref" = !!widescreenpref,
 		"allow_midround_antag" = !!(toggles & MIDROUND_ANTAG),
+		"ambience" = !!(toggles & SOUND_AMBIENCE),
+		"background_music" = !!(toggles & SOUND_SHIP_AMBIENCE),
+		"be_voice" = !!(toggles & SCHIZO_VOICE),
+		"balloon_alerts" = !(toggles_maptext & DISABLE_BALLOON_ALERTS),
+		"runechat" = !(toggles_maptext & DISABLE_RUNECHAT),
 		"pixel_size" = "[pixel_size]",
 		"scaling_method" = "[scaling_method]",
 	)
@@ -1062,6 +1068,9 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 		return FALSE
 
 	switch(action)
+		if("pref_badge")
+			return handle_preference_badge_action(user, params)
+
 		if("pref")
 			if(!islist(params) || !params["preference"])
 				return FALSE

@@ -40,6 +40,8 @@
 		"lying_direction" = user.get_lying_direction_name(),
 		"cmode" = !!user.cmode,
 		"auto_clench" = !!user.wants_auto_clench(),
+		"can_hold_it_in" = user.can_hold_fluids_in(),
+		"hold_it_in" = user.is_holding_fluids_in(),
 	)
 	data["zone_options"] = get_zone_options_ui_data()
 	data["actions"] = get_actions_ui_data()
@@ -338,6 +340,9 @@
 			return TRUE
 		if("toggle_auto_clench")
 			user.auto_clench_override = !user.wants_auto_clench()
+			return TRUE
+		if("toggle_hold_it_in")
+			user.toggle_holding_fluids_in()
 			return TRUE
 		if("swap_side")
 			user.swap_lying_direction()

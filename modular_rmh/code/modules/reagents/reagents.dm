@@ -14,7 +14,8 @@
 	glass_icon_state = "glass_white"
 	glass_name = "glass of semen"
 	glass_desc = ""
-	nutriment_factor = 5 * REAGENTS_METABOLISM
+	// As filling as milk; it costs more to make than it gives back, so nobody lives off their own.
+	nutriment_factor = 1 * REAGENTS_METABOLISM
 	hydration_factor = 2
 	var/virile = TRUE
 	var/triggers_embryo_pregnancy = FALSE
@@ -114,6 +115,12 @@
 	. = ..()
 	reconcile_parent_data(current_parent_ref, current_parent_name, current_parent_features, current_hatch_result_type, incoming_data)
 
+/// The maker a taste can be recognised by; seed from several makers belongs to none of them.
+/datum/reagent/consumable/cum/get_fluid_donor()
+	if(data?[CUM_DATA_MIXED_PARENTS])
+		return null
+	return get_parent_from_transfer()
+
 /datum/reagent/consumable/cum/proc/get_impregnation_actor_from_transfer(mob/living/father = null, mob/transfered_by = null)
 	if(isliving(transfered_by))
 		return transfered_by
@@ -137,20 +144,14 @@
 		if(forgan.can_attempt_impregnation(allow_embryo_pregnancy))
 			var/recipient_is_quickened = forgan.owner?.has_reagent(/datum/reagent/medicine/pregplus)
 			var/donor_is_quickened = father?.has_reagent(/datum/reagent/medicine/vertplus)
-			if(prob(20 * vitilty_factor) || recipient_is_quickened || donor_is_quickened)
-				var/list/father_features = get_parent_features_from_transfer(father)
-				var/father_name = get_parent_name_from_transfer(father)
-				var/embryo_hatch_result_type = get_parent_hatch_result_type_from_transfer(father)
-				forgan.be_impregnated(father, allow_embryo_pregnancy, embryo_hatch_result_type, father_features, father_name)
+			// Conception is rolled on timed checks while the seed stays inside, not here.
+			forgan.record_seed(src, trans_volume, allow_embryo_pregnancy, recipient_is_quickened || donor_is_quickened)
 
 /datum/reagent/consumable/cum/on_mob_life(mob/living/carbon/M)
 	if(M.getBruteLoss() && prob(20))
 		M.heal_bodypart_damage(1,0, 0)
 	if(ishuman(M))
 		var/mob/living/carbon/human/H = M
-		if(!HAS_TRAIT(H, TRAIT_NOHUNGER))
-			H.adjust_hydration(5)
-			H.adjust_nutrition(5)
 		if(H.blood_volume < BLOOD_VOLUME_NORMAL)
 			H.blood_volume = min(H.blood_volume+10, BLOOD_VOLUME_NORMAL)
 	var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(M)
@@ -183,7 +184,23 @@
 	if(!data)
 		data = list()
 	data[FEMCUM_DATA_PARENT_REF] = WEAKREF(parent)
+	data -= FLUID_DATA_MIXED
 	return TRUE
+
+/// Nectar from two makers is marked mixed for tasting; the base merge already copies the newest parent.
+/datum/reagent/consumable/femcum/on_merge(list/incoming_data, other_volume)
+	var/datum/weakref/current_parent = data?[FEMCUM_DATA_PARENT_REF]
+	. = ..()
+	if(!islist(incoming_data))
+		return
+	var/datum/weakref/incoming_parent = incoming_data[FEMCUM_DATA_PARENT_REF]
+	if(current_parent && incoming_parent && current_parent != incoming_parent)
+		LAZYSET(data, FLUID_DATA_MIXED, TRUE)
+
+/datum/reagent/consumable/femcum/get_fluid_donor()
+	if(data?[FLUID_DATA_MIXED])
+		return null
+	return get_femcum_parent()
 
 /datum/reagent/consumable/femcum/proc/get_femcum_parent()
 	var/datum/weakref/parent_ref = data?[FEMCUM_DATA_PARENT_REF]

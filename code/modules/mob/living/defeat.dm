@@ -357,7 +357,7 @@
 	return TRUE
 
 /// KO Only anti-softlock: with no rune and no rescuer, a downed victim can drag themselves up on their
-/// own (the "Struggle to Your Feet" action, or the auto safety-net). The price is Grievous Wounds, on
+/// own (the "Struggle to Your Feet" action, or the auto safety-net). The price is Convalescence, on
 /// top of the usual injury - so being rescued by another stays strictly better. Suppressed once kidnapped.
 /mob/living/proc/defeat_ko_only_self_recover()
 	if(!has_status_effect(/datum/status_effect/defeat_knockout))
@@ -655,9 +655,8 @@
 /mob/living/proc/defeat_can_do_spiritual_treatment()
 	return HAS_TRAIT(src, TRAIT_HOLY) || (get_skill_level(/datum/skill/magic/holy) >= SKILL_RANK_NOVICE)
 
-/// Skill-based trauma cures must be done in the right place (design section 3.4): medical care in a
-/// clinic, spiritual rites in a church. The expensive universal cure (mercy draught / absolution
-/// spell) routes through DEFEAT_TREATMENT_UNIVERSAL and is the deliberate exception - works anywhere.
+/// Legacy area query. Actual station treatment checks proximity to the apparatus or shrine;
+/// field remedies need neither a station nor a special area.
 /mob/living/proc/defeat_treatment_zone_ok(treatment_type)
 	switch(treatment_type)
 		if(DEFEAT_TREATMENT_MEDICAL)

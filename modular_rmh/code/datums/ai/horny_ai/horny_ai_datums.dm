@@ -476,6 +476,7 @@
 		if(target_has_vagina)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex, 3)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_handjob)
+		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_jerk_over)
 
 	if(has_vagina)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_facesitting, 2)

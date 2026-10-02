@@ -135,7 +135,8 @@
 		return NONE
 
 	if(is_open_container() && reagents.total_volume > 0 && !GetComponent(/datum/component/storage))
-		if(!istype(tool, /obj/item/reagent_containers) && !istype(tool, /obj/item/paper))
+		// Drink vessels, like heels used as cups, pour and scoop instead of being dunked.
+		if(!istype(tool, /obj/item/reagent_containers) && !istype(tool, /obj/item/paper) && !tool.is_refillable())
 			if(is_type_in_list(user.used_intent, list(INTENT_SOAK, INTENT_WRING)))
 				return NONE // special snowflake
 			if(tool.w_class > WEIGHT_CLASS_NORMAL || tool.w_class > w_class)
@@ -379,6 +380,9 @@
 
 	var/medicine_volume = 0
 	for(var/datum/reagent/medicine/medicine in reagents.reagent_list)
+		// Mercy Draught treats aftermath; it is not a curative drink for waking a defeated patient.
+		if(istype(medicine, /datum/reagent/medicine/herbal/mercy_draught))
+			continue
 		medicine_volume += medicine.volume
 	var/medicine_fraction = medicine_volume / reagents.total_volume
 	var/transferred = reagents.trans_to(target, min(amount_per_transfer_from_this, 5), TRUE, TRUE, FALSE, feeder, FALSE, INGEST)
@@ -386,7 +390,8 @@
 		return FALSE
 	return defeat_try_potion_rescue(target, feeder, transferred * medicine_fraction)
 
-/obj/item/reagent_containers/proc/try_pour(mob/living/user, atom/to_pour)
+/// Pours up to max_transfers measures of amount_per_transfer_from_this into to_pour.
+/obj/item/reagent_containers/proc/try_pour(mob/living/user, atom/to_pour, max_transfers = 22)
 	if(!is_open_container() || !spillable)
 		return FALSE
 
@@ -414,7 +419,7 @@
 	if(!stealthy && poursounds)
 		playsound(user, pick(poursounds), 100, TRUE)
 
-	for(var/i in 1 to 22)
+	for(var/i in 1 to max_transfers)
 		if(!do_after(user, 8 DECISECONDS, to_pour, hidden = stealthy))
 			break
 		if(!reagents.total_volume)

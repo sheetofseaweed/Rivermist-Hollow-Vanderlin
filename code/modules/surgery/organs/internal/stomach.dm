@@ -34,7 +34,7 @@
 	var/mob/living/carbon/human/H = owner
 	if(istype(H))
 		H.clear_alert("disgust")
-		H.remove_stress(/datum/stress_event/disgust)
+		H.set_disgust_stress(null)
 	..()
 
 /obj/item/organ/stomach/fly

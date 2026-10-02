@@ -64,6 +64,8 @@
 		/obj/item/natural/fibers = 1,
 		/obj/item/reagent_containers/food/snacks/tallow = 1,
 		)
+	starting_atom = /obj/item/reagent_containers/food/snacks/tallow //RMH EDITED - without a start pair the recipe never starts
+	attacked_atom = /obj/item/paper //RMH EDITED
 	skillcraft = /datum/skill/craft/cooking
 	craftdiff = 3
 	output_amount = 2

@@ -53,17 +53,15 @@
 	if(!user.has_any_defeat_trauma())
 		to_chat(user, span_warning("The light searches you and finds nothing lingering to undo."))
 		return FALSE
-	// Grievous Wounds are town-clinic-only by design. Carrying nothing else
+	// Convalescence needs a trauma apparatus or shrine of solace. Carrying nothing else
 	// means there is nothing here to buy - say so instead of taking the motes.
 	if(!has_treatable_trauma(user))
-		to_chat(user, span_warning("The shrine's light washes over you and recoils. This place mends lesser hurts; it cannot touch maiming this deep - only a healer's hands at the town clinic can set you right."))
+		to_chat(user, span_warning("This shrine cannot lift Convalescence. Seek a trauma treatment apparatus or shrine of solace, or allow time to recover."))
 		return FALSE
 	return TRUE
 
-/// The hurt this shrine would lift, or null. Grievous Wounds are town-clinic
-/// only by design, so they are never chosen - and because the universal
-/// treatment provider WILL cure them if left to pick its own target, the
-/// shrine always names its target explicitly.
+/// The hurt this shrine would lift, or null. Convalescence needs a trauma station;
+/// the field-treatment provider rejects it too.
 /obj/structure/dungeon_shrine/proc/get_treatable_trauma(mob/living/user)
 	for(var/datum/status_effect/effect as anything in user.status_effects)
 		if(!istype(effect, /datum/status_effect/debuff/defeat))
@@ -155,7 +153,7 @@
 				// Be honest about what it could not reach, so nobody keeps paying
 				// at this shrine hoping to mend a maiming.
 				if(user.has_status_effect(/datum/status_effect/debuff/defeat/grievous))
-					to_chat(user, span_warning("The deeper maiming does not answer. This shrine mends lesser hurts; only a healer at the town clinic can undo that one."))
+					to_chat(user, span_warning("Convalescence remains. A trauma treatment apparatus or shrine of solace can end it sooner; otherwise it fades with time."))
 			else
 				// Nothing was lifted - the light took nothing for nothing.
 				var/refund = get_offer_cost("revive")

@@ -78,10 +78,12 @@
 	skill_weights = list(0, 5, 20, 50, 100, 120, 150)
 	animals = list(
 		/mob/living/simple_animal/hostile/retaliate/direbear = 10,
+		/mob/living/simple_animal/hostile/retaliate/wolf/dire = 5,
 		/mob/living/simple_animal/hostile/retaliate/troll = 3,
 	)
 	preferred_tracks = list(
 		/mob/living/simple_animal/hostile/retaliate/direbear = "ursine",
+		/mob/living/simple_animal/hostile/retaliate/wolf/dire = "canine",
 		/mob/living/simple_animal/hostile/retaliate/troll = "ursine",
 	)
 	preferred_areas = list(

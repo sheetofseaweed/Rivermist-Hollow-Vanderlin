@@ -1053,45 +1053,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				set_keybinds(user)
 		return TRUE
 
-	else if(href_list["preference"] == "toggles")
-		var/list/toggles_list = list(
-			"Default Toggles" = list("toggles_default", read_preference(/datum/preference/bitwise/toggles)),
-			"Maptext Toggles" = list("toggles_maptext", read_preference(/datum/preference/bitwise/toggles_maptext)),
-			"Gameplay Toggles" = list("toggles_gameplay", read_preference(/datum/preference/bitwise/toggles_gameplay)),
-		)
-		var/toggle_type = tgui_input_list(user, message = "", title = "Toggle Select", items = toggles_list)
-		if(!toggle_type)
-			return
-		var/list/toggles_data = toggles_list[toggle_type]
-		var/bitfield = toggles_data[1]
-		var/prefs_variable = toggles_data[2]
-		var/new_toggles = input_bitfield(user, toggle_type, bitfield, prefs_variable, nheight = 500)
-		if(!isnull(new_toggles))
-			if(toggle_type == "Default Toggles")
-				var/toggles = read_preference(/datum/preference/bitwise/toggles)
-				// Reset all fields we touch to 0 first because we don't use a full set to do toggles = X
-				// And don't want to override them
-				for(var/field in GLOB.bitfields[bitfield])
-					toggles &= ~GLOB.bitfields[bitfield][field]
-				toggles ^= new_toggles
-				write_preference(/datum/preference/bitwise/toggles, toggles)
-				if((prefs_variable & SOUND_LOBBY) && user.client && isnewplayer(user))
-					user.client.playtitlemusic()
-				else
-					user.stop_sound_channel(CHANNEL_LOBBYMUSIC)
-
-				if((prefs_variable & SOUND_SHIP_AMBIENCE) && user.client && !isnewplayer(user))
-					user.refresh_looping_ambience()
-				else
-					user.cancel_looping_ambience()
-
-				user.client?.update_ambience_pref()
-
-			else if(toggle_type == "Maptext Toggles")
-				write_preference(/datum/preference/bitwise/toggles_maptext, new_toggles)
-			else if(toggle_type == "Gameplay Toggles")
-				write_preference(/datum/preference/bitwise/toggles_gameplay, new_toggles)
-
 	// TGUI character setup menu actions (see character_menu_tgui.dm / character_menu_preview.dm)
 	else if(href_list["preference"] == "character_setup_select_species")
 		return character_setup_apply_species(user, href_list["species_id"])
@@ -1354,6 +1315,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	var/static/list/native_link_types = list(
 		"name" = /datum/preference/text/real_name,
+		"s_tone" = /datum/preference/choiced/skin_tone,
 		"gender" = /datum/preference/choiced/gender,
 		"pronouns" = /datum/preference/choiced/pronouns,
 		"domhand" = /datum/preference/choiced/domhand,
@@ -1371,6 +1333,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	if(native_link_type)
 		var/datum/preference/preference = GLOB.preference_entries[native_link_type]
 		preference.handle_link(src, user)
+		// Account settings save at once; character fields wait for the Save button.
+		if(preference.savefile_identifier == PREF_PLAYER)
+			save_preferences()
 		return TRUE
 
 	var/static/list/toggle_link_types = list(
@@ -1382,7 +1347,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"winflash" = /datum/preference/toggle/windowflashing,
 		"ambientocclusion" = /datum/preference/toggle/ambientocclusion,
 		"auto_fit_viewport" = /datum/preference/toggle/auto_fit_viewport,
-		"widescreenpref" = /datum/preference/toggle/widescreenpref,
 	)
 	var/toggle_link_type = toggle_link_types[action]
 	if(toggle_link_type)
@@ -1391,32 +1355,47 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			preference.handle_link(src, user)
 		else
 			toggle_preference(toggle_link_type)
+		save_preferences()
 		switch(action)
 			if("ambientocclusion")
 				update_occlusion(parent)
 			if("auto_fit_viewport")
 				if(read_preference(/datum/preference/toggle/auto_fit_viewport))
 					parent?.fit_viewport()
-			if("widescreenpref")
-				var/datum/view_data/view = user.client?.view_size
-				view?.setDefault(view.getScreenSize(read_preference(/datum/preference/toggle/widescreenpref)))
+				else
+					parent?.reset_viewport_split()
 		return TRUE
 
 	var/static/list/bitwise_toggle_values = list(
-		"lobby_music" = SOUND_LOBBY,
-		"hear_midis" = SOUND_MIDI,
-		"allow_midround_antag" = MIDROUND_ANTAG,
+		"lobby_music" = list(/datum/preference/bitwise/toggles, SOUND_LOBBY),
+		"hear_midis" = list(/datum/preference/bitwise/toggles, SOUND_MIDI),
+		"allow_midround_antag" = list(/datum/preference/bitwise/toggles, MIDROUND_ANTAG),
+		"ambience" = list(/datum/preference/bitwise/toggles, SOUND_AMBIENCE),
+		"background_music" = list(/datum/preference/bitwise/toggles, SOUND_SHIP_AMBIENCE),
+		"be_voice" = list(/datum/preference/bitwise/toggles, SCHIZO_VOICE),
+		"balloon_alerts" = list(/datum/preference/bitwise/toggles_maptext, DISABLE_BALLOON_ALERTS),
+		"runechat" = list(/datum/preference/bitwise/toggles_maptext, DISABLE_RUNECHAT),
 	)
-	var/toggle_value = bitwise_toggle_values[action]
-	if(toggle_value)
-		var/toggles = read_preference(/datum/preference/bitwise/toggles)
-		toggles ^= toggle_value
-		write_preference(/datum/preference/bitwise/toggles, toggles)
-		if(action == "lobby_music")
-			if(toggles & SOUND_LOBBY)
-				user.client?.playtitlemusic()
-			else
-				user.stop_sound_channel(CHANNEL_LOBBYMUSIC)
+	var/list/bitwise_toggle = bitwise_toggle_values[action]
+	if(bitwise_toggle)
+		var/bitwise_type = bitwise_toggle[1]
+		var/flag = bitwise_toggle[2]
+		preference_toggle_flag(bitwise_type, flag)
+		save_preferences()
+		var/flag_set = preference_has_flag(bitwise_type, flag)
+		switch(action)
+			if("lobby_music")
+				if(flag_set)
+					user.client?.playtitlemusic()
+				else
+					user.stop_sound_channel(CHANNEL_LOBBYMUSIC)
+			if("ambience")
+				user.client?.update_ambience_pref()
+			if("background_music")
+				if(flag_set && !isnewplayer(user))
+					user.refresh_looping_ambience()
+				else
+					user.cancel_looping_ambience()
 		return TRUE
 
 	switch(action)
@@ -2026,7 +2005,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=underwear;task=menu'>Smallclothes<small>Choose underlayers and smallclothes preferences.</small></a>"
 	dat += "<a class='option-row' href='byond://?_src_=prefs;preference=customizers;task=menu'>Features<small>Adjust available body accessories and feature colors.</small></a>"
 
-	if(pref_species?.use_skintones)
+	if(pref_species?.use_skintones && !has_mutant_color_preferences())
 		var/skin_color_value = pref_species.normalize_body_color(read_preference(/datum/preference/choiced/skin_tone)) || "000000"
 		dat += "<div class='section-title'>Skin</div>"
 		dat += "<a class='option-row' href='byond://?_src_=prefs;preference=s_tone;task=input;return=body_customize'><span class='swatch' style='background-color: #[skin_color_value];'></span>[pref_species.skin_tone_wording]<small>Pick a predefined skin or scale color.</small></a>"
@@ -2039,7 +2018,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			if(!feature_key)
 				continue
 			var/color_value = pref_species.normalize_body_color(features[feature_key]) || "000000"
-			dat += "<a class='option-row' href='byond://?_src_=prefs;preference=mutant_color[color_slot == 1 ? "" : color_slot];task=input;return=body_customize'><span class='swatch' style='background-color: #[color_value];'></span>Mutant Color #[color_slot]<small>Change this character color slot.</small></a>"
+			dat += "<a class='option-row' href='byond://?_src_=prefs;preference=character_setup_mutant_color;slot=[color_slot];return=body_customize'><span class='swatch' style='background-color: #[color_value];'></span>Mutant Color #[color_slot]<small>Change this character color slot.</small></a>"
 	else
 		dat += "<div class='section-title'>Mutant Colors</div>"
 		dat += "<div class='muted'>This species has no mutant color slots.</div>"
@@ -2407,29 +2386,10 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	if(!has_mutant_color_preferences())
 		return
 
-	if(!pref_species.use_skintones)
-		return
-
-	var/feature_key = get_mutant_color_feature_key(1)
-	if(!feature_key)
-		return
-
-	var/feature_color = pref_species.normalize_body_color(features[feature_key])
-	if(feature_color)
-		features[feature_key] = feature_color
-		write_preference(/datum/preference/choiced/skin_tone, feature_color)
-		return
-
-	var/skin_color = pref_species.normalize_body_color(read_preference(/datum/preference/choiced/skin_tone))
-	if(skin_color)
-		write_preference(/datum/preference/choiced/skin_tone, skin_color)
-		features[feature_key] = skin_color
-		return
-
-	var/default_color = pref_species.normalize_body_color(pref_species.default_color)
-	if(default_color)
-		write_preference(/datum/preference/choiced/skin_tone, default_color)
-		features[feature_key] = default_color
+	var/default_color = pref_species.normalize_body_color(pref_species.default_color) || "FFFFFF"
+	for(var/color_slot in 1 to 3)
+		var/feature_key = get_mutant_color_feature_key(color_slot)
+		features[feature_key] = pref_species.normalize_body_color(features[feature_key]) || default_color
 
 /datum/preferences/proc/pick_mutant_color(mob/user, color_slot, prompt)
 	if(!has_mutant_color_preferences())
@@ -2442,16 +2402,15 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	if(!prompt)
 		prompt = "Choose your character's mutant #[color_slot] color:"
 
+	var/datum/species/picked_species = pref_species
 	var/new_mutant_color = tgui_color_picker(user, prompt, "Character Preference", "#[features[feature_key]]")
-	if(!new_mutant_color)
+	if(!new_mutant_color || QDELETED(src) || QDELETED(user) || pref_species != picked_species)
 		return
 
 	if(!is_body_color_picker_choice_valid(user, new_mutant_color))
 		return
 
 	features[feature_key] = sanitize_hexcolor(new_mutant_color)
-	if(color_slot == 1 && pref_species.use_skintones)
-		write_preference(/datum/preference/choiced/skin_tone, features[feature_key])
 
 	try_update_mutant_colors()
 
@@ -2757,20 +2716,16 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	</tr>
 	"}
 
+/// Re-applies the ambient occlusion filters on the planes that carry them.
 /proc/update_occlusion(client/parent_cl)
-	if(parent_cl && parent_cl.screen && parent_cl.screen.len)
-		var/atom/movable/screen/plane_master/game_world/PM = locate(/atom/movable/screen/plane_master/game_world) in parent_cl.screen
-		PM.backdrop(parent_cl.mob)
-		PM = locate(/atom/movable/screen/plane_master/game_world_fov_hidden) in parent_cl.screen
-		PM.backdrop(parent_cl.mob)
-		PM = locate(/atom/movable/screen/plane_master/game_world_above) in parent_cl.screen
-		PM.backdrop(parent_cl.mob)
-		PM = locate(/atom/movable/screen/plane_master/game_world_below) in parent_cl.screen
-		PM.backdrop(parent_cl.mob)
-		PM = locate(/atom/movable/screen/plane_master/massive_obj) in parent_cl.screen
-		PM.backdrop(parent_cl.mob)
-		PM = locate(/atom/movable/screen/plane_master/game_world_walls) in parent_cl.screen
-		PM.backdrop(parent_cl.mob)
+	var/mob/viewer = parent_cl?.mob
+	var/datum/hud/viewer_hud = viewer?.hud_used
+	if(!viewer_hud)
+		return
+	var/static/list/occlusion_planes = list(GAME_PLANE, GAME_PLANE_FOV_HIDDEN, GAME_PLANE_UPPER, GAME_PLANE_LOWER, MASSIVE_OBJ_PLANE, WALL_PLANE)
+	for(var/plane in occlusion_planes)
+		var/atom/movable/screen/plane_master/plane_master = viewer_hud.plane_masters["[plane]"]
+		plane_master?.backdrop(viewer)
 
 /datum/preferences/proc/resolve_loadout_to_name(item_path)
 	if (loadout1 && (item_path == loadout1.item_path) && loadout_1_name)

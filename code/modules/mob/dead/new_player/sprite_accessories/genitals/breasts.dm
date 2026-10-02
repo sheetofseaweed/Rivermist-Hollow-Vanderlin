@@ -5,7 +5,7 @@
 
 /datum/sprite_accessory/genitals/breasts/get_icon_state(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = organ
-	return "[icon_state]_[breasts.organ_size]"
+	return "[icon_state]_[breasts.get_visible_size()]"
 
 /datum/sprite_accessory/genitals/breasts/adjust_appearance_list(list/appearance_list, obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/human/owner)
 	gender_genitals_adjust(appearance_list, organ, bodypart, owner, OFFSET_BREASTS)

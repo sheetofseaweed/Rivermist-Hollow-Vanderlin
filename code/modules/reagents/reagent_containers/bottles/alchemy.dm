@@ -80,7 +80,26 @@
 
 /obj/item/reagent_containers/glass/bottle/vial/mercydraught
 	name = "Mercy Draught"
+	desc = "Five doses of a restorative for defeat aftermath. Drink five measures per ordinary trauma; Convalescence needs a treatment station."
+	amount_per_transfer_from_this = DEFEAT_MERCY_DRAUGHT_DOSE
 	list_reagents = list(/datum/reagent/medicine/herbal/mercy_draught = 25)
+
+/obj/item/reagent_containers/glass/bottle/vial/mercydraught/examine(mob/user)
+	. = ..()
+	. += span_notice("Drink five measures per ordinary defeat trauma, most severe first. A full vial holds five doses. Splashing does not work; Convalescence needs a treatment station.")
+
+/obj/item/reagent_containers/glass/bottle/vial/mercydraught/transfer_feed_reagents(mob/living/target, mob/living/feeder)
+	if(QDELETED(target) || QDELETED(feeder))
+		return FALSE
+	if(!reagents?.has_reagent(/datum/reagent/medicine/herbal/mercy_draught))
+		return ..()
+	var/datum/defeat_trauma_provider/universal/provider = new
+	var/has_trauma = length(provider.diagnose(target))
+	qdel(provider)
+	if(!has_trauma)
+		to_chat(feeder, span_warning("There is no ordinary defeat trauma for this draught to treat. Convalescence requires a treatment station."))
+		return FALSE
+	return ..()
 
 /obj/item/reagent_containers/glass/bottle/vial/genderpot
 	list_reagents = list(/datum/reagent/medicine/gender_potion = 5)

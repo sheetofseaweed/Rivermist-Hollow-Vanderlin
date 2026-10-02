@@ -600,7 +600,9 @@
 
 	var/datum/devotion/devotion = allocate(/datum/devotion)
 	devotion.make_priest()
-	TEST_ASSERT((/datum/action/cooldown/spell/defeat_absolution in devotion.miracles_extra), "Priest setup should grant the dedicated defeat-absolution spell.")
+	TEST_ASSERT(!(/datum/action/cooldown/spell/defeat_absolution in devotion.miracles_extra), "The rare burden prayer must not be a default priest grant.")
+	var/obj/item/book/granter/spell/magick/bear_burden/prayer = allocate(/obj/item/book/granter/spell/magick/bear_burden)
+	TEST_ASSERT_EQUAL(prayer.spell, /datum/action/cooldown/spell/defeat_absolution, "The rare prayer must teach the field treatment spell.")
 
 	var/datum/container_craft/cooking/herbal_tea/mercy_draught/recipe = allocate(/datum/container_craft/cooking/herbal_tea/mercy_draught)
 	TEST_ASSERT_EQUAL(recipe.created_reagent, /datum/reagent/medicine/herbal/mercy_draught, "Mercy Draught recipe should create the universal trauma-clearing reagent.")
@@ -684,7 +686,7 @@
 	var/obj/item/natural/bundle/cloth/bandage/bandages = allocate(/obj/item/natural/bundle/cloth/bandage/full)
 	doctor.put_in_active_hand(bandages)
 
-	TEST_ASSERT_EQUAL(length(machine.treatment_provider.usable_diagnoses(patient, doctor, bandages)), 0, "Provider selection should reject candidates when the helper lacks treatment skill.")
+	TEST_ASSERT_EQUAL(length(machine.treatment_provider.usable_diagnoses(patient, doctor, bandages)), 1, "Provider selection should allow untrained helpers when the other requirements are met.")
 	doctor.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
 	TEST_ASSERT_EQUAL(length(machine.treatment_provider.usable_diagnoses(patient, doctor, bandages)), 1, "Provider selection should retain candidates with valid skill, proximity, and held resources.")
 	bandages.amount = 1
@@ -2517,6 +2519,18 @@
 	TEST_ASSERT(!HAS_TRAIT(victim, TRAIT_PACIFISM), "Natural recovery must restore the ability to fight.")
 
 #ifdef FOCUS_DEFEAT_TRAUMA_TREATMENT_TEST
+/datum/unit_test/defeat_universal_treatment_and_priest_spell_surface
+	focus = TRUE
+/datum/unit_test/defeat_station_cross_treatment
+	focus = TRUE
+/datum/unit_test/defeat_mercy_draught_swallowed_doses
+	focus = TRUE
+/datum/unit_test/defeat_mercy_draught_rejects_splash_and_short_dose
+	focus = TRUE
+/datum/unit_test/defeat_burden_costs_and_exclusions
+	focus = TRUE
+/datum/unit_test/defeat_healer_guarantees_draught
+	focus = TRUE
 /datum/unit_test/defeat_treatment_clears_correct_trauma
 	focus = TRUE
 /datum/unit_test/defeat_tool_treatment_clears_matching_trauma_only
@@ -2540,5 +2554,128 @@
 /datum/unit_test/defeat_shrine_routes_horny_trauma
 	focus = TRUE
 #endif
+
+/datum/unit_test/defeat_station_cross_treatment
+
+/datum/unit_test/defeat_station_cross_treatment/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/helper = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(patient, helper, run_loc_floor_bottom_left)
+	var/datum/defeat_trauma_provider/medical/machine/medical = allocate(/datum/defeat_trauma_provider/medical/machine)
+	var/datum/defeat_trauma_provider/shrine/structure/shrine = allocate(/datum/defeat_trauma_provider/shrine/structure)
+	var/datum/status_effect/debuff/defeat/rune/rune = patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_SEVERE)
+	var/obj/item/natural/bundle/cloth/bandage/bandages = allocate(/obj/item/natural/bundle/cloth/bandage/full)
+	helper.put_in_active_hand(bandages)
+	TEST_ASSERT(medical.validate(patient, helper, rune, bandages), "An untrained helper should be able to use the apparatus.")
+	var/untrained_medical_time = medical.treatment_time(helper, rune)
+	medical.untrained_time_multiplier = 1
+	var/medical_time_without_penalty = medical.treatment_time(helper, rune)
+	medical.untrained_time_multiplier = 2
+	TEST_ASSERT_EQUAL(untrained_medical_time, medical_time_without_penalty * 2, "Missing Medicine training should double apparatus time after the specialty penalty.")
+	TEST_ASSERT_EQUAL(length(medical.all_diagnoses(patient)), 1, "The untrained diagnosis must remain visible.")
+	helper.set_skillrank(/datum/skill/misc/medicine, SKILL_RANK_APPRENTICE, TRUE)
+	TEST_ASSERT_EQUAL(medical.resource_cost_for(rune), 4, "Even the worst spiritual trauma must fit within one full bandage roll.")
+	TEST_ASSERT(medical.treat(patient, helper, rune, FALSE, TRUE, bandages), "Medicine training alone must suffice for spiritual treatment at the apparatus.")
+	TEST_ASSERT(QDELETED(bandages), "The completed treatment should consume exactly one four-bandage roll.")
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/rune), "The selected spiritual trauma should be gone.")
+
+	var/datum/status_effect/debuff/defeat/grievous/convalescence = patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
+	var/obj/item/coin/silver/coins = allocate(/obj/item/coin/silver)
+	coins.set_quantity(7)
+	helper.put_in_active_hand(coins)
+	TEST_ASSERT(shrine.validate(patient, helper, convalescence, coins), "An untrained helper should be able to use the shrine.")
+	var/untrained_shrine_time = shrine.treatment_time(helper, convalescence)
+	shrine.untrained_time_multiplier = 1
+	var/shrine_time_without_penalty = shrine.treatment_time(helper, convalescence)
+	shrine.untrained_time_multiplier = 2
+	TEST_ASSERT_EQUAL(untrained_shrine_time, shrine_time_without_penalty * 2, "Missing holy training should double shrine time after the specialty penalty.")
+	ADD_TRAIT(helper, TRAIT_HOLY, TRAIT_SOURCE_UNIT_TESTS)
+	TEST_ASSERT_EQUAL(shrine.resource_cost_for(convalescence), 6, "The shrine should charge its physical specialty surcharge.")
+	TEST_ASSERT(shrine.treat(patient, helper, convalescence, FALSE, TRUE, coins), "A holy helper must be able to treat Convalescence at a shrine.")
+	TEST_ASSERT_EQUAL(coins.quantity, 1, "The shrine must consume exactly six silver coins.")
+	TEST_ASSERT(!HAS_TRAIT(patient, TRAIT_PACIFISM), "Treating Convalescence must release its pacifism.")
+
+/datum/unit_test/defeat_mercy_draught_swallowed_doses
+
+/datum/unit_test/defeat_mercy_draught_swallowed_doses/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/obj/item/reagent_containers/glass/bottle/vial/mercydraught/vial = allocate(/obj/item/reagent_containers/glass/bottle/vial/mercydraught)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical, null, DEFEAT_SEVERITY_LIGHT)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/wound, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/physical/burn, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/pain, null, DEFEAT_SEVERITY_NORMAL)
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/rune, null, DEFEAT_SEVERITY_SEVERE)
+	var/datum/defeat_trauma_provider/universal/provider = allocate(/datum/defeat_trauma_provider/universal)
+	for(var/dose in 1 to 5)
+		vial.reagents.trans_to(patient, DEFEAT_MERCY_DRAUGHT_DOSE, transfered_by = patient, method = INGEST)
+		TEST_ASSERT_EQUAL(length(provider.diagnose(patient)), 5 - dose, "Every swallowed dose must cure exactly one ordinary trauma.")
+		TEST_ASSERT_EQUAL(vial.reagents.total_volume, 25 - dose * DEFEAT_MERCY_DRAUGHT_DOSE, "A full vial must contain five real doses.")
+		if(dose == 1)
+			TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/rune), "Automatic dosing must prioritize severe trauma over alphabetic label order.")
+	var/obj/item/organ/stomach/stomach = patient.getorganslot(ORGAN_SLOT_STOMACH)
+	TEST_ASSERT_EQUAL(stomach.reagents.get_reagent_amount(/datum/reagent/medicine/herbal/mercy_draught), 0, "Spent doses must not remain in the stomach for another cure.")
+
+/datum/unit_test/defeat_mercy_draught_rejects_splash_and_short_dose
+
+/datum/unit_test/defeat_mercy_draught_rejects_splash_and_short_dose/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/obj/item/reagent_containers/glass/bottle/vial/mercydraught/vial = allocate(/obj/item/reagent_containers/glass/bottle/vial/mercydraught)
+	var/datum/status_effect/debuff/defeat/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/pain)
+	var/datum/reagent/medicine/herbal/mercy_draught/draught = locate(/datum/reagent/medicine/herbal/mercy_draught) in vial.reagents.reagent_list
+	draught.reaction_mob(patient, TOUCH, 25)
+	TEST_ASSERT(trauma in patient.status_effects, "A splash reaction must not give a free trauma cure.")
+	vial.reagents.trans_to(patient, 4, transfered_by = patient, method = INGEST)
+	TEST_ASSERT(trauma in patient.status_effects, "Four swallowed measures must not suffice.")
+	vial.reagents.trans_to(patient, 1, transfered_by = patient, method = INGEST)
+	TEST_ASSERT_NULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/pain), "Completing a real five-measure dose should cure the trauma.")
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous)
+	vial.transfer_feed_reagents(patient, patient)
+	TEST_ASSERT_EQUAL(vial.reagents.total_volume, 20, "The labeled vial should refuse to waste a dose on Convalescence alone.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "A draught must not cure Convalescence.")
+
+/datum/unit_test/defeat_burden_costs_and_exclusions
+
+/datum/unit_test/defeat_burden_costs_and_exclusions/Run()
+	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/caster = allocate(/mob/living/carbon/human)
+	defeat_unit_place_adjacent(patient, caster, run_loc_floor_bottom_left)
+	var/datum/devotion/devotion = allocate(/datum/devotion)
+	devotion.grant_to(caster)
+	devotion.devotion = 300
+	var/datum/action/cooldown/spell/defeat_absolution/spell = allocate(/datum/action/cooldown/spell/defeat_absolution)
+	spell.Grant(caster)
+	TEST_ASSERT(!spell.is_valid_target(caster), "The sacrifice cannot target its own caster.")
+	patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous)
+	TEST_ASSERT(!spell.is_valid_target(patient), "Convalescence alone is not a valid sacrifice target.")
+	var/datum/status_effect/debuff/defeat/trauma = patient.apply_status_effect(/datum/status_effect/debuff/defeat/pain, null, DEFEAT_SEVERITY_NORMAL)
+	TEST_ASSERT(!spell.cast(patient), "A cast without a confirmed exact trauma must fail.")
+	TEST_ASSERT_EQUAL(devotion.devotion, 300, "A failed cast must not spend devotion.")
+	TEST_ASSERT_EQUAL(caster.getBruteLoss(), 0, "A failed cast must not harm the caster.")
+	devotion.devotion = 0
+	spell.selected_trauma_ref = WEAKREF(trauma)
+	TEST_ASSERT(!spell.cast(patient), "This miracle must enforce devotion even though the shared miracle check is disabled.")
+	TEST_ASSERT(trauma in patient.status_effects, "A caster without devotion must not clear trauma.")
+	devotion.devotion = 300
+	var/cost = spell.get_adjusted_cost()
+	spell.selected_trauma_ref = WEAKREF(trauma)
+	TEST_ASSERT(spell.cast(patient), "A confirmed affordable ordinary trauma should be cured.")
+	TEST_ASSERT_EQUAL(devotion.devotion, 300 - cost, "A successful sacrifice must pay its devotion cost exactly once.")
+	TEST_ASSERT_EQUAL(caster.getBruteLoss(), 20, "Normal trauma should cost the caster twenty bodily damage.")
+	TEST_ASSERT_NOTNULL(patient.has_status_effect(/datum/status_effect/debuff/defeat/grievous), "The spell must leave Convalescence alone.")
+	TEST_ASSERT_NOTNULL(caster.has_status_effect(/datum/status_effect/sacrificial_exhaustion), "Success should exhaust the caster.")
+	caster.fully_heal(HEAL_ALL)
+	TEST_ASSERT_NOTNULL(caster.has_status_effect(/datum/status_effect/sacrificial_exhaustion), "Ordinary full healing must not erase the sacrifice's exhaustion.")
+	TEST_ASSERT(!spell.can_cast_spell(FALSE), "The caster cannot repeat the sacrifice while exhausted.")
+
+/datum/unit_test/defeat_healer_guarantees_draught
+
+/datum/unit_test/defeat_healer_guarantees_draught/Run()
+	var/datum/world_faction/faction = allocate(/datum/world_faction)
+	var/datum/trader_data/medicine_merchant/healer = allocate(/datum/trader_data/medicine_merchant)
+	// Even a faction with no compatible random wares must supply the healer's fixed medicine.
+	faction.customize_trader_inventory(healer)
+	var/list/product = healer.initial_products[/obj/item/reagent_containers/glass/bottle/vial/mercydraught]
+	TEST_ASSERT_EQUAL(product[1], 100, "The Healer's fixed medicine must use the lowered supply price.")
+	TEST_ASSERT_EQUAL(product[2], 5, "Every generated Healer should carry five vials.")
 
 

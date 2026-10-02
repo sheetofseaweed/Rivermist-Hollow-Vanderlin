@@ -108,6 +108,7 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define COMSIG_BODYSTORAGE_CHANGED "hole_changed"			// (storage_component)
 #define COMSIG_BODYSTORAGE_FIND_ITEM_LAYER "hole_find_item_layer"	// ()
 #define COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND "hole_swap_layers"	// (target_layer, force)
+#define COMSIG_BODYSTORAGE_TRY_RESIZE "hole_try_resize"	// (stored_item, new_bulk, force)
 
 #define BODYSTORAGE_REMOVE_MANUAL "manual"
 #define BODYSTORAGE_REMOVE_RANDOM "random"
@@ -351,6 +352,134 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 /// Units of fluid a female climax adds into the vagina (instead of spawning a puddle); the organ's drip system leaks it out.
 #define FEMCUM_ORGASM_VOLUME 10
 
+// Fluid modifier sources. Sources are strings so they never hold a reference.
+#define FLUID_SOURCE_PREGNANCY "pregnancy"
+#define FLUID_SOURCE_POST_PREGNANCY "post_pregnancy"
+#define FLUID_SOURCE_LACTATION_INDUCER "lactation_inducer"
+/// Modifiers every member of a species has, such as a small frame.
+#define FLUID_SOURCE_SPECIES "species"
+
+// Heat cycle sources, kept as TRAIT_HEAT_CYCLE sources. Species and werewolf heat need the ERP preference.
+#define HEAT_SOURCE_QUIRK "heat_quirk"
+#define HEAT_SOURCE_SPECIES "heat_species"
+#define HEAT_SOURCE_WEREWOLF "heat_werewolf"
+/// Heat pulls arousal up to here: half wet, and below the edging threshold.
+#define HEAT_AROUSAL_FLOOR 60
+
+// Body fluid reagent data keys: who made it, whether makers mixed, and a hint of their last meals.
+#define FLUID_DATA_DONOR "fluid_donor"
+#define FLUID_DATA_MIXED "fluid_mixed_donors"
+#define FLUID_DATA_DIET "fluid_diet_hint"
+/// Tasting the same maker again counts as a new visit only this long after the last one.
+#define FAMILIAR_TASTE_GAP (1 HOURS)
+/// Visits after which a familiar taste becomes a cherished one.
+#define FAMILIAR_TASTE_CHERISHED_VISITS 3
+
+// Body zones that body fluids can coat.
+#define FLUID_COAT_FACE "face"
+#define FLUID_COAT_CHEST "chest"
+#define FLUID_COAT_BELLY "belly"
+#define FLUID_COAT_GROIN "groin"
+#define FLUID_COAT_BACK "back"
+#define FLUID_COAT_THIGHS "thighs"
+#define FLUID_COAT_FEET "feet"
+/// Units one coat zone holds; the rest runs off to the floor.
+#define FLUID_COAT_CAPACITY 20
+/// A zone holding this much reads and draws as heavily coated.
+#define FLUID_COAT_HEAVY_UNITS 8
+/// Units spilled on the face when a climax goes into the mouth.
+#define FLUID_COAT_ORAL_SPILL 3
+/// Share of a bare leak that clings to the skin; the rest drips to the floor.
+#define FLUID_COAT_LEAK_SHARE 0.5
+/// Aim zone for a shot into the mouth rather than onto the face.
+#define PENIS_AIM_MOUTH "mouth"
+/// Share of a mouth shot that is swallowed when the mouth is free; the rest glazes the face.
+#define PENIS_AIM_MOUTH_SHARE 0.6
+/// Least time between two aim announcements from the same grip.
+#define PENIS_AIM_MESSAGE_COOLDOWN (3 SECONDS)
+/// Least time between two slaps with the same grip.
+#define PENIS_SLAP_COOLDOWN (1.5 SECONDS)
+/// Slap heft (size, body mismatch, force, stiffness) that knocks the target back a tile.
+#define PENIS_SLAP_KNOCKBACK_HEFT 1.5
+/// Arousal the cock's owner gets from one slap.
+#define PENIS_SLAP_AROUSAL 1
+/// Leak multiplier while the owner lies down; gravity helps less.
+#define FLUID_LYING_LEAK_MULT 0.5
+/// Leak multiplier for a vagina or anus while the owner holds it in.
+#define FLUID_HELD_LEAK_MULT 0.1
+/// Time between the stamina checks of holding fluids in.
+#define FLUID_HOLD_TICK (5 SECONDS)
+/// Fatigue per hold tick while something is held; far below natural recovery, so it lasts indefinitely.
+#define FLUID_HOLD_STAMINA_COST 1
+/// Share of the held fluid that gushes out when the hold gives out.
+#define FLUID_HOLD_GUSH_SHARE 0.25
+/// Time between conception checks while virile seed is inside.
+#define CONCEPTION_CHECK_INTERVAL (2 MINUTES)
+/// Percent chance per check for a full dose of average seed.
+#define CONCEPTION_BASE_CHANCE 10
+/// Virile seed units below which no check is made.
+#define CONCEPTION_MIN_SEED 2
+/// Virile seed units that count as a full dose; less scales the chance down.
+#define CONCEPTION_FULL_SEED 10
+/// Conception chance multiplier while the carrier is in heat.
+#define CONCEPTION_HEAT_MULT 2
+/// Morning sickness starts this long after conception, somewhere in the range.
+#define PREGNANCY_SICKNESS_MIN_DELAY (30 MINUTES)
+#define PREGNANCY_SICKNESS_MAX_DELAY (60 MINUTES)
+/// How long morning sickness lasts if the belly has not grown first.
+#define PREGNANCY_SICKNESS_DURATION (2 HOURS)
+/// Time between bouts of morning sickness, somewhere in the range.
+#define PREGNANCY_SICKNESS_MIN_GAP (8 MINUTES)
+#define PREGNANCY_SICKNESS_MAX_GAP (15 MINUTES)
+/// Percent chance that a bout of morning sickness makes the carrier retch.
+#define PREGNANCY_RETCH_CHANCE 10
+/// A seed sachet only notices a pregnancy at least this old.
+#define PREGNANCY_TEST_MIN_AGE (10 MINUTES)
+/// Time for a wetted seed sachet to show its result.
+#define PREGNANCY_TEST_READ_TIME (3 MINUTES)
+/// Time to wet a seed sachet.
+#define PREGNANCY_TEST_WET_TIME (5 SECONDS)
+/// Conception chance or seed virility left under a contraceptive draught.
+#define CONTRACEPTIVE_MULTIPLIER 0.1
+/// How long one dose of a contraceptive draught lasts.
+#define CONTRACEPTIVE_DURATION (1 HOURS)
+/// A climax outside the body splits into two spurts from this many units, three above the next.
+#define CLIMAX_SPURT_TWO_UNITS 10
+#define CLIMAX_SPURT_THREE_UNITS 25
+/// Time between two spurts of one climax; long enough to re-aim between them.
+#define CLIMAX_SPURT_INTERVAL (1.2 SECONDS)
+/// Orgasm progress one edging squeeze takes back.
+#define EDGE_SQUEEZE_DRAIN 25
+/// Edging charge one squeeze adds.
+#define EDGE_SQUEEZE_EDGING 10
+/// Least time between two squeezes.
+#define EDGE_SQUEEZE_COOLDOWN (3 SECONDS)
+/// Arousal left after a climax choked off mid-spurt.
+#define RUINED_ORGASM_AROUSAL 90
+/// How long milk keeps flowing after a conventional pregnancy ends.
+#define POST_PREGNANCY_LACTATION_TIME (30 MINUTES)
+/// Units of a fluid potion in the blood needed before it takes effect.
+#define FLUID_POTION_DOSE 4
+/// Least volume in stomach and blood that a swap potion accepts as its paired reagent.
+#define FLUID_SWAP_MIN_PAIR_VOLUME 5
+/// A swapped fluid costs this many times the nutrition it gives back, so drinking it never profits.
+#define FLUID_SWAP_NUTRITION_MARGIN 1.5
+/// Testicles holding this share of capacity release a pent-up load.
+#define FLUID_PENT_UP_RATIO 0.9
+/// Climax release scale for empty and for full testicles; half full releases the base amount.
+#define FLUID_PENT_UP_MIN_MULT 0.5
+#define FLUID_PENT_UP_MAX_MULT 1.5
+/// Units swallowed per lick of a soaked garment, and the least a garment must hold to be licked.
+#define FLUID_LICK_AMOUNT 2
+#define FLUID_LICK_MIN_VOLUME 0.5
+/// Where body fluid stains a garment.
+#define FLUID_STAIN_GROIN "groin"
+#define FLUID_STAIN_CHEST "chest"
+/// Fullness shares at which an engorging organ shows one more size step.
+#define FLUID_ENGORGEMENT_STEP_1 0.5
+#define FLUID_ENGORGEMENT_STEP_2 0.75
+#define FLUID_ENGORGEMENT_STEP_3 0.95
+
 /proc/build_sex_actions()
 	. = list()
 	for(var/datum/path as anything in typesof(/datum/sex_action))
@@ -490,3 +619,23 @@ GLOBAL_LIST_INIT(mage_hand_start_durations, list(
 #define CLENCH_RESULT_FAIL 0
 #define CLENCH_RESULT_INTERRUPT 1
 #define CLENCH_RESULT_STOP 2
+
+/// Arcane chastity front modes: which front openings the device leaves open.
+#define CHASTITY_FRONT_SEALED 0
+#define CHASTITY_FRONT_PENIS 1
+#define CHASTITY_FRONT_VAGINA 2
+#define CHASTITY_FRONT_ALL 3
+
+/// Directory holding the chastity message banks.
+#define CHASTITY_STRINGS_DIR "strings/chastity"
+/// A random line from a chastity message bank.
+#define pick_chastity_string(FILE, KEY) (pick(strings(FILE, KEY, CHASTITY_STRINGS_DIR)))
+
+// Anal bead sizes; each /datum/bead_shape lists them from tip to ring.
+#define BEAD_SMALL 1
+#define BEAD_MEDIUM 2
+#define BEAD_LARGE 3
+#define BEAD_GIANT 4
+/// Push results beyond the body-storage insert feedback.
+#define BEADS_ALL_IN "beads_all_in"
+#define BEADS_TOO_DEEP "beads_too_deep"

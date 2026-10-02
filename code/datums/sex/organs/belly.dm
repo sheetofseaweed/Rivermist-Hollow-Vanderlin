@@ -33,6 +33,9 @@
 /obj/item/organ/genitals/belly/proc/get_visible_belly_size()
 	return CLAMP(resting_size + fullness_growth_steps, MIN_BELLY_SIZE, MAX_BELLY_SIZE)
 
+/obj/item/organ/genitals/belly/get_render_key_state()
+	return get_visible_belly_size()
+
 /obj/item/organ/genitals/belly/proc/set_fullness_growth_steps(growth_steps)
 	var/new_growth_steps = CLAMP(growth_steps, 0, MAX_BELLY_SIZE)
 	if(fullness_growth_steps == new_growth_steps)

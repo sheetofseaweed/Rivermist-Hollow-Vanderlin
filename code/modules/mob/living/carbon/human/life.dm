@@ -312,6 +312,7 @@
 			for(var/obj/item/clothing/C in below_chest)
 				if(C && C.wetable)
 					C.wet.add_water(20, dirty_water)
+	rinse_fluids(locations, rain)
 
 //This proc returns a number made up of the flags for body parts which you are protected on. (such as HEAD, CHEST, GROIN, etc. See setup.dm for the full list)
 /mob/living/carbon/human/proc/get_heat_protection_flags(temperature) //Temperature is the temperature you're being exposed to.

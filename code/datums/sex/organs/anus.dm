@@ -8,8 +8,13 @@
 	slot = ORGAN_SLOT_ANUS
 	accessory_type = /datum/sprite_accessory/none
 	max_reagents = 20 //less size than vagene in turn for more effective absorbtion
+	reagent_to_make = null
 	absorbing = TRUE
 	absorbmult = 1.5 //more effective absorb than others i guess.
+	// Slow drains so a load stays about four minutes, or about twelve when held in.
+	absorbrate = 0.1
+	driprate = 0.2
+	can_hold_in = TRUE
 	allows_oviposition_pregnancy = TRUE
 	oviposition_storage_component_type = /datum/component/body_storage/anus
 	oviposition_location_name = "anus"
@@ -25,8 +30,6 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	if(!refilling)
-		reagents.clear_reagents()
 	add_bodystorage(M, null, /datum/component/body_storage/anus)
 
 /obj/item/organ/genitals/filling_organ/anus/Remove(mob/living/M, special, drop_if_replaced)

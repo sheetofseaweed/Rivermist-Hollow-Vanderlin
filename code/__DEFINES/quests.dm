@@ -145,6 +145,7 @@
 	/mob/living/simple_animal/hostile/retaliate/poltergeist = QUEST_MOB_SOLO(4, 4),\
 	/mob/living/simple_animal/hostile/dragger = QUEST_MOB_SOLO(4, 4),\
 	/mob/living/simple_animal/hostile/retaliate/wolf = QUEST_MOB_PACK(6, 4, 2, 4),\
+	/mob/living/simple_animal/hostile/retaliate/wolf/dire = QUEST_MOB_SOLO_EX(2, 6, QUEST_MAP_FLAG_TOWN | QUEST_MAP_FLAG_BOG | QUEST_MAP_FLAG_FROZEN),\
 	/mob/living/simple_animal/hostile/retaliate/bobcat = QUEST_MOB_SOLO(5, 4),\
 	/mob/living/simple_animal/hostile/retaliate/spider = QUEST_MOB_PACK(6, 4, 2, 5),\
 	/mob/living/simple_animal/hostile/skeleton = QUEST_MOB_PACK(5, 5, 2, 4),\

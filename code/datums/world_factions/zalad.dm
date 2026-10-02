@@ -185,6 +185,9 @@
 		/datum/supply_pack/narcotics/ozium,
 		/datum/supply_pack/narcotics/poison,
 		/datum/supply_pack/medicine/antipregpot,
+		/datum/supply_pack/medicine/moon_tea,
+		/datum/supply_pack/medicine/cold_seed,
+		/datum/supply_pack/medicine/seed_sachets,
 		/datum/supply_pack/tools/camp_pavilion,
 		// Livestock
 		/datum/supply_pack/livestock/terrorbird

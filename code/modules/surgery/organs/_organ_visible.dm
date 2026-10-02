@@ -39,6 +39,10 @@
 /obj/item/organ/proc/is_visible_on_owner()
 	return TRUE
 
+/// Sprite inputs besides accessory type and colours, for the human limb render key.
+/obj/item/organ/proc/get_render_key_state()
+	return null
+
 /obj/item/organ/proc/toggle_visibility(vis_type)
 	return
 

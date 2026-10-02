@@ -25,6 +25,9 @@
 
 /mob/living/carbon/human/get_examine_list(mob/user, list/P)
 	. = ..()
+	var/badge_line = build_preference_badges(user)
+	if(badge_line)
+		LAZYADDASSOCLIST(., EXAMINE_SECT_NAME + 0.5, badge_line)
 	for(var/datum/quirk/Q in quirks)
 		Q.on_examined(user, P, .)
 
@@ -203,8 +206,6 @@
 			if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
 				if(getorganslot(ORGAN_SLOT_PENIS))
 					organ_desc += "[capitalize(P[THEYRE])] pitching a tent in [P[THEIR]] [underwear.name]."
-				if(getorganslot(ORGAN_SLOT_VAGINA))
-					organ_desc += "[capitalize(P[THEYVE])] a wet spot on [P[THEIR]] [underwear.name]."
 				show_undie_desc = TRUE
 		else
 			if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
@@ -220,8 +221,6 @@
 		if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD)
 			if(getorganslot(ORGAN_SLOT_PENIS))
 				organ_desc += "[capitalize(P[THEYRE])] pitching a tent in [P[THEIR]] [underwear.name]."
-			if(getorganslot(ORGAN_SLOT_VAGINA))
-				organ_desc += "[capitalize(P[THEYVE])] a wet spot on [P[THEIR]] [underwear.name]."
 			show_undie_desc = TRUE
 
 	else if(arousal_data["arousal"] > VISIBLE_AROUSAL_THRESHOLD && !show_naked_desc)
@@ -232,6 +231,8 @@
 			var/obj/item/organ/genitals/filling_organ/vagina/vag = getorganslot(ORGAN_SLOT_VAGINA)
 			organ_desc += "[capitalize(P[THEIR])] [vag.name] is glistening with arousal!"
 		show_naked_desc = TRUE
+
+	organ_desc += get_fluid_stain_examine(P)
 
 	if(length(organ_desc))
 		. += span_love("[organ_desc.Join("\n")]")
