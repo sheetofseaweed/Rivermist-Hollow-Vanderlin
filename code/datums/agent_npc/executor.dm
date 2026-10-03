@@ -24,7 +24,24 @@
 		cleaned = trim(copytext_char(cleaned, 2))
 
 	cleaned = copytext_char(cleaned, 1, MAX_MESSAGE_LEN)
+	// Any asterisk left anywhere makes /mob/say_mod read the words before it as a custom speech verb.
+	cleaned = trim(replacetext(cleaned, "*", ""))
 	return length(cleaned) ? cleaned : null
+
+/// Pull the model's *actions* out of its speech: list("speech" = the words, "actions" = what was acted).
+/proc/agent_split_speech_actions(text)
+	var/static/regex/action_span = regex(@"\*+([^*]+)\*+", "g")
+	var/static/regex/spaces = regex(@" {2,}", "g")
+	var/list/actions = list()
+	if(!istext(text))
+		return list("speech" = text, "actions" = actions)
+	var/position = 1
+	while(action_span.Find(text, position))
+		var/action = trim(action_span.group[1])
+		if(length(action))
+			actions += action
+		position = action_span.next
+	return list("speech" = spaces.Replace(action_span.Replace(text, " "), " "), "actions" = actions)
 
 /proc/agent_result(state, detail)
 	return list("state" = state, "detail" = detail)
@@ -35,17 +52,24 @@
 	if(pawn.stat >= UNCONSCIOUS)
 		return agent_result(AGENT_RESULT_REJECTED, "cannot speak right now")
 
-	var/cleaned = agent_sanitise_speech(text)
-	if(!cleaned)
+	// Models write *squints* into speech, which the game would garble into a speech verb. Act it out instead.
+	var/list/split = agent_split_speech_actions(text)
+	var/list/actions = split["actions"]
+	var/datum/ai_controller/agent_social/agent = pawn.ai_controller
+	var/may_act = length(actions) && istype(agent) && agent.profile?.permits("me")
+	var/cleaned = agent_sanitise_speech(split["speech"])
+	if(!cleaned && !may_act)
 		return agent_result(AGENT_RESULT_REJECTED, "nothing left after sanitising")
 
-	// say() only runs the IC filter when a client is present, so a clientless
-	// agent pawn bypasses it entirely. Run it here or it never runs.
-	if(CHAT_FILTER_CHECK(cleaned))
-		return agent_result(AGENT_RESULT_REJECTED, "blocked by the IC filter")
-
-	pawn.say(cleaned, forced = TRUE)
-	return agent_result(AGENT_RESULT_SUCCEEDED, "spoke")
+	if(cleaned)
+		// say() only runs the IC filter when a client is present, so a clientless
+		// agent pawn bypasses it entirely. Run it here or it never runs.
+		if(CHAT_FILTER_CHECK(cleaned))
+			return agent_result(AGENT_RESULT_REJECTED, "blocked by the IC filter")
+		pawn.say(cleaned, forced = TRUE)
+	if(may_act)
+		agent_execute_me(pawn, jointext(actions, ", "))
+	return agent_result(AGENT_RESULT_SUCCEEDED, cleaned ? "spoke" : "acted")
 
 /proc/agent_execute_emote(mob/living/pawn, key)
 	// Closed allowlist of verified keys. An agent cannot reach arbitrary emotes.

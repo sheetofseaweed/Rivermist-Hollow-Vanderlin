@@ -26,9 +26,11 @@ prompt. Whatever works first is remembered for the rest of the run.
 """
 
 import argparse
+import http.client
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -40,6 +42,16 @@ BASE_URL = "https://codex.sale/v1"
 DEFAULT_MODEL = "gpt-5.6-luna"
 REQUEST_TIMEOUT = 30
 MAX_TOKENS = 2048
+
+# Streamed, a healthy answer starts within two seconds (measured 2026-10-03). Silence this long is a stall.
+FIRST_BYTE_TIMEOUT = 6.0
+# Longest quiet spell allowed after that, while the model reasons or writes.
+IDLE_TIMEOUT = 10.0
+# A retry with less time left than this could not finish before DM gives up anyway.
+MIN_RETRY_SECONDS = 6.0
+MAX_ATTEMPTS = 3
+# Provider-side hiccups worth another try, alongside stalls and failed connections.
+RETRY_STATUSES = (500, 502, 503, 504)
 
 # Tried in order. The first the provider accepts is reused for the run.
 OUTPUT_MODES = ("json_schema", "json_object", "text")
@@ -73,13 +85,101 @@ def post_json(url, payload, api_key, timeout=REQUEST_TIMEOUT):
         return 0, "could not reach %s (%s)" % (url, err.reason)
 
 
+def set_read_timeout(response, seconds):
+    """Change an open response's read timeout. Python has no public way; this reaches the socket urllib opened."""
+    sock = getattr(getattr(getattr(response, "fp", None), "raw", None), "_sock", None)
+    if sock is not None:
+        sock.settimeout(max(0.1, seconds))
+
+
+def post_stream(url, payload, api_key, budget):
+    """Stream a chat completion within budget seconds. Returns (status, unstreamed-shaped body, phase reached)."""
+    # Unstreamed, a stall looks like a slow answer until the timeout. Streamed, it shows in seconds, in time to retry.
+    deadline = time.monotonic() + budget
+    payload = dict(payload, stream=True, stream_options={"include_usage": True})
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer %s" % api_key,
+        },
+        method="POST",
+    )
+    phase = "connect"
+    try:
+        with urllib.request.urlopen(request, timeout=min(FIRST_BYTE_TIMEOUT, budget)) as response:
+            phase = "waiting"
+            content, reasoning, finish, usage = [], [], None, None
+            while True:
+                left = deadline - time.monotonic()
+                if left <= 0:
+                    return 0, "no complete answer within %.0fs" % budget, phase
+                set_read_timeout(response, min(IDLE_TIMEOUT, left))
+                line = response.readline()
+                if not line:
+                    break
+                text = line.decode("utf-8", "replace").strip()
+                if not text.startswith("data:"):
+                    continue
+                data = text[5:].strip()
+                if data == "[DONE]":
+                    break
+                try:
+                    chunk = json.loads(data)
+                except ValueError:
+                    continue
+                if not isinstance(chunk, dict):
+                    continue
+                if chunk.get("error"):
+                    # Reported inside a 200 stream by some providers. Treated as the server error it is.
+                    return 500, chunk, phase
+                usage = chunk.get("usage") or usage
+                for choice in chunk.get("choices") or []:
+                    delta = choice.get("delta") or {}
+                    if isinstance(delta.get("content"), str) and delta["content"]:
+                        content.append(delta["content"])
+                        phase = "answering"
+                    for field in ("reasoning_content", "reasoning"):
+                        if isinstance(delta.get(field), str):
+                            reasoning.append(delta[field])
+                    finish = choice.get("finish_reason") or finish
+            message = {"content": "".join(content)}
+            if reasoning:
+                message["reasoning_content"] = "".join(reasoning)
+            return 200, {"choices": [{"message": message, "finish_reason": finish}],
+                         "usage": usage or {}}, "done"
+    except urllib.error.HTTPError as err:
+        raw = err.read().decode("utf-8", "replace")
+        try:
+            return err.code, json.loads(raw), "done"
+        except ValueError:
+            return err.code, raw, "done"
+    except TimeoutError:
+        return 0, "timed out %s" % _PHASE_WORDS[phase], phase
+    except urllib.error.URLError as err:
+        if isinstance(err.reason, TimeoutError):
+            return 0, "timed out %s" % _PHASE_WORDS["connect"], "connect"
+        return 0, "could not reach %s (%s)" % (url, err.reason), "connect"
+    except (OSError, http.client.HTTPException) as err:
+        return 0, "connection lost %s (%s)" % (_PHASE_WORDS[phase], err), phase
+
+
+_PHASE_WORDS = {
+    "connect": "before the provider responded",
+    "waiting": "waiting for the model to start answering",
+    "answering": "while the model was answering",
+}
+
+
 class CodexSaleDecider(proto.Decider):
     name = "codex-sale"
 
     def __init__(self, model=DEFAULT_MODEL, dry_run=False, output_mode="auto",
-                 reasoning_effort=None, base_url=BASE_URL, verbose=False, memory_turns=6):
+                 reasoning_effort=None, base_url=BASE_URL, verbose=False, memory_turns=6, stream=True):
         super().__init__(dry_run=dry_run)
         self.model = model
+        self.stream = stream
         self.verbose = verbose
         self.memory = proto.ConversationStore(max_turns=memory_turns)
         self.base_url = base_url.rstrip("/")
@@ -152,7 +252,7 @@ class CodexSaleDecider(proto.Decider):
 
         # Stay inside the deadline DM sent. Outliving it means answering a
         # request nobody is listening for any more.
-        timeout = proto.upstream_timeout(body, REQUEST_TIMEOUT)
+        deadline = time.monotonic() + proto.upstream_timeout(body, REQUEST_TIMEOUT)
 
         start = self.current_mode()
         modes = [start]
@@ -166,8 +266,7 @@ class CodexSaleDecider(proto.Decider):
             if self.dry_run:
                 return {"name": "wait"}, None, 0
 
-            status, payload = post_json(self.base_url + "/chat/completions",
-                                        turn.request, self.api_key, timeout=timeout)
+            status, payload = self.call(turn.request, deadline)
             # A 400 in auto mode usually means this output mode is unsupported.
             if status == 400 and self.requested_mode == "auto" and mode != modes[-1]:
                 nxt = self.demote_mode(mode)
@@ -185,6 +284,27 @@ class CodexSaleDecider(proto.Decider):
                                      % self.memory.depth(body))
             return action, refusal, tokens
         return None, "no output mode was attempted", 0
+
+    def call(self, request, deadline):
+        """Post the request, again if an attempt stalled before the answer began and there is time to finish."""
+        url = self.base_url + "/chat/completions"
+        started = time.monotonic()
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            budget = max(1.0, deadline - time.monotonic())
+            if not self.stream:
+                return post_json(url, request, self.api_key, timeout=budget)
+            status, payload, phase = post_stream(url, request, self.api_key, budget)
+            stalled = (status == 0 and phase in ("connect", "waiting")) or status in RETRY_STATUSES
+            left = deadline - time.monotonic()
+            if stalled and attempt < MAX_ATTEMPTS and left >= MIN_RETRY_SECONDS:
+                sys.stderr.write("[codex-sale] attempt %d: %s after %.1fs; retrying, %.0fs left\n" % (
+                    attempt, payload if status == 0 else "provider error %d" % status,
+                    time.monotonic() - started, left))
+                continue
+            if self.verbose and status == 200:
+                sys.stderr.write("[codex-sale] answered in %.1fs (attempt %d)\n" % (
+                    time.monotonic() - started, attempt))
+            return status, payload
 
     def refuse(self, reason, tokens=0, raw=None):
         """Every refusal is logged.
@@ -412,6 +532,8 @@ def main():
                         help="test what the endpoint supports, then exit")
     parser.add_argument("--verbose", action="store_true",
                         help="print every chosen action, and full model text on a refusal")
+    parser.add_argument("--no-stream", action="store_true",
+                        help="ask for whole answers instead of streaming; slower to notice a stall, and no retry")
     parser.add_argument("--memory-turns", type=int, default=6,
                         help="default exchanges kept per character; a profile's memory_turns overrides it "
                              "(0 here disables memory for everyone). Each one is resent every turn.")
@@ -423,9 +545,9 @@ def main():
     decider = CodexSaleDecider(
         model=args.model, dry_run=args.dry_run, output_mode=args.output_mode,
         reasoning_effort=args.reasoning_effort, base_url=args.base_url,
-        verbose=args.verbose, memory_turns=args.memory_turns)
-    sys.stderr.write("[codex-sale] model=%s output_mode=%s memory_turns=%d\n" % (
-        decider.model, decider.mode, decider.memory.max_turns))
+        verbose=args.verbose, memory_turns=args.memory_turns, stream=not args.no_stream)
+    sys.stderr.write("[codex-sale] model=%s output_mode=%s memory_turns=%d stream=%s\n" % (
+        decider.model, decider.mode, decider.memory.max_turns, "on" if decider.stream else "off"))
     proto.serve(decider, args.host, args.port)
     return 0
 

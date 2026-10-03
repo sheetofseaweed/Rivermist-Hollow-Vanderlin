@@ -122,6 +122,8 @@ def build_system(profile, describe_schema=False):
         "You act by choosing exactly one action per turn from: " + ", ".join(permitted) + ".",
         "Use 'wait' when nothing is worth doing. Waiting is a normal choice; "
         "do not invent activity to fill a turn.",
+        # The game reads any asterisk in speech as the start of a custom verb, which garbles the line.
+        "'say' holds only the words spoken aloud: no actions, and never asterisks.",
         "Only refer to things listed in the scene. To approach or use something, "
         "give the handle exactly as it appears there: the code in brackets, like h3, "
         "never the name. Never invent a handle.",
@@ -785,11 +787,16 @@ def make_handler(decider):
 
         def _send(self, code, payload):
             raw = json.dumps(payload).encode("utf-8")
-            self.send_response(code)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(raw)))
-            self.end_headers()
-            self.wfile.write(raw)
+            try:
+                self.send_response(code)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+            except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
+                # DM's own deadline fired first and it hung up. Its log shows the lost turn; a traceback here helped nobody.
+                sys.stderr.write("[%s] DM stopped waiting before this answer could be sent\n" % decider.name)
+                self.close_connection = True
 
         def _route(self):
             return urllib.parse.urlsplit(self.path).path

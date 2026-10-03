@@ -377,3 +377,42 @@
 	TEST_ASSERT_NULL(nobody, "A name nobody in the scene has must resolve to nobody.")
 	TEST_ASSERT_EQUAL(approached, lexus, "Approaching by name must walk to them.")
 	TEST_ASSERT_NULL(shared, "A name two shown people share must resolve to neither.")
+
+// ------------------------------------------------------------------ actions written into speech
+
+/// Everything a mob logged of one kind, as one text.
+/proc/agent_test_mob_log(mob/who, log_type)
+	var/list/entries = who.logging?["[log_type]"]
+	var/list/lines = list()
+	for(var/stamp in entries)
+		lines += "[entries[stamp]]"
+	return jointext(lines, "\n")
+
+/datum/unit_test/agent_npc_actions_in_speech_are_acted_out
+
+/datum/unit_test/agent_npc_actions_in_speech_are_acted_out/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/mob/living/carbon/human/species/human/northern/agent_social/mute = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/ai_controller/agent_social/mute_controller = mute.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	mute_controller.profile.permitted_actions = list("say", "wait")
+
+	var/list/split = agent_split_speech_actions("В ратуше, разумеется. *щурится* Спросите слуг. *ухмыляется*")
+	var/list/outcome = agent_execute_say(pawn, "В ратуше, разумеется. *щурится*")
+	var/said = agent_test_mob_log(pawn, LOG_SAY)
+	var/acted = agent_test_mob_log(pawn, LOG_EMOTE)
+	var/list/mute_outcome = agent_execute_say(mute, "*щурится*")
+	agent_test_restore_subsystem(saved, controller.binding)
+	agent_test_restore_subsystem(saved, mute_controller.binding)
+
+	// Live, "*щурится*" in speech came out as: Huan Li в ратуше, разумеется. , "Щурится*"
+	TEST_ASSERT_EQUAL(agent_sanitise_speech(split["speech"]), "В ратуше, разумеется. Спросите слуг.", "The words must be kept and the actions taken out.")
+	TEST_ASSERT_EQUAL(jointext(split["actions"], "|"), "щурится|ухмыляется", "Every action must be found.")
+	TEST_ASSERT_EQUAL(outcome["state"], AGENT_RESULT_SUCCEEDED, "Speech with an action in it must still be spoken.")
+	TEST_ASSERT(findtext(said, "В ратуше, разумеется."), "The words must be said.")
+	TEST_ASSERT(!findtext(said, "*"), "No asterisk may reach say, or the words before it become a speech verb.")
+	TEST_ASSERT(findtext(acted, "щурится"), "The action must be acted out instead.")
+	TEST_ASSERT_EQUAL(mute_outcome["state"], AGENT_RESULT_REJECTED, "Only an action, from a character that may not act in its own words, does nothing.")
+	TEST_ASSERT_EQUAL(agent_sanitise_speech("half*verb"), "halfverb", "A stray asterisk must go as well.")

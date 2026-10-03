@@ -10,9 +10,12 @@ Several of these exist because a reviewer reproduced the bug first. Where that
 is so, the test says which defect it pins down.
 """
 
+import http.server
 import json
 import os
 import sys
+import threading
+import time
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -718,6 +721,165 @@ class Interpretation(unittest.TestCase):
             action, refusal, _ = self.decider.interpret(status, {"error": "x"}, self.turn)
             self.assertIsNone(action)
             self.assertIn(expect, refusal)
+
+
+def _sse(handler, chunks, then=None):
+    """Answer like a streaming provider: one data line per chunk, then [DONE] unless told to stall."""
+    handler.send_response(200)
+    handler.send_header("Content-Type", "text/event-stream")
+    handler.end_headers()
+    for chunk in chunks:
+        handler.wfile.write(("data: %s\n\n" % json.dumps(chunk)).encode("utf-8"))
+        handler.wfile.flush()
+    if then:
+        then(handler)
+        return
+    handler.wfile.write(b"data: [DONE]\n\n")
+
+
+_ANSWER = [
+    {"choices": [{"delta": {"role": "assistant"}}]},
+    {"choices": [{"delta": {"content": '{"action":"say","text":"hi",'}}]},
+    {"choices": [{"delta": {"content": '"key":"","handle":""}'}, "finish_reason": "stop"}]},
+    {"choices": [], "usage": {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}},
+]
+
+
+def _answer(handler):
+    _sse(handler, _ANSWER)
+
+
+def _stall_before_answering(handler):
+    time.sleep(1.0)
+
+
+def _stall_mid_answer(handler):
+    _sse(handler, _ANSWER[:2], then=lambda h: time.sleep(1.0))
+
+
+def _ping_forever(handler):
+    handler.send_response(200)
+    handler.send_header("Content-Type", "text/event-stream")
+    handler.end_headers()
+    for _ in range(40):
+        handler.wfile.write(b": keep-alive\n\n")
+        handler.wfile.flush()
+        time.sleep(0.1)
+
+
+class _ScriptedProvider:
+    """A local stand-in for codex.sale. Each request plays the next script; the last one repeats."""
+
+    def __init__(self, *scripts):
+        self.scripts = list(scripts)
+        self.requests = 0
+        provider = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *args):
+                pass
+
+            def do_POST(self):
+                self.rfile.read(int(self.headers.get("Content-Length") or 0))
+                provider.requests += 1
+                script = provider.scripts.pop(0) if len(provider.scripts) > 1 else provider.scripts[0]
+                try:
+                    script(self)
+                except OSError:
+                    pass  # The client gave up first, which is what these tests arrange.
+
+        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.server.daemon_threads = True
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+        self.base = "http://127.0.0.1:%d/v1" % self.server.server_address[1]
+
+    def close(self):
+        self.server.shutdown()
+        self.server.server_close()
+
+
+class StreamingTransport(unittest.TestCase):
+    """Live, a third of turns were lost to 20 s read timeouts and DM hung up on late answers (2026-10-03)."""
+
+    def setUp(self):
+        self.saved = (cs.FIRST_BYTE_TIMEOUT, cs.IDLE_TIMEOUT, cs.MIN_RETRY_SECONDS)
+        cs.FIRST_BYTE_TIMEOUT, cs.IDLE_TIMEOUT, cs.MIN_RETRY_SECONDS = 0.3, 0.3, 0.5
+        self.decider = cs.CodexSaleDecider(dry_run=True)
+        self.decider.api_key = "test-key"
+        self.provider = None
+
+    def tearDown(self):
+        cs.FIRST_BYTE_TIMEOUT, cs.IDLE_TIMEOUT, cs.MIN_RETRY_SECONDS = self.saved
+        if self.provider:
+            self.provider.close()
+
+    def serve(self, *scripts):
+        self.provider = _ScriptedProvider(*scripts)
+        self.decider.base_url = self.provider.base
+        return self.provider
+
+    def test_a_streamed_answer_reads_like_a_whole_one(self):
+        self.serve(_answer)
+        status, body, phase = cs.post_stream(self.decider.base_url + "/chat/completions", {"model": "m"}, "k", 3)
+        self.assertEqual((status, phase), (200, "done"))
+        turn = self.decider.build_turn(envelope())
+        action, refusal, tokens = self.decider.interpret(status, body, turn)
+        self.assertIsNone(refusal)
+        self.assertEqual(action, {"name": "say", "text": "hi"})
+        self.assertEqual(tokens, 15)
+
+    def test_a_stall_before_the_answer_is_retried(self):
+        provider = self.serve(_stall_before_answering, _answer)
+        status, _ = self.decider.call({"model": "m"}, time.monotonic() + 3)
+        self.assertEqual(status, 200, "A stalled first attempt must not cost the turn while time remains.")
+        self.assertEqual(provider.requests, 2)
+
+    def test_a_stall_mid_answer_is_not_retried(self):
+        provider = self.serve(_stall_mid_answer, _answer)
+        status, payload = self.decider.call({"model": "m"}, time.monotonic() + 3)
+        self.assertEqual(status, 0)
+        self.assertIn("answering", payload)
+        self.assertEqual(provider.requests, 1, "Half an answer is not retried: a second would not finish in time.")
+
+    def test_no_retry_without_time_to_finish(self):
+        provider = self.serve(_stall_before_answering, _answer)
+        status, _ = self.decider.call({"model": "m"}, time.monotonic() + 0.6)
+        self.assertEqual(status, 0)
+        self.assertEqual(provider.requests, 1)
+
+    def test_the_whole_budget_is_enforced(self):
+        # Every read succeeding is how the old timeout let a slow trickle outlive DM's deadline.
+        self.serve(_ping_forever)
+        started = time.monotonic()
+        status, _, _ = cs.post_stream(self.decider.base_url + "/chat/completions", {"model": "m"}, "k", 0.8)
+        self.assertEqual(status, 0)
+        self.assertLess(time.monotonic() - started, 1.5)
+
+    def test_dm_hanging_up_is_not_a_traceback(self):
+        class HungUp:
+            def write(self, data):
+                raise ConnectionAbortedError(10053, "aborted")
+
+            def flush(self):
+                pass
+
+        handler_type = proto.make_handler(self.decider)
+        handler = handler_type.__new__(handler_type)
+        handler.wfile = HungUp()
+        handler.request_version = "HTTP/1.1"
+        handler.requestline = "POST /decide HTTP/1.1"
+        handler.command = "POST"
+        handler.client_address = ("127.0.0.1", 1)
+        handler.close_connection = False
+        handler._send(200, {"ok": True})
+        self.assertTrue(handler.close_connection)
+
+
+class SpeechHasNoActions(unittest.TestCase):
+
+    def test_the_prompt_keeps_actions_out_of_speech(self):
+        # A live model wrote *squints* into say, and the game made the words before it a speech verb.
+        self.assertIn("never asterisks", proto.build_system({"persona": "P", "permitted_actions": ["say", "wait"]}))
 
 
 if __name__ == "__main__":
