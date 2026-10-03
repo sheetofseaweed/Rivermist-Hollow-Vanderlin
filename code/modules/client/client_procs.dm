@@ -1196,6 +1196,9 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		add_verb(src, /client/proc/self_notes)
 	if(CONFIG_GET(flag/use_exp_tracking))
 		add_verb(src, /client/proc/self_playtime)
+	// Only where agent NPCs actually run, so nobody else sees a verb that does nothing.
+	if(CONFIG_GET(flag/agent_npc_enabled))
+		add_verb(src, /client/proc/agent_talk_to)
 
 
 #undef UPLOAD_LIMIT
