@@ -69,7 +69,10 @@
 /datum/action/cooldown/spell/projectile/proc/fire_projectile(atom/target)
 	current_amount--
 	for(var/i in 1 to projectiles_per_fire)
-		var/obj/projectile/to_fire = new projectile_type()
+		var/shot_type = projectile_type
+		if(dnd_use_spell_slots && dnd_get_cast_level() == DND_MINOR_TIER && dnd_minor_projectile_type)
+			shot_type = dnd_minor_projectile_type
+		var/obj/projectile/to_fire = new shot_type()
 		ready_projectile(to_fire, target, owner, i)
 		to_fire.fire()
 	return TRUE
@@ -103,4 +106,6 @@
 	if(victim.stat == DEAD)
 		return
 
-	handle_exp(get_adjusted_cost() / 4)
+	// Hybrid casting awards XP once on commitment, never from unlimited minor hits.
+	if(!dnd_use_spell_slots)
+		handle_exp(get_adjusted_cost() / 4)
