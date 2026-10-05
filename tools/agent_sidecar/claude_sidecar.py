@@ -153,8 +153,7 @@ def main():
     if not args.dry_run and not (os.environ.get(KEY_ENV_VAR)
                                  or os.environ.get("ANTHROPIC_API_KEY")
                                  or os.environ.get("ANTHROPIC_AUTH_TOKEN")):
-        sys.stderr.write("[claude] no key in the environment; relying on an "
-                         "`ant auth login` profile\n")
+        proto.log("claude", "no key in the environment; relying on an `ant auth login` profile")
 
     proto.serve(ClaudeDecider(model=args.model, dry_run=args.dry_run,
                               memory_turns=args.memory_turns), args.host, args.port)

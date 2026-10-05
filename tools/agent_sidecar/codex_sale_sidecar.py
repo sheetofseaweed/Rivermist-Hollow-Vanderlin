@@ -23,13 +23,19 @@ support is not documented anywhere public.
 Structured output is negotiated, not assumed. The adapter tries json_schema,
 falls back to json_object, then to plain text with the shape described in the
 prompt. Whatever works first is remembered for the rest of the run.
+
+Every log line carries the clock time. Every 20 requests, and on Ctrl+C, a
+tally follows: answers on the first try, after a retry, lost, and why tries failed.
 """
 
 import argparse
+import collections
 import http.client
 import json
 import os
+import statistics
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -52,6 +58,8 @@ MIN_RETRY_SECONDS = 6.0
 MAX_ATTEMPTS = 3
 # Provider-side hiccups worth another try, alongside stalls and failed connections.
 RETRY_STATUSES = (500, 502, 503, 504)
+# The tally is logged after this many requests, and again when the sidecar stops.
+SUMMARY_EVERY = 20
 
 # Tried in order. The first the provider accepts is reused for the run.
 OUTPUT_MODES = ("json_schema", "json_object", "text")
@@ -83,6 +91,9 @@ def post_json(url, payload, api_key, timeout=REQUEST_TIMEOUT):
             return err.code, raw
     except urllib.error.URLError as err:
         return 0, "could not reach %s (%s)" % (url, err.reason)
+    except (OSError, http.client.HTTPException) as err:
+        # A failure after the connection opened, such as a read timeout, arrives bare instead of as a URLError.
+        return 0, "no reply from %s (%s)" % (url, err)
 
 
 def set_read_timeout(response, seconds):
@@ -92,10 +103,46 @@ def set_read_timeout(response, seconds):
         sock.settimeout(max(0.1, seconds))
 
 
-def post_stream(url, payload, api_key, budget):
+class _StampedConnection:
+    """Notes when the connection is open, TLS included. A stall after that is the provider's, not the network's."""
+
+    def __init__(self, *args, stamps=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stamps = stamps
+
+    def connect(self):
+        super().connect()
+        if self.stamps is not None:
+            self.stamps["connected"] = time.monotonic()
+
+
+class _StampedHTTPConnection(_StampedConnection, http.client.HTTPConnection):
+    pass
+
+
+class _StampedHTTPSConnection(_StampedConnection, http.client.HTTPSConnection):
+    pass
+
+
+class _StampingHandler(urllib.request.HTTPHandler, urllib.request.HTTPSHandler):
+    """Opens http and https through the stamped connections. Everything else, proxies included, stays urllib's own."""
+
+    def __init__(self, stamps):
+        super().__init__()
+        self.stamps = stamps
+
+    def http_open(self, req):
+        return self.do_open(_StampedHTTPConnection, req, stamps=self.stamps)
+
+    def https_open(self, req):
+        return self.do_open(_StampedHTTPSConnection, req, stamps=self.stamps)
+
+
+def post_stream(url, payload, api_key, budget, stamps=None):
     """Stream a chat completion within budget seconds. Returns (status, unstreamed-shaped body, phase reached)."""
     # Unstreamed, a stall looks like a slow answer until the timeout. Streamed, it shows in seconds, in time to retry.
     deadline = time.monotonic() + budget
+    stamps = {} if stamps is None else stamps
     payload = dict(payload, stream=True, stream_options={"include_usage": True})
     request = urllib.request.Request(
         url,
@@ -106,9 +153,10 @@ def post_stream(url, payload, api_key, budget):
         },
         method="POST",
     )
+    opener = urllib.request.build_opener(_StampingHandler(stamps))
     phase = "connect"
     try:
-        with urllib.request.urlopen(request, timeout=min(FIRST_BYTE_TIMEOUT, budget)) as response:
+        with opener.open(request, timeout=min(FIRST_BYTE_TIMEOUT, budget)) as response:
             phase = "waiting"
             content, reasoning, finish, usage = [], [], None, None
             while True:
@@ -155,21 +203,85 @@ def post_stream(url, payload, api_key, budget):
             return err.code, json.loads(raw), "done"
         except ValueError:
             return err.code, raw, "done"
-    except TimeoutError:
-        return 0, "timed out %s" % _PHASE_WORDS[phase], phase
-    except urllib.error.URLError as err:
-        if isinstance(err.reason, TimeoutError):
-            return 0, "timed out %s" % _PHASE_WORDS["connect"], "connect"
-        return 0, "could not reach %s (%s)" % (url, err.reason), "connect"
     except (OSError, http.client.HTTPException) as err:
-        return 0, "connection lost %s (%s)" % (_PHASE_WORDS[phase], err), phase
+        # urllib wraps failures while connecting or sending in a URLError; later ones arrive bare.
+        reason = err.reason if isinstance(err, urllib.error.URLError) else err
+        if phase == "connect" and "connected" in stamps:
+            phase = "sent"
+        if isinstance(reason, TimeoutError):
+            return 0, "timed out %s" % _PHASE_WORDS[phase], phase
+        if phase == "connect":
+            return 0, "could not reach %s (%s)" % (url, reason), phase
+        return 0, "connection lost %s (%s)" % (_PHASE_WORDS[phase], reason), phase
 
 
 _PHASE_WORDS = {
-    "connect": "before the provider responded",
+    "connect": "while connecting to the provider",
+    "sent": "before the provider responded",
     "waiting": "waiting for the model to start answering",
     "answering": "while the model was answering",
 }
+
+# How each phase reads in the tally of failed tries.
+_FAILED_TRY_WORDS = {
+    "connect": "while connecting",
+    "sent": "waiting for the provider",
+    "waiting": "waiting for the model",
+    "answering": "cut off mid-answer",
+}
+
+
+class Tally:
+    """What became of each request since the sidecar started."""
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.requests = 0
+        self.first_try = 0
+        self.retried = 0
+        self.lost = 0
+        self.answer_seconds = []
+        self.connect_seconds = []
+        self.failed_tries = collections.Counter()
+
+    def record(self, answered_on, seconds, connects, failures):
+        """answered_on is the attempt that answered, or None. Returns True when the tally is due in the log."""
+        with self.lock:
+            self.requests += 1
+            if answered_on == 1:
+                self.first_try += 1
+            elif answered_on:
+                self.retried += 1
+            else:
+                self.lost += 1
+            if answered_on:
+                self.answer_seconds.append(seconds)
+            self.connect_seconds.extend(connects)
+            self.failed_tries.update(failures)
+            return self.requests % SUMMARY_EVERY == 0
+
+    def lines(self):
+        with self.lock:
+            if not self.requests:
+                return []
+            lines = ["tally: %d request%s, %d answered first try, %d after a retry, %d lost" % (
+                self.requests, "" if self.requests == 1 else "s", self.first_try, self.retried, self.lost)]
+            took = []
+            if self.answer_seconds:
+                took.append("answers took %s" % _spread(self.answer_seconds, "%.1fs"))
+            if self.connect_seconds:
+                took.append("connecting took %s" % _spread(self.connect_seconds, "%.2fs"))
+            if took:
+                lines.append("  " + "; ".join(took))
+            if self.failed_tries:
+                lines.append("  failed tries: " + ", ".join(
+                    "%d %s" % (count, kind) for kind, count in self.failed_tries.most_common()))
+            return lines
+
+
+def _spread(values, fmt):
+    """Median and worst of some durations, as in "4.1s median, 13.4s at most"."""
+    return (fmt + " median, " + fmt + " at most") % (statistics.median(values), max(values))
 
 
 class CodexSaleDecider(proto.Decider):
@@ -181,6 +293,7 @@ class CodexSaleDecider(proto.Decider):
         self.model = model
         self.stream = stream
         self.verbose = verbose
+        self.tally = Tally()
         self.memory = proto.ConversationStore(max_turns=memory_turns)
         self.base_url = base_url.rstrip("/")
         self.reasoning_effort = reasoning_effort
@@ -195,6 +308,12 @@ class CodexSaleDecider(proto.Decider):
         return {"adapter": self.name, "dry_run": self.dry_run,
                 "model": self.model, "output_mode": self.current_mode(),
                 "base_url": self.base_url, "memory_turns": self.memory.max_turns}
+
+    def log(self, text):
+        proto.log(self.name, text)
+
+    def summary_lines(self):
+        return self.tally.lines()
 
     def build_turn(self, body, mode=None):
         profile = body.get("profile") or {}
@@ -270,8 +389,7 @@ class CodexSaleDecider(proto.Decider):
             # A 400 in auto mode usually means this output mode is unsupported.
             if status == 400 and self.requested_mode == "auto" and mode != modes[-1]:
                 nxt = self.demote_mode(mode)
-                sys.stderr.write("[codex-sale] %s rejected (%s); trying %s\n" % (
-                    mode, short_error(payload), nxt))
+                self.log("%s rejected (%s); trying %s" % (mode, short_error(payload), nxt))
                 continue
 
             action, refusal, tokens = self.interpret(status, payload, turn)
@@ -280,8 +398,7 @@ class CodexSaleDecider(proto.Decider):
             if action and self.memory:
                 self.memory.record(body, turn.history_text, action)
                 if self.verbose:
-                    sys.stderr.write("[codex-sale] memory: %d exchanges for this character\n"
-                                     % self.memory.depth(body))
+                    self.log("memory: %d exchanges for this character" % self.memory.depth(body))
             return action, refusal, tokens
         return None, "no output mode was attempted", 0
 
@@ -289,22 +406,41 @@ class CodexSaleDecider(proto.Decider):
         """Post the request, again if an attempt stalled before the answer began and there is time to finish."""
         url = self.base_url + "/chat/completions"
         started = time.monotonic()
-        for attempt in range(1, MAX_ATTEMPTS + 1):
-            budget = max(1.0, deadline - time.monotonic())
-            if not self.stream:
-                return post_json(url, request, self.api_key, timeout=budget)
-            status, payload, phase = post_stream(url, request, self.api_key, budget)
-            stalled = (status == 0 and phase in ("connect", "waiting")) or status in RETRY_STATUSES
-            left = deadline - time.monotonic()
-            if stalled and attempt < MAX_ATTEMPTS and left >= MIN_RETRY_SECONDS:
-                sys.stderr.write("[codex-sale] attempt %d: %s after %.1fs; retrying, %.0fs left\n" % (
-                    attempt, payload if status == 0 else "provider error %d" % status,
-                    time.monotonic() - started, left))
-                continue
-            if self.verbose and status == 200:
-                sys.stderr.write("[codex-sale] answered in %.1fs (attempt %d)\n" % (
-                    time.monotonic() - started, attempt))
+        if not self.stream:
+            status, payload = post_json(url, request, self.api_key, timeout=max(1.0, deadline - started))
+            failed = {} if status == 200 else {"provider error %d" % status if status else "no reply, unstreamed": 1}
+            self.count(1 if status == 200 else None, started, [], failed)
             return status, payload
+        connects, failed = [], collections.Counter()
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            stamps, tried = {}, time.monotonic()
+            status, payload, phase = post_stream(url, request, self.api_key, max(1.0, deadline - tried), stamps)
+            connect = stamps["connected"] - tried if "connected" in stamps else None
+            if connect is not None:
+                connects.append(connect)
+            if status == 200:
+                if self.verbose:
+                    self.log("answered in %.1fs (attempt %d, connected in %.2fs)" % (
+                        time.monotonic() - started, attempt, connect or 0))
+                self.count(attempt, started, connects, failed)
+                return status, payload
+            failed["provider error %d" % status if status else _FAILED_TRY_WORDS.get(phase, phase)] += 1
+            stalled = (status == 0 and phase in ("connect", "sent", "waiting")) or status in RETRY_STATUSES
+            left = deadline - time.monotonic()
+            retry = stalled and attempt < MAX_ATTEMPTS and left >= MIN_RETRY_SECONDS
+            self.log("attempt %d: %s after %.1fs%s; %s" % (
+                attempt, payload if status == 0 else "provider error %d" % status,
+                time.monotonic() - started, "" if connect is None else " (connected in %.2fs)" % connect,
+                "retrying, %.0fs left" % left if retry else "giving up"))
+            if not retry:
+                self.count(None, started, connects, failed)
+                return status, payload
+
+    def count(self, answered_on, started, connects, failed):
+        """Adds a finished request to the tally, and logs the tally when it is due."""
+        if self.tally.record(answered_on, time.monotonic() - started, connects, failed):
+            for line in self.tally.lines():
+                self.log(line)
 
     def refuse(self, reason, tokens=0, raw=None):
         """Every refusal is logged.
@@ -314,12 +450,12 @@ class CodexSaleDecider(proto.Decider):
         likely failure mode - the model answering unusably - is invisible on
         both sides.
         """
-        sys.stderr.write("[codex-sale] REFUSED: %s\n" % reason)
+        self.log("REFUSED: %s" % reason)
         if raw is not None:
             shown = raw if self.verbose else (raw[:300] + ("..." if len(raw) > 300 else ""))
-            sys.stderr.write("[codex-sale]   model said: %r\n" % shown)
+            self.log("  model said: %r" % shown)
             if not self.verbose:
-                sys.stderr.write("[codex-sale]   (run with --verbose for the full text)\n")
+                self.log("  (run with --verbose for the full text)")
         return None, reason, tokens
 
     def interpret(self, status, body, turn):
@@ -359,7 +495,7 @@ class CodexSaleDecider(proto.Decider):
             for alt in ("reasoning_content", "reasoning", "text"):
                 if isinstance(message.get(alt), str) and message[alt].strip():
                     text = message[alt]
-                    sys.stderr.write("[codex-sale] content was empty; used %r instead\n" % alt)
+                    self.log("content was empty; used %r instead" % alt)
                     break
 
         if not text:
@@ -375,7 +511,7 @@ class CodexSaleDecider(proto.Decider):
             # server revalidates whatever comes out of this either way.
             parsed = proto.parse_loose_action(text, permitted)
             if parsed is not None:
-                sys.stderr.write("[codex-sale] recovered a non-JSON reply as %r\n" % parsed["action"])
+                self.log("recovered a non-JSON reply as %r" % parsed["action"])
         if parsed is None:
             return self.refuse("model output was not json", tokens, raw=text)
 
@@ -385,7 +521,7 @@ class CodexSaleDecider(proto.Decider):
                                tokens, raw=text)
 
         if self.verbose:
-            sys.stderr.write("[codex-sale] action: %s\n" % json.dumps(action))
+            self.log("action: %s" % json.dumps(action))
         return action, None, tokens
 
 
@@ -546,7 +682,7 @@ def main():
         model=args.model, dry_run=args.dry_run, output_mode=args.output_mode,
         reasoning_effort=args.reasoning_effort, base_url=args.base_url,
         verbose=args.verbose, memory_turns=args.memory_turns, stream=not args.no_stream)
-    sys.stderr.write("[codex-sale] model=%s output_mode=%s memory_turns=%d stream=%s\n" % (
+    decider.log("model=%s output_mode=%s memory_turns=%d stream=%s" % (
         decider.model, decider.mode, decider.memory.max_turns, "on" if decider.stream else "off"))
     proto.serve(decider, args.host, args.port)
     return 0

@@ -14,6 +14,7 @@ import json
 import re
 import sys
 import threading
+import time
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -734,6 +735,11 @@ def as_wire_action(action):
     return flat
 
 
+def log(source, text):
+    """Write one line to stderr, stamped with the clock time so it can be matched to the game's logs."""
+    sys.stderr.write("%s [%s] %s\n" % (time.strftime("%H:%M:%S"), source, text))
+
+
 class Decider:
     """Base adapter. Subclasses implement call_provider()."""
 
@@ -749,6 +755,10 @@ class Decider:
 
     def describe(self):
         return {"adapter": self.name, "dry_run": self.dry_run}
+
+    def summary_lines(self):
+        """Lines logged when the server stops. Adapters that measure their provider override this."""
+        return []
 
     def build_turn(self, body):
         """Return a Turn. Must not store per-request state on self."""
@@ -783,7 +793,7 @@ def make_handler(decider):
         protocol_version = "HTTP/1.1"
 
         def log_message(self, fmt, *args):
-            sys.stderr.write("[%s] %s\n" % (decider.name, fmt % args))
+            log(decider.name, fmt % args)
 
         def _send(self, code, payload):
             raw = json.dumps(payload).encode("utf-8")
@@ -795,7 +805,7 @@ def make_handler(decider):
                 self.wfile.write(raw)
             except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
                 # DM's own deadline fired first and it hung up. Its log shows the lost turn; a traceback here helped nobody.
-                sys.stderr.write("[%s] DM stopped waiting before this answer could be sent\n" % decider.name)
+                log(decider.name, "DM stopped waiting before this answer could be sent")
                 self.close_connection = True
 
         def _route(self):
@@ -854,11 +864,12 @@ def make_handler(decider):
 
 def serve(decider, host, port):
     server = ThreadingHTTPServer((host, port), make_handler(decider))
-    sys.stderr.write("[%s] listening on %s:%d%s\n" % (
-        decider.name, host, port, " (DRY RUN)" if decider.dry_run else ""))
+    log(decider.name, "listening on %s:%d%s" % (host, port, " (DRY RUN)" if decider.dry_run else ""))
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        sys.stderr.write("[%s] stopping\n" % decider.name)
+        log(decider.name, "stopping")
+        for line in decider.summary_lines():
+            log(decider.name, line)
     finally:
         server.server_close()

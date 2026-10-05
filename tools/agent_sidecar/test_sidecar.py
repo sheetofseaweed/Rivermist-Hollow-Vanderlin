@@ -10,13 +10,17 @@ Several of these exist because a reviewer reproduced the bug first. Where that
 is so, the test says which defect it pins down.
 """
 
+import contextlib
 import http.server
+import io
 import json
 import os
+import socket
 import sys
 import threading
 import time
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import agent_protocol as proto
@@ -798,6 +802,21 @@ class _ScriptedProvider:
         self.server.server_close()
 
 
+class _SilentListener:
+    """Completes TCP handshakes and never says a word, so a client stalls exactly where its protocol waits."""
+
+    def __init__(self):
+        self.sock = socket.socket()
+        self.sock.bind(("127.0.0.1", 0))
+        self.sock.listen(8)
+
+    def url(self, scheme):
+        return "%s://127.0.0.1:%d/v1/chat/completions" % (scheme, self.sock.getsockname()[1])
+
+    def close(self):
+        self.sock.close()
+
+
 class StreamingTransport(unittest.TestCase):
     """Live, a third of turns were lost to 20 s read timeouts and DM hung up on late answers (2026-10-03)."""
 
@@ -873,6 +892,72 @@ class StreamingTransport(unittest.TestCase):
         handler.close_connection = False
         handler._send(200, {"ok": True})
         self.assertTrue(handler.close_connection)
+
+    def test_a_silent_provider_is_told_apart_from_a_silent_network(self):
+        # Live, both read "before the provider responded"; their fixes differ, so the log must not merge them.
+        listener = _SilentListener()
+        self.addCleanup(listener.close)
+        stamps = {}
+        status, body, phase = cs.post_stream(listener.url("http"), {"model": "m"}, "k", 3, stamps)
+        self.assertEqual((status, phase), (0, "sent"))
+        self.assertIn("before the provider responded", body)
+        self.assertIn("connected", stamps)
+        status, body, phase = cs.post_stream(listener.url("https"), {"model": "m"}, "k", 3)
+        self.assertEqual((status, phase), (0, "connect"), "An unfinished TLS handshake is a stall while connecting.")
+        self.assertIn("while connecting", body)
+
+    def test_the_tally_counts_first_tries_retries_and_losses(self):
+        self.serve(_answer, _stall_before_answering, _answer, _stall_before_answering)
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.decider.call({"model": "m"}, time.monotonic() + 3)
+            self.decider.call({"model": "m"}, time.monotonic() + 3)
+            self.decider.call({"model": "m"}, time.monotonic() + 0.6)
+        lines = self.decider.tally.lines()
+        self.assertEqual(lines[0], "tally: 3 requests, 1 answered first try, 1 after a retry, 1 lost")
+        self.assertIn("answers took", lines[1])
+        self.assertIn("connecting took", lines[1])
+        self.assertEqual(lines[2], "  failed tries: 2 waiting for the provider")
+
+    def test_the_tally_is_logged_every_so_many_requests(self):
+        self.serve(_answer)
+        log = io.StringIO()
+        with mock.patch.object(cs, "SUMMARY_EVERY", 2), contextlib.redirect_stderr(log):
+            self.decider.call({"model": "m"}, time.monotonic() + 3)
+            self.assertNotIn("tally:", log.getvalue())
+            self.decider.call({"model": "m"}, time.monotonic() + 3)
+        self.assertIn("tally: 2 requests, 2 answered first try", log.getvalue())
+
+    def test_stopping_logs_the_tally(self):
+        # Ctrl+C is how the sidecar is stopped, so the last tally must survive it.
+        self.serve(_answer)
+        log = io.StringIO()
+        with contextlib.redirect_stderr(log):
+            self.decider.call({"model": "m"}, time.monotonic() + 3)
+            with mock.patch.object(proto.ThreadingHTTPServer, "serve_forever", side_effect=KeyboardInterrupt):
+                proto.serve(self.decider, "127.0.0.1", 0)
+        self.assertIn("stopping", log.getvalue())
+        self.assertIn("tally: 1 request, 1 answered first try", log.getvalue())
+
+    def test_an_unstreamed_stall_is_a_refusal_not_a_traceback(self):
+        # With --no-stream, a read timeout escaped as a traceback and DM lost the turn.
+        self.serve(_stall_before_answering)
+        status, body = cs.post_json(self.decider.base_url + "/chat/completions", {"model": "m"}, "k", timeout=0.3)
+        self.assertEqual(status, 0)
+        self.assertIn("timed out", body)
+        self.decider.stream = False
+        with contextlib.redirect_stderr(io.StringIO()):
+            status, _ = self.decider.call({"model": "m"}, time.monotonic() + 0.5)
+        self.assertEqual(status, 0)
+        self.assertEqual(self.decider.tally.lines()[-1], "  failed tries: 1 no reply, unstreamed")
+
+
+class LogLines(unittest.TestCase):
+
+    def test_every_line_carries_the_clock_time(self):
+        log = io.StringIO()
+        with contextlib.redirect_stderr(log):
+            proto.log("codex-sale", "hello")
+        self.assertRegex(log.getvalue(), r"^\d\d:\d\d:\d\d \[codex-sale\] hello\n$")
 
 
 class SpeechHasNoActions(unittest.TestCase):
