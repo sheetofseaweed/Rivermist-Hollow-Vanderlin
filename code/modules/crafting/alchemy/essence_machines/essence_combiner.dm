@@ -34,6 +34,26 @@
 		qdel(output_storage)
 	return ..()
 
+/obj/machinery/essence/combiner/extract_to_vial(obj/item/essence_vial/vial, mob/user, datum/essence_storage/extraction_storage)
+	if(extraction_storage)
+		return ..()
+	var/list/extraction_options = list()
+	if(output_storage.contents.len)
+		extraction_options["Extract from Output"] = output_storage
+	if(storage.contents.len)
+		extraction_options["Extract from Input"] = storage
+	if(!extraction_options.len)
+		to_chat(user, span_warning("No essences available for extraction."))
+		return
+
+	var/choice = extraction_options[1]
+	if(extraction_options.len > 1)
+		choice = input(user, "Extract from which storage?", "Storage Selection") as null|anything in extraction_options
+		if(!choice || QDELETED(src) || !check_vial_menu_valid(user, vial))
+			return
+
+	return ..(vial, user, extraction_options[choice])
+
 /obj/machinery/essence/combiner/push_to_linked(datum/essence_storage/from_storage)
 	// Input storage: only push surplus (anything no recipe can use)
 	if(from_storage == storage)
