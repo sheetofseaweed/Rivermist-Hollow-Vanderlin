@@ -4145,6 +4145,7 @@
 #include "modular_rmh\code\modules\homestead\refuse.dm"
 #include "modular_rmh\code\modules\homestead\resident.dm"
 #include "modular_rmh\code\modules\jobs\outlaw_decree.dm"
+#include "modular_rmh\code\modules\jobs\social_recognition.dm"
 #include "modular_rmh\code\modules\jobs\job_types\_advclass.dm"
 #include "modular_rmh\code\modules\jobs\job_types\_voyage\first_mate.dm"
 #include "modular_rmh\code\modules\jobs\job_types\_voyage\lord_captain.dm"
