@@ -140,7 +140,8 @@
 	next_drying_environment_check = world.time + 30 SECONDS
 	var/area/rack_area = get_area(src)
 	if(rack_area?.outdoors)
-		if(SSParticleWeather.runningWeather?.target_trait == PARTICLEWEATHER_RAIN)
+		var/datum/particle_weather/current_weather = SSParticleWeather.runningWeather
+		if(current_weather?.running && current_weather.target_trait == PARTICLEWEATHER_RAIN)
 			drying_modifier = 0
 			drying_condition = "falling rain"
 			return

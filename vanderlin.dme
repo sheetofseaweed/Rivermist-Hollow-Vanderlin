@@ -4866,6 +4866,7 @@
 #include "modular_rmh\modular\cavegen\cave_generator.dm"
 #include "modular_rmh\modular\cavegen\presets.dm"
 #include "modular_rmh\modular\ceramics\ceramics_items.dm"
+#include "modular_rmh\modular\character_stats\character_stats.dm"
 #include "modular_rmh\modular\chastity\chastity_actions.dm"
 #include "modular_rmh\modular\chastity\chastity_arcane.dm"
 #include "modular_rmh\modular\chastity\chastity_device.dm"

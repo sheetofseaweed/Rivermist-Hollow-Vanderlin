@@ -284,17 +284,19 @@
 		return ITEM_INTERACT_SUCCESS
 	return ITEM_INTERACT_BLOCKING
 
-/obj/machinery/essence/proc/extract_to_vial(obj/item/essence_vial/vial, mob/user)
-	if(!storage.contents.len)
+/obj/machinery/essence/proc/extract_to_vial(obj/item/essence_vial/vial, mob/user, datum/essence_storage/extraction_storage)
+	if(!extraction_storage)
+		extraction_storage = storage
+	if(QDELETED(extraction_storage) || !extraction_storage.contents.len)
 		to_chat(user, span_warning("[src] is empty."))
 		return
 	var/list/radial = list()
 	var/list/emap = list()
-	for(var/etype in storage.contents)
+	for(var/etype in extraction_storage.contents)
 		var/datum/thaumaturgical_essence/e = new etype
 		var/label = HAS_TRAIT(user, TRAIT_LEGENDARY_ALCHEMIST) \
-			? "[e.name] ([storage.contents[etype]] ligulae)" \
-			: "Essence of [e.smells_like] ([storage.contents[etype]] ligulae)"
+			? "[e.name] ([extraction_storage.contents[etype]] ligulae)" \
+			: "Essence of [e.smells_like] ([extraction_storage.contents[etype]] ligulae)"
 		var/datum/radial_menu_choice/rmc = new()
 		var/image/img = image(icon='icons/roguetown/misc/alchemy.dmi', icon_state="essence")
 		img.color = e.color
@@ -306,14 +308,14 @@
 	var/choice = show_radial_menu(user, src, radial,
 		custom_check = CALLBACK(src, PROC_REF(check_vial_menu_valid), user, vial),
 		radial_slice_icon = "radial_thaum")
-	if(!choice || !emap[choice])
+	if(!choice || !emap[choice] || QDELETED(src) || QDELETED(extraction_storage) || !check_vial_menu_valid(user, vial))
 		return
 	var/chosen = emap[choice]
-	var/to_take = min(storage.get(chosen), vial.max_essence, vial.extract_amount)
+	var/to_take = min(extraction_storage.get(chosen), vial.max_essence, vial.extract_amount)
 	if(to_take <= 0)
 		to_chat(user, span_warning("Cannot extract with current vial settings."))
 		return
-	var/extracted = storage.remove(chosen, to_take)
+	var/extracted = extraction_storage.remove(chosen, to_take)
 	if(extracted > 0)
 		vial.contained_essence = new chosen
 		vial.essence_amount = extracted
