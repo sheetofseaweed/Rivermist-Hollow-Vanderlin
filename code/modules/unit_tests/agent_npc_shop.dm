@@ -6,7 +6,7 @@
 	pawn.AddComponent(/datum/component/agent_shop, stock_type)
 	return pawn
 
-/// A supplier whose one ware is cloth, from a ten-mammon pack, so prices do not ride the live market.
+/// A supplier whose one ware is cloth, from a ten-amna pack, so prices do not ride the live market.
 /proc/agent_test_cloth_supplier(datum/component/agent_shop/shop)
 	var/datum/agent_stock/supplier/stock = shop.stock
 	var/datum/supply_pack/pack = new()
@@ -65,13 +65,13 @@
 	qdel(market)
 	agent_test_restore_subsystem(saved, controller.binding)
 
-	TEST_ASSERT_EQUAL(price, 15, "A ten-mammon pack of one sells for half as much again.")
+	TEST_ASSERT_EQUAL(price, 15, "A ten-amna pack of one sells for half as much again.")
 	TEST_ASSERT_NULL(first, "The first sale must go through.")
 	TEST_ASSERT_NULL(second, "An endless stock must sell the same thing again.")
 	TEST_ASSERT_EQUAL(cloth_after - cloth_before, 2, "Each sale must put the ware with the buyer.")
 	TEST_ASSERT_EQUAL(money_left, 10, "Two sales at 15 must take 30 of 40.")
 	TEST_ASSERT_EQUAL(length(trades), 2, "Each sale must reach the model.")
-	TEST_ASSERT_NOTNULL(third, "Ten mammons must not buy a fifteen-mammon ware.")
+	TEST_ASSERT_NOTNULL(third, "Ten amnas must not buy a fifteen-amna ware.")
 	TEST_ASSERT_EQUAL(cloth_unpaid, cloth_after, "Nothing must be handed over unpaid.")
 	TEST_ASSERT_EQUAL(money_unpaid, 10, "And nothing taken.")
 	TEST_ASSERT_EQUAL(length(refusals), 1, "The model must hear that the customer could not pay.")
@@ -518,5 +518,12 @@
 	var/dear_price = shop.price_for(friend, bought_dear)
 	agent_test_restore_subsystem(saved, controller.binding)
 
-	TEST_ASSERT_EQUAL(cheap_price, 20, "Half off a 40-mammon ware bought for 10 is a real half off.")
+	TEST_ASSERT_EQUAL(cheap_price, 20, "Half off a 40-amna ware bought for 10 is a real half off.")
 	TEST_ASSERT_EQUAL(dear_price, 31, "But never below what the keeper paid for it.")
+
+/datum/unit_test/agent_shop_prices_read_in_amnas
+
+/datum/unit_test/agent_shop_prices_read_in_amnas/Run()
+	// Players and the model both read these words, and the town's coin is the amna.
+	TEST_ASSERT_EQUAL(agent_amnas(1), "1 amna", "One coin is one amna.")
+	TEST_ASSERT_EQUAL(agent_amnas(15), "15 amnas", "More are amnas.")

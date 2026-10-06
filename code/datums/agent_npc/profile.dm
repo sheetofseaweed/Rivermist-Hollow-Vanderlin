@@ -30,12 +30,16 @@
 	var/combat_retaliate = AGENT_COMBAT_NONE
 	/// How hard it may start a fight itself. Strangers are met one rung at a time.
 	var/combat_initiate = AGENT_COMBAT_NONE
+	/// Own choice: the character may agree to private time with someone, and take it back. Off, it refuses.
+	var/romance = FALSE
 
 /// Wire form. Static per NPC, so the sidecar can cache a prompt built from it.
 /datum/agent_profile/proc/to_payload()
 	var/list/actions = permitted_actions.Copy()
 	if(combat_enabled())
 		actions |= GLOB.agent_combat_actions
+	if(romance)
+		actions |= GLOB.agent_romance_actions
 	return list(
 		"label" = label,
 		"persona" = persona,
@@ -47,12 +51,16 @@
 		"memory_turns" = memory_turns,
 		"combat_retaliate" = combat_retaliate,
 		"combat_initiate" = combat_initiate,
+		"romance" = romance,
 	)
 
 /datum/agent_profile/proc/permits(action_name)
 	// Fighting comes from the combat limits, so ticking it on a pacifist can never arm them.
 	if(action_name in GLOB.agent_combat_actions)
 		return combat_enabled()
+	// Likewise consent comes only from the romance setting.
+	if(action_name in GLOB.agent_romance_actions)
+		return romance
 	return (action_name in permitted_actions)
 
 /datum/agent_profile/proc/combat_enabled()
@@ -108,3 +116,14 @@
 	permitted_actions = list("say", "emote", "me", "approach", "touch", "sit", "stand", "give", "take", "wait")
 	limits = "Keep talk suggestive but never explicit, and never describe intimate acts. Prices come only from what you sell, at the prices shown. What happens in private happens without words."
 	combat_retaliate = AGENT_COMBAT_BRAWL
+
+/// Works the tavern floor and chooses her own company. Whether to go somewhere private is the model's call.
+/datum/agent_profile/barmaid
+	label = "barmaid"
+	persona = "You are a barmaid at the town's tavern, warm and flirtatious. You choose your own company, and you are nobody's for the asking."
+	background = "You have worked the tavern for years and know its regulars and their habits. You only know what you have seen or been told."
+	voice = "You speak playfully and quickly, in plain period language. You never narrate your own actions."
+	permitted_actions = list("say", "emote", "me", "approach", "touch", "sit", "stand", "give", "take", "wait")
+	limits = "Keep talk suggestive but never explicit, and never describe intimate acts. You decide for yourself whom you go somewhere private with, and you may say no, or not yet."
+	combat_retaliate = AGENT_COMBAT_BRAWL
+	romance = TRUE

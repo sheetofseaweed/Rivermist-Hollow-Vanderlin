@@ -36,8 +36,8 @@
 
 /datum/agent_profile_menu/ui_static_data(mob/user)
 	return list(
-		// Fighting is set by the combat limits, never by a checkbox.
-		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions - GLOB.agent_shop_actions,
+		// Fighting, haggling and consent come from the combat limits, a shop and the romance setting, never a checkbox.
+		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions - GLOB.agent_shop_actions - GLOB.agent_romance_actions,
 		"combatLevels" = GLOB.agent_combat_ladder.Copy(),
 		"builtins" = agent_builtin_profiles(),
 		"labelMax" = AGENT_PROFILE_LABEL_MAX,
@@ -182,6 +182,14 @@
 					profile.combat_initiate = level
 			return TRUE
 
+		if("set_romance")
+			var/datum/agent_profile/profile = GLOB.agent_custom_profiles[selected]
+			if(QDELETED(profile))
+				return TRUE
+			profile.romance = !!params["value"]
+			log_admin("[key_name(user)] turned romance [profile.romance ? "on" : "off"] for agent profile '[selected]'.")
+			return TRUE
+
 		if("toggle_action")
 			var/datum/agent_profile/profile = GLOB.agent_custom_profiles[selected]
 			if(QDELETED(profile))
@@ -221,7 +229,7 @@
 			if(!target)
 				to_chat(user, span_warning("That mob is no longer in view."))
 				return TRUE
-			var/refusal = agent_attach_controller(target, agent_resolve_profile(selected))
+			var/refusal = agent_attach_controller(target, agent_resolve_profile(selected), user)
 			if(refusal)
 				to_chat(user, span_warning("Could not attach: [refusal]."))
 				return TRUE
@@ -385,7 +393,7 @@
 		log_admin("[key_name(user)] changed [name]'s agent profile to '[chosen_profile.label]'.")
 		return
 
-	var/refusal = agent_attach_controller(src, chosen_profile)
+	var/refusal = agent_attach_controller(src, chosen_profile, user)
 	if(refusal)
 		to_chat(user, span_warning("Could not attach: [refusal]."))
 		return

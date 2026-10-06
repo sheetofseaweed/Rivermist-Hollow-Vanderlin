@@ -341,9 +341,9 @@ class ShopProtocol(unittest.TestCase):
                 "buys": "most goods, paying about 50% of what they are worth", "purse": 80,
                 "discounts": {"Lexus": 10}}}},
             [])
-        self.assertIn("Your stall sells, in mammons: iron sword (40) and 2 more.", text)
+        self.assertIn("Your stall sells, in amnas: iron sword (40) and 2 more.", text)
         self.assertIn("You buy most goods, paying about 50% of what they are worth.", text)
-        self.assertIn("Your purse holds 80 mammons.", text)
+        self.assertIn("Your purse holds 80 amnas.", text)
         self.assertIn("Better prices you have given: Lexus 10%.", text)
 
     def test_a_supplier_says_it_buys_nothing(self):
@@ -359,15 +359,15 @@ class ShopProtocol(unittest.TestCase):
             {"event": "trade", "detail": {"by": "Lexus", "what": "bought", "item": "hardtack", "price": 9}},
             {"event": "trade", "detail": {"by": "Lexus", "what": "sold", "item": "iron sword", "price": 20}},
             {"event": "trade_refused", "detail": {"by": "Bob", "what": "buy", "item": "hardtack",
-                                                  "reason": "they could not pay 9 mammons"}},
+                                                  "reason": "they could not pay 9 amnas"}},
             {"event": "trade_refused", "detail": {"by": "Bob", "what": "sell", "item": "stick",
                                                   "reason": "it is worthless"}},
         ])
         self.assertEqual(lines, [
             "  Lexus opened your stall to look at your wares (2 times).",
-            "  Lexus bought the hardtack from you for 9 mammons.",
-            "  Lexus sold you the iron sword for 20 mammons.",
-            "  Bob could not buy the hardtack: they could not pay 9 mammons.",
+            "  Lexus bought the hardtack from you for 9 amnas.",
+            "  Lexus sold you the iron sword for 20 amnas.",
+            "  Bob could not buy the hardtack: they could not pay 9 amnas.",
             "  Bob tried to sell you the stick, but you would not buy it: it is worthless.",
         ])
 
@@ -378,7 +378,7 @@ class ShopProtocol(unittest.TestCase):
             "holding": ["iron sword", "stick"],
             "offers": [{"item": "iron sword", "offer": 20},
                        {"item": "stick", "refused": "it is worthless"}]})
-        self.assertIn("(you would pay 20 mammons for the iron sword; "
+        self.assertIn("(you would pay 20 amnas for the iron sword; "
                       "you would not buy the stick: it is worthless)", line)
 
     def test_the_prompt_says_only_haggle_changes_a_price(self):
@@ -407,9 +407,9 @@ class ServiceProtocol(unittest.TestCase):
                 "kind": "service", "selling": [{"name": "15 minutes of company", "price": 100}], "more": 0,
                 "purse": 100, "with": "Lexus", "minutes_left": 12}}},
             [])
-        self.assertIn("You sell your company, in mammons: 15 minutes of company (100).", text)
+        self.assertIn("You sell your company, in amnas: 15 minutes of company (100).", text)
         self.assertIn("Lexus has paid for your company, with 12 minutes left.", text)
-        self.assertIn("Your purse holds 100 mammons.", text)
+        self.assertIn("Your purse holds 100 amnas.", text)
         self.assertNotIn("You do not buy anything", text)
 
     def test_paid_and_private_time_read_without_detail(self):
@@ -421,7 +421,7 @@ class ServiceProtocol(unittest.TestCase):
         ])
         self.assertEqual(lines, [
             "  Lexus came to you about your company.",
-            "  Lexus paid you 100 mammons for 15 minutes of company.",
+            "  Lexus paid you 100 amnas for 15 minutes of company.",
             "  You spent some private time with Lexus (2 times).",
             "  The time Lexus paid for with you is over.",
         ])
@@ -990,6 +990,86 @@ class StreamingTransport(unittest.TestCase):
         self.assertEqual(self.decider.tally.lines()[-1], "  failed tries: 1 no reply, unstreamed")
 
 
+class RomanceProtocol(unittest.TestCase):
+    """An NPC with romance on chooses its own company. The model says yes or no; it never describes what follows."""
+
+    def test_consent_maps_to_the_dm_shape(self):
+        self.assertEqual(proto.to_dm_action({"action": "consent", "handle": "h3", "key": "yes", "text": ""}),
+                         {"name": "consent", "handle": "h3", "key": "yes", "text": ""})
+        got = proto.parse_loose_action("consent: h3 no", ["consent", "wait"])
+        self.assertEqual(proto.to_dm_action(got), {"name": "consent", "handle": "h3", "key": "no", "text": ""})
+
+    def test_the_answer_travels_with_its_words(self):
+        # Live, a silent yes left the player guessing whether anything had happened (2026-10-06).
+        said = proto.to_dm_action({"action": "consent", "handle": "h3", "key": "yes", "text": "Aye, come along."})
+        self.assertEqual(said["text"], "Aye, come along.")
+        loose = proto.to_dm_action(proto.parse_loose_action("consent: h3 yes Aye, come along.", ["consent", "wait"]))
+        self.assertEqual(loose, {"name": "consent", "handle": "h3", "key": "yes", "text": "Aye, come along."})
+        given = proto.to_dm_action(proto.parse_loose_action("give: h3 h7 here", ["give", "wait"]))
+        self.assertEqual(given, {"name": "give", "handle": "h3", "key": "h7"})
+
+    def test_only_a_character_with_romance_hears_about_consent(self):
+        chooser = proto.build_system({"persona": "P", "permitted_actions": ["say", "consent", "wait"]})
+        self.assertIn("It is your own choice", chooser)
+        self.assertIn("never describe it", chooser)
+        self.assertIn("they only learn your answer from your words", chooser)
+        self.assertIn("yes/no for consent", proto.schema_prose(["say", "consent", "wait"]))
+        self.assertIn("what you say with your answer for consent", proto.schema_prose(["say", "consent", "wait"]))
+        self.assertIn("'consent'", proto.action_schema(["say", "consent", "wait"])["properties"]["text"]["description"])
+        self.assertNotIn("consent", proto.build_system({"persona": "P", "permitted_actions": ["say", "wait"]}))
+
+    def test_asks_and_agreements_read_plainly(self):
+        lines = proto.describe_events([{"event": "private_request", "detail": {"by": "Lexus", "count": 2}}])
+        self.assertEqual(lines, ["  Lexus wants to go somewhere private with you (2 times)."])
+        text = proto.build_user_message(
+            {"self": {"name": "Greta", "agreed_with": [{"name": "Lexus", "minutes_left": 12}]}}, [])
+        self.assertIn("You have agreed to go somewhere private with: Lexus (12 minutes left).", text)
+
+
+class InitiativeProtocol(unittest.TestCase):
+    """The model takes the lead in plain words; DM picks the act and asks first. No act ever reaches the model."""
+
+    def test_initiate_maps_to_the_dm_shape(self):
+        self.assertEqual(proto.to_dm_action({"action": "initiate", "handle": "h3", "key": "tender"}),
+                         {"name": "initiate", "handle": "h3", "key": "tender"})
+        got = proto.parse_loose_action("initiate: h3 intimate", ["initiate", "wait"])
+        self.assertEqual(proto.to_dm_action(got), {"name": "initiate", "handle": "h3", "key": "intimate"})
+
+    def test_only_a_character_that_may_lead_hears_how(self):
+        leader = proto.build_system({"persona": "P", "permitted_actions": ["say", "initiate", "wait"]})
+        self.assertIn("They are always asked first and may say no", leader)
+        self.assertIn("never describe it", leader)
+        self.assertIn("tender/intimate/rough for initiate", proto.schema_prose(["say", "initiate", "wait"]))
+        self.assertNotIn("initiative", proto.build_system({"persona": "P", "permitted_actions": ["say", "wait"]}))
+
+    def test_answers_read_plainly(self):
+        lines = proto.describe_events([
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "yes", "level": "tender"}},
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "yes_for_a_while", "level": "intimate"}},
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "no", "level": "rough"}},
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "stop_asking", "level": "tender"}},
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "no_answer", "level": "tender"}},
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "too_late", "level": "tender"}},
+            {"event": "advance", "detail": {"by": "Lexus", "answer": "stopped"}},
+        ])
+        self.assertEqual(lines, [
+            "  Lexus welcomed your advance (tender).",
+            "  Lexus welcomed your advance (intimate), and lets you lead like that without asking for a while.",
+            "  Lexus declined your advance (rough).",
+            "  Lexus declined your advance, and asked you not to try anything for now.",
+            "  Lexus did not answer your advance.",
+            "  Lexus said yes, but the moment had passed.",
+            "  Lexus stopped what you were doing.",
+        ])
+
+    def test_standing_answers_show_in_the_scene(self):
+        text = proto.build_user_message({"self": {"name": "Greta", "advances": [
+            {"name": "Lexus", "lead": "intimate", "lead_minutes": 12},
+            {"name": "Bob", "not_now_minutes": 9}]}}, [])
+        self.assertIn("Lexus lets you lead without asking, as far as intimate, for 12 more minutes.", text)
+        self.assertIn("Bob asked you not to try anything for 9 more minutes.", text)
+
+
 class FollowUpTurns(unittest.TestCase):
     """Live, a follow-up turn looked like a fresh one, and a chatty character talked on to nobody (2026-10-06)."""
 
@@ -1003,6 +1083,13 @@ class FollowUpTurns(unittest.TestCase):
     def test_remembered_turns_carry_no_such_hint(self):
         # History is resent every turn; a stale "nobody answered" there would contradict the present.
         self.assertNotIn("Nobody has said", proto.build_history_text(verdict("succeeded")))
+
+    def test_a_refusal_is_not_worth_repeating(self):
+        # Live, a refused advance was asked for again and again, unchanged (2026-10-06).
+        refused = proto.describe_events([{"event": "action_result", "detail": {"state": "rejected", "detail": "nothing fits"}}])
+        self.assertIn("do not try the same again", refused[0])
+        done = proto.describe_events([{"event": "action_result", "detail": {"state": "succeeded", "detail": "arrived"}}])
+        self.assertNotIn("do not try", done[0])
 
 
 class _RecordingDecider(proto.Decider):

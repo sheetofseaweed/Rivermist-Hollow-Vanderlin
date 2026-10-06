@@ -28,6 +28,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	copy.memory_turns = memory_turns
 	copy.combat_retaliate = combat_retaliate
 	copy.combat_initiate = combat_initiate
+	copy.romance = romance
 	return copy
 
 /// A whole number of exchanges within the ceiling, or null for the sidecar default.
@@ -73,8 +74,8 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 		for(var/entry in wanted)
 			if(!istext(entry) || !(entry in GLOB.agent_action_vocabulary))
 				continue
-			// Granted by the combat limits or a shop instead, so a saved list cannot smuggle them in.
-			if((entry in GLOB.agent_combat_actions) || (entry in GLOB.agent_shop_actions))
+			// Granted by the combat limits, a shop or the romance setting instead, so a saved list cannot smuggle them in.
+			if((entry in GLOB.agent_combat_actions) || (entry in GLOB.agent_shop_actions) || (entry in GLOB.agent_romance_actions))
 				continue
 			if(entry in cleaned)
 				continue
@@ -98,6 +99,8 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	profile.memory_turns = agent_clean_memory_turns(payload["memory_turns"])
 	profile.combat_retaliate = agent_clean_combat_level(payload["combat_retaliate"])
 	profile.combat_initiate = agent_clean_combat_level(payload["combat_initiate"])
+	// Only a real true turns it on: a hand-edited "no" is text, and text is truthy in DM.
+	profile.romance = (payload["romance"] == TRUE)
 	return profile
 
 /// Every built-in profile, as payloads. Instantiated, never read via initial():
@@ -191,7 +194,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
  * already destroys whatever controller was there, so this only has to decide
  * whether the swap is allowed at all.
  */
-/proc/agent_attach_controller(mob/living/target, datum/agent_profile/source_profile)
+/proc/agent_attach_controller(mob/living/target, datum/agent_profile/source_profile, mob/attacher)
 	if(QDELETED(target) || !isliving(target))
 		return "that mob is gone"
 	// The binding refuses to act on a mob with a client, so attaching would
@@ -201,9 +204,15 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	if(istype(target.ai_controller, /datum/ai_controller/agent_social))
 		return "[target.name] is already agent controlled"
 
+	// Read before attaching: once the agent owns the body, the away check answers for the agent.
+	var/borrowed = agent_borrows_character(target, attacher?.ckey)
+
 	var/datum/ai_controller/agent_social/controller = new(target)
 	if(QDELETED(controller) || controller.pawn != target)
 		return "the agent controller would not attach to [target.name]"
+	controller.borrowed_body = borrowed
+	if(borrowed && attacher)
+		to_chat(attacher, span_notice("[target.name] is [target.mind.key]'s character, so their setting for ERP while away still applies."))
 
 	if(source_profile)
 		QDEL_NULL(controller.profile)
@@ -214,6 +223,11 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	controller.register_cooldown = 0
 	controller.ensure_registered()
 	return null
+
+/// Is this someone else's character? A body only the attaching admin ever played is not.
+/proc/agent_borrows_character(mob/living/target, attacher_ckey)
+	var/owner_key = target?.mind?.key
+	return !!owner_key && ckey(owner_key) != attacher_ckey
 
 /**
  * Change the character an already-attached controller is playing.

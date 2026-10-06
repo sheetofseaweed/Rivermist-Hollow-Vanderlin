@@ -62,5 +62,5 @@
 	var/paid = trader.spend_buyer_offhand_money(customer, 15)
 	var/cost = before - get_mammons_in_atom(floor)
 
-	TEST_ASSERT(paid, "A gold piece must buy a fifteen-mammon ware.")
+	TEST_ASSERT(paid, "A gold piece must buy a fifteen-amna ware.")
 	TEST_ASSERT_EQUAL(cost, 15, "The trader must take 15 and give the rest back, not hand the ware over free.")

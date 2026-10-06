@@ -27,6 +27,7 @@ type Profile = {
   memory_turns: number | null;
   combat_retaliate: string;
   combat_initiate: string;
+  romance: BooleanLike;
 };
 
 type BuiltIn = Omit<Profile, 'name'> & { type: string };
@@ -241,6 +242,9 @@ function ReadOnly(props: { template?: BuiltIn }) {
         Fights back: {combatLabel(template.combat_retaliate)}. Starts fights:{' '}
         {combatLabel(template.combat_initiate)}.
       </Box>
+      <Box mb={1}>
+        Romance: {template.romance ? 'its own choice' : 'refuses'}.
+      </Box>
       {TEXT_FIELDS.map((field) => (
         <Box key={field.key} mb={1}>
           <Box bold>{field.label}</Box>
@@ -358,6 +362,21 @@ function Editor(props: {
       </Box>
 
       <CombatLimits profile={profile} />
+
+      <Box mb={1}>
+        <Box bold>Romance</Box>
+        <Box color="label" fontSize="0.9em" mb={0.5}>
+          Whether this character may agree to private time with someone. It
+          decides for itself, can say no, and can take a yes back. Off, it
+          refuses everyone.
+        </Box>
+        <Button.Checkbox
+          checked={!!profile.romance}
+          onClick={() => act('set_romance', { value: !profile.romance })}
+        >
+          Its own choice
+        </Button.Checkbox>
+      </Box>
 
       <Box bold mb={0.5}>
         Permitted actions

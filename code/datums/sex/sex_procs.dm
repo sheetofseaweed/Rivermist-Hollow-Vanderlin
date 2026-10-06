@@ -123,6 +123,7 @@
 
 	if(!user.open_sex_scene(target))
 		to_chat(user, span_warning(user.get_sex_scene_refusal(target)))
+		SEND_SIGNAL(target, COMSIG_LIVING_SEX_SCENE_REFUSED, user)
 		return
 
 /mob/living/proc/has_hands()
@@ -480,6 +481,10 @@
 
 /mob/living/proc/is_disconnected_player_erp_body()
 	if(client)
+		return FALSE
+	// An agent NPC answers for itself, even after someone possessed it. Not when it took over a player's character.
+	var/datum/ai_controller/agent_social/agent = ai_controller
+	if(istype(agent) && !agent.borrowed_body)
 		return FALSE
 	if(!mind)
 		return FALSE

@@ -211,7 +211,7 @@
  * action here without teaching dispatch_decision about it gets you a profile
  * that permits something the executor will reject.
  */
-GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "haggle", "wait"))
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "haggle", "consent", "initiate", "wait"))
 
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
@@ -281,6 +281,21 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach",
 			if(isnum(percent))
 				percent = "[percent]"
 			return list("name" = "haggle", "handle" = handle, "key" = istext(percent) ? percent : "")
+		if("consent")
+			var/handle = action["handle"]
+			if(!istext(handle) || !length(handle))
+				return null
+			// Yes or no is read at dispatch, where anything else is refused with the reason. Words to say are optional.
+			var/answer = action["key"]
+			var/words = action["text"]
+			return list("name" = "consent", "handle" = handle, "key" = istext(answer) ? answer : "", "text" = istext(words) ? words : "")
+		if("initiate")
+			var/handle = action["handle"]
+			if(!istext(handle) || !length(handle))
+				return null
+			// The level is read at dispatch, where anything but tender, intimate or rough is refused with the reason.
+			var/level = action["key"]
+			return list("name" = "initiate", "handle" = handle, "key" = istext(level) ? level : "")
 		if("wait")
 			// The quiescent outcome. Without it a conversation can never settle.
 			return list("name" = "wait")

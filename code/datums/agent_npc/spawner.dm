@@ -102,6 +102,26 @@
 	name = "agent performer spawner (male)"
 	body_gender = MALE
 
+/// Serves the tavern and chooses her own company. Put it in the tavern.
+/obj/effect/agent_npc_spawner/barmaid
+	name = "agent barmaid spawner"
+	profile_type = /datum/agent_profile/barmaid
+	outfit = /datum/outfit/agent_barmaid
+	body_gender = FEMALE
+
+/// A plain dress and apron, and nothing on it worth killing for.
+/datum/outfit/agent_barmaid
+	name = "Agent Barmaid"
+	shirt = /obj/item/clothing/shirt/dress/gen/colored/brown
+	cloak = /obj/item/clothing/cloak/apron/waist/colored/brown
+	shoes = /obj/item/clothing/shoes/simpleshoes
+
+/datum/outfit/agent_barmaid/pre_equip(mob/living/carbon/human/H)
+	. = ..()
+	if(H.gender == MALE)
+		shirt = /obj/item/clothing/shirt/undershirt/colored/random
+		pants = /obj/item/clothing/pants/tights/colored/random
+
 /// Light clothes and free hands. Nothing on it is worth killing for.
 /datum/outfit/agent_performer
 	name = "Agent Performer"

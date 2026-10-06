@@ -151,6 +151,14 @@
 	if(shop)
 		myself["shop"] = shop.describe_for_agent()
 	var/datum/ai_controller/agent_social/agent = pawn.ai_controller
+	if(istype(agent) && agent.romance_enabled())
+		var/list/agreed = agent.describe_consents()
+		if(length(agreed))
+			myself["agreed_with"] = agreed
+	if(istype(agent))
+		var/list/advances = agent.describe_advances()
+		if(length(advances))
+			myself["advances"] = advances
 	if(istype(agent) && agent.in_combat())
 		var/mob/living/foe = agent.blackboard[BB_AGENT_COMBAT_TARGET]
 		myself["fighting"] = list("name" = foe.get_visible_name(), "level" = agent.blackboard[BB_AGENT_COMBAT_LEVEL])

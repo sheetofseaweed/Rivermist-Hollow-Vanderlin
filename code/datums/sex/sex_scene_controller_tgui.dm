@@ -108,7 +108,7 @@
 			"target_name" = action.action_target?.name,
 			"speed" = action.speed,
 			"force" = action.force,
-			"can_stop" = (action.action_user == user),
+			"can_stop" = (action.action_user == user || agent_act_stoppable_by(action, user)),
 		))
 	return connections_out
 
@@ -302,9 +302,14 @@
 			return TRUE
 		if("stop_scene_action")
 			for(var/datum/sex_action/scene_action as anything in scene?.active_actions)
-				if(REF(scene_action) != "[params["ref"]]" || scene_action.action_user != user)
+				if(REF(scene_action) != "[params["ref"]]")
+					continue
+				var/mob/living/leader = scene_action.action_user
+				if(leader != user && !agent_act_stoppable_by(scene_action, user))
 					continue
 				scene?.stop_action(scene_action)
+				if(leader != user)
+					SEND_SIGNAL(leader, COMSIG_LIVING_SEX_ACT_STOPPED_BY_PARTNER, user)
 				return TRUE
 			return FALSE
 		if("set_speed")

@@ -66,13 +66,15 @@ def action_schema(permitted):
         "properties": {
             "action": {"type": "string", "enum": list(permitted),
                        "description": "Which action to take."},
-            "text": {"type": "string", "description": "Speech for 'say', or the action for 'me', else empty."},
+            "text": {"type": "string", "description": "Speech for 'say', what you say with your answer for "
+                                                      "'consent', or the action for 'me', else empty."},
             "key": {"type": "string", "description": "Emote key for 'emote', the way to 'touch' "
                                                      "(tap, hug, headpat, help), the held item's handle "
                                                      "for 'give', how hard to 'fight' (brawl, until_downed, "
-                                                     "no_quarter), or the percent for 'haggle' (0 to 50), else empty."},
+                                                     "no_quarter), the percent for 'haggle' (0 to 50), yes/no for "
+                                                     "'consent', or tender/intimate/rough for 'initiate', else empty."},
             "handle": {"type": "string", "description": "The person or thing for approach/use/touch/sit/"
-                                                        "give/take/fight/haggle, else empty."},
+                                                        "give/take/fight/haggle/consent/initiate, else empty."},
         },
         "required": ["action", "text", "key", "handle"],
         "additionalProperties": False,
@@ -99,10 +101,12 @@ def schema_prose(permitted):
     return (
         "Reply with a single JSON object and nothing else. No prose, no code "
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
-        '"text": speech for say, or the action for me, else "", "key": emote key for emote, '
+        '"text": speech for say, what you say with your answer for consent, or the action for me, else "", '
+        '"key": emote key for emote, '
         'tap/hug/headpat/help for touch, the held item handle for give, brawl/until_downed/'
-        'no_quarter for fight, or 0 to 50 for haggle, else "", "handle": the person or thing for '
-        'approach/use/touch/sit/give/take/fight/haggle, else ""}.')
+        'no_quarter for fight, 0 to 50 for haggle, yes/no for consent, or tender/intimate/rough for initiate, '
+        'else "", "handle": the person or thing for approach/use/touch/sit/give/take/fight/haggle/consent/'
+        'initiate, else ""}.')
 
 
 def shop_brief(profile):
@@ -164,6 +168,21 @@ def build_system(profile, describe_schema=False):
         combat_brief(profile) if "fight" in permitted else "",
         # Only shopkeepers get haggle: DM grants it with the shop, never through the profile.
         shop_brief(profile) if "haggle" in permitted else "",
+        # Only a character with romance on gets consent: DM grants it with the setting, never through the action list.
+        ("Someone may ask to go somewhere private with you. It is your own choice: you may agree, say no, or "
+         "tell them not yet, and nobody is owed a yes. To agree, use 'consent' with their handle and key 'yes', "
+         "and put what you say to them in text: they only learn your answer from your words. It lasts a "
+         "quarter of an hour. Use key 'no', again with your words, to take it back at any time. Agreeing only makes it "
+         "possible: what happens in private happens without words, so never describe it. You are told when "
+         "private time with someone ends.")
+        if "consent" in permitted else "",
+        # Romance or a service grants initiate; the act itself is always DM's choice, and always asked first.
+        ("You may take the initiative with someone who agreed to private time with you, or who paid for "
+         "your company: use 'initiate' with their handle and key 'tender' (kisses and caresses), "
+         "'intimate', or 'rough'. They are always asked first and may say no; take a no gracefully and "
+         "do not press. Rough comes only after they have welcomed something intimate. Choose your moment, "
+         "and mind who else is around. What happens in private happens without words: never describe it.")
+        if "initiate" in permitted else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -406,6 +425,17 @@ def build_user_message(observation, events):
     shop = myself.get("shop")
     if isinstance(shop, dict):
         lines.extend(describe_shop(shop))
+    agreed = [a for a in myself.get("agreed_with") or [] if isinstance(a, dict)]
+    if agreed:
+        lines.append("You have agreed to go somewhere private with: %s." % ", ".join(
+            "%s (%s minutes left)" % (a.get("name", "someone"), a.get("minutes_left", "some")) for a in agreed))
+    for advance in [a for a in myself.get("advances") or [] if isinstance(a, dict)]:
+        name = advance.get("name", "someone")
+        if advance.get("lead"):
+            lines.append("%s lets you lead without asking, as far as %s, for %s more minutes." % (
+                name, advance["lead"], advance.get("lead_minutes", "some")))
+        if advance.get("not_now_minutes"):
+            lines.append("%s asked you not to try anything for %s more minutes." % (name, advance["not_now_minutes"]))
     lines.append("You are at: %s" % observation.get("here", "somewhere"))
 
     entities = observation.get("entities") or []
@@ -444,7 +474,7 @@ def describe_offer(offer):
     item = offer.get("item", "something")
     if offer.get("refused"):
         return "you would not buy the %s: %s" % (item, offer["refused"])
-    return "you would pay %s mammons for the %s" % (offer.get("offer", "?"), item)
+    return "you would pay %s amnas for the %s" % (offer.get("offer", "?"), item)
 
 
 def describe_shop(shop):
@@ -455,7 +485,7 @@ def describe_shop(shop):
     if wares:
         listed = ", ".join("%s (%s)" % (w.get("name", "something"), w.get("price", "?")) for w in wares)
         more = _count(shop.get("more"))
-        lines.append("%s, in mammons: %s%s." % ("You sell your company" if service else "Your stall sells",
+        lines.append("%s, in amnas: %s%s." % ("You sell your company" if service else "Your stall sells",
                                                 listed, " and %d more" % more if more else ""))
     else:
         lines.append("Your stall has nothing for sale right now.")
@@ -467,7 +497,7 @@ def describe_shop(shop):
         buys = shop.get("buys")
         lines.append("You buy %s." % buys if buys else "You do not buy anything.")
     if isinstance(shop.get("purse"), (int, float)) and not isinstance(shop.get("purse"), bool):
-        lines.append("Your purse holds %d mammons." % shop["purse"])
+        lines.append("Your purse holds %d amnas." % shop["purse"])
     discounts = shop.get("discounts")
     if isinstance(discounts, dict) and discounts:
         lines.append("Better prices you have given: %s." % ", ".join(
@@ -489,10 +519,10 @@ def describe_trade(name, detail):
             return "%s tried to sell you the %s, but you would not buy it: %s." % (who, item, reason)
         return "%s could not buy the %s: %s." % (who, item, reason)
     if detail.get("what") == "sold":
-        return "%s sold you the %s for %s mammons." % (who, item, detail.get("price", "?"))
+        return "%s sold you the %s for %s amnas." % (who, item, detail.get("price", "?"))
     if detail.get("what") == "paid":
-        return "%s paid you %s mammons for %s." % (who, detail.get("price", "?"), item)
-    return "%s bought the %s from you for %s mammons." % (who, item, detail.get("price", "?"))
+        return "%s paid you %s amnas for %s." % (who, detail.get("price", "?"), item)
+    return "%s bought the %s from you for %s amnas." % (who, item, detail.get("price", "?"))
 
 
 def describe_private_time(detail):
@@ -501,6 +531,26 @@ def describe_private_time(detail):
     if detail.get("what") == "time_up":
         return "The time %s paid for with you is over." % who
     return "You spent some private time with %s%s." % (who, _times(detail))
+
+
+def describe_advance(detail):
+    """A partner's answer to the character's advance, or their stopping it. Never the act itself."""
+    who = detail.get("by", "someone")
+    level = " (%s)" % detail["level"] if detail.get("level") else ""
+    answer = detail.get("answer")
+    if answer == "yes":
+        return "%s welcomed your advance%s." % (who, level)
+    if answer == "yes_for_a_while":
+        return "%s welcomed your advance%s, and lets you lead like that without asking for a while." % (who, level)
+    if answer == "stop_asking":
+        return "%s declined your advance, and asked you not to try anything for now." % who
+    if answer == "no_answer":
+        return "%s did not answer your advance." % who
+    if answer == "too_late":
+        return "%s said yes, but the moment had passed." % who
+    if answer == "stopped":
+        return "%s stopped what you were doing." % who
+    return "%s declined your advance%s." % (who, level)
 
 
 def describe_events(events):
@@ -530,9 +580,16 @@ def describe_events(events):
             lines.append("  " + describe_trade(name, detail))
         elif name == "private_time":
             lines.append("  " + describe_private_time(detail))
+        elif name == "advance":
+            lines.append("  " + describe_advance(detail))
+        elif name == "private_request":
+            lines.append("  %s wants to go somewhere private with you%s." % (detail.get("by", "someone"), _times(detail)))
         elif name == "action_result":
-            lines.append("  Your last action: %s (%s)" % (
-                detail.get("state"), detail.get("detail")))
+            line = "  Your last action: %s (%s)" % (detail.get("state"), detail.get("detail"))
+            # Live, a refused advance was asked for again and again, unchanged (2026-10-06).
+            if detail.get("state") == "rejected":
+                line += ". It did not happen: do not try the same again unless something changes."
+            lines.append(line)
         else:
             lines.append("  %s" % name)
     return lines
@@ -557,7 +614,11 @@ def to_dm_action(parsed):
         return {"name": "emote", "key": parsed.get("key", "")}
     if name in ("approach", "use", "sit", "take"):
         return {"name": name, "handle": parsed.get("handle", "")}
-    if name in ("touch", "give", "fight", "haggle"):
+    if name == "consent":
+        # The words carry the answer to the player; DM falls back to a nod or a head shake without them.
+        return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", ""),
+                "text": parsed.get("text", "")}
+    if name in ("touch", "give", "fight", "haggle", "initiate"):
         return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
     if name == "me":
         return {"name": "me", "text": parsed.get("text", "")}
@@ -621,10 +682,11 @@ def parse_loose_action(text, permitted):
                     return {"action": name, "text": "", "key": value, "handle": ""}
                 if name in ("approach", "use", "sit", "take"):
                     return {"action": name, "text": "", "key": "", "handle": value}
-                if name in ("touch", "give", "fight", "haggle"):
-                    # "touch: h3 hug", "give: h3 h7", "fight: h3 brawl", "haggle: h3 10", or just the handle.
-                    parts = value.split()
-                    return {"action": name, "text": "", "key": parts[1] if len(parts) > 1 else "",
+                if name in ("touch", "give", "fight", "haggle", "consent", "initiate"):
+                    # "touch: h3 hug", "give: h3 h7", "fight: h3 brawl", "haggle: h3 10", "consent: h3 yes Aye", or just the handle.
+                    parts = value.split(None, 2)
+                    words = parts[2] if name == "consent" and len(parts) > 2 else ""
+                    return {"action": name, "text": words, "key": parts[1] if len(parts) > 1 else "",
                             "handle": parts[0] if parts else ""}
                 return {"action": name, "text": "", "key": "", "handle": ""}
     return None

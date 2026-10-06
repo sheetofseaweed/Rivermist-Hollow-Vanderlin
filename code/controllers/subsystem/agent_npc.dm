@@ -471,6 +471,41 @@ SUBSYSTEM_DEF(agent_npc)
 		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price")
 		return
 
+	// The model's advance. DM picks the act and asks the partner first; their answer comes back as an event.
+	if(name == "initiate")
+		var/datum/ai_controller/agent_social/suitor = binding.resolve_controller()
+		if(!istype(suitor) || !isliving(target))
+			binding.record_result(AGENT_RESULT_REJECTED, "advances are for a person, by their handle")
+			return
+		var/list/advanced = suitor.make_advance(target, response.action["key"])
+		binding.complete_action(advanced["state"], advanced["detail"])
+		return
+
+	// The model's own yes or no to private time. DM holds it to that, logs it, and voices it.
+	if(name == "consent")
+		var/datum/ai_controller/agent_social/chooser = binding.resolve_controller()
+		if(!istype(chooser) || !isliving(target) || target == pawn)
+			binding.record_result(AGENT_RESULT_REJECTED, "consent is for a person, by their handle")
+			return
+		var/answer = agent_parse_consent(response.action["key"])
+		if(isnull(answer))
+			binding.record_result(AGENT_RESULT_REJECTED, "key must be yes or no")
+			return
+		var/mob/living/person = target
+		if(answer)
+			chooser.grant_consent(person)
+			log_game("Agent NPC [key_name(pawn)] agreed to private time with [key_name(person)] at [AREACOORD(pawn)].")
+		else
+			chooser.withdraw_consent(person)
+			log_game("Agent NPC [key_name(pawn)] took back its agreement with [key_name(person)] at [AREACOORD(pawn)].")
+		// Live, a silent yes left the player guessing whether anything had happened.
+		var/spoke = agent_voice_answer(pawn, response.action["text"], answer)
+		if(answer)
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "you agreed to private time with [person.get_visible_name()] for the next [round(AGENT_ROMANCE_CONSENT_DURATION / (1 MINUTES))] minutes", spoke = spoke)
+		else
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "you took back your agreement with [person.get_visible_name()]", spoke = spoke)
+		return
+
 	// The melee is DM's from here on; the model chose who and how hard, within the profile and the ladder.
 	if(name == "fight")
 		var/datum/ai_controller/agent_social/fighter = binding.resolve_controller()

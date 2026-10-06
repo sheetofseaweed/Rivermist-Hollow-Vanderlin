@@ -45,6 +45,8 @@
 	var/datum/weakref/watched_offer
 	/// Who laid hands on this NPC lately: weakref -> world.time. They started it.
 	var/list/aggressors
+	/// Set when the agent took over a player's own character. Their setting for while they are away still applies.
+	var/borrowed_body = FALSE
 
 /datum/ai_controller/agent_social/New(atom/new_pawn)
 	// An instance, not initial() on the typepath: initial() returns null for
@@ -60,6 +62,8 @@
 	RegisterSignal(pawn, COMSIG_LIVING_ITEM_OFFERED, PROC_REF(on_item_offered))
 	RegisterSignal(pawn, COMSIG_MOB_UNBUCKLED, PROC_REF(on_unbuckled))
 	RegisterSignal(pawn, COMSIG_LIVING_SEX_CONSENT, PROC_REF(on_sex_consent))
+	RegisterSignal(pawn, COMSIG_LIVING_SEX_SCENE_REFUSED, PROC_REF(on_scene_refused))
+	RegisterSignal(pawn, COMSIG_LIVING_SEX_ACT_STOPPED_BY_PARTNER, PROC_REF(on_act_stopped_by_partner))
 	// Humans never get this by default, so without it on_pawn_attacked never fired in play at all.
 	pawn.AddElement(/datum/element/relay_attackers)
 	ensure_registered()
@@ -68,7 +72,7 @@
 	if(pawn)
 		// Before letting go, or a detached mob keeps a bubble nothing will ever clear.
 		show_thinking(FALSE)
-		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_MOB_UNBUCKLED, COMSIG_LIVING_STOPPED_OFFERING_ITEM, COMSIG_LIVING_SEX_CONSENT))
+		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_MOB_UNBUCKLED, COMSIG_LIVING_STOPPED_OFFERING_ITEM, COMSIG_LIVING_SEX_CONSENT, COMSIG_LIVING_SEX_SCENE_REFUSED, COMSIG_LIVING_SEX_ACT_STOPPED_BY_PARTNER))
 		stop_watching_offer()
 		end_combat("pawn released", report = FALSE)
 	release_binding("pawn unpossessed")
@@ -463,6 +467,10 @@
 	return length(cleaned) ? cleaned : null
 
 /datum/ai_controller/agent_social/Destroy(force, ...)
+	deltimer(romance_timer)
+	consents = null
+	private_partner = null
+	QDEL_LIST_ASSOC_VAL(advance_records)
 	release_binding("controller destroyed")
 	QDEL_NULL(profile)
 	return ..()
@@ -563,7 +571,7 @@
 	binding.note_candidate(customer)
 	binding.mark_dirty(event_name, AGENT_EVENT_LOW, detail, replenish = !isnull(customer.client))
 
-/// Agent NPCs answer for themselves. Only one selling its company says yes, and only to whoever paid.
+/// Agent NPCs answer for themselves: yes only to whoever paid for its company, or whoever it chose.
 /datum/ai_controller/agent_social/proc/on_sex_consent(datum/source, mob/living/other, list/reasons)
 	SIGNAL_HANDLER
 	var/refusal = scene_refusal_for(other)
@@ -577,9 +585,16 @@
 /datum/ai_controller/agent_social/proc/scene_refusal_for(mob/living/other)
 	var/datum/component/agent_shop/shop = pawn?.GetComponent(/datum/component/agent_shop)
 	var/datum/agent_stock/service/service = shop?.stock
-	if(!istype(service))
-		return "refuses"
-	return service.consent_refusal(other)
+	var/paid_refusal = istype(service) ? service.consent_refusal(other) : "refuses"
+	if(!paid_refusal)
+		return null
+	if(!romance_enabled())
+		return paid_refusal
+	var/chosen_refusal = romance_refusal(other)
+	if(!chosen_refusal)
+		return null
+	// A performer who also chooses lovers still asks strangers for coin first.
+	return istype(service) ? paid_refusal : chosen_refusal
 
 /// The customer with paid time left, if the NPC sells its company.
 /datum/ai_controller/agent_social/proc/paying_customer()
@@ -614,8 +629,8 @@
 		return "coalesced"
 	// An agent's `use` on another agent is an empty-hand click, so the same loop cap as speech applies.
 	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(by)]"])
-	// Rough hands mean they started it, though a paying customer may take the NPC by the hand.
-	if((kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) && !(kind == AGENT_STIMULUS_GRABBED && by == paying_customer()))
+	// Rough hands mean they started it, though someone who paid or was chosen may take the NPC by the hand.
+	if((kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) && !(kind == AGENT_STIMULUS_GRABBED && (by == paying_customer() || consent_until(by))))
 		note_aggressor(by)
 	if(from_another_agent)
 		if(!binding.agent_exchange_allowed(by))

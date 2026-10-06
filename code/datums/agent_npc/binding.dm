@@ -61,6 +61,8 @@
 	var/continuation_expires_at = 0
 	/// Speech actions in a row in this chain. Any other action, or anything happening, resets it.
 	var/speech_streak = 0
+	/// The last refusal or failure in this chain, as "state: detail". Anything else, or anything happening, clears it.
+	var/last_refusal
 	/// Highest urgency currently buffered.
 	var/pending_urgency = AGENT_EVENT_LOW
 	/// world.time floor for the next request. Enforces pacing and backoff.
@@ -145,6 +147,9 @@
 		payload["permitted_actions"] |= GLOB.agent_shop_actions
 		// A stall and a service are explained to the model differently.
 		payload["shop_kind"] = shop.stock?.kind
+		// Selling company is leave to take the lead with whoever paid.
+		if(istype(shop.stock, /datum/agent_stock/service))
+			payload["permitted_actions"] |= "initiate"
 	return payload
 
 /// A profile narrows the global action vocabulary. No profile, no objectives.
@@ -152,8 +157,11 @@
 	var/datum/ai_controller/agent_social/agent = resolve_controller()
 	if(!istype(agent) || !agent.profile)
 		return FALSE
+	var/datum/component/agent_shop/shop = agent.pawn?.GetComponent(/datum/component/agent_shop)
 	if(action_name in GLOB.agent_shop_actions)
-		return !isnull(agent.pawn?.GetComponent(/datum/component/agent_shop))
+		return !isnull(shop)
+	if(action_name == "initiate" && istype(shop?.stock, /datum/agent_stock/service))
+		return TRUE
 	return agent.profile.permits(action_name)
 
 /// Flag only. Tearing a binding down inside another datum's Destroy is asking
@@ -314,6 +322,9 @@
 	if(!record_result(state_name, detail))
 		return FALSE
 
+	var/refusal = (state_name == AGENT_RESULT_REJECTED || state_name == AGENT_RESULT_FAILED) ? "[state_name]: [detail]" : null
+	var/refused_again = refusal && refusal == last_refusal
+	last_refusal = refusal
 	if(was_wait)
 		end_continuation()
 		return FALSE
@@ -323,6 +334,10 @@
 		return FALSE
 	// Live, a chatty character spent its whole budget talking on to someone who had not answered yet.
 	if(speech_streak >= AGENT_CHAIN_SPEECH_LIMIT)
+		end_continuation()
+		return FALSE
+	// Live, a model retried one refused advance seventeen times. The same refusal twice means it is not learning.
+	if(refused_again)
 		end_continuation()
 		return FALSE
 
@@ -543,8 +558,9 @@
 		return FALSE
 
 	push_event(event_name, urgency, detail)
-	// Someone else did something, so the NPC may answer again.
+	// Someone else did something, so the NPC may answer again, or try again.
 	speech_streak = 0
+	last_refusal = null
 	set_dirty()
 	pending_urgency = max(pending_urgency, urgency)
 	if(replenish)

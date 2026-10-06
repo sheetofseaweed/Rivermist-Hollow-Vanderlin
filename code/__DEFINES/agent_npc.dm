@@ -340,6 +340,29 @@
 #define AGENT_EVENT_PRIVATE_TIME "private_time"
 /// Admins hear about one player's jailbreak attempts at most this often; the game log gets every one.
 #define AGENT_JAILBREAK_ALERT_COOLDOWN (2 MINUTES)
+/// How long an NPC's own yes to private time with someone lasts, unless it takes it back sooner.
+#define AGENT_ROMANCE_CONSENT_DURATION (15 MINUTES)
+/// Told to the model when someone tries to start a scene it has not agreed to.
+#define AGENT_EVENT_PRIVATE_REQUEST "private_request"
+/// Told to the model when a partner answers one of its advances, or stops an act it led.
+#define AGENT_EVENT_ADVANCE "advance"
+/// How far an advance goes. Rough is only offered after an intimate yes.
+#define AGENT_ADVANCE_TENDER 1
+#define AGENT_ADVANCE_INTIMATE 2
+#define AGENT_ADVANCE_ROUGH 3
+/// An act the NPC leads stops by itself after this long; some never end on their own.
+#define AGENT_ADVANCE_ACT_CAP (3 MINUTES)
+/// How long the partner has to answer an advance. No answer is a no.
+#define AGENT_ADVANCE_ANSWER_TIME (20 SECONDS)
+/// After a no, a stopped act or no answer, the NPC waits this long before trying again.
+#define AGENT_ADVANCE_DECLINE_COOLDOWN (2 MINUTES)
+/// A partner's "yes, for a while", and their "stop asking", both last this long.
+#define AGENT_ADVANCE_STANDING_DURATION (15 MINUTES)
+/// The partner's answers, as the buttons show them.
+#define AGENT_ADVANCE_YES "Yes"
+#define AGENT_ADVANCE_YES_FOR_A_WHILE "Yes, for a while"
+#define AGENT_ADVANCE_NO "No"
+#define AGENT_ADVANCE_STOP_ASKING "Stop asking"
 /// Selling company: one block of paid time, its price in mammons, and the markup while players work the same trade.
 #define AGENT_SERVICE_BLOCK (15 MINUTES)
 #define AGENT_SERVICE_PRICE 100

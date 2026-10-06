@@ -643,6 +643,39 @@
 	TEST_ASSERT(spoke_again, "Someone speaking again starts the count over.")
 	TEST_ASSERT(walked && spoke_after_walking, "Speech between other steps never ends a chain: say, walk, say still runs.")
 
+/datum/unit_test/agent_npc_chain_ends_on_a_repeated_refusal
+
+/datum/unit_test/agent_npc_chain_ends_on_a_repeated_refusal/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+
+	// Live, a model asked for the same refused advance seventeen times (2026-10-06).
+	var/first = binding.complete_action(AGENT_RESULT_REJECTED, "nothing fits")
+	var/repeated = binding.complete_action(AGENT_RESULT_REJECTED, "nothing fits")
+	var/budget_after_repeat = binding.continuation_budget
+
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+	var/after_news = binding.complete_action(AGENT_RESULT_REJECTED, "nothing fits")
+	var/different = binding.complete_action(AGENT_RESULT_REJECTED, "not close enough")
+	var/walked = binding.complete_action(AGENT_RESULT_SUCCEEDED, "arrived")
+	var/after_walking = binding.complete_action(AGENT_RESULT_REJECTED, "not close enough")
+
+	var/datum/agent_binding/failing = agent_test_binding()
+	failing.mark_dirty("heard_speech")
+	failing.take_events()
+	failing.complete_action(AGENT_RESULT_FAILED, "it did not start")
+	var/failed_again = failing.complete_action(AGENT_RESULT_FAILED, "it did not start")
+
+	TEST_ASSERT(first, "A refusal still leaves room to react to it.")
+	TEST_ASSERT(!repeated, "The same refusal twice running must end the chain.")
+	TEST_ASSERT_EQUAL(budget_after_repeat, 0, "The chain is over, not paused.")
+	TEST_ASSERT(after_news, "Something happening gives the model one more try.")
+	TEST_ASSERT(different, "A different refusal is a new problem, not a repeat.")
+	TEST_ASSERT(walked && after_walking, "A refusal after another step is a fresh try.")
+	TEST_ASSERT(!failed_again, "The same failure twice running ends the chain too.")
+
 /datum/unit_test/agent_npc_dispatched_speech_counts_as_speech
 
 /datum/unit_test/agent_npc_dispatched_speech_counts_as_speech/Run()

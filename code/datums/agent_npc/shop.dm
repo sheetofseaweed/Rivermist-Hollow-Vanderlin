@@ -3,8 +3,9 @@
 /// Granted by having a shop, the way combat limits grant fight and stop.
 GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 
-/proc/agent_mammons(amount)
-	return "[amount] mammon[amount == 1 ? "" : "s"]"
+/// A price in the town's coin.
+/proc/agent_amnas(amount)
+	return "[amount] amna[amount == 1 ? "" : "s"]"
 
 /// The first whole number in text, or null. Models write "10", "10%" or "-5".
 /proc/agent_parse_percent(text)
@@ -381,7 +382,7 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		var/refusal = stock.buy_refusal(held)
 		var/price = refusal ? null : offer_for(customer, held)
 		if(!isnull(price) && !isnull(purse) && price > purse)
-			refusal = "your purse is too light to pay [agent_mammons(price)]"
+			refusal = "your purse is too light to pay [agent_amnas(price)]"
 		if(refusal)
 			entry["refused"] = refusal
 		else
@@ -399,8 +400,8 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		return "no longer has that"
 	var/name = stock.ware_name(ware)
 	if(remove_mammons_from_atom(customer, price) < price)
-		notify(AGENT_EVENT_TRADE_REFUSED, customer, list("what" = "buy", "item" = name, "reason" = "they could not pay [agent_mammons(price)]"))
-		return "wants [agent_mammons(price)], more than you have"
+		notify(AGENT_EVENT_TRADE_REFUSED, customer, list("what" = "buy", "item" = name, "reason" = "they could not pay [agent_amnas(price)]"))
+		return "wants [agent_amnas(price)], more than you have"
 	// The item for goods; a service hands over time, and only says that it did.
 	var/handed = stock.hand_over(ware, customer)
 	if(!handed)
@@ -428,8 +429,8 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 	var/price = offer_for(customer, offered)
 	var/purse = stock.purse_amount()
 	if(!isnull(purse) && price > purse)
-		notify(AGENT_EVENT_TRADE_REFUSED, customer, list("what" = "sell", "item" = name, "reason" = "your purse is too light to pay [agent_mammons(price)]"))
-		return "cannot afford [agent_mammons(price)] for it"
+		notify(AGENT_EVENT_TRADE_REFUSED, customer, list("what" = "sell", "item" = name, "reason" = "your purse is too light to pay [agent_amnas(price)]"))
+		return "cannot afford [agent_amnas(price)] for it"
 	if(!customer.temporarilyRemoveItemFromInventory(offered))
 		return "cannot take that from you"
 	stock.take_in(offered, price)
@@ -490,7 +491,7 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		var/price = price_for(customer, ware)
 		if(isnull(price))
 			continue
-		var/label = "[stock.ware_name(ware)] ([agent_mammons(price)])"
+		var/label = "[stock.ware_name(ware)] ([agent_amnas(price)])"
 		// Two of the same thing at the same price still need two entries.
 		if(ware_by_label[label])
 			label = "[label] #[length(ware_by_label) + 1]"
@@ -504,7 +505,7 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 	var/price = price_for(customer, ware)
 	if(isnull(price))
 		return
-	to_chat(customer, span_notice("[parent] asks [agent_mammons(price)] for the [name]."))
+	to_chat(customer, span_notice("[parent] asks [agent_amnas(price)] for the [name]."))
 	if(!confirm(customer))
 		return
 	var/refusal = sell_to(customer, ware)
@@ -530,7 +531,7 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		return
 	var/name = "[offered.name]"
 	var/price = offer_for(customer, offered)
-	to_chat(customer, span_notice("[parent] offers [agent_mammons(price)] for your [name]."))
+	to_chat(customer, span_notice("[parent] offers [agent_amnas(price)] for your [name]."))
 	if(!confirm(customer))
 		return
 	var/refusal = buy_from(customer, offered)
