@@ -35,9 +35,16 @@
 	. = ..()
 	grant_outlaw_decree(spawned)
 	spawned.verbs |= /mob/proc/haltyell
-	spawned.grant_town_watch_command()
-	spawned.sync_town_watch_command()
-	spawned.sync_town_watch_sergeant_command_state()
+
+	// Sergeants always have their own command authority.
+	spawned.grant_town_watch_command(TOWNWATCH_COMMAND_SERGEANT)
+	// Emergency recruitment authority is separate.
+	if(town_watch_captain_available())
+		spawned.remove_town_watch_sergeant_command()
+	else
+		spawned.grant_town_watch_sergeant_command()
+	// Refresh emergency recruitment state for all sergeants.
+	sync_town_watch_sergeant_commands()
 
 ////////////////////////////////////////
 // ADVCLASS BASE – SEREGANT //
@@ -95,6 +102,7 @@
 		/datum/attribute/skill/misc/athletics = 40,
 		/datum/attribute/skill/misc/swimming = 30,
 		/datum/attribute/skill/misc/climbing = 30,
+		/datum/attribute/skill/craft/traps = 30,
 		/datum/attribute/skill/misc/reading = 20
 	)
 
@@ -203,6 +211,7 @@
 
 	backpack_contents = list(
 		/obj/item/clothing/neck/slave_collar,
+		/obj/item/rope/net/bola,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot,
 		/obj/item/flashlight/flare/torch/lantern,
 	)
@@ -293,30 +302,44 @@
 
 ///Emergency authonomy system. If captain is absent (Does not exist in round), sergeant gets his specials till someone joins the game as the role
 
-/mob/living/carbon/proc/grant_town_watch_sergeant_command(user)
-	if(!town_watch_recruit_action)
-		town_watch_recruit_action = new /datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch
-		town_watch_recruit_action.Grant(src)
-		to_chat(span_warning("There's no captain to be seen. It's time to work on my own."))
-
-/mob/living/carbon/proc/remove_town_watch_sergeant_command(user)
+/mob/living/carbon/human/proc/grant_town_watch_sergeant_command()
 	if(town_watch_recruit_action)
-		town_watch_recruit_action.Remove(src)
-		QDEL_NULL(town_watch_recruit_action)
-		to_chat(span_warning("Captain is nearby, so i'm no longer do his job."))
-
-/mob/living/carbon/human/proc/sync_town_watch_sergeant_command_state()
-	if(!mind)
 		return
 
-	var/datum/job/role = mind.assigned_role
-	if(role?.parent_job)
-		role = role.parent_job
+	town_watch_recruit_action = new /datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch
+	town_watch_recruit_action.Grant(src)
 
-	if(!istype(role, /datum/job/watch_sergeant))
+
+
+/mob/living/carbon/human/proc/remove_town_watch_sergeant_command()
+	if(!town_watch_recruit_action)
 		return
 
-	if(town_watch_captain_available())
-		remove_town_watch_sergeant_command()
-	else
-		grant_town_watch_sergeant_command()
+	town_watch_recruit_action.Remove(src)
+	QDEL_NULL(town_watch_recruit_action)
+
+/proc/sync_town_watch_sergeant_commands()
+	var/captain_present = town_watch_captain_available()
+
+	for(var/mob/living/carbon/human/H in GLOB.player_list)
+		if(QDELETED(H))
+			continue
+
+		var/datum/job/J = H.mind?.assigned_role
+		if(!J)
+			continue
+
+		if(J.parent_job)
+			J = J.parent_job
+
+		if(!istype(J, /datum/job/watch_sergeant))
+			continue
+
+		// Sergeants always retain their own order authority.
+		H.grant_town_watch_command(TOWNWATCH_COMMAND_SERGEANT)
+
+		// Emergency recruitment authority is conditional.
+		if(captain_present)
+			H.remove_town_watch_sergeant_command()
+		else
+			H.grant_town_watch_sergeant_command()

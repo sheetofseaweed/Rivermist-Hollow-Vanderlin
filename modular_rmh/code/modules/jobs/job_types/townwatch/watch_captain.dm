@@ -42,6 +42,15 @@
 
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch)
 
+/datum/job/watch_captain/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+	. = ..()
+
+	spawned.grant_town_watch_command(TOWNWATCH_COMMAND_CAPTAIN)
+	spawned.verbs |= /mob/proc/haltyell
+	grant_outlaw_decree(spawned)
+
+	sync_town_watch_sergeant_commands()
+
 
 ////////////////////////////////////////
 // Marhall CAPTAIN //
@@ -119,9 +128,6 @@
 	r_hand = null
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/cloth/bullets,
-		/obj/item/reagent_containers/glass/bottle/aflask,
-		/obj/item/gun/ballistic/revolver/grenadelauncher/pistol,
 		/obj/item/clothing/neck/slave_collar,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot,
 		/obj/item/flashlight/flare/torch/lantern,
@@ -289,9 +295,6 @@
 	r_hand = null
 
 	backpack_contents = list(
-		/obj/item/storage/belt/pouch/cloth/bullets,
-		/obj/item/reagent_containers/glass/bottle/aflask,
-		/obj/item/gun/ballistic/revolver/grenadelauncher/pistol,
 		/obj/item/clothing/neck/slave_collar,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot,
 		/obj/item/flashlight/flare/torch/lantern,
@@ -301,6 +304,7 @@
 
 /datum/outfit/watch_captain/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)
 	. = ..()
+
 
 //CONVERSION
 
@@ -323,44 +327,38 @@
 	set category = "Emotes.Noises"
 	emote("haltyell")
 ///Emegency authonomy system. When captain is absent, it's ability to recruit is given to the sergeant.
-/datum/job/watch_captain/after_spawn(mob/living/carbon/human/spawned, client/player_client)
-	. = ..()
-	grant_outlaw_decree(spawned)
-	spawned.verbs |= /mob/proc/haltyell
-	spawned.grant_town_watch_command()
-	spawned.sync_town_watch_command()
-	update_town_watch_sergeants()
-
-	for(var/mob/living/carbon/human/H in GLOB.player_list)
-		if(!H.mind)
-			continue
-
-		var/datum/job/J = H.mind.assigned_role
-		if(J?.parent_job)
-			J = J.parent_job
-
-		if(!istype(J, /datum/job/watch_sergeant))
-			continue
-		H.sync_town_watch_sergeant_command_state()
-
 /proc/town_watch_captain_available()
 	for(var/mob/living/carbon/human/H in GLOB.player_list)
-		if(!H.mind)
+		if(QDELETED(H))
 			continue
-
-		var/datum/job/J = H.mind.assigned_role
-		if(J?.parent_job)
+		var/datum/job/J = H.mind?.assigned_role
+		if(!J)
+			continue
+		if(J.parent_job)
 			J = J.parent_job
-
-		if(!istype(J, /datum/job/watch_captain))
-			continue
-
-		if(H.stat == DEAD)
-			continue
-
-		return TRUE
-
+		if(istype(J, /datum/job/watch_captain))
+			return TRUE
 	return FALSE
+
+
+/mob/living/carbon/human/proc/sync_town_watch_sergeant_command_state()
+	if(!mind)
+		return
+
+	var/datum/job/J = mind.assigned_role
+	if(!J)
+		return
+
+	if(J.parent_job)
+		J = J.parent_job
+
+	if(!istype(J, /datum/job/watch_sergeant))
+		return
+
+	if(town_watch_captain_available())
+		remove_town_watch_sergeant_command()
+	else
+		grant_town_watch_sergeant_command()
 
 /datum/job/watch_captain/proc/update_town_watch_sergeants()
 	var/captain_available = town_watch_captain_available()

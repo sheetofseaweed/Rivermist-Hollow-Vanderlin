@@ -177,7 +177,7 @@
 	pants = /obj/item/clothing/pants/tights/colored/guardsecond
 	shoes = /obj/item/clothing/shoes/boots/leather/advanced/watch
 	backr = /obj/item/storage/backpack/satchel/black
-	backl = /datum/supply_pack/weapons/steel/sgreataxe
+	backl = /obj/item/weapon/greataxe/steel
 	belt = /obj/item/storage/belt/leather/town_watch
 	beltr = null
 	beltl = /obj/item/weapon/mace/stunmace
@@ -260,6 +260,7 @@
 
 	backpack_contents = list(
 		/obj/item/clothing/neck/slave_collar,
+		/obj/item/rope/net/bola,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot,
 		/obj/item/flashlight/flare/torch/lantern
 	)
