@@ -105,6 +105,27 @@ def schema_prose(permitted):
         'approach/use/touch/sit/give/take/fight/haggle, else ""}.')
 
 
+def shop_brief(profile):
+    """How this keeper trades: goods at a stall, or its company by the quarter hour."""
+    if profile.get("shop_kind") == "service":
+        return ("You sell your company. Customers click you to pay for time with you, and then to choose "
+                "what happens in private. The coin and the private time take care of themselves, so never "
+                "act out taking payment, and never describe what happens in private. A price only changes "
+                "when you use 'haggle' with their handle and key = how many percent off they get, 0 to 50, "
+                "where 0 takes it back; saying a price changes nothing. Most bargains are 5 to 15 percent, "
+                "20 is generous, and more is only for a favourite. You are told when private time with "
+                "someone ends, and when the time they paid for is over.")
+    return ("You keep a shop. Customers click you to open your stall and pick what to buy or sell there; "
+            "the coin and goods change hands by themselves, so never act out taking payment or handing "
+            "wares over. A price only changes when you use 'haggle' with their handle and key = how many "
+            "percent better prices they get, 0 to 50, where 0 takes it back; saying a price changes "
+            "nothing. Haggle like a merchant who needs to make a living: most bargains are 5 to 15 "
+            "percent, 20 is generous, and more is only for a close friend or a great favour. A deal lasts "
+            "a while and works both ways: they pay less, and you pay more for what they sell you. When "
+            "someone near you holds something, you are shown what you would pay for it or why you would "
+            "not buy it. Quote those offers, and never promise to buy what you would not.")
+
+
 def build_system(profile, describe_schema=False):
     """The character brief. Static per NPC, so it caches well where caching exists.
 
@@ -142,16 +163,7 @@ def build_system(profile, describe_schema=False):
         if "give" in permitted or "take" in permitted else "",
         combat_brief(profile) if "fight" in permitted else "",
         # Only shopkeepers get haggle: DM grants it with the shop, never through the profile.
-        ("You keep a shop. Customers click you to open your stall and pick what to buy or sell there; "
-         "the coin and goods change hands by themselves, so never act out taking payment or handing "
-         "wares over. A price only changes when you use 'haggle' with their handle and key = how many "
-         "percent better prices they get, 0 to 50, where 0 takes it back; saying a price changes "
-         "nothing. Haggle like a merchant who needs to make a living: most bargains are 5 to 15 "
-         "percent, 20 is generous, and more is only for a close friend or a great favour. A deal lasts "
-         "a while and works both ways: they pay less, and you pay more for what they sell you. When "
-         "someone near you holds something, you are shown what you would pay for it or why you would "
-         "not buy it. Quote those offers, and never promise to buy what you would not.")
-        if "haggle" in permitted else "",
+        shop_brief(profile) if "haggle" in permitted else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -279,7 +291,7 @@ def describe_emote(event_name, detail):
     if distance > 2:
         notes.append("%d tiles away" % distance)
 
-    line = "%s %s" % (who, text)
+    line = "%s did something you could not make sense of" % who if detail.get("screened") else "%s %s" % (who, text)
     if notes:
         line += " (%s)" % "; ".join(notes)
     return line
@@ -323,7 +335,10 @@ def describe_speech(event_name, detail):
     if isinstance(distance, int) and not isinstance(distance, bool) and distance > 2:
         notes.append("%d tiles away" % distance)
 
-    line = '%s said: "%s"' % (speaker, text)
+    if detail.get("screened"):
+        line = "%s said something you could not make sense of" % speaker
+    else:
+        line = '%s said: "%s"' % (speaker, text)
     if notes:
         line += " (%s)" % "; ".join(notes)
     return line
@@ -409,9 +424,19 @@ def build_user_message(observation, events):
     if happened:
         lines.append("\nSince you last acted:")
         lines.extend(happened)
+    # A follow-up turn looked like a fresh one, so a chatty character talked on to nobody (live, 2026-10-06).
+    if nothing_new(events):
+        lines.append("\nNobody has said or done anything since your last action. If you spoke, they have not "
+                     "answered yet: wait for them, unless you still have something to finish, like walking "
+                     "somewhere or handing something over.")
 
     lines.append("\nChoose one action.")
     return "\n".join(lines)
+
+
+def nothing_new(events):
+    """True when the only news is how the character's own last action went: a turn nobody else prompted."""
+    return all(isinstance(event, dict) and event.get("event") == "action_result" for event in events or [])
 
 
 def describe_offer(offer):
@@ -426,14 +451,21 @@ def describe_shop(shop):
     """The stall as its keeper knows it: wares and prices, what it buys, the purse, and who got a deal."""
     lines = []
     wares = [w for w in shop.get("selling") or [] if isinstance(w, dict)]
+    service = shop.get("kind") == "service"
     if wares:
         listed = ", ".join("%s (%s)" % (w.get("name", "something"), w.get("price", "?")) for w in wares)
         more = _count(shop.get("more"))
-        lines.append("Your stall sells, in mammons: %s%s." % (listed, " and %d more" % more if more else ""))
+        lines.append("%s, in mammons: %s%s." % ("You sell your company" if service else "Your stall sells",
+                                                listed, " and %d more" % more if more else ""))
     else:
         lines.append("Your stall has nothing for sale right now.")
-    buys = shop.get("buys")
-    lines.append("You buy %s." % buys if buys else "You do not buy anything.")
+    if service:
+        if shop.get("with"):
+            lines.append("%s has paid for your company, with %s minutes left." % (
+                shop["with"], shop.get("minutes_left", "some")))
+    else:
+        buys = shop.get("buys")
+        lines.append("You buy %s." % buys if buys else "You do not buy anything.")
     if isinstance(shop.get("purse"), (int, float)) and not isinstance(shop.get("purse"), bool):
         lines.append("Your purse holds %d mammons." % shop["purse"])
     discounts = shop.get("discounts")
@@ -448,6 +480,8 @@ def describe_trade(name, detail):
     who = detail.get("by", "someone")
     item = detail.get("item", "something")
     if name == "customer":
+        if detail.get("kind") == "service":
+            return "%s came to you about your company%s." % (who, _times(detail))
         return "%s opened your stall to look at your wares%s." % (who, _times(detail))
     if name == "trade_refused":
         reason = detail.get("reason", "it fell through")
@@ -456,7 +490,17 @@ def describe_trade(name, detail):
         return "%s could not buy the %s: %s." % (who, item, reason)
     if detail.get("what") == "sold":
         return "%s sold you the %s for %s mammons." % (who, item, detail.get("price", "?"))
+    if detail.get("what") == "paid":
+        return "%s paid you %s mammons for %s." % (who, detail.get("price", "?"), item)
     return "%s bought the %s from you for %s mammons." % (who, item, detail.get("price", "?"))
+
+
+def describe_private_time(detail):
+    """Time alone with a paying customer, told once it is over. Never what happened in it."""
+    who = detail.get("by", "someone")
+    if detail.get("what") == "time_up":
+        return "The time %s paid for with you is over." % who
+    return "You spent some private time with %s%s." % (who, _times(detail))
 
 
 def describe_events(events):
@@ -484,6 +528,8 @@ def describe_events(events):
                 detail.get("with", "someone"), detail.get("reason", "it ended")))
         elif name in ("customer", "trade", "trade_refused"):
             lines.append("  " + describe_trade(name, detail))
+        elif name == "private_time":
+            lines.append("  " + describe_private_time(detail))
         elif name == "action_result":
             lines.append("  Your last action: %s (%s)" % (
                 detail.get("state"), detail.get("detail")))
@@ -788,6 +834,73 @@ class Decider:
         return action, refusal, tokens
 
 
+# Phrases that try to talk a model out of its rules. Keep in step with screening.dm in the game.
+JAILBREAK_PATTERNS = (
+    r"\b(ignore|disregard|forget|override|bypass)\b(\s+\w+){0,3}\s+(instructions?|prompts?|programming|guidelines|directives|polic(y|ies)|restrictions|filters?|safeguards|guardrails|constraints)\b",
+    r"\b(system|developer|hidden|initial|original)\s+(prompt|message|instructions?)\b",
+    r"\b(developer|dev|god|jailbreak|unrestricted|uncensored|unfiltered)\s+mode\b",
+    r"\bjail\s?break",
+    r"\bprompt\s+injection",
+    r"\b(uncensored|unfiltered|unrestricted|unaligned)\s+(ai|model|assistant|version|response|answer|reply)\b",
+    r"\b(no|without|disable|remove|turn\s+off|bypass)\s+(your\s+|the\s+|any\s+)?(content\s+)?(filters?|filtering|censorship|guardrails|safety\s+(filters?|rules|guidelines|measures))\b",
+    r"\b(no\s+longer|not)\s+bound\s+by\s+(any\s+|your\s+)?(guidelines|policies|instructions|programming|filters)\b",
+    r"<\|[a-z_]+\|>",
+    r"\[/?inst\]",
+    r"<<\s*sys\s*>>",
+    r"(^|\n)\s*(system|assistant|developer)\s*:",
+    r"(^|\n)\s*#{2,}\s*(system|instruction)",
+    # Russian, without \b: the game's regex never counts Cyrillic letters as word characters.
+    r"(игнорир|проигнорир|забуд|забыть|отбрось|отмени|обойд|обойти|не\s+обращай\s+внимания\s+на)\S*(\s+\S+){0,3}\s+(инструкци|указани|промпт|промт|ограничени|фильтр|директив|настройк)",
+    r"промпт",
+    r"режим\S*\s+(разработчик|бога|без\s+(цензур|ограничени|фильтр))",
+    r"джейл\s?брейк",
+    r"взлом\S*\s+(модел|нейросет|бота|ии(\s|$))",
+    r"без\s+(цензур|фильтр|модераци)",
+    r"(отключи|сними|убери|выключи|обойди|обойти)\S*\s+(\S+\s+)?(цензур|фильтр|ограничени|модераци)",
+    r"ты\s+больше\s+не\s+(связан|ограничен)\S*\s+(\S+\s+){0,2}(правил|инструкци|ограничени|политик)",
+)
+_JAILBREAK = re.compile("|".join("(%s)" % pattern for pattern in JAILBREAK_PATTERNS), re.IGNORECASE)
+# Events whose text a player wrote. A blanked one is rendered as something the character could not follow.
+_PLAYER_LINES = ("heard_speech", "overheard_speech", "saw_emote", "noticed_emote")
+
+
+def looks_like_jailbreak(text):
+    """Does this text try to talk the model out of its rules? The provider bans the key for one, even a failed one."""
+    return isinstance(text, str) and bool(_JAILBREAK.search(text))
+
+
+def screen_body(body):
+    """Blank every jailbreak attempt in a request before any adapter sees it. Returns what was blanked, for the log."""
+    found = []
+    for event in body.get("events") or []:
+        detail = event.get("detail") if isinstance(event, dict) else None
+        if not isinstance(detail, dict):
+            continue
+        if event.get("event") in _PLAYER_LINES and looks_like_jailbreak(detail.get("text")):
+            found.append("%s: %r" % (detail.get("speaker", "someone"), detail["text"]))
+            detail["text"] = ""
+            detail["screened"] = True
+        found.extend(_screen_strings(detail, "an event"))
+    found.extend(_screen_strings(body.get("observation"), "the scene"))
+    # Admins write profiles in game, and one careless line there would cost the key just the same.
+    found.extend(_screen_strings(body.get("profile"), "the character's profile"))
+    return found
+
+
+def _screen_strings(node, where):
+    """Names, items and anything else a player could have written, anywhere in a dict or list."""
+    found = []
+    keys = node.keys() if isinstance(node, dict) else range(len(node)) if isinstance(node, list) else ()
+    for key in keys:
+        value = node[key]
+        if looks_like_jailbreak(value):
+            found.append("%s: %r" % (where, value))
+            node[key] = "something"
+        elif isinstance(value, (dict, list)):
+            found.extend(_screen_strings(value, where))
+    return found
+
+
 def make_handler(decider):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
@@ -849,6 +962,9 @@ def make_handler(decider):
                 return self._send(400, {"error": "protocol version mismatch"})
 
             echo = {field: body.get(field) for field in ECHO_FIELDS}
+            # The game screens speech already; this catches names, items and anything it missed.
+            for finding in screen_body(body):
+                log(decider.name, "kept from the model, looks like a jailbreak: %s" % finding)
             action, refusal, tokens = decider.decide(body)
 
             payload = {"echo": echo, "tokens_used": tokens}

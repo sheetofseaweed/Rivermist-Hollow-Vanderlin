@@ -12,12 +12,15 @@
 /datum/ai_controller/agent_social/is_hot_pursuit_target(atom/target)
 	return (target && target == blackboard[BB_AGENT_POST]) || ..()
 
-/// Too busy to go home: fighting, fleeing, on an errand, seated by choice, or in a conversation.
+/// Too busy to go home: fighting, fleeing, on an errand, seated by choice, in a conversation, or paid for.
 /datum/ai_controller/agent_social/proc/busy_away_from_post()
 	var/mob/living/living_pawn = pawn
 	if(in_combat() || blackboard[BB_BASIC_MOB_CURRENT_TARGET] || living_pawn.buckled)
 		return TRUE
 	if(binding && !QDELETED(binding) && (binding.current_intent || binding.current_partner()))
+		return TRUE
+	// A customer with paid time may take the NPC somewhere quieter.
+	if(paying_customer())
 		return TRUE
 	return FALSE
 

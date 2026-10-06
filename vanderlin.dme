@@ -609,6 +609,8 @@
 #include "code\datums\agent_npc\profile.dm"
 #include "code\datums\agent_npc\profile_library.dm"
 #include "code\datums\agent_npc\protocol.dm"
+#include "code\datums\agent_npc\screening.dm"
+#include "code\datums\agent_npc\service.dm"
 #include "code\datums\agent_npc\shop.dm"
 #include "code\datums\agent_npc\spawner.dm"
 #include "code\datums\agent_npc\telemetry.dm"

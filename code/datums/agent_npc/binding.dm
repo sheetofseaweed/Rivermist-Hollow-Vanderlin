@@ -59,6 +59,8 @@
 	var/continuation_budget = 0
 	/// world.time at which the interaction lapses, budget or not.
 	var/continuation_expires_at = 0
+	/// Speech actions in a row in this chain. Any other action, or anything happening, resets it.
+	var/speech_streak = 0
 	/// Highest urgency currently buffered.
 	var/pending_urgency = AGENT_EVENT_LOW
 	/// world.time floor for the next request. Enforces pacing and backoff.
@@ -138,8 +140,11 @@
 		return null
 	var/list/payload = agent.profile.to_payload()
 	// A shop grants haggling, the way combat limits grant fighting.
-	if(agent.pawn?.GetComponent(/datum/component/agent_shop))
+	var/datum/component/agent_shop/shop = agent.pawn?.GetComponent(/datum/component/agent_shop)
+	if(shop)
 		payload["permitted_actions"] |= GLOB.agent_shop_actions
+		// A stall and a service are explained to the model differently.
+		payload["shop_kind"] = shop.stock?.kind
 	return payload
 
 /// A profile narrows the global action vocabulary. No profile, no objectives.
@@ -305,14 +310,19 @@
  * what lets "fetch the salt" run to completion unaided. `wait` ends the chain,
  * so an NPC with nothing to do settles instead of spinning.
  */
-/datum/agent_binding/proc/complete_action(state_name, detail, was_wait = FALSE)
+/datum/agent_binding/proc/complete_action(state_name, detail, was_wait = FALSE, spoke = FALSE)
 	if(!record_result(state_name, detail))
 		return FALSE
 
 	if(was_wait)
 		end_continuation()
 		return FALSE
+	speech_streak = spoke ? speech_streak + 1 : 0
 	if(continuation_budget <= 0 || world.time > continuation_expires_at)
+		end_continuation()
+		return FALSE
+	// Live, a chatty character spent its whole budget talking on to someone who had not answered yet.
+	if(speech_streak >= AGENT_CHAIN_SPEECH_LIMIT)
 		end_continuation()
 		return FALSE
 
@@ -533,6 +543,8 @@
 		return FALSE
 
 	push_event(event_name, urgency, detail)
+	// Someone else did something, so the NPC may answer again.
+	speech_streak = 0
 	set_dirty()
 	pending_urgency = max(pending_urgency, urgency)
 	if(replenish)
@@ -583,6 +595,10 @@
 	if(state != AGENT_BINDING_IDLE || !dirty || pawn_gone)
 		return FALSE
 	if(world.time < next_request_at)
+		return FALSE
+	// While an act runs the model gets no turn. Its events wait until the act ends.
+	var/datum/ai_controller/agent_social/agent = resolve_controller()
+	if(istype(agent) && agent.in_private())
 		return FALSE
 	return TRUE
 

@@ -59,6 +59,7 @@
 	RegisterSignal(pawn, COMSIG_MOB_FED, PROC_REF(on_pawn_fed))
 	RegisterSignal(pawn, COMSIG_LIVING_ITEM_OFFERED, PROC_REF(on_item_offered))
 	RegisterSignal(pawn, COMSIG_MOB_UNBUCKLED, PROC_REF(on_unbuckled))
+	RegisterSignal(pawn, COMSIG_LIVING_SEX_CONSENT, PROC_REF(on_sex_consent))
 	// Humans never get this by default, so without it on_pawn_attacked never fired in play at all.
 	pawn.AddElement(/datum/element/relay_attackers)
 	ensure_registered()
@@ -67,7 +68,7 @@
 	if(pawn)
 		// Before letting go, or a detached mob keeps a bubble nothing will ever clear.
 		show_thinking(FALSE)
-		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_MOB_UNBUCKLED, COMSIG_LIVING_STOPPED_OFFERING_ITEM))
+		UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_MOB_UNBUCKLED, COMSIG_LIVING_STOPPED_OFFERING_ITEM, COMSIG_LIVING_SEX_CONSENT))
 		stop_watching_offer()
 		end_combat("pawn released", report = FALSE)
 	release_binding("pawn unpossessed")
@@ -97,6 +98,9 @@
 	var/mob/living/living_pawn = pawn
 	if(!isliving(living_pawn) || living_pawn.stat >= UNCONSCIOUS || !living_pawn.can_hear())
 		return
+	// Nothing said during an act reaches the model, so none of it leaves the server.
+	if(in_private())
+		return
 
 	var/understood = living_pawn.lang_treat(
 		speaker,
@@ -124,10 +128,12 @@
 	// runtimes, and a runtime in a signal handler loses the speech silently.
 	var/list/mods = (length(hearing_args) >= HEARING_MESSAGE_MODS) ? hearing_args[HEARING_MESSAGE_MODS] : null
 	var/list/context = build_speech_context(speaker, understood, hearing_args[HEARING_RAW_MESSAGE], mods)
+	// The provider bans the key for a jailbreak attempt, even a failed one, so the model never sees it.
+	var/screened = screen_jailbreak(speaker, understood)
 
 	var/list/detail = list(
 		"speaker" = speaker_name,
-		"text" = understood,
+		"text" = screened ? "" : understood,
 		"distance" = context["distance"],
 		"whispered" = context["whispered"],
 		"shouted" = agent_speech_is_shouted(context["volume"]),
@@ -145,6 +151,8 @@
 	// Heard as players hear it, but the NPC must not act as if it can see the speaker.
 	if(isliving(speaker) && agent_is_hidden(speaker))
 		detail["unseen"] = TRUE
+	if(screened)
+		detail["screened"] = TRUE
 
 	route_speech(classification, speaker_name, understood, detail, from_another_agent, speaker)
 
@@ -338,6 +346,8 @@
 		return "unseen"
 	if(!agent_can_perceive_emote(living_pawn, emoter, audible))
 		return "unseen"
+	if(in_private())
+		return "private"
 	var/cleaned = agent_clean_emote_text(text)
 	if(!cleaned)
 		return "unseen"
@@ -354,9 +364,10 @@
 
 	var/list/context = build_emote_context(emoter, cleaned)
 	var/classification = classify_emote(emoter, intentional, context)
+	var/screened = screen_jailbreak(emoter, cleaned)
 	var/list/detail = list(
 		"speaker" = emoter_name,
-		"text" = cleaned,
+		"text" = screened ? "" : cleaned,
 		"distance" = context["distance"],
 		"nearby_people" = context["nearby_people"],
 		"addressing" = classification,
@@ -368,6 +379,8 @@
 		detail["involuntary"] = TRUE
 	if(unseen)
 		detail["unseen"] = TRUE
+	if(screened)
+		detail["screened"] = TRUE
 
 	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(emoter)]"])
 	return route_speech(classification, emoter_name, cleaned, detail, from_another_agent, emoter, AGENT_LINE_EMOTE)
@@ -550,6 +563,37 @@
 	binding.note_candidate(customer)
 	binding.mark_dirty(event_name, AGENT_EVENT_LOW, detail, replenish = !isnull(customer.client))
 
+/// Agent NPCs answer for themselves. Only one selling its company says yes, and only to whoever paid.
+/datum/ai_controller/agent_social/proc/on_sex_consent(datum/source, mob/living/other, list/reasons)
+	SIGNAL_HANDLER
+	var/refusal = scene_refusal_for(other)
+	if(!refusal)
+		return NONE
+	if(reasons)
+		reasons += refusal
+	return COMPONENT_REFUSE_SEX
+
+/// Why the NPC will not share a scene with them, as words after its name, or null.
+/datum/ai_controller/agent_social/proc/scene_refusal_for(mob/living/other)
+	var/datum/component/agent_shop/shop = pawn?.GetComponent(/datum/component/agent_shop)
+	var/datum/agent_stock/service/service = shop?.stock
+	if(!istype(service))
+		return "refuses"
+	return service.consent_refusal(other)
+
+/// The customer with paid time left, if the NPC sells its company.
+/datum/ai_controller/agent_social/proc/paying_customer()
+	var/datum/component/agent_shop/shop = pawn?.GetComponent(/datum/component/agent_shop)
+	var/datum/agent_stock/service/service = shop?.stock
+	return istype(service) ? service.current_customer() : null
+
+/// Is an act involving the NPC running? The model sits it out.
+/datum/ai_controller/agent_social/proc/in_private()
+	var/mob/living/living_pawn = pawn
+	if(!isliving(living_pawn) || QDELETED(living_pawn.sex_scene))
+		return FALSE
+	return length(living_pawn.sex_scene.get_actions_involving(living_pawn)) > 0
+
 /datum/ai_controller/agent_social/proc/on_pawn_fed(datum/source, mob/feeder, obj/item/fed_with)
 	SIGNAL_HANDLER
 	if(!isliving(feeder) || feeder == pawn)
@@ -570,8 +614,8 @@
 		return "coalesced"
 	// An agent's `use` on another agent is an empty-hand click, so the same loop cap as speech applies.
 	var/from_another_agent = !isnull(SSagent_npc?.bindings?["[REF(by)]"])
-	// Rough hands mean they started it, whatever the NPC decides to do about it.
-	if(kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK))
+	// Rough hands mean they started it, though a paying customer may take the NPC by the hand.
+	if((kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) && !(kind == AGENT_STIMULUS_GRABBED && by == paying_customer()))
 		note_aggressor(by)
 	if(from_another_agent)
 		if(!binding.agent_exchange_allowed(by))

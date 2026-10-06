@@ -419,15 +419,15 @@ SUBSYSTEM_DEF(agent_npc)
 			return
 		if("say")
 			var/list/outcome = agent_execute_say(pawn, response.action["text"])
-			binding.complete_action(outcome["state"], outcome["detail"])
+			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE)
 			return
 		if("emote")
 			var/list/outcome = agent_execute_emote(pawn, response.action["key"])
-			binding.complete_action(outcome["state"], outcome["detail"])
+			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE)
 			return
 		if("me")
 			var/list/outcome = agent_execute_me(pawn, response.action["text"])
-			binding.complete_action(outcome["state"], outcome["detail"])
+			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE)
 			return
 		if("stand")
 			var/list/outcome = agent_execute_stand(pawn)

@@ -619,6 +619,52 @@
 	TEST_ASSERT(!binding.complete_action(AGENT_RESULT_SUCCEEDED, "one too many"), "The chain must stop exactly at the cap.")
 	TEST_ASSERT(!binding.dirty, "A chain that has run out must not schedule another request.")
 
+/datum/unit_test/agent_npc_chain_never_monologues
+
+/datum/unit_test/agent_npc_chain_never_monologues/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+
+	// Live, a chatty character spent its whole budget on five lines before anyone answered (2026-10-06).
+	var/answered = binding.complete_action(AGENT_RESULT_SUCCEEDED, "said hello", spoke = TRUE)
+	var/second_line = binding.complete_action(AGENT_RESULT_SUCCEEDED, "said more", spoke = TRUE)
+	var/budget_after_lines = binding.continuation_budget
+
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+	var/spoke_again = binding.complete_action(AGENT_RESULT_SUCCEEDED, "answered the reply", spoke = TRUE)
+	var/walked = binding.complete_action(AGENT_RESULT_SUCCEEDED, "arrived")
+	var/spoke_after_walking = binding.complete_action(AGENT_RESULT_SUCCEEDED, "handed it over and said so", spoke = TRUE)
+
+	TEST_ASSERT(answered, "An answer may still be followed by one more step.")
+	TEST_ASSERT(!second_line, "A second line in a row must end the chain: nobody has answered yet.")
+	TEST_ASSERT_EQUAL(budget_after_lines, 0, "The chain is over, not paused.")
+	TEST_ASSERT(spoke_again, "Someone speaking again starts the count over.")
+	TEST_ASSERT(walked && spoke_after_walking, "Speech between other steps never ends a chain: say, walk, say still runs.")
+
+/datum/unit_test/agent_npc_dispatched_speech_counts_as_speech
+
+/datum/unit_test/agent_npc_dispatched_speech_counts_as_speech/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/agent_binding/binding = controller?.binding
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the pawn must be bound.")
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+
+	SSagent_npc.dispatch_decision(binding, agent_test_decision(list("name" = "say", "text" = "Hello there.")))
+	var/after_say = binding.speech_streak
+	SSagent_npc.dispatch_decision(binding, agent_test_decision(list("name" = "emote", "key" = "smile")))
+	var/after_emote = binding.speech_streak
+	var/budget = binding.continuation_budget
+	agent_test_restore_subsystem(saved, binding)
+
+	TEST_ASSERT_EQUAL(after_say, 1, "A dispatched say must count as speech.")
+	TEST_ASSERT_EQUAL(after_emote, 2, "So must an emote, or say and emote could alternate into a monologue.")
+	TEST_ASSERT_EQUAL(budget, 0, "And two in a row end the chain.")
+
 /datum/unit_test/agent_npc_wait_ends_the_chain_but_keeps_events
 
 /datum/unit_test/agent_npc_wait_ends_the_chain_but_keeps_events/Run()

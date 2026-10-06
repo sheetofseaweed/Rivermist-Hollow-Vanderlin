@@ -154,6 +154,8 @@
 #define AGENT_CONTINUATION_BUDGET 4
 /// An interaction lapses after this long regardless of remaining budget.
 #define AGENT_CONTINUATION_WINDOW (2 MINUTES)
+/// Speech actions in a row a chain may take: an answer and one more line, never a monologue to nobody.
+#define AGENT_CHAIN_SPEECH_LIMIT 2
 
 /// Where admin-authored profiles live between rounds. Hand-editable on purpose.
 #define AGENT_PROFILE_FILE "data/agent_profiles.json"
@@ -334,6 +336,22 @@
 #define AGENT_EVENT_CUSTOMER "customer"
 #define AGENT_EVENT_TRADE "trade"
 #define AGENT_EVENT_TRADE_REFUSED "trade_refused"
+/// Told to the model when an act with a paying customer ends, and when their time runs out.
+#define AGENT_EVENT_PRIVATE_TIME "private_time"
+/// Admins hear about one player's jailbreak attempts at most this often; the game log gets every one.
+#define AGENT_JAILBREAK_ALERT_COOLDOWN (2 MINUTES)
+/// Selling company: one block of paid time, its price in mammons, and the markup while players work the same trade.
+#define AGENT_SERVICE_BLOCK (15 MINUTES)
+#define AGENT_SERVICE_PRICE 100
+#define AGENT_SERVICE_RIVAL_MARKUP 2
+/// How often a sold service looks whether an act ended or the paid time ran out.
+#define AGENT_SERVICE_WATCH_INTERVAL (5 SECONDS)
+/// The one ware a service sells, and the menu choices of a paying customer.
+#define AGENT_SERVICE_WARE "company"
+#define AGENT_SERVICE_LEAD "You lead"
+#define AGENT_SERVICE_ROUGH "Be rough"
+#define AGENT_SERVICE_GENTLE "Be gentle"
+#define AGENT_SERVICE_STOP "Stop"
 /// The turf an NPC keeps to when idle, and the way it faces there.
 #define BB_AGENT_POST "BB_agent_post"
 #define BB_AGENT_POST_DIR "BB_agent_post_dir"

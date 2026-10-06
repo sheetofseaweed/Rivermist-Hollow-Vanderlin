@@ -77,8 +77,9 @@
 	if(QDELETED(target) || !can_reach(target))
 		return null
 	var/mob/living/aimed = target
-	if(isliving(aimed) && aimed != get_owner() && aimed != aimer && !aimed.allows_player_erp_while_disconnected())
-		return null
+	if(isliving(aimed) && aimed != get_owner() && aimed != aimer)
+		if(!aimed.allows_sex_with(get_owner()) || (aimer && !aimed.allows_sex_with(aimer)))
+			return null
 	return target
 
 /// The zone a shot lands on: a chest shot on someone facing away hits the back, and later spurts drift down.

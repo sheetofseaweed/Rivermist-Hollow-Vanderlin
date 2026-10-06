@@ -21,6 +21,8 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 	var/kind = "trader"
 	/// Shown to admins choosing a shop. Null on types too incomplete to use.
 	var/shop_label
+	/// What a sale is called in the event the model gets.
+	var/sold_verb = "bought"
 	var/mob/living/keeper
 
 /datum/agent_stock/New(mob/living/new_keeper)
@@ -78,6 +80,22 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 /// The keeper fell. Whatever it really held goes to the floor.
 /datum/agent_stock/proc/spill(turf/where)
 	return
+
+/// Why this customer cannot buy right now, as words after the keeper's name, or null.
+/datum/agent_stock/proc/sale_refusal(mob/living/customer)
+	return null
+
+/// Extra menu choices for this customer, label -> image, or null.
+/datum/agent_stock/proc/menu_extras(mob/living/customer)
+	return null
+
+/// Act on a choice from menu_extras.
+/datum/agent_stock/proc/pick_extra(choice, mob/living/customer)
+	return
+
+/// More for the model to know about this shop, merged into its description, or null.
+/datum/agent_stock/proc/describe_extra()
+	return null
 
 /// Sells goods from the town's supply packs at their live price plus a markup. Never runs out, never buys.
 /datum/agent_stock/supplier
@@ -306,7 +324,7 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		return COMPONENT_CANCEL_ATTACK_CHAIN
 	var/mob/living/keeper = parent
 	keeper.face_atom(customer)
-	notify(AGENT_EVENT_CUSTOMER, customer)
+	notify(AGENT_EVENT_CUSTOMER, customer, list("kind" = stock.kind))
 	INVOKE_ASYNC(src, PROC_REF(open_menu), customer)
 	return COMPONENT_CANCEL_ATTACK_CHAIN
 
@@ -373,7 +391,7 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 
 /// The customer buys a ware. Null on success, else why not, as words after the keeper's name.
 /datum/component/agent_shop/proc/sell_to(mob/living/customer, ware)
-	var/refusal = refusal_for(customer)
+	var/refusal = refusal_for(customer) || stock.sale_refusal(customer)
 	if(refusal)
 		return refusal
 	var/price = price_for(customer, ware)
@@ -383,14 +401,15 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 	if(remove_mammons_from_atom(customer, price) < price)
 		notify(AGENT_EVENT_TRADE_REFUSED, customer, list("what" = "buy", "item" = name, "reason" = "they could not pay [agent_mammons(price)]"))
 		return "wants [agent_mammons(price)], more than you have"
-	var/obj/item/sold = stock.hand_over(ware, customer)
-	if(!sold)
+	// The item for goods; a service hands over time, and only says that it did.
+	var/handed = stock.hand_over(ware, customer)
+	if(!handed)
 		add_mammons_to_atom(customer, price)
 		return "no longer has that"
 	stock.receive(price)
 	var/mob/living/keeper = parent
 	log_game("[key_name(customer)] bought [name] for [price] from agent shop [key_name(keeper)] at [AREACOORD(keeper)].")
-	notify(AGENT_EVENT_TRADE, customer, list("what" = "bought", "item" = name, "price" = price))
+	notify(AGENT_EVENT_TRADE, customer, list("what" = stock.sold_verb, "item" = name, "price" = price))
 	return null
 
 /// The customer sells a held item. Null on success, else why not.
@@ -440,6 +459,9 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		options["Buy"] = image(icon = 'icons/hud/radial.dmi', icon_state = "radial_buy")
 	if(stock.buys_text())
 		options["Sell"] = image(icon = 'icons/hud/radial.dmi', icon_state = "radial_sell")
+	var/list/extras = stock.menu_extras(customer)
+	if(extras)
+		options += extras
 	if(!length(options))
 		to_chat(customer, span_notice("[parent] has nothing to trade right now."))
 		return
@@ -449,6 +471,9 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 			buy_menu(customer)
 		if("Sell")
 			sell_menu(customer)
+		else
+			if(choice && extras && (choice in extras) && menu_check(customer))
+				stock.pick_extra(choice, customer)
 
 /datum/component/agent_shop/proc/confirm(mob/living/customer)
 	var/list/answers = list(
@@ -544,6 +569,9 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 		LAZYREMOVE(discounts, reference)
 	if(length(favoured))
 		described["discounts"] = favoured
+	var/list/extra = stock.describe_extra()
+	for(var/key in extra)
+		described[key] = extra[key]
 	return described
 
 /// Give a mob a shop of this type, replacing any it keeps; null removes it. Returns why not, or null.

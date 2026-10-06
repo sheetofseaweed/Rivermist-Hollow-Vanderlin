@@ -15,6 +15,8 @@
 	var/outfit
 	/// Their name, or null for a random one.
 	var/npc_name
+	/// MALE or FEMALE, or null to keep whichever the body rolled.
+	var/body_gender
 	/// A /datum/agent_stock type to keep a shop, or null for none.
 	var/shop_type
 	/// Keep to this tile when idle, facing the way the spawner faces.
@@ -34,9 +36,11 @@
 	if(!here || !ispath(mob_type, /mob/living))
 		return null
 	var/mob/living/spawned = new mob_type(here)
+	var/mob/living/carbon/human/body = spawned
+	if(body_gender && istype(body) && body.gender != body_gender)
+		agent_set_body_gender(body, body_gender)
 	if(npc_name)
 		spawned.fully_replace_character_name(spawned.real_name, npc_name)
-	var/mob/living/carbon/human/body = spawned
 	if(outfit && istype(body))
 		body.equipOutfit(outfit)
 	spawned.setDir(dir)
@@ -85,3 +89,39 @@
 /obj/effect/agent_npc_spawner/merchant/pawnbroker
 	name = "agent merchant spawner (pawnbroker)"
 	shop_type = /datum/agent_stock/dealer
+
+/// Sells company by the quarter hour. Put it at the baths.
+/obj/effect/agent_npc_spawner/performer
+	name = "agent performer spawner"
+	profile_type = /datum/agent_profile/performer
+	shop_type = /datum/agent_stock/service
+	outfit = /datum/outfit/agent_performer
+	body_gender = FEMALE
+
+/obj/effect/agent_npc_spawner/performer/male
+	name = "agent performer spawner (male)"
+	body_gender = MALE
+
+/// Light clothes and free hands. Nothing on it is worth killing for.
+/datum/outfit/agent_performer
+	name = "Agent Performer"
+	shirt = /obj/item/clothing/shirt/nightgown/colored/random
+	shoes = /obj/item/clothing/shoes/sandals
+
+/datum/outfit/agent_performer/pre_equip(mob/living/carbon/human/H)
+	. = ..()
+	if(H.gender == MALE)
+		shirt = /obj/item/clothing/shirt/undershirt/colored/random
+		pants = /obj/item/clothing/pants/tights/colored/random
+
+/// A fresh body made the other sex: a fitting name, and no beard on a woman.
+/proc/agent_set_body_gender(mob/living/carbon/human/body, new_gender)
+	body.gender = new_gender
+	if(new_gender == FEMALE)
+		var/datum/bodypart_feature/beard = body.get_bodypart_feature_of_slot(BODYPART_FEATURE_FACIAL_HAIR)
+		var/obj/item/bodypart/head/head = body.get_bodypart(BODY_ZONE_HEAD)
+		if(beard && head)
+			head.remove_bodypart_feature(beard)
+	if(body.dna?.species)
+		body.fully_replace_character_name(body.real_name, body.dna.species.random_name(new_gender, TRUE))
+	body.regenerate_icons()
