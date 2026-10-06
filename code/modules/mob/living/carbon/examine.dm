@@ -76,6 +76,8 @@
 	LAZYADDASSOCLIST(., EXAMINE_SECT_NAME, span_larger("[get_examine_string(user, TRUE)]."))
 	// Social context check.
 	LAZYADDASSOC(., EXAMINE_SECT_SOCIALCONTEXT+0.5, get_examine_social(user, P, .))
+	// Social context check.
+	LAZYADDASSOC(., EXAMINE_SECT_SOCIALCONTEXT+0.5, get_examine_social(user, P, .))
 	// Our face
 	var/can_see_face = IsAdminGhost(user) || is_human_part_visible(src, HIDEFACE)
 	LAZYADDASSOC(., EXAMINE_SECT_FACE+0.5, can_see_face ? get_examine_face(user, P, .) : get_examine_noface(user, P, .))
