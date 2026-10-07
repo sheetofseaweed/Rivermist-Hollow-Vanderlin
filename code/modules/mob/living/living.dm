@@ -1442,6 +1442,7 @@
 	visible_message("<span class='notice'>[src] yields!</span>")
 	playsound(src, 'sound/misc/surrender.ogg', 100, FALSE, -1)
 	toggle_cmode()
+	SEND_SIGNAL(src, COMSIG_LIVING_YIELDED)
 	addtimer(VARSET_CALLBACK(src, surrendering, FALSE), 15 SECONDS)
 /mob/living
 	var/had_pacifist = FALSE
@@ -1481,6 +1482,7 @@
 			src.visible_message("<span class='notice'>[src] yields utterly - they cannot harm anyone like this!</span>")
 			playsound(src, 'sound/misc/surrender.ogg', 100, FALSE, -1)
 			log_attack("[key_name(src)] has toggled yield ON!")
+			SEND_SIGNAL(src, COMSIG_LIVING_YIELDED)
 	else
 		if(IsKnockdown() || IsStun())
 			to_chat(src, span_warn("I can't rescind my yield when knocked down!"))

@@ -114,6 +114,7 @@
 #include "fluid_tastes.dm"
 #include "fluid_world.dm"
 #include "focus_only_tests.dm"
+#include "gnoll.dm"
 #include "guard_deflect.dm"
 #include "heat_cycles.dm"
 #include "hostile_ai_grab.dm"

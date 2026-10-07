@@ -3,7 +3,7 @@
 	footstep_type = FOOTSTEP_MOB_HEAVY
 
 /datum/species/gnoll
-	name = "Gnoll"
+	name = "Lesser Gnoll"
 	id = SPEC_ID_GNOLL
 	desc = "Gnolls are tall hyena-folk known for relentless marches, brutal charges, and a talent for surviving where softer folk would starve. \
 	Many are feared as raiders in frontier tales, yet just as many live as hunters, scouts, sellswords, and clanless wanderers in the wider world. \
