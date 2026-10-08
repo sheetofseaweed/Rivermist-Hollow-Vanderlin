@@ -409,9 +409,6 @@
 		cleanup()
 		return TRUE
 
-	if(user != owner.mob)
-		return TRUE
-
 	var/list/modifiers = params2list(params)
 
 	if(modifiers["right"])
@@ -419,12 +416,18 @@
 		return TRUE
 
 	if(istype(target, /atom/movable/screen))
-		return FALSE
+		cleanup()
+		return TRUE
 
 	if(!istype(target, /mob/living/carbon/human))
+		cleanup()
 		return TRUE
 
 	var/mob/living/carbon/human/H = target
+	if(H == user)
+		cleanup()
+		return TRUE
+
 	var/datum/town_watch_command_trait/selected_trait = command_trait
 
 	cleanup()
@@ -508,11 +511,7 @@
 		to_chat(owner, span_warning("That person is too far away to hear my order."))
 		return FALSE
 
-	var/datum/status_effect/buff/town_watch_order/effect = target.apply_status_effect(
-		/datum/status_effect/buff/town_watch_order,
-		src,
-		command
-	)
+	var/datum/status_effect/buff/town_watch_order/effect = target.apply_status_effect(/datum/status_effect/buff/town_watch_order,src, command)
 
 	if(!effect)
 		return FALSE
@@ -553,11 +552,7 @@
 	var/applied = 0
 
 	for(var/mob/living/carbon/human/H in targets)
-		var/datum/status_effect/buff/town_watch_order/effect = H.apply_status_effect(
-			/datum/status_effect/buff/town_watch_order,
-			src,
-			command
-		)
+		var/datum/status_effect/buff/town_watch_order/effect = H.apply_status_effect(/datum/status_effect/buff/town_watch_order, src, command)
 
 		if(effect)
 			applied++
@@ -660,4 +655,4 @@
 
 	to_chat(
 		owner,
-		span_notice("Select a Town Watch member to receive an order. Right-click to cancel."))
+		span_notice("Select a Town Watch member to receive an order. Click on yourself to cancel."))

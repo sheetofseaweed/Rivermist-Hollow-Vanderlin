@@ -448,7 +448,7 @@
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/captain.dmi'
 	icon_state = "capbarbute"
 	item_weight = 4.45 KILOGRAMS
-	social_cues = list("faction:town_watch" = 10, "elite:town_watch" = 5)
+	social_cues = list("faction:town_watch" = 10, "rank:town_watch:captain" = 5, "elite:town_watch" = 3)
 
 //................. Town Watch Helmet .............. //
 /obj/item/clothing/head/helmet/townwatch

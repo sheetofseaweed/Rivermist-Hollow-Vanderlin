@@ -167,7 +167,7 @@
 
 /datum/emote/living/attack
 	key = "attack"
-	key_third_person = "shouts to attack!"
+	message = "shouts to attack!"
 	emote_type = EMOTE_AUDIBLE
 	only_forced_audio = FALSE
 
@@ -509,8 +509,8 @@
 
 /datum/emote/living/gogogo
 	key = "gogogo"
+	message = "Yells to go!"
 	emote_type = EMOTE_AUDIBLE
-	key_third_person = "Yells to go!"
 	only_forced_audio = FALSE
 
 /mob/living/carbon/human/verb/emote_gogogo()
