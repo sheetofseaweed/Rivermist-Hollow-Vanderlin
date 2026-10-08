@@ -415,7 +415,8 @@ GLOBAL_DATUM_INIT(fire_overlay, /mutable_appearance, mutable_appearance('icons/e
 
 /// Lets an item refuse a body storage layer, e.g. a device that only fits over an opening.
 /obj/item/proc/can_enter_body_storage_layer(target_layer)
-	return TRUE
+	// Hand stand-ins such as grabs and cock grips delete themselves once they leave the hand.
+	return !(item_flags & (ABSTRACT | DROPDEL))
 
 /// Worn devices over an organ (pumps, chastity) return TRUE so nothing else can use the organ in [slot].
 /obj/item/proc/blocks_organ_use(slot)

@@ -68,6 +68,7 @@
 	SEND_SIGNAL(guts, COMSIG_BODYSTORAGE_TRY_INSERT, second_fake, STORAGE_LAYER_INNER, FALSE)
 
 	TEST_ASSERT_NOTEQUAL(belly_fullness_visible_state(belly, human), "pair_[BELLY_SIZE_FLAT]", "Multiple average inner insertions should visibly grow the belly.")
+	TEST_ASSERT(findtext(belly_fullness_visible_state(belly, human), "preg_") == 1, "Stuffing should use the round bump sprites.")
 	TEST_ASSERT_EQUAL(belly.organ_size, BELLY_SIZE_FLAT, "Fullness should be a transient display offset, not a mutation of the saved belly size.")
 
 /datum/unit_test/belly_fullness_deflates_when_inner_bulk_is_removed
@@ -182,3 +183,60 @@
 
 	TEST_ASSERT(!(fake in storage.all_layers[STORAGE_LAYER_DEEP]), "Sex action cleanup should remove stored items from their actual layer.")
 	TEST_ASSERT_EQUAL(storage.layer_storage_cur_bulk[STORAGE_LAYER_DEEP], 0, "Sex action cleanup should clear deep-layer bulk for removed items.")
+
+/datum/unit_test/belly_shows_pregnancy_stages/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/belly/belly = allocate(/obj/item/organ/genitals/belly)
+	belly.resting_size = BELLY_SIZE_FLAT
+	belly.organ_size = BELLY_SIZE_FLAT
+	belly.Insert(human, TRUE, FALSE)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = human.getorganslot(ORGAN_SLOT_VAGINA)
+	if(!vagina)
+		vagina = new
+		vagina.Insert(human, TRUE, FALSE)
+	vagina.reagents.clear_reagents()
+	vagina.update_reagent_capacity()
+
+	TEST_ASSERT(vagina.be_impregnated(), "The test setup should start a pregnancy.")
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "pair_[BELLY_SIZE_FLAT]", "A new pregnancy should not show yet.")
+	for(var/stage in 1 to PREGNANCY_MAX_STAGE)
+		vagina.advance_pregnancy_stage()
+		var/state = belly_fullness_visible_state(belly, human)
+		TEST_ASSERT_EQUAL(state, "preg_[stage]", "Each pregnancy stage should show its own sprite.")
+		TEST_ASSERT(icon_exists('modular_rmh/icons/mob/sprite_accessory/genitals/belly.dmi', "[state]_ADJ"), "The belly sprite file needs [state]_ADJ.")
+	TEST_ASSERT_EQUAL(belly.fullness_growth_steps, 0, "Pregnancy should not count as stuffing.")
+	vagina.advance_pregnancy_stage()
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "preg_[PREGNANCY_MAX_STAGE]", "A pregnancy should stop growing at full term.")
+
+	belly.resting_size = BELLY_SIZE_SMALL
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "preg_[PREGNANCY_MAX_STAGE]", "A bump bigger than the belly should take over.")
+	belly.resting_size = PREGNANCY_MAX_STAGE
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "pair_[PREGNANCY_MAX_STAGE]", "An equal belly should win over the bump.")
+	belly.fullness_growth_steps = BELLY_BUMP_MAX
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "preg_[BELLY_BUMP_MAX]", "Stuffing bigger than both should show.")
+	belly.fullness_growth_steps = 0
+	belly.resting_size = BELLY_SIZE_FLAT
+
+	vagina.clear_conventional_pregnancy()
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "pair_[BELLY_SIZE_FLAT]", "The belly should go flat when the pregnancy ends.")
+
+/datum/unit_test/belly_ignores_own_fluid/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	human.set_cached_erp_preferences(list(/datum/erp_preference/boolean/allow_belly_inflation = TRUE))
+	var/obj/item/organ/genitals/belly/belly = allocate(/obj/item/organ/genitals/belly)
+	belly.resting_size = BELLY_SIZE_FLAT
+	belly.organ_size = BELLY_SIZE_FLAT
+	belly.Insert(human, TRUE, FALSE)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = human.getorganslot(ORGAN_SLOT_VAGINA)
+	if(!vagina)
+		vagina = new
+		vagina.Insert(human, TRUE, FALSE)
+	vagina.reagents.clear_reagents()
+
+	vagina.add_produced_fluid(vagina.reagents.maximum_volume)
+	TEST_ASSERT_EQUAL(vagina.get_own_fluid_amount(), vagina.reagents.maximum_volume, "The test setup should fill the womb with its own fluid.")
+	TEST_ASSERT_EQUAL(belly_fullness_visible_state(belly, human), "pair_[BELLY_SIZE_FLAT]", "A womb full of its own fluid should not inflate the belly.")
+
+	vagina.reagents.clear_reagents()
+	vagina.reagents.add_reagent(/datum/reagent/consumable/cum, vagina.reagents.maximum_volume)
+	TEST_ASSERT_NOTEQUAL(belly_fullness_visible_state(belly, human), "pair_[BELLY_SIZE_FLAT]", "A womb full of seed should still inflate the belly.")

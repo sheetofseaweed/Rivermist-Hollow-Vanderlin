@@ -148,7 +148,7 @@
 	if(room <= 0 || amount <= 0)
 		return 0
 	. = source_reagents.trans_to(src, min(amount, room), transfered_by = wearer) || 0
-	if(.)
+	if(. && !context?.climax_follow_up)
 		to_chat(wearer, span_love("\The [src] drinks down my release."))
 
 /datum/sex_action_effect/fluid_pump

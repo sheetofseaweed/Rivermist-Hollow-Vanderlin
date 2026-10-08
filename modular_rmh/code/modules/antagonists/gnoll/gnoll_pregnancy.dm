@@ -101,7 +101,7 @@
 	if(!istype(carrier) || !carrier.can_receive_oviposition_implant())
 		return null
 	var/obj/item/organ/genitals/filling_organ/vagina/womb = carrier.getorganslot(ORGAN_SLOT_VAGINA)
-	if(!istype(womb) || !womb.fertility || womb.pregnant || !womb.supports_oviposition_pregnancy() || length(womb.get_oviposition_eggs()) || womb.count_internal_womb_hatchlings())
+	if(!istype(womb) || !womb.fertility || !womb.supports_oviposition_pregnancy() || length(womb.get_oviposition_eggs()) || womb.count_internal_womb_hatchlings())
 		return null
 	return womb
 

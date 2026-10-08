@@ -237,3 +237,165 @@
 	TEST_ASSERT(ispath(fucking.stored_item_type, /obj/item/organ/genitals/penis), "Vaginal sex should put the penis inside.")
 	fucking.sync_penis_grip(owner, partner)
 	TEST_ASSERT(QDELETED(grip), "The hand should let go when the cock goes inside someone.")
+
+/datum/unit_test/penis_grip_stays_out_of_body_storage/Run()
+	var/mob/living/carbon/human/holder = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	give_penis_grip_test_genitals(holder)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(partner, TRUE, TRUE)
+	holder.zone_selected = BODY_ZONE_PRECISE_GROIN
+	holder.try_grip_penis(holder)
+	var/obj/item/penis_grip/grip = holder.get_active_held_item()
+	TEST_ASSERT(istype(grip), "The holder should have the grip in hand.")
+
+	var/datum/sex_action/hole_storage/vagina_store/store = allocate(/datum/sex_action/hole_storage/vagina_store)
+	TEST_ASSERT(!store.shows_on_menu(holder, partner), "Storing items should not offer a cock grip.")
+	TEST_ASSERT(!store.can_fit_item_in_hole(partner, ORGAN_SLOT_VAGINA, grip), "A cock grip should never fit in a hole.")
+	SEND_SIGNAL(vagina, COMSIG_BODYSTORAGE_TRY_INSERT, grip, STORAGE_LAYER_INNER, FALSE)
+	TEST_ASSERT(!(grip in vagina.contents), "A cock grip should never be stored.")
+	TEST_ASSERT_EQUAL(holder.get_active_held_item(), grip, "A refused insert should leave the grip in hand.")
+
+	var/obj/item/dildo/wood/dildo = allocate(/obj/item/dildo/wood)
+	TEST_ASSERT(dildo.can_enter_body_storage_layer(STORAGE_LAYER_INNER), "Real toys should still fit inside.")
+
+/datum/unit_test/penis_grip_refuses_a_cock_inside_someone/Run()
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/holder = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_penis_grip_test_genitals(owner)
+	var/datum/sex_scene_controller/controller = owner.open_sex_scene(partner, FALSE)
+	var/datum/sex_action/fucking = controller.instantiate_action(/datum/sex_action/sex/vaginal)
+	TEST_ASSERT(fucking.bind_runtime(controller), "The vaginal action should bind.")
+	TEST_ASSERT(owner.is_penis_inside_someone(), "A running vaginal action should put the cock inside.")
+
+	holder.zone_selected = BODY_ZONE_PRECISE_GROIN
+	TEST_ASSERT(holder.try_grip_penis(owner), "The hand should be told the cock is busy.")
+	TEST_ASSERT_NULL(penis.grip, "Nobody should take hold of a cock inside someone.")
+
+	fucking.unbind_runtime()
+	qdel(fucking)
+	TEST_ASSERT(!owner.is_penis_inside_someone(), "The cock should be free once the action ends.")
+	holder.try_grip_penis(owner)
+	TEST_ASSERT_NOTNULL(penis.grip, "A free cock should be grippable again.")
+
+	var/datum/sex_action/npc/npc_vaginal_ride_sex/riding = allocate(/datum/sex_action/npc/npc_vaginal_ride_sex)
+	TEST_ASSERT_EQUAL(riding.get_inserted_penis_owner(partner, owner), owner, "An NPC riding someone takes their cock inside.")
+	var/datum/sex_action/npc/npc_vaginal_sex/npc_fucking = allocate(/datum/sex_action/npc/npc_vaginal_sex)
+	TEST_ASSERT_EQUAL(npc_fucking.get_inserted_penis_owner(owner, partner), owner, "An NPC fucking someone puts its own cock inside.")
+
+/datum/unit_test/penis_grip_squeeze_is_easy_to_reach/Run()
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_penis_grip_test_genitals(owner)
+	var/datum/component/arousal/arousal = owner.LoadComponent(/datum/component/arousal)
+	owner.zone_selected = BODY_ZONE_PRECISE_GROIN
+	owner.try_grip_penis(owner)
+	var/obj/item/penis_grip/grip = penis.grip
+
+	SEND_SIGNAL(owner, COMSIG_SEX_SET_ORGASM_PROG, EDGE_SQUEEZE_MIN_PROGRESS - 10)
+	TEST_ASSERT(!grip.squeeze(owner), "A squeeze far from the edge should hold nothing back.")
+	TEST_ASSERT_EQUAL(arousal.edging_charge, 0, "A squeeze far from the edge should build no edging.")
+	grip.cue_close_climax()
+	TEST_ASSERT(!grip.close_cued, "A cock far from the edge should not throb.")
+
+	SEND_SIGNAL(owner, COMSIG_SEX_SET_ORGASM_PROG, EDGE_SQUEEZE_CUE_PROGRESS)
+	grip.cue_close_climax()
+	TEST_ASSERT(grip.close_cued, "The hand should feel the cock throb near the edge.")
+	grip.attack_self_secondary(owner)
+	TEST_ASSERT(arousal.orgasm_progress < EDGE_SQUEEZE_CUE_PROGRESS, "Right-clicking the grip in hand should squeeze.")
+	TEST_ASSERT(arousal.edging_charge > 0, "A squeeze near the edge should build edging.")
+
+	var/edge_index = 0
+	for(var/i in 1 to length(owner.possible_a_intents))
+		var/datum/intent/intent = owner.possible_a_intents[i]
+		if(istype(intent, /datum/intent/penis_grip/edge))
+			edge_index = i
+			break
+	TEST_ASSERT(edge_index, "A grip in hand should offer the edge intent.")
+	owner.rog_intent_change(edge_index)
+	COOLDOWN_RESET(grip, squeeze_cooldown)
+	SEND_SIGNAL(owner, COMSIG_SEX_SET_ORGASM_PROG, 90)
+	grip.attack_self(owner)
+	TEST_ASSERT(arousal.orgasm_progress < 90, "Using the grip in hand on the edge intent should squeeze.")
+	TEST_ASSERT_NULL(grip.stroke_action, "A squeeze should not start stroking.")
+
+	COOLDOWN_RESET(grip, squeeze_cooldown)
+	SEND_SIGNAL(owner, COMSIG_SEX_SET_ORGASM_PROG, 90)
+	var/turf/far_away = locate(run_loc_floor_bottom_left.x + 3, run_loc_floor_bottom_left.y, run_loc_floor_bottom_left.z)
+	grip.afterattack(far_away, owner, FALSE)
+	TEST_ASSERT(arousal.orgasm_progress < 90, "An edge click out of reach should still squeeze.")
+	owner.rog_intent_change(1)
+
+	COOLDOWN_RESET(grip, squeeze_cooldown)
+	penis.strapon = TRUE
+	SEND_SIGNAL(owner, COMSIG_SEX_SET_ORGASM_PROG, 90)
+	TEST_ASSERT(!grip.squeeze(owner), "A strapon has nothing to hold back.")
+	penis.strapon = FALSE
+
+/datum/unit_test/penis_grip_strapon_reads_as_a_strapon/Run()
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_penis_grip_test_genitals(owner)
+	var/datum/component/arousal/arousal = owner.LoadComponent(/datum/component/arousal)
+	penis.strapon = TRUE
+	penis.always_hard = TRUE
+	owner.zone_selected = BODY_ZONE_PRECISE_GROIN
+	owner.try_grip_penis(owner)
+	var/obj/item/penis_grip/grip = penis.grip
+	TEST_ASSERT_EQUAL(grip.name, "strapon", "A held strapon should be called a strapon.")
+	TEST_ASSERT(findtext(grip.get_cock_phrase(victim), "strapon"), "Messages about a strapon should say strapon.")
+	SEND_SIGNAL(owner, COMSIG_SEX_SET_AROUSAL, 20)
+	owner.zone_selected = BODY_ZONE_CHEST
+	TEST_ASSERT(grip.slap(victim, owner), "A strapon slap should land.")
+	TEST_ASSERT_EQUAL(arousal.arousal, 20, "A strapon slap should not arouse its wearer.")
+
+	victim.forceMove(locate(run_loc_floor_bottom_left.x + 1, run_loc_floor_bottom_left.y, run_loc_floor_bottom_left.z))
+	victim.setDir(EAST)
+	TEST_ASSERT_EQUAL(grip.get_slap_spot(victim, BODY_ZONE_PRECISE_GROIN), "ass", "A groin slap from behind should hit the ass.")
+	victim.setDir(WEST)
+	TEST_ASSERT_EQUAL(grip.get_slap_spot(victim, BODY_ZONE_PRECISE_GROIN), "crotch", "A groin slap from the front should hit the crotch.")
+	TEST_ASSERT_EQUAL(get_fluid_coat_zone_name(FLUID_COAT_GROIN, victim, TRUE), "ass", "An aim at a groin from behind should name the ass.")
+
+/datum/unit_test/penis_grip_joins_and_frees_its_stroking/Run()
+	var/mob/living/carbon/human/holder = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_penis_grip_test_genitals(owner)
+	var/datum/sex_scene_controller/controller = holder.open_sex_scene(owner, FALSE)
+	var/datum/sex_action/stroking = controller.instantiate_action(/datum/sex_action/masturbate/other/penis)
+	TEST_ASSERT(stroking.bind_runtime(controller), "The handjob should bind.")
+
+	holder.zone_selected = BODY_ZONE_PRECISE_GROIN
+	holder.try_grip_penis(owner)
+	var/obj/item/penis_grip/grip = penis.grip
+	TEST_ASSERT_EQUAL(grip?.stroke_action, stroking, "Taking hold mid-handjob should join that handjob.")
+	grip.attack_self(holder)
+	TEST_ASSERT(QDELETED(stroking), "Using the grip in hand should then stop the handjob.")
+	TEST_ASSERT(!QDELETED(grip), "A hold taken by hand should stay.")
+	holder.dropItemToGround(grip)
+
+	stroking = controller.instantiate_action(/datum/sex_action/masturbate/other/penis)
+	TEST_ASSERT(stroking.bind_runtime(controller), "The handjob should bind again.")
+	stroking.on_start(holder, owner)
+	grip = penis.grip
+	TEST_ASSERT(grip?.made_by_action, "The handjob should put a grip in hand.")
+	qdel(stroking)
+	TEST_ASSERT(QDELETED(grip), "A handjob deleted without finishing should still let go.")
+
+	holder.try_grip_penis(owner)
+	grip = penis.grip
+	TEST_ASSERT(grip.is_hold_valid(), "The hold should start out valid.")
+	holder.mind_initialize()
+	holder.mind.key = "unit_test_holder"
+	TEST_ASSERT(!grip.is_hold_valid(), "A holder who logs off should let go.")
+
+/datum/unit_test/penis_grip_self_slap_stays_low/Run()
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_penis_grip_test_genitals(owner)
+	owner.zone_selected = BODY_ZONE_PRECISE_GROIN
+	owner.try_grip_penis(owner)
+	var/obj/item/penis_grip/grip = penis.grip
+	for(var/zone in list(BODY_ZONE_HEAD, BODY_ZONE_PRECISE_MOUTH, BODY_ZONE_CHEST))
+		owner.zone_selected = zone
+		TEST_ASSERT(!grip.slap(owner, owner), "A cock should not reach its owner's [zone].")
+	owner.zone_selected = BODY_ZONE_L_LEG
+	TEST_ASSERT(grip.slap(owner, owner), "A cock should still slap its owner's thigh.")

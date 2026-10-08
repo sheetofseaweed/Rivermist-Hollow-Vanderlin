@@ -12,10 +12,14 @@
 	hint_conception()
 	morning_sickness_timer = addtimer(CALLBACK(src, PROC_REF(start_morning_sickness)), rand(PREGNANCY_SICKNESS_MIN_DELAY, PREGNANCY_SICKNESS_MAX_DELAY), TIMER_STOPPABLE)
 
-/// Only owners with self-aware genitals feel anything, and not what it is.
+/// A small, vague hint; owners with self-aware genitals feel it more clearly.
 /obj/item/organ/genitals/filling_organ/proc/hint_conception()
-	if(owner?.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
+	if(!owner)
+		return
+	if(owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni))
 		to_chat(owner, span_love("Something feels different, deep inside my [get_oviposition_location_name()]..."))
+		return
+	to_chat(owner, span_small(span_love("A faint warmth settles low in my belly.")))
 
 /obj/item/organ/genitals/filling_organ/proc/start_morning_sickness()
 	morning_sickness_timer = null
@@ -31,7 +35,7 @@
 
 /// The belly grows a stage; the first one also brings the milk in and ends morning sickness.
 /obj/item/organ/genitals/filling_organ/proc/advance_pregnancy_stage()
-	conventional_pregnancy_stage = min(conventional_pregnancy_stage + 1, 3)
+	conventional_pregnancy_stage = min(conventional_pregnancy_stage + 1, PREGNANCY_MAX_STAGE)
 	to_chat(owner, span_love("I notice my belly has grown due to pregnancy..."))
 	if(conventional_pregnancy_stage == 1)
 		stop_pregnancy_signs()

@@ -141,7 +141,8 @@
 		if(!target_allows_mob_erp_action(impregnation_actor, forgan.owner, /datum/erp_preference/boolean/allow_mob_breeding))
 			return
 		var/allow_embryo_pregnancy = triggers_embryo_pregnancy || parent_triggers_oviposition_embryo_pregnancy(father)
-		if(forgan.can_attempt_impregnation(allow_embryo_pregnancy))
+		// Recorded even while conception is blocked, so the seed can still take once the block ends.
+		if(forgan.fertility)
 			var/recipient_is_quickened = forgan.owner?.has_reagent(/datum/reagent/medicine/pregplus)
 			var/donor_is_quickened = father?.has_reagent(/datum/reagent/medicine/vertplus)
 			// Conception is rolled on timed checks while the seed stays inside, not here.
