@@ -9,6 +9,8 @@
 	desc = "A fitted leather gag with adjustable straps."
 	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi'
+	detail_tag = "_fixed"
+	detail_color = "#FFFFFF"
 	dyeable = TRUE
 	modifies_speech = TRUE
 	clothing_flags = BLOCKS_SPEECH
@@ -22,24 +24,6 @@
 	var/can_lower = TRUE
 	var/drool_chance = BDSM_GAG_DROOL_CHANCE
 	var/muffled_words = "Mmf..."
-
-/obj/item/clothing/face/bdsm_gag/Initialize(mapload, ...)
-	. = ..()
-	update_appearance(UPDATE_OVERLAYS)
-
-/obj/item/clothing/face/bdsm_gag/update_overlays()
-	. = ..()
-	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', icon_state)
-	fixed_details.appearance_flags = RESET_COLOR
-	. += fixed_details
-
-/obj/item/clothing/face/bdsm_gag/worn_overlays(mutable_appearance/standing, isinhands = FALSE, icon_file, dummy_block = FALSE)
-	. = ..()
-	if(isinhands)
-		return
-	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', standing.icon_state)
-	fixed_details.appearance_flags = RESET_COLOR
-	. += fixed_details
 
 /obj/item/clothing/face/bdsm_gag/AdjustClothes(mob/user)
 	if(!can_lower || loc != user)
@@ -243,7 +227,7 @@
 
 /obj/item/clothing/neck/leathercollar/bdsm/update_overlays()
 	. = ..()
-	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', icon_state)
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', "[icon_state]_fixed")
 	fixed_details.appearance_flags = RESET_COLOR
 	. += fixed_details
 
@@ -251,7 +235,7 @@
 	. = ..()
 	if(isinhands)
 		return
-	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', standing.icon_state)
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', "[standing.icon_state]_fixed")
 	fixed_details.appearance_flags = RESET_COLOR
 	. += fixed_details
 
@@ -376,7 +360,7 @@
 	. = ..()
 	if(!dyeable)
 		return
-	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', icon_state)
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_fixed_items.dmi', "[icon_state]_fixed")
 	fixed_details.appearance_flags = RESET_COLOR
 	. += fixed_details
 
@@ -470,7 +454,7 @@
 	new_overlay.pixel_y = old_overlay?.pixel_y
 	if(cuffs.dyeable)
 		new_overlay.color = cuffs.color
-		var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', state)
+		var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', "[state]_fixed")
 		fixed_details.appearance_flags = RESET_COLOR
 		new_overlay.overlays.Add(fixed_details)
 	overlays_standing[HANDCUFF_LAYER] = new_overlay
@@ -487,7 +471,7 @@
 	var/mutable_appearance/new_overlay = mutable_appearance(icon_file, state, -LEGCUFF_LAYER)
 	if(cuffs.dyeable)
 		new_overlay.color = cuffs.color
-		var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', state)
+		var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_fixed_onmob.dmi', "[state]_fixed")
 		fixed_details.appearance_flags = RESET_COLOR
 		new_overlay.overlays.Add(fixed_details)
 	overlays_standing[LEGCUFF_LAYER] = new_overlay
@@ -510,11 +494,14 @@
 /obj/item/clothing/shirt/undershirt/bdsm_halfsuit
 	name = "leather halfsuit"
 	desc = "A close-fitted leather harness with a reinforced leash clasp."
-	icon = 'modular_rmh/icons/clothing/bdsm_items.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	icon = 'modular_rmh/icons/clothing/bdsm_gor_leather_items.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_gor_leather_onmob.dmi'
 	icon_state = "leatherhalfsuit"
 	item_state = "leatherhalfsuit"
+	detail_tag = "_glare"
+	detail_color = "#FFFFFF"
 	sleeved = null
+	boobed = FALSE
 	allowed_race = SPECIES_BASE_BODY
 	color = CLOTHING_BLACK
 	dyeable = TRUE
@@ -522,11 +509,12 @@
 /obj/item/clothing/legwears/bdsm_leather
 	name = "leather stockings"
 	desc = "Fitted leather stockings, cut to be worn beneath other clothing."
-	icon = 'modular_rmh/icons/clothing/bdsm_items.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	icon = 'modular_rmh/icons/clothing/bdsm_gor_leather_items.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_gor_leather_onmob.dmi'
 	icon_state = "leatherstockings"
 	item_state = "leatherstockings"
-	color = "#FFFFFF"
+	detail_tag = "_glare"
+	detail_color = "#FFFFFF"
 	slot_flags = ITEM_SLOT_SOCKS
 	muteinmouth = FALSE
 	damaged_icon = null
@@ -537,10 +525,12 @@
 /obj/item/clothing/gloves/bdsm_leather
 	name = "leather gloves"
 	desc = "Fitted gloves with a crisp snap at the wrist."
-	icon = 'modular_rmh/icons/clothing/bdsm_items.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_onmob.dmi'
+	icon = 'modular_rmh/icons/clothing/bdsm_gor_leather_items.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_gor_leather_onmob.dmi'
 	icon_state = "leathergloves"
 	item_state = "leathergloves"
+	detail_tag = "_glare"
+	detail_color = "#FFFFFF"
 	sleeved = 'modular_rmh/icons/clothing/onmob/bdsm_glove_sleeves.dmi'
 	resistance_flags = FLAMMABLE
 	color = CLOTHING_BLACK
