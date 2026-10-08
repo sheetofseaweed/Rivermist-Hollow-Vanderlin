@@ -3,15 +3,13 @@
 #define BDSM_BLACK_LEATHER "#69656B"
 #define BDSM_BROWN_LEATHER "#965F4B"
 
-// The paired black/brown sprites separate dyeable leather from fixed details.
+// The source sprites put the dyeable center behind one fixed leather and hardware overlay.
 /obj/item/clothing/face/bdsm_gag
 	name = "gag"
 	desc = "A fitted leather gag with adjustable straps."
-	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
-	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi'
-	detail_tag = "_fixed"
-	detail_color = "#FFFFFF"
-	dyeable = TRUE
+	icon = 'modular_rmh/icons/clothing/bdsm_gag_base_items.dmi'
+	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_gag_base_onmob.dmi'
+	dyeable = FALSE
 	modifies_speech = TRUE
 	clothing_flags = BLOCKS_SPEECH
 	flags_cover = MASKCOVERSMOUTH
@@ -24,6 +22,24 @@
 	var/can_lower = TRUE
 	var/drool_chance = BDSM_GAG_DROOL_CHANCE
 	var/muffled_words = "Mmf..."
+
+/obj/item/clothing/face/bdsm_gag/Initialize(mapload, ...)
+	. = ..()
+	update_appearance(UPDATE_OVERLAYS)
+
+/obj/item/clothing/face/bdsm_gag/update_overlays()
+	. = ..()
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/bdsm_gag_fixed_items.dmi', "[icon_state]_fixed")
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
+
+/obj/item/clothing/face/bdsm_gag/worn_overlays(mutable_appearance/standing, isinhands = FALSE, icon_file, dummy_block = FALSE)
+	. = ..()
+	if(isinhands)
+		return
+	var/mutable_appearance/fixed_details = mutable_appearance('modular_rmh/icons/clothing/onmob/bdsm_gag_fixed_onmob.dmi', "[standing.icon_state]_fixed")
+	fixed_details.appearance_flags = RESET_COLOR
+	. += fixed_details
 
 /obj/item/clothing/face/bdsm_gag/AdjustClothes(mob/user)
 	if(!can_lower || loc != user)
@@ -78,28 +94,25 @@
 /obj/item/clothing/face/bdsm_gag/muzzle/black
 	name = "black leather muzzle"
 	icon_state = "black_muzzle"
-	color = BDSM_BLACK_LEATHER
 	muffled_words = "Mmph..."
 
 /obj/item/clothing/face/bdsm_gag/muzzle/brown
 	name = "brown leather muzzle"
 	icon_state = "brown_muzzle"
-	color = BDSM_BROWN_LEATHER
 	muffled_words = "Mmph..."
 
 /obj/item/clothing/face/bdsm_gag/ball
 	abstract_type = /obj/item/clothing/face/bdsm_gag/ball
+	dyeable = TRUE
 
 /obj/item/clothing/face/bdsm_gag/ball/black
 	name = "black ball gag"
 	icon_state = "black_ballgag"
-	color = BDSM_BLACK_LEATHER
 	drool_chance = 14
 
 /obj/item/clothing/face/bdsm_gag/ball/brown
 	name = "brown ball gag"
 	icon_state = "brown_ballgag"
-	color = BDSM_BROWN_LEATHER
 	drool_chance = 14
 
 /obj/item/clothing/face/bdsm_gag/ring
@@ -114,16 +127,15 @@
 /obj/item/clothing/face/bdsm_gag/ring/black
 	name = "black ring gag"
 	icon_state = "black_ringgag"
-	color = BDSM_BLACK_LEATHER
 
 /obj/item/clothing/face/bdsm_gag/ring/brown
 	name = "brown ring gag"
 	icon_state = "brown_ringgag"
-	color = BDSM_BROWN_LEATHER
 
 /obj/item/clothing/face/bdsm_gag/harness
 	name = "harness gag"
 	desc = "A gag secured by a full head harness. Its straps must be removed to free the mouth."
+	dyeable = TRUE
 	can_lower = FALSE
 	strip_delay = 6 SECONDS
 	equip_delay_other = 5 SECONDS
@@ -133,12 +145,10 @@
 /obj/item/clothing/face/bdsm_gag/harness/black
 	name = "black harness gag"
 	icon_state = "black_harnessgag"
-	color = BDSM_BLACK_LEATHER
 
 /obj/item/clothing/face/bdsm_gag/harness/brown
 	name = "brown harness gag"
 	icon_state = "brown_harnessgag"
-	color = BDSM_BROWN_LEATHER
 
 // A gag suppresses ordinary vocal speech in the base code. Its own speech
 // handler substitutes an audible muffled phrase, so allow that narrow case.
