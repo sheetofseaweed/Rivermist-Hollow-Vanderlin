@@ -67,8 +67,8 @@
 	break_sound = 'sound/combat/hits/onstone/stonedeath.ogg'
 	attacked_sound = list('sound/combat/hits/onstone/wallhit.ogg', 'sound/combat/hits/onstone/wallhit2.ogg', 'sound/combat/hits/onstone/wallhit3.ogg')
 	smoothing_flags = SMOOTH_BITMASK_CARDINALS
-	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_STONE_DECO + SMOOTH_GROUP_WALLS_STONE
-	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_STONE_DECO + SMOOTH_GROUP_WALLS_STONE
+	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_STONE_DECO
+	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_STONE_DECO
 	above_floor = /turf/open/floor/blocks
 	baseturfs = /turf/open/floor/blocks
 	neighborlay = "dirtedge"
@@ -120,8 +120,8 @@
 	break_sound = 'sound/combat/hits/onstone/stonedeath.ogg'
 	attacked_sound = list('sound/combat/hits/onstone/wallhit.ogg', 'sound/combat/hits/onstone/wallhit2.ogg', 'sound/combat/hits/onstone/wallhit3.ogg')
 	smoothing_flags = SMOOTH_BITMASK
-	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_STONE_CRAFT + SMOOTH_GROUP_WALLS_STONE
-	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_STONE_CRAFT + SMOOTH_GROUP_WALLS_STONE
+	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_STONE_CRAFT
+	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_STONE_CRAFT
 	above_floor = /turf/open/floor/blocks
 	baseturfs = /turf/open/floor/blocks
 	neighborlay = "dirtedge"
@@ -141,8 +141,8 @@
 	break_sound = 'sound/combat/hits/onstone/stonedeath.ogg'
 	attacked_sound = list('sound/combat/hits/onstone/wallhit.ogg', 'sound/combat/hits/onstone/wallhit2.ogg', 'sound/combat/hits/onstone/wallhit3.ogg')
 	smoothing_flags = SMOOTH_BITMASK
-	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_STONE_BRICK + SMOOTH_GROUP_WALLS_STONE
-	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_STONE_BRICK + SMOOTH_GROUP_WALLS_STONE
+	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_STONE_BRICK
+	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_STONE_BRICK
 	above_floor = /turf/open/floor/blocks
 	baseturfs = /turf/open/floor/blocks
 	neighborlay = "dirtedge"
@@ -173,8 +173,8 @@
 	break_sound = 'sound/combat/hits/onwood/destroywalldoor.ogg'
 	attacked_sound = list('sound/combat/hits/onwood/woodimpact (1).ogg','sound/combat/hits/onwood/woodimpact (2).ogg')
 	smoothing_flags = SMOOTH_BITMASK
-	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_WOOD + SMOOTH_GROUP_WALLS_STONE
-	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_WOOD + SMOOTH_GROUP_WALLS_STONE
+	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_WOOD
+	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_WOOD
 	neighborlay = "dirtedge"
 	above_floor = /turf/open/floor/ruinedwood
 	baseturfs = /turf/open/floor/ruinedwood
@@ -223,71 +223,6 @@
 	dir = dirin
 	return ..()
 
-/turf/closed/wall/mineral/tent/blue
-	icon_state = "tent_blue"
-	name = "blue tent wall"
-	desc = "A colourful tent wall."
-
-/turf/closed/wall/mineral/tent/cyan
-	icon_state = "tent_cyan"
-	name = "cyan tent wall"
-	desc = "A colourful tent wall."
-
-/turf/closed/wall/mineral/tent/brown
-	icon_state = "tent_brown"
-	name = "brown tent wall"
-	desc = "A colourful tent wall."
-
-/turf/closed/wall/mineral/tent/green
-	icon_state = "tent_green"
-	name = "green tent wall"
-	desc = "A colourful tent wall."
-
-/turf/closed/wall/mineral/tent/purple
-	icon_state = "tent_purple"
-	name = "purple tent wall"
-	desc = "A colourful tent wall."
-
-/turf/closed/wall/mineral/tent/red
-	icon_state = "tent_red"
-	name = "red tent wall"
-	desc = "A colourful tent wall."
-
-/turf/closed/wall/mineral/tent/reddeco
-	icon_state = "tent_red_deco"
-	name = "decorated red tent wall"
-	desc = "A colourful tent wall embossed with gold."
-
-/turf/closed/wall/mineral/tent/purpledeco
-	icon_state = "tent_purple_deco"
-	name = "decorated purple tent wall"
-	desc = "A colourful tent wall embossed with gold."
-
-/turf/closed/wall/mineral/tent/greendeco
-	icon_state = "tent_green_deco"
-	name = "decorated green tent wall"
-	desc = "A colourful tent wall embossed with gold."
-
-/turf/closed/wall/mineral/tent/browndeco
-	icon_state = "tent_brown_deco"
-	name = "decorated brown tent wall"
-	desc = "A colourful tent wall embossed with gold."
-
-/turf/closed/wall/mineral/tent/cyandeco
-	icon_state = "tent_cyan_deco"
-	name = "decorated cyan tent wall"
-	desc = "A colourful tent wall embossed with gold."
-
-/turf/closed/wall/mineral/tent/bluedeco
-	icon_state = "tent_blue_deco"
-	name = "decorated blue tent wall"
-	desc = "A colourful tent wall embossed with gold."
-
-/turf/closed/wall/mineral/tent/noc
-	icon_state = "tent_noc"
-	name = "decorated navy tent wall"
-	desc = "A colourful tent wall embossed with silver, popular amongst Noccites."
-
 /turf/closed/wall/mineral/wooddark
 	name = "dark wood wall"
 	desc = "Made from durable, somewhat darker wood."
@@ -305,6 +240,13 @@
 	hardness = 7
 	burn_power = 100
 	spread_chance = 1.8
+
+/turf/closed/wall/mineral/wooddark/OnCrafted(dirin, mob/user)
+	if(dirin == NORTH || dirin == SOUTH)
+		icon_state = "vertwooddark"
+	else
+		icon_state = "horizwooddark"
+	. = ..()
 
 /turf/closed/wall/mineral/wooddark/horizontal
 	icon_state = "horizwooddark"
@@ -393,7 +335,7 @@
 /turf/closed/wall/mineral/decostone
 	name = "decorated stone wall"
 	desc = "The mason did an excellent job etching details into this wall."
-	icon = 'modular_rmh/icons/turf/walls.dmi'
+	icon = 'icons/turf/walls.dmi'
 	icon_state = "decostone-b"
 	wallclimb = FALSE
 	blade_dulling = DULLING_BASH
@@ -401,8 +343,6 @@
 	sheet_type = /obj/item/natural/stone
 	break_sound = 'sound/combat/hits/onstone/stonedeath.ogg'
 	attacked_sound = list('sound/combat/hits/onstone/wallhit.ogg', 'sound/combat/hits/onstone/wallhit2.ogg', 'sound/combat/hits/onstone/wallhit3.ogg')
-	smoothing_groups = SMOOTH_GROUP_CLOSED_WALL + SMOOTH_GROUP_WALLS_WOOD + SMOOTH_GROUP_WALLS_STONE
-	smoothing_list = SMOOTH_GROUP_DOOR_SECRET + SMOOTH_GROUP_WALLS_WOOD + SMOOTH_GROUP_WALLS_STONE
 	above_floor = /turf/open/floor/blocks
 	baseturfs = /turf/open/floor/blocks
 	neighborlay = "dirtedge"
