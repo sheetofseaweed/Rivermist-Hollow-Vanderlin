@@ -28,6 +28,7 @@
 	name = "Gnoll Champion"
 	id = "gnoll_champion"
 	desc = "A fully mature, supernatural champion of Gorellik's living pack."
+	changesource_flags = WABBAJACK
 	possible_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD)
 	species_traits = list(NO_UNDERWEAR, NO_ORGAN_FEATURES, NO_BODYPART_FEATURES, NOEYESPRITES)
 	inherent_traits = list(TRAIT_LONGSTRIDER, TRAIT_IGNOREDAMAGESLOWDOWN, TRAIT_HARDDISMEMBER, TRAIT_STEELHEARTED, TRAIT_STRONGBITE)
