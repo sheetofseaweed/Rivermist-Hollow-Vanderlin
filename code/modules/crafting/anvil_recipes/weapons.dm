@@ -912,7 +912,7 @@
 	name = "Charm Bardiche (+Cloth, +Bardiche)"
 	recipe_name = "a Charm's Bardiche. A great tool for keeping morale high in corps."
 	appro_skill = /datum/attribute/skill/craft/weaponsmithing
-	additional_items = list(/obj/item/weapon/halberd/bardiche, /obj/item/cloth)
+	additional_items = list(/obj/item/weapon/polearm/halberd/bardiche, /obj/item/natural/cloth)
 	created_item = /obj/item/weapon/polearm/halberd/watch_charm
 
 /datum/anvil_recipe/weapons/steel/chainbola
