@@ -42,6 +42,7 @@
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/f/medicator.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/medicator.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FEATHERED
 
 	soundpack_m = /datum/voicepack/male/medicator
 	soundpack_f = /datum/voicepack/female/medicator
@@ -117,6 +118,8 @@
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/organ/genitals/testicles/anthro,
+		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	body_markings = list(

@@ -16,6 +16,10 @@
 	var/list/controls = data["controls"]
 	TEST_ASSERT_NOTNULL(controls, "controls should exist")
 	TEST_ASSERT(controls["speed"] >= SEX_SPEED_MIN && controls["speed"] <= SEX_SPEED_MAX, "speed should be in range")
+	TEST_ASSERT_EQUAL(controls["finish_outside"], FALSE, "finishing inside should be the default")
+	session.finish_outside = TRUE
+	TEST_ASSERT_EQUAL(session.ui_data(user)["controls"]["finish_outside"], TRUE, "the panel should show the finish-outside switch")
+	session.finish_outside = FALSE
 
 	var/list/arousal = data["arousal"]
 	TEST_ASSERT_NOTNULL(arousal, "arousal block should exist")

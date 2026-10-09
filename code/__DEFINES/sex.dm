@@ -15,6 +15,7 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define COMSIG_SEX_AROUSAL_CHANGED "sex_arosual_change"					// fires to the parent about a change
 #define COMSIG_SEX_FREEZE_AROUSAL "sex_freeze_arousal"                  // (freeze_state) - Toggle arousal freeze
 #define COMSIG_SEX_GET_AROUSAL "sex_get_arousal"                        // () - Get current arousal info
+#define COMSIG_SEX_GET_AROUSAL_FLOOR "sex_get_arousal_floor"            // (list/floor_data) - Raise floor_data["floor"]; cooling stops there
 #define COMSIG_SEX_CLIMAX "sex_climax"                                  // (sex_action, action_receiver, action_partner, action_performer) - Handle climax event
 #define COMSIG_SEX_RECEIVE_ACTION "sex_receive_action"                  // (sex_action, action_receiver, action_partner, arousal_amt, pain_amt, orgasm_prog_amt, giving, force, speed, resist, action_performer) - Receive action effects
 #define COMSIG_SEX_GENERIC_ACTION "sex_receive_gen_action"					// ... - for generic actions without the sex session panel
@@ -278,6 +279,8 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define MIN_TESTICLES_SIZE 1
 #define DEFAULT_TESTICLES_SIZE 2
 #define MAX_TESTICLES_SIZE 3
+/// Share of what the balls hold that one climax releases, before the fullness scale.
+#define TESTICLES_LOAD_SHARE 0.25
 #define TOTAL_TESTICLES_SIZE 3
 
 #define TESTICLE_SIZES list(\
@@ -371,8 +374,17 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define HEAT_SOURCE_QUIRK "heat_quirk"
 #define HEAT_SOURCE_SPECIES "heat_species"
 #define HEAT_SOURCE_WEREWOLF "heat_werewolf"
-/// Heat pulls arousal up to here: half wet, and below the edging threshold.
-#define HEAT_AROUSAL_FLOOR 60
+/// Heat pulls arousal up to here and holds it: damp, but too low to drip or edge.
+#define HEAT_AROUSAL_FLOOR 50
+/// Most arousal one heat or pheromone tick adds.
+#define HEAT_AROUSAL_STEP 4
+/// Pheromone preference flags: which scent arouses you.
+#define PHEROMONE_SCENT_HEAT (1<<0)
+#define PHEROMONE_SCENT_RUT (1<<1)
+/// Someone else's pheromones pull arousal up to here and hold it.
+#define PHEROMONE_AROUSAL_FLOOR 40
+/// Plain arousal wetness drips to the floor only from this arousal up.
+#define VAGINA_DRIP_AROUSAL 80
 
 // Body fluid reagent data keys: who made it, whether makers mixed, and a hint of their last meals.
 #define FLUID_DATA_DONOR "fluid_donor"
@@ -392,11 +404,11 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define FLUID_COAT_THIGHS "thighs"
 #define FLUID_COAT_FEET "feet"
 /// Units one coat zone holds; the rest runs off to the floor.
-#define FLUID_COAT_CAPACITY 20
+#define FLUID_COAT_CAPACITY 12
 /// A zone holding this much reads and draws as heavily coated.
-#define FLUID_COAT_HEAVY_UNITS 8
+#define FLUID_COAT_HEAVY_UNITS 6
 /// Units spilled on the face when a climax goes into the mouth.
-#define FLUID_COAT_ORAL_SPILL 3
+#define FLUID_COAT_ORAL_SPILL 1
 /// Share of a bare leak that clings to the skin; the rest drips to the floor.
 #define FLUID_COAT_LEAK_SHARE 0.5
 /// Aim zone for a shot into the mouth rather than onto the face.
@@ -421,14 +433,18 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define FLUID_HOLD_STAMINA_COST 1
 /// Share of the held fluid that gushes out when the hold gives out.
 #define FLUID_HOLD_GUSH_SHARE 0.25
-/// Time between conception checks while virile seed is inside.
-#define CONCEPTION_CHECK_INTERVAL (2 MINUTES)
+/// Time between conception checks while virile seed is inside; short, so timing does not decide the outcome.
+#define CONCEPTION_CHECK_INTERVAL (10 SECONDS)
+/// Percent chance per minute for a full dose of average seed.
+#define CONCEPTION_CHANCE_PER_MINUTE 15
 /// Percent chance per check for a full dose of average seed.
-#define CONCEPTION_BASE_CHANCE 10
+#define CONCEPTION_BASE_CHANCE (CONCEPTION_CHANCE_PER_MINUTE * CONCEPTION_CHECK_INTERVAL / (1 MINUTES))
 /// Virile seed units below which no check is made.
-#define CONCEPTION_MIN_SEED 2
+#define CONCEPTION_MIN_SEED 1
 /// Virile seed units that count as a full dose; less scales the chance down.
-#define CONCEPTION_FULL_SEED 10
+#define CONCEPTION_FULL_SEED 7
+/// Virile seed units at which the chance reaches its cap of twice a full dose.
+#define CONCEPTION_DOUBLE_SEED 21
 /// Conception chance multiplier while the carrier is in heat.
 #define CONCEPTION_HEAT_MULT 2
 /// Morning sickness starts this long after conception, somewhere in the range.
@@ -441,6 +457,10 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define PREGNANCY_SICKNESS_MAX_GAP (15 MINUTES)
 /// Percent chance that a bout of morning sickness makes the carrier retch.
 #define PREGNANCY_RETCH_CHANCE 10
+/// Time for a conventional pregnancy belly to grow one stage.
+#define PREGNANCY_STAGE_TIME (1 HOURS)
+/// Full-term conventional pregnancy stage; the belly shows it with preg_1 and preg_2.
+#define PREGNANCY_MAX_STAGE 2
 /// A seed sachet only notices a pregnancy at least this old.
 #define PREGNANCY_TEST_MIN_AGE (10 MINUTES)
 /// Time for a wetted seed sachet to show its result.
@@ -452,16 +472,29 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 /// How long one dose of a contraceptive draught lasts.
 #define CONTRACEPTIVE_DURATION (1 HOURS)
 /// A climax outside the body splits into two spurts from this many units, three above the next.
-#define CLIMAX_SPURT_TWO_UNITS 10
-#define CLIMAX_SPURT_THREE_UNITS 25
+#define CLIMAX_SPURT_TWO_UNITS 3
+#define CLIMAX_SPURT_THREE_UNITS 5
 /// Time between two spurts of one climax; long enough to re-aim between them.
 #define CLIMAX_SPURT_INTERVAL (1.2 SECONDS)
+/// Arousal share of MAX_AROUSAL above which pulling out can fail; the panel shows the same share.
+#define PULL_OUT_FAIL_AROUSAL_SHARE 0.6
+/// Percent chance a pull-out fails just above that arousal, and at full arousal.
+#define PULL_OUT_FAIL_MIN_CHANCE 10
+#define PULL_OUT_FAIL_MAX_CHANCE 30
+/// Extra percent chance a pull-out fails while a stronger partner leg-locks the one inside them.
+#define LEG_LOCK_PULL_OUT_FAIL_CHANCE 50
+/// Highest chance a pull-out fails, so the one inside can always get out in the end.
+#define PULL_OUT_FAIL_MAX_TOTAL 90
 /// Orgasm progress one edging squeeze takes back.
 #define EDGE_SQUEEZE_DRAIN 25
 /// Edging charge one squeeze adds.
 #define EDGE_SQUEEZE_EDGING 10
 /// Least time between two squeezes.
 #define EDGE_SQUEEZE_COOLDOWN (3 SECONDS)
+/// Orgasm progress a squeeze needs before there is anything to hold back; climax comes at PASSIVE_EJAC_THRESHOLD.
+#define EDGE_SQUEEZE_MIN_PROGRESS 70
+/// Orgasm progress at which the hand feels the cock throb, the cue to squeeze.
+#define EDGE_SQUEEZE_CUE_PROGRESS 85
 /// Arousal left after a climax choked off mid-spurt.
 #define RUINED_ORGASM_AROUSAL 90
 /// How long milk keeps flowing after a conventional pregnancy ends.
@@ -556,6 +589,8 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define MIN_BELLY_SIZE BELLY_SIZE_FLAT
 #define MAX_BELLY_SIZE BELLY_SIZE_LARGE
 #define TOTAL_BELLY_SIZE 3
+/// Largest stuffed or pregnant bump; levels 1 to this use the preg_N belly sprites.
+#define BELLY_BUMP_MAX 4
 
 #define DEFAULT_BUTT_SIZE BUTT_SIZE_FLAT
 #define MIN_BUTT_SIZE BUTT_SIZE_SMALL

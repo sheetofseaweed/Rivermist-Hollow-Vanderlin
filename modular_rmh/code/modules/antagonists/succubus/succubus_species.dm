@@ -51,7 +51,8 @@
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/organ/genitals/testicles/anthro,
-		/datum/customizer/bodypart_feature/pubic_hair
+		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair
 	)
 
 /datum/species/demon/check_roundstart_eligible()

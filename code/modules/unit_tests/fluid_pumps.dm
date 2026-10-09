@@ -56,7 +56,8 @@
 	var/obj/item/organ/genitals/filling_organ/testicles/testicles = allocate(/obj/item/organ/genitals/filling_organ/testicles)
 	testicles.Insert(human, TRUE, FALSE)
 	testicles.reagents.clear_reagents()
-	testicles.reagents.add_reagent(/datum/reagent/consumable/cum, 50)
+	testicles.reagents.add_reagent(/datum/reagent/consumable/cum, testicles.reagents.maximum_volume)
+	var/full_balls = testicles.reagents.total_volume
 	var/obj/item/reagent_containers/glass/fluid_pump/cock/milker = allocate(/obj/item/reagent_containers/glass/fluid_pump/cock)
 	milker.attach_to(human)
 	TEST_ASSERT(human.is_organ_slot_blocked(ORGAN_SLOT_PENIS), "The milker should cover the cock.")
@@ -65,7 +66,7 @@
 	milker.process(2)
 	TEST_ASSERT(get_pump_test_arousal(human) > 0, "The milker should arouse its wearer.")
 	TEST_ASSERT(get_pump_test_arousal(human, "orgasm_progress") > 0, "The milker should push toward climax.")
-	TEST_ASSERT_EQUAL(testicles.reagents.total_volume, 50, "The milker should not drain the balls without a climax.")
+	TEST_ASSERT_EQUAL(testicles.reagents.total_volume, full_balls, "The milker should not drain the balls without a climax.")
 
 	var/datum/component/arousal/arousal = human.GetComponent(/datum/component/arousal)
 	TEST_ASSERT_NOTNULL(arousal, "Humans should have an arousal component.")

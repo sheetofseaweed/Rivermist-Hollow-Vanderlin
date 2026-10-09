@@ -100,11 +100,6 @@
 	cum = /datum/reagent/consumable/cum/tabaxi
 	femcum = /datum/reagent/consumable/femcum/tabaxi
 
-/datum/species/dracon
-	breast_milk = /datum/reagent/consumable/milk/dracon
-	cum = /datum/reagent/consumable/cum/dracon
-	femcum = /datum/reagent/consumable/femcum/dracon
-
 /datum/species/dragonborn
 	breast_milk = /datum/reagent/consumable/milk/dracon
 	cum = /datum/reagent/consumable/cum/dracon

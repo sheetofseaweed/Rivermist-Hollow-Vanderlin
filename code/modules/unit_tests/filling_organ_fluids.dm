@@ -186,8 +186,8 @@
 	TEST_ASSERT_EQUAL(vagina.get_reagent_capacity(), base_capacity, "Capacity should not shrink before the belly grows.")
 	vagina.advance_pregnancy_stage()
 	TEST_ASSERT(breasts.is_producing(), "The first belly stage should start lactation.")
-	vagina.advance_pregnancy_stage()
-	vagina.advance_pregnancy_stage()
+	for(var/stage in 2 to PREGNANCY_MAX_STAGE)
+		vagina.advance_pregnancy_stage()
 	TEST_ASSERT_EQUAL(vagina.reagents.maximum_volume, base_capacity * 0.5, "A full-term belly should halve capacity.")
 
 	vagina.clear_conventional_pregnancy()
@@ -222,6 +222,15 @@
 	tick_organ_life(human, 1)
 	TEST_ASSERT(human.has_status_effect(/datum/status_effect/debuff/bloatone), "Foreign fluid should bloat.")
 
+	// Between half and two thirds full is still only a light bloat.
+	vagina.reagents.add_reagent(/datum/reagent/water, vagina.reagents.maximum_volume * 0.1)
+	tick_organ_life(human, 1)
+	TEST_ASSERT(!human.has_status_effect(/datum/status_effect/debuff/bloattwo), "Three fifths full should only be a light bloat.")
+
+	vagina.reagents.add_reagent(/datum/reagent/water, vagina.reagents.maximum_volume * 0.2)
+	tick_organ_life(human, 1)
+	TEST_ASSERT(human.has_status_effect(/datum/status_effect/debuff/bloattwo), "Over two thirds full should be a heavy bloat.")
+
 /datum/unit_test/filling_organ_production_scales_with_nourishment/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
 	var/obj/item/organ/genitals/filling_organ/testicles/testicles = allocate(/obj/item/organ/genitals/filling_organ/testicles)
@@ -237,15 +246,15 @@
 	human.nutrition = NUTRITION_LEVEL_FULL
 	TEST_ASSERT(testicles.get_nourishment_multiplier() > 1, "A stuffed owner should make more.")
 
-	// A tenth of the way to well fed; smaller first drops fall under the 0.05 unit reagent floor.
+	// A tenth of the way to well fed; drops under the 0.05 unit reagent floor must add up, not vanish.
 	human.nutrition = NUTRITION_LEVEL_HUNGRY + (NUTRITION_LEVEL_WELL_FED - NUTRITION_LEVEL_HUNGRY) / 10
 	testicles.reagents.clear_reagents()
-	tick_organ_life(human, 1)
+	tick_organ_life(human, 10)
 	var/peckish_amount = testicles.reagents.total_volume
 	TEST_ASSERT(peckish_amount > 0, "A slightly peckish owner should still make a little.")
 	human.nutrition = NUTRITION_LEVEL_WELL_FED
 	testicles.reagents.clear_reagents()
-	tick_organ_life(human, 1)
+	tick_organ_life(human, 10)
 	TEST_ASSERT(testicles.reagents.total_volume > peckish_amount * 5, "A well fed owner should make far more than a peckish one.")
 
 /datum/unit_test/filling_organ_fluids_cost_more_than_they_feed/Run()
@@ -275,3 +284,50 @@
 	tick_organ_life(human, 1)
 	// A cow's udder makes 0.5 units per second.
 	TEST_ASSERT(abs(breasts.reagents.total_volume - 0.5) < 0.01, "Well fed breasts should make half a unit a second, got [breasts.reagents.total_volume].")
+
+/datum/unit_test/arousal_wetness_drips_only_when_high/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(human, TRUE, FALSE)
+	var/turf/floor = get_turf(human)
+	for(var/obj/effect/decal/cleanable/liquid_drip/old_drop in floor)
+		qdel(old_drop)
+	vagina.reagents.clear_reagents()
+	vagina.reagents.add_reagent(vagina.reagent_to_make, 5)
+
+	SEND_SIGNAL(human, COMSIG_SEX_SET_AROUSAL, HEAT_AROUSAL_FLOOR)
+	vagina.leak_reagents()
+	TEST_ASSERT_NULL(locate(/obj/effect/decal/cleanable/liquid_drip) in floor, "Heat-level wetness should not drip on the floor.")
+
+	SEND_SIGNAL(human, COMSIG_SEX_SET_AROUSAL, VAGINA_DRIP_AROUSAL)
+	vagina.leak_reagents()
+	var/obj/effect/decal/cleanable/liquid_drip/drop = locate() in floor
+	TEST_ASSERT_NOTNULL(drop, "High arousal should drip on the floor.")
+	TEST_ASSERT_NOTNULL(drop.dry_timer, "A drop should dry away in time.")
+	qdel(drop)
+
+	SEND_SIGNAL(human, COMSIG_SEX_SET_AROUSAL, 0)
+	TEST_ASSERT(vagina.produce_climax_fluid() > 0, "A climax should add a burst.")
+	var/burst = vagina.burst_to_drip
+	vagina.leak_reagents()
+	TEST_ASSERT_NOTNULL(locate(/obj/effect/decal/cleanable/liquid_drip) in floor, "A climax burst should drip at any arousal.")
+	TEST_ASSERT(vagina.burst_to_drip < burst, "Leaking should spend the burst.")
+	for(var/obj/effect/decal/cleanable/liquid_drip/burst_drop in floor)
+		qdel(burst_drop)
+
+	vagina.burst_to_drip = 0
+	vagina.reagents.clear_reagents()
+	vagina.reagents.add_reagent(vagina.reagent_to_make, 5)
+	vagina.leak_reagents(1)
+	TEST_ASSERT_NOTNULL(locate(/obj/effect/decal/cleanable/liquid_drip) in floor, "A forced gush should reach the floor at any arousal.")
+	for(var/obj/effect/decal/cleanable/liquid_drip/gush_drop in floor)
+		qdel(gush_drop)
+
+	vagina.burst_to_drip = 0
+	vagina.reagents.clear_reagents()
+	vagina.reagents.add_reagent(/datum/reagent/consumable/cum, 5)
+	vagina.leak_reagents()
+	TEST_ASSERT_NOTNULL(locate(/obj/effect/decal/cleanable/liquid_drip) in floor, "Seed should drip at any arousal.")
+	for(var/obj/effect/decal/cleanable/liquid_drip/seed_drop in floor)
+		qdel(seed_drop)
+	human.wash(CLEAN_WASH)

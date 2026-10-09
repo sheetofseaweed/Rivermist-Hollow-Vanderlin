@@ -20,6 +20,12 @@
 	default_value = TRUE
 	category = "Antagonists"
 
+/datum/erp_preference/boolean/antag_pregnancy
+	name = "Antagonist Pregnancy"
+	description = "Whether antagonists, such as a gnoll pack holding you captive, can impregnate you through their rites"
+	default_value = TRUE
+	category = "Antagonists"
+
 /datum/erp_preference/boolean/fatal_drain_ok
 	name = "Draining May Kill Me"
 	description = "Whether lewd antagonist draining effects are allowed to be lethal (fatal outcomes are always explicit opt-in)"

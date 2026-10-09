@@ -625,6 +625,9 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 			antag_obj_count++
 
 	output += antag_output
+	var/list/contract_lines = get_contract_demand_lines()
+	if(length(contract_lines))
+		output += "<br><B>Patron Contracts:</B><br>[contract_lines.Join("<br>")]"
 
 	if(window)
 		var/datum/browser/memory_browser = new(recipient, "memory", "<div align='center'>[name_display] Memory</div>", 425, 475)

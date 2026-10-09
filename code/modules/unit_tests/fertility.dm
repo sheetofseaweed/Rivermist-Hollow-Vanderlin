@@ -88,3 +88,36 @@
 	var/datum/seed_deposit/deposit = vagina.seed_ledger[vagina.seed_ledger[1]]
 	TEST_ASSERT(abs(deposit.virility - CONTRACEPTIVE_MULTIPLIER) < 0.001, "Seed given under Cold Seed should be recorded as weak.")
 	TEST_ASSERT(!deposit.quickened, "Cold Seed should win over a quickened father.")
+
+/datum/unit_test/seed_waits_out_a_blocked_womb/Run()
+	var/mob/living/carbon/human/mother = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/father = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = give_fertility_test_vagina(mother)
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = new
+	testicles.Insert(father, TRUE, FALSE)
+	testicles.reagents.clear_reagents()
+	testicles.reagents.add_reagent(/datum/reagent/consumable/cum, 10)
+	testicles.sync_cum_source_data()
+
+	TEST_ASSERT(vagina.be_impregnated(), "The test setup should start a pregnancy.")
+	testicles.reagents.trans_to(vagina, 10, transfered_by = father, method = INGEST)
+	TEST_ASSERT_EQUAL(LAZYLEN(vagina.seed_ledger), 1, "Seed should be recorded even while the womb cannot conceive.")
+	mother.reagents.add_reagent(/datum/reagent/medicine/pregplus, 5)
+	TEST_ASSERT(!vagina.roll_conception(), "A pregnant womb should not conceive again.")
+	TEST_ASSERT(LAZYLEN(vagina.seed_ledger), "A blocked roll should keep the record.")
+
+	vagina.clear_conventional_pregnancy()
+	TEST_ASSERT(vagina.roll_conception(), "The waiting seed should take once the block ends.")
+	TEST_ASSERT(vagina.pregnant, "The new conception should be a real pregnancy.")
+
+/datum/unit_test/pregnancy_belly_grows_hourly/Run()
+	var/mob/living/carbon/human/mother = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = give_fertility_test_vagina(mother)
+	TEST_ASSERT(vagina.be_impregnated(), "The test setup should start a pregnancy.")
+	TEST_ASSERT(abs(timeleft(vagina.conventional_pregnancy_timer) - PREGNANCY_STAGE_TIME) <= 1 SECONDS, "The first stage should come after one stage time.")
+	for(var/stage in 1 to PREGNANCY_MAX_STAGE)
+		deltimer(vagina.conventional_pregnancy_timer)
+		vagina.advance_conventional_pregnancy()
+		TEST_ASSERT_EQUAL(vagina.conventional_pregnancy_stage, stage, "Every check should grow the belly one stage.")
+	TEST_ASSERT_NULL(vagina.conventional_pregnancy_timer, "Growth should stop at full term.")
+	vagina.clear_conventional_pregnancy()

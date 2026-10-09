@@ -161,6 +161,8 @@
 /datum/sex_action/Destroy()
 	if(action_user)
 		UnregisterSignal(action_user, COMSIG_SEX_CLIMAX)
+	// A scene torn down without on_finish must still free the hand on the cock.
+	unlink_penis_grip()
 	if(scene && !QDELETED(scene))
 		scene.forget_action(src)
 	proposal_controller = null
@@ -559,6 +561,11 @@
 /datum/sex_action/proc/on_action_user_climax(mob/source, datum/sex_action/climax_action)
 	SIGNAL_HANDLER
 	if(climax_action != src || !stop_on_climax)
+		return
+	// The action lasts through the climax's spurts, so stopping it meanwhile pulls out.
+	var/datum/component/arousal/arousal = source.GetComponent(/datum/component/arousal)
+	if(arousal?.active_spurts?.is_running_for(src))
+		stop_after_spurts = TRUE
 		return
 	just_climaxed = TRUE
 	stop_requested = TRUE

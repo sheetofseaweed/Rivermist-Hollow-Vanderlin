@@ -876,4 +876,100 @@
 	var/datum/plant_def/plant = initial(seed_type.plant_def_type)
 	TEST_ASSERT_EQUAL(initial(plant.produce_type), /obj/item/alch/herb/lavender, "Lavender seeds should grow lavender.")
 
+/// Tests that drive SSmachines by hand through fire_machine().
+/datum/unit_test/machine_processing
+	abstract_type = /datum/unit_test/machine_processing
+
+/datum/unit_test/machine_processing/drying_rack_dries_herbs_after_idle_stop
+#ifdef FOCUS_ALCHEMY_MEDICINE_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/machine_processing/drying_rack_dries_herbs_after_idle_stop/Run()
+	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
+	user.mind_initialize()
+	var/obj/machinery/tanningrack/rack = allocate(/obj/machinery/tanningrack)
+	// Every rack is empty on its first SSmachines fire at roundstart.
+	fire_machine(rack)
+	TEST_ASSERT(!(rack in SSmachines.processing), "An empty drying rack should stop processing.")
+
+	var/obj/item/alch/herb/calendula/first_herb = allocate(/obj/item/alch/herb/calendula)
+	TEST_ASSERT(user.put_in_active_hand(first_herb, forced = TRUE), "The user should hold the first herb.")
+	first_herb.melee_attack_chain(user, rack)
+	TEST_ASSERT_EQUAL(first_herb.loc, rack, "Herbs should spread onto the rack.")
+	TEST_ASSERT((first_herb in rack.drying_herbs), "The rack should track the herb it dries.")
+	TEST_ASSERT((rack in SSmachines.processing), "A herb added after an idle stop should restart drying.")
+
+	// Pin still indoor air so the result does not depend on the test map's weather.
+	rack.drying_modifier = 1
+	rack.next_drying_environment_check = INFINITY
+	var/half_time = first_herb.drying_time / 2
+	rack.last_drying_process = world.time - half_time
+	fire_machine(rack)
+	TEST_ASSERT(!first_herb.dried, "A herb should not dry before its full drying time.")
+	TEST_ASSERT((rack in SSmachines.processing), "A rack with a fresh herb should keep processing.")
+	var/expected_minutes = CEILING(half_time / (1 MINUTES), 1)
+	TEST_ASSERT(findtext(rack.drying_status_text(), "about [expected_minutes] more minute"), "The rack should report the remaining drying time.")
+
+	rack.last_drying_process = world.time - half_time
+	fire_machine(rack)
+	TEST_ASSERT(first_herb.dried, "A herb should dry after its full drying time on the rack.")
+	TEST_ASSERT(!(rack in SSmachines.processing), "A rack with only dry herbs should stop processing.")
+
+	first_herb.forceMove(get_turf(rack))
+	TEST_ASSERT(!length(rack.drying_herbs), "A herb leaving the rack should leave the drying list.")
+
+	var/obj/item/alch/herb/calendula/second_herb = allocate(/obj/item/alch/herb/calendula)
+	TEST_ASSERT(user.put_in_active_hand(second_herb, forced = TRUE), "The user should hold the second herb.")
+	second_herb.melee_attack_chain(user, rack)
+	TEST_ASSERT((rack in SSmachines.processing), "A herb added after a finished batch should restart drying.")
+	qdel(second_herb)
+	TEST_ASSERT(!length(rack.drying_herbs), "A deleted herb must not stay in the drying list.")
+
+/datum/unit_test/machine_processing/essence_infuser_polls_only_while_waiting
+#ifdef FOCUS_ALCHEMY_MEDICINE_TEST
+	focus = TRUE
+#endif
+
+/datum/unit_test/machine_processing/essence_infuser_polls_only_while_waiting/Run()
+	var/obj/machinery/essence/infuser/infuser = allocate(/obj/machinery/essence/infuser)
+	fire_machine(infuser)
+	TEST_ASSERT(!(infuser in SSmachines.processing), "An idle infuser should stop polling.")
+
+	var/mob/living/carbon/human/user = allocate(/mob/living/carbon/human)
+	user.mind_initialize()
+	infuser.current_recipe = new /datum/infusion_recipe/glass
+	var/obj/item/natural/stone/stone = allocate(/obj/item/natural/stone)
+	TEST_ASSERT(user.put_in_active_hand(stone, forced = TRUE), "The user should hold the stone.")
+	stone.melee_attack_chain(user, infuser)
+	TEST_ASSERT_EQUAL(infuser.infusion_target, stone, "The stone should rest on the infuser.")
+	TEST_ASSERT((infuser in SSmachines.processing), "An infuser waiting for essence should poll.")
+	fire_machine(infuser)
+	TEST_ASSERT((infuser in SSmachines.processing), "An infuser still short of essence should keep polling.")
+
+	infuser.storage.add(/datum/thaumaturgical_essence/crystal, 5)
+	TEST_ASSERT(!(infuser in SSmachines.processing), "An infuser with every essence should stop polling.")
+	infuser.storage.remove(/datum/thaumaturgical_essence/crystal, 1)
+	TEST_ASSERT((infuser in SSmachines.processing), "An infuser that loses essence should poll again.")
+
+	qdel(stone)
+	TEST_ASSERT(!(infuser in SSmachines.processing), "An infuser with no item should stop polling.")
+
+/// Runs the real SSmachines fire over this machine alone, then restores the subsystem's own lists.
+/datum/unit_test/machine_processing/proc/fire_machine(obj/machinery/machine)
+	var/list/real_processing = SSmachines.processing
+	var/list/real_currentrun = SSmachines.currentrun
+	var/was_processing = (machine in real_processing)
+	SSmachines.processing = was_processing ? list(machine) : list()
+	SSmachines.currentrun = list()
+	try
+		SSmachines.fire()
+	catch(var/exception/error)
+		TEST_FAIL("SSmachines fire runtimed: [error]")
+	var/still_processing = (machine in SSmachines.processing)
+	SSmachines.processing = real_processing
+	SSmachines.currentrun = real_currentrun
+	if(was_processing && !still_processing)
+		real_processing -= machine
+
 #undef HERBAL_TEST_CLOSE

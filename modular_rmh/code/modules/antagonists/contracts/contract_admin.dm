@@ -83,21 +83,21 @@
 	set category = "IC"
 	if(!mind)
 		return
-	var/found = FALSE
+	var/list/lines = mind.get_contract_demand_lines()
+	if(!length(lines))
+		to_chat(src, span_notice("No patron makes demands of me."))
+		return
+	for(var/line in lines)
+		to_chat(src, span_notice(line))
+
+/// Demand lines from every contract party this mind belongs to, each party listed once.
+/datum/mind/proc/get_contract_demand_lines()
+	var/list/lines = list()
 	var/list/seen_parties = list()
-	for(var/datum/antagonist/antag as anything in mind.antag_datums)
+	for(var/datum/antagonist/antag as anything in antag_datums)
 		var/datum/contract_party/party = antag.contract_party
-		if(!party || (party in seen_parties))
+		if(!party?.contract_pool || (party in seen_parties))
 			continue
 		seen_parties += party
-		found = TRUE
-		var/datum/antag_contract/contract = party.current_contract
-		if(!contract)
-			to_chat(src, span_notice("[party.contract_pool.patron_name] has no demands of me right now."))
-			continue
-		var/minutes_left = round((contract.deadline - world.time) / (1 MINUTES))
-		to_chat(src, span_notice("<b>[party.contract_pool.patron_name]'s demands</b> ([minutes_left] min remain):"))
-		for(var/datum/contract_goal/goal as anything in contract.goals)
-			to_chat(src, span_notice("- [goal.get_description()][goal.completed ? " (done)" : ""]"))
-	if(!found)
-		to_chat(src, span_notice("No patron makes demands of me."))
+		lines += party.get_demand_lines()
+	return lines

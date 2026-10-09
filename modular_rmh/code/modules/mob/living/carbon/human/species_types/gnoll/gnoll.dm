@@ -3,7 +3,7 @@
 	footstep_type = FOOTSTEP_MOB_HEAVY
 
 /datum/species/gnoll
-	name = "Gnoll"
+	name = "Lesser Gnoll"
 	id = SPEC_ID_GNOLL
 	desc = "Gnolls are tall hyena-folk known for relentless marches, brutal charges, and a talent for surviving where softer folk would starve. \
 	Many are feared as raiders in frontier tales, yet just as many live as hunters, scouts, sellswords, and clanless wanderers in the wider world. \
@@ -20,6 +20,7 @@
 	changesource_flags = WABBAJACK
 	limbs_icon_m = 'modular_rmh/icons/mob/bodies/m/mta.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/bodies/f/fma.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FURRED
 	inherent_traits = list(
 		TRAIT_LONGSTRIDER,
 		TRAIT_IGNOREDAMAGESLOWDOWN,
@@ -109,6 +110,7 @@
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	body_marking_sets = list(/datum/body_marking_set/none)

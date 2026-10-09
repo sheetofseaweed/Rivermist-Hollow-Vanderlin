@@ -65,16 +65,25 @@
 	var/datum/weakref/quest_scroll_ref
 	/// List of weakrefs to actual quest items/mobs for reducing overhead of compass.
 	var/list/datum/weakref/tracked_atoms = list()
+	/// Weakrefs to mobs a quest ambush spawned; they leave with the contract.
+	var/list/datum/weakref/ambush_mobs
+	/// Weakref to the tool kit the ledger handed out with this contract.
+	var/datum/weakref/contract_kit_ref
 
 /datum/quest/Destroy()
 	being_destroyed = TRUE
 
-	// Clean up mobs with quest components
-	for(var/mob/living/M in GLOB.mob_list)
-		var/datum/component/quest_object/Q = M.GetComponent(/datum/component/quest_object)
-		if(Q && Q.quest_ref?.resolve() == src)
-			M.remove_filter("quest_item_outline")
-			qdel(Q)
+	for(var/datum/weakref/ambush_ref as anything in ambush_mobs)
+		var/mob/living/ambush_mob = ambush_ref.resolve()
+		if(QDELETED(ambush_mob) || ambush_mob.client || ambush_mob.stat == DEAD)
+			continue
+		qdel(ambush_mob)
+	ambush_mobs = null
+
+	var/obj/item/contract_kit = contract_kit_ref?.resolve()
+	if(!QDELETED(contract_kit))
+		qdel(contract_kit)
+	contract_kit_ref = null
 
 	for(var/datum/weakref/tracked_weakref in tracked_atoms)
 		var/atom/target_atom = tracked_weakref.resolve()
@@ -118,6 +127,51 @@
 		qdel(tracked_ref)
 		return TRUE
 
+	return FALSE
+
+/// Stops tracking an atom but leaves it in the world; remove_tracked_atom also deletes it via its weakref.
+/datum/quest/proc/forget_tracked_atom(atom/movable/to_forget)
+	for(var/datum/weakref/tracked_ref in tracked_atoms.Copy())
+		if(tracked_ref.resolve() != to_forget)
+			continue
+		tracked_atoms -= tracked_ref
+		return TRUE
+	return FALSE
+
+/datum/quest/proc/add_ambush_mob(mob/living/ambush_mob)
+	LAZYADD(ambush_mobs, WEAKREF(ambush_mob))
+
+/// Withdraws an unclaimed shared-board posting that can no longer be completed.
+/datum/quest/proc/expire_posting(reason)
+	SSquestboard?.remove_quest(src)
+	log_game("Quest posting withdrawn: [title] ([reason])")
+	qdel(src)
+
+/// Landmark contract types this quest may spawn at.
+/datum/quest/proc/get_landmark_contract_types()
+	return quest_type
+
+/// Lets a contract tailor itself to the player taking it at the ledger, before generation.
+/datum/quest/proc/prepare_for_issuer(mob/living/carbon/human/issuer)
+	return
+
+/// Whether this contract shows up for the player in the shared postings.
+/datum/quest/proc/is_visible_to(mob/living/carbon/human/viewer)
+	return TRUE
+
+/// Hands out any tools the contract needs, alongside its scroll.
+/datum/quest/proc/issue_contract_kit(mob/living/carbon/human/user)
+	return
+
+/datum/quest/proc/set_contract_kit(obj/item/kit)
+	contract_kit_ref = WEAKREF(kit)
+
+/// Whether goods on the ledger's input turf can finish this contract at turn-in.
+/datum/quest/proc/has_turn_in_goods(turf/input_point)
+	return FALSE
+
+/// Takes the goods on the input turf and completes the contract; returns TRUE on success.
+/datum/quest/proc/try_collect_turn_in_goods(turf/input_point, mob/user)
 	return FALSE
 
 /datum/quest/proc/set_target_anchor(atom/source)
@@ -331,7 +385,9 @@
 /datum/quest/proc/is_supported_area_target(target_area_or_type, turf/reference_turf = null)
 	return is_supported_map_turf(get_area_target_turf(target_area_or_type, reference_turf))
 
-/datum/quest/proc/has_supported_spawn_landmark(contract_type = quest_type)
+/datum/quest/proc/has_supported_spawn_landmark(contract_type)
+	if(isnull(contract_type))
+		contract_type = get_landmark_contract_types()
 	for(var/obj/effect/landmark/quest_spawner/landmark in GLOB.quest_landmarks_list)
 		if(!landmark.supports_contract_type(contract_type))
 			continue
@@ -536,7 +592,7 @@
 
 	var/mob/living/ambush_carrier = pick(candidate_mobs)
 	var/ambush_config_type = pick(config.ambush_pools)
-	ambush_carrier.AddComponent(/datum/component/quest_ambush_payload, ambush_config_type)
+	ambush_carrier.AddComponent(/datum/component/quest_ambush_payload, ambush_config_type, src)
 	return TRUE
 
 /// Get the quest title - override in subtypes for dynamic titles

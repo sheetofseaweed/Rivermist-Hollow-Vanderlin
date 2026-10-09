@@ -2,6 +2,8 @@
 
 /// Dribbles at or below this many units form a drop decal; once a drop gathers more than this it becomes a real puddle.
 #define LIQUID_DRIP_MAX_UNITS 5
+/// A drop dries away this long after it forms.
+#define LIQUID_DRIP_DRY_TIME (10 MINUTES)
 /// Fill ratio at which a full organ starts leaking faster; below this the drip rate is unchanged.
 #define DRIP_PRESSURE_THRESHOLD 0.6
 /// Drip rate multiplier reached (and capped at) when the organ is full or overfull.
@@ -49,6 +51,8 @@
 	var/produces_fluid = FALSE
 	/// Units produced per second while producing.
 	var/production_rate = 1.5
+	/// Production too small to survive the reagent floor in an empty organ, kept until it adds up.
+	var/production_carry = 0
 	/// Nutrition spent per unit produced.
 	var/nutrition_per_unit = 1
 	/// A hungry owner reabsorbs this organ's own fluid as nutrition.
@@ -197,6 +201,7 @@
 		RegisterSignal(M, COMSIG_MOB_FOOD_EAT, PROC_REF(on_owner_ate))
 
 /obj/item/organ/genitals/filling_organ/Remove(mob/living/M, special, drop_if_replaced)
+	stop_creature_fluid_ticks()
 	if(pregnant)
 		M?.remove_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
 	engorgement_steps = 0
@@ -214,6 +219,8 @@
 	. = ..()
 	if(slot == ORGAN_SLOT_ANUS || slot == ORGAN_SLOT_VAGINA)
 		SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
+	if(!creature_fluid_ticking && owner && !iscarbon(owner))
+		consider_creature_fluid_ticks(changetype)
 
 /obj/item/organ/genitals/filling_organ/on_body_storage_inserted(obj/item/inserted_item, target_layer)
 	. = ..()
@@ -234,7 +241,7 @@
 		capacity *= 0.5
 	else if(fertility && pregnant)
 		// A hidden pregnancy takes room only as the belly grows, down to half when full term.
-		capacity *= 1 - 0.5 * (conventional_pregnancy_stage / 3)
+		capacity *= 1 - 0.5 * (conventional_pregnancy_stage / PREGNANCY_MAX_STAGE)
 	for(var/obj/item/thing in contents)
 		capacity -= thing.get_fluid_displacement()
 	return max(0, capacity)
@@ -477,6 +484,13 @@
 	amount = min(amount, reagents.maximum_volume - reagents.total_volume)
 	if(amount <= 0)
 		return 0
+	// Drops under the 0.05 unit reagent floor would vanish in an empty organ, so they add up first.
+	if(reagents.get_reagent_amount(produced) < 0.05)
+		production_carry += amount
+		if(production_carry < 0.05)
+			return 0
+		amount = production_carry
+	production_carry = 0
 	reagents.add_reagent(produced, amount)
 	return amount
 
@@ -506,12 +520,12 @@
 
 /// Applies bloat debuffs when bloatable and full of foreign fluid; own fluid never bloats.
 /obj/item/organ/genitals/filling_organ/proc/handle_bloat()
-	if(!bloatable) //we wont make removals because other organs may be conflicting and shit.
+	if(!bloatable || !iscarbon(owner)) //we wont make removals because other organs may be conflicting and shit.
 		return
 	var/foreign_volume = reagents.total_volume - get_own_fluid_amount()
 	if(foreign_volume > (reagents.maximum_volume / 3) && !owner.has_status_effect(/datum/status_effect/debuff/bloattwo)) //more than 1/3 full, light bloat.
 		owner.apply_status_effect(/datum/status_effect/debuff/bloatone)
-	if(foreign_volume > (reagents.maximum_volume / 2)) //more than half full, heavy bloat.
+	if(foreign_volume > (reagents.maximum_volume * 2 / 3)) //more than two thirds full, heavy bloat.
 		owner.apply_status_effect(/datum/status_effect/debuff/bloattwo)
 
 /// Spills reagents that no longer fit once the capacity has dropped below the stored volume.
@@ -527,6 +541,11 @@
 
 /// Nutrition-driven production; a hungry owner reabsorbs fluid instead. Subtypes replace the drive.
 /obj/item/organ/genitals/filling_organ/proc/produce_fluid(seconds)
+	// Creatures keep no fluid upkeep and refill at the plain fed rate.
+	if(!iscarbon(owner))
+		if(is_producing())
+			add_produced_fluid(production_rate * get_production_multiplier() * seconds)
+		return
 	if(HAS_TRAIT(owner, TRAIT_NOHUNGER))
 		if(is_producing())
 			add_produced_fluid(production_rate * get_nourishment_multiplier() * get_production_multiplier() * seconds)
@@ -605,6 +624,9 @@
 		leak_amount = cling_to_skin(leak_amount)
 		if(leak_amount <= 0)
 			return
+	// A forced leak is a gush, so it always reaches the floor.
+	if(!forced_amount && !can_drip_to_floor())
+		return
 	if(prob(5) && owner.has_quirk(/datum/quirk/peculiarity/selfawaregeni) && MOBTIMER_FINISHED(owner, "organ_drip", rand(20, 120)))
 		MOBTIMER_SET(owner, "organ_drip")
 		to_chat(owner, pick(span_info("A little bit of [english_list(reagents.reagent_list)] drips from my [pick(altnames)]..."),
@@ -613,6 +635,10 @@
 			span_info("Some [english_list(reagents.reagent_list)] drips from my [pick(altnames)].")))
 	leave_fluid_scent(get_turf(owner), owner, get_fluid_scent_kind(reagents.get_master_reagent()))
 	drip_to_turf(get_turf(owner), leak_amount)
+
+/// Whether what a leak leaves over may drip onto the floor; otherwise it stays inside.
+/obj/item/organ/genitals/filling_organ/proc/can_drip_to_floor()
+	return TRUE
 
 /// Units leaked per flow interval: spillers and overfull organs push harder as they fill.
 /obj/item/organ/genitals/filling_organ/proc/get_leak_amount()
@@ -908,7 +934,11 @@
 		return TRUE
 	if(can_start_fertilization_embryo_pregnancy(allow_embryo_pregnancy))
 		return TRUE
-	return allows_conventional_impregnation && !pregnant
+	return can_start_conventional_pregnancy()
+
+/// A growing egg or embryo keeps the womb from starting a conventional pregnancy.
+/obj/item/organ/genitals/filling_organ/proc/can_start_conventional_pregnancy()
+	return allows_conventional_impregnation && !pregnant && !has_oviposition_pregnancy()
 
 /obj/item/organ/genitals/filling_organ/be_impregnated(mob/living/father = null, allow_embryo_pregnancy = FALSE, embryo_hatch_result_type = null, list/father_features = null, father_name = null)
 	if(!fertility || !owner || owner.stat == DEAD)
@@ -935,13 +965,13 @@
 		hint_conception()
 		return TRUE
 
-	if(!allows_conventional_impregnation || pregnant)
+	if(!can_start_conventional_pregnancy())
 		return FALSE
 	// Nothing announces it; signs come later, and a seed sachet can tell.
 	pregnant = TRUE
 	conventional_pregnancy_stage = 0
 	start_hidden_pregnancy()
-	conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), 3 HOURS, TIMER_STOPPABLE)
+	conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), PREGNANCY_STAGE_TIME, TIMER_STOPPABLE)
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
 	return TRUE
 
@@ -979,11 +1009,11 @@
 		conventional_pregnancy_timer = null
 		return
 
-	if(conventional_pregnancy_stage < 3 && prob(30))
+	if(conventional_pregnancy_stage < PREGNANCY_MAX_STAGE)
 		advance_pregnancy_stage()
 
-	if(conventional_pregnancy_stage < 3)
-		conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), 6 HOURS, TIMER_STOPPABLE)
+	if(conventional_pregnancy_stage < PREGNANCY_MAX_STAGE)
+		conventional_pregnancy_timer = addtimer(CALLBACK(src, PROC_REF(advance_conventional_pregnancy)), PREGNANCY_STAGE_TIME, TIMER_STOPPABLE)
 	else
 		conventional_pregnancy_timer = null
 
@@ -996,8 +1026,6 @@
 		var/mob/living/carbon/carbon_owner = owner
 		if(!carbon_owner.can_receive_oviposition_implant())
 			return FALSE
-	if(pregnant)
-		return FALSE
 	if(fertilization_embryo_limit <= 0)
 		return FALSE
 	return (count_internal_hatching_eggs() + count_internal_womb_hatchlings()) < fertilization_embryo_limit
@@ -1072,6 +1100,8 @@
 	alpha = 200
 	/// Once the drop is ~halfway to becoming a puddle it swaps to a larger "fem" splatter sprite, chosen once.
 	var/grown_to_fem = FALSE
+	/// Timer that dries the drop away, so old trails do not pile up.
+	var/dry_timer
 
 /obj/effect/decal/cleanable/liquid_drip/Initialize(mapload)
 	. = ..()
@@ -1079,6 +1109,10 @@
 		return .
 	pixel_x = base_pixel_x + rand(-5, 5)
 	pixel_y = base_pixel_y + rand(-3, 3)
+	dry_timer = addtimer(CALLBACK(src, PROC_REF(dry_up)), LIQUID_DRIP_DRY_TIME, TIMER_STOPPABLE)
+
+/obj/effect/decal/cleanable/liquid_drip/proc/dry_up()
+	qdel(src)
 
 /// Pulls `amount` units out of `source` into our reagents, then tints to match the held fluid and mirrors its
 /// translucency. Sprites are greyscale so a plain colour multiply reproduces the fluid colour faithfully; colour must
@@ -1109,6 +1143,7 @@
 	return clamp(round(weighted_opacity / reagents.total_volume), 0, 255)
 
 #undef LIQUID_DRIP_MAX_UNITS
+#undef LIQUID_DRIP_DRY_TIME
 #undef DRIP_PRESSURE_THRESHOLD
 #undef DRIP_PRESSURE_MAX_MULT
 #undef FLUID_HUNGER_NUTRITION

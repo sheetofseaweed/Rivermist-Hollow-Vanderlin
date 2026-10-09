@@ -361,6 +361,35 @@ const FACE_PATTERNS = ['face_detail', 'eyes', 'facial_hair'];
 const isFaceFeature = (key: string) =>
   FACE_PATTERNS.some((pattern) => key.includes(pattern));
 
+type AppearanceTab = { key: string; name: string };
+type AppearanceCategory = {
+  key: string;
+  name: string;
+  icon: string;
+  tabs: AppearanceTab[];
+};
+
+// Customizer type path fragments per category, in sub-tab order; anything unmatched lands in Body.
+const HEAD_PATTERNS = [
+  '/hair/head',
+  '/hair/facial',
+  FACE_KEY,
+  '/organ/ears',
+  '/organ/horns',
+  '/organ/snout',
+  '/organ/frills',
+  '/organ/antennas',
+];
+const ATTIRE_PATTERNS = ['/accessory', '/piercing'];
+
+const patternRank = (key: string, patterns: string[]) =>
+  patterns.findIndex((pattern) => key.includes(pattern));
+
+const sortByPatterns = (tabs: AppearanceTab[], patterns: string[]) =>
+  [...tabs].sort(
+    (a, b) => patternRank(a.key, patterns) - patternRank(b.key, patterns),
+  );
+
 const asBool = (value: Booleanish | undefined) => value === true || value === 1;
 
 const display = (value: unknown, fallback = 'None') => {
@@ -660,7 +689,11 @@ export const PreferencesMenu = () => {
         };
 
   const [activeSection, setActiveSection] = useState(mapTab(data.initial_tab));
-  const [activeFeature, setActiveFeature] = useState<string>(UNDERWEAR_KEY);
+  const [activeFeature, setActiveFeature] = useState<string>('');
+  // Last sub-tab opened in each appearance category, restored when the category is reopened.
+  const [categoryMemory, setCategoryMemory] = useState<Record<string, string>>(
+    {},
+  );
   const [loadoutCatalogSlot, setLoadoutCatalogSlot] = useState<number | null>(
     null,
   );
@@ -2088,21 +2121,74 @@ export const PreferencesMenu = () => {
       (feature) => !isFaceFeature(feature.key),
     );
 
-    const featureTabs = [
+    const otherTabs = otherFeatures.map((feature) => ({
+      key: feature.key,
+      name: feature.name,
+    }));
+    const inPatterns = (key: string, patterns: string[]) =>
+      patternRank(key, patterns) !== -1;
+    const headTabs = sortByPatterns(
+      [
+        ...otherTabs.filter((tab) => inPatterns(tab.key, HEAD_PATTERNS)),
+        ...(faceFeatures.length ? [{ key: FACE_KEY, name: 'Face Details' }] : []),
+      ],
+      HEAD_PATTERNS,
+    );
+    const attireTabs = [
       ...(!disguiseMode ? [{ key: UNDERWEAR_KEY, name: 'Underwear' }] : []),
-      { key: BODY_KEY, name: 'Body' },
-      ...(faceFeatures.length ? [{ key: FACE_KEY, name: 'Face Details' }] : []),
-      ...otherFeatures.map((feature) => ({
-        key: feature.key,
-        name: feature.name,
-      })),
-      ...(asBool(data.is_taur) ? [{ key: TAUR_KEY, name: 'Taur Body' }] : []),
-      { key: GENITALS_KEY, name: 'Genitals' },
-      ...(!disguiseMode ? [{ key: BACKDROP_KEY, name: 'Backdrop' }] : []),
+      ...sortByPatterns(
+        otherTabs.filter((tab) => inPatterns(tab.key, ATTIRE_PATTERNS)),
+        ATTIRE_PATTERNS,
+      ),
     ];
-    const currentKey = featureTabs.some((tab) => tab.key === activeFeature)
+    const bodyTabs = [
+      { key: BODY_KEY, name: 'Skin & Markings' },
+      ...otherTabs.filter(
+        (tab) =>
+          !inPatterns(tab.key, HEAD_PATTERNS) &&
+          !inPatterns(tab.key, ATTIRE_PATTERNS),
+      ),
+      ...(asBool(data.is_taur) ? [{ key: TAUR_KEY, name: 'Taur Body' }] : []),
+    ];
+    const categories: AppearanceCategory[] = [
+      { key: 'head', name: 'Head', icon: 'user', tabs: headTabs },
+      { key: 'body', name: 'Body', icon: 'child', tabs: bodyTabs },
+      { key: 'attire', name: 'Attire', icon: 'tshirt', tabs: attireTabs },
+      {
+        key: 'genitals',
+        name: 'Genitals',
+        icon: 'venus-mars',
+        tabs: [{ key: GENITALS_KEY, name: 'Genitals' }],
+      },
+      {
+        key: 'backdrop',
+        name: 'Backdrop',
+        icon: 'image',
+        tabs: !disguiseMode ? [{ key: BACKDROP_KEY, name: 'Backdrop' }] : [],
+      },
+    ].filter((category) => category.tabs.length);
+    const currentCategory =
+      categories.find((category) =>
+        category.tabs.some((tab) => tab.key === activeFeature),
+      ) || categories[0];
+    const currentKey = currentCategory.tabs.some(
+      (tab) => tab.key === activeFeature,
+    )
       ? activeFeature
-      : featureTabs[0]?.key;
+      : currentCategory.tabs[0].key;
+    const openFeature = (category: AppearanceCategory, key: string) => {
+      setActiveFeature(key);
+      setCategoryMemory({ ...categoryMemory, [category.key]: key });
+    };
+    const openCategory = (category: AppearanceCategory) => {
+      const remembered = categoryMemory[category.key];
+      openFeature(
+        category,
+        category.tabs.some((tab) => tab.key === remembered)
+          ? remembered
+          : category.tabs[0].key,
+      );
+    };
 
     const renderEditor = () => {
       if (currentKey === UNDERWEAR_KEY) {
@@ -2141,19 +2227,45 @@ export const PreferencesMenu = () => {
 
     return (
       <Panel title="Appearance" icon="palette">
-        <Box style={{ display: 'flex', flexWrap: 'wrap' }} mb={1}>
-          {featureTabs.map((tab) => (
+        <Box style={{ display: 'flex', flexWrap: 'wrap' }} mb={0.5}>
+          {categories.map((category) => (
             <Button
-              key={tab.key}
+              key={category.key}
+              icon={category.icon}
               mr={0.5}
               mb={0.5}
-              selected={tab.key === currentKey}
-              onClick={() => setActiveFeature(tab.key)}
+              selected={category.key === currentCategory.key}
+              onClick={() => openCategory(category)}
             >
-              {tab.name}
+              {category.name}
             </Button>
           ))}
         </Box>
+        {currentCategory.tabs.length > 1 ? (
+          <Box
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+              paddingTop: '4px',
+            }}
+            mb={1}
+          >
+            {currentCategory.tabs.map((tab) => (
+              <Button
+                key={tab.key}
+                compact
+                color="transparent"
+                mr={0.5}
+                mb={0.5}
+                selected={tab.key === currentKey}
+                onClick={() => openFeature(currentCategory, tab.key)}
+              >
+                {tab.name}
+              </Button>
+            ))}
+          </Box>
+        ) : null}
         <Section>{renderEditor()}</Section>
       </Panel>
     );

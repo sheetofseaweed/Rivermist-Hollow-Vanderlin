@@ -2053,7 +2053,8 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		else
 			H.next_attack_msg += " <span class='warning'>Armor stops the damage.</span>"
 		if(!QDELETED(I))
-			I.take_damage(1, BRUTE, I.damage_type)
+			// Natural skin already plays its hit sound; weapon wear must not add a metallic clang.
+			I.take_damage(1, BRUTE, I.damage_type, sound_effect = !H.skin_armor)
 	else
 		var/datum/wound/bodypart_wound = affecting.bodypart_attacked_by(user.used_intent.blade_class, actual_damage, user, selzone, crit_message = TRUE, modifiers = list(CRIT_MOD_KNOCKOUT_CHANCE = knockout_modifier), incoming_germ = I.germ_level, pre_applied = TRUE)
 		if(istype(bodypart_wound) && bodypart_wound.should_embed(I))

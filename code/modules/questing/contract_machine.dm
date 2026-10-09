@@ -342,7 +342,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 			if(contract_type in seen_types)
 				continue
 			seen_types += contract_type
-			if(!(contract_type in list(QUEST_HUNT, QUEST_CLEAR_OUT, QUEST_RAID, QUEST_BOSS)))
+			if(!quest_contract_targets_creatures(contract_type))
 				continue
 
 			var/datum/quest/quest_template = create_quest_for_type(contract_type)
@@ -469,7 +469,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	if(!supports_quest_postings() || !SSquestboard)
 		return entries
 	for(var/datum/quest/posted_quest as anything in SSquestboard.get_all_posted_quests())
-		if(!can_accept_contract_quest(posted_quest))
+		if(!can_accept_contract_quest(posted_quest) || !posted_quest.is_visible_to(user))
 			continue
 		entries += list(list(
 			"ref" = REF(posted_quest),
@@ -664,6 +664,8 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 /obj/structure/fake_machine/contractledger/proc/is_contract_type_allowed_for_user(mob/user, contract_type)
 	if((contract_type in list(QUEST_RAID, QUEST_BOSS)) && !is_boss_raid_issuer(user))
 		return FALSE
+	if(quest_contract_uses_taker_pool(contract_type) && !carnal_contract_type_allowed_for(contract_type, user))
+		return FALSE
 	return TRUE
 
 /obj/structure/fake_machine/contractledger/proc/get_tier_values_for_contract(contract_type)
@@ -793,6 +795,12 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 			return "Take on a heavy hostile force in organized numbers."
 		if(QUEST_BOSS)
 			return "Hunt a singular elite threat with a much higher payout."
+		if(QUEST_FLUID_HARVEST)
+			return "Bring back a creature's own seed or nectar, collected by any means."
+		if(QUEST_EGG_HARVEST)
+			return "Bring back unhatched eggs from an egg-laying creature."
+		if(QUEST_SATE_MARK)
+			return "Wear creatures down to a lustful collapse, then tie a guild ribbon on each."
 	return "Unknown contract."
 
 /obj/structure/fake_machine/contractledger/proc/can_take_selected_contract(mob/living/carbon/human/user, contract_type, selected_tier)
@@ -821,7 +829,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	if(!contract_type)
 		return preview_state
 
-	if(!(contract_type in list(QUEST_HUNT, QUEST_CLEAR_OUT, QUEST_RAID, QUEST_BOSS)))
+	if(!quest_contract_targets_creatures(contract_type))
 		preview_state["title_key"] = "preview.contract"
 		preview_state["message_key"] = "preview.non_hunt"
 		return preview_state
@@ -830,8 +838,9 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		preview_state["message_key"] = "preview.choose_tier"
 		return preview_state
 
+	var/uses_taker_pool = quest_contract_uses_taker_pool(contract_type)
 	var/preview_cache_key = get_preview_cache_key(contract_type, selected_tier)
-	var/list/cached_entry = GLOB.quest_preview_state_cache[preview_cache_key]
+	var/list/cached_entry = uses_taker_pool ? null : GLOB.quest_preview_state_cache[preview_cache_key]
 	if(islist(cached_entry))
 		var/list/cached_targets = cached_entry["targets"]
 		if(!length(cached_targets))
@@ -846,7 +855,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		preview_state["hidden_count"] = hidden_count
 		return preview_state
 
-	var/list/entries = get_target_preview_entries(contract_type, selected_tier)
+	var/list/entries = get_target_preview_entries(contract_type, selected_tier, uses_taker_pool ? user : null)
 	if(!length(entries))
 		preview_state["message_key"] = "preview.no_valid"
 		return preview_state
@@ -880,7 +889,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		insert_preview_entry(entries, entry)
 	return entries
 
-/obj/structure/fake_machine/contractledger/proc/get_target_preview_entries(contract_type, selected_tier)
+/obj/structure/fake_machine/contractledger/proc/get_target_preview_entries(contract_type, selected_tier, mob/living/carbon/human/taker)
 	var/list/entries = list()
 	var/datum/quest/quest_template = create_quest_for_type(contract_type)
 	if(!istype(quest_template, /datum/quest/kill))
@@ -890,6 +899,8 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 
 	var/datum/quest/kill/kill_template = quest_template
 	kill_template.requested_tier = selected_tier
+	if(taker)
+		kill_template.prepare_for_issuer(taker)
 	var/list/candidate_pool = kill_template.get_candidate_target_pool()
 
 	for(var/mob_type in candidate_pool)
@@ -1188,13 +1199,18 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		return FALSE
 	for(var/obj/item/paper/scroll/quest/held_scroll in user.GetAllContents(/obj/item/paper/scroll/quest))
 		var/list/mob/quest_assignees = held_scroll.get_quest_assignees(user, TRUE)
-		if((user in quest_assignees) && held_scroll.assigned_quest?.complete && can_accept_contract_quest(held_scroll.assigned_quest))
+		if((user in quest_assignees) && is_quest_ready_to_turn_in(held_scroll.assigned_quest) && can_accept_contract_quest(held_scroll.assigned_quest))
 			return TRUE
 	for(var/obj/item/paper/scroll/quest/floor_scroll in input_point)
 		var/list/mob/quest_assignees = floor_scroll.get_quest_assignees(user, TRUE)
-		if((user in quest_assignees) && floor_scroll.assigned_quest?.complete && can_accept_contract_quest(floor_scroll.assigned_quest))
+		if((user in quest_assignees) && is_quest_ready_to_turn_in(floor_scroll.assigned_quest) && can_accept_contract_quest(floor_scroll.assigned_quest))
 			return TRUE
 	return FALSE
+
+/obj/structure/fake_machine/contractledger/proc/is_quest_ready_to_turn_in(datum/quest/quest)
+	if(!quest)
+		return FALSE
+	return quest.complete || quest.has_turn_in_goods(input_point)
 
 /obj/structure/fake_machine/contractledger/proc/can_abandon_any_contract(mob/living/carbon/human/user)
 	if(!user)
@@ -1271,6 +1287,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		return FALSE
 
 	attached_quest.requested_tier = selected_tier
+	attached_quest.prepare_for_issuer(user)
 
 	if(is_quest_handler(user))
 		attached_quest.quest_giver_name = user.real_name
@@ -1388,6 +1405,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 
 	user.put_in_hands(spawned_scroll)
 	spawned_scroll.update_quest_text()
+	attached_quest.issue_contract_kit(user)
 
 /obj/structure/fake_machine/contractledger/proc/find_quest_landmark(contract_tier, contract_type)
 	var/list/exact_landmarks = list()
@@ -1396,15 +1414,15 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	var/list/closest_clean_landmarks = list()
 	var/best_gap = INFINITY
 	var/prefer_clean_landmarks = contract_type == QUEST_BOSS
-	var/datum/quest/template = null
-	if(contract_type in list(QUEST_RETRIEVAL, QUEST_COURIER))
-		template = create_quest_for_type(contract_type)
+	var/datum/quest/template = create_quest_for_type(contract_type)
+	var/landmark_types = template ? template.get_landmark_contract_types() : contract_type
+	var/check_supported_map = template && (contract_type in list(QUEST_RETRIEVAL, QUEST_COURIER))
 
 	GLOB.quest_landmarks_list = shuffle(GLOB.quest_landmarks_list)
 	for(var/obj/effect/landmark/quest_spawner/landmark in GLOB.quest_landmarks_list)
-		if(!landmark.supports_contract_type(contract_type))
+		if(!landmark.supports_contract_type(landmark_types))
 			continue
-		if(template && !template.is_supported_map_turf(get_turf(landmark)))
+		if(check_supported_map && !template.is_supported_map_turf(get_turf(landmark)))
 			continue
 
 		var/has_clients_around = FALSE
@@ -1500,7 +1518,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	else
 		for(var/obj/item/paper/scroll/quest/held_scroll in user.GetAllContents(/obj/item/paper/scroll/quest))
 			var/list/mob/held_assignees = held_scroll.get_quest_assignees(user, TRUE)
-			if(!(user in held_assignees) || !held_scroll.assigned_quest?.complete || !can_accept_contract_quest(held_scroll.assigned_quest))
+			if(!(user in held_assignees) || !is_quest_ready_to_turn_in(held_scroll.assigned_quest) || !can_accept_contract_quest(held_scroll.assigned_quest))
 				continue
 			turn_in_scroll(user, held_scroll)
 			return
@@ -1529,6 +1547,9 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	if(!can_accept_contract_quest(completed_quest))
 		show_wrong_ledger_notice(user, completed_quest)
 		return
+
+	if(!completed_quest.complete)
+		completed_quest.try_collect_turn_in_goods(input_point, user)
 
 	if(completed_quest?.complete)
 		var/base_reward = completed_quest.reward_amount

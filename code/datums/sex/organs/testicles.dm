@@ -9,10 +9,12 @@
 	organ_size = DEFAULT_TESTICLES_SIZE
 	var/virility = TRUE
 	reagent_to_make = /datum/reagent/consumable/cum
-	production_rate = 3
+	// About three minutes from empty to full at the default size.
+	production_rate = 0.15
 	// Seed costs more than drinking it gives back, so it cannot feed its maker.
 	nutrition_per_unit = 2
-	storage_per_size = 75
+	// 20/30/40 units by size, so one load is a few units, not a bellyful.
+	storage_per_size = 10
 	startsfilled = TRUE
 	allows_oviposition_pregnancy = FALSE
 	blocker = ITEM_SLOT_PANTS
@@ -51,17 +53,9 @@
 	. = ..()
 	sync_cum_source_data()
 
+/// One load is the same wherever it lands: a share of what the balls hold.
 /obj/item/organ/genitals/filling_organ/testicles/get_base_climax_release(climax_location)
-	switch(climax_location)
-		if(ORGASM_LOCATION_ONTO)
-			return min(reagents.maximum_volume / 2, 10 * organ_size)
-		if(ORGASM_LOCATION_INTO, ORGASM_LOCATION_ORAL)
-			return reagents.maximum_volume / 4
-		if(ORGASM_LOCATION_SELF)
-			return reagents.maximum_volume / 5
-		if(ORGASM_LOCATION_CONTAINER)
-			return reagents.maximum_volume / 3
-	return min(3, 10 * organ_size)
+	return reagents.maximum_volume * TESTICLES_LOAD_SHARE
 
 /// Fuller testicles release more: the base amount at half full, up to half again when full.
 /obj/item/organ/genitals/filling_organ/testicles/get_pent_up_multiplier()

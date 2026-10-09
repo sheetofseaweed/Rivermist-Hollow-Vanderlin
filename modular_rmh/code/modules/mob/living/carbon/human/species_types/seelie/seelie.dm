@@ -92,6 +92,7 @@
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/testicles/human,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	statsheet_male = /datum/attribute_holder/sheet/job/species/seelie/stats/male

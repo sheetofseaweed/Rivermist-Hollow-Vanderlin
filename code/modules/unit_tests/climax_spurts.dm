@@ -82,12 +82,239 @@
 	arousal.spurt_onto(partner, FLUID_COAT_CHEST, 40)
 	var/datum/climax_spurts/spurts = arousal.active_spurts
 	TEST_ASSERT_NOTNULL(spurts, "The climax should still be spurting.")
+	owner.add_stress(/datum/stress_event/cumok)
 	grip.squeeze(owner)
 	TEST_ASSERT(QDELETED(spurts), "A squeeze mid-climax should choke off the rest.")
 	TEST_ASSERT_NULL(arousal.active_spurts, "No spurts should be left.")
 	TEST_ASSERT_NOTNULL(owner.has_stress_type(/datum/stress_event/ruined_orgasm), "A ruined climax should sour the mood.")
+	TEST_ASSERT_NULL(owner.has_stress_type(/datum/stress_event/cumok), "A ruined climax should bring no relief.")
 	TEST_ASSERT(arousal.arousal >= RUINED_ORGASM_AROUSAL, "A ruined climax should leave arousal high.")
 	TEST_ASSERT_EQUAL(get_spurt_test_coat(partner, FLUID_COAT_BELLY), 0, "The choked spurts should never land.")
+
+/datum/unit_test/climax_spurts_outlive_the_stroking/Run()
+	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/penis = give_spurt_test_genitals(owner)
+	var/datum/component/arousal/arousal = owner.LoadComponent(/datum/component/arousal)
+	var/datum/sex_scene_controller/controller = owner.open_sex_scene(owner, FALSE)
+	var/datum/sex_action/stroking = controller.instantiate_action(/datum/sex_action/masturbate/penis)
+	TEST_ASSERT(stroking.bind_runtime(controller), "The jerk-off action should bind.")
+	stroking.on_start(owner, owner)
+	var/obj/item/penis_grip/grip = penis.grip
+	TEST_ASSERT(grip?.made_by_action, "Jerking off should put a grip in hand.")
+	owner.zone_selected = BODY_ZONE_HEAD
+	TEST_ASSERT(grip.aim_at(partner, owner), "A face next to the owner should be a valid aim.")
+	arousal.ejaculate()
+	TEST_ASSERT(get_spurt_test_coat(partner, FLUID_COAT_FACE) > 0, "The first spurt should hit the face.")
+	TEST_ASSERT_NOTNULL(arousal.active_spurts, "More spurts should be on the way.")
+	// A climax ends the stroking, and with it the grip and its aim.
+	owner.sex_scene.stop_action(stroking)
+	TEST_ASSERT(QDELETED(grip), "The stroking's grip should let go when it stops.")
+	arousal.active_spurts?.pulse()
+	TEST_ASSERT(get_spurt_test_coat(partner, FLUID_COAT_CHEST) > 0, "The rest should drift down the body, not fall to the floor.")
+	qdel(arousal.active_spurts)
+
+	var/mob/living/carbon/human/npc = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/target = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/npc_penis = give_spurt_test_genitals(npc)
+	var/datum/component/arousal/npc_arousal = npc.LoadComponent(/datum/component/arousal)
+	var/datum/sex_scene_controller/npc_controller = npc.open_sex_scene(target, FALSE)
+	var/datum/sex_action/npc/npc_jerk_over/jerking = npc_controller.instantiate_action(/datum/sex_action/npc/npc_jerk_over)
+	TEST_ASSERT(jerking.bind_runtime(npc_controller), "The NPC action should bind.")
+	jerking.on_start(npc, target)
+	npc_penis.get_climax_aim().set_target(target, FLUID_COAT_FACE, npc)
+	npc_arousal.ejaculate()
+	TEST_ASSERT_NOTNULL(npc_arousal.active_spurts, "The NPC should spurt more than once.")
+	npc.sex_scene.stop_action(jerking)
+	TEST_ASSERT_NULL(npc_penis.climax_aim.target, "Stopping should drop the NPC's aim.")
+	npc_arousal.active_spurts?.pulse()
+	TEST_ASSERT(get_spurt_test_coat(target, FLUID_COAT_CHEST) > 0, "The NPC's later spurts should still land on its target.")
+	qdel(npc_arousal.active_spurts)
+
+/datum/unit_test/climax_spurts_pump_inside_then_spill_on_pull_out/Run()
+	var/mob/living/carbon/human/climaxer = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human)
+	give_spurt_test_genitals(climaxer)
+	var/datum/component/arousal/arousal = climaxer.LoadComponent(/datum/component/arousal)
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = climaxer.getorganslot(ORGAN_SLOT_TESTICLES)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(partner, TRUE, TRUE)
+	vagina.reagents.maximum_volume = 200
+	vagina.reagents.clear_reagents()
+	var/datum/sex_scene_controller/controller = climaxer.open_sex_scene(partner, FALSE)
+	var/datum/sex_action/fucking = controller.instantiate_action(/datum/sex_action/sex/vaginal)
+	TEST_ASSERT(fucking.bind_runtime(controller), "The vaginal action should bind.")
+
+	// A small hole still takes the whole load: what does not fit overflows instead of staying in the balls.
+	var/mob/living/carbon/human/first_partner = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/small_vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	small_vagina.Insert(first_partner, TRUE, TRUE)
+	small_vagina.reagents.clear_reagents()
+	small_vagina.reagents.maximum_volume = 20
+	var/full_balls = testicles.reagents.total_volume
+	arousal.handle_climax(fucking, ORGASM_LOCATION_INTO, climaxer, first_partner, FALSE, climaxer, first_partner, climaxer)
+	TEST_ASSERT_NOTNULL(arousal.active_spurts, "A climax inside should come in spurts.")
+	arousal.active_spurts.finish_now()
+	TEST_ASSERT(full_balls - testicles.reagents.total_volume > 30, "A climax into a small hole should still empty the whole load.")
+	testicles.reagents.add_reagent(/datum/reagent/consumable/cum, testicles.reagents.maximum_volume)
+	fucking.stop_requested = FALSE
+	fucking.just_climaxed = FALSE
+
+	// A climax set to stop the action waits for its last spurt, so stopping meanwhile is a pull-out.
+	fucking.stop_on_climax = TRUE
+	arousal.begin_spurts(new /datum/climax_spurts/inside(arousal, 40, fucking, climaxer, partner, climaxer, partner, vagina))
+	var/first = vagina.reagents.get_reagent_amount(/datum/reagent/consumable/cum)
+	TEST_ASSERT(first > 0 && first < 40, "The first spurt should pump in only part of the load.")
+	fucking.on_action_user_climax(climaxer, fucking)
+	TEST_ASSERT(fucking.stop_after_spurts && !fucking.stop_requested, "The action should keep going until the spurts end.")
+	arousal.active_spurts?.finish_now()
+	TEST_ASSERT(vagina.reagents.get_reagent_amount(/datum/reagent/consumable/cum) > first, "Later spurts should pump inside while the action runs.")
+	TEST_ASSERT(fucking.stop_requested, "The action should stop once the last spurt is done.")
+	fucking.unbind_runtime()
+	fucking.stop_requested = FALSE
+	fucking.just_climaxed = FALSE
+
+	TEST_ASSERT(fucking.bind_runtime(controller), "The vaginal action should bind again.")
+	arousal.begin_spurts(new /datum/climax_spurts/inside(arousal, 40, fucking, climaxer, partner, climaxer, partner, vagina))
+	var/inside_before_pull_out = vagina.reagents.get_reagent_amount(/datum/reagent/consumable/cum)
+	fucking.unbind_runtime()
+	arousal.active_spurts?.pulse()
+	TEST_ASSERT_EQUAL(vagina.reagents.get_reagent_amount(/datum/reagent/consumable/cum), inside_before_pull_out, "Nothing more should go inside after a pull-out.")
+	TEST_ASSERT(get_spurt_test_coat(partner, FLUID_COAT_GROIN) > 0, "After a pull-out the rest should land on the partner.")
+	arousal.active_spurts?.finish_now()
+
+	// A full hole takes what fits; the rest overflows down the thighs instead of staying in the balls.
+	TEST_ASSERT(fucking.bind_runtime(controller), "The vaginal action should bind a third time.")
+	vagina.reagents.clear_reagents()
+	vagina.reagents.maximum_volume = 5
+	testicles.reagents.add_reagent(/datum/reagent/consumable/cum, testicles.reagents.maximum_volume)
+	var/balls_before = testicles.reagents.total_volume
+	arousal.begin_spurts(new /datum/climax_spurts/inside(arousal, 40, fucking, climaxer, partner, climaxer, partner, vagina))
+	arousal.active_spurts?.finish_now()
+	TEST_ASSERT(vagina.reagents.total_volume <= 5, "A hole should never take more than it holds.")
+	TEST_ASSERT(get_spurt_test_coat(partner, FLUID_COAT_THIGHS) > 0, "What does not fit should run down the thighs.")
+	TEST_ASSERT(balls_before - testicles.reagents.total_volume > 30, "The whole load should leave the balls even when the hole is full.")
+	fucking.unbind_runtime()
+	qdel(fucking)
+
+	var/mob/living/carbon/human/sucker = allocate(/mob/living/carbon/human)
+	sucker.reagents.clear_reagents()
+	var/datum/sex_scene_controller/oral_controller = climaxer.open_sex_scene(sucker, FALSE)
+	var/datum/sex_action/blowjob = oral_controller.instantiate_action(/datum/sex_action/blowjob)
+	TEST_ASSERT(blowjob.bind_runtime(oral_controller), "The blowjob should bind.")
+	arousal.begin_spurts(new /datum/climax_spurts/inside/oral(arousal, 40, blowjob, climaxer, sucker, climaxer, sucker))
+	var/obj/item/organ/stomach/stomach = sucker.getorganslot(ORGAN_SLOT_STOMACH)
+	var/swallowed = stomach?.reagents.get_reagent_amount(/datum/reagent/consumable/cum) + sucker.reagents.get_reagent_amount(/datum/reagent/consumable/cum)
+	TEST_ASSERT(swallowed > 0, "The first oral spurt should be swallowed.")
+	blowjob.unbind_runtime()
+	arousal.active_spurts?.pulse()
+	TEST_ASSERT(get_spurt_test_coat(sucker, FLUID_COAT_FACE) > 0, "A mouth that pulls away should catch the rest on the face.")
+	arousal.active_spurts?.finish_now()
+	qdel(blowjob)
+
+/datum/unit_test/climax_spurts_follow_position_and_choice/Run()
+	var/mob/living/carbon/human/penetrator = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/receiver = allocate(/mob/living/carbon/human)
+	give_spurt_test_genitals(penetrator)
+	give_spurt_test_genitals(receiver)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(receiver, TRUE, TRUE)
+	vagina.reagents.clear_reagents()
+	var/datum/component/arousal/penetrator_arousal = penetrator.LoadComponent(/datum/component/arousal)
+	var/datum/component/arousal/receiver_arousal = receiver.LoadComponent(/datum/component/arousal)
+	var/datum/sex_scene_controller/controller = penetrator.open_sex_scene(receiver, FALSE)
+	var/datum/sex_action/fucking = controller.instantiate_action(/datum/sex_action/sex/vaginal)
+	TEST_ASSERT(fucking.bind_runtime(controller), "The vaginal action should bind.")
+
+	// Set to finish outside, the penetrator pulls out and lands on the partner.
+	controller.finish_outside = TRUE
+	penetrator_arousal.ejaculate(fucking, penetrator, receiver, TRUE, penetrator)
+	penetrator_arousal.active_spurts?.finish_now()
+	TEST_ASSERT_EQUAL(vagina.reagents.get_reagent_amount(/datum/reagent/consumable/cum), 0, "Finishing outside should put nothing inside.")
+	TEST_ASSERT(get_spurt_test_coat(receiver, FLUID_COAT_BELLY) > 0, "Finishing outside should land on the partner's belly.")
+	controller.finish_outside = FALSE
+
+	// Lying under the penetrator, the receiver's cock spurts over their own body.
+	receiver.set_body_position(LYING_DOWN)
+	receiver_arousal.handle_climax(fucking, ORGASM_LOCATION_ONTO, receiver, penetrator, FALSE, receiver, penetrator, receiver)
+	receiver_arousal.active_spurts?.finish_now()
+	TEST_ASSERT(get_spurt_test_coat(receiver, FLUID_COAT_CHEST) > 0, "A lying receiver should spurt over their own chest.")
+	TEST_ASSERT_EQUAL(get_spurt_test_coat(penetrator, FLUID_COAT_BELLY), 0, "A lying receiver should not spurt over the one inside them.")
+	receiver.set_body_position(STANDING_UP)
+	receiver.set_lying_angle(0)
+	receiver_arousal.handle_climax(fucking, ORGASM_LOCATION_ONTO, receiver, penetrator, FALSE, receiver, penetrator, receiver)
+	receiver_arousal.active_spurts?.finish_now()
+	TEST_ASSERT(get_spurt_test_coat(penetrator, FLUID_COAT_BELLY) > 0, "A standing receiver should still spurt over their partner.")
+	fucking.unbind_runtime()
+	qdel(fucking)
+
+/datum/unit_test/climax_pull_outs_can_fail/Run()
+	var/mob/living/carbon/human/penetrator = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/receiver = allocate(/mob/living/carbon/human)
+	give_spurt_test_genitals(penetrator)
+	var/datum/component/arousal/arousal = penetrator.LoadComponent(/datum/component/arousal)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(receiver, TRUE, TRUE)
+	vagina.reagents.maximum_volume = 200
+	vagina.reagents.clear_reagents()
+	var/datum/sex_scene_controller/controller = penetrator.open_sex_scene(receiver, FALSE)
+	var/datum/sex_action/fucking = controller.instantiate_action(/datum/sex_action/sex/vaginal)
+	TEST_ASSERT(fucking.bind_runtime(controller), "The vaginal action should bind.")
+
+	SEND_SIGNAL(penetrator, COMSIG_SEX_SET_AROUSAL, 0)
+	TEST_ASSERT_EQUAL(get_pull_out_fail_chance(penetrator, receiver), 0, "A calm pull-out should never fail.")
+	SEND_SIGNAL(penetrator, COMSIG_SEX_SET_AROUSAL, MAX_AROUSAL * 0.8)
+	TEST_ASSERT(abs(get_pull_out_fail_chance(penetrator, receiver) - (PULL_OUT_FAIL_MIN_CHANCE + PULL_OUT_FAIL_MAX_CHANCE) / 2) < 0.01, "Arousal half way above the line should give a middling chance.")
+	SEND_SIGNAL(penetrator, COMSIG_SEX_SET_AROUSAL, MAX_AROUSAL)
+	TEST_ASSERT_EQUAL(get_pull_out_fail_chance(penetrator, receiver), PULL_OUT_FAIL_MAX_CHANCE, "Full arousal should give the highest chance.")
+
+	TEST_ASSERT((penetrator in receiver.get_hole_penetrators()), "The receiver should know who is inside them.")
+	var/datum/sex_scene_controller/receiver_controller = receiver.open_sex_scene(penetrator, FALSE)
+	TEST_ASSERT(!receiver_controller.ui_data(receiver)["controls"]["can_leg_lock"], "A standing receiver should not see the leg lock.")
+	receiver.set_body_position(LYING_DOWN)
+	TEST_ASSERT(receiver_controller.ui_data(receiver)["controls"]["can_leg_lock"], "A lying receiver should see the leg lock.")
+	receiver_controller.toggle_leg_lock()
+	TEST_ASSERT(receiver_controller.leg_lock, "The leg lock should switch on.")
+	TEST_ASSERT(!receiver.leg_locks_harder(penetrator), "Legs no stronger than the one inside should not hold them.")
+	receiver.set_stat_modifier("unit_test", STATKEY_STR, 5)
+	TEST_ASSERT(receiver.leg_locks_harder(penetrator), "Stronger legs should hold them in.")
+	TEST_ASSERT_EQUAL(get_pull_out_fail_chance(penetrator, receiver), min(PULL_OUT_FAIL_MAX_CHANCE + LEG_LOCK_PULL_OUT_FAIL_CHANCE, PULL_OUT_FAIL_MAX_TOTAL), "A stronger leg lock should add a lot to the chance.")
+
+	// A failed pull-out mid-climax keeps the rest inside.
+	arousal.begin_spurts(new /datum/climax_spurts/inside(arousal, 40, fucking, penetrator, receiver, penetrator, receiver, vagina))
+	var/datum/climax_spurts/inside/spurts = arousal.active_spurts
+	spurts.pull_out_fail_chance = 100
+	var/inside_before = vagina.reagents.total_volume
+	fucking.unbind_runtime()
+	spurts.pulse()
+	TEST_ASSERT(vagina.reagents.total_volume > inside_before, "A failed pull-out should keep pumping inside.")
+	TEST_ASSERT_EQUAL(get_spurt_test_coat(receiver, FLUID_COAT_GROIN), 0, "A failed pull-out should land nothing outside.")
+	arousal.active_spurts?.finish_now()
+	receiver.set_body_position(STANDING_UP)
+	receiver.set_lying_angle(0)
+	qdel(fucking)
+
+/datum/unit_test/climax_spurts_feed_a_succubus_once/Run()
+	var/mob/living/carbon/human/climaxer = allocate(/mob/living/carbon/human)
+	climaxer.mind_initialize()
+	give_spurt_test_genitals(climaxer)
+	var/datum/component/arousal/arousal = climaxer.LoadComponent(/datum/component/arousal)
+	var/mob/living/carbon/human/succubus = allocate(/mob/living/carbon/human)
+	succubus.mind_initialize()
+	var/datum/antagonist/succubus/antag = allocate(/datum/antagonist/succubus)
+	antag.owner = succubus.mind
+	antag.essence_cap = 100000
+	LAZYADD(succubus.mind.antag_datums, antag)
+
+	TEST_ASSERT(arousal.spurt_onto(succubus, FLUID_COAT_CHEST, 40), "A climax onto the succubus should spurt.")
+	TEST_ASSERT_EQUAL(antag.partner_harvests[climaxer.mind], 1, "The first spurt should feed the succubus.")
+	// The same-tick guard would hide a repeat here, so clear it.
+	antag.last_harvest_time = -1
+	arousal.active_spurts?.finish_now()
+	TEST_ASSERT_EQUAL(antag.partner_harvests[climaxer.mind], 1, "Later spurts of one climax should not feed her again.")
+
+	succubus.mind.antag_datums -= antag
+	antag.owner = null
 
 /datum/unit_test/climax_aim_warns_its_target/Run()
 	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)
@@ -95,9 +322,24 @@
 	var/obj/item/organ/genitals/penis/penis = give_spurt_test_genitals(owner)
 	var/datum/climax_aim/aim = penis.get_climax_aim()
 	aim.set_target(partner, FLUID_COAT_FACE, owner)
-	TEST_ASSERT_NOTNULL(partner.alerts["cock_aimed"], "The target should see an alert while aimed at.")
+	TEST_ASSERT_NOTNULL(partner.alerts[aim.get_alert_category()], "The target should see an alert while aimed at.")
+
+	var/mob/living/carbon/human/rival = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/penis/rival_penis = give_spurt_test_genitals(rival)
+	var/datum/climax_aim/rival_aim = rival_penis.get_climax_aim()
+	rival_aim.set_target(partner, FLUID_COAT_CHEST, rival)
 	aim.clear()
-	TEST_ASSERT_NULL(partner.alerts["cock_aimed"], "The alert should go when the aim does.")
+	TEST_ASSERT_NULL(partner.alerts[aim.get_alert_category()], "The alert should go when the aim does.")
+	TEST_ASSERT_NOTNULL(partner.alerts[rival_aim.get_alert_category()], "A second aim on the same body should keep its own alert.")
+
+	partner.forceMove(locate(run_loc_floor_bottom_left.x + 3, run_loc_floor_bottom_left.y, run_loc_floor_bottom_left.z))
+	TEST_ASSERT_NULL(rival_aim.target, "Walking out of reach should drop the aim at once.")
+	TEST_ASSERT_NULL(partner.alerts[rival_aim.get_alert_category()], "Walking out of reach should drop the alert too.")
+
+	partner.forceMove(get_turf(owner))
+	aim.set_target(partner, FLUID_COAT_FACE, owner)
+	owner.forceMove(locate(run_loc_floor_bottom_left.x + 3, run_loc_floor_bottom_left.y, run_loc_floor_bottom_left.z))
+	TEST_ASSERT_NULL(aim.target, "The owner walking away should drop the aim too.")
 
 /datum/unit_test/climax_aim_respects_logged_off_players/Run()
 	var/mob/living/carbon/human/owner = allocate(/mob/living/carbon/human)

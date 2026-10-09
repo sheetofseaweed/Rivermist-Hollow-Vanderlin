@@ -3235,7 +3235,6 @@
 	dir = 4
 	},
 /obj/effect/decal/cleanable/dirt/dust,
-/obj/item/natural/wood/plank,
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/living)
 "baA" = (
@@ -28397,7 +28396,7 @@
 /area/outdoors/rmh_field/west)
 "iNr" = (
 /obj/structure/questboard/tavern,
-/turf/closed/wall/mineral/wooddark,
+/turf/closed/wall/mineral/wooddark/window,
 /area/indoors/town/rmh/tavern)
 "iNs" = (
 /obj/structure/table/wood/counter/alt,
@@ -53239,8 +53238,7 @@
 /turf/open/floor/metal,
 /area/under/town/rmh/sewer)
 "qwk" = (
-/obj/structure/fluff/railing/stonewall{
-	pixel_y = -2;
+/obj/structure/fluff/walldeco/bath/wallpipes/outie{
 	dir = 10
 	},
 /turf/open/floor/grass/mixyel,
@@ -300914,8 +300912,8 @@ lyL
 jHp
 mOG
 tLp
-xzW
-sSB
+sXV
+sXV
 tLp
 tPN
 bUN
@@ -305782,7 +305780,7 @@ hae
 uWJ
 dxE
 lzI
-lzI
+paQ
 lzI
 lzI
 gYz
