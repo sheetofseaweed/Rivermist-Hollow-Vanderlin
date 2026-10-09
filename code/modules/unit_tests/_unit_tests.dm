@@ -78,6 +78,7 @@
 #include "belly_fullness.dm"
 #include "bellyriding.dm"
 #include "blueprint_mode.dm"
+#include "body_hair.dm"
 #include "body_storage.dm"
 #include "buckling_port.dm"
 #include "buildmode_search.dm"

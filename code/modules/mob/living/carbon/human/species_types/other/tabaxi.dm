@@ -21,6 +21,7 @@
 	possible_ages = NORMAL_AGES_LIST
 	limbs_icon_m = 'modular_rmh/icons/mob/bodies/m/mta.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/bodies/f/fma.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FURRED
 
 	soundpack_m = /datum/voicepack/male/tabaxi
 	soundpack_f = /datum/voicepack/female/tabaxi
@@ -99,6 +100,8 @@
 		/datum/customizer/organ/genitals/breasts/animal,
 		/datum/customizer/organ/genitals/vagina/animal,
 		/datum/customizer/organ/ears/tajaran,
+		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 		)
 	body_marking_sets = list(
 		/datum/body_marking_set/none,

@@ -20,6 +20,7 @@
 	changesource_flags = WABBAJACK
 	limbs_icon_m = 'modular_rmh/icons/mob/bodies/m/mta.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/bodies/f/fma.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FURRED
 	inherent_traits = list(
 		TRAIT_LONGSTRIDER,
 		TRAIT_IGNOREDAMAGESLOWDOWN,
@@ -109,6 +110,7 @@
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	body_marking_sets = list(/datum/body_marking_set/none)

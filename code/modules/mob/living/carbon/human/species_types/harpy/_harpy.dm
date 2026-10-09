@@ -46,6 +46,7 @@
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/harpy.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/harpy.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FEATHERED
 
 	soundpack_m = /datum/voicepack/male
 	soundpack_f = /datum/voicepack/female
@@ -132,6 +133,7 @@
 		/datum/customizer/organ/genitals/butt/human,
 		/datum/customizer/organ/genitals/testicles/human,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	descriptor_choices = list(

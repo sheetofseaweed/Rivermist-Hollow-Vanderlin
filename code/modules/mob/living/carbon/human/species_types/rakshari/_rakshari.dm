@@ -43,6 +43,7 @@
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/rakshari.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/rakshari.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FURRED
 
 	exotic_bloodtype = /datum/blood_type/human/rakshari
 
@@ -113,6 +114,8 @@
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/organ/genitals/testicles/anthro,
+		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 	body_markings = list(
 		/datum/body_marking/tonage,

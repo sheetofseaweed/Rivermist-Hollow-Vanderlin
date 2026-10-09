@@ -142,7 +142,8 @@
 
 /datum/sprite_accessory/proc/get_overlay(overlay_icon_state, color_string, dummy_block = FALSE, icon_file)
 	color_string = sanitize_color_string(color_string)
-	var/key = "[type]-[overlay_icon_state]-[color_string]-[glows]"
+	// get_icon() can pick a per-body file, so the file is part of the key.
+	var/key = "[type]-[icon_file]-[overlay_icon_state]-[color_string]-[glows]"
 	if(!accessory_icon_cache[key])
 		var/list/icon_states = generate_icon_states(overlay_icon_state, color_string, icon_file)
 		var/icon/icon_bundle = icon('icons/testing/greyscale_error.dmi')

@@ -37,6 +37,7 @@
 
 	limbs_icon_m = 'modular_rmh/icons/mob/species/anthro_small_malea.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/species/anthro_small_femalea.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FURRED
 	dam_icon_m = 'icons/roguetown/mob/bodies/dam/dam_male.dmi'
 	dam_icon_f = 'icons/roguetown/mob/bodies/dam/dam_female.dmi'
 
@@ -145,6 +146,7 @@
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/organ/genitals/testicles/anthro,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 		)
 	body_marking_sets = list(
 		/datum/body_marking_set/none,
