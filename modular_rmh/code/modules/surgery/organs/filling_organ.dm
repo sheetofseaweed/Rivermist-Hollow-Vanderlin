@@ -201,6 +201,7 @@
 		RegisterSignal(M, COMSIG_MOB_FOOD_EAT, PROC_REF(on_owner_ate))
 
 /obj/item/organ/genitals/filling_organ/Remove(mob/living/M, special, drop_if_replaced)
+	stop_creature_fluid_ticks()
 	if(pregnant)
 		M?.remove_fluid_modifier(/datum/fluid_modifier/pregnancy_lactation, FLUID_SOURCE_PREGNANCY)
 	engorgement_steps = 0
@@ -218,6 +219,8 @@
 	. = ..()
 	if(slot == ORGAN_SLOT_ANUS || slot == ORGAN_SLOT_VAGINA)
 		SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
+	if(!creature_fluid_ticking && owner && !iscarbon(owner))
+		consider_creature_fluid_ticks(changetype)
 
 /obj/item/organ/genitals/filling_organ/on_body_storage_inserted(obj/item/inserted_item, target_layer)
 	. = ..()
@@ -517,7 +520,7 @@
 
 /// Applies bloat debuffs when bloatable and full of foreign fluid; own fluid never bloats.
 /obj/item/organ/genitals/filling_organ/proc/handle_bloat()
-	if(!bloatable) //we wont make removals because other organs may be conflicting and shit.
+	if(!bloatable || !iscarbon(owner)) //we wont make removals because other organs may be conflicting and shit.
 		return
 	var/foreign_volume = reagents.total_volume - get_own_fluid_amount()
 	if(foreign_volume > (reagents.maximum_volume / 3) && !owner.has_status_effect(/datum/status_effect/debuff/bloattwo)) //more than 1/3 full, light bloat.
@@ -538,6 +541,11 @@
 
 /// Nutrition-driven production; a hungry owner reabsorbs fluid instead. Subtypes replace the drive.
 /obj/item/organ/genitals/filling_organ/proc/produce_fluid(seconds)
+	// Creatures keep no fluid upkeep and refill at the plain fed rate.
+	if(!iscarbon(owner))
+		if(is_producing())
+			add_produced_fluid(production_rate * get_production_multiplier() * seconds)
+		return
 	if(HAS_TRAIT(owner, TRAIT_NOHUNGER))
 		if(is_producing())
 			add_produced_fluid(production_rate * get_nourishment_multiplier() * get_production_multiplier() * seconds)

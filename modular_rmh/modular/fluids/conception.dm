@@ -71,6 +71,9 @@
 
 /// Called every fluid tick; rolls once per interval while seed is recorded.
 /obj/item/organ/genitals/filling_organ/proc/check_conception()
+	// Creature wombs tick only for fluids; conception stays a carbon feature for now.
+	if(!iscarbon(owner))
+		return
 	if(!LAZYLEN(seed_ledger) || !COOLDOWN_FINISHED(src, conception_cooldown))
 		return
 	COOLDOWN_START(src, conception_cooldown, CONCEPTION_CHECK_INTERVAL)

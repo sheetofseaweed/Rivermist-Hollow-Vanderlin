@@ -69,9 +69,12 @@ SUBSYSTEM_DEF(questboard)
 		return null
 
 	var/list/valid_types = list()
+	var/carnal_board_full = count_carnal_postings() >= QUEST_CARNAL_BOARD_MAX
 	for(var/contract_type in GLOB.global_quest_registry)
 		var/datum/quest/quest_path = GLOB.global_quest_registry[contract_type]
 		if(tier < initial(quest_path.minimum_tier) || tier > initial(quest_path.maximum_tier))
+			continue
+		if(carnal_board_full && quest_contract_uses_taker_pool(contract_type))
 			continue
 		var/datum/quest/template = new quest_path()
 		if(template.can_generate_for_world())
@@ -100,6 +103,12 @@ SUBSYSTEM_DEF(questboard)
 		generated_quest.expiry_time = world.time + get_expiry_duration(tier)
 		return generated_quest
 	return null
+
+/datum/controller/subsystem/questboard/proc/count_carnal_postings()
+	. = 0
+	for(var/datum/quest/posted_quest as anything in get_all_posted_quests())
+		if(posted_quest.contract_group == QUEST_GROUP_CARNAL)
+			.++
 
 /datum/controller/subsystem/questboard/proc/get_expiry_duration(tier)
 	switch(tier)
