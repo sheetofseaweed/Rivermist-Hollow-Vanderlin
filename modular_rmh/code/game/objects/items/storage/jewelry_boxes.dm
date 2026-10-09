@@ -400,3 +400,37 @@
 /obj/item/scomstone
 	grid_width = 32
 	grid_height = 32
+
+/* ------------------------------------------------------------------ */
+/* Prefilled variants with SCOM rings                                  */
+/* ------------------------------------------------------------------ */
+
+/obj/item/storage/jewelry_box/rich/crownstone
+	populate_contents = list(
+		/obj/item/scomstone/garrison,
+	)
+
+/obj/item/storage/jewelry_box/rich/handpin
+	populate_contents = list(
+		/obj/item/scomstone/garrison/hand,
+	)
+
+/obj/item/storage/jewelry_box/houndstones
+	populate_contents = list(
+		/obj/item/scomstone/bad/garrison,
+		/obj/item/scomstone/bad/garrison,
+		/obj/item/scomstone/bad/garrison,
+		/obj/item/scomstone/bad/garrison,
+		/obj/item/scomstone/bad/garrison,
+		/obj/item/scomstone/bad/garrison,
+	)
+
+/obj/item/storage/jewelry_box/kerchief/serfstone
+	populate_contents = list(
+		/obj/item/scomstone/bad,
+	)
+
+/obj/item/storage/jewelry_box/kerchief/scomstone
+	populate_contents = list(
+		/obj/item/scomstone,
+	)
