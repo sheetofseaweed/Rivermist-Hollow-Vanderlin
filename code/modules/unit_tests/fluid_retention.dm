@@ -60,11 +60,13 @@
 	vagina.check_conception()
 	TEST_ASSERT(!vagina.pregnant && LAZYLEN(vagina.seed_ledger), "Nothing should roll before the interval passes.")
 
-	TEST_ASSERT_EQUAL(vagina.get_conception_chance(20, 1), CONCEPTION_BASE_CHANCE, "A full dose of average seed should give the base chance.")
-	TEST_ASSERT_EQUAL(vagina.get_conception_chance(5, 1), CONCEPTION_BASE_CHANCE / 2, "Half a dose should halve the chance.")
-	TEST_ASSERT_EQUAL(vagina.get_conception_chance(20, 5), CONCEPTION_BASE_CHANCE * 5, "Virile seed should raise the chance.")
+	TEST_ASSERT_EQUAL(vagina.get_conception_chance(CONCEPTION_FULL_SEED, 1), CONCEPTION_BASE_CHANCE, "A full dose of average seed should give the base chance.")
+	TEST_ASSERT_EQUAL(vagina.get_conception_chance(CONCEPTION_FULL_SEED / 2, 1), CONCEPTION_BASE_CHANCE / 2, "Half a dose should halve the chance.")
+	TEST_ASSERT_EQUAL(vagina.get_conception_chance((CONCEPTION_FULL_SEED + CONCEPTION_DOUBLE_SEED) / 2, 1), CONCEPTION_BASE_CHANCE * 1.5, "More seed than a full dose should keep raising the chance.")
+	TEST_ASSERT_EQUAL(vagina.get_conception_chance(CONCEPTION_DOUBLE_SEED * 2, 1), CONCEPTION_BASE_CHANCE * 2, "The chance should stop rising at twice a full dose.")
+	TEST_ASSERT_EQUAL(vagina.get_conception_chance(CONCEPTION_FULL_SEED, 5), CONCEPTION_BASE_CHANCE * 5, "Virile seed should raise the chance.")
 	mother.add_fluid_modifier(/datum/fluid_modifier/in_heat, "test")
-	TEST_ASSERT_EQUAL(vagina.get_conception_chance(20, 1), CONCEPTION_BASE_CHANCE * CONCEPTION_HEAT_MULT, "Heat should raise the chance.")
+	TEST_ASSERT_EQUAL(vagina.get_conception_chance(CONCEPTION_FULL_SEED, 1), CONCEPTION_BASE_CHANCE * CONCEPTION_HEAT_MULT, "Heat should raise the chance.")
 	mother.remove_fluid_modifier(/datum/fluid_modifier/in_heat, "test")
 
 	vagina.reagents.remove_reagent(/datum/reagent/consumable/cum, 10)

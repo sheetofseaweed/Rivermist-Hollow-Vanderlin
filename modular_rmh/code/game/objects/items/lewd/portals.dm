@@ -778,7 +778,7 @@
 		return FALSE
 
 	var/obj/item/stored_item = user.get_inactive_held_item()
-	if(!stored_item)
+	if(!stored_item?.can_enter_body_storage_layer(STORAGE_LAYER_INNER))
 		return FALSE
 	if(istype(stored_item, /obj/item/portallight))
 		return FALSE

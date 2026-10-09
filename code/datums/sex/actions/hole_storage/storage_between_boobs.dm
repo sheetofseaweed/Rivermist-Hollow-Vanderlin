@@ -10,7 +10,7 @@
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_BREASTS, null, dildo))
 		return FALSE
-	if(!dildo)
+	if(!dildo?.can_enter_body_storage_layer(STORAGE_LAYER_INNER))
 		return FALSE
 	return TRUE
 

@@ -7,6 +7,8 @@
 	var/max_tier = 5
 	/// Extra triumphs on a FULL-grade cycle (goal triumphs are paid live, separately)
 	var/contract_bonus_triumphs = 3
+	/// Highest patron favor a party can reach; 0 disables favor for this pool.
+	var/max_favor = 0
 	// Fiction skin
 	var/patron_name = "the Patron"
 	var/issue_text = "New demands are made of me..."

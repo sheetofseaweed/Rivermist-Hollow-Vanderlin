@@ -7,6 +7,8 @@
 	var/datum/antag_contract/current_contract
 	var/list/datum/antag_contract/contract_history = list()
 	var/contracts_completed_full = 0
+	/// Patron favor: FULL cycles raise it, failed ones lower it, capped by the pool's max_favor.
+	var/favor = 0
 	var/contract_created_at = 0
 
 /datum/contract_party/New(contract_pool_type, shared = FALSE)
@@ -197,10 +199,12 @@
 			for(var/datum/antagonist/antag as anything in antags.Copy())
 				antag.on_contract_completed(contract)
 			notify_members(contract_pool.success_text)
+			adjust_favor(1)
 		if(CONTRACT_GRADE_FAIL)
 			for(var/datum/antagonist/antag as anything in antags.Copy())
 				antag.on_contract_failed(contract)
 			notify_members(contract_pool.failure_text)
+			adjust_favor(-1)
 		if(CONTRACT_GRADE_EXCUSED)
 			notify_members(contract_pool.excused_text)
 	for(var/datum/antagonist/antag as anything in antags.Copy())
@@ -212,6 +216,29 @@
 	else
 		sync_to_antags()
 	issue_next_contract()
+
+/// The current demands as chat-ready lines, shared by Review Contract, Memories and antag stations.
+/datum/contract_party/proc/get_demand_lines()
+	var/list/lines = list()
+	var/datum/antag_contract/contract = current_contract
+	if(!contract)
+		lines += "[contract_pool.patron_name] has no demands right now."
+	else
+		var/minutes_left = max(0, round((contract.deadline - world.time) / (1 MINUTES)))
+		lines += "<b>[contract_pool.patron_name]'s demands</b> ([minutes_left] min remain):"
+		for(var/datum/contract_goal/goal as anything in contract.goals)
+			lines += "- [goal.get_description()][goal.completed ? " (done)" : ""]"
+	if(contract_pool.max_favor)
+		lines += "Favor of [contract_pool.patron_name]: [favor]/[contract_pool.max_favor]"
+	return lines
+
+/datum/contract_party/proc/adjust_favor(amount)
+	var/old_favor = favor
+	favor = clamp(favor + amount, 0, contract_pool?.max_favor || 0)
+	if(favor == old_favor)
+		return
+	for(var/datum/antagonist/antag as anything in antags.Copy())
+		antag.on_contract_favor_changed(old_favor, favor)
 
 /datum/contract_party/proc/escalate_contract_omens(datum/antag_contract/contract)
 	var/omen_points = SSgamemode.point_thresholds[EVENT_TRACK_OMENS] * CONTRACT_OMEN_ESCALATION_FRACTION * contract.tier_ceiling

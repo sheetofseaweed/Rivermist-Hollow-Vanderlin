@@ -1,22 +1,36 @@
-/datum/unit_test/climax_release_uses_location_shares/Run()
+/datum/unit_test/climax_release_is_one_load_everywhere/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
 	var/obj/item/organ/genitals/filling_organ/testicles/testicles = allocate(/obj/item/organ/genitals/filling_organ/testicles)
-	testicles.organ_size = 2
+	testicles.organ_size = DEFAULT_TESTICLES_SIZE
 	testicles.Insert(human, TRUE, FALSE)
 	TEST_ASSERT_NOTNULL(testicles.reagents, "Inserted testicles should have a reagent holder.")
 	var/capacity = testicles.reagents.maximum_volume
+	TEST_ASSERT(capacity <= 30, "Baseline balls should hold a few loads, not a bellyful.")
 	testicles.reagents.clear_reagents()
 	testicles.reagents.add_reagent(testicles.reagent_to_make, capacity / 2)
 
-	TEST_ASSERT(abs(testicles.get_climax_release(ORGASM_LOCATION_INTO) - capacity / 4) < 0.01, "Half-full testicles should release a quarter of capacity inside.")
-	TEST_ASSERT_EQUAL(testicles.get_climax_release(ORGASM_LOCATION_ONTO), 20, "Release onto a partner should cap at ten per size step.")
-	TEST_ASSERT(abs(testicles.get_climax_release(ORGASM_LOCATION_SELF) - capacity / 5) < 0.01, "Self release should be a fifth of capacity.")
-	TEST_ASSERT(abs(testicles.get_climax_release(ORGASM_LOCATION_CONTAINER) - capacity / 3) < 0.01, "Container release should be a third of capacity.")
-	TEST_ASSERT_EQUAL(testicles.get_climax_release(), 3, "A quick climax should release three units.")
-	TEST_ASSERT_EQUAL(testicles.get_climax_release(ORGASM_LOCATION_INTO, 10), 10, "Release should not exceed the space given.")
+	var/load = capacity * TESTICLES_LOAD_SHARE
+	for(var/location in list(ORGASM_LOCATION_INTO, ORGASM_LOCATION_ORAL, ORGASM_LOCATION_ONTO, ORGASM_LOCATION_SELF, ORGASM_LOCATION_CONTAINER, null))
+		TEST_ASSERT(abs(testicles.get_climax_release(location) - load) < 0.01, "Every climax should release the same load ([location || "hands-free"]).")
+	TEST_ASSERT(load < 10, "A baseline load should stay a few units.")
+	TEST_ASSERT_EQUAL(testicles.get_climax_release(ORGASM_LOCATION_INTO, 2), 2, "Release should not exceed the space given.")
 
 	testicles.reagents.clear_reagents()
 	TEST_ASSERT_EQUAL(testicles.get_climax_release(ORGASM_LOCATION_INTO), 0, "Empty testicles should release nothing.")
+
+/datum/unit_test/baseline_creampies_do_not_swell_a_belly/Run()
+	var/mob/living/carbon/human/father = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = allocate(/obj/item/organ/genitals/filling_organ/testicles)
+	testicles.organ_size = DEFAULT_TESTICLES_SIZE
+	testicles.Insert(father, TRUE, FALSE)
+	testicles.reagents.add_reagent(testicles.reagent_to_make, testicles.reagents.maximum_volume)
+	var/full_load = testicles.get_climax_release(ORGASM_LOCATION_INTO)
+	var/mob/living/carbon/human/mother = allocate(/mob/living/carbon/human)
+	var/obj/item/organ/genitals/filling_organ/vagina/vagina = allocate(/obj/item/organ/genitals/filling_organ/vagina)
+	vagina.Insert(mother, TRUE, TRUE)
+	var/belly_step = vagina.reagents.maximum_volume * 2 / 3
+	TEST_ASSERT(full_load * 2 < belly_step, "Two full creampies ([full_load * 2]u) should not reach the first belly step ([belly_step]u).")
+	TEST_ASSERT(full_load * 3 >= belly_step, "A few more creampies should still be able to swell a belly.")
 
 /datum/unit_test/climax_release_scales_when_pent_up/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
@@ -57,7 +71,9 @@
 		runtimed = TRUE
 	TEST_ASSERT(!runtimed, "A quick climax should not runtime.")
 	TEST_ASSERT_NOTNULL(human.has_stress_type(/datum/stress_event/pent_up_release), "A pent-up climax should lift the mood.")
-	TEST_ASSERT(abs((start_volume - testicles.reagents.total_volume) - 3 * FLUID_PENT_UP_MAX_MULT) < 0.01, "A pent-up quick climax should release half again the base amount.")
+	arousal.active_spurts?.finish_now()
+	var/base_load = testicles.reagents.maximum_volume * TESTICLES_LOAD_SHARE
+	TEST_ASSERT(abs((start_volume - testicles.reagents.total_volume) - base_load * FLUID_PENT_UP_MAX_MULT) < 0.01, "A pent-up quick climax should release half again the base amount.")
 
 /datum/unit_test/vagina_climax_release_uses_held_fluid/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)

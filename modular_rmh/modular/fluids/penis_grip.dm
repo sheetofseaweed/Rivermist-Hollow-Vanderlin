@@ -4,6 +4,10 @@
 	/// The hand pseudo-item holding this cock, if any.
 	var/obj/item/penis_grip/grip
 
+/// What a hand holds: a worn strapon, or the real thing.
+/obj/item/organ/genitals/penis/proc/get_hold_word()
+	return strapon ? "strapon" : "cock"
+
 /datum/intent/penis_grip
 	unarmed = TRUE
 	chargetime = 0
@@ -28,13 +32,13 @@
 
 /datum/intent/penis_grip/edge
 	name = "edge"
-	desc = "Squeeze the base to hold the climax back, or choke it off mid-spurt."
+	desc = "Squeeze the base to hold back a climax that is close, or choke it off mid-spurt. Click anywhere or use it in hand."
 	icon_state = "inedge"
 	hud_icon = 'modular_rmh/icons/hud/intents.dmi'
 
 /obj/item/penis_grip
 	name = "cock"
-	desc = "A firm hold on a cock. Aim it, slap with it, or use it in hand to stroke it."
+	desc = "A firm hold on a cock. Aim it, slap with it, or use it in hand to stroke it. Right-click it in hand to squeeze the base."
 	icon = 'icons/mob/roguehudgrabs.dmi'
 	icon_state = "groin"
 	w_class = WEIGHT_CLASS_HUGE
@@ -54,6 +58,8 @@
 	var/datum/sex_action/stroke_action
 	/// TRUE when a stroking action made this grip, so the hand lets go when the stroking stops.
 	var/made_by_action = FALSE
+	/// TRUE once the hand felt the cock throb near climax; resets when it calms down.
+	var/close_cued = FALSE
 	COOLDOWN_DECLARE(slap_cooldown)
 	COOLDOWN_DECLARE(squeeze_cooldown)
 	COOLDOWN_DECLARE(aim_message_cooldown)
@@ -66,7 +72,8 @@
 	owner = new_owner
 	penis = new_penis
 	penis.grip = src
-	name = holder == owner ? "cock" : "[owner.name]'s cock"
+	var/word = penis.get_hold_word()
+	name = holder == owner ? word : "[owner.name]'s [word]"
 	RegisterSignal(penis, COMSIG_PARENT_QDELETING, PROC_REF(on_part_deleted))
 	var/list/parties = list(holder)
 	parties |= owner
@@ -97,7 +104,29 @@
 
 /obj/item/penis_grip/process(seconds_per_tick)
 	if(!is_hold_valid())
-		qdel(src)
+		lose_hold()
+		return
+	cue_close_climax()
+
+/// The hold slips for a reason the holder did not choose, so they are told.
+/obj/item/penis_grip/proc/lose_hold()
+	if(!QDELETED(holder) && !QDELETED(owner) && !QDELETED(penis))
+		to_chat(holder, span_warning("I lose my hold on [get_cock_phrase(holder)]."))
+	qdel(src)
+
+/// The hand feels the cock throb as a climax nears, the moment to squeeze.
+/obj/item/penis_grip/proc/cue_close_climax()
+	var/datum/component/arousal/arousal = owner.GetComponent(/datum/component/arousal)
+	if(!arousal || penis.strapon)
+		return
+	if(arousal.orgasm_progress < EDGE_SQUEEZE_MIN_PROGRESS)
+		close_cued = FALSE
+		return
+	if(close_cued || arousal.orgasm_progress < EDGE_SQUEEZE_CUE_PROGRESS)
+		return
+	close_cued = TRUE
+	var/who = holder == owner ? "My cock throbs in my hand. I'm close" : "[owner]'s cock throbs in my hand. [owner.p_theyre(TRUE)] close"
+	to_chat(holder, span_love("[who]! <i>(Right-click it in hand to squeeze.)</i>"))
 
 /obj/item/penis_grip/proc/on_part_deleted(datum/source)
 	SIGNAL_HANDLER
@@ -106,7 +135,7 @@
 /obj/item/penis_grip/proc/on_party_changed(datum/source)
 	SIGNAL_HANDLER
 	if(!is_hold_valid())
-		qdel(src)
+		lose_hold()
 
 /// TRUE while the holder can keep a hand on the cock.
 /obj/item/penis_grip/proc/is_hold_valid()
@@ -118,8 +147,10 @@
 		return FALSE
 	if(holder != owner && !holder.adjacent_or_closet(owner))
 		return FALSE
-	// A player who logs off without allowing it is let go.
+	// A player who logs off without allowing it is let go; a holder who logs off lets go.
 	if(holder != owner && !owner.allows_player_erp_while_disconnected())
+		return FALSE
+	if(holder.is_disconnected_player_erp_body())
 		return FALSE
 	return owner.is_penis_grippable()
 
@@ -136,9 +167,29 @@
 	aim_at(target, user)
 	return TRUE
 
-/// Using the grip in hand starts or stops stroking the cock.
+/// Clicks out of reach only squeeze; the cock itself reaches no further than its owner.
+/obj/item/penis_grip/afterattack(atom/target, mob/living/user, proximity_flag, list/modifiers)
+	. = ..()
+	if(proximity_flag || user != holder || !is_hold_valid())
+		return
+	if(istype(user.used_intent, /datum/intent/penis_grip/edge))
+		squeeze(user)
+		return
+	to_chat(user, span_warning("It won't reach that far."))
+
+/// Right-click in hand squeezes, whatever the intent.
+/obj/item/penis_grip/attack_self_secondary(mob/user, list/modifiers)
+	if(user == holder && is_hold_valid())
+		squeeze(user)
+	return TRUE
+
+/// Using the grip in hand squeezes on the edge intent, and otherwise starts or stops stroking.
 /obj/item/penis_grip/attack_self(mob/user, list/modifiers)
 	if(user != holder)
+		return
+	if(istype(user.used_intent, /datum/intent/penis_grip/edge))
+		if(is_hold_valid())
+			squeeze(user)
 		return
 	if(stroke_action)
 		// Stopping by hand keeps the hold.
@@ -146,6 +197,17 @@
 		stroke_action.scene?.stop_action(stroke_action)
 		return
 	start_stroking()
+
+/// A hand that takes hold mid-stroke joins that stroking, so using it in hand stops it.
+/obj/item/penis_grip/proc/adopt_running_stroke()
+	for(var/datum/sex_action/action as anything in holder.sex_scene?.active_actions)
+		if(action.action_user != holder || action.stroke_grip)
+			continue
+		if(action.get_grip_owner(action.action_user, action.action_target) != owner)
+			continue
+		action.stroke_grip = src
+		stroke_action = action
+		return
 
 /obj/item/penis_grip/proc/start_stroking()
 	var/datum/sex_scene_controller/controller = holder.open_sex_scene(owner, FALSE)
@@ -160,11 +222,12 @@
 	return penis.get_climax_aim().can_reach(target)
 
 /obj/item/penis_grip/proc/get_cock_phrase(mob/living/subject, mob/living/victim)
+	var/word = penis.get_hold_word()
 	if(owner == subject)
-		return "[subject.p_their()] cock"
+		return "[subject.p_their()] [word]"
 	if(owner == victim)
-		return "[victim.p_their()] own cock"
-	return "[owner]'s cock"
+		return "[victim.p_their()] own [word]"
+	return "[owner]'s [word]"
 
 // --- Aim ---
 
@@ -210,18 +273,26 @@
 
 // --- Edge ---
 
-/// Squeezing the base holds the climax back; mid-spurt it chokes the rest off.
+/// Squeezing the base holds back a close climax; mid-spurt it chokes the rest off.
 /obj/item/penis_grip/proc/squeeze(mob/living/user)
 	if(!COOLDOWN_FINISHED(src, squeeze_cooldown))
 		return FALSE
+	if(penis.strapon)
+		to_chat(user, span_warning("A strapon has nothing to hold back."))
+		return FALSE
+	var/datum/component/arousal/arousal = owner.GetComponent(/datum/component/arousal)
+	if(!arousal?.active_spurts && (arousal?.orgasm_progress || 0) < EDGE_SQUEEZE_MIN_PROGRESS)
+		to_chat(user, span_notice(owner == user ? "I'm not close enough to hold anything back." : "[owner] isn't close enough to hold anything back."))
+		return FALSE
 	COOLDOWN_START(src, squeeze_cooldown, EDGE_SQUEEZE_COOLDOWN)
 	user.changeNext_move(CLICK_CD_MELEE)
-	var/datum/component/arousal/arousal = owner.GetComponent(/datum/component/arousal)
 	var/whose = owner == user ? "[user.p_their()] own" : "[owner]'s"
-	if(arousal?.active_spurts)
+	if(arousal.active_spurts)
 		arousal.active_spurts.choke()
 		user.visible_message(span_love("[user] squeezes hard, choking off [whose] climax!"))
 		to_chat(owner, span_warning("It stops short, and leaves me aching for more."))
+		// A ruined release brings none of a real one's relief.
+		owner.remove_stress(list(/datum/stress_event/cumok, /datum/stress_event/pent_up_release))
 		owner.add_stress(/datum/stress_event/ruined_orgasm)
 		SEND_SIGNAL(owner, COMSIG_SEX_SET_AROUSAL, RUINED_ORGASM_AROUSAL)
 		return TRUE
@@ -249,6 +320,10 @@
 		return FALSE
 	if(victim != user && victim != owner && !victim.allows_player_erp_while_disconnected())
 		return FALSE
+	// Nobody is endowed enough to reach their own face or chest.
+	if(victim == owner && !(user.zone_selected in get_self_slap_zones()))
+		to_chat(user, span_warning("It won't reach that far up."))
+		return FALSE
 	COOLDOWN_START(src, slap_cooldown, PENIS_SLAP_COOLDOWN)
 	user.changeNext_move(CLICK_CD_MELEE)
 	var/force_mult = get_slap_force_multiplier(user)
@@ -263,11 +338,27 @@
 		user.visible_message(span_love("[user] [slap_verb] [spot] with [cock]!"))
 	playsound(victim, pick('sound/foley/slap.ogg', 'sound/foley/smackspecial.ogg'), force_mult < 1 ? 30 : 45, TRUE, -2, ignore_walls = FALSE)
 	user.do_attack_animation(victim, used_item = FALSE, atom_bounce = TRUE)
-	SEND_SIGNAL(owner, COMSIG_SEX_ADJUST_AROUSAL, PENIS_SLAP_AROUSAL * force_mult)
-	log_combat(user, victim, "slapped with [owner == user ? "their own" : "[owner]'s"] cock")
+	// A strapon feels nothing for its wearer.
+	if(!penis.strapon)
+		SEND_SIGNAL(owner, COMSIG_SEX_ADJUST_AROUSAL, PENIS_SLAP_AROUSAL * force_mult)
+	log_combat(user, victim, "slapped with [owner == user ? "their own" : "[owner]'s"] [penis.get_hold_word()]")
 	if(heavy)
 		knock_back(victim, user)
 	return TRUE
+
+/// Where a cock can slap its own owner: belly, crotch, legs and hands.
+/obj/item/penis_grip/proc/get_self_slap_zones()
+	var/static/list/zones = list(
+		BODY_ZONE_PRECISE_STOMACH,
+		BODY_ZONE_PRECISE_GROIN,
+		BODY_ZONE_L_LEG,
+		BODY_ZONE_R_LEG,
+		BODY_ZONE_L_ARM,
+		BODY_ZONE_R_ARM,
+		BODY_ZONE_PRECISE_L_HAND,
+		BODY_ZONE_PRECISE_R_HAND,
+	)
+	return zones
 
 /// The weak and strong right-click stances soften or harden a slap.
 /obj/item/penis_grip/proc/get_slap_force_multiplier(mob/living/user)
@@ -309,7 +400,7 @@
 		if(BODY_ZONE_PRECISE_STOMACH)
 			return "belly"
 		if(BODY_ZONE_PRECISE_GROIN)
-			return "ass"
+			return penis.get_climax_aim().is_from_behind(victim) ? "ass" : "crotch"
 		if(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
 			return "thigh"
 		if(BODY_ZONE_PRECISE_L_FOOT, BODY_ZONE_PRECISE_R_FOOT)
@@ -343,9 +434,16 @@
 
 // --- Taking hold ---
 
-/// TRUE when the cock is there, free of devices, and not behind armour.
+/// TRUE while an action in this mob's scene has their cock inside someone.
+/mob/living/proc/is_penis_inside_someone()
+	for(var/datum/sex_action/action as anything in sex_scene?.active_actions)
+		if(action.get_inserted_penis_owner(action.action_user, action.action_target) == src)
+			return TRUE
+	return FALSE
+
+/// TRUE when the cock is there, free of devices, not inside someone, and not behind armour.
 /mob/living/carbon/proc/is_penis_grippable()
-	if(!getorganslot(ORGAN_SLOT_PENIS) || is_organ_slot_blocked(ORGAN_SLOT_PENIS))
+	if(!getorganslot(ORGAN_SLOT_PENIS) || is_organ_slot_blocked(ORGAN_SLOT_PENIS) || is_penis_inside_someone())
 		return FALSE
 	for(var/obj/item/clothing/garment in get_equipped_items())
 		if(!(garment.body_parts_covered & GROIN))
@@ -381,17 +479,30 @@
 	if(target.has_status_effect(/datum/status_effect/defeat_knockout))
 		return FALSE
 	var/obj/item/organ/genitals/penis/penis = target.getorganslot(ORGAN_SLOT_PENIS)
-	if(!penis || !target.is_penis_grippable())
+	if(!penis)
+		return FALSE
+	var/word = penis.get_hold_word()
+	if(target.is_penis_inside_someone())
+		to_chat(src, span_warning(target == src ? "My [word] is busy inside someone." : "[target]'s [word] is busy inside someone."))
+		return TRUE
+	if(!target.is_penis_grippable())
 		return FALSE
 	if(target != src && !target.allows_player_erp_while_disconnected())
 		return FALSE
 	if(penis.grip)
 		to_chat(src, span_warning(penis.grip.holder == src ? "I already hold it." : "[penis.grip.holder] already holds it."))
 		return TRUE
-	if(!take_penis_grip(target))
+	var/obj/item/penis_grip/grip = take_penis_grip(target)
+	if(!grip)
 		return FALSE
-	var/whose = target == src ? "[p_their()] cock" : "[target]'s cock"
-	visible_message(span_warning("[src] takes hold of [whose]."), span_warning("I take hold of [target == src ? "my cock" : "[target]'s cock"]."))
+	grip.adopt_running_stroke()
+	var/whose = target == src ? "[p_their()] [word]" : "[target]'s [word]"
+	visible_message(span_warning("[src] takes hold of [whose]."), span_warning("I take hold of [target == src ? "my [word]" : "[target]'s [word]"]."))
+	// Each player sees how to use the hold once per round.
+	var/static/list/hinted_ckeys = list()
+	if(ckey && !hinted_ckeys[ckey])
+		hinted_ckeys[ckey] = TRUE
+		to_chat(src, span_notice("Click a spot to aim it. Slap intent slaps. Use it in hand to stroke, right-click it in hand to squeeze the base. Drop it to let go."))
 	return TRUE
 
 // --- Sex action links ---
@@ -413,15 +524,36 @@
 /datum/sex_action/masturbate/other/penis/get_grip_owner(mob/living/user, mob/living/target)
 	return target
 
+/// Whose cock this action puts inside someone, or null.
+/datum/sex_action/proc/get_inserted_penis_owner(mob/living/user, mob/living/target)
+	if(!ispath(stored_item_type, /obj/item/organ/genitals/penis))
+		return null
+	return get_storage_insertor(user, target)
+
+// NPC penetration skips hole storage, so each names its cock directly.
+/datum/sex_action/npc/npc_vaginal_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
+	return user
+
+/datum/sex_action/npc/npc_anal_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
+	return user
+
+/datum/sex_action/npc/npc_throat_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
+	return user
+
+/datum/sex_action/npc/npc_vaginal_ride_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
+	return target
+
+/datum/sex_action/npc/npc_anal_ride_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
+	return target
+
 /// On start: a stroking action links to a grip, or makes one; a cock going into something is let go.
 /datum/sex_action/proc/sync_penis_grip(mob/living/user, mob/living/target)
 	var/mob/living/carbon/grip_owner = get_grip_owner(user, target)
 	if(!grip_owner)
-		if(ispath(stored_item_type, /obj/item/organ/genitals/penis))
-			var/mob/living/insertor = get_storage_insertor(user, target)
-			var/obj/item/organ/genitals/penis/inserted = insertor?.getorganslot(ORGAN_SLOT_PENIS)
-			if(inserted?.grip)
-				qdel(inserted.grip)
+		var/mob/living/insertor = get_inserted_penis_owner(user, target)
+		var/obj/item/organ/genitals/penis/inserted = insertor?.getorganslot(ORGAN_SLOT_PENIS)
+		if(inserted?.grip)
+			qdel(inserted.grip)
 		return
 	if(!iscarbon(user) || !iscarbon(grip_owner) || user.ai_controller || can_mage_hand_reach(user, target))
 		return

@@ -946,7 +946,7 @@
 		if(!target_allows_pref(climaxer_human, /datum/erp_preference/boolean/allow_horny_leeches))
 			return 0
 	var/consumed = drain_reagents_into_self(source_reagents, amount)
-	if(consumed)
+	if(consumed && !context?.climax_follow_up)
 		feedback(wearer, span_love("[src] tightens and drinks the climax before it can spill."), TRUE)
 	if(is_full())
 		erotic_unattach(wearer, span_info("The sated [src] slips off."))
