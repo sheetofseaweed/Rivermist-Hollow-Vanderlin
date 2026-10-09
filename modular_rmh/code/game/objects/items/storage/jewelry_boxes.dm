@@ -1,8 +1,12 @@
+/* ------------------------------------------------------------------ */
+/* Storage components                                                  */
+/* ------------------------------------------------------------------ */
+
 /datum/component/storage/concrete/grid/jewelry_box
-	screen_max_columns = 1
-	screen_max_rows = 2
-	max_w_class = WEIGHT_CLASS_SMALL
-	rustle_sound = FALSE
+	screen_max_columns = 2
+	screen_max_rows = 3
+	max_w_class = WEIGHT_CLASS_NORMAL
+	/// show_to() hides the previous view of the same mob first; that hide must not shut the lid.
 	var/reshowing = FALSE
 
 /datum/component/storage/concrete/grid/jewelry_box/New(datum/P, ...)
@@ -13,24 +17,30 @@
 	reshowing = TRUE
 	. = ..()
 	reshowing = FALSE
-	if(!.)
+	if(!. || !isliving(M))
 		return
 	var/obj/item/storage/jewelry_box/box = parent
 	if(istype(box))
-		box.set_lid_open(TRUE)
+		box.set_viewed(TRUE)
 
 /datum/component/storage/concrete/grid/jewelry_box/hide_from(mob/M)
 	. = ..()
-	if(reshowing || length(can_see_contents()))
+	if(reshowing || has_living_viewers())
 		return
 	var/obj/item/storage/jewelry_box/box = parent
 	if(istype(box) && !QDELETED(box))
-		box.set_lid_open(FALSE)
+		box.set_viewed(FALSE)
 
-/datum/component/storage/concrete/grid/jewelry_box/big
-	screen_max_columns = 2
-	screen_max_rows = 3
-	max_w_class = WEIGHT_CLASS_NORMAL
+/datum/component/storage/concrete/grid/jewelry_box/proc/has_living_viewers()
+	for(var/mob/viewer as anything in can_see_contents())
+		if(isliving(viewer))
+			return TRUE
+	return FALSE
+
+/datum/component/storage/concrete/grid/jewelry_box/rich
+	screen_max_columns = 1
+	screen_max_rows = 2
+	max_w_class = WEIGHT_CLASS_SMALL
 
 /datum/component/storage/concrete/grid/kerchief
 	screen_max_columns = 1
@@ -43,40 +53,64 @@
 	set_holdable(cant_hold_list = list(/obj/item/grown/log))
 
 /* ------------------------------------------------------------------ */
-/* Jewelry boxes                                                       */
+/* Large jewelry box                                                   */
 /* ------------------------------------------------------------------ */
 
 /obj/item/storage/jewelry_box
-	abstract_type = /obj/item/storage/jewelry_box
-	name = "jewelry box"
-	desc = "A small wooden box for keeping valuables."
+	name = "large jewelry box"
+	desc = "A sturdy nailed box of planks. Heavy, but it keeps a lot safe."
 	icon = 'modular_rmh/icons/obj/jewelry_boxes.dmi'
 	icon_state = "jbox_big"
 	base_icon_state = "jbox_big"
+	item_weight = 900 GRAMS
+	w_class = WEIGHT_CLASS_NORMAL
+	grid_width = 64
+	grid_height = 64
 	resistance_flags = FLAMMABLE
+	sellprice = 15
 	component_type = /datum/component/storage/concrete/grid/jewelry_box
-	/// TRUE while at least one mob is looking inside.
+	/// TRUE while at least one living mob is looking inside.
+	var/viewed = FALSE
+	/// TRUE when the lid was flipped up by hand on an empty box, without looking inside.
+	var/propped_open = FALSE
+	/// Current lid position, derived from the two flags above.
 	var/lid_open = FALSE
+	/// Usage hint added to examine.
+	var/examine_hint = "Middle-click to open or close the lid."
 
 /obj/item/storage/jewelry_box/examine(mob/user)
 	. = ..()
-	. += span_info("Middle-click to open or close the lid.")
+	if(examine_hint)
+		. += span_info(examine_hint)
 
-/obj/item/storage/jewelry_box/proc/set_lid_open(new_state)
+/obj/item/storage/jewelry_box/proc/set_viewed(new_state)
+	viewed = new_state
+	update_lid()
+
+/obj/item/storage/jewelry_box/proc/set_propped_open(new_state)
+	propped_open = new_state
+	update_lid()
+
+/obj/item/storage/jewelry_box/proc/update_lid()
+	var/new_state = viewed || propped_open
 	if(lid_open == new_state)
 		return
 	lid_open = new_state
+	on_lid_changed()
+
+/// The lid always sounds like a chest; rummaging inside rustles through the storage component.
+/obj/item/storage/jewelry_box/proc/on_lid_changed()
 	playsound(src, lid_open ? 'sound/misc/chestopen.ogg' : 'sound/misc/chestclose.ogg', 25, TRUE, -3)
 	update_appearance(UPDATE_ICON_STATE)
 
 /obj/item/storage/jewelry_box/update_icon_state()
 	. = ..()
-	var/state = base_icon_state
-	if(lid_open)
-		state += length(contents) ? "_full" : "_open"
-	if(isturf(loc))
-		state += "_world"
-	icon_state = state
+	icon_state = "[base_icon_state][get_state_suffix()][isturf(loc) ? "_world" : ""]"
+
+/obj/item/storage/jewelry_box/proc/get_state_suffix()
+	if(!lid_open)
+		return ""
+	return length(contents) ? "_ajar" : "_open"
 
 /obj/item/storage/jewelry_box/Moved(atom/OldLoc, Dir, Forced = FALSE)
 	. = ..()
@@ -87,27 +121,41 @@
 	. = ..()
 	update_appearance(UPDATE_ICON_STATE)
 
-/obj/item/storage/jewelry_box/MiddleClick(mob/user, list/modifiers)
-	var/datum/component/storage/storage = GetComponent(/datum/component/storage)
-	if(!storage || !isliving(user))
+/obj/item/storage/jewelry_box/Initialize(mapload, ...)
+	. = ..()
+	RegisterSignal(src, COMSIG_ATOM_CLICKEDON, PROC_REF(on_clicked))
+
+/obj/item/storage/jewelry_box/proc/on_clicked(datum/source, mob/user, list/modifiers)
+	SIGNAL_HANDLER
+	if(!LAZYACCESS(modifiers, MIDDLE_CLICK))
+		return
+	if(LAZYACCESS(modifiers, SHIFT_CLICKED) || LAZYACCESS(modifiers, CTRL_CLICKED) || LAZYACCESS(modifiers, ALT_CLICKED))
+		return
+	if(!isliving(user) || user.next_move > world.time || user.incapacitated())
+		return
+	if(!user.CanReach(src))
 		return
 	user.changeNext_move(CLICK_CD_FAST)
-	if(user.active_storage == storage)
-		storage.close(user)
+	INVOKE_ASYNC(src, PROC_REF(middle_click_interact), user)
+	return COMSIG_MOB_CANCEL_CLICKON
+
+/obj/item/storage/jewelry_box/proc/middle_click_interact(mob/living/user)
+	var/datum/component/storage/storage = GetComponent(/datum/component/storage)
+	if(!storage)
+		return
+	if(lid_open)
+		set_propped_open(FALSE)
+		if(user.active_storage == storage)
+			storage.close(user)
+		return
+	if(!length(contents))
+		set_propped_open(TRUE)
 		return
 	storage.user_show_to_mob(user)
 
-/obj/item/storage/jewelry_box/big
-	name = "large jewelry box"
-	desc = "A sturdy nailed box of planks. Heavy, but it keeps a lot safe."
-	icon_state = "jbox_big"
-	base_icon_state = "jbox_big"
-	item_weight = 900 GRAMS
-	w_class = WEIGHT_CLASS_NORMAL
-	grid_width = 64
-	grid_height = 64
-	sellprice = 15
-	component_type = /datum/component/storage/concrete/grid/jewelry_box/big
+/* ------------------------------------------------------------------ */
+/* Rich jewelry box                                                    */
+/* ------------------------------------------------------------------ */
 
 /obj/item/storage/jewelry_box/rich
 	name = "rich jewelry box"
@@ -119,6 +167,7 @@
 	grid_width = 32
 	grid_height = 64
 	sellprice = 60
+	component_type = /datum/component/storage/concrete/grid/jewelry_box/rich
 	var/datum/weakref/carrier_ref
 
 /obj/item/storage/jewelry_box/rich/Initialize(mapload, ...)
@@ -172,68 +221,59 @@
 /* Kerchief                                                            */
 /* ------------------------------------------------------------------ */
 
-/obj/item/storage/kerchief
+/obj/item/storage/jewelry_box/kerchief
 	name = "kerchief"
 	desc = "A square of cloth, good for wrapping a small treasure or a bite to eat."
-	icon = 'modular_rmh/icons/obj/jewelry_boxes.dmi'
 	icon_state = "kerchief"
 	base_icon_state = "kerchief"
 	item_weight = 10 GRAMS
 	w_class = WEIGHT_CLASS_TINY
 	grid_width = 32
 	grid_height = 32
-	resistance_flags = FLAMMABLE
 	sellprice = 4
 	component_type = /datum/component/storage/concrete/grid/kerchief
+	examine_hint = "Food wrapped in it spoils at half the usual pace."
+	/// Wrapped food -> list(warming when wrapped, rotprocess when wrapped)
 	var/list/wrapped_food
+	/// TRUE while a dye color picker is open for this kerchief.
 	var/dyeing = FALSE
 
-/obj/item/storage/kerchief/Destroy()
+/obj/item/storage/jewelry_box/kerchief/Destroy()
 	for(var/obj/item/reagent_containers/food/snacks/food as anything in wrapped_food)
 		unwrap_food(food)
 	LAZYNULL(wrapped_food)
 	return ..()
 
-/obj/item/storage/kerchief/examine(mob/user)
+/obj/item/storage/jewelry_box/kerchief/examine(mob/user)
 	. = ..()
-	. += span_info("Food wrapped in it spoils at half the usual pace.")
 	if(!length(contents))
 		. += span_info("Middle-click it while holding dyes to dye it.")
 
-/obj/item/storage/kerchief/update_icon_state()
-	. = ..()
-	var/state = base_icon_state
-	if(length(contents))
-		state += "_tied"
-	if(isturf(loc))
-		state += "_world"
-	icon_state = state
+/obj/item/storage/jewelry_box/kerchief/on_lid_changed()
+	return
 
-/obj/item/storage/kerchief/Moved(atom/OldLoc, Dir, Forced = FALSE)
-	. = ..()
-	if(isturf(OldLoc) != isturf(loc))
-		update_appearance(UPDATE_ICON_STATE)
+/obj/item/storage/jewelry_box/kerchief/get_state_suffix()
+	return length(contents) ? "_tied" : ""
 
-/obj/item/storage/kerchief/Entered(atom/movable/arrived, atom/old_loc)
+/obj/item/storage/jewelry_box/kerchief/Entered(atom/movable/arrived, atom/old_loc)
 	. = ..()
 	if(istype(arrived, /obj/item/reagent_containers/food/snacks))
 		wrap_food(arrived)
 	update_appearance(UPDATE_ICON_STATE)
 
-/obj/item/storage/kerchief/Exited(atom/movable/gone, direction)
-	. = ..()
+/obj/item/storage/jewelry_box/kerchief/Exited(atom/movable/gone, direction)
 	if(LAZYACCESS(wrapped_food, gone))
 		unwrap_food(gone)
-	update_appearance(UPDATE_ICON_STATE)
+	return ..()
 
-/obj/item/storage/kerchief/proc/wrap_food(obj/item/reagent_containers/food/snacks/food)
+/obj/item/storage/jewelry_box/kerchief/proc/wrap_food(obj/item/reagent_containers/food/snacks/food)
 	if(!food.rotprocess)
 		return
 	var/start_warming = food.warming || 0
 	LAZYSET(wrapped_food, food, list(start_warming, food.rotprocess))
 	food.rotprocess = food.rotprocess * 2 + start_warming
 
-/obj/item/storage/kerchief/proc/unwrap_food(obj/item/reagent_containers/food/snacks/food)
+/obj/item/storage/jewelry_box/kerchief/proc/unwrap_food(obj/item/reagent_containers/food/snacks/food)
 	var/list/saved = LAZYACCESS(wrapped_food, food)
 	LAZYREMOVE(wrapped_food, food)
 	if(!saved || !food.rotprocess)
@@ -243,9 +283,14 @@
 	food.warming = start_warming - lost / 2
 	food.rotprocess = saved[2]
 
-/obj/item/storage/kerchief/MiddleClick(mob/user, list/modifiers)
+/obj/item/storage/jewelry_box/kerchief/middle_click_interact(mob/living/user)
 	var/obj/item/dye_pack/dye = user.get_active_held_item()
-	if(!istype(dye) || !isliving(user))
+	if(!istype(dye))
+		var/datum/component/storage/storage = GetComponent(/datum/component/storage)
+		if(user.active_storage == storage)
+			storage.close(user)
+		else
+			storage?.user_show_to_mob(user)
 		return
 	if(length(contents))
 		to_chat(user, span_warning("I need to empty [src] before dyeing it."))
@@ -254,7 +299,7 @@
 		return
 	INVOKE_ASYNC(src, PROC_REF(start_dyeing), user, dye)
 
-/obj/item/storage/kerchief/proc/can_keep_dyeing(mob/living/user, obj/item/dye_pack/dye)
+/obj/item/storage/jewelry_box/kerchief/proc/can_keep_dyeing(mob/living/user, obj/item/dye_pack/dye)
 	if(QDELETED(src) || QDELETED(user) || QDELETED(dye))
 		return FALSE
 	if(user.get_active_held_item() != dye)
@@ -267,7 +312,7 @@
 		return FALSE
 	return TRUE
 
-/obj/item/storage/kerchief/proc/start_dyeing(mob/living/user, obj/item/dye_pack/dye)
+/obj/item/storage/jewelry_box/kerchief/proc/start_dyeing(mob/living/user, obj/item/dye_pack/dye)
 	dyeing = TRUE
 	var/new_color = tgui_color_picker(user, "Choose a color for [src].", "Dyeing", color || "#FFFFFF", 1 MINUTES)
 	dyeing = FALSE
@@ -287,47 +332,21 @@
 /* Nails                                                               */
 /* ------------------------------------------------------------------ */
 
-/obj/item/natural/nail
-	name = "nail"
-	desc = "A small iron nail."
-	icon = 'icons/roguetown/items/misc.dmi'
-	icon_state = "nails1"
-	item_weight = 10 GRAMS
-	sellprice = 1
-	bundletype = /obj/item/natural/bundle/nails
-
-/obj/item/natural/bundle/nails
+/obj/item/nails
 	name = "handful of nails"
 	desc = "A handful of iron nails."
 	icon = 'icons/roguetown/items/misc.dmi'
-	icon_state = "nails2"
+	icon_state = "nails5"
+	item_weight = 50 GRAMS
 	w_class = WEIGHT_CLASS_TINY
 	grid_width = 32
 	grid_height = 32
-	resistance_flags = NONE
-	firefuel = 0
-	firemod = 0
-	amount = 2
-	maxamount = 5
-	icon1 = null
-	icon2 = null
-	icon3 = null
-	items_per_increase = 6
-	stacktype = /obj/item/natural/nail
-	stackname = "nails"
-	bundle_verb = "handful"
-
-/obj/item/natural/bundle/nails/update_bundle()
-	. = ..()
-	icon_state = "nails[clamp(amount, 1, 5)]"
-/obj/item/natural/bundle/nails/full
-	icon_state = "nails5"
-	amount = 5
+	sellprice = 5
 
 /datum/anvil_recipe/tools/iron/nails
-	name = "Handful of Nails (5)"
+	name = "Handful of Nails"
 	recipe_name = "a handful of nails"
-	created_item = /obj/item/natural/bundle/nails/full
+	created_item = /obj/item/nails
 	craftdiff = 2
 
 /* ------------------------------------------------------------------ */
@@ -335,7 +354,7 @@
 /* ------------------------------------------------------------------ */
 
 /datum/repeatable_crafting_recipe/crafting/jewelry_box
-	abstract_type = /datum/repeatable_crafting_recipe/crafting/jewelry_box
+	name = "large jewelry box"
 	category = "Containers"
 	skillcraft = /datum/attribute/skill/craft/carpentry
 	starting_atom = /obj/item/weapon/chisel
@@ -345,37 +364,38 @@
 		/obj/item/weapon/chisel = list("carves the planks", "carve the planks"),
 		/obj/item/weapon/hammer = list("hammers the nails in", "hammer the nails in", 'sound/foley/Building-01.ogg'),
 	)
+	output = /obj/item/storage/jewelry_box
+	requirements = list(
+		/obj/item/natural/wood/plank = 2,
+		/obj/item/nails = 2,
+	)
+	craftdiff = 2
 
 /datum/repeatable_crafting_recipe/crafting/jewelry_box/rich
 	name = "rich jewelry box"
 	output = /obj/item/storage/jewelry_box/rich
 	requirements = list(
 		/obj/item/natural/wood/plank = 1,
-		/obj/item/natural/nail = 5,
+		/obj/item/nails = 1,
 		/obj/item/natural/cloth = 1,
 		/obj/item/dye_pack/luxury = 1,
-		/obj/item/ore/dust/gold = 1,
+		/obj/item/alch/golddust = 1,
 	)
 	craftdiff = 3
 
-/datum/repeatable_crafting_recipe/crafting/jewelry_box/big
-	name = "large jewelry box"
-	output = /obj/item/storage/jewelry_box/big
-	requirements = list(
-		/obj/item/natural/wood/plank = 2,
-		/obj/item/natural/nail = 10,
-	)
-	craftdiff = 2
-
 /datum/repeatable_crafting_recipe/sewing/kerchief
 	name = "kerchief"
-	output = /obj/item/storage/kerchief
+	output = /obj/item/storage/jewelry_box/kerchief
 	requirements = list(
 		/obj/item/natural/cloth = 2,
 		/obj/item/natural/fibers = 2,
 	)
 	category = "Misc"
 	craftdiff = 1
+
+/* ------------------------------------------------------------------ */
+/* SCOM rings take a single cell like every other ring                 */
+/* ------------------------------------------------------------------ */
 
 /obj/item/scomstone
 	grid_width = 32
