@@ -108,6 +108,16 @@
 	var/command_mode
 	var/mob/living/carbon/human/targeted_recipient
 
+/datum/town_watch_command_trait/proc/on_owner_qdeleting(datum/source)
+	SIGNAL_HANDLER
+	qdel(src)
+
+/datum/town_watch_command_trait/Destroy(force)
+	if(owner)
+		UnregisterSignal(owner, qdel(src))
+		owner = null
+	return ..()
+
 /datum/action/cooldown/spell/undirected/town_watch_command
 	name = "Issue Order"
 	desc = "Issue an order to the Town Watch."
@@ -139,6 +149,10 @@
 		return FALSE
 	return TRUE
 
+/datum/action/cooldown/spell/undirected/town_watch_command/before_cast(atom/cast_on)
+	. = ..()
+	return SPELL_NO_IMMEDIATE_COOLDOWN
+
 /datum/action/cooldown/spell/undirected/town_watch_command/cast(atom/cast_on)
 	. = ..()
 
@@ -168,7 +182,12 @@
 	authority_level = TOWNWATCH_COMMAND_CAPTAIN
 
 /datum/town_watch_command_trait/New(mob/living/carbon/human/new_owner)
+	. = ..()
+
 	owner = new_owner
+
+	if(owner)
+		RegisterSignal(owner, COMSIG_PARENT_QDELETING, PROC_REF(on_owner_qdeleting))
 
 	commands = list(
 		new /datum/town_watch_command_definition/attack,
@@ -180,11 +199,13 @@
 	action.command_trait = src
 	action.Grant(owner)
 
-	return ..()
 
 /datum/town_watch_command_trait/Destroy()
 	close_command_menu()
 	cleanup_targeter()
+
+	if(owner)
+		UnregisterSignal(owner, COMSIG_PARENT_QDELETING)
 
 	if(action)
 		action.Remove(owner)
@@ -640,4 +661,4 @@
 
 	to_chat(
 		owner,
-		span_notice("Select a Town Watch member to receive an order. Click on yourself to cancel."))
+		span_notice("Select a Town Watch member to receive an order. Right click to cancel."))

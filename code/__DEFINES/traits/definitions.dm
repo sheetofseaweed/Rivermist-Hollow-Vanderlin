@@ -77,6 +77,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_PARTIAL_DEAF "partial_deaf"
 #define TRAIT_HUSK "husk"
 #define TRAIT_CHUNKYFINGERS	"chunkyfingers" //means that you can't use weapons with normal trigger guards.
+#define TRAIT_ROTFINGERS "rotfingers" //means that you can't use weapons, equip armor and parry
 #define TRAIT_DUMB "dumb"
 #define TRAIT_MONKEYLIKE "monkeylike" //sets IsAdvancedToolUser to FALSE
 /// Cannot directly bring harm to other mobs

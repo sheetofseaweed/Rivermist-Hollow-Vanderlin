@@ -402,7 +402,7 @@
 	var/rallied = 0
 
 	// The banner bearer is affected as well.
-	user.apply_status_effect(/datum/status_effect/buff/charm_wave)
+	user.apply_status_effect(/datum/status_effect/buff/charm_wave, /datum/status_effect/buff/halberd_wave)
 	rallied++
 
 	// Faction/department is checked ONLY when distributing the buff.
@@ -413,7 +413,11 @@
 		if(ally.stat >= DEAD)
 			continue
 
-		if(!(ally.mind?.assigned_role?.department_flag & TOWNWATCH))
+		if(!istype(ally, /mob/living/carbon/human))
+			continue
+
+		var/mob/living/carbon/human/human_ally = ally
+		if(!human_ally.is_town_watch_member())
 			continue
 
 		ally.apply_status_effect(/datum/status_effect/buff/charm_wave)

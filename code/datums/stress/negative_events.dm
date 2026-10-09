@@ -777,9 +777,9 @@
 	desc = span_red("I feel the eyes of the law upon me.")
 
 /datum/stress_event/townwatch_disguised_authority
-    timer = 2 MINUTES
-    stress_change = 1
-    desc = span_red("Who the hell is that? That's not the captain!")
+	timer = 2 MINUTES
+	stress_change = 1
+	desc = span_red("Who the hell is that? That's not the captain!")
 
 /datum/stress_event/paranoia
 	timer = 1 MINUTES

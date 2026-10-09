@@ -188,7 +188,7 @@
 	icon = 'icons/roguetown/clothing/cloaks.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/onmob/cloaks.dmi'
 	sleeved = 'icons/roguetown/clothing/onmob/cloaks.dmi'
-	social_cues = list(	social_cues = list("faction:town_watch" = 5))
+	social_cues = list(social_cues = list("faction:town_watch" = 5))
 
 // Dumping old black knight stuff here
 /obj/item/clothing/cloak/cape/blkknight

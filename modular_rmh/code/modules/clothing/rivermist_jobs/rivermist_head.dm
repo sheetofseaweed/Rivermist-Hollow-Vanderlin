@@ -11,7 +11,7 @@
 /obj/item/clothing/head/helmet/sargebarbute/town_watch
 	name = "captain barbute"
 	misc_flags = CRAFTING_TEST_EXCLUDE
-	social_cues = list("faction:town_watch" = 5, "rank:town_watch:sergant" = 5)
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:captain" = 5)
 
 /obj/item/clothing/head/helmet/kettle/slit/atarms/town_watch
 	name = "sergeant kettle"

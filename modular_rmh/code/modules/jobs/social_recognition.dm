@@ -167,8 +167,8 @@
 
 	var/face_required = FALSE
 
-	var/list/elite_job_titles = list()
-	var/list/elite_recognition_job_titles = list()
+	var/list/elite_job_types = list()
+	var/list/elite_recognition_job_types = list()
 
 	var/faction_flag = 0
 
@@ -184,15 +184,20 @@
 	return !!(J.get_social_faction_flag() & faction_flag)
 
 
+/datum/social_profile/proc/job_matches_any_type(datum/job/J, list/job_types)
+	if(!J || !length(job_types))
+		return FALSE
+
+	for(var/job_type in job_types)
+		if(J.social_is_or_inherits(job_type))
+			return TRUE
+
+	return FALSE
+
+
 /datum/social_profile/proc/matches_elite_target(mob/living/carbon/target)
-	if(!length(elite_job_titles))
-		return FALSE
-
 	var/datum/job/J = target.mind?.assigned_role
-	if(!J)
-		return FALSE
-
-	return J.title in elite_job_titles
+	return job_matches_any_type(J, elite_job_types)
 
 
 /datum/social_profile/proc/get_cue_score(datum/examine_social_context/context, cue_key)
@@ -450,7 +455,7 @@
 	 * Known identity can independently establish the identity path.
 	 */
 
-	var/knows_personnel = (recognition_trait && HAS_MIND_TRAIT(user, recognition_trait))
+	var/knows_personnel = (recognition_trait && HAS_CHARACTER_TRAIT(user, recognition_trait))
 
 	if(knows_personnel)
 		if(context.target_face_visible && recognition.actual_faction)
@@ -490,7 +495,7 @@
 	 * ========================================================================
 	 */
 
-	if(rank_trait && HAS_MIND_TRAIT(user, rank_trait) && context.target_job && recognition.actual_faction && (recognition.identity_recognized || recognition.known_faction))
+	if(rank_trait && HAS_CHARACTER_TRAIT(user, rank_trait) && context.target_job && recognition.actual_faction && (recognition.identity_recognized || recognition.known_faction))
 		recognition.known_rank = TRUE
 		recognition.source |= SOCIAL_SOURCE_KNOWLEDGE
 
@@ -516,7 +521,7 @@
 	 * ========================================================================
 	 */
 
-	if(specialization_trait && HAS_MIND_TRAIT(user, specialization_trait) && recognition.actual_faction && context.target.get_social_specialization() && (recognition.identity_recognized || recognition.known_faction))
+	if(specialization_trait && HAS_CHARACTER_TRAIT(user, specialization_trait) && recognition.actual_faction && context.target.get_social_specialization() && (recognition.identity_recognized || recognition.known_faction))
 		recognition.known_specialization = TRUE
 		recognition.source |= SOCIAL_SOURCE_KNOWLEDGE
 
@@ -555,7 +560,7 @@
 
 	var/datum/job/observer_job = user.mind?.assigned_role
 
-	if(context.target_face_visible && observer_job && length(elite_recognition_job_titles) && (observer_job.title in elite_recognition_job_titles))
+	if(context.target_face_visible && job_matches_any_type(observer_job, elite_recognition_job_types))
 		if(recognition.actual_elite)
 			recognition.known_elite = TRUE
 			recognition.known_faction = TRUE
@@ -833,10 +838,14 @@
  */
 
 /mob/living/carbon/proc/get_faction_relationship(mob/living/carbon/user, mob/living/carbon/target, user_faction, target_faction)
+	/* Directional faction rules must precede generic shared-bit alliance. */
 	if((user_faction & TOWNWATCH) && (target_faction & VILLAINS))
 		return SOCIAL_RELATION_HOSTILE
 
 	if((user_faction & TOWNWATCH) && (target_faction & TOWNHALL))
+		var/datum/job/target_authority = target?.mind?.assigned_role
+		if(target_authority?.social_is_or_inherits(/datum/job/burgmeister))
+			return SOCIAL_RELATION_LOYAL
 		return SOCIAL_RELATION_PROTECT_DUTY
 
 	if((user_faction & TOWNHALL) && (target_faction & VILLAINS))
@@ -845,34 +854,40 @@
 	if((user_faction & VILLAINS) && (target_faction & TOWNWATCH))
 		return SOCIAL_RELATION_HOSTILE_TO_WATCH
 
+	/* Civic administration and the Watch cooperate, but hold distinct authority. */
+	if((user_faction & TOWNHALL) && (target_faction & TOWNWATCH))
+		return SOCIAL_RELATION_SEPARATED_AUTHORITY
+
+	/* Trade interests benefit from cooperation with the town's civic authority. */
+	if((user_faction & TRADERS) && (target_faction & TOWNHALL))
+		return SOCIAL_RELATION_COOPERATIVE
+
 	if((user_faction & SCHOLARS) && (target_faction & CHAPEL))
 		return SOCIAL_RELATION_TENSE
+
+	if((user_faction & CHAPEL) && (target_faction & SCHOLARS))
+		return SOCIAL_RELATION_DISAGREEING
 
 	if((user_faction & TRADERS) && (target_faction & TAVERN))
 		return SOCIAL_RELATION_TENSE
 
+	/* Town Watch rank is directional: only a junior observer gets HIGHER_RANK. */
 	if((user_faction & TOWNWATCH) && (target_faction & TOWNWATCH))
-		var/datum/job/user_job = user.get_social_base_job()
-		var/datum/job/target_job = target.get_social_base_job()
+		var/datum/job/user_role = user?.mind?.assigned_role
+		var/datum/job/target_role = target?.mind?.assigned_role
 
-		if(!user_job || !target_job)
-			return SOCIAL_RELATION_NEUTRAL
+		if(user_role && target_role)
+			var/user_is_lower_watch = (user_role.social_is_or_inherits(/datum/job/watch_guard) || user_role.social_is_or_inherits(/datum/job/watch_veteran) || user_role.social_is_or_inherits(/datum/job/watch_warden))
+			var/target_is_command_watch = (target_role.social_is_or_inherits(/datum/job/watch_sergeant) || target_role.social_is_or_inherits(/datum/job/watch_captain))
 
-		/*
-		 * Warden/Guard/Veteran -> Captain/Sergeant
-		 * produces HIGHER_RANK.
-		 *
-		 * Everything else inside the Town Watch is ALLIED.
-		 */
-
-		var/user_is_lower_watch = (istype(user_job, /datum/job/watch_guard) || istype(user_job, /datum/job/watch_veteran) || istype(user_job, /datum/job/watch_warden))
-
-		var/target_is_command_watch = (istype(target_job, /datum/job/watch_sergeant) || istype(target_job, /datum/job/watch_captain))
-
-		if(user_is_lower_watch && target_is_command_watch)
-			return SOCIAL_RELATION_HIGHER_RANK
+			if(user_is_lower_watch && target_is_command_watch)
+				return SOCIAL_RELATION_HIGHER_RANK
 
 		return SOCIAL_RELATION_ALLIED
+
+	/* Unknown-to-authority factions react fearfully to a recognized outlaw. */
+	if((target_faction & VILLAINS) && !(user_faction & (TOWNWATCH | TOWNHALL | VILLAINS)))
+		return SOCIAL_RELATION_FEARFUL
 
 	if(user_faction & target_faction)
 		return SOCIAL_RELATION_ALLIED
@@ -927,41 +942,33 @@
 		return
 
 	/*
-	 * Known outlaw status has its own reaction path.
+	 * Known outlaw identification is a phrase-only fallback. Do not return
+	 * here: the observer's faction must still determine the directional
+	 * reaction (e.g. Town Watch hostility or Town Hall diplomatic hostility).
 	 */
 	if(id == "outlaw" && recognition.known_faction)
 		var/datum/examine_social_reaction/known_outlaw = new
-
-		known_outlaw.stress_type = /datum/stress_event/paranoia
 		known_outlaw.phrases = list(
 			"I'm certain they're an outlaw.",
 			"I know what they are. An outlaw.",
 			"That's an outlaw. I recognize them.",
 			"There's no mistaking it. They're an outlaw."
 		)
-
 		reactions += known_outlaw
-		return
 
 	if(!recognition.faction_recognized)
 		return
 
-
-	var/datum/job/user_job = user.get_social_base_job()
-	var/user_faction = user_job?.get_social_faction_flag()
+	var/datum/job/user_role = user?.mind?.assigned_role
+	var/user_faction = user_role?.get_social_faction_flag()
 	var/target_faction = get_profile_faction_flag()
-	var/datum/job/target_job = context.target?.get_social_base_job()
-	var/relationship = user.get_faction_relationship(user, context.target, user_faction, target_faction)
-
-	if(!user_job || !target_job)
-		return
 
 	if(!user_faction || !target_faction)
 		return
 
-	if(!target_faction)
-		return
+	var/relationship = user.get_faction_relationship(user, context.target, user_faction, target_faction)
 
+	/* Only relationships returned by get_faction_relationship have handlers. */
 	switch(relationship)
 		if(SOCIAL_RELATION_ALLIED)
 			var/datum/examine_social_reaction/allied = new
@@ -973,6 +980,16 @@
 			)
 			reactions += allied
 
+		if(SOCIAL_RELATION_COOPERATIVE)
+			var/datum/examine_social_reaction/cooperative = new
+			cooperative.stress_type = /datum/stress_event/rely_on
+			cooperative.phrases = list(
+				"Better to work with them for my own interests.",
+				"They'll protect me if we are on good terms, right?",
+				"Great, someone who will help me if things get ugly."
+			)
+			reactions += cooperative
+
 		if(SOCIAL_RELATION_PROTECT_DUTY)
 			var/datum/examine_social_reaction/protect_duty = new
 			protect_duty.phrases = list(
@@ -981,6 +998,15 @@
 				"Best to be nearby in case of emergency."
 			)
 			reactions += protect_duty
+
+		if(SOCIAL_RELATION_LOYAL)
+			var/datum/examine_social_reaction/loyal = new
+			loyal.phrases = list(
+				"My job is to serve them.",
+				"I should be ready to assist, if necessary.",
+				"Should be ready to serve; that's why I'm here."
+			)
+			reactions += loyal
 
 		if(SOCIAL_RELATION_HIGHER_RANK)
 			var/datum/examine_social_reaction/higher_rank = new
@@ -992,33 +1018,14 @@
 			)
 			reactions += higher_rank
 
-		if(SOCIAL_RELATION_COOPERATIVE)
-			var/datum/examine_social_reaction/cooperative = new
-			cooperative.stress_type = /datum/stress_event/rely_on
-			cooperative.phrases = list(
-				"Better to work with them for my own interests.",
-				"They'll protect me if we are on good terms, right?",
-				"Great, someone who will help me if things get ugly."
-			)
-			reactions += cooperative
-
-		if(SOCIAL_RELATION_LOYAL)
-			var/datum/examine_social_reaction/loyal = new
-			loyal.phrases = list(
-				"My job is to serve them.",
-				"I should be ready to assist, if necessary.",
-				"Should be ready to serve; that's why I'm here."
-			)
-			reactions += loyal
-
 		if(SOCIAL_RELATION_SEPARATED_AUTHORITY)
-			var/datum/examine_social_reaction/seperated_authority = new
-			seperated_authority.phrases = list(
+			var/datum/examine_social_reaction/separated_authority = new
+			separated_authority.phrases = list(
 				"We have the same interests, but not jurisdictions.",
 				"Someone has to keep an eye on the town, and someone stays in the dark forest.",
 				"Only if we weren't separated..."
 			)
-			reactions += seperated_authority
+			reactions += separated_authority
 
 		if(SOCIAL_RELATION_TENSE)
 			var/datum/examine_social_reaction/tense = new
@@ -1090,6 +1097,10 @@
 
 GLOBAL_LIST_INIT(social_profiles, list(
 	new /datum/social_profile/town_watch,
+	new /datum/social_profile/town_hall,
+	new /datum/social_profile/chapel,
+	new /datum/social_profile/scholars,
+	new /datum/social_profile/tavern,
 	new /datum/social_profile/outlaw
 ))
 
@@ -1166,18 +1177,61 @@ GLOBAL_LIST_INIT(social_profiles, list(
 		"specialization:Charm" = "Charm of the corps"
 	)
 
-	elite_job_titles = list(
-		"Town Watch Captain",
-		"Town Watch Sergeant",
-		"Town Watch Warden"
+	elite_job_types = list(
+		/datum/job/watch_captain,
+		/datum/job/watch_sergeant,
+		/datum/job/watch_warden
 	)
 
-	elite_recognition_job_titles = list(
-		"Burgmeister",
-		"Town Watch Captain",
-		"Town Watch Sergeant",
-		"Town Watch Warden"
+	elite_recognition_job_types = list(
+		/datum/job/burgmeister,
+		/datum/job/watch_captain,
+		/datum/job/watch_sergeant,
+		/datum/job/watch_warden
 	)
+
+/*
+ * ============================================================================
+ * PUBLIC FACTIONS USED BY DIRECTIONAL RELATIONSHIP RULES
+ * ============================================================================
+ *
+ * These profiles only become recognizable when visible equipment supplies the
+ * matching faction cue. Add faction:<key> cues to the relevant items; objective
+ * job assignment alone must not reveal faction membership.
+ */
+
+/datum/social_profile/town_hall
+	id = "town_hall"
+	display_name = "the Town Hall"
+	faction_flag = TOWNHALL
+	faction_cue_key = "faction:town_hall"
+	faction_threshold = 10
+	faction_solid_threshold = 15
+
+/datum/social_profile/chapel
+	id = "chapel"
+	display_name = "the Chapel"
+	faction_flag = CHAPEL
+	faction_cue_key = "faction:chapel"
+	faction_threshold = 10
+	faction_solid_threshold = 15
+
+/datum/social_profile/scholars
+	id = "scholars"
+	display_name = "the Scholars"
+	faction_flag = SCHOLARS
+	faction_cue_key = "faction:scholars"
+	faction_threshold = 10
+	faction_solid_threshold = 15
+
+/datum/social_profile/tavern
+	id = "tavern"
+	display_name = "the Tavern"
+	faction_flag = TAVERN
+	faction_cue_key = "faction:tavern"
+	faction_threshold = 10
+	faction_solid_threshold = 15
+
 
 /*
  * ============================================================================

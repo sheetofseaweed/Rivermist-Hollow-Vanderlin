@@ -261,10 +261,6 @@
 	if(!target)
 		return
 
-	// Silver itself carries the silver_bane material trait.
-	if(!(/datum/material_trait/silver_bane in initial(melting_material.traits)))
-		return
-
 	target.set_stat_modifier(
 		get_silver_bane_modifier_id(),
 		list(
@@ -375,6 +371,8 @@
 
 /obj/item/rope/net/bola/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
+	if(.)
+		return
 
 	// Anything that isn't a carbon mob is a miss.
 	if(!iscarbon(hit_atom))
@@ -413,7 +411,6 @@
 	if(C.electrocute_act(electrocute_damage, src))
 		C.emote("painscream")
 		C.update_sneak_invis(TRUE)
-		C.consider_ambush(always = TRUE)
 
 		if(C.throwing)
 			C.throwing.finalize(FALSE)
@@ -441,7 +438,8 @@
 
 /obj/item/rope/net/bola/thaum/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
 	for(var/i in 1 to 10)
-		addtimer(CALLBACK(C, TYPE_PROC_REF(/mob/living, consume_mana), rand(10, 15)), i SECONDS)
+		var/amount = rand(10, 15)
+		addtimer(CALLBACK(C.mana_pool, TYPE_PROC_REF(/datum/mana_pool, adjust_mana), -amount), i SECONDS)
 
 	to_chat(C, span_userdanger("Arcane energy is ripped from me by the thaumaturgic bola!"))
 
