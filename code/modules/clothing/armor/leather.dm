@@ -304,6 +304,7 @@
 	armor_type = /datum/armor/leather
 	prevent_crits = list(BCLASS_CUT, BCLASS_STAB, BCLASS_BLUNT, BCLASS_CHOP, BCLASS_SMASH)
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MEDIUM
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:sergeant" = 5, "elite:town_watch" = 3)
 
 /obj/item/clothing/armor/leather/jacket/leathercoat/black
 	name = "black leather coat"

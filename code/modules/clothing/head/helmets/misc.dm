@@ -57,6 +57,7 @@
 	body_parts_covered = COVERAGE_NASAL
 	max_integrity = ARMOR_INT_HELMET_STEEL
 	item_weight = 3.12 KILOGRAMS
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5, "elite:town_watch" = 3)
 
 //................ Skull Cap ............... //
 /obj/item/clothing/head/helmet/skullcap
@@ -499,6 +500,7 @@
 	detail_color = CLOTHING_PLUM_PURPLE
 	uses_lord_coloring = LORD_PRIMARY
 	misc_flags = CRAFTING_TEST_EXCLUDE
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:veteran" = 5, "elite:town_watch" = 3)
 
 /obj/item/clothing/head/helmet/sargebarbute
 	name = "elegant barbute"

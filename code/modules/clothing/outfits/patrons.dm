@@ -267,6 +267,7 @@
 	block2add = FOV_BEHIND
 	melting_material = /datum/material/steel
 	melt_amount = 150
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:sergeant" = 5, "elite:town_watch" = 3)
 
 /obj/item/clothing/head/helmet/heavy/abyssorgreathelm
 	name = "abyssorite helmet"

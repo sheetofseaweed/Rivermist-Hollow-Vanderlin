@@ -1,36 +1,5 @@
 /*
  * ============================================================================
- * SOCIAL RECOGNITION CONSTANTS
- * ============================================================================
- */
-
-#define SOCIAL_SOURCE_KNOWLEDGE   (1 << 0)
-#define SOCIAL_SOURCE_COSMETIC    (1 << 1)
-#define SOCIAL_SOURCE_IDENTITY    (1 << 2)
-#define SOCIAL_SOURCE_PERSONNEL   (1 << 3)
-#define SOCIAL_SOURCE_STATUS      (1 << 4)
-#define SOCIAL_SOURCE_ELITE       (1 << 5)
-#define SOCIAL_SOURCE_PRESTIGE    (1 << 6)
-
-#define SOCIAL_LEVEL_UNKNOWN      0
-#define SOCIAL_LEVEL_APPARENT     1
-#define SOCIAL_LEVEL_KNOWN        2
-
-#define SOCIAL_PRESENTATION_INSUFFICIENT 0
-#define SOCIAL_PRESENTATION_RECOGNIZABLE 1
-#define SOCIAL_PRESENTATION_CONVINCING   2
-
-#define SOCIAL_LEGITIMACY_UNKNOWN       "unknown"
-#define SOCIAL_LEGITIMACY_PARTIAL       "partial"
-#define SOCIAL_LEGITIMACY_SOLID         "solid"
-#define SOCIAL_LEGITIMACY_SUSPICIOUS    "suspicious"
-#define SOCIAL_LEGITIMACY_DISGUISED     "disguised"
-
-#define SOCIAL_PRESTIGE_THRESHOLD 5
-
-
-/*
- * ============================================================================
  * EXAMINE SOCIAL CONTEXT
  * ============================================================================
  */
@@ -862,20 +831,6 @@
  *
  * Directional by design.
  */
-
-#define SOCIAL_RELATION_ALLIED             "allied"
-#define SOCIAL_RELATION_HOSTILE            "hostile"
-#define SOCIAL_RELATION_PROTECT_DUTY       "protect_duty"
-#define SOCIAL_RELATION_DIPLOMATIC_HOSTILE "diplomatic_hostile"
-#define SOCIAL_RELATION_HOSTILE_TO_WATCH   "hostile_to_watch"
-#define SOCIAL_RELATION_TENSE              "tense"
-#define SOCIAL_RELATION_NEUTRAL            "neutral"
-#define SOCIAL_RELATION_COOPERATIVE       "cooperative"
-#define SOCIAL_RELATION_HIGHER_RANK       "higher_rank"
-#define SOCIAL_RELATION_LOYAL              "loyal"
-#define SOCIAL_RELATION_FEARFUL	    		"fearful"
-#define SOCIAL_RELATION_SEPARATED_AUTHORITY "separated_authority"
-#define SOCIAL_RELATION_DISAGREEING         "disagreeing"
 
 /mob/living/carbon/proc/get_faction_relationship(mob/living/carbon/user, mob/living/carbon/target, user_faction, target_faction)
 	if((user_faction & TOWNWATCH) && (target_faction & VILLAINS))

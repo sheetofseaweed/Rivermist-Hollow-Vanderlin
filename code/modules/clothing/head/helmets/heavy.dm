@@ -28,6 +28,7 @@
 	body_parts_covered = HEAD_NECK
 	prevent_crits = ALL_EXCEPT_BLUNT
 	block2add = FOV_BEHIND
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:sergeant" = 5, "elite:town_watch" = 3)
 
 /obj/item/clothing/head/helmet/heavy/psydonbarbute
 	name = "exotic barbute"

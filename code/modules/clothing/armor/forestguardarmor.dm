@@ -38,7 +38,7 @@
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
 	has_storage = TRUE
-	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5)
+	social_cues = list("faction:town_watch" = 5, "rank:town_watch:warden" = 5, "elite:town_watch" = 3)
 
 /obj/item/clothing/head/helmet/visored/warden
 	item_weight = 3.25 KILOGRAMS

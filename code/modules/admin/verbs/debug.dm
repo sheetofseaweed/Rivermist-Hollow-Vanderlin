@@ -667,20 +667,6 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 
 	real_pack.pick_pack(usr)
 
-#define SOCIAL_RELATION_ALLIED             "allied"
-#define SOCIAL_RELATION_HOSTILE            "hostile"
-#define SOCIAL_RELATION_PROTECT_DUTY       "protect_duty"
-#define SOCIAL_RELATION_DIPLOMATIC_HOSTILE "diplomatic_hostile"
-#define SOCIAL_RELATION_HOSTILE_TO_WATCH   "hostile_to_watch"
-#define SOCIAL_RELATION_TENSE              "tense"
-#define SOCIAL_RELATION_NEUTRAL            "neutral"
-#define SOCIAL_RELATION_COOPERATIVE        "cooperative"
-#define SOCIAL_RELATION_HIGHER_RANK        "higher_rank"
-#define SOCIAL_RELATION_LOYAL              "loyal"
-#define SOCIAL_RELATION_FEARFUL             "fearful"
-#define SOCIAL_RELATION_SEPARATED_AUTHORITY "separated_authority"
-#define SOCIAL_RELATION_DISAGREEING        "disagreeing"
-
 /client/proc/DebugSocialRecognition()
 	set category = "Debug.Debug"
 	set name = "Debug SOCIAL RECOGNITION"
