@@ -101,6 +101,25 @@
 	TEST_ASSERT(!cage_lock.check_access(master), "Hard mode should refuse the master key.")
 	TEST_ASSERT(!cage.can_be_picked(), "Hard mode should refuse lockpicks.")
 
+/datum/unit_test/chastity_crafted_device_keeps_its_lock/Run()
+	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/smith = allocate(/mob/living/carbon/human)
+	give_chastity_test_organs(human, list(ORGAN_SLOT_PENIS))
+	var/obj/item/clothing/undies/chastity/cage/cage = allocate(/obj/item/clothing/undies/chastity/cage)
+	cage.OnCrafted(smith.dir, smith)
+	TEST_ASSERT(istype(cage.lock, /datum/lock/key/chastity), "A crafted device should keep its chastity lock.")
+	TEST_ASSERT(!cage.can_add_lock, "A crafted device should not take a foreign lock.")
+	human.equip_to_slot_if_possible(cage, ITEM_SLOT_UNDER_BOTTOM, disable_warning = TRUE)
+	TEST_ASSERT_EQUAL(human.underwear, cage, "A crafted cage should fit.")
+	smith.zone_selected = BODY_ZONE_PRECISE_GROIN
+	var/obj/item/key/chastity/key = cage.get_generated_key()
+	TEST_ASSERT_EQUAL(cage.on_wearer_item_interaction(human, smith, key, list()), ITEM_INTERACT_SUCCESS, "The key should reach a crafted cage's lock.")
+	TEST_ASSERT(cage.locked(), "The key should lock a crafted cage.")
+
+	var/obj/item/clothing/undies/chastity/arcane/arcane = allocate(/obj/item/clothing/undies/chastity/arcane)
+	arcane.OnCrafted(smith.dir, smith)
+	TEST_ASSERT(arcane.set_arcane_locked(TRUE), "A crafted arcane device should still lock.")
+
 /datum/unit_test/chastity_chisel_breaks_lock_without_harm/Run()
 	var/mob/living/carbon/human/human = allocate(/mob/living/carbon/human)
 	var/mob/living/carbon/human/smith = allocate(/mob/living/carbon/human)

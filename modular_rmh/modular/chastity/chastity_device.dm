@@ -67,6 +67,13 @@ GLOBAL_VAR_INIT(chastity_lock_serial, 0)
 	generated_key_ref = null
 	return ..()
 
+/obj/item/clothing/undies/chastity/OnCrafted(dirin, mob/user)
+	// The lock is built in and matches the key; hide it so the parent cannot strip it.
+	var/datum/lock/own_lock = lock
+	lock = null
+	. = ..()
+	lock = own_lock
+
 /obj/item/clothing/undies/chastity/equipped(mob/living/carbon/user, slot)
 	. = ..()
 	flags_inv = worn_flags_inv
