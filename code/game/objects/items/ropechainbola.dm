@@ -18,7 +18,9 @@
 	possible_item_intents = list(/datum/intent/tie)
 	firefuel = 5 MINUTES
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
+
 	var/legcuff_multiplicative_slowdown = 3
+	var/cuffing_time = 6 SECONDS
 
 /obj/item/rope/spider_silk
 	name = "spider silk"
@@ -76,36 +78,35 @@
 	var/surrender_mod = 1
 	if(C.surrendering || HAS_TRAIT(C, TRAIT_BAGGED))
 		surrender_mod = 0.5
+
 	if(user.aimheight >= 5)
 		if(!C.handcuffed)
 			if(C.num_hands)
-				C.visible_message(span_warning("[user] is trying to tie [C]'s arms with [src.name]!"), \
-									span_danger("[user] is trying to tie my arms with [src.name]!"))
-				if(do_after(user, 6 SECONDS * (surrender_mod), C) && C.num_hands)
-					apply_cuffs(C, user, leg = FALSE)
-					C.visible_message(span_warning("[user] ties [C]' arms with [src.name]."), \
-										span_danger("[user] ties my arms up with [src.name]."))
-					SSblackbox.record_feedback("tally", "handcuffs", 1, type)
-					user.adjust_experience(/datum/attribute/skill/craft/traps, GET_MOB_ATTRIBUTE_VALUE(C, STAT_INTELLIGENCE), FALSE)
-					log_combat(user, C, "handcuffed")
+				C.visible_message(span_warning("[user] is trying to tie [C]'s arms with [src.name]!"), span_danger("[user] is trying to tie my arms with [src.name]!"))
+
+				if(do_after(user, cuffing_time * surrender_mod, C) && C.num_hands)
+					if(apply_cuffs(C, user, leg = FALSE))
+						C.visible_message(span_warning("[user] ties [C]' arms with [src.name]."), span_danger("[user] ties my arms up with [src.name]."))
+						SSblackbox.record_feedback("tally", "handcuffs", 1, type)
+						user.adjust_experience(/datum/attribute/skill/craft/traps, GET_MOB_ATTRIBUTE_VALUE(C, STAT_INTELLIGENCE), FALSE)
+						log_combat(user, C, "handcuffed")
 				else
-					to_chat(user, span_warning("I fail to tie up [C]'s arms!</span>"))
+					to_chat(user, span_warning("I fail to tie up [C]'s arms!"))
 			else
 				to_chat(user, span_warning("[C] is missing two or one arms."))
 	else
 		if(!C.legcuffed)
 			if(C.num_legs)
-				C.visible_message(span_warning("[user] is trying to tie [C]'s legs with [src.name]!"), \
-									span_danger("[user] is trying to tie my legs with [src.name]!"))
-				if(do_after(user, 6 SECONDS * (C.surrendering ? 0.5 : 1), C) && C.num_legs)
-					apply_cuffs(C, user, leg = TRUE)
-					C.visible_message(span_warning("[user] ties [C]' legs with [src.name]."), \
-										span_danger("[user] ties my legs up with [src.name]."))
-					SSblackbox.record_feedback("tally", "legcuffs", 1, type)
-					user.adjust_experience(/datum/attribute/skill/craft/traps, GET_MOB_ATTRIBUTE_VALUE(C, STAT_INTELLIGENCE), FALSE)
-					log_combat(user, C, "legcuffed")
+				C.visible_message(span_warning("[user] is trying to tie [C]'s legs with [src.name]!"), span_danger("[user] is trying to tie my legs with [src.name]!"))
+
+				if(do_after(user, cuffing_time * (C.surrendering ? 0.5 : 1), C) && C.num_legs)
+					if(apply_cuffs(C, user, leg = TRUE))
+						C.visible_message(span_warning("[user] ties [C]' legs with [src.name]."), span_danger("[user] ties my legs up with [src.name]."))
+						SSblackbox.record_feedback("tally", "legcuffs", 1, type)
+						user.adjust_experience(/datum/attribute/skill/craft/traps, GET_MOB_ATTRIBUTE_VALUE(C, STAT_INTELLIGENCE), FALSE)
+						log_combat(user, C, "legcuffed")
 				else
-					to_chat(user, span_warning("I fail to tie up [C]'s legs!</span>"))
+					to_chat(user, span_warning("I fail to tie up [C]'s legs!"))
 			else
 				to_chat(user, span_warning("[C] is missing two or one legs."))
 
@@ -167,6 +168,139 @@
 	melt_amount = 40
 	firefuel = null
 	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
+	cuffing_time = 7 SECONDS
+
+/obj/item/rope/chain/steel
+	item_weight = 1.1 KILOGRAMS
+	name = "Steel chain"
+	desc = "Metal chains designed to interlock and apply the harshest confinement on the villainous."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "steelchain"
+	grid_width = 32
+	grid_height = 32
+	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
+	force = DAMAGE_WHIP - 25
+	throwforce = DAMAGE_WHIP - 20
+	wdefense = MEDIOCRE_PARRY
+	possible_item_intents = list(/datum/intent/tie, WHIP_LASH)
+	blade_dulling = DULLING_BASHCHOP
+	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
+	parrysound = list('sound/combat/parry/parrygen.ogg')
+	swingsound = WHIPWOOSH
+	w_class = WEIGHT_CLASS_SMALL
+	associated_skill = /datum/attribute/skill/combat/whipsflails
+	throw_speed = 1
+	throw_range = 3
+	breakouttime = 50 SECONDS
+	slipouttime = 1 MINUTES
+	melting_material = /datum/material/steel
+	melt_amount = 40
+	firefuel = null
+	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
+	cuffing_time = 8 SECONDS
+
+/obj/item/rope/chain/gold
+	item_weight = 1.6 KILOGRAMS
+	name = "Gold chain"
+	desc = "Metal chains designed to interlock and apply the harshest confinement on the villainous."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "goldchain"
+	grid_width = 32
+	grid_height = 32
+	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
+	force = DAMAGE_WHIP - 25
+	throwforce = DAMAGE_WHIP - 20
+	wdefense = MEDIOCRE_PARRY
+	possible_item_intents = list(/datum/intent/tie, WHIP_LASH)
+	blade_dulling = DULLING_BASHCHOP
+	slot_flags = ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
+	parrysound = list('sound/combat/parry/parrygen.ogg')
+	swingsound = WHIPWOOSH
+	w_class = WEIGHT_CLASS_SMALL
+	associated_skill = /datum/attribute/skill/combat/whipsflails
+	throw_speed = 1
+	throw_range = 3
+	breakouttime = 25 SECONDS
+	slipouttime = 45 SECONDS
+	melting_material = /datum/material/gold
+	melt_amount = 40
+	firefuel = null
+	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
+	cuffing_time = 5 SECONDS
+
+/obj/item/rope/chain/silver
+	item_weight = 1.1 KILOGRAMS
+	name = "Silver chain"
+	desc = "A heavy chain forged from silver. Those afflicted by silver's bane weaken merely from being restrained by it."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "silverchain"
+
+	force = DAMAGE_WHIP - 10
+	throwforce = DAMAGE_WHIP - 15
+	wdefense = MEDIOCRE_PARRY
+	possible_item_intents = list(/datum/intent/tie, WHIP_LASH)
+	blade_dulling = DULLING_BASHCHOP
+	parrysound = list('sound/combat/parry/parrygen.ogg')
+	swingsound = WHIPWOOSH
+	w_class = WEIGHT_CLASS_SMALL
+	associated_skill = /datum/attribute/skill/combat/whipsflails
+	throw_speed = 1
+	throw_range = 3
+	breakouttime = 40 SECONDS
+	slipouttime = 1 MINUTES
+	cuffing_time = 9 SECONDS
+	melting_material = /datum/material/silver
+	melt_amount = 40
+	firefuel = null
+	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
+
+/obj/item/rope/chain/silver/proc/get_silver_bane_modifier_id()
+	return "silver_chain_[REF(src)]"
+
+/obj/item/rope/chain/silver/proc/apply_silver_bane(mob/living/carbon/target)
+	if(!target)
+		return
+
+	target.set_stat_modifier(
+		get_silver_bane_modifier_id(),
+		list(
+			STAT_STRENGTH = -2,
+			STAT_PERCEPTION = -2,
+			STAT_ENDURANCE = -2,
+			STAT_SPEED = -2,
+		))
+
+/obj/item/rope/chain/silver/proc/remove_silver_bane(mob/living/carbon/target)
+	if(!target)
+		return
+
+	target.remove_stat_modifier(get_silver_bane_modifier_id())
+
+/obj/item/rope/chain/silver/apply_cuffs(mob/living/carbon/target, mob/user, leg = FALSE)
+	. = ..()
+
+	if(.)
+		apply_silver_bane(target)
+
+/obj/item/rope/chain/silver/dropped(mob/user, silent = FALSE)
+	var/mob/living/carbon/target
+
+	if(iscarbon(loc))
+		target = loc
+	else if(iscarbon(user))
+		target = user
+
+	if(target)
+		remove_silver_bane(target)
+
+	return ..()
+
+/obj/item/rope/chain/silver/Destroy()
+	if(iscarbon(loc))
+		var/mob/living/carbon/target = loc
+		remove_silver_bane(target)
+
+	return ..()
 
 /obj/item/rope/net
 	item_weight = 500 GRAMS
@@ -217,7 +351,7 @@
 
 /obj/item/rope/net/bola
 	item_weight = 800 GRAMS
-	name = "Bola"
+	name = "bola"
 	desc = "A clever but simple bundle of rope and stones used to catch criminals"
 	icon = 'icons/roguetown/items/misc.dmi'
 	icon_state = "bola"
@@ -228,6 +362,100 @@
 	breakouttime = 6 SECONDS
 	knockdown = 3 SECONDS
 	legcuff_multiplicative_slowdown = 2.5
+
+
+/obj/item/rope/net/bola/proc/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+	// Base bola has no special impact effect.
+	return
+
+
+/obj/item/rope/net/bola/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
+	. = ..()
+	if(.)
+		return
+
+	// Anything that isn't a carbon mob is a miss.
+	if(!iscarbon(hit_atom))
+		qdel(src)
+		return
+
+	var/mob/living/carbon/C = hit_atom
+
+	// Impact effects happen on actual contact, regardless of whether
+	// the normal bola trapping roll succeeds.
+	on_bola_impact(C, throwingdatum)
+
+	// The bola successfully attached as a legcuff.
+	if(C.legcuffed == src)
+		return
+
+	// It hit a mob, but failed to trap them.
+	qdel(src)
+
+/obj/item/rope/net/bola/electro
+	name = "Shock bola"
+	desc = "A reinforced bola charged with stored electricity. It releases its charge once when it strikes a living target."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "shockbola"
+
+	var/electrocuted = FALSE
+	var/electrocute_damage = 20
+
+
+/obj/item/rope/net/bola/electro/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+	if(electrocuted)
+		return
+
+	electrocuted = TRUE
+
+	if(C.electrocute_act(electrocute_damage, src))
+		C.emote("painscream")
+		C.update_sneak_invis(TRUE)
+
+		if(C.throwing)
+			C.throwing.finalize(FALSE)
+
+/obj/item/rope/net/bola/chain
+	name = "chain bola"
+	desc = "A heavy bola fashioned from short lengths of steel chain. The impact is brutal."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "chainbola"
+	throwforce = 10
+
+/obj/item/rope/net/bola/chain/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+	var/damage = rand(20, 30)
+
+	// Direct damage. Armor does not reduce this.
+	C.adjustBruteLoss(damage)
+
+	C.visible_message(span_danger("[src] slams violently into [C]!"), span_userdanger("The chain bola slams into me!"))
+
+/obj/item/rope/net/bola/thaum
+	name = "thaumaturgic bola"
+	desc = "A mystically charged bola that tears arcane energy from whoever it catches."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "thaumicbola"
+
+/obj/item/rope/net/bola/thaum/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+	for(var/i in 1 to 10)
+		var/amount = rand(10, 15)
+		addtimer(CALLBACK(C.mana_pool, TYPE_PROC_REF(/datum/mana_pool, adjust_mana), -amount), i SECONDS)
+
+	to_chat(C, span_userdanger("Arcane energy is ripped from me by the thaumaturgic bola!"))
+
+/obj/item/rope/net/bola/silver
+	name = "silver bola"
+	desc = "A bola fashioned with silver weights, deadly to creatures cursed by the night."
+	icon = 'icons/roguetown/items/misc.dmi'
+	icon_state = "silverbola"
+
+/obj/item/rope/net/bola/silver/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+	if(!ishuman(C) || !C.mind)
+		return
+
+	var/datum/material_trait/silver_bane/bane = new
+	bane.touch_bane(C)
+	qdel(bane)
 
 /obj/structure/noose
 	name = "noose"

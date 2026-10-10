@@ -666,3 +666,452 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 	var/datum/job_pack/real_pack = GLOB.job_pack_singletons[pack]
 
 	real_pack.pick_pack(usr)
+
+/client/proc/DebugSocialRecognition()
+	set category = "Debug.Debug"
+	set name = "Debug SOCIAL RECOGNITION"
+
+	if(!check_rights(R_DEBUG))
+		return
+
+	var/mob/living/carbon/observer = input(usr, "Select the observer.", "Social Recognition Debug") as null|mob in GLOB.player_list
+
+	if(!observer)
+		return
+
+	if(!iscarbon(observer))
+		to_chat(usr, span_warning("Selected observer is not a carbon mob."))
+		return
+
+	var/mob/living/carbon/target = input(usr, "Select the target.", "Social Recognition Debug") as null|mob in GLOB.player_list
+
+	if(!target)
+		return
+
+	if(!iscarbon(target))
+		to_chat(usr, span_warning("Selected target is not a carbon mob."))
+		return
+
+	/*
+	 * ========================================================================
+	 * ROOT DEBUG HEADER
+	 * ========================================================================
+	 */
+
+	to_chat(usr, span_boldnotice("===================================================================="))
+	to_chat(usr, span_boldnotice("                SOCIAL RECOGNITION TRACE DEBUG"))
+	to_chat(usr, span_boldnotice("===================================================================="))
+
+	/*
+	 * ========================================================================
+	 * OBSERVER
+	 * ========================================================================
+	 */
+
+	to_chat(usr, span_boldnotice("--- OBSERVER ---"))
+	to_chat(usr, "Name: [observer.real_name]")
+	to_chat(usr, "Type: [observer.type]")
+	to_chat(usr, "Mind: [observer.mind ? "YES" : "NO"]")
+
+	var/datum/job/observer_raw_job = observer.mind?.assigned_role
+
+	to_chat(usr, "Raw assigned job: [observer_raw_job ? observer_raw_job.title : "NONE"]")
+	to_chat(usr, "Raw assigned job type: [observer_raw_job ? "[observer_raw_job.type]" : "NONE"]")
+	to_chat(usr, "Raw department_flag: [observer_raw_job ? observer_raw_job.department_flag : "NONE"]")
+
+	/*
+	 * Walk the actual parent_job chain.
+	 *
+	 * IMPORTANT:
+	 * This deliberately does not call a helper from the social system.
+	 * The debug must independently show what the job hierarchy actually is.
+	 */
+
+	var/datum/job/observer_base_job = observer_raw_job
+	var/observer_parent_depth = 0
+
+	if(observer_base_job)
+		while(observer_base_job.parent_job)
+			observer_parent_depth++
+			to_chat(usr, "Parent #[observer_parent_depth]: [observer_base_job.parent_job.title] ([observer_base_job.parent_job.type])")
+			observer_base_job = observer_base_job.parent_job
+
+	to_chat(usr, "Base/root job: [observer_base_job ? observer_base_job.title : "NONE"]")
+
+	to_chat(usr, "Base/root job type: [observer_base_job ? "[observer_base_job.type]" : "NONE"]")
+
+	to_chat(usr, "Base/root department_flag: [observer_base_job ? observer_base_job.department_flag : "NONE"]")
+
+	if(observer_base_job)
+		to_chat(
+			usr,
+			"Base job classification: \
+				[istype(observer_base_job, /datum/job/watch_captain) ? "TOWN WATCH CAPTAIN" : \
+				istype(observer_base_job, /datum/job/watch_sergeant) ? "TOWN WATCH SERGEANT" : \
+				istype(observer_base_job, /datum/job/watch_warden) ? "TOWN WATCH WARDEN" : \
+				istype(observer_base_job, /datum/job/watch_veteran) ? "TOWN WATCH VETERAN" : \
+				istype(observer_base_job, /datum/job/watch_guard) ? "TOWN WATCH GUARD" : \
+				"OTHER / UNKNOWN"]"
+		)
+
+	/*
+	 * ========================================================================
+	 * TARGET
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- TARGET ---"))
+	to_chat(usr, "Name: [target.real_name]")
+	to_chat(usr, "Type: [target.type]")
+	to_chat(usr, "Mind: [target.mind ? "YES" : "NO"]")
+
+	var/datum/job/target_raw_job = target.mind?.assigned_role
+
+	to_chat(usr, "Raw assigned job: [target_raw_job ? target_raw_job.title : "NONE"]")
+	to_chat(usr, "Raw assigned job type: [target_raw_job ? "[target_raw_job.type]" : "NONE"]")
+	to_chat(usr, "Raw department_flag: [target_raw_job ? target_raw_job.department_flag : "NONE"]")
+
+	var/datum/job/target_base_job = target_raw_job
+	var/target_parent_depth = 0
+
+	if(target_base_job)
+		while(target_base_job.parent_job)
+			target_parent_depth++
+			to_chat(usr, "Parent #[target_parent_depth]: [target_base_job.parent_job.title] ([target_base_job.parent_job.type])")
+			target_base_job = target_base_job.parent_job
+
+	to_chat(usr, "Base/root job: [target_base_job ? target_base_job.title : "NONE"]")
+
+	to_chat(usr, "Base/root job type: [target_base_job ? "[target_base_job.type]" : "NONE"]")
+
+	to_chat(usr, "Base/root department_flag: [target_base_job ? target_base_job.department_flag : "NONE"]")
+
+	if(target_base_job)
+		to_chat(
+			usr,
+			"Base job classification: \
+				[istype(target_base_job, /datum/job/watch_captain) ? "TOWN WATCH CAPTAIN" : \
+				istype(target_base_job, /datum/job/watch_sergeant) ? "TOWN WATCH SERGEANT" : \
+				istype(target_base_job, /datum/job/watch_warden) ? "TOWN WATCH WARDEN" : \
+				istype(target_base_job, /datum/job/watch_veteran) ? "TOWN WATCH VETERAN" : \
+				istype(target_base_job, /datum/job/watch_guard) ? "TOWN WATCH GUARD" : \
+				"OTHER / UNKNOWN"]")
+
+	/*
+	 * ========================================================================
+	 * BASIC OBSERVER/TARGET COMPARISON
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- ROLE COMPARISON ---"))
+
+	var/observer_is_townwatch = FALSE
+	var/target_is_townwatch = FALSE
+
+	if(observer_base_job)
+		observer_is_townwatch = !!(observer_base_job.department_flag & TOWNWATCH)
+
+	if(target_base_job)
+		target_is_townwatch = !!(target_base_job.department_flag & TOWNWATCH)
+
+	to_chat(
+		usr,
+		"Observer is Town Watch: [observer_is_townwatch ? "YES" : "NO"]"
+	)
+
+	to_chat(
+		usr,
+		"Target is Town Watch: [target_is_townwatch ? "YES" : "NO"]"
+	)
+
+	var/observer_is_lower_watch = FALSE
+	var/observer_is_command_watch = FALSE
+	var/target_is_lower_watch = FALSE
+	var/target_is_command_watch = FALSE
+
+	if(observer_base_job)
+		observer_is_lower_watch = (istype(observer_base_job, /datum/job/watch_guard) || istype(observer_base_job, /datum/job/watch_veteran) || istype(observer_base_job, /datum/job/watch_warden))
+
+		observer_is_command_watch = (istype(observer_base_job, /datum/job/watch_sergeant) || istype(observer_base_job, /datum/job/watch_captain))
+
+	if(target_base_job)
+		target_is_lower_watch = (istype(target_base_job, /datum/job/watch_guard) || istype(target_base_job, /datum/job/watch_veteran) || istype(target_base_job, /datum/job/watch_warden))
+
+		target_is_command_watch = (istype(target_base_job, /datum/job/watch_sergeant) || istype(target_base_job, /datum/job/watch_captain))
+
+	to_chat(usr, "Observer lower-watch: [observer_is_lower_watch ? "YES" : "NO"]")
+
+	to_chat(usr, "Observer command-watch: [observer_is_command_watch ? "YES" : "NO"]")
+
+	to_chat(usr, "Target lower-watch: [target_is_lower_watch ? "YES" : "NO"]")
+
+	to_chat(usr, "Target command-watch: [target_is_command_watch ? "YES" : "NO"]")
+
+	/*
+	 * This is the relationship the intended Town Watch hierarchy SHOULD
+	 * produce, independently of the reaction system.
+	 */
+
+	var/expected_relationship = SOCIAL_RELATION_NEUTRAL
+
+	if(observer_is_townwatch && target_is_townwatch)
+		if(observer_is_lower_watch && target_is_command_watch)
+			expected_relationship = SOCIAL_RELATION_HIGHER_RANK
+		else
+			expected_relationship = SOCIAL_RELATION_ALLIED
+
+	to_chat(usr, "Expected Town Watch relationship: [expected_relationship]")
+
+	/*
+	 * ========================================================================
+	 * SOCIAL CONTEXT
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- SOCIAL CONTEXT ---"))
+
+	var/datum/examine_social_context/context = target.build_social_context(observer)
+
+	if(!context)
+		to_chat(usr, span_warning("FAILED: build_social_context() returned NULL."))
+		return
+
+	to_chat(usr, "Context observer: [context.observer ? context.observer.real_name : "NONE"]")
+	to_chat(usr, "Context target: [context.target ? context.target.real_name : "NONE"]")
+	to_chat(usr, "Context target job: [context.target_job ? context.target_job.title : "NONE"]")
+	to_chat(usr, "Target wanted: [context.target_wanted ? "YES" : "NO"]")
+	to_chat(usr, "Face visible: [context.target_face_visible ? "YES" : "NO"]")
+	to_chat(usr, "Identity known: [context.identity_known ? "YES" : "NO"]")
+	to_chat(usr, "Visible items: [length(context.visible_items)]")
+
+	/*
+	 * ========================================================================
+	 * SOCIAL CUES
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- VISIBLE SOCIAL CUES ---"))
+
+	if(length(context.visible_social_cues))
+		for(var/cue_key in context.visible_social_cues)
+			to_chat(usr, "[cue_key] = [context.visible_social_cues[cue_key]]")
+	else
+		to_chat(usr, "  NONE")
+
+	/*
+	 * ========================================================================
+	 * SOCIAL PROFILES
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- PROFILE EVALUATION ---"))
+
+	var/list/recognitions = list()
+
+	for(var/datum/social_profile/profile as anything in GLOB.social_profiles)
+		if(!profile)
+			continue
+
+		to_chat(usr, "")
+		to_chat(usr, span_boldnotice("PROFILE: [profile.id]"))
+		to_chat(usr, "Display name: [profile.display_name]")
+		to_chat(usr, "Faction flag: [profile.faction_flag]")
+		to_chat(usr, "Recognition trait: [profile.recognition_trait ? "[profile.recognition_trait]" : "NONE"]")
+		to_chat(usr, "Rank trait: [profile.rank_trait ? "[profile.rank_trait]" : "NONE"]")
+		to_chat(usr, "Specialization trait: [profile.specialization_trait ? "[profile.specialization_trait]" : "NONE"]")
+
+		var/datum/social_recognition/recognition = profile.evaluate(observer, context)
+
+		if(!recognition)
+			to_chat(usr, "RESULT: NOT RECOGNIZED")
+			continue
+
+		recognitions += recognition
+
+		to_chat(usr, "RESULT: RECOGNIZED")
+		to_chat(usr, "Actual faction: [recognition.actual_faction ? "YES" : "NO"]")
+		to_chat(usr, "Actual elite: [recognition.actual_elite ? "YES" : "NO"]")
+		to_chat(usr, "Identity recognized: [recognition.identity_recognized ? "YES" : "NO"]")
+		to_chat(usr, "Known faction: [recognition.known_faction ? "YES" : "NO"]")
+		to_chat(usr, "Apparent faction: [recognition.apparent_faction ? "YES" : "NO"]")
+		to_chat(usr, "Known rank: [recognition.known_rank ? "YES" : "NO"]")
+		to_chat(usr, "Apparent rank: [recognition.apparent_rank ? "YES" : "NO"]")
+		to_chat(usr, "Known specialization: [recognition.known_specialization ? "YES" : "NO"]")
+		to_chat(usr, "Apparent specialization: [recognition.apparent_specialization ? "YES" : "NO"]")
+		to_chat(usr, "Elite equipment recognized: [recognition.elite_equipment_recognized ? "YES" : "NO"]")
+		to_chat(usr, "Apparent elite member: [recognition.apparent_elite_member ? "YES" : "NO"]")
+		to_chat(usr, "Personnel recognized: [recognition.personnel_recognized ? "YES" : "NO"]")
+		to_chat(usr, "Personnel mismatch: [recognition.personnel_mismatch ? "YES" : "NO"]")
+		to_chat(usr, "Elite personnel mismatch: [recognition.elite_personnel_mismatch ? "YES" : "NO"]")
+		to_chat(usr, "Presentation state: [recognition.presentation_state]")
+		to_chat(usr, "Solid faction: [recognition.solid_faction ? "YES" : "NO"]")
+		to_chat(usr, "Social legitimacy: [recognition.social_legitimacy]")
+		to_chat(usr, "Faction appearance score: [recognition.faction_appearance_score]")
+		to_chat(usr, "Elite appearance score: [recognition.elite_appearance_score]")
+		to_chat(usr, "Rank appearance score: [recognition.rank_appearance_score]")
+		to_chat(usr, "Specialization appearance score: [recognition.specialization_appearance_score]")
+		to_chat(usr, "Prestige appearance score: [recognition.prestige_appearance_score]")
+		to_chat(usr, "Source flags: [recognition.source]")
+		to_chat(usr, "Final recognition score: [recognition.score]")
+
+		to_chat(usr, "Apparent rank title: [recognition.apparent_rank_title ? recognition.apparent_rank_title : "NONE"]")
+
+		to_chat(usr, "Apparent specialization title: [recognition.apparent_specialization_title ? recognition.apparent_specialization_title : "NONE"]")
+
+		/*
+		 * Show exactly what the current reaction function sees.
+		 */
+
+		to_chat(usr, "")
+		to_chat(usr, span_boldnotice("REACTION PRECONDITIONS"))
+
+		to_chat(usr, "recognition.faction_recognized: [recognition.faction_recognized ? "YES" : "NO"]")
+
+		to_chat(usr, "user.mind.assigned_role exists: [observer.mind?.assigned_role ? "YES" : "NO"]")
+
+		var/raw_observer_faction = observer.mind?.assigned_role?.department_flag
+		var/profile_faction = profile.get_profile_faction_flag()
+
+		to_chat(usr, "Current code raw observer department_flag: [raw_observer_faction]")
+
+		to_chat(usr, "Current profile faction flag: [profile_faction]")
+
+		to_chat(usr, "Normalized observer faction: [observer_base_job?.department_flag]")
+
+		to_chat(usr, "Normalized target faction: [target_base_job?.department_flag]")
+
+		/*
+		 * IMPORTANT:
+		 * Current get_reactions() uses the observer's RAW assigned_role
+		 * department_flag. This line explicitly exposes the value it will
+		 * currently receive.
+		 */
+
+		if(!recognition.faction_recognized)
+			to_chat(usr, span_warning("REACTION STOP: faction_recognized == FALSE."))
+		else if(!observer.mind?.assigned_role)
+			to_chat(usr, span_warning("REACTION STOP: observer has no assigned_role."))
+		else if(!profile_faction)
+			to_chat(usr, span_warning("REACTION STOP: profile returned no faction flag."))
+		else
+			to_chat(usr, "Current raw relationship input: [raw_observer_faction] -> [profile_faction]")
+
+			if(!raw_observer_faction)
+				to_chat(usr, span_warning("LIKELY FAILURE: observer's assigned_role.department_flag is ZERO."))
+
+				to_chat(usr, span_warning("Use the parent/base job department_flag for hierarchy-aware reactions."))
+
+	/*
+	 * ========================================================================
+	 * ACTUAL REACTION GENERATION
+	 * ========================================================================
+	 *
+	 * This invokes the real profile reaction generator.
+	 * No simulation here.
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- ACTUAL REACTION GENERATION ---"))
+
+	var/list/all_reactions = list()
+
+	for(var/datum/social_recognition/recognition as anything in recognitions)
+		if(!recognition?.profile)
+			continue
+
+		var/before_count = length(all_reactions)
+
+		recognition.profile.get_reactions(observer, context, recognition, all_reactions)
+
+		var/after_count = length(all_reactions)
+		var/generated = after_count - before_count
+
+		to_chat(usr, "Profile '[recognition.profile.id]' generated [generated] reaction(s).")
+
+		if(generated)
+			for(var/i in (before_count + 1) to after_count)
+				var/datum/examine_social_reaction/reaction = all_reactions[i]
+
+				to_chat(usr, "  Reaction #[i - before_count]")
+				to_chat(usr, "    Datum: [reaction.type]")
+				to_chat(usr, "    Stress type: [reaction.stress_type ? "[reaction.stress_type]" : "NONE"]")
+				to_chat(usr, "    Phrase count: [length(reaction.phrases)]")
+
+				for(var/phrase in reaction.phrases)
+					to_chat(usr, "      - [phrase]")
+
+	/*
+	 * ========================================================================
+	 * FINAL REACTION RESOLUTION
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- FINAL REACTION RESOLUTION ---"))
+
+	to_chat(usr, "Total generated reactions: [length(all_reactions)]")
+
+	if(!length(all_reactions))
+		to_chat(usr, span_warning("No reactions were generated."))
+		to_chat(usr, span_warning("Failure is upstream of resolve_strongest_social_reaction()."))
+	else
+		for(var/datum/examine_social_reaction/reaction as anything in all_reactions)
+			to_chat(usr, "Candidate: [reaction.type] | Stress: [reaction.stress_type ? "[reaction.stress_type]" : "NONE"]")
+
+			if(reaction.stress_type)
+				to_chat(usr, "  Already has stress: [observer.has_stress_type(reaction.stress_type) ? "YES" : "NO"]")
+
+				var/datum/stress_event/event = new reaction.stress_type
+
+				if(event)
+					to_chat(usr, "  can_apply(): [event.can_apply(observer) ? "YES" : "NO"]")
+
+					if(event.can_apply(observer))
+						to_chat(usr, "  get_stress(): [event.get_stress(observer)]")
+
+					qdel(event)
+
+	var/datum/examine_social_reaction/strongest = \
+		observer.resolve_strongest_social_reaction(observer, all_reactions)
+
+	if(!strongest)
+		to_chat(usr, span_warning("STRONGEST REACTION: NONE"))
+	else
+		to_chat(usr, span_notice("STRONGEST REACTION: [strongest.type]"))
+
+		to_chat(usr, "Stress type: [strongest.stress_type ? "[strongest.stress_type]" : "NONE"]")
+
+		to_chat(usr, "Selected phrase: [strongest.get_phrase()]")
+
+	/*
+	 * ========================================================================
+	 * EXPECTED VS ACTUAL
+	 * ========================================================================
+	 */
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("--- EXPECTED VS ACTUAL ---"))
+
+	if(observer_is_townwatch && target_is_townwatch)
+		to_chat(usr, "Expected relationship from normalized jobs: [expected_relationship]")
+	else
+		to_chat(usr, "Expected relationship from normalized jobs: not a Town Watch-vs-Town Watch case.")
+
+	if(!length(all_reactions))
+		to_chat(usr, span_warning("RESULT: Expected relationship exists, but actual reaction generator produced NOTHING."))
+
+		if(observer_is_townwatch && target_is_townwatch)
+			if(observer_base_job && observer_base_job.department_flag & TOWNWATCH)
+				if(observer_raw_job && !(observer_raw_job.department_flag & TOWNWATCH))
+					to_chat(usr, span_warning("DIAGNOSIS: observer raw job lost the Town Watch department flag."))
+					to_chat(usr, span_warning("DIAGNOSIS: parent/base job contains the faction information."))
+
+	to_chat(usr, "")
+	to_chat(usr, span_boldnotice("===================================================================="))
+	to_chat(usr, span_boldnotice("                    END SOCIAL TRACE"))
+	to_chat(usr, span_boldnotice("===================================================================="))
