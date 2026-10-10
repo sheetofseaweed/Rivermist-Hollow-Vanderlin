@@ -147,8 +147,8 @@
 		return FALSE
 	if(holder != owner && !holder.adjacent_or_closet(owner))
 		return FALSE
-	// A player who logs off without allowing it is let go; a holder who logs off lets go.
-	if(holder != owner && !owner.allows_player_erp_while_disconnected())
+	// A player who logs off without allowing it is let go.
+	if(holder != owner && (!owner.allows_sex_with(holder) || !holder.allows_sex_with(owner)))
 		return FALSE
 	if(holder.is_disconnected_player_erp_body())
 		return FALSE
@@ -246,7 +246,7 @@
 		var/mob/living/aimed = target
 		if(aimed.stat == DEAD)
 			return FALSE
-		if(aimed != user && aimed != owner && !aimed.allows_player_erp_while_disconnected())
+		if(aimed != user && aimed != owner && (!aimed.allows_sex_with(user) || !aimed.allows_sex_with(owner)))
 			return FALSE
 		new_aim = aimed
 		new_zone = user.zone_selected == BODY_ZONE_PRECISE_MOUTH ? PENIS_AIM_MOUTH : body_zone_to_coat_zone(user.zone_selected)
@@ -318,7 +318,7 @@
 		return FALSE
 	if(victim.stat == DEAD || !can_reach(victim))
 		return FALSE
-	if(victim != user && victim != owner && !victim.allows_player_erp_while_disconnected())
+	if(victim != user && victim != owner && (!victim.allows_sex_with(user) || !victim.allows_sex_with(owner)))
 		return FALSE
 	// Nobody is endowed enough to reach their own face or chest.
 	if(victim == owner && !(user.zone_selected in get_self_slap_zones()))
@@ -487,7 +487,7 @@
 		return TRUE
 	if(!target.is_penis_grippable())
 		return FALSE
-	if(target != src && !target.allows_player_erp_while_disconnected())
+	if(target != src && !target.allows_sex_with(src))
 		return FALSE
 	if(penis.grip)
 		to_chat(src, span_warning(penis.grip.holder == src ? "I already hold it." : "[penis.grip.holder] already holds it."))

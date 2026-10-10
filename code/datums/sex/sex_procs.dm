@@ -48,7 +48,7 @@
 		return
 	if(stat == DEAD || target.stat == DEAD)
 		return
-	if(src != target && !target.allows_player_erp_while_disconnected())
+	if(src != target && (!target.allows_sex_with(src) || !allows_sex_with(target)))
 		return
 	if(!GetComponent(/datum/component/arousal))
 		AddComponent(/datum/component/arousal)
@@ -78,6 +78,10 @@
 		return "[target || "They"] can't take part right now."
 	if(src != target && !target.allows_player_erp_while_disconnected())
 		return "[target] is away and does not allow this while disconnected."
+	if(src != target)
+		var/refusal = target.sex_refusal_for(src)
+		if(refusal)
+			return "[target] [refusal]."
 	var/list/combined_participants = list(src, target)
 	if(sex_scene && !QDELETED(sex_scene))
 		combined_participants |= sex_scene.participants
@@ -119,6 +123,7 @@
 
 	if(!user.open_sex_scene(target))
 		to_chat(user, span_warning(user.get_sex_scene_refusal(target)))
+		SEND_SIGNAL(target, COMSIG_LIVING_SEX_SCENE_REFUSED, user)
 		return
 
 /mob/living/proc/has_hands()
@@ -477,6 +482,10 @@
 /mob/living/proc/is_disconnected_player_erp_body()
 	if(client)
 		return FALSE
+	// An agent NPC answers for itself, even after someone possessed it. Not when it took over a player's character.
+	var/datum/ai_controller/agent_social/agent = ai_controller
+	if(istype(agent) && !agent.borrowed_body)
+		return FALSE
 	if(!mind)
 		return FALSE
 	return !!(mind.key || mind.cached_erp_preferences || cached_erp_preferences)
@@ -485,6 +494,19 @@
 	if(!is_disconnected_player_erp_body())
 		return TRUE
 	return get_cached_erp_pref(/datum/erp_preference/boolean/allow_player_erp_when_disconnected) == TRUE
+
+/// Will this mob share a scene with other? Logged-off players need their pref, and agent NPCs answer for themselves.
+/mob/living/proc/allows_sex_with(mob/living/other)
+	if(!allows_player_erp_while_disconnected())
+		return FALSE
+	return !(SEND_SIGNAL(src, COMSIG_LIVING_SEX_CONSENT, other) & COMPONENT_REFUSE_SEX)
+
+/// Why this mob refuses other, as words after its name, or null if it does not.
+/mob/living/proc/sex_refusal_for(mob/living/other)
+	var/list/reasons = list()
+	if(!(SEND_SIGNAL(src, COMSIG_LIVING_SEX_CONSENT, other, reasons) & COMPONENT_REFUSE_SEX))
+		return null
+	return length(reasons) ? reasons[1] : "refuses"
 
 /datum/mind
 	var/tmp/list/cached_erp_preferences

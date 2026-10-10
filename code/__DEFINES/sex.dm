@@ -44,6 +44,14 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define COMSIG_SEX_CAN_USE_PENIS "sex_can_use_penis"
 /// Checks if user is considered limp. Return: TRUE/FALSE
 #define COMSIG_SEX_CONSIDERED_LIMP "sex_considered_limp"
+/// Asks a mob whether it will share a scene with another: (mob/living/other, list/reasons). Refusers add a reason when given one.
+#define COMSIG_LIVING_SEX_CONSENT "living_sex_consent"
+/// Returned by a COMSIG_LIVING_SEX_CONSENT handler that refuses.
+#define COMPONENT_REFUSE_SEX (1<<0)
+/// Sent to a mob that refused a scene someone tried to start with it: (mob/living/asker).
+#define COMSIG_LIVING_SEX_SCENE_REFUSED "living_sex_scene_refused"
+/// Sent to the leader of an act its partner stopped from their own window: (mob/living/stopper).
+#define COMSIG_LIVING_SEX_ACT_STOPPED_BY_PARTNER "living_sex_act_stopped_by_partner"
 
 #define SEX_UI_ZONE_ANY 0
 #define SEX_UI_ZONE_MOUTH (1 << 0)
