@@ -113,12 +113,13 @@
 	return null
 
 /proc/considered_alive(datum/mind/M, enforce_human = TRUE)
-	if(M && M.current)
+	// mind.current can still point at a body that was deleted without ghosting.
+	if(M && !QDELETED(M.current))
 		if(enforce_human)
 			var/mob/living/carbon/human/H
 			if(ishuman(M.current))
 				H = M.current
-			return M.current.stat != DEAD && !isbrain(M.current) && (!H || H.dna.species.id != "memezombies")
+			return M.current.stat != DEAD && !isbrain(M.current) && (!H || H.dna?.species?.id != "memezombies")
 		else if(isliving(M.current))
 			return M.current.stat != DEAD
 	return FALSE

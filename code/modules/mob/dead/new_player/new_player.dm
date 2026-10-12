@@ -256,7 +256,10 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 		observer.real_name = observer.client.prefs.read_preference(/datum/preference/text/real_name)
 		observer.name = observer.real_name
 	observer.stop_sound_channel(CHANNEL_LOBBYMUSIC)
-	QDEL_NULL(mind)
+	// The observer now carries this mind; deleting it would leave a null assigned_role for its next body.
+	if(mind)
+		mind.current = null
+		mind = null
 	qdel(src)
 	return TRUE
 

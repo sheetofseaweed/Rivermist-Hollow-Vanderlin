@@ -478,9 +478,9 @@
 	tugging_knot_blocked = FALSE
 
 	if(istype(btm) && !QDELETED(btm))
-		btm.reset_pull_offsets()
+		btm.reset_pull_offsets(btm)
 	if(istype(top) && !QDELETED(top))
-		top.reset_pull_offsets()
+		top.reset_pull_offsets(top)
 
 /datum/action/knot_release
 	name = "Release Knot"

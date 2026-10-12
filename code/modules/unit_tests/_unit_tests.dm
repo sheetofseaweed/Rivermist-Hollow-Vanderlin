@@ -124,6 +124,7 @@
 #include "infinite_dungeons.dm"
 #include "leeches.dm"
 #include "limb_render_cache.dm"
+#include "live_runtime_regressions.dm"
 #include "load_map_security.dm"
 #include "lootpanel.dm"
 #include "mana_capacity_enchantment.dm"

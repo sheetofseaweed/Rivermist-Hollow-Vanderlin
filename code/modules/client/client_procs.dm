@@ -126,7 +126,8 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	if(href_list["ask_again"])
 		var/datum/schizohelp/schizo = locate(href_list["ask_again"])
 		var/mob/voice = locate(href_list["voice"])
-		if(QDELETED(schizo) || !voice.client)
+		// Old links can locate() a recycled ref of another type.
+		if(!istype(schizo) || QDELETED(schizo) || !istype(voice) || !voice.client)
 			return
 		var/msg = input("Ask again:", "To the voice of a [schizo.voice_names[voice.client.ckey]]") as text|null
 		if(msg)
@@ -138,7 +139,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	if(href_list["like"])
 		var/datum/schizohelp/schizo = locate(href_list["src"])
 		var/mob/voice = locate(href_list["like"])
-		if(schizo && voice && voice.client)
+		if(istype(schizo) && istype(voice) && voice.client)
 			var/voice_ckey = voice.client.ckey
 			if(!schizo.voted[voice_ckey])
 				schizo.voted[voice_ckey] = list()
@@ -171,7 +172,7 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	if(href_list["dislike"])
 		var/datum/schizohelp/schizo = locate(href_list["src"])
 		var/mob/voice = locate(href_list["dislike"])
-		if(schizo && voice && voice.client)
+		if(istype(schizo) && istype(voice) && voice.client)
 			var/voice_ckey = voice.client.ckey
 			if(!schizo.voted[voice_ckey])
 				schizo.voted[voice_ckey] = list()
@@ -769,8 +770,11 @@ GLOBAL_LIST_EMPTY(respawncounts)
 	log_access("Logout: [key_name(src)]")
 	GLOB.ahelp_tickets.ClientLogout(src)
 
+	// Each credit removes itself from credits on Destroy, which nulls the list mid-loop.
 	if(length(credits))
-		QDEL_LIST(credits)
+		var/list/old_credits = credits
+		credits = null
+		QDEL_LIST(old_credits)
 
 	QDEL_NULL(loot_panel)
 

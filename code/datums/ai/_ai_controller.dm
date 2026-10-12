@@ -401,6 +401,11 @@ have ways of interacting with a specific atom and control it. They posses a blac
 		GLOB.ai_controllers_by_status[ai_status] -= src
 	stop_previous_processing()
 	CancelActions()
+	// Detection fields are hosted on the pawn and must not outlive this possession.
+	for(var/key in blackboard)
+		var/datum/proximity_monitor/field = blackboard[key]
+		if(istype(field))
+			qdel(field)
 	pawn.ai_controller = null
 	pawn = null
 	if(destroy)

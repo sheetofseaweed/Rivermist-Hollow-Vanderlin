@@ -432,7 +432,7 @@
 		new_limbs += BP.get_limb_icon()
 	if(new_limbs.len)
 		overlays_standing[BODYPARTS_LAYER] = new_limbs
-		limb_icon_cache[icon_render_key] = new_limbs
+		store_limb_icons(icon_render_key, new_limbs)
 
 	apply_overlay(BODYPARTS_LAYER)
 	update_damage_overlays()
@@ -470,6 +470,21 @@
 		. += "husk"
 	return jointext(., "-")
 
+
+/// Render keys kept in limb_icon_cache before the oldest are dropped.
+#define LIMB_ICON_CACHE_MAX_KEYS 1000
+/// How many of the oldest keys are dropped at once when the cache is full.
+#define LIMB_ICON_CACHE_EVICT_KEYS 250
+
+/// Keys change with damage, sizes and colours; unbounded, the cache filled the engine's 2^24 image table on long rounds.
+/mob/living/carbon/proc/store_limb_icons(render_key, list/limbs)
+	if(!limb_icon_cache[render_key] && length(limb_icon_cache) >= LIMB_ICON_CACHE_MAX_KEYS)
+		// Associative lists keep insertion order, so the front holds the oldest keys.
+		limb_icon_cache.Cut(1, LIMB_ICON_CACHE_EVICT_KEYS + 1)
+	limb_icon_cache[render_key] = limbs
+
+#undef LIMB_ICON_CACHE_MAX_KEYS
+#undef LIMB_ICON_CACHE_EVICT_KEYS
 
 //change the mob's icon to the one matching its key
 /mob/living/carbon/proc/load_limb_from_cache()

@@ -2468,6 +2468,7 @@
 #include "code\modules\admin\verbs\diagnostics.dm"
 #include "code\modules\admin\verbs\fps.dm"
 #include "code\modules\admin\verbs\getlogs.dm"
+#include "code\modules\admin\verbs\image_census.dm"
 #include "code\modules\admin\verbs\individual_logging.dm"
 #include "code\modules\admin\verbs\manipulate_organs.dm"
 #include "code\modules\admin\verbs\map_export.dm"

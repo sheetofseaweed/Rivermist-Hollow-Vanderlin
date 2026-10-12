@@ -455,7 +455,9 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 
 	remove_client_colour(/datum/client_colour/monochrome)
-	client.view_size.setDefault(client.view_size.getScreenSize())
+	// view_size is only built near the end of client/New.
+	if(client.view_size)
+		client.view_size.setDefault(client.view_size.getScreenSize())
 	mind.current_ghost = null
 	mind.current.ckey = ckey(key)
 	if(HAS_TRAIT_FROM(mind.current, TRAIT_NOSLEEP, "aghost"))

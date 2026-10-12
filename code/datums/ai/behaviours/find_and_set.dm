@@ -481,8 +481,7 @@ GLOBAL_LIST_INIT(find_and_set_interested_atoms, typecacheof(list(/obj/item, /mob
 
 /datum/proximity_monitor/advanced/ai_find_tracking/swim_alternate/setup_field_turf(turf/target)
 	. = ..()
-	var/mob/living/living_pawn = target_controller.pawn
-	if(QDELETED(living_pawn))
+	if(!has_live_controller() || QDELETED(target_controller.pawn))
 		return
 	var/look_for_land = target_controller.blackboard[BB_CURRENTLY_SWIMMING]
 
@@ -616,18 +615,33 @@ GLOBAL_LIST_INIT(find_and_set_interested_atoms, typecacheof(list(/obj/item, /mob
 	set_key = key
 	locate_path = path
 	search_range = s_range
+	RegisterSignal(controller, COMSIG_PARENT_QDELETING, PROC_REF(controller_deleted))
 	. = ..()
+
+/datum/proximity_monitor/advanced/ai_find_tracking/proc/controller_deleted(datum/source)
+	SIGNAL_HANDLER
+	qdel(src)
+
+/// Whether the owning controller still drives a pawn this field can report to.
+/datum/proximity_monitor/advanced/ai_find_tracking/proc/has_live_controller()
+	return !QDELETED(target_controller) && !isnull(target_controller.pawn)
 
 /datum/proximity_monitor/advanced/ai_find_tracking/setup_field_turf(turf/target)
 	. = ..()
+	if(!has_live_controller())
+		return
 	parent_behavior.new_turf_found(target, target_controller)
 
 /datum/proximity_monitor/advanced/ai_find_tracking/field_edge_crossed(atom/movable/movable, turf/location, direction)
 	. = ..()
+	if(!has_live_controller())
+		return
 	parent_behavior.new_atoms_found(list(movable), target_controller)
 
 /datum/proximity_monitor/advanced/ai_find_tracking/field_turf_crossed(atom/movable/movable, turf/location)
 	. = ..()
+	if(!has_live_controller())
+		return
 	parent_behavior.new_atoms_found(list(movable), target_controller)
 
 /datum/proximity_monitor/advanced/ai_find_tracking/Destroy()

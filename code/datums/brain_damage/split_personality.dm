@@ -135,6 +135,7 @@
 /mob/living/split_personality/Life()
 	if(QDELETED(body))
 		qdel(src) //in case trauma deletion doesn't already do it
+		return
 
 	if((body.stat == DEAD && trauma.owner_backseat == src))
 		trauma.switch_personalities()

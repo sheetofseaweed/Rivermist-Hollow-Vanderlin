@@ -746,7 +746,9 @@
 
 				rand_item.doMove(get_turf(H))
 				var/yeet = rand(4)
-				var/turf/selectedturf = pick(orange(H, yeet)) //object flies off the hole with pressure at a random turf, funny.
+				// Turfs only; orange() includes areas and is empty when yeet rolls 0.
+				var/turf/holder_turf = get_turf(H)
+				var/turf/selectedturf = pick(RANGE_TURFS(yeet, holder_turf)) //object flies off the hole with pressure at a random turf, funny.
 				rand_item.throw_at(selectedturf, yeet, 2)
 			else
 				if(H.client?.prefs?.read_preference(/datum/preference/toggle/showrolls))

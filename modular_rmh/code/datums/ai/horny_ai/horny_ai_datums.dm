@@ -764,7 +764,9 @@
 		basic_mob.visible_message(span_danger("[basic_mob] tears off [basic_mob.p_their()] [stripped_item]!"))
 	else
 		basic_mob.visible_message(span_danger("[basic_mob] tears [human_target]'s [stripped_item] loose!"))
-		var/turf/landing_spot = pick(orange(2, get_turf(human_target)))
+		// orange() also returns areas and objects, which throw_at cannot land on.
+		var/turf/target_turf = get_turf(human_target)
+		var/turf/landing_spot = target_turf ? pick(RANGE_TURFS(2, target_turf)) : null
 		if(landing_spot)
 			stripped_item.throw_at(landing_spot, 2, 1, basic_mob, TRUE)
 	return TRUE

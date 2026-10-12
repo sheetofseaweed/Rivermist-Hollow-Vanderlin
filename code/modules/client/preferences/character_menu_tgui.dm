@@ -597,7 +597,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 	var/datum/hud/new_player/lobby_hud = hud_used
 	if(istype(lobby_hud))
-		for(var/atom/movable/screen/lobby/button/ready/ready_button as anything in lobby_hud.static_inventory)
+		for(var/atom/movable/screen/lobby/button/ready/ready_button in lobby_hud.static_inventory)
 			ready_button.ready = (ready == PLAYER_READY_TO_PLAY)
 			ready_button.base_icon_state = ready_button.ready ? "ready" : "not_ready"
 			ready_button.update_appearance(UPDATE_ICON)
