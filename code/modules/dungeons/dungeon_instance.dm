@@ -77,6 +77,10 @@
 	var/datum/map_template/pocket/dungeon/dungeon_template = template
 	return istype(dungeon_template) ? dungeon_template : null
 
+/// Ordinary authored rooms have no generation state.
+/datum/pocket_dimension/dungeon/proc/set_generation_seed(room_seed)
+	return
+
 /datum/pocket_dimension/dungeon/activate()
 	. = ..()
 	if(. && !contents_setup_done)
@@ -138,16 +142,23 @@
 	if(!owning_run?.floor_config)
 		return spawned
 	var/datum/dungeon_floor_config/cfg = owning_run.floor_config
-	var/list/turf/open = get_open_dungeon_turfs()
+	var/list/turf/open = get_guardian_spawn_turfs()
 	for(var/i in 1 to count)
 		if(!length(open))
 			break
-		var/turf/spot = pick(open)
+		var/turf/spot = pick_guardian_spawn_turf(open)
 		open -= spot
 		var/datum/dungeon_spawn_entry/entry = pick_floor_spawn_entry(cfg, style, owning_run.get_target_tier())
 		if(entry && ispath(entry.mob_type, /mob/living))
 			spawned += new entry.mob_type(spot)
 	return spawned
+
+/// Procedural rooms can reserve tactical positions without replacing the encounter director.
+/datum/pocket_dimension/dungeon/proc/get_guardian_spawn_turfs()
+	return get_open_dungeon_turfs()
+
+/datum/pocket_dimension/dungeon/proc/pick_guardian_spawn_turf(list/turf/available)
+	return pick(available)
 
 /datum/pocket_dimension/dungeon/proc/setup_dungeon_contents()
 	var/list/mobs_to_register = list()
