@@ -21,6 +21,8 @@
 
 	var/legcuff_multiplicative_slowdown = 3
 	var/cuffing_time = 6 SECONDS
+	var/tie_sound = 'modular_rmh/sound/items/ropetyingup.ogg'
+	var/untie_sound = 'modular_rmh/sound/items/ropeuntying.ogg'
 
 /obj/item/rope/spider_silk
 	name = "spider silk"
@@ -83,6 +85,7 @@
 		if(!C.handcuffed)
 			if(C.num_hands)
 				C.visible_message(span_warning("[user] is trying to tie [C]'s arms with [src.name]!"), span_danger("[user] is trying to tie my arms with [src.name]!"))
+				playsound(src, tie_sound, 75, TRUE)
 
 				if(do_after(user, cuffing_time * surrender_mod, C) && C.num_hands)
 					if(apply_cuffs(C, user, leg = FALSE))
@@ -98,6 +101,7 @@
 		if(!C.legcuffed)
 			if(C.num_legs)
 				C.visible_message(span_warning("[user] is trying to tie [C]'s legs with [src.name]!"), span_danger("[user] is trying to tie my legs with [src.name]!"))
+				playsound(src, tie_sound, 75, TRUE)
 
 				if(do_after(user, cuffing_time * (C.surrendering ? 0.5 : 1), C) && C.num_legs)
 					if(apply_cuffs(C, user, leg = TRUE))
@@ -168,6 +172,8 @@
 	melt_amount = 40
 	firefuel = null
 	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
+	tie_sound = 'modular_rmh/sound/items/Chainrattle.ogg'
+	untie_sound = 'modular_rmh/sound/items/Chainrattle.ogg'
 	cuffing_time = 7 SECONDS
 
 /obj/item/rope/chain/steel
@@ -257,8 +263,25 @@
 /obj/item/rope/chain/silver/proc/get_silver_bane_modifier_id()
 	return "silver_chain_[REF(src)]"
 
+/obj/item/rope/chain/silver/proc/is_silver_bane_target(mob/living/carbon/target)
+	if(!ishuman(target) || !target.mind)
+		return FALSE
+
+	var/datum/antagonist/vampire/vamp_datum = target.mind.has_antag_datum(/datum/antagonist/vampire)
+	var/datum/antagonist/werewolf/wolf_datum = target.mind.has_antag_datum(/datum/antagonist/werewolf)
+
+	// Ascended vampire lords are immune to silver's bane.
+	if(istype(vamp_datum, /datum/antagonist/vampire/lord))
+		var/datum/antagonist/vampire/lord/lord_datum = vamp_datum
+		return !lord_datum.ascended
+
+	// Vampires are always affected; werewolves only while transformed.
+	if(vamp_datum || wolf_datum?.transformed)
+		return TRUE
+	return FALSE
+
 /obj/item/rope/chain/silver/proc/apply_silver_bane(mob/living/carbon/target)
-	if(!target)
+	if(!target || !is_silver_bane_target(target))
 		return
 
 	target.set_stat_modifier(
@@ -353,64 +376,171 @@
 	item_weight = 800 GRAMS
 	name = "bola"
 	desc = "A clever but simple bundle of rope and stones used to catch criminals"
-	icon = 'icons/roguetown/items/misc.dmi'
+	icon = 'modular_rmh/icons/obj/items/weapons/ranged/bola.dmi'
 	icon_state = "bola"
 	grid_width = 64
 	grid_height = 64
-	throw_range = 10
+	throw_range = 6
 	throw_speed = 1.5
 	breakouttime = 6 SECONDS
 	knockdown = 3 SECONDS
 	legcuff_multiplicative_slowdown = 2.5
 
+	var/bola_throw_sound = 'modular_rmh/sound/items/bolathrow.ogg'
 
-/obj/item/rope/net/bola/proc/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
-	// Base bola has no special impact effect.
+	/// Icon used while the player is winding up this bola.
+	var/windup_icon_state = "spinbola"
+	var/windup_item_state = "spinbola"
+	var/windup_original_icon_state
+	var/windup_original_item_state
+	var/windup_started_at = 0
+	var/mob/living/carbon/windup_user
+	var/windup_active = FALSE
+
+	/// A bola must be wound up for at least this long before it can be thrown.
+	var/minimum_windup_time = 1 SECONDS
+
+/obj/item/rope/net/bola/proc/start_windup(mob/living/carbon/user)
+	if(windup_active || !user || user.get_active_held_item() != src)
+		return FALSE
+
+	windup_user = user
+	windup_started_at = world.time
+	windup_original_icon_state = icon_state
+	windup_original_item_state = item_state
+	windup_active = TRUE
+
+	icon_state = windup_icon_state
+	item_state = windup_item_state
+	update_appearance(UPDATE_ICON_STATE)
+	user.update_inv_hands()
+	user.add_movespeed_modifier("bola_windup_[REF(src)]", multiplicative_slowdown = 1)
+	RegisterSignal(user, COMSIG_MOB_SWAPPING_HANDS, PROC_REF(on_windup_hand_swap))
+	RegisterSignal(user, COMSIG_MOB_UNEQUIPPED_ITEM, PROC_REF(on_windup_unequipped))
+	playsound(src, 'modular_rmh/sound/items/bolaspin.ogg', 75, TRUE)
+	user.visible_message(
+		span_notice("[user] begins winding up [src]."),
+		span_notice("I begin winding up [src]."))
+	return TRUE
+
+/obj/item/rope/net/bola/proc/finish_windup(mob/living/carbon/user)
+	if(!windup_active || windup_user != user)
+		return null
+
+	var/windup_duration = world.time - windup_started_at
+	var/throw_range_bonus = 0
+	var/throw_speed_bonus = 0
+	if(windup_duration >= 5 SECONDS)
+		throw_range_bonus = 3
+		throw_speed_bonus = 2
+	else if(windup_duration >= 2 SECONDS)
+		throw_range_bonus = 2
+		throw_speed_bonus = 1
+
+	var/list/throw_stats = list(
+		"range" = throw_range + throw_range_bonus,
+		"speed" = throw_speed + throw_speed_bonus,)
+	cancel_windup(FALSE)
+	return throw_stats
+
+/obj/item/rope/net/bola/proc/cancel_windup(show_feedback = TRUE)
+	if(!windup_active && !windup_user)
+		return
+
+	var/mob/living/carbon/old_user = windup_user
+	if(old_user)
+		UnregisterSignal(old_user, COMSIG_MOB_SWAPPING_HANDS)
+		UnregisterSignal(old_user, COMSIG_MOB_UNEQUIPPED_ITEM)
+		old_user.remove_movespeed_modifier("bola_windup_[REF(src)]")
+
+	icon_state = windup_original_icon_state ? windup_original_icon_state : initial(icon_state)
+	item_state = windup_original_item_state
+	update_appearance(UPDATE_ICON_STATE)
+	if(old_user && !QDELETED(old_user))
+		old_user.update_inv_hands()
+		if(show_feedback)
+			old_user.visible_message(
+				span_notice("[old_user] stops winding up [src]."),
+				span_notice("I stop winding up [src]."))
+
+	windup_user = null
+	windup_started_at = 0
+	windup_original_icon_state = null
+	windup_original_item_state = null
+	windup_active = FALSE
+
+/obj/item/rope/net/bola/proc/on_windup_hand_swap(mob/living/carbon/source, obj/item/currently_held_item)
+	SIGNAL_HANDLER
+	if(source == windup_user)
+		cancel_windup()
+
+/obj/item/rope/net/bola/proc/on_windup_unequipped(mob/living/source, obj/item/unequipped_item, force, atom/newloc, no_move, invdrop, silent)
+	SIGNAL_HANDLER
+	if(source == windup_user && unequipped_item == src)
+		cancel_windup()
+
+/obj/item/rope/net/bola/dropped(mob/user)
+	. = ..()
+	cancel_windup()
+
+/obj/item/rope/net/bola/Destroy()
+	cancel_windup(FALSE)
+	return ..()
+
+/obj/item/rope/net/bola/proc/on_bola_impact(mob/living/C, datum/thrownthing/throwingdatum)
+	// Base bola has no special damage effect.
 	return
-
 
 /obj/item/rope/net/bola/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
 	if(.)
 		return
-
-	// Anything that isn't a carbon mob is a miss.
-	if(!iscarbon(hit_atom))
-		qdel(src)
+	if(!isliving(hit_atom))
 		return
 
-	var/mob/living/carbon/C = hit_atom
+	var/mob/living/target = hit_atom
+	// A light camera shake provides feedback for any living target, including simplemobs.
+	if(target.client)
+		shake_camera(target, 1, 1)
 
-	// Impact effects happen on actual contact, regardless of whether
-	// the normal bola trapping roll succeeds.
-	on_bola_impact(C, throwingdatum)
+	// Carbon mobs use the existing restraint mechanic when the bola catches them.
+	// Other living mobs cannot wear a legcuff, so give them a timed movement debuff instead.
+	var/successfully_ensnared = FALSE
+	if(iscarbon(target))
+		var/mob/living/carbon/carbon_target = target
+		successfully_ensnared = (carbon_target.legcuffed == src)
+	if(!successfully_ensnared)
+		target.apply_status_effect(/datum/status_effect/debuff/bola_slow)
 
-	// The bola successfully attached as a legcuff.
-	if(C.legcuffed == src)
+	// Variant effects run on every valid living hit, not only carbon mobs.
+	on_bola_impact(target, throwingdatum)
+
+	// If the bola attached as a legcuff, the target now owns it.
+	// Otherwise the bola is left on the ground and can be retrieved.
+	if(successfully_ensnared)
 		return
-
-	// It hit a mob, but failed to trap them.
-	qdel(src)
 
 /obj/item/rope/net/bola/electro
 	name = "Shock bola"
 	desc = "A reinforced bola charged with stored electricity. It releases its charge once when it strikes a living target."
-	icon = 'icons/roguetown/items/misc.dmi'
+	icon = 'modular_rmh/icons/obj/items/weapons/ranged/bola.dmi'
 	icon_state = "shockbola"
-
+	windup_icon_state = "spinelectrobola"
+	bola_throw_sound = 'modular_rmh/sound/items/bolathrowelectro.ogg'
 	var/electrocuted = FALSE
 	var/electrocute_damage = 20
 
 
-/obj/item/rope/net/bola/electro/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+/obj/item/rope/net/bola/electro/on_bola_impact(mob/living/C, datum/thrownthing/throwingdatum)
 	if(electrocuted)
 		return
 
 	electrocuted = TRUE
 
 	if(C.electrocute_act(electrocute_damage, src))
-		C.emote("painscream")
-		C.update_sneak_invis(TRUE)
+		if(iscarbon(C))
+			C.emote("painscream")
+			C.update_sneak_invis(TRUE)
 
 		if(C.throwing)
 			C.throwing.finalize(FALSE)
@@ -418,11 +548,13 @@
 /obj/item/rope/net/bola/chain
 	name = "chain bola"
 	desc = "A heavy bola fashioned from short lengths of steel chain. The impact is brutal."
-	icon = 'icons/roguetown/items/misc.dmi'
+	icon = 'modular_rmh/icons/obj/items/weapons/ranged/bola.dmi'
+	bola_throw_sound = 'modular_rmh/sound/items/bolathrowheavy.ogg'
 	icon_state = "chainbola"
+	windup_icon_state = "spinchainbola"
 	throwforce = 10
 
-/obj/item/rope/net/bola/chain/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+/obj/item/rope/net/bola/chain/on_bola_impact(mob/living/C, datum/thrownthing/throwingdatum)
 	var/damage = rand(20, 30)
 
 	// Direct damage. Armor does not reduce this.
@@ -433,29 +565,56 @@
 /obj/item/rope/net/bola/thaum
 	name = "thaumaturgic bola"
 	desc = "A mystically charged bola that tears arcane energy from whoever it catches."
-	icon = 'icons/roguetown/items/misc.dmi'
+	icon = 'modular_rmh/icons/obj/items/weapons/ranged/bola.dmi'
+	bola_throw_sound = 'modular_rmh/sound/items/bolathrowheavy.ogg'
 	icon_state = "thaumicbola"
+	windup_icon_state = "spinthaumbola"
 
-/obj/item/rope/net/bola/thaum/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
-	for(var/i in 1 to 10)
-		var/amount = rand(10, 15)
-		addtimer(CALLBACK(C.mana_pool, TYPE_PROC_REF(/datum/mana_pool, adjust_mana), -amount), i SECONDS)
+/obj/item/rope/net/bola/thaum/on_bola_impact(mob/living/C, datum/thrownthing/throwingdatum)
+	if(C.mana_pool)
+		var/datum/mana_pool/target_mana_pool = C.mana_pool
+		for(var/i in 1 to 10)
+			var/amount = rand(10, 15)
+			addtimer(CALLBACK(target_mana_pool, TYPE_PROC_REF(/datum/mana_pool, adjust_mana), -amount), i SECONDS)
 
 	to_chat(C, span_userdanger("Arcane energy is ripped from me by the thaumaturgic bola!"))
 
 /obj/item/rope/net/bola/silver
 	name = "silver bola"
 	desc = "A bola fashioned with silver weights, deadly to creatures cursed by the night."
-	icon = 'icons/roguetown/items/misc.dmi'
+	icon = 'modular_rmh/icons/obj/items/weapons/ranged/bola.dmi'
+	bola_throw_sound = 'modular_rmh/sound/items/bolathrowheavy.ogg'
 	icon_state = "silverbola"
+	windup_icon_state = "spinsilverbola"
 
-/obj/item/rope/net/bola/silver/on_bola_impact(mob/living/carbon/C, datum/thrownthing/throwingdatum)
+/obj/item/rope/net/bola/silver/on_bola_impact(mob/living/C, datum/thrownthing/throwingdatum)
 	if(!ishuman(C) || !C.mind)
 		return
 
+	var/mob/living/carbon/human/human_target = C
 	var/datum/material_trait/silver_bane/bane = new
-	bane.touch_bane(C)
+	bane.touch_bane(human_target)
 	qdel(bane)
+
+/// Briefly slows living non-carbon targets hit by a bola, which cannot be legcuffed.
+/datum/status_effect/debuff/bola_slow
+	id = "bola_slow"
+	status_type = STATUS_EFFECT_REFRESH
+	duration = 1 MINUTES
+	tick_interval = -1
+	effectedstats = list(STAT_SPEED = -3)
+
+/datum/status_effect/debuff/bola_slow/on_apply()
+	. = ..()
+	if(!.)
+		return
+	owner.add_movespeed_modifier("bola_hit_slowdown", multiplicative_slowdown = 2)
+	return TRUE
+
+/datum/status_effect/debuff/bola_slow/on_remove()
+	if(owner)
+		owner.remove_movespeed_modifier("bola_hit_slowdown")
+	return ..()
 
 /obj/structure/noose
 	name = "noose"

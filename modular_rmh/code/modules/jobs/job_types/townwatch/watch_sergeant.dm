@@ -88,7 +88,7 @@
 		STAT_INTELLIGENCE = 1,
 		STAT_CONSTITUTION = 1,
 		STAT_ENDURANCE = 2,
-		STAT_SPEED = 3,
+		STAT_SPEED = 2,
 		/datum/attribute/skill/combat/swords = 10,
 		/datum/attribute/skill/combat/shields = 10,
 		/datum/attribute/skill/combat/wrestling = 25,

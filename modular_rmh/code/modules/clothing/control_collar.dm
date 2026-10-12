@@ -225,16 +225,14 @@ GLOBAL_LIST_INIT(reverse_slave_phrases_translations, list(
 		STOP_PROCESSING(SSobj, src)
 		return
 	if(bearer.mana_pool.amount <= 0)
-		STOP_PROCESSING(SSobj, src)
 		return
 	var/drain_amount = mana_drain_per_second * delta_time
 	if(drain_amount <= 0)
 		STOP_PROCESSING(SSobj, src)
 		return
 	bearer.mana_pool.adjust_mana(-drain_amount)
-
+	// Keep processing active while empty so mana regeneration does not disable draining permanently.
 	if(bearer.mana_pool.amount <= 0)
-		STOP_PROCESSING(SSobj, src)
 		return
 
 /obj/item/clothing/neck/slave_collar/proc/apply_collar_traits(mob/living/carbon/human/wearer)
