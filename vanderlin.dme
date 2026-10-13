@@ -4938,6 +4938,7 @@
 #include "modular_rmh\modular\pref_badges\pref_badges.dm"
 #include "modular_rmh\modular\resurrection_rune\res_helpers.dm"
 #include "modular_rmh\modular\resurrection_rune\resurrection_rune.dm"
+#include "modular_rmh\modular\role_calls\role_calls.dm"
 #include "modular_rmh\modular\selectable_moanpacks\emote.dm"
 #include "modular_rmh\modular\selectable_moanpacks\moanpacks_defs.dm"
 #include "modular_rmh\modular\skirt_peeking\skirt_peeking.dm"

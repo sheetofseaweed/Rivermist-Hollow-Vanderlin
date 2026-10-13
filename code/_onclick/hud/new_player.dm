@@ -20,6 +20,8 @@
 	for (var/atom/movable/screen/lobby/lobbyscreen as anything in buttons)
 		if (!initial(lobbyscreen.always_available))
 			continue
+		if (ispath(lobbyscreen, /atom/movable/screen/lobby/button/spectate) && !CONFIG_GET(flag/lobby_spectate))
+			continue
 		lobbyscreen = new lobbyscreen(null, src)
 		static_inventory += lobbyscreen
 		if (!lobbyscreen.always_shown)
@@ -274,7 +276,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
 /atom/movable/screen/lobby/button/lore
 	name = "Lore Primer"
-	screen_loc = "WEST:20,TOP:-101"
+	screen_loc = "WEST:20,TOP:-134"
 	icon = 'icons/hud/lobby/lore.dmi'
 	icon_state = "lore"
 	base_icon_state = "lore"
@@ -289,7 +291,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
 /atom/movable/screen/lobby/button/migration
 	name = "Migration"
-	screen_loc = "WEST:20,TOP:-134"
+	screen_loc = "WEST:20,TOP:-167"
 	icon = 'icons/hud/lobby/migration.dmi'
 	icon_state = "migration"
 	base_icon_state = "migration"
@@ -305,7 +307,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 
 /atom/movable/screen/lobby/button/actors
 	name = "Actors"
-	screen_loc = "WEST:20,TOP:-167"
+	screen_loc = "WEST:20,TOP:-200"
 	icon = 'icons/hud/lobby/actors.dmi'
 	icon_state = "actors"
 	base_icon_state = "actors"

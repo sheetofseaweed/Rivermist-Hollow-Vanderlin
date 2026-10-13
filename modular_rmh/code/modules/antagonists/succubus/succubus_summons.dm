@@ -289,6 +289,7 @@
 		summon_spell.StartCooldown(SUCCUBUS_SUMMON_IMP_RETRY_COOLDOWN)
 		return
 
+	chosen_candidate.leave_lobby_for_role()
 	var/mob/living/simple_animal/hostile/retaliate/infernal/imp/succubus/new_imp = new(spawn_turf)
 	new_imp.PossessByPlayer(chosen_ckey)
 	new_imp.sync_mind()

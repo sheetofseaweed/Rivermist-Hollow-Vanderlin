@@ -483,6 +483,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 			GLOB.respawntimes[key] = world.time + modifier
 		else
 			GLOB.respawntimes[key] = world.time
+	start_spectate_rejoin_delay()
 
 	log_game("[key_name(usr)] used abandon mob.")
 
@@ -505,6 +506,8 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 
 	M.key = key
+	// The empty ghost would otherwise linger for the rest of the round.
+	qdel(src)
 //	M.Login()	//wat
 
 /mob/dead/observer/verb/stay_dead()
@@ -970,7 +973,8 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	set_ghost_appearance()
 	if(client && client.prefs)
 		deadchat_name = client.prefs.read_preference(/datum/preference/text/real_name)
-		mind.ghostname = client.prefs.read_preference(/datum/preference/text/real_name)
+		if(mind)
+			mind.ghostname = client.prefs.read_preference(/datum/preference/text/real_name)
 		name = client.prefs.read_preference(/datum/preference/text/real_name)
 
 /mob/dead/observer/proc/apply_admin_ghost_icon_preference()

@@ -161,6 +161,7 @@
 #include "resurrection_rune.dm"
 #include "rogue_inhands.dm"
 #include "roguetown_clothing.dm"
+#include "role_calls.dm"
 #include "rotation_network.dm"
 #include "runtime_gc_regressions.dm"
 #include "runtime_regressions.dm"
