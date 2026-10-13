@@ -244,5 +244,25 @@
 	TEST_ASSERT_EQUAL(counts["test.kept\[] (image)"], 1, "The census missed an image inside a list.")
 	TEST_ASSERT_EQUAL(counts["test.kept\[] (mutable appearance)"], 1, "The census missed a mutable appearance inside a list.")
 
+/datum/unit_test/live_runtime_http_request_timeout
+#ifdef FOCUS_LIVE_RUNTIME_REGRESSIONS
+	focus = TRUE
+#endif
+
+/datum/unit_test/live_runtime_http_request_timeout/Run()
+	var/datum/http_request/plain = http_request(RUSTG_HTTP_METHOD_GET, "http://127.0.0.1:1/")
+	TEST_ASSERT_NULL(plain.build_options(), "A request without options must still pass null to rust_g.")
+
+	var/datum/http_request/request = http_request(RUSTG_HTTP_METHOD_GET, "http://127.0.0.1:1/", "", null, null, 2)
+	var/raw_options = request.build_options()
+	TEST_ASSERT_NOTNULL(raw_options, "The timeout is not passed to rust_g.")
+	var/list/options = json_decode(raw_options)
+	TEST_ASSERT_EQUAL(options["timeout_seconds"], 2, "The timeout is not passed to rust_g.")
+	// Port 1 refuses the connection, so the wait must return an errored response, not hit its deadline.
+	request.begin_async()
+	var/datum/http_response/response = request.wait_for_response(10 SECONDS)
+	TEST_ASSERT_NOTNULL(response, "A refused request ran into the wait deadline.")
+	TEST_ASSERT(response.errored, "A refused request did not report an error.")
+
 #undef TEST_TRIUMPH_SEASON
 #undef TEST_TRIUMPH_AMOUNT

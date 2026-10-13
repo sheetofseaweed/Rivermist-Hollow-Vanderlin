@@ -654,7 +654,8 @@ GLOBAL_LIST_EMPTY(respawncounts)
 		if (CONFIG_GET(flag/irc_first_connection_alert))
 			send2irc_adminless_only("new_byond_user", "[key_name(src)] (IP: [address], ID: [computer_id]) is a new BYOND account [account_age] day[(account_age==1?"":"s")] old, created on [account_join_date].")
 	get_message_output("watchlist entry", ckey)
-	check_overwatch()
+	// Async: a stalled IP lookup here once skipped the rest of login setup, leaving view_size null.
+	INVOKE_ASYNC(src, PROC_REF(check_overwatch))
 	validate_key_in_db()
 
 	// If we aren't already generating a ban cache, fire off a build request
