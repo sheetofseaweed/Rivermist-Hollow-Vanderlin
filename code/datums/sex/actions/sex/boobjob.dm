@@ -42,7 +42,7 @@
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] fucks [target]'s tits."))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 20, TRUE, -2, ignore_walls = FALSE)
 
-	perform_sex_action(user, target, 2, 4, 2)
+	perform_sex_action(user, target, 2 * get_breast_paizuri_multiplier(target), 4, 2) // breast_weight.dm
 
 /datum/sex_action/sex/boobjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()

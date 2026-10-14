@@ -1,0 +1,345 @@
+// Breast size effects: one status effect (id "breast_size") for the wearer's visible breast size
+// (get_visible_size(): organ size plus swelling from Swelling Glands, 0-8). It replaces the old per-size
+// "<size>boobs/permanent/lite" statuses, which were applied once when the organ was inserted and shared the
+// "bigboobs" id with Naturally Endowed's status, so that vice wiped the size 5 stats.
+// Sizes 6+ ("weight"), growing from 6 to 8: alert, more fatigue when sprinting, slower to stand up, a quiet seam sound
+// and an examine line for a plain (not breast-sized) garment over the chest. While the breasts hold their own milk at
+// 75 % of capacity or more ("full"), at any size: leaking while running and a spray on falls and chest hits, both growing
+// with the fill; a short buff once emptied from 7-8.
+// Every number is in the tables below; see "breasts files/docs/IMPLEMENTATION_NOTES.md" for tuning and rollback.
+
+/// Visible size -> stats (keys as in effectedstats). Sizes 0-5 keep the numbers of the old per-size statuses.
+GLOBAL_LIST_INIT(breast_size_stats, list(
+	"0" = list("speed" = 2),
+	"1" = list("speed" = 1),
+	"2" = list(),
+	"3" = list(),
+	"4" = list("constitution" = 1, "speed" = -1),
+	"5" = list("constitution" = 2, "speed" = -1),
+	"6" = list("constitution" = 2, "speed" = -2),
+	"7" = list("constitution" = 2, "speed" = -2, "endurance" = -1),
+	"8" = list("constitution" = 2, "speed" = -3, "endurance" = -1),
+))
+
+/// Fatigue tier -> extra sprint stamina per tile, as a share of the base cost (2 per tile, carbon_movement.dm).
+/// The tier is the visible size, +1 for Naturally Endowed, -1 with a supporting bra.
+GLOBAL_LIST_INIT(breast_size_sprint_cost, list("6" = 0.15, "7" = 0.3, "8" = 0.5))
+
+/// Visible size -> arousal multiplier when the breasts are touched (bigger ones take more effort).
+GLOBAL_LIST_INIT(breast_touch_sensitivity, list("6" = 0.85, "7" = 0.75, "8" = 0.55))
+/// Visible size -> extra seconds to stand up (get_up()).
+GLOBAL_LIST_INIT(breast_stand_extra_time, list("6" = 1, "7" = 1.5, "8" = 2))
+/// Visible size -> plain garment over the chest: seam sound volume, message on putting it on, examine line.
+GLOBAL_LIST_INIT(breast_strain_volume, list("6" = 4, "7" = 8, "8" = 14))
+GLOBAL_LIST_INIT(breast_strain_equip_text, list(
+	"6" = "ITEM fits a little snug across my chest.",
+	"7" = "A seam creaks as I squeeze into ITEM.",
+	"8" = "Seams groan as I force ITEM over my chest.",
+))
+GLOBAL_LIST_INIT(breast_strain_examine_text, list(
+	"6" = "ITEM sits snugly over THEIR chest.",
+	"7" = "ITEM strains against THEIR chest.",
+	"8" = "ITEM is stretched to bursting over THEIR chest.",
+))
+/// Visible size of the giver's breasts -> arousal multiplier for the receiver of a boob job.
+GLOBAL_LIST_INIT(breast_paizuri_bonus, list("8" = 1.2))
+/// Visible size -> milking speed multiplier ("Milk them").
+GLOBAL_LIST_INIT(breast_milking_rate, list("7" = 1.25, "8" = 1.5))
+
+/// Base sprint stamina cost per tile in /mob/living/carbon/Move().
+#define BREAST_SPRINT_BASE_COST 2
+/// Smallest visible size with the weight effects.
+#define BREAST_WEIGHT_MIN_SIZE 6
+/// Own milk share from which the breasts count as full.
+#define BREAST_FULL_RATIO 0.75
+/// Own milk share at which Swelling Glands makes the breasts one size bigger (they swell once, not in three steps).
+#define BREAST_SWELL_RATIO 0.65
+/// Own milk share -> units leaked every BREAST_SPRINT_LEAK_TILES sprinted tiles / sprayed by a fall or chest hit.
+/// Checked from the highest share down: 95 %+, 75 %+ (the swelling steps); nothing below 75 %.
+GLOBAL_LIST_INIT(breast_sprint_leak, list("0.95" = 1.5, "0.75" = 1))
+GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
+#define BREAST_SPRINT_LEAK_TILES 6
+#define BREAST_SPRAY_COOLDOWN (20 SECONDS)
+/// Flavour messages while sprinting / now and then.
+#define BREAST_FLAVOUR_COOLDOWN (90 SECONDS)
+#define BREAST_RELIEVED_DURATION (5 MINUTES)
+
+/obj/item/organ/genitals/filling_organ/breasts/proc/is_full_of_milk()
+	return get_own_fullness() >= BREAST_FULL_RATIO
+
+// Swelling Glands on breasts: a single +1 size at BREAST_SWELL_RATIO (balls keep the three steps of filling_organ.dm).
+/obj/item/organ/genitals/filling_organ/breasts/get_engorgement_steps_for(fullness)
+	return fullness >= BREAST_SWELL_RATIO ? 1 : 0
+
+/// Value of a fill table (see GLOB.breast_sprint_leak) for the breasts' own milk share now, 0 below its lowest share.
+/obj/item/organ/genitals/filling_organ/breasts/proc/get_fill_value(list/table)
+	var/fullness = get_own_fullness()
+	var/best_ratio = 0
+	. = 0
+	for(var/ratio_text in table)
+		var/ratio = text2num(ratio_text)
+		if(fullness >= ratio && ratio > best_ratio)
+			best_ratio = ratio
+			. = table[ratio_text]
+
+/// Strain table text for the size, with ITEM and THEIR filled in.
+/proc/get_breast_strain_text(list/table, size, obj/item/item, their)
+	var/text = LAZYACCESS(table, "[min(size, 8)]")
+	if(!text)
+		return null
+	text = replacetext(text, "ITEM", "[item]")
+	text = replacetext(text, "THEIR", their)
+	return capitalize(text)
+
+/mob/living/carbon/human
+	/// Size and fullness the breast size effect was last applied for, see update_breast_size_effect().
+	var/breast_size_effect_key
+	var/breast_size_effect_size
+	var/breast_size_effect_full = FALSE
+	var/breast_size_effect_swollen = FALSE
+	/// The breasts reached full (75 %+) during the current swelling, for the relief buff when it goes down.
+	var/breast_swell_was_full = FALSE
+
+/// Re-applies the breast size effect when the visible size or fullness changed. Called whenever the body is redrawn.
+/mob/living/carbon/human/proc/update_breast_size_effect()
+	var/obj/item/organ/genitals/filling_organ/breasts/breasts = getorganslot(ORGAN_SLOT_BREASTS)
+	if(!breasts)
+		if(breast_size_effect_key)
+			breast_size_effect_key = null
+			breast_size_effect_size = null
+			remove_status_effect(/datum/status_effect/breast_size)
+		return
+	var/size = clamp(breasts.get_visible_size(), 0, 8)
+	var/full = breasts.is_full_of_milk()
+	var/swollen = breasts.engorgement_steps > 0
+	var/key = "[size]|[full]|[swollen]"
+	if(key == breast_size_effect_key)
+		return
+	var/had_effect = !isnull(breast_size_effect_size)
+	var/old_size = breast_size_effect_size
+	if(swollen && full)
+		breast_swell_was_full = TRUE
+	var/old_full = breast_swell_was_full
+	if(!swollen)
+		breast_swell_was_full = FALSE
+	var/old_swollen = breast_size_effect_swollen
+	breast_size_effect_key = key
+	breast_size_effect_size = size
+	breast_size_effect_full = full
+	breast_size_effect_swollen = swollen
+	remove_status_effect(/datum/status_effect/breast_size)
+	apply_status_effect(/datum/status_effect/breast_size, null, size, full)
+	if(had_effect && swollen != old_swollen)
+		breast_size_changed_message(old_size, size, old_full, swollen)
+
+/// Messages when Swelling Glands swells the breasts or the swelling goes down (other size changes have their own).
+/mob/living/carbon/human/proc/breast_size_changed_message(old_size, new_size, old_full, swollen)
+	// Swelling Glands grows the breasts one size at 65 % milk (get_engorgement_steps_for()).
+	if(swollen)
+		switch(new_size)
+			if(0 to 5)
+				to_chat(src, span_notice("My breasts swell, heavy with milk."))
+			if(6)
+				to_chat(src, span_warning("My chest grows heavy and tight."))
+			if(7)
+				to_chat(src, span_warning("My breasts swell further, straining against everything."))
+			else
+				to_chat(src, span_warning("They're so full it hurts to move."))
+		return
+	// The swelling went down: relief, and a short buff when they had been full (75 %+) and big.
+	if(old_full && old_size >= BREAST_WEIGHT_MIN_SIZE)
+		to_chat(src, span_notice("Finally... my chest feels light again."))
+		apply_status_effect(/datum/status_effect/buff/breast_relieved)
+		add_stress(/datum/stress_event/breasts_relieved)
+	else
+		to_chat(src, span_notice("Some of the pressure in my chest eases."))
+
+/mob/living/carbon/human/update_body_parts(redraw = FALSE)
+	. = ..()
+	update_breast_size_effect()
+
+/// Fatigue tier for sprinting: visible size, +1 for Naturally Endowed, -1 with a supporting bra.
+/mob/living/carbon/human/proc/get_breast_fatigue_tier(size)
+	. = size
+	if(has_status_effect(/datum/status_effect/debuff/boobs_quirk))
+		. = min(. + 1, 8)
+	if(bra && (bra.flags_inv & HIDEBOOB))
+		. -= 1
+
+/// A plain (not breast-sized) garment worn over the chest, which big breasts strain.
+/mob/living/carbon/human/proc/get_strained_chest_garment()
+	for(var/obj/item/item as anything in list(cloak, wear_armor, wear_shirt))
+		if(!item || item.draws_breast_sized_layers())
+			continue
+		if(item == cloak && cloak.alternate_worn_layer != TABARD_LAYER)
+			continue
+		if((item.body_parts_covered & CHEST) || (item.flags_inv & HIDEBOOB))
+			return item
+	return null
+
+/// Extra seconds to stand up, see get_up().
+/mob/living/proc/get_extra_stand_time()
+	return 0
+
+/mob/living/carbon/human/get_extra_stand_time()
+	return LAZYACCESS(GLOB.breast_stand_extra_time, "[breast_size_effect_size]") || 0
+
+// ---------------------------------------------------------------- the status effect
+
+/datum/status_effect/breast_size
+	id = "breast_size"
+	duration = -1
+	tick_interval = STATUS_EFFECT_NO_TICK
+	status_type = STATUS_EFFECT_REPLACE
+	alert_type = null
+	var/size = 0
+	var/full = FALSE
+	var/sprinted_tiles = 0
+	COOLDOWN_DECLARE(spray_cooldown)
+	COOLDOWN_DECLARE(flavour_cooldown)
+
+/datum/status_effect/breast_size/on_creation(mob/living/new_owner, duration_override, size, full)
+	src.size = size
+	src.full = full
+	var/list/stats = LAZYACCESS(GLOB.breast_size_stats, "[size]")
+	effectedstats = stats ? stats.Copy() : list()
+	if(size >= BREAST_WEIGHT_MIN_SIZE)
+		alert_type = full ? /atom/movable/screen/alert/status_effect/breast_size/full : /atom/movable/screen/alert/status_effect/breast_size
+	return ..()
+
+/datum/status_effect/breast_size/on_apply()
+	. = ..()
+	// Milk effects (leak, spray) at any size: the fill is checked live, because without Swelling Glands filling up
+	// does not redraw the body, so this status is not re-applied when the milk passes 75 %. Weight effects from size 6.
+	RegisterSignal(owner, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
+	RegisterSignal(owner, COMSIG_LIVING_STATUS_KNOCKDOWN, PROC_REF(on_knockdown))
+	RegisterSignal(owner, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(on_damage))
+	if(size >= BREAST_WEIGHT_MIN_SIZE)
+		RegisterSignal(owner, COMSIG_MOB_EQUIPPED_ITEM, PROC_REF(on_equipped))
+
+/datum/status_effect/breast_size/on_remove()
+	UnregisterSignal(owner, list(COMSIG_MOVABLE_MOVED, COMSIG_MOB_EQUIPPED_ITEM, COMSIG_LIVING_STATUS_KNOCKDOWN, COMSIG_MOB_APPLY_DAMAGE))
+	return ..()
+
+/datum/status_effect/breast_size/get_examine_text(mob/user, list/P)
+	if(!ishuman(owner))
+		return null
+	var/mob/living/carbon/human/human_owner = owner
+	var/their = P ? lowertext(P[THEIR]) : owner.p_their()
+	var/list/lines = list()
+	if(size >= BREAST_WEIGHT_MIN_SIZE)
+		var/obj/item/garment = human_owner.get_strained_chest_garment()
+		if(garment)
+			lines += span_notice(get_breast_strain_text(GLOB.breast_strain_examine_text, size, garment, their))
+	// Breast Enthusiast (breast_enthusiast.dm): the one looking, and the one looked at.
+	if(size >= 4 && ishuman(user) && get_breast_exposure(human_owner))
+		var/mob/living/carbon/human/viewer = user
+		if(viewer == owner)
+			if(viewer.get_quirk(/datum/quirk/vice/breast_enthusiast))
+				lines += span_love("You take a moment to admire your own curves.")
+		else
+			if(viewer.get_quirk(/datum/quirk/vice/breast_enthusiast))
+				if(size >= 7)
+					lines += span_love("[capitalize(their)] bust dominates your entire view. You've stopped pretending not to stare.")
+				else
+					lines += span_love(pick("You can't tear your eyes away from [their] cleavage.", "Your gaze keeps drifting back to [their] chest."))
+			var/datum/quirk/vice/breast_enthusiast/owner_vice = human_owner.get_quirk(/datum/quirk/vice/breast_enthusiast)
+			owner_vice?.admired_by(human_owner, viewer)
+	return length(lines) ? lines.Join("\n") : null
+
+/// Sprinting costs more stamina; full breasts leak and bounce.
+/datum/status_effect/breast_size/proc/on_moved(mob/living/carbon/human/source, atom/old_loc, dir, forced)
+	SIGNAL_HANDLER
+	if(forced || source.m_intent != MOVE_INTENT_RUN || source.buckled || source.body_position == LYING_DOWN)
+		return
+	var/share = LAZYACCESS(GLOB.breast_size_sprint_cost, "[source.get_breast_fatigue_tier(size)]")
+	if(share)
+		INVOKE_ASYNC(source, TYPE_PROC_REF(/mob/living, adjust_stamina), BREAST_SPRINT_BASE_COST * share)
+	sprinted_tiles++
+	var/obj/item/organ/genitals/filling_organ/breasts/breasts = source.getorganslot(ORGAN_SLOT_BREASTS)
+	var/leak = breasts?.get_fill_value(GLOB.breast_sprint_leak)
+	if(leak && sprinted_tiles % BREAST_SPRINT_LEAK_TILES == 0)
+		if(source.bra && (source.bra.flags_inv & HIDEBOOB))
+			leak /= 2
+		INVOKE_ASYNC(breasts, TYPE_PROC_REF(/obj/item/organ/genitals/filling_organ, leak_reagents), leak)
+	if(size < BREAST_WEIGHT_MIN_SIZE || !COOLDOWN_FINISHED(src, flavour_cooldown) || !prob(15))
+		return
+	COOLDOWN_START(src, flavour_cooldown, BREAST_FLAVOUR_COOLDOWN)
+	if(full)
+		source.visible_message(span_notice("[source]'s chest sways heavily as [source.p_they()] run[source.p_s()], and milk dribbles down [source.p_their()] front."), span_notice("Running with these is a chore."))
+	else
+		source.visible_message(span_notice("[source]'s chest sways heavily as [source.p_they()] run[source.p_s()]."), span_notice("My back aches under the weight."))
+
+/// Squeezing into a plain garment over a big chest: a quiet seam sound.
+/datum/status_effect/breast_size/proc/on_equipped(mob/living/carbon/human/source, obj/item/item, slot)
+	SIGNAL_HANDLER
+	if(source.get_strained_chest_garment() != item)
+		return
+	playsound(source, 'sound/foley/cloth_rip.ogg', LAZYACCESS(GLOB.breast_strain_volume, "[size]") || 4, TRUE, -6)
+	to_chat(source, span_notice(get_breast_strain_text(GLOB.breast_strain_equip_text, size, item, source.p_their())))
+
+/datum/status_effect/breast_size/proc/on_knockdown(mob/living/carbon/human/source, amount, ignore_canstun)
+	SIGNAL_HANDLER
+	if(amount <= 0)
+		return
+	if(spray(source, span_warning("Milk sprays from [source]'s chest as [source.p_they()] hit[source.p_s()] the ground!")))
+		return
+	if(size >= BREAST_WEIGHT_MIN_SIZE && COOLDOWN_FINISHED(src, flavour_cooldown) && prob(30))
+		COOLDOWN_START(src, flavour_cooldown, BREAST_FLAVOUR_COOLDOWN)
+		source.visible_message(span_notice("[source] lands hard on [source.p_their()] chest and winces."))
+
+/datum/status_effect/breast_size/proc/on_damage(mob/living/carbon/human/source, damage, damagetype, def_zone)
+	SIGNAL_HANDLER
+	if(def_zone != BODY_ZONE_CHEST || damagetype != BRUTE || damage < 5)
+		return
+	if(spray(source, span_warning("[source] gasps as the blow lands on [source.p_their()] full chest, and milk sprays out!")))
+		return
+	if(size >= 7 && full && COOLDOWN_FINISHED(src, flavour_cooldown))
+		COOLDOWN_START(src, flavour_cooldown, BREAST_FLAVOUR_COOLDOWN)
+		source.visible_message(span_warning("[source] gasps as the blow lands on [source.p_their()] swollen chest."))
+
+/// Milk sprays out when the breasts are at least 75 % full of it; the amount grows with the fill. TRUE if it did.
+/datum/status_effect/breast_size/proc/spray(mob/living/carbon/human/source, message)
+	if(!COOLDOWN_FINISHED(src, spray_cooldown))
+		return FALSE
+	var/obj/item/organ/genitals/filling_organ/breasts/breasts = source.getorganslot(ORGAN_SLOT_BREASTS)
+	var/amount = breasts?.get_fill_value(GLOB.breast_spray_amount)
+	if(!amount || !breasts.reagents?.total_volume)
+		return FALSE
+	COOLDOWN_START(src, spray_cooldown, BREAST_SPRAY_COOLDOWN)
+	source.visible_message(message)
+	playsound(source, 'sound/effects/splash.ogg', 20, TRUE, -4)
+	INVOKE_ASYNC(breasts, TYPE_PROC_REF(/obj/item/organ/genitals/filling_organ, leak_reagents), amount)
+	return TRUE
+
+// Icons: the existing big breast alert icons (modular_rmh/icons/mob/screen_alert.dmi), to be replaced by new art.
+/atom/movable/screen/alert/status_effect/breast_size
+	name = "Heavy Chest"
+	desc = "Their weight pulls at my back with every step."
+	icon = 'modular_rmh/icons/mob/screen_alert.dmi'
+	icon_state = "bigboobslite"
+
+/atom/movable/screen/alert/status_effect/breast_size/full
+	name = "Swollen Breasts"
+	desc = "Heavy, tight and full. Running is a chore, and any jolt might make them spill."
+	icon_state = "bigboobs"
+
+/datum/status_effect/buff/breast_relieved
+	id = "breast_relieved"
+	duration = BREAST_RELIEVED_DURATION
+	alert_type = null
+	effectedstats = list("speed" = 1)
+
+/datum/stress_event/breasts_relieved
+	stress_change = -2
+	desc = span_green("My chest finally feels light again.")
+	timer = 5 MINUTES
+
+#undef BREAST_SPRINT_BASE_COST
+#undef BREAST_WEIGHT_MIN_SIZE
+#undef BREAST_FULL_RATIO
+#undef BREAST_SWELL_RATIO
+#undef BREAST_SPRINT_LEAK_TILES
+#undef BREAST_SPRAY_COOLDOWN
+#undef BREAST_FLAVOUR_COOLDOWN
+#undef BREAST_RELIEVED_DURATION

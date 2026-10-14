@@ -408,6 +408,8 @@
 	if(iscarbon(owner))
 		var/mob/living/carbon/carbon_owner = owner
 		carbon_owner.update_body_parts(TRUE)
+		// Breast-sized clothing follows the visible size. Armor update also redraws the shirt.
+		carbon_owner.update_inv_armor()
 
 /obj/item/organ/genitals/filling_organ/proc/get_engorgement_steps_for(fullness)
 	if(fullness >= FLUID_ENGORGEMENT_STEP_3)
