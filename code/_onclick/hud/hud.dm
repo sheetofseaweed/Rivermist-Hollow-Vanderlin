@@ -194,6 +194,19 @@ GLOBAL_LIST_INIT(available_ui_styles, sortList(list(
 	zone_select = null
 	pull_icon = null
 	backhudl = null
+	// These point at screens deleted above; a lingering hud would otherwise keep them from collecting.
+	hsover = null
+	mana_over = null
+	quad_intents = null
+	give_intent = null
+	combat_utilities = null
+	stressies = null
+	cmode_button = null
+	rmb_intent = null
+	cdleft = null
+	cdright = null
+	cdmid = null
+	hand_slots = null
 
 	QDEL_LIST(toggleable_inventory)
 	QDEL_LIST(hotkeybuttons)
@@ -202,6 +215,10 @@ GLOBAL_LIST_INIT(available_ui_styles, sortList(list(
 	QDEL_NULL(vis_holder)
 
 	healths = null
+	bloods = null
+	mana = null
+	stamina = null
+	energy = null
 	healthdoll = null
 	blobpwrdisplay = null
 

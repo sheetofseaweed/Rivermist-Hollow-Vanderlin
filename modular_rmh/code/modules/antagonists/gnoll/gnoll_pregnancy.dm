@@ -136,7 +136,7 @@
 	seed.polling = TRUE
 	pack.reserved_places++
 	var/list/candidates = pollGhostCandidates("Awaken as a fully mature adult Gnoll Champion of Gorellik? Share the pack's living-hunt and renewal contracts; no killing quarry.", ROLE_GNOLL, null, FALSE, 30 SECONDS)
-	for(var/mob/dead/observer/candidate as anything in candidates.Copy())
+	for(var/mob/candidate as anything in candidates.Copy())
 		if(!candidate.client || is_total_antag_banned(candidate.ckey) || is_antag_banned(candidate.ckey, ROLE_GNOLL))
 			candidates -= candidate
 	if(QDELETED(src) || QDELETED(seed) || !Adjacent(user) || !can_join_gnoll_rite(user) || get_gnoll_antag(user) != champion || user.get_active_held_item() != seed || !length(candidates) || length(pack.members) >= pack.get_member_limit())
@@ -145,7 +145,8 @@
 			seed.polling = FALSE
 		to_chat(user, span_notice("The seed waits. Try again when a willing soul and a place in the pack are available."))
 		return
-	var/mob/dead/observer/candidate = pick(candidates)
+	var/mob/candidate = pick(candidates)
+	candidate.leave_lobby_for_role()
 	// This mob is adult in body and mind before receiving a player or antagonist role.
 	var/champion_type = pick(/mob/living/carbon/human/species/gnoll_champion/male, /mob/living/carbon/human/species/gnoll_champion/female)
 	var/mob/living/carbon/human/species/gnoll_champion/new_champion = new champion_type(get_turf(user))

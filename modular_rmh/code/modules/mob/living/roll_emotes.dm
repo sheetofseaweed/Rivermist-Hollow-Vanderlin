@@ -713,7 +713,8 @@ GLOBAL_LIST_INIT(rollable_stats, list(
 	SStgui.close_uis(src)
 	state = null
 	stats = null
-	QDEL_NULL(callback)
+	// Callbacks are refcounted and refuse qdel.
+	callback = null
 	return ..()
 
 /datum/contest_response_prompt/ui_interact(mob/user, datum/tgui/ui)

@@ -142,9 +142,10 @@ GLOBAL_LIST_EMPTY(antagonists)
 /datum/antagonist/proc/replace_banned_player()
 	set waitfor = FALSE
 
-	var/list/mob/dead/observer/candidates = pollCandidatesForMob("Do you want to play as a [name]?", "[name]", null, job_rank, 50, owner.current)
+	var/list/mob/candidates = pollCandidatesForMob("Do you want to play as a [name]?", "[name]", null, job_rank, 50, owner.current)
 	if(LAZYLEN(candidates))
-		var/mob/dead/observer/C = pick(candidates)
+		var/mob/C = pick(candidates)
+		C.leave_lobby_for_role()
 		to_chat(owner, "Your mob has been taken over by a ghost! Appeal your job ban if you want to avoid this in the future!")
 		message_admins("[key_name_admin(C)] has taken control of ([key_name_admin(owner)]) to replace a jobbanned player.")
 		owner.current.ghostize(0)

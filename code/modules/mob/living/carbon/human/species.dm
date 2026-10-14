@@ -517,6 +517,17 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		limbs_id = name
 	..()
 
+/// Voicepacks stay typepaths until first use; species copied without on_species_gain build them here.
+/datum/species/proc/get_soundpack_m()
+	if(ispath(soundpack_m))
+		soundpack_m = new soundpack_m()
+	return soundpack_m
+
+/datum/species/proc/get_soundpack_f()
+	if(ispath(soundpack_f))
+		soundpack_f = new soundpack_f()
+	return soundpack_f
+
 /datum/species/proc/after_creation(mob/living/carbon/human/H)
 	if(H.mind)
 		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
@@ -955,8 +966,8 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		for(var/i in inherent_factions)
 			C.set_faction(C.get_faction() + i) //Using +=/-= for this in case you also gain the faction from a different source.
 
-	soundpack_m = new soundpack_m()
-	soundpack_f = new soundpack_f()
+	get_soundpack_m()
+	get_soundpack_f()
 
 	if(C.underwear)
 		qdel(C.underwear)

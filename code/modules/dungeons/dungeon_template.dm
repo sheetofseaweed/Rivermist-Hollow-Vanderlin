@@ -31,6 +31,10 @@
 /datum/map_template/pocket/dungeon/proc/get_loot_table_type(dungeon_floor = 1)
 	return loot_table_type
 
+/// A failed generated layout may substitute an authored room of the same kind and theme.
+/datum/map_template/pocket/dungeon/proc/get_fallback_template()
+	return null
+
 /// Returns an assoc list of template datum -> weight for all dungeon templates
 /// matching the given filters. Templates are the cached datums registered in
 /// SSpocket_dimensions.templates_by_id (built from SSmapping.map_templates).

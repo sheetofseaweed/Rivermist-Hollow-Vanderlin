@@ -885,7 +885,10 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 /// Setter for the assigned_role job datum.
 /datum/mind/proc/set_assigned_role(datum/job/new_role)
 	if(!istype(new_role))
+		var/requested_role = new_role
 		new_role = ispath(new_role) ? SSjob.GetJobType(new_role) : SSjob.GetJob(new_role)
+		if(!new_role && !isnull(requested_role))
+			stack_trace("set_assigned_role could not resolve [requested_role]; assigned_role becomes null.")
 	if(assigned_role == new_role)
 		return assigned_role
 	. = assigned_role

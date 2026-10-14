@@ -247,7 +247,8 @@
 		injury.adjust_germ_level(incoming_germ * 0.5)
 
 	update_damages()
-	owner.updatehealth()
+	// Organ damage and injuries above can kill or dismember, clearing owner.
+	owner?.updatehealth()
 
 	/*
 	for(var/datum/wound/iter_wound as anything in wounds)
@@ -260,7 +261,7 @@
 			return crit_attempt
 
 /obj/item/bodypart/proc/try_crit(bclass, dam, mob/living/user, zone_precise, silent = FALSE, crit_message = FALSE, list/modifiers = list())
-	if(!bclass || isnum(bclass) || !dam || (owner.status_flags & GODMODE))
+	if(!owner || !bclass || isnum(bclass) || !dam || (owner.status_flags & GODMODE))
 		return FALSE
 	if(dam < 5)
 		return FALSE
@@ -313,6 +314,8 @@
 	return FALSE
 
 /obj/item/bodypart/chest/try_crit(bclass, dam, mob/living/user, zone_precise, silent, crit_message, list/modifiers)
+	if(!owner)
+		return FALSE
 	if(zone_precise == BODY_ZONE_PRECISE_GROIN && (bclass in CBT_BCLASSES))
 		var/cbt_multiplier = (user && HAS_TRAIT(user, TRAIT_NUTCRACKER)) ? 2 : 1
 		if(prob(dam * cbt_multiplier))
@@ -321,6 +324,8 @@
 	return ..()
 
 /obj/item/bodypart/head/try_crit(bclass, dam, mob/living/user, zone_precise, silent, crit_message, list/modifiers)
+	if(!owner)
+		return FALSE
 	var/static/list/knockout_zones = list(BODY_ZONE_PRECISE_NOSE, BODY_ZONE_PRECISE_EARS, BODY_ZONE_PRECISE_SKULL, BODY_ZONE_PRECISE_R_EYE, BODY_ZONE_PRECISE_L_EYE)
 
 	if(!owner.stat && (zone_precise in knockout_zones) && !(bclass in NO_KNOCKOUT_BCLASSES) && (bclass in FRACTURE_BCLASSES))

@@ -613,7 +613,7 @@ GLOBAL_LIST_INIT(examine_panel_slot_layout, list(
 			return TRUE
 
 /datum/examine_panel/ui_close()
-	viewing.client?.tgui_panel?.stop_music()
+	viewing?.client?.tgui_panel?.stop_music()
 	QDEL_NULL(src)
 
 /datum/examine_panel/ui_assets(mob/user)
