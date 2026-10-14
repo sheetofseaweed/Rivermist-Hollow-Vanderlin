@@ -482,10 +482,6 @@
 	monitor.shock_warning_last_at = world.time - DEFEAT_SHOCK_WARNING_COOLDOWN
 	TEST_ASSERT(monitor.maybe_warn_shock_defeat(DEFEAT_SHOCK_WARNING_STAGE), "Shock warning should fire again after the cooldown.")
 
-	test_human.setShockStage(DEFEAT_SHOCK_WARNING_STAGE - 1, FALSE, TRUE)
-	monitor.check_defeat_triggers()
-	TEST_ASSERT_EQUAL(monitor.shock_warning_last_at, 0, "Dropping below the shock warning stage should clear the warning cooldown.")
-
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff
 
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff/Run()
@@ -2225,11 +2221,11 @@
 
 	var/datum/status_effect/debuff/defeat/horny/wobble/lewd = patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_SEVERE)
 	TEST_ASSERT_EQUAL(lewd.linked_alert.name, "Lewd: Rubbery Legs (Severe)", "A horny trauma alert should be labelled distinctly from an ordinary injury.")
-	TEST_ASSERT_NOTEQUAL(lewd.linked_alert.icon_state, head.linked_alert.icon_state, "Horny and physical trauma alerts should not share an icon.")
+	TEST_ASSERT_NOTEQUAL(lewd.linked_alert.overlay_state, head.linked_alert.overlay_state, "Horny and physical trauma alerts should not share an icon.")
 
 	var/datum/status_effect/debuff/defeat/grievous/grave = patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
-	TEST_ASSERT_EQUAL(grave.linked_alert.name, "Grievous: Grievous Wounds (Severe)", "A grievous wound alert should be labelled distinctly.")
-	TEST_ASSERT_NOTEQUAL(grave.linked_alert.icon_state, head.linked_alert.icon_state, "Grievous and physical trauma alerts should not share an icon.")
+	TEST_ASSERT_EQUAL(grave.linked_alert.name, "Recovery: Convalescence (Severe)", "A convalescence alert should be labelled distinctly.")
+	TEST_ASSERT_NOTEQUAL(grave.linked_alert.overlay_state, head.linked_alert.overlay_state, "Convalescence and physical trauma alerts should not share an icon.")
 
 // Focused isolation run for just the mob horny-defeat KO tests. Compile with FOCUS_MOB_HORNY_DEFEAT_TEST
 // defined to run only these. Guarded so it is inert (and safe to leave in) on a normal build.

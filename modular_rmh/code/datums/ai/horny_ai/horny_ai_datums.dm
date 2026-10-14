@@ -1,6 +1,7 @@
 #define HORNY_INTERACTION_TIMEOUT (5 MINUTES)
 #define HORNY_ACTION_BLEED_HEAL_AMOUNT 30
 #define BB_HORNY_BLEED_HEAL_DONE "BB_horny_bleed_heal_done"
+#define HORNY_PREP_PAUSE (1 SECONDS)
 
 /datum/ai_behavior/horny
 	action_cooldown = 1.5 SECONDS
@@ -23,6 +24,12 @@
 /datum/ai_behavior/horny/human
 	// Human-type mobs add prep work before the shared action flow.
 
+
+/// What onlookers see when this mob picks a horny target.
+/mob/living/proc/get_horny_seek_message(mob/living/target)
+	if(gender == MALE)
+		return "[src] has his eyes on [target], cock throbbing!"
+	return "[src] has her eyes on [target], cunt dripping!"
 
 /datum/ai_behavior/horny/setup(datum/ai_controller/controller, target_key, targetting_datum_key)
 	. = ..()
@@ -58,10 +65,7 @@
 	controller.set_blackboard_key(BB_HORNY_WRONG_ACTION, FALSE)
 	controller.set_blackboard_key(BB_HORNY_KNOCKDOWN_NEED, TRUE)
 
-	if(basic_mob.gender == MALE)
-		basic_mob.visible_message(span_boldwarning("[basic_mob] has his eyes on [target_living], cock throbbing!"))
-	else
-		basic_mob.visible_message(span_boldwarning("[basic_mob] has her eyes on [target_living], cunt dripping!"))
+	basic_mob.visible_message(span_boldwarning(basic_mob.get_horny_seek_message(target_living)))
 
 	SEND_SIGNAL(basic_mob, COMSIG_SET_ERECT_STATE, 4)
 
@@ -197,25 +201,30 @@
 
 	if(portal_light)
 		if(handle_target_prep(controller, basic_mob, target_living, scene_controller))
-			controller.set_blackboard_key(BB_HORNY_ACTIONLESS_TICKS, 0)
+			pause_after_prep(controller)
 			return
 		start_horny_action(controller, basic_mob, target_living, scene_controller, target_key)
 		return
 
 	if(try_pre_knockdown_disarm(controller, basic_mob, target_living))
-		controller.set_blackboard_key(BB_HORNY_ACTIONLESS_TICKS, 0)
+		pause_after_prep(controller)
 		return
 
 	if(world.time > controller.blackboard[BB_HORNY_STUN_COOLDOWN] && knockdown_need)
 		if(attempt_stamina_knockdown(controller, basic_mob, target_living))
-			controller.set_blackboard_key(BB_HORNY_ACTIONLESS_TICKS, 0)
+			pause_after_prep(controller)
 			return
 
 	if(handle_target_prep(controller, basic_mob, target_living, scene_controller))
-		controller.set_blackboard_key(BB_HORNY_ACTIONLESS_TICKS, 0)
+		pause_after_prep(controller)
 		return
 
 	start_horny_action(controller, basic_mob, target_living, scene_controller, target_key)
+
+/// Holds the next prep step (strip, tackle, tie) back a moment, so the moves read one at a time.
+/datum/ai_behavior/horny/proc/pause_after_prep(datum/ai_controller/controller)
+	controller.set_blackboard_key(BB_HORNY_ACTIONLESS_TICKS, 0)
+	controller.modify_cooldown(src, max(controller.behavior_cooldowns[src], world.time + HORNY_PREP_PAUSE))
 
 /datum/ai_behavior/horny/proc/stop_active_horny_actions(mob/living/basic_mob)
 	if(!basic_mob)
@@ -240,6 +249,8 @@
 /datum/ai_behavior/horny/proc/is_valid_aggro_interrupt_target(mob/living/basic_mob, datum/targetting_datum/targetting_datum, atom/target)
 	if(!target || target == basic_mob || QDELETED(target))
 		return FALSE
+	if(!basic_mob.ai_controller?.is_threat_in_reach(target))
+		return FALSE
 
 	// Human NPCs can consider prone, armed victims "disarm targets"; that should not
 	// override horny retargeting while this same mob is still a valid horny partner.
@@ -254,7 +265,7 @@
 		if(living_target.stat == DEAD)
 			return FALSE
 		if(living_target.alpha <= 100 || living_target.rogue_sneaking)
-			var/extra_chance = (basic_mob.health <= basic_mob.maxHealth * 0.5) ? 30 : 0
+			var/extra_chance = basic_mob.get_npc_sneak_alert_bonus()
 			if(!basic_mob.npc_detect_sneak(living_target, extra_chance))
 				return FALSE
 
@@ -468,6 +479,18 @@
 				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater, 3)
 		if(target_has_penis)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk/maneater, 2)
+		return
+
+	// Skeletons: a funny bone gets its own acts, and one with nothing below the belt can only pet.
+	if(istype(basic_mob.getorganslot(ORGAN_SLOT_PENIS), /obj/item/organ/genitals/penis/funny_bone))
+		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/funny_bone, 2)
+		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/funny_bone)
+		if(target_has_vagina)
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/funny_bone, 3)
+		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_jerk_over/funny_bone)
+		return
+	if(!has_penis && !has_vagina && istype(basic_mob, /mob/living/carbon/human/species/skeleton))
+		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_bony_petting)
 		return
 
 	if(has_penis)
@@ -746,9 +769,9 @@
 		return FALSE
 
 	if(human_target == basic_mob)
-		basic_mob.visible_message(span_danger("[basic_mob] starts hurriedly pulling off [basic_mob.p_their()] [stripped_item]!"))
+		basic_mob.visible_message(span_danger("[basic_mob] starts hurriedly pulling off [basic_mob.p_their()] [stripped_item.name]!"))
 	else
-		basic_mob.visible_message(span_danger("[basic_mob] starts tugging at [human_target]'s [stripped_item]!"))
+		basic_mob.visible_message(span_danger("[basic_mob] starts tugging at [human_target]'s [stripped_item.name]!"))
 
 	if(!do_after(basic_mob, strip_delay, human_target, interaction_key = "horny_strip"))
 		return TRUE
@@ -761,9 +784,9 @@
 		stripped_item.take_damage(damage_amount = stripped_item.max_integrity * damage_ratio, sound_effect = FALSE)
 
 	if(human_target == basic_mob)
-		basic_mob.visible_message(span_danger("[basic_mob] tears off [basic_mob.p_their()] [stripped_item]!"))
+		basic_mob.visible_message(span_danger("[basic_mob] tears off [basic_mob.p_their()] [stripped_item.name]!"))
 	else
-		basic_mob.visible_message(span_danger("[basic_mob] tears [human_target]'s [stripped_item] loose!"))
+		basic_mob.visible_message(span_danger("[basic_mob] tears [human_target]'s [stripped_item.name] loose!"))
 		// orange() also returns areas and objects, which throw_at cannot land on.
 		var/turf/target_turf = get_turf(human_target)
 		var/turf/landing_spot = target_turf ? pick(RANGE_TURFS(2, target_turf)) : null
@@ -1051,7 +1074,7 @@
 		hit_count += 1
 		controller.set_blackboard_key(BB_HORNY_TARGET_ATTACK_COUNT, hit_count)
 
-		var/health_below_breakpoint = source.maxHealth && source.health <= source.maxHealth * 0.75
+		var/health_below_breakpoint = source.get_ai_hurt_fraction() >= 0.25
 		if(hit_count < 4 && !(hit_count >= 2 && health_below_breakpoint))
 			return
 
@@ -1172,4 +1195,5 @@
 #undef HORNY_INTERACTION_TIMEOUT
 #undef HORNY_ACTION_BLEED_HEAL_AMOUNT
 #undef BB_HORNY_BLEED_HEAL_DONE
+#undef HORNY_PREP_PAUSE
 

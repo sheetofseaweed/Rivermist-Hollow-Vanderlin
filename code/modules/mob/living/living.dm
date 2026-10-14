@@ -3144,9 +3144,18 @@
 		return
 
 	clear_hostile_grab_horny_hostility_timer()
-	retarget_hostile_ai_to_grabber(grabber)
+	// A willing horny partner can't be attacked yet; only the hostility timer may start a fight.
+	if(!is_tolerated_horny_grabber(grabber))
+		retarget_hostile_ai_to_grabber(grabber)
 	schedule_hostile_grab_resist()
 	schedule_hostile_grab_horny_hostility(grabber)
+
+/// TRUE for a grabber our AI wants as a horny partner and has not yet turned hostile.
+/mob/living/proc/is_tolerated_horny_grabber(mob/living/grabber)
+	var/datum/targetting_datum/targetting_datum = ai_controller?.blackboard[BB_TARGETTING_DATUM]
+	if(!targetting_datum?.is_selected_horny_target(src, grabber))
+		return FALSE
+	return !targetting_datum.is_horny_target_now_hostile(src, grabber)
 
 /mob/living/proc/can_hostile_ai_react_to_grabber(mob/living/grabber)
 	if(!ai_controller || QDELETED(grabber) || grabber == src)
