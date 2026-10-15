@@ -179,6 +179,7 @@
 #include "sex_scene_controller_tgui.dm"
 #include "skeleton_funny_bones.dm"
 #include "slave_collar.dm"
+#include "smallclothes_hud.dm"
 #include "spawn_humans.dm"
 #include "spawn_mobs.dm"
 #include "species_fluids.dm"
