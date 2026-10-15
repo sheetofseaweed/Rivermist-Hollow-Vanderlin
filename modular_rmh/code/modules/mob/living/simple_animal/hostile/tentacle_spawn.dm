@@ -254,7 +254,7 @@
 	if(!core)
 		return
 	var/datum/component/bounded/old_bounds = GetComponent(/datum/component/bounded)
-	old_bounds?.RemoveComponent()
+	qdel(old_bounds)
 	// Keep the original burrow as the combat leash, but permit the one deliberate route between that
 	// burrow and the colony core when hauling prey.
 	var/core_route_distance = max(leash_distance, get_dist(src, core) + 1)

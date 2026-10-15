@@ -6,6 +6,8 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 	sight = SEE_TURFS | SEE_MOBS | SEE_OBJS | SEE_SELF
 	move_resist = INFINITY
 	throwforce = 0
+	// Dead mobs skip /mob/Initialize, so the holder would stay a bare typepath.
+	attributes = null
 	/// For instant transfer once the round is set up
 	var/mob/living/new_character
 

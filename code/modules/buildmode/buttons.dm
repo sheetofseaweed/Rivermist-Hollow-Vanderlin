@@ -75,5 +75,8 @@
 	name = "Quit Buildmode"
 
 /atom/movable/screen/buildmode/quit/Click()
+	// A stale button can still be clicked after its buildmode datum is gone.
+	if(!bd)
+		return 1
 	bd.quit()
 	return 1

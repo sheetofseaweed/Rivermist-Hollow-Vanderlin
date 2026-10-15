@@ -199,6 +199,8 @@
 	culture = GLOB.culture_singletons[culture]
 
 	. = ..()
+	// Only damage refreshes health, so start full instead of at the living default of 100.
+	set_health(maxHealth)
 
 	AddElement(/datum/element/ridable, /datum/component/riding/creature/human)
 	AddElement(/datum/element/footstep, footstep_type, 1, -6)

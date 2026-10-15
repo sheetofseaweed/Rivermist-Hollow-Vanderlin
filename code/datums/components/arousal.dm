@@ -531,7 +531,7 @@
 	playsound(parent, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
 	// Special cases for when the user has a penis but no testicles & for eunuchs
 	if((!mob.getorganslot(ORGAN_SLOT_TESTICLES) && mob.getorganslot(ORGAN_SLOT_PENIS)) || (!mob.getorganslot(ORGAN_SLOT_TESTICLES) && !mob.getorganslot(ORGAN_SLOT_VAGINA)))
-		mob.visible_message(span_love("[mob] climaxes, yet nothing is released!"))
+		mob.visible_message(span_love(mob.get_dry_climax_message()))
 		after_ejaculation(FALSE, parent, null, action, action_initiator, action_target, action_performer)
 		return
 	var/obj/item/organ/genitals/filling_organ/testicles/climax_testes = mob.getorganslot(ORGAN_SLOT_TESTICLES)

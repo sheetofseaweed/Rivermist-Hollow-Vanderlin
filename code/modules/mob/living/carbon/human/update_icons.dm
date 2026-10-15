@@ -309,6 +309,9 @@ GLOBAL_PROTECT(no_child_icons)
 
 //For legacy support.
 /mob/living/carbon/human/regenerate_icons()
+	// Queued spawn() calls, such as sneak fades, can land after deletion has cleared dna.
+	if(QDELETED(src))
+		return
 	if(!..())
 		icon_render_key = null //invalidate bodyparts cache
 		if(dna?.species?.regenerate_icons(src))
@@ -2231,7 +2234,7 @@ generate/load female uniform sprites matching all previously decided variables
 		new_limbs += limb_icons
 	if(new_limbs.len)
 		overlays_standing[BODYPARTS_LAYER] = new_limbs
-		limb_icon_cache[icon_render_key] = new_limbs
+		store_limb_icons(icon_render_key, new_limbs)
 
 	apply_overlay(BODYPARTS_LAYER)
 	update_damage_overlays()
