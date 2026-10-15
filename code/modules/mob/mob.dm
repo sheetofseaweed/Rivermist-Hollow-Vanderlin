@@ -37,6 +37,9 @@ GLOBAL_VAR_INIT(mobids, 1)
 		for(var/mob/dead/observe as anything in observers)
 			observe.reset_perspective(null)
 	qdel(hud_used)
+	// The holder points back at us; left alone, the pair is a cycle refcounting never frees.
+	if(istype(attributes))
+		QDEL_NULL(attributes)
 	for(var/cc in client_colours)
 		qdel(cc)
 	client_colours = null

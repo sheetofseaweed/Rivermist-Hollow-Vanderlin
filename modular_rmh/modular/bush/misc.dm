@@ -54,6 +54,10 @@
 	default_disabled = TRUE
 	gender_enabled = MALE
 
+/// Starts disabled for every sex, so species given chest hair later keep existing characters unchanged.
+/datum/customizer/bodypart_feature/body_hair/optional
+	gender_enabled = null
+
 /datum/customizer_choice/bodypart_feature/body_hair
 	name = "Body Hair"
 	feature_type = /datum/bodypart_feature/hair/body_hair

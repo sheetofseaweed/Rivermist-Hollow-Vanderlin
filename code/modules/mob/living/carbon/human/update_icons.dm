@@ -93,22 +93,11 @@ GLOBAL_PROTECT(no_child_icons)
 	remove_overlay(LEG_DAMAGE_LAYER)
 	remove_overlay(ARM_DAMAGE_LAYER)
 
-	var/use_female_sprites = MALE_SPRITES
-	if(species?.sexes)
-		if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-			use_female_sprites = FEMALE_SPRITES
-
-	var/list/offsets
-	var/limb_icon
-	if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-		offsets = species.offset_features_f
-		limb_icon = species.dam_icon_f
-	else
-		offsets = species.offset_features_m
-		limb_icon = species.dam_icon_m
+	var/list/offsets = get_offset_features()
+	var/limb_icon = get_damage_icon()
 
 	var/hidechest = TRUE
-	if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
+	if(get_body_cut() == BODY_CUT_FEMININE)
 		var/obj/item/bodypart/CH = get_bodypart(BODY_ZONE_CHEST)
 		if(CH)
 			if(wear_armor?.flags_inv & HIDEBOOB)
@@ -309,6 +298,9 @@ GLOBAL_PROTECT(no_child_icons)
 
 //For legacy support.
 /mob/living/carbon/human/regenerate_icons()
+	// Queued spawn() calls, such as sneak fades, can land after deletion has cleared dna.
+	if(QDELETED(src))
+		return
 	if(!..())
 		icon_render_key = null //invalidate bodyparts cache
 		if(dna?.species?.regenerate_icons(src))
@@ -382,18 +374,8 @@ GLOBAL_PROTECT(no_child_icons)
 		update_hud_neck(wear_neck)
 		var/list/obscured = check_obscured_slots()
 		if(!(ITEM_SLOT_NECK & obscured[SLOT_CHECK_REGULAR]))
-			var/datum/species/species = dna?.species
 
-			var/use_female_sprites = FALSE
-			if(species?.sexes)
-				if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-					use_female_sprites = FEMALE_SPRITES
-
-			var/list/offsets
-			if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-				offsets = species.offset_features_f
-			else
-				offsets = species.offset_features_m
+			var/list/offsets = get_offset_features()
 
 			var/mutable_appearance/neck_overlay = wear_neck.build_worn_icon(age, NECK_LAYER, 'icons/roguetown/clothing/onmob/neck.dmi')
 			if(LAZYACCESS(offsets, OFFSET_NECK))
@@ -422,18 +404,7 @@ GLOBAL_PROTECT(no_child_icons)
 			client.screen += wear_ring
 		update_observer_view(wear_ring)
 
-		var/datum/species/species = dna?.species
-
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/list/offsets = get_offset_features()
 
 		var/mutable_appearance/ring_overlay = wear_ring.build_worn_icon(age, RING_LAYER, 'icons/roguetown/clothing/onmob/rings.dmi')
 		if(LAZYACCESS(offsets, OFFSET_RING))
@@ -458,10 +429,7 @@ GLOBAL_PROTECT(no_child_icons)
 		inv?.update_appearance(UPDATE_ICON_STATE)
 
 	var/datum/species/species = dna?.species
-	var/use_female_sprites = FALSE
-	if(species?.sexes)
-		if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-			use_female_sprites = FEMALE_SPRITES
+	var/use_female_sprites = get_worn_cut()
 
 	if(!gloves && bloody_hands)
 		var/mutable_appearance/bloody_overlay = mutable_appearance('icons/effects/blood.dmi', "bloodyhands", -GLOVES_LAYER)
@@ -471,7 +439,7 @@ GLOBAL_PROTECT(no_child_icons)
 			else if(has_right_hand(FALSE))
 				bloody_overlay.icon_state = "bloodyhands_right"
 
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
+		if(get_body_cut() == BODY_CUT_FEMININE)
 			bloody_overlay.icon_state += "_f"
 
 		overlays_standing[GLOVESLEEVE_LAYER] = bloody_overlay
@@ -483,11 +451,7 @@ GLOBAL_PROTECT(no_child_icons)
 				client.screen += gloves
 		update_observer_view(gloves, 1)
 
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -544,16 +508,9 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/armsindex = get_limbloss_index(ARM_RIGHT, ARM_LEFT)
 
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
+		var/use_female_sprites = get_worn_cut()
 
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -614,16 +571,9 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/footindex = get_limbloss_index(LEG_RIGHT, LEG_LEFT)
 
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
+		var/use_female_sprites = get_worn_cut()
 
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -677,16 +627,7 @@ GLOBAL_PROTECT(no_child_icons)
 			return
 
 		update_hud_head(head)
-		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/list/offsets = get_offset_features()
 
 		overlays_standing[HEAD_LAYER] = head.build_worn_icon(age = age, default_layer = HEAD_LAYER, default_icon_file = 'icons/roguetown/clothing/onmob/head.dmi', coom = FALSE)
 		var/mutable_appearance/head_overlay = overlays_standing[HEAD_LAYER]
@@ -718,16 +659,9 @@ GLOBAL_PROTECT(no_child_icons)
 		inv?.update_appearance(UPDATE_ICON_STATE)
 
 	var/datum/species/species = dna?.species
-	var/use_female_sprites = FALSE
-	if(species?.sexes)
-		if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-			use_female_sprites = FEMALE_SPRITES
+	var/use_female_sprites = get_worn_cut()
 
-	var/list/offsets
-	if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-		offsets = species.offset_features_f
-	else
-		offsets = species.offset_features_m
+	var/list/offsets = get_offset_features()
 
 	var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 
@@ -872,16 +806,7 @@ GLOBAL_PROTECT(no_child_icons)
 		var/list/obscured = check_obscured_slots()
 		if(!(ITEM_SLOT_MASK & obscured[SLOT_CHECK_REGULAR]))
 			var/mutable_appearance/mask_overlay = wear_mask.build_worn_icon(default_layer = MASK_LAYER, default_icon_file = 'icons/roguetown/clothing/onmob/masks.dmi')
-			var/datum/species/species = dna?.species
-			var/use_female_sprites = FALSE
-			if(species.sexes)
-				if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-					use_female_sprites = FEMALE_SPRITES
-			var/list/offsets
-			if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-				offsets = species.offset_features_f
-			else
-				offsets = species.offset_features_m
+			var/list/offsets = get_offset_features()
 			var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 			if(mask_overlay)
 				if(LAZYACCESS(offsets, OFFSET_FACEMASK))
@@ -909,20 +834,7 @@ GLOBAL_PROTECT(no_child_icons)
 		inv = hud_used.inv_slots[TOBITSHIFT(ITEM_SLOT_BACK_L) + 1]
 		inv?.update_appearance(UPDATE_ICON_STATE)
 
-	var/datum/species/species = dna?.species
-
-	var/use_female_sprites = FALSE
-	if(species?.sexes)
-		if(gender == FEMALE && !species.swap_female_clothes)
-			use_female_sprites = FEMALE_BOOB
-		else if(gender == MALE && species.swap_male_clothes)
-			use_female_sprites = FEMALE_SPRITES
-
-	var/list/offsets
-	if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-		offsets = species.offset_features_f
-	else
-		offsets = species.offset_features_m
+	var/list/offsets = get_offset_features()
 
 	var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 
@@ -1043,18 +955,9 @@ GLOBAL_PROTECT(no_child_icons)
 	var/list/cloaklays
 	var/datum/species/species = dna?.species
 
-	var/use_female_sprites = FALSE
-	if(species?.sexes)
-		if(gender == FEMALE && !species.swap_female_clothes)
-			use_female_sprites = FEMALE_BOOB
-		else if(gender == MALE && species.swap_male_clothes)
-			use_female_sprites = FEMALE_SPRITES
+	var/use_female_sprites = get_torso_cut()
 
-	var/list/offsets
-	if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-		offsets = species.offset_features_f
-	else
-		offsets = species.offset_features_m
+	var/list/offsets = get_offset_features()
 
 	var/racecustom
 	if(species?.custom_clothes)
@@ -1165,17 +1068,8 @@ GLOBAL_PROTECT(no_child_icons)
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes)
-				use_female_sprites = hideboob ? FEMALE_SPRITES : FEMALE_BOOB
-			else if(gender == MALE && species.swap_male_clothes)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_torso_cut(hideboob)
+		var/list/offsets = get_offset_features()
 		var/racecustom
 		if(species?.custom_clothes)
 			if(species.custom_id)
@@ -1239,17 +1133,8 @@ GLOBAL_PROTECT(no_child_icons)
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes)
-				use_female_sprites = hideboob ? FEMALE_SPRITES : FEMALE_BOOB
-			else if(gender == MALE && species.swap_male_clothes)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_torso_cut(hideboob)
+		var/list/offsets = get_offset_features()
 		var/racecustom
 		if(species?.custom_clothes)
 			if(species?.custom_id)
@@ -1308,15 +1193,8 @@ GLOBAL_PROTECT(no_child_icons)
 		update_observer_view(wear_pants,1)
 		var/datum/species/species = dna?.species
 		var/legsindex = get_limbloss_index(LEG_RIGHT, LEG_LEFT)
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 		var/racecustom
 		if(species?.custom_clothes)
 			if(species.custom_id)
@@ -1370,16 +1248,7 @@ GLOBAL_PROTECT(no_child_icons)
 		update_hud_mouth(mouth)
 		var/list/obscured = check_obscured_slots()
 		if(!(ITEM_SLOT_MOUTH & obscured[SLOT_CHECK_REGULAR]))
-			var/datum/species/species = dna?.species
-			var/use_female_sprites = FALSE
-			if(species?.sexes)
-				if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-					use_female_sprites = FEMALE_SPRITES
-			var/list/offsets
-			if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-				offsets = species.offset_features_f
-			else
-				offsets = species.offset_features_m
+			var/list/offsets = get_offset_features()
 			var/mutable_appearance/mouth_overlay = mouth.build_worn_icon(age, MOUTH_LAYER, 'icons/roguetown/clothing/onmob/mouth_items.dmi')
 			if(mouth_overlay)
 				if(LAZYACCESS(offsets, OFFSET_MOUTH))
@@ -1396,15 +1265,8 @@ GLOBAL_PROTECT(no_child_icons)
 	if(underwear)
 		var/b_size = 0
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -1434,15 +1296,8 @@ GLOBAL_PROTECT(no_child_icons)
 
 	if(legwear_socks)
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 		var/racecustom
 		if(species?.custom_clothes)
 			if(species.custom_id)
@@ -1470,15 +1325,8 @@ GLOBAL_PROTECT(no_child_icons)
 	if(bra)
 		var/b_size = 0
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 
 		var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 
@@ -1514,15 +1362,8 @@ GLOBAL_PROTECT(no_child_icons)
 
 	if(garter)
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 
 		var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 
@@ -1566,17 +1407,8 @@ GLOBAL_PROTECT(no_child_icons)
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes)
-				use_female_sprites = hideboob ? FEMALE_SPRITES : FEMALE_BOOB
-			else if(gender == MALE && species.swap_male_clothes)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_torso_cut(hideboob)
+		var/list/offsets = get_offset_features()
 
 		var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 
@@ -1630,15 +1462,8 @@ GLOBAL_PROTECT(no_child_icons)
 
 	if(choker)
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 		var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 		var/racecustom
 		if(species?.custom_clothes)
@@ -1666,15 +1491,8 @@ GLOBAL_PROTECT(no_child_icons)
 
 	if(earring_l)
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -1702,15 +1520,8 @@ GLOBAL_PROTECT(no_child_icons)
 
 	if(earring_r)
 		var/datum/species/species = dna?.species
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/use_female_sprites = get_worn_cut()
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -1741,16 +1552,9 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/armsindex = get_limbloss_index(ARM_RIGHT, ARM_LEFT)
 
-		var/use_female_sprites = FALSE
-		if(species?.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
+		var/use_female_sprites = get_worn_cut()
 
-		var/list/offsets
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		var/list/offsets = get_offset_features()
 
 		var/racecustom
 		if(species?.custom_clothes)
@@ -2025,7 +1829,7 @@ generate/load female uniform sprites matching all previously decided variables
 			sleeveindex -= 2
 
 	var/index = I.icon_state
-	if(gender == FEMALE ^ dna.species.swap_female_clothes)
+	if(uses_feminine_sleeves())
 		index += "_f"
 	if(dna.species.custom_clothes)
 		index += "_[dna.species.custom_id ? dna.species.custom_id : dna.species.id]"
@@ -2134,6 +1938,9 @@ generate/load female uniform sprites matching all previously decided variables
 
 	. += gender
 	. += age
+	var/datum/body_build/build = get_body_build()
+	if(build)
+		. += "build_[build.id]"
 
 	for(var/obj/item/bodypart/BP as anything in bodyparts)
 		. += BP.body_zone
@@ -2231,7 +2038,7 @@ generate/load female uniform sprites matching all previously decided variables
 		new_limbs += limb_icons
 	if(new_limbs.len)
 		overlays_standing[BODYPARTS_LAYER] = new_limbs
-		limb_icon_cache[icon_render_key] = new_limbs
+		store_limb_icons(icon_render_key, new_limbs)
 
 	apply_overlay(BODYPARTS_LAYER)
 	update_damage_overlays()
@@ -2254,16 +2061,7 @@ generate/load female uniform sprites matching all previously decided variables
 
 	var/datum/species/species = dna?.species
 
-	var/use_female_sprites = MALE_SPRITES
-	if(species.sexes)
-		if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-			use_female_sprites = FEMALE_SPRITES
-
-	var/list/offsets
-	if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-		offsets = species.offset_features_f
-	else
-		offsets = species.offset_features_m
+	var/list/offsets = get_offset_features()
 
 	HD.update_limb()
 

@@ -93,6 +93,8 @@
 		gender = FEMALE
 	. = ..()
 	ensure_spider_ovipositor(src)
+	// Lets a hit make the attacker its target, like other hostile creatures.
+	AddComponent(/datum/component/ai_aggro_system)
 
 	update_appearance(UPDATE_OVERLAYS)
 

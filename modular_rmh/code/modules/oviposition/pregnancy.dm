@@ -500,6 +500,7 @@
 		hatchling.AddComponent(/datum/component/newborn_growth, needs_newborn_scaling ? newborn_start_scale : 1, newborn_growth_duration, 1, protected_parent)
 
 	if(player)
+		player.leave_lobby_for_role()
 		hatchling.mind_initialize()
 		if(player.mind)
 			player.mind.transfer_to(hatchling, TRUE)

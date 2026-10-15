@@ -48,6 +48,9 @@
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/mm.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/fm.dmi'
+	allowed_body_builds = HUMANOID_BODY_BUILDS
+	default_body_build_m = BODY_BUILD_AVERAGE
+	default_body_build_f = BODY_BUILD_SLIM
 
 	soundpack_m = /datum/voicepack/male/serious
 
@@ -126,6 +129,7 @@
 		/datum/customizer/organ/genitals/butt/human,
 		/datum/customizer/organ/genitals/testicles/human,
 		/datum/customizer/organ/wings/aasimar,
+		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,
 		/datum/customizer/bodypart_feature/armpit_hair,
 	)

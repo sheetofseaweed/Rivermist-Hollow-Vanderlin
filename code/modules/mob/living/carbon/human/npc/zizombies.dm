@@ -110,7 +110,8 @@
 
 /mob/living/carbon/human/species/zizombie/proc/configure_mind()
 	if(!mind)
-		mind = new /datum/mind(src)
+		// No key: a keyed mind looks like a logged-off player, and ERP refuses those.
+		mind = new /datum/mind()
 	attributes?.add_sheet(/datum/attribute_holder/sheet/job/zizombie)
 
 

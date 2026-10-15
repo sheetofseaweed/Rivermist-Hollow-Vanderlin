@@ -67,6 +67,9 @@
 	stop_offering_item()
 
 	QDEL_LIST(surgeries)
+	// Carbons delete organs after ghosting in their own Destroy; creature organs would otherwise keep this mob alive.
+	if(!iscarbon(src))
+		QDEL_LIST(internal_organs)
 
 	GLOB.mob_living_list -= src
 	for(var/datum/soullink/S as anything in ownedSoullinks)
@@ -1728,10 +1731,12 @@
 	else if(wall_count >= 3) // Against wall
 		modifier += 0.15
 
-	// Difficult terrain
-	if(our_turf.slowdown > their_turf.slowdown)
+	// Difficult terrain; slowdown only exists on open turfs.
+	var/our_slowdown = isopenturf(our_turf) ? our_turf.slowdown : 0
+	var/their_slowdown = isopenturf(their_turf) ? their_turf.slowdown : 0
+	if(our_slowdown > their_slowdown)
 		modifier -= 0.1 // We're disadvantaged by terrain
-	else if(their_turf.slowdown > our_turf.slowdown)
+	else if(their_slowdown > our_slowdown)
 		modifier += 0.1 // They're disadvantaged
 
 	return modifier
@@ -3139,9 +3144,18 @@
 		return
 
 	clear_hostile_grab_horny_hostility_timer()
-	retarget_hostile_ai_to_grabber(grabber)
+	// A willing horny partner can't be attacked yet; only the hostility timer may start a fight.
+	if(!is_tolerated_horny_grabber(grabber))
+		retarget_hostile_ai_to_grabber(grabber)
 	schedule_hostile_grab_resist()
 	schedule_hostile_grab_horny_hostility(grabber)
+
+/// TRUE for a grabber our AI wants as a horny partner and has not yet turned hostile.
+/mob/living/proc/is_tolerated_horny_grabber(mob/living/grabber)
+	var/datum/targetting_datum/targetting_datum = ai_controller?.blackboard[BB_TARGETTING_DATUM]
+	if(!targetting_datum?.is_selected_horny_target(src, grabber))
+		return FALSE
+	return !targetting_datum.is_horny_target_now_hostile(src, grabber)
 
 /mob/living/proc/can_hostile_ai_react_to_grabber(mob/living/grabber)
 	if(!ai_controller || QDELETED(grabber) || grabber == src)

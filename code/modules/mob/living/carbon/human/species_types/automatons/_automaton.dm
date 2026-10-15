@@ -128,22 +128,22 @@
 	var/datum/component/component
 
 	component = C.GetComponent(/datum/component/abberant_eater)
-	component?.RemoveComponent()
+	qdel(component)
 
 	component = C.GetComponent(/datum/component/steam_life)
-	component?.RemoveComponent()
+	qdel(component)
 
 	component = C.GetComponent(/datum/component/command_follower)
-	component?.RemoveComponent()
+	qdel(component)
 
 	component = C.GetComponent(/datum/component/augmentable)
-	component?.RemoveComponent()
+	qdel(component)
 
 	component = C.GetComponent(/datum/component/easy_repair)
-	component?.RemoveComponent()
+	qdel(component)
 
 	component = C.GetComponent(/datum/component/damage_shutdown)
-	component?.RemoveComponent()
+	qdel(component)
 
 /datum/species/automaton/proc/add_species_actions(mob/living/carbon/C)
 	for(var/datum/action/action as anything in actions)

@@ -158,8 +158,11 @@
 	if(!succeeded)
 		controller.clear_blackboard_key(target_key)
 	var/mob/living/simple_animal/basic_mob = controller.pawn
+	// The swing can kill a del_on_death attacker, leaving no pawn.
+	if(QDELETED(basic_mob))
+		return
 	basic_mob.cmode = FALSE
-	SEND_SIGNAL(controller.pawn, COMSIG_COMBAT_TARGET_SET, FALSE)
+	SEND_SIGNAL(basic_mob, COMSIG_COMBAT_TARGET_SET, FALSE)
 
 /datum/ai_behavior/basic_ranged_attack
 	action_cooldown = 0.6 SECONDS

@@ -470,7 +470,7 @@
 
 /atom/proc/ShiftClick(mob/user, list/modifiers)
 	SEND_SIGNAL(src, COMSIG_CLICK_SHIFT, user, modifiers)
-	if(user.client && user.client.eye == user || user.client.eye == user.loc)
+	if(user.client && (user.client.eye == user || user.client.eye == user.loc))
 		user.examinate(src)
 
 /*
@@ -747,7 +747,7 @@
 
 /atom/proc/ShiftRightClick(mob/user)
 	SEND_SIGNAL(src, COMSIG_CLICK_RIGHT_SHIFT, user)
-	if(user.client && user.client.eye == user || user.client.eye == user.loc)
+	if(user.client && (user.client.eye == user || user.client.eye == user.loc))
 		user.examinate(src)
 
 /mob/proc/addtemptarget()

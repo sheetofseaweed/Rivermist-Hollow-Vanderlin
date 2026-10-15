@@ -225,10 +225,12 @@
 				modifier = "old"
 			if(!ignore_silent && !H.can_speak() || (!ignore_silent && HAS_TRAIT(H, TRAIT_MUTE)) || (!ignore_silent && HAS_TRAIT(H, TRAIT_BAGGED)))
 				modifier = "silenced"
-			if(user.gender == FEMALE && H.dna.species.soundpack_f)
-				possible_sounds = H.dna.species.soundpack_f.get_sound(key,modifier)
-			else if(H.dna.species.soundpack_m)
-				possible_sounds = H.dna.species.soundpack_m.get_sound(key,modifier)
+			var/datum/voicepack/soundpack_m = H.dna.species.get_soundpack_m()
+			var/datum/voicepack/soundpack_f = H.dna.species.get_soundpack_f()
+			if(user.gender == FEMALE && soundpack_f)
+				possible_sounds = soundpack_f.get_sound(key,modifier)
+			else if(soundpack_m)
+				possible_sounds = soundpack_m.get_sound(key,modifier)
 			//RMH ADD - manual voicepack selection
 			if(H.moan_selection && (key in list("sexmoanlight","sexmoanmed","sexmoanhvy","groan","painmoan","whimper","sexmoangag","sexmoangag_org")))
 				var/datum/moan_pack/vpath
@@ -265,12 +267,12 @@
 			else if(H.voice_type)
 				switch (H.voice_type)
 					if (VOICE_TYPE_MASC)
-						possible_sounds = H.dna.species.soundpack_m.get_sound(key, modifier)
+						possible_sounds = soundpack_m?.get_sound(key, modifier)
 					if (VOICE_TYPE_FEM, VOICE_TYPE_ANDRO)
-						if (H.dna.species.soundpack_f)
-							possible_sounds = H.dna.species.soundpack_f.get_sound(key, modifier)
+						if (soundpack_f)
+							possible_sounds = soundpack_f.get_sound(key, modifier)
 						else
-							possible_sounds = H.dna.species.soundpack_m.get_sound(key, modifier)
+							possible_sounds = soundpack_m?.get_sound(key, modifier)
 			if(possible_sounds)
 				if(islist(possible_sounds))
 					var/list/PS = possible_sounds

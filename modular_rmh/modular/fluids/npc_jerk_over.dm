@@ -23,7 +23,10 @@
 	if(!.)
 		return
 	aim_at_target(user, target)
-	user.visible_message(span_warning("[user] grips [user.p_their()] cock and points it at [target]..."))
+	user.visible_message(span_warning(get_start_message(user, target)))
+
+/datum/sex_action/npc/npc_jerk_over/proc/get_start_message(mob/living/user, mob/living/target)
+	return "[user] grips [user.p_their()] cock and points it at [target]..."
 
 /// Picks a spot on the target, mostly high on the body, so later spurts drift down it.
 /datum/sex_action/npc/npc_jerk_over/proc/aim_at_target(mob/living/user, mob/living/target)
@@ -38,7 +41,7 @@
 /datum/sex_action/npc/npc_jerk_over/on_perform(mob/living/user, mob/living/target)
 	. = ..()
 	if(can_show_action_message(user, target))
-		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] jerks [user.p_their()] cock over [target]..."))
+		user.visible_message(spanify_force(get_perform_message(user, target)))
 	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
 	perform_sex_action(user, user, 2, 0, 2)
 	handle_passive_ejaculation()
@@ -48,7 +51,13 @@
 	var/obj/item/organ/genitals/penis/penis = user.getorganslot(ORGAN_SLOT_PENIS)
 	if(penis?.climax_aim?.aimer == user)
 		penis.climax_aim.clear()
-	user.visible_message(span_warning("[user] stops jerking off."))
+	user.visible_message(span_warning(get_finish_message(user, target)))
+
+/datum/sex_action/npc/npc_jerk_over/proc/get_perform_message(mob/living/user, mob/living/target)
+	return "[user] [get_generic_force_adjective()] jerks [user.p_their()] cock over [target]..."
+
+/datum/sex_action/npc/npc_jerk_over/proc/get_finish_message(mob/living/user, mob/living/target)
+	return "[user] stops jerking off."
 
 /datum/sex_action/npc/npc_jerk_over/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	user.visible_message(span_love("[user] cums over [target]!"))

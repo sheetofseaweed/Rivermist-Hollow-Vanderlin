@@ -791,6 +791,10 @@
 	refresh_erp_preference_cache()
 	return cached_horny_mob_family_flags
 
+/// Shown when this mob climaxes with nothing to release.
+/mob/living/proc/get_dry_climax_message()
+	return "[src] climaxes, yet nothing is released!"
+
 /mob/living/proc/give_genitals()
 	var/mob/living/user = src
 	var/obj/item/organ/genitals/filling_organ/anus/anus = user.getorganslot(ORGAN_SLOT_ANUS)

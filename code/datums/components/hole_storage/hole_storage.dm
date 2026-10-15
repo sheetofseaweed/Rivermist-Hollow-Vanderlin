@@ -127,7 +127,7 @@
  * @param override - If the insertion should always succeed. Boolean
 */
 /datum/component/body_storage/proc/handle_insertion(datum/source, obj/item/incoming_item, target_layer, force = FALSE, override = FALSE)
-	if(!available_layers[target_layer])
+	if(QDELETED(incoming_item) || !available_layers[target_layer])
 		return FALSE
 	var/fit_condition = check_fit(source, incoming_item, target_layer, force, override)
 	if(fit_condition == INSERT_FEEDBACK_OK || fit_condition == INSERT_FEEDBACK_OK_FORCE || fit_condition == INSERT_FEEDBACK_ALMOST_FULL || fit_condition == INSERT_FEEDBACK_OK_OVERRIDE)

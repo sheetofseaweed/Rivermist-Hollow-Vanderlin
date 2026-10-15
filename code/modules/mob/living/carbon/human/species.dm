@@ -17,6 +17,13 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	var/limbs_icon_m
 	/// Limb icon to use to build appearance for females
 	var/limbs_icon_f
+	/// BODY_BUILD_* ids offered in character setup; null keeps limbs_icon_m and limbs_icon_f.
+	var/list/allowed_body_builds
+	/// Build used when none or an invalid one is picked, so NPCs and old saves keep their body.
+	var/default_body_build_m
+	var/default_body_build_f
+	/// BODY_PALETTE_* sprite set the builds draw from.
+	var/body_build_palette = BODY_PALETTE_SKIN
 	/// if alien colors are disabled, this is the color that will be used by that race
 	var/default_color = "#FFF"
 	/// List of ages that can be selected in prefs for this species
@@ -517,6 +524,17 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		limbs_id = name
 	..()
 
+/// Voicepacks stay typepaths until first use; species copied without on_species_gain build them here.
+/datum/species/proc/get_soundpack_m()
+	if(ispath(soundpack_m))
+		soundpack_m = new soundpack_m()
+	return soundpack_m
+
+/datum/species/proc/get_soundpack_f()
+	if(ispath(soundpack_f))
+		soundpack_f = new soundpack_f()
+	return soundpack_f
+
 /datum/species/proc/after_creation(mob/living/carbon/human/H)
 	if(H.mind)
 		H.dna.species.accent_language = H.dna.species.get_accent(H.dna.species.native_language)
@@ -955,8 +973,8 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		for(var/i in inherent_factions)
 			C.set_faction(C.get_faction() + i) //Using +=/-= for this in case you also gain the faction from a different source.
 
-	soundpack_m = new soundpack_m()
-	soundpack_f = new soundpack_f()
+	get_soundpack_m()
+	get_soundpack_f()
 
 	if(C.underwear)
 		qdel(C.underwear)
@@ -1035,17 +1053,7 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	H.remove_overlay(BODY_LAYER)
 	H.remove_overlay(ABOVE_BODY_FRONT_LAYER)
 
-	var/datum/species/species = H.dna?.species
-	var/use_female_sprites = FALSE
-	var/list/offsets
-	if(species)
-		if(species.sexes)
-			if(H.gender == FEMALE && !species.swap_female_clothes || H.gender == MALE && species.swap_male_clothes)
-				use_female_sprites = FEMALE_BOOB
-		if(use_female_sprites && !(H.gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+	var/list/offsets = H.get_offset_features()
 
 	var/list/standing = list()
 

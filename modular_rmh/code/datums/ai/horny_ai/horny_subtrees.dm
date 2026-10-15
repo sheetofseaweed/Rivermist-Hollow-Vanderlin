@@ -48,6 +48,14 @@
 
 	return /datum/ai_behavior/horny/simple_mob
 
+/// TRUE while a horny scene with this attacker runs; the horny behavior counts their hits itself.
+/proc/horny_ai_counts_partner_hits(datum/ai_controller/controller, atom/attacker)
+	if(!controller || !attacker)
+		return FALSE
+	if(controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET] != attacker)
+		return FALSE
+	return !isnull(controller.blackboard[BB_HORNY_TIME_START])
+
 /datum/ai_planning_subtree/proc/horny_ai_should_yield_to_aggro(datum/ai_controller/controller)
 	var/mob/living/living_pawn = controller.pawn
 	var/datum/targetting_datum/targetting_datum = controller.blackboard[BB_TARGETTING_DATUM]
@@ -80,6 +88,8 @@
 /datum/ai_planning_subtree/proc/horny_ai_is_valid_aggro_target(mob/living/living_pawn, datum/targetting_datum/targetting_datum, atom/target)
 	if(!target || target == living_pawn || QDELETED(target))
 		return FALSE
+	if(!living_pawn.ai_controller?.is_threat_in_reach(target))
+		return FALSE
 
 	// Human NPCs can consider prone, armed victims "disarm targets"; keep that from
 	// hijacking horny planning while this same mob is still a valid horny partner.
@@ -94,7 +104,7 @@
 		if(living_target.stat == DEAD)
 			return FALSE
 		if(living_target.alpha <= 100 || living_target.rogue_sneaking)
-			var/extra_chance = (living_pawn.health <= living_pawn.maxHealth * 0.5) ? 30 : 0
+			var/extra_chance = living_pawn.get_npc_sneak_alert_bonus()
 			if(!living_pawn.npc_detect_sneak(living_target, extra_chance))
 				return FALSE
 

@@ -116,15 +116,15 @@
 	var/datum/antagonist/gnoll/champion = get_gnoll_antag(user)
 	if(champion && world.time < champion.customization_until)
 		page += "<p><b>Changes also reshape your current champion for [DisplayTimeText(champion.customization_until - world.time)].</b></p>"
-	page += "<b>Name:</b> [html_encode(profile["name"])] <a href='?src=[REF(src)];field=name'>Change</a> · <a href='?src=[REF(src)];field=random_name'>Randomize</a><br>"
-	page += "<b>Voice color:</b> <a href='?src=[REF(src)];field=voice_color'>[html_encode(profile["voice_color"])]</a><br>"
+	page += "<b>Name:</b> [html_encode(profile["name"])] <a href='byond://?src=[REF(src)];field=name'>Change</a> · <a href='byond://?src=[REF(src)];field=random_name'>Randomize</a><br>"
+	page += "<b>Voice color:</b> <a href='byond://?src=[REF(src)];field=voice_color'>[html_encode(profile["voice_color"])]</a><br>"
 	for(var/field in appearance_fields)
 		var/list/options = get_options(field)
 		var/current_label
 		for(var/label in options)
 			if(options[label] == profile[field])
 				current_label = label
-		page += "<b>[appearance_fields[field]]:</b> <a href='?src=[REF(src)];field=[field]'>[html_encode(current_label)]</a><br>"
+		page += "<b>[appearance_fields[field]]:</b> <a href='byond://?src=[REF(src)];field=[field]'>[html_encode(current_label)]</a><br>"
 	page += "<h3>Pelt previews</h3><table><tr>"
 	var/list/pelts = get_options("pelt")
 	for(var/label in pelts)
@@ -132,7 +132,7 @@
 		page += "<td align='center'>[icon2html(pelt_icon, user.client)]<br>[label]</td>"
 	page += "</tr></table><h3>Champion profile</h3><p>Gallery fields accept one image link per line. Rumours, gossip and detailed interaction preferences use your ordinary character settings.</p>"
 	for(var/field in profile_fields)
-		page += "<a href='?src=[REF(src)];field=[field]'>[html_encode(replacetext(field, "_", " "))]</a><br>"
+		page += "<a href='byond://?src=[REF(src)];field=[field]'>[html_encode(replacetext(field, "_", " "))]</a><br>"
 	page += "<p>Your choices save automatically. Open this menu through Preferences → Gnoll Customization.</p>"
 	var/datum/browser/popup = new(user, "gnoll_customization", "Gnoll Customization", 620, 760)
 	popup.set_content(page.Join())

@@ -288,6 +288,8 @@
 			if(!pref_species)
 				return FALSE
 			return !params["task"] && (params["ancestry"] in pref_species.get_skin_list())
+		if("character_setup_select_body_build")
+			return !params["task"] && pref_species?.is_body_build_valid(params["body_build"], read_preference(/datum/preference/choiced/gender))
 		if("character_setup_customizer")
 			return !params["task"] && is_allowed_customizer_action(params)
 		if("character_setup_set_choice")
@@ -486,6 +488,9 @@
 		"use_skintones",
 		"gender",
 		"gender_short",
+		"body_build",
+		"body_build_name",
+		"body_build_options",
 		"age",
 		"age_index",
 		"age_min",
