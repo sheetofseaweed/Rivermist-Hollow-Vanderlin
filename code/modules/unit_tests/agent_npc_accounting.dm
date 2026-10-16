@@ -61,6 +61,8 @@
 	TEST_ASSERT_EQUAL(SSagent_npc.tokens_reserved_total, global_before, "The global ledger must end where it started.")
 	TEST_ASSERT_EQUAL(SSagent_npc.tokens_spent, spent_before + 500, "Spend must be recorded once, not twice.")
 
+	// The stand-in transport is ours to release, or Destroy() flags it as a leaked job.
+	qdel(request.release_transport())
 	qdel(request)
 	qdel(binding)
 

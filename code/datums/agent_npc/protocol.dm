@@ -280,7 +280,8 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach",
 			var/percent = action["key"]
 			if(isnum(percent))
 				percent = "[percent]"
-			return list("name" = "haggle", "handle" = handle, "key" = istext(percent) ? percent : "")
+			var/words = action["text"]
+			return list("name" = "haggle", "handle" = handle, "key" = istext(percent) ? percent : "", "text" = istext(words) ? words : "")
 		if("consent")
 			var/handle = action["handle"]
 			if(!istext(handle) || !length(handle))

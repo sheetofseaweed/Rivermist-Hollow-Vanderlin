@@ -67,7 +67,8 @@ def action_schema(permitted):
             "action": {"type": "string", "enum": list(permitted),
                        "description": "Which action to take."},
             "text": {"type": "string", "description": "Speech for 'say', what you say with your answer for "
-                                                      "'consent', or the action for 'me', else empty."},
+                                                      "'consent' or your deal for 'haggle', or the action for "
+                                                      "'me', else empty."},
             "key": {"type": "string", "description": "Emote key for 'emote', the way to 'touch' "
                                                      "(tap, hug, headpat, help), the held item's handle "
                                                      "for 'give', how hard to 'fight' (brawl, until_downed, "
@@ -101,7 +102,8 @@ def schema_prose(permitted):
     return (
         "Reply with a single JSON object and nothing else. No prose, no code "
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
-        '"text": speech for say, what you say with your answer for consent, or the action for me, else "", '
+        '"text": speech for say, what you say with your answer for consent or your deal for haggle, '
+        'or the action for me, else "", '
         '"key": emote key for emote, '
         'tap/hug/headpat/help for touch, the held item handle for give, brawl/until_downed/'
         'no_quarter for fight, 0 to 50 for haggle, yes/no for consent, or tender/intimate/rough for initiate, '
@@ -116,14 +118,15 @@ def shop_brief(profile):
                 "what happens in private. The coin and the private time take care of themselves, so never "
                 "act out taking payment, and never describe what happens in private. A price only changes "
                 "when you use 'haggle' with their handle and key = how many percent off they get, 0 to 50, "
-                "where 0 takes it back; saying a price changes nothing. Most bargains are 5 to 15 percent, "
+                "where 0 takes it back, and what you tell them in text; saying a price changes nothing. "
+                "Most bargains are 5 to 15 percent, "
                 "20 is generous, and more is only for a favourite. You are told when private time with "
                 "someone ends, and when the time they paid for is over.")
     return ("You keep a shop. Customers click you to open your stall and pick what to buy or sell there; "
             "the coin and goods change hands by themselves, so never act out taking payment or handing "
             "wares over. A price only changes when you use 'haggle' with their handle and key = how many "
-            "percent better prices they get, 0 to 50, where 0 takes it back; saying a price changes "
-            "nothing. Haggle like a merchant who needs to make a living: most bargains are 5 to 15 "
+            "percent better prices they get, 0 to 50, where 0 takes it back, and what you tell them in text; "
+            "saying a price changes nothing. Haggle like a merchant who needs to make a living: most bargains are 5 to 15 "
             "percent, 20 is generous, and more is only for a close friend or a great favour. A deal lasts "
             "a while and works both ways: they pay less, and you pay more for what they sell you. When "
             "someone near you holds something, you are shown what you would pay for it or why you would "
@@ -171,7 +174,8 @@ def build_system(profile, describe_schema=False):
         # Only a character with romance on gets consent: DM grants it with the setting, never through the action list.
         ("Someone may ask to go somewhere private with you. It is your own choice: you may agree, say no, or "
          "tell them not yet, and nobody is owed a yes. To agree, use 'consent' with their handle and key 'yes', "
-         "and put what you say to them in text: they only learn your answer from your words. It lasts a "
+         "and put what you say to them in text: they only learn your answer from your words. Only use key 'yes' "
+         "when you agree now: if you mean later or maybe, just say so, and agree when the time comes. It lasts a "
          "quarter of an hour. Use key 'no', again with your words, to take it back at any time. Agreeing only makes it "
          "possible: what happens in private happens without words, so never describe it. You are told when "
          "private time with someone ends.")
@@ -530,6 +534,9 @@ def describe_private_time(detail):
     who = detail.get("by", "someone")
     if detail.get("what") == "time_up":
         return "The time %s paid for with you is over." % who
+    if detail.get("what") == "lapsed":
+        # Live, a yes ran out unannounced and the character kept making advances the game refused (2026-10-15).
+        return "Your yes to private time with %s has run out; give it again only if you still want to." % who
     return "You spent some private time with %s%s." % (who, _times(detail))
 
 
@@ -614,11 +621,11 @@ def to_dm_action(parsed):
         return {"name": "emote", "key": parsed.get("key", "")}
     if name in ("approach", "use", "sit", "take"):
         return {"name": name, "handle": parsed.get("handle", "")}
-    if name == "consent":
-        # The words carry the answer to the player; DM falls back to a nod or a head shake without them.
+    if name in ("consent", "haggle"):
+        # The words carry the answer or the deal to the player; DM says them alongside the action.
         return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", ""),
                 "text": parsed.get("text", "")}
-    if name in ("touch", "give", "fight", "haggle", "initiate"):
+    if name in ("touch", "give", "fight", "initiate"):
         return {"name": name, "handle": parsed.get("handle", ""), "key": parsed.get("key", "")}
     if name == "me":
         return {"name": "me", "text": parsed.get("text", "")}
@@ -685,7 +692,7 @@ def parse_loose_action(text, permitted):
                 if name in ("touch", "give", "fight", "haggle", "consent", "initiate"):
                     # "touch: h3 hug", "give: h3 h7", "fight: h3 brawl", "haggle: h3 10", "consent: h3 yes Aye", or just the handle.
                     parts = value.split(None, 2)
-                    words = parts[2] if name == "consent" and len(parts) > 2 else ""
+                    words = parts[2] if name in ("consent", "haggle") and len(parts) > 2 else ""
                     return {"action": name, "text": words, "key": parts[1] if len(parts) > 1 else "",
                             "handle": parts[0] if parts else ""}
                 return {"action": name, "text": "", "key": "", "handle": ""}

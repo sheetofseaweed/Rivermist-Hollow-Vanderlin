@@ -1021,3 +1021,26 @@
 	// A sample decides the script; per-word matching still finds a late Cyrillic name.
 	TEST_ASSERT_EQUAL(agent_text_script(latin + " Исаак"), AGENT_SCRIPT_LATIN, "Script must be decided from the opening sample.")
 	TEST_ASSERT(agent_name_matches_loosely("Isaac Brown", latin + " Исаак"), "A transliterated name after the sample must still be recognised.")
+
+/datum/unit_test/agent_npc_objects_are_only_overheard
+
+/datum/unit_test/agent_npc_objects_are_only_overheard/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	TEST_ASSERT_NOTNULL(controller?.binding, "Setup failed: the pawn must be bound.")
+	var/obj/item/coin/gold/hawker = allocate(/obj/item/coin/gold)
+	var/mob/living/carbon/human/speaker = allocate(/mob/living/carbon/human)
+	var/list/near = agent_test_speech_context(distance = 1, nearby_people = 1)
+
+	var/hawked = controller.classify_speech(hawker, "room IX key for sale! 100 amnas!", near)
+	var/named = controller.classify_speech(hawker, "[controller.addressable_name()], room IX key for sale!", near)
+	var/said = controller.classify_speech(speaker, "room IX key for sale! 100 amnas!", near)
+	var/route = controller.route_speech(hawked, "TAVERN ROOMS", "room IX key for sale!", list("speaker" = "TAVERN ROOMS", "text" = "room IX key for sale!"), FALSE, hawker)
+	agent_test_restore_subsystem(saved, controller.binding)
+
+	// Live, the inn's key vendor woke every NPC in earshot each minute and used up their ration (2026-10-15).
+	TEST_ASSERT_EQUAL(hawked, AGENT_SPEECH_OVERHEARD, "An object's speech must only ever be overheard.")
+	TEST_ASSERT_EQUAL(named, AGENT_SPEECH_OVERHEARD, "Even when it says our name.")
+	TEST_ASSERT_EQUAL(said, AGENT_SPEECH_AMBIGUOUS, "Setup failed: the same line from a person is unclear.")
+	TEST_ASSERT_EQUAL(route, "buffered", "So it never buys a decision, and never spends the unclear-speech ration.")

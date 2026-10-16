@@ -286,12 +286,15 @@
 /**
  * Was that said to us?
  *
- * Three answers, not two. Only the first four rules claim to know; everything
+ * Three answers, not two. Only the first five rules claim to know; everything
  * else is honestly ambiguous. The classifier stays lopsided — a wasted decision
  * is a fraction of a penny, an NPC that ignores someone looks broken — so only
  * positive evidence that a line belonged elsewhere produces `overheard`.
  */
 /datum/ai_controller/agent_social/proc/classify_speech(atom/movable/speaker, text, list/context)
+	// Objects talk on timers. Live, the inn's key vendor woke every NPC in earshot each minute.
+	if(!ismob(speaker))
+		return AGENT_SPEECH_OVERHEARD
 	// Talk To is the one answer that is not a guess, and reads no text. It outranks everything below.
 	if(context["focused"])
 		return AGENT_SPEECH_DIRECTED

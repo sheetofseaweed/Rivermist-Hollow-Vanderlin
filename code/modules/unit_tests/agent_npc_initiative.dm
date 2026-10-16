@@ -104,9 +104,10 @@
 	var/started_anything = !isnull(agent_test_led_act(barmaid))
 	agent_test_restore_subsystem(saved, agent.binding)
 
-	TEST_ASSERT(findtext(after_no["detail"], "wait a little"), "A no holds the NPC back: [after_no["detail"]]")
-	TEST_ASSERT(findtext(after_silence["detail"], "wait a little"), "So does no answer: [after_silence["detail"]]")
-	TEST_ASSERT(findtext(after_stop["detail"], "not to try anything"), "Stop asking holds it back longer: [after_stop["detail"]]")
+	// Live, a model retried seconds early because the refusal never said how long (2026-10-15).
+	TEST_ASSERT(findtext(after_no["detail"], "wait 2 more minutes"), "A no holds the NPC back, and says how long: [after_no["detail"]]")
+	TEST_ASSERT(findtext(after_silence["detail"], "before trying again"), "So does no answer: [after_silence["detail"]]")
+	TEST_ASSERT(findtext(after_stop["detail"], "not to try anything for 15 more minutes"), "Stop asking holds it back longer: [after_stop["detail"]]")
 	TEST_ASSERT(length(scene_line) && scene_line[1]["not_now_minutes"], "And the model's scene says so.")
 	TEST_ASSERT_EQUAL(jointext(heard, ","), "no,no_answer,stop_asking", "Each answer must reach the model as it was given.")
 	TEST_ASSERT(!started_anything, "None of them may start anything.")
@@ -172,7 +173,7 @@
 	TEST_ASSERT(shown_stoppable, "Their scene window must offer the stop button.")
 	TEST_ASSERT(stopped, "And pressing it must stop the act.")
 	TEST_ASSERT_EQUAL(told["answer"], "stopped", "The model must hear it was stopped.")
-	TEST_ASSERT(findtext(after_stop["detail"], "wait a little"), "Stopping counts as a no: [after_stop["detail"]]")
+	TEST_ASSERT(findtext(after_stop["detail"], "before trying again"), "Stopping counts as a no: [after_stop["detail"]]")
 
 /datum/unit_test/agent_initiative_acts_end_at_the_cap
 

@@ -22,6 +22,11 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 			return name
 	return null
 
+/// Time left until then, in whole minutes rounded up, as the model reads it.
+/proc/agent_minutes_left(until)
+	var/minutes = max(1, CEILING((until - world.time) / (1 MINUTES), 1))
+	return "[minutes] more minute[minutes == 1 ? "" : "s"]"
+
 /// The acts DM may pick from at one level: the performer's house lists, split by how far they go.
 /proc/agent_advance_acts(rank)
 	switch(rank)
@@ -87,7 +92,7 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 	if(!rank)
 		return "key must be tender, intimate or rough"
 	if(!may_advance_on(partner))
-		return "they have not agreed to private time with you"
+		return "you have not agreed to private time with them, or your yes has run out"
 	if(in_combat())
 		return "you are fighting"
 	if(is_aggressor(partner))
@@ -95,10 +100,11 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 	var/datum/agent_advance_record/record = advance_record(partner)
 	if(record.pending_until > world.time)
 		return "you are already waiting for their answer"
+	// Whole minutes: the model learns how long, and retries seconds apart still read as the same refusal.
 	if(record.blocked_until > world.time)
-		return "they asked you not to try anything for now"
+		return "they asked you not to try anything for [agent_minutes_left(record.blocked_until)]"
 	if(record.next_allowed > world.time)
-		return "wait a little before trying again"
+		return "wait [agent_minutes_left(record.next_allowed)] before trying again"
 	if(rank >= AGENT_ADVANCE_ROUGH && !record.welcomed_intimate)
 		return "rough only after they have welcomed something intimate"
 	if(!pawn.Adjacent(partner))

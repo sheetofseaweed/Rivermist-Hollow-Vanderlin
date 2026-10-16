@@ -324,9 +324,20 @@ class ShopProtocol(unittest.TestCase):
 
     def test_haggle_maps_to_the_dm_shape(self):
         self.assertEqual(proto.to_dm_action({"action": "haggle", "handle": "h3", "key": "10"}),
-                         {"name": "haggle", "handle": "h3", "key": "10"})
+                         {"name": "haggle", "handle": "h3", "key": "10", "text": ""})
         got = proto.parse_loose_action("haggle: h3 15", ["haggle", "wait"])
-        self.assertEqual(proto.to_dm_action(got), {"name": "haggle", "handle": "h3", "key": "15"})
+        self.assertEqual(proto.to_dm_action(got), {"name": "haggle", "handle": "h3", "key": "15", "text": ""})
+
+    def test_the_deal_travels_with_its_words(self):
+        # Live, a discount given in silence went unnoticed by the customer (2026-10-15).
+        said = proto.to_dm_action({"action": "haggle", "handle": "h3", "key": "10", "text": "A tenth off, for you."})
+        self.assertEqual(said["text"], "A tenth off, for you.")
+        loose = proto.to_dm_action(proto.parse_loose_action("haggle: h3 10 A tenth off, for you.", ["haggle", "wait"]))
+        self.assertEqual(loose, {"name": "haggle", "handle": "h3", "key": "10", "text": "A tenth off, for you."})
+        for kind in ("goods", "service"):
+            brief = proto.shop_brief({"shop_kind": kind})
+            self.assertIn("what you tell them in text", brief)
+        self.assertIn("your deal for haggle", proto.schema_prose(["say", "haggle", "wait"]))
 
     def test_only_a_shopkeeper_hears_about_haggling(self):
         keeper = proto.build_system({"persona": "P", "permitted_actions": ["say", "haggle", "wait"]})
@@ -1013,6 +1024,8 @@ class RomanceProtocol(unittest.TestCase):
         self.assertIn("It is your own choice", chooser)
         self.assertIn("never describe it", chooser)
         self.assertIn("they only learn your answer from your words", chooser)
+        # Live, a yes went out with the words "perhaps, after the work's done" (2026-10-15).
+        self.assertIn("Only use key 'yes' when you agree now", chooser)
         self.assertIn("yes/no for consent", proto.schema_prose(["say", "consent", "wait"]))
         self.assertIn("what you say with your answer for consent", proto.schema_prose(["say", "consent", "wait"]))
         self.assertIn("'consent'", proto.action_schema(["say", "consent", "wait"])["properties"]["text"]["description"])
@@ -1021,6 +1034,9 @@ class RomanceProtocol(unittest.TestCase):
     def test_asks_and_agreements_read_plainly(self):
         lines = proto.describe_events([{"event": "private_request", "detail": {"by": "Lexus", "count": 2}}])
         self.assertEqual(lines, ["  Lexus wants to go somewhere private with you (2 times)."])
+        # Live, a yes ran out unannounced and the character kept making refused advances (2026-10-15).
+        lapsed = proto.describe_events([{"event": "private_time", "detail": {"by": "Lexus", "what": "lapsed"}}])
+        self.assertEqual(lapsed, ["  Your yes to private time with Lexus has run out; give it again only if you still want to."])
         text = proto.build_user_message(
             {"self": {"name": "Greta", "agreed_with": [{"name": "Lexus", "minutes_left": 12}]}}, [])
         self.assertIn("You have agreed to go somewhere private with: Lexus (12 minutes left).", text)

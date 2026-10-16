@@ -311,3 +311,32 @@
 	TEST_ASSERT_EQUAL(streak_after_shake, 0, "A head shake is not speech.")
 	TEST_ASSERT(findtext(acted, "nods"), "And a yes without words as a nod: [acted]")
 	TEST_ASSERT(agreed, "A yes without words still counts.")
+
+/datum/unit_test/agent_romance_lapse_is_announced
+
+/datum/unit_test/agent_romance_lapse_is_announced/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/barmaid = agent_test_romantic_pawn()
+	var/datum/ai_controller/agent_social/agent = barmaid.ai_controller
+	var/mob/living/carbon/human/suitor = allocate(/mob/living/carbon/human/species/human/northern)
+	TEST_ASSERT_NOTNULL(agent?.binding, "Setup failed: the pawn must be bound.")
+	agent.grant_consent(suitor)
+	agent.binding.take_events()
+
+	agent.romance_watch()
+	var/list/while_live = agent_test_events_named(agent.binding.take_events(), AGENT_EVENT_PRIVATE_TIME)
+	agent.consents[WEAKREF(suitor)] = world.time - 1
+	agent.romance_watch()
+	var/list/lapsed = agent_test_events_named(agent.binding.take_events(), AGENT_EVENT_PRIVATE_TIME)
+	var/list/told = length(lapsed) ? lapsed[1]["detail"] : list()
+	agent.romance_watch()
+	var/list/again = agent_test_events_named(agent.binding.take_events(), AGENT_EVENT_PRIVATE_TIME)
+	var/list/advance = agent.make_advance(suitor, "tender")
+	agent_test_restore_subsystem(saved, agent.binding)
+
+	TEST_ASSERT_EQUAL(length(while_live), 0, "Setup failed: a live yes is not announced.")
+	// Live, her yes ran out unannounced and she kept trying advances the game refused (2026-10-15).
+	TEST_ASSERT_EQUAL(told["what"], "lapsed", "The model must hear that its yes ran out.")
+	TEST_ASSERT_EQUAL(told["by"], suitor.get_visible_name(), "And with whom.")
+	TEST_ASSERT_EQUAL(length(again), 0, "Once, not at every look.")
+	TEST_ASSERT(findtext(advance["detail"], "your yes has run out"), "A refused advance must say whose yes is missing: [advance["detail"]]")

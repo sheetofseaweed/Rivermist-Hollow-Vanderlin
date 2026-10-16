@@ -466,9 +466,13 @@ SUBSYSTEM_DEF(agent_npc)
 			return
 		var/mob/living/customer = target
 		var/given = shop.set_discount(customer, percent)
+		// Live, a deal struck in silence went unnoticed. The customer hears the keeper's words, then the deal itself.
+		var/words = response.action["text"]
+		var/list/said = (istext(words) && length(words)) ? agent_execute_say(pawn, words) : null
+		to_chat(customer, span_notice(given ? "[pawn] gives you [given]% better prices for a while." : "[pawn] charges you full price again."))
 		// Said back when capped, or the model goes on telling them a price the stall does not charge.
 		var/capped = given < percent ? ", the most you can give" : ""
-		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price")
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price", spoke = said?["detail"] == "spoke")
 		return
 
 	// The model's advance. DM picks the act and asks the partner first; their answer comes back as an event.

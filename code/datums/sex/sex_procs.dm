@@ -68,7 +68,8 @@
 	if(!controller.scene)
 		qdel(controller)
 		return
-	if(target.client && client && show_ui)
+	// Shown even when the partner has no client: live, the first drag onto an NPC opened nothing.
+	if(client && show_ui)
 		controller.show_ui()
 	return controller
 

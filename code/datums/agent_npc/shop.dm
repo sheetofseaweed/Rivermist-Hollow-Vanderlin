@@ -362,7 +362,8 @@ GLOBAL_LIST_INIT(agent_shop_actions, list("haggle"))
 	var/base = stock.ware_price(ware)
 	if(isnull(base))
 		return null
-	var/price = CEILING(base * (100 - discount_for(customer)) / 100, 1)
+	// Nearest coin, not up: live, CEILING ate a 10% deal on a 9-amna ware whole.
+	var/price = round(base * (100 - discount_for(customer)) / 100, 1)
 	return max(price, stock.price_floor(ware), 1)
 
 /// What this customer is paid for an item, or null if the shop will not buy it.

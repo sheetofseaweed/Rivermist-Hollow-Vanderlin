@@ -521,6 +521,54 @@
 	TEST_ASSERT_EQUAL(cheap_price, 20, "Half off a 40-amna ware bought for 10 is a real half off.")
 	TEST_ASSERT_EQUAL(dear_price, 31, "But never below what the keeper paid for it.")
 
+/datum/unit_test/agent_shop_small_discounts_still_show
+
+/datum/unit_test/agent_shop_small_discounts_still_show/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_shopkeeper(/datum/agent_stock/supplier)
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
+	var/mob/living/carbon/human/customer = allocate(/mob/living/carbon/human/species/human/northern)
+	var/datum/agent_stock/supplier/stock = agent_test_cloth_supplier(shop)
+	var/datum/supply_pack/pack = stock.catalog[/obj/item/natural/cloth]
+	pack.cost = 6
+
+	var/full = shop.price_for(customer, /obj/item/natural/cloth)
+	shop.set_discount(customer, 10)
+	var/haggled = shop.price_for(customer, /obj/item/natural/cloth)
+	agent_test_restore_subsystem(saved, controller.binding)
+
+	TEST_ASSERT_EQUAL(full, 9, "Setup failed: a six-amna pack sells for nine.")
+	// Live, ten percent off a 9-amna water bottle still cost 9 (2026-10-15).
+	TEST_ASSERT_EQUAL(haggled, 8, "Ten percent off nine is 8.1, so the customer pays eight.")
+
+/datum/unit_test/agent_shop_haggle_is_said_out_loud
+
+/datum/unit_test/agent_shop_haggle_is_said_out_loud/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_shopkeeper(/datum/agent_stock/supplier)
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/agent_binding/binding = controller?.binding
+	var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
+	var/mob/living/carbon/human/customer = allocate(/mob/living/carbon/human/species/human/northern)
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the pawn must be bound.")
+	agent_test_cloth_supplier(shop)
+	var/handle = agent_test_handle_of(binding, pawn, customer)
+	binding.mark_dirty("heard_speech")
+	binding.take_events()
+
+	// Validated, as live replies are.
+	SSagent_npc.dispatch_decision(binding, agent_test_decision(agent_validate_action(list("name" = "haggle", "handle" = handle, "key" = "10", "text" = "A tenth off, for a regular."))))
+	var/streak = binding.speech_streak
+	var/given = shop.discount_for(customer)
+	var/said = agent_test_mob_log(pawn, LOG_SAY)
+	agent_test_restore_subsystem(saved, binding)
+
+	TEST_ASSERT_EQUAL(given, 10, "Setup failed: the haggle must set the deal.")
+	// Live, a deal struck in silence went unnoticed (2026-10-15).
+	TEST_ASSERT(findtext(said, "A tenth off, for a regular"), "The keeper's words must be said out loud: [said]")
+	TEST_ASSERT_EQUAL(streak, 1, "Words with a deal count as speech for the chain.")
+
 /datum/unit_test/agent_shop_prices_read_in_amnas
 
 /datum/unit_test/agent_shop_prices_read_in_amnas/Run()

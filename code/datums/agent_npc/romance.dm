@@ -121,8 +121,14 @@ GLOBAL_LIST_INIT(agent_romance_actions, list("consent", "initiate"))
 	if(QDELETED(pawn))
 		return
 	for(var/datum/weakref/reference as anything in consents?.Copy())
-		if(consents[reference] <= world.time)
-			LAZYREMOVE(consents, reference)
+		if(consents[reference] > world.time)
+			continue
+		LAZYREMOVE(consents, reference)
+		// Live, a yes ran out unannounced, and the model kept making advances the game refused.
+		var/mob/living/lapsed = reference.resolve()
+		if(lapsed && binding && !QDELETED(binding))
+			binding.note_candidate(lapsed)
+			binding.mark_dirty(AGENT_EVENT_PRIVATE_TIME, AGENT_EVENT_LOW, list("by" = lapsed.get_visible_name(), "what" = "lapsed"), replenish = !isnull(lapsed.client))
 	var/mob/living/partner = current_private_partner()
 	var/mob/living/last = private_partner?.resolve()
 	if(last && last != partner && binding && !QDELETED(binding))
