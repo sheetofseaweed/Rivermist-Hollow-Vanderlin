@@ -3093,3 +3093,8 @@
 	icon_state = "alsoprotagonist"
 	gender = NEUTER
 	specuse = ALL_RACES_LIST
+
+/datum/sprite_accessory/hair/head/azur/elize
+	name = "Elize"
+	icon_state = "elize"
+	specuse = ALL_RACES_LIST
