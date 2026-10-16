@@ -21,6 +21,10 @@
 	changesource_flags =  WABBAJACK
 	limbs_icon_m = 'modular_rmh/icons/mob/bodies/m/mta.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/bodies/f/fma.dmi'
+	allowed_body_builds = HUMANOID_BODY_BUILDS
+	default_body_build_m = BODY_BUILD_BROAD
+	default_body_build_f = BODY_BUILD_SLIM
+	body_build_palette = BODY_PALETTE_GREY
 
 	order_num = 34
 

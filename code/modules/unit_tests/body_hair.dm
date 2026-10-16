@@ -1,6 +1,6 @@
-/// Every species offering pubic or armpit hair has art drawn for both of its bodies.
+/// Every species offering body hair has art drawn for each body it can wear.
 /datum/unit_test/body_hair_art_covers_species/Run()
-	var/list/hair_accessories = subtypesof(/datum/sprite_accessory/body_hair/pubic) + subtypesof(/datum/sprite_accessory/body_hair/armpit)
+	var/list/hair_accessories = subtypesof(/datum/sprite_accessory/body_hair/pubic) + subtypesof(/datum/sprite_accessory/body_hair/armpit) + subtypesof(/datum/sprite_accessory/body_hair/body)
 	for(var/datum/sprite_accessory/body_hair/accessory_type as anything in hair_accessories)
 		var/preview_state = initial(accessory_type.icon_state)
 		if(preview_state && !icon_exists(initial(accessory_type.icon), preview_state))
@@ -10,12 +10,19 @@
 		var/datum/species/species = allocate(species_type)
 		var/offers_hair = FALSE
 		for(var/customizer_type in species.customizers)
-			if(ispath(customizer_type, /datum/customizer/bodypart_feature/pubic_hair) || ispath(customizer_type, /datum/customizer/bodypart_feature/armpit_hair))
+			if(ispath(customizer_type, /datum/customizer/bodypart_feature/pubic_hair) || ispath(customizer_type, /datum/customizer/bodypart_feature/armpit_hair) || ispath(customizer_type, /datum/customizer/bodypart_feature/body_hair))
 				offers_hair = TRUE
 				break
 		if(!offers_hair)
 			continue
-		for(var/body_icon in list(species.limbs_icon_m, species.limbs_icon_f))
+		var/list/body_icons = list(species.limbs_icon_m, species.limbs_icon_f)
+		for(var/build_id in species.allowed_body_builds)
+			var/datum/body_build/build = GLOB.body_builds[build_id]
+			for(var/build_gender in list(MALE, FEMALE))
+				var/build_icon = build.get_limbs_icon(build_gender, species.body_build_palette)
+				if(build_icon)
+					body_icons |= build_icon
+		for(var/body_icon in body_icons)
 			var/art_key = GLOB.body_hair_art_keys["[body_icon]"]
 			if(!art_key)
 				TEST_FAIL("[species_type] offers body hair, but its body [body_icon] has no body hair art key.")
@@ -197,3 +204,43 @@
 	pubic_entry.material = BODY_HAIR_MATERIAL_FUR
 	pubic_choice.validate_entry(human, pubic_entry)
 	TEST_ASSERT_EQUAL(pubic_entry.material, BODY_HAIR_MATERIAL_FUR, "Anthromorphs should keep their fur.")
+
+/// Chest hair is drawn from per-body art, so halflings get their own fitted sprite.
+/datum/unit_test/chest_hair_uses_per_body_art/Run()
+	var/mob/living/carbon/human/halfling = allocate(/mob/living/carbon/human)
+	halfling.gender = MALE
+	halfling.set_species(/datum/species/halfling)
+	var/obj/item/bodypart/chest = halfling.get_bodypart(BODY_ZONE_CHEST)
+	var/datum/sprite_accessory/body_hair/body/hairy = SPRITE_ACCESSORY(/datum/sprite_accessory/body_hair/body/hairy)
+	TEST_ASSERT_EQUAL(hairy.get_icon_state(null, chest, halfling), "t2_male_short", "A halfling man should draw his own chest hair state.")
+	TEST_ASSERT(icon_exists(hairy.get_icon(null, chest, halfling), "t2_male_short"), "The halfling chest hair state should exist.")
+
+	var/mob/living/carbon/human/ogre = allocate(/mob/living/carbon/human)
+	ogre.gender = MALE
+	ogre.set_species(/datum/species/ogre)
+	TEST_ASSERT_EQUAL(hairy.get_icon(null, ogre.get_bodypart(BODY_ZONE_CHEST), ogre), hairy.tall_icon, "Ogres should draw from the tall chest hair dmi.")
+
+	// Dwarven chest hair once drew one identical mat for every level.
+	for(var/dwarf_key in list("md", "fd"))
+		var/list/level_art = list()
+		for(var/level in list("t1", "t2", "t3"))
+			level_art |= icon2base64(icon(hairy.icon, "[level]_[dwarf_key]"))
+		TEST_ASSERT_EQUAL(length(level_art), 3, "Dwarf chest hair \"[dwarf_key]\" should draw three different levels.")
+
+/// Species given chest hair later start with it switched off, so saved men do not grow it on load.
+/datum/unit_test/chest_hair_optional_starts_off/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	prefs.set_species_preference(/datum/species/human/northern)
+	prefs.write_preference(/datum/preference/choiced/gender, MALE)
+	prefs.customizer_entries = list()
+	prefs.validate_customizer_entries()
+	var/datum/customizer_entry/chest_entry = prefs.get_customizer_entry_for_customizer_type(/datum/customizer/bodypart_feature/body_hair/optional)
+	TEST_ASSERT_NOTNULL(chest_entry, "Humans should offer chest hair.")
+	TEST_ASSERT(chest_entry.disabled, "A human man's chest hair should start switched off.")
+
+	prefs.set_species_preference(/datum/species/dwarf/mountain)
+	prefs.customizer_entries = list()
+	prefs.validate_customizer_entries()
+	var/datum/customizer_entry/dwarf_entry = prefs.get_customizer_entry_for_customizer_type(/datum/customizer/bodypart_feature/body_hair)
+	TEST_ASSERT_NOTNULL(dwarf_entry, "Dwarves should still offer chest hair.")
+	TEST_ASSERT(!dwarf_entry.disabled, "A dwarf man's chest hair should still start switched on.")
