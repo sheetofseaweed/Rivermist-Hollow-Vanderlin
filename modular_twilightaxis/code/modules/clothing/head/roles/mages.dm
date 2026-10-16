@@ -7,4 +7,5 @@
 	icon_state = "stargazerhood"
 	item_state = "stargazerhood"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -7,4 +7,5 @@
 	icon_state = "ewarlockhood"
 	item_state = "ewarlockhood"
 	armor_type = /datum/armor/ported/leather
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

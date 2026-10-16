@@ -7,6 +7,3 @@
 	icon_state = "bloodchainmantle"
 	item_state = "bloodchainmantle"
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/neck/chaincoif/chainmantle/bloodraider/Initialize(mapload)
-	. = ..()

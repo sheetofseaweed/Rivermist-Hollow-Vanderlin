@@ -7,6 +7,7 @@
 	icon_state = "lirvastabard"
 	item_state = "lirvastabard"
 	sellprice = 100
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/hoodvamp
@@ -22,4 +23,5 @@
 	detail_tag = "_spl"
 	body_parts_covered = CHEST
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

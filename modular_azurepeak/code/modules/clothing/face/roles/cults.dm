@@ -8,7 +8,5 @@
 	block2add = null
 	body_parts_covered = MOUTH|NOSE
 	flags_inv = HIDEFACE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/face/facemask/steel/graggar/Initialize(mapload)
-	. = ..()

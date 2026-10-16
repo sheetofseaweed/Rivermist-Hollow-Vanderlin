@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "clothheadveil"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/shroudblack
@@ -19,6 +20,7 @@
 	color = null
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/shroudscarlet
@@ -33,6 +35,7 @@
 	color = null
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/shroudwhite
@@ -47,6 +50,7 @@
 	color = null
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/durag
 	name = "durag"
@@ -56,6 +60,7 @@
 	sleeved = null
 	icon_state = "durag"
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/longveil
 	name = "long veil"
@@ -67,6 +72,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_CHALK_WHITE
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/tiyon
 	name = "tiyon"
@@ -76,6 +82,7 @@
 	sleeved = null
 	icon_state = "tiyon"
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/headband/fur
 	name = "fur headband"
@@ -87,6 +94,7 @@
 	item_state = "fur_headband"
 	body_parts_covered = HEAD|HAIR|EARS
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/necrahood
 	name = "death shroud"
@@ -100,3 +108,4 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
 	dynamic_hair_suffix = ""
 	sewrepair = TRUE
+	ported_clothing = TRUE

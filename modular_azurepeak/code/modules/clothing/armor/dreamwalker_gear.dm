@@ -6,10 +6,8 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "dhauberk"
 	item_flags = (1<<13)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/chainmail/hauberk/dreamwalker/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/armor/plate/full/dreamwalker
 	name = "otherworldly fullplate"
@@ -20,7 +18,5 @@
 	icon_state = "dreamplate"
 	max_integrity = ARMOR_INT_CHEST_PLATE_BLACKSTEEL
 	item_flags = (1<<13)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/plate/full/dreamwalker/Initialize(mapload)
-	. = ..()

@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "chiv_abevor"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/leather
@@ -22,6 +23,7 @@
 	max_integrity = ARMOR_INT_SIDE_HARDLEATHER + 50
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/chaincoif/full
 	name = "full chain coif"
@@ -33,6 +35,7 @@
 	resistance_flags = FIRE_PROOF
 	body_parts_covered = NECK|MOUTH|NOSE|HAIR|EARS|HEAD
 	adjustable = CAN_CADJUST
+	ported_clothing = TRUE
 	var/body_parts_covered_dynamic = 0
 
 /obj/item/clothing/neck/chaincoif/full/AdjustClothes(mob/user)
@@ -84,6 +87,7 @@
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
 	sewrepair = TRUE
+	ported_clothing = TRUE
 	var/body_parts_covered_dynamic = 0
 
 /obj/item/clothing/neck/coif/heavypadding/AdjustClothes(mob/user)
@@ -117,10 +121,6 @@
 			H.update_inv_neck()
 			H.update_inv_head()
 
-/obj/item/clothing/neck/coif/heavypadding/Initialize(mapload)
-	. = ..()
-	return
-
 /obj/item/clothing/neck/coif/padded
 	name = "padded coif"
 	desc = "A gambeson's coif, hewn from cloth. It can either be worn beneath a helmet to cushion one's skull from punishment, or worn on its own to keep one's cheeks warm in more frigid climates."
@@ -138,6 +138,7 @@
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/gorget/bronze
 	name = "bronze neckguard"
@@ -149,6 +150,7 @@
 	armor_type = /datum/armor/ported/bronze
 	smeltresult = /obj/item/ingot/bronze
 	max_integrity = 250 + 50
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/gorget/steel
 	name = "steel gorget"
@@ -159,6 +161,7 @@
 	icon_state = "sgorget"
 	smeltresult = /obj/item/ingot/steel
 	max_integrity = ARMOR_INT_SIDE_STEEL + 50
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/chaincoif/iron/full
 	name = "full iron chain coif"
@@ -171,3 +174,4 @@
 	body_parts_covered = NECK|MOUTH|NOSE|HAIR|EARS|HEAD
 	adjustable = CAN_CADJUST
 	smeltresult = /obj/item/ingot/iron
+	ported_clothing = TRUE

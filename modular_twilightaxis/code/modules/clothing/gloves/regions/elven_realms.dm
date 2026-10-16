@@ -8,3 +8,4 @@
 	item_state = "elven_gloves"
 	allowed_race = SPECIES_BASE_BODY
 	color = null
+	ported_clothing = TRUE

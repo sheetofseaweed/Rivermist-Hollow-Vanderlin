@@ -14,3 +14,4 @@
 	sewrepair = TRUE
 	unarmed_bonus = 1
 	salvage_result = /obj/item/natural/cloth
+	ported_clothing = TRUE

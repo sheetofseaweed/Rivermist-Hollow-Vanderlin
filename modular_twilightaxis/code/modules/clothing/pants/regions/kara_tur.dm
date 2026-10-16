@@ -7,4 +7,5 @@
 	icon_state = "hakama"
 	item_state = "hakama"
 	salvage_result = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

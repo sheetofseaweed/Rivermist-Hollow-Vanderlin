@@ -11,4 +11,5 @@
 	l_sleeve_status = SLEEVE_NORMAL
 	allowed_sex = list(MALE)
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

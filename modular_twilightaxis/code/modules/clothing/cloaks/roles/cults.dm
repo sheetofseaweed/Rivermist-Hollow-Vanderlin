@@ -8,6 +8,3 @@
 	body_parts_covered = ARMS|CHEST|VITALS
 	armor_type = /datum/armor/ported/padded
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/cloak/shadowcloak/cult/Initialize(mapload, ...)
-	. = ..()

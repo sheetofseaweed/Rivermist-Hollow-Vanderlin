@@ -13,4 +13,5 @@
 	slot_flags = ITEM_SLOT_SHIRT
 	salvage_result = /obj/item/natural/fibers
 	salvage_amount = 3
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

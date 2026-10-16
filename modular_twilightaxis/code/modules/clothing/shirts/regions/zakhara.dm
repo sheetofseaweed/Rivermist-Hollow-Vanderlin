@@ -13,6 +13,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	armor_type = /datum/armor/ported/padded
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/sultan
@@ -30,6 +31,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	armor_type = /datum/armor/ported/padded
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/sultana
@@ -47,6 +49,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	armor_type = /datum/armor/ported/padded
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/amiradress
@@ -59,6 +62,7 @@
 	item_state = "dprince"
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
 	body_parts_covered = CHEST|GROIN|LEGS|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/thawb
@@ -72,6 +76,7 @@
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
 	armor_type = /datum/armor/tree
 	body_parts_covered = CHEST|GROIN|LEGS|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/exoticsilkbra_ta/green
@@ -104,12 +109,15 @@
 	body_parts_covered = CHEST|GROIN|LEGS|ARMS|VITALS
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/thawb/beige
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	color = "#e9c792"
 	dyeable = TRUE
 
@@ -117,6 +125,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -125,6 +135,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	color = "#2f51b8"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -133,6 +145,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	color = "#846145"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -153,6 +167,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	color = "#989898"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -161,6 +177,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/thawb/random/Initialize()
@@ -171,6 +189,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "thawb"
+	item_state = "thawb"
 	color = "#9c4744"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -179,6 +199,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	color = "#e9c792"
 	dyeable = TRUE
 
@@ -186,6 +208,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -194,6 +218,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	color = "#2f51b8"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -211,6 +237,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	color = "#846145"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -219,6 +247,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	color = "#989898"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -251,6 +281,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/robe/bisht/random/Initialize()
@@ -261,6 +293,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/easternclothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/easternclothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "greythawb"
+	item_state = "greythawb"
 	color = "#9c4744"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

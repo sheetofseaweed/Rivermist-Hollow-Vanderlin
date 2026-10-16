@@ -11,6 +11,7 @@
 	color = "#FFFFFF"
 	detail_color = "#FFFFFF"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/forrestercloak/autumn
@@ -25,4 +26,5 @@
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

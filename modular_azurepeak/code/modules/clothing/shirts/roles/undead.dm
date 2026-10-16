@@ -4,10 +4,13 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = null
+	icon_state = "toga"
+	item_state = "toga"
 	color = CLOTHING_BLACK
 	detail_color = "#bb9696"
 	var/open_wear = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/toga/lich/attack_hand_secondary(mob/user, list/modifiers)
@@ -61,4 +64,5 @@
 	icon_state = "monkvestments"
 	item_state = "monkvestments"
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

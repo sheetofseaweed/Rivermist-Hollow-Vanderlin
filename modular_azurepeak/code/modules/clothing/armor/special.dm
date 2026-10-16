@@ -17,6 +17,7 @@
 	armor_class = AC_LIGHT
 	blocksound = SOFTUNDERHIT
 	armor_type = /datum/armor/ported/padded
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/armor/vampiric
 
 /obj/item/clothing/armor/vampiric/gnoll

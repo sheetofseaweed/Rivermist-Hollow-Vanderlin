@@ -7,6 +7,9 @@
 	var/eora_colors = list("Blue Tabard", "Pink Tabard")
 	var/picked = FALSE
 	var/eora_final_icon = null
+	ported_clothing = TRUE
+	layer_toggle = FALSE
+	hint_pattern = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/templar/eoran/alt/attack_hand_secondary(mob/user, list/modifiers)

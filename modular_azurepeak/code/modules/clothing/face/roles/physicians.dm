@@ -6,6 +6,7 @@
 	sleeved = null
 	icon_state = "brassbeak"
 	item_state = "brassbeak"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/physician/plaguebearer
@@ -13,8 +14,10 @@
 	icon = 'modular_azurepeak/icons/clothing/masks_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
+	icon_state = "physmask"
 	armor_type = /datum/armor/plate
 	max_integrity = 160
 	body_parts_covered = FACE
 	blocksound = PLATEHIT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

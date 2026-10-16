@@ -12,3 +12,4 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_LEG_STEEL_CHAIN + 10
 	dyeable = TRUE
+	ported_clothing = TRUE

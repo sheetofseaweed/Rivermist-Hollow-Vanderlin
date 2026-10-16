@@ -4,6 +4,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/special/warden.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/special/onmob/warden.dmi'
 	sleeved = null
+	icon_state = "skullmet_bear"
+	item_state = "that"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet/warden/goat/vanguard
@@ -12,6 +14,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/special/warden.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/special/onmob/warden.dmi'
 	sleeved = null
+	icon_state = "skullmet_goat"
+	item_state = "that"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet/warden/rat/vanguard
@@ -20,6 +24,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/special/warden.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/special/onmob/warden.dmi'
 	sleeved = null
+	icon_state = "skullmet_rat"
+	item_state = "that"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet/warden/wolf/vanguard
@@ -28,4 +34,6 @@
 	icon = 'modular_twilightaxis/icons/clothing/special/warden.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/special/onmob/warden.dmi'
 	sleeved = null
+	icon_state = "skullmet_volf"
+	item_state = "that"
 	misc_flags = CRAFTING_TEST_EXCLUDE

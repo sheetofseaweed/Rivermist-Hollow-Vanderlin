@@ -10,6 +10,7 @@
 	var/hammerhold_variants = null
 	var/picked = FALSE
 	var/hammerhold_final_icon = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/twilight_hammerhold_hat/attack_hand_secondary(mob/user, list/modifiers)
@@ -28,30 +29,6 @@
 			H.update_inv_head()
 		if(alert("Are you pleased with your kokoshnik?", "Kokoshnik", "Yes", "No") != "Yes")
 			icon_state = "white_mage_headwear"
-			update_appearance()
-			if(loc == user && ishuman(user))
-				var/mob/living/carbon/H = user
-				H.update_inv_head()
-			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
-		picked = TRUE
-	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
-
-/obj/item/clothing/head/twilight_hammerhold_hat/attack_hand_secondary(mob/user, list/modifiers)
-	if(!picked)
-		var/choiceV = input(user, "Choose a variant.", "Mithral Hall colors") as anything in hammerhold_variants
-		if(choiceV == "a")
-			icon_state = "headwear_a"
-			hammerhold_final_icon = "headwear_a"
-		if(choiceV == "b")
-			icon_state = "headwear_b"
-			hammerhold_final_icon = "headwear_b"
-		update_appearance()
-		if(loc == user && ishuman(user))
-			var/mob/living/carbon/H = user
-			H.update_inv_head()
-		if(alert("Are you pleased with your hat?", "hat", "Yes", "No") != "Yes")
-			icon_state = "headwear_a"
-			hammerhold_final_icon = "headwear_a"
 			update_appearance()
 			if(loc == user && ishuman(user))
 				var/mob/living/carbon/H = user
@@ -86,3 +63,27 @@
 	hammerhold_variants = list("a", "b")
 	picked = FALSE
 	misc_flags = CRAFTING_TEST_EXCLUDE
+
+/obj/item/clothing/head/twilight_hammerhold_hat/peasant/attack_hand_secondary(mob/user, list/modifiers)
+	if(!picked)
+		var/choiceV = input(user, "Choose a variant.", "Mithral Hall colors") as anything in hammerhold_variants
+		if(choiceV == "a")
+			icon_state = "headwear_a"
+			hammerhold_final_icon = "headwear_a"
+		if(choiceV == "b")
+			icon_state = "headwear_b"
+			hammerhold_final_icon = "headwear_b"
+		update_appearance()
+		if(loc == user && ishuman(user))
+			var/mob/living/carbon/H = user
+			H.update_inv_head()
+		if(alert("Are you pleased with your hat?", "hat", "Yes", "No") != "Yes")
+			icon_state = "headwear_a"
+			hammerhold_final_icon = "headwear_a"
+			update_appearance()
+			if(loc == user && ishuman(user))
+				var/mob/living/carbon/H = user
+				H.update_inv_head()
+			return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+		picked = TRUE
+	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN

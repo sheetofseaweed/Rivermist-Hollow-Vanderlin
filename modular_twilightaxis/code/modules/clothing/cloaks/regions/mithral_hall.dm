@@ -10,6 +10,8 @@
 	var/hammerhold_colors = list("white", "blue")
 	var/picked = FALSE
 	var/hammerhold_final_icon = null
+	ported_clothing = TRUE
+	hint_pattern = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/twilight_cape/attack_hand_secondary(mob/user, list/modifiers)

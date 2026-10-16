@@ -2,6 +2,8 @@
 	icon = 'modular_azurepeak/icons/clothing/wrists.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
+	icon_state = "splintarms"
+	item_state = "splintarms"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -16,7 +18,8 @@
 	smeltresult = /obj/item/ingot/blacksteel
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/blacksteel/modern
 	name = "blacksteel bracers"
@@ -38,11 +41,12 @@
 	armor_type = /datum/armor/brigandine
 	blocksound = SOFTHIT
 	max_integrity = ARMOR_INT_SIDE_STEEL
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/steel
 	w_class = WEIGHT_CLASS_NORMAL
 	resistance_flags = FIRE_PROOF
 	sewrepair = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/chain
 	name = "chain sleeves"
@@ -58,6 +62,7 @@
 	pickup_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	equip_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	var/wrapped = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/chain/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()
@@ -99,6 +104,7 @@
 	smeltresult = /obj/item/ingot/gold
 	grid_height = 96
 	grid_width = 96
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/splint
 	name = "splint bracers"
@@ -112,11 +118,12 @@
 	armor_type = /datum/armor/brigandine
 	blocksound = SOFTHIT
 	max_integrity = ARMOR_INT_SIDE_IRON
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/iron
 	w_class = WEIGHT_CLASS_NORMAL
 	resistance_flags = FIRE_PROOF
 	sewrepair = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/zizo
 	name = "avantyne bracers"
@@ -128,10 +135,8 @@
 	item_state = "zizobracers"
 	max_integrity = ARMOR_INT_SIDE_STEEL
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/wrists/bracers/zizo/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/wrists/bracers/ancient/chain
 	name = "decrepit chain sleeves"
@@ -148,6 +153,7 @@
 	equip_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	var/wrapped = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/ancient/chain/attack_hand_secondary(mob/user, list/modifiers)
@@ -228,6 +234,7 @@
 	pickup_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	equip_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	var/wrapped = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/iron/chain/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()

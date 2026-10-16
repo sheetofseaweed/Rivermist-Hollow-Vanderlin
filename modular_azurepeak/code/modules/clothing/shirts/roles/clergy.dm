@@ -11,6 +11,7 @@
 	detail_color = null
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/lunar
 	name = "moonlit robe"
@@ -24,6 +25,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/pointfex
 	name = "pontifex's qaba"
@@ -40,6 +42,7 @@
 	r_sleeve_status = SLEEVE_NOMOD
 	l_sleeve_status = SLEEVE_NOMOD
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/ravox
 	name = "Tempuran robe"
@@ -54,6 +57,7 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/undividedcleric
 	name = "undivided clerical robe"
@@ -68,18 +72,21 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/hierophant/loadout
 	name = "aesthetic hierophant's kandys"
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "desertgown"
+	item_state = "desertgown"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/undershirt/priest/holy
 	name = "holy monk vestments"
-	desc = "Holy vestments, worn by those who pursue faith above all else. Hundreds of heavy leather strips have been meticulously sheared-and-stitched onto the cloth, resulting in unparalleled comfort and protection. It's said that those who 'don the cloth' will never tire; a boon of unbreakable faith."
+	desc = "Holy vestments, worn by those who pursue faith above all else. Hundreds of heavy leather strips have been meticulously sheared-and-stitched onto the cloth, resulting in unparalleled comfort and protection."
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
@@ -87,6 +94,7 @@
 	item_state = "monkvestments"
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/undershirt/priest/holy/equipped(mob/user, slot, initial = FALSE)
 	..()
@@ -101,6 +109,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "monkcloth"
+	item_state = "monkcloth"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -114,6 +124,7 @@
 	item_state = "bishoprobe"
 	color = null
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/robe/abyssor_leader
@@ -129,6 +140,7 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/robe/abyssor_painter
@@ -144,6 +156,7 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/robe/abyssor_painter_sea
@@ -159,4 +172,5 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

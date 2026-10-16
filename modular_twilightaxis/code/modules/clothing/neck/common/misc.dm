@@ -1,6 +1,7 @@
 /obj/item/clothing/neck/necklace
 	mob_overlay_icon = null
 	sleeved = null
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/neck/necklace
 
 /obj/item/clothing/neck/collar/bell

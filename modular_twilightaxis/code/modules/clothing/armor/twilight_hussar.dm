@@ -14,4 +14,5 @@
 	worn_x_dimension = 32
 	worn_y_dimension = 36
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -9,5 +9,6 @@
 	var/open_wear = TRUE
 	flags_inv = HIDEHAIR
 	body_parts_covered = HEAD|HAIR|EARS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/body_parts_covered_dynamic = 0

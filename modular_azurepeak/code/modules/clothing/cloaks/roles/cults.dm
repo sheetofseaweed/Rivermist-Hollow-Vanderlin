@@ -5,4 +5,5 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	icon_state = "graggarcloak_heavy"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -2,7 +2,9 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = null
 	armor_type = /datum/armor/none
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/head/decoration
 
 /obj/item/clothing/head/halo
@@ -19,6 +21,7 @@
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 	smeltresult = /obj/item/ingot/gold
 	max_integrity = 777
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/decoration/gazelleskull
@@ -37,6 +40,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "whitehood"
+	item_state = "whitehood"
 	color = CLOTHING_SCARLET
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -45,6 +50,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "armingcap"
+	item_state = "armingcap"
 	color = "#cb3434"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

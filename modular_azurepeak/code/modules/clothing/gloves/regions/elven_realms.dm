@@ -7,4 +7,5 @@
 	icon_state = "awelfhand"
 	item_state = "awelfhand"
 	max_integrity = ARMOR_INT_SIDE_LEATHER - 25
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

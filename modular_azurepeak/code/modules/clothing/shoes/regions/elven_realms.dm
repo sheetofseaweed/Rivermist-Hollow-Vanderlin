@@ -8,4 +8,5 @@
 	item_state = "awelfshoes"
 	max_integrity = ARMOR_INT_SIDE_LEATHER - 25
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

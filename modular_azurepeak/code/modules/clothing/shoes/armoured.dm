@@ -6,6 +6,7 @@
 	sleeved = null
 	icon_state = "chiv_aboots"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/armor/dreamwalker
@@ -18,10 +19,8 @@
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
 	armor_type = /datum/armor/ported/plate_bsteel
 	item_flags = (1<<13)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/shoes/boots/armor/dreamwalker/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/shoes/boots/armor/iron/gronn
 	name = "Uthgardt norsii iron boots"
@@ -43,6 +42,7 @@
 	max_integrity = ARMOR_INT_SIDE_STEEL
 	armor_type = /datum/armor/ported/plate_bsteel
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/armor/baotha
@@ -55,6 +55,7 @@
 	item_state = "baothaboots"
 	max_integrity = ARMOR_INT_SIDE_ANTAG - 250
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/stepnoise_flag = null
 
@@ -79,6 +80,7 @@
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
 	armor_type = /datum/armor/ported/plate_bsteel
 	smeltresult = /obj/item/ingot/blacksteel
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/boots/armor/bronze
 	name = "bronze greaves"
@@ -91,6 +93,7 @@
 	smeltresult = /obj/item/ingot/bronze
 	armor_type = /datum/armor/ported/bronze
 	max_integrity = 250
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/boots/armor/dwarven
 	name = "grudgebearer dwarven boots"
@@ -101,6 +104,7 @@
 	icon_state = "dwarfshoe"
 	item_state = "dwarfshoe"
 	allowed_race = list(SPEC_ID_DWARF)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/armor/gold
@@ -119,6 +123,7 @@
 	smeltresult = /obj/item/ingot/gold
 	grid_height = 96
 	grid_width = 96
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/boots/armor/iron
 	name = "iron plated boots"
@@ -133,14 +138,17 @@
 	blocksound = PLATEHIT
 	max_integrity = ARMOR_INT_SIDE_IRON
 	armor_type = /datum/armor/plate
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/iron
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/boots/armor/gold/king
 	name = "royal golden greaves"
 	icon = 'modular_azurepeak/icons/clothing/feet.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/feet.dmi'
 	sleeved = null
+	icon_state = "goldgreaves"
+	item_state = "goldgreaves"
 	max_integrity = 10
 	sellprice = 300
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -159,6 +167,7 @@
 	blocksound = PLATEHIT
 	armor_type = /datum/armor/blackbag
 	resistance_flags = FIRE_PROOF | ACID_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/armor/vampire/Initialize(mapload)

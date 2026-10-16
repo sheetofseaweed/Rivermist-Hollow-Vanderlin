@@ -10,6 +10,7 @@
 	salvage_amount = 1
 	resistance_flags = FIRE_PROOF
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/aristocratic
@@ -21,6 +22,7 @@
 	icon_state = "kumieshirt"
 	item_state = "kumieshirt"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/light/aristocratic
@@ -31,6 +33,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "kumiecoat"
 	item_state = "kumiecoat"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/light/commandant
@@ -42,12 +45,15 @@
 	icon_state = "robe"
 	item_state = "robe"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/aristocratic/heavy
 	icon = 'modular_twilightaxis/icons/clothing/donor_clothes.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/donor_sleeves_armor.dmi'
+	icon_state = "kumieshirt"
+	item_state = "kumieshirt"
 	armor_type = /datum/armor/ported/padded
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	sellprice = 25
@@ -62,6 +68,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/nightmare_set.dmi'
 	icon_state = "nightmare_scales"
 	item_state = "nightmare_scales"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/coat/aristocratic

@@ -19,6 +19,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "studhood"
+	item_state = "studhood"
 	detail_tag = "_detail"
 	color = CLOTHING_AZURE
 	detail_color = CLOTHING_WHITE
@@ -32,6 +34,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = "#641E16"
 	detail_color = "#b68e37ff"
 	dyeable = TRUE
@@ -62,6 +66,7 @@
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
 	max_integrity = 200
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/warden/antler
@@ -82,6 +87,8 @@
 	icon = 'modular_azurepeak/icons/clothing/special/warden.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/warden.dmi'
 	sleeved = null
+	icon_state = "wardenhood"
+	item_state = "wardenhood"
 	max_integrity = ARMOR_INT_HELMET_LEATHER
 	armor_type = /datum/armor/ported/leather
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "atgervi_idol"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/abyssor/gronn
@@ -23,6 +24,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "gronndendor"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/inhumen/baothagronn
@@ -50,6 +52,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "gronngraggar"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/inhumen/gronn/special
@@ -58,6 +61,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "gronnzizo"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/inhumen/matthios/gronn
@@ -75,4 +79,5 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "gronnmatthios"
 	misc_flags = CRAFTING_TEST_EXCLUDE

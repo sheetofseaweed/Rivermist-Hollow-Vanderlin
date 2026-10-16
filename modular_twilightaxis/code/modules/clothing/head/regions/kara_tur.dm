@@ -8,6 +8,7 @@
 	flags_inv = HIDEEARS
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roningasa
@@ -20,6 +21,7 @@
 	flags_inv = HIDEEARS
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/sandogasa
@@ -32,6 +34,7 @@
 	flags_inv = HIDEEARS
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/tengai
@@ -45,6 +48,7 @@
 	flags_inv = HIDEEARS
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/torioigasa
@@ -57,6 +61,7 @@
 	flags_inv = HIDEEARS
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/gasa/ronin
@@ -65,6 +70,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/kazengun_n_burger.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/64x64/head.dmi'
 	sleeved = null
+	icon_state = "gasa"
+	item_state = "gasa"
 	color = CLOTHING_BLUE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

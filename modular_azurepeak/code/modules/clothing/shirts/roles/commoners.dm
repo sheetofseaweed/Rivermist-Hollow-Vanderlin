@@ -4,6 +4,7 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "fencingshirt"
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER - 30
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -21,6 +22,7 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/dress/tavern
 	name = "tavern dress"
@@ -39,3 +41,4 @@
 	color = "#BEF686"
 	detail_color = "#996633"
 	dyeable = TRUE
+	ported_clothing = TRUE

@@ -6,4 +6,5 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "legionkilt"
 	item_state = "legionkilt"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

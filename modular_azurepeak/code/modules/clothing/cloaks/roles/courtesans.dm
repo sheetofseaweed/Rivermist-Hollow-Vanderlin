@@ -9,4 +9,5 @@
 	flags_inv = HIDECROTCH
 	allowed_sex = list(MALE)
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

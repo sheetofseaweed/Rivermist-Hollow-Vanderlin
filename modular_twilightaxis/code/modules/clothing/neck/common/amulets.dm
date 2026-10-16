@@ -6,4 +6,5 @@
 	sleeved = null
 	icon_state = "loveamulet"
 	item_state = "loveamulet"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

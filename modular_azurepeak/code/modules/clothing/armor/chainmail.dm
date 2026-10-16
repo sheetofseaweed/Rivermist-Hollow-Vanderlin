@@ -4,7 +4,9 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "haubergeon"
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/bronze
@@ -16,6 +18,7 @@
 	icon_state = "bhaubergeon"
 	max_integrity = 250
 	smeltresult = /obj/item/ingot/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/chainmail/light
 	name = "haubyrnie"
@@ -33,6 +36,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = CHEST
 	adj_sound = 'sound/foley/equip/equip_armor_chain.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/chainmail/light/get_mechanics_examine(mob/user)
 	. = ..()
@@ -43,6 +47,7 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "haubergeon"
 	max_integrity = ARMOR_INT_CHEST_LIGHT_STEEL
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -57,6 +62,7 @@
 	smeltresult = /obj/item/ingot/bronze
 	max_integrity = 250
 	armor_type = /datum/armor/ported/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/chainmail/hauberk/graggar
 	name = "vicious hauberk"
@@ -66,10 +72,8 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "graggarhauberk"
 	item_state = "graggarhauberk"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/chainmail/hauberk/graggar/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/armor/chainmail/hauberk/heavy
 	name = "plate-and-maille"
@@ -82,6 +86,7 @@
 	slot_flags = ITEM_SLOT_ARMOR
 	armor_class = AC_HEAVY
 	max_integrity = 450
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/chainmail/hauberk/matthios
 	name = "gilded hauberk"
@@ -91,10 +96,8 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "matthioshauberk"
 	item_state = "matthioshauberk"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/chainmail/hauberk/matthios/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/armor/chainmail/hauberk/zizo
 	name = "avantyne hauberk"
@@ -104,10 +107,8 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "zizohauberk"
 	item_state = "zizohauberk"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/chainmail/hauberk/zizo/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/armor/chainmail/light/bronze
 	name = "bronze haubyrnie"
@@ -142,6 +143,7 @@
 	armor_class = AC_HEAVY
 	max_integrity = 200
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/hauberk/heavy/decorated
@@ -168,6 +170,7 @@
 	slot_flags = ITEM_SLOT_ARMOR
 	armor_class = AC_HEAVY
 	max_integrity = 325
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/chainmail/hauberk/ancient/heavy_ap
 	name = "ancient plate-and-maille"
@@ -180,4 +183,5 @@
 	slot_flags = ITEM_SLOT_ARMOR
 	armor_class = AC_HEAVY
 	max_integrity = 450
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

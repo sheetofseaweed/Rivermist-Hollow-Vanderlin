@@ -5,6 +5,7 @@
 	mob_overlay_icon = null
 	sleeved = null
 	icon_state = "stethoscope"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/stethoscope/suicide_act(mob/living/carbon/user)
@@ -44,6 +45,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "fchaincoif"
+	item_state = "chaincoif"
 	color = "#323232"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

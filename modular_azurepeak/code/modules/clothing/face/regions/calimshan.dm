@@ -4,6 +4,7 @@
 	icon = 'modular_azurepeak/icons/clothing/masks_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
+	icon_state = "helmetless_visor"
 	armor_type = /datum/armor/ported/bronze
 	max_integrity = 50
 	smeltresult = null

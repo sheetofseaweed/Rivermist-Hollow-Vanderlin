@@ -8,6 +8,7 @@
 	item_state = "elven_armplates"
 	allowed_race = SPECIES_BASE_BODY
 	alternate_worn_layer = WRISTS_LAYER
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/twilight_elven/equipped(mob/user, slot, initial = FALSE)
 	. = ..()

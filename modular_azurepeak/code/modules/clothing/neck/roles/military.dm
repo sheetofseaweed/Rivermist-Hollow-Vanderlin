@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "condo_blade"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/mercmedal/forlorn
@@ -14,6 +15,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "forlorn_dogmedal"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/mercmedal/freifechter
@@ -23,6 +25,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "freif_obol"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/mercmedal/grudgebearer
@@ -32,6 +35,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "grudge_keepsake"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/mercmedal/steppesman_ap
@@ -41,6 +45,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "steppe_ungent"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/mercmedal/underdweller_ap
@@ -50,6 +55,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "under_compass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/mercmedal/vaquero
@@ -59,6 +65,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "vaquero_ring"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/bevor/bronze
@@ -71,7 +78,8 @@
 	armor_type = /datum/armor/ported/bronze
 	max_integrity = 250
 	smeltresult = /obj/item/ingot/bronze
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/gorget/aventail/iron
 	name = "iron aventail"

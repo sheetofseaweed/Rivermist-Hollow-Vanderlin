@@ -12,6 +12,7 @@
 	lefthand_file = 'icons/mob/inhands/weapons/rogue_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/weapons/rogue_righthand.dmi'
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_BACK_L
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/furcloak/woodland
@@ -48,6 +49,7 @@
 	allowed_sex = list(MALE)
 	allowed_race = SPECIES_BASE_BODY
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/half/donator_rezathedwarf/attack_hand_secondary(mob/user, list/modifiers)
@@ -73,6 +75,7 @@
 	nodismemsleeves = TRUE
 	allowed_sex = list(FEMALE)
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/raincloak/tyesca
@@ -86,6 +89,7 @@
 	boobed = FALSE
 	sleevetype = "feather_cloak"
 	hoodtype = /obj/item/clothing/head/hooded/rainhood/tyesca
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/furcloak/woodland/donator_noire
@@ -110,6 +114,7 @@
 	detail_color = CLOTHING_RED
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/darkcloak
@@ -129,6 +134,7 @@
 	inhand_mod = TRUE
 	allowed_race = SPECIES_BASE_BODY
 	salvage_result = /obj/item/natural/fur
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/scaledcloak
 	name = "scaled cloak"
@@ -147,6 +153,7 @@
 	detail_tag = "_detail"
 	detail_color = "#405996"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/scout
@@ -162,6 +169,7 @@
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/absolutionistrobe/black
@@ -172,6 +180,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	icon_state = "blackabsolutionistrobe"
 	item_state = "blackabsolutionistrobe"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/darkcloak/bear
@@ -224,6 +233,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	icon_state = "handcloak"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/guardhood/elder
@@ -231,5 +241,7 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "guard_hood"
+	item_state = "guard_hood"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

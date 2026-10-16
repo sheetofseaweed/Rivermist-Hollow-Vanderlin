@@ -5,4 +5,5 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/mercmedals.dmi'
 	sleeved = null
 	icon_state = "routier_halo"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

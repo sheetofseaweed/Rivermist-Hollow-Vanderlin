@@ -12,6 +12,7 @@
 	pickup_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	equip_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	var/wrapped = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/ancient/chain_ap/attack_hand_secondary(mob/user, list/modifiers)

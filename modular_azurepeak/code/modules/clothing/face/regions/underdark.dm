@@ -5,5 +5,5 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "dgoggles"
-	armor_type = /datum/armor/none
+	armor_type = /datum/armor/ported/spectacles
 	misc_flags = CRAFTING_TEST_EXCLUDE

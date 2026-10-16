@@ -8,7 +8,5 @@
 	max_integrity = ARMOR_INT_LEG_BLACKSTEEL
 	armor_type = /datum/armor/ported/plate_bsteel
 	item_flags = (1<<13)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/pants/platelegs/dreamwalker/Initialize(mapload)
-	. = ..()

@@ -9,7 +9,5 @@
 	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
 	sellprice = 0
 	smeltresult = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/leather/studded/cult/Initialize(mapload, ...)
-	. = ..()

@@ -8,6 +8,7 @@
 	item_state = "sagesbighat"
 	slot_flags = ITEM_SLOT_HEAD
 	worn_x_dimension = 46
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/eaststrawhat
@@ -20,6 +21,7 @@
 	flags_inv = HIDEEARS
 	sewrepair = TRUE
 	var/hides_ears = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/eaststrawhat/MiddleClick(mob/user, list/modifiers)
@@ -53,6 +55,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/head_2.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "bucklehat"
+	item_state = "that"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/duelhat/gunslinger
@@ -60,5 +64,7 @@
 	icon = 'modular_twilightaxis/icons/clothing/head_2.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "duelhat"
+	item_state = "that"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

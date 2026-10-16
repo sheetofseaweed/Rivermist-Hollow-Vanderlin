@@ -7,4 +7,5 @@
 	icon_state = "etrmask"
 	max_integrity = 200
 	smeltresult = /obj/item/ingot/steel
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

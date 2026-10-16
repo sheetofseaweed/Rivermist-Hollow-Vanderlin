@@ -7,6 +7,7 @@
 	icon_state = "chainhose"
 	body_parts_covered = LEGS|FEET
 	flags_inv = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/chainlegs/iron/hose
 	name = "iron chain hosen"
@@ -17,3 +18,4 @@
 	icon_state = "ichainhose"
 	body_parts_covered = LEGS|FEET
 	flags_inv = null
+	ported_clothing = TRUE

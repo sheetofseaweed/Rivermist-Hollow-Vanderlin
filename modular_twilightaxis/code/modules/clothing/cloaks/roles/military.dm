@@ -1,6 +1,7 @@
 /obj/item/clothing/cloak/citywatch
 	mob_overlay_icon = null
 	sleeved = null
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/cloak/citywatch
 
 /obj/item/clothing/cloak/commandant
@@ -11,6 +12,7 @@
 	sleeved = null
 	icon_state = "raincoat"
 	item_state = "raincoat"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/sheriff
@@ -21,6 +23,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/special/onmob/citywatch_armor.dmi'
 	icon_state = "sheriffcloak"
 	alternate_worn_layer = CLOAK_BEHIND_LAYER
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/lepoardcloak
@@ -35,4 +38,5 @@
 	salvage_result = /obj/item/natural/fur
 	allowed_race = SPECIES_BASE_BODY
 	salvage_amount = 3
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

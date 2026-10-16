@@ -12,6 +12,7 @@
 	visor_flags_cover = MASKCOVERSMOUTH | PEPPERPROOF
 	slot_flags = ITEM_SLOT_MASK
 	adjusted_flags = ITEM_SLOT_HEAD
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/bandana/attack_self(mob/user, list/modifiers)
@@ -41,3 +42,4 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'sound/foley/equip/rummaging-03.ogg'
+	ported_clothing = TRUE

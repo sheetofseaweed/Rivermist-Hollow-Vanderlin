@@ -8,6 +8,7 @@
 	item_state = "gronnchain"
 	smeltresult = /obj/item/ingot/iron
 	armor_type = /datum/armor/maille
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/gronn
@@ -20,6 +21,7 @@
 	item_state = "gronnleatherarmor"
 	armor_type = /datum/armor/ported/leather
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/iron/gronn
@@ -34,4 +36,5 @@
 	body_parts_covered = (( CHEST | GROIN | VITALS | ARMS))
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	smeltresult = /obj/item/ingot/iron
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

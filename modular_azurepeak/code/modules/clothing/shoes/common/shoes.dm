@@ -10,11 +10,9 @@
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/stepnoise_flag = null
-
-/obj/item/clothing/shoes/boots/tabi/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/shoes/footwraps
 	name = "cloth footwraps"
@@ -26,6 +24,7 @@
 	gender = PLURAL
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/cloth
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/footwraps/apply_components()
 	. = ..()
@@ -38,6 +37,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/rosewood.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/rosewood.dmi'
 	icon_state = "rosashoes1"
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/footwraps/hleather
 	name = "hardened leather footwraps"
@@ -50,22 +50,15 @@
 	armor_type = /datum/armor/ported/leather
 	max_integrity = ARMOR_INT_SIDE_HARDLEATHER
 
-/obj/item/clothing/shoes/footwraps/hleather/apply_components()
-	. = ..()
-	AddComponent(/datum/component/storage/concrete/boots)
-
 /obj/item/clothing/shoes/footwraps/padded
 	name = "padded cloth footwraps"
 	desc = "Thickly-woven padded bandages wrapped about one's ankles to maintain mobility for climbing and kicking."
 	icon = 'modular_azurepeak/icons/clothing/feet.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/feet.dmi'
 	sleeved = null
+	icon_state = "footwraps"
 	armor_type = /datum/armor/ported/padded
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
-
-/obj/item/clothing/shoes/footwraps/padded/apply_components()
-	. = ..()
-	AddComponent(/datum/component/storage/concrete/boots)
 
 /obj/item/clothing/shoes/rosa/eight
 	name = "courtly shoes"
@@ -134,6 +127,7 @@
 	gender = PLURAL
 	salvage_amount = 1
 	salvage_result = /obj/item/natural/cloth
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/sandals/toga/apply_components()

@@ -6,6 +6,7 @@
 	sleeved = null
 	icon_state = "petcollar"
 	var/tagname = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/petcollar/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
@@ -28,6 +29,7 @@
 	resistance_flags = FIRE_PROOF
 	dropshrink = 0.5
 	salvage_result = null
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/neck/collar
 
 /obj/item/clothing/neck/collar/forlorn
@@ -144,12 +146,13 @@
 	item_state = "cursed_collar"
 	armor_type = /datum/armor/tree
 	smeltresult = /obj/item/ingot/iron
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	max_integrity = ARMOR_INT_SIDE_DECREPIT
 	resistance_flags = FIRE_PROOF
 	slot_flags = ITEM_SLOT_NECK
 	body_parts_covered = NECK
 	blocksound = PLATEHIT
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/gorget/forlorncollar
 	name = "forlorn collar"
@@ -159,4 +162,5 @@
 	sleeved = null
 	icon_state = "iwolfcollaralt"
 	max_integrity = ARMOR_INT_SIDE_STEEL + 50
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

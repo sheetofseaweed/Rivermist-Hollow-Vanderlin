@@ -6,6 +6,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "nightmare_chausses"
 	item_state = "nightmare_chausses"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/chainlegs/twilight_drow
@@ -16,6 +17,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "shadowchains"
 	item_state = "shadowchains"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/gambeson
@@ -38,6 +40,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/gambeson/heavy
 	name = "padded gamboised cuisses"

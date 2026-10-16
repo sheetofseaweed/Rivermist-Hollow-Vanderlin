@@ -7,6 +7,7 @@
 	icon_state = "freiboots"
 	item_state = "freiboots"
 	max_integrity = ARMOR_INT_SIDE_HARDLEATHER + 30
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/rare/grenzelhoft/freifechter/apply_components()
@@ -18,8 +19,6 @@
 	icon = 'modular_azurepeak/icons/clothing/feet.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/feet.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/stonekeep_merc.dmi'
+	icon_state = "freiboots"
+	item_state = "freiboots"
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/shoes/rare/grenzelhoft/freifechter/loadout/apply_components()
-	. = ..()
-	AddComponent(/datum/component/storage/concrete/boots)

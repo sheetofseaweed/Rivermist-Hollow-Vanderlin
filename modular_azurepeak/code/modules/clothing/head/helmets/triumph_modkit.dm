@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
 	icon_state = "kettleclassic"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/sallet/legacy
 	name = "Luskanian sallet"
@@ -13,6 +14,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
 	icon_state = "salletclassic"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/skullcap/old
 	name = "aged skull cap"
@@ -21,6 +23,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
 	icon_state = "skullcapold"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/ravoxhelm_ap/triumph
@@ -40,6 +43,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
 	icon_state = "ikettleclassic"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/sallet/iron/legacy
 	name = "Luskanian iron sallet"
@@ -48,6 +52,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
 	icon_state = "isalletclassic"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/sallet/visored/legacy
 	name = "Luskanian visored sallet"

@@ -6,6 +6,7 @@
 	sleeved = null
 	icon_state = "nightmare_crown"
 	item_state = "nightmare_crown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/tiara
@@ -17,6 +18,7 @@
 	icon_state = "tiara"
 	item_state = "tiara"
 	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_HIP|ITEM_SLOT_MASK
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/burgerhood
@@ -40,6 +42,7 @@
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/onhelm/tw_d_feathers
@@ -74,6 +77,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/head_2.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = "#15266f"
 	detail_color = "#FFFFFF"
 	dyeable = TRUE

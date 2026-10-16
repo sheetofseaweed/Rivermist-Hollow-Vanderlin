@@ -4,6 +4,7 @@
 	icon = 'modular_twilightaxis/icons/clothing/masks_2.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/masks_2.dmi'
 	sleeved = null
+	icon_state = "ragmask"
 	color = "#78a3c9"
 	armor_type = /datum/armor/weak
 	body_parts_covered = FACE
@@ -38,6 +39,7 @@
 	altdetail_color = "#b8252c"
 	smeltresult = null
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/facemask/steel/psythorns
@@ -54,6 +56,7 @@
 	resistance_flags = FIRE_PROOF
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
 	body_parts_covered = FACE|HAIR|HEAD
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/blindfold_ap/psydon

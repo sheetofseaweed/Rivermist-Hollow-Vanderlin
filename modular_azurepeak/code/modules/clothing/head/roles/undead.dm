@@ -15,12 +15,15 @@
 	salvage_amount = 2
 	resistance_flags = FIRE_PROOF
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/duelhat/vamp
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "duelhat"
+	item_state = "that"
 	color = CLOTHING_WHITE
 	detail_color = CLOTHING_RED
 	dyeable = TRUE
@@ -30,6 +33,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "witch"
+	item_state = "witch"
 	color = CLOTHING_WHITE
 	detail_color = CLOTHING_RED
 	dyeable = TRUE
@@ -39,6 +44,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "studhood"
+	item_state = "studhood"
 	color = CLOTHING_RED
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

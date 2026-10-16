@@ -22,6 +22,7 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet_winged
@@ -43,6 +44,8 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet_winged/attackby(obj/item/attacking_item, mob/user, list/modifiers)
@@ -50,10 +53,10 @@
 	..()
 	if(!(istype(W, /obj/item/natural/feather) && !detail_tag))
 		return
-	var/choice = input(user, "Choose a color.", "Wings") as anything in COLOR_MAP
+	var/choice = input(user, "Choose a color.", "Wings") as anything in GLOB.ported_color_map
 	user.visible_message(span_warning("[user] adds [W] to [src]."))
 	user.transferItemToLoc(W, src, FALSE, FALSE)
-	detail_color = COLOR_MAP[choice]
+	detail_color = GLOB.ported_color_map[choice]
 	detail_tag = "_detail"
 	update_appearance()
 	if(loc == user && ishuman(user))
@@ -78,6 +81,8 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/shadowplate/attackby(obj/item/attacking_item, mob/user, list/modifiers)
@@ -113,6 +118,8 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/bascinet/apostle/attackby(obj/item/attacking_item, mob/user, list/modifiers)
@@ -120,10 +127,10 @@
 	..()
 	if(!(istype(W, /obj/item/natural/feather) && !detail_tag))
 		return
-	var/choice = input(user, "Choose a color.", "Wings") as anything in COLOR_MAP
+	var/choice = input(user, "Choose a color.", "Wings") as anything in GLOB.ported_color_map
 	user.visible_message(span_warning("[user] adds [W] to [src]."))
 	user.transferItemToLoc(W, src, FALSE, FALSE)
-	detail_color = COLOR_MAP[choice]
+	detail_color = GLOB.ported_color_map[choice]
 	detail_tag = "_detail"
 	update_appearance()
 	if(loc == user && ishuman(user))
@@ -149,6 +156,8 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/bascinet/apostle_winged/attackby(obj/item/attacking_item, mob/user, list/modifiers)
@@ -156,10 +165,10 @@
 	..()
 	if(!(istype(W, /obj/item/natural/feather) && !detail_tag))
 		return
-	var/choice = input(user, "Choose a color.", "Wings") as anything in COLOR_MAP
+	var/choice = input(user, "Choose a color.", "Wings") as anything in GLOB.ported_color_map
 	user.visible_message(span_warning("[user] adds [W] to [src]."))
 	user.transferItemToLoc(W, src, FALSE, FALSE)
-	detail_color = COLOR_MAP[choice]
+	detail_color = GLOB.ported_color_map[choice]
 	detail_tag = "_detail"
 	update_appearance()
 	if(loc == user && ishuman(user))
@@ -170,6 +179,8 @@
 	icon = 'modular_azurepeak/icons/clothing/donor_clothes.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
+	icon_state = "dasfox_habitburgeonet"
+	item_state = "dasfox_habitburgeonet"
 	adjustable = CAN_CADJUST
 	emote_environment = 3
 	body_parts_covered = FULL_HEAD|NECK
@@ -189,12 +200,15 @@
 	sleeved = null
 	icon_state = "burgeonet_t"
 	item_state = "burgeonet_t"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/bascinet/apostle/aventail
 	icon = 'modular_azurepeak/icons/clothing/donor_clothes.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
+	icon_state = "apostleburgeonet"
+	item_state = "apostleburgeonet"
 	adjustable = CAN_CADJUST
 	emote_environment = 3
 	body_parts_covered = FULL_HEAD|NECK
@@ -262,6 +276,7 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/aventail/donator_lamprey
@@ -293,6 +308,7 @@
 	sleeved = null
 	icon_state = "gildedknight"
 	item_state = "gildedknight"
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/knight/gilded/attackby(obj/item/attacking_item, mob/user, list/modifiers)
@@ -316,16 +332,17 @@
 	sleeved = null
 	icon_state = "rockhillarmet"
 	item_state = "rockhillarmet"
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/knight/rockhill/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !altdetail_tag)
-		var/choicealt = input(user, "Choose a color.", "Scarf") as anything in COLOR_MAP
+		var/choicealt = input(user, "Choose a color.", "Scarf") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		altdetail_color = COLOR_MAP[choicealt]
+		altdetail_color = GLOB.ported_color_map[choicealt]
 		altdetail_tag = "_detailalt"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -339,6 +356,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes64.dmi'
 	sleeved = null
 	icon_state = "ryan_maimedhelm"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet/visored/aasimar
@@ -466,6 +484,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "dakken_zizbarb"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/visored/royalknight/dasfox
@@ -475,6 +494,8 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "valkyrhelm"
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/visored/royalknight/dasfox/attackby(obj/item/attacking_item, mob/user, list/modifiers)
@@ -482,10 +503,10 @@
 	..()
 	if(!(istype(W, /obj/item/natural/feather) && !detail_tag))
 		return
-	var/choice = input(user, "Choose a color.", "Plume") as anything in COLOR_MAP
+	var/choice = input(user, "Choose a color.", "Plume") as anything in GLOB.ported_color_map
 	user.visible_message(span_warning("[user] adds [W] to [src]."))
 	user.transferItemToLoc(W, src, FALSE, FALSE)
-	detail_color = COLOR_MAP[choice]
+	detail_color = GLOB.ported_color_map[choice]
 	detail_tag = "_detail"
 	update_appearance()
 	if(loc == user && ishuman(user))
@@ -499,6 +520,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "spaz_helm"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/knight/rockhill/iron

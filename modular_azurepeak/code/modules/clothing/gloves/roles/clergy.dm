@@ -8,6 +8,7 @@
 	item_state = "psydongloves"
 	armor_type = /datum/armor/ported/leather
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/knuckles/psydon
@@ -19,12 +20,6 @@
 	icon_state = "psyknuckle"
 	smeltresult = /obj/item/ingot/silverblessed
 
-/obj/item/clothing/gloves/knuckles/psydon/Initialize(mapload)
-	. = ..()
-	AddComponent(\
-		pre_blessed = 0,\
-	)
-
 /obj/item/clothing/gloves/knuckles/psydon/old
 	name = "enduring knuckles"
 	desc = "A simple piece of harm molded in a holy mixture of steel and silver, its holy blessing long since faded. You are HIS weapon, you needn't fear Aeon."
@@ -34,7 +29,3 @@
 	icon_state = "opsyknuckle"
 	smeltresult = /obj/item/ingot/steel
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/gloves/knuckles/psydon/old/Initialize(mapload)
-	. = ..()
-	return

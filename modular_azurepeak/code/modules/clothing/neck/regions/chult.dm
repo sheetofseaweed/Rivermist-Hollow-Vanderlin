@@ -6,4 +6,5 @@
 	sleeved = null
 	icon_state = "psybracelet"
 	item_state = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

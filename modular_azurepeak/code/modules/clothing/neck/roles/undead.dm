@@ -7,6 +7,7 @@
 	icon_state = "vgorget"
 	armor_type = /datum/armor/blackbag
 	max_integrity = ARMOR_INT_SIDE_ANTAG
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/gorget/ancient/vampire/Initialize(mapload)

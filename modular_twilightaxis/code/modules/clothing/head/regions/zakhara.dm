@@ -9,6 +9,7 @@
 	dynamic_hair_suffix = "+generic"
 	flags_inv = HIDEEARS|HIDEHAIR
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HEAD
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/sultan
@@ -22,6 +23,7 @@
 	dynamic_hair_suffix = "+generic"
 	flags_inv = HIDEEARS
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HEAD
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/sultana
@@ -35,6 +37,7 @@
 	dynamic_hair_suffix = "+generic"
 	flags_inv = HIDEEARS|HIDEHAIR
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HEAD
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/tagelmust
@@ -47,6 +50,7 @@
 	item_state = "blue_hood"
 	body_parts_covered = HEAD|EARS|HAIR|NECK|NOSE|MOUTH
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/hooded/rainhood/amirhood
@@ -59,6 +63,7 @@
 	item_state = "dprince"
 	block2add = FOV_BEHIND
 	flags_inv = HIDEHAIR
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/sultan/amir
@@ -91,6 +96,7 @@
 	sleeved = null
 	icon_state = "purple_hood"
 	item_state = "purple_hood"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/hooded/desert_hood
@@ -108,18 +114,5 @@
 	flags_inv = HIDEEARS|HIDEHAIR
 	detail_tag = "_detail"
 	dyeable = TRUE
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/head/roguehood/shalal/hijab/yohei
-	name = "shadowed hood"
-	desc = "A traditional Kozakuran hood, dyed in dark colors."
-	icon = 'modular_twilightaxis/icons/clothing/head_2.dmi'
-	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/head_2.dmi'
-	sleeved = null
-	icon_state = "hijab"
-	item_state = "hijab"
-	max_integrity = ARMOR_INT_HELMET_LEATHER
-	armor_type = /datum/armor/ported/leather
-	color = CLOTHING_BLACK
-	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

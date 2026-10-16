@@ -17,7 +17,5 @@
 	resistance_flags = FIRE_PROOF
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/head/roguehood/bishop/Initialize()
-	. = ..()

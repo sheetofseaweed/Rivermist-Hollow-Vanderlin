@@ -10,6 +10,7 @@
 	slot_flags = ITEM_SLOT_CLOAK
 	sellprice = 50
 	nodismemsleeves = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/dunestalker
@@ -29,6 +30,7 @@
 	toggle_icon_state = FALSE
 	allowed_sex = list(MALE, FEMALE)
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/citywatch/janissary
@@ -53,6 +55,7 @@
 	inhand_mod = FALSE
 	hoodtype = /obj/item/clothing/head/hooded/rainhood/amirhood
 	salvage_result = /obj/item/natural/silk
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/catcloak/jancap
@@ -61,6 +64,7 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/cloaks.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/cloaks.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/desert/onmob/cloaks.dmi'
+	icon_state = "catcloak"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/twilight_desert
@@ -80,4 +84,5 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_YARROW
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

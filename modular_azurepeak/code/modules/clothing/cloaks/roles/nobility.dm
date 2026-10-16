@@ -10,6 +10,7 @@
 	pickup_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	equip_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/donator_oathkeeper
@@ -20,6 +21,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "oa_fancy_short"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/surcoat/donator_oathkeeper
@@ -47,6 +49,7 @@
 	salvage_result = /obj/item/natural/hide/cured
 	grid_width = 64
 	grid_height = 96
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/cotehardie
 	name = "fitted coat"
@@ -66,6 +69,7 @@
 	detail_color = "#36241f"
 	sleevetype = "cotehardie"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/rosa
 	name = "regal cloak"
@@ -76,6 +80,7 @@
 	icon_state = "rosacloak7"
 	alternate_worn_layer = CLOAK_BEHIND_LAYER
 	salvage_result = /obj/item/natural/silk
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/guardhood
 	name = "hood"
@@ -92,6 +97,8 @@
 	body_parts_covered = CHEST
 	dyeable = TRUE
 	uses_lord_coloring = LORD_SECONDARY|LORD_DETAIL_AND_COLOR
+	ported_clothing = TRUE
+	hint_pattern = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/custom_design = FALSE
 

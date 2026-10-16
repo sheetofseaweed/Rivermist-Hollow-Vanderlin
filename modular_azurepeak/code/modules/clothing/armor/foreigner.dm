@@ -8,6 +8,7 @@
 	item_state = "awelfchest"
 	armor_class = AC_LIGHT
 	max_integrity = ARMOR_INT_CHEST_PLATE_BRIGANDINE + 25
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/gambeson/heavy/hierophant/civilian
 	name = "shawl"
@@ -15,6 +16,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "desertrobe"
+	item_state = "desertrobe"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

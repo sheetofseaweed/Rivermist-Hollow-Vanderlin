@@ -22,10 +22,11 @@
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
 	possible_item_intents = list(/datum/intent/use)
 	experimental_onhip = TRUE
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	grid_width = 32
 	grid_height = 32
 	var/wrist_display = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/carved/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
@@ -75,19 +76,20 @@
 	var/goodluckactivated = FALSE
 	salvage_result = /obj/item/natural/fibers
 	salvage_amount = 1
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/luckcharm/equipped(mob/living/user, slot, initial = FALSE)
 	. = ..()
 	if((slot & ITEM_SLOT_NECK))
-		user.change_stat(STATKEY_LCK, 1) //how much luck stat it gives when equipped
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_LCK) = 1))
 		goodluckactivated = TRUE
 	return
 
 /obj/item/clothing/neck/luckcharm/dropped(mob/living/user, silent = FALSE)
 	. = ..()
 	if(goodluckactivated == TRUE)
-		user.change_stat(STATKEY_LCK, -1) //how much luck stat taken away when unequipped
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		goodluckactivated = FALSE
 	return
 
@@ -99,7 +101,8 @@
 	sleeved = null
 	icon_state = "ornateamulet"
 	resistance_flags = FIRE_PROOF
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/skullamulet
 	name = "skull amulet"
@@ -109,7 +112,8 @@
 	sleeved = null
 	icon_state = "skullamulet"
 	resistance_flags = FIRE_PROOF
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/carved/amberamulet
 	name = "amber amulet"
@@ -309,7 +313,7 @@
 	resistance_flags = FIRE_PROOF
 	sellprice = 222
 	smeltresult = /obj/item/gem/green
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	var/luckyskull = FALSE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -321,13 +325,13 @@
 /obj/item/clothing/neck/skullamulet/gemerald/equipped(mob/living/user, slot, initial = FALSE)
 	. = ..()
 	if((slot & ITEM_SLOT_NECK))
-		user.change_stat(STATKEY_LCK, 2)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_LCK) = 2))
 		luckyskull = TRUE
 	return
 
 /obj/item/clothing/neck/skullamulet/gemerald/dropped(mob/living/user, silent = FALSE)
 	. = ..()
 	if(luckyskull == TRUE)
-		user.change_stat(STATKEY_LCK, -2)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		luckyskull = FALSE
 	return

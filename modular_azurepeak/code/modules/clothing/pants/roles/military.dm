@@ -4,6 +4,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/pants.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "bklegs"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/tights/clothlegs
@@ -24,3 +25,4 @@
 	body_parts_covered = GROIN|LEGS
 	detail_color = CLOTHING_WHITE
 	altdetail_color = CLOTHING_WHITE
+	ported_clothing = TRUE

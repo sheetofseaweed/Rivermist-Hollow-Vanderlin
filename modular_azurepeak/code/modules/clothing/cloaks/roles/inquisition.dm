@@ -7,6 +7,7 @@
 	icon_state = "inquisitor_cloak"
 	sleevetype = "inquisitor"
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/cape/inquisitorsilver
 	name = "silver order cloak"
@@ -17,3 +18,4 @@
 	icon_state = "sinquisitor_cloak"
 	sleevetype = "inquisitor"
 	color = null
+	ported_clothing = TRUE

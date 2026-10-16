@@ -14,4 +14,5 @@
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HIP
 	smeltresult = null
 	sellprice = 0
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

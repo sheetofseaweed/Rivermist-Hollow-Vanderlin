@@ -7,4 +7,5 @@
 	icon_state = "merchantgarb"
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	sleevetype = "merchantgarb"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

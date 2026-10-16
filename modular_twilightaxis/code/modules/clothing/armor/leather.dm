@@ -8,6 +8,7 @@
 	item_state = "etrjacket"
 	allowed_race = SPECIES_BASE_BODY
 	armor_type = /datum/armor/none
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/jacket/leathercoat/confessor/overseer
@@ -20,6 +21,7 @@
 	item_state = "overseerjacket"
 	color = null
 	boobed = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/coat/raneshen/new_coat

@@ -12,6 +12,7 @@
 	detail_color = CLOTHING_GOLD
 	altdetail_color = CLOTHING_GOLD
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/witchhat
@@ -30,11 +31,14 @@
 	detail_color = CLOTHING_BROWN
 	ported_adjust = TRUE
 	adj_sound = 'sound/foley/cloth_wipe (1).ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/witchhat/mageblue
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "witch"
+	item_state = "witch"
 	color = CLOTHING_MAGE_BLUE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -29,10 +29,7 @@
 	drop_sound = 'sound/foley/dropsound/chain_drop.ogg'
 	pickup_sound = 'sound/foley/equip/equip_armor_chain.ogg'
 	equip_sound = 'sound/foley/equip/equip_armor_chain.ogg'
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	sewrepair = FALSE
 	smeltresult = /obj/item/ingot/steel
-
-/obj/item/clothing/shoes/boots/maille/Initialize(mapload)
-	. = ..()
-	.=..()
+	ported_clothing = TRUE

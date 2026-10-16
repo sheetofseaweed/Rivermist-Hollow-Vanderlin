@@ -10,6 +10,7 @@
 	smeltresult = /obj/item/ingot/steel
 	var/worn = FALSE
 	slot_flags = ITEM_SLOT_MASK
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/face/facemask/steel/confessor_ap
 
 /obj/item/clothing/face/facemask/steel/confessor_ap/equipped(mob/living/carbon/human/user, slot, initial = FALSE)
@@ -39,9 +40,6 @@
 		else
 			user.visible_message(span_warning("[user] stops inserting the lenses into [src]."))
 		return
-
-/obj/item/clothing/face/facemask/steel/confessor_ap/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/face/facemask/steel/confessor_ap/pyro
 	name = "insulated breath-mask"

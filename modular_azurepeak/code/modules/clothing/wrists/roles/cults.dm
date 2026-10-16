@@ -6,10 +6,8 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	icon_state = "graggarbracers"
 	item_state = "graggarbracers"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/wrists/bracers/graggar/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/wrists/bracers/matthios
 	name = "gilded bracers"
@@ -19,10 +17,8 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	icon_state = "matthiosbracers"
 	item_state = "matthiosbracers"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/wrists/bracers/matthios/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/wrists/bracers/graggar/heavy
 	name = "vicious wristguards"
@@ -56,6 +52,7 @@
 	resistance_flags = FIRE_PROOF
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER + 150
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/leather/baotha/Initialize(mapload)

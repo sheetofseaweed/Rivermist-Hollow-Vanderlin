@@ -13,9 +13,10 @@
 	nodismemsleeves = TRUE
 	blocking_behavior = null
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/steel
 	armor_class = AC_HEAVY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/heartfelt/hand
@@ -43,6 +44,7 @@
 	max_integrity = 250
 	armor_class = AC_MEDIUM
 	boobed = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/silver
 	name = "templar's half-plate"
@@ -57,8 +59,9 @@
 	armor_type = /datum/armor/plate
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	allowed_sex = list(MALE, FEMALE)
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/steel
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/heavy/decorated
@@ -101,6 +104,7 @@
 	smeltresult = /obj/item/ingot/copper
 	body_parts_covered = CHEST
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/fluted/avantyne
 	name = "avantyne-threaded maille"
@@ -112,6 +116,7 @@
 	armor_class = AC_MEDIUM
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	armor_type = /datum/armor/ported/plate_bsteel
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/fluted/baotha
@@ -126,6 +131,7 @@
 	armor_class = AC_LIGHT
 	color = null
 	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/fluted/baotha/Initialize(mapload)
@@ -150,6 +156,7 @@
 	detail_color = CLOTHING_WHITE
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/fluted/zizo
 	name = "avantyne half-plate"
@@ -161,10 +168,8 @@
 	armor_class = AC_MEDIUM
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	armor_type = /datum/armor/plate
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/plate/fluted/zizo/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/armor/plate/full/bronze
 	name = "bronze panoplic armor"
@@ -179,13 +184,13 @@
 	armor_class = AC_HEAVY
 	smeltresult = /obj/item/ingot/bronze
 	var/bronzeplatecumbersome = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/full/bronze/equipped(mob/living/user, slot, initial = FALSE)
 	. = ..()
 	if((slot & ITEM_SLOT_ARMOR))
 		to_chat(user, span_suicide("The panoply clatters into place, and I feel my shoulders slouch beneath its weight - yet even now, I feel sturdier than ever before.."))
-		user.change_stat(STATKEY_CON, 1)
-		user.change_stat(STATKEY_SPD, -1)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_CON) = 1, (STATKEY_SPD) = -1))
 		bronzeplatecumbersome = TRUE
 	return
 
@@ -193,8 +198,7 @@
 	. = ..()
 	if(bronzeplatecumbersome == TRUE)
 		to_chat(user, span_hypnophrase("..and with a sigh of relief, the panoply's weight no longer burdens my shoulders."))
-		user.change_stat(STATKEY_CON, -1)
-		user.change_stat(STATKEY_SPD, 1)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		bronzeplatecumbersome = FALSE
 	return
 
@@ -210,6 +214,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "ornateplate"
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/full/samsibsa
 	name = "samsibsa scaleplate"
@@ -226,6 +231,7 @@
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	var/picked = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/samsibsa/attack_hand_secondary(mob/user, list/modifiers)
@@ -233,8 +239,8 @@
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"
@@ -256,11 +262,12 @@
 	max_integrity = ARMOR_INT_CHEST_PLATE_IRON + 25
 	armor_class = AC_HEAVY
 	body_parts_covered = CHEST | ARMS | LEGS | GROIN
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/ancient/artificer
 	name = "artificed half-plate"
-	desc = "Forbidden knowledge, resurrected into a weightless vessel of gilbranze-and-magicka. It holds a slot for an arcyne meld to power it."
+	desc = "Forbidden knowledge, resurrected into a weightless vessel of gilbranze. Whatever arcyne meld once powered it has long gone dark."
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
@@ -268,98 +275,8 @@
 	item_state = "artificerplate"
 	armor_class = AC_LIGHT
 	max_integrity = 300
-	var/powered = FALSE
-	var/mode = 1
-	var/active_item = FALSE
-	var/legendaryarcane = FALSE
-	var/legendaryathletics = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/plate/ancient/artificer/Initialize(mapload)
-	.=..()
-	update_description()
-
-/obj/item/clothing/armor/plate/ancient/artificer/proc/toggle_mode(mob/user)
-	if(!src.ontable())
-		to_chat(user, span_notice("I need to put this on a table first!")) //prevents stats staying on a person if tinkered on self
-	else
-		mode = (mode == 1) ? 2 : 1
-		user.visible_message(span_notice("[user] tinkers with [src], adjusting its enhancements."))
-		update_description()
-
-/obj/item/clothing/armor/plate/ancient/artificer/equipped(mob/living/user, slot, initial = FALSE)
-	. = ..()
-	if(!powered || active_item || slot != ITEM_SLOT_ARMOR)
-		return
-	if(mode == 1) // Arcane mode
-		var/current_arcane = user.get_skill_level(/datum/skill/magic/arcane)
-		if(current_arcane)
-			if(current_arcane < 6) // Only add if not already capped
-				active_item = TRUE
-				legendaryarcane = FALSE
-				user.adjust_skillrank(/datum/skill/magic/arcane, 1, TRUE)
-				to_chat(user, span_notice("Arcyne lightning crackles across the cuirass, enchanting your mind with forbidden knowledge!"))
-				icon_state ="artificerplate_powered"
-				item_state = "artificerplate_powered"
-			else
-				legendaryarcane = TRUE
-				active_item = TRUE
-				to_chat(user, span_warning("Arcyne lightning crackles across the cuirass, enshrining your mastery over magicka!"))
-				icon_state ="artificerplate_powered"
-				item_state = "artificerplate_powered"
-		else
-			to_chat(user, span_warning("The cuirass feels unnervingly cold to the touch."))
-	if(mode == 2)
-		if(slot != ITEM_SLOT_ARMOR)
-			return
-		var/current_athletics = user.get_skill_level(/datum/skill/misc/athletics)
-		if(current_athletics)
-			if(current_athletics < 6)// Only add if not already capped
-				user.adjust_skillrank(/datum/skill/misc/athletics, 1, TRUE)
-				legendaryathletics = FALSE
-				icon_state ="artificerplate_powered"
-				item_state = "artificerplate_powered"
-			else
-				legendaryathletics = TRUE
-			active_item = TRUE
-			to_chat(user, span_notice("Arcyne lightning crackles across the cuirass, enchanting your body with adrenalized power!"))
-			icon_state ="artificerplate_powered"
-			item_state = "artificerplate_powered"
-			return
-		else
-			to_chat(user, span_warning("The cuirass feels unnervingly warm to the touch."))
-
-/obj/item/clothing/armor/plate/ancient/artificer/dropped(mob/living/user, silent = FALSE)
-	.=..()
-	if(active_item)
-		if(mode == 1)
-			if(user.get_skill_level(/datum/skill/magic/arcane))
-				var/mob/living/carbon/human/H = user
-				if(!legendaryarcane)
-					H.adjust_skillrank(/datum/skill/magic/arcane, -1, TRUE)
-				if(H.get_item_by_slot(ITEM_SLOT_ARMOR) == src)
-					to_chat(H, span_notice("Gone is the intelligence, which bolstered thine arcyna.."))
-					active_item = FALSE
-					return
-			else
-				return
-		if(mode == 2)
-			if(user.get_skill_level(/datum/skill/misc/athletics))
-				var/mob/living/carbon/human/H = user
-				if(!legendaryathletics)
-					H.adjust_skillrank(/datum/skill/misc/athletics, -1, TRUE)
-				if(H.get_item_by_slot(ITEM_SLOT_ARMOR) == src)
-					to_chat(H, span_notice("Gone is the strength, which bolstered thine arms.."))
-					active_item = FALSE
-					return
-			else
-				return
-
-/obj/item/clothing/armor/plate/ancient/artificer/proc/update_description()
-	if(mode == 1)
-		desc = "Forbidden knowledge, resurrected into a weightless vessel of gilbranze-and-magicka. It crackles with raw magicka; the mind, empowered."
-	else
-		desc = "Forbidden knowledge, resurrected into a weightless vessel of gilbranze-and-magicka. It crackles with arcyne vigor; the body, emboldened."
 
 /obj/item/clothing/armor/medium/scale/bronze
 	name = "bronze lamellar"
@@ -372,6 +289,7 @@
 	smeltresult = /obj/item/ingot/bronze
 	armor_class = AC_MEDIUM
 	armor_type = /datum/armor/ported/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/medium/scale/copper
 	name = "copper lamellar"
@@ -384,6 +302,7 @@
 	smeltresult = /obj/item/ingot/copper
 	armor_class = AC_MEDIUM
 	armor_type = /datum/armor/ported/leather
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/medium/scale/inqcoat_ap
 	name = "inquisitorial duster"
@@ -399,17 +318,14 @@
 	allowed_sex = list(MALE, FEMALE)
 	sleevetype = "shirt"
 	max_integrity = 300
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	equip_delay_self = 4 SECONDS
 	armor_class = AC_LIGHT
 	armor_type = /datum/armor/ported/leather
 	smeltresult = /obj/item/ingot/iron
 	blocksound = SOFTHIT
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/armor/medium/scale/inqcoat_ap
-
-/obj/item/clothing/armor/medium/scale/inqcoat_ap/Initialize(mapload)
-	. = ..()
-	return
 
 /obj/item/clothing/armor/medium/scale/iron
 	name = "lamellar"
@@ -421,6 +337,7 @@
 	max_integrity = ARMOR_INT_CHEST_MEDIUM_IRON
 	smeltresult = /obj/item/ingot/iron
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/medium/scale/marshal
 	name = "coat of the commander"
@@ -432,6 +349,7 @@
 	item_state = "leathercoat"
 	boobed = FALSE
 	uses_lord_coloring = LORD_PRIMARY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/fencer/decorated
@@ -446,6 +364,7 @@
 	detail_color = CLOTHING_WHITE
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/fencer/donator
@@ -456,6 +375,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "heartplates"
 	item_state = "heartplates"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/fencer/donator_girdle
@@ -466,6 +386,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "plackarts"
 	item_state = "plackarts"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/fencer/donator_gothic
@@ -476,6 +397,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "gcuirass"
 	item_state = "gcuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/fencer/legacy
@@ -486,6 +408,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "legacycuirass"
 	item_state = "legacycuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/decorated
@@ -500,6 +423,7 @@
 	detail_color = CLOTHING_WHITE
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/cuirass/ornate/gold
 	name = "golden cuirass"
@@ -515,6 +439,7 @@
 	smeltresult = /obj/item/ingot/gold
 	grid_height = 96
 	grid_width = 96
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/cuirass/ornate/grinning
 	name = "grinning cuirass"
@@ -523,6 +448,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "grinningcuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/holysee
@@ -533,6 +459,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "seecuirass"
 	item_state = "seecuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/bronze/alt
@@ -585,6 +512,7 @@
 	unequip_delay_self = 8 SECONDS
 	equip_delay_other = 3 SECONDS
 	strip_delay = ((6 SECONDS))
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/gold/heroic
@@ -600,6 +528,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "goldcuirass"
+	item_state = "cuirass"
 	max_integrity = 10
 	sellprice = 400
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -616,4 +546,5 @@
 	armor_class = AC_HEAVY
 	armor_type = /datum/armor/plate
 	max_integrity = ARMOR_INT_CHEST_PLATE_PSYDON
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

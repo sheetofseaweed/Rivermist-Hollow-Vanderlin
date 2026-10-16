@@ -7,6 +7,7 @@
 	icon_state = "g_newring_sapphire"
 	sellprice = 222
 	var/active_item = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/statamythortz/equipped(mob/living/user, slot, initial = FALSE)
@@ -16,16 +17,14 @@
 	else if((slot & ITEM_SLOT_RING))
 		active_item = TRUE
 		to_chat(user, span_rose("'..the way of knowledge, cursing its pursuers with inzanity..'"))
-		user.change_stat(STATKEY_INT, 1)
-		user.change_stat(STATKEY_PER, 1)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_INT) = 1, (STATKEY_PER) = 1))
 	return
 
 /obj/item/clothing/ring/statamythortz/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_rose("'..but if we root ourselves in the thoughtless, how else will we progress?'"))
-		user.change_stat(STATKEY_INT, -1)
-		user.change_stat(STATKEY_PER, -1)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 	return
 
@@ -34,5 +33,6 @@
 	icon = 'modular_azurepeak/icons/clothing/rings.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
+	icon_state = "g_newring_sapphire"
 	sellprice = 30
 	misc_flags = CRAFTING_TEST_EXCLUDE

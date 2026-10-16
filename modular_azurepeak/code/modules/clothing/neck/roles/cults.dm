@@ -3,6 +3,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "graggar_g"
 	sellprice = 77
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -24,6 +25,7 @@
 	resistance_flags = FIRE_PROOF
 	blocksound = SOFTHIT
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/coif/baotha/Initialize(mapload)
@@ -46,9 +48,6 @@
 	item_state = "matthioschainmantle"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
-/obj/item/clothing/neck/chaincoif/chainmantle/matthios/Initialize(mapload)
-	. = ..()
-
 /obj/item/clothing/neck/gorget/steel/graggar
 	name = "vicious gorget"
 	desc = "Curled plate, cradling the neck. Once, they were chains - now, they've allowed you to break free."
@@ -58,9 +57,6 @@
 	icon_state = "graggargorget"
 	item_state = "graggargorget"
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/neck/gorget/steel/graggar/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/neck/psycross/inhumen/aalloy
 	name = "decrepit zcross"
@@ -133,6 +129,7 @@
 	sleeved = null
 	icon_state = "graggar_b"
 	item_state = "graggar_b"
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/silver/ravox/g
@@ -142,6 +139,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "graggar_g"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/ravox/wood
@@ -155,6 +153,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/inhumen/matthios/g

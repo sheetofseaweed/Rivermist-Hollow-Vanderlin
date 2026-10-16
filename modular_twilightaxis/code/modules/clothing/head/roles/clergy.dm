@@ -4,6 +4,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/head_2.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/head_2.dmi'
 	sleeved = null
+	icon_state = "basichood"
+	item_state = "basichood"
 	color = "#78a3c9"
 	slot_flags = ITEM_SLOT_HEAD
 	armor_type = /datum/armor/ported/newmoon_hood
@@ -12,6 +14,7 @@
 	armor_class = AC_MEDIUM
 	alternate_worn_layer = 16
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flowercrown/rosa/resprite
@@ -22,6 +25,7 @@
 	sleeved = null
 	icon_state = "flower_crown_eora"
 	item_state = "flower_crown_eora"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/nunTA
@@ -34,6 +38,7 @@
 	item_state = "nun_hood"
 	slot_flags = ITEM_SLOT_HEAD
 	flags_inv = HIDEEARS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/nunTA/MiddleClick(mob/user, list/modifiers)

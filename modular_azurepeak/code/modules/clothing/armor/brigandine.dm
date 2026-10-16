@@ -12,6 +12,7 @@
 	detail_color = "#FFFFFF"
 	var/picked = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/haraate/attack_hand_secondary(mob/user, list/modifiers)
@@ -19,8 +20,8 @@
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"
@@ -41,6 +42,7 @@
 	blocksound = PLATEHIT
 	armor_class = AC_HEAVY
 	max_integrity = ARMOR_INT_CHEST_PLATE_BRIGANDINE + 100
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/brigandine/pyro
 	name = "darksooted brigandine coat"
@@ -52,6 +54,7 @@
 	item_state = "pyrocoat"
 	armor_type = /datum/armor/ported/insulated_brigandine
 	body_parts_covered = (( CHEST | GROIN | VITALS | ARMS))
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/heavy/iron

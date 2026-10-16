@@ -7,6 +7,7 @@
 	icon_state = "yoheisuit"
 	armor_type = /datum/armor/brigandine
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER + 25
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/harayoroi
@@ -24,6 +25,7 @@
 	max_integrity = ARMOR_INT_CHEST_PLATE_BRIGANDINE + 25
 	var/picked = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/harayoroi/attack_hand_secondary(mob/user, list/modifiers)
@@ -31,8 +33,8 @@
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"

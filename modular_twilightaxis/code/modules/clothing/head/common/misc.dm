@@ -2,8 +2,10 @@
 	icon = 'modular_twilightaxis/icons/clothing/head_2.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = null
 	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_HIP|ITEM_SLOT_MASK
 	flags_inv = HIDEEARS
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/head/onhelm
 
 /obj/item/clothing/head/onhelm/tw_d_oathtaker

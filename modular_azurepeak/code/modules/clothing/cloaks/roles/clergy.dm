@@ -10,6 +10,7 @@
 	flags_inv = HIDEBOOB
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_CLOAK|ITEM_SLOT_ARMOR
 	nodismemsleeves = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/raincloak/feather_cloak
@@ -23,6 +24,7 @@
 	boobed = FALSE
 	sleevetype = "feather_cloak"
 	hoodtype = /obj/item/clothing/head/hooded/rainhood/feather_hood
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/templar/astratancleric/koruu
@@ -31,6 +33,7 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
+	icon_state = "astrataclerictabard"
 	armor_type = /datum/armor/tree
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -40,6 +43,7 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
+	icon_state = "justiceclerictabard"
 	armor_type = /datum/armor/tree
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -60,6 +64,8 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/hierophant
@@ -74,6 +80,7 @@
 	detail_color = null
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/undividedcleric
 	name = "undivided devotee cloak"
@@ -84,6 +91,7 @@
 	icon_state = "tenclericcloak"
 	alternate_worn_layer = CLOAK_BEHIND_LAYER
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stole/bishop
 	name = "bishop's stole"
@@ -92,6 +100,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = null
 	icon_state = "stole_bishop"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/tabard/abyssorite
@@ -103,6 +112,7 @@
 	icon_state = "abyssortabard"
 	item_state = "abyssortabard"
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/tabard/psydontabard
 	name = "Aonic tabard"
@@ -115,6 +125,7 @@
 	color = null
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
 	var/open_wear = FALSE
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/cloak/tabard/psydontabard
 
 /obj/item/clothing/cloak/tabard/psydontabard/get_mechanics_examine(mob/user)
@@ -165,6 +176,8 @@
 	sleevetype = "shirt"
 	boobed = FALSE
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 
 /obj/item/clothing/cloak/templar/necrancleric
 	name = "Jergalite cloak"
@@ -177,6 +190,8 @@
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK
 	sleevetype = "shirt"
 	boobed = FALSE
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 
 /obj/item/clothing/cloak/templar/ravox
 	name = "Tempuran tabard"
@@ -191,6 +206,8 @@
 	nodismemsleeves = TRUE
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK|ITEM_SLOT_MASK
 	flags_inv = HIDECROTCH|HIDEBOOB
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 
 /obj/item/clothing/cloak/templar/ravoxcleric
 	name = "Tempuran cloak"
@@ -204,6 +221,8 @@
 	alternate_worn_layer = CLOAK_BEHIND_LAYER
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK|ITEM_SLOT_MASK
 	sleevetype = "shirt"
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 
 /obj/item/clothing/cloak/templar/undivided_alt
 	name = "undivided templar tabard"
@@ -214,6 +233,8 @@
 	icon_state = "seetabardalt"
 	alternate_worn_layer = TABARD_LAYER
 	boobed = TRUE
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/templar/undividedcleric
@@ -225,6 +246,8 @@
 	icon_state = "tenclerictabard"
 	alternate_worn_layer = TABARD_LAYER
 	boobed = TRUE
+	ported_clothing = TRUE
+	layer_toggle = FALSE
 
 /obj/item/clothing/cloak/tabard/psydontabard/black
 	name = "blessed tabard"
@@ -319,6 +342,8 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/cloaks.dmi'
 	sleeved = null
+	icon_state = "blackpsydontabard"
+	item_state = "blackpsydontabard"
 	body_parts_covered = GROIN
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -342,6 +367,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	icon_state = "acrusader_surcoat"
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/crusader/bsteel
 	name = "surcoat of the blacksteel order"
@@ -350,6 +376,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	icon_state = "crusader_surcoatb3"
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/crusader/heavy
 	name = "overvestments"
@@ -358,6 +385,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	icon_state = "priest_surcoat"
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/crusader/undivided
 	name = "surcoat of the golden order"
@@ -366,6 +394,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	icon_state = "ucrusader_surcoat"
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/crusader/t/astrata
 	name = "surcoat of the silver order"
@@ -374,6 +403,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	icon_state = "acrusader_surcoatt2"
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/crusader/t/undivided
 	name = "surcoat of the silver order"
@@ -382,3 +412,4 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/crusader.dmi'
 	icon_state = "ucrusader_surcoatt2"
+	ported_clothing = TRUE

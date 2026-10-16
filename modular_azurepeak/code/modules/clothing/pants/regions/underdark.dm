@@ -6,4 +6,5 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "thistlepants"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

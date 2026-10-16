@@ -19,3 +19,4 @@
 	color = "#4b3a2c"
 	salvage_amount = 1
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE

@@ -11,4 +11,5 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = "sound/foley/cloth_wipe (1).ogg"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

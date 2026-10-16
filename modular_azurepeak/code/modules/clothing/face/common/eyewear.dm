@@ -11,6 +11,7 @@
 	tint = 3
 	grid_width = 32
 	grid_height = 32
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/face/blindfold_ap
 
 /obj/item/clothing/face/spectacles/bronze
@@ -21,9 +22,10 @@
 	sleeved = null
 	icon_state = "bgoggles"
 	max_integrity = 30
-	armor_type = /datum/armor/ported/plate_bsteel
+	armor_type = /datum/armor/ported/spectacles
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/spectacles/duelist
 	name = "iron duelist goggles"
@@ -35,13 +37,14 @@
 	break_sound = "garrote_snap"
 	blocksound = PLATEHIT
 	max_integrity = 125
-	armor_type = /datum/armor/plate
+	armor_type = /datum/armor/ported/spectacles
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'sound/foley/equip/rummaging-03.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/spectacles/iron
 	name = "iron spectacles"
@@ -53,6 +56,7 @@
 	max_integrity = 30
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/spectacles/steel
 	name = "steel spectacles"
@@ -62,9 +66,10 @@
 	sleeved = null
 	icon_state = "sgoggles"
 	max_integrity = 40
-	armor_type = /datum/armor/ported/plate_bsteel
+	armor_type = /datum/armor/ported/spectacles
 	adjustable = CAN_CADJUST
 	toggle_icon_state = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/spectacles/thin
 	name = "thin-lensed spectacles"
@@ -72,6 +77,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "glassesa"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/spectacles/duelist/bronze
@@ -99,4 +105,5 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "glassesb_dark"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

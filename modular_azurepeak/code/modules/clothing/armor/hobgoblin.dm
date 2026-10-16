@@ -7,6 +7,7 @@
 	item_state = "leather_armor"
 	body_parts_covered = CHEST|GROIN|ARMS|VITALS|LEGS
 	sellprice = 4
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/iron/hobgoblin
@@ -19,4 +20,5 @@
 	smeltresult = /obj/item/ingot/iron
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS|FEET
 	sellprice = 7
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

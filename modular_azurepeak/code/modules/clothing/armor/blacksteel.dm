@@ -10,6 +10,7 @@
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_CHEST_PLATE_BLACKSTEEL
 	smeltresult = /obj/item/ingot/blacksteel
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/blacksteel/modern
 	name = "blacksteel half-plate"
@@ -34,6 +35,7 @@
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_CHEST_PLATE_BLACKSTEEL
 	smeltresult = /obj/item/ingot/blacksteel
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/full/blacksteel/modern
 	name = "blacksteel plate armor"

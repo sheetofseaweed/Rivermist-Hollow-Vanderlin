@@ -14,6 +14,7 @@
 	max_integrity = ARMOR_INT_HELMET_BLACKSTEEL
 	smeltresult = /obj/item/ingot/blacksteel
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/blacksteel_ap/modern
 	name = "blacksteel armet"
@@ -29,25 +30,26 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/blacksteel_ap/modern/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/feather) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Plume") as anything in COLOR_MAP
+		var/choice = input(user, "Choose a color.", "Plume") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		detail_color = COLOR_MAP[choice]
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		update_appearance()
 		if(loc == user && ishuman(user))
 			var/mob/living/carbon/H = user
 			H.update_inv_head()
 	if(istype(W, /obj/item/natural/cloth) && !altdetail_tag)
-		var/choicealt = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
+		var/choicealt = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		altdetail_color = COLOR_MAP[choicealt]
+		altdetail_color = GLOB.ported_color_map[choicealt]
 		altdetail_tag = "_detailalt"
 		update_appearance()
 		if(loc == user && ishuman(user))

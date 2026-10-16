@@ -3,6 +3,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "abyssor_g"
+	item_state = "abyssor_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -22,6 +24,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "dendor_g"
+	item_state = "dendor_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -31,6 +35,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "eora_g"
+	item_state = "eora_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -41,6 +47,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "zcross_g"
 	sellprice = 66
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -49,6 +56,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "malum_g"
+	item_state = "malum_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -58,6 +67,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "necra_g"
+	item_state = "necra_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -67,6 +78,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "noc_g"
 	sellprice = 77
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -75,6 +87,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "pestra_g"
+	item_state = "pestra_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -84,6 +98,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "ravox_g"
+	item_state = "ravox_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -93,6 +109,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "reformistcross_g"
+	item_state = "reformistcross_g"
 	sellprice = 77
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -101,6 +119,8 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "xylix_g"
+	item_state = "xylix_g"
 	sellprice = 77
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -112,6 +132,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "astrata_periapt"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/eora/rosecollar
@@ -121,6 +142,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "rosecollar"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/chaincoif/bronze
@@ -130,10 +152,11 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "bchaincoif"
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/bronze
 	max_integrity = 250
 	armor_type = /datum/armor/ported/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/psycross/aalloy
 	name = "decrepit holy symbol"
@@ -144,6 +167,7 @@
 	icon_state = "psycross_a"
 	color = "#bb9696"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/abyssor
@@ -154,6 +178,7 @@
 	sleeved = null
 	icon_state = "abyssor"
 	salvage_amount = 1
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/bronze
@@ -164,6 +189,7 @@
 	sleeved = null
 	icon_state = "psycross_b"
 	item_state = "psycross_b"
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/liefdonator
@@ -173,6 +199,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "lief_amulet"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/malum
@@ -182,6 +209,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "malum"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/paalloy
@@ -191,6 +219,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "psycross_a"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/pestra
@@ -200,6 +229,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "pestra"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/ravox
@@ -209,6 +239,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "ravox"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/reform
@@ -219,6 +250,7 @@
 	sleeved = null
 	icon_state = "reformistcross"
 	sellprice = 0
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/undivided
@@ -228,6 +260,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "undivided"
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/psycross/weeping
 	name = "weeping holy symbol"
@@ -243,6 +276,7 @@
 	sellprice = 666
 	unequip_delay_self = 7 SECONDS
 	var/active_item = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/weeping/Initialize(mapload)
@@ -254,22 +288,16 @@
 	if((slot & ITEM_SLOT_NECK))
 		active_item = TRUE
 		to_chat(user, span_warning("As you don the holy symbol, the chains tighten like a vice around your neck!	</br>	</br>You're overcome with a sense of terrible anguish - all of humenity's suffering, thrust upon your very spirit!	</br>	</br>Your chest grows cold, yet your blood boils hotter than magma! Faerun's villains may be brutal and merciless, but you will be WORSE!	</br>	</br>You've gone BERSERK!"))
-		user.change_stat(STATKEY_STR, 3)
-		user.change_stat(STATKEY_CON, 3)
-		user.change_stat(STATKEY_END, 3)
-		user.change_stat(STATKEY_INT, -3)
-		ADD_TRAIT(user, TRAIT_NOCSHADES, TRAIT_GENERIC) //Roughly ~30% reduced vision with a sharp red overlay. Provides night vision in the visible tiles.
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_STR) = 3, (STATKEY_CON) = 3, (STATKEY_END) = 3, (STATKEY_INT) = -3))
+		ADD_TRAIT(user, TRAIT_NOCSHADES, REF(src)) //Roughly ~30% reduced vision with a sharp red overlay. Provides night vision in the visible tiles.
 	return
 
 /obj/item/clothing/neck/psycross/weeping/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_warning("..and at once, the mania subsides. A familiar warmth creeps back into your chest. Though your mind is clear, the thought lingers; was it truly just a malaise, or something more? </br>	</br>..perhaps, this would better fit in the smoldering heat of a forge.."))
-		user.change_stat(STATKEY_STR, -3)
-		user.change_stat(STATKEY_CON, -3)
-		user.change_stat(STATKEY_END, -3)
-		user.change_stat(STATKEY_INT, 3)
-		REMOVE_TRAIT(user, TRAIT_NOCSHADES, TRAIT_GENERIC)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
+		REMOVE_TRAIT(user, TRAIT_NOCSHADES, REF(src))
 		active_item = FALSE
 	return
 
@@ -284,6 +312,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/xylix
@@ -295,6 +324,7 @@
 	icon_state = "xylix"
 	toggle_icon_state = FALSE
 	var/disguised_type = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/xylix/examine(mob/user)
@@ -305,9 +335,9 @@
 
 	var/mob/living/carbon/human/human = user
 	if(istype(human.patron, /datum/patron/faerun/neutral_gods/Tymora))
-		. += span_notice("This is an amulet of Tymora! By shift-right clicking it, I can alter its shape to whatever befits my whim.")
+		. += span_notice("This is an amulet of Tymora! By Alt+right-clicking it, I can alter its shape to whatever befits my whim.")
 
-/obj/item/clothing/neck/psycross/xylix/ShiftRightClick(mob/user)
+/obj/item/clothing/neck/psycross/xylix/AltRightClick(mob/user, list/modifiers)
 	if(!ishuman(user))
 		return
 
@@ -369,6 +399,7 @@
 	sleeved = null
 	icon_state = "astrata_b"
 	item_state = "astrata_b"
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/silver/astrata/g
@@ -378,6 +409,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "astrata_g"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/astrata/wood
@@ -391,6 +423,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/silver/dendor/g
@@ -402,6 +435,7 @@
 	icon_state = "dendor_g"
 	item_state = "dendor_g"
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -416,6 +450,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/silver/eora/g
@@ -427,6 +462,7 @@
 	icon_state = "eora_g"
 	item_state = "eora_g"
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -441,6 +477,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/inhumen/bronze
@@ -528,20 +565,14 @@
 	if((slot & ITEM_SLOT_NECK))
 		active_item = TRUE
 		to_chat(user, span_hypnophrase("..the warmth flows through my veins, yet I do not burn; in fact, my mind feels clearer than ever before.. </br>	</br>..glowing runes race past my eyes, gradually deciphering into the forge's greatest secrets..	</br>	</br>'BLACKSTEEL AND GOLD, SAFFIRA AND BLORTZ - BOUND WITH A HOLY SYMBOL O' SILVER, TO FOSTER THE DRAGON'S FURY.'	</br>	</br>'FOUR ENCHANTED RINGS, BOUND IN SILVER. A GEMERALD, ONYX, AMYTHORTZ, RONTZ - OMNIPOTENT, TOGETHER.'	</br>	</br>'A SILVER CATALYST, A BERSERKER'S GREATSWORD ANOINTED WITH GNOLL-BLOOD - MERGED WITH AN ANCIENT GREATSWORD OF GILBRANZE, THE REMAINS OF A DRACONIC RING AND WEEPING HOLY SYMBOL, AND WHAT LIES WITHIN THIS AMULET: TO SLAY THE ULTIMATE EVYLLE.'"))
-		user.change_stat(STATKEY_INT, 3)
-		user.change_stat(STATKEY_LCK, 3)
-		user.change_stat(STATKEY_END, 3)
-		user.change_stat(STATKEY_STR, -3)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_INT) = 3, (STATKEY_LCK) = 3, (STATKEY_END) = 3, (STATKEY_STR) = -3))
 	return
 
 /obj/item/clothing/neck/psycross/malum/secret/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_warning("..the runes morph into indiscernable smudges, before fading into the world once more. For just a moment, you forget that the heat's blistering within your palm..	</br>	</br>..perhaps, this would better fit in the smoldering heat of a forge.."))
-		user.change_stat(STATKEY_INT, -3)
-		user.change_stat(STATKEY_LCK, -3)
-		user.change_stat(STATKEY_END, -3)
-		user.change_stat(STATKEY_STR, 3)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 	return
 
@@ -567,6 +598,7 @@
 	icon_state = "necra_g"
 	item_state = "necra_g"
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -581,6 +613,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/silver/noc/aalloy
@@ -593,6 +626,7 @@
 	color = "#bb9696"
 	resistance_flags = FIRE_PROOF
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/noc/bronze
@@ -602,6 +636,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "noc_b"
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/psycross/silver/noc/g
 	name = "golden amulet of Mystra"
@@ -611,6 +646,7 @@
 	sleeved = null
 	icon_state = "noc_g"
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/noc/paalloy
@@ -621,6 +657,7 @@
 	sleeved = null
 	icon_state = "noc_a"
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/psycross/silver/noc/wood
@@ -634,6 +671,7 @@
 	sellprice = 0
 	salvage_result = /obj/item/grown/log/tree/stick
 	salvage_amount = 1
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/pestra/g
@@ -724,6 +762,7 @@
 	item_state = "psycross_g"
 	resistance_flags = FIRE_PROOF
 	sellprice = 100
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -734,6 +773,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "necra_s"
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -744,6 +784,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
 	icon_state = "undivided_s"
+	ported_clothing = TRUE
 	wrist_mob_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 
 /obj/item/clothing/neck/psycross/undivided/g
@@ -752,6 +793,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "undivided"
 	resistance_flags = FIRE_PROOF
 
 /obj/item/clothing/neck/psycross/undivided/wood

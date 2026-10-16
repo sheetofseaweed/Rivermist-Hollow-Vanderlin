@@ -28,6 +28,7 @@
 	light_outer_range = 3
 	light_power = 1
 	toggle_icon_state = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/leather/shaman_hood/Initialize(mapload)
@@ -121,6 +122,7 @@
 	body_parts_covered = HEAD|HAIR|EARS|EYES|NOSE
 	worn_x_dimension = 32
 	worn_y_dimension = 32
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/bucket/gronn
@@ -137,4 +139,5 @@
 	smeltresult = /obj/item/ingot/iron
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

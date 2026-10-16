@@ -3,11 +3,14 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "tabard"
+	item_state = "tabard"
 	color = CLOTHING_AZURE
 	detail_tag = "_quad"
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
 	uses_lord_coloring = LORD_SECONDARY|LORD_DETAIL_AND_COLOR
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/tabard/retinue/banneret
@@ -15,6 +18,8 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "tabard"
+	item_state = "tabard"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -31,4 +36,5 @@
 	detail_color = CLOTHING_DARK_GREEN
 	detail_tag = "_spl"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

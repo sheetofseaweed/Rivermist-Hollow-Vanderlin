@@ -10,6 +10,7 @@
 	flags_inv = null
 	sleevetype = "limedress"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/boobed_detail = TRUE
 
@@ -37,6 +38,7 @@
 	flags_inv = HIDECROTCH
 	body_parts_covered = GROIN
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/toga/dress
@@ -50,6 +52,7 @@
 	boobed = TRUE
 	var/open_wear = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/toga/dress/attack_hand_secondary(mob/user, list/modifiers)
 	switch(open_wear)
@@ -103,6 +106,7 @@
 	item_state = "openrobe"
 	color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/robe/leopard
@@ -116,6 +120,7 @@
 	slot_flags = ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
 	var/open_wear = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/shirt/robe/leopard
 
 /obj/item/clothing/shirt/robe/leopard/get_mechanics_examine(mob/user)
@@ -163,6 +168,7 @@
 	icon_state = "whiterobe"
 	item_state = "whiterobe"
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/leopard/alt
 	name = "open leopard robe"
@@ -186,4 +192,5 @@
 	icon_state = "ewarlock"
 	item_state = "ewarlock"
 	armor_type = /datum/armor/ported/leather
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

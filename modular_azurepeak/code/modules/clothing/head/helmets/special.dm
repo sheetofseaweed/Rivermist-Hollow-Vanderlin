@@ -15,6 +15,7 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_HELMET_STEEL + 15
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/bascinet/etruscan/grenzelhoft
 	name = "Sembian bascinet w/plume hat"

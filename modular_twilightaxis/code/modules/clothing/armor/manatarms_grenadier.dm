@@ -15,4 +15,5 @@
 	color = CLOTHING_AZURE
 	dyeable = TRUE
 	uses_lord_coloring = LORD_SECONDARY|LORD_DETAIL_AND_COLOR
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

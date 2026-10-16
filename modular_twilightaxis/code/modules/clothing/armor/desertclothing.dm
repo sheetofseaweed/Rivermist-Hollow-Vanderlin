@@ -14,6 +14,7 @@
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 	sewrepair = TRUE
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/zyb
@@ -25,6 +26,7 @@
 	icon_state = "sherwani"
 	color = "#7c6d5c"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/cataphract
 	name = "cataphract armor"
@@ -42,6 +44,7 @@
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	armor_class = AC_HEAVY
 	armor_type = /datum/armor/plate
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/hauberk/janissary
@@ -54,6 +57,7 @@
 	item_state = "mamaluke"
 	slot_flags = ITEM_SLOT_ARMOR
 	max_integrity = 350
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/vest/open
@@ -65,6 +69,7 @@
 	icon_state = "openvest"
 	body_parts_covered = CHEST|VITALS
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/cataphract/sultan
@@ -73,6 +78,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "cataphract"
+	item_state = "halfplate"
 	color = "#5e5d5d"
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_CHEST_PLATE_BLACKSTEEL
@@ -84,6 +91,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	color = "#2f51b8"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -92,6 +101,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	color = "#514339"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -100,6 +111,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	color = CLOTHING_GREEN
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -108,6 +121,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	color = CLOTHING_ORANGE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -116,6 +131,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	color = CLOTHING_PURPLE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -124,6 +141,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -135,6 +154,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/armor.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/armor.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "openvest"
+	item_state = "vest"
 	color = CLOTHING_RED
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

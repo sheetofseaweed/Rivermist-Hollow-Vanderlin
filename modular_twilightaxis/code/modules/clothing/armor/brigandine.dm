@@ -14,4 +14,5 @@
 	equip_delay_self = 40
 	armor_class = AC_LIGHT
 	w_class = WEIGHT_CLASS_BULKY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -14,6 +14,7 @@
 	var/disguise_state = null
 	grid_width = 32
 	grid_height = 32
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/baotha/Initialize()
@@ -23,7 +24,7 @@
 	realstate = icon_state
 	realicon = icon
 
-/obj/item/clothing/ring/baotha/examine(var/mob/living/carbon/human/user)
+/obj/item/clothing/ring/baotha/examine(mob/living/carbon/human/user)
 	. = ..()
 	if(iscarbon(user))
 		if(user.patron.type == /datum/patron/faerun/evil_gods/Blissara)

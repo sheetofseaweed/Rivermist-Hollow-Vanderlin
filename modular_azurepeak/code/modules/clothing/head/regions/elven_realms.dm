@@ -10,6 +10,7 @@
 	block2add = null
 	max_integrity = ARMOR_INT_HELMET_IRON
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/rare/elfplate/welfplate/autumn
@@ -22,6 +23,7 @@
 	item_state = "awelfhead"
 	armor_class = AC_LIGHT
 	max_integrity = ARMOR_INT_HELMET_HARDLEATHER
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/rare/elfplate/welfplate/autumn/light
 	name = "autumnwoad elven barbute"

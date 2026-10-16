@@ -10,6 +10,7 @@
 	armor_class = AC_LIGHT
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER + 150
 	body_parts_covered = GROIN | LEGS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/skirt/baotha/Initialize(mapload)

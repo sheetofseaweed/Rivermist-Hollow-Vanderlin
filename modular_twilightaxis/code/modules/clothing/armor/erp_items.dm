@@ -11,3 +11,4 @@
 	body_parts_covered = CHEST
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
+	ported_clothing = TRUE

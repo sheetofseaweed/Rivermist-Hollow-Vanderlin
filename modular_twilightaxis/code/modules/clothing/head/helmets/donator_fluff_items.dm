@@ -8,6 +8,7 @@
 	item_state = "helmet"
 	worn_y_dimension = 32
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/visored/royalknight/nightmare
@@ -18,4 +19,5 @@
 	sleeved = null
 	icon_state = "nightmare_armet"
 	item_state = "nightmare_armet"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

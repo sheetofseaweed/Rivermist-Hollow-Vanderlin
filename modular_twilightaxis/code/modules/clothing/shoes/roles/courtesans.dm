@@ -12,3 +12,4 @@
 	armor_type = /datum/armor/none
 	salvage_amount = 2
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE

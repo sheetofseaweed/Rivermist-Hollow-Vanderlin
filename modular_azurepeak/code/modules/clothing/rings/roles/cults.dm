@@ -6,4 +6,5 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "baothaflower"
 	item_state = "baothaflower"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

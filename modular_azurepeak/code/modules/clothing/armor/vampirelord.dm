@@ -11,6 +11,7 @@
 	armor_type = /datum/armor/blackbag
 	max_integrity = ARMOR_INT_CHEST_PLATE_ANTAG
 	resistance_flags = FIRE_PROOF | ACID_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/iron/vampire/Initialize(mapload)
@@ -29,6 +30,7 @@
 	armor_type = /datum/armor/blackbag
 	max_integrity = ARMOR_INT_CHEST_PLATE_ANTAG
 	resistance_flags = FIRE_PROOF | ACID_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/hauberk/ancient/vampire/Initialize(mapload)

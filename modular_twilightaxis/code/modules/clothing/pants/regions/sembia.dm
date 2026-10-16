@@ -12,4 +12,5 @@
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

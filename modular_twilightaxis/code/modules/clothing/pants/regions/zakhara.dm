@@ -7,11 +7,14 @@
 	icon_state = "sirwal"
 	item_state = "sirwal"
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/sirwal/beige
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = "#edc6a5"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -20,6 +23,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -28,6 +33,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = "#927351"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -38,6 +45,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = null
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -45,6 +54,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/sirwal/plainrandom/Initialize()
@@ -55,6 +66,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = CLOTHING_BLUE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -63,6 +76,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = CLOTHING_PURPLE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -71,6 +86,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/sirwal/fancy/random/Initialize()
@@ -81,6 +98,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = CLOTHING_RED
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -89,6 +108,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/desert/pants.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/desert/onmob/pants.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "sirwal"
+	item_state = "sirwal"
 	color = CLOTHING_YELLOW
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

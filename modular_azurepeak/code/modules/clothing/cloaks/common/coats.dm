@@ -9,6 +9,7 @@
 	body_parts_covered = CHEST|GROIN|ARMS
 	slot_flags = ITEM_SLOT_CLOAK
 	flags_inv = HIDECROTCH|HIDEBOOB
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/donator_greatcoat/dyeable

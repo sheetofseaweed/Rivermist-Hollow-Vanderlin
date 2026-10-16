@@ -8,7 +8,8 @@
 	smeltresult = /obj/item/ingot/blacksteel
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/bevor/blacksteel/modern
 	name = "blacksteel neckguard"
@@ -27,10 +28,8 @@
 	icon_state = "zizobevor"
 	item_state = "zizobevor"
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/neck/bevor/zizo/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/neck/gorget/aventail
 	name = "aventail"
@@ -47,6 +46,7 @@
 	armor_type = /datum/armor/maille
 	blocksound = CHAINHIT
 	smeltresult = /obj/item/ingot/steel
+	ported_clothing = TRUE
 
 /obj/item/clothing/neck/gorget/gold
 	name = "golden gorget"
@@ -62,3 +62,4 @@
 	smeltresult = /obj/item/ingot/gold
 	grid_height = 96
 	grid_width = 96
+	ported_clothing = TRUE

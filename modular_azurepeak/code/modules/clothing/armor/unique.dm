@@ -9,6 +9,7 @@
 	armor_class = AC_LIGHT
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MEDIUM
 	body_parts_covered = CHEST | VITALS | LEGS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/dwarven
@@ -20,6 +21,7 @@
 	icon_state = "dwarfchest"
 	item_state = "dwarfchest"
 	allowed_race = list(SPEC_ID_DWARF)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/dwarven/smith

@@ -18,8 +18,8 @@
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"

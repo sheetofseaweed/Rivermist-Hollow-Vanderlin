@@ -18,6 +18,7 @@
 	item_state = "b_lamellar"
 	boobed = TRUE
 	body_parts_covered = CHEST|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/fancyjacket
@@ -33,6 +34,7 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	allowed_sex = list(MALE, FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/ilamellar
@@ -45,6 +47,7 @@
 	item_state = "i_lamellar"
 	boobed = TRUE
 	body_parts_covered = CHEST|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/tunic/rosacoat/four

@@ -14,6 +14,7 @@
 	max_integrity = ARMOR_INT_HELMET_HARDLEATHER
 	armor_type = /datum/armor/ported/padded
 	block2add = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/abyssor_painter/attack_self(mob/user, list/modifiers)

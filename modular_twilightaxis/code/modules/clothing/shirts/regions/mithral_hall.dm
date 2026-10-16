@@ -15,6 +15,7 @@
 	var/hammerhold_variants = list("a", "b", "c", "d")
 	var/picked = FALSE
 	var/hammerhold_final_icon = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/twilight_hammerhold/attack_hand_secondary(mob/user, list/modifiers)
@@ -242,6 +243,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
+	icon_state = "white_mage_coat"
+	item_state = "white_mage_coat"
 	body_parts_covered = COVERAGE_ALL_BUT_ARMS
 	armor_type = /datum/armor/ported/leather
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
@@ -257,6 +260,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
+	icon_state = "white_mage_robe"
+	item_state = "white_mage_robe"
 	armor_type = /datum/armor/ported/padded
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
@@ -273,6 +278,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
+	icon_state = "white_mage_robe"
+	item_state = "white_mage_robe"
 	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
 	armor_type = /datum/armor/ported/padded
 	blocksound = SOFTUNDERHIT

@@ -7,6 +7,7 @@
 	icon_state = "viceseergloves"
 	item_state = "viceseergloves"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/leather/otavan/psygloves/overseer
@@ -26,15 +27,6 @@
 	icon = 'modular_twilightaxis/icons/clothing/32.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/gloves.dmi'
+	icon_state = "psyknuckle"
 	unarmed_bonus = 10
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/gloves/knuckles/psydon/relic/Initialize(mapload)
-	. = ..()
-	AddComponent(\
-		pre_blessed = 1,\
-		added_force = 0,\
-		added_blade_int = 0,\
-		added_int = 50,\
-		added_def = 2,\
-	)

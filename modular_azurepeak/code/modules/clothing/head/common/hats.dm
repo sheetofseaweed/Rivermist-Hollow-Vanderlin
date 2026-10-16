@@ -11,6 +11,7 @@
 	armor_type = /datum/armor/none
 	resistance_flags = FIRE_PROOF
 	sellprice = 30
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/octopus/MiddleClick(mob/user, list/modifiers)
@@ -23,9 +24,6 @@
 		flags_inv |= HIDEHAIR
 		to_chat(user, span_info("You tuck your hair under the [src]."))
 	user.update_inv_head()
-
-/obj/item/clothing/head/octopus/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/head/duelhat/pretzel
 	name = "rethrifted gravedigger's hat"
@@ -46,6 +44,7 @@
 	mob_overlay_icon = null
 	sleeved = null
 	icon_state = "archercap"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/cap
 	name = "cap"
@@ -58,6 +57,7 @@
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HEAD
 	flags_inv = HIDEEARS
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/duelhat
 	name = "duelist's hat"
@@ -70,6 +70,7 @@
 	color = COLOR_ALMOST_BLACK
 	detail_tag = "_detail"
 	detail_color = COLOR_SILVER
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/fedora
 	name = "archeologist's hat"
@@ -81,6 +82,7 @@
 	item_state = "curator"
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flamboyant
@@ -92,6 +94,7 @@
 	icon_state = "flamboyant"
 	item_state = "flamboyant"
 	sewrepair = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flathat
@@ -102,6 +105,7 @@
 	icon_state = "flathat"
 	item_state = "flathat"
 	sewrepair = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/smokingcap
@@ -111,6 +115,7 @@
 	sleeved = null
 	icon_state = "smokingc"
 	sewrepair = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/rosa/five
@@ -163,6 +168,7 @@
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/fibers
 	salvage_amount = 2
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/armingcap_ap/padded
 	name = "padded arming cap"

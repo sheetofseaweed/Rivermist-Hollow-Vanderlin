@@ -11,6 +11,7 @@
 	slot_flags = ITEM_SLOT_HEAD | ITEM_SLOT_CLOAK
 	grid_width = 32
 	grid_height = 32
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/sash
@@ -26,6 +27,7 @@
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/sleevedtabard
 	name = "sleeved tabard"
@@ -38,6 +40,7 @@
 	color = null
 	boobed = TRUE
 	sleevetype = "shirt"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/surcoat
@@ -48,6 +51,7 @@
 	icon_state = "surcoat"
 	sleevetype = "shirt"
 	nodismemsleeves = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/cloak/stabard/surcoat/short
 	name = "short jupon"

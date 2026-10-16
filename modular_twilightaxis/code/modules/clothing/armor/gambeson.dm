@@ -7,10 +7,8 @@
 	icon_state = "bloodgambeson"
 	color = null
 	max_integrity = 360
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/gambeson/bloodraider/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/armor/regenerating/baotha
 	name = "masquerade"
@@ -30,6 +28,7 @@
 	var/realdesc = null
 	var/realstate = null
 	var/active_item = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/regenerating/baotha/Initialize()
@@ -38,7 +37,7 @@
 	realdesc = desc
 	realstate = icon_state
 
-/obj/item/clothing/armor/regenerating/baotha/examine(var/mob/living/carbon/human/user)
+/obj/item/clothing/armor/regenerating/baotha/examine(mob/living/carbon/human/user)
 	. = ..()
 	if(iscarbon(user))
 		if(user.patron.type == /datum/patron/faerun/evil_gods/Blissara)
@@ -139,4 +138,5 @@
 	item_state = "overseershirt"
 	color = null
 	boobed = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

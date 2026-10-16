@@ -12,6 +12,7 @@
 	allowed_race = SPECIES_BASE_BODY
 	allowed_sex = list(FEMALE)
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/robe/eora/resprite
@@ -21,6 +22,7 @@
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
 	icon_state = "robe_blue"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/fanatic_wear = FALSE
 

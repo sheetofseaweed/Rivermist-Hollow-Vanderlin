@@ -11,6 +11,7 @@
 	max_integrity = 360
 	resistance_flags = FIRE_PROOF
 	body_parts_covered = CHEST | GROIN | ARMS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/baotha/Initialize(mapload)
@@ -34,6 +35,7 @@
 	color = null
 	allowed_sex = list(MALE, FEMALE)
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/gambeson/raneshen
 	name = "thin desert coat"
@@ -44,6 +46,7 @@
 	icon_state = "sherwani"
 	color = "#eec39a"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/heavy/grenzelhoft
@@ -64,14 +67,15 @@
 	color = "#1d1d22"
 	var/picked = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/gambeson/heavy/grenzelhoft/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Darkhold colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Darkhold colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"
@@ -92,6 +96,7 @@
 	detail_tag = "_detail"
 	detail_color = "#6e423a"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/heavy/hatanga
@@ -104,6 +109,7 @@
 	color = "#ffffff"
 	boobed = TRUE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/heavy/hierophant
@@ -115,6 +121,7 @@
 	icon_state = "desertrobe"
 	item_state = "desertrobe"
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/gambeson/heavy/otavan_ap
 	name = "fencing gambeson"
@@ -129,14 +136,15 @@
 	detail_tag = "_detail"
 	var/picked = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/gambeson/heavy/otavan_ap/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Amnian colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Amnian colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"
@@ -156,6 +164,7 @@
 	icon_state = "monkleather"
 	item_state = "monkleather"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/gambeson/heavy/raneshen
 	name = "padded desert coat"
@@ -166,6 +175,7 @@
 	icon_state = "sherwani"
 	color = "#eec39a"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/lord/heavy
@@ -193,6 +203,7 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/stonekeep_merc.dmi'
+	icon_state = "grenzelshirt"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -200,6 +211,7 @@
 	icon = 'modular_azurepeak/icons/clothing/special/hand.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/hand.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/hand.dmi'
+	icon_state = "handgambeson"
 	detail_color = "#6678c9"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -208,6 +220,7 @@
 	icon = 'modular_azurepeak/icons/clothing/special/hand.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/hand.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/hand.dmi'
+	icon_state = "handgambeson"
 	detail_color = "#742277"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -217,6 +230,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "desertrobe"
+	item_state = "desertrobe"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/heavy/pontifex/loadout
@@ -224,6 +239,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "monkleather"
+	item_state = "monkleather"
 	armor_type = /datum/armor/tree
 	max_integrity = ARMOR_INT_CHEST_CIVILIAN
 	armor_class = ARMOR_CLASS_NONE
@@ -235,5 +252,6 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/stonekeep_merc.dmi'
+	icon_state = "grenzelshirt"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

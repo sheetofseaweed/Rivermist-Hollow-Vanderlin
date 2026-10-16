@@ -8,6 +8,7 @@
 	item_state = "gronnleathergloves"
 	color = "#ffffff"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/angle/gronnfur
@@ -22,6 +23,7 @@
 	max_integrity = ARMOR_INT_SIDE_HARDLEATHER
 	color = "#ffffff"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/angle/gronnfur/cleric
@@ -30,6 +32,8 @@
 	icon = 'modular_azurepeak/icons/clothing/special/gronn.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/gronn.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
+	icon_state = "gronnfurgloves"
+	item_state = "gronnfurgloves"
 	max_integrity = ARMOR_INT_SIDE_LEATHER
 	armor_type = /datum/armor/ported/leather
 	dyeable = TRUE

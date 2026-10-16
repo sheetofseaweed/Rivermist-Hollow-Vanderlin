@@ -15,6 +15,7 @@
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
 	var/flipped = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/donator_greatcoat/attack_hand_secondary(mob/user, list/modifiers)
@@ -46,4 +47,5 @@
 	sleevetype = "dittocloak"
 	nodismemsleeves = TRUE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

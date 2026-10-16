@@ -10,6 +10,7 @@
 	flags_inv = HIDEBOOB|HIDECROTCH
 	sleevetype = null
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/dress/gen/strapless/alt
 	name = "strapless dress"
@@ -32,6 +33,7 @@
 	icon_state = "laciedress"
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	sleevetype = "laciedress"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/funkydress
@@ -43,6 +45,7 @@
 	icon_state = "funkydress"
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	sleevetype = "funkydress"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/silkdress/donator_mortosasye_deepcutdress
@@ -55,6 +58,7 @@
 	item_state = "mortosasye_deepcutdress"
 	color = null
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/silkdress/donator_mortosasye_sunrisegown
@@ -67,6 +71,7 @@
 	item_state = "mortosasye_sunrisegown"
 	color = null
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/blue
@@ -86,6 +91,7 @@
 	color = "#ADD8E6"
 	detail_color = "#996633"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/dress/green
 	name = "light green dress"
@@ -106,6 +112,7 @@
 	detail_color = CLOTHING_WHITE
 	altdetail_color = "#996633"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/dress/slit
 	name = "slitted dress"
@@ -120,6 +127,7 @@
 	l_sleeve_status = SLEEVE_NOMOD
 	color = CLOTHING_BLACK
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/dress/velvetdress
 	name = "velvet dress"
@@ -129,6 +137,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_shirts.dmi'
 	icon_state = "velvetdress"
 	item_state = "velvetdress"
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/tunic/rosa/five
 	name = "sable dress"

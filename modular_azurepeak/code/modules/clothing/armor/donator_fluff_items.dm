@@ -6,6 +6,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "cropmailles"
 	item_state = "cropmailles"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/donator_elven
@@ -16,6 +17,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "elven_chain"
 	item_state = "elven_chain"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/ollanius_maille
@@ -27,6 +29,7 @@
 	icon_state = "ollanius_hoeburk"
 	item_state = "ollanius_hoeburk"
 	flags_inv = HIDEBOOB
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/woodland
@@ -40,6 +43,7 @@
 	detail_color = "#697F5C"
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/donator_arming
@@ -50,6 +54,7 @@
 	icon_state = "darming"
 	item_state = "darming"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/shifted = FALSE
 	var/shiftable = TRUE
@@ -92,6 +97,7 @@
 	icon_state = "cropgambeson"
 	item_state = "cropgambeson"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/donator_jacket
@@ -102,6 +108,7 @@
 	icon_state = "djacket"
 	item_state = "djacket"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/shifted = FALSE
 	var/shiftable = TRUE
@@ -143,6 +150,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "leathercuirass"
 	item_state = "leathercuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/donator_girdle
@@ -155,6 +163,7 @@
 	item_state = "plackartleather"
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heartplate
@@ -165,6 +174,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "heartplatel"
 	item_state = "heartplatel"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/longcoat/donator_squidqueen
@@ -233,6 +243,7 @@
 	item_state = "plackarts"
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/donator_gothic
@@ -243,6 +254,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "ghalfplate"
 	item_state = "ghalfplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/heartplate
@@ -253,6 +265,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "heartplates"
 	item_state = "heartplates"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/light/donator_rhynn
@@ -269,6 +282,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_RED
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/light/tyesca
@@ -279,6 +293,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "fencerbrig"
 	item_state = "fencerbrig"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/light/woodland
@@ -292,6 +307,7 @@
 	detail_color = "#697F5C"
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/bronze/donator
@@ -312,6 +328,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "chainkinis"
 	item_state = "chainkinis"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/hauberk/woodland
@@ -325,6 +342,7 @@
 	detail_color = "#697F5C"
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/iron/donator
@@ -335,6 +353,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "cropmaillei"
 	item_state = "cropmaillei"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/iron/donator_elven
@@ -345,6 +364,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "elven_chain"
 	item_state = "elven_chain"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/woodland/plackart
@@ -364,6 +384,7 @@
 	icon_state = "darming"
 	item_state = "darming"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/shifted = FALSE
 	var/shiftable = TRUE
@@ -406,6 +427,7 @@
 	icon_state = "cropgambeson"
 	item_state = "cropgambeson"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/heavy/donator_jacket
@@ -416,6 +438,7 @@
 	icon_state = "djacket"
 	item_state = "djacket"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/shifted = FALSE
 	var/shiftable = TRUE
@@ -459,6 +482,7 @@
 	item_state = "formfit"
 	color = "#ffffff"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/light/donator_arming
@@ -469,6 +493,7 @@
 	icon_state = "darming"
 	item_state = "darming"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/light/donator_jacket
@@ -479,6 +504,7 @@
 	icon_state = "djacket"
 	item_state = "djacket"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/gambeson/shadowrobe/donator_sanshoom
@@ -488,6 +514,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "sanshoom_prowlerrobe"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/donator_cuirass
@@ -499,6 +526,7 @@
 	icon_state = "leathercuirass"
 	item_state = "leathercuirass"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/donator_girdle
@@ -512,6 +540,7 @@
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/heartplate
@@ -523,6 +552,7 @@
 	icon_state = "leathercuirass"
 	item_state = "leathercuirass"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/donator_cuirass
@@ -533,6 +563,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "leathercuirass"
 	item_state = "leathercuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/donator_girdle
@@ -545,6 +576,7 @@
 	item_state = "plackartleather"
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/heartplate
@@ -555,6 +587,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "leathercuirass"
 	item_state = "leathercuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/woodland
@@ -568,6 +601,7 @@
 	detail_color = "#697F5C"
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/aasimar
@@ -578,6 +612,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "chiv_acuirass"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/donator_girdle
@@ -590,6 +625,7 @@
 	item_state = "plackarts"
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/donator_gothic
@@ -600,6 +636,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "gcuirass"
 	item_state = "gcuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/heartplate
@@ -610,6 +647,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "heartplates"
 	item_state = "heartplates"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/woodland
@@ -623,6 +661,7 @@
 	detail_color = "#697F5C"
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/fluted/donator_girdle
@@ -635,6 +674,7 @@
 	item_state = "plackarts"
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/fluted/donator_gothic
@@ -645,6 +685,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "gflutedhalfplate"
 	item_state = "gflutedhalfplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/fluted/donator_gothic_ornate
@@ -655,6 +696,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "gpsycuirass"
 	item_state = "gpsycuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/apostle
@@ -665,6 +707,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "apostleplate"
 	item_state = "apostleplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/donator_gothic
@@ -675,6 +718,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "gplate"
 	item_state = "gplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/donator_triheartfelt
@@ -685,6 +729,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "triheartfelt"
 	item_state = "triheartfelt"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/robed
@@ -699,6 +744,7 @@
 	color = null
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/iron/donator_gothic
@@ -709,6 +755,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "ighalfplate"
 	item_state = "ighalfplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/light/woodland/plackart
@@ -742,6 +789,7 @@
 	color = null
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/hauberk/heavy/donator_gothic
@@ -774,6 +822,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "chainkinii"
 	item_state = "chainkinii"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/chainmail/hauberk/woodland/plackart
@@ -792,6 +841,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "sanshoom_prowlerrobe"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/coat/donator_squidqueen
@@ -826,6 +876,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "leathercuirass"
 	item_state = "leathercuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/woodland/plackart
@@ -857,6 +908,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "fencerbrig"
 	item_state = "fencerbrig"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/aasimar
@@ -867,6 +919,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "chiv_acuirass"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/apostle
@@ -877,6 +930,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "apostlecuirass"
 	item_state = "apostlecuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/dasfox
@@ -890,6 +944,7 @@
 	detail_color = CLOTHING_WHITE
 	boobed = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/donator_gothic
@@ -900,6 +955,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "gflutedcuirass"
 	item_state = "gflutedcuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/robed
@@ -914,6 +970,7 @@
 	color = null
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/woodland
@@ -927,6 +984,7 @@
 	detail_color = "#697F5C"
 	detail_tag = "_detail"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/iron/donator_girdle
@@ -939,6 +997,7 @@
 	item_state = "plackarti"
 	body_parts_covered = CHEST | VITALS
 	flags_inv = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/iron/donator_gothic
@@ -949,6 +1008,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "igcuirass"
 	item_state = "igcuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/iron/heartplate
@@ -959,6 +1019,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "heartplatei"
 	item_state = "heartplatei"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/woodland/plackart
@@ -978,6 +1039,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "ghalfplate"
 	item_state = "ghalfplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/iron/donator_gothic
@@ -988,6 +1050,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "igplate"
 	item_state = "igplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/robed/grandmaster
@@ -1055,6 +1118,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "gcuirass"
 	item_state = "gcuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/donator_gothic_ap
@@ -1065,6 +1129,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "gpsycuirass"
 	item_state = "gpsycuirass"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/ornate/woodland/plackart

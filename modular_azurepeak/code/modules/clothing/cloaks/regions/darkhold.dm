@@ -16,6 +16,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/surcoat/sofiavest
@@ -39,10 +40,13 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "stabard"
+	item_state = "tabard"
 	color = CLOTHING_YELLOW
 	detail_color = CLOTHING_RED
 	detail_tag = "_box"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/grenzelmage
@@ -58,4 +62,5 @@
 	detail_tag = "_spl"
 	body_parts_covered = CHEST
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

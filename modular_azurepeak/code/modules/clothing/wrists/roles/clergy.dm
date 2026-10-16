@@ -4,5 +4,7 @@
 	icon = 'modular_azurepeak/icons/clothing/wrists.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
+	icon_state = "nocwrappings"
+	item_state = "nocwrappings"
 	color = "#BFB8A9"
 	dyeable = TRUE

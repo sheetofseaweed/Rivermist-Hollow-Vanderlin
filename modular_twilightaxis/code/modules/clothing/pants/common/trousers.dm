@@ -9,4 +9,5 @@
 	salvage_result = /obj/item/natural/silk
 	salvage_amount = 1
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

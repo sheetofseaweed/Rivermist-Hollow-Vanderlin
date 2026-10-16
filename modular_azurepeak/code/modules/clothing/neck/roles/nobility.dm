@@ -4,6 +4,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "ornateamulet"
 	sellprice = 33
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -13,6 +14,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "ornateamulet"
 	var/choicename = FALSE
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_WRISTS|ITEM_SLOT_HIP
 	sellprice = 10
@@ -37,6 +39,7 @@
 	icon = 'modular_azurepeak/icons/clothing/neck_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/neck.dmi'
 	sleeved = null
+	icon_state = "goldgorget"
 	max_integrity = 10
 	sellprice = 300
 	misc_flags = CRAFTING_TEST_EXCLUDE

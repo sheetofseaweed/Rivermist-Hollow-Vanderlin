@@ -6,3 +6,4 @@
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/rosewood.dmi'
 	icon_state = "rosadress1"
 	boobed = FALSE
+	ported_clothing = TRUE

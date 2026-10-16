@@ -10,14 +10,16 @@
 	body_parts_covered = HEAD|HAIR
 	block2add = null
 	flags_inv = HIDEHAIR
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/shadedhat/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/fur) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Fur") as anything in COLOR_MAP
-		detail_color = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Fur") as anything in GLOB.ported_color_map
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
@@ -26,8 +28,8 @@
 			var/mob/living/carbon/H = user
 			H.update_inv_head()
 	if(istype(W, /obj/item/natural/cloth) && !altdetail_tag)
-		var/choice = input(user, "Choose a color.", "Cloth") as anything in COLOR_MAP
-		detail_color = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Cloth") as anything in GLOB.ported_color_map
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detailalt"
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
@@ -47,6 +49,7 @@
 	armor_type = /datum/armor/plate
 	armor_class = AC_LIGHT
 	smeltresult = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/abyssor
@@ -67,6 +70,7 @@
 	max_integrity = 180
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/eorahood
 	name = "opera hood"
@@ -87,6 +91,7 @@
 	max_integrity = 180
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/hierophant
 	name = "hierophant's pashmina"
@@ -101,6 +106,7 @@
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/pontifex
@@ -116,6 +122,7 @@
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/psydon_ap
@@ -141,6 +148,7 @@
 	max_integrity = ARMOR_INT_HELMET_LEATHER
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/head/roguehood/psydon_ap
 
 /obj/item/clothing/head/roguehood/ravox
@@ -163,6 +171,7 @@
 	max_integrity = 180
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/ravoxgorget
 	name = "Tempuran tabard gorget"
@@ -180,6 +189,7 @@
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
 	block2add = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/undividedcleric
 	name = "undivided clerical hood"
@@ -202,6 +212,7 @@
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/psydon_ap/black
 	name = "blessed hood"
@@ -220,6 +231,7 @@
 	sleeved = null
 	icon_state = "gravehat"
 	item_state = "gravehat"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/priesthat/bishop
@@ -229,6 +241,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/64x64/head.dmi'
 	sleeved = null
 	icon_state = "bishop"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/eoramask
@@ -248,6 +261,7 @@
 	resistance_flags = FIRE_PROOF
 	salvage_result = /obj/item/natural/silk
 	salvage_amount = 2
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/eoramask/equipped(mob/user, slot, initial = FALSE)
 	. = ..()
@@ -289,6 +303,7 @@
 	flags_inv = HIDEEARS|HIDEHAIR|HIDEFACIALHAIR
 	dynamic_hair_suffix = ""
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/abyssor_painter
 	name = "quicksilver hood"
@@ -308,4 +323,5 @@
 	max_integrity = 180
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

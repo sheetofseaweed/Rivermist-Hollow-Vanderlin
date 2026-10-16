@@ -6,6 +6,7 @@
 	sleeved = null
 	icon_state = "owlmask"
 	item_state = "owlmask"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/facemask/steel/owlmask
@@ -16,6 +17,7 @@
 	sleeved = null
 	icon_state = "owlmask"
 	item_state = "owlmask"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/ragmask/bishop
@@ -31,9 +33,6 @@
 	resistance_flags = FIRE_PROOF
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
-/obj/item/clothing/face/ragmask/bishop/Initialize()
-	. = ..()
-
 /obj/item/clothing/face/facemask/steel/miragefen_rogue
 	name = "bronze-decorated steel mask"
 	desc = "A steel mask with bronze inlays"
@@ -41,4 +40,5 @@
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "miragefen_rogue"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

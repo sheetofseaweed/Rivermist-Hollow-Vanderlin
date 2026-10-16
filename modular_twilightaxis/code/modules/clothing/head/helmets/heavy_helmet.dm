@@ -7,6 +7,7 @@
 	icon_state = "citywatch_helmet"
 	item_state = "citywatch_helmet"
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/twilight_drow
@@ -24,6 +25,7 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/astratan/oldrw
@@ -88,15 +90,16 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/heavy/knight/raneshi_hmamluk/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
+		var/choice = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		detail_color = COLOR_MAP[choice]
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -116,6 +119,7 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/ravoxhelm_ap/oldrw
@@ -164,6 +168,7 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_HELMET_HEAVY_STEEL - ARMOR_INT_HELMET_HEAVY_ADJUSTABLE_PENALTY + 10
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/knight/raneshi_hmamluk/raneshi_vmamluk

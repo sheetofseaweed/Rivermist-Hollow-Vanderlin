@@ -10,10 +10,11 @@
 	integrity_failure = 0.5
 	resistance_flags = FIRE_PROOF
 	body_parts_covered = EYES
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	adjustable = CAN_CADJUST
 	var/active_item = FALSE
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'sound/foley/equip/rummaging-03.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

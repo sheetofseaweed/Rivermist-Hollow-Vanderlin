@@ -10,3 +10,4 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE

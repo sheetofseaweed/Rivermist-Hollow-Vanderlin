@@ -10,6 +10,8 @@
 	inhand_mod = TRUE
 	var/elven_colors = list("Blue Cloak", "Red Cloak", "Blue Furcloak", "Red Furcloak")
 	var/picked = FALSE
+	ported_clothing = TRUE
+	hint_pattern = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/storage = TRUE
 
@@ -43,9 +45,6 @@
 			H.update_inv_cloak()
 			update_appearance()
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
-
-/obj/item/clothing/cloak/twilight_elven/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/cloak/twilight_elven/short
 	name = "elven shortcloak"

@@ -7,6 +7,7 @@
 	icon_state = "thistleboots"
 	allowed_sex = list(FEMALE)
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/leather/reinforced
@@ -20,6 +21,7 @@
 	max_integrity = ARMOR_INT_SIDE_HARDLEATHER
 	armor_type = /datum/armor/ported/leather
 	color = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/shoes/boots/maille/copper
 	name = "copper lamellar boots"

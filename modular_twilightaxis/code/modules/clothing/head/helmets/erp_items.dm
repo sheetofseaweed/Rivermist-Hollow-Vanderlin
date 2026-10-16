@@ -11,6 +11,7 @@
 	salvage_result = /obj/item/natural/hide/cured
 	smeltresult = null
 	armor_type = /datum/armor/none
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/pony_harness/Initialize(mapload)
 	. = ..()

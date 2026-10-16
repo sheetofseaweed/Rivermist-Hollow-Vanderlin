@@ -29,6 +29,7 @@
 	item_state = "freigloves"
 	max_integrity = ARMOR_INT_SIDE_HARDLEATHER + 30
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/angle/freifechter/loadout
@@ -36,6 +37,8 @@
 	icon = 'modular_azurepeak/icons/clothing/gloves.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
+	icon_state = "freigloves"
+	item_state = "freigloves"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/fingerless_leather
@@ -54,6 +57,7 @@
 	anvilrepair = null
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 
 /obj/item/clothing/gloves/rosa
 	name = "ivory gloves"
@@ -63,6 +67,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/special/onmob/rosewood.dmi'
 	icon_state = "rosagloves1"
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 
 /obj/item/clothing/gloves/rosa/eight
 	name = "courtly gloves"
@@ -127,6 +132,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "handgloves"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/knuckles
@@ -139,9 +145,10 @@
 	w_class = WEIGHT_CLASS_SMALL
 	armor_type = /datum/armor/robe/mage
 	max_integrity = ARMOR_INT_SIDE_LEATHER
-	anvilrepair = /datum/skill/craft/weaponsmithing
+	anvilrepair = /datum/attribute/skill/craft/weapon_repair
 	smeltresult = /obj/item/ingot/steel
 	unarmed_bonus = 8
+	ported_clothing = TRUE
 	var/wielded = FALSE
 
 /obj/item/clothing/gloves/knuckles/get_mechanics_examine(mob/user)
@@ -207,7 +214,7 @@
 	w_class = WEIGHT_CLASS_SMALL
 	armor_type = /datum/armor/robe/mage
 	max_integrity = ARMOR_INT_SIDE_LEATHER -50
-	anvilrepair = /datum/skill/craft/weaponsmithing
+	anvilrepair = /datum/attribute/skill/craft/weapon_repair
 	smeltresult = /obj/item/ingot/iron
 	unarmed_bonus = 7
 
@@ -220,9 +227,3 @@
 	icon_state = "silverknuckle"
 	smeltresult = /obj/item/ingot/silver
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/gloves/knuckles/silver/Initialize(mapload)
-	. = ..()
-	AddComponent(\
-		pre_blessed = 0,\
-	)

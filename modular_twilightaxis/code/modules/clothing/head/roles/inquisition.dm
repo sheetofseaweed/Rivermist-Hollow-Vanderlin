@@ -8,6 +8,7 @@
 	item_state = "overseerhood"
 	color = null
 	toggle_icon_state = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/psydon_ap/warscholar

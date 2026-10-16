@@ -7,6 +7,7 @@
 	icon_state = "zydrasdress"
 	item_state = "zydrasdress"
 	sleevetype = "zydrasdress"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/etrdress
@@ -23,6 +24,7 @@
 	flags_inv = HIDECROTCH|HIDEBOOB
 	allowed_sex = list(FEMALE)
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/etrdress2
@@ -38,6 +40,7 @@
 	flags_inv = HIDECROTCH|HIDEBOOB
 	allowed_sex = list(FEMALE)
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/dress/etrdress3
@@ -57,4 +60,5 @@
 	boobed = FALSE
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

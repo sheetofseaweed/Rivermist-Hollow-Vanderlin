@@ -21,6 +21,7 @@
 	sewrepair = TRUE
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/shalal/heavyhood
 	name = "heavy hood"
@@ -60,13 +61,12 @@
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
-/obj/item/clothing/head/roguehood/shalal/hijab/pyro/Initialize(mapload)
-	. = ..()
-
 /obj/item/clothing/head/roguehood/shalal/hijab/white
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "hijab"
+	item_state = "hijab"
 	color = CLOTHING_WHITE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -77,6 +77,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "hijab"
+	item_state = "hijab"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -90,12 +92,15 @@
 	icon_state = "desert_hood"
 	item_state = "desert_hood"
 	sewrepair = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/shalal/hijab/black
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "hijab"
+	item_state = "hijab"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -104,6 +109,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "hijab"
+	item_state = "hijab"
 	color = "#384d8a"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -114,6 +121,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "hijab"
+	item_state = "hijab"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -122,6 +131,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "hijab"
+	item_state = "hijab"
 	color = "#883030"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

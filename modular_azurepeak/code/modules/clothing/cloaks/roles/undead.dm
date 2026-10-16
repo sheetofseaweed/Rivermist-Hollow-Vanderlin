@@ -4,6 +4,8 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
+	icon_state = "surcoat"
+	item_state = "tabard"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -14,10 +16,13 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "tabard"
+	item_state = "tabard"
 	color = CLOTHING_BLACK
 	detail_tag = "_quad"
 	detail_color = CLOTHING_BURLAP
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/hoodlich
@@ -34,6 +39,7 @@
 	slot_flags = ITEM_SLOT_HEAD|ITEM_SLOT_NECK|ITEM_SLOT_MASK|ITEM_SLOT_CLOAK
 	body_parts_covered = CHEST
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/stabard/surcoat/lich
@@ -42,6 +48,8 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
+	icon_state = "surcoat"
+	item_state = "tabard"
 	color = CLOTHING_BLACK
 	detail_tag = "_quad"
 	detail_color = CLOTHING_BURLAP
@@ -53,10 +61,13 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "stabard"
+	item_state = "tabard"
 	color = CLOTHING_WHITE
 	detail_tag = "_quad"
 	detail_color = CLOTHING_RED
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/tabard/vamp
@@ -64,8 +75,11 @@
 	icon = 'modular_azurepeak/icons/clothing/cloaks.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/detailed/tabards.dmi'
 	sleeved = null
+	icon_state = "tabard"
+	item_state = "tabard"
 	color = CLOTHING_WHITE
 	detail_tag = "_quad"
 	detail_color = CLOTHING_RED
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -12,4 +12,5 @@
 	body_parts_covered = CHEST|GROIN|VITALS|LEGS|ARMS
 	max_integrity = 300
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -7,6 +7,7 @@
 	icon_state = "overseermask"
 	item_state = "overseermask"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/overseer_silver
@@ -18,4 +19,5 @@
 	icon_state = "viceseermask"
 	item_state = "viceseermask"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

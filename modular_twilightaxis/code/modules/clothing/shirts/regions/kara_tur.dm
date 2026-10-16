@@ -11,6 +11,7 @@
 	flags_inv = HIDEBOOB
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	body_parts_covered = CHEST|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/kamishimo
@@ -24,6 +25,7 @@
 	flags_inv = HIDEBOOB
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR|ITEM_SLOT_CLOAK
 	body_parts_covered = CHEST|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/kazengun_jacket
@@ -40,6 +42,7 @@
 	flags_inv = HIDEBOOB
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	body_parts_covered = CHEST|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/kimono2
@@ -56,6 +59,7 @@
 	flags_inv = HIDEBOOB|HIDECROTCH
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/yoroihitatare
@@ -72,6 +76,7 @@
 	flags_inv = HIDEBOOB|HIDECROTCH
 	slot_flags = ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/kamishimo/ronin
@@ -80,6 +85,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/shirts.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/shirts.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "kamishimo"
+	item_state = "kamishimo"
 	color = CLOTHING_BLUE
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

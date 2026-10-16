@@ -6,6 +6,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "chiv_agauntlets"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/dreamwalker
@@ -17,15 +18,14 @@
 	icon_state = "dreamgauntlets"
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
 	item_flags = (1<<13)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/gloves/plate/dreamwalker/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/gloves/plate/blkknight/death
 	icon = 'modular_azurepeak/icons/clothing/gloves.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
+	icon_state = "bkgloves"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -38,6 +38,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "gronnchaingloves"
 	item_state = "gronnchaingloves"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/iron/gronn
@@ -48,6 +49,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "gronnplategloves"
 	item_state = "gronnplategloves"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/blkknight
@@ -56,6 +58,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "bkgloves"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/blacksteel
@@ -69,6 +72,7 @@
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_SIDE_BLACKSTEEL
 	smeltresult = /obj/item/ingot/blacksteel
+	ported_clothing = TRUE
 
 /obj/item/clothing/gloves/chain/bronze
 	name = "bronze maille gauntlets"
@@ -77,10 +81,11 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "bcgloves"
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/bronze
 	max_integrity = 250
 	armor_type = /datum/armor/ported/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/gloves/plate/avantyne
 	name = "avantyne-threaded sleevegloves"
@@ -91,6 +96,7 @@
 	icon_state = "zizoplategauntlets_med"
 	armor_type = /datum/armor/ported/plate_bsteel
 	body_parts_covered = HANDS|ARMS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/baotha
@@ -103,6 +109,7 @@
 	item_state = "baothagloves"
 	max_integrity = ARMOR_INT_SIDE_ANTAG - 250
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/baotha/Initialize(mapload)
@@ -129,6 +136,7 @@
 	detail_color = "#FFFFFF"
 	var/picked = FALSE
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/kote/attack_hand_secondary(mob/user, list/modifiers)
@@ -136,8 +144,8 @@
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)
 		return
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in COLOR_MAP
-		var/playerchoice = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in GLOB.ported_color_map
+		var/playerchoice = GLOB.ported_color_map[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"
@@ -155,6 +163,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "graggarplategloves_heavy"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/graggar/heavy/Initialize(mapload)
@@ -175,6 +184,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "bandedgloves"
 	item_state = "bandedgloves"
+	ported_clothing = TRUE
 
 /obj/item/clothing/gloves/plate/zizo/heavy
 	name = "avantyne plate gauntlets"
@@ -184,6 +194,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	icon_state = "zizogauntlets"
 	max_integrity = ARMOR_INT_SIDE_ANTAG
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/zizo/heavy/Initialize(mapload)
@@ -216,6 +227,7 @@
 	icon_state = "dwarfhand"
 	item_state = "dwarfhand"
 	allowed_race = list(SPEC_ID_DWARF)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/chain/vampire
@@ -228,6 +240,7 @@
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 	armor_type = /datum/armor/blackbag
 	max_integrity = ARMOR_INT_SIDE_ANTAG
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/chain/vampire/Initialize(mapload)

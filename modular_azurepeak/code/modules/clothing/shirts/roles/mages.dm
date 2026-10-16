@@ -11,4 +11,5 @@
 	color = null
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

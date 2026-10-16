@@ -6,6 +6,7 @@
 	sleeved = null
 	icon_state = "azurosa_crown"
 	item_state = "azurosa_crown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/crown_hat
@@ -19,10 +20,8 @@
 	detail_color = CLOTHING_SCARLET
 	adjustable = CAN_CADJUST
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/head/crown_hat/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/head/crown/circlet/donator_mortosasye_golddiadem
 	name = "gold diadem"
@@ -34,6 +33,7 @@
 	item_state = "mortosasye_golddiadem"
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/crown/circlet/saffiratiara
@@ -44,6 +44,7 @@
 	sleeved = null
 	icon_state = "eekasqueak"
 	item_state = "eekasqueak"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/decoration/broche
@@ -84,6 +85,7 @@
 	article = null
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/decoration/orle/donator_oathkeeper
@@ -105,6 +107,7 @@
 	sleeved = null
 	icon_state = "drd_tiara"
 	item_state = "drd_tiara"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flowercrown/calendula
@@ -114,6 +117,7 @@
 	sleeved = null
 	icon_state = "calendula_crown"
 	item_state = "calendula_crown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flowercrown/fyritius
@@ -124,6 +128,7 @@
 	sleeved = null
 	icon_state = "fyritius_crown"
 	item_state = "fyritius_crown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flowercrown/manabloom
@@ -134,6 +139,7 @@
 	sleeved = null
 	icon_state = "manabloom_crown"
 	item_state = "manabloom_crown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flowercrown/matricaria
@@ -143,6 +149,7 @@
 	sleeved = null
 	icon_state = "matricaria_crown"
 	item_state = "matricaria_crown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/flowercrown/rosa/dyecrown
@@ -153,13 +160,14 @@
 	sleeved = null
 	icon_state = "flower"
 	item_state = "flower"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/flowercrown/rosa/dyecrown/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/thorn) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Thorns.") as anything in COLOR_MAP
-		detail_color = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Thorns.") as anything in GLOB.ported_color_map
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
@@ -176,6 +184,7 @@
 	sleeved = null
 	icon_state = "rosecirclet"
 	item_state = "rosecirclet"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/flowercrown/rosa/thorns/pickup(mob/living/user)
 	. = ..()
@@ -189,6 +198,7 @@
 	mob_overlay_icon = null
 	sleeved = null
 	icon_state = "serpcrown"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/crown/circlet/porcelain
@@ -199,6 +209,7 @@
 	sleeved = null
 	icon_state = "circlet_porcelain"
 	toggle_icon_state = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/chaperon/councillor
@@ -211,6 +222,7 @@
 	item_state = "chap_alt"
 	color = "#7dcea0"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/chaperon/noble
@@ -225,6 +237,7 @@
 	color = CLOTHING_WHITE
 	detail_color = COLOR_ASSEMBLY_GOLD
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/chaperon/noble/court
 	name = "councillor's chaperon"
@@ -232,6 +245,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = CLOTHING_AZURE
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
@@ -244,6 +259,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = CLOTHING_DARK_GREY
 	detail_color = CLOTHING_SCARLET
 	dyeable = TRUE
@@ -255,6 +272,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = "#1b1717ff"
 	detail_color = "#b68e37ff"
 	dyeable = TRUE
@@ -266,6 +285,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = CLOTHING_AZURE
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
@@ -277,6 +298,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = "#722017"
 	detail_color = "#b68e37ff"
 	dyeable = TRUE
@@ -286,6 +309,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = "#445671"
 	detail_color = CLOTHING_AZURE
 	dyeable = TRUE
@@ -295,6 +320,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "noblechaperon"
+	item_state = "noblechaperon"
 	color = "#715944"
 	detail_color = CLOTHING_AZURE
 	dyeable = TRUE

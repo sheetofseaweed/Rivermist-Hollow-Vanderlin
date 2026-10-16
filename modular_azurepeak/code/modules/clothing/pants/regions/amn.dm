@@ -24,5 +24,7 @@
 	icon = 'modular_azurepeak/icons/clothing/pants.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/pants.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
+	icon_state = "fencingbreeches"
+	item_state = "roguepants"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

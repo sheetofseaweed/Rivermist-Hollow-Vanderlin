@@ -8,11 +8,9 @@
 	item_state = "bishop_cape"
 	slot_flags = ITEM_SLOT_BACK_R|ITEM_SLOT_CLOAK
 	inhand_mod = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/storage = TRUE
-
-/obj/item/clothing/cloak/bishop/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/cloak/etrcape
 	name = "wanderer's cape"
@@ -26,6 +24,7 @@
 	inhand_mod = FALSE
 	color = null
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/twilight_scarf
@@ -39,6 +38,8 @@
 	inhand_mod = TRUE
 	var/elven_colors = list("blue", "black", "green", "beige", "brown", "white")
 	var/picked = FALSE
+	ported_clothing = TRUE
+	hint_pattern = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/twilight_scarf/attack_hand_secondary(mob/user, list/modifiers)

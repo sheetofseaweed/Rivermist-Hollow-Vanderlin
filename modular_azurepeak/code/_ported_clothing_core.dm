@@ -1,6 +1,9 @@
 // Shared support for clothing ported from Azure Peak and Twilight Axis.
 // Both modular_azurepeak and modular_twilightaxis rely on this file.
 
+/// COLOR_MAP is a macro that builds a new list on every use; ported colour pickers share one copy.
+GLOBAL_LIST_INIT(ported_color_map, COLOR_MAP)
+
 /obj/item/clothing
 	/// Second colourable overlay layer used by plumes, crests and trims.
 	var/altdetail_tag
@@ -99,6 +102,9 @@
 	playsound(src, pick('sound/foley/waterwash (1).ogg','sound/foley/waterwash (2).ogg'), 50, FALSE)
 	if(!do_after(user, 1 SECONDS, src))
 		return
+	// someone may have taken the item out, or swapped it, while we waited
+	if(inserted != C || C.loc != src)
+		return
 	C.altdetail_color = active_color
 	C.update_appearance(UPDATE_OVERLAYS)
 	user.visible_message(span_notice("[user] dyes [C] in [src]."), span_notice("I dye [C] in [src]."))
@@ -108,160 +114,150 @@
 
 
 // ---------------------------------------------------------------------------
-// Aesthetic storage: purely cosmetic pieces layered over hats, armour and gloves.
-// The storage component is only created the first time someone opens it.
+// Everything below only applies to clothing ported from Azure Peak and Twilight Axis
+// (ported_clothing = TRUE). Existing Rivermist Hollow clothing keeps its own controls.
 // ---------------------------------------------------------------------------
 
+/// How many cosmetic pieces one hat or armour can carry.
+#define PORTED_COSMETIC_CAPACITY 2
+
 /obj/item/clothing
-	/// Storage opened with Shift+RMB to layer cosmetic pieces over this one. Null disables it.
-	var/aesthetic_storage_type
-	/// Set while stored in another piece's aesthetic storage but toggled hidden.
-	var/aesthetic_hidden = FALSE
+	/// Set on clothing ported from Azure Peak and Twilight Axis; enables the controls and hints below.
+	var/ported_clothing = FALSE
+	/// FALSE when a parent already uses middle-click for something else (lenses, robe styles).
+	var/layer_toggle = TRUE
 	/// Layer toggles (cloaks, wrists, rings, masks, hoods) remember whether they were flipped.
 	var/layer_flipped = FALSE
 	/// Masks with a "_snout" worn sprite can swap to it.
 	var/snouted = FALSE
+	/// Shows the hint about fitting feathers or cloth.
+	var/hint_decorate = FALSE
+	/// Shows the hint about picking a pattern with right-click.
+	var/hint_pattern = FALSE
+	/// Purely decorative pieces layered over this one. They are kept in contents.
+	var/list/cosmetic_pieces
+	/// Set on a piece layered over another one while it is toggled hidden.
+	var/cosmetic_hidden = FALSE
 
-/obj/item/clothing/head
-	aesthetic_storage_type = /datum/component/storage/concrete/grid/aesthetic/hat
+// ---------------------------------------------------------------------------
+// Cosmetic layering: drag a piece onto a worn hat or armour to wear it over it.
+// No storage component is involved, so bags and storage checks are unaffected.
+// ---------------------------------------------------------------------------
 
-/obj/item/clothing/armor
-	aesthetic_storage_type = /datum/component/storage/concrete/grid/aesthetic/armor
+/// Slots a piece must fit to be layered over this one.
+/obj/item/clothing/proc/cosmetic_slots()
+	if(!ported_clothing)
+		return NONE
+	if(istype(src, /obj/item/clothing/head))
+		return ITEM_SLOT_HEAD|ITEM_SLOT_MASK
+	if(istype(src, /obj/item/clothing/armor))
+		return ITEM_SLOT_CLOAK|ITEM_SLOT_SHIRT|ITEM_SLOT_ARMOR
+	return NONE
 
-/obj/item/clothing/gloves
-	aesthetic_storage_type = /datum/component/storage/concrete/grid/aesthetic/gloves
-
-/datum/component/storage/concrete/grid/aesthetic
-	screen_max_rows = 2
-	screen_max_columns = 2
-	max_w_class = WEIGHT_CLASS_GIGANTIC
-	attack_hand_interact = FALSE
-	silent = TRUE
-	rustle_sound = null
-	insert_verb = "fit"
-	insert_preposition = "onto"
-	allow_big_nesting = TRUE
-	/// Slots a piece must be wearable in to be layered here.
-	var/allowed_slots = NONE
-
-/datum/component/storage/concrete/grid/aesthetic/Initialize(datum/component/storage/concrete/master)
-	. = ..()
-	// Only the storage window inserts or removes; the piece keeps its own clicks (visors, plumes, hoods).
-	UnregisterSignal(parent, list(
-		COMSIG_ATOM_ATTACKBY,
-		COMSIG_ATOM_ATTACKBY_SECONDARY,
-		COMSIG_CLICK_ALT,
-		COMSIG_ATOM_ATTACK_HAND_SECONDARY,
-		COMSIG_ITEM_PRE_ATTACK,
-		COMSIG_ITEM_ATTACK_SELF,
-		COMSIG_MOUSEDROP_ONTO,
-		COMSIG_ATOM_ATTACK_PAW,
-	))
-
-/datum/component/storage/concrete/grid/aesthetic/can_be_inserted(obj/item/storing, stop_messages, mob/user, worn_check = FALSE, list/modifiers, storage_click = FALSE)
-	if(!istype(storing, /obj/item/clothing))
+/obj/item/clothing/proc/can_layer_cosmetic(obj/item/clothing/piece, mob/user)
+	var/allowed = cosmetic_slots()
+	if(!allowed || piece == src)
 		return FALSE
-	if(!(storing.slot_flags & allowed_slots))
+	if(LAZYLEN(cosmetic_pieces) >= PORTED_COSMETIC_CAPACITY)
+		to_chat(user, span_warning("[src] can't carry any more decorations."))
 		return FALSE
-	if(storing.get_armor_rating(STAB) > 0 || storing.get_armor_rating(BLUNT) > 0)
+	// jewellery keeps its value visible; it never hides under other clothing
+	if(istype(piece, /obj/item/clothing/ring) || istype(piece, /obj/item/clothing/neck))
 		return FALSE
-	if(length(storing.contents) || storing.GetComponent(/datum/component/storage))
+	if(!(piece.slot_flags & allowed))
+		to_chat(user, span_warning("[piece] can't be worn over [src]."))
 		return FALSE
-	return ..()
-
-/datum/component/storage/concrete/grid/aesthetic/handle_item_insertion(obj/item/storing, prevent_warning = FALSE, mob/user, datum/component/storage/remote, list/modifiers, storage_click = FALSE)
-	. = ..()
-	refresh_wearer()
-
-/datum/component/storage/concrete/grid/aesthetic/remove_from_storage(atom/movable/removed, atom/new_location)
-	. = ..()
-	var/obj/item/clothing/C = removed
-	if(istype(C))
-		C.aesthetic_hidden = FALSE
-	refresh_wearer()
-
-/datum/component/storage/concrete/grid/aesthetic/proc/refresh_wearer()
-	var/obj/item/clothing/C = parent
-	if(ismob(C.loc))
-		var/mob/M = C.loc
-		M.update_clothing(C.slot_flags)
-
-/datum/component/storage/concrete/grid/aesthetic/hat
-	allowed_slots = ITEM_SLOT_HEAD|ITEM_SLOT_MASK|ITEM_SLOT_NECK
-
-/datum/component/storage/concrete/grid/aesthetic/armor
-	allowed_slots = ITEM_SLOT_CLOAK|ITEM_SLOT_ARMOR|ITEM_SLOT_SHIRT
-
-/datum/component/storage/concrete/grid/aesthetic/gloves
-	allowed_slots = ITEM_SLOT_RING|ITEM_SLOT_GLOVES
-
-/// Returns our aesthetic storage, optionally creating it. Pieces that already carry another storage never get one.
-/obj/item/clothing/proc/get_aesthetic_storage(create = FALSE)
-	if(!aesthetic_storage_type)
-		return null
-	var/datum/component/storage/existing = GetComponent(/datum/component/storage)
-	if(existing)
-		return istype(existing, /datum/component/storage/concrete/grid/aesthetic) ? existing : null
-	if(!create)
-		return null
-	return AddComponent(aesthetic_storage_type)
-
-/obj/item/clothing/proc/open_aesthetic_storage(mob/user)
-	if(!aesthetic_storage_type || loc != user)
+	if(piece.get_armor_rating(STAB) > 0 || piece.get_armor_rating(BLUNT) > 0)
+		to_chat(user, span_warning("[piece] is too sturdy to be a mere decoration."))
 		return FALSE
-	var/datum/component/storage/S = get_aesthetic_storage(TRUE)
-	if(!S)
+	if(length(piece.contents) || piece.GetComponent(/datum/component/storage))
+		to_chat(user, span_warning("[piece] needs to be empty first."))
 		return FALSE
-	S.user_show_to_mob(user, TRUE)
 	return TRUE
 
-/// Lets the wearer pick a stored piece and show or hide it. Returns TRUE if anything was stored.
-/obj/item/clothing/proc/toggle_aesthetic_layer(mob/user)
-	if(loc != user)
+/obj/item/clothing/MouseDrop_T(atom/dropping, mob/user)
+	if(!ported_clothing || !isliving(user) || loc != user || !istype(dropping, /obj/item/clothing))
+		return ..()
+	var/obj/item/clothing/piece = dropping
+	if(!user.is_holding(piece) || !can_layer_cosmetic(piece, user))
+		return ..()
+	if(!user.transferItemToLoc(piece, src))
+		return
+	LAZYADD(cosmetic_pieces, piece)
+	to_chat(user, span_info("I wear [piece] over [src]."))
+	refresh_cosmetic_wearer()
+
+/obj/item/clothing/Exited(atom/movable/gone, direction)
+	. = ..()
+	if(!LAZYLEN(cosmetic_pieces) || !(gone in cosmetic_pieces))
+		return
+	LAZYREMOVE(cosmetic_pieces, gone)
+	var/obj/item/clothing/piece = gone
+	piece.cosmetic_hidden = FALSE
+	refresh_cosmetic_wearer()
+
+/obj/item/clothing/Destroy()
+	if(LAZYLEN(cosmetic_pieces))
+		var/atom/drop_to = drop_location()
+		for(var/obj/item/clothing/piece as anything in cosmetic_pieces.Copy())
+			if(drop_to)
+				piece.forceMove(drop_to)
+			else
+				qdel(piece)
+		cosmetic_pieces = null
+	return ..()
+
+/obj/item/clothing/proc/refresh_cosmetic_wearer()
+	if(ismob(loc))
+		var/mob/M = loc
+		M.update_clothing(slot_flags)
+
+/// Lets the wearer show, hide or take off a layered piece. Returns TRUE if there was anything to manage.
+/obj/item/clothing/proc/manage_cosmetic_pieces(mob/user)
+	if(!LAZYLEN(cosmetic_pieces) || loc != user)
 		return FALSE
 	var/list/stored = list()
-	for(var/obj/item/clothing/C in contents)
-		stored["[C.name] ([C.aesthetic_hidden ? "hidden" : "shown"])"] = C
-	if(!length(stored) || !get_aesthetic_storage())
-		return FALSE
-	var/choice = browser_input_list(user, "Choose a piece to show or hide.", "Layering", stored)
+	for(var/obj/item/clothing/piece as anything in cosmetic_pieces)
+		stored["[piece.name] ([piece.cosmetic_hidden ? "hidden" : "shown"])"] = piece
+	var/choice = browser_input_list(user, "Choose a decoration.", "Decorations", stored)
 	var/obj/item/clothing/picked = stored[choice]
-	if(!picked || picked.loc != src)
+	if(!picked || picked.loc != src || loc != user)
 		return TRUE
-	picked.aesthetic_hidden = !picked.aesthetic_hidden
-	to_chat(user, span_info("[picked] will be [picked.aesthetic_hidden ? "hidden under" : "shown over"] [src]."))
-	user.update_clothing(slot_flags)
+	var/action = browser_input_list(user, "What to do with [picked]?", "Decorations", list(picked.cosmetic_hidden ? "Show" : "Hide", "Take off"))
+	if(!action || picked.loc != src || loc != user)
+		return TRUE
+	if(action == "Take off")
+		user.put_in_hands(picked)
+		return TRUE
+	picked.cosmetic_hidden = !picked.cosmetic_hidden
+	to_chat(user, span_info("[picked] will be [picked.cosmetic_hidden ? "hidden under" : "shown over"] [src]."))
+	refresh_cosmetic_wearer()
 	return TRUE
 
-/obj/item/clothing/ShiftRightClick(mob/user)
-	if(open_aesthetic_storage(user))
-		return TRUE
-	return ..()
-
 /obj/item/clothing/AltRightClick(mob/user, list/modifiers)
-	if(toggle_aesthetic_layer(user))
+	if(ported_clothing && manage_cosmetic_pieces(user))
 		return TRUE
 	return ..()
 
 /obj/item/clothing/get_examine_name(mob/user, use_article = TRUE)
 	. = ..()
-	if(!aesthetic_storage_type || !length(contents) || !get_aesthetic_storage())
+	if(!LAZYLEN(cosmetic_pieces))
 		return
 	var/list/shown = list()
-	for(var/obj/item/clothing/C in contents)
-		if(!C.aesthetic_hidden)
-			shown += C.name
+	for(var/obj/item/clothing/piece as anything in cosmetic_pieces)
+		if(!piece.cosmetic_hidden)
+			shown += piece.name
 	if(length(shown))
 		. += " ([shown.Join(", ")])"
 
 /obj/item/clothing/build_worn_icon(age = AGE_ADULT, default_layer = 0, default_icon_file = null, isinhands = FALSE, femaleuniform = NO_FEMALE_UNIFORM, override_state = null, coom = FALSE, customi = null, sleeveindex, breast_size = 0, icon/clip_mask = null)
 	var/mutable_appearance/standing = ..()
-	if(isinhands || !aesthetic_storage_type || !length(contents) || !get_aesthetic_storage())
+	if(isinhands || !standing || !LAZYLEN(cosmetic_pieces))
 		return standing
-	for(var/obj/item/clothing/C in contents)
-		if(C.aesthetic_hidden)
+	for(var/obj/item/clothing/piece as anything in cosmetic_pieces)
+		if(piece.cosmetic_hidden)
 			continue
-		var/mutable_appearance/layered = C.build_worn_icon(age, default_layer, C.mob_overlay_icon, FALSE, femaleuniform, null, coom, customi, sleeveindex, breast_size, clip_mask)
+		var/mutable_appearance/layered = piece.build_worn_icon(age, default_layer, piece.mob_overlay_icon, FALSE, femaleuniform, null, coom, customi, sleeveindex, breast_size, clip_mask)
 		if(!layered)
 			continue
 		layered.appearance_flags |= RESET_COLOR
@@ -270,34 +266,29 @@
 		standing.overlays += layered
 	return standing
 
-/// Shift+RMB on a piece you carry opens it instead of looking past it.
-/mob/living/ShiftRightClickOn(atom/clicked_atom, list/modifiers)
-	if(istype(clicked_atom, /obj/item/clothing) && clicked_atom.loc == src)
-		clicked_atom.ShiftRightClick(src)
-		return
-	return ..()
+#undef PORTED_COSMETIC_CAPACITY
 
 // ---------------------------------------------------------------------------
 // Middle-click layer and visibility toggles
 // ---------------------------------------------------------------------------
 
-/// True when a middle-click should go to the base sleeve tear/roll handling instead.
-/obj/item/clothing/proc/is_sleeve_click(mob/living/user, list/modifiers)
-	if(nodismemsleeves || !istype(user))
+/// True when the ported middle-click toggle should run instead of the base handling (sleeves, parents' own clicks).
+/obj/item/clothing/proc/use_layer_toggle(mob/living/user, list/modifiers)
+	if(!ported_clothing || !layer_toggle || !istype(user))
 		return FALSE
+	if(nodismemsleeves)
+		return TRUE
 	if(LAZYACCESS(modifiers, ALT_CLICKED))
-		return (l_sleeve_status != SLEEVE_NOMOD || r_sleeve_status != SLEEVE_NOMOD)
+		return (l_sleeve_status == SLEEVE_NOMOD && r_sleeve_status == SLEEVE_NOMOD)
 	if(user.zone_selected == l_sleeve_zone && l_sleeve_status != SLEEVE_NOMOD)
-		return TRUE
+		return FALSE
 	if(user.zone_selected == r_sleeve_zone && r_sleeve_status != SLEEVE_NOMOD)
-		return TRUE
-	return FALSE
+		return FALSE
+	return TRUE
 
 /obj/item/clothing/cloak/MiddleClick(mob/living/user, list/modifiers)
-	if(is_sleeve_click(user, modifiers))
+	if(!use_layer_toggle(user, modifiers))
 		return ..()
-	if(!istype(user))
-		return
 	layer_flipped = !layer_flipped
 	alternate_worn_layer = layer_flipped ? UNDER_ARMOR_LAYER : initial(alternate_worn_layer)
 	to_chat(user, span_info("I wear [src] [layer_flipped ? "under" : "over"] my armor."))
@@ -306,10 +297,8 @@
 	user.update_inv_back()
 
 /obj/item/clothing/wrists/MiddleClick(mob/living/user, list/modifiers)
-	if(is_sleeve_click(user, modifiers))
+	if(!use_layer_toggle(user, modifiers))
 		return ..()
-	if(!istype(user))
-		return
 	layer_flipped = !layer_flipped
 	alternate_worn_layer = layer_flipped ? (ARMOR_LAYER - 0.5) : initial(alternate_worn_layer)
 	to_chat(user, span_info("I wear [src] [layer_flipped ? "over" : "under"] my armor."))
@@ -319,8 +308,8 @@
 	user.update_inv_shirt()
 
 /obj/item/clothing/ring/MiddleClick(mob/living/user, list/modifiers)
-	if(!istype(user))
-		return
+	if(!use_layer_toggle(user, modifiers))
+		return ..()
 	layer_flipped = !layer_flipped
 	alternate_worn_layer = layer_flipped ? UNDER_ARMOR_LAYER : initial(alternate_worn_layer)
 	to_chat(user, span_info("I wear [src] [layer_flipped ? "under" : "over"] my sleeves."))
@@ -328,15 +317,15 @@
 	user.update_inv_gloves()
 
 /obj/item/clothing/face/MiddleClick(mob/living/user, list/modifiers)
-	if(!istype(user))
-		return
+	if(!use_layer_toggle(user, modifiers))
+		return ..()
 	layer_flipped = !layer_flipped
 	alternate_worn_layer = layer_flipped ? (HAIR_LAYER + 0.5) : initial(alternate_worn_layer)
 	to_chat(user, span_info("I wear [src] [layer_flipped ? "under" : "over"] my hair."))
 	user.update_inv_wear_mask()
 
 /obj/item/clothing/face/AltRightClick(mob/user, list/modifiers)
-	if(loc != user)
+	if(!ported_clothing || loc != user || LAZYLEN(cosmetic_pieces))
 		return ..()
 	var/snout_state = "[initial(icon_state)]_snout"
 	if(!snouted && !(mob_overlay_icon && icon_exists(mob_overlay_icon, snout_state)))
@@ -350,8 +339,8 @@
 
 /// Cycles: hair and ears tucked -> ears out -> hair out -> tucked again.
 /obj/item/clothing/head/MiddleClick(mob/living/user, list/modifiers)
-	if(!ishuman(user))
-		return
+	if(!use_layer_toggle(user, modifiers) || !ishuman(user))
+		return ..()
 	var/mob/living/carbon/human/H = user
 	switch(flags_inv & (HIDEEARS|HIDEHAIR))
 		if(HIDEEARS|HIDEHAIR)
@@ -368,9 +357,9 @@
 		H.update_inv_head()
 
 /obj/item/clothing/head/roguehood/AltRightClick(mob/user, list/modifiers)
-	if(loc != user)
+	if(!ported_clothing || loc != user)
 		return ..()
-	if(toggle_aesthetic_layer(user))
+	if(manage_cosmetic_pieces(user))
 		return TRUE
 	layer_flipped = !layer_flipped
 	alternate_worn_layer = layer_flipped ? (HAIR_LAYER - 0.5) : initial(alternate_worn_layer)
@@ -379,7 +368,7 @@
 	return TRUE
 
 // ---------------------------------------------------------------------------
-// Holy symbols: pray with middle-click, some can be worn around the wrist
+// Ported holy symbols: pray with middle-click, some can be worn around the wrist
 // ---------------------------------------------------------------------------
 
 /obj/item/clothing/neck/psycross
@@ -388,8 +377,8 @@
 	var/wrist_display = FALSE
 
 /obj/item/clothing/neck/psycross/MiddleClick(mob/living/user, list/modifiers)
-	if(!ishuman(user))
-		return
+	if(!ported_clothing || !ishuman(user))
+		return ..()
 	var/mob/living/carbon/human/H = user
 	if(!(/mob/living/carbon/human/proc/clericpray in H.verbs))
 		to_chat(user, span_warning("I don't know the proper prayers."))
@@ -398,7 +387,7 @@
 	H.clericpray()
 
 /obj/item/clothing/neck/psycross/attack_hand_secondary(mob/user, list/modifiers)
-	if(!wrist_mob_icon || loc != user)
+	if(!ported_clothing || !wrist_mob_icon || loc != user)
 		return ..()
 	wrist_display = !wrist_display
 	mob_overlay_icon = wrist_display ? wrist_mob_icon : initial(mob_overlay_icon)
@@ -408,71 +397,92 @@
 	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
 
 // ---------------------------------------------------------------------------
-// Mechanics hints (examine -> mechanics)
+// Mechanics hints (examine -> mechanics), ported clothing only
 // ---------------------------------------------------------------------------
 
 /obj/item/clothing/get_mechanics_examine(mob/user)
 	. = ..()
+	if(!ported_clothing)
+		return
 	if(hoodtype)
 		. += span_info("Right-click it while worn to raise or lower the hood.")
-	else if(adjustable > 0)
+	else if(ported_adjust && adjustable > 0)
 		. += span_info("Right-click it while worn to adjust how it is worn - raise a visor, loosen a coif, open a robe.")
-	if(!nodismemsleeves && (r_sleeve_status != SLEEVE_NOMOD || l_sleeve_status != SLEEVE_NOMOD))
-		. += span_info("Middle-click it while targeting a sleeve or leg to tear that part off for an emergency bandage; Alt+middle-click rolls it up or down. Tearing success scales with Strength.")
-	if((aesthetic_storage_type && !GetComponent(/datum/component/storage)) || get_aesthetic_storage())
-		. += span_info("Shift+RMB on [src] in your inventory opens its aesthetic storage, letting you layer purely decorative pieces over it.")
-		. += span_info("Alt+RMB lets you show or hide the pieces layered over [src].")
+	if(!nodismemsleeves && salvage_result && (r_sleeve_status != SLEEVE_NOMOD || l_sleeve_status != SLEEVE_NOMOD))
+		. += span_info("Middle-click it while targeting a sleeve or leg to tear that part off for a scrap of material; Alt+middle-click rolls it up or down. Tearing success scales with Strength.")
+	if(cosmetic_slots())
+		. += span_info("Drag a light piece of clothing from your hand onto [src] while wearing it to layer it over as a decoration. Alt+RMB lets you show, hide or take off those pieces.")
 	if(dyeable || sewrepair)
 		. += span_info("It can be dyed in a dye bin[get_detail_tag() ? ", accents included" : ""].")
+	if(hint_decorate)
+		. += span_info("It can be decorated by clicking it with a feather or a piece of cloth.")
+	if(hint_pattern)
+		. += span_info("Right-click it to pick its pattern and colouring.")
+	if(layer_toggle && is_layer_toggle_type())
+		. += span_info("Middle-click it to [layer_toggle_hint()].")
 
-/obj/item/clothing/head/get_mechanics_examine(mob/user)
-	. = ..()
-	. += span_info("Middle-click it to cycle whether your ears and hair show from under it.")
+/obj/item/clothing/proc/is_layer_toggle_type()
+	return istype(src, /obj/item/clothing/cloak) || istype(src, /obj/item/clothing/wrists) || istype(src, /obj/item/clothing/ring) || istype(src, /obj/item/clothing/face) || istype(src, /obj/item/clothing/head)
 
-/obj/item/clothing/head/helmet/get_mechanics_examine(mob/user)
-	. = ..()
-	. += span_info("Lifted visors offer a wider field of view, but expose your face to precise strikes.")
-	. += span_info("Certain helmets can be decorated by clicking them with a feather, a piece of cloth, or both.")
+/obj/item/clothing/proc/layer_toggle_hint()
+	if(istype(src, /obj/item/clothing/cloak))
+		return "wear it over or under your armor"
+	if(istype(src, /obj/item/clothing/wrists))
+		return "wear it over or under your armor and gloves"
+	if(istype(src, /obj/item/clothing/ring))
+		return "wear it over or under your sleeves"
+	if(istype(src, /obj/item/clothing/face))
+		return "wear it over or under your hair"
+	return "cycle whether your ears and hair show from under it"
 
 /obj/item/clothing/head/roguehood/get_mechanics_examine(mob/user)
 	. = ..()
-	. += span_info("Alt+RMB while worn moves the hood under or over your hair. Most fully drawn hoods hide the wearer's identity.")
-
-/obj/item/clothing/cloak/get_mechanics_examine(mob/user)
-	. = ..()
-	. += span_info("Certain cloaks - jupons, tabards and surcoats - can be given a pattern and colouring by right-clicking them.")
-	. += span_info("Middle-click it to wear it over or under your armor.")
-
-/obj/item/clothing/wrists/get_mechanics_examine(mob/user)
-	. = ..()
-	. += span_info("Middle-click it to wear it over or under your armor and gloves.")
-
-/obj/item/clothing/ring/get_mechanics_examine(mob/user)
-	. = ..()
-	. += span_info("Middle-click it to wear it over or under your sleeves.")
+	if(ported_clothing)
+		. += span_info("Alt+RMB while worn moves the hood under or over your hair.")
 
 /obj/item/clothing/face/get_mechanics_examine(mob/user)
 	. = ..()
-	. += span_info("Middle-click it to wear it over or under your hair.")
-	if(mob_overlay_icon && icon_exists(mob_overlay_icon, "[initial(icon_state)]_snout"))
+	if(ported_clothing && mob_overlay_icon && icon_exists(mob_overlay_icon, "[initial(icon_state)]_snout"))
 		. += span_info("Alt+RMB while worn swaps between the snouted and the flat-faced fit.")
 
 /obj/item/clothing/neck/psycross/get_mechanics_examine(mob/user)
 	. = ..()
-	. += span_info("Middle-click it to kneel in prayer, if you know the prayers. Praying generates devotion for miracles.")
-	. += span_info("Typing '*pray' lets you write a dedicated prayer to your patron; such prayers are, rarely, answered.")
+	if(!ported_clothing)
+		return
+	. += span_info("Middle-click it to kneel in prayer, if you know the prayers.")
 	if(wrist_mob_icon)
 		. += span_info("Right-click it while worn to wear it around your wrist instead of your neck.")
 
 /obj/item/clothing/gloves/get_mechanics_examine(mob/user)
 	. = ..()
-	if(unarmed_bonus != 1)
+	if(ported_clothing && unarmed_bonus != 1)
 		. += span_notice("Unarmed damage while worn: x[unarmed_bonus].")
 
 /obj/item/clothing/shoes/get_mechanics_examine(mob/user)
 	. = ..()
-	if(istype(GetComponent(/datum/component/storage), /datum/component/storage/concrete/boots))
+	if(ported_clothing && istype(GetComponent(/datum/component/storage), /datum/component/storage/concrete/boots))
 		. += span_info("It can hide a knife, a coin or a key. Click it with one to slip it in; right-click it to draw it back out.")
+
+/// Ported spectacles and goggles: frames and lenses, not a helmet visor.
+/datum/armor/ported/spectacles
+	blunt = DR_LIGHT
+	slash = DBLOCK_LIGHT
+	stab = DBLOCK_LIGHT
+	piercing = DBLOCK_NONE
+	fire = DR_NONE
+	acid = DR_NONE
+
+/// Nobility gate shared by ported loadout entries: the Nobility virtue, or a noble, keep or townhall job set to high.
+/proc/ported_loadout_noble_check(mob/C)
+	var/datum/preferences/P = C?.client?.prefs
+	if(!P)
+		return FALSE
+	if(HAS_TRAIT(P, TRAIT_NOBLE))
+		return TRUE
+	for(var/job_title in GLOB.lords_positions + GLOB.keep_positions + GLOB.townhall_positions)
+		if(P.job_preferences[job_title] == JP_HIGH)
+			return TRUE
+	return FALSE
 
 /datum/armor/ported/padded
 	blunt = DR_SUPER

@@ -8,6 +8,7 @@
 	item_state = "ichainkilt"
 	sleevetype = "ichainkilt"
 	alternate_worn_layer = (SHIRT_LAYER)
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/chainlegs/kilt/bronze
 	name = "bronze chain kilt"
@@ -20,6 +21,7 @@
 	sleevetype = "bchainkilt"
 	alternate_worn_layer = (SHIRT_LAYER)
 	smeltresult = /obj/item/ingot/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/heavy_leather_pants/bronzeskirt
 	name = "bronze chain skirt"
@@ -33,7 +35,7 @@
 	blocksound = CHAINHIT
 	resistance_flags = FIRE_PROOF
 	sewrepair = FALSE
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/bronze
 	dyeable = TRUE
 
@@ -53,6 +55,7 @@
 	sewrepair = TRUE
 	body_parts_covered = GROIN | LEGS
 	color = "#ad977d"
+	ported_clothing = TRUE
 	var/shifted = FALSE
 	var/shiftable = TRUE
 
@@ -91,6 +94,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "surcoatshortskirt"
 	item_state = "surcoatshortskirt"
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/skirt/gambeson/heavy
 	name = "padded gambesoned kilt"

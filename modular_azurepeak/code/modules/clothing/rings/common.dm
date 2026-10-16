@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "ring_a"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/band
@@ -16,6 +17,7 @@
 	icon_state = "s_ring_wedding"
 	var/choicename = FALSE
 	var/choicedesc = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/band/attack_hand_secondary(mob/user, list/modifiers)
 	if(choicename)
@@ -49,6 +51,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "ring_bs"
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/bronze
 	name = "bronze ring"
@@ -57,6 +60,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "ring_b"
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/diamond
 	name = "dorpel ring"
@@ -66,6 +70,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "g_ring_diamond"
 	smeltresult = /obj/item/gem/diamond
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/diamondbs
 	name = "dorpel ring of blacksteel"
@@ -75,6 +80,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "bs_ring_diamond"
 	sellprice = 370
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/diamonds
@@ -85,6 +91,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "s_ring_diamond"
 	smeltresult = /obj/item/gem/diamond
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/dragon_ring_ap
 	name = "dragonstone ring"
@@ -95,6 +102,7 @@
 	icon_state = "dragonring"
 	sellprice = 666
 	var/active_item = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/dragon_ring_ap/equipped(mob/living/user, slot, initial = FALSE)
 	. = ..()
@@ -103,9 +111,7 @@
 	else if((slot & ITEM_SLOT_RING))
 		active_item = TRUE
 		to_chat(user, span_suicide("Draconic fire courses through my veins! I feel powerful!"))
-		user.change_stat(STATKEY_STR, 2)
-		user.change_stat(STATKEY_CON, 2)
-		user.change_stat(STATKEY_END, 2)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_STR) = 2, (STATKEY_CON) = 2, (STATKEY_END) = 2))
 		update_appearance()
 	return
 
@@ -113,9 +119,7 @@
 	..()
 	if(active_item)
 		to_chat(user, span_suicide("A chilling sensation courses through my body, and the ring's heat remains oh-so-alluring.. </br>..yet, one must wonder.. could such fiery strength withstand a forge's heat?"))
-		user.change_stat(STATKEY_STR, -2)
-		user.change_stat(STATKEY_CON, -2)
-		user.change_stat(STATKEY_END, -2)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 		update_appearance()
 	return
@@ -131,6 +135,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "ring_duel"
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/emerald
 	name = "gemerald ring"
@@ -140,6 +145,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "g_ring_emerald"
 	smeltresult = /obj/item/gem/green
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/emeraldbs
 	name = "gemerald ring of blacksteel"
@@ -149,6 +155,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "bs_ring_emerald"
 	sellprice = 295
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/emeralds
@@ -159,6 +166,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "s_ring_emerald"
 	smeltresult = /obj/item/gem/green
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/lief_ring
 	name = "Blortz Blacksteel Engagement Ring"
@@ -167,6 +175,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "blacksteel_blortz"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/porcelain
@@ -177,6 +186,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "ring_porcelain"
 	toggle_icon_state = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/quartz
@@ -187,6 +197,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "g_ring_quartz"
 	smeltresult = /obj/item/gem/blue
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/quartzbs
 	name = "blortz ring of blacksteel"
@@ -196,6 +207,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "bs_ring_quartz"
 	sellprice = 345
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/quartzs
@@ -206,6 +218,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "s_ring_quartz"
 	smeltresult = /obj/item/gem/blue
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/ruby
 	name = "rontz ring"
@@ -214,6 +227,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "g_ring_ruby"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/rubybs
@@ -224,6 +238,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "bs_ring_ruby"
 	sellprice = 355
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/rubys
@@ -233,6 +248,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "s_ring_ruby"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/sapphire
@@ -243,6 +259,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "g_ring_sapphire"
 	smeltresult = /obj/item/gem/violet
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/sapphirebs
 	name = "saffira ring of blacksteel"
@@ -252,6 +269,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "bs_ring_sapphire"
 	sellprice = 300
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/sapphires
@@ -262,6 +280,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "s_ring_sapphire"
 	smeltresult = /obj/item/gem/violet
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/statdorpel
 	name = "ring of omnipotence"
@@ -273,6 +292,7 @@
 	smeltresult = /obj/item/riddleofsteel
 	sellprice = 777
 	var/active_item = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/statdorpel/equipped(mob/living/user, slot, initial = FALSE)
 	. = ..()
@@ -281,26 +301,14 @@
 	else if((slot & ITEM_SLOT_RING))
 		active_item = TRUE
 		to_chat(user, span_blue("'..the way of hope, unbreakable and unifying..'"))
-		user.change_stat(STATKEY_SPD, 1)
-		user.change_stat(STATKEY_LCK, 1)
-		user.change_stat(STATKEY_INT, 1)
-		user.change_stat(STATKEY_PER, 1)
-		user.change_stat(STATKEY_CON, 1)
-		user.change_stat(STATKEY_END, 1)
-		user.change_stat(STATKEY_STR, 1)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_SPD) = 1, (STATKEY_LCK) = 1, (STATKEY_INT) = 1, (STATKEY_PER) = 1, (STATKEY_CON) = 1, (STATKEY_END) = 1, (STATKEY_STR) = 1))
 	return
 
 /obj/item/clothing/ring/statdorpel/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_blue("'..I know that kindness exists, for I am kind..' </br>'..I know hope exists, for I have hope..' </br>'..and I know love exists, for I love.'"))
-		user.change_stat(STATKEY_SPD, -1)
-		user.change_stat(STATKEY_LCK, -1)
-		user.change_stat(STATKEY_INT, -1)
-		user.change_stat(STATKEY_PER, -1)
-		user.change_stat(STATKEY_CON, -1)
-		user.change_stat(STATKEY_END, -1)
-		user.change_stat(STATKEY_STR, -1)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 	return
 
@@ -313,6 +321,7 @@
 	icon_state = "g_newring_emerald"
 	sellprice = 222
 	var/active_item = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/statgemerald/equipped(mob/living/user, slot, initial = FALSE)
@@ -322,16 +331,14 @@
 	else if((slot & ITEM_SLOT_RING))
 		active_item = TRUE
 		to_chat(user, span_green("'..the way of lyfe, bountiful but fleeting..'"))
-		user.change_stat(STATKEY_SPD, 1)
-		user.change_stat(STATKEY_LCK, 1)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_SPD) = 1, (STATKEY_LCK) = 1))
 	return
 
 /obj/item/clothing/ring/statgemerald/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_green("'..but without an end to the journey, what would become of lyfe's meaning?'"))
-		user.change_stat(STATKEY_SPD, -1)
-		user.change_stat(STATKEY_LCK, -1)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 	return
 
@@ -344,6 +351,7 @@
 	icon_state = "g_newring_quartz"
 	sellprice = 222
 	var/active_item = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/statonyx/equipped(mob/living/user, slot, initial = FALSE)
@@ -353,16 +361,14 @@
 	else if((slot & ITEM_SLOT_RING))
 		active_item = TRUE
 		to_chat(user, span_purple("'..the way of blood, shed from you in vain..'"))
-		user.change_stat(STATKEY_CON, 1)
-		user.change_stat(STATKEY_END, 1)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_CON) = 1, (STATKEY_END) = 1))
 	return
 
 /obj/item/clothing/ring/statonyx/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_purple("'..but if you don't stand for those who cannot, who will?'"))
-		user.change_stat(STATKEY_CON, -1)
-		user.change_stat(STATKEY_END, -1)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 	return
 
@@ -375,6 +381,7 @@
 	icon_state = "g_newring_ruby"
 	sellprice = 222
 	var/active_item = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/statrontz/equipped(mob/living/user, slot, initial = FALSE)
@@ -384,14 +391,14 @@
 	else if((slot & ITEM_SLOT_RING))
 		active_item = TRUE
 		to_chat(user, span_warning("'..the way of death, indiscriminate and total..'"))
-		user.change_stat(STATKEY_STR, 1)
+		user.set_stat_modifier("ported_equip_[REF(src)]", list((STATKEY_STR) = 1))
 	return
 
 /obj/item/clothing/ring/statrontz/dropped(mob/living/user, silent = FALSE)
 	..()
 	if(active_item)
 		to_chat(user, span_warning("'..but without violence, what would stop evil from triumphing?'"))
-		user.change_stat(STATKEY_STR, -1)
+		user.remove_stat_modifier("ported_equip_[REF(src)]")
 		active_item = FALSE
 	return
 
@@ -403,6 +410,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "g_ring_topaz"
 	smeltresult = /obj/item/gem/yellow
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/topazbs
 	name = "toper ring of blacksteel"
@@ -412,6 +420,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "bs_ring_topaz"
 	sellprice = 380
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/ring/topazs
@@ -422,6 +431,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "s_ring_topaz"
 	smeltresult = /obj/item/gem/yellow
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/band/aalloy
 	name = "decrepit weddingband"
@@ -465,6 +475,7 @@
 	icon = 'modular_azurepeak/icons/clothing/rings.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
+	icon_state = "g_newring_emerald"
 	sellprice = 30
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -473,5 +484,6 @@
 	icon = 'modular_azurepeak/icons/clothing/rings.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
+	icon_state = "g_newring_quartz"
 	sellprice = 30
 	misc_flags = CRAFTING_TEST_EXCLUDE

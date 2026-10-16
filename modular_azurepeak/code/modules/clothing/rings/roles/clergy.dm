@@ -5,9 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/rings.dmi'
 	icon_state = "psysignet"
-
-/obj/item/clothing/ring/signet/psy/get_mechanics_examine(mob/user)
-	. = ..()
+	ported_clothing = TRUE
 
 /obj/item/clothing/ring/signet/psy/g
 	name = "Aonic gold signet ring"

@@ -4,8 +4,10 @@
 	icon = 'modular_azurepeak/icons/clothing/masks_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
+	icon_state = "goldmask"
 	sellprice = 77
 	smeltresult = /obj/item/clothing/face/lordmask
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/facemask/goldmaskc/triumph
@@ -14,6 +16,7 @@
 	icon = 'modular_azurepeak/icons/clothing/masks_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
+	icon_state = "goldmaskc"
 	sellprice = 77
 	smeltresult = /obj/item/clothing/face/lordmask
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -27,6 +30,7 @@
 	icon_state = "porc_mask"
 	adjustable = CAN_CADJUST
 	var/list/toggles = list( "porc_mask", "porc_mask_red", "porc_mask_blue" )
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/iamcrystalclear/AdjustClothes(mob/user)
@@ -50,6 +54,7 @@
 	sleeved = null
 	icon_state = "elegantjademask"
 	item_state = "elegantjademask"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/facemask/bronze/donator
@@ -70,6 +75,7 @@
 	sleeved = null
 	icon_state = "elegantjademask"
 	item_state = "elegantjademask"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/facemask/steel/ancient/jademask/donator
@@ -94,6 +100,7 @@
 	w_class = WEIGHT_CLASS_SMALL
 	gas_transfer_coefficient = 0.9
 	equip_delay_other = 20
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/pig
@@ -108,6 +115,7 @@
 	clothing_flags = VOICEBOX_TOGGLABLE
 	w_class = WEIGHT_CLASS_SMALL
 	modifies_speech = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/pig/handle_speech(datum/source, list/speech_args)
@@ -120,6 +128,8 @@
 	icon = 'modular_azurepeak/icons/clothing/masks.dmi'
 	mob_overlay_icon = null
 	sleeved = null
+	icon_state = "pig"
+	item_state = "pig"
 	flags_inv = HIDEFACIALHAIR
 	clothing_flags = NONE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -140,6 +150,7 @@
 	sewrepair = TRUE
 	grid_width = 32
 	grid_height = 32
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/ragmask
 	name = "rag mask"
@@ -158,6 +169,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'sound/foley/equip/rummaging-03.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/bronze
 	name = "bronze mask"
@@ -171,6 +183,7 @@
 	armor_class = AC_LIGHT
 	max_integrity = 150
 	smeltresult = /obj/item/ingot/bronze
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/goldmaskc
 	name = "gold mask"
@@ -180,6 +193,7 @@
 	icon_state = "goldmaskc"
 	max_integrity = 150
 	smeltresult = /obj/item/ingot/gold
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/leather
 	name = "padded leather mask"
@@ -200,6 +214,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'sound/foley/equip/rummaging-03.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/maille
 	name = "iron chainmaille mask"
@@ -219,6 +234,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'modular_azurepeak/sound/foley/equip/chain_equip.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/padded
 	name = "padded mask"
@@ -239,6 +255,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'sound/foley/equip/rummaging-03.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/xylixmask/ceramic
 	name = "ceramic mask"
@@ -275,6 +292,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_coral"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/steel/ancient/jademask
 	name = "jade mask"
@@ -283,6 +301,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_jade"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/steel/ancient/onyxamask
 	name = "onyxa mask"
@@ -291,6 +310,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_onyxa"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/steel/ancient/opalmask
 	name = "opal mask"
@@ -299,6 +319,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_opal"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/steel/ancient/shellmask
 	name = "shell mask"
@@ -307,6 +328,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_shell"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/steel/ancient/turqmask
 	name = "cerulite mask"
@@ -315,6 +337,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_turq"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/maille/fluted
 	name = "iron fluted chainmaille mask"
@@ -346,6 +369,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'modular_azurepeak/sound/foley/equip/chain_equip.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/bronze/classic/anthro
 	name = "bronze death mask"

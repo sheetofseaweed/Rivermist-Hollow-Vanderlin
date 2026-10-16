@@ -6,6 +6,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "armharness"
 	item_state = "armharness"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/donator_steelpauldron
@@ -16,6 +17,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "steelpauldron"
 	item_state = "steelpauldron"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/ancient/armharness
@@ -27,6 +29,7 @@
 	icon_state = "aarmharness"
 	item_state = "aarmharness"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/bronze/armharness
@@ -47,6 +50,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "iarmharness"
 	item_state = "iarmharness"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/ancient/armharness_ap
@@ -57,6 +61,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/donor_sleeves_armor.dmi'
 	icon_state = "aarmharness"
 	item_state = "aarmharness"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/allwrappings
@@ -69,11 +74,14 @@
 	item_state = "nocwrappings"
 	slot_flags = ITEM_SLOT_WRISTS
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/allwrappings/scarlet
 	icon = 'modular_azurepeak/icons/clothing/wrists.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
+	icon_state = "nocwrappings"
+	item_state = "nocwrappings"
 	color = CLOTHING_SCARLET
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -89,6 +97,7 @@
 	smeltresult = /obj/item/ingot/bronze
 	armor_type = /datum/armor/ported/bronze
 	max_integrity = 250
+	ported_clothing = TRUE
 
 /obj/item/clothing/wrists/bracers/cloth
 	name = "cloth bracers"
@@ -108,6 +117,7 @@
 	equip_sound = 'sound/foley/equip/equip_armor.ogg'
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/hand
@@ -119,10 +129,8 @@
 	icon_state = "bracersheath"
 	color = null
 	armor_type = /datum/armor/maille
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/wrists/bracers/hand/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/wrists/bracers/lirvas
 	name = "lirvasi pauldrons"
@@ -132,6 +140,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	icon_state = "goldpauldron"
 	sellprice = 20
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/wrists/bracers/cloth/gladiator
@@ -140,6 +149,8 @@
 	icon = 'modular_azurepeak/icons/clothing/wrists.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
+	icon_state = "nocwrappings"
+	item_state = "nocwrappings"
 	color = "#BFB8A9"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -157,3 +168,4 @@
 	salvage_result = /obj/item/natural/hide/cured
 	color = "#7f829d"
 	dyeable = TRUE
+	ported_clothing = TRUE

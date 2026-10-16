@@ -7,4 +7,5 @@
 	icon_state = "hussarhelm"
 	body_parts_covered = HEAD|EARS|HAIR|NECK|NOSE
 	max_integrity = ARMOR_INT_HELMET_STEEL
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

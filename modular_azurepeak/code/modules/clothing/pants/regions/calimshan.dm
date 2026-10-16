@@ -6,6 +6,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "chiv_achaussus"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/tights/dhoti
@@ -20,6 +21,7 @@
 	detail_color = CLOTHING_WHITE
 	salvage_result = /obj/item/natural/cloth
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/tights/shalwar
 	name = "shalwar pants"
@@ -37,3 +39,4 @@
 	body_parts_covered = GROIN|LEGS
 	detail_tag = "_detail"
 	detail_color = CLOTHING_WHITE
+	ported_clothing = TRUE

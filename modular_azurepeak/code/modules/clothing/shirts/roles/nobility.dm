@@ -9,6 +9,7 @@
 	detail_tag = "_detail"
 	detail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/tunic/rosacoat
 	name = "regal coat"
@@ -19,6 +20,7 @@
 	icon_state = "rosacoat7"
 	salvage_result = /obj/item/natural/hide/cured
 	boobed = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/tunic/rosacoat/three
 	name = "royal coat"

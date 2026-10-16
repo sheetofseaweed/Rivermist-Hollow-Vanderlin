@@ -6,3 +6,4 @@
 	sleeved = null
 	icon_state = "bucklehat"
 	sewrepair = TRUE
+	ported_clothing = TRUE

@@ -5,3 +5,4 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_amber"
+	ported_clothing = TRUE

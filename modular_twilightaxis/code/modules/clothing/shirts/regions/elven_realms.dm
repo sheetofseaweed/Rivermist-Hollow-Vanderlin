@@ -12,6 +12,7 @@
 	body_parts_covered = CHEST|VITALS
 	var/elven_colors = list("blue", "red", "beige", "black", "green")
 	var/picked = FALSE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/twilight_elven/attack_hand_secondary(mob/user, list/modifiers)

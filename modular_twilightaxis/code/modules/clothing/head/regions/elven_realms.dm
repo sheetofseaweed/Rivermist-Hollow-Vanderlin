@@ -6,4 +6,5 @@
 	sleeved = null
 	icon_state = "elven_hat"
 	flags_inv = HIDEEARS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

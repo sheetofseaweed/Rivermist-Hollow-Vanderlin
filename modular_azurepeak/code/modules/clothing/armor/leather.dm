@@ -8,6 +8,7 @@
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	color = "#7D6653"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/leather/heavy/aristocratavar
 	name = "noble's vest"
@@ -20,6 +21,7 @@
 	max_integrity = ARMOR_INT_CHEST_LIGHT_BASE - 25
 	color = "#292626"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/coat
@@ -35,6 +37,7 @@
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER
 	color = "#7D6653"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/leather/heavy/freifechter
 	name = "fencing jacket"
@@ -49,6 +52,7 @@
 	color = "#5E4440"
 	detail_color = "#c08955"
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/leather/heavy/shadowvest
 	name = "drowcraft vest"
@@ -60,6 +64,7 @@
 	item_state = "shadowvest"
 	allowed_race = SPECIES_BASE_BODY
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/shepherd
@@ -73,6 +78,7 @@
 	max_integrity = ARMOR_INT_CHEST_LIGHT_MEDIUM
 	color = "#313131"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/warden
@@ -82,6 +88,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/special/onmob/warden.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "forestleather"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/heavy/coat/gravecoat
@@ -134,6 +141,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "freijacket"
+	item_state = "freijacket"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
@@ -143,6 +152,8 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "shadowvest"
+	item_state = "shadowvest"
 	allowed_race = list(SPEC_ID_DROW)
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -173,4 +184,6 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "chargahfur"
+	item_state = "chargahfur"
 	misc_flags = CRAFTING_TEST_EXCLUDE

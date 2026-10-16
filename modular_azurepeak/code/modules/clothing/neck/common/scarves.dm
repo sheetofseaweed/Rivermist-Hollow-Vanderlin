@@ -5,6 +5,7 @@
 	sleeved = null
 	icon_state = "stripedbluescarf"
 	custom_price = 10
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/stripedgreenscarf
@@ -14,6 +15,7 @@
 	sleeved = null
 	icon_state = "stripedgreenscarf"
 	custom_price = 10
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/stripedredscarf
@@ -23,6 +25,7 @@
 	sleeved = null
 	icon_state = "stripedredscarf"
 	custom_price = 10
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/neck/chaincoif/chainmantle
@@ -36,3 +39,4 @@
 	body_parts_covered = NECK|MOUTH
 	slot_flags = ITEM_SLOT_NECK
 	flags_inv = HIDEFACE|HIDEFACIALHAIR
+	ported_clothing = TRUE

@@ -5,6 +5,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "legacyroguearmor"
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/triumph_padded
@@ -17,6 +18,7 @@
 	detail_color = null
 	color = null
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/legacy
@@ -27,6 +29,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "legacyhalfplate"
 	item_state = "legacyhalfplate"
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/triumph_slim
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
@@ -34,6 +37,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "halfplateslim"
 	item_state = "halfplateslim"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/brigandine/heavy/triumph
@@ -76,6 +80,7 @@
 	detail_color = null
 	color = null
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/leather/studded/triumph_padded
@@ -88,6 +93,7 @@
 	detail_color = null
 	color = null
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/legacy
@@ -98,6 +104,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "legacycuirass"
 	item_state = "legacycuirass"
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/cuirass/triumph_slim
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
@@ -105,6 +112,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "cuirassslim"
 	item_state = "cuirassslim"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/fluted/triumph_slim
@@ -113,6 +121,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "ornatehalfplateslim"
 	item_state = "ornatehalfplateslim"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/legacy
@@ -123,6 +132,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "legacyplate"
 	item_state = "legacyplate"
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/full/triumph_slim
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
@@ -130,6 +140,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "plateslim"
 	item_state = "plateslim"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/iron/legacy
@@ -139,6 +150,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "ilegacytassetplate"
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/leather/heavy/coat/triumph
 	name = "hardened leather coat"
@@ -156,6 +168,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "ilegacycuirass"
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/cuirass/iron/triumph
 	name = "aged iron breastplate"
@@ -164,6 +177,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "legacyibreastplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/full/fluted/legacy
@@ -190,3 +204,4 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
 	icon_state = "ilegacyplate"
+	ported_clothing = TRUE

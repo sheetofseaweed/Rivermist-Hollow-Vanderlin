@@ -11,6 +11,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = (CHEST|VITALS)
 	adj_sound = 'sound/foley/cloth_wipe (1).ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shirt/undershirt/artificer/donator_thistle/get_mechanics_examine(mob/user)
@@ -33,11 +34,13 @@
 	break_sound = 'sound/foley/cloth_rip.ogg'
 	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
 	sewrepair = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/freifechter/loadout
 	name = "aesthetic fencing shirt"
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "fencingshirt"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

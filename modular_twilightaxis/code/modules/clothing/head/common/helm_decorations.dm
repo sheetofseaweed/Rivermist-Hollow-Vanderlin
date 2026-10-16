@@ -11,6 +11,7 @@
 	var/picked = FALSE
 	var/rogavid = list("halo", "knighty")
 	var/antlers_final_icon = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/antlers/attack_hand_secondary(mob/user, list/modifiers)

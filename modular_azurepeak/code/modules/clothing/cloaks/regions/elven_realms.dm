@@ -12,6 +12,7 @@
 	nodismemsleeves = TRUE
 	inhand_mod = TRUE
 	resistance_flags = FIRE_PROOF
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/cloak/rangercloak/gray

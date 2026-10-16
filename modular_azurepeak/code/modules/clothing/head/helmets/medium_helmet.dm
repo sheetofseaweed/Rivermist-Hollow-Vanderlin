@@ -10,10 +10,8 @@
 	flags_inv = HIDEFACE
 	armor_class = AC_LIGHT
 	max_integrity = ARMOR_INT_HELMET_ANTAG - 300
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/head/helmet/baotha/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/head/helmet/bronze
 	name = "bronze illyriahelm"
@@ -29,13 +27,15 @@
 	worn_x_dimension = 64
 	worn_y_dimension = 64
 	smeltresult = /obj/item/ingot/bronze
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/bronze/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/feather) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Greatplume") as anything in COLOR_MAP
-		detail_color = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Greatplume") as anything in GLOB.ported_color_map
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
@@ -57,15 +57,17 @@
 	armor_class = AC_LIGHT
 	body_parts_covered = FULL_HEAD
 	smeltresult = /obj/item/ingot/bronze
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/bronzegladiator/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
+		var/choice = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		detail_color = COLOR_MAP[choice]
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -90,6 +92,7 @@
 	detail_tag = "_detail"
 	detail_color = "#FFFFFF"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/otavan
@@ -115,6 +118,7 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = HIDEEARS
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/otavan/getonmobprop(tag)
@@ -144,6 +148,7 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/bascinet/aventail
@@ -157,6 +162,7 @@
 	body_parts_covered = HEAD|HAIR|EARS|MOUTH|NECK
 	block2add = FOV_BEHIND
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/bascinet/etruscan
 	name = "klappvisier bascinet"
@@ -177,15 +183,17 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/bascinet/etruscan/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
+		var/choice = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		detail_color = COLOR_MAP[choice]
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -202,6 +210,7 @@
 	item_state = "ibascinet"
 	smeltresult = /obj/item/ingot/iron
 	max_integrity = ARMOR_INT_HELMET_IRON
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/bascinet/pigface
 	name = "pigface bascinet"
@@ -222,13 +231,15 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = (HIDEEARS|HIDEHAIR)
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/bascinet/pigface/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
-		detail_color = COLOR_MAP[choice]
+		var/choice = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
@@ -237,10 +248,10 @@
 			var/mob/living/carbon/H = user
 			H.update_inv_head()
 	if(istype(W, /obj/item/natural/feather) && !altdetail_tag)
-		var/choicealt = input(user, "Choose a color.", "Plume") as anything in COLOR_MAP
+		var/choicealt = input(user, "Choose a color.", "Plume") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		altdetail_color = COLOR_MAP[choicealt]
+		altdetail_color = GLOB.ported_color_map[choicealt]
 		altdetail_tag = "_detailalt"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -252,6 +263,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "elven_barbute_full"
+	item_state = "elven_barbute_full"
 	detail_color = COLOR_ASSEMBLY_GOLD
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -279,6 +292,7 @@
 	anvilrepair = null
 	max_integrity = ARMOR_INT_HELMET_HEAVY_DECREPIT
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/kettle/jingasa
@@ -293,6 +307,7 @@
 	detail_color = "#FFFFFF"
 	flags_inv = HIDEEARS|HIDEHAIR
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/kettle/paalloy
@@ -303,6 +318,7 @@
 	sleeved = null
 	icon_state = "ancientkettle"
 	body_parts_covered = HEAD|HAIR|EARS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/kettle/wide
@@ -312,6 +328,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
 	icon_state = "kettlewide"
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/nasal/iron
 	name = "iron nasal helmet"
@@ -322,6 +339,7 @@
 	icon_state = "inasal"
 	smeltresult = /obj/item/ingot/iron
 	max_integrity = ARMOR_INT_HELMET_IRON
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/sallet/beastskull
 	name = "beast skull"
@@ -335,6 +353,7 @@
 	smeltresult = /obj/item/ingot/steel
 	worn_x_dimension = 64
 	worn_y_dimension = 64
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet/visored
@@ -354,15 +373,19 @@
 	adj_open_coverage = (HEAD|EARS|HAIR)
 	adj_open_inv = HIDEEARS|HIDEHAIR
 	adj_sound = 'sound/items/visor.ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/sallet/warden
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "sallet"
+	item_state = "that"
 	flags_inv = HIDEFACE
 	body_parts_covered = FULL_HEAD
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH
 	block2add = FOV_BEHIND
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/skullcap/steel
@@ -375,6 +398,7 @@
 	body_parts_covered = HEAD|HAIR
 	max_integrity = ARMOR_INT_HELMET_STEEL
 	smeltresult = /obj/item/ingot/steel
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/winged/iron
 	name = "iron winged helmet"
@@ -385,6 +409,7 @@
 	icon_state = "iwingedcap"
 	smeltresult = /obj/item/ingot/iron
 	max_integrity = ARMOR_INT_HELMET_IRON
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/bascinet/etruscan/iron
 	name = "iron klappvisier bascinet"
@@ -453,6 +478,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "elven_barbute_winged"
+	item_state = "elven_barbute_winged"
 	detail_color = COLOR_ASSEMBLY_GOLD
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -471,6 +498,7 @@
 	flags_cover = HEADCOVERSEYES
 	body_parts_covered = HEAD|EARS|HAIR|NOSE|EYES
 	block2add = FOV_BEHIND
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/sallet/visored/grinning

@@ -1,28 +1,3 @@
-/obj/item/clothing/armor/gambeson/baotha_ta
-	name = "saccharine vestments"
-	desc = "Padded vestments steeped in a heady perfume. A gemmed chalice is stitched upon the breast; Blissara's cultists say that one sip from Her cup is enough to make the world disappear."
-	icon = 'modular_twilightaxis/icons/clothing/shirts_2.dmi'
-	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/shirts_2.dmi'
-	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_shirts.dmi'
-	icon_state = "baothagamb"
-	armor_class = AC_LIGHT
-	armor_type = /datum/armor/brigandine
-	color = null
-	max_integrity = ARMOR_INT_CHEST_LIGHT_MASTER + 150
-	resistance_flags = FIRE_PROOF
-	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/gambeson/baotha_ta/Initialize()
-	. = ..()
-	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
-
-/obj/item/clothing/armor/gambeson/baotha_ta/dropped(mob/user, silent = FALSE)
-	. = ..()
-	if(QDELETED(src))
-		return
-	qdel(src)
-
 /obj/item/clothing/armor/plate/legion
 	name = "Shoonite lorica segmentata"
 	desc = "Plate armour assembled from strips of steel fastened to one another. Despite its cost, legionaries and praetorians favour it for its reliability and comfort."
@@ -31,6 +6,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor_2.dmi'
 	icon_state = "legionplate"
 	item_state = "legionplate"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/plate/raneshen_scale
@@ -45,10 +21,11 @@
 	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
 	allowed_sex = list(MALE, FEMALE)
 	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/steel
 	equip_delay_self = 4 SECONDS
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/cuirass/etrcuirass
 	name = "Sembian cuirass"
@@ -64,6 +41,7 @@
 	boobed = FALSE
 	allowed_race = SPECIES_BASE_BODY
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/legion
@@ -75,30 +53,7 @@
 	icon_state = "legioncuirass"
 	item_state = "legioncuirass"
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
-
-/obj/item/clothing/armor/plate/fluted/baotha_ta
-	name = "saccharine plate armor"
-	desc = "Fluted plate lacquered in sickly pink and gilded with sugar-glass. Blissara's champions wear it as a promise: that the war they bring will feel like a dream until the very end."
-	icon = 'modular_twilightaxis/icons/clothing/armor_2.dmi'
-	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/armor_2.dmi'
-	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor_2.dmi'
-	icon_state = "baothaplate"
-	item_state = "baothaplate"
-	max_integrity = ARMOR_INT_CHEST_PLATE_ANTAG - 250
-	armor_class = AC_LIGHT
-	color = null
-	body_parts_covered = (( CHEST | GROIN | VITALS | LEGS | ARMS))
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/armor/plate/fluted/baotha_ta/Initialize()
-	. = ..()
-	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
-
-/obj/item/clothing/armor/plate/fluted/baotha_ta/dropped(mob/user, silent = FALSE)
-	. = ..()
-	if(QDELETED(src))
-		return
-	qdel(src)
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/full/raneshen_plated
 	name = "Calishite plate armor"
@@ -115,6 +70,7 @@
 	strip_delay = 6 SECONDS
 	max_integrity = ARMOR_INT_CHEST_PLATE_STEEL
 	armor_class = AC_HEAVY
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/medium/scale/townguard
 	name = "watchman's armor"
@@ -124,6 +80,7 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/special/onmob/helpers/citywatch_sleeves_armor.dmi'
 	icon_state = "citywatch"
 	item_state = "citywatch"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/armor/cuirass/fencer/twilight_elven
@@ -135,6 +92,7 @@
 	icon_state = "elven_chestplate"
 	item_state = "elven_chestplate"
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/plate/fluted/zizo/bloodraider
 	name = "raider's cuirass"

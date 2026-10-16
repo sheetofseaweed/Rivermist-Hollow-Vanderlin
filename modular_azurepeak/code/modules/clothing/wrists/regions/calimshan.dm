@@ -6,4 +6,5 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/wrists.dmi'
 	icon_state = "chiv_abracers"
 	allowed_sex = list(FEMALE)
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

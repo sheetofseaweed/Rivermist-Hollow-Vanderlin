@@ -10,26 +10,28 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	block2add = FOV_BEHIND
 	smeltresult = /obj/item/ingot/steel
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/astratan/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
+		var/choice = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		detail_color = COLOR_MAP[choice]
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		update_appearance()
 		if(loc == user && ishuman(user))
 			var/mob/living/carbon/H = user
 			H.update_inv_head()
 	if(istype(W, /obj/item/clothing/head/veiled) && !altdetail_tag)
-		var/choicealt = input(user, "Choose a color.", "Veil") as anything in COLOR_MAP
+		var/choicealt = input(user, "Choose a color.", "Veil") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		altdetail_color = COLOR_MAP[choicealt]
+		altdetail_color = GLOB.ported_color_map[choicealt]
 		altdetail_tag = "_detailalt"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -52,6 +54,7 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR
 	block2add = FOV_BEHIND
 	smeltresult = /obj/item/ingot/steel
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/helmet/heavy/undivided
@@ -62,15 +65,17 @@
 	sleeved = null
 	icon_state = "silversallet"
 	item_state = "silversallet"
+	ported_clothing = TRUE
+	hint_decorate = TRUE
 
 /obj/item/clothing/head/helmet/heavy/undivided/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	var/obj/item/W = attacking_item
 	..()
 	if(istype(W, /obj/item/natural/cloth) && !detail_tag)
-		var/choice = input(user, "Choose a color.", "Orle") as anything in COLOR_MAP
+		var/choice = input(user, "Choose a color.", "Orle") as anything in GLOB.ported_color_map
 		user.visible_message(span_warning("[user] adds [W] to [src]."))
 		user.transferItemToLoc(W, src, FALSE, FALSE)
-		detail_color = COLOR_MAP[choice]
+		detail_color = GLOB.ported_color_map[choice]
 		detail_tag = "_detail"
 		update_appearance()
 		if(loc == user && ishuman(user))
@@ -87,6 +92,7 @@
 	worn_x_dimension = 64
 	worn_y_dimension = 64
 	smeltresult = null
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/bandana
 	name = "bandana"
@@ -104,6 +110,7 @@
 	blocksound = SOFTHIT
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/tricorn
 	name = "tricorn"
@@ -122,6 +129,7 @@
 	blocksound = SOFTHIT
 	salvage_result = /obj/item/natural/hide/cured
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/helmet/tricorn/lucky
 	name = "lucky tricorn"
@@ -129,6 +137,8 @@
 	icon = 'modular_azurepeak/icons/clothing/head.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/head.dmi'
 	sleeved = null
+	icon_state = "tricorn"
+	item_state = "that"
 	armor_type = /datum/armor/ported/leather
 	misc_flags = CRAFTING_TEST_EXCLUDE
 

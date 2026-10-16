@@ -14,6 +14,7 @@
 	altdetail_color = "#FFFFFF"
 	max_integrity = ARMOR_INT_CHEST_MEDIUM_STEEL + 10
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/chainmail/iron/besilked
 	name = "iron besilked haubergeon"
@@ -21,5 +22,7 @@
 	icon = 'modular_twilightaxis/icons/clothing/armor_2.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/armor_2.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/helpers/sleeves_armor_2.dmi'
+	icon_state = "ihaubergeon"
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

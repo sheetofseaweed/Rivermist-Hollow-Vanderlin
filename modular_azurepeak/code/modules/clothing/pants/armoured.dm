@@ -8,8 +8,9 @@
 	item_state = "bklegs"
 	armor_type = /datum/armor/ported/plate_bsteel
 	max_integrity = ARMOR_INT_LEG_BLACKSTEEL
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/blacksteel
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/platelegs/blacksteel/modern
 	name = "blacksteel plate chausses"
@@ -30,6 +31,7 @@
 	max_integrity = ARMOR_INT_LEG_STEEL_PLATE
 	armor_class = AC_MEDIUM
 	armor_type = /datum/armor/ported/plate_bsteel
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/platelegs/zizo_ap
@@ -42,6 +44,7 @@
 	max_integrity = ARMOR_INT_LEG_STEEL_PLATE
 	armor_type = /datum/armor/ported/plate_bsteel
 	armor_class = AC_MEDIUM
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/platelegs/zizo_ap/Initialize(mapload)

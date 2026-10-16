@@ -9,6 +9,7 @@
 	color = CLOTHING_RED
 	body_parts_covered = CHEST | GROIN | LEGS | ARMS
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/shirt/robe/bishop
 	name = "bishop robe"
@@ -24,10 +25,8 @@
 	resistance_flags = FIRE_PROOF
 	armor_type = /datum/armor/ported/padded
 	color = null
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/shirt/robe/bishop/Initialize()
-	. = ..()
 
 /obj/item/clothing/shirt/robe/bishop/equipped(mob/user, slot, initial = FALSE)
 	..()

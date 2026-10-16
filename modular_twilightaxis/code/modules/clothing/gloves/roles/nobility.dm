@@ -7,6 +7,7 @@
 	icon_state = "kumiegloves"
 	item_state = "kumiegloves"
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/fingerless_leather/aristocratic

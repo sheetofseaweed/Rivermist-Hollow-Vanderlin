@@ -15,9 +15,7 @@
 	allowed_sex = list(MALE, FEMALE)
 	grid_width = 64
 	grid_height = 64
-
-/obj/item/clothing/armor/longcoat/Initialize(mapload)
-	. = ..()
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/workervest
 	name = "striped tunic"
@@ -37,6 +35,7 @@
 	boobed = TRUE
 	grid_height = 64
 	grid_width = 64
+	ported_clothing = TRUE
 
 /obj/item/clothing/armor/workervest/Initialize(mapload)
 	color = pick("#94b4b6", "#ba8f9e", "#bd978c", "#92bd8c", "#c7c981")
@@ -46,6 +45,7 @@
 	icon = 'modular_azurepeak/icons/clothing/armor.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/armor.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_armor.dmi'
+	icon_state = "longcoat"
 	color = "#997C4F"
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

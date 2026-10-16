@@ -7,4 +7,5 @@
 	icon_state = "stargazer"
 	item_state = "stargazer"
 	sleevetype = "stargazer"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -3,6 +3,8 @@
 	icon = 'modular_azurepeak/icons/clothing/donor_clothes.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
+	icon_state = "river_otavatabi"
+	item_state = "river_otavatabi"
 	color = null
 	armor_type = /datum/armor/plate
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -15,11 +17,9 @@
 	sleeved = null
 	icon_state = "inqheels"
 	item_state = "inqheels"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 	var/stepnoise_flag = null
-
-/obj/item/clothing/shoes/otavan/inqboots/heels/Initialize(mapload)
-	. = ..()
 
 /obj/item/clothing/shoes/otavan/inqboots/heels/apply_components()
 	. = ..()

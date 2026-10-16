@@ -9,4 +9,5 @@
 	r_sleeve_status = SLEEVE_NORMAL
 	l_sleeve_status = SLEEVE_NORMAL
 	body_parts_covered = CHEST|VITALS
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

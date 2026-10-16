@@ -5,6 +5,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/donor_clothes.dmi'
 	sleeved = null
 	icon_state = "radiantgoldmask"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/face/facemask/steel/maille/birdmask
@@ -37,8 +38,9 @@
 	body_parts_covered = FACE
 	block2add = FOV_BEHIND
 	slot_flags = ITEM_SLOT_MASK|ITEM_SLOT_HIP
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/iron
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/xylixmask/weathered
 	name = "weathered mask"
@@ -58,6 +60,7 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
 	icon_state = "mask_rose"
+	ported_clothing = TRUE
 
 /obj/item/clothing/face/facemask/steel/visor/cleric
 	name = "clerical helmetless visor"
@@ -65,4 +68,5 @@
 	icon = 'modular_azurepeak/icons/clothing/masks_2.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/masks.dmi'
 	sleeved = null
+	icon_state = "helmetless_visor"
 	misc_flags = CRAFTING_TEST_EXCLUDE

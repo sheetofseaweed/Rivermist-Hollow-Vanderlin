@@ -8,4 +8,5 @@
 	smeltresult = /obj/item/ingot/iron
 	body_parts_covered = HEAD|EARS|HAIR|EYES|NOSE
 	sellprice = 7
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

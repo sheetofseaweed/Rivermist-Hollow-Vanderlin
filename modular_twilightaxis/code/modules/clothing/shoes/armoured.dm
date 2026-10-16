@@ -6,30 +6,8 @@
 	sleeved = null
 	icon_state = "nightmare_boots"
 	item_state = "nightmare_boots"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/shoes/boots/armor/baotha_ta
-	name = "saccharine heels"
-	desc = "..yet, even as She indulges and mourns beneath the stars, one must wonder; is She truly damned by the Pantheon, or by Herself alone?"
-	icon = 'modular_twilightaxis/icons/clothing/feet.dmi'
-	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/feet.dmi'
-	sleeved = null
-	icon_state = "baothaboots"
-	item_state = "baothaboots"
-	max_integrity = ARMOR_INT_SIDE_ANTAG - 200
-	armor_class = AC_LIGHT
-	misc_flags = CRAFTING_TEST_EXCLUDE
-	var/stepnoise_flag = null
-
-/obj/item/clothing/shoes/boots/armor/baotha_ta/Initialize()
-	. = ..()
-	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
-
-/obj/item/clothing/shoes/boots/armor/baotha_ta/dropped(mob/user, silent = FALSE)
-	. = ..()
-	if(QDELETED(src))
-		return
-	qdel(src)
 
 /obj/item/clothing/shoes/boots/armor/legion
 	name = "Shoonite greaves"
@@ -39,6 +17,7 @@
 	sleeved = null
 	icon_state = "legionboots"
 	item_state = "legionboots"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/armor/twilight_drow
@@ -50,6 +29,7 @@
 	icon_state = "shadowboots"
 	item_state = "shadowboots"
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/armor/blacksteel/legate
@@ -81,4 +61,5 @@
 	item_state = "bloodboots"
 	armor_type = /datum/armor/plate
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

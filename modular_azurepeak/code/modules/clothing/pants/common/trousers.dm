@@ -9,13 +9,14 @@
 	max_integrity = ARMOR_INT_LEG_IRON_CHAIN
 	armor_type = /datum/armor/brigandine
 	blocksound = SOFTHIT
-	anvilrepair = /datum/skill/craft/armorsmithing
+	anvilrepair = /datum/attribute/skill/craft/armor_repair
 	smeltresult = /obj/item/ingot/iron
 	r_sleeve_status = SLEEVE_NOMOD
 	l_sleeve_status = SLEEVE_NOMOD
 	armor_class = AC_LIGHT
 	w_class = WEIGHT_CLASS_NORMAL
 	sewrepair = FALSE
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/chainlegs/hose/dyeable
 	name = "steel chain hosen with coverings"
@@ -55,6 +56,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "explorerpants"
 	item_state = "explorerpants"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/tights/hose
@@ -73,6 +75,7 @@
 	detail_color = CLOTHING_WHITE
 	altdetail_color = CLOTHING_WHITE
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/tights/puritan
 	name = "formal breeches"
@@ -83,6 +86,7 @@
 	item_state = "monkpants"
 	color = CLOTHING_BLACK
 	dyeable = TRUE
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/heavy_leather_pants
 	name = "hardened leather trousers"
@@ -103,6 +107,7 @@
 	resistance_flags = FIRE_PROOF
 	armor_class = AC_LIGHT
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 
 /obj/item/clothing/pants/heavy_leather_pants/shorts
 	name = "hardened leather shorts"
@@ -124,4 +129,5 @@
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/pants.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "handpants"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

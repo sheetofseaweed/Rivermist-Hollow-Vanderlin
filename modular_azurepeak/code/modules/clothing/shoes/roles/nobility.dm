@@ -12,11 +12,8 @@
 	armor_type = /datum/armor/tree
 	salvage_amount = 2
 	salvage_result = /obj/item/natural/hide/cured
+	ported_clothing = TRUE
 	abstract_type = /obj/item/clothing/shoes/boots/nobleboot
-
-/obj/item/clothing/shoes/boots/nobleboot/Initialize(mapload)
-	. = ..()
-	.=..()
 
 /obj/item/clothing/shoes/rosa/nine
 	name = "royal shoes"

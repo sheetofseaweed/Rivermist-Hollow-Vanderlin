@@ -6,29 +6,8 @@
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/nightmare_set.dmi'
 	icon_state = "nightmare_gauntlets"
 	item_state = "nightmare_gauntlets"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/gloves/plate/baotha_ta
-	name = "saccharine gauntlets"
-	desc = "Plated gauntlets lacquered in sickly pink. It is better to numb the regret than to face the guilt - or so whisper the cultists of Blissara."
-	icon = 'modular_twilightaxis/icons/clothing/gloves_2.dmi'
-	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/gloves.dmi'
-	sleeved = 'modular_twilightaxis/icons/clothing/onmob/gloves.dmi'
-	icon_state = "baothagloves"
-	item_state = "baothagloves"
-	max_integrity = ARMOR_INT_SIDE_ANTAG - 250
-	armor_class = AC_LIGHT
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/gloves/plate/baotha_ta/Initialize()
-	. = ..()
-	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
-
-/obj/item/clothing/gloves/plate/baotha_ta/dropped(mob/user, silent = FALSE)
-	. = ..()
-	if(QDELETED(src))
-		return
-	qdel(src)
 
 /obj/item/clothing/gloves/plate/blacksteel/legate
 	name = "legate's plate gauntlets"
@@ -46,6 +25,7 @@
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/gloves_2.dmi'
 	sleeved = 'modular_twilightaxis/icons/clothing/onmob/gloves.dmi'
 	icon_state = "legiongloves"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/gloves/plate/zizo/bloodraider
@@ -57,4 +37,5 @@
 	icon_state = "bloodgauntlets"
 	item_state = "bloodgauntlets"
 	armor_class = AC_LIGHT
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

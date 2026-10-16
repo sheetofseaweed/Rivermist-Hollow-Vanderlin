@@ -7,6 +7,7 @@
 	icon_state = "headscarf"
 	item_state = "headscarf"
 	salvage_result = /obj/item/natural/silk
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/duelhat/pretzel/skelet
 	name = "old rebel's hat"
@@ -14,6 +15,8 @@
 	icon = 'modular_twilightaxis/icons/clothing/donor_clothes_2.dmi'
 	mob_overlay_icon = 'modular_twilightaxis/icons/clothing/onmob/donor_clothes_2.dmi'
 	sleeved = null
+	icon_state = "pretzel_stolenhat"
+	item_state = "pretzel_stolenhat"
 	max_integrity = 100
 	armor_type = /datum/armor/ported/leather
 	body_parts_covered = HEAD|HAIR|EARS

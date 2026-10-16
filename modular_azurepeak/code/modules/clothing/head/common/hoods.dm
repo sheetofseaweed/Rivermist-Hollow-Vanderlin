@@ -12,6 +12,7 @@
 	body_parts_covered = HEAD
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDETAIL
 	block2add = FOV_BEHIND
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/hooded/rainhood/tyesca
@@ -28,6 +29,7 @@
 	body_parts_covered = HEAD
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDETAIL
 	block2add = FOV_BEHIND
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/hooded/rainhood/wyrd_hood
@@ -44,6 +46,7 @@
 	body_parts_covered = HEAD
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR|HIDETAIL
 	block2add = FOV_BEHIND
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/roguehood/studded
@@ -72,6 +75,7 @@
 	ported_adjust = TRUE
 	adj_open_coverage = NECK
 	adj_sound = 'modular_azurepeak/sound/foley/equip/cloak (3).ogg'
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/roguehood/undivided
 	name = "undivided hood"
@@ -93,6 +97,7 @@
 	max_integrity = 180
 	salvage_result = /obj/item/natural/cloth
 	salvage_amount = 1
+	ported_clothing = TRUE
 
 /obj/item/clothing/head/necromhood
 	name = "necromancers hood"
@@ -106,4 +111,5 @@
 	flags_inv = HIDEEARS|HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
 	dynamic_hair_suffix = ""
 	sewrepair = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

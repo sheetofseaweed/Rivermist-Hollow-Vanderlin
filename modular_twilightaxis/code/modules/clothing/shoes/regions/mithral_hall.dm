@@ -7,6 +7,7 @@
 	icon_state = "shoes"
 	item_state = "shoes"
 	allowed_race = SPECIES_BASE_BODY
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/shoes/boots/hammerhold_boots
@@ -19,4 +20,5 @@
 	item_state = "boots"
 	allowed_race = SPECIES_BASE_BODY
 	dyeable = TRUE
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

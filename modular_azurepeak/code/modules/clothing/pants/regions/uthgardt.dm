@@ -6,6 +6,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "gronnchainpants"
 	item_state = "gronnchainpants"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/platelegs/iron/gronn
@@ -16,6 +17,7 @@
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/helpers/sleeves_pants.dmi'
 	icon_state = "gronnplatepants"
 	item_state = "gronnplatepants"
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/pants/trou/leather/gronn
@@ -28,4 +30,5 @@
 	item_state = "gronnleatherpants"
 	armor_type = /datum/armor/ported/leather
 	max_integrity = ARMOR_INT_LEG_HARDLEATHER
+	ported_clothing = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE

@@ -4,9 +4,10 @@
 	icon = 'modular_azurepeak/icons/clothing/unarmed32.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
+	icon_state = "bronzeknuckle"
 	color = "#5f1414"
 	max_integrity = 500
-	anvilrepair = /datum/skill/craft/engineering
+	anvilrepair = /datum/attribute/skill/craft/engineering
 	unarmed_bonus = 8
 	dyeable = TRUE
 	misc_flags = CRAFTING_TEST_EXCLUDE
@@ -25,6 +26,7 @@
 	icon = 'modular_azurepeak/icons/clothing/gloves.dmi'
 	mob_overlay_icon = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
 	sleeved = 'modular_azurepeak/icons/clothing/onmob/gloves.dmi'
+	icon_state = "roguegloves"
 	sewrepair = TRUE
 	armor_type = /datum/armor/ported/leather
 	color = "#fce517"
