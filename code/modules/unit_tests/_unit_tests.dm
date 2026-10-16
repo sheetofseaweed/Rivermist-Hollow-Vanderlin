@@ -88,6 +88,7 @@
 #include "buckling_port.dm"
 #include "buildmode_search.dm"
 #include "camp_shelters.dm"
+#include "character_creator.dm"
 #include "character_menu.dm"
 #include "chastity.dm"
 #include "chat_macros.dm"

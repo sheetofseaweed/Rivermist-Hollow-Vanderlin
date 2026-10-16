@@ -1,8 +1,9 @@
-/// Character Creator: the BG3-style character setup window ("CharacterCreator" TGUI interface).
-/// It reuses every existing character setup action and only adds the data and actions the new
-/// layout needs: origins (cultures), preferred subclasses, native descriptors and markings,
-/// interface language, rivals counter and a validated character export/import.
-/// Succubus disguises and ooze reshaping keep the legacy "PreferencesMenu" interface.
+/// Character Creator: data and actions for the "CharacterCreator" TGUI interface, the BG3-style
+/// character setup window. It reuses every existing character setup action and only adds what the
+/// new layout needs: origins (cultures), preferred subclasses, native descriptors and markings,
+/// interface language, rivals counter, the loadout window with worn and carried items, and a
+/// validated character export/import. The succubus disguise and ooze reshape editors open the
+/// same interface in an appearance-only layout.
 
 #define CC_LANG_EN "en"
 #define CC_LANG_RU "ru"
@@ -27,37 +28,7 @@
 /datum/preferences/ooze_body/character_creator_active()
 	return FALSE
 
-// ---- Window ----
-
-/datum/preferences/ui_interact(mob/user, datum/tgui/ui)
-	var/window_width = character_setup_preferences_fullscreen ? 7680 : 1360
-	var/window_height = character_setup_preferences_fullscreen ? 4320 : 880
-	ui = SStgui.try_update_ui(user, src, ui)
-	if(!ui)
-		ui = new(user, src, "CharacterCreator", "Character Creator", window_width, window_height)
-		ui.set_autoupdate(FALSE)
-		ui.open()
-	character_setup_ensure_view(user, ui)
-
 // ---- Sandbox editors: succubus disguise and ooze reshape ----
-
-/datum/preferences/proc/character_creator_open_sandbox(mob/user, datum/tgui/ui, title)
-	ui = SStgui.try_update_ui(user, src, ui)
-	if(!ui)
-		ui = new(user, src, "CharacterCreator", title, 1180, 800)
-		ui.set_autoupdate(FALSE)
-		ui.open()
-	character_setup_ensure_view(user, ui)
-
-/datum/preferences/succubus_disguise/ui_interact(mob/user, datum/tgui/ui)
-	if(!get_editor_body(user))
-		return
-	character_creator_open_sandbox(user, ui, "Create Disguise")
-
-/datum/preferences/ooze_body/ui_interact(mob/user, datum/tgui/ui)
-	if(!get_editor_body(user))
-		return
-	character_creator_open_sandbox(user, ui, "Reshape Body")
 
 /datum/preferences/succubus_disguise/ui_static_data(mob/user)
 	. = ..()
@@ -101,10 +72,10 @@
 	var/raw
 	S["character_creator_subclasses"] >> raw
 	if(istext(raw))
-		character_creator_subclasses = character_creator_sanitize_subclasses(json_decode(raw))
+		character_creator_subclasses = character_creator_sanitize_subclasses(safe_json_decode(raw))
 	var/raw_loadout
 	S["character_creator_loadout"] >> raw_loadout
-	character_creator_read_loadout_state(istext(raw_loadout) ? json_decode(raw_loadout) : null)
+	character_creator_read_loadout_state(istext(raw_loadout) ? safe_json_decode(raw_loadout) : null)
 
 /datum/preferences/save_character()
 	. = ..()
@@ -297,7 +268,7 @@
 			return TRUE
 	return FALSE
 
-/// Offers the preferred subclass first, when the player qualifies for it in this roll.
+/// Lists the preferred subclass first when this roll already offers it. It never adds a class.
 /datum/class_select_handler/assemble_the_CLASSES()
 	. = ..()
 	character_creator_offer_preferred()
@@ -310,22 +281,20 @@
 	if(!subclass_type)
 		return
 	var/datum/job/advclass/preferred = SSjob.GetJobType(subclass_type)
-	if(!preferred)
-		return
-	// Only classes that passed the checks of this roll are eligible.
-	var/eligible = FALSE
-	for(var/category in local_total_sorted_class_cache)
-		if(preferred in local_total_sorted_class_cache[category])
-			eligible = TRUE
-			break
-	if(!eligible)
-		return
+	if(preferred)
+		rolled_classes = character_creator_order_classes(rolled_classes, preferred)
+
+/// The roll decides which classes are offered; the preference only moves an offered one to the front.
+/// Returns the same list when the preferred class was not rolled, so no class is ever added.
+/proc/character_creator_order_classes(list/rolled, preferred)
+	if(!islist(rolled) || !(preferred in rolled))
+		return rolled
 	var/list/reordered = list()
-	reordered[preferred] = rolled_classes[preferred] || 0
-	for(var/datum/job/advclass/rolled as anything in rolled_classes)
-		if(rolled != preferred)
-			reordered[rolled] = rolled_classes[rolled]
-	rolled_classes = reordered
+	reordered[preferred] = rolled[preferred]
+	for(var/rolled_class in rolled)
+		if(rolled_class != preferred)
+			reordered[rolled_class] = rolled[rolled_class]
+	return reordered
 
 // ---- Abilities, quirks, descriptors, markings ----
 
@@ -588,7 +557,7 @@
 			if(params["clear"])
 				smallclothes_preferences[color_key] = null
 			else
-				var/new_color = tgui_color_picker(user, "Choose a color.", "[smallclothes_category["name"]] Colour", character_creator_color_default(smallclothes_preferences[color_key] || "#ffffff"))
+				var/new_color = tgui_color_picker(user, "Choose a color.", "[smallclothes_category["name"]] Colour", sanitize_hexcolor(smallclothes_preferences[color_key], 6, TRUE, "#ffffff"))
 				if(!new_color)
 					return FALSE
 				smallclothes_preferences[color_key] = sanitize_hexcolor(new_color, include_crunch = 1)
@@ -635,12 +604,12 @@
 		pref_values[entry.savefile_key] = ispath(value) ? "[value]" : value
 
 	var/list/customizers = list()
-	var/static/list/skipped_vars = list("type", "parent_type", "vars", "tag", "gc_destroyed", "datum_flags", "weak_reference", "show_dropdown")
 	for(var/datum/customizer_entry/entry as anything in customizer_entries)
-		var/list/entry_vars = list()
-		for(var/var_name in entry.vars)
-			if(var_name in skipped_vars)
-				continue
+		var/list/entry_vars = list(
+			"customizer_type" = "[entry.customizer_type]",
+			"customizer_choice_type" = "[entry.customizer_choice_type]",
+		)
+		for(var/var_name in character_creator_customizer_fields(entry))
 			var/value = entry.vars[var_name]
 			if(isnum(value) || istext(value))
 				entry_vars[var_name] = value
@@ -722,7 +691,20 @@
 		return
 	if(tgui_alert(user, "Replace [read_preference(/datum/preference/text/real_name)] in this slot with the imported character?", "Import Character", list("Replace", "Cancel")) != "Replace")
 		return
-	character_creator_apply_import(user, payload)
+	// A failed import must not leave a half-built character that the next Save would write.
+	var/import_failed = FALSE
+	try
+		character_creator_apply_import(user, payload)
+	catch(var/exception/import_error)
+		import_failed = TRUE
+		log_runtime("Character import by [key_name(user)] failed: [import_error] ([import_error.file]:[import_error.line])")
+	if(import_failed)
+		load_character(default_slot)
+		character_setup_ui_heavy_cache = null
+		update_static_data(user)
+		update_menu_data(user)
+		to_chat(user, span_warning("That character could not be imported. This slot was left as it was."))
+		return
 	save_character()
 	character_setup_ui_heavy_cache = null
 	update_static_data(user)
@@ -741,6 +723,7 @@
 /datum/preferences/proc/character_creator_apply_import(mob/user, list/payload)
 	var/datum/species/previous_species = pref_species
 	var/previous_patron = read_preference(/datum/preference/choiced/patron)
+	var/previous_culture = read_preference(/datum/preference/choiced/culture)
 
 	// Preference datums: each value goes through deserialize and is_valid, exactly like a savefile load.
 	var/list/pref_values = payload["prefs"]
@@ -775,6 +758,10 @@
 	var/datum/patron/imported_patron = read_preference(/datum/preference/choiced/patron)
 	if(istype(imported_patron) && !imported_patron.preference_accessible(src))
 		write_preference(/datum/preference/choiced/patron, previous_patron)
+	var/culture_type = read_preference(/datum/preference/choiced/culture)
+	var/datum/culture/imported_culture = culture_type ? GLOB.culture_singletons[culture_type] : null
+	if(culture_type && (!imported_culture || !imported_culture.is_selectable(src)))
+		write_preference(/datum/preference/choiced/culture, previous_culture)
 
 	var/cached_name = reject_bad_name(read_preference(/datum/preference/text/real_name))
 	write_preference(/datum/preference/text/real_name, cached_name || random_unique_name(read_preference(/datum/preference/choiced/gender)))
@@ -836,12 +823,7 @@
 	character_creator_import_loadout(user, payload["loadout"])
 	character_creator_read_loadout_state(payload["loadout_state"])
 
-	var/list/imported_jobs = payload["jobs"]
-	job_preferences = list()
-	if(islist(imported_jobs))
-		for(var/job_title in imported_jobs)
-			if(istext(job_title) && SSjob?.GetJob(job_title) && (imported_jobs[job_title] in list(JP_LOW, JP_MEDIUM, JP_HIGH)))
-				job_preferences[job_title] = imported_jobs[job_title]
+	character_creator_import_jobs(user, payload["jobs"])
 	var/list/imported_alt_jobs = payload["alt_jobs"]
 	alt_job_selections = islist(imported_alt_jobs) ? imported_alt_jobs : list()
 	sanitize_alt_job_selections()
@@ -850,6 +832,68 @@
 	validate_culinary_preferences()
 	validate_smallclothes_preferences()
 	ensure_erp_preferences()
+
+/// Job priorities from an export. Same rules as the role menu: the job must be open to this
+/// player and only one job may stay at High (a later High demotes the earlier one to Medium).
+/datum/preferences/proc/character_creator_import_jobs(mob/user, list/imported)
+	job_preferences = list()
+	if(!islist(imported) || !SSjob)
+		return
+	for(var/job_title in imported)
+		if(!istext(job_title))
+			continue
+		var/level = imported[job_title]
+		if(!(level in list(JP_LOW, JP_MEDIUM, JP_HIGH)))
+			continue
+		var/datum/job/job = SSjob.GetJob(job_title)
+		if(!job || (user && !job_is_available(job, user)))
+			continue
+		set_job_preference_level(job, level)
+
+/// Customizer entry fields the editor can change: the shared appearance fields plus the fields a
+/// subtype declares itself (sizes, eye and hair colours, gradients). Datum internals never qualify.
+/proc/character_creator_customizer_fields(datum/customizer_entry/entry)
+	var/static/list/inherited_fields
+	var/static/list/fields_by_type = list()
+	if(!inherited_fields)
+		var/datum/customizer_entry/probe = new
+		inherited_fields = list()
+		for(var/var_name in probe.vars)
+			inherited_fields += var_name
+		qdel(probe)
+	if(fields_by_type[entry.type])
+		return fields_by_type[entry.type]
+	var/list/fields = list("accessory_type", "accessory_colors", "disabled")
+	for(var/var_name in entry.vars)
+		if(!(var_name in inherited_fields))
+			fields += var_name
+	fields_by_type[entry.type] = fields
+	return fields
+
+/// The top two levels of a typepath, e.g. /datum/hair_gradient for /datum/hair_gradient/none.
+/proc/character_creator_path_family(path)
+	var/list/parts = splittext("[path]", "/")
+	if(length(parts) < 3)
+		return null
+	return text2path("/[parts[2]]/[parts[3]]")
+
+/// Validates one imported customizer field against the kind of value the fresh entry holds.
+/// Returns the value to store, or null to keep the fresh entry's own value.
+/proc/character_creator_customizer_value(datum/customizer_entry/entry, var_name, raw)
+	var/current = entry.vars[var_name]
+	var/value = character_creator_unstring_path(raw)
+	if(var_name == "disabled" || isnum(current))
+		return isnum(value) ? value : null
+	if(var_name == "accessory_type" || ispath(current))
+		var/family = current ? character_creator_path_family(current) : /datum/sprite_accessory
+		return (family && ispath(value, family)) ? value : null
+	if(!istext(value))
+		return null
+	if(var_name == "accessory_colors" || findtext(var_name, "color"))
+		// Colour strings only ever hold hex digits, '#' and separators.
+		var/static/regex/not_color = regex(@"[^#0-9a-fA-F;,]", "g")
+		return copytext(not_color.Replace(value, ""), 1, 128)
+	return copytext(STRIP_HTML_SIMPLE(value, CC_TEXT_CAP), 1, CC_TEXT_CAP)
 
 /datum/preferences/proc/character_creator_import_customizers(list/imported)
 	if(!islist(imported) || !pref_species)
@@ -869,19 +913,14 @@
 		var/datum/customizer_entry/entry = customizer.create_customizer_entry(src, choice_type)
 		if(!choice || !entry)
 			continue
-		// Only plain values the fresh entry already has are copied; validate_entry clamps them after.
-		for(var/var_name in entry_vars)
-			if(!(var_name in entry.vars) || var_name == "customizer_type" || var_name == "customizer_choice_type")
+		// Only whitelisted editor fields are copied, each checked against its kind of value;
+		// validate_entry() then clamps sizes and accessories like a savefile load does.
+		for(var/var_name in character_creator_customizer_fields(entry))
+			if(!(var_name in entry_vars))
 				continue
-			var/current = entry.vars[var_name]
-			if(!(isnull(current) || isnum(current) || istext(current) || ispath(current)))
-				continue
-			var/value = character_creator_unstring_path(entry_vars[var_name])
-			if(istext(value))
-				value = copytext(STRIP_HTML_SIMPLE(value, CC_TEXT_CAP), 1, CC_TEXT_CAP)
-			else if(!(isnum(value) || ispath(value) || isnull(value)))
-				continue
-			entry.vars[var_name] = value
+			var/value = character_creator_customizer_value(entry, var_name, entry_vars[var_name])
+			if(!isnull(value))
+				entry.vars[var_name] = value
 		new_entries += entry
 	customizer_entries = new_entries
 	validate_customizer_entries(enforce_genital_rules = FALSE)
@@ -934,10 +973,8 @@
 		if(!ispath(quirk_type, /datum/quirk) || (quirk_type in quirks))
 			continue
 		quirks += quirk_type
-		var/custom_value = character_creator_unstring_path(quirk_data["value"])
-		if(istext(custom_value))
-			custom_value = STRIP_HTML_SIMPLE(custom_value, CC_TEXT_CAP)
-		if(isnum(custom_value) || istext(custom_value) || ispath(custom_value))
+		var/custom_value = character_creator_quirk_value(quirk_type, quirk_data["value"])
+		if(!isnull(custom_value))
 			quirk_customizations[quirk_type] = custom_value
 	validate_quirks()
 	// Extra fields go through the regular per-field sanitizer once the quirk list is final.
@@ -949,6 +986,21 @@
 		for(var/key in extra)
 			set_quirk_extra_customization(quirk_type, key, extra[key])
 
+/// A quirk customization from an export: one of the options the quirk offers this character,
+/// or plain text for text quirks. Anything else is dropped, never trusted as a path to spawn.
+/datum/preferences/proc/character_creator_quirk_value(quirk_type, raw)
+	var/datum/quirk/singleton = GLOB.quirk_singletons[quirk_type]
+	if(!singleton || isnull(raw))
+		return null
+	switch(singleton.customization_type)
+		if(QUIRK_TEXT)
+			return istext(raw) ? STRIP_HTML_SIMPLE(raw, CC_TEXT_CAP) : null
+		if(QUIRK_NUMBER)
+			return isnum(raw) ? raw : null
+	var/value = character_creator_unstring_path(raw)
+	var/list/options = singleton.return_customization(src)
+	return (value in options) ? value : null
+
 /datum/preferences/proc/character_creator_import_loadout(mob/user, list/imported)
 	for(var/slot in 1 to 10)
 		vars["loadout[slot]"] = null
@@ -957,19 +1009,33 @@
 		vars["loadout_[slot]_hex"] = null
 	if(!islist(imported))
 		return
+	var/points_left = get_base_points()
+	var/skipped = 0
+	var/list/taken_types = list()
 	for(var/slot in 1 to min(10, length(imported)))
 		var/list/slot_data = imported[slot]
 		if(!islist(slot_data))
 			continue
 		var/item_type = text2path("[slot_data["type"]]")
-		if(!item_type || !try_select_loadout_item(user, item_type, slot))
+		if(!ispath(item_type, /datum/loadout_item))
 			continue
+		// Same rules as picking the item by hand (nobility, one of each, points), without a chat line per item.
+		var/datum/loadout_item/item = new item_type
+		if((user && !item.nobility_check(user)) || (item_type in taken_types) || item.point_cost > points_left)
+			qdel(item)
+			skipped++
+			continue
+		points_left -= item.point_cost
+		taken_types += item_type
+		vars["loadout[slot]"] = item
 		if(istext(slot_data["name"]))
 			vars["loadout_[slot]_name"] = STRIP_HTML_SIMPLE(slot_data["name"], MAX_NAME_LEN)
 		if(istext(slot_data["desc"]))
 			vars["loadout_[slot]_desc"] = STRIP_HTML_SIMPLE(slot_data["desc"], MAX_MESSAGE_LEN)
 		if(istext(slot_data["hex"]))
 			vars["loadout_[slot]_hex"] = sanitize_hexcolor(slot_data["hex"], 6, TRUE)
+	if(skipped && user)
+		to_chat(user, span_warning("[skipped] loadout item\s could not be taken: not available for this character or over the point limit."))
 
 // ---- Character texts edited in place ----
 
@@ -1357,7 +1423,7 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 			if(params["clear"])
 				prefs.vars["loadout_[slot_number]_hex"] = null
 			else
-				var/new_color = tgui_color_picker(user, "Choose a dye for this item.", "Item Color", character_creator_color_default(prefs.vars["loadout_[slot_number]_hex"] || "#ffffff"))
+				var/new_color = tgui_color_picker(user, "Choose a dye for this item.", "Item Color", sanitize_hexcolor(prefs.vars["loadout_[slot_number]_hex"], 6, TRUE, "#ffffff"))
 				if(!new_color)
 					return FALSE
 				prefs.vars["loadout_[slot_number]_hex"] = sanitize_hexcolor(new_color, include_crunch = 1)
@@ -1474,7 +1540,10 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 		to_chat(character, span_notice("[stashed] of my belongings wait for me in my stash."))
 	return TRUE
 
-/// Wears a loadout item. The role item it replaces, and anything inside it, goes to the bags or the stash.
+/// Wears a loadout item in its slot. The role item already there moves whole into the bags,
+/// with its contents and state (stack amounts, key IDs). Nothing from the role is deleted:
+/// when the bags cannot take the role item, it stays where it was and the loadout item is not
+/// worn, so the caller packs or stashes the loadout item instead.
 /datum/preferences/proc/character_creator_wear(mob/living/carbon/human/character, obj/item/new_item, slot_id, datum/outfit/character_creator_kit/kit)
 	var/slot_flag = GLOB.character_creator_equip_slots[slot_id]
 	var/obj/item/displaced
@@ -1482,30 +1551,24 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 		displaced = (slot_id == "rhand") ? character.get_item_for_held_index(2) : character.get_item_for_held_index(1)
 	else
 		displaced = character.get_item_by_slot(slot_flag)
-	if(displaced)
-		character.temporarilyRemoveItemFromInventory(displaced, TRUE)
-	var/worn = FALSE
-	if(!slot_flag)
-		worn = (slot_id == "rhand") ? character.put_in_r_hand(new_item) : character.put_in_l_hand(new_item)
-	else
-		worn = character.equip_to_slot_if_possible(new_item, slot_flag, FALSE, TRUE, TRUE, TRUE, TRUE)
-	if(!worn)
-		// Put the role item back where it was.
-		if(displaced)
-			if(slot_flag)
-				character.equip_to_slot_if_possible(displaced, slot_flag, FALSE, TRUE, TRUE, TRUE, TRUE)
-			else
-				character.put_in_hands(displaced)
+	if(displaced && !character.temporarilyRemoveItemFromInventory(displaced, TRUE))
 		return FALSE
-	if(displaced)
-		for(var/obj/item/inner in displaced.contents.Copy())
-			if(!kit.store(character, inner))
-				character_creator_stash_path(character, inner.type)
-				qdel(inner)
-		if(!kit.store(character, displaced))
-			character_creator_stash_path(character, displaced.type, displaced.name)
-			qdel(displaced)
-	return TRUE
+	if(!character_creator_put_in_slot(character, new_item, slot_id, slot_flag))
+		if(displaced)
+			character_creator_put_in_slot(character, displaced, slot_id, slot_flag)
+		return FALSE
+	if(!displaced || kit.store(character, displaced))
+		return TRUE
+	// No room for the role item: undo the swap.
+	character.temporarilyRemoveItemFromInventory(new_item, TRUE)
+	if(!character_creator_put_in_slot(character, displaced, slot_id, slot_flag))
+		displaced.forceMove(character.drop_location())
+	return FALSE
+
+/datum/preferences/proc/character_creator_put_in_slot(mob/living/carbon/human/character, obj/item/item, slot_id, slot_flag)
+	if(!slot_flag)
+		return (slot_id == "rhand") ? character.put_in_r_hand(item) : character.put_in_l_hand(item)
+	return character.equip_to_slot_if_possible(item, slot_flag, FALSE, TRUE, TRUE, TRUE, TRUE)
 
 /proc/character_creator_stash_path(mob/living/carbon/human/character, item_path, display_name)
 	if(!character.mind)
@@ -1518,13 +1581,6 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 		suffix++
 		key = "[base_name] ([suffix])"
 	character.mind.special_items[key] = item_path
-
-/// Color input default: the TGUI color picker wants a leading #.
-/proc/character_creator_color_default(value)
-	var/shown = "[value]"
-	if(!length(shown))
-		return "#ffffff"
-	return copytext(shown, 1, 2) == "#" ? shown : "#[shown]"
 
 #undef CC_LANG_EN
 #undef CC_LANG_RU

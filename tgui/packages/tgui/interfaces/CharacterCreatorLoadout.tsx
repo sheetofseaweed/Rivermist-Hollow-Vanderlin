@@ -5,15 +5,7 @@ import { useBackend } from '../backend';
 import { dragStartHandler } from '../drag';
 import { suspendStart } from '../events/handlers/suspense';
 import { Window } from '../layouts';
-import {
-  Btn,
-  CSS,
-  Frame,
-  Select,
-  Swatch,
-  Tip,
-  TipLayer,
-} from './CharacterCreator';
+import { Btn, Frame, Select, Swatch, Tip, TipLayer } from './CharacterCreator';
 import {
   type CharacterCreatorStrings,
   characterCreatorStrings,
@@ -125,61 +117,6 @@ const UNDIES = [
 ];
 const PIERCINGS = ['earring_l', 'earring_r', 'choker'];
 const HANDS = ['rhand', 'lhand'];
-
-const LOADOUT_CSS = `
-.ccl { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "top" "content" "foot"; }
-.ccl-top { display: flex; align-items: center; gap: 6px; cursor: move; }
-.ccl-top .cc-btn, .ccl-top .cc-dd, .ccl-top input { cursor: pointer; }
-.ccl-title { font-family: var(--cc-serif); color: var(--cc-gold); font-size: 16px; letter-spacing: 1px; padding: 0 8px; white-space: nowrap; }
-.ccl-body { display: grid; grid-template-columns: minmax(230px, 0.85fr) minmax(320px, 2fr); gap: 8px; min-height: 0; height: 100%; }
-.ccl-pane { min-height: 0; display: flex; flex-direction: column; padding: 8px; }
-.ccl-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.ccl-items > * { flex: 0 0 96px; width: 96px; box-sizing: border-box; }
-.ccl-item {
-  position: relative; min-height: 104px; padding: 6px 4px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  border: 1px solid #3a3024; background: radial-gradient(circle at 50% 35%, #2a2219, #15110d);
-  cursor: pointer; border-radius: 4px;
-}
-.ccl-item:hover { border-color: var(--cc-silver); }
-.ccl-item.chosen { border-color: var(--cc-gold); box-shadow: 0 0 8px rgba(201,164,92,0.5); }
-.ccl-item.blocked { opacity: 0.4; }
-.ccl-cost { position: absolute; top: 3px; right: 6px; font-size: 11px; color: var(--cc-gold); font-family: var(--cc-serif); }
-.ccl-name { font-size: 11px; text-align: center; line-height: 1.15; max-height: 26px; overflow: hidden; }
-.ccl-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
-.ccl-icon > div { transform: scale(1.7); image-rendering: pixelated; }
-.ccl-icon.small { width: 36px; height: 36px; }
-.ccl-icon.small > div { transform: scale(1.05); }
-.ccl-slot-card { border: 1px solid #5a4630; background: linear-gradient(180deg, #2a2117, #1c1711); padding: 6px; margin-bottom: 6px; }
-.ccl-doll { display: grid; grid-template-columns: repeat(3, minmax(74px, 1fr)); gap: 8px; padding: 12px; background: linear-gradient(180deg, #2e2416, #191410); position: relative; }
-.ccl-eq {
-  position: relative; min-height: 78px; border: 1px solid #3a3024; background: #1b1d22; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-  font-family: var(--cc-serif); color: #cdbb94;
-}
-.ccl-eq:hover { border-color: var(--cc-silver); }
-.ccl-eq.has-fit { background: #3a3530; }
-.ccl-eq.active { border-color: #e8c547; box-shadow: 0 0 8px rgba(232,197,71,0.5); }
-.ccl-eq-label { position: absolute; top: 4px; left: 6px; font-size: 10px; color: #cdbb94; font-family: Verdana, sans-serif; }
-.ccl-eq-count { position: absolute; bottom: 3px; right: 6px; font-size: 11px; color: #e6dccb; }
-.ccl-eq-tag { position: absolute; bottom: 3px; right: 6px; font-size: 10px; color: #a9d68a; font-weight: bold; }
-.ccl-eq-tagl { position: absolute; bottom: 3px; left: 6px; font-size: 10px; color: #e2a25a; }
-.ccl-pop {
-  position: absolute; z-index: 30; left: 8px; right: 8px; top: 8px;
-  background: #0d0b09; border: 1px solid var(--cc-gold-dim); box-shadow: 0 6px 20px rgba(0,0,0,0.85);
-  padding: 8px; max-height: calc(100% - 16px); display: flex; flex-direction: column;
-}
-.ccl-pop-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-.ccl-pop-title { font-family: var(--cc-serif); color: var(--cc-text); font-size: 15px; }
-.ccl-pop-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
-.ccl-pop-grid > * { flex: 0 0 90px; width: 90px; box-sizing: border-box; }
-.ccl-mini { display: grid; grid-template-columns: repeat(3, minmax(74px, 1fr)); gap: 8px; }
-.ccl-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; }
-.ccl-row-item { display: flex; align-items: center; gap: 8px; padding: 6px; border: 1px solid #5a4630; background: linear-gradient(180deg, #2a2117, #1c1711); margin-bottom: 6px; }
-.ccl-tip-line { margin-top: 3px; }
-.ccl-tip-damage { color: #8fc97a; font-weight: bold; font-size: 13px; }
-.ccl-tip-meta { color: #7fa7c9; }
-`;
 
 const iconBox = (item: CatalogItem | undefined, small?: boolean) => (
   <div className={`ccl-icon ${small ? 'small' : ''}`}>
@@ -691,7 +628,6 @@ export const CharacterCreatorLoadout = () => {
   return (
     <Window title={L.loadoutTitle} width={1180} height={780} theme="vanderlin">
       <Window.Content fitted>
-        <style>{CSS + LOADOUT_CSS}</style>
         <div className="cc ccl">
           <div className="ccl-top cc-area-top" onMouseDown={startDrag}>
             <div className="ccl-title">{L.loadoutTitle}</div>

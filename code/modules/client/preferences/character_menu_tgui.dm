@@ -215,7 +215,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 			field = "dye_color"
 		else
 			return FALSE
-	var/new_color = input(user, "Choose color", "Color", he.vars[field]) as color|null
+	var/new_color = tgui_color_picker(user, "Choose color", "Color", sanitize_hexcolor(he.vars[field], 6, TRUE, "#ffffff"))
 	if(new_color)
 		he.vars[field] = sanitize_hexcolor(new_color)
 	return TRUE
@@ -1023,11 +1023,11 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	return data
 
 /datum/preferences/ui_interact(mob/user, datum/tgui/ui)
-	var/window_width = character_setup_preferences_fullscreen ? 7680 : 1298
-	var/window_height = character_setup_preferences_fullscreen ? 4320 : 874
+	var/window_width = character_setup_preferences_fullscreen ? 7680 : 1360
+	var/window_height = character_setup_preferences_fullscreen ? 4320 : 880
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "PreferencesMenu", "Character Setup", window_width, window_height)
+		ui = new(user, src, "CharacterCreator", "Character Creator", window_width, window_height)
 		ui.set_autoupdate(FALSE)
 		ui.open()
 	character_setup_ensure_view(user, ui)

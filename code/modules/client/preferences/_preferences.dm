@@ -1183,7 +1183,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		if(color_choice)
 			if(GLOB.colorlist[color_choice] == "CUSTOM_RGB")
 				var/current_color = smallclothes_preferences[color_pref_key] || "#FFFFFF"
-				var/new_color = input(user, "Select color:", "Custom Color", current_color) as color|null
+				var/new_color = tgui_color_picker(user, "Select color:", "Custom Color", sanitize_hexcolor(current_color, 6, TRUE, "#ffffff"))
 				if(new_color)
 					smallclothes_preferences[color_pref_key] = sanitize_hexcolor(new_color, include_crunch = 1)
 			else
