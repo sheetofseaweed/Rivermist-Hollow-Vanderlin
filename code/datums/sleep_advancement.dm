@@ -169,7 +169,7 @@
 	else if (int > 10)
 		to_chat(mind.current, span_notice("My creative thinking enhances them..."))
 
-	var/stress_median = stress_amount / stress_cycles
+	var/stress_median = stress_cycles ? stress_amount / stress_cycles : 0
 
 	if(dreamwatcher)
 		to_chat(mind.current, span_notice("Mystra opens the dreamworld before me, a realm of impossible beauty and boundless thought."))
@@ -305,6 +305,8 @@
 		return FALSE
 	var/has_vamp_trait = HAS_TRAIT(mind.current, TRAIT_VAMP_DREAMS)
 	if(has_vamp_trait)
+		return TRUE
+	if(mind.current.has_status_effect(/datum/status_effect/reverie))
 		return TRUE
 	if(mind.current.IsSleeping())
 		return TRUE

@@ -79,6 +79,7 @@
 #include "anchored_mobs.dm"
 #include "antag_contracts.dm"
 #include "armor_damage.dm"
+#include "automaton_reverie.dm"
 #include "belly_fullness.dm"
 #include "bellyriding.dm"
 #include "blueprint_mode.dm"
