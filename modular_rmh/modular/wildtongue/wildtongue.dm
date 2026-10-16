@@ -42,48 +42,59 @@ GLOBAL_LIST_INIT(wildtongue_verbs, list(
 	emote_verbs = GLOB.wildtongue_verbs
 
 /datum/species
-	/// Whether this species gets the Emotes.Wildtongue verbs without a wild tongue.
-	var/wildtongue = TRUE
+	/// Spawns with a wild tongue instead of the plain one. Opt-in only.
+	var/wild_tongue = FALSE
 
-/datum/species/human
-	wildtongue = FALSE
+/datum/species/New()
+	if(wild_tongue && organs && organs[ORGAN_SLOT_TONGUE] == /obj/item/organ/tongue)
+		organs = organs.Copy()
+		organs[ORGAN_SLOT_TONGUE] = /obj/item/organ/tongue/wild_tongue
+	return ..()
 
-/datum/species/elf
-	wildtongue = FALSE
+/datum/species/anthromorph
+	wild_tongue = TRUE
 
-/datum/species/aasimar
-	wildtongue = FALSE
+/datum/species/anthromorphsmall
+	wild_tongue = TRUE
 
-/datum/species/gnome
-	wildtongue = FALSE
+/datum/species/half_anthromorphsmall
+	wild_tongue = TRUE
 
-/datum/species/dwarf
-	wildtongue = FALSE
+/datum/species/demihuman
+	wild_tongue = TRUE
 
-/datum/species/goblin
-	wildtongue = FALSE
+/datum/species/taur_kin
+	wild_tongue = TRUE
 
-/datum/species/halforc
-	wildtongue = FALSE
+/datum/species/rakshari
+	wild_tongue = TRUE
 
-/datum/species/ogre
-	wildtongue = FALSE
+/datum/species/tabaxi
+	wild_tongue = TRUE
 
-/datum/species/seelie
-	wildtongue = FALSE
+/datum/species/harpy
+	wild_tongue = TRUE
 
-/datum/species/halfling
-	wildtongue = FALSE
+/datum/species/medicator
+	wild_tongue = TRUE
 
-/datum/species/on_species_gain(mob/living/carbon/C, datum/species/old_species, datum/preferences/pref_load)
-	. = ..()
-	if(wildtongue)
-		add_verb(C, GLOB.wildtongue_verbs)
+/datum/species/kobold
+	wild_tongue = TRUE
 
-/datum/species/on_species_loss(mob/living/carbon/human/C, datum/species/new_species, pref_load)
-	. = ..()
-	if(wildtongue && !istype(C.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
-		remove_verb(C, GLOB.wildtongue_verbs)
+/datum/species/gnoll
+	wild_tongue = TRUE
+
+/datum/species/gnoll_champion
+	wild_tongue = TRUE
+
+/datum/species/werewolf
+	wild_tongue = TRUE
+
+/datum/species/minotaur
+	wild_tongue = TRUE
+
+/datum/species/white_stag
+	wild_tongue = TRUE
 
 /obj/item/organ/tongue
 	/// Verbs granted to the owner while this tongue is inserted.
@@ -91,20 +102,21 @@ GLOBAL_LIST_INIT(wildtongue_verbs, list(
 
 /obj/item/organ/tongue/Insert(mob/living/carbon/M, special = FALSE, drop_if_replaced = TRUE, new_zone = null)
 	. = ..()
-	if(length(emote_verbs))
-		add_verb(M, emote_verbs)
+	if(!length(emote_verbs))
+		return
+	var/list/missing = emote_verbs - M.verbs
+	if(length(missing))
+		add_verb(M, missing)
 
 /obj/item/organ/tongue/Remove(mob/living/carbon/M, special = FALSE, drop_if_replaced = TRUE)
 	. = ..()
 	if(!length(emote_verbs))
 		return
-	if(emote_verbs == GLOB.wildtongue_verbs && ishuman(M))
-		var/mob/living/carbon/human/H = M
-		if(H.dna?.species?.wildtongue)
-			return
-	remove_verb(M, emote_verbs)
+	var/list/present = emote_verbs & M.verbs
+	if(length(present))
+		remove_verb(M, present)
 
-/// Animal noises: a wild tongue, or a species that isn't excluded above.
+/// Animal noises that need a wild tongue.
 /datum/emote/living/wildtongue
 	vary = TRUE
 	show_runechat = FALSE
@@ -117,12 +129,27 @@ GLOBAL_LIST_INIT(wildtongue_verbs, list(
 	if(!iscarbon(user))
 		return FALSE
 	var/mob/living/carbon/carbon_user = user
-	if(istype(carbon_user.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue))
+	return istype(carbon_user.getorganslot(ORGAN_SLOT_TONGUE), /obj/item/organ/tongue/wild_tongue)
+
+/datum/emote/living/wildtongue/get_sound(mob/living/user)
+	if(!can_voice_beast_noise(user))
+		return null
+	return ..()
+
+/datum/emote/living/carbon/human/rakshari/get_sound(mob/living/user)
+	if(!can_voice_beast_noise(user))
+		return null
+	return ..()
+
+/datum/emote/living/carbon/human/rakshari/purr
+	message_muffled = "makes a muffled sound!"
+
+/// Gagged, bagged, mute or with a hand over the mouth: the text turns muffled, the call itself is not heard.
+/datum/emote/proc/can_voice_beast_noise(mob/living/user)
+	if(!message_muffled || !iscarbon(user))
 		return TRUE
-	if(!ishuman(user))
-		return FALSE
-	var/mob/living/carbon/human/human_user = user
-	return human_user.dna?.species?.wildtongue
+	var/mob/living/carbon/carbon_user = user
+	return carbon_user.can_speak_vocal()
 
 /datum/emote/living/wildtongue/mreow
 	key = "mreow"

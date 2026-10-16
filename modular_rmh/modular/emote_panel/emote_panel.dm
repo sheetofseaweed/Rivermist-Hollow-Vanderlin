@@ -3,6 +3,8 @@
 #define EMOTE_PANEL_MAX_NAME 32
 #define EMOTE_PANEL_MAX_TEXT 256
 #define EMOTE_PANEL_SAVE_DELAY (3 SECONDS)
+/// Minimum gap between two custom emotes that print player text.
+#define EMOTE_PANEL_TEXT_COOLDOWN (1 SECONDS)
 
 #define CUSTOM_EMOTE_KEY 1
 #define CUSTOM_EMOTE_KEY_TEXT 2
@@ -56,13 +58,12 @@
 			return FALSE
 	return TRUE
 
-/client/init_verbs()
-	. = ..()
-	send_emote_panel_data()
-
 /client/on_stat_panel_message(type, payload)
 	. = ..()
 	switch(type)
+		// Sent by the panel on (re)load only, mob changes keep the JS state
+		if("Update-Verbs")
+			send_emote_panel_data()
 		if("Emote-Favourite")
 			toggle_favourite_emote(payload["name"])
 		if("Emote-Custom-Add")
@@ -251,6 +252,9 @@
 
 	var/datum/emote/sound_source
 	if(kind == CUSTOM_EMOTE_KEY_TEXT)
+		// The emote's own sound cooldown applies, same as running it normally
+		if(world.time < user.next_emote)
+			return
 		for(var/datum/emote/emote as anything in GLOB.emote_list[entry["key"]])
 			if(emote.key == entry["key"] && emote.can_run_emote(user, TRUE, TRUE))
 				sound_source = emote
@@ -262,7 +266,9 @@
 	var/message = trim(copytext_char(sanitize(entry["text"]), 1, MAX_MESSAGE_LEN))
 	message = parsemarkdown_basic(message, limited = TRUE, barebones = TRUE)
 	user.emote("me", sound_source ? sound_source.emote_type : EMOTE_VISIBLE, message, TRUE, custom_me = TRUE)
+	user.next_me_emote = max(user.next_me_emote, world.time + EMOTE_PANEL_TEXT_COOLDOWN)
 	if(sound_source)
+		user.next_emote = max(user.next_emote, world.time + sound_source.mute_time)
 		play_custom_emote_sound(user, sound_source)
 
 /client/proc/play_custom_emote_sound(mob/living/user, datum/emote/sound_source)
@@ -278,6 +284,7 @@
 #undef EMOTE_PANEL_MAX_NAME
 #undef EMOTE_PANEL_MAX_TEXT
 #undef EMOTE_PANEL_SAVE_DELAY
+#undef EMOTE_PANEL_TEXT_COOLDOWN
 #undef CUSTOM_EMOTE_KEY
 #undef CUSTOM_EMOTE_KEY_TEXT
 #undef CUSTOM_EMOTE_ME

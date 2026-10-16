@@ -806,6 +806,18 @@ function create_verb_search() {
   return input;
 }
 
+// Verb lists arrive in bursts (login, species change, organ swap): redraw once per burst
+var verb_redraw_pending = false;
+
+function schedule_draw_verbs() {
+  if (verb_redraw_pending) return;
+  verb_redraw_pending = true;
+  setTimeout(function () {
+    verb_redraw_pending = false;
+    if (is_verb_tab(current_tab)) draw_verbs(current_tab);
+  }, 50);
+}
+
 function draw_verbs(cat) {
   // New tab -> fresh query
   if (cat !== last_verb_cat) {
@@ -1165,11 +1177,11 @@ function add_verb_list(payload) {
       if (split_admin_tabs && splitName[0] === "Admin") category = splitName[1];
       else category = splitName[0];
     }
-    if (findVerbindex(part[1], verbs)) continue;
+    if (findVerbindex(part[1], verbs) !== undefined) continue;
     if (verb_tabs.includes(category)) {
       verbs.push(part);
       if (current_tab == category && is_verb_tab(category)) {
-        draw_verbs(category); // redraw if we added a verb to the tab we're currently in
+        schedule_draw_verbs(); // redraw if we added a verb to the tab we're currently in
       }
     } else if (category) {
       verb_tabs.push(category);
@@ -1219,7 +1231,7 @@ Byond.subscribeTo("remove_verb_list", function (v) {
   }
   check_verbs();
   sortVerbs();
-  if (is_verb_tab(current_tab)) draw_verbs(current_tab);
+  if (is_verb_tab(current_tab)) schedule_draw_verbs();
 });
 
 // passes a 2D list of (verbcategory, verbname) creates tabs and adds verbs to respective list
@@ -1242,7 +1254,7 @@ Byond.subscribeTo("init_verbs", function (payload) {
     add_verb_list(payload.verblist);
     sortVerbs(); // sort them
     if (do_update) {
-      draw_verbs(current_tab);
+      schedule_draw_verbs();
     }
   }
   SendTabsToByond();
@@ -1386,7 +1398,13 @@ Byond.subscribeTo("remove_mc", remove_mc);
 Byond.subscribeTo("add_verb_list", add_verb_list);
 
 Byond.subscribeTo("emote_panel_data", function (payload) {
-  emote_favourites = payload.favourites || [];
-  emote_customs = payload.customs || [];
-  if (current_tab === EMOTE_TAB && is_verb_tab(current_tab)) draw_verbs(current_tab);
+  // The server echoes every star click back; skip the redraw when it matches what we show
+  var favourites = payload.favourites || [];
+  var customs = payload.customs || [];
+  var changed =
+    JSON.stringify(favourites) !== JSON.stringify(emote_favourites) ||
+    JSON.stringify(customs) !== JSON.stringify(emote_customs);
+  emote_favourites = favourites.slice();
+  emote_customs = customs;
+  if (changed && current_tab === EMOTE_TAB) schedule_draw_verbs();
 });
