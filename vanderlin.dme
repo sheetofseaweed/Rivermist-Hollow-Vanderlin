@@ -4886,6 +4886,7 @@
 #include "modular_rmh\modular\chastity\chastity_recipes.dm"
 #include "modular_rmh\modular\comfy\comfy.dm"
 #include "modular_rmh\modular\defeat_recovery\trauma_providers.dm"
+#include "modular_rmh\modular\emote_panel\emote_panel.dm"
 #include "modular_rmh\modular\falling_star\falling_star.dm"
 #include "modular_rmh\modular\fluids\climax_aim.dm"
 #include "modular_rmh\modular\fluids\climax_spurts.dm"
@@ -4950,4 +4951,5 @@
 #include "modular_rmh\modular\selectable_moanpacks\moanpacks_defs.dm"
 #include "modular_rmh\modular\skirt_peeking\skirt_peeking.dm"
 #include "modular_rmh\modular\tattoo\tattoo.dm"
+#include "modular_rmh\modular\wildtongue\wildtongue.dm"
 // END_INCLUDE
