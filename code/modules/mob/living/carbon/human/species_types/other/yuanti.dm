@@ -21,6 +21,9 @@
 	order_num = 30
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/mt.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/fm.dmi'
+	allowed_body_builds = HUMANOID_BODY_BUILDS
+	default_body_build_m = BODY_BUILD_BROAD
+	default_body_build_f = BODY_BUILD_SLIM
 
 	soundpack_m = /datum/voicepack/male
 	soundpack_f = /datum/voicepack/female

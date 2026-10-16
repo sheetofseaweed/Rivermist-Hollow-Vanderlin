@@ -345,7 +345,7 @@
 	var/datum/species/species = wearer.dna?.species
 	if(!species)
 		return prefix
-	if(species.sexes && ((wearer.gender == FEMALE && !species.swap_female_clothes) || (wearer.gender == MALE && species.swap_male_clothes)))
+	if(wearer.get_body_cut() == BODY_CUT_FEMININE)
 		prefix += "_f"
 	if(species.custom_clothes && ((species.custom_id || species.id) == SPEC_ID_DWARF))
 		prefix += "_dwarf"

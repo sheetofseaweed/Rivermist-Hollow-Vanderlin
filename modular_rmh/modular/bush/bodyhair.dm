@@ -27,6 +27,13 @@ GLOBAL_LIST_INIT(body_hair_art_keys, list(
 	"icons/roguetown/mob/bodies/f/medicator.dmi" = "medicator",
 	"modular_rmh/icons/mob/species/ogre_male.dmi" = "ogre_m",
 	"modular_rmh/icons/mob/species/ogre_female.dmi" = "ogre_f",
+	// Build recolours and the broad female share a silhouette with an existing body.
+	"modular_rmh/icons/mob/bodies/m/mem_grey.dmi" = "mem",
+	"modular_rmh/icons/mob/bodies/m/mm_grey.dmi" = "mm",
+	"modular_rmh/icons/mob/bodies/m/mt_muscular_grey.dmi" = "mt_muscular",
+	"modular_rmh/icons/mob/bodies/f/ft_broad.dmi" = "ft_muscular",
+	"modular_rmh/icons/mob/bodies/f/ft_broad_grey.dmi" = "ft_muscular",
+	"modular_rmh/icons/mob/bodies/f/ft_muscular_grey.dmi" = "ft_muscular",
 ))
 
 /// Art keys of 32x64 bodies, drawn from the tall hair dmis.
@@ -56,12 +63,9 @@ GLOBAL_LIST_INIT(pubic_hair_styles, list(
 /proc/get_body_hair_art_key(mob/living/carbon/owner)
 	if(!ishuman(owner))
 		return null
-	var/mob/living/carbon/human/human_owner = owner
-	var/datum/species/species = human_owner.dna?.species
-	if(!species)
+	if(!owner.dna?.species)
 		return null
-	var/body_icon = human_owner.gender == MALE ? species.limbs_icon_m : species.limbs_icon_f
-	return GLOB.body_hair_art_keys["[body_icon]"]
+	return GLOB.body_hair_art_keys["[owner.get_limbs_icon()]"]
 
 /// Keeps material if allowed, else falls back to the first allowed one. Null allowed means any known material.
 /proc/sanitize_body_hair_material(material, list/allowed_materials)
@@ -113,21 +117,12 @@ GLOBAL_LIST_INIT(pubic_hair_styles, list(
 	for(var/mutable_appearance/appearance as anything in appearance_list)
 		appearance.alpha = appearance_alpha
 
+// Chest hair, fitted per body by body_hair_art_generator/build_chest_hair.py.
 /datum/sprite_accessory/body_hair/body
 	abstract_type = /datum/sprite_accessory/body_hair/body
-	icon = 'icons/roguetown/mob/bodies/m/mm.dmi'
+	icon = 'modular_rmh/icons/mob/sprite_accessory/bodyhair/chest_hair.dmi'
+	tall_icon = 'modular_rmh/icons/mob/sprite_accessory/bodyhair/chest_hair_tall.dmi'
 	layer = FRONT_MUTATIONS_LAYER
-
-/datum/sprite_accessory/body_hair/body/get_icon(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
-	if(!ishuman(owner))
-		return ..()
-	var/mob/living/carbon/human/human_owner = owner
-	var/datum/species/species = human_owner.dna?.species
-	if(!species)
-		return ..()
-	if(human_owner.gender == MALE)
-		return species.limbs_icon_m || ..()
-	return species.limbs_icon_f || species.limbs_icon_m || ..()
 
 /datum/sprite_accessory/body_hair/body/shaved
 	name = "shaved"
@@ -136,17 +131,20 @@ GLOBAL_LIST_INIT(pubic_hair_styles, list(
 
 /datum/sprite_accessory/body_hair/body/some_hair
 	name = "some hair"
-	icon_state = "t1"
+	icon_state = "t1_mt"
+	art_state = "t1"
 	hairiness_level = HAIRINESS_SOME_HAIR
 
 /datum/sprite_accessory/body_hair/body/hairy
 	name = "hairy"
-	icon_state = "t2"
+	icon_state = "t2_mt"
+	art_state = "t2"
 	hairiness_level = HAIRINESS_HAIRY
 
 /datum/sprite_accessory/body_hair/body/very_hairy
 	name = "very hairy"
-	icon_state = "t3"
+	icon_state = "t3_mt"
+	art_state = "t3"
 	hairiness_level = HAIRINESS_VERY_HAIRY
 
 // icon_state only feeds the preferences preview; drawing uses art_state.

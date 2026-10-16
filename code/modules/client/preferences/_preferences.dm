@@ -660,7 +660,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	preview_subclass = null
 	if(!silent)
 		to_chat(user, "<font color='red'>Classes reset.</font>")
-	if(winget(user, "mob_occupation", "is-visible"))
+	if(user?.client && winget(user, "mob_occupation", "is-visible"))
 		set_choices(user)
 
 
@@ -1062,6 +1062,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		return character_setup_apply_patron(user, href_list["patron_id"])
 	else if(href_list["preference"] == "character_setup_select_ancestry")
 		return character_setup_apply_ancestry(user, href_list["ancestry"])
+	else if(href_list["preference"] == "character_setup_select_body_build")
+		return character_setup_apply_body_build(user, href_list["body_build"])
 	else if(href_list["preference"] == "character_setup_round_action")
 		return character_setup_round_action(user)
 	else if(href_list["preference"] == "character_setup_preferences_fullscreen")

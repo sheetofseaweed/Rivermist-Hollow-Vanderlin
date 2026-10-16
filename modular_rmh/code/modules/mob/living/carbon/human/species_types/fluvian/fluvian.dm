@@ -61,6 +61,7 @@
 		/datum/customizer/organ/genitals/vagina/anthro,
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
+		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,
 		/datum/customizer/bodypart_feature/armpit_hair,
 	)

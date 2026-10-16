@@ -54,6 +54,11 @@ type SpeciesStat = {
   value: number;
 };
 
+type BodyBuildEntry = {
+  id: string;
+  name: string;
+};
+
 type SpeciesEntry = {
   id: string;
   name: string;
@@ -238,6 +243,9 @@ type PrefsData = {
   taur_tertiary: string;
   gender: string;
   gender_short: string;
+  body_build: string | null;
+  body_build_name: string;
+  body_build_options?: BodyBuildEntry[];
   default_slot: number;
   patron_name: string;
   faith_name: string;
@@ -824,6 +832,7 @@ export const PreferencesMenu = () => {
   }, [localRoundSeconds]);
 
   const ageOptions = data.age_options ?? [];
+  const buildOptions = data.body_build_options ?? [];
   const backdropColor =
     data.background === 'white'
       ? '#d8d8d8'
@@ -842,6 +851,27 @@ export const PreferencesMenu = () => {
       ...(extra || {}),
     });
   };
+
+  // Hidden when the species offers fewer than two builds for this body.
+  const renderBuildRow = () =>
+    buildOptions.length > 1 ? (
+      <FieldBlock label="Build">
+        <Dropdown
+          width="100%"
+          displayText={display(data.body_build_name)}
+          selected={data.body_build ?? undefined}
+          options={buildOptions.map((option) => ({
+            displayText: option.name,
+            value: option.id,
+          }))}
+          onSelected={(value) =>
+            doPref('character_setup_select_body_build', undefined, {
+              body_build: value,
+            })
+          }
+        />
+      </FieldBlock>
+    ) : null;
 
   const setMenuScale = (scale: number) => {
     const clamped = clampMenuScale(scale);
@@ -1532,7 +1562,8 @@ export const PreferencesMenu = () => {
         <Stack.Item grow basis={0}>
           <Panel title="Identity" icon="id-card">
             <PrefRow icon="signature" label="Name" value={data.real_name} onClick={() => doPref('name', 'input')} />
-            <PrefRow icon="venus-mars" label="Body Type" value={data.gender} onClick={() => doPref('gender')} />
+            <PrefRow icon="venus-mars" label="Body" value={data.gender} onClick={() => doPref('gender')} />
+            {renderBuildRow()}
             <PrefRow icon="comment" label="Pronouns" value={data.pronouns} onClick={() => doPref('pronouns', 'input')} />
             <FieldBlock label="Age">
               <Tooltip
@@ -3167,10 +3198,11 @@ export const PreferencesMenu = () => {
         />
         <PrefRow
           icon="venus-mars"
-          label="Body Type"
+          label="Body"
           value={data.gender}
           onClick={() => doPref('gender')}
         />
+        {renderBuildRow()}
         <PrefRow
           icon="comment"
           label="Pronouns"
@@ -3245,10 +3277,11 @@ export const PreferencesMenu = () => {
           <Panel title="Body" icon="user">
             <PrefRow
               icon="venus-mars"
-              label="Body Type"
+              label="Body"
               value={data.gender}
               onClick={() => doPref('gender')}
             />
+            {renderBuildRow()}
             <Box color="label" mt={1}>
               My name, species, age, and pronouns stay the same.
             </Box>
