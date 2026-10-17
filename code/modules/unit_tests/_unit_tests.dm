@@ -107,6 +107,7 @@
 #include "defeat_system.dm"
 #include "defense_cooldowns.dm"
 #include "dye_bin.dm"
+#include "elemental_abilities.dm"
 #include "excavation.dm"
 #include "faction_supply_packs.dm"
 #include "fall_damage.dm"

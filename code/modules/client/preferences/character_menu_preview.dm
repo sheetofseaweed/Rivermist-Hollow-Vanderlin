@@ -45,6 +45,8 @@
 		if(!character_setup_body)
 			character_setup_body = new
 		character_setup_log("VIEW", "ensure_view created map=[character_setup_view.assigned_map] user=[user?.ckey] window=[ui?.window ? "yes" : "NO"] window_visible=[ui?.window?.visible] tile_top=[character_setup_view_tile_top]")
+		// New views start empty, so draw even if the preferences match the last render.
+		character_setup_render_forced = TRUE
 		character_setup_update_view()
 	if(character_setup_view_shown)
 		return
@@ -125,6 +127,7 @@
 	character_setup_hover_color = null
 	character_setup_hover_customizer = null
 	character_setup_view_shown = FALSE
+	character_setup_rendered_sig = null
 	character_setup_view?.hide_from(user)
 	character_setup_view_front?.hide_from(user)
 	character_setup_view_side?.hide_from(user)
@@ -142,6 +145,8 @@
 		character_setup_log("VIEW", "update_view SKIP view=[!!character_setup_view] body=[!!character_setup_body] species=[!!pref_species]")
 		return
 	if(character_setup_view_busy)
+		// The yielded render may have read the old state, so the next pass must draw.
+		character_setup_render_forced = TRUE
 		character_setup_view_pending = TRUE
 		character_setup_log("VIEW", "update_view BUSY -> pending")
 		return
@@ -150,18 +155,41 @@
 		character_setup_view_pending = FALSE
 		var/_t = world.timeofday
 		try
-			character_setup_render_body()
+			if(character_setup_render_forced || character_setup_render_signature() != character_setup_rendered_sig)
+				character_setup_render_forced = FALSE
+				character_setup_redraw_dir = FALSE
+				character_setup_render_body()
+				// Taken after the render, so preference writes made while dressing the dummy count as drawn.
+				character_setup_rendered_sig = character_setup_render_signature()
+				character_setup_log_op("render_body", _t, "dir=[character_setup_preview_dir] hover=[character_setup_hover_acc || "none"] species=[pref_species?.id]")
+			else
+				character_setup_render_main_only = FALSE
+				if(character_setup_redraw_dir)
+					character_setup_redraw_dir = FALSE
+					character_setup_turn_view()
 		catch(var/exception/render_error)
 			// Cleared before rethrowing, or one failed render freezes this preview for the round.
 			character_setup_view_busy = FALSE
 			throw render_error
-		character_setup_log_op("render_body", _t, "dir=[character_setup_preview_dir] hover=[character_setup_hover_acc || "none"] species=[pref_species?.id]")
-	while(character_setup_view_pending)
+	while(character_setup_view_pending && character_setup_view && character_setup_body)
 	character_setup_view_busy = FALSE
 	var/bbox_sig = "[character_setup_view_zoom_w]x[character_setup_view_zoom_h]"
 	if(bbox_sig != character_setup_view_bbox_sent)
 		character_setup_view_bbox_sent = bbox_sig
 		SStgui.update_uis(src)
+
+/// What the preview dummy is dressed from, minus facing; an unchanged signature means a render would change nothing.
+/datum/preferences/proc/character_setup_render_signature()
+	return "[get_character_preview_fingerprint()]|[character_setup_preview_clothes]|[character_setup_preview_underwear]|[character_setup_hover_acc]|[character_setup_hover_color]|[character_setup_hover_customizer]"
+
+/// Re-measures and turns the main view without dressing the dummy again.
+/datum/preferences/proc/character_setup_turn_view()
+	var/mob/living/carbon/human/dummy/body = character_setup_body
+	character_setup_measure_body(character_setup_preview_dir)
+	// Measuring can yield; skip if the menu closed or reopened meanwhile.
+	if(QDELETED(body) || body != character_setup_body)
+		return
+	character_setup_apply_to_view(character_setup_view, body, character_setup_preview_dir)
 
 /datum/preferences/proc/character_setup_render_body()
 	var/mob/living/carbon/human/dummy/body = character_setup_body
@@ -229,6 +257,9 @@
 		var/zoom_dim_h = max(character_setup_view_bbox_h, perp_art ? perp_art[2] : 0)
 		character_setup_view_zoom_w = CEILING(zoom_dim_w, 4)
 		character_setup_view_zoom_h = CEILING(zoom_dim_h, 4)
+	// Measuring can yield; skip if the menu closed or reopened meanwhile.
+	if(QDELETED(body) || body != character_setup_body)
+		return
 	character_setup_apply_to_view(character_setup_view, body, character_setup_preview_dir)
 	if(!main_only)
 		character_setup_apply_to_view(character_setup_view_front, body, SOUTH)
@@ -239,7 +270,11 @@
 	var/mob/living/carbon/human/dummy/body = character_setup_body
 	if(!body)
 		return null
-	var/icon/measure = character_setup_get_flat_icon(body, dir, no_anim = TRUE)
+	// A frozen copy, so the measurement holds if the dummy changes while the flat icon yields.
+	var/mutable_appearance/snapshot = new(body)
+	// Copied appearances get FLOAT_PLANE in New(); the flat icon filters overlays by plane.
+	snapshot.plane = body.plane
+	var/icon/measure = character_setup_get_flat_icon(snapshot, dir, no_anim = TRUE)
 	var/measure_w = isicon(measure) ? measure.Width() : 32
 	var/measure_h = isicon(measure) ? measure.Height() : 32
 	var/art_x = 0
@@ -376,6 +411,8 @@
 		var/addY2 = 0
 
 		for(var/image/layer_image as anything in layers)
+			// Yields here only: the global flat origin is written and read with no sleep between.
+			CHECK_TICK
 			if(layer_image.alpha == 0)
 				continue
 

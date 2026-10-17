@@ -1115,9 +1115,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		else
 			idx = (idx >= length(dir_cycle)) ? 1 : (idx + 1)
 		character_setup_preview_dir = dir_cycle[idx]
-		if(character_setup_view && character_setup_body)
-			character_setup_measure_body(character_setup_preview_dir)
-			character_setup_apply_to_view(character_setup_view, character_setup_body, character_setup_preview_dir)
+		// Through update_view, so turning never measures a dummy that a yielded render is still dressing.
+		character_setup_redraw_dir = TRUE
+		character_setup_update_view()
 		return TRUE
 	else if(href_list["preference"] == "character_setup_preview_background")
 		var/bg_choice = href_list["bg"]
