@@ -139,6 +139,7 @@
 	production_eligible = FALSE
 
 /datum/unit_test/procedural_dungeon_integration
+	needs_pocket_space = TRUE
 	abstract_type = /datum/unit_test/procedural_dungeon_integration
 	var/list/datum/pocket_dimension/dungeon/created_rooms = list()
 
@@ -319,6 +320,9 @@
 	var/datum/map_template/pocket/dungeon/actual_template = destination.get_dungeon_template()
 	if(gate.pre_rolled_template != actual_template || !(actual_template.id in run.recent_template_ids))
 		return Fail("Fallback gate hints and recent-room history must use the actual destination template.")
+
+/datum/unit_test/procedural_dungeon_traversal
+	needs_pocket_space = TRUE
 
 /datum/unit_test/procedural_dungeon_traversal/Run()
 	var/obj/structure/dungeon_entrance/infinite/entrance = allocate(/obj/structure/dungeon_entrance/infinite, run_loc_floor_bottom_left)

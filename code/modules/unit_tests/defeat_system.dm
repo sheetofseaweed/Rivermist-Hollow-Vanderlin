@@ -1277,6 +1277,7 @@
 	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(5, 0), 0, "An unrolled threshold should produce no warning.")
 
 /datum/unit_test/defeat_horny_self_recovery
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_horny_self_recovery/Run()
 	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
@@ -1401,6 +1402,7 @@
 	lair_tag = "unit_test_kidnap_lair"
 
 /datum/unit_test/defeat_kidnap_to_lair_and_escape
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_kidnap_to_lair_and_escape/Run()
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
@@ -1441,6 +1443,7 @@
 	TEST_ASSERT(!(locate(/datum/action/innate/defeat_refuse_advances) in victim.actions), "Escaping should remove the Refuse Advances action from the captive.")
 
 /datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey/Run()
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
@@ -1557,6 +1560,7 @@
 	TEST_ASSERT(!(trinket in victim.held_items), "Surrender should drop carried items out of the hands.")
 
 /datum/unit_test/defeat_kidnap_remembers_captor_faction
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_kidnap_remembers_captor_faction/Run()
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
@@ -1578,6 +1582,7 @@
 	TEST_ASSERT(("greenskin_unit_test" in captivity.captor_faction), "Captivity should remember the captor's faction so a surrendered captive shares it.")
 
 /datum/unit_test/defeat_kidnap_climaxes_offer_surrender
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_kidnap_climaxes_offer_surrender/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)

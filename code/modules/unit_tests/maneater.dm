@@ -134,6 +134,7 @@
 
 /// A swallow fills the stomach: the plant shows its full sprite, and the greater vines root in a grassless stomach.
 /datum/unit_test/maneater_full_while_occupied
+	needs_pocket_space = TRUE
 
 /datum/unit_test/maneater_full_while_occupied/Run()
 	var/obj/structure/flora/grass/maneater/real/maneater = allocate(/obj/structure/flora/grass/maneater/real)
