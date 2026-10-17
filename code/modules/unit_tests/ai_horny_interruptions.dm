@@ -84,6 +84,8 @@
 	controller.set_movement_target(type, runner)
 	movement.start_moving_towards(controller, runner, 1)
 
+	// A* sleeps once the tick is spent, which ends process() early; start the passes on a fresh tick.
+	stoplag()
 	// Each pass the runner has moved on, so the old path is dropped and a new one is built.
 	for(var/i in 1 to movement.max_pathing_attempts + 3)
 		controller.movement_path = null

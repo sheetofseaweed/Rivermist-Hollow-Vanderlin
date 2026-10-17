@@ -154,7 +154,14 @@
 	for(var/turf/stomach_turf as anything in stomach.affected_turfs)
 		TEST_ASSERT(!(locate(/obj/structure/flora/grass) in stomach_turf), "The stomach map must not contain grass.")
 
+	var/list/stomach_vines = list()
+	for(var/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater/vine in stomach.get_occupants())
+		stomach_vines += vine
+	TEST_ASSERT(length(stomach_vines) > greater_vines, "Setup failed: the stomach should also hold lesser vines.")
+
 	victim.remove_status_effect(/datum/status_effect/defeat_knockout)
 	TEST_ASSERT(captivity.release_to_context(), "Setup failed: the captive must be released.")
 	TEST_ASSERT_NOTEQUAL(maneater.icon_state, "maneater-full", "An empty stomach must drop the full sprite.")
 	SSpocket_dimensions.delete_instance(stomach)
+	for(var/mob/living/vine as anything in stomach_vines)
+		TEST_ASSERT(QDELETED(vine), "[vine.type] outlived its stomach at [vine.x],[vine.y],[vine.z].")

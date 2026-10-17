@@ -77,6 +77,10 @@ GLOBAL_LIST_EMPTY(required_map_items)
 			if(istype(content, /obj/effect/landmark))
 				continue
 			qdel(content)
+		// Smells outlive their source and are capped per turf, so a leftover cloud blocks the next test's.
+		if(isopenturf(turf))
+			var/turf/open/open_turf = turf
+			QDEL_NULL(open_turf.pollution)
 	return ..()
 
 /datum/unit_test/proc/Run()

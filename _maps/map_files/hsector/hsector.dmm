@@ -3084,10 +3084,6 @@
 /obj/structure/rack/shelf/biggest,
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/merchant)
-"aXy" = (
-/obj/structure/window/openclose,
-/turf/closed/basic,
-/area/indoors/shelter/woods)
 "aXD" = (
 /obj/structure/flora/newtree,
 /turf/open/floor/dirt,
@@ -33513,6 +33509,10 @@
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/craft/apothecary)
+"kmZ" = (
+/obj/structure/window/openclose,
+/turf/open/floor/ruinedwood/alizeria/tiles/wood19,
+/area/indoors/shelter/woods)
 "kng" = (
 /obj/structure/fluff/railing/corner{
 	dir = 9
@@ -37116,6 +37116,12 @@
 	},
 /turf/open/floor/naturalstone,
 /area/outdoors/rmh_air)
+"lsx" = (
+/obj/structure/window/openclose{
+	dir = 8
+	},
+/turf/open/floor/ruinedwood/alizeria/tiles/wood28,
+/area/indoors/shelter/woods)
 "lsy" = (
 /obj/effect/decal/cleanable/sigil/W,
 /turf/open/floor/blocks,
@@ -48866,6 +48872,12 @@
 /obj/structure/flora/alizeria/decor/leavesr,
 /turf/open/floor/ruinedwood/turned,
 /area/outdoors/town/rmh/roofs)
+"oYq" = (
+/obj/structure/window/openclose{
+	dir = 1
+	},
+/turf/open/floor/ruinedwood/alizeria/tiles/wood19,
+/area/indoors/shelter/woods)
 "oYw" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
@@ -377913,7 +377925,7 @@ bwh
 ubW
 xvp
 vbd
-aXy
+oYq
 etm
 etm
 etm
@@ -378160,7 +378172,7 @@ etm
 etm
 etm
 etm
-aXy
+kmZ
 jwI
 wsK
 vMJ
@@ -378674,7 +378686,7 @@ etm
 etm
 etm
 etm
-aXy
+kmZ
 mcE
 oPw
 wvT
@@ -380220,9 +380232,9 @@ etm
 mrS
 rlk
 rlk
-aXy
-aXy
-aXy
+lsx
+lsx
+lsx
 rlk
 rlk
 mrS

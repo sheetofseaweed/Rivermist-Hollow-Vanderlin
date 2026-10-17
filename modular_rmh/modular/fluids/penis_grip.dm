@@ -268,7 +268,7 @@
 /// Letting go ends an aim this hand made.
 /obj/item/penis_grip/proc/drop_aim()
 	var/datum/climax_aim/aim = penis?.climax_aim
-	if(aim?.aimer == holder)
+	if(holder && aim?.aimer == holder)
 		aim.clear()
 
 // --- Edge ---

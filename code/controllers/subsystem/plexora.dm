@@ -804,6 +804,7 @@ SUBSYSTEM_DEF(plexora)
 #undef OLD_PLEXORA_CONFIG
 #undef AUTH_HEADER
 #undef TOPIC_EMITTER
+#undef ADMIN_SAY_ICON_LIFETIME
 
 
 /client
