@@ -389,9 +389,9 @@
 	if(!action_user || !action_target || QDELETED(action_user) || QDELETED(action_target))
 		return FALSE
 	if(action_user != action_target)
-		if(!action_user.allows_player_erp_while_disconnected())
+		if(!action_user.allows_sex_with(action_target))
 			return FALSE
-		if(!action_target.allows_player_erp_while_disconnected())
+		if(!action_target.allows_sex_with(action_user))
 			return FALSE
 	if(action_user.stat != CONSCIOUS || action_target.stat == DEAD)
 		return FALSE
