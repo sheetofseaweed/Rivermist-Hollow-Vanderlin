@@ -773,7 +773,7 @@
 	else
 		examination += "<span class='dead'>[m1] dead.</span>"
 
-	switch(blood_volume)
+	switch(is_bloodless() ? BLOOD_VOLUME_NORMAL : blood_volume)
 		if(-INFINITY to BLOOD_VOLUME_SURVIVE)
 			examination += "<span class='artery'><B>[m1] extremely anemic.</B></span>"
 		if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)

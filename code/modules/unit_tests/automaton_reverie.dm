@@ -135,6 +135,46 @@
 	construct.dna.species.spec_life(construct)
 	TEST_ASSERT(construct.reagents.total_volume < 10, "Constructs should shed reagents they cannot metabolize.")
 
+/datum/unit_test/bloodless_bodies_lose_no_blood
+
+/datum/unit_test/bloodless_bodies_lose_no_blood/Run()
+	var/mob/living/carbon/human/doll = allocate(/mob/living/carbon/human/species/doll)
+	TEST_ASSERT(doll.is_bloodless(), "Dolls should count as bloodless.")
+	var/start_volume = doll.blood_volume
+	doll.adjust_bloodvolume(-300)
+	var/obj/item/bodypart/arm = doll.get_bodypart(BODY_ZONE_R_ARM)
+	arm.create_injury(WOUND_BURN, 30)
+	TEST_ASSERT_EQUAL(doll.blood_volume, start_volume, "A bloodless body should not lose blood to drains or burns.")
+
+	doll.blood_volume = 0
+	var/mob/living/carbon/human/viewer = allocate(/mob/living/carbon/human/species/human/northern)
+	var/list/examine_text = doll.examine(viewer)
+	var/shows_paleness = FALSE
+	for(var/line in examine_text)
+		if(findtext("[line]", "pale and sickly"))
+			shows_paleness = TRUE
+	TEST_ASSERT(!shows_paleness, "A bloodless body should never be described as pale from blood loss.")
+
+	var/mob/living/carbon/human/bleeder = allocate(/mob/living/carbon/human/species/human/northern)
+	var/bleeder_volume = bleeder.blood_volume
+	bleeder.adjust_bloodvolume(-300)
+	TEST_ASSERT_EQUAL(bleeder.blood_volume, bleeder_volume - 300, "A body with blood should still lose it.")
+
+/datum/unit_test/defeat_warning_repeats_only_on_fresh_harm
+
+/datum/unit_test/defeat_warning_repeats_only_on_fresh_harm/Run()
+	var/mob/living/carbon/human/doll = allocate(/mob/living/carbon/human/species/doll)
+	var/datum/component/defeat_monitor/monitor = doll.AddComponent(/datum/component/defeat_monitor)
+	TEST_ASSERT_NOTNULL(monitor, "The defeat monitor should attach.")
+	TEST_ASSERT(monitor.maybe_warn_damage_defeat(doll, 150, 200), "Entering the near-defeat band should warn.")
+	monitor.damage_warning_last_at = 0
+	TEST_ASSERT(!monitor.maybe_warn_damage_defeat(doll, 150, 200), "Unchanged damage should not warn again.")
+	TEST_ASSERT(monitor.maybe_warn_damage_defeat(doll, 160, 200), "Fresh harm should warn again.")
+	monitor.damage_warning_last_at = 0
+	TEST_ASSERT(!monitor.maybe_warn_damage_defeat(doll, 155, 200), "Healing should not warn.")
+	TEST_ASSERT(!monitor.maybe_warn_damage_defeat(doll, 50, 200), "Leaving the band should not warn.")
+	TEST_ASSERT(monitor.maybe_warn_damage_defeat(doll, 150, 200), "Coming back into the band should warn again.")
+
 /datum/unit_test/doll_has_no_critical_weakness
 
 /datum/unit_test/doll_has_no_critical_weakness/Run()
