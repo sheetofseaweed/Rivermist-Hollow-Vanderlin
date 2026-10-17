@@ -121,8 +121,8 @@
 
 	var/mob/living/carbon/human/H = owner
 
-	// Check if a pet type was selected
-	if(!customization_value || !ispath(customization_value, /mob/living/simple_animal))
+	// Only the offered pets may spawn; a saved or imported value can name any mob type.
+	if(!customization_value || !(customization_value in customization_options))
 		customization_value = /mob/living/simple_animal/pet/cat/black
 
 	// Spawn the pet at the owner's location

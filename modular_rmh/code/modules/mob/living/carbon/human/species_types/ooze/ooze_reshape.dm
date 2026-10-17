@@ -214,7 +214,7 @@
 		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "PreferencesMenu", "Reshape Body", 1298, 874)
+		ui = new(user, src, "CharacterCreator", "Reshape Body", 1180, 800)
 		ui.set_autoupdate(FALSE)
 		ui.open()
 	character_setup_ensure_view(user, ui)
