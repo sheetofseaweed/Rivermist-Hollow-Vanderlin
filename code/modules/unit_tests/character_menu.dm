@@ -72,3 +72,49 @@
 	TEST_ASSERT_NULL(prefs.loadout_3_hex, "None should clear the stored hex")
 	TEST_ASSERT(!prefs.character_setup_apply_loadout_color(3, "Custom"), "The Custom sentinel must never be stored directly")
 	TEST_ASSERT(!prefs.character_setup_apply_loadout_color(99, "Red"), "Out-of-range slot should fail")
+
+/// Preview measuring skips icons reporting 0x0 instead of runtiming in Scale(0, 0).
+/datum/unit_test/character_menu_preview_zero_size_icon/Run()
+	var/datum/preferences/prefs = allocate(/datum/preferences)
+	var/mob/living/carbon/human/dummy/body = new
+	prefs.character_setup_body = body
+	prefs.character_setup_render_body()
+	// A new /icon() whose first inserted south frame is a MapColors blank reports 0x0.
+	var/icon/side_view = icon('icons/mob/human.dmi', "ghost")
+	var/icon/blank = icon(side_view, "", SOUTH, 1)
+	blank.MapColors(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0)
+	side_view.Insert(blank, "", SOUTH)
+	var/icon/zero_size = new /icon()
+	zero_size.Insert(side_view, "", moving = 0)
+	var/zero_size_file = fcopy_rsc(zero_size)
+	var/list/zero_dimensions = get_icon_dimensions(zero_size_file)
+	TEST_ASSERT_EQUAL(zero_dimensions["width"], 0, "Fixture icon no longer reports zero width")
+	body.underlays += image(zero_size_file, icon_state = "")
+	var/list/measured
+	var/measure_error
+	try
+		measured = prefs.character_setup_measure_art(EAST)
+	catch(var/exception/error)
+		measure_error = "[error] at [error.file]:[error.line]"
+	body.underlays.Cut()
+	TEST_ASSERT_NULL(measure_error, "Measuring a body with a zero-size icon runtimed: [measure_error]")
+	TEST_ASSERT_NOTNULL(measured, "Measuring returned nothing")
+	TEST_ASSERT(measured[1] > 0 && measured[2] > 0, "Measured art lost the body, got [measured[1]]x[measured[2]]")
+
+/// A failed preview render clears the busy flag, or the preview never redraws again.
+/datum/unit_test/character_menu_preview_render_error_clears_busy/Run()
+	var/datum/preferences/render_crash/prefs = allocate(/datum/preferences/render_crash)
+	prefs.character_setup_view = new
+	prefs.character_setup_body = new
+	var/render_error
+	try
+		prefs.character_setup_update_view()
+	catch(var/exception/error)
+		render_error = "[error]"
+	TEST_ASSERT_NOTNULL(render_error, "The forced render failure did not reach the caller")
+	TEST_ASSERT(!prefs.character_setup_view_busy, "A failed render left character_setup_view_busy set")
+
+/datum/preferences/render_crash
+
+/datum/preferences/render_crash/character_setup_render_body()
+	CRASH("Forced preview render failure")

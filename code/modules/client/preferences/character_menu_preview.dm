@@ -149,7 +149,12 @@
 	do
 		character_setup_view_pending = FALSE
 		var/_t = world.timeofday
-		character_setup_render_body()
+		try
+			character_setup_render_body()
+		catch(var/exception/render_error)
+			// Cleared before rethrowing, or one failed render freezes this preview for the round.
+			character_setup_view_busy = FALSE
+			throw render_error
 		character_setup_log_op("render_body", _t, "dir=[character_setup_preview_dir] hover=[character_setup_hover_acc || "none"] species=[pref_species?.id]")
 	while(character_setup_view_pending)
 	character_setup_view_busy = FALSE
@@ -334,7 +339,10 @@
 		var/list/icon_dimensions = get_icon_dimensions(curicon)
 		var/icon_width = icon_dimensions["width"]
 		var/icon_height = icon_dimensions["height"]
-		if(icon_width != 32 || icon_height != 32)
+		// Runtime icons sized by a blank first frame report 0x0; Scale(0, 0) runtimes.
+		if(!icon_width || !icon_height)
+			render_icon = FALSE
+		else if(icon_width != 32 || icon_height != 32)
 			flat.Scale(icon_width, icon_height)
 
 	if(!base_icon_dir)
