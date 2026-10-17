@@ -281,11 +281,11 @@
 	var/mob/living/carbon/human/reader = allocate(/mob/living/carbon/human)
 	var/obj/item/recipe_book/apothecarys_handbook/book = allocate(/obj/item/recipe_book/apothecarys_handbook)
 	var/list/data = book.ui_static_data(reader)
-	TEST_ASSERT(length(data["recipes"]), "The handbook should send its own recipes.")
-	TEST_ASSERT(length(data["linked_recipes"]), "The handbook should send linked recipes from other books.")
+	TEST_ASSERT(length(data["recipe_ids"]), "The handbook should send its own recipes.")
+	TEST_ASSERT(length(data["linked_ids"]), "The handbook should send linked recipes from other books.")
 
 	var/pottery_entries = 0
-	for(var/list/entry as anything in data["recipes"] + data["linked_recipes"])
+	for(var/list/entry as anything in recipe_book_db_entries(data["recipe_ids"] + data["linked_ids"]))
 		if(entry["type"] != "pottery")
 			continue
 		pottery_entries++

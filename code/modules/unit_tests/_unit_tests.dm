@@ -161,6 +161,7 @@
 #include "reagent_id_typos.dm"
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
+#include "recipe_book_db.dm"
 #include "reflection_tracking.dm"
 #include "relics.dm"
 #include "repeatable_recipes.dm"
