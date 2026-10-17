@@ -128,6 +128,7 @@
 	character_setup_hover_customizer = null
 	character_setup_view_shown = FALSE
 	character_setup_rendered_sig = null
+	character_setup_note_rendered_hover()
 	character_setup_view?.hide_from(user)
 	character_setup_view_front?.hide_from(user)
 	character_setup_view_side?.hide_from(user)
@@ -139,14 +140,16 @@
 	QDEL_NULL(character_setup_bg_front)
 	QDEL_NULL(character_setup_bg_side)
 
-/datum/preferences/proc/character_setup_update_view()
+/// base_changed FALSE means only hover or facing changed, which the loop tracks on its own.
+/datum/preferences/proc/character_setup_update_view(base_changed = TRUE)
 	set waitfor = FALSE
 	if(!character_setup_view || !character_setup_body || !pref_species)
 		character_setup_log("VIEW", "update_view SKIP view=[!!character_setup_view] body=[!!character_setup_body] species=[!!pref_species]")
 		return
 	if(character_setup_view_busy)
-		// The yielded render may have read the old state, so the next pass must draw.
-		character_setup_render_forced = TRUE
+		// The yielded render may have read the old preferences, so the next pass must draw.
+		if(base_changed)
+			character_setup_render_forced = TRUE
 		character_setup_view_pending = TRUE
 		character_setup_log("VIEW", "update_view BUSY -> pending")
 		return
@@ -155,9 +158,14 @@
 		character_setup_view_pending = FALSE
 		var/_t = world.timeofday
 		try
-			if(character_setup_render_forced || character_setup_render_signature() != character_setup_rendered_sig)
+			var/needs_full_render = character_setup_render_forced || character_setup_render_signature() != character_setup_rendered_sig
+			if(!needs_full_render && character_setup_hover_changed())
+				needs_full_render = !character_setup_render_hover()
+			if(needs_full_render)
 				character_setup_render_forced = FALSE
 				character_setup_redraw_dir = FALSE
+				// Noted before dressing: the render reads hover first, and a hover changed during its yield must still show.
+				character_setup_note_rendered_hover()
 				character_setup_render_body()
 				// Taken after the render, so preference writes made while dressing the dummy count as drawn.
 				character_setup_rendered_sig = character_setup_render_signature()
@@ -178,9 +186,101 @@
 		character_setup_view_bbox_sent = bbox_sig
 		SStgui.update_uis(src)
 
-/// What the preview dummy is dressed from, minus facing; an unchanged signature means a render would change nothing.
+/// What the preview dummy is dressed from, minus facing and hover; an unchanged signature means a render would change nothing.
 /datum/preferences/proc/character_setup_render_signature()
-	return "[get_character_preview_fingerprint()]|[character_setup_preview_clothes]|[character_setup_preview_underwear]|[character_setup_hover_acc]|[character_setup_hover_color]|[character_setup_hover_customizer]"
+	return "[get_character_preview_fingerprint()]|[character_setup_preview_clothes]|[character_setup_preview_underwear]"
+
+/datum/preferences/proc/character_setup_hover_changed()
+	return character_setup_hover_acc != character_setup_rendered_hover_acc || character_setup_hover_color != character_setup_rendered_hover_color || character_setup_hover_customizer != character_setup_rendered_hover_customizer
+
+/datum/preferences/proc/character_setup_note_rendered_hover()
+	character_setup_rendered_hover_acc = character_setup_hover_acc
+	character_setup_rendered_hover_color = character_setup_hover_color
+	character_setup_rendered_hover_customizer = character_setup_hover_customizer
+
+/// Swaps only the hovered accessory on the dressed dummy; FALSE when a full render is needed instead.
+/datum/preferences/proc/character_setup_render_hover()
+	var/mob/living/carbon/human/dummy/body = character_setup_body
+	var/old_customizer = character_setup_rendered_hover_customizer
+	var/new_customizer_path = character_setup_hover_customizer ? text2path(character_setup_hover_customizer) : null
+	var/new_acc_path = character_setup_hover_acc ? text2path(character_setup_hover_acc) : null
+	// Put the previously hovered customizer back to its saved choice first.
+	if(old_customizer && old_customizer != character_setup_hover_customizer)
+		var/old_customizer_path = text2path(old_customizer)
+		if(old_customizer_path && !character_setup_redress_customizer(body, old_customizer_path))
+			return FALSE
+	if(new_acc_path && new_customizer_path && !character_setup_redress_customizer(body, new_customizer_path, new_acc_path, character_setup_hover_color))
+		return FALSE
+	character_setup_suppress_eye_glow(body)
+	body.update_body_parts(TRUE)
+	character_setup_note_rendered_hover()
+	character_setup_render_main_only = FALSE
+	character_setup_redraw_dir = FALSE
+	character_setup_turn_view()
+	return TRUE
+
+/// Re-applies one customizer to the dummy, optionally with a hovered accessory; FALSE if this one needs a full render.
+/datum/preferences/proc/character_setup_redress_customizer(mob/living/carbon/human/body, customizer_path, accessory_path, accessory_colors)
+	var/datum/customizer_entry/entry = get_customizer_entry_for_customizer_type(customizer_path)
+	if(!entry)
+		return FALSE
+	var/datum/customizer/customizer = CUSTOMIZER(entry.customizer_type)
+	if(!customizer?.is_allowed(src))
+		return FALSE
+	var/saved_accessory = entry.accessory_type
+	var/saved_colors = entry.accessory_colors
+	var/saved_disabled = entry.disabled
+	if(accessory_path)
+		entry.accessory_type = accessory_path
+		if(accessory_colors)
+			entry.accessory_colors = accessory_colors
+		entry.disabled = FALSE
+	try
+		. = character_setup_redress_choice(body, CUSTOMIZER_CHOICE(entry.customizer_choice_type), entry)
+	catch(var/exception/redress_error)
+		// The entry is the saved character; never leave a hovered value in it.
+		entry.accessory_type = saved_accessory
+		entry.accessory_colors = saved_colors
+		entry.disabled = saved_disabled
+		throw redress_error
+	entry.accessory_type = saved_accessory
+	entry.accessory_colors = saved_colors
+	entry.disabled = saved_disabled
+
+/// Mirrors how a full render applies this customizer; organs that would have to be created return FALSE.
+/datum/preferences/proc/character_setup_redress_choice(mob/living/carbon/human/body, datum/customizer_choice/choice, datum/customizer_entry/entry)
+	if(istype(choice, /datum/customizer_choice/bodypart_feature))
+		var/datum/customizer_choice/bodypart_feature/feature_choice = choice
+		if(!entry.disabled)
+			// Adding a feature replaces whatever sits in its slot.
+			feature_choice.apply_customizer_to_character(body, src, entry)
+			return TRUE
+		var/datum/bodypart_feature/feature_type = feature_choice.feature_type
+		var/datum/bodypart_feature/existing = body.get_bodypart_feature_of_slot(initial(feature_type.feature_slot))
+		if(existing)
+			var/obj/item/bodypart/part = body.get_bodypart(existing.body_zone)
+			part?.remove_bodypart_feature(existing)
+		return TRUE
+	if(istype(choice, /datum/customizer_choice/organ))
+		var/datum/customizer_choice/organ/organ_choice = choice
+		var/list/organs = body.getorganslotlist(organ_choice.get_organ_slot())
+		if(entry.disabled || !length(organs))
+			return FALSE
+		var/datum/organ_dna/organ_dna = organ_choice.create_organ_dna(entry, src)
+		if(!organ_dna)
+			return FALSE
+		for(var/obj/item/organ/organ as anything in organs)
+			organ_dna.imprint_organ(organ, species = body.dna.species)
+			customize_organ(organ)
+		return TRUE
+	return FALSE
+
+/// Emissive eye glow renders as a flat white blob in the lit portrait; returns TRUE if any glow was switched off.
+/datum/preferences/proc/character_setup_suppress_eye_glow(mob/living/carbon/human/body)
+	for(var/obj/item/organ/eyes/preview_eyes in body.internal_organs)
+		if(preview_eyes.glows && preview_eyes.user_glowing_pref)
+			preview_eyes.user_glowing_pref = FALSE
+			. = TRUE
 
 /// Re-measures and turns the main view without dressing the dummy again.
 /datum/preferences/proc/character_setup_turn_view()
@@ -222,14 +322,8 @@
 		hover_entry.accessory_type = hover_old_acc
 		hover_entry.accessory_colors = hover_old_colors
 		hover_entry.disabled = hover_old_disabled
-	// Emissive eye glow renders as a flat white blob in the lit portrait; the RMH
-	// user_glowing_pref switch suppresses the emissive overlay at its source.
-	var/suppressed_eye_glow = FALSE
-	for(var/obj/item/organ/eyes/preview_eyes in body.internal_organs)
-		if(preview_eyes.glows && preview_eyes.user_glowing_pref)
-			preview_eyes.user_glowing_pref = FALSE
-			suppressed_eye_glow = TRUE
-	if(suppressed_eye_glow)
+	// The RMH user_glowing_pref switch suppresses the emissive overlay at its source.
+	if(character_setup_suppress_eye_glow(body))
 		body.update_body_parts()
 	if(!character_setup_preview_underwear)
 		// Smallclothes are worn items living in inventory slots here, not strings.
