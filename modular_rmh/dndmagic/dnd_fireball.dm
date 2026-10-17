@@ -3,7 +3,7 @@
 
 /datum/action/cooldown/spell/projectile/dnd_fireball
 	name = "DND Fireball"
-	desc = "Shoot out a ball of fire that scales with the selected DND spell slot."
+	desc = "Use a spell slot for a scaling fireball, or select Minor for a 2-mana firebolt with a small blast but no ignition. Minor direct damage is 10 before attunement. A level-five blast can reach the caster!"
 	button_icon_state = "fireball"
 	charge_sound = 'sound/magic/charging_fire.ogg'
 	sound = 'sound/magic/fireball.ogg'
@@ -22,31 +22,20 @@
 	charge_slowdown = 0.7
 	cooldown_time = 10 SECONDS
 	spell_cost = 0
-	spell_flags = SPELL_RITUOS
+	spell_flags = NONE
 	projectile_type = /obj/projectile/magic/aoe/fireball/dnd
 
 	dnd_use_spell_slots = TRUE
+	dnd_minor_mana_cost = 2
+	dnd_minor_projectile_type = /obj/projectile/magic/dnd_ember
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Fireball"
 
-/datum/action/cooldown/spell/projectile/dnd_fireball/can_cast_spell(feedback = TRUE)
+/datum/action/cooldown/spell/projectile/dnd_fireball/on_start_charge()
 	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/projectile/dnd_fireball/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
+	if(dnd_get_cast_level() == 5)
+		to_chat(owner, span_warning("This level-five [dnd_get_spell_label()] has a wide blast that could reach you, even when aimed at a distant target!"))
 
 /datum/action/cooldown/spell/projectile/dnd_fireball/proc/apply_dnd_fireball_level(obj/projectile/magic/aoe/fireball/to_fire)
 	if(!to_fire)
@@ -92,25 +81,26 @@
 
 	return level
 
-/datum/action/cooldown/spell/projectile/dnd_fireball/ready_projectile(obj/projectile/magic/aoe/fireball/to_fire, atom/target, mob/user, iteration)
+/datum/action/cooldown/spell/projectile/dnd_fireball/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	. = ..()
+
+	if(dnd_get_cast_level() == DND_MINOR_TIER)
+		to_fire.damage = 10 * clamp(attuned_strength, 0.5, 1.5)
+		return
 
 	var/level = apply_dnd_fireball_level(to_fire)
 
+	var/obj/projectile/magic/aoe/fireball/fireball = to_fire
 	to_fire.damage *= attuned_strength
-	to_fire.exp_light *= attuned_strength
-	to_fire.exp_fire *= attuned_strength
+	fireball.exp_light *= attuned_strength
+	fireball.exp_fire *= attuned_strength
 
 	if(user)
 		to_chat(user, span_notice("The Fireball forms at spell level [level]."))
 
-/datum/action/cooldown/spell/projectile/dnd_fireball/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()
-
 /datum/action/cooldown/spell/projectile/dnd_fireball/greater
 	name = "DND Fireball (Greater)"
-	desc = "Shoot out an immense ball of fire that scales with the selected DND spell slot."
+	desc = "Shoot out an immense ball of fire that scales with the selected DND spell slot. A level-five blast can reach the caster!"
 	button_icon_state = "fireball_greater"
 
 	point_cost = 6
@@ -127,6 +117,7 @@
 
 	projectile_type = /obj/projectile/magic/aoe/fireball/dnd/great
 	dnd_min_spell_slot_level = 3
+	dnd_minor_mana_cost = 0
 	dnd_spell_slot_label = "Greater Fireball"
 
 /obj/projectile/magic/aoe/fireball/dnd
@@ -184,3 +175,20 @@
 			to_fire.speed = 7
 
 	return level
+
+// Keep the minor blast fixed in size and separate from full fireball's ignition.
+/obj/projectile/magic/dnd_ember
+	name = "minor firebolt"
+	icon_state = "fireball"
+	damage = 10
+	damage_type = BURN
+	woundclass = BCLASS_BURN
+	flag = "magic"
+	nodamage = FALSE
+	range = 8
+	speed = 3
+
+/obj/projectile/magic/dnd_ember/on_hit(atom/target)
+	. = ..()
+	// Explosion ranges are exclusive: light range 2 reaches the adjacent tiles.
+	explosion(get_turf(target), devastation_range = 0, heavy_impact_range = 0, light_impact_range = 2, flash_range = 0, adminlog = FALSE, flame_range = 0, hotspot_range = 0, soundin = 'sound/misc/explode/incendiary (1).ogg')

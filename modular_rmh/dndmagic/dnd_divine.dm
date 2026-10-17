@@ -2,32 +2,15 @@
 
 /datum/action/cooldown/spell/healing/dnd
 	name = "DND Healing"
-	desc = "Heal a target. Healing scales with the selected DND spell slot."
+	desc = "Heal a target using a spell slot. Healing scales with the selected level. There is no minor form."
 	spell_cost = 0
 	charge_drain = 0
 
+	spell_flags = NONE
 	dnd_use_spell_slots = TRUE
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Healing"
-
-/datum/action/cooldown/spell/healing/dnd/can_cast_spell(feedback = TRUE)
-	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/healing/dnd/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
 
 /datum/action/cooldown/spell/healing/dnd/cast(mob/living/cast_on)
 	var/old_base_healing = base_healing
@@ -64,39 +47,17 @@
 	wound_modifier = old_wound_modifier
 	blood_restoration = old_blood_restoration
 
-/datum/action/cooldown/spell/healing/dnd/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()
-
-
 /datum/action/cooldown/spell/sacred_flame/dnd
 	name = "DND Sacred Flame"
 	desc = "Strike a target with divine fire. Stacks scale with the selected DND spell slot."
 	spell_cost = 0
 	charge_drain = 0
 
+	spell_flags = NONE
 	dnd_use_spell_slots = TRUE
 	dnd_min_spell_slot_level = 1
 	dnd_max_spell_slot_level = 5
 	dnd_spell_slot_label = "Sacred Flame"
-
-/datum/action/cooldown/spell/sacred_flame/dnd/can_cast_spell(feedback = TRUE)
-	. = ..()
-	if(!.)
-		return FALSE
-
-	return dnd_spell_slot_can_cast(feedback)
-
-/datum/action/cooldown/spell/sacred_flame/dnd/before_cast(atom/cast_on)
-	. = ..()
-	if(. & SPELL_CANCEL_CAST)
-		return
-
-	var/dnd_result = dnd_spell_slot_before_cast(cast_on)
-	if(dnd_result & SPELL_CANCEL_CAST)
-		return . | SPELL_CANCEL_CAST
-
-	return .
 
 /datum/action/cooldown/spell/sacred_flame/dnd/cast(atom/cast_on)
 	var/old_stacks = stacks_to_add
@@ -117,7 +78,3 @@
 	. = ..()
 
 	stacks_to_add = old_stacks
-
-/datum/action/cooldown/spell/sacred_flame/dnd/after_cast(atom/cast_on)
-	. = ..()
-	dnd_spell_slot_after_cast()
