@@ -109,10 +109,17 @@
 	masked_icons[key] = .
 
 /// part: "" for every direction, "_side" without the south frame, "_front" with only the south frame.
-/obj/item/proc/get_breast_sized_layer_states(size, detail = FALSE, part = "", anim = "")
+/// covers: null for every state, TRUE for the cover state only, FALSE without it.
+/obj/item/proc/get_breast_sized_layer_states(size, detail = FALSE, part = "", anim = "", covers = null)
 	var/prefix = "[icon_state]_f[detail ? "_detail" : ""][anim]"
 	. = list()
-	for(var/state in list("[prefix]_pair_[size]_BEHIND", "[prefix]_pair_[size]_ADJ", "[prefix]_pair_[size]_FRONT", "[prefix]_[size]_extra"))
+	var/list/states = covers ? list() : list("[prefix]_pair_[size]_BEHIND", "[prefix]_pair_[size]_ADJ", "[prefix]_pair_[size]_FRONT", "[prefix]_[size]_extra")
+	// "_cover" (only "_cover_front" exists): the base over the lifted body breasts, see covers_body_breasts_packed().
+	// Packed from the human sprites, so races with their own clothing sprites keep the runtime cut instead.
+	var/mob/living/carbon/human/wearer = loc
+	if(covers != FALSE && istype(wearer) && !wearer.dna?.species?.custom_clothes)
+		states.Insert(1, "[prefix]_[size]_cover")
+	for(var/state in states)
 		if(has_breast_sized_state("[state][part]"))
 			. += "[state][part]"
 
@@ -177,11 +184,11 @@
 	return breasts?.visible_through_clothes == DRAW_ABOVE
 
 /// cut_masks/cut_key: see build_breast_sized_front().
-/obj/item/proc/make_breast_sized_overlays(size, offset_y, layer2use, detail, part, list/cut_masks, cut_key)
+/obj/item/proc/make_breast_sized_overlays(size, offset_y, layer2use, detail, part, list/cut_masks, cut_key, covers = null)
 	. = list()
 	if(is_under_closed_breast_sized() || breasts_exposed_over_garment())
 		return
-	for(var/state in get_breast_sized_layer_states(size, detail, part, get_breast_sized_anim(size)))
+	for(var/state in get_breast_sized_layer_states(size, detail, part, get_breast_sized_anim(size), covers))
 		var/list/layer_icon = length(cut_masks) ? list(get_breast_sized_cut_icon(state, cut_masks, cut_key), "") : get_breast_sized_layer_icon(state)
 		var/mutable_appearance/layer_overlay = mutable_appearance(layer_icon[1], layer_icon[2], -layer2use)
 		layer_overlay.pixel_y = offset_y
@@ -248,9 +255,13 @@
 			cut_key += "|[item.get_breast_sized_cover_key(wearer, frame[2], frame[3])]"
 	var/front_layer = get_breast_sized_front_layer()
 	var/offset_y = get_breast_sized_offset(customi)
-	var/list/layers = make_breast_sized_overlays(size, offset_y, front_layer, FALSE, "_front", cut_masks, cut_key)
+	// Covers of the base and the paint first, under the breast layers of both (as the static garment is).
+	var/list/layers = make_breast_sized_overlays(size, offset_y, front_layer, FALSE, "_front", cut_masks, cut_key, covers = TRUE)
 	if(get_detail_tag())
-		layers += make_breast_sized_overlays(size, offset_y, front_layer, TRUE, "_front", cut_masks, cut_key)
+		layers += make_breast_sized_overlays(size, offset_y, front_layer, TRUE, "_front", cut_masks, cut_key, covers = TRUE)
+	layers += make_breast_sized_overlays(size, offset_y, front_layer, FALSE, "_front", cut_masks, cut_key, covers = FALSE)
+	if(get_detail_tag())
+		layers += make_breast_sized_overlays(size, offset_y, front_layer, TRUE, "_front", cut_masks, cut_key, covers = FALSE)
 	if(!length(layers))
 		return null
 	var/mutable_appearance/front = mutable_appearance(null, "", -front_layer)

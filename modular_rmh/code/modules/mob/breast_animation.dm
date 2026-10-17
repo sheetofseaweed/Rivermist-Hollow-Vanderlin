@@ -72,17 +72,31 @@ GLOBAL_LIST_INIT(breast_emote_anim_times, list(
 /mob/living/carbon/proc/refresh_breast_anim_visuals()
 	update_body_parts()
 
+/mob/living/carbon/human
+	/// Set while redrawing for a breast animation frame: update_body_parts() then uses the limb cache (breast_weight.dm).
+	var/breast_anim_redraw = FALSE
+
 /mob/living/carbon/human/refresh_breast_anim_visuals()
+	breast_anim_redraw = TRUE
+	try
+		refresh_breast_anim_layers()
+	catch(var/exception/error)
+		breast_anim_redraw = FALSE
+		throw error
+	breast_anim_redraw = FALSE
+
+/// Redraws the outermost breast-sized garment; each of these also redraws what is under it and the body.
+/mob/living/carbon/human/proc/refresh_breast_anim_layers()
 	if(cloak?.breast_sized_icon)
 		update_inv_cloak() // also redraws the armor, the shirt and the body
-		return
-	if(wear_shirt?.breast_sized_icon || wear_armor?.breast_sized_icon)
+	else if(wear_armor?.breast_sized_icon)
 		update_inv_armor() // also redraws the shirt, a breast-sized bra and the body
-		return
-	if(bra?.breast_sized_icon)
+	else if(wear_shirt?.breast_sized_icon)
+		update_inv_shirt() // also redraws a breast-sized bra and the body
+	else if(bra?.breast_sized_icon)
 		update_inv_undie_top() // also redraws the body
-		return
-	..()
+	else
+		update_body_parts()
 
 /// Whether owner's breasts use the animated icon. Mobs without a player animate.
 /proc/breast_animation_enabled(mob/living/carbon/owner)

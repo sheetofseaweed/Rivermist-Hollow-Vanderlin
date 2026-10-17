@@ -150,6 +150,12 @@
 	/// TRUE when this actor, lying down, locks their legs around whoever is inside them.
 	var/leg_lock = FALSE
 
+	/// Set while a coalesced arousal refresh builds the UI data, see on_arousal_changed().
+	var/arousal_only_ui_update = FALSE
+	/// Menu actions UI data from the last full build, reused by arousal refreshes for SEX_ACTIONS_UI_CACHE_TIME.
+	var/list/cached_actions_ui_data
+	var/cached_actions_ui_time = 0
+
 	var/static/list/action_zone_filter_options = list(
 		"Any" = SEX_UI_ZONE_ANY,
 		"Mouth" = SEX_UI_ZONE_MOUTH,
@@ -236,7 +242,16 @@
 
 /datum/sex_scene_controller/proc/on_arousal_changed()
 	SIGNAL_HANDLER
+	// Arousal changes every action tick; refreshing the whole panel each time rebuilt every menu action (~9 ms).
+	// Coalesce them into one refresh per SEX_AROUSAL_UI_DELAY, which reuses a recent action list.
+	if(!is_ui_open())
+		return
+	addtimer(CALLBACK(src, PROC_REF(flush_arousal_ui_update)), SEX_AROUSAL_UI_DELAY, TIMER_UNIQUE)
+
+/datum/sex_scene_controller/proc/flush_arousal_ui_update()
+	arousal_only_ui_update = TRUE
 	SStgui.update_uis(src)
+	arousal_only_ui_update = FALSE
 
 /datum/sex_scene_controller/proc/get_active_action(action_ref)
 	var/list/datum/sex_action/controlled_actions = get_active_actions()

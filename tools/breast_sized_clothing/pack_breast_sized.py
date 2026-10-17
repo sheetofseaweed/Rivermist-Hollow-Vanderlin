@@ -51,6 +51,11 @@ for every direction or per direction ("S", "N", "E", "W", with "default" for the
 After warping, the hide mask never retreats from where it is at rest (it covers its rest and its warped
 area), and wherever that leaves a hole not covered by the warped breast/extra layers, those layers keep their
 rest pixels. So a frame never shows the original garment under the cut, nor skin through it.
+Cover. For the south view of every size and frame the packer also writes "<prefix>..._<N>_cover_front": the worn
+base left after that frame's hide cut, only where the body breast of that frame is (human offsets). The game draws
+it in the garment's lifted front layer, above the lifted body breasts, instead of cutting the body breasts by the
+garment at runtime (that cut cost up to ~130 ms per new frame). Written for every size, empty or not, so the game
+can tell a garment packed with covers from an older one.
 --preview writes a GIF of the walk and run cycles over the body for checking the warp, and next to it
 "<name>_squeeze.gif" with the squeeze frames.
 """
@@ -302,6 +307,44 @@ def worn_garments(base, profile):
     return {prefix: states[prefix][0] for prefix in (base, base + "_detail") if prefix in states}
 
 
+def worn_bases(base, profile):
+    """prefix -> the worn base frames [4] ("<base>" and "<base>_detail"), for the covers."""
+    states = {s.name: state_frames(s) for s in Dmi.from_file(os.path.join(ROOT, profile["worn"])).states if not s.movement}
+    return {prefix: states[prefix][0] for prefix in (base, base + "_detail") if prefix in states}
+
+
+def load_body_still():
+    """size -> south view of the still body breast (ADJ), in clothing pixel space."""
+    result = {}
+    for state in Dmi.from_file(BODY_ANIM).states:
+        match = re.match(r"^pair_(\d+)_ADJ$", state.name)
+        if match and not state.movement:
+            result[int(match.group(1))] = shifted(state_frames(state)[0][SOUTH], BODY_OFFSET_Y)
+    return result
+
+
+def cover_frame(worn, hide, body_south, within=None):
+    """South-only frame: the worn base where the hide does not cut it and the body breast is.
+    within: the base cover of the same frame, for the detail cover (paint only covers where the cloth does, as the
+    runtime cut by the base did)."""
+    out = blank()
+    if worn is None:
+        return [out, blank(), blank(), blank()]
+    w, h, b, o = worn[SOUTH].load(), hide[SOUTH].load() if hide else None, body_south.load(), out.load()
+    c = within[SOUTH].load() if within else None
+    for y in range(32):
+        for x in range(32):
+            if w[x, y][3] and b[x, y][3] and not (h and h[x, y][3]) and (c is None or c[x, y][3]):
+                o[x, y] = w[x, y]
+    return [out, blank(), blank(), blank()]
+
+
+def add_cover(dmi, name, still, moving=None, delay=1):
+    add_state(dmi, name + "_front", [still])
+    if moving:
+        add_state(dmi, name + "_front", moving, movement=True, delay=delay)
+
+
 def pin_unchanged(items, warped, garment, dirs):
     """Puts back the rest pixels wherever the rest picture still equals the original garment, in directions dirs."""
     for d in dirs:
@@ -446,20 +489,53 @@ def pack(source, output, preview=None, profile=None):
     profile = profile or load_profile(source)
     motion = load_body_motion()
     garments = worn_garments(base, profile)
+    worn = worn_bases(base, profile)
+    if base not in worn:
+        print(f"warning: no worn base {base} in {profile['worn']}, covers are empty")
+    body_still = load_body_still()
     result = Dmi(32, 32)
     groups = {}
+    still_hides = {}
     for prefix, rest_name, kind, size, frames in layers:
+        if kind == "hide":
+            still_hides[(prefix, size)] = frames[0]
         if size not in motion:
             add_variants(result, prefix + rest_name, kind, frames)
             continue
         groups.setdefault((prefix, size), []).append((rest_name, kind, frames))
-    for (prefix, size), group in groups.items():
+    base_covers = {}  # (size, frame key) -> base cover, to limit the detail cover
+    def make_cover(prefix, size, key, hide, body_south):
+        within = None if prefix == base else base_covers.get((size, key))
+        frame = cover_frame(worn.get(prefix), hide, body_south, within)
+        if prefix == base:
+            base_covers[(size, key)] = frame
+        return frame
+    for (prefix, size), hide in sorted(still_hides.items(), key=lambda item: item[0][0] != base):
+        if size not in motion and size in body_still:
+            add_cover(result, f"{prefix}_{size}_cover", make_cover(prefix, size, "rest", hide, body_still[size]))
+    # Base groups first: the detail covers are limited to the base covers.
+    for (prefix, size), group in sorted(groups.items(), key=lambda item: item[0][0] != base):
         body = motion[size]
         items = [(name, kind, frames[0]) for name, kind, frames in group]
         garment = garments.get(prefix)
         walk = [warp_group(items, body["rest"], f, profile, garment) for f in body["walk"]]
         run = [warp_group(items, body["rest"], f, profile, garment) for f in body["run"]]
         squeeze = [warp_group(items, body["rest"], f, profile, garment) for f in body["squeeze"]]
+        hide_name = next((name for name, kind, frames in group if kind == "hide"), None)
+        if hide_name:
+            cover = lambda key, warped, body_frame: make_cover(prefix, size, key, warped[hide_name], body_frame[SOUTH])
+            rest_cover = make_cover(prefix, size, "rest", still_hides[(prefix, size)], body["rest"][SOUTH])
+            walk_covers = [cover(f"w{i}", w, f) for i, (w, f) in enumerate(zip(walk, body["walk"]))]
+            run_covers = [cover(f"r{i}", r, f) for i, (r, f) in enumerate(zip(run, body["run"]))]
+            squeeze_covers = [cover(f"s{i}", s, f) for i, (s, f) in enumerate(zip(squeeze, body["squeeze"]))]
+            add_cover(result, f"{prefix}_{size}_cover", rest_cover, walk_covers, WALK_DELAY)
+            add_cover(result, f"{prefix}_run_{size}_cover", rest_cover, run_covers, RUN_DELAY)
+            for index, frame in enumerate(walk_covers, 1):
+                add_cover(result, f"{prefix}_f{index}_{size}_cover", frame)
+            for index, frame in enumerate(run_covers, 1):
+                add_cover(result, f"{prefix}_r{index}_{size}_cover", frame)
+            for index, frame in enumerate(squeeze_covers, 1):
+                add_cover(result, f"{prefix}_s{index}_{size}_cover", frame)
         for rest_name, kind, frames in group:
             add_variants(result, prefix + rest_name, kind, frames, [w[rest_name] for w in walk], WALK_DELAY)
             add_variants(result, f"{prefix}_run{rest_name}", kind, frames, [r[rest_name] for r in run], RUN_DELAY)

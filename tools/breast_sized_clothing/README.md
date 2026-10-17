@@ -46,6 +46,11 @@ Layer values: `code/__DEFINES/misc.dm` (search `FRONT_LAYER`).
    In `stretch`, `bottom` and `rigid` the per-column motion is smoothed (3-column median), and `bottom` also
    keeps the garment outline from growing new lone pixels above (top edge first) or below its neighbours;
    `free` follows the breast exactly, unsmoothed, so closed garments do not show skin.
+   The packer also writes `<state>_f[_detail][anim]_<N>_cover_front` for every size and frame: the base left after the
+   hide cut where the body breast of that frame is (paint only where the base is). The game draws these first in the
+   garment's lifted front layer, so the lifted body breasts are never cut by the garment at runtime (that cut froze
+   the server for up to ~130 ms per new frame). Body breast icons carry pre-split `*_ADJ_front` / `*_ADJ_side`
+   states (`tools/breast_anim/south_split.py`). Repack every garment after changing this.
    The hide mask never retreats from its rest position in any frame, and holes it would leave are filled
    with the clothing's rest pixels, so no frame shows the original garment under the cut.
    Repack every garment after rebuilding the body animation: the warp is computed from `breasts_anim.dmi`.

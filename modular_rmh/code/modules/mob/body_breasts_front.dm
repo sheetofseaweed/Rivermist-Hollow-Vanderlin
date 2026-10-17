@@ -92,6 +92,38 @@
 		result.Insert(part, "", moving = moving)
 	return result
 
+/// split_south_view() with the "_front"/"_side" copies of the state already in source's icon, so nothing is cut at
+/// runtime. The body breast icons hold them for every ADJ state (tools/breast_anim/south_split.py), and the coloured
+/// bundle includes them (generate_icon_states() below).
+/proc/split_south_view_packed(mutable_appearance/source, front_layer)
+	var/had_blocker = length(source.overlays)
+	var/mutable_appearance/front_appearance = new(source)
+	front_appearance.icon_state = "[source.icon_state]_front"
+	front_appearance.layer = -front_layer
+	front_appearance.overlays.Cut()
+	if(had_blocker)
+		front_appearance.overlays += emissive_blocker(source.icon, front_appearance.icon_state)
+	source.icon_state = "[source.icon_state]_side"
+	return front_appearance
+
+/// Whether this breast-sized item hides the lifted body breasts with the cover states in its own front layer (packed by
+/// pack_breast_sized.py for the human offsets), so the body breasts need no cut by its base.
+/obj/item/proc/covers_body_breasts_packed(mob/living/carbon/human/wearer, body_x, body_y)
+	var/size = get_breast_sized_size()
+	if(isnull(size) || !has_breast_sized_state("[icon_state]_f_[size]_cover_front"))
+		return FALSE
+	var/list/frame = get_breast_sized_cover_frame(wearer)
+	// Custom race sprites or other offsets: the cover was packed for the human body frame (body breasts 1px lower).
+	return !frame[1] && frame[2] - body_x == 0 && frame[3] - body_y == 1
+
+/datum/sprite_accessory/genitals/breasts/generate_icon_states(overlay_icon_state, color_string, icon_file)
+	. = ..()
+	var/file = icon_file || icon
+	var/list/color_list = color_string_to_list(color_string)
+	for(var/suffix in list("ADJ_front", "ADJ_side"))
+		if(icon_exists(file, "[overlay_icon_state]_[suffix]"))
+			.["[overlay_icon_state]_[suffix]"] = generate_icon_state(overlay_icon_state, color_list, BODY_ADJ_TOP_LAYER, suffix, file)
+
 /// Splits the front view off appearances drawn on from_layer when owner's breasts are lifted.
 /// colors: the accessory colors the appearances were built with, part of the split icon cache key.
 /// use_cover: cut the front view by breast-sized clothing worn over it; otherwise only lift when bare.
@@ -105,6 +137,17 @@
 	for(var/mutable_appearance/appearance as anything in appearance_list.Copy())
 		if(appearance.layer != -from_layer)
 			continue
+		// Pre-split states, and garments that cover the body breasts from their own front layer: nothing to cut.
+		if(use_cover && icon_exists(icon_file, "[appearance.icon_state]_front"))
+			var/packed = TRUE
+			if(islist(cover))
+				for(var/obj/item/cover_item as anything in cover)
+					if(!cover_item.covers_body_breasts_packed(owner, appearance.pixel_x, appearance.pixel_y))
+						packed = FALSE
+						break
+			if(packed)
+				appearance_list += split_south_view_packed(appearance, front_layer)
+				continue
 		var/cache_key = "[type]|[icon_file]|[appearance.icon_state]|[colors]"
 		var/list/cover_masks = list()
 		if(islist(cover))

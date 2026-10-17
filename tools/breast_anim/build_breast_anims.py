@@ -36,6 +36,7 @@ from PIL import Image, ImageOps
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 from dmi import Dmi  # noqa: E402
+from south_split import add_south_splits  # noqa: E402
 
 SRC = os.path.join(os.path.dirname(__file__), "src")
 BASE = os.path.join(ROOT, "modular_rmh/icons/mob/sprite_accessory/genitals/breasts.dmi")
@@ -148,6 +149,8 @@ def main():
             add_state(out, f"pair_{size}_r{index}_{layer}", [frame])
         for index, frame in enumerate(squeeze[name], 1):
             add_state(out, f"pair_{size}_s{index}_{layer}", [frame])
+    # "_front"/"_side" copies of the ADJ states, so the game never splits them at runtime (south_split.py).
+    add_south_splits(out)
     out.to_file(OUT)
     print(f"{OUT}: {len(out.states)} states")
 

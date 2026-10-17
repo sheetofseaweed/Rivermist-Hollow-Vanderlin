@@ -2,8 +2,9 @@
 // (get_visible_size(): organ size plus swelling from Swelling Glands, 0-8). It replaces the old per-size
 // "<size>boobs/permanent/lite" statuses, which were applied once when the organ was inserted and shared the
 // "bigboobs" id with Naturally Endowed's status, so that vice wiped the size 5 stats.
-// Sizes 6+ ("weight"), growing from 6 to 8: alert, more fatigue when sprinting, slower to stand up, a quiet seam sound
-// and an examine line for a plain (not breast-sized) garment over the chest. While the breasts hold their own milk at
+// Sizes 6+ ("weight"), growing from 6 to 8: alert, more fatigue when sprinting, slower to stand up.
+// Sizes 5+ (the animated ones) in a plain (not breast-sized) garment over the chest ("strain"): a seam sound and a message
+// on putting it on, an examine line, discomfort messages now and then, and from 6 a stress event while it is worn. While the breasts hold their own milk at
 // 75 % of capacity or more ("full"), at any size: leaking while running and a spray on falls and chest hits, both growing
 // with the fill; a short buff once emptied from 7-8.
 // Every number is in the tables below; see "breasts files/docs/IMPLEMENTATION_NOTES.md" for tuning and rollback.
@@ -29,17 +30,48 @@ GLOBAL_LIST_INIT(breast_size_sprint_cost, list("6" = 0.15, "7" = 0.3, "8" = 0.5)
 GLOBAL_LIST_INIT(breast_touch_sensitivity, list("6" = 0.85, "7" = 0.75, "8" = 0.55))
 /// Visible size -> extra seconds to stand up (get_up()).
 GLOBAL_LIST_INIT(breast_stand_extra_time, list("6" = 1, "7" = 1.5, "8" = 2))
-/// Visible size -> plain garment over the chest: seam sound volume, message on putting it on, examine line.
-GLOBAL_LIST_INIT(breast_strain_volume, list("6" = 4, "7" = 8, "8" = 14))
+/// Visible size -> plain garment over the chest: seam sound volume, message on putting it on, examine line,
+/// stress event while it is worn, discomfort messages now and then (BREAST_STRAIN_MESSAGE_MIN-MAX apart).
+/// Messages from 6 up are yellow (span_warning), size 5 grey (span_notice).
+GLOBAL_LIST_INIT(breast_strain_volume, list("5" = 25, "6" = 35, "7" = 50, "8" = 65))
 GLOBAL_LIST_INIT(breast_strain_equip_text, list(
+	"5" = "ITEM is a touch tight across my chest.",
 	"6" = "ITEM fits a little snug across my chest.",
 	"7" = "A seam creaks as I squeeze into ITEM.",
 	"8" = "Seams groan as I force ITEM over my chest.",
 ))
 GLOBAL_LIST_INIT(breast_strain_examine_text, list(
+	"5" = "ITEM hugs THEIR chest closely.",
 	"6" = "ITEM sits snugly over THEIR chest.",
 	"7" = "ITEM strains against THEIR chest.",
 	"8" = "ITEM is stretched to bursting over THEIR chest.",
+))
+GLOBAL_LIST_INIT(breast_strain_stress, list(
+	"6" = /datum/stress_event/tight_clothes,
+	"7" = /datum/stress_event/tight_clothes_bad,
+	"8" = /datum/stress_event/tight_clothes_bad,
+))
+GLOBAL_LIST_INIT(breast_strain_flavour_text, list(
+	"5" = list(
+		"ITEM pulls a little across my chest when I move.",
+		"I tug ITEM into a more comfortable spot.",
+		"ITEM is a touch snug over my chest.",
+	),
+	"6" = list(
+		"ITEM presses against my chest.",
+		"ITEM rubs against my chest with every breath.",
+		"I roll my shoulders, trying to ease ITEM's grip on my chest.",
+	),
+	"7" = list(
+		"The seams of ITEM dig into my chest.",
+		"I tug at ITEM, but nothing eases the squeeze.",
+		"Every breath strains ITEM a little more.",
+	),
+	"8" = list(
+		"ITEM crushes my chest. It's hard to breathe.",
+		"The seams of ITEM creak with every breath.",
+		"ITEM is cutting into my chest. I need to get out of it.",
+	),
 ))
 /// Visible size of the giver's breasts -> arousal multiplier for the receiver of a boob job.
 GLOBAL_LIST_INIT(breast_paizuri_bonus, list("8" = 1.2))
@@ -50,6 +82,13 @@ GLOBAL_LIST_INIT(breast_milking_rate, list("7" = 1.25, "8" = 1.5))
 #define BREAST_SPRINT_BASE_COST 2
 /// Smallest visible size with the weight effects.
 #define BREAST_WEIGHT_MIN_SIZE 6
+/// Smallest visible size that strains a plain garment over the chest (the first animated size).
+#define BREAST_STRAIN_MIN_SIZE 5
+/// The seam sound waits for the garment's own equip sound, which would drown it.
+#define BREAST_STRAIN_SOUND_DELAY (0.5 SECONDS)
+/// Time between discomfort messages while a strained garment is worn.
+#define BREAST_STRAIN_MESSAGE_MIN (3 MINUTES)
+#define BREAST_STRAIN_MESSAGE_MAX (5 MINUTES)
 /// Own milk share from which the breasts count as full.
 #define BREAST_FULL_RATIO 0.75
 /// Own milk share at which Swelling Glands makes the breasts one size bigger (they swell once, not in three steps).
@@ -82,9 +121,11 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 			best_ratio = ratio
 			. = table[ratio_text]
 
-/// Strain table text for the size, with ITEM and THEIR filled in.
+/// Strain table text for the size (one picked when it is a list), with ITEM and THEIR filled in.
 /proc/get_breast_strain_text(list/table, size, obj/item/item, their)
 	var/text = LAZYACCESS(table, "[min(size, 8)]")
+	if(islist(text))
+		text = pick(text)
 	if(!text)
 		return null
 	text = replacetext(text, "ITEM", "[item]")
@@ -155,7 +196,11 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 		to_chat(src, span_notice("Some of the pressure in my chest eases."))
 
 /mob/living/carbon/human/update_body_parts(redraw = FALSE)
-	. = ..()
+	// A breast animation frame only changes the render key (the frame is part of it), so the limb cache is enough;
+	// the clothing updates would otherwise rebuild every limb two or three times per frame. See breast_animation.dm.
+	if(breast_anim_redraw)
+		redraw = FALSE
+	. = ..(redraw)
 	update_breast_size_effect()
 
 /// Fatigue tier for sprinting: visible size, +1 for Naturally Endowed, -1 with a supporting bra.
@@ -166,16 +211,21 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 	if(bra && (bra.flags_inv & HIDEBOOB))
 		. -= 1
 
-/// A plain (not breast-sized) garment worn over the chest, which big breasts strain.
+/// The outermost plain (not breast-sized) garment worn over the chest, which big breasts strain.
 /mob/living/carbon/human/proc/get_strained_chest_garment()
 	for(var/obj/item/item as anything in list(cloak, wear_armor, wear_shirt))
-		if(!item || item.draws_breast_sized_layers())
-			continue
-		if(item == cloak && cloak.alternate_worn_layer != TABARD_LAYER)
-			continue
-		if((item.body_parts_covered & CHEST) || (item.flags_inv & HIDEBOOB))
+		if(is_strained_chest_garment(item))
 			return item
 	return null
+
+/// Whether the item is worn over the chest (shirt, armor or tabard) and is plain, so big breasts strain it,
+/// whatever is worn over it.
+/mob/living/carbon/human/proc/is_strained_chest_garment(obj/item/item)
+	if(!item || item.draws_breast_sized_layers())
+		return FALSE
+	if(item != wear_shirt && item != wear_armor && !(item == cloak && cloak.alternate_worn_layer == TABARD_LAYER))
+		return FALSE
+	return (item.body_parts_covered & CHEST) || (item.flags_inv & HIDEBOOB)
 
 /// Extra seconds to stand up, see get_up().
 /mob/living/proc/get_extra_stand_time()
@@ -189,12 +239,17 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 /datum/status_effect/breast_size
 	id = "breast_size"
 	duration = -1
-	tick_interval = STATUS_EFFECT_NO_TICK
+	/// Checks the strained garment (stress, discomfort messages); does nothing below BREAST_STRAIN_MIN_SIZE.
+	tick_interval = 5 SECONDS
 	status_type = STATUS_EFFECT_REPLACE
 	alert_type = null
 	var/size = 0
 	var/full = FALSE
 	var/sprinted_tiles = 0
+	/// Stress event type applied for the strained garment now, see update_strain().
+	var/strain_stress
+	/// world.time of the next discomfort message; 0 while nothing is strained.
+	var/next_strain_message = 0
 	COOLDOWN_DECLARE(spray_cooldown)
 	COOLDOWN_DECLARE(flavour_cooldown)
 
@@ -214,12 +269,19 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 	RegisterSignal(owner, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
 	RegisterSignal(owner, COMSIG_LIVING_STATUS_KNOCKDOWN, PROC_REF(on_knockdown))
 	RegisterSignal(owner, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(on_damage))
-	if(size >= BREAST_WEIGHT_MIN_SIZE)
+	if(size >= BREAST_STRAIN_MIN_SIZE)
 		RegisterSignal(owner, COMSIG_MOB_EQUIPPED_ITEM, PROC_REF(on_equipped))
+		RegisterSignal(owner, COMSIG_MOB_UNEQUIPPED_ITEM, PROC_REF(on_unequipped))
+		update_strain()
 
 /datum/status_effect/breast_size/on_remove()
-	UnregisterSignal(owner, list(COMSIG_MOVABLE_MOVED, COMSIG_MOB_EQUIPPED_ITEM, COMSIG_LIVING_STATUS_KNOCKDOWN, COMSIG_MOB_APPLY_DAMAGE))
+	UnregisterSignal(owner, list(COMSIG_MOVABLE_MOVED, COMSIG_MOB_EQUIPPED_ITEM, COMSIG_MOB_UNEQUIPPED_ITEM, COMSIG_LIVING_STATUS_KNOCKDOWN, COMSIG_MOB_APPLY_DAMAGE))
+	if(strain_stress)
+		owner.remove_stress(strain_stress)
 	return ..()
+
+/datum/status_effect/breast_size/tick()
+	update_strain(TRUE)
 
 /datum/status_effect/breast_size/get_examine_text(mob/user, list/P)
 	if(!ishuman(owner))
@@ -227,7 +289,7 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 	var/mob/living/carbon/human/human_owner = owner
 	var/their = P ? lowertext(P[THEIR]) : owner.p_their()
 	var/list/lines = list()
-	if(size >= BREAST_WEIGHT_MIN_SIZE)
+	if(size >= BREAST_STRAIN_MIN_SIZE)
 		var/obj/item/garment = human_owner.get_strained_chest_garment()
 		if(garment)
 			lines += span_notice(get_breast_strain_text(GLOB.breast_strain_examine_text, size, garment, their))
@@ -270,13 +332,52 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 	else
 		source.visible_message(span_notice("[source]'s chest sways heavily as [source.p_they()] run[source.p_s()]."), span_notice("My back aches under the weight."))
 
-/// Squeezing into a plain garment over a big chest: a quiet seam sound.
+/// Squeezing into a plain garment over a big chest (even under other clothes): a seam sound after the equip sound.
 /datum/status_effect/breast_size/proc/on_equipped(mob/living/carbon/human/source, obj/item/item, slot)
 	SIGNAL_HANDLER
-	if(source.get_strained_chest_garment() != item)
+	if(source.is_strained_chest_garment(item))
+		addtimer(CALLBACK(src, PROC_REF(strain_on_equip), item), BREAST_STRAIN_SOUND_DELAY)
+
+/datum/status_effect/breast_size/proc/strain_on_equip(obj/item/item)
+	var/mob/living/carbon/human/source = owner
+	if(QDELETED(item) || !istype(source) || !source.is_strained_chest_garment(item))
 		return
-	playsound(source, 'sound/foley/cloth_rip.ogg', LAZYACCESS(GLOB.breast_strain_volume, "[size]") || 4, TRUE, -6)
-	to_chat(source, span_notice(get_breast_strain_text(GLOB.breast_strain_equip_text, size, item, source.p_their())))
+	playsound(source, 'sound/foley/cloth_rip.ogg', LAZYACCESS(GLOB.breast_strain_volume, "[size]") || 25, TRUE, -6)
+	strain_message(get_breast_strain_text(GLOB.breast_strain_equip_text, size, item, source.p_their()))
+	update_strain()
+
+/datum/status_effect/breast_size/proc/on_unequipped(mob/living/carbon/human/source, obj/item/item)
+	SIGNAL_HANDLER
+	addtimer(CALLBACK(src, PROC_REF(update_strain)), 1)
+
+/// Yellow from size 6, grey at 5.
+/datum/status_effect/breast_size/proc/strain_message(text)
+	if(text)
+		to_chat(owner, size >= BREAST_WEIGHT_MIN_SIZE ? span_warning(text) : span_notice(text))
+
+/// Stress for a strained garment while it is worn; with discomfort_messages, also a discomfort message when one is due.
+/datum/status_effect/breast_size/proc/update_strain(discomfort_messages = FALSE)
+	var/mob/living/carbon/human/source = owner
+	if(!istype(source))
+		return
+	var/obj/item/garment = size >= BREAST_STRAIN_MIN_SIZE ? source.get_strained_chest_garment() : null
+	var/stress_type = garment ? LAZYACCESS(GLOB.breast_strain_stress, "[size]") : null
+	if(stress_type != strain_stress)
+		if(strain_stress)
+			source.remove_stress(strain_stress)
+		strain_stress = stress_type
+		if(strain_stress)
+			source.add_stress(strain_stress)
+	if(!garment)
+		next_strain_message = 0
+		return
+	if(!next_strain_message)
+		next_strain_message = world.time + rand(BREAST_STRAIN_MESSAGE_MIN, BREAST_STRAIN_MESSAGE_MAX)
+		return
+	if(!discomfort_messages || world.time < next_strain_message || source.stat != CONSCIOUS)
+		return
+	next_strain_message = world.time + rand(BREAST_STRAIN_MESSAGE_MIN, BREAST_STRAIN_MESSAGE_MAX)
+	strain_message(get_breast_strain_text(GLOB.breast_strain_flavour_text, size, garment, source.p_their()))
 
 /datum/status_effect/breast_size/proc/on_knockdown(mob/living/carbon/human/source, amount, ignore_canstun)
 	SIGNAL_HANDLER
@@ -335,8 +436,22 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 	desc = span_green("My chest finally feels light again.")
 	timer = 5 MINUTES
 
+/// While a plain garment strains size 6 breasts (update_strain()); removed when it stops.
+/datum/stress_event/tight_clothes
+	stress_change = 1
+	desc = span_red("My clothes are too tight across my chest.")
+
+/// Sizes 7-8. Not a subtype of tight_clothes: has_stress_type() would find one for the other.
+/datum/stress_event/tight_clothes_bad
+	stress_change = 2
+	desc = span_red("My clothes are crushing my chest.")
+
 #undef BREAST_SPRINT_BASE_COST
 #undef BREAST_WEIGHT_MIN_SIZE
+#undef BREAST_STRAIN_MIN_SIZE
+#undef BREAST_STRAIN_SOUND_DELAY
+#undef BREAST_STRAIN_MESSAGE_MIN
+#undef BREAST_STRAIN_MESSAGE_MAX
 #undef BREAST_FULL_RATIO
 #undef BREAST_SWELL_RATIO
 #undef BREAST_SPRINT_LEAK_TILES
