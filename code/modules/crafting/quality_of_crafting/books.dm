@@ -40,7 +40,13 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 // Example: /obj/item/ore/iron { recipe_info_path = /datum/ore_source/iron }
 // Example: /obj/item/hammer   { recipe_info_path = /obj/item/recipe_book/blacksmithing }
 // When null the atom's own return_recipe_data() is called directly.
-/atom/var/recipe_info_path
+//RMH EDITED START - declared on /datum, not /atom: get_cached_recipe_data() is
+// called with /datum recipe paths (container_craft, wounds, brewing...), and
+// initial(path.recipe_info_path) on a type without the var is a runtime error
+// that aborts the whole ui_static_data call stack, so the GLOB caches were
+// never filled and every book open redid the full scan (lag spike + runtime).
+/datum/var/recipe_info_path
+//RMH EDITED END
 
 /obj/item/recipe_book
 
@@ -72,7 +78,6 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 	var/list/data = list()
 	data["book_name"] = name
 	data["book_desc"] = desc
-	ensure_snack_mill_reverse()
 	build_obtained_from_reverse()
 	data["recipes"] = get_cached_book_recipes(type, FALSE)
 	data["linked_recipes"] = get_cached_linked_recipes(type)
@@ -286,12 +291,12 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 /obj/item/recipe_book/proc/_try_queue_path(path_str, list/queue, list/visited)
 	if(!path_str) return
 	var/atom/p = text2path(path_str)
-	if(!p || visited[p]) return
+	if(!p || visited["[p]"]) return
 	// Check if the item itself declares a recipe_info_path redirect
 	var/atom/redirect = initial(p.recipe_info_path)
 	var/atom/target = redirect ? redirect : p
-	if(visited[target]) return
-	visited[target] = TRUE
+	if(visited["[target]"]) return
+	visited["[target]"] = TRUE
 	queue += target
 
 /obj/item/recipe_book/getonmobprop(tag)
@@ -403,7 +408,7 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 		/datum/repeatable_crafting_recipe/saltfish,
 		/datum/repeatable_crafting_recipe/raisins,
 		/datum/orderless_slapcraft/food/pie,
-		/datum/orderless_slapcraft/food/tart.
+		/datum/orderless_slapcraft/food/tart, //RMH EDITED - was a trailing "." (path operator), typo for ","
 	)
 
 /obj/item/recipe_book/survival

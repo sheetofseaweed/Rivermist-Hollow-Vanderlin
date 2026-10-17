@@ -503,6 +503,7 @@
 		return
 	limb = newBodyPart(limb_zone, 0, 0)
 	if(limb)
+		SEND_SIGNAL(src, COMSIG_CARBON_LIMB_REGENERATED, limb)
 		limb.attach_limb(src, TRUE)
 		if(!silent)
 			visible_message(span_green("[src]'s [limb] regenerates!"), span_green("My [limb] regenerates!"), vision_distance = COMBAT_MESSAGE_RANGE)

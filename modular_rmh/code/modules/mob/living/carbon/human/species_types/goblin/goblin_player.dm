@@ -121,6 +121,7 @@
 		/datum/customizer/organ/genitals/vagina/anthro,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
+		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,
 		/datum/customizer/bodypart_feature/armpit_hair,
 	)

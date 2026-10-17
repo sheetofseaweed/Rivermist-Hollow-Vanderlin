@@ -419,6 +419,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// Can't fall asleep
 #define TRAIT_FAT "Obese"
 #define TRAIT_NOSLEEP "Fatal Insomnia"
+/// Rests, mends and dreams through the Reverie action instead of sleep
+#define TRAIT_REVERIE "Reverie"
 #define TRAIT_FASTSLEEP "Fast Sleeper"
 #define TRAIT_NUDIST "Nudist" //you can't wear most clothes
 #define TRAIT_INHUMANE_ANATOMY "Inhuman Anatomy" //can't wear hats and shoes

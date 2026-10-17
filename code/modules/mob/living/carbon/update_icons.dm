@@ -79,16 +79,8 @@
 	var/list/behindhands = list()
 
 	var/list/offsets
-	var/use_female_sprites = MALE_SPRITES
 	if(species)
-		if(species.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		offsets = get_offset_features()
 
 	for(var/obj/item/I in held_items)
 		if(client && hud_used && hud_used.hud_version != HUD_STYLE_NOHUD)
@@ -310,22 +302,7 @@
 	if(handcuffed)
 		var/mutable_appearance/inhand_overlay = mutable_appearance('icons/roguetown/mob/bodies/cuffed.dmi', "[handcuffed.name]up", -HANDCUFF_LAYER)
 		if(ishuman(src))
-			var/mob/living/carbon/human/H = src
-			var/datum/species/species = H.dna?.species
-			var/list/offsets
-			var/use_female_sprites = MALE_SPRITES
-			if(species)
-				if(species.sexes)
-					if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-						use_female_sprites = FEMALE_SPRITES
-				if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-					offsets = species.offset_features_f
-				else
-					offsets = species.offset_features_m
-
-			if(LAZYACCESS(offsets, OFFSET_HANDS))
-				inhand_overlay.pixel_x += offsets[OFFSET_HANDS][1]
-				inhand_overlay.pixel_y += offsets[OFFSET_HANDS][2]
+			apply_offset(inhand_overlay, OFFSET_HANDS)
 
 		overlays_standing[HANDCUFF_LAYER] = inhand_overlay
 		apply_overlay(HANDCUFF_LAYER)

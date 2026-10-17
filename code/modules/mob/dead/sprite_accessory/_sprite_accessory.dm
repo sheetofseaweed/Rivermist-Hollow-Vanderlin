@@ -56,23 +56,10 @@
 	if(QDELETED(owner) || !ishuman(owner))
 		return
 
-	var/mob/living/carbon/human/H = owner
-	var/datum/species/species = H.dna?.species
-
-	if(!species)
+	if(!owner.dna?.species)
 		return
 
-	var/use_female_sprites = FALSE
-	if(species?.sexes)
-		if(H.gender == FEMALE && !species.swap_female_clothes || H.gender == MALE && species.swap_male_clothes || H.gender == MALE && species.swap_male_clothes_but_not_offsets)
-			use_female_sprites = FEMALE_SPRITES
-
-	var/list/offsets
-	if(use_female_sprites && !(H.gender == MALE && species.swap_male_clothes_but_not_offsets))
-		offsets = species.offset_features_f
-	else
-		offsets = species.offset_features_m
-
+	var/list/offsets = owner.get_offset_features()
 	if(LAZYACCESS(offsets, feature_key))
 		for(var/mutable_appearance/appearance as anything in appearance_list)
 			appearance.pixel_x += offsets[feature_key][1]
@@ -82,23 +69,10 @@
 	if(QDELETED(owner) || !ishuman(owner))
 		return
 
-	var/mob/living/carbon/human/H = owner
-	var/datum/species/species = H.dna?.species
-
-	if(!species)
+	if(!owner.dna?.species)
 		return
 
-	var/use_female_sprites = FALSE
-	if(species?.sexes)
-		if(H.gender == FEMALE && !species.swap_female_clothes || H.gender == MALE && species.swap_male_clothes)
-			use_female_sprites = FEMALE_SPRITES
-
-	var/list/offsets
-	if(use_female_sprites)
-		offsets = species.offset_genitals_f
-	else
-		offsets = species.offset_genitals_m
-
+	var/list/offsets = owner.get_genital_offsets()
 	if(LAZYACCESS(offsets, feature_key))
 		for(var/mutable_appearance/appearance as anything in appearance_list)
 			appearance.pixel_x += offsets[feature_key][1]

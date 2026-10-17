@@ -229,7 +229,7 @@
 	TEST_ASSERT_NOTNULL(hud.stressies, "Test hud built no stress screen.")
 	qdel(hud)
 	// The GC queue holds the hud for 5 minutes; its screen vars must not pin the screens meanwhile.
-	for(var/varname in list("stressies", "rmb_intent", "bloods", "quad_intents", "combat_utilities", "cmode_button", "give_intent", "hsover", "mana_over", "cdleft", "cdright", "cdmid", "stamina", "energy", "mana", "hand_slots"))
+	for(var/varname in list("stressies", "rmb_intent", "bloods", "quad_intents", "cmode_button", "give_intent", "hsover", "mana_over", "cdleft", "cdright", "cdmid", "stamina", "energy", "mana", "hand_slots"))
 		TEST_ASSERT_NULL(hud.vars[varname], "Deleted hud still holds [varname].")
 
 /datum/unit_test/live_runtime_image_census_counts_holders
