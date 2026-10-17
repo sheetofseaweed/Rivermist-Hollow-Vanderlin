@@ -24,7 +24,7 @@
 		/datum/job/advclass/watch_guard/marine,
 	)
 
-	give_bank_account = 30
+	give_bank_account = 75
 
 	exp_type = list(EXP_TYPE_LIVING)
 	exp_types_granted = list(EXP_TYPE_GARRISON, EXP_TYPE_COMBAT)
@@ -54,7 +54,7 @@
 /datum/attribute_holder/sheet/job/advclass/watch_guard/bulwark
 	raw_attribute_list = list(
 		STAT_STRENGTH = 2,
-		STAT_ENDURANCE = 3,
+		STAT_ENDURANCE = 4,
 		STAT_CONSTITUTION = 3,
 		/datum/attribute/skill/combat/axesmaces = 40,
 		/datum/attribute/skill/combat/shields = 40,
@@ -199,7 +199,7 @@
 /datum/attribute_holder/sheet/job/advclass/watch_guard/sentinel
 	raw_attribute_list = list(
 		STAT_PERCEPTION = 2,
-		STAT_ENDURANCE = 1,
+		STAT_ENDURANCE = 3,
 		STAT_SPEED = 2,
 		/datum/attribute/skill/combat/bows = 30,
 		/datum/attribute/skill/combat/crossbows = 30,
