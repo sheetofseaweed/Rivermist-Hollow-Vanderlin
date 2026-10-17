@@ -983,6 +983,12 @@ GLOBAL_PROTECT(no_child_icons)
 			cloak_overlay.pixel_y += T.body_offset_y
 		if(cloak.alternate_worn_layer == TABARD_LAYER)
 			overlays_standing[TABARD_LAYER] = cloak_overlay
+			// South view of breast-sized aprons goes above sleeves, gloves and rings
+			var/mutable_appearance/breast_front = cloak.build_breast_sized_front(use_female_sprites, racecustom, c_mask)
+			if(breast_front)
+				breast_front.pixel_x += cloak_overlay.pixel_x
+				breast_front.pixel_y += cloak_overlay.pixel_y
+				overlays_standing[TABARD_LAYER] = list(cloak_overlay, breast_front)
 		if(cloak.alternate_worn_layer == CLOAK_BEHIND_LAYER)
 			overlays_standing[CLOAK_BEHIND_LAYER] = cloak_overlay
 		if(!cloak.alternate_worn_layer)
@@ -1062,9 +1068,9 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/armsindex = get_limbloss_index(ARM_RIGHT, ARM_LEFT)
 		var/hideboob = FALSE
-		if(wear_armor?.flags_inv & HIDEBOOB)
+		if(wear_armor?.flags_inv & HIDEBOOB && !wear_armor.draws_breast_sized_layers()) // breast-sized garments show what is under their cut
 			hideboob = TRUE
-		if(cloak?.flags_inv & HIDEBOOB)
+		if(cloak?.flags_inv & HIDEBOOB && !cloak.draws_breast_sized_layers()) // breast-sized garments show what is under their cut
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
@@ -1085,6 +1091,12 @@ GLOBAL_PROTECT(no_child_icons)
 		if(T && T.body_offset_y)
 			shirt_overlay.pixel_y += T.body_offset_y
 		overlays_standing[SHIRT_LAYER] = shirt_overlay
+		// South view of breast-sized clothing goes above sleeves, gloves and rings
+		var/mutable_appearance/breast_front = wear_shirt.build_breast_sized_front(use_female_sprites, racecustom, c_mask)
+		if(breast_front)
+			breast_front.pixel_x += shirt_overlay.pixel_x
+			breast_front.pixel_y += shirt_overlay.pixel_y
+			overlays_standing[SHIRT_LAYER] = list(shirt_overlay, breast_front)
 
 		//add sleeve overlays, then offset
 		var/list/sleeves = list()
@@ -1107,6 +1119,9 @@ GLOBAL_PROTECT(no_child_icons)
 
 	apply_overlay(SHIRT_LAYER)
 	apply_overlay(SHIRTSLEEVE_LAYER)
+	// A breast-sized bra's lifted front is cut by the garments over it, see breast_sized_clothing.dm
+	if(bra?.breast_sized_icon)
+		update_inv_undie_top()
 
 /mob/living/carbon/human/update_inv_armor()
 	remove_overlay(ARMOR_LAYER)
@@ -1129,7 +1144,7 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/armsindex = get_limbloss_index(ARM_RIGHT, ARM_LEFT)
 		var/hideboob = FALSE
-		if(cloak?.flags_inv & HIDEBOOB)
+		if(cloak?.flags_inv & HIDEBOOB && !cloak.draws_breast_sized_layers()) // breast-sized garments show what is under their cut
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
@@ -1149,6 +1164,12 @@ GLOBAL_PROTECT(no_child_icons)
 		if(T && T.body_offset_y)
 			armor_overlay.pixel_y += T.body_offset_y
 		overlays_standing[ARMOR_LAYER] = armor_overlay
+		// South view of breast-sized clothing goes above sleeves, gloves and rings
+		var/mutable_appearance/breast_front = wear_armor.build_breast_sized_front(use_female_sprites, racecustom, c_mask)
+		if(breast_front)
+			breast_front.pixel_x += armor_overlay.pixel_x
+			breast_front.pixel_y += armor_overlay.pixel_y
+			overlays_standing[ARMOR_LAYER] = list(armor_overlay, breast_front)
 
 		//add sleeve overlays, then offset
 		var/list/sleeves = list()
@@ -1342,6 +1363,10 @@ GLOBAL_PROTECT(no_child_icons)
 			b_size = boob.organ_size
 		if(!bra.gendered)
 			use_female_sprites = FALSE
+		// Breast-sized bras replace the old "_B<size>" states, see breast_sized_clothing.dm
+		if(bra_draws_breast_sized_layers())
+			use_female_sprites = FEMALE_BOOB
+			b_size = 0
 		var/mutable_appearance/underwear_overlay = bra.build_worn_icon(age, UNDERWEAR_TOP_LAYER, coom = use_female_sprites, customi = racecustom, breast_size = b_size, clip_mask = c_mask)
 
 		if(LAZYACCESS(offsets, OFFSET_BRA))
@@ -1351,6 +1376,12 @@ GLOBAL_PROTECT(no_child_icons)
 		if(T && T.body_offset_y)
 			underwear_overlay.pixel_y += T.body_offset_y
 		overlays_standing[UNDERWEAR_TOP_LAYER] = underwear_overlay
+		// South view of a breast-sized bra goes above sleeves, gloves and rings
+		var/mutable_appearance/breast_front = bra.build_breast_sized_front(use_female_sprites, racecustom, c_mask)
+		if(breast_front)
+			breast_front.pixel_x += underwear_overlay.pixel_x
+			breast_front.pixel_y += underwear_overlay.pixel_y
+			overlays_standing[UNDERWEAR_TOP_LAYER] = list(underwear_overlay, breast_front)
 
 	update_body_parts(redraw = TRUE)
 	update_body()
@@ -1764,11 +1795,20 @@ generate/load female uniform sprites matching all previously decided variables
 //			MA.blend_mode = BLEND_MULTIPLY
 		standing.overlays.Add(worn_overlays)
 	var/do_boob = (coom == FEMALE_BOOB && boobed)
+	// Per-breast-size layers replace the single "_boob" overlay, see breast_sized_clothing.dm
+	var/sized_breasts = (!isinhands && do_boob) ? get_breast_sized_size() : null
+	var/sized_offset = 0
+	if(!isnull(sized_breasts))
+		do_boob = FALSE
+		sized_offset = get_breast_sized_offset(customi)
+		apply_breast_sized_layers(standing, "[file2use]|[t_state]|[sleeveindex]", sized_breasts, sized_offset, layer2use)
 	if(!isinhands && do_boob)
 		var/mutable_appearance/boob_overlay = mutable_appearance(file2use, "[t_state]_boob", -layer2use)
 		standing.overlays.Add(boob_overlay)
 
-	if(get_detail_tag())
+	if(get_detail_tag() && !isnull(sized_breasts))
+		apply_breast_sized_detail(standing, file2use, t_state, sized_breasts, sized_offset, layer2use)
+	else if(get_detail_tag())
 		var/mutable_appearance/pic = mutable_appearance(icon(file2use, "[t_state][get_detail_tag()]"), -layer2use)
 		pic.appearance_flags = RESET_COLOR
 		if(get_detail_color())
@@ -1784,9 +1824,14 @@ generate/load female uniform sprites matching all previously decided variables
 	if(!isinhands && GET_ATOM_BLOOD_DNA_LENGTH(src))
 		var/index = "[t_state][sleeveindex]"
 		var/static/list/bloody_onmob = list()
+		if(!isnull(sized_breasts))
+			index = "[file2use]|[index]_sized[sized_breasts]_[sized_offset]"
 		var/icon/clothing_icon = bloody_onmob["[index][(coom == "f") ? "_boob" : ""]"]
 		if(!clothing_icon)
-			if(sleeved && sleeveindex < 4) //cut out sleeves from north/south sprites
+			if(!isnull(sized_breasts))
+				clothing_icon = icon(standing.icon, standing.icon_state)
+				blend_breast_sized_layers(clothing_icon, sized_breasts, sized_offset)
+			else if(sleeved && sleeveindex < 4) //cut out sleeves from north/south sprites
 				clothing_icon = icon(GLOB.dismembered_clothing_icons[index])
 			else
 				clothing_icon = icon(file2use, t_state)

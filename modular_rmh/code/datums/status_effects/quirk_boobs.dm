@@ -1,7 +1,9 @@
 
+// Naturally Endowed: sets the breasts to size 6. Its own id: it used to share "bigboobs" with the size 5 stats and
+// removed them. Stats and the alert come from the breast size status (breast_weight.dm).
 /datum/status_effect/debuff/boobs_quirk
-	id = "bigboobs"
-	alert_type = /atom/movable/screen/alert/status_effect/debuff/boobs_quirk
+	id = "endowed"
+	alert_type = null
 	examine_text = span_notice("They have massive MAGICAL GOODS!")
 	//effectedstats = list("constitution" = 2, "speed" = -2)
 	duration = -1

@@ -365,6 +365,8 @@
 		suppress_visible_messages = begin_remote_visible_message_suppression()
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
+		play_perform_breast_anim() // modular_rmh/code/modules/mob/sex_breast_anim.dm
+		play_perform_motion() // modular_rmh/code/modules/mob/sex_motion.dm
 		send_clench_prompt()
 		if(!is_runtime_active())
 			break

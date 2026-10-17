@@ -47,7 +47,13 @@
 		"hold_it_in" = user.is_holding_fluids_in(),
 	)
 	data["zone_options"] = get_zone_options_ui_data()
-	data["actions"] = get_actions_ui_data()
+	// Arousal refreshes reuse a recent action list; anything the player does rebuilds it (on_arousal_changed()).
+	if(arousal_only_ui_update && cached_actions_ui_data && world.time - cached_actions_ui_time < SEX_ACTIONS_UI_CACHE_TIME)
+		data["actions"] = cached_actions_ui_data
+	else
+		cached_actions_ui_data = get_actions_ui_data()
+		cached_actions_ui_time = world.time
+		data["actions"] = cached_actions_ui_data
 	data["scene_patterns"] = get_scene_patterns_ui_data()
 	data["bellyriding"] = get_bellyriding_ui_data()
 	data["custom"] = get_custom_actions_ui_data()

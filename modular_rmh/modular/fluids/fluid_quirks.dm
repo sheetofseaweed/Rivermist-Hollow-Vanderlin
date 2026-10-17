@@ -25,7 +25,7 @@
 /datum/quirk/peculiarity/swelling_glands
 	name = "Swelling Glands"
 	desc = "My breasts and balls visibly swell as they fill, and shrink back once emptied."
-	desc_hint = "Breasts and balls grow up to three sizes when full; balls stop where their sprites end."
+	desc_hint = "Breasts grow one size once 65% full of their own milk; balls grow up to three sizes when full and stop where their sprites end."
 	traits_to_add = list(TRAIT_FLUID_ENGORGEMENT)
 
 /datum/quirk/peculiarity/relief_needed

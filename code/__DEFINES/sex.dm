@@ -125,6 +125,11 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define SEX_SPEED_MIN 1
 #define SEX_SPEED_MAX 4
 
+/// Arousal changes refresh the interaction panel at most this often (sex_scene_controller.dm).
+#define SEX_AROUSAL_UI_DELAY (0.5 SECONDS)
+/// Those refreshes reuse the menu action list while it is younger than this.
+#define SEX_ACTIONS_UI_CACHE_TIME (2 SECONDS)
+
 #define SEX_FORCE_LOW 1
 #define SEX_FORCE_MID 2
 #define SEX_FORCE_HIGH 3

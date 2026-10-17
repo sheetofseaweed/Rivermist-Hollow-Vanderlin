@@ -71,6 +71,14 @@
 #define WRISTSLEEVE_LAYER		20
 #define ARMORSLEEVE_LAYER		19
 #define RING_LAYER				18
+#define TESTICLES_FRONT_LAYER	17.9	//not an overlays_standing index: south view of bare testicles, stored in the BODYPARTS slot
+#define PENIS_FRONT_LAYER		17.8	//not an overlays_standing index: south view of bare penis, stored in the BODYPARTS slot
+#define BREAST_BRA_FRONT_LAYER	17.58	//not an overlays_standing index: south view of a breast-sized bra, stored in the UNDERWEAR_TOP slot
+#define BREAST_SHIRT_FRONT_LAYER	17.55	//not an overlays_standing index: south view of breast-sized clothing in the shirt slot, stored in the SHIRT slot
+#define BREAST_ARMOR_FRONT_LAYER	17.5	//not an overlays_standing index: south view of breast-sized clothing in the armor slot, stored in the ARMOR slot
+#define BREAST_CLOAK_FRONT_LAYER	17.45	//not an overlays_standing index: south view of a breast-sized tabard-layer cloak (aprons), stored in the TABARD slot
+#define BODY_BREASTS_FRONT_LAYER	17.6	//not an overlays_standing index: south view of body breasts, under breast-sized clothing; stored in the BODYPARTS slot
+#define BREAST_PIERCING_FRONT_LAYER	17.4	//not an overlays_standing index: south view of nipple piercings over lifted bare breasts
 #define GLASSES_LAYER			17
 #define NECK_LAYER				16
 #define CLOAK_LAYER				15		//only when looking north or west/east

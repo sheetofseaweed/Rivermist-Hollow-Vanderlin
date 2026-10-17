@@ -123,14 +123,14 @@
 
 	ADD_TRAIT(human, TRAIT_FLUID_ENGORGEMENT, "unit_test")
 	tick_organ_life(human, 1)
-	TEST_ASSERT_EQUAL(breasts.engorgement_steps, 3, "Full breasts should swell three steps.")
-	TEST_ASSERT_EQUAL(breasts.get_visible_size(), 6, "Swelling should add to the visible size.")
+	TEST_ASSERT_EQUAL(breasts.engorgement_steps, 1, "Full breasts should swell one size.")
+	TEST_ASSERT_EQUAL(breasts.get_visible_size(), 4, "Swelling should add to the visible size.")
 	TEST_ASSERT_EQUAL(breasts.organ_size, 3, "Swelling must not change the real size.")
 	TEST_ASSERT_NOTEQUAL(human.generate_icon_render_key(), resting_key, "A swollen look needs its own render key.")
 
 	breasts.reagents.remove_all(capacity * 0.07)
 	tick_organ_life(human, 1)
-	TEST_ASSERT_EQUAL(breasts.engorgement_steps, 3, "A small dip below a threshold should not shrink the swelling.")
+	TEST_ASSERT_EQUAL(breasts.engorgement_steps, 1, "A small dip should not shrink the swelling.")
 
 	breasts.reagents.remove_all(capacity * 0.8)
 	tick_organ_life(human, 1)

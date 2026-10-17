@@ -21,7 +21,8 @@
 	if(owner && owner.underwear && owner.underwear.covers_breasts)
 		return FALSE
 
-	return is_human_part_visible(owner, HIDEBOOB|HIDEJUMPSUIT)
+	// Breast-sized clothing is cut around the breasts and draws over them, see breast_sized_clothing.dm
+	return breasts_visible_under_clothes(owner)
 
 /datum/sprite_accessory/genitals/breasts/pair
 	icon_state = "pair"

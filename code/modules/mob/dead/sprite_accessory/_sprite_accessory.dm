@@ -123,6 +123,10 @@
 		var/icon/icon_bundle = icon('icons/testing/greyscale_error.dmi')
 		for(var/icon_state in icon_states)
 			icon_bundle.Insert(icon_states[icon_state], icon_state)
+			// Insert() keeps only the still version, so movement states (played while the mob moves) go in separately.
+			var/icon/moving_icon = icon(icon_states[icon_state], "", moving = 1)
+			if(length(icon_states(moving_icon)))
+				icon_bundle.Insert(moving_icon, icon_state, moving = 1)
 
 		accessory_icon_cache[key] = icon_bundle
 
