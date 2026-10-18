@@ -262,7 +262,7 @@ GLOBAL_LIST_INIT(breast_spray_amount, list("0.95" = 4, "0.75" = 3))
 	if(!ishuman(owner))
 		return null
 	var/mob/living/carbon/human/human_owner = owner
-	var/their = P ? lowertext(P[THEIR]) : owner.p_their()
+	var/their = P ? LOWER_TEXT(P[THEIR]) : owner.p_their()
 	var/list/lines = list()
 	if(size >= BREAST_STRAIN_MIN_SIZE)
 		var/obj/item/garment = human_owner.get_strained_chest_garment()
