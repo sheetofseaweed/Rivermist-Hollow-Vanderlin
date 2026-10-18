@@ -365,6 +365,8 @@
 		suppress_visible_messages = begin_remote_visible_message_suppression()
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
+		play_perform_breast_anim()
+		play_perform_motion()
 		send_clench_prompt()
 		if(!is_runtime_active())
 			break
@@ -543,6 +545,9 @@
 	return TRUE
 
 /datum/sex_action/proc/perform_sex_action(mob/living/pleasure_receiver, mob/living/partner, arousal_amt, pain_amt, orgasm_prog_amt)
+	var/through_clothes = get_through_clothes_multiplier(pleasure_receiver)
+	arousal_amt *= through_clothes
+	orgasm_prog_amt *= through_clothes
 	return apply_sex_action_stimulation(
 		src,
 		action_user,
@@ -637,6 +642,7 @@
 			return pick(list("brutally", "violently", "relentlessly", "savagely", "mercilessly"))
 
 /datum/sex_action/proc/spanify_force(string)
+	string = add_through_clothes_suffix(string)
 	switch(force)
 		if(SEX_FORCE_LOW)
 			return "<span class='love_low'>[string]</span>"

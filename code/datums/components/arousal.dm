@@ -840,6 +840,8 @@
 	set_arousal(parent, arousal * (arousal_falloff_coeff + edging_charge / MAX_EDGING))
 	set_orgasm_prog(parent, 0)
 	SEND_SIGNAL(user, COMSIG_SEX_CLIMAX, action, action_initiator, action_target, action_performer)
+	if(arousal > MAX_AROUSAL / 4)
+		user.play_climax_motion()
 
 	if(user.has_quirk(/datum/quirk/vice/addiction/lovefiend))
 		user.sate_addiction(/datum/quirk/vice/addiction/lovefiend)
