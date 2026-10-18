@@ -40,6 +40,8 @@
 	var/draw_above_clothes = FALSE
 	/// Layer we switch to
 	var/draw_above_clothes_layer = UNDER_CLOAK_LAYER
+	/// Keeps the movement variant of each state in the coloured bundle.
+	var/keep_movement_states = FALSE
 
 /datum/sprite_accessory/New()
 	if(color_keys > 1)
@@ -123,6 +125,11 @@
 		var/icon/icon_bundle = icon('icons/testing/greyscale_error.dmi')
 		for(var/icon_state in icon_states)
 			icon_bundle.Insert(icon_states[icon_state], icon_state)
+			if(keep_movement_states)
+				// Insert() keeps only the still variant, so the movement variant goes in separately.
+				var/icon/moving_icon = icon(icon_states[icon_state], "", moving = 1)
+				if(length(icon_states(moving_icon)))
+					icon_bundle.Insert(moving_icon, icon_state, moving = 1)
 
 		accessory_icon_cache[key] = icon_bundle
 
