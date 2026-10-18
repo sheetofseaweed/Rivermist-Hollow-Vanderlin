@@ -4914,6 +4914,7 @@
 #include "modular_rmh\modular\funny_bones\funny_bone.dm"
 #include "modular_rmh\modular\funny_bones\funny_bone_actions.dm"
 #include "modular_rmh\modular\helpers\lewd_helpers.dm"
+#include "modular_rmh\modular\hiking\hiking.dm"
 #include "modular_rmh\modular\hunting\hunting_boar.dm"
 #include "modular_rmh\modular\hunting\hunting_boar_charge.dm"
 #include "modular_rmh\modular\hunting\hunting_categories.dm"

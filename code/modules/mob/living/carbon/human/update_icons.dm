@@ -780,6 +780,8 @@ GLOBAL_PROTECT(no_child_icons)
 				// Apply taur body offset to adjust rendering height for taurs like jdeer
 				if(T && T.body_offset_y)
 					mbeltoverlay.pixel_y += T.body_offset_y
+				if(has_hiked_hem())
+					mbeltoverlay.pixel_y += 2 // ride above the gathered hem while it is held up
 			standing_front += mbeltoverlay
 
 	overlays_standing[BELT_LAYER] = standing_front
@@ -1605,7 +1607,7 @@ GLOBAL_PROTECT(no_child_icons)
 	return mutable_appearance(GLOB.female_clothing_icons[t_color], layer = -layer)
 
 /proc/wear_dismembered_version(t_color, icon, layer, sleeveindex, type)
-	var/index = "[t_color][sleeveindex]"
+	var/index = "[t_color][sleeveindex][icon]" // hiked hems reuse state names from another file
 	var/icon/clothing_icon = GLOB.dismembered_clothing_icons[index]
 	if(!clothing_icon) 	//Create standing/laying icons if they don't exist
 		generate_dismembered_clothing(index,t_color,icon,sleeveindex, type)
@@ -1782,7 +1784,7 @@ generate/load female uniform sprites matching all previously decided variables
 			standing.overlays.Add(pic)
 
 	if(!isinhands && GET_ATOM_BLOOD_DNA_LENGTH(src))
-		var/index = "[t_state][sleeveindex]"
+		var/index = "[t_state][sleeveindex][file2use]"
 		var/static/list/bloody_onmob = list()
 		var/icon/clothing_icon = bloody_onmob["[index][(coom == "f") ? "_boob" : ""]"]
 		if(!clothing_icon)
@@ -1868,12 +1870,12 @@ generate/load female uniform sprites matching all previously decided variables
 			sleeves += pic
 
 		if(GET_ATOM_BLOOD_DNA_LENGTH(I))
-			var/icon/blood_overlay = bloody_r[used]
+			var/icon/blood_overlay = bloody_r["[used][I.sleeved]"]
 			if(!blood_overlay)
 				blood_overlay = icon(I.sleeved, used)
 				blood_overlay.Blend("#fff", ICON_ADD) 			//fills the icon_state with white (except where it's transparent)
 				blood_overlay.Blend(icon(I.bloody_icon, I.bloody_icon_state), ICON_MULTIPLY) //adds blood and the remaining white areas become transparant
-				bloody_r[used] = fcopy_rsc(blood_overlay)
+				bloody_r["[used][I.sleeved]"] = fcopy_rsc(blood_overlay)
 			var/mutable_appearance/pic = mutable_appearance(blood_overlay, layer=-layer2use)
 			sleeves += pic
 
@@ -1895,12 +1897,12 @@ generate/load female uniform sprites matching all previously decided variables
 			sleeves += pic
 
 		if(GET_ATOM_BLOOD_DNA_LENGTH(I))
-			var/icon/blood_overlay = bloody_l[used]
+			var/icon/blood_overlay = bloody_l["[used][I.sleeved]"]
 			if(!blood_overlay)
 				blood_overlay = icon(I.sleeved, used)
 				blood_overlay.Blend("#fff", ICON_ADD) 			//fills the icon_state with white (except where it's transparent)
 				blood_overlay.Blend(icon(I.bloody_icon, I.bloody_icon_state), ICON_MULTIPLY) //adds blood and the remaining white areas become transparant
-				bloody_l[used] = fcopy_rsc(blood_overlay)
+				bloody_l["[used][I.sleeved]"] = fcopy_rsc(blood_overlay)
 			var/mutable_appearance/pic = mutable_appearance(blood_overlay, layer=-layer2use)
 			sleeves += pic
 
