@@ -80,7 +80,7 @@
 /datum/action/cooldown/spell/projectile/proc/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	to_fire.firer = owner
 	to_fire.fired_from = get_turf(owner)
-	to_fire.scale = clamp(attuned_strength, 0.5, 1.5)
+	to_fire.scale = clamp(get_rank_multiplier(), 0.5, 1.5)
 	to_fire.preparePixelProjectile(target, owner)
 
 	RegisterSignal(to_fire, COMSIG_PROJECTILE_SELF_ON_HIT, PROC_REF(on_cast_hit))

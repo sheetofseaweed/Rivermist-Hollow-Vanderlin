@@ -22,6 +22,3 @@
 	required_form = FORM_DEATH
 	required_technique = TECHNIQUE_CREATION
 	spell_flags = SPELL_RITUOS
-	attunements = list(
-		/datum/attunement/death = 0.3,
-	)

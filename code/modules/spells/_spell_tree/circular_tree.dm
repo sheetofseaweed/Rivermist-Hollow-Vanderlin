@@ -5,27 +5,12 @@
 	node_y = 0
 	spell_type = /datum/action/cooldown/spell/undirected/arcyne_eye
 
-/datum/spell_node/illusionist
-	name = "Illusionist"
-	desc = "Bend reality with deception and trickery."
-	cost = 8
-	node_x = 50
-	node_y = -50
-	prerequisites = list(/datum/spell_node/air_affinity, /datum/spell_node/death_affinity)
-	is_passive = TRUE
-
-/datum/spell_node/illusionist/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/illusion, 0.3)
-	user.mana_pool?.adjust_attunement(/datum/attunement/dark, 0.1)
-	user.mana_pool?.adjust_attunement(/datum/attunement/light, 0.1)
-	to_chat(user, span_notice("Reality bends to your whims."))
-
 /datum/spell_node/nondetection
 	name = "Nondetection"
 	desc = "Hide a target from divination magic."
 	node_x = 90
 	node_y = -110
-	prerequisites = list(/datum/spell_node/illusionist)
+	prerequisites = list(/datum/spell_node/message, /datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/undirected/touch/non_detection
 
 /datum/spell_node/forcewall_weak
@@ -33,7 +18,7 @@
 	desc = "Create a weak barrier of magical force."
 	node_x = 110
 	node_y = -90
-	prerequisites = list(/datum/spell_node/illusionist)
+	prerequisites = list(/datum/spell_node/message, /datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/undirected/forcewall/breakable
 
 /datum/spell_node/mana_well
@@ -110,45 +95,17 @@
 	desc = "Channel primal magic to grow poisonous fangs."
 	node_x = -50
 	node_y = -50
-	prerequisites = list(/datum/spell_node/earth_affinity, /datum/spell_node/arcyne_affinity)
+	prerequisites = list(/datum/spell_node/light, /datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/status/primal_savagery
 
-
-/datum/spell_node/blood_pact
-	name = "Blood Pact"
-	desc = "Bind your life force to blood magic."
-	cost = 5
-	node_x = -50
-	node_y = 50
-	prerequisites = list(/datum/spell_node/dark_affinity, /datum/spell_node/electric_affinity)
-	is_passive = TRUE
-
-/datum/spell_node/blood_pact/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/dark, 0.12)
-	user.mana_pool?.adjust_attunement(/datum/attunement/blood, 0.12)
-	to_chat(user, span_notice("Dark power flows through your lifeblood."))
 
 /datum/spell_node/blood_lightning
 	name = "Blood Lightning"
 	desc = "Channel crimson lightning through blood."
 	node_x = -110
 	node_y = 110
-	prerequisites = list(/datum/spell_node/blood_pact)
+	prerequisites = list(/datum/spell_node/prestidigitation, /datum/spell_node/light)
 	spell_type = /datum/action/cooldown/spell/projectile/blood_bolt
-
-/datum/spell_node/elemental_harmony
-	name = "Elemental Harmony"
-	desc = "Balance fire and ice within yourself."
-	cost = 5
-	node_x = 50
-	node_y = 50
-	prerequisites = list(/datum/spell_node/fire_affinity, /datum/spell_node/frost_affinity)
-	is_passive = TRUE
-
-/datum/spell_node/elemental_harmony/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/fire, 0.1)
-	user.mana_pool?.adjust_attunement(/datum/attunement/ice, 0.1)
-	to_chat(user, span_notice("Fire and ice flow in harmony within you."))
 
 /datum/spell_node/create_bonfire
 	name = "Create Bonfire"
@@ -158,38 +115,12 @@
 	prerequisites = list(/datum/spell_node/arcyne_eye)
 	spell_type = /datum/action/cooldown/spell/conjure/bonfire
 
-/datum/spell_node/fire_affinity
-	name = "Fire Affinity"
-	desc = "Deepen your connection to the flames."
-	cost = 3
-	node_x = RIGHT_X_TIER_1
-	node_y = RIGHT_Y_RIGHT
-	prerequisites = list(/datum/spell_node/create_bonfire)
-	is_passive = TRUE
-
-/datum/spell_node/fire_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/fire, 0.15)
-	to_chat(user, span_notice("You feel the flames dance within your soul."))
-
-/datum/spell_node/death_affinity
-	name = "Death Affinity"
-	desc = "Touch the void and understand mortality."
-	cost = 3
-	node_x = RIGHT_X_TIER_1
-	node_y = RIGHT_Y_LEFT
-	prerequisites = list(/datum/spell_node/create_bonfire)
-	is_passive = TRUE
-
-/datum/spell_node/death_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/death, 0.15)
-	to_chat(user, span_notice("The void whispers secrets to you."))
-
 /datum/spell_node/acid_splash
 	name = "Acid Splash"
 	desc = "Hurl a bubble of acid at your enemies."
 	node_x = RIGHT_X_TIER_2
 	node_y = RIGHT_Y_LEFT
-	prerequisites = list(/datum/spell_node/death_affinity)
+	prerequisites = list(/datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/projectile/acid_splash
 
 /datum/spell_node/infestation
@@ -197,7 +128,7 @@
 	desc = "Cause a cloud of mites, fleas, and other parasites to swarm an enemy."
 	node_x = RIGHT_X_TIER_2
 	node_y = RIGHT_Y_LEFT - 50
-	prerequisites = list(/datum/spell_node/death_affinity)
+	prerequisites = list(/datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/status/infestation
 
 /datum/spell_node/decompose
@@ -221,7 +152,7 @@
 	desc = "Evoke fiery green flames along your weapon."
 	node_x = RIGHT_X_TIER_2
 	node_y = RIGHT_Y_RIGHT + 50
-	prerequisites = list(/datum/spell_node/fire_affinity)
+	prerequisites = list(/datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/enchantment/green_flame
 
 /datum/spell_node/spitfire
@@ -229,7 +160,7 @@
 	desc = "Spit a small gout of flame at your enemy."
 	node_x = RIGHT_X_TIER_2
 	node_y = RIGHT_Y_RIGHT
-	prerequisites = list(/datum/spell_node/fire_affinity)
+	prerequisites = list(/datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/projectile/fire_flare
 
 /datum/spell_node/fireball
@@ -264,34 +195,12 @@
 	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/conjure/phantom_ear
 
-/datum/spell_node/arcyne_affinity
-	name = "Weave Affinity"
-	desc = "Devote yourself to Mystra."
-	cost = 3
-	node_x = DOWN_X_LEFT
-	node_y = DOWN_Y_TIER_1
-	prerequisites = list(/datum/spell_node/message)
-	is_passive = TRUE
-
-/datum/spell_node/arcyne_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/arcyne, 0.15)
-	to_chat(user, span_notice("Mystra whispers to you."))
-
-/datum/spell_node/air_affinity
-	name = "Air Affinity"
-	desc = "Free yourself of burden."
-	cost = 3
-	node_x = DOWN_X_RIGHT
-	node_y = DOWN_Y_TIER_1
-	is_passive = TRUE
-	prerequisites = list(/datum/spell_node/message)
-
 /datum/spell_node/booming_blade
 	name = "Booming Blade"
 	desc = "Evoke thunderous energy around an enemy, which will burst if they move."
 	node_x = 0
 	node_y = DOWN_Y_TIER_1 - 30
-	prerequisites = list(/datum/spell_node/air_affinity, /datum/spell_node/arcyne_affinity)
+	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/status/booming_blade
 
 /datum/spell_node/blade_ward
@@ -299,19 +208,15 @@
 	desc = "Trace a sigil of warding, making you more difficult to injure."
 	node_x = 0
 	node_y = DOWN_Y_TIER_1 - 70
-	prerequisites = list(/datum/spell_node/air_affinity, /datum/spell_node/arcyne_affinity)
+	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/undirected/blade_ward
-
-/datum/spell_node/air_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/aeromancy, 0.15)
-	to_chat(user, span_notice("You feel lighter."))
 
 /datum/spell_node/longstrider
 	name = "Longstrider"
 	desc = "Ignore the effects of rough terrain."
 	node_x = DOWN_X_RIGHT
 	node_y = DOWN_Y_TIER_2
-	prerequisites = list(/datum/spell_node/air_affinity)
+	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/undirected/longstrider
 
 /datum/spell_node/haste
@@ -335,7 +240,7 @@
 	desc = "Slow your descent when falling."
 	node_x = DOWN_X_RIGHT + 50
 	node_y = DOWN_Y_TIER_2
-	prerequisites = list(/datum/spell_node/air_affinity)
+	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/undirected/feather_falling
 
 /datum/spell_node/slowdown_aoe
@@ -351,7 +256,7 @@
 	desc = "Magically retrieve distant objects with a telekinetic bolt."
 	node_x = DOWN_X_LEFT
 	node_y = DOWN_Y_TIER_2
-	prerequisites = list(/datum/spell_node/arcyne_affinity)
+	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/projectile/fetch
 
 /datum/spell_node/arcane_bolt
@@ -359,7 +264,7 @@
 	desc = "Launch a bolt of pure magical energy."
 	node_x = DOWN_X_LEFT -50
 	node_y = DOWN_Y_TIER_2
-	prerequisites = list(/datum/spell_node/arcyne_affinity)
+	prerequisites = list(/datum/spell_node/message)
 	spell_type = /datum/action/cooldown/spell/projectile/arcyne_bolt
 
 /datum/spell_node/arcyne_storm
@@ -386,38 +291,12 @@
 	prerequisites = list(/datum/spell_node/light)
 	spell_type = /datum/action/cooldown/spell/undirected/touch/darkvision
 
-/datum/spell_node/electric_affinity
-	name = "Electric Affinity"
-	desc = "Attune yourself to the power of lightning."
-	cost = 3
-	node_x = LEFT_X_TIER_1
-	node_y = LEFT_Y_RIGHT
-	prerequisites = list(/datum/spell_node/light)
-	is_passive = TRUE
-
-/datum/spell_node/electric_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/electric, 0.15)
-	to_chat(user, span_notice("Lightning crackles through your veins."))
-
-/datum/spell_node/earth_affinity
-	name = "Earth Affinity"
-	desc = "Attune yourself to the earth."
-	cost = 3
-	node_x = LEFT_X_TIER_1
-	node_y = LEFT_Y_LEFT
-	prerequisites = list(/datum/spell_node/light)
-	is_passive = TRUE
-
-/datum/spell_node/earth_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/earth, 0.15)
-	to_chat(user, span_notice("The earth moves beneath you."))
-
 /datum/spell_node/guidance
 	name = "Guidance"
 	desc = "Provide arcyne assistance to aid in both study and combat." //this was "divine assistance" before??? its an arcyne spell you wot
 	node_x = LEFT_X_TIER_2
 	node_y = LEFT_Y_LEFT
-	prerequisites = list(/datum/spell_node/earth_affinity)
+	prerequisites = list(/datum/spell_node/light)
 	spell_type = /datum/action/cooldown/spell/status/guidance
 
 
@@ -426,7 +305,7 @@
 	desc = "Concentrate your intellect into an arcyne brick."
 	node_x = LEFT_X_TIER_2
 	node_y = LEFT_Y_LEFT - 50
-	prerequisites = list(/datum/spell_node/earth_affinity)
+	prerequisites = list(/datum/spell_node/light)
 	spell_type = /datum/action/cooldown/spell/undirected/conjure_item/brick
 
 /datum/spell_node/flower_field
@@ -437,26 +316,12 @@
 	prerequisites = list(/datum/spell_node/magic_stone)
 	spell_type = /datum/action/cooldown/spell/aoe/on_turf/circle/flower_field
 
-/datum/spell_node/storm_caller
-	name = "Storm Caller"
-	desc = "Channel the fury of tempests."
-	cost = 5
-	node_x = LEFT_X_TIER_2
-	node_y = LEFT_Y_RIGHT
-	prerequisites = list(/datum/spell_node/electric_affinity)
-	is_passive = TRUE
-
-/datum/spell_node/storm_caller/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/electric, 0.12)
-	user.mana_pool?.adjust_attunement(/datum/attunement/ice, 0.08)
-	to_chat(user, span_notice("The fury of storms courses through you."))
-
 /datum/spell_node/lightning_bolt
 	name = "Lightning Bolt"
 	desc = "Strike your enemies with a bolt of lightning."
 	node_x = LEFT_X_TIER_2
 	node_y = LEFT_Y_RIGHT + 50
-	prerequisites = list(/datum/spell_node/electric_affinity)
+	prerequisites = list(/datum/spell_node/light)
 	spell_type = /datum/action/cooldown/spell/projectile/lightning
 
 /datum/spell_node/mana_conservation
@@ -465,7 +330,7 @@
 	cost = 5
 	node_x = LEFT_X_TIER_3
 	node_y = LEFT_Y_RIGHT
-	prerequisites = list(/datum/spell_node/storm_caller)
+	prerequisites = list(/datum/spell_node/light)
 	is_passive = TRUE
 
 /datum/spell_node/mana_conservation/on_node_buy(mob/user)
@@ -522,46 +387,20 @@
 		mage_hand.can_scrying = TRUE
 	to_chat(user, span_notice("My Mage Hand can now follow my scrying vision."))
 
-/datum/spell_node/frost_affinity
-	name = "Frost Affinity"
-	desc = "Embrace the cold within your soul."
-	cost = 3
-	node_x = UP_X_RIGHT
-	node_y = UP_Y_TIER_1
-	prerequisites = list(/datum/spell_node/prestidigitation)
-	is_passive = TRUE
-
-/datum/spell_node/frost_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/ice, 0.15)
-	to_chat(user, span_notice("Cold seeps into your very essence."))
-
 /datum/spell_node/snap_freeze
 	name = "Snap Freeze"
 	desc = "Instantly freeze the moisture in an area."
 	node_x = UP_X_RIGHT + 50
 	node_y = UP_Y_TIER_1
-	prerequisites = list(/datum/spell_node/frost_affinity)
-	spell_type = /datum/action/cooldown/spell/aoe/on_turf/snap_freeze
-
-/datum/spell_node/dark_affinity
-	name = "Dark Affinity"
-	desc = "Feel the light vanish."
-	cost = 3
-	node_x = UP_X_LEFT
-	node_y = UP_Y_TIER_1
 	prerequisites = list(/datum/spell_node/prestidigitation)
-	is_passive = TRUE
-
-/datum/spell_node/dark_affinity/on_node_buy(mob/user)
-	user.mana_pool?.adjust_attunement(/datum/attunement/dark, 0.15)
-	to_chat(user, span_notice("The void whispers secrets to you."))
+	spell_type = /datum/action/cooldown/spell/aoe/on_turf/snap_freeze
 
 /datum/spell_node/eldritch_blast
 	name = "Eldritch Blast"
 	desc = "Let forth a wave of maddening mind-energy."
 	node_x = UP_X_LEFT
 	node_y = UP_Y_TIER_2
-	prerequisites = list(/datum/spell_node/dark_affinity)
+	prerequisites = list(/datum/spell_node/prestidigitation)
 	spell_type = /datum/action/cooldown/spell/cone/staggered/eldritch_blast
 
 /datum/spell_node/encode_thoughts
@@ -569,7 +408,7 @@
 	desc = "Incept an intrusive thought into the mind of your target. They may not agree with it."
 	node_x = UP_X_LEFT - 50
 	node_y = UP_Y_TIER_2
-	prerequisites = list(/datum/spell_node/dark_affinity)
+	prerequisites = list(/datum/spell_node/prestidigitation)
 	spell_type = /datum/action/cooldown/spell/undirected/list_target/encode_thoughts
 
 /datum/spell_node/mind_sliver
@@ -594,7 +433,7 @@
 	desc = "Set a frigid beam of hyperborean energy upon a target."
 	node_x = UP_X_RIGHT
 	node_y = UP_Y_TIER_2
-	prerequisites = list(/datum/spell_node/frost_affinity)
+	prerequisites = list(/datum/spell_node/prestidigitation)
 	spell_type = /datum/action/cooldown/spell/beam/beam_of_frost
 
 /datum/spell_node/chill_touch
@@ -602,7 +441,7 @@
 	desc = "Create a ghostly, skeletal hand that wrestles with foes."
 	node_x = UP_X_RIGHT + 50
 	node_y = UP_Y_TIER_2
-	prerequisites = list(/datum/spell_node/frost_affinity)
+	prerequisites = list(/datum/spell_node/prestidigitation)
 	spell_type = /datum/action/cooldown/spell/chill_touch
 
 /datum/spell_node/cone_of_frost

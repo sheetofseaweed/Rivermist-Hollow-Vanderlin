@@ -4,6 +4,11 @@
 #define SPELL_SLOT_MAX 5
 /// Reserve mana cost of a Minor cast for spells that do not set their own.
 #define SPELL_MINOR_COST_DEFAULT 10
+/// Reserve mana cost of a combat cantrip; utility cantrips cost less.
+#define SPELL_CANTRIP_COST 10
+#define SPELL_UTILITY_CANTRIP_COST 5
+/// Natural reserve recharge per second for archetype casters; leylines stay the fast refill.
+#define CASTER_BASE_MANA_RECHARGE 0.5
 
 // Caster archetypes pick the slot ladder a job follows.
 #define CASTER_FULL "full"

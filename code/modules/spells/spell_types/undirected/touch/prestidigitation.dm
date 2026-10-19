@@ -11,9 +11,6 @@
 
 	point_cost = 1
 	school = SCHOOL_TRANSMUTATION
-	attunements = list(
-		/datum/attunement/arcyne = 0.2,
-	)
 
 	cooldown_time = 1 MINUTES
 

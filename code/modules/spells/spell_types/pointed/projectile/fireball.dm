@@ -7,9 +7,6 @@
 
 	cast_range = 8
 	point_cost = 4
-	attunements = list(
-		/datum/attunement/fire = 0.5
-	)
 
 	invocation = "ONI SOMA!!!"
 	invocation_type = INVOCATION_SHOUT
@@ -72,9 +69,7 @@
 	. = ..()
 	var/level = get_effect_level()
 	if(isnull(level))
-		to_fire.damage *= attuned_strength
-		to_fire.exp_light *= attuned_strength
-		to_fire.exp_fire *= attuned_strength
+		to_fire.damage *= get_rank_multiplier()
 		return
 	if(level == SPELL_SLOT_MINOR)
 		to_fire.damage = 10 * get_cantrip_multiplier()
@@ -103,9 +98,6 @@
 	button_icon_state = "fireball_greater"
 
 	point_cost = 6
-	attunements = list(
-		/datum/attunement/fire = 1.1,
-	)
 
 	charge_time = 4 SECONDS
 	charge_drain = 2

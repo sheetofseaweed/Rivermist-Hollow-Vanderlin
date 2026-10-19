@@ -4,9 +4,6 @@
 	button_icon_state = "longstride"
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/aeromancy = 0.8,
-	)
 	school = SCHOOL_TRANSMUTATION
 
 	invocation = "Walk unopposed."
@@ -32,7 +29,7 @@
 		span_notice("I mutter the incantation and a dim pulse of light radiates out from me."),
 	)
 
-	var/duration_increase = max(0, attuned_strength * 2 MINUTES)
+	var/duration_increase = max(0, get_rank_multiplier() * 2 MINUTES)
 	for(var/mob/living/L in viewers(1, owner))
 		L.apply_status_effect(/datum/status_effect/buff/longstrider, duration_increase)
 

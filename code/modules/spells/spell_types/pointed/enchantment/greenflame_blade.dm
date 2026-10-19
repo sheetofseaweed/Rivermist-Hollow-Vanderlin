@@ -4,12 +4,9 @@
 	button_icon_state = "enchant_weapon"
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/fire = 0.3,
-	)
 
 	charge_required = FALSE
-	spell_cost = 30
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 	enchantment = SEARING_BLADE_ENCHANT
 

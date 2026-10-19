@@ -64,8 +64,6 @@
 
 	magic_user = TRUE
 	spell_points = 30
-	attunements_max = 10
-	attunements_min = 5
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_cleric/death_domain,

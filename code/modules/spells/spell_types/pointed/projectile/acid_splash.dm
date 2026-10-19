@@ -5,10 +5,6 @@
 	sound = 'sound/magic/whiteflame.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/blood = 0.3,
-		/datum/attunement/death = 0.4,
-	)
 
 	invocation = "HYDRO MURIATIC!!!!"
 	invocation_type = INVOCATION_SHOUT
@@ -31,9 +27,8 @@
 	. = ..()
 	var/level = get_effect_level()
 	if(isnull(level))
-		to_fire.damage *= attuned_strength
-		to_fire.aoe_range *= attuned_strength
-		to_fire.strength_modifier *= attuned_strength
+		to_fire.damage *= get_rank_multiplier()
+		to_fire.strength_modifier *= get_rank_multiplier()
 		return
 	switch(level)
 		if(1)

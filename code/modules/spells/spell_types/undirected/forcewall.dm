@@ -4,9 +4,6 @@
 	button_icon_state = "forcewall"
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/illusion = 0.3,
-	)
 	school = SCHOOL_TRANSMUTATION
 
 	charge_time = 2 SECONDS

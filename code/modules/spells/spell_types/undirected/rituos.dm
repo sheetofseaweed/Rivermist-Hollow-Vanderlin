@@ -14,10 +14,6 @@
 	cooldown_time = 3 HOURS
 	spell_cost = 120
 
-	attunements = list(
-		/datum/attunement/death = 0.5
-	)
-
 	/// Weakref to granted spell, for the dream ending
 	var/datum/weakref/granted_spell
 

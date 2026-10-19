@@ -139,12 +139,6 @@
 	/// Spell points to give/take to the mob
 	var/spell_points
 
-	/// Upper number of attunements to grant
-	var/attunements_max
-
-	/// Lower number of attunemnets to grant
-	var/attunements_min
-
 	var/whitelist_req = FALSE //!
 	/// Stable database whitelist identifier for jobs and subclasses.
 	var/job_whitelist_id = null
@@ -398,6 +392,11 @@
 
 	if(caster_archetype)
 		spawned.mind?.setup_spell_slots(caster_archetype, caster_rank_skill)
+		var/datum/mana_pool/pool = spawned.mana_pool
+		if(pool)
+			// Slot casters pace Minor casts on a steady trickle and start with a full reserve.
+			pool.set_natural_recharge(max(pool.ethereal_recharge_rate, CASTER_BASE_MANA_RECHARGE))
+			pool.adjust_mana(pool.get_softcap() - pool.amount)
 	if(spawned.mind && (form_points || technique_points || prepares_spells))
 		var/datum/spell_mastery/mastery = spawned.mind.get_spell_mastery()
 		mastery.uses_preparation = prepares_spells
@@ -421,7 +420,6 @@
 	// Archetype casters grow through slots and mastery, not the old tree.
 	if(!caster_archetype)
 		spawned.adjust_spell_points(spell_points)
-	spawned.generate_random_attunements(rand(attunements_min, attunements_max))
 
 	// When we have sourced skill mods (praying, add to this as well)
 	if(clear_job_stats) // Reset for most non-advclasses

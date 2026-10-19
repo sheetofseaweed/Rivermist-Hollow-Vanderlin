@@ -5,9 +5,6 @@
 	self_cast_possible = FALSE
 
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/earth = 0.5,
-	)
 
 	invocation = "Earth pierce you!!!"
 	invocation_type = INVOCATION_SHOUT
@@ -30,7 +27,7 @@
 	var/turf/T = get_turf(cast_on)
 	new /obj/effect/temp_visual/trap(T)
 	playsound(T, 'sound/magic/blade_burst.ogg', 80, TRUE, soundping = TRUE)
-	addtimer(CALLBACK(src, PROC_REF(send_blades), T, get_effect_level()), round(1 SECONDS / attuned_strength))
+	addtimer(CALLBACK(src, PROC_REF(send_blades), T, get_effect_level()), 1 SECONDS)
 
 /// Damage per slot level; Minor casts cut without fracturing.
 /datum/action/cooldown/spell/blade_burst/proc/get_level_damage(level)
@@ -46,7 +43,7 @@
 	return 45
 
 /datum/action/cooldown/spell/blade_burst/proc/send_blades(turf/victim, level)
-	var/scaled_damage = round(45 * attuned_strength)
+	var/scaled_damage = round(45 * get_rank_multiplier())
 	var/can_fracture = TRUE
 	if(level == SPELL_SLOT_MINOR)
 		scaled_damage = 15 * get_cantrip_multiplier()
@@ -60,7 +57,7 @@
 		L.apply_damage(scaled_damage, BRUTE, def_zone)
 		var/obj/item/bodypart/BP = L.get_bodypart(def_zone)
 		if(BP)
-			var/probby = (BP.get_damage() / BP.max_damage) * 20 * attuned_strength
+			var/probby = (BP.get_damage() / BP.max_damage) * 20
 			if(can_fracture && prob(probby))
 				BP.add_wound(/datum/wound/fracture)
 		L.adjustBruteLoss(scaled_damage, damage_type = BCLASS_CUT)

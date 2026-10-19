@@ -5,10 +5,6 @@
 	button_icon_state = "knock"
 	click_to_activate = FALSE
 
-	attunements = list(
-		/datum/attunement/aeromancy = 0.2,
-	)
-
 	school = SCHOOL_TRANSMUTATION
 	charge_time = 2 SECONDS
 	cooldown_time = 20 SECONDS

@@ -9,13 +9,10 @@
 	school = SCHOOL_TRANSMUTATION
 	charge_required = FALSE
 	cooldown_time = 2 MINUTES
-	spell_cost = 50
+	spell_cost = 0
 
 	invocation = "Manus arcyne."
 	invocation_type = INVOCATION_WHISPER
-	attunements = list(
-		/datum/attunement/arcyne = 0.2,
-	)
 
 	slot_level = 0
 	required_form = FORM_ARCANE

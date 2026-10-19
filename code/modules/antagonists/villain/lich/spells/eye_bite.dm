@@ -4,10 +4,6 @@
 	button_icon_state = "raiseskele"
 	sound = 'sound/items/beartrap.ogg'
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-	)
-
 	charge_time = 2 SECONDS
 	charge_drain = 1
 	cooldown_time = 15 SECONDS

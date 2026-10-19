@@ -21,10 +21,6 @@
 	summon_radius = 0
 	summon_lifespan = 5 MINUTES
 
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
-
 	slot_level = 2
 	slot_only = TRUE
 	concentration = TRUE

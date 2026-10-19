@@ -5,9 +5,6 @@
 	point_cost = 2
 	sound = 'sound/magic/haste.ogg'
 
-	attunements = list(
-		/datum/attunement/aeromancy = 0.5,
-	)
 	school = SCHOOL_TRANSMUTATION
 
 	charge_time = 2 SECONDS

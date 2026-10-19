@@ -160,8 +160,6 @@
 	prepares_spells = TRUE
 	form_points = 3
 	technique_points = 1
-	attunements_max = 10
-	attunements_min = 5
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/adventurers_guildmaster/eldritch_knight
 

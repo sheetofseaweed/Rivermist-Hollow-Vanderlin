@@ -6,9 +6,6 @@
 
 	cast_range = 12
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/arcyne = 0.7,
-	)
 
 	invocation = "MAGIC MISSILE!!!"
 	invocation_type = INVOCATION_SHOUT
@@ -31,8 +28,7 @@
 	. = ..()
 	var/level = get_effect_level()
 	if(isnull(level))
-		to_fire.damage *= attuned_strength
-		to_fire.armor_penetration *= attuned_strength
+		to_fire.damage *= get_rank_multiplier()
 		return
 	if(level == SPELL_SLOT_MINOR)
 		to_fire.damage = 10 * get_cantrip_multiplier()

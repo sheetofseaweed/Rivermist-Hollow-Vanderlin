@@ -81,9 +81,6 @@
 	sound = 'sound/magic/whiteflame.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/dark = 0.3,
-	)
 
 	invocation = "Eldritch blast!"
 	invocation_type = INVOCATION_SHOUT
@@ -95,7 +92,7 @@
 	charge_drain = 1
 	charge_slowdown = 0.7
 	cooldown_time = 30 SECONDS
-	spell_cost = 25
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 
 	slot_level = 0

@@ -39,8 +39,6 @@
 	prepares_spells = TRUE
 	form_points = 3
 	technique_points = 1
-	attunements_max = 5
-	attunements_min = 1
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,

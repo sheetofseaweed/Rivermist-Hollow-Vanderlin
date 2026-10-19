@@ -6,9 +6,6 @@
 
 	point_cost = 8
 	cast_range = 4
-	attunements = list(
-		/datum/attunement/electric = 0.9
-	)
 
 	invocation = "Lightning strikes more than twice!"
 	invocation_type = INVOCATION_SHOUT

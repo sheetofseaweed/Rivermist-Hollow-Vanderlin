@@ -13,9 +13,6 @@
 	respect_density = TRUE
 	delay_between_level = 0.05 SECONDS
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/ice = 0.3,
-	)
 	button_icon_state = "frostbolt"
 	charge_time = 2 SECONDS
 	charge_drain = 1

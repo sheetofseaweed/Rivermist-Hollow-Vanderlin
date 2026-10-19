@@ -7,10 +7,6 @@
 
 	point_cost = 1
 	associated_skill = /datum/attribute/skill/magic/druidic
-	attunements = list(
-		/datum/attunement/dark = 0.3,
-		/datum/attunement/death = 0.3,
-	)
 
 	invocation = "Rot, take them!"
 	invocation_type = INVOCATION_SHOUT

@@ -49,8 +49,6 @@
 	prepares_spells = TRUE
 	form_points = 8
 	technique_points = 4
-	attunements_max = 20
-	attunements_min = 10
 	spells = list(
 		/datum/action/cooldown/spell/aoe/knock,
 		/datum/action/cooldown/spell/undirected/jaunt/ethereal_jaunt,

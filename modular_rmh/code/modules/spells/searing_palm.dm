@@ -14,9 +14,6 @@
 
 	point_cost = 3
 	school = SCHOOL_EVOCATION
-	attunements = list(
-		/datum/attunement/fire = 0.8,
-	)
 
 	cooldown_time = 10 MINUTES
 	spell_cost = 100
@@ -199,7 +196,7 @@
 	cost = 3
 	node_x = RIGHT_X_TIER_1
 	node_y = RIGHT_Y_RIGHT + 50
-	prerequisites = list(/datum/spell_node/fire_affinity)
+	prerequisites = list(/datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/undirected/touch/searing_palm
 
 #undef SEARING_BRAND

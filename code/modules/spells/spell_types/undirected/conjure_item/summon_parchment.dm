@@ -12,7 +12,7 @@
 	invocation_type = INVOCATION_NONE
 
 	cooldown_time = 2 MINUTES
-	spell_cost = 30
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 
 	delete_old = FALSE
 	item_type = /obj/item/paper

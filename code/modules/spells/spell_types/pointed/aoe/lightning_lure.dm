@@ -7,9 +7,6 @@
 	click_to_activate = FALSE
 
 	point_cost = 4
-	attunements = list(
-		/datum/attunement/electric = 0.9
-	)
 
 	invocation = "Lighnting Lure!!!"
 	invocation_type = INVOCATION_SHOUT

@@ -12,10 +12,6 @@
 
 	aoe_radius = 4
 
-	attunements = list(
-		/datum/attunement/arcyne = 1.2
-	)
-
 	invocation = "BE TORN APART!!!"
 	invocation_type = INVOCATION_SHOUT
 
@@ -32,7 +28,7 @@
 		addtimer(CALLBACK(src, PROC_REF(apply_damage), victim, get_effect_level()), wait = i * 1 SECONDS)
 
 /datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/proc/apply_damage(turf/victim, level)
-	var/tick_damage = round(7 * attuned_strength)
+	var/tick_damage = round(7 * get_rank_multiplier())
 	if(!isnull(level))
 		tick_damage = round((level == SPELL_SLOT_MAX ? 9 : 7) * get_rank_multiplier())
 	new /obj/effect/temp_visual/arcyne_storm(victim)

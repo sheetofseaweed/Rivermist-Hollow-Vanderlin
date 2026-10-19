@@ -14,9 +14,9 @@
 	var/datum/status_effect/status_effect = /datum/status_effect/buff/calm
 	/// Duration of the status effect, null to use status effect duration
 	var/duration = null
-	/// If attunement strength scales the duration
+	/// If the caster's rank multiplier scales the duration
 	var/duration_scaling = FALSE
-	/// Base duration increase, if null multiply duration by attuned strength
+	/// Base duration increase, if null multiply duration by the rank multiplier
 	var/duration_modification = 2 MINUTES
 	/// Extra arguments to pass, must be a list
 	/// Will have no effect unless on_creation has 3+ args
@@ -54,9 +54,9 @@
 	var/new_duration = duration ? duration : initial(status_effect.duration)
 	if(duration_scaling)
 		if(duration_modification)
-			new_duration += duration_modification * attuned_strength
+			new_duration += duration_modification * get_rank_multiplier()
 		else
-			new_duration *= attuned_strength
+			new_duration *= get_rank_multiplier()
 	var/list/status_args = list(
 		status_effect,
 		new_duration,

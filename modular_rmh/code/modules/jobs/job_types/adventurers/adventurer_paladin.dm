@@ -41,8 +41,6 @@ GLOBAL_LIST_EMPTY(paladin_evil_subclasses)
 
 	magic_user = TRUE
 	spell_points = 20
-	attunements_max = 10
-	attunements_min = 5
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_paladin/immortal,

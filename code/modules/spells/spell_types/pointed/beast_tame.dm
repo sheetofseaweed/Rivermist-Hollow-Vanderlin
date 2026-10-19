@@ -10,9 +10,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(
-		/datum/attunement/earth = 1,
-	)
 
 	invocation = "Be still and calm, brotherbeast."
 	invocation_type = INVOCATION_WHISPER

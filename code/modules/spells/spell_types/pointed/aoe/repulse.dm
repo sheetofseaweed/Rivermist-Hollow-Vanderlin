@@ -25,10 +25,6 @@
 	required_technique = TECHNIQUE_CREATION
 	required_level = MASTERY_RANK_ADEPT
 
-	attunements = list(
-		/datum/attunement/aeromancy = 0.4,
-	)
-
 	/// The minimum throw range of the replusion
 	var/min_throw = 3
 	/// The max throw range of the repulsion.

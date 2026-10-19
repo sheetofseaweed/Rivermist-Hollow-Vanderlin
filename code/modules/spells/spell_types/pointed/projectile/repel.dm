@@ -6,9 +6,6 @@
 	sound = 'sound/magic/unmagnet.ogg'
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/aeromancy = 0.4,
-	)
 
 	invocation = "Repel!"
 	invocation_type = INVOCATION_SHOUT

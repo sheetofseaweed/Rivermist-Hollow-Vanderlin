@@ -51,8 +51,6 @@
 	prepares_spells = TRUE
 	form_points = 5
 	technique_points = 2
-	attunements_max = 15
-	attunements_min = 10
 
 	spells = list(
 		/datum/action/cooldown/spell/aoe/knock,
@@ -155,8 +153,6 @@
 	prepares_spells = TRUE
 	form_points = 4
 	technique_points = 2
-	attunements_max = 15
-	attunements_min = 5
 
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,

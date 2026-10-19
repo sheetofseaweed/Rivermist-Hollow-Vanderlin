@@ -9,10 +9,6 @@
 	invocation = "VANISHIKA"
 	invocation_type = INVOCATION_SHOUT
 
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
-
 	jaunt_type = /obj/effect/dummy/phased_mob/spell_jaunt
 
 	slot_level = 3

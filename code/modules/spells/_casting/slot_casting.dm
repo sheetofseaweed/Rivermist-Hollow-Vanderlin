@@ -54,12 +54,17 @@
 /datum/action/cooldown/spell/proc/get_minor_cost()
 	return minor_cost
 
-/// Skill multiplier for slot casts: 0.9 at no rank, 1.2 at legendary.
+/// Skill multiplier: 0.9 at no rank, 1.2 at legendary; slotless casters use the spell's own skill.
 // CHARISMA_LATER: bards, sorcerers and warlocks should read a Charisma stat here once it exists.
 /datum/action/cooldown/spell/proc/get_rank_multiplier()
 	var/datum/spell_slots/slots = get_spell_slots()
-	var/rank = slots ? slots.get_rank() : 0
-	return 0.9 + 0.05 * rank
+	if(slots)
+		return 0.9 + 0.05 * slots.get_rank()
+	var/mob/living/caster = owner
+	// Skill-less abilities, such as organ or racial spells, stay neutral.
+	if(!istype(caster) || !associated_skill)
+		return 1
+	return 0.9 + 0.05 * clamp(round(caster.get_skill_level(associated_skill)), SKILL_RANK_NONE, SKILL_RANK_LEGENDARY)
 
 /// Gear magnitude for the cast in progress, already capped.
 /datum/action/cooldown/spell/proc/get_gear_multiplier()
@@ -89,10 +94,7 @@
 			if(feedback)
 				to_chat(caster, span_warning("[get_slot_label()] requires a spell slot; it has no minor form."))
 			return FALSE
-		var/available_mana = 0
-		for(var/datum/mana_pool/pool as anything in caster.get_all_pools())
-			available_mana += pool.get_attuned_amount(attunements, caster)
-		if(available_mana < cost)
+		if(!caster.has_mana_available(cost))
 			if(feedback)
 				caster.balloon_alert(caster, "not enough mana for a minor cast!")
 			return FALSE
@@ -113,7 +115,7 @@
 	// HUD and mana signals may ask whether this action is available during payment.
 	cast_paid = TRUE
 	if(cast_slot_level == SPELL_SLOT_MINOR)
-		caster.consume_mana(attunements, get_minor_cost())
+		caster.consume_mana(get_minor_cost())
 		caster.balloon_alert(caster, "[get_slot_label()]: minor")
 		return TRUE
 	if(!slots.spend(cast_slot_level))

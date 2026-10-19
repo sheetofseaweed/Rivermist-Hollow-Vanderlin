@@ -9,10 +9,6 @@
 	cast_range = 1
 	point_cost = 3
 	associated_skill = /datum/attribute/skill/magic/blood
-	attunements = list(
-		/datum/attunement/death = 0.3,
-		/datum/attunement/blood = 0.2,
-	)
 	invocation = "Return to rot."
 	invocation_type = INVOCATION_WHISPER
 

@@ -5,12 +5,9 @@
 	sound = 'sound/magic/PSY.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/dark = 0.5,
-	)
 
 	cooldown_time = 25 SECONDS
-	spell_cost = 25
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 
 	choose_target_message = "Choose who to invade the mind of."
 	target_radius = 6

@@ -5,13 +5,10 @@
 	sound = 'sound/magic/whiteflame.ogg'
 	self_cast_possible = FALSE
 	spell_flags = SPELL_RITUOS
-	attunements = list(
-		/datum/attunement/life = 1.2
-	)
 
 	charge_time = 3 SECONDS
 	cooldown_time = 30 SECONDS
-	spell_cost = 40
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 
 	slot_level = 0
 	required_form = FORM_LIFE

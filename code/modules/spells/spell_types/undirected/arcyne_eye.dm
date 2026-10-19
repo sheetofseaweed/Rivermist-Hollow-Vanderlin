@@ -12,9 +12,6 @@
 
 	slot_level = 0
 	required_form = FORM_ARCANE
-	attunements = list(
-		/datum/attunement/arcyne = 0.1
-	)
 
 /datum/action/cooldown/spell/undirected/arcyne_eye/cast(atom/cast_on)
 	. = ..()
@@ -24,7 +21,7 @@
 		if(L.has_status_effect(status))
 			L.remove_status_effect(status)
 		else
-			var/duration_increase = attuned_strength * 1.5 MINUTES
+			var/duration_increase = get_rank_multiplier() * 1.5 MINUTES
 			L.apply_status_effect(status, initial(status.duration) + duration_increase)
 
 /datum/status_effect/buff/arcyne_eye

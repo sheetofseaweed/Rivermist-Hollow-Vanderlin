@@ -6,7 +6,7 @@
 	point_cost = 1
 
 	charge_required = FALSE
-	spell_cost = 30
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 	cooldown_time = 1 MINUTES
 
 	/// Ref to cliented mob we are sending to

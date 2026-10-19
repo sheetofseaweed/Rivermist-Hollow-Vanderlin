@@ -9,9 +9,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(
-		/datum/attunement/earth = 0.6,
-	)
 
 	invocation = "Treefather light the way."
 	invocation_type = INVOCATION_WHISPER

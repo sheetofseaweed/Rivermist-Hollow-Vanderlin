@@ -4,9 +4,6 @@
 	button_icon_state = "rayoffrost"
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/ice = 0.6,
-	)
 
 	charge_time = 2.5 SECONDS
 	charge_drain = 1
@@ -69,7 +66,7 @@
 		qdel(active)
 		return
 
-	var/strength = clamp(attuned_strength * extra_modifer, 0.5, 2)
+	var/strength = clamp(get_rank_multiplier() * extra_modifer, 0.5, 2)
 
 	var/damage = round(20 * strength)
 	if(beam_level == SPELL_SLOT_MINOR)

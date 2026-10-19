@@ -16,13 +16,10 @@
 	slot_label = "Feather Falling"
 	required_form = FORM_AIR
 	required_technique = TECHNIQUE_ALTERATION
-	attunements = list(
-		/datum/attunement/aeromancy = 0.5,
-	)
 
 /datum/action/cooldown/spell/undirected/feather_falling/cast(atom/cast_on)
 	. = ..()
 	var/datum/status_effect/status = /datum/status_effect/buff/featherfall
-	var/duration_increase = max(0, attuned_strength * 90 SECONDS)
-	for(var/mob/living/L in viewers(max(1, FLOOR(attuned_strength, 1)), owner))
+	var/duration_increase = max(0, get_rank_multiplier() * 90 SECONDS)
+	for(var/mob/living/L in viewers(1, owner))
 		L.apply_status_effect(status, initial(status.duration) + duration_increase)

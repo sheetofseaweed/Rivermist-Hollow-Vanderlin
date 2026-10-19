@@ -24,8 +24,6 @@
 	prepares_spells = FALSE
 	form_points = 4
 	technique_points = 2
-	attunements_max = 10
-	attunements_min = 5
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_warlock/the_fiend,

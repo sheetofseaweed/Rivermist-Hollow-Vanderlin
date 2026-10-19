@@ -11,11 +11,6 @@
 	invocation = "Oblino!"
 	invocation_type = INVOCATION_SHOUT
 
-	attunements = list(
-		/datum/attunement/death = 0.3,
-		/datum/attunement/blood = 0.3,
-	)
-
 	charge_drain = 1
 	charge_time = 2 SECONDS
 	charge_slowdown = 0.3

@@ -54,8 +54,6 @@
 
 	magic_user = TRUE
 	spell_points = 20
-	attunements_max = 5
-	attunements_min = 1
 
 	spells = list(
 		/datum/action/cooldown/spell/healing,

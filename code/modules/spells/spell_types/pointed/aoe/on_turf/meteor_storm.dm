@@ -6,9 +6,6 @@
 	sound = 'sound/magic/meteorstorm.ogg'
 
 	point_cost = 8
-	attunements = list(
-		/datum/attunement/fire = 1.2
-	)
 
 	charge_time = 25 SECONDS
 	charge_drain = 2
@@ -36,7 +33,7 @@
 	cast_on.visible_message(span_boldwarning("Fire is raining from the sky!"))
 
 /datum/action/cooldown/spell/aoe/on_turf/meteor_storm/cast_on_thing_in_aoe(turf/victim, atom/caster)
-	// Slot casts ignore attunement; a level five storm lands a quarter of its tiles.
-	var/chance = isnull(get_effect_level()) ? 20 * attuned_strength : 25
+	// A level five slot storm lands a quarter of its tiles, a legacy cast a fifth.
+	var/chance = isnull(get_effect_level()) ? 20 : 25
 	if(prob(chance))
 		new /obj/effect/temp_visual/target/meteor(get_turf(victim))

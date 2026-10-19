@@ -8,7 +8,7 @@
 	point_cost = 1
 
 	cooldown_time = 5 SECONDS
-	spell_cost = 30
+	spell_cost = SPELL_CANTRIP_COST
 
 	invocation = "Valtarem!"
 	invocation_type = INVOCATION_SHOUT
@@ -21,10 +21,6 @@
 	required_form = FORM_EARTH
 	required_technique = TECHNIQUE_CREATION
 
-	attunements = list(
-		/datum/attunement/earth = 0.3,
-	)
-
 /datum/action/cooldown/spell/undirected/conjure_item/brick/make_item()
 	. = ..()
 	if(!isliving(owner))
@@ -35,8 +31,8 @@
 		return
 	var/obj/item/brick = .
 	var/int_scaling = INT - 10
-	brick.force = (brick.force + int_scaling) * attuned_strength
-	brick.throwforce = (brick.throwforce + int_scaling * 2) * attuned_strength // 2x scaling for throwing. Let's go.
+	brick.force = (brick.force + int_scaling) * get_rank_multiplier()
+	brick.throwforce = (brick.throwforce + int_scaling * 2) * get_rank_multiplier() // 2x scaling for throwing. Let's go.
 	brick.name = "magician's brick +[int_scaling]"
 	return brick
 

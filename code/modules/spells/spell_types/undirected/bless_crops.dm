@@ -7,10 +7,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(
-		/datum/attunement/earth = 0.5,
-		/datum/attunement/life = 0.5,
-	)
 
 	invocation = "The Treefather commands thee, be fruitful!"
 	invocation_type = INVOCATION_SHOUT

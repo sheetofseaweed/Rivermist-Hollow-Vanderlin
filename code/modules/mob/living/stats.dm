@@ -52,10 +52,8 @@
 		return FALSE
 	if(patron && !ispath(patron))
 		patron.on_remove(src)
-		mana_pool?.remove_attunements(patron)
 	patron = new_patron
 	patron.on_gain(src)
-	mana_pool?.set_attunements(patron)
 	return TRUE
 
 /mob/living/proc/sync_legacy_stat_cache()

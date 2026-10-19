@@ -105,12 +105,10 @@
 	/// Stat associated with spell enchancements.
 	var/associated_stat = STAT_INTELLIGENCE
 
-	/// Assoc list of [datum/attunement] to value.
-	var/list/attunements
+	/// Rune and wave color; defaults to the form color, else white.
+	var/spell_color
 	/// Essence type paths accepted as the cost of an essence spell.
 	var/list/essences
-	/// Value summed from caster and spell attunements to adjust some spell effects.
-	var/attuned_strength
 
 	/// Technique track this spell belongs to; null for techniqueless spells.
 	var/required_technique = null
@@ -203,6 +201,9 @@
 
 	if(click_to_activate && !charge_required)
 		ranged_mousepointer = 'icons/effects/mousemice/charge/spell_charged.dmi'
+
+	if(!spell_color)
+		spell_color = (required_form && GLOB.form_colors[required_form]) || "#FFFFFF"
 
 	if(!charge_required)
 		return
@@ -474,28 +475,6 @@
 
 	return result
 
-/// Do any attunement handling in here or any time after before_cast
-/datum/action/cooldown/spell/proc/handle_attunements()
-	SHOULD_CALL_PARENT(TRUE)
-
-	var/mob/living/caster = owner
-	var/list/datum/mana_pool/usable_pools = caster.get_all_pools()
-	var/list/total_attunements = GLOB.default_attunements.Copy()
-
-	for(var/datum/mana_pool/pool as anything in usable_pools)
-		for(var/negative_attunement in pool.negative_attunements)
-			total_attunements[negative_attunement] += pool.negative_attunements[negative_attunement]
-		for(var/attunement in pool.attunements)
-			total_attunements[attunement] += pool.attunements[attunement]
-
-	var/total_value = 1
-	for(var/datum/attunement/attunement as anything in attunements)
-		if(!(attunement in total_attunements))
-			continue
-		total_value += total_attunements[attunement] * attunements[attunement]
-
-	attuned_strength = clamp(total_value, 0.5, 2.5)
-
 /// Checks if the owner of the spell can currently cast it.
 /// Does not check anything involving potential targets.
 /datum/action/cooldown/spell/proc/can_cast_spell(feedback = TRUE)
@@ -616,9 +595,6 @@
 		// We do invocation and sound effects here, before actual cast
 		// That way stuff like teleports or shape-shifts can be invoked before ocurring
 		spell_feedback(owner)
-
-	if(length(attunements))
-		handle_attunements()
 
 	spell_magnitude_modifier = min(get_form_technique_modifiers()[SPELLMOD_MAGNITUDE], SPELLMOD_MAGNITUDE_CAP)
 
@@ -761,7 +737,7 @@
 
 	if(has_visual_effects)
 		var/mob/living/caster = owner
-		caster.finish_spell_visual_effects(attunements)
+		caster.finish_spell_visual_effects(spell_color)
 
 /// Provides feedback after a spell cast occurs, in the form of a cast sound and/or invocation
 /datum/action/cooldown/spell/proc/spell_feedback(mob/living/invoker)
@@ -811,7 +787,7 @@
 
 	if(has_visual_effects)
 		var/mob/living/caster = owner
-		caster.start_spell_visual_effects(attunements)
+		caster.start_spell_visual_effects(spell_color)
 
 	if(charge_message)
 		owner.balloon_alert(owner, charge_message)
@@ -896,7 +872,7 @@
 	next_use_time -= cooldown_time // Basically, ensures that the ability can be used now
 	build_all_button_icons()
 
-// Spell level is unused currently, it could be used for attunement thresholds
+// Spell level is unused currently
 
 /**
  * Levels the spell up a single level, reducing the cooldown.
@@ -978,7 +954,7 @@
 
 	switch(spell_type)
 		if(SPELL_MANA)
-			if(!caster.has_mana_available(attunements, used_cost))
+			if(!caster.has_mana_available(used_cost))
 				if(feedback)
 					owner.balloon_alert(owner, "not enough mana to cast!")
 				return FALSE
@@ -1072,7 +1048,7 @@
 	switch(used_type)
 		if(SPELL_MANA)
 			var/mob/living/caster = owner
-			caster.consume_mana(attunements, used_cost)
+			caster.consume_mana(used_cost)
 
 		if(SPELL_MIRACLE)
 			var/mob/living/carbon/human/H = owner

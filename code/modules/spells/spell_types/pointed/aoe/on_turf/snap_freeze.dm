@@ -4,10 +4,6 @@
 	button_icon_state = "snapfreeze"
 
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/blood = 0.3,
-		/datum/attunement/ice = 0.4,
-	)
 
 	invocation = "Air be still!"
 	invocation_type = INVOCATION_SHOUT
@@ -34,7 +30,7 @@
 
 /datum/action/cooldown/spell/aoe/on_turf/snap_freeze/proc/do_freeze(turf/victim, level)
 	var/damage = 35
-	var/strength = attuned_strength
+	var/strength = get_rank_multiplier()
 	if(!isnull(level))
 		damage = round((15 + 10 * level) * get_rank_multiplier())
 		strength = clamp(0.5 * level, 1, 2.5)

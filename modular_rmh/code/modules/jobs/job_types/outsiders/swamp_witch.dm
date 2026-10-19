@@ -63,8 +63,6 @@
 	prepares_spells = FALSE
 	form_points = 3
 	technique_points = 1
-	attunements_max = 5
-	attunements_min = 1
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/alchemist
 
@@ -158,8 +156,6 @@
 	prepares_spells = FALSE
 	form_points = 4
 	technique_points = 2
-	attunements_max = 10
-	attunements_min = 5
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/cinder
 
@@ -246,8 +242,6 @@
 	prepares_spells = FALSE
 	form_points = 4
 	technique_points = 2
-	attunements_max = 10
-	attunements_min = 5
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/hex
 
@@ -337,8 +331,6 @@
 	prepares_spells = FALSE
 	form_points = 3
 	technique_points = 1
-	attunements_max = 10
-	attunements_min = 5
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/wild
 

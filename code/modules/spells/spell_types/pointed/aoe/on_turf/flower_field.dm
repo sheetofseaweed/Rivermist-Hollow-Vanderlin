@@ -4,10 +4,6 @@
 	button_icon_state = "flower_field"
 
 	point_cost = 5
-	attunements = list(
-		/datum/attunement/earth = 0.4,
-		/datum/attunement/life = 0.3,
-	)
 
 	invocation = "May the earth bloom!"
 	invocation_type = INVOCATION_WHISPER

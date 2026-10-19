@@ -5,9 +5,6 @@
 	sound = 'sound/magic/whiteflame.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/ice = 0.7,
-	)
 
 	invocation = "Beam of Frost!!"
 	invocation_type = INVOCATION_SHOUT
@@ -35,7 +32,7 @@
 	. = ..()
 	var/level = get_effect_level()
 	if(isnull(level))
-		to_fire.damage *= attuned_strength
+		to_fire.damage *= get_rank_multiplier()
 		return
 	if(level == SPELL_SLOT_MINOR)
 		to_fire.damage = 10 * get_cantrip_multiplier()

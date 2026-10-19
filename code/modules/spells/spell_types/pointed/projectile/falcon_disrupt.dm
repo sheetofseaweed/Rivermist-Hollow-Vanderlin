@@ -8,7 +8,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(/datum/attunement/earth = 0.5)
 	charge_time = 1 SECONDS
 	charge_drain = 1
 	charge_slowdown = 0.7

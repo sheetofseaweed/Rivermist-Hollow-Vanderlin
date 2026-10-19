@@ -24,8 +24,6 @@
 	prepares_spells = FALSE
 	form_points = 7
 	technique_points = 3
-	attunements_max = 15
-	attunements_min = 5
 
 	traits = list(TRAIT_SORCERER)
 

@@ -21,11 +21,6 @@
 	invocation = "Create cloud!"
 	invocation_type = INVOCATION_SHOUT
 
-	attunements = list(
-		/datum/attunement/blood = 0.3,
-		/datum/attunement/death = 0.3,
-	)
-
 /datum/action/cooldown/spell/undirected/create_cloud/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

@@ -6,9 +6,6 @@
 	charge_sound = 'sound/magic/charging_fire.ogg'
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/fire = 0.3,
-	)
 
 	charge_time = 2 SECONDS
 	charge_drain = 1
@@ -27,8 +24,7 @@
 	. = ..()
 	var/level = get_effect_level()
 	if(isnull(level))
-		to_fire.damage *= attuned_strength
-		to_fire.exp_flash *= attuned_strength
+		to_fire.damage *= get_rank_multiplier()
 		return
 	if(level == SPELL_SLOT_MINOR)
 		to_fire.damage = 5 * get_cantrip_multiplier()

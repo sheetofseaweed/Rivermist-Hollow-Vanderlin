@@ -4,10 +4,6 @@
 	button_icon_state = "blindness"
 	sound = 'sound/magic/churn.ogg'
 
-	attunements = list(
-		/datum/attunement/arcyne = 0.1
-	)
-
 	invocation = "darkness envelop them."
 	invocation_type = INVOCATION_WHISPER
 

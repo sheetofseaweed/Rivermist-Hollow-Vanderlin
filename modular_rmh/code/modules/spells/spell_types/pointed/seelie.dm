@@ -205,7 +205,7 @@
 	charge_time = 1.5 SECONDS
 	charge_drain = 1
 	cooldown_time = 15 SECONDS
-	spell_cost = 20
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 
 	slot_level = 0
@@ -220,7 +220,7 @@
 
 /datum/action/cooldown/spell/projectile/water_bolt/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	. = ..()
-	to_fire.damage *= attuned_strength
+	to_fire.damage *= get_rank_multiplier()
 
 /obj/projectile/magic/waterbolt
 	name = "water bolt"

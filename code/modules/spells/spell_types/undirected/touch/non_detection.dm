@@ -5,9 +5,6 @@
 	can_cast_on_self = TRUE
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/illusion = 0.4,
-	)
 	spell_flags = SPELL_RITUOS
 	cooldown_time = 10 MINUTES
 
@@ -24,7 +21,8 @@
 	required_level = MASTERY_RANK_ADEPT
 
 /datum/action/cooldown/spell/undirected/touch/non_detection/adjust_hand_charges()
-	charges += FLOOR(attuned_strength * 1.5, 1)
+	// One spare charge above the base count.
+	charges++
 
 /datum/action/cooldown/spell/undirected/touch/non_detection/is_valid_target(atom/cast_on)
 	. = ..()

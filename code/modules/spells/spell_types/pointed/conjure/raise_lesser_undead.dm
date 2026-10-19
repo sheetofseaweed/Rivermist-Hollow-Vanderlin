@@ -19,9 +19,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
 	var/cabal_affine = FALSE
 
 /datum/action/cooldown/spell/conjure/raise_lesser_undead/before_cast()

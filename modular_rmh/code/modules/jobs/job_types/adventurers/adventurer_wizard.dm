@@ -23,8 +23,6 @@
 	prepares_spells = TRUE
 	form_points = 5
 	technique_points = 2
-	attunements_max = 15
-	attunements_min = 10
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_wizard/evocation_wizard,
