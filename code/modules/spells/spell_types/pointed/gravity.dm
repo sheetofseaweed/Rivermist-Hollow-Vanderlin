@@ -18,6 +18,12 @@
 	cooldown_time = 25 SECONDS
 	spell_cost = 35
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Gravity"
+	required_form = FORM_AIR
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/gravity/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

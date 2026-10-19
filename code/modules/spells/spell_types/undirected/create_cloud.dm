@@ -10,6 +10,13 @@
 	charge_required = FALSE
 	cooldown_time = 20 SECONDS
 	spell_cost = 30
+
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Create Cloud"
+	required_form = FORM_WATER
+	required_technique = TECHNIQUE_ALTERATION
+	required_level = MASTERY_RANK_EXPERT
 	spell_flags = SPELL_RITUOS
 	invocation = "Create cloud!"
 	invocation_type = INVOCATION_SHOUT

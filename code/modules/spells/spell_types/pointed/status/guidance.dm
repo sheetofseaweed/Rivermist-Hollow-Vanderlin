@@ -20,6 +20,12 @@
 	duration_scaling = TRUE
 	duration_modification = 30 SECONDS
 
+	slot_level = 1
+	slot_only = TRUE
+	concentration = TRUE
+	slot_label = "Guidance"
+	required_form = FORM_EARTH
+
 /datum/action/cooldown/spell/status/guidance/cast(mob/living/cast_on)
 	. = ..()
 	if(cast_on != owner)

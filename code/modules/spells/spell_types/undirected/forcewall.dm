@@ -15,19 +15,52 @@
 	cooldown_time = 35 SECONDS
 	spell_cost = 30
 	spell_flags = SPELL_RITUOS
+	slot_level = 3
+	slot_only = TRUE
+	concentration = TRUE
+	slot_label = "Forcewall"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ILLUSION
+	required_level = MASTERY_RANK_EXPERT
+	prerequisite_spells = list(/datum/action/cooldown/spell/undirected/forcewall/breakable)
+
 	var/wall_type = /obj/effect/forcefield/wizard
+	/// Walls of the current cast, dropped when concentration ends.
+	var/list/active_walls
+
+/datum/action/cooldown/spell/undirected/forcewall/Destroy()
+	active_walls = null
+	return ..()
 
 /datum/action/cooldown/spell/undirected/forcewall/cast(atom/cast_on)
 	. = ..()
+	if(uses_spell_slots())
+		on_concentration_broken(CONCENTRATION_REPLACED)
 	var/turf/ahead = get_step(owner, owner.dir)
-	new wall_type(ahead, owner, antimagic_flags)
+	place_wall(ahead)
 	if(owner.dir == SOUTH || owner.dir == NORTH)
-		new wall_type(get_step(ahead, EAST), owner, antimagic_flags)
-		new wall_type(get_step(ahead, WEST), owner, antimagic_flags)
+		place_wall(get_step(ahead, EAST))
+		place_wall(get_step(ahead, WEST))
 	else
-		new wall_type(get_step(ahead, NORTH), owner, antimagic_flags)
-		new wall_type(get_step(ahead, SOUTH), owner, antimagic_flags)
+		place_wall(get_step(ahead, NORTH))
+		place_wall(get_step(ahead, SOUTH))
+
+/datum/action/cooldown/spell/undirected/forcewall/proc/place_wall(turf/spot)
+	var/atom/wall = new wall_type(spot, owner, antimagic_flags)
+	LAZYADD(active_walls, WEAKREF(wall))
+
+/datum/action/cooldown/spell/undirected/forcewall/on_concentration_broken(reason)
+	for(var/datum/weakref/wall_ref as anything in active_walls)
+		var/atom/wall = wall_ref.resolve()
+		if(!QDELETED(wall))
+			qdel(wall)
+	active_walls = null
 
 /datum/action/cooldown/spell/undirected/forcewall/breakable
 	name = "Lesser Forcewall"
 	wall_type = /obj/structure/forcefield/casted
+
+	slot_level = 1
+	required_level = MASTERY_RANK_NOVICE
+	prerequisite_spells = null
+	slot_label = "Lesser Forcewall"

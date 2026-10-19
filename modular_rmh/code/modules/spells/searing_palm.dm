@@ -22,6 +22,11 @@
 	spell_cost = 100
 	infinite_use = TRUE
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Searing Palm"
+	required_form = FORM_FIRE
+
 	hand_path = /obj/item/melee/touch_attack/searing_palm
 	draw_message = span_warning("Flame crawls across my palm and clings there.")
 	drop_message = span_notice("The flame on my palm gutters out.")

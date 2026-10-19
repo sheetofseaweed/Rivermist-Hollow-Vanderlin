@@ -1,5 +1,5 @@
 /**
- * Spellbooks for learning arcane points.
+ * Tomes of the Weave: one read grants form mastery points, a gem's attunement themes half of them.
  * Difficult to learn by default, has multipliers for weed, gems and rituals.
  * Inherits most of its functionality from default granters, however also has some copy paste from roguebooks for parity.
  */
@@ -108,6 +108,9 @@
 /obj/item/book/granter/spellbook/attack_self(mob/user, list/modifiers)
 	if(!open)
 		attack_hand_secondary(user, modifiers)
+		return
+	if(HAS_TRAIT(user, TRAIT_SORCERER))
+		to_chat(user, span_warning("The written word has nothing to teach my blood."))
 		return
 	..()
 	user.update_inv_hands()
@@ -219,12 +222,15 @@
 	user.visible_message(span_warning("[user] is filled with arcane energy! You witness [user.p_their()] body convulse and spark brightly."), \
 	span_notice("Mystra blesses me. I have been granted knowledge and wisdom beyond my years, this tome's mysteries unveiled one at a time."))
 	qualityoflearn = qualityoflearn / 100
-	var/spellpoints = (src.bookquality * qualityoflearn)
-	spellpoints = CEILING(spellpoints, 1)
-	reader.adjust_spell_points(spellpoints)
+	var/spellpoints = CEILING(src.bookquality * qualityoflearn, 1)
+	// Slot casters learn through mastery; everyone else still feeds the old tree.
+	if(reader.mind?.spell_slots)
+		grant_mastery_points(reader, spellpoints)
+	else
+		reader.adjust_spell_points(spellpoints)
 	if(stored_attunement)
 		user.mana_pool?.adjust_attunement(stored_attunement, 0.1 * (spellpoints / 0.2))
-	user.log_message("successfully studied their spellbook and gained spellpoints", LOG_ATTACK, color="orange")
+	user.log_message("successfully studied their spellbook and gained [spellpoints] form mastery points", LOG_ATTACK, color="orange")
 	onlearned(user)
 	if(prob(55))
 		to_chat(user, span_notice("Confounded arcane mysteries, my notes have gone in circles. I must sleep before I can bring myself to open this damned thing again..."))
@@ -233,6 +239,46 @@
 
 /obj/item/book/granter/spellbook/onlearned(mob/user)
 	used = FALSE
+
+/// Form points equal to the old spell points; a gem's attunement themes half of them like a grimoire.
+/obj/item/book/granter/spellbook/proc/grant_mastery_points(mob/living/reader, points)
+	var/datum/spell_mastery/mastery = reader.mind?.get_spell_mastery()
+	if(!mastery || points <= 0)
+		return FALSE
+	var/themed_form = attunement_to_form(stored_attunement)
+	if(themed_form)
+		var/themed_amount = CEILING(points * 0.5, 1)
+		mastery.adjust_form_mastery_points(themed_amount, FALSE, themed_form)
+		if(points - themed_amount)
+			mastery.adjust_form_points(points - themed_amount)
+	else
+		mastery.adjust_form_points(points)
+	mastery.recalculate_unspent_points()
+	to_chat(reader, span_notice("I gain [points] form mastery point[points == 1 ? "" : "s"][themed_form ? ", half of them in [themed_form]" : ""]."))
+	return TRUE
+
+/// The form a gem attunement feeds; null for attunements without one.
+/proc/attunement_to_form(datum/attunement/attunement_path)
+	switch(attunement_path)
+		if(/datum/attunement/fire)
+			return FORM_FIRE
+		if(/datum/attunement/ice)
+			return FORM_ICE
+		if(/datum/attunement/electric)
+			return FORM_LIGHTNING
+		if(/datum/attunement/earth)
+			return FORM_EARTH
+		if(/datum/attunement/arcyne)
+			return FORM_ARCANE
+		if(/datum/attunement/death)
+			return FORM_DEATH
+		if(/datum/attunement/life)
+			return FORM_LIFE
+		if(/datum/attunement/aeromancy)
+			return FORM_AIR
+		if(/datum/attunement/blood)
+			return FORM_BLOOD
+	return null
 
 /obj/item/book/granter/spellbook/recoil(mob/user)
 	user.visible_message(span_warning("[src] shoots out a spark of angry, arcane energy at [user]!"))

@@ -24,6 +24,13 @@
 	spell_cost = 25
 	spell_flags = SPELL_RITUOS
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Cone of Cold"
+	required_form = FORM_ICE
+	required_level = MASTERY_RANK_ADEPT
+	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/frost_bolt)
+
 	/// What flags do we pass to MakeSlippery when affecting turfs?
 	/// null / NONE / TURF_DRY means the turf is unaffected
 	var/turf_freeze_type = TURF_WET_PERMAFROST

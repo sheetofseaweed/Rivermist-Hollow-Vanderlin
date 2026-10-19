@@ -21,6 +21,13 @@
 	aoe_radius = 3
 	ignore_openspace = TRUE
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Flower Field"
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_CREATION
+	required_level = MASTERY_RANK_ADEPT
+
 	var/obj/structure/flora/field/flowers
 
 /datum/action/cooldown/spell/aoe/on_turf/circle/flower_field/before_cast(atom/cast_on)

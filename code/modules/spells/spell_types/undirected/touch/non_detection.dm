@@ -16,6 +16,13 @@
 	drop_message = "I release my arcyne focus."
 	charges = 2
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Nondetection"
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_ILLUSION
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/undirected/touch/non_detection/adjust_hand_charges()
 	charges += FLOOR(attuned_strength * 1.5, 1)
 

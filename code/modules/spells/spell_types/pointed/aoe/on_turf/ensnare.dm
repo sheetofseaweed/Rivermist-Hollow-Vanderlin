@@ -18,6 +18,13 @@
 	spell_flags = SPELL_RITUOS
 	aoe_radius = 4
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Ensnare"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_CREATION
+	required_level = MASTERY_RANK_ADEPT
+
 	var/duration = 4 SECONDS
 	var/delay = 0.8 SECONDS
 	var/ensnare_radius = 1

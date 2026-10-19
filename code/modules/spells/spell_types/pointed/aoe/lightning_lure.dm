@@ -23,6 +23,13 @@
 	aoe_radius = 4
 	max_targets = 3
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Lightning Lure"
+	required_form = FORM_LIGHTNING
+	required_technique = TECHNIQUE_DESTRUCTION
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/aoe/lightning_lure/is_valid_target(atom/cast_on)
 	return iscarbon(cast_on)
 

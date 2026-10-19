@@ -21,6 +21,10 @@
 
 	status_effect = /datum/status_effect/debuff/booming_blade
 
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ALTERATION
+
 /datum/action/cooldown/spell/status/booming_blade/handle_attunements()
 	. = ..()
 	extra_args = list(attuned_strength)

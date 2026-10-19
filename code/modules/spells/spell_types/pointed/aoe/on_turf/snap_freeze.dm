@@ -20,12 +20,24 @@
 
 	aoe_radius = 2
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Snap Freeze"
+	required_form = FORM_ICE
+	required_technique = TECHNIQUE_DESTRUCTION
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/aoe/on_turf/snap_freeze/cast_on_thing_in_aoe(turf/victim, atom/caster)
 	new /obj/effect/temp_visual/trapice(victim)
 	playsound(victim, 'sound/combat/wooshes/blunt/wooshhuge (2).ogg', 80, TRUE, soundping = TRUE)
-	addtimer(CALLBACK(src, PROC_REF(do_freeze), victim), 0.5 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(do_freeze), victim, get_effect_level()), 0.5 SECONDS)
 
-/datum/action/cooldown/spell/aoe/on_turf/snap_freeze/proc/do_freeze(turf/victim)
+/datum/action/cooldown/spell/aoe/on_turf/snap_freeze/proc/do_freeze(turf/victim, level)
+	var/damage = 35
+	var/strength = attuned_strength
+	if(!isnull(level))
+		damage = round((15 + 10 * level) * get_rank_multiplier())
+		strength = clamp(0.5 * level, 1, 2.5)
 	new /obj/effect/temp_visual/snap_freeze(victim)
 	playsound(victim, 'sound/combat/newstuck.ogg', 80, TRUE)
 	for(var/mob/living/L in victim)
@@ -33,8 +45,8 @@
 			L.visible_message(span_warning("The ice fades away around [L]."))
 			playsound(L, 'sound/magic/magic_nulled.ogg', 100)
 			continue
-		L.adjustFireLoss(35)
-		L.apply_status_effect(/datum/status_effect/debuff/frostbite, null, attuned_strength)
+		L.adjustFireLoss(damage)
+		L.apply_status_effect(/datum/status_effect/debuff/frostbite, null, strength)
 		to_chat(L, span_userdanger("The air chills your bones!"))
 
 /obj/effect/temp_visual/trapice

@@ -22,10 +22,36 @@
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/energy/rogue3
 
+	slot_level = 1
+	minor_cost = SPELL_MINOR_COST_DEFAULT
+	slot_label = "Arcane Bolt"
+	required_form = FORM_ARCANE
+
 /datum/action/cooldown/spell/projectile/arcyne_bolt/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	. = ..()
-	to_fire.damage *= attuned_strength
-	to_fire.armor_penetration *= attuned_strength
+	var/level = get_effect_level()
+	if(isnull(level))
+		to_fire.damage *= attuned_strength
+		to_fire.armor_penetration *= attuned_strength
+		return
+	if(level == SPELL_SLOT_MINOR)
+		to_fire.damage = 10 * get_cantrip_multiplier()
+		to_fire.armor_penetration = 0
+		return
+	switch(level)
+		if(1)
+			to_fire.damage = 30
+		if(2)
+			to_fire.damage = 38
+		if(3)
+			to_fire.damage = 46
+		if(4)
+			to_fire.damage = 55
+		if(5)
+			to_fire.damage = 65
+	to_fire.damage *= get_rank_multiplier()
+	if(user)
+		to_chat(user, span_notice("The [get_slot_label()] forms at spell level [level]."))
 
 /obj/projectile/magic/energy/rogue3
 	name = "arcyne bolt"

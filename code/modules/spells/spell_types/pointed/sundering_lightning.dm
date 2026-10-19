@@ -20,6 +20,14 @@
 	cooldown_time = 1.5 MINUTES
 	spell_cost = 60
 
+	slot_level = 4
+	slot_only = TRUE
+	slot_label = "Sundering Lightning"
+	required_form = FORM_LIGHTNING
+	required_technique = TECHNIQUE_DESTRUCTION
+	required_level = MASTERY_RANK_MASTER
+	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/lightning)
+
 /datum/action/cooldown/spell/sundering_lightning/cast(atom/cast_on)
 	. = ..()
 	addtimer(CALLBACK(src, PROC_REF(create_lightning), get_turf(cast_on)), 3 SECONDS)

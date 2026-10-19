@@ -17,6 +17,11 @@
 	summon_type = list(/obj/item/phantom_ear)
 	summon_radius = 0
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Phantom Ear"
+	required_form = FORM_WATER
+
 	var/datum/weakref/current_ear
 
 /datum/action/cooldown/spell/conjure/phantom_ear/Destroy(force)

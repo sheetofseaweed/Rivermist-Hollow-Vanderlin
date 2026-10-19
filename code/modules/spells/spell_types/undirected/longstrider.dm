@@ -19,6 +19,12 @@
 	spell_cost = 50
 	spell_flags = SPELL_RITUOS
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Longstrider"
+	required_form = FORM_AIR
+	required_technique = TECHNIQUE_ALTERATION
+
 /datum/action/cooldown/spell/undirected/longstrider/cast(atom/cast_on)
 	. = ..()
 	owner.visible_message(

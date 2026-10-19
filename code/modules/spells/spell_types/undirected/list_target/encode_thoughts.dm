@@ -15,6 +15,9 @@
 	choose_target_message = "Choose who to invade the mind of."
 	target_radius = 6
 	spell_flags = SPELL_RITUOS
+	slot_level = 0
+	required_form = FORM_DEATH
+
 	var/message
 
 /datum/action/cooldown/spell/undirected/list_target/encode_thoughts/before_cast(atom/cast_on)
@@ -42,3 +45,5 @@
 	point_cost = 0
 	spell_type = SPELL_BLOOD
 	spell_flags = NONE
+	learnable = FALSE
+	slot_level = null

@@ -20,6 +20,14 @@
 	charge_drain = 1
 	cooldown_time = 30 SECONDS
 	spell_cost = 50
+	heretical_spell = TRUE
+
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Decompose"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_ALTERATION
+	required_level = MASTERY_RANK_ADEPT
 
 /datum/action/cooldown/spell/decompose/is_valid_target(atom/cast_on)
 	. = ..()

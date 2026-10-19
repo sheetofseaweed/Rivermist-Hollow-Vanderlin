@@ -19,15 +19,26 @@
 	invocation = "BE TORN APART!!!"
 	invocation_type = INVOCATION_SHOUT
 
+	slot_level = 4
+	slot_only = TRUE
+	slot_label = "Arcane Storm"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_DESTRUCTION
+	required_level = MASTERY_RANK_MASTER
+	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/arcyne_bolt)
+
 /datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/cast_on_thing_in_aoe(atom/victim, atom/caster)
 	for(var/i in 1 to 16)
-		addtimer(CALLBACK(src, PROC_REF(apply_damage), victim), wait = i * 1 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(apply_damage), victim, get_effect_level()), wait = i * 1 SECONDS)
 
-/datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/proc/apply_damage(turf/victim)
+/datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/proc/apply_damage(turf/victim, level)
+	var/tick_damage = round(7 * attuned_strength)
+	if(!isnull(level))
+		tick_damage = round((level == SPELL_SLOT_MAX ? 9 : 7) * get_rank_multiplier())
 	new /obj/effect/temp_visual/arcyne_storm(victim)
 	playsound(victim, "genslash", 40, TRUE)
 	for(var/mob/living/L in victim.contents)
-		L.adjustBruteLoss(round(7 * attuned_strength), damage_type = BCLASS_CUT)
+		L.adjustBruteLoss(tick_damage, damage_type = BCLASS_CUT)
 		to_chat(L, span_userdanger("I'm cut by an arcyne force!"))
 
 /obj/effect/temp_visual/arcyne_storm

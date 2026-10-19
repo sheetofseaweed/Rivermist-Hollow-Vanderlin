@@ -20,6 +20,10 @@
 	duration_scaling = TRUE
 	duration_modification = 30 SECONDS
 
+	slot_level = 0
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
+
 /datum/action/cooldown/spell/status/primal_savagery/cast(mob/living/cast_on)
 	. = ..()
 	cast_on.visible_message(span_warning("[cast_on] looks more primal!"), span_info("You feel more primal."))

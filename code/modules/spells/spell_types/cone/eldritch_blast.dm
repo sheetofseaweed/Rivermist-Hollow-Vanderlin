@@ -98,6 +98,10 @@
 	spell_cost = 25
 	spell_flags = SPELL_RITUOS
 
+	slot_level = 0
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_DESTRUCTION
+
 /datum/action/cooldown/spell/cone/staggered/eldritch_blast/cast(atom/cast_on)
 	. = ..()
 	new /obj/effect/temp_visual/dir_setting/entropic(get_step(cast_on, cast_on.dir), cast_on.dir)

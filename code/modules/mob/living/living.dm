@@ -3451,6 +3451,9 @@
 	if(QDELETED(src))
 		return
 
+	if(mind?.spell_slots)
+		return
+
 	if(get_spell(/datum/action/cooldown/spell/undirected/learn))
 		return
 

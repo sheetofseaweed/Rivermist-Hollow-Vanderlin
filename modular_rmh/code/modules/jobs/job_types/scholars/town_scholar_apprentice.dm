@@ -57,7 +57,6 @@
 	form_points = 3
 	technique_points = 1
 	spells = list(
-		/datum/action/cooldown/spell/undirected/learn,
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/conjure_item/summon_parchment,
 		/datum/action/cooldown/spell/undirected/conjure_item/summon_parchment/scroll,

@@ -9,6 +9,9 @@
 	cooldown_time = 1 MINUTES
 	spell_cost = 30
 
+	slot_level = 0
+	required_form = FORM_ARCANE
+
 	invocation = "Blades, be dulled!"
 	invocation_type = INVOCATION_SHOUT
 	spell_flags = SPELL_RITUOS

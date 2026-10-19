@@ -133,6 +133,8 @@
 	button_icon_state = "icebeam"
 
 	school = SCHOOL_FORBIDDEN
+	learnable = FALSE
+	slot_level = null
 	cooldown_time = 30 SECONDS
 
 	invocation = "FR'ZE!"

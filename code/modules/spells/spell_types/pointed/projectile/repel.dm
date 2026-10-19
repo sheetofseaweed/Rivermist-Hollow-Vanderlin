@@ -21,6 +21,11 @@
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/repel
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Repel"
+	required_form = FORM_AIR
+
 /obj/projectile/magic/repel
 	name = "bolt of repeling"
 	icon = 'icons/effects/effects.dmi'

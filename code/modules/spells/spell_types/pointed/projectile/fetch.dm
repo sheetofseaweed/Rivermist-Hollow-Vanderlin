@@ -21,3 +21,6 @@
 	spell_cost = 30
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/fetch
+
+	slot_level = 0
+	required_form = FORM_AIR

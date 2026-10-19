@@ -10,6 +10,12 @@
 	cooldown_time = 3 MINUTES
 	spell_cost = 50
 	spell_flags = SPELL_RITUOS
+
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Feather Falling"
+	required_form = FORM_AIR
+	required_technique = TECHNIQUE_ALTERATION
 	attunements = list(
 		/datum/attunement/aeromancy = 0.5,
 	)

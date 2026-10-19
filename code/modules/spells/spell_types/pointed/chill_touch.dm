@@ -20,6 +20,9 @@
 	cooldown_time = 60 SECONDS
 	spell_cost = 50
 
+	slot_level = 0
+	required_form = FORM_ICE
+
 /datum/action/cooldown/spell/chill_touch/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

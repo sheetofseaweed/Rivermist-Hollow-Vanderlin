@@ -17,6 +17,10 @@
 		/datum/attunement/arcyne = 0.2,
 	)
 
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ALTERATION
+
 	var/tether_duration = 2 MINUTES
 	var/can_scrying = FALSE
 
@@ -25,6 +29,7 @@
 	desc = "Project Mage Hand through a scrying vision."
 	spell_cost = 0
 	cooldown_time = 0
+	learnable = FALSE
 
 /datum/action/cooldown/spell/mage_hand/is_valid_target(atom/cast_on)
 	. = ..()

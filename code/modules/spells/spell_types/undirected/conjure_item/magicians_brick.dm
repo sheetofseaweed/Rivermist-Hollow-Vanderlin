@@ -17,6 +17,10 @@
 	item_duration = 3 MINUTES
 	item_outline = "#6495ED"
 
+	slot_level = 0
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_CREATION
+
 	attunements = list(
 		/datum/attunement/earth = 0.3,
 	)

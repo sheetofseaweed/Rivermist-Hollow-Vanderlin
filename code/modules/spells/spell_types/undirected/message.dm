@@ -17,6 +17,9 @@
 	var/anonymous = FALSE
 	spell_flags = SPELL_RITUOS
 
+	slot_level = 0
+	required_form = FORM_AIR
+
 /datum/action/cooldown/spell/undirected/message/Destroy(force, ...)
 	recipient_ref = null
 	return ..()

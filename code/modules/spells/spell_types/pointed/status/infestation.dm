@@ -22,6 +22,12 @@
 	duration_modification = 5 SECONDS
 	status_effect = /datum/status_effect/debuff/infestation
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Infestation"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_SUMMONING
+
 /datum/status_effect/debuff/infestation
 	id = "infestation"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/infestation

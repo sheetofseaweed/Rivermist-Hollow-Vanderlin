@@ -16,6 +16,11 @@
 	drop_message = "I release my arcyne focus."
 	charges = 3
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Darkvision"
+	required_form = FORM_DEATH
+
 /datum/action/cooldown/spell/undirected/touch/darkvision/adjust_hand_charges()
 	charges += FLOOR(attuned_strength * 1.5, 1)
 

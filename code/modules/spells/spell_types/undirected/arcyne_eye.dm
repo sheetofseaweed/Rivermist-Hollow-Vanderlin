@@ -9,6 +9,9 @@
 	charge_required = FALSE
 	cooldown_time = 15 SECONDS
 	spell_cost = 0
+
+	slot_level = 0
+	required_form = FORM_ARCANE
 	attunements = list(
 		/datum/attunement/arcyne = 0.1
 	)

@@ -18,6 +18,13 @@
 	charge_drain = 1
 	charge_slowdown = 0.7
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Repulse"
+	required_form = FORM_AIR
+	required_technique = TECHNIQUE_CREATION
+	required_level = MASTERY_RANK_ADEPT
+
 	attunements = list(
 		/datum/attunement/aeromancy = 0.4,
 	)
@@ -93,6 +100,8 @@
 	cooldown_reduction_per_rank = 0
 
 	sparkle_path = /obj/effect/temp_visual/dir_setting/tailsweep
+	learnable = FALSE
+	slot_level = null
 
 /datum/action/cooldown/spell/aoe/repulse/dragon/cast(atom/target)
 	. = ..()

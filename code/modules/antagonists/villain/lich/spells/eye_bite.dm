@@ -13,6 +13,11 @@
 	cooldown_time = 15 SECONDS
 	spell_cost = 30
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Eyebite"
+	required_form = FORM_DEATH
+
 /datum/action/cooldown/spell/eyebite/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

@@ -36,6 +36,9 @@
 	)
 
 /datum/attribute/skill/magic/arcane/on_level_change(mob/owner, new_level, old_level)
+	// Slot casters grow through the slot ladder, not the old tree.
+	if(owner?.mind?.spell_slots)
+		return
 	var/old_tier = floor(old_level / 10)
 	var/new_tier = floor(new_level / 10)
 	if(new_tier > old_tier)

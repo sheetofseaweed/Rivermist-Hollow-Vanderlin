@@ -20,6 +20,12 @@
 	spell_flags = SPELL_RITUOS
 	status_effect = /datum/status_effect/debuff/frostbite
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Frostbite"
+	required_form = FORM_ICE
+	required_technique = TECHNIQUE_ALTERATION
+
 /datum/action/cooldown/spell/status/frostbite/cast(mob/living/cast_on)
 	. = ..()
 	extra_args = list(attuned_strength)

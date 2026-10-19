@@ -23,10 +23,20 @@
 	invocation = "METEOR STORM!!!"
 	invocation_type = INVOCATION_SHOUT
 
+	slot_level = 5
+	slot_only = TRUE
+	slot_label = "Meteor Storm"
+	required_form = FORM_FIRE
+	required_technique = TECHNIQUE_DESTRUCTION
+	required_level = MASTERY_RANK_MASTER
+	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/fireball)
+
 /datum/action/cooldown/spell/aoe/on_turf/meteor_storm/cast(atom/cast_on)
 	. = ..()
 	cast_on.visible_message(span_boldwarning("Fire is raining from the sky!"))
 
 /datum/action/cooldown/spell/aoe/on_turf/meteor_storm/cast_on_thing_in_aoe(turf/victim, atom/caster)
-	if(prob(20 * attuned_strength))
+	// Slot casts ignore attunement; a level five storm lands a quarter of its tiles.
+	var/chance = isnull(get_effect_level()) ? 20 * attuned_strength : 25
+	if(prob(chance))
 		new /obj/effect/temp_visual/target/meteor(get_turf(victim))

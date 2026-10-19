@@ -418,7 +418,9 @@
 			var/datum/action/innate/open_spellbook/innate_book = new
 			innate_book.Grant(spawned)
 	add_spells(spawned)
-	spawned.adjust_spell_points(spell_points)
+	// Archetype casters grow through slots and mastery, not the old tree.
+	if(!caster_archetype)
+		spawned.adjust_spell_points(spell_points)
 	spawned.generate_random_attunements(rand(attunements_min, attunements_max))
 
 	// When we have sourced skill mods (praying, add to this as well)
@@ -812,7 +814,7 @@
 
 /datum/job/proc/add_spells(mob/living/equipped_human)
 	for(var/datum/action/cooldown/spell/spell as anything in spells)
-		equipped_human.add_spell(spell, source = src)
+		equipped_human.add_spell(spell, source = src, mastery_spell = !!caster_archetype)
 
 /datum/job/proc/remove_spells(mob/living/equipped_human)
 	equipped_human.remove_spells(source = src)
@@ -1114,7 +1116,7 @@
 				for(var/stat in adv_ref.adv_stat_ceiling)
 					dat += "["[capitalize(stat)]: <b>\Roman[adv_ref.adv_stat_ceiling[stat]]</b>"] | "
 				dat += "<i><br>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"*/
-			if(adv_ref.spell_points > 0)
+			if(adv_ref.spell_points > 0 && !adv_ref.caster_archetype)
 				dat += "<font color = '#a3a7e0'>Starting Spellpoints: <b>[adv_ref.spell_points]</b></font>"
 			if(length(adv_ref.languages))
 				dat += "<details><summary><i>Known Languages</i></summary>"
@@ -1178,7 +1180,7 @@
 				dat += "["[capitalize(stat)]: <b>\Roman[stat_ceilings[stat]]</b>"] | "
 			dat += "<br><i>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"
 			dat += "</font>"	//Ends the stat limit colors
-	if(spell_points > 0)
+	if(spell_points > 0 && !caster_archetype)
 		dat += "<br><font color = '#a3a7e0'>Starting Spellpoints: <b>[spell_points]</b></font>"
 	if(length(traits) && (show_traits || sclass_count > 1))
 		dat += "<br><b>Class</b></font> Traits: "

@@ -208,6 +208,9 @@
 	spell_cost = 20
 	spell_flags = SPELL_RITUOS
 
+	slot_level = 0
+	required_form = FORM_WATER
+
 /datum/action/cooldown/spell/projectile/water_bolt/cast(atom/cast_on)
 	. = ..()
 	owner.visible_message(

@@ -13,6 +13,10 @@
 	cooldown_time = 30 SECONDS
 	spell_cost = 40
 
+	slot_level = 0
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
+
 	/// Amount to repair by
 	var/repair_percent = 0.25
 

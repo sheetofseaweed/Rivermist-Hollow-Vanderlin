@@ -14,6 +14,12 @@
 	cooldown_time = 5 MINUTES
 	spell_cost = 20
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Mimicry"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ILLUSION
+
 	var/datum/weakref/old_dna_ref
 	var/old_hair
 	var/old_hair_color

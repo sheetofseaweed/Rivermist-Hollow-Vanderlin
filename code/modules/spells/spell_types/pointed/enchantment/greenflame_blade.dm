@@ -12,3 +12,6 @@
 	spell_cost = 30
 	spell_flags = SPELL_RITUOS
 	enchantment = SEARING_BLADE_ENCHANT
+
+	slot_level = 0
+	required_form = FORM_FIRE

@@ -15,6 +15,12 @@
 	summon_type = list(/obj/structure/spider/stickyweb)
 	summon_radius = 3
 	summon_amount = 0
+
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Conjure Web"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_CREATION
 	spell_flags = SPELL_RITUOS
 	attunements = list(
 		/datum/attunement/death = 0.3,

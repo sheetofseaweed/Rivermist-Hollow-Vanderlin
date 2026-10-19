@@ -21,6 +21,21 @@
 	/// Extra arguments to pass, must be a list
 	/// Will have no effect unless on_creation has 3+ args
 	var/extra_args
+	/// Last target of a concentration cast, so a broken concentration can strip the effect.
+	var/datum/weakref/concentration_target_ref
+
+/datum/action/cooldown/spell/status/Destroy()
+	concentration_target_ref = null
+	return ..()
+
+/// Breaking concentration removes the buff from the last target.
+/datum/action/cooldown/spell/status/on_concentration_broken(reason)
+	var/mob/living/target = concentration_target_ref?.resolve()
+	concentration_target_ref = null
+	if(QDELETED(target) || !target.has_status_effect(status_effect))
+		return
+	target.remove_status_effect(status_effect)
+	target.visible_message(span_warning("The magic sustaining [target] unravels."), span_warning("The [name] sustaining me unravels!"))
 
 /datum/action/cooldown/spell/status/New(Target)
 	. = ..()
@@ -48,5 +63,9 @@
 	)
 	if(extra_args && islist(extra_args))
 		status_args += extra_args
+	if(concentration && uses_spell_slots())
+		// A second concentration cast ends the first target's buff.
+		on_concentration_broken(CONCENTRATION_REPLACED)
+		concentration_target_ref = WEAKREF(cast_on)
 	cast_on.apply_status_effect(arglist(status_args))
 	cooldown_time = cooldown_time || duration
