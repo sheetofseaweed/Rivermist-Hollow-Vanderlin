@@ -73,6 +73,8 @@
 #define COMSIG_LIVING_DEFEAT_RESCUED "living_defeat_rescued"
 /// Sent when a mob is knocked into a defeat state (defeat_knockout or mob_horny_knockout applied): ()
 #define COMSIG_LIVING_DEFEATED "living_defeated"
+/// From the Yield verbs, once the mob has surrendered: ()
+#define COMSIG_LIVING_YIELDED "living_yielded"
 /// From /mob/living/proc/defeat_treat_trauma(): (mob/living/helper, treatment_type)
 #define COMSIG_LIVING_DEFEAT_TREATED "living_defeat_treated"
 #define COMSIG_LIVING_TRY_ENTER_AFTERLIFE "try_enter_afterlife"

@@ -475,14 +475,3 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/start/new_player)
 
 /obj/effect/landmark/death_arena/second
 	name = "Death arena spawn 2"
-
-/obj/effect/landmark/start/gnoll
-	name = "gnoll"
-	icon_state = "arrow"
-	jobspawn_override = list("Gnoll")
-
-/obj/effect/landmark/start/gnolllate
-	name = "gnoll"
-	icon_state = "arrow"
-	delete_after_roundstart = FALSE
-	jobspawn_override = list("Gnoll")

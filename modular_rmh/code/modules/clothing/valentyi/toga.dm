@@ -46,6 +46,15 @@
 		icon_state = "[base_icon]"
 		changed_icon = "[base_icon]"
 
+/obj/item/clothing/shirt/toga/build_worn_icon(age = AGE_ADULT, default_layer = 0, default_icon_file = null, isinhands = FALSE, femaleuniform = NO_FEMALE_UNIFORM, override_state = null, coom = FALSE, customi = null, sleeveindex, breast_size = 0, icon/clip_mask = null)
+	// Large visible breasts get the fuller _bvl fit; no race-specific _bvl art exists.
+	if(!override_state && !isinhands && coom == FEMALE_BOOB && !customi && ishuman(loc))
+		var/mob/living/carbon/human/wearer = loc
+		var/obj/item/organ/genitals/filling_organ/breasts/boobs = wearer.getorganslot(ORGAN_SLOT_BREASTS)
+		if(boobs?.organ_size >= BREAST_SIZE_LARGE)
+			override_state = "[icon_state]_f_bvl"
+	return ..(age, default_layer, default_icon_file, isinhands, femaleuniform, override_state, coom, customi, sleeveindex, breast_size, clip_mask)
+
 /datum/repeatable_crafting_recipe/sewing/toga
 	name = "toga"
 	output = /obj/item/clothing/shirt/toga

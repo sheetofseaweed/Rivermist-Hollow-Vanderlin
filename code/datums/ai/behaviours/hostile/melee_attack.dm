@@ -158,8 +158,11 @@
 	if(!succeeded)
 		controller.clear_blackboard_key(target_key)
 	var/mob/living/simple_animal/basic_mob = controller.pawn
+	// The swing can kill a del_on_death attacker, leaving no pawn.
+	if(QDELETED(basic_mob))
+		return
 	basic_mob.cmode = FALSE
-	SEND_SIGNAL(controller.pawn, COMSIG_COMBAT_TARGET_SET, FALSE)
+	SEND_SIGNAL(basic_mob, COMSIG_COMBAT_TARGET_SET, FALSE)
 
 /datum/ai_behavior/basic_ranged_attack
 	action_cooldown = 0.6 SECONDS
@@ -326,17 +329,6 @@
 		target.IgniteMob()
 		target.visible_message(span_danger("[basic_mob] sets [target] on fire!"))
 
-
-/datum/ai_behavior/basic_melee_attack/warden/perform(delta_time, datum/ai_controller/controller, target_key, targetting_datum_key, hiding_location_key)
-	. = ..()
-	var/mob/living/simple_animal/basic_mob = controller.pawn
-	//targetting datum will kill the action if not real anymore
-	var/mob/living/target = controller.blackboard[target_key]
-	if(!isliving(target))
-		return
-	var/atom/throw_target = get_edge_target_turf(basic_mob, get_dir(basic_mob, target)) //ill be real I got no idea why this worked.
-	target.throw_at(throw_target, 7, 4)
-	target.adjustBruteLoss(20, damage_type = BCLASS_BLUNT)
 
 /datum/ai_behavior/basic_melee_attack/species_hostile/perform(delta_time, datum/ai_controller/controller, target_key, targetting_datum_key, hiding_location_key)
 	. = ..()

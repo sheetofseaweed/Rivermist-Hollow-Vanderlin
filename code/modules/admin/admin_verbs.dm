@@ -231,6 +231,7 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	/client/proc/start_tracy,
 	/client/proc/set_tod_override,
 	/client/proc/check_timer_sources,
+	/client/proc/cmd_image_census,
 	/client/proc/debug_spell_requirements,
 	/client/proc/debug_grant_dnd_spell_pack,
 	/client/proc/debug_grant_dnd_fireball_v2,

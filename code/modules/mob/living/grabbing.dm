@@ -174,6 +174,10 @@
 				part.grabbedby -= src
 				part = null
 				sublimb_grabbed = null
+	// The zone lookup above misses detached limbs and precise zones, so drop the direct ref too.
+	if(limb_grabbed)
+		limb_grabbed.grabbedby -= src
+		limb_grabbed = null
 
 	. = ..()
 

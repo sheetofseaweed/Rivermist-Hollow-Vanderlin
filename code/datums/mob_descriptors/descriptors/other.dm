@@ -61,7 +61,6 @@
 		else
 			arousal_modifier = ", soft and flaccid"
 	var/used_name
-	var/pubic_hair_adjective = H.get_pubic_hair_organ_adjective()
 	if(penis.erect_state != ERECT_STATE_HARD && penis.sheath_type != SHEATH_TYPE_NONE)
 		switch(penis.sheath_type)
 			if(SHEATH_TYPE_NORMAL)
@@ -72,16 +71,8 @@
 			if(SHEATH_TYPE_SLIT)
 				used_name = "a genital slit"
 	else
-		used_name = "[adjective] [pubic_hair_adjective ? "[pubic_hair_adjective] " : ""][penis.name][arousal_modifier]"
-	if(pubic_hair_adjective)
-		switch(used_name)
-			if("a fat sheath")
-				used_name = "a fat, [pubic_hair_adjective] sheath"
-			if("a sheath")
-				used_name = "a [pubic_hair_adjective] sheath"
-			if("a genital slit")
-				used_name = "a [pubic_hair_adjective] genital slit"
-	return "[used_name]"
+		used_name = "[adjective] [penis.name][arousal_modifier]"
+	return "[used_name][H.get_pubic_hair_clause(ORGAN_SLOT_PENIS)]"
 
 /datum/mob_descriptor/testicles
 	name = "balls"
@@ -122,9 +113,8 @@
 			adjective = "a massive"
 		if(6)
 			adjective = "an enormous"
-	var/pubic_hair_adjective = H.get_pubic_hair_organ_adjective()
 	var/fullness = testes.get_fullness_description()
-	return "[adjective][pubic_hair_adjective ? ", [pubic_hair_adjective]" : ""] pair of balls[fullness ? ", [fullness]" : ""]"
+	return "[adjective] pair of balls[fullness ? ", [fullness]" : ""][H.get_pubic_hair_clause(ORGAN_SLOT_TESTICLES)]"
 
 /datum/mob_descriptor/butt
 	name = "butt"
@@ -197,11 +187,6 @@
 			vagina_type = "gaping vagina"
 		if(/datum/sprite_accessory/genitals/vagina/cloaca)
 			vagina_type = "cloaca"
-	var/pubic_hair_adjective = H.get_pubic_hair_organ_adjective()
-	if(pubic_hair_adjective)
-		if(vagina_type == "plain vagina")
-			vagina_type = "vagina"
-		vagina_type = "[pubic_hair_adjective] [vagina_type]"
 	var/list/arousal_data = list()
 	SEND_SIGNAL(H, COMSIG_SEX_GET_AROUSAL, arousal_data)
 	switch(arousal_data["arousal"])
@@ -211,7 +196,7 @@
 			arousal_modifier = ", slickened with arousal"
 		if(20 to 50)
 			arousal_modifier = ", wet with arousal"
-	return "a [vagina_type][arousal_modifier]"
+	return "a [vagina_type][arousal_modifier][H.get_pubic_hair_clause(ORGAN_SLOT_VAGINA)]"
 
 /datum/mob_descriptor/breasts
 	name = "breasts"

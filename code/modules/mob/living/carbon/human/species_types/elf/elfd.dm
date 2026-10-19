@@ -43,6 +43,9 @@
 	changesource_flags = WABBAJACK
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/mem.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/ft.dmi'
+	allowed_body_builds = ELVEN_BODY_BUILDS
+	default_body_build_m = BODY_BUILD_SLIM
+	default_body_build_f = BODY_BUILD_LITHE
 	hairyness = "t3"
 	exotic_bloodtype = /datum/blood_type/human/delf
 
@@ -78,7 +81,9 @@
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
 		/datum/customizer/organ/genitals/testicles/human,
+		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	swap_male_clothes_but_not_offsets  = TRUE

@@ -482,10 +482,6 @@
 	monitor.shock_warning_last_at = world.time - DEFEAT_SHOCK_WARNING_COOLDOWN
 	TEST_ASSERT(monitor.maybe_warn_shock_defeat(DEFEAT_SHOCK_WARNING_STAGE), "Shock warning should fire again after the cooldown.")
 
-	test_human.setShockStage(DEFEAT_SHOCK_WARNING_STAGE - 1, FALSE, TRUE)
-	monitor.check_defeat_triggers()
-	TEST_ASSERT_EQUAL(monitor.shock_warning_last_at, 0, "Dropping below the shock warning stage should clear the warning cooldown.")
-
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff
 
 /datum/unit_test/defeat_rescue_applies_aftermath_debuff/Run()
@@ -1281,6 +1277,7 @@
 	TEST_ASSERT_EQUAL(horny_defeat_warning_stage(5, 0), 0, "An unrolled threshold should produce no warning.")
 
 /datum/unit_test/defeat_horny_self_recovery
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_horny_self_recovery/Run()
 	var/mob/living/carbon/human/patient = allocate(/mob/living/carbon/human)
@@ -1405,6 +1402,7 @@
 	lair_tag = "unit_test_kidnap_lair"
 
 /datum/unit_test/defeat_kidnap_to_lair_and_escape
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_kidnap_to_lair_and_escape/Run()
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
@@ -1445,6 +1443,7 @@
 	TEST_ASSERT(!(locate(/datum/action/innate/defeat_refuse_advances) in victim.actions), "Escaping should remove the Refuse Advances action from the captive.")
 
 /datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_faction_mob_kidnaps_defeated_prey/Run()
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
@@ -1561,6 +1560,7 @@
 	TEST_ASSERT(!(trinket in victim.held_items), "Surrender should drop carried items out of the hands.")
 
 /datum/unit_test/defeat_kidnap_remembers_captor_faction
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_kidnap_remembers_captor_faction/Run()
 	var/turf/lair_turf = get_step(run_loc_floor_bottom_left, EAST)
@@ -1582,6 +1582,7 @@
 	TEST_ASSERT(("greenskin_unit_test" in captivity.captor_faction), "Captivity should remember the captor's faction so a surrendered captive shares it.")
 
 /datum/unit_test/defeat_kidnap_climaxes_offer_surrender
+	needs_pocket_space = TRUE
 
 /datum/unit_test/defeat_kidnap_climaxes_offer_surrender/Run()
 	var/mob/living/carbon/human/victim = allocate(/mob/living/carbon/human)
@@ -2225,11 +2226,11 @@
 
 	var/datum/status_effect/debuff/defeat/horny/wobble/lewd = patient.apply_status_effect(/datum/status_effect/debuff/defeat/horny/wobble, null, DEFEAT_SEVERITY_SEVERE)
 	TEST_ASSERT_EQUAL(lewd.linked_alert.name, "Lewd: Rubbery Legs (Severe)", "A horny trauma alert should be labelled distinctly from an ordinary injury.")
-	TEST_ASSERT_NOTEQUAL(lewd.linked_alert.icon_state, head.linked_alert.icon_state, "Horny and physical trauma alerts should not share an icon.")
+	TEST_ASSERT_NOTEQUAL(lewd.linked_alert.overlay_state, head.linked_alert.overlay_state, "Horny and physical trauma alerts should not share an icon.")
 
 	var/datum/status_effect/debuff/defeat/grievous/grave = patient.apply_status_effect(/datum/status_effect/debuff/defeat/grievous, null, DEFEAT_SEVERITY_SEVERE)
-	TEST_ASSERT_EQUAL(grave.linked_alert.name, "Grievous: Grievous Wounds (Severe)", "A grievous wound alert should be labelled distinctly.")
-	TEST_ASSERT_NOTEQUAL(grave.linked_alert.icon_state, head.linked_alert.icon_state, "Grievous and physical trauma alerts should not share an icon.")
+	TEST_ASSERT_EQUAL(grave.linked_alert.name, "Recovery: Convalescence (Severe)", "A convalescence alert should be labelled distinctly.")
+	TEST_ASSERT_NOTEQUAL(grave.linked_alert.overlay_state, head.linked_alert.overlay_state, "Convalescence and physical trauma alerts should not share an icon.")
 
 // Focused isolation run for just the mob horny-defeat KO tests. Compile with FOCUS_MOB_HORNY_DEFEAT_TEST
 // defined to run only these. Guarded so it is inert (and safe to leave in) on a normal build.

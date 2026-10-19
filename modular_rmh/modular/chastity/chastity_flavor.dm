@@ -220,7 +220,8 @@
 	var/obj/item/organ/testicles = wearer.getorganslot(ORGAN_SLOT_TESTICLES)
 	if(!testicles || source_reagents != testicles.reagents)
 		return 0
-	wearer.visible_message(span_love("[wearer]'s release dribbles out through [wearer.p_their()] [name]."), span_love("My release dribbles uselessly out through \the [src]."))
+	if(!context.climax_follow_up)
+		wearer.visible_message(span_love("[wearer]'s release dribbles out through [wearer.p_their()] [name]."), span_love("My release dribbles uselessly out through \the [src]."))
 	var/leftover = wearer.coat_with_fluid(FLUID_COAT_THIGHS, source_reagents, amount)
 	if(leftover > 0)
 		deposit_cum_on_turf(get_turf(wearer), source_reagents, leftover)

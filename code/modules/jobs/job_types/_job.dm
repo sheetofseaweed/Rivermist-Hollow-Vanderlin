@@ -438,7 +438,12 @@
 	else
 		type_check = type
 	if(!(type_check in actors_list_blacklist)) //don't show these.
-		GLOB.actors_list[spawned.mobid] = "[spawned.real_name] as [used_title]<BR>"
+		GLOB.actors_list[spawned.mobid] = list(
+			"name" = spawned.real_name,
+			"species" = spawned.dna?.species?.name || "Unknown",
+			"title" = used_title,
+			"ckey" = player_client?.ckey || spawned.ckey,
+		)
 
 	if(forced_flaw)
 		spawned.add_quirk(forced_flaw)

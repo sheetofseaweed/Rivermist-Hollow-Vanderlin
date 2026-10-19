@@ -42,6 +42,7 @@
 		/datum/mob_descriptor/breasts,
 		/datum/mob_descriptor/vagina,
 		/datum/mob_descriptor/butt,
+		/datum/mob_descriptor/armpit_hair,
 		///datum/mob_descriptor/defiant,
 		)
 
@@ -85,6 +86,10 @@
 	var/fourth_line = build_coalesce_description(desc_copy, described, list(MOB_DESCRIPTOR_SLOT_PROMINENT, MOB_DESCRIPTOR_SLOT_PROMINENT), "%THEY% %DESC1% and %DESC2%")
 	if(fourth_line)
 		lines += fourth_line
+
+	var/armpit_line = build_coalesce_description(desc_copy, described, list(MOB_DESCRIPTOR_SLOT_ARMPITS), "%THEY% %DESC1%.")
+	if(armpit_line)
+		lines += armpit_line
 
 	var/fifth_line = build_coalesce_description(desc_copy, described, list(MOB_DESCRIPTOR_SLOT_PENIS, MOB_DESCRIPTOR_SLOT_TESTICLES), "%THEY% %DESC1% and %DESC2%.")
 	if(fifth_line)

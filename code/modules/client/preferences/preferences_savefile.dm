@@ -400,6 +400,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["feature_mcolor"]		>> features["mcolor"]
 	S["feature_mcolor2"]	>> features["mcolor2"]
 	S["feature_mcolor3"]	>> features["mcolor3"]
+	S["feature_body_build"]	>> features["body_build"]
 	if(!islist(randomise))
 		randomise = list()
 
@@ -511,6 +512,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	features["mcolor"]	= sanitize_hexcolor(features["mcolor"], 6, 0)
 	features["mcolor2"]	= sanitize_hexcolor(features["mcolor2"], 6, 0)
 	features["mcolor3"]	= sanitize_hexcolor(features["mcolor3"], 6, 0)
+	sanitize_body_build()
 
 	validate_body_markings()
 
@@ -617,6 +619,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_mcolor"]		, features["mcolor"])
 	WRITE_FILE(S["feature_mcolor2"]		, features["mcolor2"])
 	WRITE_FILE(S["feature_mcolor3"]		, features["mcolor3"])
+	WRITE_FILE(S["feature_body_build"]	, features["body_build"])
 
 	// Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)

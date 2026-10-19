@@ -45,6 +45,15 @@
 /datum/preferences/var/character_setup_hover_customizer
 /datum/preferences/var/character_setup_view_busy = FALSE
 /datum/preferences/var/character_setup_view_pending = FALSE
+/// Render signature the preview dummy was last dressed from.
+/datum/preferences/var/character_setup_rendered_sig
+/datum/preferences/var/character_setup_render_forced = FALSE
+/// Facing changed with nothing else; only re-measure and turn the main view.
+/datum/preferences/var/character_setup_redraw_dir = FALSE
+/// Hover the dummy currently shows, so a new hover can swap one accessory instead of rebuilding.
+/datum/preferences/var/character_setup_rendered_hover_acc
+/datum/preferences/var/character_setup_rendered_hover_color
+/datum/preferences/var/character_setup_rendered_hover_customizer
 /datum/preferences/var/character_setup_view_shown = FALSE
 /datum/preferences/var/list/character_setup_ui_heavy_cache
 /datum/preferences/var/character_setup_ui_heavy_sig
@@ -377,10 +386,9 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 	var/saved_age = read_preference(/datum/preference/choiced/age)
 	var/saved_name = read_preference(/datum/preference/text/real_name)
+	var/had_mutant_colors = has_mutant_color_preferences()
 	write_preference(/datum/preference/choiced/selected_accent, ACCENT_NONE)
 	set_species_preference(new_species)
-	if(!LAZYLEN(pref_species.allowed_taur_types))
-		write_preference(/datum/preference/choiced/taur_type, null)
 
 	to_chat(user, "<em>[pref_species.name]</em>")
 	if(pref_species.desc)
@@ -393,33 +401,18 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	else if(!(read_preference(/datum/preference/choiced/pronouns) in pref_species.allowed_pronouns))
 		write_preference(/datum/preference/choiced/pronouns, pref_species.allowed_pronouns[1])
 
-	write_preference(/datum/preference/text/real_name, pref_species.random_name(read_preference(/datum/preference/choiced/gender), TRUE))
 	reset_jobs(user)
 	reset_patron(user)
 	reset_culture(user)
-	randomise_appearance_prefs(~(RANDOMIZE_SPECIES))
-	var/list/enabled_genital_customizers = list()
-	for(var/genital_customizer_type in subtypesof(/datum/customizer/organ/genitals))
-		var/datum/customizer_entry/old_entry = get_customizer_entry_for_customizer_type(genital_customizer_type)
-		if(old_entry && !old_entry.disabled)
-			enabled_genital_customizers += genital_customizer_type
-	customizer_entries = list()
-	validate_customizer_entries()
-	reset_all_customizer_accessory_colors()
-	randomize_all_customizer_accessories()
-	write_preference(/datum/preference/choiced/accessory, "Nothing")
-	for(var/genital_customizer_type in enabled_genital_customizers)
-		var/datum/customizer_entry/new_entry = get_customizer_entry_for_customizer_type(genital_customizer_type)
-		if(new_entry)
-			new_entry.disabled = FALSE
+	fit_appearance_to_species(had_mutant_colors)
 
 	var/list/selectable_ages = character_setup_species_display_ages(pref_species)
 	if(saved_age && (saved_age in selectable_ages))
 		write_preference(/datum/preference/choiced/age, saved_age)
 	else if(length(selectable_ages))
 		write_preference(/datum/preference/choiced/age, selectable_ages[1])
-	if(saved_name)
-		write_preference(/datum/preference/text/real_name, saved_name)
+	if(!saved_name)
+		write_preference(/datum/preference/text/real_name, pref_species.random_name(read_preference(/datum/preference/choiced/gender), TRUE))
 
 	update_menu_data(user)
 	return TRUE
@@ -597,7 +590,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 	var/datum/hud/new_player/lobby_hud = hud_used
 	if(istype(lobby_hud))
-		for(var/atom/movable/screen/lobby/button/ready/ready_button as anything in lobby_hud.static_inventory)
+		for(var/atom/movable/screen/lobby/button/ready/ready_button in lobby_hud.static_inventory)
 			ready_button.ready = (ready == PLAYER_READY_TO_PLAY)
 			ready_button.base_icon_state = ready_button.ready ? "ready" : "not_ready"
 			ready_button.update_appearance(UPDATE_ICON)
@@ -886,6 +879,11 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	data["race_title"] = selected_title || "None"
 	data["gender"] = gender_name
 	data["gender_short"] = gender_short
+	var/body_build_id = get_body_build_id()
+	var/datum/body_build/current_build = body_build_id ? GLOB.body_builds[body_build_id] : null
+	data["body_build"] = body_build_id
+	data["body_build_name"] = current_build?.name || "None"
+	data["body_build_options"] = character_setup_body_build_options()
 	data["default_slot"] = default_slot
 
 	data["patron_name"] = patron_name

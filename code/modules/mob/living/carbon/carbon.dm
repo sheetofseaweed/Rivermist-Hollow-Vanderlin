@@ -480,7 +480,7 @@
 			return TRUE
 		if(I == legcuffed)
 			legcuffed.forceMove(drop_location())
-			legcuffed.dropped()
+			legcuffed.dropped(src)
 			legcuffed = null
 			remove_movespeed_modifier(MOVESPEED_ID_LEGCUFF_SLOWDOWN, TRUE)
 			update_inv_legcuffed()

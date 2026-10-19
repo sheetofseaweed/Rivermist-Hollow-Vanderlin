@@ -9,7 +9,7 @@
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_ANUS, null, dildo))
 		return FALSE
-	if(!dildo)
+	if(!dildo?.can_enter_body_storage_layer(STORAGE_LAYER_INNER))
 		return FALSE
 	return TRUE
 
@@ -20,7 +20,7 @@
 	var/obj/item/dildo = user.get_active_held_item()
 	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
-	if(!dildo)
+	if(QDELETED(dildo))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_ANUS, null, dildo))
 		return FALSE
@@ -53,7 +53,7 @@
 			target_organ = target.getorganslot(hole_id)
 
 	var/obj/item/dildo = user.get_active_held_item()
-	if(!dildo)
+	if(QDELETED(dildo))
 		stop_runtime()
 		return
 	var/use_force = (force >= SEX_FORCE_HIGH)

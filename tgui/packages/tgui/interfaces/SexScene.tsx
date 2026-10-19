@@ -38,6 +38,9 @@ type ControlsData = {
   has_penis: Booleanish;
   do_until_finished: Booleanish;
   edging_other: Booleanish;
+  finish_outside: Booleanish;
+  can_leg_lock: Booleanish;
+  leg_lock: Booleanish;
   lying_direction: string | null;
   cmode: Booleanish;
   auto_clench: Booleanish;
@@ -512,6 +515,32 @@ export const SexScene = () => {
             Edge {asBool(controls.edging_other) ? 'On' : 'Off'}
           </Button>
         </Stack.Item>
+        {asBool(controls.has_penis) ? (
+          <Stack.Item>
+            <Button
+              compact
+              selected={asBool(controls.finish_outside)}
+              tooltip="Pull out at the last moment and finish over your partner instead of inside them."
+              onClick={() => act('toggle_finish_outside')}
+            >
+              {asBool(controls.finish_outside)
+                ? 'Finish Outside'
+                : 'Finish Inside'}
+            </Button>
+          </Stack.Item>
+        ) : null}
+        {asBool(controls.can_leg_lock) ? (
+          <Stack.Item>
+            <Button
+              compact
+              selected={asBool(controls.leg_lock)}
+              tooltip="Wrap your legs around whoever is inside you. If you are stronger, they will struggle to pull out."
+              onClick={() => act('toggle_leg_lock')}
+            >
+              Leg Lock {asBool(controls.leg_lock) ? 'On' : 'Off'}
+            </Button>
+          </Stack.Item>
+        ) : null}
         {asBool(controls.can_hold_it_in) ? (
           <Stack.Item>
             <Button

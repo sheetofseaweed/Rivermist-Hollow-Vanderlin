@@ -16,9 +16,6 @@
 		/datum/ai_planning_subtree/pet_planning,
 		/datum/ai_planning_subtree/flee_target,
 
-		/datum/ai_planning_subtree/find_valid_home,
-		/datum/ai_planning_subtree/enter_exit_home,
-
 		/datum/ai_planning_subtree/simple_find_horny,
 		/datum/ai_planning_subtree/horny,
 
@@ -28,6 +25,10 @@
 
 		/datum/ai_planning_subtree/find_dead_bodies,
 		/datum/ai_planning_subtree/eat_dead_body,
+
+		// Last, so a fight, a horny scene or a meal ends planning before the nest roll.
+		/datum/ai_planning_subtree/find_valid_home,
+		/datum/ai_planning_subtree/enter_exit_home,
 	)
 
 	idle_behavior = /datum/idle_behavior/idle_random_walk

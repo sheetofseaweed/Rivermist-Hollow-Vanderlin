@@ -67,6 +67,9 @@
 	stop_offering_item()
 
 	QDEL_LIST(surgeries)
+	// Carbons delete organs after ghosting in their own Destroy; creature organs would otherwise keep this mob alive.
+	if(!iscarbon(src))
+		QDEL_LIST(internal_organs)
 
 	GLOB.mob_living_list -= src
 	for(var/datum/soullink/S as anything in ownedSoullinks)
@@ -768,7 +771,7 @@
 		return
 	if(!reaper)
 		return
-	if (InCritical() || health <= 0 || (blood_volume < BLOOD_VOLUME_SURVIVE))
+	if (InCritical() || health <= 0 || (blood_volume < BLOOD_VOLUME_SURVIVE && !is_bloodless()))
 		log_message("Has [whispered ? "whispered his final words" : "succumbed to death"] while in [InFullCritical() ? "hard":"soft"] critical with [round(health, 0.1)] points of health!", LOG_ATTACK)
 
 		if(istype(src.loc, /turf/open/water) && !HAS_TRAIT(src, TRAIT_NOBREATH) && body_position == LYING_DOWN && client)
@@ -945,6 +948,7 @@
 		var/proto_timer = 2 * stand_speed_mult
 		if(proto_timer >= timer)
 			timer = proto_timer
+	timer += get_extra_stand_time()
 
 	if(!instant && !do_after(src, timer SECONDS, src, timed_action_flags = (IGNORE_USER_LOC_CHANGE|IGNORE_TARGET_LOC_CHANGE|IGNORE_HELD_ITEM|IGNORE_USER_DIR_CHANGE), extra_checks = CALLBACK(src, TYPE_PROC_REF(/mob/living, rest_checks_callback)), interaction_key = DOAFTER_SOURCE_GETTING_UP))
 		if(body_position == LYING_DOWN) // stay lying down
@@ -1442,6 +1446,7 @@
 	visible_message("<span class='notice'>[src] yields!</span>")
 	playsound(src, 'sound/misc/surrender.ogg', 100, FALSE, -1)
 	toggle_cmode()
+	SEND_SIGNAL(src, COMSIG_LIVING_YIELDED)
 	addtimer(VARSET_CALLBACK(src, surrendering, FALSE), 15 SECONDS)
 /mob/living
 	var/had_pacifist = FALSE
@@ -1481,6 +1486,7 @@
 			src.visible_message("<span class='notice'>[src] yields utterly - they cannot harm anyone like this!</span>")
 			playsound(src, 'sound/misc/surrender.ogg', 100, FALSE, -1)
 			log_attack("[key_name(src)] has toggled yield ON!")
+			SEND_SIGNAL(src, COMSIG_LIVING_YIELDED)
 	else
 		if(IsKnockdown() || IsStun())
 			to_chat(src, span_warn("I can't rescind my yield when knocked down!"))
@@ -1726,10 +1732,12 @@
 	else if(wall_count >= 3) // Against wall
 		modifier += 0.15
 
-	// Difficult terrain
-	if(our_turf.slowdown > their_turf.slowdown)
+	// Difficult terrain; slowdown only exists on open turfs.
+	var/our_slowdown = isopenturf(our_turf) ? our_turf.slowdown : 0
+	var/their_slowdown = isopenturf(their_turf) ? their_turf.slowdown : 0
+	if(our_slowdown > their_slowdown)
 		modifier -= 0.1 // We're disadvantaged by terrain
-	else if(their_turf.slowdown > our_turf.slowdown)
+	else if(their_slowdown > our_slowdown)
 		modifier += 0.1 // They're disadvantaged
 
 	return modifier
@@ -3137,9 +3145,18 @@
 		return
 
 	clear_hostile_grab_horny_hostility_timer()
-	retarget_hostile_ai_to_grabber(grabber)
+	// A willing horny partner can't be attacked yet; only the hostility timer may start a fight.
+	if(!is_tolerated_horny_grabber(grabber))
+		retarget_hostile_ai_to_grabber(grabber)
 	schedule_hostile_grab_resist()
 	schedule_hostile_grab_horny_hostility(grabber)
+
+/// TRUE for a grabber our AI wants as a horny partner and has not yet turned hostile.
+/mob/living/proc/is_tolerated_horny_grabber(mob/living/grabber)
+	var/datum/targetting_datum/targetting_datum = ai_controller?.blackboard[BB_TARGETTING_DATUM]
+	if(!targetting_datum?.is_selected_horny_target(src, grabber))
+		return FALSE
+	return !targetting_datum.is_horny_target_now_hostile(src, grabber)
 
 /mob/living/proc/can_hostile_ai_react_to_grabber(mob/living/grabber)
 	if(!ai_controller || QDELETED(grabber) || grabber == src)

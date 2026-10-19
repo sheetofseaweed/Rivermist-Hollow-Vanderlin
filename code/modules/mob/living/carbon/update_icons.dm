@@ -79,16 +79,8 @@
 	var/list/behindhands = list()
 
 	var/list/offsets
-	var/use_female_sprites = MALE_SPRITES
 	if(species)
-		if(species.sexes)
-			if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-				use_female_sprites = FEMALE_SPRITES
-
-		if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-			offsets = species.offset_features_f
-		else
-			offsets = species.offset_features_m
+		offsets = get_offset_features()
 
 	for(var/obj/item/I in held_items)
 		if(client && hud_used && hud_used.hud_version != HUD_STYLE_NOHUD)
@@ -310,22 +302,7 @@
 	if(handcuffed)
 		var/mutable_appearance/inhand_overlay = mutable_appearance('icons/roguetown/mob/bodies/cuffed.dmi', "[handcuffed.name]up", -HANDCUFF_LAYER)
 		if(ishuman(src))
-			var/mob/living/carbon/human/H = src
-			var/datum/species/species = H.dna?.species
-			var/list/offsets
-			var/use_female_sprites = MALE_SPRITES
-			if(species)
-				if(species.sexes)
-					if(gender == FEMALE && !species.swap_female_clothes || gender == MALE && species.swap_male_clothes || gender == MALE && species.swap_male_clothes_but_not_offsets)
-						use_female_sprites = FEMALE_SPRITES
-				if(use_female_sprites && !(gender == MALE && species.swap_male_clothes_but_not_offsets))
-					offsets = species.offset_features_f
-				else
-					offsets = species.offset_features_m
-
-			if(LAZYACCESS(offsets, OFFSET_HANDS))
-				inhand_overlay.pixel_x += offsets[OFFSET_HANDS][1]
-				inhand_overlay.pixel_y += offsets[OFFSET_HANDS][2]
+			apply_offset(inhand_overlay, OFFSET_HANDS)
 
 		overlays_standing[HANDCUFF_LAYER] = inhand_overlay
 		apply_overlay(HANDCUFF_LAYER)
@@ -432,7 +409,7 @@
 		new_limbs += BP.get_limb_icon()
 	if(new_limbs.len)
 		overlays_standing[BODYPARTS_LAYER] = new_limbs
-		limb_icon_cache[icon_render_key] = new_limbs
+		store_limb_icons(icon_render_key, new_limbs)
 
 	apply_overlay(BODYPARTS_LAYER)
 	update_damage_overlays()
@@ -470,6 +447,21 @@
 		. += "husk"
 	return jointext(., "-")
 
+
+/// Render keys kept in limb_icon_cache before the oldest are dropped.
+#define LIMB_ICON_CACHE_MAX_KEYS 1000
+/// How many of the oldest keys are dropped at once when the cache is full.
+#define LIMB_ICON_CACHE_EVICT_KEYS 250
+
+/// Keys change with damage, sizes and colours; unbounded, the cache filled the engine's 2^24 image table on long rounds.
+/mob/living/carbon/proc/store_limb_icons(render_key, list/limbs)
+	if(!limb_icon_cache[render_key] && length(limb_icon_cache) >= LIMB_ICON_CACHE_MAX_KEYS)
+		// Associative lists keep insertion order, so the front holds the oldest keys.
+		limb_icon_cache.Cut(1, LIMB_ICON_CACHE_EVICT_KEYS + 1)
+	limb_icon_cache[render_key] = limbs
+
+#undef LIMB_ICON_CACHE_MAX_KEYS
+#undef LIMB_ICON_CACHE_EVICT_KEYS
 
 //change the mob's icon to the one matching its key
 /mob/living/carbon/proc/load_limb_from_cache()

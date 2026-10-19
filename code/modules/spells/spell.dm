@@ -790,7 +790,8 @@
 
 /// End the charging cycle
 /datum/action/cooldown/spell/proc/end_charging()
-	UnregisterSignal(owner.client, list(COMSIG_CLIENT_MOUSEDOWN, COMSIG_CLIENT_MOUSEUP))
+	// The failsafe cancel timer can fire after the action lost its owner.
+	UnregisterSignal(owner?.client, list(COMSIG_CLIENT_MOUSEDOWN, COMSIG_CLIENT_MOUSEUP))
 	UnregisterSignal(owner, list(COMSIG_MOB_LOGOUT, COMSIG_MOB_DEATH, COMSIG_MOVABLE_MOVED))
 	currently_charging = FALSE
 	charge_started_at = null

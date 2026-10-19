@@ -149,7 +149,9 @@
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
 		/datum/customizer/organ/genitals/testicles/anthro,
+		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 	body_markings = list(
 		/datum/body_marking/tonage,

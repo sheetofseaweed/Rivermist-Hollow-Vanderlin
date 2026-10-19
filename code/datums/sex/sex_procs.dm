@@ -16,30 +16,27 @@
 		return grab_state
 	return max(grabstate, grab_state)
 
+// pixels and time are ignored; force sets the reach and speed the pumps (modular_rmh/code/modules/mob/sex_motion.dm).
 /datum/sex_action/proc/do_thrust_animate(atom/movable/user, atom/movable/target, pixels = 4, time = 2.7)
-	if(speed > SEX_SPEED_MID)
-		time = max(0.5, time - 0.25)
-	if(force < SEX_FORCE_MID)
-		pixels = max(1, pixels - 1)
-	var/oldx = user.pixel_x
-	var/oldy = user.pixel_y
-	var/target_x = oldx
-	var/target_y = oldy
-	var/dir = get_dir(user, target)
-	if(user.loc == target.loc)
-		dir = user.dir
-	switch(dir)
-		if(NORTH)
-			target_y += pixels
-		if(SOUTH)
-			target_y -= pixels
-		if(WEST)
-			target_x -= pixels
-		if(EAST)
-			target_x += pixels
-
-	animate(user, pixel_x = target_x, pixel_y = target_y, time = time)
-	animate(pixel_x = oldx, pixel_y = oldy, time = time)
+	if(!user || !target || user == target)
+		return
+	var/reach = get_thrust_reach()
+	var/list/step = get_sex_motion_step(user, target)
+	if(motion_vertical)
+		step = list(0, 1)
+	else if(isliving(target) && isliving(user) && user.loc == target.loc)
+		var/mob/living/living_target = target
+		var/mob/living/living_user = user
+		// A partner lying on the user's tile is pressed down.
+		if(living_target.body_position == LYING_DOWN && living_user.body_position != LYING_DOWN)
+			step = list(0, -1)
+	var/pumps = get_motion_pumps()
+	var/list/timing = get_motion_steps(pumps)
+	sex_motion_nudge(user, step[1] * reach, step[2] * reach, timing[1], timing[2], timing[3], pumps)
+	// Hard thrusts push the partner along; riding does not.
+	var/recoil = GLOB.sex_motion_recoil[get_motion_force_index()]
+	if(recoil && !motion_vertical)
+		addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(sex_motion_nudge), target, step[1] * recoil, step[2] * recoil, 0.08 SECONDS, timing[2]), timing[1])
 
 /mob/living/proc/open_sex_scene(mob/living/target, show_ui = TRUE)
 	if(!target)
@@ -768,6 +765,10 @@
 /mob/living/proc/get_cached_horny_mob_family_flags()
 	refresh_erp_preference_cache()
 	return cached_horny_mob_family_flags
+
+/// Shown when this mob climaxes with nothing to release.
+/mob/living/proc/get_dry_climax_message()
+	return "[src] climaxes, yet nothing is released!"
 
 /mob/living/proc/give_genitals()
 	var/mob/living/user = src

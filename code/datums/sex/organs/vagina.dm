@@ -12,9 +12,11 @@
 	max_reagents = 40 //big cap, ordinary absorbtion.
 	altnames = list("vagina", "cunt", "womb", "pussy", "slit", "kitty", "snatch") //used in thought messages.
 	absorbing = TRUE
-	// Slow drains so a load stays about eight minutes, or about twenty when held in.
+	// Slow drains sized for a few-unit load: it stays about eight minutes, or about twenty when held in.
 	absorbrate = 0.1
 	driprate = 0.2
+	// A slow tick keeps each drop big enough to wet cloth while the hole drains at a quarter pace.
+	processspeed = 20 SECONDS
 	can_hold_in = TRUE
 	fertility = TRUE
 	allows_conventional_impregnation = TRUE
@@ -44,6 +46,8 @@
 	var/resource_dependent_yield = FALSE
 	/// Own femcum held at full arousal; less arousal keeps it lower.
 	var/max_wetness = 10
+	/// Units of a climax burst still free to drip to the floor at any arousal.
+	var/burst_to_drip = 0
 
 /obj/item/organ/genitals/filling_organ/vagina/Insert(mob/living/M, special, drop_if_replaced, new_zone = null)
 	if(M?.femcum)
@@ -76,10 +80,26 @@
 
 /// Zero at visible arousal, max_wetness at the climax threshold, scaled by capacity modifiers.
 /obj/item/organ/genitals/filling_organ/vagina/proc/get_wetness_target()
+	var/arousal_fraction = clamp((get_owner_arousal() - VISIBLE_AROUSAL_THRESHOLD) / (ACTIVE_EJAC_THRESHOLD - VISIBLE_AROUSAL_THRESHOLD), 0, 1)
+	return max_wetness * arousal_fraction * get_capacity_multiplier()
+
+/obj/item/organ/genitals/filling_organ/vagina/proc/get_owner_arousal()
 	var/list/arousal_data = list()
 	SEND_SIGNAL(owner, COMSIG_SEX_GET_AROUSAL, arousal_data)
-	var/arousal_fraction = clamp((arousal_data["arousal"] - VISIBLE_AROUSAL_THRESHOLD) / (ACTIVE_EJAC_THRESHOLD - VISIBLE_AROUSAL_THRESHOLD), 0, 1)
-	return max_wetness * arousal_fraction * get_capacity_multiplier()
+	return arousal_data["arousal"] || 0
+
+/// Seed or a fresh climax burst always drips; plain wetness only at high arousal, so heat leaves no trail.
+/obj/item/organ/genitals/filling_organ/vagina/can_drip_to_floor()
+	burst_to_drip = min(burst_to_drip, get_own_fluid_amount())
+	if(burst_to_drip > 0 || reagents.total_volume - get_own_fluid_amount() > 0.05)
+		return TRUE
+	return get_owner_arousal() >= VAGINA_DRIP_AROUSAL
+
+/// A leak spends the climax burst first.
+/obj/item/organ/genitals/filling_organ/vagina/leak_reagents(forced_amount)
+	var/held = reagents.total_volume
+	. = ..()
+	burst_to_drip = max(0, burst_to_drip - (held - reagents.total_volume))
 
 /obj/item/organ/genitals/filling_organ/vagina/get_base_climax_release(climax_location)
 	return min(8, reagents.total_volume * 0.3)
@@ -93,6 +113,7 @@
 		return 0
 	. = add_produced_fluid(FEMCUM_ORGASM_VOLUME * get_climax_multiplier())
 	pay_for_fluid(.)
+	burst_to_drip += .
 
 /// Stamps held femcum with its producer each tick, so the donor survives transfer out of the organ.
 /obj/item/organ/genitals/filling_organ/vagina/proc/tag_femcum_donor()

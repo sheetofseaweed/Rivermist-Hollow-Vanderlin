@@ -101,6 +101,10 @@
 /datum/antagonist/proc/on_contract_cycle_closed(datum/antag_contract/contract)
 	return
 
+/// Called on every party member after the party's patron favor changes.
+/datum/antagonist/proc/on_contract_favor_changed(old_favor, new_favor)
+	return
+
 /datum/antagonist/proc/notify_contract(text)
 	var/datum/contract_party/party = get_or_create_contract_party()
 	party.notify_members(text)

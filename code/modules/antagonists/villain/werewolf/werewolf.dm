@@ -269,10 +269,9 @@
 	w_class = WEIGHT_CLASS_BULKY
 	can_parry = TRUE
 	sharpness = IS_SHARP
-	parrysound = "bladedmedium"
 	swingsound = BLADEWOOSH_MED
 	possible_item_intents = list(/datum/intent/simple/werewolf)
-	parrysound = list('sound/combat/parry/parrygen.ogg')
+	parrysound = list('sound/combat/hits/punch/punch (1).ogg', 'sound/combat/hits/punch/punch (2).ogg', 'sound/combat/hits/punch/punch (3).ogg')
 	embedding = list("embedded_pain_multiplier" = 0, "embed_chance" = 0, "embedded_fall_chance" = 0)
 	item_flags = DROPDEL
 

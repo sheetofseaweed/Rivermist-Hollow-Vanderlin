@@ -7,13 +7,15 @@
 	zone = BODY_ZONE_PRECISE_GROIN
 	slot = ORGAN_SLOT_ANUS
 	accessory_type = /datum/sprite_accessory/none
-	max_reagents = 20 //less size than vagene in turn for more effective absorbtion
+	max_reagents = 30 //less size than vagene in turn for more effective absorbtion
 	reagent_to_make = null
 	absorbing = TRUE
 	absorbmult = 1.5 //more effective absorb than others i guess.
-	// Slow drains so a load stays about four minutes, or about twelve when held in.
+	// Slow drains sized for a few-unit load: it stays about four minutes, or about twelve when held in.
 	absorbrate = 0.1
 	driprate = 0.2
+	// A slow tick keeps each drop big enough to wet cloth while the hole drains at a quarter pace.
+	processspeed = 20 SECONDS
 	can_hold_in = TRUE
 	allows_oviposition_pregnancy = TRUE
 	oviposition_storage_component_type = /datum/component/body_storage/anus

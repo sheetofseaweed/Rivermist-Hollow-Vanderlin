@@ -52,9 +52,6 @@
 	name = "Quit Buildmode"
 	screen_loc = "NORTH,WEST+3"
 
-/atom/movable/screen/buildmode/quit/Click()
-	bd.quit()
-
 /atom/movable/screen/buildmode/modeswitch/Click()
 	bd.change_mode(modetype)
 

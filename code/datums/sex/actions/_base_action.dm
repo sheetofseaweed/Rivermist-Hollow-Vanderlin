@@ -161,6 +161,8 @@
 /datum/sex_action/Destroy()
 	if(action_user)
 		UnregisterSignal(action_user, COMSIG_SEX_CLIMAX)
+	// A scene torn down without on_finish must still free the hand on the cock.
+	unlink_penis_grip()
 	if(scene && !QDELETED(scene))
 		scene.forget_action(src)
 	proposal_controller = null
@@ -363,6 +365,8 @@
 		suppress_visible_messages = begin_remote_visible_message_suppression()
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
+		play_perform_breast_anim()
+		play_perform_motion()
 		send_clench_prompt()
 		if(!is_runtime_active())
 			break
@@ -541,6 +545,9 @@
 	return TRUE
 
 /datum/sex_action/proc/perform_sex_action(mob/living/pleasure_receiver, mob/living/partner, arousal_amt, pain_amt, orgasm_prog_amt)
+	var/through_clothes = get_through_clothes_multiplier(pleasure_receiver)
+	arousal_amt *= through_clothes
+	orgasm_prog_amt *= through_clothes
 	return apply_sex_action_stimulation(
 		src,
 		action_user,
@@ -559,6 +566,11 @@
 /datum/sex_action/proc/on_action_user_climax(mob/source, datum/sex_action/climax_action)
 	SIGNAL_HANDLER
 	if(climax_action != src || !stop_on_climax)
+		return
+	// The action lasts through the climax's spurts, so stopping it meanwhile pulls out.
+	var/datum/component/arousal/arousal = source.GetComponent(/datum/component/arousal)
+	if(arousal?.active_spurts?.is_running_for(src))
+		stop_after_spurts = TRUE
 		return
 	just_climaxed = TRUE
 	stop_requested = TRUE
@@ -630,6 +642,7 @@
 			return pick(list("brutally", "violently", "relentlessly", "savagely", "mercilessly"))
 
 /datum/sex_action/proc/spanify_force(string)
+	string = add_through_clothes_suffix(string)
 	switch(force)
 		if(SEX_FORCE_LOW)
 			return "<span class='love_low'>[string]</span>"

@@ -5,10 +5,13 @@
 	var/obj/item/held_item = user.get_active_held_item()
 	if(!user.cmode && held_item && held_item.get_sharpness() && held_item.wlength == WLENGTH_SHORT)
 		if(user.zone_selected == BODY_ZONE_CHEST)
-			if(try_shave_body_hair(user, held_item, BODYPART_FEATURE_BODY_HAIR, "body hair", BODY_ZONE_CHEST, 10 SECONDS))
+			if(try_groom_body_hair(user, held_item, BODYPART_FEATURE_BODY_HAIR, "body hair", BODY_ZONE_CHEST))
 				return
 		if(user.zone_selected == BODY_ZONE_PRECISE_GROIN)
-			if(try_shave_body_hair(user, held_item, BODYPART_FEATURE_PUBIC_HAIR, "pubic hair", BODY_ZONE_PRECISE_GROIN, 10 SECONDS))
+			if(try_groom_body_hair(user, held_item, BODYPART_FEATURE_PUBIC_HAIR, "pubic hair", BODY_ZONE_PRECISE_GROIN))
+				return
+		if(user.zone_selected == BODY_ZONE_L_ARM || user.zone_selected == BODY_ZONE_R_ARM)
+			if(try_groom_body_hair(user, held_item, BODYPART_FEATURE_ARMPIT_HAIR, "armpit hair", BODY_ZONE_CHEST))
 				return
 	if(user.cmode)
 		if(held_item && (user.zone_selected == BODY_ZONE_PRECISE_NECK))
@@ -196,6 +199,8 @@
 	culture = GLOB.culture_singletons[culture]
 
 	. = ..()
+	// Only damage refreshes health, so start full instead of at the living default of 100.
+	set_health(maxHealth)
 
 	AddElement(/datum/element/ridable, /datum/component/riding/creature/human)
 	AddElement(/datum/element/footstep, footstep_type, 1, -6)

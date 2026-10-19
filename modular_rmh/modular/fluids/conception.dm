@@ -71,6 +71,9 @@
 
 /// Called every fluid tick; rolls once per interval while seed is recorded.
 /obj/item/organ/genitals/filling_organ/proc/check_conception()
+	// Creature wombs tick only for fluids; conception stays a carbon feature for now.
+	if(!iscarbon(owner))
+		return
 	if(!LAZYLEN(seed_ledger) || !COOLDOWN_FINISHED(src, conception_cooldown))
 		return
 	COOLDOWN_START(src, conception_cooldown, CONCEPTION_CHECK_INTERVAL)
@@ -116,9 +119,15 @@
 
 /// Percent chance for one check: base chance, scaled by how much seed there is, its virility, and heat.
 /obj/item/organ/genitals/filling_organ/proc/get_conception_chance(inside, average_virility)
-	. = CONCEPTION_BASE_CHANCE * min(1, inside / CONCEPTION_FULL_SEED) * average_virility * get_conception_multiplier()
+	. = CONCEPTION_BASE_CHANCE * get_seed_dose(inside) * average_virility * get_conception_multiplier()
 	if(owner?.has_fluid_modifier(/datum/fluid_modifier/in_heat))
 		. *= CONCEPTION_HEAT_MULT
+
+/// Dose multiplier: rises to 1 at a full dose, then on to 2 as more seed is held.
+/proc/get_seed_dose(inside)
+	if(inside <= CONCEPTION_FULL_SEED)
+		return max(0, inside / CONCEPTION_FULL_SEED)
+	return 1 + min(1, (inside - CONCEPTION_FULL_SEED) / (CONCEPTION_DOUBLE_SEED - CONCEPTION_FULL_SEED))
 
 /// Quickened seed or a quickened carrier conceives for sure, unless a contraceptive is at work.
 /obj/item/organ/genitals/filling_organ/proc/is_conception_certain(has_quickened_seed)

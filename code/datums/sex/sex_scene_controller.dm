@@ -16,6 +16,8 @@
 	var/mob/living/climaxer
 	var/atom/climax_destination
 	var/climax_method = null
+	/// TRUE for a later spurt of a climax already announced, so catchers stay quiet and nothing counts twice.
+	var/climax_follow_up = FALSE
 
 /datum/sex_action_effect_context/New(mob/living/_receiver, mob/living/_partner, datum/sex_action/_action, mob/living/_action_initiator, mob/living/_action_target, _giving = TRUE)
 	receiver = _receiver
@@ -90,9 +92,9 @@
 	for(var/datum/sex_action_effect/effect as anything in effects)
 		qdel(effect)
 
-/proc/apply_sex_action_climax_effects(mob/living/climaxer, mob/living/target, datum/sex_action/action, climax_type, datum/reagents/source_reagents, amount, atom/climax_destination, climax_method, mob/living/action_initiator, mob/living/action_target, mob/living/action_performer)
-	// Succubus essence harvest: a partner's climax feeds a succubus. (spec 2026-07-17 §2)
-	if(target && climaxer != target)
+/proc/apply_sex_action_climax_effects(mob/living/climaxer, mob/living/target, datum/sex_action/action, climax_type, datum/reagents/source_reagents, amount, atom/climax_destination, climax_method, mob/living/action_initiator, mob/living/action_target, mob/living/action_performer, follow_up = FALSE)
+	// Succubus essence harvest: a partner's climax feeds a succubus once, not once per spurt.
+	if(target && climaxer != target && !follow_up)
 		var/datum/antagonist/succubus/succubus_antag = IS_SUCCUBUS(target)
 		if(succubus_antag)
 			var/was_virgin_at_action_start = action?.was_participant_virgin_at_start(climaxer)
@@ -104,6 +106,7 @@
 	context.climax_type = climax_type
 	context.climax_destination = climax_destination
 	context.climax_method = climax_method
+	context.climax_follow_up = follow_up
 	context.action_performer = action_performer
 	var/list/effects = collect_sex_action_effects(context)
 	var/remaining = amount
@@ -142,6 +145,10 @@
 	var/resistance_to_pleasure = RESIST_NONE
 	/// Level of edging others
 	var/edging_other = FALSE
+	/// TRUE when this actor pulls their cock out to climax over the partner.
+	var/finish_outside = FALSE
+	/// TRUE when this actor, lying down, locks their legs around whoever is inside them.
+	var/leg_lock = FALSE
 
 	var/static/list/action_zone_filter_options = list(
 		"Any" = SEX_UI_ZONE_ANY,

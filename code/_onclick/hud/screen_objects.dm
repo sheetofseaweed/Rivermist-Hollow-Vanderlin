@@ -566,25 +566,29 @@
 		else
 			icon_state = "take[giving]"
 
-/atom/movable/screen/combat_utilities
-	name = "interact / extra items"
-	desc = "Use the upper half to open the interaction panel and the lower half to manage extra items."
-	icon_state = "combat_utilities"
-	icon = 'icons/mob/combat_utilities.dmi'
-	screen_loc = rogueui_def
+/// The heart medallion at the foot of the HUD; invisible over the background art, lit red on hover.
+/atom/movable/screen/interact_heart
+	name = "interact"
+	desc = "Open the interaction panel."
+	icon = 'icons/mob/interact_heart.dmi'
+	icon_state = "interact"
+	screen_loc = rogueui_interact
+	mouse_opacity = MOUSE_OPACITY_OPAQUE
 
-/atom/movable/screen/combat_utilities/Click(location, control, params)
-	var/list/modifiers = params2list(params)
-	var/_y = text2num(LAZYACCESS(modifiers, ICON_Y))
+/atom/movable/screen/interact_heart/Click(location, control, params)
 	var/mob/living/carbon/human/user = hud?.mymob
 	if(user != usr || !user.client)
 		return
-
 	user.playsound_local(user, 'sound/misc/click.ogg', 100)
-	if(_y > 16 && _y <= 32)
-		user.open_interact_panel()
-	else if(_y >= 0 && _y <= 16)
-		user.remove_underwear()
+	user.open_interact_panel()
+
+/atom/movable/screen/interact_heart/MouseEntered(location, control, params)
+	. = ..()
+	icon_state = "interact_hover"
+
+/atom/movable/screen/interact_heart/MouseExited(location, control, params)
+	. = ..()
+	icon_state = "interact"
 
 /atom/movable/screen/cmode
 	name = "combat mode"

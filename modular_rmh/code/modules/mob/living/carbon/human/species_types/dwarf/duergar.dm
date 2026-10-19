@@ -33,6 +33,7 @@
 
 	limbs_icon_m = 'icons/roguetown/mob/bodies/m/md.dmi'
 	limbs_icon_f = 'icons/roguetown/mob/bodies/f/fd.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_DWARVEN
 
 	hairyness = "t3"
 
@@ -132,6 +133,7 @@
 		/datum/customizer/organ/genitals/testicles/human,
 		/datum/customizer/bodypart_feature/body_hair,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair/enabled,
 	)
 	body_markings = list(
 		/datum/body_marking/tonage,

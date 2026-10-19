@@ -625,6 +625,9 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 			antag_obj_count++
 
 	output += antag_output
+	var/list/contract_lines = get_contract_demand_lines()
+	if(length(contract_lines))
+		output += "<br><B>Patron Contracts:</B><br>[contract_lines.Join("<br>")]"
 
 	if(window)
 		var/datum/browser/memory_browser = new(recipient, "memory", "<div align='center'>[name_display] Memory</div>", 425, 475)
@@ -882,7 +885,10 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 /// Setter for the assigned_role job datum.
 /datum/mind/proc/set_assigned_role(datum/job/new_role)
 	if(!istype(new_role))
+		var/requested_role = new_role
 		new_role = ispath(new_role) ? SSjob.GetJobType(new_role) : SSjob.GetJob(new_role)
+		if(!new_role && !isnull(requested_role))
+			stack_trace("set_assigned_role could not resolve [requested_role]; assigned_role becomes null.")
 	if(assigned_role == new_role)
 		return assigned_role
 	. = assigned_role

@@ -597,7 +597,7 @@
 							. += span_love("[P[THEYRE]] restless, for some reason.")
 
 	// Blood volume
-	if(!SEND_SIGNAL(src, COMSIG_DISGUISE_STATUS))
+	if(!SEND_SIGNAL(src, COMSIG_DISGUISE_STATUS) && !is_bloodless())
 		var/blood_lvl_msg
 		switch(blood_volume)
 			if(-INFINITY to BLOOD_VOLUME_SURVIVE)

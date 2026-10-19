@@ -21,6 +21,7 @@
 
 	limbs_icon_m = 'modular_rmh/icons/mob/species/moth_male.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/species/moth_female.dmi'
+	body_hair_materials = BODY_HAIR_MATERIALS_FUZZY
 
 	bodypart_features = list(
 		/datum/bodypart_feature/hair/head,
@@ -60,7 +61,9 @@
 		/datum/customizer/organ/genitals/vagina/anthro,
 		/datum/customizer/organ/genitals/belly/animal,
 		/datum/customizer/organ/genitals/butt/animal,
+		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,
+		/datum/customizer/bodypart_feature/armpit_hair,
 	)
 
 	body_marking_sets = list(

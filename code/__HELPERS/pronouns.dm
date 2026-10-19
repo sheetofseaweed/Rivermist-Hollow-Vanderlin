@@ -214,44 +214,30 @@
 	if(capitalized)
 		. = capitalize(.)
 
+/// TRUE when p_they() gives "they", so verbs agree with it: chosen pronouns win over a hidden gender.
+/mob/proc/has_plural_pronoun(temp_gender, ignore_pronouns = FALSE)
+	if(pronouns && !ignore_pronouns)
+		return pronouns == THEY_THEM
+	return (temp_gender || gender) == PLURAL
+
 /mob/p_have(temp_gender, ignore_pronouns = FALSE)
-	if(!temp_gender)
-		temp_gender = gender
-	. = "has"
-	if(temp_gender == PLURAL || (!ignore_pronouns && pronouns == THEY_THEM))
-		. = "have"
+	. = has_plural_pronoun(temp_gender, ignore_pronouns) ? "have" : "has"
 
 /mob/p_are(temp_gender, ignore_pronouns = FALSE)
-	if(!temp_gender)
-		temp_gender = gender
-	. = "is"
-	if(temp_gender == PLURAL || (!ignore_pronouns && pronouns == THEY_THEM))
-		. = "are"
+	. = has_plural_pronoun(temp_gender, ignore_pronouns) ? "are" : "is"
 
 /mob/p_were(temp_gender, ignore_pronouns = FALSE)
-	if(!temp_gender)
-		temp_gender = gender
-	. = "was"
-	if(temp_gender == PLURAL || (!ignore_pronouns && pronouns == THEY_THEM))
-		. = "were"
+	. = has_plural_pronoun(temp_gender, ignore_pronouns) ? "were" : "was"
 
 /mob/p_do(temp_gender, ignore_pronouns = FALSE)
-	if(!temp_gender)
-		temp_gender = gender
-	. = "does"
-	if(temp_gender == PLURAL || (!ignore_pronouns && pronouns == THEY_THEM))
-		. = "do"
+	. = has_plural_pronoun(temp_gender, ignore_pronouns) ? "do" : "does"
 
 /mob/p_s(temp_gender, ignore_pronouns = FALSE)
-	if(!temp_gender)
-		temp_gender = gender
-	if(temp_gender != PLURAL || (!ignore_pronouns && pronouns != THEY_THEM))
+	if(!has_plural_pronoun(temp_gender, ignore_pronouns))
 		. = "s"
 
 /mob/p_es(temp_gender, ignore_pronouns = FALSE)
-	if(!temp_gender)
-		temp_gender = gender
-	if(temp_gender != PLURAL || (!ignore_pronouns && pronouns != THEY_THEM))
+	if(!has_plural_pronoun(temp_gender, ignore_pronouns))
 		. = "es"
 
 /// Reports what gender this atom appears to be

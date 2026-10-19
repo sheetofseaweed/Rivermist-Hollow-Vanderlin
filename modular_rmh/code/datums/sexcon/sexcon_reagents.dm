@@ -507,6 +507,8 @@
 		if(forgan.pregnant)
 			to_chat(M, "I feel something shift within my [forgan.altnames]... I am no longer pregnant.")
 			forgan.clear_conventional_pregnancy()
+	if(end_gnoll_ritual_pregnancy(M))
+		to_chat(M, span_notice("Gorellik's renewal loosens and fades from within me."))
 	M.add_nausea(1)
 	..()
 	. = 1
