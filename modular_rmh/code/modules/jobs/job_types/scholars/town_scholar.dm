@@ -60,6 +60,10 @@
 
 	magic_user = TRUE
 	spell_points = 15
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 	spells = list(
 		/datum/action/cooldown/spell/undirected/learn,
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
@@ -151,6 +155,10 @@
 
 	magic_user = TRUE
 	spell_points = 20
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 	spells = list(
 		/datum/action/cooldown/spell/undirected/learn,
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,

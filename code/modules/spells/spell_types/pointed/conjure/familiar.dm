@@ -25,9 +25,39 @@
 		/datum/attunement/arcyne = 0.4,
 	)
 
+	slot_level = 2
+	slot_only = TRUE
+	concentration = TRUE
+	slot_label = "Familiar"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_SUMMONING
+	required_level = MASTERY_RANK_ADEPT
+
+	/// The living familiar, so concentration can dismiss it.
+	var/datum/weakref/familiar_ref
+
+/datum/action/cooldown/spell/conjure/familiar/Destroy()
+	familiar_ref = null
+	return ..()
+
+/datum/action/cooldown/spell/conjure/familiar/on_concentration_broken(reason)
+	var/mob/living/wolf = familiar_ref?.resolve()
+	familiar_ref = null
+	if(QDELETED(wolf))
+		return
+	wolf.visible_message(span_warning("[wolf] fades away as its master's focus slips."))
+	qdel(wolf)
+
+/datum/action/cooldown/spell/conjure/familiar/proc/on_familiar_gone(datum/source)
+	SIGNAL_HANDLER
+	familiar_ref = null
+	get_spell_slots()?.clear_concentration(src)
+
 /datum/action/cooldown/spell/conjure/familiar/post_summon(atom/summoned_object, atom/cast_on)
 	var/mob/living/wolf = summoned_object
 	wolf.befriend(owner)
+	familiar_ref = WEAKREF(wolf)
+	RegisterSignal(wolf, COMSIG_PARENT_QDELETING, PROC_REF(on_familiar_gone))
 
 	if(isliving(cast_on))
 		var/mob/living/L = cast_on

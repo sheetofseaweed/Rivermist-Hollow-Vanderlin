@@ -93,9 +93,7 @@
 	user.mana_pool?.set_max_mana(current_max + 200, TRUE, TRUE)
 	user.mana_pool?.set_natural_recharge(user.mana_pool.ethereal_recharge_rate + 1.0)
 	user.mana_overload_threshold += 400
-	if(ishuman(user))
-		var/mob/living/carbon/human/caster = user
-		caster.unlock_dnd_extra_short_rest()
+	user.mind?.spell_slots?.unlock_extra_short_rest()
 	to_chat(user, span_notice("You become one with the eternal flow of magic."))
 
 

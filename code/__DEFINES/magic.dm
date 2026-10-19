@@ -208,3 +208,102 @@ DEFINE_BITFIELD(spell_requirements, list(
  * as it encompasses more states in which a mob may be "incorporeal from magic"
  */
 #define is_jaunting(atom) (istype(atom.loc, /obj/effect/dummy/phased_mob))
+
+// Spell forms and techniques. A spell carries a form, an optional technique and a required track level.
+#define TECHNIQUE_DESTRUCTION "Destruction"
+#define TECHNIQUE_CREATION "Creation"
+#define TECHNIQUE_SUMMONING "Summoning"
+#define TECHNIQUE_RESTORATION "Restoration"
+#define TECHNIQUE_ALTERATION "Alteration"
+#define TECHNIQUE_ILLUSION "Illusion"
+#define TECHNIQUE_IMBUE "Imbue"
+
+#define FORM_FIRE "Fire"
+#define FORM_ICE "Ice"
+#define FORM_LIGHTNING "Lightning"
+#define FORM_EARTH "Earth"
+#define FORM_ARCANE "Arcane"
+#define FORM_DEATH "Death"
+#define FORM_LIFE "Life"
+#define FORM_AIR "Aeromancy"
+#define FORM_WATER "Hydromancy"
+#define FORM_BLOOD "Hemomancy"
+
+#define MASTERY_RANK_NOVICE 0
+#define MASTERY_RANK_ADEPT 2
+#define MASTERY_RANK_EXPERT 4
+#define MASTERY_RANK_MASTER 6
+
+GLOBAL_LIST_INIT(mastery_rank_names, list(
+	"[MASTERY_RANK_NOVICE]" = "Novice",
+	"[MASTERY_RANK_ADEPT]" = "Adept",
+	"[MASTERY_RANK_EXPERT]" = "Expert",
+	"[MASTERY_RANK_MASTER]" = "Master",
+))
+
+GLOBAL_LIST_INIT(form_colors, list(
+	FORM_FIRE = "#FF4500",
+	FORM_ICE = "#00BFFF",
+	FORM_LIGHTNING = "#FFD700",
+	FORM_WATER = "#00158b",
+	FORM_LIFE = "#32CD32",
+	FORM_DEATH = "#800080",
+	FORM_EARTH = "#8B4513",
+	FORM_AIR = "#C0C0C0",
+	FORM_ARCANE = "#9932CC",
+	FORM_BLOOD = "#8b0000",
+))
+
+GLOBAL_LIST_INIT(all_techniques, list(
+	TECHNIQUE_DESTRUCTION,
+	TECHNIQUE_CREATION,
+	TECHNIQUE_SUMMONING,
+	TECHNIQUE_RESTORATION,
+	TECHNIQUE_ALTERATION,
+	TECHNIQUE_ILLUSION,
+	TECHNIQUE_IMBUE,
+))
+
+GLOBAL_LIST_INIT(all_forms, list(
+	FORM_FIRE,
+	FORM_ICE,
+	FORM_LIGHTNING,
+	FORM_EARTH,
+	FORM_ARCANE,
+	FORM_LIFE,
+	FORM_DEATH,
+	FORM_AIR,
+	FORM_WATER,
+	FORM_BLOOD,
+))
+
+// Gear modifier keys collected through COMSIG_SPELL_REQUEST_MODIFIERS.
+#define SPELLMOD_COST "cost"
+#define SPELLMOD_CASTSPEED "castSpeed"
+#define SPELLMOD_MAGNITUDE "magnitude"
+/// Gear magnitude multipliers never exceed this.
+#define SPELLMOD_MAGNITUDE_CAP 1.5
+
+// Charge time tiers by spell weight.
+#define CHARGETIME_POKE 0.5 SECONDS
+#define CHARGETIME_MINOR 1 SECONDS
+#define CHARGETIME_MAJOR 1.5 SECONDS
+#define CHARGETIME_HEAVY 2 SECONDS
+#define CHARGETIME_BARRAGE 3 SECONDS
+
+#define SPELL_RANGE_PROJECTILE 10
+#define SPELL_RANGE_GROUND 7
+#define SPELL_RANGE_TWO_SCREENS 14
+#define SPELL_RANGE_AURA 4
+#define SPELL_RANGE_ADJACENT 1
+
+// Themed grimoires scale their points from these baselines by book quality.
+#define SPELLBOOK_THEME_BASELINE_QUALITY 6
+#define SPELLBOOK_THEME_BASELINE_FORM_POINTS 7
+#define SPELLBOOK_THEME_BASELINE_TECHNIQUE_POINTS 3
+
+/// Prepared spell cap: four plus two per arcane rank, at most twelve.
+#define MAX_PREPARED_SPELLS(rank) (min(12, 4 + 2 * (rank)))
+
+/// Innate casters cannot read grimoires and never prepare.
+#define TRAIT_SORCERER "sorcerer"

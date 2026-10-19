@@ -1,10 +1,36 @@
-/// Explicit mana-funded tier for opt-in slot spells. Null remains the unset state.
-#define DND_MINOR_TIER 0
-#define DND_SHORT_REST_BASE_CHARGES 2
-#define DND_SHORT_REST_ADVANCED_CHARGES 3
-#define DND_SHORT_REST_DURATION (60 SECONDS)
-#define DND_LONG_REST_DURATION (5 MINUTES)
-#define DND_SHORT_REST_BUDGET 8
+// Spell slot casting. A null tier means no cast in progress; zero is a real Minor cast.
+#define SPELL_SLOT_MINOR 0
+#define SPELL_SLOT_MIN 1
+#define SPELL_SLOT_MAX 5
+/// Reserve mana cost of a Minor cast for spells that do not set their own.
+#define SPELL_MINOR_COST_DEFAULT 10
+
+// Caster archetypes pick the slot ladder a job follows.
+#define CASTER_FULL "full"
+#define CASTER_HALF "half"
+#define CASTER_THIRD "third"
+#define CASTER_PACT "pact"
+
+#define SHORT_REST_BASE_CHARGES 2
+#define SHORT_REST_ADVANCED_CHARGES 3
+#define SHORT_REST_DURATION (60 SECONDS)
+#define SHORT_REST_BUDGET 8
+#define LONG_REST_DURATION (5 MINUTES)
+/// Rolling gate between completed long rests, close to one in-game day.
+#define LONG_REST_GATE (90 MINUTES)
+
+// Rest kinds; also the refill trigger of class features.
+#define REST_SHORT (1<<0)
+#define REST_LONG (1<<1)
+
+// Why a concentration effect ended.
+#define CONCENTRATION_REPLACED "replaced"
+#define CONCENTRATION_WOUNDED "wounded"
+#define CONCENTRATION_DEATH "death"
+#define CONCENTRATION_DISMISSED "dismissed"
+
+// Class feature ids stored on /datum/spell_slots.
+#define FEATURE_ARCANE_RECOVERY "arcane_recovery"
 
 #define RIGHT_X_TIER_1 150
 #define RIGHT_X_TIER_2 RIGHT_X_TIER_1 + 50

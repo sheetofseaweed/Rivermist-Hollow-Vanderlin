@@ -45,6 +45,10 @@
 
 	magic_user = TRUE
 	spell_points = 70
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 8
+	technique_points = 4
 	attunements_max = 20
 	attunements_min = 10
 	spells = list(

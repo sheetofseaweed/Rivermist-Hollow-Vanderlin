@@ -20,8 +20,14 @@
 
 	magic_user = TRUE
 	spell_points = 30
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 7
+	technique_points = 3
 	attunements_max = 15
 	attunements_min = 5
+
+	traits = list(TRAIT_SORCERER)
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_sorcerer/desert_sorceress,
@@ -31,4 +37,12 @@
 /datum/job/adventurer_sorcerer/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
+
+// Shared by every subclass. Points match the top-level job; the mastery grants them only once.
+/datum/job/advclass/combat/adventurer_sorcerer
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 7
+	technique_points = 3
+	traits = list(TRAIT_SORCERER)
 

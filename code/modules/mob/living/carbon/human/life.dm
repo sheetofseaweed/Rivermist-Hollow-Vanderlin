@@ -50,8 +50,9 @@
 			A.on_life(src)
 
 	INVOKE_ASYNC(src, PROC_REF(handle_vamp_dreams))
-	if(dnd_spell_slots_max && IsSleeping() && health > 0 && !dnd_rest_in_progress)
-		INVOKE_ASYNC(src, PROC_REF(use_dnd_rest), TRUE)
+	var/datum/spell_slots/slots = mind?.spell_slots
+	if(slots && IsSleeping() && health > 0 && !slots.rest_in_progress && world.time >= slots.next_long_rest)
+		INVOKE_ASYNC(slots, TYPE_PROC_REF(/datum/spell_slots, use_rest), TRUE, TRUE)
 
 	if(IsSleeping())
 		if(health > 0)

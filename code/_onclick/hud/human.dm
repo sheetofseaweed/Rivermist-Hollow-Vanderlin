@@ -410,9 +410,9 @@
 	var/mob/screenmob = viewer || H
 
 	if(screenmob == H)
-		if(H.dnd_spell_slots_max && !H.dnd_spell_slots_toggle_hud_button)
-			H.grant_dnd_spell_hud()
-		H.apply_dnd_spell_hud_visibility()
+		if(H.get_spell_slots() && !H.spell_slots_toggle_hud_button)
+			H.grant_spell_slot_hud()
+		H.apply_spell_slot_hud_visibility()
 
 	if(screenmob.hud_used)
 		if(screenmob.hud_used.hud_shown)

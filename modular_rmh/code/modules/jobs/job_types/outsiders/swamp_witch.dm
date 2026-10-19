@@ -59,6 +59,10 @@
 
 	magic_user = TRUE
 	spell_points = 20
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 3
+	technique_points = 1
 	attunements_max = 5
 	attunements_min = 1
 
@@ -150,6 +154,10 @@
 
 	magic_user = TRUE
 	spell_points = 30
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 4
+	technique_points = 2
 	attunements_max = 10
 	attunements_min = 5
 
@@ -234,6 +242,10 @@
 
 	magic_user = TRUE
 	spell_points = 30
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 4
+	technique_points = 2
 	attunements_max = 10
 	attunements_min = 5
 
@@ -321,6 +333,10 @@
 
 	magic_user = TRUE
 	spell_points = 25
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 3
+	technique_points = 1
 	attunements_max = 10
 	attunements_min = 5
 

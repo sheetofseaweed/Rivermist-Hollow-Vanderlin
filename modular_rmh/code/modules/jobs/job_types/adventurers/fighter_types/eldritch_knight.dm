@@ -28,6 +28,10 @@
 
 	magic_user = TRUE
 	spell_points = 25
+	caster_archetype = CASTER_THIRD
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 	attunements_max = 10
 	attunements_min = 5
 

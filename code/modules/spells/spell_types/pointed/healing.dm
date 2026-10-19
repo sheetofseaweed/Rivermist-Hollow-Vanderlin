@@ -27,6 +27,21 @@
 	/// Some prayers reject targets outside their aligned faith.
 	var/patron_restrictive = FALSE
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Healing"
+
+/// Slot casts scale from the subtype's own numbers; legacy casts keep them as written.
+/datum/action/cooldown/spell/healing/before_cast(atom/cast_on)
+	. = ..()
+	var/level = get_effect_level()
+	var/steps = isnull(level) ? 0 : max(level - slot_level, 0)
+	base_healing = initial(base_healing) * (1 + 0.5 * steps)
+	wound_modifier = min(initial(wound_modifier) * (1 + 0.5 * steps), 1)
+	blood_restoration = initial(blood_restoration)
+	if(!initial(blood_restoration) && steps >= 2)
+		blood_restoration = (BLOOD_VOLUME_SURVIVE / 2) * (steps - 1)
+
 /datum/action/cooldown/spell/healing/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)
@@ -273,6 +288,9 @@
 	blood_restoration = BLOOD_VOLUME_SURVIVE
 	stun_undead = TRUE
 	patron_restrictive = TRUE
+
+	slot_level = 3
+	slot_label = "Miracle"
 
 /datum/action/cooldown/spell/healing/greater/profane
 	name = "Corrupt Miracle"

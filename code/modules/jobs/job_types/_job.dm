@@ -200,6 +200,16 @@
 	var/apprentice_name
 	/// do we magic?
 	var/magic_user = FALSE
+	/// CASTER_FULL, CASTER_HALF, CASTER_THIRD or CASTER_PACT. Null means no spell slots.
+	var/caster_archetype
+	/// Skill whose rank drives the slot ladder. Null uses the arcane skill.
+	var/caster_rank_skill
+	/// Innate form mastery points granted at spawn.
+	var/form_points = 0
+	/// Innate technique mastery points granted at spawn.
+	var/technique_points = 0
+	/// Wizards prepare from a grimoire; innate casters cast everything they know.
+	var/prepares_spells = FALSE
 	/// Do we get passive income every day from our noble estates?
 	var/noble_income = FALSE
 
@@ -386,6 +396,27 @@
 		spawned.set_max_apprentices(max_apprentices)
 		spawned.set_apprentice_name(apprentice_name)
 
+	if(caster_archetype)
+		spawned.mind?.setup_spell_slots(caster_archetype, caster_rank_skill)
+	if(spawned.mind && (form_points || technique_points || prepares_spells))
+		var/datum/spell_mastery/mastery = spawned.mind.get_spell_mastery()
+		mastery.uses_preparation = prepares_spells
+		if(!mastery.job_points_granted && (form_points || technique_points))
+			mastery.job_points_granted = TRUE
+			if(form_points)
+				mastery.adjust_form_points(form_points)
+			if(technique_points)
+				mastery.adjust_technique_points(technique_points)
+			mastery.recalculate_unspent_points()
+		if(prepares_spells)
+			// The outfit's grimoire binds at spawn so its points land at once.
+			for(var/obj/item/spellbook/book in spawned.get_all_contents())
+				if(!book.get_bound_mind())
+					book.bind_owner(spawned.mind)
+					break
+		else if(!locate(/datum/action/innate/open_spellbook) in spawned.actions)
+			var/datum/action/innate/open_spellbook/innate_book = new
+			innate_book.Grant(spawned)
 	add_spells(spawned)
 	spawned.adjust_spell_points(spell_points)
 	spawned.generate_random_attunements(rand(attunements_min, attunements_max))

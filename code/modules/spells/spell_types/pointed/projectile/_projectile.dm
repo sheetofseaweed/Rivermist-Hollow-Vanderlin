@@ -70,8 +70,8 @@
 	current_amount--
 	for(var/i in 1 to projectiles_per_fire)
 		var/shot_type = projectile_type
-		if(dnd_use_spell_slots && dnd_get_cast_level() == DND_MINOR_TIER && dnd_minor_projectile_type)
-			shot_type = dnd_minor_projectile_type
+		if(minor_projectile_type && uses_spell_slots() && get_cast_level() == SPELL_SLOT_MINOR)
+			shot_type = minor_projectile_type
 		var/obj/projectile/to_fire = new shot_type()
 		ready_projectile(to_fire, target, owner, i)
 		to_fire.fire()
@@ -106,6 +106,6 @@
 	if(victim.stat == DEAD)
 		return
 
-	// Hybrid casting awards XP once on commitment, never from unlimited minor hits.
-	if(!dnd_use_spell_slots)
+	// Slot casting awards XP once on commitment, never from unlimited minor hits.
+	if(!uses_spell_slots())
 		handle_exp(get_adjusted_cost() / 4)

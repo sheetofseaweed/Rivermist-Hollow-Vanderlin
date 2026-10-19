@@ -112,6 +112,21 @@
 	/// Value summed from caster and spell attunements to adjust some spell effects.
 	var/attuned_strength
 
+	/// Technique track this spell belongs to; null for techniqueless spells.
+	var/required_technique = null
+	/// Form track this spell belongs to; null keeps the spell out of the spellbook.
+	var/required_form = null
+	/// Points needed in the form track before the spell can be learned.
+	var/required_level = 0
+	/// Spell typepaths that must be known first.
+	var/list/prerequisite_spells
+	/// Shown in the spellbook catalogue when TRUE.
+	var/learnable = TRUE
+	/// Flags forbidden magic in the spellbook.
+	var/heretical_spell = FALSE
+	/// Gear magnitude multiplier for this spell's form and technique, gathered once per cast.
+	var/spell_magnitude_modifier = 1
+
 	// Pointed vars
 	// In the TG refactor these weren't a given but almost all our spells are pointed including most spell types.
 	// I don't really like this but oh well its required without creating a mess of inheritance.
@@ -250,11 +265,11 @@
 	if(!owner)
 		return
 
-	if(dnd_use_spell_slots && ishuman(owner))
+	if(slot_level > 0 && ishuman(owner))
 		var/mob/living/carbon/human/caster = owner
-		if(!caster.dnd_spell_slots_max)
-			caster.setup_default_dnd_spell_slots()
-		caster.grant_dnd_spell_hud()
+		caster.ensure_spell_slots_for_job()
+		if(caster.get_spell_slots())
+			caster.grant_spell_slot_hud()
 
 	// Register some signals so our button's icon stays up to date
 	if(spell_requirements & SPELL_REQUIRES_STATION)
@@ -349,8 +364,8 @@
 /datum/action/cooldown/spell/proc/on_deactivation(mob/on_who, refund_cooldown = TRUE)
 	SHOULD_CALL_PARENT(TRUE)
 
-	if(dnd_use_spell_slots && !dnd_cast_paid)
-		dnd_cast_slot_level = null
+	if(!cast_paid)
+		cast_slot_level = null
 
 	if(refund_cooldown)
 		// Only send the "deactivation" message if they're willingly disabling the ability
@@ -386,7 +401,7 @@
 /datum/action/cooldown/spell/PreActivate(atom/target)
 	charged = FALSE
 	if(!is_valid_target(target))
-		dnd_cast_slot_level = null
+		cast_slot_level = null
 		if(charge_required && click_to_activate)
 			to_chat(owner, span_warning("I can't cast [src] on [target]!"))
 			RegisterSignal(owner.client, COMSIG_CLIENT_MOUSEDOWN, PROC_REF(start_casting), override = TRUE)
@@ -410,6 +425,8 @@
 	else
 		new_time += charge_time * (10 - owner_stat) * 0.02
 
+	new_time /= max(get_form_technique_modifiers()[SPELLMOD_CASTSPEED], 0.1)
+
 	return max(new_time, 1 DECISECONDS)
 
 /// Adjust the base spell cost based on the users stats
@@ -430,7 +447,32 @@
 	else
 		new_cost += spell_cost * (10 - owner_stat) * 0.02
 
+	new_cost *= get_form_technique_modifiers()[SPELLMOD_COST]
+
 	return max(new_cost, 0)
+
+/// Gear modifiers that match this spell's form or technique, as cost and cast-speed multipliers and a magnitude multiplier.
+/datum/action/cooldown/spell/proc/get_form_technique_modifiers()
+	var/list/result = list(SPELLMOD_COST = 1, SPELLMOD_CASTSPEED = 1, SPELLMOD_MAGNITUDE = 1)
+	if(!owner || (!required_form && !required_technique))
+		return result
+
+	var/list/modifiers = list()
+	SEND_SIGNAL(owner, COMSIG_SPELL_REQUEST_MODIFIERS, modifiers)
+	if(!length(modifiers))
+		return result
+
+	for(var/list/entry in modifiers)
+		if(required_form && entry["form"] == required_form)
+			result[SPELLMOD_COST] *= entry[SPELLMOD_COST]
+			result[SPELLMOD_CASTSPEED] *= entry[SPELLMOD_CASTSPEED]
+			result[SPELLMOD_MAGNITUDE] += entry[SPELLMOD_MAGNITUDE]
+		if(required_technique && entry["technique"] == required_technique)
+			result[SPELLMOD_COST] *= entry[SPELLMOD_COST]
+			result[SPELLMOD_CASTSPEED] *= entry[SPELLMOD_CASTSPEED]
+			result[SPELLMOD_MAGNITUDE] += entry[SPELLMOD_MAGNITUDE]
+
+	return result
 
 /// Do any attunement handling in here or any time after before_cast
 /datum/action/cooldown/spell/proc/handle_attunements()
@@ -547,26 +589,26 @@
 /datum/action/cooldown/spell/Activate(atom/target)
 	SHOULD_NOT_OVERRIDE(TRUE)
 
-	if(dnd_use_spell_slots)
-		dnd_cast_slot_level = dnd_get_cast_level()
+	if(uses_spell_slots())
+		cast_slot_level = get_cast_level()
 
 	// Pre-casting of the spell
 	// Pre-cast is the very last chance for a spell to cancel
 	// Stuff like target input can go here.
 	var/precast_result = before_cast(target)
 	if(precast_result & SPELL_CANCEL_CAST)
-		dnd_cast_slot_level = null
+		cast_slot_level = null
 		if(charge_required)
 			cancel_casting()
 		return FALSE
 
 	// Extra safety
 	if(!check_cost())
-		dnd_cast_slot_level = null
+		cast_slot_level = null
 		return FALSE
 
-	if(dnd_use_spell_slots && !dnd_pay_cast())
-		dnd_cast_slot_level = null
+	if(uses_spell_slots() && !pay_slot_cast())
+		cast_slot_level = null
 		return FALSE
 
 	// Spell is officially being cast
@@ -578,8 +620,13 @@
 	if(length(attunements))
 		handle_attunements()
 
+	spell_magnitude_modifier = min(get_form_technique_modifiers()[SPELLMOD_MAGNITUDE], SPELLMOD_MAGNITUDE_CAP)
+
 	// Actually cast the spell. Main effects go here
 	cast(target)
+
+	if(concentration && uses_spell_slots())
+		get_spell_slots().start_concentration(src)
 
 	if(!(precast_result & SPELL_NO_IMMEDIATE_COOLDOWN))
 		// The entire spell is done, start the actual cooldown at its set duration
@@ -594,8 +641,7 @@
 	// And then proceed with the aftermath of the cast
 	// Final effects that happen after all the casting is done can go here
 	after_cast(target)
-	dnd_cast_slot_level = null
-	dnd_cast_paid = FALSE
+	clear_slot_cast()
 	build_all_button_icons()
 
 	return TRUE
@@ -751,8 +797,8 @@
 
 /// When we start charging the spell called from set_click_ability or start_casting
 /datum/action/cooldown/spell/proc/on_start_charge()
-	if(dnd_use_spell_slots)
-		dnd_cast_slot_level = dnd_get_cast_level()
+	if(uses_spell_slots())
+		cast_slot_level = get_cast_level()
 	currently_charging = TRUE
 	START_PROCESSING(SSaction_charge, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
@@ -784,7 +830,7 @@
 	if(success)
 		charged = TRUE
 		return
-	dnd_cast_slot_level = null
+	cast_slot_level = null
 	if(owner)
 		owner.balloon_alert(owner, "channeling was interrupted!")
 
@@ -818,7 +864,7 @@
 /datum/action/cooldown/spell/proc/cancel_casting()
 	if(QDELETED(src)) // Timer
 		return
-	dnd_cast_slot_level = null
+	cast_slot_level = null
 	charged = FALSE
 	end_charging()
 
@@ -912,8 +958,8 @@
 
 /// Check if the spell is castable by cost
 /datum/action/cooldown/spell/proc/check_cost(cost_override, feedback = TRUE)
-	if(dnd_use_spell_slots)
-		return dnd_spell_slot_can_cast(feedback)
+	if(uses_spell_slots())
+		return slot_can_cast(feedback)
 	var/mob/living/caster = owner
 
 	var/used_cost = get_adjusted_cost(cost_override)
@@ -1003,9 +1049,9 @@
 	if(!owner)
 		return
 
-	// Hybrid spells already paid at commitment. Only paid tiers grant casting XP.
-	if(dnd_use_spell_slots)
-		return dnd_cast_paid ? dnd_cast_slot_level * 10 : 0
+	// Slot spells already paid at commitment. Only paid tiers grant casting XP.
+	if(uses_spell_slots())
+		return cast_paid ? cast_slot_level * 10 : 0
 
 	var/used_cost = get_adjusted_cost(cost_override)
 

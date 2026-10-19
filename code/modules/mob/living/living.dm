@@ -3341,7 +3341,7 @@
  *			  defaults to src and mind makes it transfer with the mind to new mobs.
  * * override - Replace existing spell if present, instead of returning early
  */
-/mob/living/proc/add_spell(datum/action/cooldown/spell/spell_type, silent = TRUE, source, override = FALSE)
+/mob/living/proc/add_spell(datum/action/cooldown/spell/spell_type, silent = TRUE, source, override = FALSE, mastery_spell = FALSE)
 	if(QDELETED(src))
 		return
 
@@ -3362,6 +3362,9 @@
 		to_chat(src, span_nicegreen("I learnt [spell.name]!"))
 
 	spell.Grant(src)
+	var/datum/action/cooldown/spell/granted_spell = spell
+	if(mastery_spell && mind && istype(granted_spell) && granted_spell.required_form)
+		mind.get_spell_mastery().grant_bonus_spell(granted_spell, src)
 
 /mob/living/proc/remove_spell(datum/action/cooldown/spell/spell, return_skill_points = FALSE, silent = TRUE)
 	if(QDELETED(src))
@@ -3379,6 +3382,11 @@
 	if(!silent)
 		to_chat(src, span_boldwarning("I forgot [real_spell.name]!"))
 
+	var/datum/spell_mastery/mastery = mind?.spell_mastery
+	if(mastery && (mastery.granted_actions[real_spell.type] == real_spell))
+		mastery.granted_actions -= real_spell.type
+		mastery.unlocked_spells -= real_spell.type
+		mastery.prepared_spells -= real_spell.type
 	qdel(real_spell)
 
 /**

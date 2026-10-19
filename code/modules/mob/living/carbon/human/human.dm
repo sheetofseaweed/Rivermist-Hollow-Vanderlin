@@ -217,7 +217,7 @@
 	culture = null
 	// The spell slot HUD buttons hold a strong owner_mob reference back to us,
 	// so they have to be torn down here or we hard delete.
-	remove_dnd_spell_hud()
+	remove_spell_slot_hud()
 	GLOB.human_list -= src
 	return ..()
 

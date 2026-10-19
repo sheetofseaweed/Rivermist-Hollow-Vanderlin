@@ -17,6 +17,10 @@
 
 	cooldown_time = 1 MINUTES
 
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ALTERATION
+
 	hand_path = /obj/item/melee/touch_attack/prestidigitation
 	draw_message = "I prepare to perform a minor arcyne incantation."
 	drop_message = "I release my minor arcyne focus."

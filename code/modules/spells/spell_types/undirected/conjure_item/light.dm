@@ -20,6 +20,10 @@
 		/datum/attunement/light = 0.3,
 	)
 
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_CREATION
+
 /datum/action/cooldown/spell/undirected/conjure_item/light/make_item()
 	var/obj/item = ..()
 	item.add_overlay(mutable_appearance('icons/obj/projectiles.dmi', "gumball"))

@@ -23,6 +23,32 @@
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/lightning
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Lightning Bolt"
+	required_form = FORM_LIGHTNING
+	required_technique = TECHNIQUE_DESTRUCTION
+
+/datum/action/cooldown/spell/projectile/lightning/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
+	. = ..()
+	var/level = get_effect_level()
+	if(isnull(level))
+		return
+	switch(level)
+		if(1)
+			to_fire.damage = 15
+		if(2)
+			to_fire.damage = 25
+		if(3)
+			to_fire.damage = 40
+		if(4)
+			to_fire.damage = 55
+		if(5)
+			to_fire.damage = 70
+	to_fire.damage *= get_rank_multiplier()
+	if(user)
+		to_chat(user, span_notice("The [get_slot_label()] forms at spell level [level]."))
+
 /obj/projectile/magic/lightning
 	name = "bolt of lightning"
 	tracer_type = /obj/effect/projectile/tracer/stun

@@ -156,6 +156,8 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	QDEL_LIST_ASSOC_VAL(active_uis)
 	active_uis = null
 	QDEL_NULL(sleep_adv)
+	QDEL_NULL(spell_mastery)
+	QDEL_NULL(spell_slots)
 	if(islist(antag_datums))
 		QDEL_LIST(antag_datums)
 	current = null
@@ -431,6 +433,8 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 		C.last_mind = src
 	transfer_antag_huds(hud_to_transfer)				//inherit the antag HUD
 	transfer_martial_arts(current)
+	spell_slots?.attach_body(current)
+	spell_mastery?.on_body_changed(current)
 
 	RegisterSignal(current, COMSIG_MOB_DEATH, PROC_REF(set_death_time))
 	if(active || force_key_move)
