@@ -15,6 +15,10 @@
 	cooldown_time = 30 SECONDS
 	spell_cost = 20
 
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_CREATION
+	slot_level = 0
+
 /datum/action/cooldown/spell/undirected/bless_crops/cast(atom/cast_on)
 	. = ..()
 	owner.visible_message(

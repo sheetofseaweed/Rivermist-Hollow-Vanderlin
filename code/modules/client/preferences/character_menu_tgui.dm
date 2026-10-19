@@ -468,7 +468,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 /datum/preferences/proc/character_setup_faith_options()
 	. = list()
 	var/datum/patron/selected_patron = read_preference(/datum/preference/choiced/patron)
-	var/current_faith = selected_patron ? selected_patron.associated_faith : /datum/patron/divine/astrata::associated_faith
+	var/current_faith = selected_patron ? selected_patron.associated_faith : /datum/patron/faerun/good_gods/Lathander::associated_faith
 	for(var/faith_type in GLOB.faith_list)
 		var/datum/faith/faith = GLOB.faith_list[faith_type]
 		if(!faith)
@@ -810,7 +810,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	var/patron_name = "None"
 	if(selected_patron)
 		patron_name = selected_patron.display_name ? selected_patron.display_name : selected_patron.name
-	var/current_faith_type = selected_patron ? selected_patron.associated_faith : /datum/patron/divine/astrata::associated_faith
+	var/current_faith_type = selected_patron ? selected_patron.associated_faith : /datum/patron/faerun/good_gods/Lathander::associated_faith
 
 	var/heavy_sig = "[pref_species?.type]|[gender]|[selected_patron?.type]|[age]|[skin_tone]"
 	if(!character_setup_ui_heavy_cache || character_setup_ui_heavy_sig != heavy_sig)

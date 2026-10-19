@@ -1,5 +1,6 @@
 /datum/patron/faerun/good_gods
 	abstract_type = /datum/patron/faerun/good_gods
+	devotion_holder = /datum/devotion/faerun/good
 	name = null
 	associated_faith = /datum/faith/faerun/good_gods
 
@@ -50,6 +51,7 @@
 
 /datum/patron/faerun/good_gods/Ilmater
 	name = "Ilmater"
+	devotion_holder = /datum/devotion/faerun/good/ilmater
 	display_name = "Ilmater"
 	domain = "Endurance, Martyrdom, Compassion"
 	desc = "The Crying God who endures suffering so others may find relief."
@@ -64,6 +66,7 @@
 
 /datum/patron/faerun/good_gods/Lathander
 	name = "Lathander"
+	devotion_holder = /datum/devotion/faerun/good/lathander
 	display_name = "Lathander"
 	domain = "Dawn, Renewal, Vitality"
 	desc = "The Morninglord, ever shining with youthful zeal and new beginnings."
@@ -92,6 +95,7 @@
 
 /datum/patron/faerun/good_gods/Moradin
 	name = "Moradin"
+	devotion_holder = /datum/devotion/faerun/good/moradin
 	display_name = "Moradin"
 	domain = "Creation, Dwarves, Forge"
 	desc = "The All-Father, master smith who carved the dwarves from stone."
@@ -148,6 +152,7 @@
 
 /datum/patron/faerun/good_gods/Sune
 	name = "Sune"
+	devotion_holder = /datum/devotion/faerun/good/sune
 	display_name = "Sune"
 	domain = "Beauty, Love, Passion"
 	desc = "Goddess of romance and artistic expression, radiant and capricious."

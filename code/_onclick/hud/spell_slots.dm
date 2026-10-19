@@ -186,8 +186,13 @@
 	if(slot_level == SPELL_SLOT_MINOR)
 		icon_state = "dnd_slot_1_0"
 		maptext = "<span class='maptext'>MIN</span>"
-		name = "[selected ? "Selected: " : ""]Minor Casting (Mana)"
-		desc = "Cast supported minor forms using mana. Healing, summons and other slot-only spells require a numbered tier."
+		var/datum/devotion/faith = owner_mob.cleric
+		if(faith)
+			name = "[selected ? "Selected: " : ""]Minor Casting (Devotion)"
+			desc = "Minor miracles draw devotion ([faith.devotion]/[faith.max_devotion]); arcane minor forms use mana. Slot-only spells require a numbered tier."
+		else
+			name = "[selected ? "Selected: " : ""]Minor Casting (Mana)"
+			desc = "Cast supported minor forms using mana. Healing, summons and other slot-only spells require a numbered tier."
 		return TRUE
 	var/current = slots.get_current(slot_level)
 	var/maximum = slots.get_max(slot_level)
@@ -230,6 +235,9 @@
 	var/feature_text = ""
 	for(var/id in slots.features)
 		feature_text += " [capitalize(replacetext(id, "_", " "))]: [slots.get_feature_charges(id)]/[slots.get_feature_max(id)]."
+	var/datum/devotion/faith = owner_mob.cleric
+	if(faith)
+		feature_text += " Devotion: [faith.devotion]/[faith.max_devotion], half back on a short rest, all on a long rest."
 	desc = "Lie down and click to rest for 60 seconds, recovering up to [SHORT_REST_BUDGET] spell levels. The selected tier takes priority, then lower tiers; MIN prioritizes lower tiers. Right-click to sleep for five minutes and restore all slots, rests and powers. Movement, damage and combat interrupt recovery. Charges: [current]/[maximum]. [long_rest_text][feature_text]"
 	return TRUE
 

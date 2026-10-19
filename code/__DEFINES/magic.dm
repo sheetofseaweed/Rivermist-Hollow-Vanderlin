@@ -228,6 +228,7 @@ DEFINE_BITFIELD(spell_requirements, list(
 #define FORM_AIR "Aeromancy"
 #define FORM_WATER "Hydromancy"
 #define FORM_BLOOD "Hemomancy"
+#define FORM_HOLY "Divine"
 
 #define MASTERY_RANK_NOVICE 0
 #define MASTERY_RANK_ADEPT 2
@@ -252,6 +253,7 @@ GLOBAL_LIST_INIT(form_colors, list(
 	FORM_AIR = "#C0C0C0",
 	FORM_ARCANE = "#9932CC",
 	FORM_BLOOD = "#8b0000",
+	FORM_HOLY = "#E8C547",
 ))
 
 GLOBAL_LIST_INIT(all_techniques, list(
@@ -275,6 +277,7 @@ GLOBAL_LIST_INIT(all_forms, list(
 	FORM_AIR,
 	FORM_WATER,
 	FORM_BLOOD,
+	FORM_HOLY,
 ))
 
 // Gear modifier keys collected through COMSIG_SPELL_REQUEST_MODIFIERS.

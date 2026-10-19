@@ -18,6 +18,10 @@
 	spell_cost = 35
 	projectile_type = /obj/projectile/magic/profane
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_DESTRUCTION
+	heretical_spell = TRUE
+
 /datum/action/cooldown/spell/projectile/profane/before_cast(mob/living/cast_on)
 	. = ..()
 	if(. & SPELL_CANCEL_CAST)

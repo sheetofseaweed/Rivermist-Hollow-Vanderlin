@@ -221,7 +221,7 @@
 				if(CONSECRATED) // consecrated, if you're not necran clergy or a treasure hunter, you get cursed.
 					if(ishuman(user))
 						var/mob/living/L = user
-						if(L.patron?.type != /datum/patron/divine/necra) // non-necran get tagged as graverobbers in EOR stats.
+						if(L.patron?.type != /datum/patron/faerun/neutral_gods/Jergal) // non-necran get tagged as graverobbers in EOR stats.
 							record_featured_stat(FEATURED_STATS_CRIMINALS, user)
 							record_round_statistic(STATS_GRAVES_ROBBED)
 						if(HAS_TRAIT(L, TRAIT_GRAVEROBBER))
@@ -237,7 +237,7 @@
 					if(ishuman(user))
 						var/mob/living/carbon/human/L = user
 						var/robbery_location = get_area_name(src)
-						if(L.patron?.type != /datum/patron/divine/necra) // non-necran trigger an alarm and get cursed.
+						if(L.patron?.type != /datum/patron/faerun/neutral_gods/Jergal) // non-necran trigger an alarm and get cursed.
 							record_featured_stat(FEATURED_STATS_CRIMINALS, user)
 							record_round_statistic(STATS_GRAVES_ROBBED)
 							to_chat(user, span_warning("Necra shuns my blasphemous deeds! Worse, whispers flutter in every direction, someone has been warned of my actions!"))

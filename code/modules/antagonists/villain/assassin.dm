@@ -27,7 +27,7 @@
 	var/mob/living/ass = owner.current
 	ass.cmode_music = 'sound/music/cmode/antag/CombatAssassin.ogg'
 	add_verb(ass, /mob/living/carbon/human/proc/who_targets) // wtf
-	ass.set_patron(/datum/patron/inhumen/graggar, TRUE)
+	ass.set_patron(/datum/patron/faerun/evil_gods/Gruumsh, TRUE)
 	ass.clamped_adjust_skill_level(/datum/attribute/skill/combat/knives, 40, 40)
 	ass.clamped_adjust_skill_level(/datum/attribute/skill/misc/sneaking, 50, 50)
 	var/yea = /obj/item/weapon/knife/dagger/steel/profane

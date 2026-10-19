@@ -16,6 +16,8 @@
 	cooldown_time = 10 SECONDS
 	spell_cost = 40
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_DESTRUCTION
 	slot_level = 1
 	slot_only = TRUE
 	slot_label = "Sacred Flame"

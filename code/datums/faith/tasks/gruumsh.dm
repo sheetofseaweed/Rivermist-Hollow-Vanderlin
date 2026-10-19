@@ -1,4 +1,4 @@
-/datum/devotion_task/graggar_consume
+/datum/devotion_task/gruumsh_consume
 	name = "Feast on Flesh"
 	desc = "Consume the organs of your enemies"
 	devotion_reward = 25

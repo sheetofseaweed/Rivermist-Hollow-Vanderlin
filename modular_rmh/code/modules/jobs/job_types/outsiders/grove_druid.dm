@@ -54,6 +54,8 @@
 
 	magic_user = TRUE
 	spell_points = 20
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/druidic
 
 	spells = list(
 		/datum/action/cooldown/spell/healing,
@@ -104,35 +106,30 @@
 
 /datum/job/grove_druid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
 	spawned.update_sight()
 	var/shapes = list("Crow", "Cat", "Fox", "Mole", "Raccoon", "Saiga", "Smallrat", "Spider", "Wolf", "Direvolf", "Direbear")
 	var/shape_choice = browser_input_list(spawned, "CHOOSE YOUR WILD SHAPE.", "WHO ARE YOU", shapes)
 
 	switch(shape_choice)
 		if("Crow")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/crow)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/crow/wild)
 		if("Cat")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/cat)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/cat/wild)
 		if("Fox")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/fox)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/fox/wild)
 		if("Mole")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/mole)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/mole/wild)
 		if("Raccoon")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/raccoon)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/raccoon/wild)
 		if("Saiga")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/saiga)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/saiga/wild)
 		if("Smallrat")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/smallrat)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/smallrat/wild)
 		if("Spider")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/spider)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/spider/wild)
 		if("Wolf")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf/wild)
 		if("Direvolf")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf/dire)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf/dire/wild)
 		if("Direbear")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/direbear)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/direbear/wild)

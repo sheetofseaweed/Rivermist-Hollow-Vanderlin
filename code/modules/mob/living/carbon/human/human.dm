@@ -218,6 +218,7 @@
 	// The spell slot HUD buttons hold a strong owner_mob reference back to us,
 	// so they have to be torn down here or we hard delete.
 	remove_spell_slot_hud()
+	QDEL_NULL(cleric)
 	GLOB.human_list -= src
 	return ..()
 

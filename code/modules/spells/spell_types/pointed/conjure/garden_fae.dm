@@ -11,6 +11,12 @@
 	cooldown_time = 5 MINUTES
 	spell_cost = 50
 	charge_time = 2 SECONDS
+
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_SUMMONING
+	slot_level = 2
+	slot_only = TRUE
+	required_level = MASTERY_RANK_ADEPT
 	charge_drain = 1
 	charge_slowdown = 1.2
 	summon_radius = 0

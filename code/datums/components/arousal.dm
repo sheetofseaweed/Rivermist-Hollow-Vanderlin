@@ -381,7 +381,7 @@
 		sexhealrand *= 4
 	if(!issimple(parent)||!issimple(target))
 		if(parent.health < user.maxHealth) //so its not spammy
-			if(parent.patron.type == /datum/patron/divine/eora)
+			if(parent.patron.type == /datum/patron/faerun/good_gods/Sune)
 				var/sexhealmult = parent.mind.get_skill_level(/datum/skill/magic/holy)
 				if(sexhealmult < 2) //so its never below 2 for ones with trait.
 					sexhealmult = 2
@@ -410,7 +410,7 @@
 			if(devouser.get_skill_level(/datum/skill/magic/holy))
 				if(C.devotion < C.max_devotion)
 					C.update_devotion(rand(1,2))
-					if(devouser.patron.type == /datum/patron/divine/eora)
+					if(devouser.patron.type == /datum/patron/faerun/good_gods/Sune)
 						C.update_devotion(rand(4,8))
 						if(prob(3))
 							to_chat(devouser, span_info("I feel Viiritri guide me."))*/

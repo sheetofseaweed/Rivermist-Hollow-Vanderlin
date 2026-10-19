@@ -326,7 +326,7 @@
 	name = "The Burdened One"
 	greet_text = span_notice("You are a true instrument of creation, the most blessed of Moradin, nothing will stop your toil, be it sleep or fatigue.")
 	weight = 10
-	allowed_patrons = list(/datum/patron/divine/malum)
+	allowed_patrons = list(/datum/patron/faerun/good_gods/Moradin)
 	req_text = "Worship Moradin, must be a carpenter, elder, smith, artificer or miner."
 	allowed_jobs = list(/datum/job/artisan, /datum/job/artisan_apprentice, /datum/job/towner) // no combat roles
 
@@ -801,7 +801,7 @@
 	name = "Adored by Baotha"
 	greet_text = span_notice("Baotha adore me so much that she gave me some goodies, dope tbh.")
 	weight = 10
-	allowed_patrons = list(/datum/patron/inhumen/baotha)
+	allowed_patrons = list(/datum/patron/faerun/evil_gods/Blissara)
 	req_text = "Have Baotha as your Patron and do not be a Iconoclast, a profane paladin or a inhumen cleric"
 	restricted_jobs = list(/datum/job/advclass/wretch/heretic, /datum/job/advclass/combat/inhumencleric, /datum/job/advclass/combat/profanepaladin)
 

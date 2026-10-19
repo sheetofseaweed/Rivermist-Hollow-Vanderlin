@@ -27,8 +27,10 @@
 	/// Some prayers reject targets outside their aligned faith.
 	var/patron_restrictive = FALSE
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_RESTORATION
 	slot_level = 1
-	slot_only = TRUE
+	minor_cost = DEVOTION_MINOR_HEALING
 	slot_label = "Healing"
 
 /// Slot casts scale from the subtype's own numbers; legacy casts keep them as written.
@@ -41,6 +43,11 @@
 	blood_restoration = initial(blood_restoration)
 	if(!initial(blood_restoration) && steps >= 2)
 		blood_restoration = (BLOOD_VOLUME_SURVIVE / 2) * (steps - 1)
+	// Minor casts heal at half strength with cantrip scaling and restore no blood.
+	if(!isnull(level) && level == SPELL_SLOT_MINOR)
+		base_healing = initial(base_healing) * 0.5 * get_cantrip_multiplier()
+		wound_modifier = initial(wound_modifier) * 0.5
+		blood_restoration = 0
 
 /datum/action/cooldown/spell/healing/is_valid_target(atom/cast_on)
 	. = ..()
@@ -50,7 +57,7 @@
 
 /datum/action/cooldown/spell/healing/cast(mob/living/cast_on)
 	. = ..()
-	if(is_profane && patron_restrictive && !(cast_on.patron in ALL_PROFANE_PATRONS))
+	if(is_profane && patron_restrictive && !(cast_on.patron?.type in ALL_PROFANE_PATRONS))
 		cast_on.visible_message(
 			span_warning("The Inhumen Four sear the flesh of [cast_on]! a non-believer and weakling!"),
 			span_notice("The Inhumen Four lash out at me with a wave of pain!"),
@@ -91,22 +98,22 @@
 	if(isliving(owner))
 		var/mob/living/living_owner = owner
 		switch(living_owner.patron?.type)
-			if(/datum/patron/psydon, /datum/patron/psydon/extremist)
+			if(/datum/patron/faerun/neutral_gods/Helm)
 				cast_on.visible_message(span_info("A strange stirring feeling pours from [cast_on]!"), span_notice("Sentimental thoughts drive away my pains!"))
 
-			if(/datum/patron/divine/astrata)
+			if(/datum/patron/faerun/good_gods/Lathander)
 				cast_on.visible_message(span_info("A wreath of gentle light passes over [cast_on]!"), span_notice("I'm bathed in holy light!"))
 				// during the day, heal 10 more (basic as fuck)
 				if(GLOB.tod == "day")
 					conditional_buff = TRUE
 
-			if(/datum/patron/divine/noc)
+			if(/datum/patron/faerun/neutral_gods/Mystra)
 				cast_on.visible_message(span_info("A shroud of soft moonlight falls upon [cast_on]!"), span_notice("I'm shrouded in gentle moonlight!"))
 				// during the night, heal 10 more (i wish this was more interesting but they're twins so whatever)
 				if(GLOB.tod == "night")
 					conditional_buff = TRUE
 
-			if(/datum/patron/divine/dendor)
+			if(/datum/patron/faerun/neutral_gods/Silvanus)
 				cast_on.visible_message(span_info("A rush of primal energy spirals about [cast_on]!"), span_notice("I'm infused with primal energies!"))
 				var/static/list/natural_stuff = typecacheof(list(/obj/structure/flora/grass, /obj/structure/chair/bench/ancientlog, /obj/structure/flora))
 				situational_bonus = 0
@@ -117,7 +124,7 @@
 				if(situational_bonus > 0)
 					conditional_buff = TRUE
 
-			if(/datum/patron/divine/abyssor)
+			if(/datum/patron/faerun/evil_gods/Umberlee)
 				cast_on.visible_message(span_info("A mist of salt-scented vapour settles on [cast_on]!"), span_notice("I'm invigorated by healing vapours!"))
 				// if our owner or cast_on is standing in water, heal a flat amount extra
 				if(istype(get_turf(cast_on), /turf/open/water) || istype(get_turf(owner), /turf/open/water))
@@ -125,7 +132,7 @@
 					situational_bonus = 15
 				situational_blood += BLOOD_VOLUME_SURVIVE/2
 
-			if(/datum/patron/divine/ravox)
+			if(/datum/patron/faerun/neutral_gods/Tempus)
 				cast_on.visible_message(span_info("An air of righteous defiance rises near [cast_on]!"), span_notice("I'm filled with an urge to fight on!"))
 				situational_bonus = 0
 				// the bloodier the area around our cast_on is, the more we heal
@@ -133,7 +140,7 @@
 					situational_bonus = min(situational_bonus + 1, 25)
 				conditional_buff = TRUE
 
-			if(/datum/patron/divine/necra)
+			if(/datum/patron/faerun/neutral_gods/Jergal)
 				cast_on.visible_message(span_info("A sense of quiet respite radiates from [cast_on]!"), span_notice("I feel the Undermaiden's gaze turn from me for now!"))
 				if(iscarbon(cast_on))
 					var/mob/living/carbon/C = cast_on
@@ -142,19 +149,19 @@
 						conditional_buff = TRUE
 						situational_bonus = 25
 
-			if(/datum/patron/divine/xylix)
+			if(/datum/patron/faerun/neutral_gods/Tymora)
 				cast_on.visible_message(span_info("A fugue seems to manifest briefly across [cast_on]!"), span_notice("My wounds vanish as if they had never been there! "))
 				// half of the time, heal a little (or a lot) more - flip the coin
 				if(prob(50))
 					conditional_buff = TRUE
 					situational_bonus = rand(1, 25)
-			if(/datum/patron/divine/pestra)
+			if(/datum/patron/faerun/good_gods/Ilmater)
 				cast_on.visible_message(span_info("An aura of clinical care encompasses [cast_on]!"), span_notice("I'm sewn back together by sacred medicine!"))
 				// pestra always heals a little more toxin damage and restores a bit more blood
 				cast_on.adjustToxLoss(-situational_bonus)
 				situational_blood += BLOOD_VOLUME_SURVIVE/2
 
-			if(/datum/patron/divine/malum)
+			if(/datum/patron/faerun/good_gods/Moradin)
 				cast_on.visible_message(span_info("A tempering heat is discharged out of [cast_on]!"), span_notice("I feel the heat of a forge soothing my pains!"))
 				situational_bonus = 0
 				for(var/obj/machinery/light/fueled/O in oview(5, owner))
@@ -164,7 +171,7 @@
 				if(situational_bonus > 0)
 					conditional_buff = TRUE
 
-			if(/datum/patron/divine/eora)
+			if(/datum/patron/faerun/good_gods/Sune)
 				cast_on.visible_message(span_info("An eminence of love blossoms around [cast_on]!"), span_notice("I'm filled with the restorative warmth of love!"))
 				// if they're wearing an eoran bud (or are a pacifist), pretty much double the healing.
 				situational_bonus = 0
@@ -172,7 +179,7 @@
 					conditional_buff = TRUE
 					situational_bonus = 25
 
-			if(/datum/patron/inhumen/zizo)
+			if(/datum/patron/faerun/evil_gods/Lolth)
 				cast_on.visible_message(span_info("Vital energies are sapped towards [cast_on]!"), span_notice("The life around me pales as I am restored!"))
 				// set up a ritual pile of bones (or just cast near a stack of bones whatever) around us for massive bonuses, cap at 50 for 75 healing total (wowie)
 				situational_bonus = 0
@@ -181,7 +188,7 @@
 				if(situational_bonus > 0)
 					conditional_buff = TRUE
 
-			if(/datum/patron/inhumen/graggar)
+			if(/datum/patron/faerun/evil_gods/Gruumsh)
 				cast_on.visible_message(span_info("Foul fumes billow outward as [cast_on] is restored!"), span_notice("A noxious scent burns my nostrils, but I feel better!"))
 				// if you've got lingering toxin damage, you get healed more, but your bonus healing doesn't affect toxin
 				var/toxloss = cast_on.getToxLoss()
@@ -190,14 +197,14 @@
 					situational_bonus = 25
 					cast_on.adjustToxLoss(situational_bonus) // remember we do a global toxloss adjust down below so this is okay
 
-			if(/datum/patron/inhumen/matthios)
+			if(/datum/patron/faerun/evil_gods/Mask)
 				cast_on.visible_message(span_info("A shadowed hand passes [cast_on] a small, stolen vial... its contents glimmer faintly before sinking into their veins..."), span_notice("A quick swig and the ache fades..."))
 				// COMRADES! WE MUST BAND TOGETHER! Or Outlaw.
 				if(HAS_TRAIT(cast_on, TRAIT_BANDITCAMP) || (cast_on.real_name in GLOB.outlawed_players))
 					conditional_buff = TRUE
 					situational_bonus = 25
 
-			if(/datum/patron/inhumen/baotha)
+			if(/datum/patron/faerun/evil_gods/Blissara)
 				cast_on.visible_message(span_info("A sweet, dizzying haze swirls around [cast_on], their eyes glimmering with bliss..."), span_notice("Mmm... the world softens... and I melt into it..."))
 				//If the owner or cast_on are on drugs, they get a heal bonus.
 				var/static/list/drugs_buffs = list(
@@ -215,7 +222,7 @@
 						break
 
 			else
-				if(istype(living_owner.patron, /datum/patron/godless))
+				if(istype(living_owner.patron, /datum/patron/faerun/godless))
 					cast_on.visible_message(span_info("No Gods answer these prayers."), span_notice("No Gods answer these prayers."))
 					return
 				cast_on.visible_message(span_info("A choral sound comes from above and [cast_on] is healed!"), span_notice("I am bathed in healing choral hymns!"))
@@ -271,6 +278,7 @@
 /datum/action/cooldown/spell/healing/profane
 	name = "Corrupt Lesser Miracle"
 	antimagic_flags = MAGIC_RESISTANCE_UNHOLY
+	heretical_spell = TRUE
 	required_items = null
 	is_profane = TRUE
 
@@ -290,11 +298,15 @@
 	patron_restrictive = TRUE
 
 	slot_level = 3
+	slot_only = TRUE
+	minor_cost = 0
+	required_level = MASTERY_RANK_EXPERT
 	slot_label = "Miracle"
 
 /datum/action/cooldown/spell/healing/greater/profane
 	name = "Corrupt Miracle"
 	antimagic_flags = MAGIC_RESISTANCE_UNHOLY
+	heretical_spell = TRUE
 	required_items = null
 	stun_undead = FALSE
 	is_profane = TRUE
@@ -314,6 +326,12 @@
 	cooldown_time = 2 MINUTES
 	spell_cost = 100
 	self_cast_possible = FALSE
+
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_RESTORATION
+	slot_level = 2
+	slot_only = TRUE
+	required_level = MASTERY_RANK_ADEPT
 	var/datum/weakref/selected_trauma_ref
 	var/treating = FALSE
 
@@ -322,7 +340,9 @@
 	return ..()
 
 /datum/action/cooldown/spell/defeat_absolution/check_cost(cost_override, feedback = TRUE)
-	// Miracle affordability is disabled in the shared spell code. Enforce this spell's own price.
+	// Slot casters need the slot and the devotion surcharge; legacy casters pay devotion alone.
+	if(uses_spell_slots() && !..())
+		return FALSE
 	var/mob/living/carbon/human/caster = owner
 	if(!istype(caster) || !caster.cleric?.check_devotion(get_adjusted_cost(cost_override)))
 		if(feedback)
@@ -394,6 +414,10 @@
 	var/damage_cost = defeat_severity_rank(trauma.severity) * DEFEAT_BURDEN_DAMAGE_PER_SEVERITY
 	if(!cast_on.defeat_treat_trauma(caster, DEFEAT_TREATMENT_UNIVERSAL, trauma))
 		return FALSE
+	// The slot was spent at commitment; the devotion surcharge lands once the cure succeeds.
+	if(uses_spell_slots() && ishuman(caster))
+		var/mob/living/carbon/human/faithful = caster
+		faithful.cleric?.update_devotion(-get_adjusted_cost())
 	var/spent_cost = invoke_cost()
 	if(spent_cost)
 		handle_exp(spent_cost)

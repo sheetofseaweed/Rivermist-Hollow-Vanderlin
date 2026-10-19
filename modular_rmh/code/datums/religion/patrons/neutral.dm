@@ -4,8 +4,28 @@
 	associated_faith = /datum/faith/faerun/neutral_gods
 	preference_accessible = TRUE
 
+// Fallback for mobs without prefs and for the Curse of Atheism; not pickable.
+/datum/patron/faerun/godless
+	name = "Godless"
+	display_name = "Godless"
+	domain = "Abandonment of the Gods"
+	desc = "Worship of the gods is foolish! Gods exist, but you refuse to worship them due to your own hubris."
+	flaws = "Stubborn, Unrelenting, Misguided"
+	worshippers = "Egomaniacs, Heretics, the Ignorant"
+	sins = "Idolatry, Worship, Blind Faith"
+	boons = "None, you godless heathen."
+	associated_faith = /datum/faith/faerun/godless
+	preference_accessible = FALSE
+	confess_lines = list(
+		"NO GODS, NO MASTERS! THERE IS ONLY ME!",
+	)
+
+/datum/patron/faerun/godless/hear_prayer(mob/living/follower, message)
+	return FALSE
+
 /datum/patron/faerun/neutral_gods
 	abstract_type = /datum/patron/faerun/neutral_gods
+	devotion_holder = /datum/devotion/faerun/neutral
 	name = null
 	associated_faith = /datum/faith/faerun/neutral_gods
 	profane_words = list()
@@ -25,6 +45,7 @@
 
 /datum/patron/faerun/neutral_gods/Mystra
 	name = "Mystra"
+	devotion_holder = /datum/devotion/faerun/neutral/mystra
 	domain = "Magic, Knowledge, Balance"
 	desc = "Mother of All Magic, governing the Weave with careful precision."
 	flaws = "Overly cautious; hides truths to protect magic’s balance."
@@ -51,6 +72,7 @@
 
 /datum/patron/faerun/neutral_gods/Tempus
 	name = "Tempus"
+	devotion_holder = /datum/devotion/faerun/neutral/tempus
 	domain = "War, Courage, Battle"
 	desc = "Neutral god of honorable warfare and bravery tempered by respect."
 	flaws = "Indifferent to victory or loss; battle itself is the goal."
@@ -64,6 +86,7 @@
 
 /datum/patron/faerun/neutral_gods/Tymora
 	name = "Tymora"
+	devotion_holder = /datum/devotion/faerun/neutral/tymora
 	domain = "Luck, Adventure, Fortune"
 	desc = "Lady Luck, smiling upon the bold and daring."
 	flaws = "Fickle; blessings change with the winds of chance."
@@ -77,6 +100,7 @@
 
 /datum/patron/faerun/neutral_gods/Silvanus
 	name = "Silvanus"
+	devotion_holder = /datum/devotion/faerun/neutral/silvanus
 	domain = "Nature, Renewal, Wild Balance"
 	desc = "The Oak Father, ancient and impartial guardian of the wilds, who ensures that nature’s cycle of growth, decay, and rebirth continues unbroken."
 	flaws = "Indifferent to civilization; allows disasters and predation as natural balance; difficult for mortals to understand."
@@ -90,6 +114,7 @@
 
 /datum/patron/faerun/neutral_gods/Jergal
 	name = "Jergal"
+	devotion_holder = /datum/devotion/faerun/neutral/jergal
 	domain = "Fatalism, Records of the Dead, Passive Undeath, Oblivion"
 	desc = "The Scribe of the Doomed, ancient and emotionless seneschal of the dead who records every mortal’s doom with perfect neutrality. Once a mighty god of death, now a cold administrator overseeing the cosmic order of endings."
 	flaws = "Utterly apathetic; refuses to intervene even when imbalance is evident; obsessed with inevitability over justice or mercy."

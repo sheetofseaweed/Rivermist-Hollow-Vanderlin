@@ -1,6 +1,7 @@
 /datum/patron/faerun/evil_gods
 	name = null
 	abstract_type = /datum/patron/faerun/evil_gods
+	devotion_holder = /datum/devotion/faerun/evil
 	associated_faith = /datum/faith/faerun/evil_gods
 
 	profane_words = list()
@@ -8,6 +9,7 @@
 
 /datum/patron/faerun/evil_gods/Mask
 	name = "Mask"
+	devotion_holder = /datum/devotion/faerun/evil/mask
 	domain = "Shadows, Thieves, Intrigue"
 	desc = "Lord of Shadows, patron of secrecy and cunning theft."
 	flaws = "Paranoid, untrustworthy even to his own faithful."
@@ -32,6 +34,7 @@
 
 /datum/patron/faerun/evil_gods/Lolth
 	name = "Lolth"
+	devotion_holder = /datum/devotion/faerun/evil/lolth
 	domain = "Spiders, Chaos, Deceit, Drow"
 	desc = "The Spider Queen, cruel matron of ambition, deception, and domination."
 	flaws = "Sadistic, capricious, encourages endless infighting."
@@ -56,6 +59,7 @@
 
 /datum/patron/faerun/evil_gods/Gruumsh
 	name = "Gruumsh"
+	devotion_holder = /datum/devotion/faerun/evil/gruumsh
 	domain = "Conquest, Strength, Orcs"
 	desc = "The One-Eyed God, eternally raging, urging orcs to dominate all foes."
 	flaws = "Blind fury, no strategy beyond destruction."
@@ -128,6 +132,7 @@
 
 /datum/patron/faerun/evil_gods/Umberlee
 	name = "Umberlee"
+	devotion_holder = /datum/devotion/faerun/evil/umberlee
 	domain = "Sea, Storms, Destruction, Chaos"
 	desc = "The Bitch Queen, a wrathful and unpredictable sea goddess who demands tribute from sailors and coastal dwellers lest her waves drag them to a watery grave. She revels in the terror of storms and the fragile lives of those who sail upon her domain."
 	flaws = "Capricious beyond reason; destroys without purpose; cannot be bargained with for long."
@@ -140,6 +145,7 @@
 
 /datum/patron/faerun/evil_gods/Blissara
 	name = "Blissara"
+	devotion_holder = /datum/devotion/faerun/evil/blissara
 	domain = "Desire, Psychic Influence, Transformation, Hivemind Unity, Breeding, Desire"
 	desc = "Blissara is a veiled and forbidden deity born from an aberrant evolution of the mind flayers - a splinter of the Elder Brain concept that learned to feed not on thoughts, but on emotional resonance. She appears in visions as a many-petaled, tentacled blossom radiating warmth and longing. Blissara offers euphoric connection and unity, drawing mortals into a vast empathic network where individuality softens into shared purpose. Bliss and breeding."
 	flaws = "Erodes personal boundaries and free will."

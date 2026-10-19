@@ -345,11 +345,11 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	var/list/feature = features[id]
 	return feature ? feature[FEATURE_MAX] : 0
 
-/datum/spell_slots/proc/use_feature(id)
+/datum/spell_slots/proc/use_feature(id, amount = 1)
 	var/list/feature = features[id]
-	if(!feature || feature[FEATURE_CURRENT] <= 0)
+	if(!feature || amount <= 0 || feature[FEATURE_CURRENT] < amount)
 		return FALSE
-	feature[FEATURE_CURRENT]--
+	feature[FEATURE_CURRENT] -= amount
 	update_hud()
 	return TRUE
 

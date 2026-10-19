@@ -271,6 +271,8 @@
 		caster.ensure_spell_slots_for_job()
 		if(caster.get_spell_slots())
 			caster.grant_spell_slot_hud()
+	if(divine_feature_id)
+		register_divine_feature()
 
 	// Register some signals so our button's icon stays up to date
 	if(spell_requirements & SPELL_REQUIRES_STATION)
@@ -420,7 +422,7 @@
 
 	new_time -= charge_time * GET_MOB_SKILL_VALUE_OLD(living_owner, associated_skill) * 0.05
 
-	var/owner_stat = living_owner.get_stat(associated_stat)
+	var/owner_stat = living_owner.get_stat(get_associated_stat())
 	if(owner_stat > 10)
 		new_time -= charge_time * (owner_stat - 10) * 0.02
 	else
@@ -429,6 +431,12 @@
 	new_time /= max(get_form_technique_modifiers()[SPELLMOD_CASTSPEED], 0.1)
 
 	return max(new_time, 1 DECISECONDS)
+
+/// Miracles that keep the default stat read Perception; everything else reads its own.
+/datum/action/cooldown/spell/proc/get_associated_stat()
+	if(spell_type == SPELL_MIRACLE && associated_stat == STAT_INTELLIGENCE)
+		return STAT_PERCEPTION
+	return associated_stat
 
 /// Adjust the base spell cost based on the users stats
 /datum/action/cooldown/spell/proc/get_adjusted_cost(cost_override)
@@ -442,7 +450,7 @@
 
 	new_cost -= spell_cost * GET_MOB_SKILL_VALUE_OLD(living_owner, associated_skill) * 0.03
 
-	var/owner_stat = living_owner.get_stat(associated_stat)
+	var/owner_stat = living_owner.get_stat(get_associated_stat())
 	if(owner_stat > 10)
 		new_cost -= spell_cost * (owner_stat - 10) * 0.02
 	else
@@ -546,6 +554,9 @@
 			owner.balloon_alert(owner, "missing something to cast!")
 			return FALSE
 
+	if(divine_feature_id && !divine_feature_ready(feedback))
+		return FALSE
+
 	return TRUE
 
 /**
@@ -583,11 +594,18 @@
 
 	// Extra safety
 	if(!check_cost())
-		cast_slot_level = null
+		clear_slot_cast()
 		return FALSE
 
+	// Feature pools are spent before the slot, so a refused spend leaves nothing paid.
+	if(divine_feature_id)
+		var/feature_cost = get_divine_feature_cost()
+		if(feature_cost > 0 && !spend_divine_feature(feature_cost))
+			clear_slot_cast()
+			return FALSE
+
 	if(uses_spell_slots() && !pay_slot_cast())
-		cast_slot_level = null
+		clear_slot_cast()
 		return FALSE
 
 	// Spell is officially being cast
@@ -970,12 +988,14 @@
 			return TRUE
 
 		if(SPELL_MIRACLE)
-			//SEAWEED PLEASE LOOK HERE//DISABLED UNTIL DEVOTION AND SPELLS REWORK//
-			//var/mob/living/carbon/human/H = caster
-			//if(!istype(H) || !H.cleric?.check_devotion(spell_cost))
-				//if(feedback)
-					//owner.balloon_alert(owner, "devotion too weak!")
-				//return FALSE
+			// Only the faithful pay devotion; miracle-typed racial and antagonist powers stay free.
+			var/mob/living/carbon/human/H = caster
+			if(!istype(H) || !H.cleric)
+				return TRUE
+			if(!H.cleric.check_devotion(used_cost))
+				if(feedback)
+					owner.balloon_alert(owner, "devotion too weak!")
+				return FALSE
 
 			return TRUE
 
@@ -1094,7 +1114,7 @@
 		return
 
 	var/mob/living/caster = owner
-	var/exp_to_gain = caster.get_stat(associated_stat) + (cost_in * experience_modifier) / 2
+	var/exp_to_gain = caster.get_stat(get_associated_stat()) + (cost_in * experience_modifier) / 2
 
 	var/datum/mind/owner_mind = owner.mind
 	if(owner_mind && experience_sleep || (experience_sleep_threshold && (skill_level >= experience_sleep_threshold)))

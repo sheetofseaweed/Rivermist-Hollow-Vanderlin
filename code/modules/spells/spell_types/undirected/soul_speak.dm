@@ -15,6 +15,12 @@
 	cooldown_time = 75 SECONDS
 	spell_cost = 40
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_ILLUSION
+	slot_level = 2
+	slot_only = TRUE
+	required_level = MASTERY_RANK_ADEPT
+
 	var/datum/weakref/soul
 
 /datum/action/cooldown/spell/undirected/soul_speak/before_cast(atom/cast_on)

@@ -11,6 +11,11 @@
 	associated_skill = /datum/attribute/skill/magic/holy
 	cooldown_time = 2 MINUTES
 	spell_cost = 20
+
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 1
+	slot_only = TRUE
 	has_visual_effects = FALSE
 
 	var/obj/effect/dummy/bush_disguise/active_dummy = null

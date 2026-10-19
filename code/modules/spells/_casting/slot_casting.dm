@@ -87,6 +87,13 @@
 		return FALSE
 	if(cast_paid)
 		return TRUE
+	// The forsaken keep their slots, but no god answers a miracle.
+	if(spell_type == SPELL_MIRACLE && ishuman(caster))
+		var/mob/living/carbon/human/believer = caster
+		if(believer.cleric?.forsaken)
+			if(feedback)
+				caster.balloon_alert(caster, "the gods do not answer!")
+			return FALSE
 	var/level = get_cast_level()
 	if(level == SPELL_SLOT_MINOR)
 		var/cost = get_minor_cost()
@@ -94,6 +101,14 @@
 			if(feedback)
 				to_chat(caster, span_warning("[get_slot_label()] requires a spell slot; it has no minor form."))
 			return FALSE
+		// Minor miracles draw on devotion; arcane Minor casts draw on mana.
+		if(spell_type == SPELL_MIRACLE)
+			var/mob/living/carbon/human/faithful = caster
+			if(!istype(faithful) || !faithful.cleric?.check_devotion(cost))
+				if(feedback)
+					caster.balloon_alert(caster, "not enough devotion for a minor miracle!")
+				return FALSE
+			return TRUE
 		if(!caster.has_mana_available(cost))
 			if(feedback)
 				caster.balloon_alert(caster, "not enough mana for a minor cast!")
@@ -115,7 +130,11 @@
 	// HUD and mana signals may ask whether this action is available during payment.
 	cast_paid = TRUE
 	if(cast_slot_level == SPELL_SLOT_MINOR)
-		caster.consume_mana(get_minor_cost())
+		if(spell_type == SPELL_MIRACLE)
+			var/mob/living/carbon/human/faithful = caster
+			faithful.cleric?.update_devotion(-get_minor_cost())
+		else
+			caster.consume_mana(get_minor_cost())
 		caster.balloon_alert(caster, "[get_slot_label()]: minor")
 		return TRUE
 	if(!slots.spend(cast_slot_level))

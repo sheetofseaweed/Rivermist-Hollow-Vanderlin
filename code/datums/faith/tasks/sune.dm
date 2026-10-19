@@ -1,4 +1,4 @@
-/datum/devotion_task/eora_create
+/datum/devotion_task/sune_create
 	name = "Create Beauty"
 	desc = "Craft art or beautiful objects"
 	devotion_reward = 40
@@ -6,7 +6,7 @@
 	cooldown_time = 45 SECONDS
 	signal_type = COMSIG_ART_CREATED
 
-/datum/devotion_task/eora_hug
+/datum/devotion_task/sune_hug
 	name = "Spread Love"
 	desc = "Spread love to those around, hug people."
 	devotion_reward = 4

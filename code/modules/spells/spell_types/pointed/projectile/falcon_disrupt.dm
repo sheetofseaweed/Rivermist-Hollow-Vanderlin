@@ -13,6 +13,11 @@
 	charge_slowdown = 0.7
 	cooldown_time = 50 SECONDS
 	spell_cost = 20
+
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_DESTRUCTION
+	slot_level = 1
+	slot_only = TRUE
 	projectile_type = /obj/projectile/magic/falcon_dive
 
 /datum/action/cooldown/spell/projectile/falcon_disrupt/cast(atom/cast_on)

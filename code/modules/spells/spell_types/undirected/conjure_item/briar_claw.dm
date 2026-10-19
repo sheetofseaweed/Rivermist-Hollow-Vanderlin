@@ -10,6 +10,11 @@
 	spell_cost = 15
 	item_duration = 1 MINUTES
 	cooldown_time = 4 MINUTES
+
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_CREATION
+	slot_level = 1
+	slot_only = TRUE
 	item_type = /obj/item/weapon/briar_claw/left
 	uses_component = TRUE
 	refresh_count = 0

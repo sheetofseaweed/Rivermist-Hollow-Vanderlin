@@ -1,5 +1,5 @@
 
-/datum/devotion_task/dendor_harvest
+/datum/devotion_task/silvanus_harvest
 	name = "Reap the Bounty"
 	desc = "Harvest crops blessed by Silvanus"
 	devotion_reward = 2
@@ -7,13 +7,13 @@
 	cooldown_time = 0 SECONDS
 	signal_type = COMSIG_PLANT_HARVESTED
 
-/datum/devotion_task/dendor_harvest/can_complete(mob/living/carbon/human/user)
+/datum/devotion_task/silvanus_harvest/can_complete(mob/living/carbon/human/user)
 	. = ..()
 	if(prob(30))
 		return TRUE
 	return FALSE
 
-/datum/devotion_task/dendor_tend
+/datum/devotion_task/silvanus_tend
 	name = "Tend to Life"
 	desc = "Care for growing plants"
 	devotion_reward = 1
@@ -21,13 +21,13 @@
 	cooldown_time = 0 SECONDS
 	signal_type = COMSIG_PLANT_TENDED
 
-/datum/devotion_task/dendor_tend/can_complete(mob/living/carbon/human/user)
+/datum/devotion_task/silvanus_tend/can_complete(mob/living/carbon/human/user)
 	. = ..()
 	if(prob(80))
 		return TRUE
 	return FALSE
 
-/datum/devotion_task/dendor_bless
+/datum/devotion_task/silvanus_bless
 	name = "Provide Silvanus's Blessing"
 	desc = "Spread Silvanus's blessing to plants"
 	devotion_reward = 25

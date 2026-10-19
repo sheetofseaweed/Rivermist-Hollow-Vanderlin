@@ -30,11 +30,6 @@
 
 /datum/job/swamp_witch/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
 
 //SUBCLASSES
 /datum/attribute_holder/sheet/job/advclass/swamp_witch/alchemist

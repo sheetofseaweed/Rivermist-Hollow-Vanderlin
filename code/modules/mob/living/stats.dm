@@ -39,7 +39,7 @@
 	var/has_rolled_for_stats = FALSE
 
 /mob/living/proc/init_faith()
-	patron = GLOB.patron_list[/datum/patron/godless/godless]
+	patron = GLOB.patron_list[/datum/patron/faerun/godless]
 
 /mob/living/proc/set_patron(datum/patron/new_patron, check_antag = FALSE)
 	if(!new_patron)

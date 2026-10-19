@@ -1,5 +1,5 @@
 
-/datum/devotion_task/necra_bury
+/datum/devotion_task/jergal_bury
 	name = "Grant Eternal Rest"
 	desc = "Bury the dead properly"
 	devotion_reward = 8

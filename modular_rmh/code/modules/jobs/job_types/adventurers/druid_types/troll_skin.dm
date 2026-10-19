@@ -9,6 +9,7 @@
 		/datum/attribute/skill/combat/wrestling = 10,
 		/datum/attribute/skill/misc/athletics = 20,
 		/datum/attribute/skill/magic/holy = 30,
+		/datum/attribute/skill/magic/druidic = 30,
 		/datum/attribute/skill/labor/taming = 40,
 		/datum/attribute/skill/craft/tanning = 20,
 		/datum/attribute/skill/misc/riding = 10,

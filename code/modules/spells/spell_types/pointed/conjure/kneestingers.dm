@@ -17,5 +17,10 @@
 	cooldown_time = 30 SECONDS
 	spell_cost = 30
 
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_SUMMONING
+	slot_level = 1
+	slot_only = TRUE
+
 	summon_type = list(/obj/structure/kneestingers/decaying)
 	summon_radius = 0

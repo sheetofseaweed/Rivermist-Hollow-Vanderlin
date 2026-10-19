@@ -816,7 +816,7 @@ ____________End of Example*/
 	verses_file = "strings/psybibble.txt"
 
 /obj/item/book/bibble/psy/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
-	if(!isliving(interacting_with) || !istype(user.patron, /datum/patron/psydon))
+	if(!isliving(interacting_with) || !istype(user.patron, /datum/patron/faerun/neutral_gods/Helm))
 		return NONE
 
 	if(!user.can_read(src))

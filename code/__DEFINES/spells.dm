@@ -36,6 +36,20 @@
 
 // Class feature ids stored on /datum/spell_slots.
 #define FEATURE_ARCANE_RECOVERY "arcane_recovery"
+#define FEATURE_CHANNEL_DIVINITY "channel_divinity"
+#define FEATURE_CHANNEL_OATH "channel_oath"
+#define FEATURE_LAY_ON_HANDS "lay_on_hands"
+#define FEATURE_WILD_SHAPE "wild_shape"
+/// Wild Shape charges per short rest.
+#define WILD_SHAPE_CHARGES 2
+/// Form mastery points the completed Rituos grants a slot caster.
+#define RITUOS_FORM_POINTS 3
+/// Lay on Hands pool per holy rank, in hit points.
+#define LAY_ON_HANDS_POOL_PER_RANK 5
+/// Divine Smite holy fire per slot level.
+#define DIVINE_SMITE_DAMAGE_PER_LEVEL 15
+/// Preserve Life mend per holy rank, per ally.
+#define PRESERVE_LIFE_HEAL_PER_RANK 5
 
 #define RIGHT_X_TIER_1 150
 #define RIGHT_X_TIER_2 RIGHT_X_TIER_1 + 50

@@ -1,5 +1,5 @@
 
-/datum/devotion_task/pestra_heal
+/datum/devotion_task/ilmater_heal
 	name = "Ease Suffering"
 	desc = "Heal the sick and wounded"
 	devotion_reward = 3
@@ -7,7 +7,7 @@
 	cooldown_time = 20 SECONDS
 	signal_type = COMSIG_LIVING_HEALED_OTHER
 
-/datum/devotion_task/pestra_medicine
+/datum/devotion_task/ilmater_medicine
 	name = "Apply Remedies"
 	desc = "Administer medicine to those in need"
 	devotion_reward = 2

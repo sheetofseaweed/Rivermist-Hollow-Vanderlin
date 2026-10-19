@@ -58,6 +58,12 @@
 		return FALSE
 	return TRUE
 
+/// Druid feature: the same recovery read from the druidic rank on the slot datum.
+/datum/action/cooldown/spell/undirected/arcane_recovery/natural
+	name = "Natural Recovery"
+	desc = "Once per long rest, spend ten quiet seconds in communion with the land to recover spent spell slots: two levels per rank of druidic skill, up to ten."
+	button_icon_state = "shapeshift"
+
 /datum/action/cooldown/spell/undirected/arcane_recovery/cast(atom/cast_on)
 	. = ..()
 	var/datum/spell_slots/slots = get_spell_slots()

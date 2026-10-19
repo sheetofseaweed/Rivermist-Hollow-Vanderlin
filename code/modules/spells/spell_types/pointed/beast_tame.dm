@@ -18,6 +18,12 @@
 	cooldown_time = 6 MINUTES
 	spell_cost = 60
 
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 3
+	slot_only = TRUE
+	required_level = MASTERY_RANK_EXPERT
+
 	var/static/list/pet_commands = list(
 		/datum/pet_command/idle,
 		/datum/pet_command/free,

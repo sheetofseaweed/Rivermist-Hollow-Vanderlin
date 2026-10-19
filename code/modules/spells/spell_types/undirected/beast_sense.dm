@@ -15,6 +15,11 @@
 	cooldown_time = 10 MINUTES
 	spell_cost = 20
 
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ILLUSION
+	slot_level = 1
+	slot_only = TRUE
+
 /datum/action/cooldown/spell/undirected/beast_sense/can_cast_spell(feedback)
 	. = ..()
 	if(!.)

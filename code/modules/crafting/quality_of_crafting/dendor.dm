@@ -126,7 +126,7 @@
 		return ..()
 
 	. = TRUE
-	if(ishuman(user) && user.patron.type == /datum/patron/divine/dendor)
+	if(ishuman(user) && user.patron.type == /datum/patron/faerun/neutral_gods/Silvanus)
 		if(!check_blessing_requirements(user))
 			return
 		icon_state = "[icon_state]_end"

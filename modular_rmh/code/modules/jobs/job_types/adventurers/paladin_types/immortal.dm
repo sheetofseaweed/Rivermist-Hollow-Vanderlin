@@ -49,6 +49,12 @@
 	else
 		spawned.adjust_skillrank(/datum/skill/combat/swords, 4, TRUE)
 
+	var/holder = spawned.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_templar()
+		devotion.grant_to(spawned)
+
 /datum/outfit/adventurer_paladin/immortal
 	name = "Immortal"
 	// Despite extensive combat experience, this class is exceptionally destitute. The only luxury besides combat gear that it possesses is a lantern for a source of light

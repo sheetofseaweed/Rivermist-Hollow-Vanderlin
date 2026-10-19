@@ -10,6 +10,11 @@
 	cooldown_time = 5 MINUTES
 	spell_cost = 15
 
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 1
+	slot_only = TRUE
+
 	charges = 3
 
 /datum/action/cooldown/spell/undirected/touch/entangler/create_hand(mob/living/carbon/cast_on)

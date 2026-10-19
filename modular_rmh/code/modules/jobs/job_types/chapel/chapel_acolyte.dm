@@ -82,9 +82,12 @@
 
 	magic_user = TRUE
 	spell_points = 15
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 
-/datum/job/heart_priest/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+/datum/job/acolyte/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
+	spawned.add_spell(/datum/action/cooldown/spell/aoe/preserve_life, source = src)
 	spawned.verbs |= /mob/living/carbon/human/proc/churchannouncement
 
 	var/holder = spawned.patron?.devotion_holder
@@ -92,6 +95,11 @@
 		var/datum/devotion/devotion = new holder()
 		devotion.make_acolyte()
 		devotion.grant_to(spawned)
+
+// Shared by every acolyte subclass so re-rolls keep the holy ladder.
+/datum/job/advclass/acolyte
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 
 // ─────────────────────────────
 

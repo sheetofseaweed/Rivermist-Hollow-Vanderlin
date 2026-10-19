@@ -1,4 +1,4 @@
-/datum/devotion_task/matthios_steal
+/datum/devotion_task/mask_steal
 	name = "Redistribute Wealth"
 	desc = "Steal from the wealthy"
 	devotion_reward = 5

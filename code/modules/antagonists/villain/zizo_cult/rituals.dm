@@ -177,9 +177,9 @@ GLOBAL_LIST_INIT(ritualslist, build_zizo_rituals())
 	w_class =  WEIGHT_CLASS_SMALL
 
 /obj/item/corruptedheart/attack(mob/living/target, mob/living/user, list/modifiers)
-	if(!istype(user.patron, /datum/patron/inhumen/zizo))
+	if(!istype(user.patron, /datum/patron/faerun/evil_gods/Lolth))
 		return
-	if(istype(target.patron, /datum/patron/inhumen/zizo) && iscarbon(target))
+	if(istype(target.patron, /datum/patron/faerun/evil_gods/Lolth) && iscarbon(target))
 		var/mob/living/carbon/carbon_target = target
 		if(!(NOBLOOD in carbon_target.dna?.species?.species_traits) && carbon_target.blood_volume < BLOOD_VOLUME_NORMAL)
 			carbon_target.blood_volume = BLOOD_VOLUME_NORMAL
