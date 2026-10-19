@@ -379,7 +379,7 @@
 			sex_shack.Shake(1, 3, 15)
 
 		// Remote work stays anonymous - hearts over the caster would point straight back at them.
-		if(action_user.has_kink(KINK_VISUAL_EFFECTS) && !action_remote_context)
+		if(action_user.has_kink(KINK_VISUAL_EFFECTS) && (!action_remote_context || action_remote_context.allows_visible_messages))
 			show_sex_effects(action_user)
 
 		if(is_finished(action_user, action_target) || !continous)
@@ -426,7 +426,8 @@
 	return TRUE
 
 /datum/sex_action/proc/begin_remote_visible_message_suppression()
-	if(!get_valid_remote_context())
+	var/datum/sex_remote_context/suppressing_context = get_valid_remote_context()
+	if(!suppressing_context || suppressing_context.allows_visible_messages)
 		return FALSE
 	action_user?.push_visible_message_suppression()
 	if(action_target && action_target != action_user)
@@ -659,6 +660,10 @@
 			return pick(SEX_SOUNDS_SLOW)
 		if(SEX_FORCE_HIGH, SEX_FORCE_EXTREME)
 			return pick(SEX_SOUNDS_HARD)
+
+/// TRUE when this action may be used on yourself even though it normally needs a partner.
+/datum/sex_action/proc/allows_self_use(mob/living/user)
+	return FALSE
 
 /datum/sex_action/proc/can_perform(mob/living/user, mob/living/target)
 	SHOULD_CALL_PARENT(TRUE)
@@ -1088,7 +1093,9 @@
 
 
 /datum/sex_action/proc/can_show_action_message(mob/living/user, mob/living/target)
-	if(can_mage_hand_reach(user, target))
+	// Secret contexts (the mage hand) stay silent; open ones (a held head) keep talking.
+	var/datum/sex_remote_context/message_context = get_valid_remote_context()
+	if(message_context && !message_context.allows_visible_messages)
 		return FALSE
 	if(user && (user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)) //stealth sex les go
 		return FALSE

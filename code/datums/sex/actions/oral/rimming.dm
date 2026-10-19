@@ -10,7 +10,7 @@
 	scene_target_slot = ORGAN_SLOT_ANUS
 
 /datum/sex_action/rimming/shows_on_menu(mob/living/user, mob/living/target)
-	if(user == target)
+	if(user == target && !allows_self_use(user))
 		return FALSE
 	return TRUE
 
@@ -18,7 +18,7 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	if(user == target)
+	if(user == target && !allows_self_use(user))
 		return FALSE
 	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE

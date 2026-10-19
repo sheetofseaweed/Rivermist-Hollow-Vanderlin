@@ -89,9 +89,9 @@
 	if(rogue_sneaking || alpha <= 100)
 		suckyvolume *= 0.5
 	if(gender == FEMALE)
-		playsound(src, pick('sound/misc/mat/girlmouth (1).ogg','sound/misc/mat/girlmouth (2).ogg'), suckyvolume, TRUE, ignore_walls = FALSE)
+		playsound(get_sense_anchor(), pick('sound/misc/mat/girlmouth (1).ogg','sound/misc/mat/girlmouth (2).ogg'), suckyvolume, TRUE, ignore_walls = FALSE)
 	else
-		playsound(src, pick('sound/misc/mat/guymouth (2).ogg','sound/misc/mat/guymouth (3).ogg','sound/misc/mat/guymouth (4).ogg','sound/misc/mat/guymouth (5).ogg'), suckyvolume, TRUE, ignore_walls = FALSE)
+		playsound(get_sense_anchor(), pick('sound/misc/mat/guymouth (2).ogg','sound/misc/mat/guymouth (3).ogg','sound/misc/mat/guymouth (4).ogg','sound/misc/mat/guymouth (5).ogg'), suckyvolume, TRUE, ignore_walls = FALSE)
 
 /mob/living/proc/can_do_sex()
 	return TRUE
@@ -215,7 +215,7 @@
 	return TRUE
 
 /mob/living/carbon/human/has_mouth()
-	return get_bodypart(BODY_ZONE_HEAD)
+	return get_bodypart(BODY_ZONE_HEAD) || get_detached_dullahan_head(src)
 
 /mob/living/carbon/human/has_hands() // technically should be an and but i'll replicate original behavior
 	return get_bodypart(BODY_ZONE_L_ARM) || get_bodypart(BODY_ZONE_R_ARM)

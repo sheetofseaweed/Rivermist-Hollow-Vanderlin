@@ -1163,6 +1163,10 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	else if((H.health < H.crit_threshold) && !HAS_TRAIT(H, TRAIT_NOCRITDAMAGE))
 		H.adjustOxyLoss(1)
 
+/// The atom a human looks through when nothing asks for a specific one. Null keeps the mob's own eyes.
+/datum/species/proc/get_default_perspective(mob/living/carbon/human/H)
+	return null
+
 /datum/species/proc/spec_death(gibbed, mob/living/carbon/human/H)
 	return
 
