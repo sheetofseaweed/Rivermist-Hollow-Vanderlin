@@ -11,6 +11,7 @@
 	spell_cost = 20
 
 	slot_level = 1
+	slot_level_max = 1
 	slot_only = TRUE
 	slot_label = "Mimicry"
 	required_form = FORM_ARCANE

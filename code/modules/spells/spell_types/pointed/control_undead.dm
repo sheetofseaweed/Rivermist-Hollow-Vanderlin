@@ -19,6 +19,7 @@
 	heretical_spell = TRUE
 
 	slot_level = 3
+	slot_level_max = 3
 	slot_only = TRUE
 	slot_label = "Control Undead"
 	required_form = FORM_DEATH

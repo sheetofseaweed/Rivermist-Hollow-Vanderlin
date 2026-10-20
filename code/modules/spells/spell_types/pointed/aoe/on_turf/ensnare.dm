@@ -27,21 +27,24 @@
 
 /datum/action/cooldown/spell/aoe/on_turf/ensnare/cast_on_thing_in_aoe(turf/victim)
 	new /obj/effect/temp_visual/slowdown_spell_aoe(victim)
-	addtimer(CALLBACK(src, PROC_REF(apply_slowdown), victim), delay)
+	// The tendrils grab after the cast ends, so the upcast hold is read now.
+	addtimer(CALLBACK(src, PROC_REF(apply_slowdown), victim, duration * get_upcast_duration_multiplier()), delay)
 
-/datum/action/cooldown/spell/aoe/on_turf/ensnare/proc/apply_slowdown(turf/victim)
+/datum/action/cooldown/spell/aoe/on_turf/ensnare/proc/apply_slowdown(turf/victim, hold_time)
+	if(isnull(hold_time))
+		hold_time = duration
 	for(var/mob/living/simple_animal/animal in range(ensnare_radius, victim))
-		animal.Paralyze(duration, ignore_canstun = TRUE)
+		animal.Paralyze(hold_time, ignore_canstun = TRUE)
 
 	for(var/mob/living/L in range(ensnare_radius, victim))
 		if(L.can_block_magic(MAGIC_RESISTANCE))
 			victim.visible_message(span_warning("The tendrils of force can't seem to latch onto [L] "))
 			playsound(L, 'sound/magic/magic_nulled.ogg', 100)
 			return
-		L.Immobilize(duration)
-		L.OffBalance(duration)
+		L.Immobilize(hold_time)
+		L.OffBalance(hold_time)
 		L.visible_message(span_warning("[L] is held by tendrils of arcyne force!"))
-		new /obj/effect/temp_visual/slowdown_spell_aoe/long(get_turf(L))
+		new /obj/effect/temp_visual/slowdown_spell_aoe/long(get_turf(L), hold_time)
 
 /obj/effect/temp_visual/slowdown_spell_aoe
 	icon = 'icons/effects/effects.dmi'
@@ -50,3 +53,9 @@
 
 /obj/effect/temp_visual/slowdown_spell_aoe/long
 	duration = 4 SECONDS
+
+/// The tendrils stay visible for as long as the hold lasts.
+/obj/effect/temp_visual/slowdown_spell_aoe/long/Initialize(mapload, hold_time)
+	if(hold_time)
+		duration = hold_time
+	return ..()

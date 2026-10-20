@@ -28,8 +28,8 @@
 
 /datum/action/cooldown/spell/projectile/fireball/on_start_charge()
 	. = ..()
-	if(get_effect_level() == SPELL_SLOT_MAX)
-		to_chat(owner, span_warning("This level-five [get_slot_label()] has a wide blast that could reach you, even when aimed at a distant target!"))
+	if(get_effect_level() >= 4)
+		to_chat(owner, span_warning("This level-[get_effect_level()] [get_slot_label()] has a wide blast; stay well back from where it lands."))
 
 /// Slot profiles. Legacy mana casts never reach this and keep the projectile's own numbers.
 /datum/action/cooldown/spell/projectile/fireball/proc/apply_level_profile(obj/projectile/magic/aoe/fireball/to_fire, level)
@@ -53,17 +53,18 @@
 			to_fire.exp_heavy = 0
 			to_fire.speed = 3
 		if(4)
-			to_fire.damage = 80
+			to_fire.damage = 75
+			to_fire.exp_light = 3
+			to_fire.exp_fire = 3
+			to_fire.exp_heavy = 0
+			to_fire.speed = 4
+		// Light range 4 reaches three tiles: a caster at range stays outside it.
+		if(5)
+			to_fire.damage = 90
 			to_fire.exp_light = 4
 			to_fire.exp_fire = 3
 			to_fire.exp_heavy = 0
 			to_fire.speed = 4
-		if(5)
-			to_fire.damage = 110
-			to_fire.exp_light = 5
-			to_fire.exp_fire = 4
-			to_fire.exp_heavy = 1
-			to_fire.speed = 5
 
 /datum/action/cooldown/spell/projectile/fireball/ready_projectile(obj/projectile/magic/aoe/fireball/to_fire, atom/target, mob/user, iteration)
 	. = ..()
@@ -118,23 +119,24 @@
 /datum/action/cooldown/spell/projectile/fireball/greater/apply_level_profile(obj/projectile/magic/aoe/fireball/to_fire, level)
 	switch(level)
 		if(3)
+			to_fire.damage = 110
+			to_fire.exp_light = 4
+			to_fire.exp_fire = 3
+			to_fire.exp_heavy = 0
+			to_fire.speed = 6
+		if(4)
 			to_fire.damage = 130
+			to_fire.exp_light = 4
+			to_fire.exp_fire = 4
+			to_fire.exp_heavy = 0
+			to_fire.speed = 6
+		// The only heavy blast left; light range 5 reaches four tiles.
+		if(5)
+			to_fire.damage = 150
 			to_fire.exp_light = 5
 			to_fire.exp_fire = 4
 			to_fire.exp_heavy = 1
 			to_fire.speed = 6
-		if(4)
-			to_fire.damage = 160
-			to_fire.exp_light = 6
-			to_fire.exp_fire = 5
-			to_fire.exp_heavy = 1
-			to_fire.speed = 6
-		if(5)
-			to_fire.damage = 200
-			to_fire.exp_light = 7
-			to_fire.exp_fire = 6
-			to_fire.exp_heavy = 2
-			to_fire.speed = 7
 
 /obj/projectile/magic/aoe/fireball/rogue
 	name = "fireball"

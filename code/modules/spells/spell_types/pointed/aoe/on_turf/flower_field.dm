@@ -62,7 +62,8 @@
 /datum/action/cooldown/spell/aoe/on_turf/circle/flower_field/cast_on_thing_in_aoe(turf/victim, atom/caster)
 	if(prob(25))
 		return
-	var/obj/structure/flora/field/field = new flowers(victim)
+	// Upcasting keeps the field blooming for half as long again per level.
+	var/obj/structure/flora/field/field = new flowers(victim, initial(flowers.wilt_time) * get_upcast_duration_multiplier())
 	field.dir = pick(GLOB.cardinals)
 	for(var/mob/living/L in victim)
 		field.Crossed(L)
@@ -85,10 +86,14 @@
 	blade_dulling = DULLING_CUT
 	resistance_flags = FLAMMABLE
 	object_slowdown = 2
+	/// How long the flowers bloom before they wilt away.
+	var/wilt_time = 1 MINUTES
 
-/obj/structure/flora/field/Initialize()
+/obj/structure/flora/field/Initialize(mapload, bloom_time)
+	if(bloom_time)
+		wilt_time = bloom_time
 	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(flower_decay)), 1 MINUTES)
+	addtimer(CALLBACK(src, PROC_REF(flower_decay)), wilt_time)
 
 /obj/structure/flora/field/Crossed(atom/movable/AM)
 	. = ..()

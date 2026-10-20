@@ -19,6 +19,7 @@
 	heretical_spell = TRUE
 
 	slot_level = 2
+	slot_level_max = 2
 	slot_only = TRUE
 	slot_label = "Decompose"
 	required_form = FORM_DEATH

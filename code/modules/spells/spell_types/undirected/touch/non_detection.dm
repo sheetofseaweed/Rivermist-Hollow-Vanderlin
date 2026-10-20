@@ -54,7 +54,7 @@
 	else
 		caster.visible_message("[caster] draws a glyph in the air and covers themselves in ash.")
 
-	victim.apply_status_effect(/datum/status_effect/non_detection, 1 HOURS)
+	victim.apply_status_effect(/datum/status_effect/non_detection, 1 HOURS * hand_duration_multiplier)
 
 	return TRUE
 

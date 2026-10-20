@@ -37,3 +37,5 @@
 		to_chat(owner, span_notice("You've conjured a phantom ear. You can hear through it as if you were there. Speak \"deafen\" to close this ear to the world, and \"listen\" to re-open it."))
 	current_ear = WEAKREF(summoned_object)
 	summoned_object.setup(owner)
+	// The ear hears one tile further for every two levels above the spell's own.
+	summoned_object.hear_radius += round(get_upcast_steps() / 2)

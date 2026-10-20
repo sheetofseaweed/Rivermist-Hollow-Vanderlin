@@ -16,9 +16,15 @@
 	var/concentration = FALSE
 	/// Label used in slot feedback. Defaults to the name.
 	var/slot_label
+	/// Reactions are short answers to someone else's action, such as Counterspell or Shield.
+	var/reaction = FALSE
 	/// Null means no cast in progress; zero is a real Minor cast.
 	var/tmp/cast_slot_level = null
 	var/tmp/cast_paid = FALSE
+	/// A cast paid elsewhere, such as a scroll: no slot, mana, drain, metamagic or XP.
+	var/tmp/free_cast = FALSE
+	/// Slot level a free cast runs at; null keeps the selection.
+	var/tmp/free_cast_level
 
 /datum/action/cooldown/spell/proc/get_spell_slots()
 	RETURN_TYPE(/datum/spell_slots)
@@ -31,10 +37,16 @@
 	var/datum/spell_slots/slots = get_spell_slots()
 	return slot_level > 0 && slots && slots.has_slot_ladder()
 
+/// Twin casts and scroll casts were paid elsewhere.
+/datum/action/cooldown/spell/proc/is_free_cast()
+	return twin_cast_active || free_cast
+
 /// The level locked for the cast in progress, or the caster's selection.
 /datum/action/cooldown/spell/proc/get_cast_level()
 	if(!isnull(cast_slot_level))
 		return cast_slot_level
+	if(free_cast && !isnull(free_cast_level))
+		return free_cast_level
 	var/datum/spell_slots/slots = get_spell_slots()
 	if(!slots)
 		return null
@@ -51,6 +63,21 @@
 
 /datum/action/cooldown/spell/proc/get_slot_label()
 	return slot_label || name
+
+/// Slot levels above the spell's own level on the cast in progress, capped by slot_level_max.
+/datum/action/cooldown/spell/proc/get_upcast_steps()
+	var/level = get_effect_level()
+	if(isnull(level) || level == SPELL_SLOT_MINOR)
+		return 0
+	return max(level - slot_level, 0)
+
+/// Damage or healing multiplier for an upcast: a quarter more per step.
+/datum/action/cooldown/spell/proc/get_upcast_multiplier()
+	return 1 + UPCAST_MAGNITUDE_STEP * get_upcast_steps()
+
+/// Duration multiplier for an upcast: half as long again per step.
+/datum/action/cooldown/spell/proc/get_upcast_duration_multiplier()
+	return 1 + UPCAST_DURATION_STEP * get_upcast_steps()
 
 /datum/action/cooldown/spell/proc/get_minor_cost()
 	return minor_cost
@@ -86,7 +113,7 @@
 	var/datum/spell_slots/slots = get_spell_slots()
 	if(!istype(caster) || !slots)
 		return FALSE
-	if(cast_paid || twin_cast_active)
+	if(cast_paid || is_free_cast())
 		return TRUE
 	// The forsaken keep their slots, but no god answers a miracle.
 	if(spell_type == SPELL_MIRACLE && ishuman(caster))
@@ -126,11 +153,15 @@
 	if(cast_paid)
 		return FALSE
 	var/mob/living/caster = owner
-	// The twin cast reuses the first cast's level without a second payment.
+	// Twin casts reuse the first cast's level and scroll casts run at their own; neither pays again.
 	if(twin_cast_active)
 		cast_slot_level = isnull(twin_level) ? get_cast_level() : twin_level
 		cast_paid = TRUE
 		caster.balloon_alert(caster, "[get_slot_label()]: twinned")
+		return TRUE
+	if(free_cast)
+		cast_slot_level = get_cast_level()
+		cast_paid = TRUE
 		return TRUE
 	if(!slot_can_cast())
 		return FALSE

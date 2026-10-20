@@ -25,8 +25,9 @@
 
 /datum/action/cooldown/spell/status/frostbite/cast(mob/living/cast_on)
 	// The parent applies the status, so its strength must be set first.
-	extra_args = list(get_rank_multiplier())
+	// Half a point of strength costs one more Speed; upcasts add it every two levels.
+	extra_args = list(get_rank_multiplier() + 0.5 * round(get_upcast_steps() / 2))
 	. = ..()
 	if(iscarbon(cast_on))
 		var/mob/living/carbon/C = cast_on
-		C.adjustFireLoss(15 * get_rank_multiplier())
+		C.adjustFireLoss(15 * get_rank_multiplier() * get_upcast_multiplier())

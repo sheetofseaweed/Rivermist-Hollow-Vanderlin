@@ -12,6 +12,7 @@
 	spell_cost = 30
 
 	slot_level = 2
+	slot_level_max = 4
 	slot_only = TRUE
 	slot_label = "Create Cloud"
 	required_form = FORM_WATER
@@ -51,6 +52,7 @@
 	var/obj/item/held_item = owner.get_active_held_item()
 	var/datum/reagents/reagents = held_item.reagents
 	var/datum/effect_system/smoke_spread/chem/smoke = new
-	smoke.set_up(reagents, 3, get_turf(owner), FALSE)
+	// One tile wider for every two levels above the spell's own.
+	smoke.set_up(reagents, 3 + round(get_upcast_steps() / 2), get_turf(owner), FALSE)
 	smoke.start()
 

@@ -20,8 +20,10 @@
 	summon_type = list(/mob/living/simple_animal/hostile/retaliate/wolf/familiar)
 	summon_radius = 0
 	summon_lifespan = 5 MINUTES
+	upcast_extra_summons = TRUE
 
 	slot_level = 2
+	slot_level_max = 4
 	slot_only = TRUE
 	concentration = TRUE
 	slot_label = "Familiar"
@@ -29,30 +31,40 @@
 	required_technique = TECHNIQUE_SUMMONING
 	required_level = MASTERY_RANK_ADEPT
 
-	/// The living familiar, so concentration can dismiss it.
-	var/datum/weakref/familiar_ref
+	/// The living familiars, so concentration can dismiss them.
+	var/list/datum/weakref/familiar_refs
 
 /datum/action/cooldown/spell/conjure/familiar/Destroy()
-	familiar_ref = null
+	familiar_refs = null
+	return ..()
+
+/// One pack per concentration: summoning again dismisses the last one.
+/datum/action/cooldown/spell/conjure/familiar/cast(atom/cast_on)
+	if(uses_spell_slots())
+		on_concentration_broken(CONCENTRATION_REPLACED)
 	return ..()
 
 /datum/action/cooldown/spell/conjure/familiar/on_concentration_broken(reason)
-	var/mob/living/wolf = familiar_ref?.resolve()
-	familiar_ref = null
-	if(QDELETED(wolf))
-		return
-	wolf.visible_message(span_warning("[wolf] fades away as its master's focus slips."))
-	qdel(wolf)
+	var/list/familiars = familiar_refs
+	familiar_refs = null
+	for(var/datum/weakref/familiar_ref as anything in familiars)
+		var/mob/living/wolf = familiar_ref.resolve()
+		if(QDELETED(wolf))
+			continue
+		wolf.visible_message(span_warning("[wolf] fades away as its master's focus slips."))
+		qdel(wolf)
 
 /datum/action/cooldown/spell/conjure/familiar/proc/on_familiar_gone(datum/source)
 	SIGNAL_HANDLER
-	familiar_ref = null
-	get_spell_slots()?.clear_concentration(src)
+	// Weakrefs stop resolving during deletion, so match the reference itself.
+	LAZYREMOVE(familiar_refs, source.weak_reference)
+	if(!LAZYLEN(familiar_refs))
+		get_spell_slots()?.clear_concentration(src)
 
 /datum/action/cooldown/spell/conjure/familiar/post_summon(atom/summoned_object, atom/cast_on)
 	var/mob/living/wolf = summoned_object
 	wolf.befriend(owner)
-	familiar_ref = WEAKREF(wolf)
+	LAZYADD(familiar_refs, WEAKREF(wolf))
 	RegisterSignal(wolf, COMSIG_PARENT_QDELETING, PROC_REF(on_familiar_gone))
 
 	if(isliving(cast_on))

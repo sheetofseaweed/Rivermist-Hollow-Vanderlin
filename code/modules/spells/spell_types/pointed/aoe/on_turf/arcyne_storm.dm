@@ -23,9 +23,18 @@
 	required_level = MASTERY_RANK_MASTER
 	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/arcyne_bolt)
 
+	/// Seconds the storm cuts each turf at the spell's own level.
+	var/storm_ticks = 16
+
 /datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/cast_on_thing_in_aoe(atom/victim, atom/caster)
-	for(var/i in 1 to 16)
-		addtimer(CALLBACK(src, PROC_REF(apply_damage), victim, get_effect_level()), wait = i * 1 SECONDS)
+	var/level = get_effect_level()
+	var/ticks = get_storm_ticks()
+	for(var/i in 1 to ticks)
+		addtimer(CALLBACK(src, PROC_REF(apply_damage), victim, level), wait = i * 1 SECONDS)
+
+/// Storm length for the cast in progress; upcasting adds half the length per level.
+/datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/proc/get_storm_ticks()
+	return round(storm_ticks * get_upcast_duration_multiplier())
 
 /datum/action/cooldown/spell/aoe/on_turf/arcyne_storm/proc/apply_damage(turf/victim, level)
 	var/tick_damage = round(7 * get_rank_multiplier())

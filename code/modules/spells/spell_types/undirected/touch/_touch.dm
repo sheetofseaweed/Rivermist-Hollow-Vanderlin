@@ -37,6 +37,8 @@
 	var/infinite_use = FALSE
 	/// Number of uses before the spell removes itself
 	var/charges = 1
+	/// Upcast duration multiplier locked when the hand was drawn, since hits land after the cast.
+	var/hand_duration_multiplier = 1
 
 /datum/action/cooldown/spell/undirected/touch/Destroy()
 	// If we have an owner, the hand is cleaned up in Remove(), which Destroy() calls.
@@ -75,6 +77,7 @@
 /datum/action/cooldown/spell/undirected/touch/proc/create_hand(mob/living/carbon/cast_on)
 	SHOULD_CALL_PARENT(TRUE)
 	charges = initial(charges)
+	hand_duration_multiplier = get_upcast_duration_multiplier()
 	var/obj/item/melee/touch_attack/new_hand = new hand_path(cast_on, src)
 	if(!cast_on.put_in_hands(new_hand, del_on_fail = TRUE))
 		reset_spell_cooldown()

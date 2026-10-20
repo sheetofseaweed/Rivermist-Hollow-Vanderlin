@@ -65,11 +65,13 @@
 	if(!holder)
 		CRASH("[type] attempted do_jaunt but failed to create a jaunt holder via enter_jaunt.")
 
+	// The cast level clears after the cast, so the upcast duration is locked here.
+	var/duration = jaunt_duration * get_upcast_duration_multiplier()
 	if(jaunt_out_time > 0)
 		ADD_TRAIT(cast_on, TRAIT_IMMOBILIZED, REF(src))
-		addtimer(CALLBACK(src, PROC_REF(do_jaunt_out), cast_on, holder), jaunt_out_time)
+		addtimer(CALLBACK(src, PROC_REF(do_jaunt_out), cast_on, holder, duration), jaunt_out_time)
 	else
-		start_jaunt(cast_on, holder)
+		start_jaunt(cast_on, holder, duration)
 
 /**
  * The wind-up to the jaunt.
@@ -77,12 +79,12 @@
  *
  * Calls start_jaunt.
  */
-/datum/action/cooldown/spell/undirected/jaunt/ethereal_jaunt/proc/do_jaunt_out(mob/living/cast_on, obj/effect/dummy/phased_mob/spell_jaunt/holder)
+/datum/action/cooldown/spell/undirected/jaunt/ethereal_jaunt/proc/do_jaunt_out(mob/living/cast_on, obj/effect/dummy/phased_mob/spell_jaunt/holder, duration)
 	if(QDELETED(cast_on) || QDELETED(holder) || QDELETED(src))
 		return
 
 	REMOVE_TRAIT(cast_on, TRAIT_IMMOBILIZED, REF(src))
-	start_jaunt(cast_on, holder)
+	start_jaunt(cast_on, holder, duration)
 
 /**
  * The actual process of starting the jaunt.
@@ -91,13 +93,13 @@
  *
  * Calls stop_jaunt after the jaunt runs out.
  */
-/datum/action/cooldown/spell/undirected/jaunt/ethereal_jaunt/proc/start_jaunt(mob/living/cast_on, obj/effect/dummy/phased_mob/spell_jaunt/holder)
+/datum/action/cooldown/spell/undirected/jaunt/ethereal_jaunt/proc/start_jaunt(mob/living/cast_on, obj/effect/dummy/phased_mob/spell_jaunt/holder, duration)
 	if(QDELETED(cast_on) || QDELETED(holder) || QDELETED(src))
 		return
 
 	LAZYINITLIST(exit_point_list)
 	RegisterSignal(holder, COMSIG_MOVABLE_MOVED, PROC_REF(update_exit_point), target)
-	addtimer(CALLBACK(src, PROC_REF(stop_jaunt), cast_on, holder, get_turf(holder)), jaunt_duration)
+	addtimer(CALLBACK(src, PROC_REF(stop_jaunt), cast_on, holder, get_turf(holder)), isnull(duration) ? jaunt_duration : duration)
 
 /**
  * The stopping of the jaunt.

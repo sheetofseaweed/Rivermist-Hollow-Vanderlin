@@ -51,6 +51,7 @@ type SpellEntry = {
   icon: string;
   iconState: string;
   heretical: BooleanLike;
+  prerequisites?: { name: string; known: BooleanLike }[];
 };
 
 type SlotPool = {
@@ -287,6 +288,11 @@ const SpellCard = (props: {
     !!spell.needsPreparation &&
     !!spell.unlocked &&
     !!spell.prepared;
+  const prerequisites = spell.prerequisites || [];
+  const missing = prerequisites.filter((p) => !p.known).map((p) => p.name);
+  const learnTooltip = missing.length
+    ? `Needs ${missing.join(', ')} first`
+    : undefined;
 
   return (
     <Box
@@ -310,6 +316,14 @@ const SpellCard = (props: {
               (spell.form || spell.technique) &&
               ` · Requires ${spell.form || spell.technique} ${spell.level}`}
           </Box>
+          {prerequisites.length > 0 && (
+            <Box fontSize="0.85em" color={missing.length ? 'bad' : 'label'}>
+              Needs:{' '}
+              {prerequisites
+                .map((p) => (p.known ? p.name : `${p.name} (not known)`))
+                .join(', ')}
+            </Box>
+          )}
         </Stack.Item>
         <Stack.Item>
           {unlearnMode ? (
@@ -325,6 +339,7 @@ const SpellCard = (props: {
           ) : (
             <Button
               disabled={!spell.canLearn}
+              tooltip={learnTooltip}
               onClick={() => onLearn(spell.path)}
             >
               Learn

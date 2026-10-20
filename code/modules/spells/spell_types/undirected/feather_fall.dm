@@ -21,5 +21,6 @@
 	. = ..()
 	var/datum/status_effect/status = /datum/status_effect/buff/featherfall
 	var/duration_increase = max(0, get_rank_multiplier() * 90 SECONDS)
+	var/duration = (initial(status.duration) + duration_increase) * get_upcast_duration_multiplier()
 	for(var/mob/living/L in viewers(1, owner))
-		L.apply_status_effect(status, initial(status.duration) + duration_increase)
+		L.apply_status_effect(status, duration)

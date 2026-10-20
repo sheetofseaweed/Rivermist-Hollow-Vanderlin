@@ -54,7 +54,7 @@
 
 /datum/action/cooldown/spell/beast_tame/cast(mob/living/simple_animal/hostile/retaliate/cast_on)
 	. = ..()
-	if(!prob(cast_on.dendor_taming_chance))
+	if(!prob(min(cast_on.dendor_taming_chance * get_upcast_multiplier(), 100)))
 		to_chat(owner, span_warning("\The [cast_on] resists your soothing!"))
 		return
 

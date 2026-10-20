@@ -215,8 +215,9 @@
 		charge_sound_instance = sound(charge_sound)
 
 /datum/action/cooldown/spell/Destroy()
-	if(charge_required && owner)
-		cancel_casting()
+	// cancel_casting refuses once qdel marked the spell, so a charging spell drops its charge state here.
+	if(currently_charging)
+		end_charging()
 	charge_sound_instance = null
 	return ..()
 
@@ -848,8 +849,14 @@
 	currently_charging = FALSE
 	charge_started_at = null
 	charge_target_time = null
+	// Every cancel path ends here; the click failsafe must not fire on a later charge.
+	if(auto_cancel_timer)
+		deltimer(auto_cancel_timer)
+		auto_cancel_timer = null
 	STOP_PROCESSING(SSaction_charge, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
+	if(!owner)
+		return
 
 	if(charge_slowdown)
 		owner.remove_movespeed_modifier(MOVESPEED_ID_SPELL_CASTING)
@@ -965,8 +972,8 @@
 
 /// Check if the spell is castable by cost
 /datum/action/cooldown/spell/proc/check_cost(cost_override, feedback = TRUE)
-	// The free twin cast was paid by the first cast.
-	if(twin_cast_active)
+	// Twin casts and scroll casts were paid elsewhere.
+	if(is_free_cast())
 		return TRUE
 	if(uses_spell_slots())
 		return slot_can_cast(feedback)
@@ -1058,7 +1065,7 @@
  * * Cost used
  */
 /datum/action/cooldown/spell/proc/invoke_cost(cost_override, type_override, re_run = FALSE)
-	if(!owner || twin_cast_active)
+	if(!owner || is_free_cast())
 		return
 
 	// Slot spells already paid at commitment. Only paid tiers grant casting XP.

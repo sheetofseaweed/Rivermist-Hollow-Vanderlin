@@ -35,12 +35,16 @@
 		on_concentration_broken(CONCENTRATION_REPLACED)
 	var/turf/ahead = get_step(owner, owner.dir)
 	place_wall(ahead)
-	if(owner.dir == SOUTH || owner.dir == NORTH)
-		place_wall(get_step(ahead, EAST))
-		place_wall(get_step(ahead, WEST))
-	else
-		place_wall(get_step(ahead, NORTH))
-		place_wall(get_step(ahead, SOUTH))
+	var/list/sides = (owner.dir == SOUTH || owner.dir == NORTH) ? list(EAST, WEST) : list(NORTH, SOUTH)
+	// The wall reaches one tile further each way for every two levels above the spell's own.
+	var/reach = 1 + round(get_upcast_steps() / 2)
+	for(var/side in sides)
+		var/turf/spot = ahead
+		for(var/i in 1 to reach)
+			spot = get_step(spot, side)
+			if(!spot)
+				break
+			place_wall(spot)
 
 /datum/action/cooldown/spell/undirected/forcewall/proc/place_wall(turf/spot)
 	var/atom/wall = new wall_type(spot, owner, antimagic_flags)

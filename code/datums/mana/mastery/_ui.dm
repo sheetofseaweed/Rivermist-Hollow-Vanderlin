@@ -85,6 +85,12 @@
 		var/is_unlocked = (spell_path in mastery.unlocked_spells)
 		var/needs_prep = mastery.needs_preparation(spell_path)
 		var/slot_level = initial(spell_path.slot_level)
+		var/list/prerequisite_data = list()
+		for(var/datum/action/cooldown/spell/prerequisite as anything in get_spell_prerequisites(spell_path))
+			prerequisite_data += list(list(
+				"name" = initial(prerequisite.name),
+				"known" = (prerequisite in mastery.unlocked_spells),
+			))
 
 		spell_data += list(list(
 			"path" = "[spell_path]",
@@ -104,6 +110,7 @@
 			"icon" = "[initial(spell_path.button_icon)]",
 			"iconState" = initial(spell_path.button_icon_state),
 			"heretical" = initial(spell_path.heretical_spell),
+			"prerequisites" = prerequisite_data,
 		))
 	data["spells"] = spell_data
 	return data

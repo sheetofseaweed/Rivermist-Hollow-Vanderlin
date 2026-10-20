@@ -17,6 +17,9 @@
 	give_bank_account = TRUE
 	exp_types_granted = list(EXP_TYPE_ADVENTURER, EXP_TYPE_COMBAT)
 
+	caster_archetype = CASTER_NONE
+	caster_rank_skill = /datum/attribute/skill/misc/athletics
+
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_fighter/abyssal,
 		/datum/job/advclass/combat/adventurer_fighter/amnian_merc,
@@ -47,7 +50,17 @@
 		/datum/job/advclass/combat/adventurer_fighter/winged_rescuer,
 	)
 
+// Every fighter path gets Action Surge; the pool follows athletics rank unless a path overrides the skill.
+/datum/job/advclass/combat/adventurer_fighter
+	caster_archetype = CASTER_NONE
+	caster_rank_skill = /datum/attribute/skill/misc/athletics
+
+/datum/job/advclass/combat/adventurer_fighter/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+	. = ..()
+	spawned.add_spell(/datum/action/cooldown/spell/undirected/action_surge)
+
 /datum/job/adventurer_fighter/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
+	spawned.add_spell(/datum/action/cooldown/spell/undirected/action_surge)
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
 

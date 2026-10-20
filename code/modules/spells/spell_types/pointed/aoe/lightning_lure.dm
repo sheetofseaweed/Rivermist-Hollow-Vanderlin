@@ -27,6 +27,11 @@
 	required_technique = TECHNIQUE_DESTRUCTION
 	required_level = MASTERY_RANK_ADEPT
 
+	/// Shock dealt when a leash ends close to the caster.
+	var/lure_damage = 15
+	/// How long each leash holds at the spell's own level.
+	var/lure_duration = 15 SECONDS
+
 /datum/action/cooldown/spell/aoe/lightning_lure/is_valid_target(atom/cast_on)
 	return iscarbon(cast_on)
 
@@ -38,6 +43,7 @@
 		span_warning("You create a static link with [victim]."),
 	)
 	playsound(victim, 'sound/items/stunmace_gen (2).ogg', 100)
+	// The shock lands when the leash ends, so the upcast numbers are read now.
 	victim.AddComponent(\
 		/datum/component/leash,\
 		owner,\
@@ -47,11 +53,11 @@
 		"lightning7",\
 		'icons/effects/beam.dmi',\
 		FALSE,\
-		CALLBACK(src, PROC_REF(on_break), victim),\
-		duration = 15 SECONDS,\
+		CALLBACK(src, PROC_REF(on_break), victim, lure_damage * get_upcast_multiplier()),\
+		duration = lure_duration * get_upcast_duration_multiplier(),\
 	)
 
-/datum/action/cooldown/spell/aoe/lightning_lure/proc/on_break(mob/living/carbon/victim)
+/datum/action/cooldown/spell/aoe/lightning_lure/proc/on_break(mob/living/carbon/victim, shock_damage = 15)
 	if(QDELETED(owner))
 		return
 	if(get_dist(victim, owner) > aoe_radius - 1)
@@ -59,4 +65,4 @@
 		owner.visible_message(span_warning("The lightning lure fizzles out!"), span_warning("[victim] was too far away!"))
 		return
 	victim.visible_message(span_warning("[victim] is hooked!"), span_userdanger("I'm hooked!"))
-	victim.electrocute_act(15, owner)
+	victim.electrocute_act(shock_damage, owner)

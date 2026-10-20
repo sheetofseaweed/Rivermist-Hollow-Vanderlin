@@ -29,6 +29,8 @@
 	magic_user = TRUE
 	spell_points = 25
 	caster_archetype = CASTER_THIRD
+	// The shared fighter block sizes pools by athletics; this path keeps its ladder on arcane.
+	caster_rank_skill = /datum/attribute/skill/magic/arcane
 	prepares_spells = TRUE
 	form_points = 3
 	technique_points = 1

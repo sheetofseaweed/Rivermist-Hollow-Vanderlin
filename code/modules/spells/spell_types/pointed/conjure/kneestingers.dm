@@ -24,3 +24,4 @@
 
 	summon_type = list(/obj/structure/kneestingers/decaying)
 	summon_radius = 0
+	upcast_extra_summons = TRUE

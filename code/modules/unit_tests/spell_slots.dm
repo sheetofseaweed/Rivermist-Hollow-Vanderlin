@@ -163,6 +163,15 @@
 	fireball.ready_projectile(full, target, caster, 1)
 	TEST_ASSERT(abs(full.damage - 63) < 0.01, "Level three fireball did not use its profile and rank multiplier (got [full.damage]).")
 
+	// Upcast helpers: two levels above a level-one spell give +50% magnitude and double duration.
+	probe.cast_slot_level = 3
+	TEST_ASSERT_EQUAL(probe.get_upcast_steps(), 2, "Two levels above the spell's own did not count as two steps.")
+	TEST_ASSERT(abs(probe.get_upcast_multiplier() - 1.5) < 0.01, "The upcast magnitude multiplier was [probe.get_upcast_multiplier()].")
+	TEST_ASSERT(abs(probe.get_upcast_duration_multiplier() - 2) < 0.01, "The upcast duration multiplier was [probe.get_upcast_duration_multiplier()].")
+	probe.cast_slot_level = 1
+	TEST_ASSERT_EQUAL(probe.get_upcast_steps(), 0, "A cast at the spell's own level counted upcast steps.")
+	probe.clear_slot_cast()
+
 	slots.archetype = CASTER_PACT
 	slots.sync_to_rank(TRUE)
 	TEST_ASSERT_EQUAL(slots.get_max(2), 3, "Journeyman pact casters should have three level two slots.")

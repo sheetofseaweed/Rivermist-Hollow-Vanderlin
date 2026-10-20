@@ -15,14 +15,17 @@
 	required_form = FORM_LIFE
 	required_technique = TECHNIQUE_SUMMONING
 	slot_level = 2
+	slot_level_max = 4
 	slot_only = TRUE
 	required_level = MASTERY_RANK_ADEPT
 	charge_drain = 1
 	charge_slowdown = 1.2
 	summon_radius = 0
+	upcast_extra_summons = TRUE
 	self_cast_possible = FALSE
 
-	var/datum/weakref/gardener_ref
+	/// Gardeners of the last cast; casting again replaces them.
+	var/list/datum/weakref/gardener_refs
 	var/static/list/garden_fae = list(
 		/obj/structure/flora/grass/herb/atropa      = /mob/living/simple_animal/hostile/retaliate/fae/agriopylon/atropa,
 		/obj/structure/flora/grass/herb/matricaria  = /mob/living/simple_animal/hostile/retaliate/fae/agriopylon/matricaria,
@@ -49,10 +52,7 @@
 	if(!istype(cast_on, /obj/structure/flora/grass/herb))
 		to_chat(owner, span_warning("You must target a wild herb!"))
 		return . | SPELL_CANCEL_CAST
-	var/mob/living/simple_animal/hostile/retaliate/fae/agriopylon/gardener = gardener_ref?.resolve()
-	if(!QDELETED(gardener))
-		qdel(gardener)
-	gardener_ref = null
+	dismiss_gardeners()
 	var/mob_type = garden_fae[cast_on.type]
 	if(!mob_type)
 		to_chat(owner, span_warning("Your gardener crumbles into dust."))
@@ -70,12 +70,16 @@
 		return
 	gardener.befriend(owner)
 	gardener.owner = owner
-	gardener_ref = WEAKREF(gardener)
+	LAZYADD(gardener_refs, WEAKREF(gardener))
+
+/datum/action/cooldown/spell/conjure/garden_fae/proc/dismiss_gardeners()
+	for(var/datum/weakref/gardener_ref as anything in gardener_refs)
+		var/mob/living/gardener = gardener_ref.resolve()
+		if(!QDELETED(gardener))
+			qdel(gardener)
+	gardener_refs = null
 
 /datum/action/cooldown/spell/conjure/garden_fae/Destroy()
-	var/mob/living/simple_animal/hostile/retaliate/fae/agriopylon/gardener = gardener_ref?.resolve()
-	if(!QDELETED(gardener))
-		qdel(gardener)
-	gardener_ref = null
+	dismiss_gardeners()
 	return ..()
 

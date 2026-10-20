@@ -22,3 +22,7 @@
 	required_form = FORM_DEATH
 	required_technique = TECHNIQUE_CREATION
 	spell_flags = SPELL_RITUOS
+
+/datum/action/cooldown/spell/conjure/web/get_summon_radius()
+	// One tile wider for every two levels above the spell's own.
+	return ..() + round(get_upcast_steps() / 2)

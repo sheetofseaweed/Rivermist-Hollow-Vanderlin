@@ -43,7 +43,7 @@
 
 /// The armed metamagic applies when it fits this cast and the points cover it. The free twin cast carries none.
 /datum/action/cooldown/spell/proc/metamagic_applies(id)
-	if(twin_cast_active)
+	if(is_free_cast())
 		return FALSE
 	var/datum/spell_slots/slots = get_spell_slots()
 	if(!slots || slots.get_armed_metamagic() != id || !metamagic_fits(id))
@@ -61,7 +61,7 @@
 
 /// Pays the armed metamagic after a successful cast. Returns TRUE when a twin window opened.
 /datum/action/cooldown/spell/proc/finish_metamagic(atom/target)
-	if(twin_cast_active)
+	if(is_free_cast())
 		return FALSE
 	var/datum/spell_slots/slots = get_spell_slots()
 	var/armed = slots?.get_armed_metamagic()

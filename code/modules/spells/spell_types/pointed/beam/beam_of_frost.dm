@@ -27,14 +27,18 @@
 	var/list/hit_targets
 	/// Slot level captured at cast, since the beam outlives the cast.
 	var/beam_level
+	/// Upcast frostbite duration multiplier, captured with the level.
+	var/beam_duration_multiplier = 1
 
 /datum/action/cooldown/spell/beam/beam_of_frost/Destroy()
 	hit_targets = null
 	return ..()
 
 /datum/action/cooldown/spell/beam/beam_of_frost/cast(atom/cast_on)
-	. = ..()
+	// The parent connects the beam and freezes the first target, so capture the level first.
 	beam_level = get_effect_level()
+	beam_duration_multiplier = get_upcast_duration_multiplier()
+	. = ..()
 	addtimer(VARSET_CALLBACK(src, hit_targets, null), time + 5 DECISECONDS)
 
 /datum/action/cooldown/spell/beam/beam_of_frost/on_beam_connect(atom/victim, mob/caster)
@@ -76,7 +80,8 @@
 		damage = round((15 + 10 * beam_level) * get_rank_multiplier())
 		strength = clamp(0.5 + 0.25 * beam_level, 0.5, 2)
 	victim.adjustFireLoss(damage)
-	victim.apply_status_effect(/datum/status_effect/debuff/frostbite, null, strength)
+	var/datum/status_effect/debuff/frostbite/frost_type = /datum/status_effect/debuff/frostbite
+	victim.apply_status_effect(frost_type, initial(frost_type.duration) * beam_duration_multiplier, strength)
 
 	new /obj/effect/temp_visual/snap_freeze(get_turf(victim))
 

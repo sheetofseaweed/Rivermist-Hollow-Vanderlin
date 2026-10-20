@@ -59,7 +59,7 @@
 			new_duration += duration_modification * get_rank_multiplier()
 		else
 			new_duration *= get_rank_multiplier()
-	new_duration *= get_metamagic_duration_multiplier()
+	new_duration *= get_metamagic_duration_multiplier() * get_upcast_duration_multiplier()
 	var/list/status_args = list(
 		status_effect,
 		new_duration,

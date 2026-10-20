@@ -82,6 +82,9 @@
 	to_fire.firer = owner
 	to_fire.fired_from = get_turf(owner)
 	to_fire.scale = clamp(get_rank_multiplier(), 0.5, 1.5)
+	// Numbered slot casts scale here; spells with their own level tables overwrite the damage after this.
+	if(uses_spell_slots() && get_cast_level() != SPELL_SLOT_MINOR)
+		to_fire.damage *= get_rank_multiplier() * get_upcast_multiplier()
 	to_fire.preparePixelProjectile(target, owner)
 
 	RegisterSignal(to_fire, COMSIG_PROJECTILE_SELF_ON_HIT, PROC_REF(on_cast_hit))

@@ -17,6 +17,7 @@
 	required_form = FORM_HOLY
 	required_technique = TECHNIQUE_SUMMONING
 	slot_level = 3
+	slot_level_max = 3
 	slot_only = TRUE
 	required_level = MASTERY_RANK_EXPERT
 

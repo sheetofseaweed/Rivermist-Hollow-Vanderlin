@@ -18,6 +18,7 @@
 	required_form = FORM_HOLY
 	required_technique = TECHNIQUE_RESTORATION
 	slot_level = 2
+	slot_level_max = 2
 	slot_only = TRUE
 	required_level = MASTERY_RANK_ADEPT
 

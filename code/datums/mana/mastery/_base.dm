@@ -197,6 +197,18 @@
 	var/technique_cost = initial(spell_path.required_technique) ? 1 : 0
 	return list(form_cost, technique_cost)
 
+/// initial() is null for list vars, so prerequisites come from a throwaway instance, cached per type.
+/proc/get_spell_prerequisites(datum/action/cooldown/spell/spell_path)
+	var/static/list/cache
+	cache ||= list()
+	var/list/prereqs = cache[spell_path]
+	if(isnull(prereqs))
+		var/datum/action/cooldown/spell/probe = new spell_path()
+		prereqs = probe.prerequisite_spells?.Copy() || list()
+		qdel(probe)
+		cache[spell_path] = prereqs
+	return prereqs
+
 /// Whether spell_path is purchasable now; known spells return FALSE.
 /datum/spell_mastery/proc/can_learn_spell(datum/action/cooldown/spell/spell_path)
 	if(!ispath(spell_path, /datum/action/cooldown/spell))
@@ -217,7 +229,7 @@
 		if(form && get_form_level(form) < level_req)
 			return FALSE
 
-	var/list/prereqs = initial(spell_path.prerequisite_spells)
+	var/list/prereqs = get_spell_prerequisites(spell_path)
 	if(length(prereqs))
 		for(var/prereq_path in prereqs)
 			if(!(prereq_path in unlocked_spells))

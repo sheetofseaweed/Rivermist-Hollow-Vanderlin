@@ -26,14 +26,17 @@
 /datum/action/cooldown/spell/aoe/on_turf/snap_freeze/cast_on_thing_in_aoe(turf/victim, atom/caster)
 	new /obj/effect/temp_visual/trapice(victim)
 	playsound(victim, 'sound/combat/wooshes/blunt/wooshhuge (2).ogg', 80, TRUE, soundping = TRUE)
-	addtimer(CALLBACK(src, PROC_REF(do_freeze), victim, get_effect_level()), 0.5 SECONDS)
+	addtimer(CALLBACK(src, PROC_REF(do_freeze), victim, get_effect_level(), get_upcast_duration_multiplier()), 0.5 SECONDS)
 
-/datum/action/cooldown/spell/aoe/on_turf/snap_freeze/proc/do_freeze(turf/victim, level)
+/datum/action/cooldown/spell/aoe/on_turf/snap_freeze/proc/do_freeze(turf/victim, level, duration_multiplier = 1)
 	var/damage = 35
 	var/strength = get_rank_multiplier()
 	if(!isnull(level))
 		damage = round((15 + 10 * level) * get_rank_multiplier())
 		strength = clamp(0.5 * level, 1, 2.5)
+	// Upcasting lengthens the frostbite; the level table already sets its strength.
+	var/datum/status_effect/debuff/frostbite/frost_type = /datum/status_effect/debuff/frostbite
+	var/frost_duration = initial(frost_type.duration) * duration_multiplier
 	new /obj/effect/temp_visual/snap_freeze(victim)
 	playsound(victim, 'sound/combat/newstuck.ogg', 80, TRUE)
 	for(var/mob/living/L in victim)
@@ -42,7 +45,7 @@
 			playsound(L, 'sound/magic/magic_nulled.ogg', 100)
 			continue
 		L.adjustFireLoss(damage)
-		L.apply_status_effect(/datum/status_effect/debuff/frostbite, null, strength)
+		L.apply_status_effect(frost_type, frost_duration, strength)
 		to_chat(L, span_userdanger("The air chills your bones!"))
 
 /obj/effect/temp_visual/trapice

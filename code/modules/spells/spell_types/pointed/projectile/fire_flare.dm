@@ -30,19 +30,20 @@
 		to_fire.damage = 5 * get_cantrip_multiplier()
 		to_fire.exp_flash = 1
 		return
+	// The flash widens by one tile every two levels.
 	switch(level)
 		if(1)
 			to_fire.damage = 10
 			to_fire.exp_flash = 1
 		if(2)
 			to_fire.damage = 15
-			to_fire.exp_flash = 2
+			to_fire.exp_flash = 1
 		if(3)
 			to_fire.damage = 20
 			to_fire.exp_flash = 2
 		if(4)
 			to_fire.damage = 25
-			to_fire.exp_flash = 3
+			to_fire.exp_flash = 2
 		if(5)
 			to_fire.damage = 30
 			to_fire.exp_flash = 3

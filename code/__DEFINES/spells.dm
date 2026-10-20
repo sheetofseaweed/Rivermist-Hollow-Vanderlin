@@ -46,6 +46,7 @@
 #define FEATURE_BARDIC_INSPIRATION "bardic_inspiration"
 #define FEATURE_RAGE "rage"
 #define FEATURE_KI "ki"
+#define FEATURE_ACTION_SURGE "action_surge"
 /// Wild Shape charges per short rest.
 #define WILD_SHAPE_CHARGES 2
 /// Rage charges before the Expert and Master bonuses.
@@ -67,6 +68,10 @@
 #define SORCERY_SLOT_COSTS list(2, 3, 5, 6, 7)
 /// Window for the free second cast of a twinned spell.
 #define TWINNED_CAST_WINDOW (10 SECONDS)
+
+// Upcasting: each slot level above the spell's own level adds these fractions.
+#define UPCAST_MAGNITUDE_STEP 0.25
+#define UPCAST_DURATION_STEP 0.5
 /// Form mastery points the completed Rituos grants a slot caster.
 #define RITUOS_FORM_POINTS 3
 /// Lay on Hands pool per holy rank, in hit points.
