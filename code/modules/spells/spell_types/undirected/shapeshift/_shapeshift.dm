@@ -152,7 +152,7 @@
 	return unshapeshifted_mob
 
 /// Shifting back is free; only taking a beast form spends a Wild Shape charge.
-/datum/action/cooldown/spell/undirected/shapeshift/get_divine_feature_cost()
+/datum/action/cooldown/spell/undirected/shapeshift/get_feature_cost()
 	if(owner && is_shifted(owner))
 		return 0
 	return ..()

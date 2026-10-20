@@ -28,7 +28,8 @@
 	return caster.mind?.spell_slots
 
 /datum/action/cooldown/spell/proc/uses_spell_slots()
-	return slot_level > 0 && !isnull(get_spell_slots())
+	var/datum/spell_slots/slots = get_spell_slots()
+	return slot_level > 0 && slots && slots.has_slot_ladder()
 
 /// The level locked for the cast in progress, or the caster's selection.
 /datum/action/cooldown/spell/proc/get_cast_level()
@@ -58,7 +59,7 @@
 // CHARISMA_LATER: bards, sorcerers and warlocks should read a Charisma stat here once it exists.
 /datum/action/cooldown/spell/proc/get_rank_multiplier()
 	var/datum/spell_slots/slots = get_spell_slots()
-	if(slots)
+	if(slots && slots.has_slot_ladder())
 		return 0.9 + 0.05 * slots.get_rank()
 	var/mob/living/caster = owner
 	// Skill-less abilities, such as organ or racial spells, stay neutral.
@@ -73,7 +74,7 @@
 /// Cantrip and Minor scaling: x1 until journeyman, x1.5 until master, x2 after.
 /datum/action/cooldown/spell/proc/get_cantrip_multiplier()
 	var/datum/spell_slots/slots = get_spell_slots()
-	var/rank = slots ? slots.get_rank() : 0
+	var/rank = (slots && slots.has_slot_ladder()) ? slots.get_rank() : 0
 	if(rank >= SKILL_RANK_MASTER)
 		return 2
 	if(rank >= SKILL_RANK_JOURNEYMAN)
@@ -85,7 +86,7 @@
 	var/datum/spell_slots/slots = get_spell_slots()
 	if(!istype(caster) || !slots)
 		return FALSE
-	if(cast_paid)
+	if(cast_paid || twin_cast_active)
 		return TRUE
 	// The forsaken keep their slots, but no god answers a miracle.
 	if(spell_type == SPELL_MIRACLE && ishuman(caster))
@@ -122,9 +123,17 @@
 
 /// Pays once, after validation and before the effect. Cancelling earlier is free.
 /datum/action/cooldown/spell/proc/pay_slot_cast()
-	if(cast_paid || !slot_can_cast())
+	if(cast_paid)
 		return FALSE
 	var/mob/living/caster = owner
+	// The twin cast reuses the first cast's level without a second payment.
+	if(twin_cast_active)
+		cast_slot_level = isnull(twin_level) ? get_cast_level() : twin_level
+		cast_paid = TRUE
+		caster.balloon_alert(caster, "[get_slot_label()]: twinned")
+		return TRUE
+	if(!slot_can_cast())
+		return FALSE
 	var/datum/spell_slots/slots = get_spell_slots()
 	cast_slot_level = get_cast_level()
 	// HUD and mana signals may ask whether this action is available during payment.
@@ -146,6 +155,7 @@
 /datum/action/cooldown/spell/proc/clear_slot_cast()
 	cast_slot_level = null
 	cast_paid = FALSE
+	twin_cast_active = FALSE
 
 /// Ends this spell's concentration effect. Subtypes end their effect in on_concentration_broken.
 /datum/action/cooldown/spell/proc/break_concentration(reason)

@@ -47,6 +47,7 @@
 	data["canPrepare"] = mastery.can_prepare(FALSE)
 	data["bookAtHand"] = mastery.is_book_at_hand()
 	data["inCombatMode"] = !!owner?.cmode
+	data["slotInfo"] = get_slot_info()
 
 	var/list/form_modifiers = get_modifiers_by_form()
 	var/list/technique_modifiers = get_modifiers_by_technique()
@@ -106,6 +107,9 @@
 		))
 	data["spells"] = spell_data
 	return data
+
+/datum/spellbook/proc/get_slot_info()
+	return owner?.mind?.spell_slots?.get_ui_info()
 
 /datum/spellbook/ui_act(action, list/params)
 	. = ..()

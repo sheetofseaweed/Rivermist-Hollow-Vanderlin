@@ -20,6 +20,8 @@
 	magic_user = TRUE
 	spell_points = 25
 	caster_archetype = CASTER_FULL
+	// CHARISMA_LATER: performance stands in for Charisma; no bard sheet trains arcane.
+	caster_rank_skill = /datum/attribute/skill/misc/music
 	prepares_spells = FALSE
 	form_points = 3
 	technique_points = 2
@@ -36,6 +38,7 @@
 // Shared by every subclass. Points match the top-level job; the mastery grants them only once.
 /datum/job/advclass/combat/adventurer_bard
 	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/misc/music
 	prepares_spells = FALSE
 	form_points = 3
 	technique_points = 2

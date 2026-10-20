@@ -15,6 +15,8 @@
 #define CASTER_HALF "half"
 #define CASTER_THIRD "third"
 #define CASTER_PACT "pact"
+/// Non-casters that only carry rest-gated class features.
+#define CASTER_NONE "none"
 
 #define SHORT_REST_BASE_CHARGES 2
 #define SHORT_REST_ADVANCED_CHARGES 3
@@ -40,8 +42,31 @@
 #define FEATURE_CHANNEL_OATH "channel_oath"
 #define FEATURE_LAY_ON_HANDS "lay_on_hands"
 #define FEATURE_WILD_SHAPE "wild_shape"
+#define FEATURE_SORCERY_POINTS "sorcery_points"
+#define FEATURE_BARDIC_INSPIRATION "bardic_inspiration"
+#define FEATURE_RAGE "rage"
+#define FEATURE_KI "ki"
 /// Wild Shape charges per short rest.
 #define WILD_SHAPE_CHARGES 2
+/// Rage charges before the Expert and Master bonuses.
+#define RAGE_CHARGES_BASE 2
+/// Extra short-rest budget levels from a bard's Song of Rest.
+#define SONG_OF_REST_BONUS 4
+
+// Sorcerer metamagic: armed on the slot datum, paid in sorcery points when a cast uses it.
+#define METAMAGIC_QUICKENED "quickened"
+#define METAMAGIC_TWINNED "twinned"
+#define METAMAGIC_EXTENDED "extended"
+#define METAMAGIC_DISTANT "distant"
+#define METAMAGIC_SUBTLE "subtle"
+#define METAMAGIC_QUICKENED_COST 3
+#define METAMAGIC_EXTENDED_COST 1
+#define METAMAGIC_DISTANT_COST 1
+#define METAMAGIC_SUBTLE_COST 1
+/// Sorcery points to create a slot of level 1 to 5.
+#define SORCERY_SLOT_COSTS list(2, 3, 5, 6, 7)
+/// Window for the free second cast of a twinned spell.
+#define TWINNED_CAST_WINDOW (10 SECONDS)
 /// Form mastery points the completed Rituos grants a slot caster.
 #define RITUOS_FORM_POINTS 3
 /// Lay on Hands pool per holy rank, in hit points.

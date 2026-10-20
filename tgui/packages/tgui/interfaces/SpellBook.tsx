@@ -5,6 +5,7 @@ import {
   Collapsible,
   DmIcon,
   Icon,
+  LabeledList,
   NoticeBox,
   Section,
   Stack,
@@ -52,7 +53,35 @@ type SpellEntry = {
   heretical: BooleanLike;
 };
 
+type SlotPool = {
+  name: string;
+  current: number;
+  max: number;
+  rest: string;
+};
+
+type SlotInfo = {
+  archetype: string;
+  hasLadder: BooleanLike;
+  skillName: string;
+  rank: number;
+  rankName: string;
+  skillValue: number;
+  nextRankName: string | null;
+  nextRankValue: number | null;
+  current: number[];
+  maximum: number[];
+  nextMaximum: number[] | null;
+  pactLevel: number;
+  shortRests: number;
+  shortRestsMax: number;
+  unlimitedShortRests: BooleanLike;
+  longRestIn: string | null;
+  pools: SlotPool[];
+};
+
 type SpellBookData = {
+  slotInfo?: SlotInfo | null;
   unspentFormPoints: number;
   unspentTechniquePoints: number;
   unlearnMode: BooleanLike;
@@ -127,6 +156,83 @@ const slotLabel = (slotLevel: number | null) => {
     return null;
   }
   return slotLevel === 0 ? 'Cantrip' : `L${slotLevel}`;
+};
+
+// "L1 4, L2 3, L3 2" for a ladder row; levels without slots are skipped.
+const ladderText = (row: number[] | null | undefined) => {
+  if (!row) {
+    return 'none';
+  }
+  const parts = row
+    .map((count, index) => (count > 0 ? `L${index + 1} ${count}` : null))
+    .filter(Boolean);
+  return parts.length ? parts.join(', ') : 'none';
+};
+
+const slotSummaryText = (info: SlotInfo) => {
+  const skill = `${info.skillName} (${info.rankName}, ${info.skillValue})`;
+  if (!info.hasLadder) {
+    return `${info.archetype}; powers follow ${skill}`;
+  }
+  const next = info.nextRankName
+    ? `; ${info.nextRankName} at ${info.nextRankValue} gives ${ladderText(info.nextMaximum)}`
+    : '';
+  return `${info.archetype}; slots follow ${skill}: ${ladderText(info.maximum)}${next}`;
+};
+
+const SlotSection = (props: { info: SlotInfo }) => {
+  const { info } = props;
+  const levels = info.maximum
+    .map((max, index) =>
+      max > 0 ? `L${index + 1} ${info.current[index]}/${max}` : null,
+    )
+    .filter(Boolean)
+    .join(', ');
+  return (
+    <Section title="Spell Slots" fill scrollable>
+      <LabeledList>
+        <LabeledList.Item label="Archetype">{info.archetype}</LabeledList.Item>
+        <LabeledList.Item label="Governing skill">
+          {info.skillName} at {info.skillValue}
+        </LabeledList.Item>
+        <LabeledList.Item label="Rank">{info.rankName}</LabeledList.Item>
+        {!!info.hasLadder && (
+          <LabeledList.Item label="Slots now">
+            {levels || 'none'}
+          </LabeledList.Item>
+        )}
+        {!!info.hasLadder && !!info.pactLevel && (
+          <LabeledList.Item label="Pact level">
+            {info.pactLevel}, every slot refills on a short rest
+          </LabeledList.Item>
+        )}
+        {!!info.hasLadder && info.nextRankName && (
+          <LabeledList.Item label="Next rank">
+            {info.nextRankName} at {info.skillName} {info.nextRankValue}:{' '}
+            {ladderText(info.nextMaximum)}
+          </LabeledList.Item>
+        )}
+        {!!info.hasLadder && !info.nextRankName && (
+          <LabeledList.Item label="Next rank">
+            None, the ladder is complete
+          </LabeledList.Item>
+        )}
+        <LabeledList.Item label="Short rests">
+          {info.unlimitedShortRests
+            ? 'unlimited'
+            : `${info.shortRests} / ${info.shortRestsMax}`}
+        </LabeledList.Item>
+        <LabeledList.Item label="Long rest">
+          {info.longRestIn ? `ready in ${info.longRestIn}` : 'ready'}
+        </LabeledList.Item>
+        {info.pools.map((pool) => (
+          <LabeledList.Item key={pool.name} label={pool.name}>
+            {pool.current} / {pool.max}, refilled by a {pool.rest}
+          </LabeledList.Item>
+        ))}
+      </LabeledList>
+    </Section>
+  );
 };
 
 const Badge = (props: { color: string; children: ReactNode }) => {
@@ -277,6 +383,7 @@ const StatsPage = (props: {
   unspentTechniquePoints: number;
   techniqueLevels: Track[];
   formLevels: Track[];
+  slotInfo?: SlotInfo | null;
   act: Act;
 }) => {
   const {
@@ -284,11 +391,17 @@ const StatsPage = (props: {
     unspentTechniquePoints,
     techniqueLevels,
     formLevels,
+    slotInfo,
     act,
   } = props;
 
   return (
     <Stack fill mt={1}>
+      {slotInfo && (
+        <Stack.Item grow>
+          <SlotSection info={slotInfo} />
+        </Stack.Item>
+      )}
       <Stack.Item grow>
         <Section
           title="Techniques"
@@ -617,6 +730,7 @@ const PreparedPage = (props: {
 export const SpellBook = () => {
   const { act, data } = useBackend<SpellBookData & SpellBookStatic>();
   const {
+    slotInfo,
     unspentFormPoints,
     unspentTechniquePoints,
     unlearnMode,
@@ -662,6 +776,12 @@ export const SpellBook = () => {
                 </Stack>
               }
             >
+              {slotInfo && (
+                <Box color="label" mb={1}>
+                  <Icon name="layer-group" mr={1} />
+                  {slotSummaryText(slotInfo)}
+                </Box>
+              )}
               <Tabs m="0px">
                 <Tabs.Tab
                   selected={currentPage === 'learn'}
@@ -709,6 +829,7 @@ export const SpellBook = () => {
                 unspentTechniquePoints={unspentTechniquePoints}
                 techniqueLevels={techniqueLevels}
                 formLevels={formLevels}
+                slotInfo={slotInfo}
                 act={act}
               />
             )}

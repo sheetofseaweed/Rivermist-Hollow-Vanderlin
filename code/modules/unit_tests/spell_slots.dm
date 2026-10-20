@@ -34,6 +34,29 @@
 /datum/action/cooldown/spell/slot_test_probe/focus
 	concentration = TRUE
 
+/datum/action/cooldown/spell/slot_test_probe/third
+	slot_level = 3
+
+/datum/action/cooldown/spell/slot_test_probe/loud
+	invocation_type = INVOCATION_SHOUT
+	invocation = "Probe!"
+
+/datum/action/cooldown/spell/slot_test_probe/charged
+	charge_required = TRUE
+	charge_time = 4 SECONDS
+
+/datum/action/cooldown/spell/slot_test_probe/aimed
+	click_to_activate = TRUE
+	twinnable = TRUE
+	extendable = TRUE
+	cooldown_time = 10 SECONDS
+
+/datum/action/cooldown/spell/slot_test_probe/rage_feature
+	slot_level = null
+	spell_cost = 0
+	feature_id = FEATURE_RAGE
+	feature_rest = REST_LONG
+
 /datum/unit_test/spell_slots
 #ifdef FOCUS_SPELL_SLOTS
 	focus = TRUE
@@ -142,11 +165,11 @@
 
 	slots.archetype = CASTER_PACT
 	slots.sync_to_rank(TRUE)
-	TEST_ASSERT_EQUAL(slots.get_max(2), 2, "Journeyman pact casters should have two level two slots.")
+	TEST_ASSERT_EQUAL(slots.get_max(2), 3, "Journeyman pact casters should have three level two slots.")
 	TEST_ASSERT_EQUAL(slots.get_max(1), 0, "Pact casters gained slots outside their pact level.")
 	slots.slots_current["2"] = 0
 	var/list/pact_recovery = slots.get_recovery(1)
-	TEST_ASSERT_EQUAL(pact_recovery["2"], 2, "A pact short rest did not refill every pact slot.")
+	TEST_ASSERT_EQUAL(pact_recovery["2"], 3, "A pact short rest did not refill every pact slot.")
 	slots.archetype = CASTER_FULL
 	slots.sync_to_rank(TRUE)
 
@@ -199,6 +222,206 @@
 	TEST_ASSERT_EQUAL(slots.get_current(1), 0, "The gated long rest restored slots.")
 	TEST_ASSERT_EQUAL(slots.grant_free_short_rest(), 4, "The potion recovery did not restore four level one slots.")
 	TEST_ASSERT_EQUAL(slots.get_short_rest_current(), slots.get_short_rest_max(), "The potion recovery spent a short rest charge.")
+
+/// Pact ladder, pact selection, the pact short rest, the slot-level floor and the pact HUD.
+/datum/unit_test/spell_pact
+#ifdef FOCUS_SPELL_SLOTS
+	focus = TRUE
+#endif
+
+/datum/unit_test/spell_pact/Run()
+	var/mob/living/carbon/human/caster = allocate(/mob/living/carbon/human)
+	caster.mind_initialize()
+	caster.set_skillrank(/datum/attribute/skill/magic/arcane, SKILL_RANK_APPRENTICE)
+	var/datum/spell_slots/slots = caster.mind.setup_spell_slots(CASTER_PACT)
+	TEST_ASSERT_EQUAL(slots.get_max(1), 3, "Apprentice pact casters should have three level one slots.")
+	TEST_ASSERT_EQUAL(slots.get_selected_level(), 1, "A fresh pact caster did not select its pact level.")
+
+	caster.set_skillrank(/datum/attribute/skill/magic/arcane, SKILL_RANK_JOURNEYMAN)
+	slots.sync_to_rank()
+	for(var/level in SPELL_SLOT_MIN to SPELL_SLOT_MAX)
+		TEST_ASSERT_EQUAL(slots.get_max(level), level == 2 ? 3 : 0, "A journeyman pact caster has [slots.get_max(level)] level [level] slots.")
+	TEST_ASSERT_EQUAL(slots.get_current(2), 3, "New pact slots did not arrive filled.")
+	TEST_ASSERT_EQUAL(slots.get_selected_level(), 2, "The selection did not follow the pact level to two.")
+
+	var/datum/action/cooldown/spell/slot_test_probe/probe = allocate(/datum/action/cooldown/spell/slot_test_probe)
+	probe.Grant(caster)
+	TEST_ASSERT(probe.Activate(caster), "A level one spell could not use a level two pact slot.")
+	TEST_ASSERT_EQUAL(probe.last_cast_level, 2, "The pact cast did not run at the pact level.")
+	TEST_ASSERT(probe.Activate(caster), "The second pact slot could not be spent.")
+	TEST_ASSERT(probe.Activate(caster), "The third pact slot could not be spent.")
+	TEST_ASSERT_EQUAL(slots.get_current(2), 0, "Three pact casts did not spend every pact slot.")
+	var/rests_before = slots.get_short_rest_current()
+	TEST_ASSERT(slots.finish_short_rest(caster, slots.get_selected_level()), "A pact short rest restored nothing.")
+	TEST_ASSERT_EQUAL(slots.get_current(2), 3, "A short rest did not refill every pact slot.")
+	TEST_ASSERT_EQUAL(slots.get_short_rest_current(), rests_before, "A pact short rest spent a charge; pact rests are free.")
+	TEST_ASSERT(slots.has_unlimited_short_rests(), "Pact casters did not get unlimited short rests.")
+
+	var/datum/action/cooldown/spell/slot_test_probe/third/high = allocate(/datum/action/cooldown/spell/slot_test_probe/third)
+	high.Grant(caster)
+	TEST_ASSERT(!high.Activate(caster), "A level three spell accepted a level two pact slot.")
+	TEST_ASSERT_EQUAL(high.cast_count, 0, "A refused level three spell released its effect.")
+	TEST_ASSERT_EQUAL(slots.get_current(2), 3, "A refused level three spell spent a pact slot.")
+
+	var/atom/movable/screen/spell_slot_hud/live_button = allocate(/atom/movable/screen/spell_slot_hud)
+	live_button.owner_mob = caster
+	live_button.slot_level = 2
+	live_button.refresh_slot_hud()
+	var/atom/movable/screen/spell_slot_hud/unused_button = allocate(/atom/movable/screen/spell_slot_hud)
+	unused_button.owner_mob = caster
+	unused_button.slot_level = 1
+	var/atom/movable/screen/spell_slot_hud/minor_button = allocate(/atom/movable/screen/spell_slot_hud)
+	minor_button.owner_mob = caster
+	minor_button.slot_level = SPELL_SLOT_MINOR
+	TEST_ASSERT_EQUAL(live_button.alpha, 255, "The pact level button was not live.")
+	TEST_ASSERT(!live_button.hidden_by_pact(), "The pact level button was hidden.")
+	TEST_ASSERT_EQUAL(live_button.screen_loc, get_spell_slot_screen_loc(SPELL_SLOT_MIN), "The pact button did not take the first tier position.")
+	TEST_ASSERT(unused_button.hidden_by_pact(), "A numbered button outside the pact level stayed visible.")
+	TEST_ASSERT(!minor_button.hidden_by_pact(), "Pact casters lost the MIN button.")
+	var/atom/movable/screen/spell_rest_hud/rest_button = allocate(/atom/movable/screen/spell_rest_hud)
+	rest_button.owner_mob = caster
+	rest_button.refresh_rest_hud()
+	TEST_ASSERT(findtext(rest_button.desc, "refills all pact slots"), "The rest tooltip did not explain the pact short rest.")
+
+	TEST_ASSERT(slots.select_level(SPELL_SLOT_MINOR), "Pact casters could not select Minor casting.")
+	caster.set_skillrank(/datum/attribute/skill/magic/arcane, SKILL_RANK_EXPERT)
+	slots.sync_to_rank()
+	TEST_ASSERT_EQUAL(slots.get_max(3), 3, "An expert pact caster should have three level three slots.")
+	TEST_ASSERT_EQUAL(slots.get_selected_level(), SPELL_SLOT_MINOR, "A pact level change overrode a Minor selection.")
+
+	// A leftover do_after key, such as getting up, must not block or silently refuse a rest.
+	caster.set_resting(TRUE, TRUE)
+	slots.slots_current["3"] = 0
+	LAZYSET(caster.do_afters, "pact_test_busy", 1)
+	INVOKE_ASYNC(slots, TYPE_PROC_REF(/datum/spell_slots, use_rest))
+	sleep(1 SECONDS)
+	TEST_ASSERT(slots.rest_in_progress, "A short rest did not start while another do_after key was held.")
+	SEND_SIGNAL(caster, COMSIG_MOVABLE_MOVED, 1)
+	sleep(1 SECONDS)
+	TEST_ASSERT(!slots.rest_in_progress, "Movement did not interrupt the pact rest.")
+	LAZYREMOVE(caster.do_afters, "pact_test_busy")
+
+/// Sorcery points, Font of Magic conversions and the five metamagic options.
+/datum/unit_test/spell_sorcery
+#ifdef FOCUS_SPELL_SLOTS
+	focus = TRUE
+#endif
+	var/last_invocation_type
+
+/datum/unit_test/spell_sorcery/proc/on_invocation(datum/source, datum/action/cooldown/spell/spell, list/invocation_list)
+	SIGNAL_HANDLER
+	last_invocation_type = invocation_list[INVOCATION_TYPE]
+
+/datum/unit_test/spell_sorcery/Run()
+	var/mob/living/carbon/human/caster = allocate(/mob/living/carbon/human)
+	caster.mind_initialize()
+	caster.set_skillrank(/datum/attribute/skill/magic/arcane, SKILL_RANK_JOURNEYMAN)
+	var/datum/spell_slots/slots = caster.mind.setup_spell_slots(CASTER_FULL)
+	ADD_TRAIT(caster, TRAIT_SORCERER, TRAIT_GENERIC)
+	TEST_ASSERT(caster.grant_sorcery_kit(), "The sorcery kit was refused.")
+	var/datum/action/cooldown/spell/undirected/sorcery/create_slot/create = caster.get_spell(/datum/action/cooldown/spell/undirected/sorcery/create_slot, TRUE)
+	var/datum/action/cooldown/spell/undirected/sorcery/sacrifice_slot/sacrifice = caster.get_spell(/datum/action/cooldown/spell/undirected/sorcery/sacrifice_slot, TRUE)
+	TEST_ASSERT_NOTNULL(create, "The kit did not grant Font of Magic.")
+	TEST_ASSERT_NOTNULL(sacrifice, "The kit did not grant the sacrifice half of Font of Magic.")
+	TEST_ASSERT_EQUAL(slots.get_feature_max(FEATURE_SORCERY_POINTS), 4, "A journeyman sorcerer should hold four sorcery points.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 4, "Sorcery points did not start full.")
+
+	// Font of Magic: a spent level-2 slot costs three points; sacrifices pay one point per level, capped at the pool.
+	TEST_ASSERT(!create.restore_slot(2), "Font of Magic restored a slot that was not spent.")
+	slots.spend(2)
+	TEST_ASSERT(create.restore_slot(2), "Font of Magic could not restore a spent level-2 slot.")
+	TEST_ASSERT_EQUAL(slots.get_current(2), slots.get_max(2), "The restored slot did not return.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 1, "Restoring a level-2 slot did not cost three points.")
+	TEST_ASSERT_EQUAL(sacrifice.break_slot(1), 1, "Sacrificing a level-1 slot did not yield one point.")
+	TEST_ASSERT_EQUAL(slots.get_current(1), slots.get_max(1) - 1, "The sacrificed slot was not spent.")
+	TEST_ASSERT_EQUAL(sacrifice.break_slot(3), 2, "Sacrificing a level-3 slot was not capped at the pool.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 4, "The pool exceeded its size.")
+	TEST_ASSERT_EQUAL(sacrifice.break_slot(1), 0, "A full pool still accepted a sacrifice.")
+	slots.restore_all_slots()
+
+	// Quickened, Distant, Extended and Subtle read the armed option; an option that does not fit stays armed and unpaid.
+	var/datum/action/cooldown/spell/slot_test_probe/charged/charged = allocate(/datum/action/cooldown/spell/slot_test_probe/charged)
+	charged.Grant(caster)
+	TEST_ASSERT(charged.get_adjusted_charge_time() > 1 SECONDS, "The charge time started quickened.")
+	slots.arm_metamagic(METAMAGIC_QUICKENED)
+	TEST_ASSERT_EQUAL(charged.get_adjusted_charge_time(), 1 DECISECONDS, "Quickened did not remove the charge time.")
+	var/datum/action/cooldown/spell/slot_test_probe/probe = allocate(/datum/action/cooldown/spell/slot_test_probe)
+	probe.Grant(caster)
+	slots.select_level(1)
+	TEST_ASSERT(probe.Activate(caster), "A plain cast failed with a metamagic armed.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 4, "A metamagic that did not fit was paid.")
+	TEST_ASSERT_EQUAL(slots.get_armed_metamagic(), METAMAGIC_QUICKENED, "A metamagic that did not fit was disarmed.")
+	var/datum/action/cooldown/spell/slot_test_probe/aimed/aimed = allocate(/datum/action/cooldown/spell/slot_test_probe/aimed)
+	aimed.Grant(caster)
+	slots.arm_metamagic(METAMAGIC_DISTANT)
+	TEST_ASSERT_EQUAL(aimed.get_cast_range(), aimed.cast_range * 2, "Distant did not double the range.")
+	slots.arm_metamagic(METAMAGIC_EXTENDED)
+	TEST_ASSERT_EQUAL(aimed.get_metamagic_duration_multiplier(), 2, "Extended did not double the duration.")
+	TEST_ASSERT_EQUAL(probe.get_metamagic_duration_multiplier(), 1, "Extended applied to a spell without a duration.")
+	RegisterSignal(caster, COMSIG_MOB_PRE_INVOCATION, PROC_REF(on_invocation))
+	var/datum/action/cooldown/spell/slot_test_probe/loud/loud = allocate(/datum/action/cooldown/spell/slot_test_probe/loud)
+	loud.Grant(caster)
+	slots.arm_metamagic(METAMAGIC_SUBTLE)
+	TEST_ASSERT(loud.Activate(caster), "A subtle cast failed.")
+	TEST_ASSERT_EQUAL(last_invocation_type, INVOCATION_NONE, "Subtle did not silence the invocation.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 3, "Subtle did not cost one point.")
+	TEST_ASSERT_NULL(slots.get_armed_metamagic(), "Subtle stayed armed after the cast.")
+	TEST_ASSERT(loud.Activate(caster), "A plain loud cast failed.")
+	TEST_ASSERT_EQUAL(last_invocation_type, INVOCATION_SHOUT, "A plain cast lost its invocation.")
+	UnregisterSignal(caster, COMSIG_MOB_PRE_INVOCATION)
+
+	// Twinned: the first cast pays, skips its cooldown and opens a free second cast on another target.
+	var/mob/living/carbon/human/first_target = allocate(/mob/living/carbon/human)
+	var/mob/living/carbon/human/second_target = allocate(/mob/living/carbon/human)
+	slots.arm_metamagic(METAMAGIC_TWINNED)
+	TEST_ASSERT(aimed.Activate(first_target), "The twinned cast failed.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 2, "A twinned level-1 cast did not cost one point.")
+	TEST_ASSERT_NULL(slots.get_armed_metamagic(), "Twinned stayed armed after the cast.")
+	TEST_ASSERT(aimed.twin_cast_ready(), "The twin window did not open.")
+	TEST_ASSERT(aimed.next_use_time <= world.time, "The twinned cast started its cooldown before the second cast.")
+	var/slots_after_first = slots.get_current(1)
+	TEST_ASSERT(!aimed.Activate(first_target), "The twin cast accepted the first target again.")
+	TEST_ASSERT(aimed.twin_cast_ready(), "A refused twin target closed the window.")
+	TEST_ASSERT(aimed.Activate(second_target), "The free twin cast failed.")
+	TEST_ASSERT_EQUAL(slots.get_current(1), slots_after_first, "The twin cast spent a slot.")
+	TEST_ASSERT_EQUAL(aimed.last_cast_level, 1, "The twin cast ran at level [aimed.last_cast_level].")
+	TEST_ASSERT(!aimed.twin_cast_ready(), "The window stayed open after the twin cast.")
+	TEST_ASSERT(aimed.next_use_time > world.time, "The cooldown did not start after the twin cast.")
+	TEST_ASSERT_EQUAL(slots.get_feature_charges(FEATURE_SORCERY_POINTS), 2, "The twin cast cost points.")
+
+/// Non-caster feature pools: a CASTER_NONE job holds rest-gated charges and no slot row.
+/datum/unit_test/spell_class_features
+#ifdef FOCUS_SPELL_SLOTS
+	focus = TRUE
+#endif
+
+/datum/unit_test/spell_class_features/Run()
+	var/mob/living/carbon/human/brute = allocate(/mob/living/carbon/human)
+	brute.mind_initialize()
+	brute.set_skillrank(/datum/attribute/skill/combat/unarmed, SKILL_RANK_EXPERT)
+	var/datum/spell_slots/pool = brute.mind.setup_spell_slots(CASTER_NONE, /datum/attribute/skill/combat/unarmed)
+	TEST_ASSERT(!pool.has_any_slots(), "A non-caster received spell slots.")
+	var/datum/action/cooldown/spell/slot_test_probe/rage_feature/rage = allocate(/datum/action/cooldown/spell/slot_test_probe/rage_feature)
+	rage.Grant(brute)
+	TEST_ASSERT_EQUAL(pool.get_feature_max(FEATURE_RAGE), 3, "An expert should hold three rage charges.")
+	TEST_ASSERT(rage.Activate(brute), "A rage cast failed.")
+	TEST_ASSERT_EQUAL(pool.get_feature_charges(FEATURE_RAGE), 2, "A rage cast did not spend one charge.")
+	TEST_ASSERT_EQUAL(rage.cast_count, 1, "The rage cast did not run.")
+	brute.set_resting(TRUE, TRUE)
+	TEST_ASSERT(!pool.finish_short_rest(brute, SPELL_SLOT_MIN), "A short rest refilled a long-rest feature.")
+	TEST_ASSERT_EQUAL(pool.get_feature_charges(FEATURE_RAGE), 2, "A short rest returned a rage charge.")
+	TEST_ASSERT(pool.finish_long_rest(brute), "A long rest failed for a non-caster.")
+	TEST_ASSERT_EQUAL(pool.get_feature_charges(FEATURE_RAGE), 3, "A long rest did not refill rage.")
+	var/atom/movable/screen/spell_slot_hud/minor_button = allocate(/atom/movable/screen/spell_slot_hud)
+	minor_button.owner_mob = brute
+	minor_button.slot_level = SPELL_SLOT_MINOR
+	TEST_ASSERT(minor_button.hidden_by_pact(), "A non-caster showed the slot row.")
+	brute.set_skillrank(/datum/attribute/skill/combat/unarmed, SKILL_RANK_MASTER)
+	rage.register_feature()
+	TEST_ASSERT_EQUAL(pool.get_feature_max(FEATURE_RAGE), 4, "A master should hold four rage charges.")
+	pool.use_feature(FEATURE_RAGE, 4)
+	TEST_ASSERT(!rage.Activate(brute), "An empty pool still allowed a rage cast.")
+	TEST_ASSERT_EQUAL(rage.cast_count, 1, "A refused rage cast ran anyway.")
 
 /// Allocation, interruption and progression checks; explicit focus also exercises both full timers.
 /datum/unit_test/spell_rests

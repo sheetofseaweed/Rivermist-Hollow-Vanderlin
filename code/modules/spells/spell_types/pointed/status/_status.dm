@@ -9,6 +9,8 @@
  */
 /datum/action/cooldown/spell/status
 	self_cast_possible = TRUE
+	twinnable = TRUE
+	extendable = TRUE
 
 	/// Path of status effect to add
 	var/datum/status_effect/status_effect = /datum/status_effect/buff/calm
@@ -57,6 +59,7 @@
 			new_duration += duration_modification * get_rank_multiplier()
 		else
 			new_duration *= get_rank_multiplier()
+	new_duration *= get_metamagic_duration_multiplier()
 	var/list/status_args = list(
 		status_effect,
 		new_duration,

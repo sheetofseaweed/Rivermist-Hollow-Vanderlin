@@ -271,8 +271,8 @@
 		caster.ensure_spell_slots_for_job()
 		if(caster.get_spell_slots())
 			caster.grant_spell_slot_hud()
-	if(divine_feature_id)
-		register_divine_feature()
+	if(feature_id)
+		register_feature()
 
 	// Register some signals so our button's icon stays up to date
 	if(spell_requirements & SPELL_REQUIRES_STATION)
@@ -416,6 +416,8 @@
 /datum/action/cooldown/spell/proc/get_adjusted_charge_time()
 	if(charge_time <= 0)
 		return
+	if(metamagic_applies(METAMAGIC_QUICKENED))
+		return 1 DECISECONDS
 
 	var/mob/living/living_owner = owner
 	var/new_time = charge_time
@@ -554,7 +556,7 @@
 			owner.balloon_alert(owner, "missing something to cast!")
 			return FALSE
 
-	if(divine_feature_id && !divine_feature_ready(feedback))
+	if(feature_id && !feature_ready(feedback))
 		return FALSE
 
 	return TRUE
@@ -579,6 +581,7 @@
 /datum/action/cooldown/spell/Activate(atom/target)
 	SHOULD_NOT_OVERRIDE(TRUE)
 
+	twin_cast_active = twin_cast_ready()
 	if(uses_spell_slots())
 		cast_slot_level = get_cast_level()
 
@@ -587,7 +590,7 @@
 	// Stuff like target input can go here.
 	var/precast_result = before_cast(target)
 	if(precast_result & SPELL_CANCEL_CAST)
-		cast_slot_level = null
+		clear_slot_cast()
 		if(charge_required)
 			cancel_casting()
 		return FALSE
@@ -598,9 +601,9 @@
 		return FALSE
 
 	// Feature pools are spent before the slot, so a refused spend leaves nothing paid.
-	if(divine_feature_id)
-		var/feature_cost = get_divine_feature_cost()
-		if(feature_cost > 0 && !spend_divine_feature(feature_cost))
+	if(feature_id)
+		var/feature_cost = get_feature_cost()
+		if(feature_cost > 0 && !spend_feature(feature_cost))
 			clear_slot_cast()
 			return FALSE
 
@@ -619,10 +622,13 @@
 	// Actually cast the spell. Main effects go here
 	cast(target)
 
+	// A twinned cast skips its cooldown until the second cast lands or the window closes.
+	var/twin_window = finish_metamagic(target)
+
 	if(concentration && uses_spell_slots())
 		get_spell_slots().start_concentration(src)
 
-	if(!(precast_result & SPELL_NO_IMMEDIATE_COOLDOWN))
+	if(!(precast_result & SPELL_NO_IMMEDIATE_COOLDOWN) && !twin_window)
 		// The entire spell is done, start the actual cooldown at its set duration
 		StartCooldown()
 
@@ -635,6 +641,7 @@
 	// And then proceed with the aftermath of the cast
 	// Final effects that happen after all the casting is done can go here
 	after_cast(target)
+	end_twin_cast()
 	clear_slot_cast()
 	build_all_button_icons()
 
@@ -664,8 +671,12 @@
 			on_deactivation(owner, refund_cooldown = FALSE)
 			return sig_return
 
-		if(get_dist(owner, cast_on) > cast_range)
+		if(get_dist(owner, cast_on) > get_cast_range())
 			owner.balloon_alert(owner, "too far away!")
+			return sig_return | SPELL_CANCEL_CAST
+
+		if(twin_cast_active && cast_on == twin_first_target_ref?.resolve())
+			owner.balloon_alert(owner, "the twinned spell needs another target!")
 			return sig_return | SPELL_CANCEL_CAST
 
 		if((spell_type == SPELL_MIRACLE) && HAS_TRAIT(cast_on, TRAIT_ATHEISM_CURSE))
@@ -771,7 +782,8 @@
 /// The invocation that accompanies the spell, called from spell_feedback() before cast().
 /datum/action/cooldown/spell/proc/invocation(mob/living/invoker)
 	//lists can be sent by reference, a string would be sent by value
-	var/list/invocation_list = list(invocation, invocation_type)
+	// Subtle metamagic silences the cast before anyone can hear it.
+	var/list/invocation_list = list(invocation, metamagic_applies(METAMAGIC_SUBTLE) ? INVOCATION_NONE : invocation_type)
 	SEND_SIGNAL(invoker, COMSIG_MOB_PRE_INVOCATION, src, invocation_list)
 	var/used_invocation_message = invocation_list[INVOCATION_MESSAGE]
 	var/used_invocation_type = invocation_list[INVOCATION_TYPE]
@@ -932,7 +944,8 @@
 
 /datum/action/cooldown/spell/update_button_name(atom/movable/screen/movable/action_button/button, force)
 	name = "[get_spell_title()][initial(name)]"
-	return ..()
+	. = ..()
+	button.name = "[name][get_feature_button_suffix()]"
 
 /// Gets the title of the spell based on its level.
 /datum/action/cooldown/spell/proc/get_spell_title()
@@ -952,6 +965,9 @@
 
 /// Check if the spell is castable by cost
 /datum/action/cooldown/spell/proc/check_cost(cost_override, feedback = TRUE)
+	// The free twin cast was paid by the first cast.
+	if(twin_cast_active)
+		return TRUE
 	if(uses_spell_slots())
 		return slot_can_cast(feedback)
 	var/mob/living/caster = owner
@@ -1042,7 +1058,7 @@
  * * Cost used
  */
 /datum/action/cooldown/spell/proc/invoke_cost(cost_override, type_override, re_run = FALSE)
-	if(!owner)
+	if(!owner || twin_cast_active)
 		return
 
 	// Slot spells already paid at commitment. Only paid tiers grant casting XP.

@@ -16,21 +16,8 @@
 	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC | SPELL_REQUIRES_NO_MOVE
 	spell_flags = SPELL_IGNORE_SPELLBLOCK
 	learnable = FALSE
-
-/datum/action/cooldown/spell/undirected/arcane_recovery/Grant(mob/grant_to)
-	. = ..()
-	if(!owner)
-		return
-	register_feature()
-
-/datum/action/cooldown/spell/undirected/arcane_recovery/proc/register_feature()
-	var/datum/spell_slots/slots = get_spell_slots()
-	if(!slots)
-		var/mob/living/living_owner = owner
-		slots = living_owner.ensure_spell_slots_for_job()
-	if(slots && !slots.has_feature(FEATURE_ARCANE_RECOVERY))
-		slots.add_feature(FEATURE_ARCANE_RECOVERY, 1, REST_LONG)
-	return slots
+	feature_id = FEATURE_ARCANE_RECOVERY
+	feature_rest = REST_LONG
 
 /datum/action/cooldown/spell/undirected/arcane_recovery/proc/get_budget(datum/spell_slots/slots)
 	return min(2 * slots.get_rank(), 10)
@@ -39,14 +26,10 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	var/datum/spell_slots/slots = register_feature()
+	var/datum/spell_slots/slots = get_feature_slots()
 	if(!slots)
 		if(feedback)
 			owner.balloon_alert(owner, "no spell slots to recover!")
-		return FALSE
-	if(slots.get_feature_charges(FEATURE_ARCANE_RECOVERY) <= 0)
-		if(feedback)
-			owner.balloon_alert(owner, "already recovered since my last long rest!")
 		return FALSE
 	if(owner.cmode)
 		if(feedback)
@@ -64,13 +47,12 @@
 	desc = "Once per long rest, spend ten quiet seconds in communion with the land to recover spent spell slots: two levels per rank of druidic skill, up to ten."
 	button_icon_state = "shapeshift"
 
+/// The charge was spent by the cast chain; only the recovery itself happens here.
 /datum/action/cooldown/spell/undirected/arcane_recovery/cast(atom/cast_on)
 	. = ..()
 	var/datum/spell_slots/slots = get_spell_slots()
 	if(!slots)
 		return
 	var/list/recovery = slots.get_recovery(slots.get_selected_level(), get_budget(slots))
-	if(!length(recovery) || !slots.use_feature(FEATURE_ARCANE_RECOVERY))
-		return
 	var/restored = slots.apply_recovery(recovery)
 	to_chat(owner, span_notice("Arcane power seeps back into me. [restored] spell slot[restored == 1 ? "" : "s"] restored."))

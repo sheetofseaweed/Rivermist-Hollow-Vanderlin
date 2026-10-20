@@ -17,11 +17,19 @@
 	give_bank_account = TRUE
 	exp_types_granted = list(EXP_TYPE_ADVENTURER, EXP_TYPE_COMBAT, EXP_TYPE_CLERIC)
 
+	caster_archetype = CASTER_NONE
+	caster_rank_skill = /datum/attribute/skill/combat/unarmed
+
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_monk/drunk_master,
 		/datum/job/advclass/combat/adventurer_monk/open_hand,
 		/datum/job/advclass/combat/adventurer_monk/shadow,
 	)
+
+// Shared by every tradition so re-rolled subclasses keep the Ki pool sized by unarmed rank.
+/datum/job/advclass/combat/adventurer_monk
+	caster_archetype = CASTER_NONE
+	caster_rank_skill = /datum/attribute/skill/combat/unarmed
 
 /datum/job/adventurer_monk/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()

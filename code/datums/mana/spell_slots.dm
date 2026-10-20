@@ -31,13 +31,13 @@ GLOBAL_LIST_INIT(spell_slot_ladders, list(
 
 /// Pact slots per arcane rank as list(count, level). Row index is rank + 1.
 GLOBAL_LIST_INIT(pact_slot_ladder, list(
-	list(1, 1),
-	list(1, 1),
 	list(2, 1),
-	list(2, 2),
-	list(2, 3),
-	list(2, 4),
-	list(3, 5),
+	list(2, 1),
+	list(3, 1),
+	list(3, 2),
+	list(3, 3),
+	list(3, 4),
+	list(4, 5),
 ))
 
 #define FEATURE_CURRENT 1
@@ -87,6 +87,8 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	var/next_long_rest = 0
 	/// Feature id to list(current, max, rest flags).
 	var/list/features = list()
+	/// Metamagic id armed for the next eligible cast; null when none.
+	var/armed_metamagic
 	var/datum/weakref/concentration_ref
 	var/hud_collapsed = FALSE
 	var/datum/weakref/body_ref
@@ -141,6 +143,37 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 		var/mob/living/carbon/human/human_body = old_body
 		human_body.remove_spell_slot_hud()
 
+/// Rank names as the ladder tables use them, index rank + 1.
+/proc/get_caster_rank_name(rank)
+	var/static/list/names
+	names ||= list("Untrained", "Novice", "Apprentice", "Journeyman", "Expert", "Master", "Legendary")
+	return names[clamp(round(rank), SKILL_RANK_NONE, SKILL_RANK_LEGENDARY) + 1]
+
+/proc/get_caster_archetype_label(archetype)
+	switch(archetype)
+		if(CASTER_FULL)
+			return "Full caster"
+		if(CASTER_HALF)
+			return "Half caster"
+		if(CASTER_THIRD)
+			return "Third caster"
+		if(CASTER_PACT)
+			return "Pact caster"
+		if(CASTER_NONE)
+			return "No spell slots"
+	return "Caster"
+
+/// Pact casters rest as often as they like; their slots are few and all come back at once.
+/datum/spell_slots/proc/has_unlimited_short_rests()
+	return archetype == CASTER_PACT
+
+/// CASTER_NONE datums only hold feature pools; their owners cast slot spells the legacy way.
+/datum/spell_slots/proc/has_slot_ladder()
+	return archetype != CASTER_NONE
+
+/datum/mind/proc/is_slot_caster()
+	return !isnull(spell_slots) && spell_slots.has_slot_ladder()
+
 /datum/spell_slots/proc/get_rank()
 	var/mob/living/body = get_body()
 	if(!body)
@@ -187,8 +220,21 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 			current += new_max - old_max
 		slots_max[key] = new_max
 		slots_current[key] = clamp(current, 0, new_max)
+	// A numbered pact selection follows the pact level; a MIN selection stays.
+	var/pact_level = get_pact_level()
+	if(pact_level && get_selected_level() != SPELL_SLOT_MINOR)
+		selected_level = pact_level
 	update_hud()
 	return TRUE
+
+/// Level every pact slot shares; zero for other archetypes.
+/datum/spell_slots/proc/get_pact_level()
+	if(archetype != CASTER_PACT)
+		return 0
+	for(var/level in SPELL_SLOT_MAX to SPELL_SLOT_MIN step -1)
+		if(get_max(level) > 0)
+			return level
+	return 0
 
 /datum/spell_slots/proc/set_fixed_slots(list/maxima, refill = TRUE)
 	fixed_slots = maxima?.Copy()
@@ -345,6 +391,10 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	var/list/feature = features[id]
 	return feature ? feature[FEATURE_MAX] : 0
 
+/datum/spell_slots/proc/get_feature_rest(id)
+	var/list/feature = features[id]
+	return feature ? feature[FEATURE_REST] : NONE
+
 /datum/spell_slots/proc/use_feature(id, amount = 1)
 	var/list/feature = features[id]
 	if(!feature || amount <= 0 || feature[FEATURE_CURRENT] < amount)
@@ -352,6 +402,18 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	feature[FEATURE_CURRENT] -= amount
 	update_hud()
 	return TRUE
+
+/// Returns charges to a pool, capped at its size. Returns how many came back.
+/datum/spell_slots/proc/restore_feature(id, amount = 1)
+	var/list/feature = features[id]
+	if(!feature || amount <= 0)
+		return 0
+	var/restored = min(round(amount), feature[FEATURE_MAX] - feature[FEATURE_CURRENT])
+	if(restored <= 0)
+		return 0
+	feature[FEATURE_CURRENT] += restored
+	update_hud()
+	return restored
 
 /datum/spell_slots/proc/refill_features(rest_type)
 	for(var/id in features)
@@ -365,6 +427,24 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 		if((feature[FEATURE_REST] & rest_type) && feature[FEATURE_CURRENT] < feature[FEATURE_MAX])
 			return TRUE
 	return FALSE
+
+// Metamagic
+
+/// Arms one metamagic for the next cast it fits; null disarms.
+/datum/spell_slots/proc/arm_metamagic(id)
+	armed_metamagic = id
+	update_hud()
+
+/datum/spell_slots/proc/get_armed_metamagic()
+	return armed_metamagic
+
+/// Short-rest budget plus allies' bonuses, such as a bard's Song of Rest.
+/datum/spell_slots/proc/get_short_rest_budget(mob/living/body)
+	return SHORT_REST_BUDGET + (body ? body.get_rest_budget_bonus() : 0)
+
+/// Extra short-rest budget levels from nearby effects; class files override this.
+/mob/living/proc/get_rest_budget_bonus()
+	return 0
 
 // Concentration
 
@@ -444,12 +524,16 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 /// Runs a short or long rest on the body. Silent rests come from the sleep hook and skip chatter.
 /datum/spell_slots/proc/use_rest(long_rest = FALSE, silent = FALSE)
 	var/mob/living/body = get_body()
-	if(!body || rest_in_progress || body.doing())
+	if(!body)
+		return FALSE
+	if(rest_in_progress)
+		if(!silent)
+			to_chat(body, span_warning("I am already resting."))
 		return FALSE
 	if(!has_any_slots() && !length(features))
 		return FALSE
 	var/priority_level = get_selected_level()
-	var/list/recovery = get_recovery(priority_level)
+	var/list/recovery = get_recovery(priority_level, get_short_rest_budget(body))
 	if(long_rest)
 		if(world.time < next_long_rest)
 			if(!silent)
@@ -458,7 +542,7 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 		if(!length(recovery) && get_short_rest_current() >= get_short_rest_max() && !features_need_refill(REST_SHORT | REST_LONG))
 			return FALSE
 	else
-		if(get_short_rest_current() <= 0)
+		if(!has_unlimited_short_rests() && get_short_rest_current() <= 0)
 			if(!silent)
 				to_chat(body, span_warning("I have no short rests left. Sleep for five uninterrupted minutes to recover."))
 			return FALSE
@@ -496,15 +580,21 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	RegisterSignal(body, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(rest_damage))
 	RegisterSignal(body, COMSIG_LIVING_HEALTH_UPDATE, PROC_REF(rest_health_changed))
 	var/rest_duration = long_rest ? LONG_REST_DURATION : SHORT_REST_DURATION
-	var/rest_flags = IGNORE_SLOWDOWNS | IGNORE_HELD_ITEM | IGNORE_USER_DIR_CHANGE
+	// Getting up leaves a do_after key behind for two seconds; it must not block a rest.
+	var/rest_flags = IGNORE_SLOWDOWNS | IGNORE_HELD_ITEM | IGNORE_USER_DIR_CHANGE | IGNORE_USER_DOING
 	if(long_rest)
 		rest_flags |= IGNORE_INCAPACITATED
 		if(!silent)
 			to_chat(body, span_notice("I settle into a five-minute long rest. Waking, movement, damage or combat will interrupt recovery."))
+	else if(archetype == CASTER_PACT)
+		to_chat(body, span_notice("I begin a one-minute short rest that refills all my pact slots. Movement, damage or combat will interrupt it."))
+	else if(archetype == CASTER_NONE)
+		to_chat(body, span_notice("I begin a one-minute short rest to recover my powers. Movement, damage or combat will interrupt it."))
 	else
 		to_chat(body, span_notice("I begin a one-minute short rest. My selected tier takes priority, then lower tiers. Movement, damage or combat will interrupt it."))
 	update_hud()
-	var/completed = do_after(body, rest_duration, target = body, timed_action_flags = rest_flags, extra_checks = CALLBACK(src, PROC_REF(rest_is_valid), body, long_rest), interaction_key = "spell_rest")
+	// A sleeper gets no progress bar or cog over their head; the short rest keeps its bar.
+	var/completed = do_after(body, rest_duration, target = body, timed_action_flags = rest_flags, progress = !long_rest, extra_checks = CALLBACK(src, PROC_REF(rest_is_valid), body, long_rest), interaction_key = "spell_rest", hidden = long_rest)
 	if(QDELETED(src) || QDELETED(body))
 		return FALSE
 	UnregisterSignal(body, interrupt_signals)
@@ -522,16 +612,25 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 
 /// Spends a charge only when something actually came back.
 /datum/spell_slots/proc/finish_short_rest(mob/living/body, priority_level)
-	var/list/recovery = get_recovery(priority_level)
-	if(get_short_rest_current() <= 0)
+	var/list/recovery = get_recovery(priority_level, get_short_rest_budget(body))
+	if(!has_unlimited_short_rests() && get_short_rest_current() <= 0)
 		return FALSE
 	if(!length(recovery) && !features_need_refill(REST_SHORT))
 		return FALSE
 	apply_recovery(recovery)
 	refill_features(REST_SHORT)
-	short_rest_current--
+	if(!has_unlimited_short_rests())
+		short_rest_current--
 	update_hud()
-	to_chat(body, span_notice("My short rest restores spell slots. [get_short_rest_current()] short rests remain."))
+	var/rest_text = "My short rest restores spell slots."
+	if(archetype == CASTER_PACT)
+		rest_text = "My short rest refills my pact slots."
+	else if(archetype == CASTER_NONE)
+		rest_text = "My short rest restores my powers."
+	if(has_unlimited_short_rests())
+		to_chat(body, span_notice(rest_text))
+	else
+		to_chat(body, span_notice("[rest_text] [get_short_rest_current()] short rests remain."))
 	SEND_SIGNAL(mind, COMSIG_MIND_SPELL_REST, REST_SHORT)
 	SEND_SIGNAL(body, COMSIG_LIVING_SPELL_REST, REST_SHORT)
 	return TRUE
@@ -555,6 +654,46 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	update_hud()
 	return restored
 
+/// Archetype and skill behind the slots, the ladder now and at the next rank, rests and pools, for any UI.
+/datum/spell_slots/proc/get_ui_info()
+	var/mob/living/body = get_body()
+	var/rank = get_rank()
+	var/datum/attribute/skill/skill_path = rank_skill
+	var/list/current = list()
+	var/list/maximum = list()
+	for(var/level in SPELL_SLOT_MIN to SPELL_SLOT_MAX)
+		current += get_current(level)
+		maximum += get_max(level)
+	var/has_next = rank < SKILL_RANK_LEGENDARY
+	var/list/pools = list()
+	for(var/id in features)
+		pools += list(list(
+			"name" = capitalize(replacetext(id, "_", " ")),
+			"current" = get_feature_charges(id),
+			"max" = get_feature_max(id),
+			"rest" = (get_feature_rest(id) & REST_SHORT) ? "short rest" : "long rest",
+		))
+	var/gate = long_rest_ready_in()
+	return list(
+		"archetype" = get_caster_archetype_label(archetype),
+		"hasLadder" = has_slot_ladder(),
+		"skillName" = initial(skill_path.name),
+		"rank" = rank,
+		"rankName" = get_caster_rank_name(rank),
+		"skillValue" = body ? round(body.get_skill_level(rank_skill) * 10) : rank * 10,
+		"nextRankName" = has_next ? get_caster_rank_name(rank + 1) : null,
+		"nextRankValue" = has_next ? (rank + 1) * 10 : null,
+		"current" = current,
+		"maximum" = maximum,
+		"nextMaximum" = has_next ? get_ladder_row(rank + 1) : null,
+		"pactLevel" = get_pact_level(),
+		"shortRests" = get_short_rest_current(),
+		"shortRestsMax" = get_short_rest_max(),
+		"unlimitedShortRests" = has_unlimited_short_rests(),
+		"longRestIn" = gate > 0 ? DisplayTimeText(gate) : null,
+		"pools" = pools,
+	)
+
 /datum/spell_slots/proc/update_hud()
 	var/mob/living/body = get_body()
 	if(!body)
@@ -563,8 +702,13 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 		var/mob/living/carbon/human/human_body = body
 		human_body.update_spell_slot_hud()
 	for(var/datum/action/cooldown/spell/spell in body.actions)
+		var/update_flags = NONE
 		if(spell.uses_spell_slots())
-			spell.build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
+			update_flags |= UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND
+		if(spell.feature_id)
+			update_flags |= UPDATE_BUTTON_NAME|UPDATE_BUTTON_STATUS
+		if(update_flags)
+			spell.build_all_button_icons(update_flags)
 	SEND_SIGNAL(body, COMSIG_LIVING_SPELL_SLOTS_UPDATED)
 
 #undef FEATURE_CURRENT

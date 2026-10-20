@@ -351,6 +351,10 @@
 
 /// Executes after the mob has been spawned in the map.
 /// Client might not be yet in the mob, and is thus a separate variable.
+/// Slot casters follow a ladder; CASTER_NONE jobs only carry rest-gated features.
+/datum/job/proc/is_slot_caster()
+	return caster_archetype && caster_archetype != CASTER_NONE
+
 /datum/job/proc/after_spawn(mob/living/carbon/human/spawned, client/player_client, clear_job_stats = TRUE)
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_JOB_AFTER_SPAWN, src, spawned, player_client)
@@ -392,11 +396,14 @@
 
 	if(caster_archetype)
 		spawned.mind?.setup_spell_slots(caster_archetype, caster_rank_skill)
+	if(is_slot_caster())
 		var/datum/mana_pool/pool = spawned.mana_pool
 		if(pool)
 			// Slot casters pace Minor casts on a steady trickle and start with a full reserve.
 			pool.set_natural_recharge(max(pool.ethereal_recharge_rate, CASTER_BASE_MANA_RECHARGE))
 			pool.adjust_mana(pool.get_softcap() - pool.amount)
+		if(HAS_TRAIT(spawned, TRAIT_SORCERER))
+			spawned.grant_sorcery_kit()
 	if(spawned.mind && (form_points || technique_points || prepares_spells))
 		var/datum/spell_mastery/mastery = spawned.mind.get_spell_mastery()
 		mastery.uses_preparation = prepares_spells
@@ -418,7 +425,7 @@
 			innate_book.Grant(spawned)
 	add_spells(spawned)
 	// Archetype casters grow through slots and mastery, not the old tree.
-	if(!caster_archetype)
+	if(!is_slot_caster())
 		spawned.adjust_spell_points(spell_points)
 
 	// When we have sourced skill mods (praying, add to this as well)
@@ -812,7 +819,7 @@
 
 /datum/job/proc/add_spells(mob/living/equipped_human)
 	for(var/datum/action/cooldown/spell/spell as anything in spells)
-		equipped_human.add_spell(spell, source = src, mastery_spell = !!caster_archetype)
+		equipped_human.add_spell(spell, source = src, mastery_spell = is_slot_caster())
 
 /datum/job/proc/remove_spells(mob/living/equipped_human)
 	equipped_human.remove_spells(source = src)
@@ -1114,7 +1121,7 @@
 				for(var/stat in adv_ref.adv_stat_ceiling)
 					dat += "["[capitalize(stat)]: <b>\Roman[adv_ref.adv_stat_ceiling[stat]]</b>"] | "
 				dat += "<i><br>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"*/
-			if(adv_ref.spell_points > 0 && !adv_ref.caster_archetype)
+			if(adv_ref.spell_points > 0 && !adv_ref.is_slot_caster())
 				dat += "<font color = '#a3a7e0'>Starting Spellpoints: <b>[adv_ref.spell_points]</b></font>"
 			if(length(adv_ref.languages))
 				dat += "<details><summary><i>Known Languages</i></summary>"
@@ -1178,7 +1185,7 @@
 				dat += "["[capitalize(stat)]: <b>\Roman[stat_ceilings[stat]]</b>"] | "
 			dat += "<br><i>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"
 			dat += "</font>"	//Ends the stat limit colors
-	if(spell_points > 0 && !caster_archetype)
+	if(spell_points > 0 && !is_slot_caster())
 		dat += "<br><font color = '#a3a7e0'>Starting Spellpoints: <b>[spell_points]</b></font>"
 	if(length(traits) && (show_traits || sclass_count > 1))
 		dat += "<br><b>Class</b></font> Traits: "

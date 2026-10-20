@@ -41,7 +41,7 @@
 		if(!holder_mob.get_spell(good_type, TRUE))
 			continue
 		holder_mob.remove_spell(good_type)
-		holder_mob.add_spell(corruptions[good_type], source = src, mastery_spell = !!holder_mob.mind?.spell_slots)
+		holder_mob.add_spell(corruptions[good_type], source = src, mastery_spell = holder_mob.mind?.is_slot_caster())
 
 /datum/devotion/faerun/evil/make_templar()
 	. = ..()

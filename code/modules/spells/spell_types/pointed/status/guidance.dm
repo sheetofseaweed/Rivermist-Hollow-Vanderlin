@@ -11,15 +11,14 @@
 	charge_drain = 1
 	charge_slowdown = 0.7
 	cooldown_time = 5 MINUTES
-	spell_cost = 60
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 	status_effect = /datum/status_effect/buff/guidance
 	duration_scaling = TRUE
 	duration_modification = 30 SECONDS
 
-	slot_level = 1
-	slot_only = TRUE
-	concentration = TRUE
+	// A cantrip again: reserve cost, no slot and no concentration seat.
+	slot_level = 0
 	slot_label = "Guidance"
 	required_form = FORM_EARTH
 

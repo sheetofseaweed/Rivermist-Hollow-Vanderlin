@@ -224,7 +224,7 @@
 	qualityoflearn = qualityoflearn / 100
 	var/spellpoints = CEILING(src.bookquality * qualityoflearn, 1)
 	// Slot casters learn through mastery; everyone else still feeds the old tree.
-	if(reader.mind?.spell_slots)
+	if(reader.mind?.is_slot_caster())
 		grant_mastery_points(reader, spellpoints)
 	else
 		reader.adjust_spell_points(spellpoints)

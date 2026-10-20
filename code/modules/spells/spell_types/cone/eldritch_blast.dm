@@ -109,7 +109,14 @@
 		return
 	victim.apply_status_effect(/datum/status_effect/amok)
 	victim.apply_status_effect(/datum/status_effect/cloudstruck, level * 1 SECONDS)
-	victim.reagents?.add_reagent(/datum/reagent/eldritch, max(1, 6 - level))
+	victim.reagents?.add_reagent(/datum/reagent/eldritch, get_essence_dose(level))
+
+/// Essence per cone layer; slot casters scale it by cantrip rank, slotless casters keep the flat dose.
+/datum/action/cooldown/spell/cone/staggered/eldritch_blast/proc/get_essence_dose(level)
+	var/dose = max(1, 6 - level)
+	if(!get_spell_slots()?.has_slot_ladder())
+		return dose
+	return dose * get_cantrip_multiplier()
 
 
 /obj/effect/temp_visual/dir_setting/entropic

@@ -77,7 +77,7 @@
 		cast_on.adjust_stat_modifier(STATMOD_RITUAL, list(/datum/attribute/skill/magic/arcane = 30))
 		cast_on.add_spell(/datum/action/cooldown/spell/undirected/touch/prestidigitation)
 		// Slot casters have no spell points; the Lesser Work pays in form mastery instead.
-		if(cast_on.mind?.spell_slots)
+		if(cast_on.mind?.is_slot_caster())
 			var/datum/spell_mastery/mastery = cast_on.mind.get_spell_mastery()
 			mastery.adjust_form_points(RITUOS_FORM_POINTS)
 			mastery.recalculate_unspent_points()

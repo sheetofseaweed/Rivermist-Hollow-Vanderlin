@@ -96,7 +96,7 @@
 	var/collapsed = slots?.hud_collapsed
 	if(spell_slot_hud_buttons)
 		for(var/atom/movable/screen/spell_slot_hud/button as anything in spell_slot_hud_buttons)
-			if(hud_hidden || collapsed)
+			if(hud_hidden || collapsed || button.hidden_by_pact())
 				client.screen -= button
 			else if(!(button in client.screen))
 				client.screen += button
@@ -130,6 +130,8 @@
 		button.refresh_slot_hud()
 	short_rest_hud_button?.refresh_rest_hud()
 	spell_slots_toggle_hud_button?.refresh_toggle_hud()
+	// A pact level change swaps which numbered button is shown.
+	apply_spell_slot_hud_visibility()
 
 /proc/get_spell_slot_icon_state(level, charges)
 	level = clamp(round(level), SPELL_SLOT_MIN, SPELL_SLOT_MAX)
@@ -197,10 +199,30 @@
 	var/current = slots.get_current(slot_level)
 	var/maximum = slots.get_max(slot_level)
 	icon_state = get_spell_slot_icon_state(slot_level, current)
+	// Pact casters see only the pact tier, moved to the first tier position.
+	if(slots.get_pact_level())
+		screen_loc = get_spell_slot_screen_loc(SPELL_SLOT_MIN)
+		alpha = 255
+		name = "[selected ? "Selected: " : ""]Level [slot_level] Pact Slots ([current]/[maximum])"
+		desc = "All my pact slots are level [slot_level]. A short rest refills them all. Charges: [current]/[maximum]."
+		return TRUE
+	screen_loc = get_spell_slot_screen_loc(slot_level)
 	alpha = maximum > 0 ? 255 : 110
 	name = "[selected ? "Selected: " : ""]Level [slot_level] Spell Slot ([current]/[maximum])"
 	desc = "Select level [slot_level] spell slot. Charges: [current]/[maximum]."
 	return TRUE
+
+/// Pact casters hide every numbered tier except the pact level; MIN always shows. Non-casters hide the row.
+/atom/movable/screen/spell_slot_hud/proc/hidden_by_pact()
+	var/datum/spell_slots/slots = owner_mob?.get_spell_slots()
+	if(!slots)
+		return FALSE
+	if(slots.archetype == CASTER_NONE)
+		return TRUE
+	if(slot_level == SPELL_SLOT_MINOR)
+		return FALSE
+	var/pact_level = slots.get_pact_level()
+	return pact_level && slot_level != pact_level
 
 /atom/movable/screen/spell_slot_hud/Click(location, control, params)
 	. = ..()
@@ -227,9 +249,11 @@
 		return FALSE
 	var/current = slots.get_short_rest_current()
 	var/maximum = slots.get_short_rest_max()
-	icon_state = get_spell_rest_icon_state(current)
-	maptext = "<span class='maptext'>[current]/[maximum]</span>"
-	name = "[slots.rest_in_progress ? "Resting" : "Short Rest"] ([current]/[maximum])"
+	var/unlimited = slots.has_unlimited_short_rests()
+	icon_state = get_spell_rest_icon_state(unlimited ? SHORT_REST_BASE_CHARGES : current)
+	var/charges_text = unlimited ? "free" : "[current]/[maximum]"
+	maptext = "<span class='maptext'>[charges_text]</span>"
+	name = "[slots.rest_in_progress ? "Resting" : "Short Rest"] ([charges_text])"
 	var/gate = slots.long_rest_ready_in()
 	var/long_rest_text = gate > 0 ? "A long rest is ready in [DisplayTimeText(gate)]." : "A long rest is ready."
 	var/feature_text = ""
@@ -238,7 +262,13 @@
 	var/datum/devotion/faith = owner_mob.cleric
 	if(faith)
 		feature_text += " Devotion: [faith.devotion]/[faith.max_devotion], half back on a short rest, all on a long rest."
-	desc = "Lie down and click to rest for 60 seconds, recovering up to [SHORT_REST_BUDGET] spell levels. The selected tier takes priority, then lower tiers; MIN prioritizes lower tiers. Right-click to sleep for five minutes and restore all slots, rests and powers. Movement, damage and combat interrupt recovery. Charges: [current]/[maximum]. [long_rest_text][feature_text]"
+	var/recovery_text = "recovering up to [SHORT_REST_BUDGET] spell levels. The selected tier takes priority, then lower tiers; MIN prioritizes lower tiers."
+	if(slots.archetype == CASTER_PACT)
+		recovery_text = "which refills all pact slots."
+	else if(slots.archetype == CASTER_NONE)
+		recovery_text = "which restores my rest-bound powers."
+	var/charges_desc = unlimited ? "Short rests are free for pact casters." : "Charges: [current]/[maximum]."
+	desc = "Lie down and click to rest for 60 seconds, [recovery_text] Right-click to sleep for five minutes and restore all slots, rests and powers. Movement, damage and combat interrupt recovery. [charges_desc] [long_rest_text][feature_text]"
 	return TRUE
 
 /atom/movable/screen/spell_rest_hud/Click(location, control, params)

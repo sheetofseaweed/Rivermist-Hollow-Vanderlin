@@ -1,64 +1,4 @@
-// Divine class features on the slot feature API: charges per rest, holy rank from the slot datum.
-
-/datum/action/cooldown/spell
-	/// Feature pool this spell spends; null for ordinary spells.
-	var/divine_feature_id
-	/// Rest that refills the pool.
-	var/divine_feature_rest = REST_SHORT
-
-/datum/action/cooldown/spell/proc/get_divine_slots()
-	RETURN_TYPE(/datum/spell_slots)
-	var/datum/spell_slots/slots = get_spell_slots()
-	if(slots)
-		return slots
-	var/mob/living/living_owner = owner
-	return istype(living_owner) ? living_owner.ensure_spell_slots_for_job() : null
-
-/// Pool size by holy rank: channel pools hold one charge, two from Expert; Lay on Hands scales.
-/datum/action/cooldown/spell/proc/get_divine_feature_max()
-	var/datum/spell_slots/slots = get_divine_slots()
-	var/rank = slots ? slots.get_rank() : 0
-	switch(divine_feature_id)
-		if(FEATURE_LAY_ON_HANDS)
-			return max(LAY_ON_HANDS_POOL_PER_RANK, LAY_ON_HANDS_POOL_PER_RANK * rank)
-		if(FEATURE_CHANNEL_OATH)
-			return 1
-		if(FEATURE_WILD_SHAPE)
-			return WILD_SHAPE_CHARGES
-	return rank >= SKILL_RANK_EXPERT ? 2 : 1
-
-/// Ensures the pool on the slot datum, resizing it when the rank moved.
-/datum/action/cooldown/spell/proc/register_divine_feature()
-	RETURN_TYPE(/datum/spell_slots)
-	if(!divine_feature_id)
-		return null
-	var/datum/spell_slots/slots = get_divine_slots()
-	if(!slots)
-		return null
-	var/max_charges = get_divine_feature_max()
-	if(!slots.has_feature(divine_feature_id) || slots.get_feature_max(divine_feature_id) != max_charges)
-		slots.add_feature(divine_feature_id, max_charges, divine_feature_rest)
-	return slots
-
-/// Charges spent per cast. Lay on Hands overrides this with its touch size.
-/datum/action/cooldown/spell/proc/get_divine_feature_cost()
-	return 1
-
-/datum/action/cooldown/spell/proc/divine_feature_ready(feedback = TRUE)
-	var/datum/spell_slots/slots = register_divine_feature()
-	if(!slots)
-		if(feedback)
-			owner.balloon_alert(owner, "no divine power to channel!")
-		return FALSE
-	if(slots.get_feature_charges(divine_feature_id) < get_divine_feature_cost())
-		if(feedback)
-			owner.balloon_alert(owner, "[get_slot_label()] needs a rest!")
-		return FALSE
-	return TRUE
-
-/datum/action/cooldown/spell/proc/spend_divine_feature(amount = 1)
-	var/datum/spell_slots/slots = register_divine_feature()
-	return slots?.use_feature(divine_feature_id, amount)
+// Divine class features: Channel Divinity, Lay on Hands, Divine Smite and Channel Oath on the feature pools.
 
 /// Heals one limb the way the healing miracle does, injuries included.
 /proc/divine_heal_limb(obj/item/bodypart/limb, amount, wound_modifier = 0.25)
@@ -79,7 +19,7 @@
 	slot_level = null
 	learnable = FALSE
 	slot_label = "Turn Undead"
-	divine_feature_id = FEATURE_CHANNEL_DIVINITY
+	feature_id = FEATURE_CHANNEL_DIVINITY
 
 /datum/action/cooldown/spell/undirected/divine_strike/channel
 	name = "Channel Divinity: War Priest"
@@ -89,7 +29,7 @@
 	slot_level = null
 	learnable = FALSE
 	slot_label = "War Priest"
-	divine_feature_id = FEATURE_CHANNEL_DIVINITY
+	feature_id = FEATURE_CHANNEL_DIVINITY
 
 /datum/action/cooldown/spell/aoe/preserve_life
 	name = "Channel Divinity: Preserve Life"
@@ -114,7 +54,7 @@
 	learnable = FALSE
 	slot_label = "Preserve Life"
 	aoe_radius = SPELL_RANGE_AURA
-	divine_feature_id = FEATURE_CHANNEL_DIVINITY
+	feature_id = FEATURE_CHANNEL_DIVINITY
 
 /datum/action/cooldown/spell/aoe/preserve_life/is_valid_target(atom/cast_on)
 	if(!isliving(cast_on))
@@ -159,18 +99,18 @@
 	minor_cost = 0
 	learnable = FALSE
 	slot_label = "Lay on Hands"
-	divine_feature_id = FEATURE_LAY_ON_HANDS
-	divine_feature_rest = REST_LONG
+	feature_id = FEATURE_LAY_ON_HANDS
+	feature_rest = REST_LONG
 	var/pending_spend = 0
 
-/datum/action/cooldown/spell/healing/lay_on_hands/get_divine_feature_cost()
+/datum/action/cooldown/spell/healing/lay_on_hands/get_feature_cost()
 	return max(pending_spend, 1)
 
 /// The touch spends what the pool still holds, up to the healing base.
 /datum/action/cooldown/spell/healing/lay_on_hands/before_cast(atom/cast_on)
 	. = ..()
-	var/datum/spell_slots/slots = register_divine_feature()
-	pending_spend = min(slots ? slots.get_feature_charges(divine_feature_id) : 0, initial(base_healing))
+	var/datum/spell_slots/slots = register_feature()
+	pending_spend = min(slots ? slots.get_feature_charges(feature_id) : 0, initial(base_healing))
 	if(pending_spend <= 0)
 		return . | SPELL_CANCEL_CAST
 	base_healing = pending_spend
@@ -274,7 +214,7 @@
 	slot_level = null
 	learnable = FALSE
 	slot_label = "Sacred Weapon"
-	divine_feature_id = FEATURE_CHANNEL_OATH
+	feature_id = FEATURE_CHANNEL_OATH
 
 /datum/action/cooldown/spell/pointed/silence/channel_oath
 	name = "Channel Oath: Champion's Silence"
@@ -282,7 +222,7 @@
 	cooldown_time = 10 SECONDS
 	learnable = FALSE
 	slot_label = "Champion's Silence"
-	divine_feature_id = FEATURE_CHANNEL_OATH
+	feature_id = FEATURE_CHANNEL_OATH
 
 /datum/action/cooldown/spell/aoe/hellfire_burst
 	name = "Channel Oath: Hellfire Burst"
@@ -308,7 +248,7 @@
 	learnable = FALSE
 	slot_label = "Hellfire Burst"
 	aoe_radius = SPELL_RANGE_AURA
-	divine_feature_id = FEATURE_CHANNEL_OATH
+	feature_id = FEATURE_CHANNEL_OATH
 
 /datum/action/cooldown/spell/aoe/hellfire_burst/is_valid_target(atom/cast_on)
 	if(!isliving(cast_on))
