@@ -19,6 +19,8 @@
 	slot_level = 3
 	slot_only = TRUE
 	concentration = TRUE
+	// One concentration target per caster, so a twinned cast would end the first haste.
+	twinnable = FALSE
 	slot_label = "Haste"
 	required_form = FORM_EARTH
 	required_level = MASTERY_RANK_EXPERT

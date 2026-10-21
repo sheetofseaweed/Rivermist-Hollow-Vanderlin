@@ -58,6 +58,8 @@
 /datum/action/cooldown/spell/projectile/acid_splash/quietus
 	name = "Caustic Splash"
 	learnable = FALSE
+	// The coven power keeps its own 80 damage instead of the Acid Splash slot table.
+	slot_level = null
 
 	projectile_type = /obj/projectile/magic/acidsplash/quietus
 

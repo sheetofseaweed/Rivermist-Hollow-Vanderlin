@@ -54,5 +54,7 @@
 	var/datum/effect_system/smoke_spread/chem/smoke = new
 	// One tile wider for every two levels above the spell's own.
 	smoke.set_up(reagents, 3 + round(get_upcast_steps() / 2), get_turf(owner), FALSE)
+	// The smoke only copies the reagents, so the container loses what went into it.
+	reagents.remove_all(smoke.chemholder.reagents.total_volume)
 	smoke.start()
 

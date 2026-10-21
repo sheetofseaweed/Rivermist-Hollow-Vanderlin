@@ -31,7 +31,7 @@
 	return isliving(cast_on)
 
 /datum/action/cooldown/spell/undirected/touch/non_detection/cast_on_hand_hit(obj/item/melee/touch_attack/hand, mob/living/victim, mob/living/carbon/caster, list/modifiers)
-	if(victim.has_status_effect(/datum/status_effect/non_detection) || HAS_TRAIT(target, TRAIT_ANTISCRYING))
+	if(victim.has_status_effect(/datum/status_effect/non_detection) || HAS_TRAIT(victim, TRAIT_ANTISCRYING))
 		to_chat(caster, span_warning("[victim] already has protection from divination magic."))
 		return FALSE
 

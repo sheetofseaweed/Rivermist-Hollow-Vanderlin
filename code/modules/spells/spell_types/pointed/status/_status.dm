@@ -25,18 +25,23 @@
 	var/extra_args
 	/// Last target of a concentration cast, so a broken concentration can strip the effect.
 	var/datum/weakref/concentration_target_ref
+	/// The effect instance that cast applied; a break removes only this one.
+	var/datum/weakref/concentration_effect_ref
 
 /datum/action/cooldown/spell/status/Destroy()
 	concentration_target_ref = null
+	concentration_effect_ref = null
 	return ..()
 
-/// Breaking concentration removes the buff from the last target.
+/// Breaking concentration removes the buff this spell applied, never another caster's copy.
 /datum/action/cooldown/spell/status/on_concentration_broken(reason)
-	var/mob/living/target = concentration_target_ref?.resolve()
+	var/datum/status_effect/sustained = concentration_effect_ref?.resolve()
 	concentration_target_ref = null
-	if(QDELETED(target) || !target.has_status_effect(status_effect))
+	concentration_effect_ref = null
+	if(QDELETED(sustained) || !sustained.before_remove())
 		return
-	target.remove_status_effect(status_effect)
+	var/mob/living/target = sustained.owner
+	qdel(sustained)
 	target.visible_message(span_warning("The magic sustaining [target] unravels."), span_warning("The [name] sustaining me unravels!"))
 
 /datum/action/cooldown/spell/status/New(Target)
@@ -66,9 +71,39 @@
 	)
 	if(extra_args && islist(extra_args))
 		status_args += extra_args
-	if(concentration && uses_spell_slots())
+	var/holds_concentration = concentration && uses_spell_slots()
+	if(holds_concentration)
 		// A second concentration cast ends the first target's buff.
 		on_concentration_broken(CONCENTRATION_REPLACED)
 		concentration_target_ref = WEAKREF(cast_on)
-	cast_on.apply_status_effect(arglist(status_args))
+	var/datum/status_effect/applied = cast_on.apply_status_effect(arglist(status_args))
+	// A cast that only refreshed someone else's copy owns nothing, so it holds no seat.
+	if(holds_concentration)
+		track_concentration_effect(applied)
 	cooldown_time = cooldown_time || duration
+
+/datum/action/cooldown/spell/status/after_cast(atom/cast_on)
+	. = ..()
+	// Activate seats concentration after the cast; a hold that slid off a ward keeps no seat.
+	if(concentration && !concentration_target_ref)
+		get_spell_slots()?.clear_concentration(src)
+
+/// Watches the sustained effect so its end frees the seat; an effect that never took holds nothing.
+/datum/action/cooldown/spell/status/proc/track_concentration_effect(datum/status_effect/effect)
+	if(QDELETED(effect))
+		concentration_target_ref = null
+		concentration_effect_ref = null
+		return
+	concentration_effect_ref = WEAKREF(effect)
+	RegisterSignal(effect, COMSIG_PARENT_QDELETING, PROC_REF(on_concentration_effect_deleted), override = TRUE)
+
+/// The effect ended on its own, such as expiry or a shaken-off hold, so the caster's seat is free.
+/datum/action/cooldown/spell/status/proc/on_concentration_effect_deleted(datum/status_effect/source)
+	SIGNAL_HANDLER
+	UnregisterSignal(source, COMSIG_PARENT_QDELETING)
+	// A recast or a broken concentration has already let this effect go.
+	if(!concentration_effect_ref || source.weak_reference != concentration_effect_ref)
+		return
+	concentration_target_ref = null
+	concentration_effect_ref = null
+	get_spell_slots()?.clear_concentration(src)

@@ -77,7 +77,14 @@
 	if(ispath(frozen_status_effect_path) && unfreeze_mob_duration > 0 SECONDS) // 0 duration = don't apply the status effect
 		var/datum/status_effect/freeze = target_mob.apply_status_effect(frozen_status_effect_path)
 		if(unfreeze_mob_duration != INFINITY)
-			freeze.duration = world.time + unfreeze_mob_duration * cone_duration_multiplier
+			var/thaw_time = world.time + unfreeze_mob_duration * cone_duration_multiplier
+			if(freeze)
+				freeze.duration = thaw_time
+			else
+				// A target already frozen or chilled keeps its effect; the hit only lengthens a timed one.
+				freeze = target_mob.has_status_effect(frozen_status_effect_path)
+				if(freeze && freeze.duration != STATUS_EFFECT_PERMANENT)
+					freeze.duration = max(freeze.duration, thaw_time)
 
 	if(on_freeze_brute_damage || on_freeze_burn_damage)
 		target_mob.take_overall_damage(on_freeze_brute_damage * cone_damage_multiplier, on_freeze_burn_damage * cone_damage_multiplier, damage_type = BCLASS_BLUNT)

@@ -14,8 +14,9 @@
 	owner.visible_message(span_notice("[owner] cleanses all toxins from the area."))
 
 	for(var/mob/living/M in range(2, target_turf))
-		M.reagents?.remove_all_type(/datum/reagent/toxin)
-		M.reagents?.remove_all_type(/datum/reagent/poison)
+		// remove_all_type does nothing without an amount, so 999 clears each one.
+		M.reagents?.remove_all_type(/datum/reagent/toxin, 999)
+		M.reagents?.remove_all_type(/datum/reagent/poison, 999)
 		M.setToxLoss(0, TRUE, FALSE)
 		M.apply_status_effect(/datum/status_effect/buff/toxin_immunity, 300 SECONDS)
 		new /obj/effect/temp_visual/snake/twin_up(null, M)

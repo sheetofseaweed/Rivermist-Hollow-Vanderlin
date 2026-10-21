@@ -50,6 +50,14 @@
 	remove_hand(remove_from)
 	return ..()
 
+// Putting a drawn hand away is free, so it skips the cost checks and the cast chain.
+/datum/action/cooldown/spell/undirected/touch/Trigger(trigger_flags, atom/target)
+	var/mob/living/carbon/caster = owner
+	if(istype(caster) && !QDELETED(attached_hand) && (attached_hand in caster.held_items))
+		remove_hand(caster, reset_cooldown_after = TRUE)
+		return TRUE
+	return ..()
+
 // PreActivate is overridden to not check is_valid_target on the caster, as it makes less sense.
 /datum/action/cooldown/spell/undirected/touch/PreActivate(atom/target)
 	return Activate(target)

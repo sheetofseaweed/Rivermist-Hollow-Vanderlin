@@ -33,14 +33,14 @@
 /datum/action/cooldown/spell/aoe/on_turf/ensnare/proc/apply_slowdown(turf/victim, hold_time)
 	if(isnull(hold_time))
 		hold_time = duration
-	for(var/mob/living/simple_animal/animal in range(ensnare_radius, victim))
-		animal.Paralyze(hold_time, ignore_canstun = TRUE)
-
 	for(var/mob/living/L in range(ensnare_radius, victim))
 		if(L.can_block_magic(MAGIC_RESISTANCE))
 			victim.visible_message(span_warning("The tendrils of force can't seem to latch onto [L] "))
 			playsound(L, 'sound/magic/magic_nulled.ogg', 100)
-			return
+			continue
+		// Beasts are also paralyzed; the guard above spares a warded beast as it spares people.
+		if(isanimal(L))
+			L.Paralyze(hold_time, ignore_canstun = TRUE)
 		L.Immobilize(hold_time)
 		L.OffBalance(hold_time)
 		L.visible_message(span_warning("[L] is held by tendrils of arcyne force!"))

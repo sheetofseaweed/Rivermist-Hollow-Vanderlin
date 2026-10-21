@@ -30,7 +30,7 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	return isitem(cast_on) || isliving(target)
+	return isitem(cast_on) || isliving(cast_on)
 
 /datum/action/cooldown/spell/decompose/cast(atom/cast_on)
 	. = ..()

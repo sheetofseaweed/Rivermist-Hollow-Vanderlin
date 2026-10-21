@@ -16,8 +16,12 @@
 	var/mutable_appearance/stacks_overlay
 	COOLDOWN_DECLARE(chill_purge)
 
-/datum/status_effect/void_chill/on_creation(mob/living/new_owner, new_stacks, ...)
+// apply_status_effect passes the duration override second, so the stacks come third.
+/datum/status_effect/void_chill/on_creation(mob/living/new_owner, duration_override, new_stacks, ...)
 	. = ..()
+	// A warded target makes the parent delete the chill, so stop before touching the owner.
+	if(!.)
+		return
 	RegisterSignal(owner, COMSIG_ATOM_UPDATE_OVERLAYS, PROC_REF(update_stacks_overlay))
 	set_stacks(new_stacks)
 	stacks_overlay = mutable_appearance('icons/effects/effects.dmi', "void_chill_oh_fuck", ABOVE_MOB_LAYER)
@@ -55,7 +59,7 @@
 	if (stacks == 0)
 		owner.remove_status_effect(/datum/status_effect/void_chill)
 
-/datum/status_effect/void_chill/refresh(mob/living/new_owner, new_stacks, forced = FALSE)
+/datum/status_effect/void_chill/refresh(mob/living/new_owner, duration_override, new_stacks, forced = FALSE)
 	. = ..()
 	if(forced)
 		set_stacks(new_stacks)

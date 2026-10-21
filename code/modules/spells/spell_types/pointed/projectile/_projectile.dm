@@ -55,7 +55,8 @@
 		return FALSE
 
 	fire_projectile(cast_on)
-	if(current_amount <= 0)
+	// A direct cast, such as a surge copy, must not disarm a spell the caster has armed.
+	if(current_amount <= 0 && owner.click_intercept == src)
 		unset_click_ability(owner, refund_cooldown = FALSE)
 
 	return TRUE

@@ -14,7 +14,7 @@
 	charge_time = 2.5 SECONDS
 	charge_drain = 1
 	charge_slowdown = 1.3
-	cooldown_time = 40 MINUTES
+	cooldown_time = 40 SECONDS
 	spell_cost = 45
 	spell_flags = SPELL_RITUOS
 	aoe_radius = 4

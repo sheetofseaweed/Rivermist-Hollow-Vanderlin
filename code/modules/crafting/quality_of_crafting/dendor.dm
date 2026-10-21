@@ -324,7 +324,9 @@
 	user.emote("rage", forced = TRUE)
 	ADD_TRAIT(user, TRAIT_CRITICAL_RESISTANCE, TRAIT_GENERIC)
 	user.physiology.pain_mod *= 0.6
-	user.remove_spell(/datum/action/cooldown/spell/healing)
+	// remove_spell matches the exact type, so Ki, Lay on Hands and other healing variants go one by one.
+	for(var/datum/action/cooldown/spell/healing/mending in user.actions.Copy())
+		user.remove_spell(mending)
 	user.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/troll_form)
 	to_chat(user, span_warning("I no longer care for mending wounds, let the lords of the forest be known!"))
 
