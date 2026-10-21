@@ -245,6 +245,7 @@
 		/obj/item/paper = 3,
 		/obj/item/weapon/knife/dagger/steel,
 		/obj/item/paper,
+		/obj/item/spellbook/apprentice/starter/arcane,
 	)
 
 /datum/outfit/adventurers_guildmaster/eldritch_knight/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

@@ -106,6 +106,7 @@
 		/obj/item/textbook = 1,
 		/obj/item/natural/feather = 1,
 		/obj/item/book/granter/spellbook/apprentice,
+		/obj/item/spellbook/apprentice/starter/air,
 		/obj/item/storage/belt/pouch/cloth/bullets,
 		/obj/item/reagent_containers/glass/bottle/aflask,
 		)
@@ -190,6 +191,7 @@
 		/obj/item/textbook = 1,
 		/obj/item/natural/feather = 1,
 		/obj/item/book/granter/spellbook/apprentice,
+		/obj/item/spellbook/apprentice/starter/arcane,
 		)
 
 /datum/outfit/town_scholar/archivist/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

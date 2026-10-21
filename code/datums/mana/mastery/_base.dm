@@ -419,6 +419,29 @@
 
 // Point adjustment helpers
 
+/// Each slot-skill rank gained pays a form point; Apprentice, Expert and Legendary add a technique point.
+/datum/spell_mastery/proc/pay_rank_points(new_rank, old_rank)
+	if(QDELETED(src) || new_rank <= old_rank)
+		return FALSE
+	if(!uses_preparation && !initial_form_points && !initial_technique_points)
+		return FALSE
+	var/form_gain = new_rank - old_rank
+	var/technique_gain = 0
+	for(var/rank in old_rank + 1 to new_rank)
+		if(rank == SKILL_RANK_APPRENTICE || rank == SKILL_RANK_EXPERT || rank == SKILL_RANK_LEGENDARY)
+			technique_gain++
+	adjust_form_points(form_gain)
+	if(technique_gain)
+		adjust_technique_points(technique_gain)
+	recalculate_unspent_points()
+	var/mob/living/body = get_body()
+	if(body)
+		var/gained = "[form_gain] form point[form_gain == 1 ? "" : "s"]"
+		if(technique_gain)
+			gained += " and [technique_gain] technique point[technique_gain == 1 ? "" : "s"]"
+		to_chat(body, span_notice("My deeper study grants me [gained]. Spellcraft can spend them."))
+	return TRUE
+
 /datum/spell_mastery/proc/adjust_form_mastery_points(points, used_points = FALSE, specific_form = null)
 	if(QDELETED(src))
 		return
@@ -495,3 +518,8 @@
 	if(!istype(user) || !user.mind)
 		return
 	user.mind.get_spell_mastery().open_ui(user)
+
+/// Wizards open the same window; preparing still needs their bound grimoire at hand.
+/datum/action/innate/open_spellbook/grimoire
+	name = "Spellcraft"
+	desc = "Study the forms, techniques and spells of my grimoire."

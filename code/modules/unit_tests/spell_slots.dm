@@ -540,6 +540,14 @@
 	book.bind_owner(caster.mind)
 	TEST_ASSERT_EQUAL(mastery.unspent_form_points, 2, "Rebinding claimed the points again.")
 
+	caster.mind.setup_spell_slots(CASTER_FULL)
+	caster.set_skillrank(/datum/attribute/skill/magic/arcane, SKILL_RANK_EXPERT)
+	TEST_ASSERT_EQUAL(mastery.unspent_form_points, 3, "An Expert rank-up did not pay a form point.")
+	TEST_ASSERT_EQUAL(mastery.unspent_technique_points, 3, "The Expert rank-up did not pay a technique point.")
+	caster.set_skillrank(/datum/attribute/skill/magic/arcane, SKILL_RANK_JOURNEYMAN)
+	TEST_ASSERT_EQUAL(mastery.unspent_form_points, 3, "Losing a rank took form points away.")
+	TEST_ASSERT_EQUAL(mastery.unspent_technique_points, 3, "Losing a rank took technique points away.")
+
 	var/fireball_path = /datum/action/cooldown/spell/projectile/fireball
 	TEST_ASSERT(!mastery.can_learn_spell(fireball_path), "Fireball was learnable without a destruction investment.")
 	TEST_ASSERT(mastery.invest_technique(TECHNIQUE_DESTRUCTION), "Could not invest a technique point.")

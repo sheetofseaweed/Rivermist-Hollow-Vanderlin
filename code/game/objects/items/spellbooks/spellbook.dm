@@ -350,6 +350,48 @@
 	themed_form = FORM_WATER
 	designlist = list("steel")
 
+/obj/item/spellbook/expert/starter
+	abstract_type = /obj/item/spellbook/expert/starter
+	themed_cost_multiplier = 0.86
+	themed_cast_speed_multiplier = 1.25
+	themed_magnitude_bonus = 0.35
+
+/obj/item/spellbook/expert/starter/fire
+	themed_form = FORM_FIRE
+	designlist = list("steel")
+
+/obj/item/spellbook/expert/starter/ice
+	themed_form = FORM_ICE
+	designlist = list("steel")
+
+/obj/item/spellbook/expert/starter/lightning
+	themed_form = FORM_LIGHTNING
+	designlist = list("steel")
+
+/obj/item/spellbook/expert/starter/earth
+	themed_form = FORM_EARTH
+	designlist = list("steel")
+
+/obj/item/spellbook/expert/starter/arcane
+	themed_form = FORM_ARCANE
+	designlist = list("gem")
+
+/obj/item/spellbook/expert/starter/death
+	themed_form = FORM_DEATH
+	designlist = list("skin")
+
+/obj/item/spellbook/expert/starter/life
+	themed_form = FORM_LIFE
+	designlist = list("mimic")
+
+/obj/item/spellbook/expert/starter/air
+	themed_form = FORM_AIR
+	designlist = list("steel")
+
+/obj/item/spellbook/expert/starter/water
+	themed_form = FORM_WATER
+	designlist = list("steel")
+
 /obj/item/spellbook/master/starter
 	abstract_type = /obj/item/spellbook/master/starter
 	themed_cost_multiplier = 0.80

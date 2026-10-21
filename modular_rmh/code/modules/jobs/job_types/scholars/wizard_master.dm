@@ -87,6 +87,7 @@
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/master = 1,
+		/obj/item/spellbook/master/starter/arcane = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
 		/obj/item/storage/belt/pouch/coins/rich
 	)

@@ -185,6 +185,9 @@ GLOBAL_LIST_INIT(pact_slot_ladder, list(
 	if(skill_type != rank_skill)
 		return
 	sync_to_rank()
+	// Ladder casters earn mastery points per rank gained; a lost rank keeps them.
+	if(has_slot_ladder() && new_rank > old_rank)
+		mind?.spell_mastery?.pay_rank_points(new_rank, old_rank)
 
 /// Level 1 to 5 maxima for a rank. Pact rows put every slot on one level.
 /datum/spell_slots/proc/get_ladder_row(rank)

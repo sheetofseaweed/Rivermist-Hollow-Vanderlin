@@ -420,8 +420,16 @@
 				if(!book.get_bound_mind())
 					book.bind_owner(spawned.mind)
 					break
-		else if(!locate(/datum/action/innate/open_spellbook) in spawned.actions)
-			var/datum/action/innate/open_spellbook/innate_book = new
+			// A final role with no grimoire at all gets a plain one; subclass parents equip theirs later.
+			if(!LAZYLEN(job_subclasses) && !(locate(/obj/item/spellbook) in spawned.get_all_contents()))
+				give_fallback_grimoire(spawned)
+		// Spellcraft opens for every mastery owner; wizards still need the grimoire at hand to prepare.
+		if(!locate(/datum/action/innate/open_spellbook) in spawned.actions)
+			var/datum/action/innate/open_spellbook/innate_book
+			if(prepares_spells)
+				innate_book = new /datum/action/innate/open_spellbook/grimoire
+			else
+				innate_book = new /datum/action/innate/open_spellbook
 			innate_book.Grant(spawned)
 	add_spells(spawned)
 	// Archetype casters grow through slots and mastery, not the old tree.
@@ -816,6 +824,17 @@
 		SSjob.set_adventurer_slot_limit(new_total_positions)
 		return
 	total_positions = new_total_positions
+
+/// A preparing role that spawned without a grimoire gets a plain bound one: hand, bag, or feet.
+/datum/job/proc/give_fallback_grimoire(mob/living/carbon/human/spawned)
+	var/obj/item/spellbook/book = new(get_turf(spawned))
+	book.bind_owner(spawned.mind)
+	if(!spawned.put_in_hands(book))
+		var/obj/item/bag = spawned.get_item_by_slot(ITEM_SLOT_BACK_L) || spawned.get_item_by_slot(ITEM_SLOT_BACK_R)
+		if(bag)
+			SEND_SIGNAL(bag, COMSIG_TRY_STORAGE_INSERT, book, null, TRUE, TRUE)
+	to_chat(spawned, span_notice("My kit held no grimoire, so a plain one has been bound to me."))
+	return book
 
 /datum/job/proc/add_spells(mob/living/equipped_human)
 	for(var/datum/action/cooldown/spell/spell as anything in spells)

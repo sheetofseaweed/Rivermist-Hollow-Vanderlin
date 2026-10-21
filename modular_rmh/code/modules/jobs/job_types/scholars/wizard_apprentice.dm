@@ -67,6 +67,7 @@
 
 	backpack_contents = list(
 		/obj/item/book/granter/spellbook/apprentice = 1,
+		/obj/item/spellbook/apprentice/starter/arcane = 1,
 		/obj/item/chalk = 1,
 		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)
