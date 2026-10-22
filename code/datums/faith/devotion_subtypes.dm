@@ -230,3 +230,186 @@
 	viable_tasks = list(
 		/datum/devotion_task/blissara_indulge,
 	)
+
+// Per-god holders for the gods that used the pantheon defaults: defaults plus domain picks.
+
+/datum/devotion/faerun/good/bahamut
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/divine_strike, /datum/action/cooldown/spell/defeat_absolution),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater,
+	)
+
+
+/datum/devotion/faerun/good/corellon
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/diagnose/holy),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/cure_rot),
+		CLERIC_T2 = /datum/action/cooldown/spell/attach_bodypart,
+	)
+
+
+/datum/devotion/faerun/good/eilistraee
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/soul_speak),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater,
+		CLERIC_T3 = /datum/action/cooldown/spell/revive,
+	)
+
+
+/datum/devotion/faerun/good/mielikki
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/locate_dead),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/cure_rot),
+		CLERIC_T2 = /datum/action/cooldown/spell/attach_bodypart,
+	)
+
+
+/datum/devotion/faerun/good/selune
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good, /datum/action/cooldown/spell/undirected/locate_dead),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/soul_speak),
+		CLERIC_T2 = /datum/action/cooldown/spell/aoe/churn_undead,
+		CLERIC_T3 = /datum/action/cooldown/spell/revive,
+	)
+
+
+/datum/devotion/faerun/good/tyr
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/divine_strike),
+		CLERIC_T2 = /datum/action/cooldown/spell/aoe/churn_undead,
+	)
+
+
+/datum/devotion/faerun/good/yondalla
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good, /datum/action/cooldown/spell/diagnose/holy),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/cure_rot),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater,
+	)
+
+
+/datum/devotion/faerun/good/sharess
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/diagnose/holy),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/defeat_absolution, /datum/action/cooldown/spell/cure_rot),
+	)
+
+
+/datum/devotion/faerun/good/torm
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/defeat_absolution, /datum/action/cooldown/spell/undirected/divine_strike),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater,
+	)
+
+
+/datum/devotion/faerun/good/milil
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/touch/orison),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/soul_speak, /datum/action/cooldown/spell/defeat_absolution),
+	)
+
+
+/datum/devotion/faerun/good/deneir
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/locate_dead, /datum/action/cooldown/spell/diagnose/holy),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/soul_speak),
+	)
+
+
+/datum/devotion/faerun/good/garl_glittergold
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good, /datum/action/cooldown/spell/undirected/touch/orison),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/cure_rot),
+	)
+
+
+/datum/devotion/faerun/neutral/helm
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/undirected/protection_evil_good),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/divine_strike, /datum/action/cooldown/spell/defeat_absolution),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater,
+	)
+
+
+/datum/devotion/faerun/neutral/oghma
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing, /datum/action/cooldown/spell/diagnose/holy, /datum/action/cooldown/spell/undirected/locate_dead),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/sacred_flame, /datum/action/cooldown/spell/undirected/soul_speak),
+		CLERIC_T2 = /datum/action/cooldown/spell/attach_bodypart,
+	)
+
+
+/datum/devotion/faerun/evil/vlaakith
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/undirected/locate_dead),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/soul_speak),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater/profane,
+	)
+
+
+/datum/devotion/faerun/evil/shar
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/sacred_flame/oathbreaker),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/soul_speak),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater/profane,
+	)
+
+
+/datum/devotion/faerun/evil/laduguer
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/diagnose/holy),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/defeat_absolution),
+		CLERIC_T2 = /datum/action/cooldown/spell/attach_bodypart,
+	)
+
+
+/datum/devotion/faerun/evil/talos
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/sacred_flame/oathbreaker),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/divine_strike),
+		CLERIC_T2 = /datum/action/cooldown/spell/aoe/churn_undead,
+	)
+
+
+/datum/devotion/faerun/evil/tiamat
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/sacred_flame/oathbreaker),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/divine_strike),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater/profane,
+	)
+
+
+/datum/devotion/faerun/evil/malar
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/sacred_flame/oathbreaker),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/divine_strike, /datum/action/cooldown/spell/cure_rot),
+	)
+
+
+/datum/devotion/faerun/evil/maglubiyet
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/undirected/protection_evil_good),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/divine_strike),
+		CLERIC_T2 = /datum/action/cooldown/spell/aoe/churn_undead,
+	)
+
+
+/datum/devotion/faerun/evil/loviatar
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/diagnose/holy),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/defeat_absolution),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater/profane,
+	)
+
+
+/datum/devotion/faerun/evil/asmodeus
+	miracles = list(
+		CLERIC_T0 = list(/datum/action/cooldown/spell/healing/profane, /datum/action/cooldown/spell/sacred_flame/oathbreaker),
+		CLERIC_T1 = list(/datum/action/cooldown/spell/projectile/profane, /datum/action/cooldown/spell/undirected/soul_speak),
+		CLERIC_T2 = /datum/action/cooldown/spell/healing/greater/profane,
+		CLERIC_T3 = /datum/action/cooldown/spell/revive,
+	)

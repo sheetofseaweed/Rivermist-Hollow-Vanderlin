@@ -157,8 +157,6 @@
 		// Excommunications
 		if(real_name in GLOB.excommunicated_players)
 			. += span_redtextbig("GOD-FORSAKEN!")
-		if(real_name in GLOB.heretical_players)
-			. += span_redtextbig("HERETIC! SHAME!")
 
 		// Outlaws
 		if(HAS_CHARACTER_TRAIT(user, TRAIT_KNOWBANDITS) && (real_name in GLOB.outlawed_players))

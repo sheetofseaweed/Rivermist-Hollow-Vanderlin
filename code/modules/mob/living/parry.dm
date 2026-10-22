@@ -69,6 +69,7 @@
 
 	if(body_position == LYING_DOWN)
 		parry_modifier -= 2
+	parry_modifier += get_enmity_penalty(user)
 
 	var/attacker_opposition = floor(attacker_skill / 4)
 

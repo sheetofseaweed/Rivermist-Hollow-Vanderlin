@@ -4058,6 +4058,7 @@
 #include "code\modules\spells\spell_types\undirected\call_to_arms.dm"
 #include "code\modules\spells\spell_types\undirected\call_to_slaughter.dm"
 #include "code\modules\spells\spell_types\undirected\channel_divinity.dm"
+#include "code\modules\spells\spell_types\undirected\channel_oath.dm"
 #include "code\modules\spells\spell_types\undirected\create_cloud.dm"
 #include "code\modules\spells\spell_types\undirected\divine_strike.dm"
 #include "code\modules\spells\spell_types\undirected\embrace_death.dm"

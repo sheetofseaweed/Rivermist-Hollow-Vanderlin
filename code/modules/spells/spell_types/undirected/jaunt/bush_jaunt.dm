@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/undirected/jaunt/bush_jaunt
 	name = "Nature's Concealment"
-	desc = "Disguise yourself as a nearby bush."
+	desc = "Disguise yourself as a nearby bush. The minor form copies a bush within two tiles and fades after half a minute."
 	button_icon_state = "bush_jaunt"
 	jaunt_type = /obj/effect/dummy/bush_disguise
 	sound = 'sound/magic/fleshtostone.ogg'
@@ -15,10 +15,12 @@
 	required_form = FORM_EARTH
 	required_technique = TECHNIQUE_ALTERATION
 	slot_level = 1
-	slot_only = TRUE
+	minor_cost = SPELL_MINOR_COST_DEFAULT
 	has_visual_effects = FALSE
 
 	var/obj/effect/dummy/bush_disguise/active_dummy = null
+	/// Set for a Minor disguise: short reach and a timed end.
+	var/minor_jaunt = FALSE
 	var/static/list/allowed_structures = list(
 		/obj/structure/flora/grass/bush,
 		/obj/structure/flora/grass/thorn_bush,
@@ -31,6 +33,7 @@
 		end_jaunt(cast_on)
 		return TRUE
 
+	minor_jaunt = is_minor_cast()
 	new /obj/effect/temp_visual/bush_transform(get_turf(cast_on))
 	cast_on.Immobilize(1 SECONDS)
 	. = ..()
@@ -57,7 +60,7 @@
 		return
 	var/obj/structure/nearest
 	var/turf/origin = get_turf(cast_on)
-	var/range = 10
+	var/range = minor_jaunt ? 2 : 10
 	for(var/turf/T in view(range, origin))
 		for(var/obj/O in T)
 			if(is_type_in_list(O, allowed_structures))
@@ -82,6 +85,8 @@
 	cast_on.cancel_camera()
 	to_chat(cast_on, span_notice("You blend into your surroundings..."))
 	active_dummy = holder
+	if(minor_jaunt)
+		addtimer(CALLBACK(src, PROC_REF(end_jaunt), cast_on), 30 SECONDS)
 
 /datum/action/cooldown/spell/undirected/jaunt/bush_jaunt/proc/end_jaunt(mob/living/cast_on)
 	if(!active_dummy || QDELETED(active_dummy))

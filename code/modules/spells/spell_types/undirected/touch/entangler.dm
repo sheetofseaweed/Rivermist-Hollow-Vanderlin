@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/undirected/touch/entangler
 	name = "Hand of Silvanus"
-	desc = "Invoke a hand which will create living vines and grant protection."
+	desc = "Invoke a hand which will create living vines and grant protection. The minor form holds one charge and its vine withers in a minute."
 	button_icon_state = "entangle"
 	sound = 'sound/items/dig_shovel.ogg'
 
@@ -13,9 +13,11 @@
 	required_form = FORM_EARTH
 	required_technique = TECHNIQUE_ALTERATION
 	slot_level = 1
-	slot_only = TRUE
+	minor_cost = SPELL_MINOR_COST_DEFAULT
 
 	charges = 3
+	/// Set while the hand came from a Minor cast: one charge, short-lived vines.
+	var/minor_hand = FALSE
 
 /datum/action/cooldown/spell/undirected/touch/entangler/create_hand(mob/living/carbon/cast_on)
 	. = ..()
@@ -23,6 +25,9 @@
 		return
 	// Permanent for now
 	ADD_TRAIT(cast_on, TRAIT_ENTANGLER_IMMUNE, MAGIC_TRAIT)
+	minor_hand = is_minor_cast()
+	if(minor_hand)
+		charges = 1
 
 /datum/action/cooldown/spell/undirected/touch/entangler/cast_on_hand_hit(obj/item/melee/touch_attack/hand, atom/victim, mob/living/carbon/caster, list/modifiers)
 	. = ..()
@@ -37,7 +42,9 @@
 		to_chat(caster, span_warning("The soil may only be blessed once."))
 		return FALSE
 
-	new /obj/structure/flora/grass/tangler/real(to_grow)
+	var/obj/structure/flora/grass/tangler/real/vine = new(to_grow)
+	if(minor_hand)
+		QDEL_IN(vine, 1 MINUTES)
 
 	return TRUE
 

@@ -121,7 +121,7 @@
 	var/datum/action/cooldown/spell/conjure/familiar/familiar = allocate(/datum/action/cooldown/spell/conjure/familiar)
 	familiar.Grant(caster)
 	caster.mana_pool.adjust_mana(100)
-	TEST_ASSERT(!healing.check_cost(feedback = FALSE), "Healing accepted minor casting.")
+	TEST_ASSERT(healing.check_cost(feedback = FALSE), "Healing refused a Minor cast on mana without a devotion datum.")
 	TEST_ASSERT(!familiar.check_cost(feedback = FALSE), "Familiar accepted mana in place of a slot.")
 	slots.set_fixed_slots(list(1, 1, 0, 0, 0))
 	slots.select_level(1)

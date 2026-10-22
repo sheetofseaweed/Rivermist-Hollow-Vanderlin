@@ -75,7 +75,16 @@
 /// Form mastery points the completed Rituos grants a slot caster.
 #define RITUOS_FORM_POINTS 3
 /// Lay on Hands pool per holy rank, in hit points.
-#define LAY_ON_HANDS_POOL_PER_RANK 5
+#define LAY_ON_HANDS_POOL_PER_RANK 10
+/// Pool points a Lay on Hands cleanse of toxins costs.
+#define LAY_ON_HANDS_CLEANSE_COST 5
+/// Vow of Enmity penalty on the marked foe's dodge and parry rolls against the paladin.
+#define VOW_OF_ENMITY_PENALTY -2
+/// Conquering Presence reach in tiles and fright length.
+#define CONQUERING_PRESENCE_RANGE 3
+#define CONQUERING_PRESENCE_DURATION 10 SECONDS
+/// Undying Sentinel mend per holy rank.
+#define UNDYING_SENTINEL_HEAL_PER_RANK 10
 /// Divine Smite holy fire per slot level.
 #define DIVINE_SMITE_DAMAGE_PER_LEVEL 15
 /// Preserve Life mend per holy rank, per ally.

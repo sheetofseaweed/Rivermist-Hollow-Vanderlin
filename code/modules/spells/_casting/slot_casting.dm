@@ -61,6 +61,11 @@
 		return level
 	return clamp(level, slot_level, slot_level_max)
 
+/// TRUE only for a Minor cast in progress; a legacy cast (null level) is not Minor.
+/datum/action/cooldown/spell/proc/is_minor_cast()
+	var/level = get_effect_level()
+	return !isnull(level) && level == SPELL_SLOT_MINOR
+
 /datum/action/cooldown/spell/proc/get_slot_label()
 	return slot_label || name
 
@@ -129,10 +134,10 @@
 			if(feedback)
 				to_chat(caster, span_warning("[get_slot_label()] requires a spell slot; it has no minor form."))
 			return FALSE
-		// Minor miracles draw on devotion; arcane Minor casts draw on mana.
-		if(spell_type == SPELL_MIRACLE)
+		// A Minor miracle draws devotion when the caster has a datum, else mana like any Minor cast.
+		if(uses_devotion_reserve())
 			var/mob/living/carbon/human/faithful = caster
-			if(!istype(faithful) || !faithful.cleric?.check_devotion(cost))
+			if(!faithful.cleric.check_devotion(cost))
 				if(feedback)
 					caster.balloon_alert(caster, "not enough devotion for a minor miracle!")
 				return FALSE
@@ -147,6 +152,13 @@
 			to_chat(caster, span_warning("[get_slot_label()] requires a level [slot_level] or higher slot."))
 		return FALSE
 	return slots.can_spend(level, feedback)
+
+/// Minor miracles pay devotion only for casters who carry a devotion datum.
+/datum/action/cooldown/spell/proc/uses_devotion_reserve()
+	if(spell_type != SPELL_MIRACLE || !ishuman(owner))
+		return FALSE
+	var/mob/living/carbon/human/faithful = owner
+	return !isnull(faithful.cleric)
 
 /// Pays once, after validation and before the effect. Cancelling earlier is free.
 /datum/action/cooldown/spell/proc/pay_slot_cast()
@@ -170,12 +182,13 @@
 	// HUD and mana signals may ask whether this action is available during payment.
 	cast_paid = TRUE
 	if(cast_slot_level == SPELL_SLOT_MINOR)
-		if(spell_type == SPELL_MIRACLE)
+		if(uses_devotion_reserve())
 			var/mob/living/carbon/human/faithful = caster
-			faithful.cleric?.update_devotion(-get_minor_cost())
+			faithful.cleric.update_devotion(-get_minor_cost())
+			caster.balloon_alert(caster, "[get_slot_label()]: minor, devotion")
 		else
 			caster.consume_mana(get_minor_cost())
-		caster.balloon_alert(caster, "[get_slot_label()]: minor")
+			caster.balloon_alert(caster, "[get_slot_label()]: minor, mana")
 		return TRUE
 	if(!slots.spend(cast_slot_level))
 		cast_paid = FALSE

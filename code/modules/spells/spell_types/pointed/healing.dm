@@ -83,9 +83,9 @@
 				cast_on.adjust_divine_fire_stacks(1)
 				cast_on.IgniteMob()
 				return
-		if(((cast_on.real_name in GLOB.excommunicated_players) || (cast_on.real_name in GLOB.heretical_players)) && !HAS_TRAIT(cast_on, TRAIT_FANATICAL))
+		if((cast_on.real_name in GLOB.excommunicated_players) && !HAS_TRAIT(cast_on, TRAIT_FANATICAL))
 			cast_on.visible_message(
-				span_warning("The angry Ten sear the flesh of [cast_on]! a foolish blasphemer and heretic!"),
+				span_warning("The gods sear the flesh of [cast_on], a forsaken blasphemer!"),
 				span_notice("I am despised by the gods, rejected, and they remind me just how unlovable I am with a wave of pain!"),
 			)
 			cast_on.emote("scream")

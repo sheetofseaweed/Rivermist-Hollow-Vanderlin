@@ -32,6 +32,7 @@
 
 /datum/patron/faerun/neutral_gods/Helm
 	name = "Helm"
+	devotion_holder = /datum/devotion/faerun/neutral/helm
 	domain = "Guardianship, Vigilance, Duty"
 	desc = "The Watcher, unblinking and stern, devoted to eternal vigilance."
 	flaws = "Emotionally distant, uncompromising; duty outweighs compassion."
@@ -59,6 +60,7 @@
 
 /datum/patron/faerun/neutral_gods/Oghma
 	name = "Oghma"
+	devotion_holder = /datum/devotion/faerun/neutral/oghma
 	domain = "Knowledge, Inspiration, Invention"
 	desc = "Patron of ideas, creation, and the power of words."
 	flaws = "Absent-minded; values knowledge over mortal consequences."

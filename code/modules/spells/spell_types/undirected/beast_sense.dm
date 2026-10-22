@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/undirected/beast_sense
 	name = "Beastial Senses"
-	desc = "Grants the Dendorite a keen sense of smell and excellent vision, to better hunt with."
+	desc = "Grants a keen sense of smell and excellent vision for ten minutes, to better hunt with. The minor form lasts five."
 	button_icon_state = "bestialsense"
 	sound = 'sound/vo/smokedrag.ogg'
 
@@ -18,7 +18,7 @@
 	required_form = FORM_LIFE
 	required_technique = TECHNIQUE_ILLUSION
 	slot_level = 1
-	slot_only = TRUE
+	minor_cost = SPELL_MINOR_COST_DEFAULT
 
 /datum/action/cooldown/spell/undirected/beast_sense/can_cast_spell(feedback)
 	. = ..()
@@ -35,10 +35,13 @@
 
 /datum/action/cooldown/spell/undirected/beast_sense/cast(atom/cast_on)
 	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(grant_status)), rand(5 SECONDS, 9 SECONDS))
+	addtimer(CALLBACK(src, PROC_REF(grant_status), is_minor_cast()), rand(5 SECONDS, 9 SECONDS))
 
-/datum/action/cooldown/spell/undirected/beast_sense/proc/grant_status()
+/// A Minor prayer lasts half the time.
+/datum/action/cooldown/spell/undirected/beast_sense/proc/grant_status(minor = FALSE)
 	var/mob/living/carbon/C = owner
+	if(QDELETED(C))
+		return
 	to_chat(C, span_greentext("A raven passes overhead... your prayer was heard!"))
 	playsound(C, 'sound/vo/mobs/bird/CROW_01.ogg', 60, TRUE, -1)
-	C.apply_status_effect(/datum/status_effect/buff/beastsense)
+	C.apply_status_effect(/datum/status_effect/buff/beastsense, minor ? 5 MINUTES : null)

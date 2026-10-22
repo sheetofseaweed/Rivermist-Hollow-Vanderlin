@@ -91,7 +91,7 @@
 
 /datum/action/cooldown/spell/healing/lay_on_hands
 	name = "Lay on Hands"
-	desc = "Touch someone to mend them from your oath's pool of five hit points per rank of holy skill, up to twenty-five per touch. A long rest refills the pool."
+	desc = "Touch someone to mend them from your oath's pool of ten hit points per rank of holy skill, up to twenty-five per touch. A poisoned target is cleansed for five points instead. A long rest refills the pool."
 	cast_range = 1
 	cooldown_time = 5 SECONDS
 	spell_cost = 0
@@ -102,18 +102,46 @@
 	feature_id = FEATURE_LAY_ON_HANDS
 	feature_rest = REST_LONG
 	var/pending_spend = 0
+	/// TRUE when this touch cleanses toxins instead of healing.
+	var/cleansing = FALSE
 
 /datum/action/cooldown/spell/healing/lay_on_hands/get_feature_cost()
 	return max(pending_spend, 1)
 
-/// The touch spends what the pool still holds, up to the healing base.
+/// Toxins and poisons in the blood are what the touch can cleanse; the realm has no diseases.
+/datum/action/cooldown/spell/healing/lay_on_hands/proc/needs_cleansing(mob/living/target)
+	if(!target.reagents)
+		return FALSE
+	for(var/datum/reagent/reagent as anything in target.reagents.reagent_list)
+		if(istype(reagent, /datum/reagent/toxin) || istype(reagent, /datum/reagent/poison))
+			return TRUE
+	return FALSE
+
+/// A poisoned target is cleansed for five points; otherwise the touch spends up to the healing base.
 /datum/action/cooldown/spell/healing/lay_on_hands/before_cast(atom/cast_on)
 	. = ..()
+	if(. & SPELL_CANCEL_CAST)
+		return .
 	var/datum/spell_slots/slots = register_feature()
-	pending_spend = min(slots ? slots.get_feature_charges(feature_id) : 0, initial(base_healing))
+	var/pool = slots ? slots.get_feature_charges(feature_id) : 0
+	cleansing = FALSE
+	if(isliving(cast_on) && pool >= LAY_ON_HANDS_CLEANSE_COST && needs_cleansing(cast_on))
+		cleansing = TRUE
+		pending_spend = LAY_ON_HANDS_CLEANSE_COST
+		return .
+	pending_spend = min(pool, initial(base_healing))
 	if(pending_spend <= 0)
 		return . | SPELL_CANCEL_CAST
 	base_healing = pending_spend
+
+/datum/action/cooldown/spell/healing/lay_on_hands/cast(mob/living/cast_on)
+	if(!cleansing)
+		return ..()
+	cleansing = FALSE
+	cast_on.reagents?.remove_all_type(/datum/reagent/toxin, 999)
+	cast_on.reagents?.remove_all_type(/datum/reagent/poison, 999)
+	owner.visible_message(span_notice("[owner] lays a hand on [cast_on] and draws the poison from [cast_on.p_their()] blood."), span_notice("I draw the poison from [cast_on]'s blood."))
+	return TRUE
 
 /datum/action/cooldown/spell/undirected/divine_smite
 	name = "Divine Smite"

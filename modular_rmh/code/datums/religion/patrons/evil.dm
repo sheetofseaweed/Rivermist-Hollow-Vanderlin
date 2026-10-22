@@ -22,6 +22,7 @@
 
 /datum/patron/faerun/evil_gods/Vlaakith
 	name = "Vlaakith"
+	devotion_holder = /datum/devotion/faerun/evil/vlaakith
 	domain = "Domination, Lichdom, Githyanki Supremacy"
 	desc = "Undying lich-queen who rules the githyanki with iron psionic tyranny."
 	flaws = "Megalomaniacal, paranoid, devours her own champions."
@@ -47,6 +48,7 @@
 
 /datum/patron/faerun/evil_gods/Shar
 	name = "Shar"
+	devotion_holder = /datum/devotion/faerun/evil/shar
 	domain = "Darkness, Loss, Secrets"
 	desc = "Mistress of the Night, embracing oblivion and the quiet of forgotten things."
 	flaws = "Self-destructive nihilism; burns everything she touches."
@@ -72,6 +74,7 @@
 
 /datum/patron/faerun/evil_gods/Laduguer
 	name = "Laduguer"
+	devotion_holder = /datum/devotion/faerun/evil/laduguer
 	domain = "Labor, Slavery, Duergar"
 	desc = "Grim patron of relentless toil, austerity, and duergar dominion."
 	flaws = "Joyless, harsh, obsessed with productivity and control."
@@ -84,6 +87,7 @@
 
 /datum/patron/faerun/evil_gods/Talos
 	name = "Talos"
+	devotion_holder = /datum/devotion/faerun/evil/talos
 	domain = "Storms, Destruction, Rage"
 	desc = "The Storm Lord, wild force of nature’s fury made divine."
 	flaws = "Impulsive, uncontrollable, delights in devastation for its own sake."
@@ -96,6 +100,7 @@
 
 /datum/patron/faerun/evil_gods/Tiamat
 	name = "Tiamat"
+	devotion_holder = /datum/devotion/faerun/evil/tiamat
 	domain = "Greed, Dragons, Domination"
 	desc = "The Five-Headed Dragon Queen, embodiment of chromatic avarice and tyranny."
 	flaws = "Pride, infighting among her aspects, insatiable greed."
@@ -108,6 +113,7 @@
 
 /datum/patron/faerun/evil_gods/Malar
 	name = "Malar"
+	devotion_holder = /datum/devotion/faerun/evil/malar
 	domain = "The Hunt, Bloodlust, Predation"
 	desc = "The Beastlord, a savage deity of primal hunger and relentless pursuit, exalting the raw instincts of predator and prey."
 	flaws = "Mindless ferocity; cannot distinguish challenge from cruelty; views all life only as hunter or hunted."
@@ -120,6 +126,7 @@
 
 /datum/patron/faerun/evil_gods/Maglubiyet
 	name = "Maglubiyet"
+	devotion_holder = /datum/devotion/faerun/evil/maglubiyet
 	domain = "Conquest, Goblinoids, Tyranny, War"
 	desc = "The Mighty One, brutal and domineering god of goblinoid supremacy, uniting goblins, hobgoblins, and bugbears under his iron will and driving them toward endless war and conquest."
 	flaws = "Obsessed with domination; unable to trust even his own followers; crushes innovation and compassion as weakness."
@@ -158,6 +165,7 @@
 
 /datum/patron/faerun/evil_gods/Loviatar
 	name = "Loviatar"
+	devotion_holder = /datum/devotion/faerun/evil/loviatar
 	display_name = "Loviatar"
 	domain = "Pain, Discipline, Endurance, Control"
 	desc = "The Maiden of Pain, who teaches that suffering refines and reveals truth."
@@ -171,6 +179,7 @@
 
 /datum/patron/faerun/evil_gods/Asmodeus
 	name = "Asmodeus"
+	devotion_holder = /datum/devotion/faerun/evil/asmodeus
 	display_name = "Asmodeus"
 	domain = "Tyranny, Contracts, Domination, Hell"
 	desc = "The Lord of the Nine Hells, master of tyranny through law and binding pacts."
