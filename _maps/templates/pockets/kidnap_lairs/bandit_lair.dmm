@@ -309,7 +309,6 @@
 "oq" = (
 /obj/structure/flora/new_shroom/cyan,
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -341,8 +340,7 @@
 /area/pocket_dimension)
 "qP" = (
 /obj/structure/fluff/walldeco/chains{
-	icon_state = "chains3";
-	pixel_y = 0
+	icon_state = "chains3"
 	},
 /obj/effect/decal/cleanable/blood/tracks{
 	dir = 9
@@ -434,7 +432,6 @@
 /area/pocket_dimension)
 "wM" = (
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -507,7 +504,6 @@
 /area/pocket_dimension)
 "zi" = (
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -545,7 +541,6 @@
 "BK" = (
 /obj/structure/hotspring/border/six,
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -566,7 +561,6 @@
 "Cl" = (
 /obj/item/natural/rock,
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -1022,7 +1016,6 @@
 "SP" = (
 /obj/structure/table/wood/plain_alt,
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -1035,7 +1028,6 @@
 "Ua" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
