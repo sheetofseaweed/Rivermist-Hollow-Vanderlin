@@ -30,8 +30,23 @@
 /datum/spellbook/ui_static_data(mob/user)
 	var/list/data = list()
 	data["techniques"] = GLOB.all_techniques
-	data["forms"] = GLOB.all_forms
+	data["forms"] = get_shown_forms()
 	return data
+
+/// The forms the craft may study, plus any form a known spell already uses.
+/datum/spellbook/proc/get_shown_forms()
+	if(!mastery || !mastery.allowed_forms)
+		return GLOB.all_forms
+	var/list/shown = list()
+	for(var/form in GLOB.all_forms)
+		if(mastery.form_allowed(form))
+			shown += form
+			continue
+		for(var/datum/action/cooldown/spell/known as anything in mastery.unlocked_spells)
+			if(initial(known.required_form) == form)
+				shown += form
+				break
+	return shown
 
 /datum/spellbook/ui_data(mob/user)
 	var/list/data = list()
@@ -64,7 +79,7 @@
 	data["techniqueLevels"] = technique_data
 
 	var/list/form_data = list()
-	for(var/form in GLOB.all_forms)
+	for(var/form in get_shown_forms())
 		form_data += list(list(
 			"id" = form,
 			"name" = form,
@@ -83,6 +98,9 @@
 		if(!form)
 			continue
 		var/is_unlocked = (spell_path in mastery.unlocked_spells)
+		// A craft shows only the forms it may study, besides what it already knows.
+		if(!is_unlocked && !mastery.form_allowed(form))
+			continue
 		var/needs_prep = mastery.needs_preparation(spell_path)
 		var/slot_level = initial(spell_path.slot_level)
 		var/list/prerequisite_data = list()

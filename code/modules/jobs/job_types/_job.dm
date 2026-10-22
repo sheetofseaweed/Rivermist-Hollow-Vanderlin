@@ -204,6 +204,8 @@
 	var/technique_points = 0
 	/// Wizards prepare from a grimoire; innate casters cast everything they know.
 	var/prepares_spells = FALSE
+	/// Forms this role may study, such as the nature forms for rangers. Null opens every form.
+	var/list/allowed_spell_forms
 	/// Do we get passive income every day from our noble estates?
 	var/noble_income = FALSE
 
@@ -436,6 +438,9 @@
 			var/datum/action/innate/teach_spell/lesson = new
 			lesson.Grant(spawned)
 	add_spells(spawned)
+	// A role's craft limits the forms it may study; the list lands once the kit spells exist.
+	if(allowed_spell_forms && spawned.mind)
+		spawned.mind.get_spell_mastery().allowed_forms = allowed_spell_forms.Copy()
 	// Archetype casters grow through slots and mastery, not the old tree.
 	if(!is_slot_caster())
 		spawned.adjust_spell_points(spell_points)

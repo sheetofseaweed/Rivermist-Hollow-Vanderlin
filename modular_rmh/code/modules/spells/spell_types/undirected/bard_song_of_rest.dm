@@ -3,6 +3,7 @@
 // Bardic Inspiration
 
 /datum/action/cooldown/spell/bardic_inspiration/bard
+	name = "Bardic Inspiration"
 	desc = "Inspire a target with stirring words. Each use spends an Inspiration charge that a long rest restores, as does a short rest from Journeyman arcane."
 	cooldown_time = 10 SECONDS
 	feature_id = FEATURE_BARDIC_INSPIRATION

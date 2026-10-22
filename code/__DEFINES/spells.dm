@@ -46,6 +46,7 @@
 #define FEATURE_BARDIC_INSPIRATION "bardic_inspiration"
 #define FEATURE_RAGE "rage"
 #define FEATURE_KI "ki"
+#define FEATURE_HUNTERS_MARK "hunters_mark"
 #define FEATURE_ACTION_SURGE "action_surge"
 /// Wild Shape charges per short rest.
 #define WILD_SHAPE_CHARGES 2
@@ -87,6 +88,9 @@
 #define UNDYING_SENTINEL_HEAL_PER_RANK 10
 /// Divine Smite holy fire per slot level.
 #define DIVINE_SMITE_DAMAGE_PER_LEVEL 15
+/// Hunter's Mark length before upcasting, and the extra brute each of the hunter's hits deals.
+#define HUNTERS_MARK_DURATION (60 SECONDS)
+#define HUNTERS_MARK_BONUS_DAMAGE 5
 /// Preserve Life mend per holy rank, per ally.
 #define PRESERVE_LIFE_HEAL_PER_RANK 5
 

@@ -578,6 +578,14 @@
 	TEST_ASSERT_NULL(caster.get_spell(light_path), "An unlearned spell stayed granted.")
 	TEST_ASSERT_EQUAL(mastery.spendable_form_points[FORM_ARCANE], 1, "Unlearning did not refund the form point.")
 
+	// A craft limited to the nature forms refuses other forms in learning and investing.
+	mastery.allowed_forms = list(FORM_LIFE, FORM_EARTH, FORM_AIR)
+	TEST_ASSERT(!mastery.can_learn_spell(light_path), "An Arcane cantrip was learnable under a nature-only craft.")
+	TEST_ASSERT(!mastery.invest_form(FORM_FIRE), "A nature-only craft invested a point in Fire.")
+	TEST_ASSERT(mastery.invest_form(FORM_LIFE), "A nature-only craft could not invest in Life.")
+	mastery.allowed_forms = null
+	TEST_ASSERT(mastery.can_learn_spell(light_path), "Lifting the craft limit did not reopen the Arcane cantrip.")
+
 	book.forceMove(get_step(caster, NORTH))
 	SEND_SIGNAL(caster.mind, COMSIG_MIND_SPELL_REST, REST_LONG)
 	TEST_ASSERT_EQUAL(book.loc, caster, "A long rest did not recall the grimoire.")

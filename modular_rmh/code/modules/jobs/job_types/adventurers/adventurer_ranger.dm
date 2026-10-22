@@ -19,6 +19,9 @@
 
 	magic_user = TRUE
 	spell_points = 20
+	caster_archetype = CASTER_HALF
+	caster_rank_skill = /datum/attribute/skill/misc/tracking
+	allowed_spell_forms = list(FORM_LIFE, FORM_EARTH, FORM_AIR)
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_ranger/beastmaster,
@@ -38,3 +41,28 @@
 	. = ..()
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
 
+// Shared by every ranger path; every sheet trains tracking, so the ladder rests on it.
+/datum/job/advclass/combat/adventurer_ranger
+	caster_archetype = CASTER_HALF
+	caster_rank_skill = /datum/attribute/skill/misc/tracking
+	// A ranger's craft stays on the nature forms; tomes and lessons cannot push it into Fire or Arcane.
+	allowed_spell_forms = list(FORM_LIFE, FORM_EARTH, FORM_AIR)
+	spells = list(
+		/datum/action/cooldown/spell/undirected/longstrider,
+		/datum/action/cooldown/spell/undirected/feather_falling,
+		/datum/action/cooldown/spell/undirected/beast_sense,
+		/datum/action/cooldown/spell/conjure/kneestingers,
+		/datum/action/cooldown/spell/undirected/touch/entangler,
+		/datum/action/cooldown/spell/undirected/jaunt/bush_jaunt,
+		/datum/action/cooldown/spell/status/hunters_mark,
+	)
+
+/// Rangers hold no mastery points, so the shared spawn skips Spellcraft; the known list still needs it.
+/datum/job/advclass/combat/adventurer_ranger/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+	. = ..()
+	if(!spawned || QDELETED(spawned) || !spawned.mind)
+		return
+	if(locate(/datum/action/innate/open_spellbook) in spawned.actions)
+		return
+	var/datum/action/innate/open_spellbook/innate_book = new
+	innate_book.Grant(spawned)

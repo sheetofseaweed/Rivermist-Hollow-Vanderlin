@@ -33,6 +33,8 @@
 	var/list/granted_actions = list()
 	/// Wizards prepare slot spells from a grimoire; innate casters cast everything they know.
 	var/uses_preparation = FALSE
+	/// Forms this craft may study, set by the job; null leaves every form open, as for wizards.
+	var/list/allowed_forms
 	/// Job spawn points land once, whichever of the job and its advanced class runs first.
 	var/job_points_granted = FALSE
 	var/list/prepared_spells = list()
@@ -181,8 +183,12 @@
 	spendable_technique_points[technique] = (spendable_technique_points[technique] || 0) + amount
 	return TRUE
 
+/// Whether this craft reaches a form; an unset list opens every form, and formless spells always pass.
+/datum/spell_mastery/proc/form_allowed(form)
+	return !form || !allowed_forms || (form in allowed_forms)
+
 /datum/spell_mastery/proc/invest_form(form, amount = 1)
-	if(!form || amount <= 0)
+	if(!form || amount <= 0 || !form_allowed(form))
 		return FALSE
 	if(amount > unspent_form_points)
 		return FALSE
@@ -220,6 +226,8 @@
 	var/form = initial(spell_path.required_form)
 	var/level_req = initial(spell_path.required_level)
 
+	if(!form_allowed(form))
+		return FALSE
 	if(form && (spendable_form_points[form] || 0) < 1)
 		return FALSE
 	if(technique && (spendable_technique_points[technique] || 0) < 1)

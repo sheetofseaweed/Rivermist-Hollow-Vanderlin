@@ -131,6 +131,8 @@
 		return "[student] must stand beside me."
 	if(spell_path in student_mastery.unlocked_spells)
 		return "[student] already knows [spell_name]."
+	if(!student_mastery.form_allowed(form))
+		return "[student]'s craft does not reach [form]; [spell_name] is beyond [student.p_them()]."
 	if(student_mastery.can_learn_spell(spell_path, TEACH_SPELL_LEVEL_GRACE))
 		return null
 	var/needed_level = max(0, initial(spell_path.required_level) - TEACH_SPELL_LEVEL_GRACE)
