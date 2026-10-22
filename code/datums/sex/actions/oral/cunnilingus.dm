@@ -10,7 +10,7 @@
 	scene_target_slot = ORGAN_SLOT_VAGINA
 
 /datum/sex_action/cunnilingus/shows_on_menu(mob/living/user, mob/living/target)
-	if(user == target)
+	if(user == target && !allows_self_use(user))
 		return FALSE
 	if(!target.getorganslot(ORGAN_SLOT_VAGINA))
 		return FALSE
@@ -20,7 +20,7 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	if(user == target)
+	if(user == target && !allows_self_use(user))
 		return FALSE
 	if(check_sex_lock(target, ORGAN_SLOT_VAGINA))
 		return FALSE

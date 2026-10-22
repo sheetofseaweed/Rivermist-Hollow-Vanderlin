@@ -147,6 +147,41 @@
 	log_game("Quest posting withdrawn: [title] ([reason])")
 	qdel(src)
 
+/// Whether a rune rescue of the contractor voids this unfinished contract.
+/datum/quest/proc/fails_on_rune_rescue(mob/living/carbon/rescued)
+	return FALSE
+
+/// TRUE when a tracked quest item rides on the carrier: held, worn or in a bag.
+/datum/quest/proc/is_tracked_item_carried_by(mob/living/carrier)
+	for(var/datum/weakref/tracked_ref as anything in tracked_atoms)
+		var/obj/item/tracked_item = tracked_ref.resolve()
+		if(isitem(tracked_item) && get(tracked_item, /mob/living) == carrier)
+			return TRUE
+	return FALSE
+
+/// Voids the contract with no refund; quest Destroy unbinds the scroll before deleting it.
+/datum/quest/proc/fail_from_rune_rescue(mob/living/carbon/rescued)
+	var/forfeit_text = deposit_amount > 0 ? " The [deposit_amount] amna deposit is forfeit." : ""
+	to_chat(rescued, span_warning("The rune's pull voids your contract, \"[get_title()]\".[forfeit_text]"))
+	var/mob/giver = quest_giver_reference?.resolve()
+	if(giver && giver != rescued)
+		to_chat(giver, span_warning("[rescued.real_name] was pulled back by the rune, voiding the contract \"[get_title()]\".[forfeit_text]"))
+	log_quest(rescued.ckey, rescued.mind, rescued, "Rune rescue voided [quest_type]: [get_title()]")
+	qdel(src)
+
+/// Voids every unfinished contract the rune-rescued mob holds whose type forbids a rescue.
+/proc/fail_contracts_on_rune_rescue(mob/living/carbon/rescued)
+	if(!rescued)
+		return
+	for(var/obj/item/paper/scroll/quest/scroll as anything in GLOB.quest_scrolls.Copy())
+		var/datum/quest/quest = scroll.assigned_quest
+		if(!quest || quest.complete || quest.being_destroyed)
+			continue
+		if(!(rescued in scroll.get_quest_assignees(rescued)))
+			continue
+		if(quest.fails_on_rune_rescue(rescued))
+			quest.fail_from_rune_rescue(rescued)
+
 /// Landmark contract types this quest may spawn at.
 /datum/quest/proc/get_landmark_contract_types()
 	return quest_type
@@ -166,13 +201,35 @@
 /datum/quest/proc/set_contract_kit(obj/item/kit)
 	contract_kit_ref = WEAKREF(kit)
 
-/// Whether goods on the ledger's input turf can finish this contract at turn-in.
-/datum/quest/proc/has_turn_in_goods(turf/input_point)
+/// Whether this contract is finished by handing goods to the ledger at turn-in.
+/datum/quest/proc/uses_turn_in_goods()
 	return FALSE
 
-/// Takes the goods on the input turf and completes the contract; returns TRUE on success.
+/// Whether goods on the ledger's input turf or carried by the user can finish this contract at turn-in.
+/datum/quest/proc/has_turn_in_goods(turf/input_point, mob/user)
+	return FALSE
+
+/// Takes the goods from the input turf and the user and completes the contract; returns TRUE on success.
 /datum/quest/proc/try_collect_turn_in_goods(turf/input_point, mob/user)
 	return FALSE
+
+/// Chat line telling the user how much of the needed goods the ledger can see.
+/datum/quest/proc/get_turn_in_goods_report(turf/input_point, mob/user)
+	return ""
+
+/// Goods of a type on the input turf, in containers there, or carried by the user; never inside a body or another mob.
+/datum/quest/proc/find_turn_in_goods(turf/input_point, mob/user, goods_type)
+	. = list()
+	for(var/atom/place as anything in list(input_point, user))
+		if(!place)
+			continue
+		for(var/atom/movable/candidate as anything in place.GetAllContents(goods_type))
+			if(candidate == place || get(candidate, /obj/item/organ))
+				continue
+			var/mob/living/holder = get(candidate, /mob/living)
+			if(holder && holder != user)
+				continue
+			. |= candidate
 
 /datum/quest/proc/set_target_anchor(atom/source)
 	var/turf/anchor_turf = get_turf(source)

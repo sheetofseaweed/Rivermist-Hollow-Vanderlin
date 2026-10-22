@@ -780,6 +780,8 @@ GLOBAL_PROTECT(no_child_icons)
 				// Apply taur body offset to adjust rendering height for taurs like jdeer
 				if(T && T.body_offset_y)
 					mbeltoverlay.pixel_y += T.body_offset_y
+				if(has_hiked_hem())
+					mbeltoverlay.pixel_y += 2 // ride above the gathered hem while it is held up
 			standing_front += mbeltoverlay
 
 	overlays_standing[BELT_LAYER] = standing_front
@@ -1062,9 +1064,9 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/armsindex = get_limbloss_index(ARM_RIGHT, ARM_LEFT)
 		var/hideboob = FALSE
-		if(wear_armor?.flags_inv & HIDEBOOB)
+		if(wear_armor?.flags_inv & HIDEBOOB && !wear_armor.uses_breast_sized_layers(src))
 			hideboob = TRUE
-		if(cloak?.flags_inv & HIDEBOOB)
+		if(cloak?.flags_inv & HIDEBOOB && !cloak.uses_breast_sized_layers(src))
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
@@ -1129,7 +1131,7 @@ GLOBAL_PROTECT(no_child_icons)
 		var/datum/species/species = dna?.species
 		var/armsindex = get_limbloss_index(ARM_RIGHT, ARM_LEFT)
 		var/hideboob = FALSE
-		if(cloak?.flags_inv & HIDEBOOB)
+		if(cloak?.flags_inv & HIDEBOOB && !cloak.uses_breast_sized_layers(src))
 			hideboob = TRUE
 		if(species?.no_boobs)
 			hideboob = TRUE
@@ -1342,6 +1344,10 @@ GLOBAL_PROTECT(no_child_icons)
 			b_size = boob.organ_size
 		if(!bra.gendered)
 			use_female_sprites = FALSE
+		// Breast-sized bras take their sheet state in build_worn_icon() instead of the _B size states.
+		if(bra.uses_breast_sized_layers(src))
+			use_female_sprites = FEMALE_BOOB
+			b_size = 0
 		var/mutable_appearance/underwear_overlay = bra.build_worn_icon(age, UNDERWEAR_TOP_LAYER, coom = use_female_sprites, customi = racecustom, breast_size = b_size, clip_mask = c_mask)
 
 		if(LAZYACCESS(offsets, OFFSET_BRA))
@@ -1605,7 +1611,7 @@ GLOBAL_PROTECT(no_child_icons)
 	return mutable_appearance(GLOB.female_clothing_icons[t_color], layer = -layer)
 
 /proc/wear_dismembered_version(t_color, icon, layer, sleeveindex, type)
-	var/index = "[t_color][sleeveindex]"
+	var/index = "[t_color][sleeveindex][icon]" // hiked hems reuse state names from another file
 	var/icon/clothing_icon = GLOB.dismembered_clothing_icons[index]
 	if(!clothing_icon) 	//Create standing/laying icons if they don't exist
 		generate_dismembered_clothing(index,t_color,icon,sleeveindex, type)
@@ -1730,6 +1736,12 @@ generate/load female uniform sprites matching all previously decided variables
 	if(!file2use)
 		file2use = default_icon_file
 
+	// Breast-sized garments take the sheet state for the wearer's size instead of the "_boob" overlay.
+	var/breast_sized_suffix = get_breast_sized_worn_suffix(coom, customi, isinhands)
+	if(breast_sized_suffix)
+		file2use = breast_sized_icon
+		t_state = "[icon_state]_f_[breast_sized_suffix]"
+
 	//Find a valid layer from variables+arguments
 	var/layer2use
 	if(alternate_worn_layer)
@@ -1763,13 +1775,17 @@ generate/load female uniform sprites matching all previously decided variables
 //		for(var/mutable_appearance/MA in worn_overlays)
 //			MA.blend_mode = BLEND_MULTIPLY
 		standing.overlays.Add(worn_overlays)
-	var/do_boob = (coom == FEMALE_BOOB && boobed)
+	var/do_boob = (coom == FEMALE_BOOB && boobed && !breast_sized_suffix)
 	if(!isinhands && do_boob)
 		var/mutable_appearance/boob_overlay = mutable_appearance(file2use, "[t_state]_boob", -layer2use)
 		standing.overlays.Add(boob_overlay)
 
 	if(get_detail_tag())
-		var/mutable_appearance/pic = mutable_appearance(icon(file2use, "[t_state][get_detail_tag()]"), -layer2use)
+		var/mutable_appearance/pic
+		if(breast_sized_suffix && icon_exists(breast_sized_icon, "[icon_state]_f_detail_[breast_sized_suffix]"))
+			pic = mutable_appearance(breast_sized_icon, "[icon_state]_f_detail_[breast_sized_suffix]", -layer2use)
+		else
+			pic = mutable_appearance(icon(file2use, "[t_state][get_detail_tag()]"), -layer2use)
 		pic.appearance_flags = RESET_COLOR
 		if(get_detail_color())
 			pic.color = get_detail_color()
@@ -1781,12 +1797,15 @@ generate/load female uniform sprites matching all previously decided variables
 				pic.color = get_detail_color()
 			standing.overlays.Add(pic)
 
+	if(breast_sized_suffix)
+		add_breast_sized_front(standing, breast_sized_suffix, layer2use)
+
 	if(!isinhands && GET_ATOM_BLOOD_DNA_LENGTH(src))
-		var/index = "[t_state][sleeveindex]"
+		var/index = "[t_state][sleeveindex][file2use]"
 		var/static/list/bloody_onmob = list()
 		var/icon/clothing_icon = bloody_onmob["[index][(coom == "f") ? "_boob" : ""]"]
 		if(!clothing_icon)
-			if(sleeved && sleeveindex < 4) //cut out sleeves from north/south sprites
+			if(sleeved && sleeveindex < 4 && !breast_sized_suffix) //cut out sleeves from north/south sprites
 				clothing_icon = icon(GLOB.dismembered_clothing_icons[index])
 			else
 				clothing_icon = icon(file2use, t_state)
@@ -1868,12 +1887,12 @@ generate/load female uniform sprites matching all previously decided variables
 			sleeves += pic
 
 		if(GET_ATOM_BLOOD_DNA_LENGTH(I))
-			var/icon/blood_overlay = bloody_r[used]
+			var/icon/blood_overlay = bloody_r["[used][I.sleeved]"]
 			if(!blood_overlay)
 				blood_overlay = icon(I.sleeved, used)
 				blood_overlay.Blend("#fff", ICON_ADD) 			//fills the icon_state with white (except where it's transparent)
 				blood_overlay.Blend(icon(I.bloody_icon, I.bloody_icon_state), ICON_MULTIPLY) //adds blood and the remaining white areas become transparant
-				bloody_r[used] = fcopy_rsc(blood_overlay)
+				bloody_r["[used][I.sleeved]"] = fcopy_rsc(blood_overlay)
 			var/mutable_appearance/pic = mutable_appearance(blood_overlay, layer=-layer2use)
 			sleeves += pic
 
@@ -1895,12 +1914,12 @@ generate/load female uniform sprites matching all previously decided variables
 			sleeves += pic
 
 		if(GET_ATOM_BLOOD_DNA_LENGTH(I))
-			var/icon/blood_overlay = bloody_l[used]
+			var/icon/blood_overlay = bloody_l["[used][I.sleeved]"]
 			if(!blood_overlay)
 				blood_overlay = icon(I.sleeved, used)
 				blood_overlay.Blend("#fff", ICON_ADD) 			//fills the icon_state with white (except where it's transparent)
 				blood_overlay.Blend(icon(I.bloody_icon, I.bloody_icon_state), ICON_MULTIPLY) //adds blood and the remaining white areas become transparant
-				bloody_l[used] = fcopy_rsc(blood_overlay)
+				bloody_l["[used][I.sleeved]"] = fcopy_rsc(blood_overlay)
 			var/mutable_appearance/pic = mutable_appearance(blood_overlay, layer=-layer2use)
 			sleeves += pic
 

@@ -15,6 +15,8 @@
 	/// assoc donor loot_table type -> total weight it contributes after scaling.
 	/// Compare against this table's own loot_table weights to read the mix.
 	var/list/donor_types = list()
+	/// Typepaths dropped from every donor before its budget is spread
+	var/list/donor_exclude = list()
 
 /datum/loot_table/dungeon/New()
 	for(var/donor_type in donor_types)
@@ -27,6 +29,8 @@
 			for(var/entry in sublist)
 				if(isnum(entry)) // skill-gate delimiters carry no weight
 					continue
+				if(entry in donor_exclude)
+					continue
 				total_weight += sublist[entry]
 		if(total_weight > 0 && budget > 0)
 			var/scale = budget / total_weight
@@ -35,7 +39,7 @@
 					continue
 				var/list/scaled = list()
 				for(var/entry in sublist)
-					if(isnum(entry))
+					if(isnum(entry) || (entry in donor_exclude))
 						continue
 					// Float weights are fine - pickweight and the delve scaler
 					// both work in floats already.
@@ -117,7 +121,7 @@
 	base_max = 4
 	scaling_factor = 0.2
 
-/// Floor 5+ / bosses / vaults: the rare pool, gold, and a thin seam of true
+/// Floor 5+: the rare pool, single gold coins, and a thin seam of true
 /// magic. The ceiling of what the dark pays out.
 /datum/loot_table/dungeon/tier3
 	name = "dungeon spoils (deep)"
@@ -126,6 +130,8 @@
 		/datum/loot_table/coin/high = 30,
 		/datum/loot_table/potion_stats = 12,
 	)
+	// A gold pile averages 900 amna; the deep tier pays in single coins.
+	donor_exclude = list(/obj/item/coin/gold/pile)
 	loot_table = list(
 		list(
 			/obj/item/weapon/sword/long/greatsword = 5,
@@ -140,7 +146,7 @@
 			/obj/item/clothing/head/crown/circlet/stink = 1,
 		),
 		STAT_FORTUNE = list(
-			/obj/item/coin/gold/pile = 6,
+			/obj/item/coin/silver/pile = 6,
 			/obj/item/gem = 6,
 		),
 	)
@@ -283,6 +289,7 @@
 		/datum/loot_table/coin/high = 30,
 		/datum/loot_table/potion_stats = 5,
 	)
+	donor_exclude = list(/obj/item/coin/gold/pile)
 	loot_table = list(
 		list(
 			/obj/item/weapon/sword/long/greatsword = 3,
@@ -303,7 +310,7 @@
 			/obj/item/clothing/gloves/fingerless/shadowgloves = 6,
 		),
 		STAT_FORTUNE = list(
-			/obj/item/coin/gold/pile = 6,
+			/obj/item/coin/silver/pile = 6,
 			/obj/item/gem = 6,
 			/obj/item/gem/violet = 5,
 		),
