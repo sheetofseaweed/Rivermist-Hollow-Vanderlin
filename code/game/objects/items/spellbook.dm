@@ -47,6 +47,8 @@
 	var/picked // if the book has had it's style picked or not
 	var/born_of_rock = FALSE // was a magical stone used to make it instead of a gem?
 	var/bookquality = 3
+	/// A reader of Expert arcane rank or better claims one technique point per tome.
+	var/technique_point_claimed = FALSE
 
 /obj/item/book/granter/spellbook/getonmobprop(tag)
 	. = ..()
@@ -238,7 +240,7 @@
 /obj/item/book/granter/spellbook/onlearned(mob/user)
 	used = FALSE
 
-/// Form points equal to the old spell points; a gem's attunement themes half of them like a grimoire.
+/// Form points equal to the old spell points, half themed by a gem; Expert readers also claim the tome's technique point.
 /obj/item/book/granter/spellbook/proc/grant_mastery_points(mob/living/reader, points)
 	var/datum/spell_mastery/mastery = reader.mind?.get_spell_mastery()
 	if(!mastery || points <= 0)
@@ -251,8 +253,13 @@
 			mastery.adjust_form_points(points - themed_amount)
 	else
 		mastery.adjust_form_points(points)
+	var/technique_note = ""
+	if(!technique_point_claimed && mastery.get_rank() >= SKILL_RANK_EXPERT)
+		technique_point_claimed = TRUE
+		mastery.adjust_technique_points(1)
+		technique_note = " Between its lines I find a technique point as well."
 	mastery.recalculate_unspent_points()
-	to_chat(reader, span_notice("I gain [points] form mastery point[points == 1 ? "" : "s"][themed_form ? ", half of them in [themed_form]" : ""]."))
+	to_chat(reader, span_notice("I gain [points] form mastery point[points == 1 ? "" : "s"][themed_form ? ", half of them in [themed_form]" : ""].[technique_note]"))
 	return TRUE
 
 /// The form a gem attunement feeds; null for attunements without one.

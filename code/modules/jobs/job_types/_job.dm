@@ -431,6 +431,10 @@
 			else
 				innate_book = new /datum/action/innate/open_spellbook
 			innate_book.Grant(spawned)
+		// Teaching needs an apprentice-taking role; the base flag is on everywhere, so apprentice_name is the opt-in.
+		if(prepares_spells && can_have_apprentices && apprentice_name && !(locate(/datum/action/innate/teach_spell) in spawned.actions))
+			var/datum/action/innate/teach_spell/lesson = new
+			lesson.Grant(spawned)
 	add_spells(spawned)
 	// Archetype casters grow through slots and mastery, not the old tree.
 	if(!is_slot_caster())

@@ -209,8 +209,8 @@
 		cache[spell_path] = prereqs
 	return prereqs
 
-/// Whether spell_path is purchasable now; known spells return FALSE.
-/datum/spell_mastery/proc/can_learn_spell(datum/action/cooldown/spell/spell_path)
+/// Whether spell_path is purchasable now; known spells return FALSE. level_grace lowers the form rank needed.
+/datum/spell_mastery/proc/can_learn_spell(datum/action/cooldown/spell/spell_path, level_grace = 0)
 	if(!ispath(spell_path, /datum/action/cooldown/spell))
 		return FALSE
 	if(spell_path in unlocked_spells)
@@ -226,7 +226,7 @@
 		return FALSE
 
 	if(level_req > 0)
-		if(form && get_form_level(form) < level_req)
+		if(form && get_form_level(form) < max(0, level_req - level_grace))
 			return FALSE
 
 	var/list/prereqs = get_spell_prerequisites(spell_path)
@@ -237,8 +237,8 @@
 
 	return TRUE
 
-/datum/spell_mastery/proc/try_learn_spell(datum/action/cooldown/spell/spell_path)
-	if(!can_learn_spell(spell_path))
+/datum/spell_mastery/proc/try_learn_spell(datum/action/cooldown/spell/spell_path, level_grace = 0)
+	if(!can_learn_spell(spell_path, level_grace))
 		return FALSE
 
 	var/technique = initial(spell_path.required_technique)

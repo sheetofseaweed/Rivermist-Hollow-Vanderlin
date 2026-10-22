@@ -1418,6 +1418,7 @@
 #include "code\datums\mana\spell_slots.dm"
 #include "code\datums\mana\mastery\_base.dm"
 #include "code\datums\mana\mastery\_ui.dm"
+#include "code\datums\mana\mastery\teaching.dm"
 #include "code\datums\mana\leylines\_leyline.dm"
 #include "code\datums\mana\leylines\leyline_intensity.dm"
 #include "code\datums\martial\_martial.dm"

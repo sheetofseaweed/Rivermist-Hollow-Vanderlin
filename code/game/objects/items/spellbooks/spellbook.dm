@@ -14,6 +14,7 @@
 	item_weight = 547 GRAMS
 	grid_height = 64
 	grid_width = 32
+	sellprice = 40
 
 	/// The mind this grimoire is bound to.
 	var/datum/weakref/bound_mind_ref
