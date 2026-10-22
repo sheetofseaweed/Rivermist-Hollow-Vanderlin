@@ -1,5 +1,6 @@
 /datum/action/cooldown/spell/bardic_inspiration
-	name = "Bardic Inspiration"
+	// Nothing grants this legacy form; the colleges use the charge-spending bard subtype below it.
+	name = "Bardic Inspiration (Legacy)"
 	desc = "Inspire a target with stirring words."
 	button_icon_state = "comedy"
 	sound = 'sound/magic/ahh2.ogg'

@@ -6,7 +6,6 @@
 	spell_cost = 4
 	cooldown_time = 45 SECONDS
 	point_cost = 4
-	attunements = list(/datum/attunement/fire, /datum/attunement/aeromancy)
 	essences = list(/datum/thaumaturgical_essence/fire, /datum/thaumaturgical_essence/air)
 	click_to_activate = TRUE
 	/// Projectile type to fire

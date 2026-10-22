@@ -2,12 +2,6 @@
 	name = "Tentacle Form"
 	desc = "Transform into a writhing tentacle mass. Damage is not inherited between forms!"
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-		/datum/attunement/polymorph = 0.6,
-		/datum/attunement/blood = 0.2,
-	)
-
 	charge_required = FALSE
 	cooldown_time = 50 SECONDS
 

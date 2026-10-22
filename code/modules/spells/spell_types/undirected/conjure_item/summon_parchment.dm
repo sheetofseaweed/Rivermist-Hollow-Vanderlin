@@ -12,11 +12,15 @@
 	invocation_type = INVOCATION_NONE
 
 	cooldown_time = 2 MINUTES
-	spell_cost = 30
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 
 	delete_old = FALSE
 	item_type = /obj/item/paper
 	item_duration = 0
+
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_CREATION
 
 /datum/action/cooldown/spell/undirected/conjure_item/summon_parchment/cast(mob/living/carbon/cast_on)
 	playsound(cast_on, 'sound/foley/finger-snap.ogg', 100, FALSE)
@@ -28,4 +32,5 @@
 	sound = 'sound/items/scroll_open.ogg'
 
 	item_type = /obj/item/paper/scroll
+	learnable = FALSE
 

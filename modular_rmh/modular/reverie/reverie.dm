@@ -151,7 +151,10 @@
 	repair_minor_damage(holder, sleepy_mod)
 	last_damage = holder.getBruteLoss() + holder.getFireLoss()
 	if(holder.has_status_effect(/datum/status_effect/debuff/dreamytime))
-		holder.restore_all_dnd_spell_slots()
+		// A finished reverie counts as a long rest, under the same daily gate.
+		var/datum/spell_slots/slots = holder.mind?.spell_slots
+		if(slots && world.time >= slots.next_long_rest)
+			slots.finish_long_rest(holder)
 		holder.finish_night_rest()
 
 /// Mends small mechanical injuries; larger damage still needs a repairer.

@@ -6,10 +6,6 @@
 	self_cast_possible = FALSE
 
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/ice = 0.3,
-		/datum/attunement/death = 0.2,
-	)
 
 	invocation = "Death grip you!"
 	invocation_type = INVOCATION_SHOUT
@@ -18,7 +14,10 @@
 	charge_drain = 0
 	charge_slowdown = 0.3
 	cooldown_time = 60 SECONDS
-	spell_cost = 50
+	spell_cost = SPELL_CANTRIP_COST
+
+	slot_level = 0
+	required_form = FORM_ICE
 
 /datum/action/cooldown/spell/chill_touch/is_valid_target(atom/cast_on)
 	. = ..()

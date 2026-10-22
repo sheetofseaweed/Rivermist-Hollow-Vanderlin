@@ -85,6 +85,9 @@
 		/datum/supply_pack/tools/camp_tent
 	)
 	uncommon_pool = list(
+		// Arcyne study
+		/datum/supply_pack/tools/grimoire,
+		/datum/supply_pack/tools/spell_scroll_lesser,
 		// Refined apparel
 		/datum/supply_pack/apparel/spectacles,
 		/datum/supply_pack/apparel/silkdress_random,
@@ -141,6 +144,9 @@
 		/datum/supply_pack/tools/tattoo_needle
 	)
 	rare_pool = list(
+		// Arcyne study
+		/datum/supply_pack/tools/grimoire_adept,
+		/datum/supply_pack/tools/spell_scroll_greater,
 		// Luxury apparel
 		/datum/supply_pack/apparel/luxurydyes,
 		/datum/supply_pack/apparel/fancyhat,

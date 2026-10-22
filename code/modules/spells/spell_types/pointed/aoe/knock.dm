@@ -5,10 +5,6 @@
 	button_icon_state = "knock"
 	click_to_activate = FALSE
 
-	attunements = list(
-		/datum/attunement/aeromancy = 0.2,
-	)
-
 	school = SCHOOL_TRANSMUTATION
 	charge_time = 2 SECONDS
 	cooldown_time = 20 SECONDS
@@ -16,6 +12,13 @@
 	invocation = "AULIE OXIN FIERA"
 	invocation_type = INVOCATION_WHISPER
 	aoe_radius = 3
+
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Knock"
+	required_form = FORM_AIR
+	required_technique = TECHNIQUE_ILLUSION
+	required_level = MASTERY_RANK_EXPERT
 
 /datum/action/cooldown/spell/aoe/knock/get_things_to_cast_on(atom/center)
 	return RANGE_TURFS(aoe_radius, center)

@@ -15,6 +15,12 @@
 	cooldown_time = 2 MINUTES
 	spell_cost = 100
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_SUMMONING
+	slot_level = 5
+	slot_only = TRUE
+	required_level = MASTERY_RANK_MASTER
+
 	var/obj/structure/fluff/psycross/target_cross
 
 /datum/action/cooldown/spell/revive/Destroy()

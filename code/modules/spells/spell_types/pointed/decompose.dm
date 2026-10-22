@@ -9,10 +9,6 @@
 	cast_range = 1
 	point_cost = 3
 	associated_skill = /datum/attribute/skill/magic/blood
-	attunements = list(
-		/datum/attunement/death = 0.3,
-		/datum/attunement/blood = 0.2,
-	)
 	invocation = "Return to rot."
 	invocation_type = INVOCATION_WHISPER
 
@@ -20,12 +16,21 @@
 	charge_drain = 1
 	cooldown_time = 30 SECONDS
 	spell_cost = 50
+	heretical_spell = TRUE
+
+	slot_level = 2
+	slot_level_max = 2
+	slot_only = TRUE
+	slot_label = "Decompose"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_ALTERATION
+	required_level = MASTERY_RANK_ADEPT
 
 /datum/action/cooldown/spell/decompose/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)
 		return FALSE
-	return isitem(cast_on) || isliving(target)
+	return isitem(cast_on) || isliving(cast_on)
 
 /datum/action/cooldown/spell/decompose/cast(atom/cast_on)
 	. = ..()

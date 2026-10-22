@@ -12,6 +12,7 @@
  * These REQUIRE click_to_activate to be true
  */
 /datum/action/cooldown/spell/projectile
+	twinnable = TRUE
 	self_cast_possible = FALSE
 	experience_modifier = 0.3 // More earned when hitting a target
 
@@ -54,7 +55,8 @@
 		return FALSE
 
 	fire_projectile(cast_on)
-	if(current_amount <= 0)
+	// A direct cast, such as a surge copy, must not disarm a spell the caster has armed.
+	if(current_amount <= 0 && owner.click_intercept == src)
 		unset_click_ability(owner, refund_cooldown = FALSE)
 
 	return TRUE
@@ -69,7 +71,10 @@
 /datum/action/cooldown/spell/projectile/proc/fire_projectile(atom/target)
 	current_amount--
 	for(var/i in 1 to projectiles_per_fire)
-		var/obj/projectile/to_fire = new projectile_type()
+		var/shot_type = projectile_type
+		if(minor_projectile_type && uses_spell_slots() && get_cast_level() == SPELL_SLOT_MINOR)
+			shot_type = minor_projectile_type
+		var/obj/projectile/to_fire = new shot_type()
 		ready_projectile(to_fire, target, owner, i)
 		to_fire.fire()
 	return TRUE
@@ -77,7 +82,10 @@
 /datum/action/cooldown/spell/projectile/proc/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
 	to_fire.firer = owner
 	to_fire.fired_from = get_turf(owner)
-	to_fire.scale = clamp(attuned_strength, 0.5, 1.5)
+	to_fire.scale = clamp(get_rank_multiplier(), 0.5, 1.5)
+	// Numbered slot casts scale here; spells with their own level tables overwrite the damage after this.
+	if(uses_spell_slots() && get_cast_level() != SPELL_SLOT_MINOR)
+		to_fire.damage *= get_rank_multiplier() * get_upcast_multiplier()
 	to_fire.preparePixelProjectile(target, owner)
 
 	RegisterSignal(to_fire, COMSIG_PROJECTILE_SELF_ON_HIT, PROC_REF(on_cast_hit))
@@ -103,4 +111,6 @@
 	if(victim.stat == DEAD)
 		return
 
-	handle_exp(get_adjusted_cost() / 4)
+	// Slot casting awards XP once on commitment, never from unlimited minor hits.
+	if(!uses_spell_slots())
+		handle_exp(get_adjusted_cost() / 4)

@@ -139,12 +139,6 @@
 	/// Spell points to give/take to the mob
 	var/spell_points
 
-	/// Upper number of attunements to grant
-	var/attunements_max
-
-	/// Lower number of attunemnets to grant
-	var/attunements_min
-
 	var/whitelist_req = FALSE //!
 	/// Stable database whitelist identifier for jobs and subclasses.
 	var/job_whitelist_id = null
@@ -200,6 +194,18 @@
 	var/apprentice_name
 	/// do we magic?
 	var/magic_user = FALSE
+	/// CASTER_FULL, CASTER_HALF, CASTER_THIRD or CASTER_PACT. Null means no spell slots.
+	var/caster_archetype
+	/// Skill whose rank drives the slot ladder. Null uses the arcane skill.
+	var/caster_rank_skill
+	/// Innate form mastery points granted at spawn.
+	var/form_points = 0
+	/// Innate technique mastery points granted at spawn.
+	var/technique_points = 0
+	/// Wizards prepare from a grimoire; innate casters cast everything they know.
+	var/prepares_spells = FALSE
+	/// Forms this role may study, such as the nature forms for rangers. Null opens every form.
+	var/list/allowed_spell_forms
 	/// Do we get passive income every day from our noble estates?
 	var/noble_income = FALSE
 
@@ -347,6 +353,10 @@
 
 /// Executes after the mob has been spawned in the map.
 /// Client might not be yet in the mob, and is thus a separate variable.
+/// Slot casters follow a ladder; CASTER_NONE jobs only carry rest-gated features.
+/datum/job/proc/is_slot_caster()
+	return caster_archetype && caster_archetype != CASTER_NONE
+
 /datum/job/proc/after_spawn(mob/living/carbon/human/spawned, client/player_client, clear_job_stats = TRUE)
 	SHOULD_CALL_PARENT(TRUE)
 	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_JOB_AFTER_SPAWN, src, spawned, player_client)
@@ -386,9 +396,54 @@
 		spawned.set_max_apprentices(max_apprentices)
 		spawned.set_apprentice_name(apprentice_name)
 
+	if(caster_archetype)
+		spawned.mind?.setup_spell_slots(caster_archetype, caster_rank_skill)
+	if(is_slot_caster())
+		var/datum/mana_pool/pool = spawned.mana_pool
+		if(pool)
+			// Slot casters pace Minor casts on a steady trickle and start with a full reserve.
+			pool.set_natural_recharge(max(pool.ethereal_recharge_rate, CASTER_BASE_MANA_RECHARGE))
+			pool.adjust_mana(pool.get_softcap() - pool.amount)
+		if(HAS_TRAIT(spawned, TRAIT_SORCERER))
+			spawned.grant_sorcery_kit()
+	if(spawned.mind && (form_points || technique_points || prepares_spells))
+		var/datum/spell_mastery/mastery = spawned.mind.get_spell_mastery()
+		mastery.uses_preparation = prepares_spells
+		if(!mastery.job_points_granted && (form_points || technique_points))
+			mastery.job_points_granted = TRUE
+			if(form_points)
+				mastery.adjust_form_points(form_points)
+			if(technique_points)
+				mastery.adjust_technique_points(technique_points)
+			mastery.recalculate_unspent_points()
+		if(prepares_spells)
+			// The outfit's grimoire binds at spawn so its points land at once.
+			for(var/obj/item/spellbook/book in spawned.get_all_contents())
+				if(!book.get_bound_mind())
+					book.bind_owner(spawned.mind)
+					break
+			// A final role with no grimoire at all gets a plain one; subclass parents equip theirs later.
+			if(!LAZYLEN(job_subclasses) && !(locate(/obj/item/spellbook) in spawned.get_all_contents()))
+				give_fallback_grimoire(spawned)
+		// Spellcraft opens for every mastery owner; wizards still need the grimoire at hand to prepare.
+		if(!locate(/datum/action/innate/open_spellbook) in spawned.actions)
+			var/datum/action/innate/open_spellbook/innate_book
+			if(prepares_spells)
+				innate_book = new /datum/action/innate/open_spellbook/grimoire
+			else
+				innate_book = new /datum/action/innate/open_spellbook
+			innate_book.Grant(spawned)
+		// Teaching needs an apprentice-taking role; the base flag is on everywhere, so apprentice_name is the opt-in.
+		if(prepares_spells && can_have_apprentices && apprentice_name && !(locate(/datum/action/innate/teach_spell) in spawned.actions))
+			var/datum/action/innate/teach_spell/lesson = new
+			lesson.Grant(spawned)
 	add_spells(spawned)
-	spawned.adjust_spell_points(spell_points)
-	spawned.generate_random_attunements(rand(attunements_min, attunements_max))
+	// A role's craft limits the forms it may study; the list lands once the kit spells exist.
+	if(allowed_spell_forms && spawned.mind)
+		spawned.mind.get_spell_mastery().allowed_forms = allowed_spell_forms.Copy()
+	// Archetype casters grow through slots and mastery, not the old tree.
+	if(!is_slot_caster())
+		spawned.adjust_spell_points(spell_points)
 
 	// When we have sourced skill mods (praying, add to this as well)
 	if(clear_job_stats) // Reset for most non-advclasses
@@ -779,9 +834,20 @@
 		return
 	total_positions = new_total_positions
 
+/// A preparing role that spawned without a grimoire gets a plain bound one: hand, bag, or feet.
+/datum/job/proc/give_fallback_grimoire(mob/living/carbon/human/spawned)
+	var/obj/item/spellbook/book = new(get_turf(spawned))
+	book.bind_owner(spawned.mind)
+	if(!spawned.put_in_hands(book))
+		var/obj/item/bag = spawned.get_item_by_slot(ITEM_SLOT_BACK_L) || spawned.get_item_by_slot(ITEM_SLOT_BACK_R)
+		if(bag)
+			SEND_SIGNAL(bag, COMSIG_TRY_STORAGE_INSERT, book, null, TRUE, TRUE)
+	to_chat(spawned, span_notice("My kit held no grimoire, so a plain one has been bound to me."))
+	return book
+
 /datum/job/proc/add_spells(mob/living/equipped_human)
 	for(var/datum/action/cooldown/spell/spell as anything in spells)
-		equipped_human.add_spell(spell, source = src)
+		equipped_human.add_spell(spell, source = src, mastery_spell = is_slot_caster())
 
 /datum/job/proc/remove_spells(mob/living/equipped_human)
 	equipped_human.remove_spells(source = src)
@@ -1083,7 +1149,7 @@
 				for(var/stat in adv_ref.adv_stat_ceiling)
 					dat += "["[capitalize(stat)]: <b>\Roman[adv_ref.adv_stat_ceiling[stat]]</b>"] | "
 				dat += "<i><br>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"*/
-			if(adv_ref.spell_points > 0)
+			if(adv_ref.spell_points > 0 && !adv_ref.is_slot_caster())
 				dat += "<font color = '#a3a7e0'>Starting Spellpoints: <b>[adv_ref.spell_points]</b></font>"
 			if(length(adv_ref.languages))
 				dat += "<details><summary><i>Known Languages</i></summary>"
@@ -1147,7 +1213,7 @@
 				dat += "["[capitalize(stat)]: <b>\Roman[stat_ceilings[stat]]</b>"] | "
 			dat += "<br><i>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"
 			dat += "</font>"	//Ends the stat limit colors
-	if(spell_points > 0)
+	if(spell_points > 0 && !is_slot_caster())
 		dat += "<br><font color = '#a3a7e0'>Starting Spellpoints: <b>[spell_points]</b></font>"
 	if(length(traits) && (show_traits || sclass_count > 1))
 		dat += "<br><b>Class</b></font> Traits: "

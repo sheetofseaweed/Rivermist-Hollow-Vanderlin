@@ -42,7 +42,7 @@
 	)
 
 	spells = list(
-		/datum/action/cooldown/spell/undirected/giant_shape
+		/datum/action/cooldown/spell/undirected/giant_shape/rage
 	)
 
 /datum/job/advclass/combat/adventurer_barbarian/giant/after_spawn(mob/living/carbon/human/spawned, client/player_client)

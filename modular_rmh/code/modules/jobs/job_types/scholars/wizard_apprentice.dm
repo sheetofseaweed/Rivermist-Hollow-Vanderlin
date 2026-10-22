@@ -35,8 +35,10 @@
 
 	magic_user = TRUE
 	spell_points = 15
-	attunements_max = 5
-	attunements_min = 1
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
@@ -65,6 +67,7 @@
 
 	backpack_contents = list(
 		/obj/item/book/granter/spellbook/apprentice = 1,
+		/obj/item/spellbook/apprentice/starter/arcane = 1,
 		/obj/item/chalk = 1,
 		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)

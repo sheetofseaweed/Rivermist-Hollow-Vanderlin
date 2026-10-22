@@ -19,6 +19,12 @@
 /obj/item/reagent_containers/glass/bottle/strongmanapot
 	list_reagents = list(/datum/reagent/medicine/strongmana = 75)
 
+/obj/item/reagent_containers/glass/bottle/recollection
+	list_reagents = list(/datum/reagent/medicine/recollection_draught = 25)
+
+/obj/item/reagent_containers/glass/bottle/secondwind
+	list_reagents = list(/datum/reagent/medicine/second_wind_elixir = 25)
+
 /obj/item/reagent_containers/glass/bottle/stampot
 	list_reagents = list(/datum/reagent/medicine/stampot = 75)
 

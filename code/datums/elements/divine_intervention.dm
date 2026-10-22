@@ -6,7 +6,7 @@
 	var/allows_pantheon
 	var/sets_alight
 
-/datum/element/divine_intervention/Attach(datum/target, patron = /datum/patron/divine/astrata, allows_pantheon = PUNISHMENT_NONE, stress_event = null, sets_alight = FALSE)
+/datum/element/divine_intervention/Attach(datum/target, patron = /datum/patron/faerun/good_gods/Lathander, allows_pantheon = PUNISHMENT_NONE, stress_event = null, sets_alight = FALSE)
 	. = ..()
 	if(!istype(target))
 		return ELEMENT_INCOMPATIBLE

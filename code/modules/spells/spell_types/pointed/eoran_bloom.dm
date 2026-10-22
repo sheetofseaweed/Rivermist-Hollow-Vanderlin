@@ -126,7 +126,7 @@
 		return
 	UnregisterSignal(wearer, COMSIG_MOB_UNEQUIPPED_ITEM)
 	wearer.remove_curse(/datum/curse/baotha)
-	if(wearer.patron != /datum/patron/inhumen/baotha)
+	if(wearer.patron?.type != /datum/patron/faerun/evil_gods/Blissara)
 		REMOVE_TRAIT(wearer, TRAIT_CRACKHEAD, "corruptflower_[REF(src)]")
 
 /obj/item/clothing/head/corruptflower/proc/cursed_check(mob/living/user)

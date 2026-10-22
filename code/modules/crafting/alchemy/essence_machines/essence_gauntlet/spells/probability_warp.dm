@@ -5,7 +5,6 @@
 	button_icon_state = "guidanceneu"
 	cast_range = 3
 	point_cost = 7
-	attunements = list(/datum/attunement/polymorph, /datum/attunement/illusion)
 	essences = list(/datum/thaumaturgical_essence/chaos, /datum/thaumaturgical_essence/void)
 
 /datum/action/cooldown/spell/essence/probability_warp/cast(atom/cast_on)

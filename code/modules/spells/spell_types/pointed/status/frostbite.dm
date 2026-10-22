@@ -6,9 +6,6 @@
 
 	sound = 'sound/magic/whiteflame.ogg'
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/ice = 0.9
-	)
 
 	invocation = "Bite of Frost!!"
 	invocation_type = INVOCATION_SHOUT
@@ -20,9 +17,17 @@
 	spell_flags = SPELL_RITUOS
 	status_effect = /datum/status_effect/debuff/frostbite
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Frostbite"
+	required_form = FORM_ICE
+	required_technique = TECHNIQUE_ALTERATION
+
 /datum/action/cooldown/spell/status/frostbite/cast(mob/living/cast_on)
+	// The parent applies the status, so its strength must be set first.
+	// Half a point of strength costs one more Speed; upcasts add it every two levels.
+	extra_args = list(get_rank_multiplier() + 0.5 * round(get_upcast_steps() / 2))
 	. = ..()
-	extra_args = list(attuned_strength)
 	if(iscarbon(cast_on))
 		var/mob/living/carbon/C = cast_on
-		C.adjustFireLoss(15 * attuned_strength)
+		C.adjustFireLoss(15 * get_rank_multiplier() * get_upcast_multiplier())

@@ -137,7 +137,7 @@
 	L.grant_undead_eyes()
 	L.skeletonize(FALSE)
 	L.equipOutfit(/datum/outfit/lich)
-	L.set_patron(/datum/patron/inhumen/zizo)
+	L.set_patron(/datum/patron/faerun/evil_gods/Lolth)
 
 /datum/outfit/lich/pre_equip(mob/living/carbon/human/H)
 	..()

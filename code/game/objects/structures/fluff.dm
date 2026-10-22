@@ -1353,7 +1353,7 @@
 		return ..()
 
 	var/is_priest = is_priest_job(user.mind.assigned_role)
-	var/is_eoran_acolyte = (user.patron.type == /datum/patron/divine/eora)
+	var/is_eoran_acolyte = (user.patron.type == /datum/patron/faerun/good_gods/Sune)
 	if(!is_priest && !is_eoran_acolyte && !HAS_TRAIT(user, TRAIT_SECRET_OFFICIANT))
 		return ..()
 
@@ -1534,7 +1534,7 @@
 	if(!isliving(user))
 		return
 	var/mob/living/living_user = user
-	if(istype(living_user.patron, /datum/patron/psydon))
+	if(istype(living_user.patron, /datum/patron/faerun/neutral_gods/Helm))
 		living_user.add_stress(/datum/stress_event/painful_reminder)
 		. += " Never forget those we have lost."
 

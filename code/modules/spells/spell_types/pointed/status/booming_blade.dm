@@ -6,9 +6,6 @@
 	spell_requirements = SPELL_REQUIRES_NO_ANTIMAGIC|SPELL_REQUIRES_NO_MOVE // reap what you sow
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
 	spell_flags = SPELL_RITUOS
 	invocation = "Be still!"
 	invocation_type = INVOCATION_SHOUT
@@ -17,13 +14,18 @@
 	charge_drain = 1
 	charge_slowdown = 1.3
 	cooldown_time = 30 SECONDS
-	spell_cost = 50
+	spell_cost = SPELL_CANTRIP_COST
 
 	status_effect = /datum/status_effect/debuff/booming_blade
 
-/datum/action/cooldown/spell/status/booming_blade/handle_attunements()
-	. = ..()
-	extra_args = list(attuned_strength)
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ALTERATION
+
+/datum/action/cooldown/spell/status/booming_blade/cast(mob/living/cast_on)
+	// The parent applies the status, so its strength must be set first.
+	extra_args = list(get_rank_multiplier())
+	return ..()
 
 /datum/status_effect/debuff/booming_blade
 	id = "booming_blade"
@@ -55,11 +57,12 @@
 /datum/status_effect/debuff/booming_blade/proc/boom(datum/source, atom/OldLoc, Dir, Forced)
 	if(Forced)
 		return
+	// The blast keeps a fixed size; only the damage scales with the caster.
 	var/exp_heavy = 0
-	var/exp_light = round(1 * strength_multiplier)  // Scale explosion
-	var/exp_flash = round(2 * strength_multiplier)
+	var/exp_light = 1
+	var/exp_flash = 2
 	var/exp_fire = 0
-	var/damage = round(10 * strength_multiplier)  // Scale damage
+	var/damage = round(10 * strength_multiplier)
 
 	explosion(owner, -1, exp_heavy, exp_light, exp_flash, 0, flame_range = exp_fire)
 	owner.adjustBruteLoss(damage, damage_type = BCLASS_BLUNT)

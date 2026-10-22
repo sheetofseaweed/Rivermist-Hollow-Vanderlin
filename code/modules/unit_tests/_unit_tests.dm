@@ -117,6 +117,7 @@
 #include "spell_invocations.dm"
 #include "spell_names.dm"
 #include "spell_shapeshift.dm"
+#include "spell_slots.dm"
 #include "startup.dm"
 #include "subsystem_init.dm"
 #include "surgeries.dm"

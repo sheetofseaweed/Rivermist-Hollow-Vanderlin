@@ -20,8 +20,10 @@
 
 	magic_user = TRUE
 	spell_points = 25
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_PACT
+	prepares_spells = FALSE
+	form_points = 4
+	technique_points = 2
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_warlock/the_fiend,
@@ -31,4 +33,11 @@
 /datum/job/adventurer_warlock/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
+
+// Shared by every subclass. Points match the top-level job; the mastery grants them only once.
+/datum/job/advclass/combat/adventurer_warlock
+	caster_archetype = CASTER_PACT
+	prepares_spells = FALSE
+	form_points = 4
+	technique_points = 2
 

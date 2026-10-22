@@ -282,6 +282,80 @@
 	M.mana_pool.adjust_mana(8 * efficiency)
 	..()
 
+/// Shared gate for slot draughts; returns the drinker's spell slots or explains why nothing happens.
+/// Minimum units in the blood for a slot draught to act; smaller sips are wasted.
+#define SLOT_DRAUGHT_MIN_DOSE 3
+
+/datum/reagent/medicine/proc/get_draught_spell_slots(mob/living/drinker, dose)
+	RETURN_TYPE(/datum/spell_slots)
+	var/datum/spell_slots/slots = drinker.mind?.spell_slots
+	if(!slots)
+		to_chat(drinker, span_notice("The [name] settles in my belly, and nothing happens."))
+		return null
+	if(dose < SLOT_DRAUGHT_MIN_DOSE)
+		to_chat(drinker, span_warning("That sip of [name] was too small to stir anything."))
+		return null
+	if(drinker.has_status_effect(/datum/status_effect/debuff/arcane_sickness))
+		to_chat(drinker, span_warning("My mind is too raw to hold another draught of power."))
+		return null
+	return slots
+
+/// Reports the result and locks the drinker only when something actually came back.
+/datum/reagent/medicine/proc/finish_slot_draught(mob/living/drinker, restored, success_text)
+	if(restored <= 0)
+		to_chat(drinker, span_notice("The [name] finds nothing spent to restore."))
+		return
+	to_chat(drinker, span_notice("[success_text] [restored] spell slot[restored == 1 ? "" : "s"] restored."))
+	drinker.apply_status_effect(/datum/status_effect/debuff/arcane_sickness)
+
+/datum/reagent/medicine/recollection_draught
+	name = "draught of recollection"
+	description = "Draws the memory of spent spells back into a caster's mind."
+	reagent_state = LIQUID
+	color = "#4b3a8c"
+	taste_description = "half-remembered words"
+	scent_description = "old parchment"
+	metabolization_rate = REAGENTS_METABOLISM
+	alpha = 173
+	/// Set once the draught acts, so a stalled and resumed metabolism cannot repeat it.
+	var/took_effect = FALSE
+
+/datum/reagent/medicine/recollection_draught/on_mob_metabolize(mob/living/L)
+	. = ..()
+	if(took_effect)
+		return
+	took_effect = TRUE
+	var/datum/spell_slots/slots = get_draught_spell_slots(L, volume)
+	if(!slots)
+		return
+	var/restored = slots.apply_recovery(slots.get_recovery(slots.get_selected_level(), budget = 3))
+	finish_slot_draught(L, restored, "Memories of spent spells drift back to me.")
+
+/datum/reagent/medicine/second_wind_elixir
+	name = "elixir of the second wind"
+	description = "Floods a weary caster's mind with the recovery of a short rest in one swallow."
+	reagent_state = LIQUID
+	color = "#d4a017"
+	taste_description = "cold mountain air"
+	scent_description = "wild mint"
+	metabolization_rate = REAGENTS_METABOLISM
+	alpha = 173
+	/// Set once the elixir acts, so a stalled and resumed metabolism cannot repeat it.
+	var/took_effect = FALSE
+
+/datum/reagent/medicine/second_wind_elixir/on_mob_metabolize(mob/living/L)
+	. = ..()
+	if(took_effect)
+		return
+	took_effect = TRUE
+	var/datum/spell_slots/slots = get_draught_spell_slots(L, volume)
+	if(!slots)
+		return
+	var/restored = slots.grant_free_short_rest()
+	finish_slot_draught(L, restored, "A second wind clears my weary mind, as if I had rested.")
+
+#undef SLOT_DRAUGHT_MIN_DOSE
+
 
 /datum/reagent/medicine/stampot
 	name = "Stamina Potion"

@@ -47,9 +47,10 @@
 		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/sacred_flame,
+		/datum/action/cooldown/spell/pointed/silence/channel_oath,
 	)
 
-/datum/job/advclass/combat/adventurer_paladin/devotion/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+/datum/job/advclass/combat/adventurer_paladin/crown/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	spawned.grant_language(/datum/language/celestial)
 
