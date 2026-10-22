@@ -290,9 +290,8 @@
 	// Floor-relative, matching guardian scaling - cumulative depth inflated
 	// cache quantity by 1.1^depth and rare weights by 1.3^depth.
 	cache.delve_level = max(1, (owning_run ? owning_run.get_encounter_delve() : depth) + bonus_delve)
-	cache.max_takers = max(cache.max_takers, length(owning_run?.present_ckeys))
 	if(owning_run?.run_unlocks?["extra_cache"])
-		cache.max_takers += 1
+		cache.claims_left += 1
 	if(cache_key_id)
 		cache.key_id = cache_key_id
 		cache.icon_state = "chestweird1" // vault caches look the part
