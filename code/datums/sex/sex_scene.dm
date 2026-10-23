@@ -499,6 +499,8 @@
 	participant.sex_scene = src
 	RegisterSignal(participant, list(COMSIG_PARENT_QDELETING, COMSIG_LIVING_DEATH), PROC_REF(on_participant_invalidated))
 	update_display_name()
+	if(length(GLOB.sense_relay_mobs))
+		ensure_dullahan_head_contexts(src)
 	return TRUE
 
 /datum/sex_scene/proc/remove_participant(mob/living/participant)

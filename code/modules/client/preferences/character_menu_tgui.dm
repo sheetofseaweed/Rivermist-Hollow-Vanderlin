@@ -45,6 +45,15 @@
 /datum/preferences/var/character_setup_hover_customizer
 /datum/preferences/var/character_setup_view_busy = FALSE
 /datum/preferences/var/character_setup_view_pending = FALSE
+/// Render signature the preview dummy was last dressed from.
+/datum/preferences/var/character_setup_rendered_sig
+/datum/preferences/var/character_setup_render_forced = FALSE
+/// Facing changed with nothing else; only re-measure and turn the main view.
+/datum/preferences/var/character_setup_redraw_dir = FALSE
+/// Hover the dummy currently shows, so a new hover can swap one accessory instead of rebuilding.
+/datum/preferences/var/character_setup_rendered_hover_acc
+/datum/preferences/var/character_setup_rendered_hover_color
+/datum/preferences/var/character_setup_rendered_hover_customizer
 /datum/preferences/var/character_setup_view_shown = FALSE
 /datum/preferences/var/list/character_setup_ui_heavy_cache
 /datum/preferences/var/character_setup_ui_heavy_sig

@@ -419,6 +419,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// Can't fall asleep
 #define TRAIT_FAT "Obese"
 #define TRAIT_NOSLEEP "Fatal Insomnia"
+/// Rests, mends and dreams through the Reverie action instead of sleep
+#define TRAIT_REVERIE "Reverie"
 #define TRAIT_FASTSLEEP "Fast Sleeper"
 #define TRAIT_NUDIST "Nudist" //you can't wear most clothes
 #define TRAIT_INHUMANE_ANATOMY "Inhuman Anatomy" //can't wear hats and shoes
@@ -661,6 +663,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_FLUID_ENGORGEMENT "fluid_engorgement"
 /// Goes into heat or rut now and then; each source is a HEAT_SOURCE_* define.
 #define TRAIT_HEAT_CYCLE "heat_cycle"
+/// Jiggling costs no stamina inside the bathhouse.
+#define TRAIT_BATHHOUSE_DANCER "Bathhouse Dancer"
 /// This mob cannot cast spells
 #define TRAIT_NO_SELF_MAGIC 	"noselfmagic"
 

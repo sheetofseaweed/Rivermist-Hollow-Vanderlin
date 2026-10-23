@@ -91,13 +91,15 @@
 
 /datum/pocket_dimension/defeat_captivity/maneater/Destroy(force)
 	var/obj/structure/flora/grass/maneater/real/maneater = get_owner_plant()
-	// Pocket teardown normally ejects every living occupant. Stomach flora belongs to the pocket
-	// instead, so remove it before the parent returns captives to the destroyed plant's turf.
+	. = ..()
+	maneater?.update_icon()
+
+// Teardown ejects every living mob, and an ejected vine's leash drops it outside the stomach; delete flora first.
+/datum/pocket_dimension/defeat_captivity/maneater/eject_teardown_contents(message = null, atom/override_destination = null)
 	for(var/mob/occupant as anything in get_occupants())
 		if(istype(occupant, /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/maneater))
 			qdel(occupant)
-	. = ..()
-	maneater?.update_icon()
+	return ..()
 
 /datum/pocket_dimension/defeat_captivity/maneater/register_captive(datum/component/kidnap_captivity/captivity)
 	. = ..()

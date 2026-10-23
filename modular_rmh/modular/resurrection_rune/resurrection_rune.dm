@@ -480,6 +480,7 @@
 
 	replace_linked_body(linked_mind, new_body)
 	resurrecting -= linked_mind
+	fail_contracts_on_rune_rescue(new_body)
 	apply_revival_debuffs(new_body)
 	apply_revival_side_effects(new_body, FALSE, null)
 	playsound(destination_turf, 'sound/misc/vampirespell.ogg', 100, FALSE, -1)
@@ -1003,6 +1004,8 @@
 	body.defeat_suppress_heal_cleanup = TRUE
 	body.revive(ADMIN_HEAL_ALL, force_grab_ghost = TRUE)
 	body.defeat_suppress_heal_cleanup = FALSE
+	// After the strip and the move, so only quest items that came home count.
+	fail_contracts_on_rune_rescue(body)
 	if(had_defeat_knockout)
 		var/datum/defeat_recovery_profile/rune/rune_profile = new
 		rune_profile.additional_aftermath_severity = get_defeat_rune_trauma_severity(rune_charge_result)

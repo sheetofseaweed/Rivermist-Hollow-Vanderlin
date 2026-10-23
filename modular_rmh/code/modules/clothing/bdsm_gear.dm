@@ -225,6 +225,7 @@
 	name = "leashed leather collar"
 	desc = "A leather collar with a reinforced ring for a leash."
 	icon = 'modular_rmh/icons/clothing/bdsm_leather_items.dmi'
+	icon_state = null
 	mob_overlay_icon = 'modular_rmh/icons/clothing/onmob/bdsm_leather_onmob.dmi'
 	dyeable = TRUE
 	leashable = TRUE

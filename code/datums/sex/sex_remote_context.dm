@@ -9,6 +9,8 @@
 	var/line_of_sight_break_grace = 20 SECONDS
 	var/line_of_sight_lost_at = 0
 	var/check_interval = 2 SECONDS
+	/// TRUE lets actions keep their ordinary visible messages and visual effects through this context.
+	var/allows_visible_messages = FALSE
 
 /datum/sex_remote_context/New(mob/living/caster, mob/living/target, duration = 2 MINUTES, range_override = 7)
 	. = ..()
@@ -17,7 +19,8 @@
 		RegisterSignal(caster, COMSIG_LIVING_DEATH, PROC_REF(on_participant_invalidated))
 	if(target)
 		target_ref = WEAKREF(target)
-		RegisterSignal(target, COMSIG_LIVING_DEATH, PROC_REF(on_participant_invalidated))
+		if(target != caster)
+			RegisterSignal(target, COMSIG_LIVING_DEATH, PROC_REF(on_participant_invalidated))
 	range = range_override
 	if(duration > 0)
 		expires_at = world.time + duration
