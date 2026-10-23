@@ -217,6 +217,8 @@ GLOBAL_VAR_INIT(mobids, 1)
 		ignored_mobs = list(ignored_mobs)
 	var/list/hearers = get_hearers_in_view(vision_distance, src) //caches the hearers and then removes ignored mobs.
 	hearers -= ignored_mobs
+	if(length(GLOB.sense_relay_mobs))
+		add_sense_relay_hearers(hearers)
 	if(self_message)
 		hearers -= src
 	for(var/mob/M in hearers)
@@ -245,6 +247,17 @@ GLOBAL_VAR_INIT(mobids, 1)
 	var/list/portal_skipped_mobs = hearers.Copy()
 	portal_skipped_mobs |= ignored_mobs
 	relay_visible_message_to_portals(message, portal_skipped_mobs)
+
+/// Adds mobs that perceive through an anchor (a detached dullahan head) when that anchor is among the hearers.
+/proc/add_sense_relay_hearers(list/hearers)
+	for(var/mob/relay_mob as anything in GLOB.sense_relay_mobs)
+		if(QDELETED(relay_mob))
+			GLOB.sense_relay_mobs -= relay_mob
+			continue
+		var/atom/movable/anchor = relay_mob.get_sense_anchor()
+		if(!anchor || anchor == relay_mob || !(anchor in hearers))
+			continue
+		hearers |= relay_mob
 
 /atom/proc/push_visible_message_suppression()
 	visible_message_suppression_count++

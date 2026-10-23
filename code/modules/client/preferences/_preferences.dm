@@ -1115,9 +1115,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		else
 			idx = (idx >= length(dir_cycle)) ? 1 : (idx + 1)
 		character_setup_preview_dir = dir_cycle[idx]
-		if(character_setup_view && character_setup_body)
-			character_setup_measure_body(character_setup_preview_dir)
-			character_setup_apply_to_view(character_setup_view, character_setup_body, character_setup_preview_dir)
+		// Through update_view, so turning never measures a dummy that a yielded render is still dressing.
+		character_setup_redraw_dir = TRUE
+		character_setup_update_view(base_changed = FALSE)
 		return TRUE
 	else if(href_list["preference"] == "character_setup_preview_background")
 		var/bg_choice = href_list["bg"]
@@ -1245,7 +1245,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			character_setup_hover_color = null
 			character_setup_hover_customizer = null
 			character_setup_render_main_only = TRUE
-			character_setup_update_view()
+			character_setup_update_view(base_changed = FALSE)
 			return TRUE
 		if(new_acc == character_setup_hover_acc && href_list["color"] == character_setup_hover_color && new_customizer == character_setup_hover_customizer)
 			return TRUE
@@ -1255,7 +1255,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		character_setup_hover_color = href_list["color"]
 		character_setup_hover_customizer = new_customizer
 		character_setup_render_main_only = TRUE
-		character_setup_update_view()
+		character_setup_update_view(base_changed = FALSE)
 		return TRUE
 
 	if(process_native_preference_link(user, href_list))

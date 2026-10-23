@@ -618,7 +618,7 @@
 
 	set_eye_blur_if_lower(20 SECONDS)
 
-	var/turf/T = get_turf(src)
+	var/turf/T = get_turf(get_sense_anchor())
 	if(!blood)
 		if(nutrition > 50)
 			adjust_nutrition(-lost_nutrition)

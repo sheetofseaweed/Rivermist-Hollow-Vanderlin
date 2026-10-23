@@ -108,11 +108,8 @@
 	if(table_type)
 		cache.loot = new table_type
 	cache.delve_level = max(1, owner?.owning_run ? owner.owning_run.get_encounter_delve() : owner?.depth)
-	// Every present member deserves a share; each taker rolls the table
-	// independently, so this scales reward with party size, not per-share size.
-	cache.max_takers = max(cache.max_takers, length(owner?.owning_run?.present_ckeys))
 	if(owner?.owning_run?.run_unlocks?["extra_cache"])
-		cache.max_takers += 1
+		cache.claims_left += 1
 	return cache
 
 // -- Gate point: recorded by the instance, built by the run controller --
@@ -165,26 +162,25 @@
 	var/locked = TRUE
 	/// When set, a matching /obj/item/dungeon_key unseals this cache (vault rewards)
 	var/key_id
-	/// Loot table datum instance; rolled once per taker
+	/// Loot table datum instance; rolled once per opening
 	var/datum/loot_table/loot
 	/// Delve level passed into the loot table for quantity/rarity scaling
 	var/delve_level = 1
-	/// How many different people can claim a share
-	var/max_takers = 3
-	/// Minds that already claimed their share
-	var/list/takers = list()
+	/// Openings left; the party splits what each opening yields
+	var/claims_left = 1
 
 /obj/structure/dungeon_loot_cache/Destroy()
 	if(loot)
 		qdel(loot)
 		loot = null
-	takers = null
 	return ..()
 
 /obj/structure/dungeon_loot_cache/examine(mob/user)
 	. = ..()
 	if(locked)
 		. += span_warning("It is sealed shut by something unseen.")
+	else if(claims_left <= 0)
+		. += span_notice("It hangs open and empty.")
 	else
 		. += span_notice("It hangs open, waiting to be claimed.")
 
@@ -217,17 +213,14 @@
 	if(locked)
 		to_chat(user, span_warning("The cache is sealed by some lingering will. Whatever guards this place must fall first."))
 		return FALSE
-	if(!loot)
-		to_chat(user, span_warning("The cache is empty."))
-		return FALSE
-	if(user.mind && (user.mind in takers))
-		to_chat(user, span_warning("I have already claimed my share from this cache."))
-		return FALSE
-	if(length(takers) >= max_takers)
+	if(!loot || claims_left <= 0)
 		to_chat(user, span_warning("The cache has been picked clean."))
 		return FALSE
+	claims_left--
 	loot.spawn_loot(user, delve_level, user.return_item_rarity())
-	if(user.mind)
-		takers += user.mind
-	to_chat(user, span_notice("I claim my share from the cache."))
+	if(claims_left > 0)
+		user.visible_message(span_notice("[user] hauls spoils out of [src]. Something still glints inside."), span_notice("I haul spoils out of the cache. Something still glints inside."))
+		return TRUE
+	name = "emptied cache"
+	user.visible_message(span_notice("[user] empties [src]."), span_notice("I empty the cache."))
 	return TRUE

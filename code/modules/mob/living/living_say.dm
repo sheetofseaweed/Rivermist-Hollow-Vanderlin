@@ -190,9 +190,9 @@
 		return TRUE
 
 	if(speaker_language?.flags & SIGNLANG)
-		send_speech_sign(message, message_range, src, bubble_type, spans, language, message_mods, original_message)
+		send_speech_sign(message, message_range, get_sense_anchor(), bubble_type, spans, language, message_mods, original_message)
 	else
-		send_speech(message, message_range, src, bubble_type, spans, language, message_mods, original_message)
+		send_speech(message, message_range, get_sense_anchor(), bubble_type, spans, language, message_mods, original_message)
 
 	if(succumbed)
 		succumb(TRUE)
@@ -233,7 +233,7 @@
 
 	// Create map text prior to modifying message for goonchat
 	if(can_see_runechat(speaker) && can_hear())
-		create_chat_message(speaker, message_language, raw_message, spans)
+		create_chat_message(speaker.get_sense_anchor(), message_language, raw_message, spans)
 	// Recompose message for AI hrefs, language incomprehension.
 	message = compose_message(speaker, message_language, raw_message, radio_freq, spans, message_mods)
 	// voice muffling
@@ -259,7 +259,7 @@
 
 /mob/living/send_speech(message, message_range = 6, obj/source = src, bubble_type = bubble_icon, list/spans, datum/language/message_language, list/message_mods = list(), original_message)
 	var/speaker_has_ceiling = TRUE
-	var/turf/speaker_turf = get_turf(src)
+	var/turf/speaker_turf = get_turf(source)
 	var/turf/speaker_ceiling = get_step_multiz(speaker_turf, UP)
 	if(!speaker_ceiling || istransparentturf(speaker_ceiling))
 		speaker_has_ceiling = FALSE
@@ -295,14 +295,14 @@
 			if(player_mob.stat != DEAD)
 				if(z_message_type != Z_MODE_ALL)
 					continue
-				if(get_dist(player_mob, src) > message_range)
+				if(get_dist(player_mob, source) > message_range)
 					continue
 				if(!is_in_zweb(player_mob.z, source.z))
 					continue
 				listening |= player_mob
 				continue
 			// Else if dead check prefs (unless subtle with noghost)
-			if(!is_in_zweb(player_mob.z, source.z) || get_dist(player_mob, src) > message_range) //they're out of range of normal hearing
+			if(!is_in_zweb(player_mob.z, source.z) || get_dist(player_mob, source) > message_range) //they're out of range of normal hearing
 				if(player_mob.client.prefs)
 					var/chat_toggles = player_mob.client.prefs.read_preference(/datum/preference/bitwise/chat_toggles)
 					if(eavesdrop_range && !(chat_toggles & CHAT_GHOSTWHISPER)) //they're whispering and we have hearing whispers at any range off
@@ -311,6 +311,12 @@
 						continue
 				the_dead[player_mob] = TRUE
 				listening |= player_mob
+
+	// A mob that hears through an anchor gets the message from the anchor, never twice.
+	if(length(GLOB.sense_relay_mobs))
+		for(var/mob/relay_mob as anything in GLOB.sense_relay_mobs)
+			if(!QDELETED(relay_mob) && (relay_mob.get_sense_anchor() in listening))
+				listening -= relay_mob
 
 	var/eavesdropping
 	var/eavesrendered
@@ -333,7 +339,7 @@
 		if(HAS_TRAIT(hearing_movable, TRAIT_KEENEARS))
 			keenears_range_bonus = 5
 
-		if(!ignore_z && z_message_type == Z_MODE_ONE_CEILING && hearing_movable.z != z)
+		if(!ignore_z && z_message_type == Z_MODE_ONE_CEILING && hearing_movable.z != source.z)
 			var/listener_has_ceiling = TRUE
 			var/turf/listener_turf = get_turf(hearing_movable)
 			var/turf/listener_ceiling = GET_TURF_ABOVE(listener_turf) // optimize, this is inside a loop
@@ -359,7 +365,7 @@
 			speech_bubble_recipients |= M.client
 
 	if(length(speech_bubble_recipients))
-		var/image/I = image('icons/mob/talk.dmi', src, "[bubble_type][say_test(message)]", FLY_LAYER)
+		var/image/I = image('icons/mob/talk.dmi', source, "[bubble_type][say_test(message)]", FLY_LAYER)
 		I.appearance_flags = APPEARANCE_UI_IGNORE_ALPHA
 		INVOKE_ASYNC(GLOBAL_PROC, GLOBAL_PROC_REF(flick_overlay), I, speech_bubble_recipients, 30)
 

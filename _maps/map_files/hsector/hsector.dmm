@@ -5,7 +5,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/wallfire/candle/l{
@@ -192,7 +191,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -490,7 +488,6 @@
 /area/under/town/rmh/sewer)
 "agL" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/brick,
@@ -593,8 +590,7 @@
 "aie" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/rack/rogue/shelf/alizeria/shelf1,
 /obj/item/plate/pewter{
@@ -838,9 +834,7 @@
 /area/outdoors/town/rmh/livingquart)
 "amb" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/pillar/sand1{
 	pixel_x = -14;
@@ -913,7 +907,6 @@
 	pixel_x = 4
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
@@ -968,18 +961,14 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/under/town/rmh/sewer)
 "anT" = (
-/obj/structure/fluff/railing/stonewall{
-	dir = 2
-	},
+/obj/structure/fluff/railing/stonewall,
 /turf/open/floor/cobble,
 /area/outdoors/beach/rmh_beach)
 "aoc" = (
 /obj/effect/decal/edge_corner{
 	dir = 1
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/magician)
 "aow" = (
 /obj/effect/decal/edge_corner{
@@ -1255,7 +1244,6 @@
 	},
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /turf/open/floor/wood,
@@ -1276,9 +1264,7 @@
 /area/outdoors/rmh_field/north)
 "asH" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/cobble,
@@ -1299,9 +1285,7 @@
 /turf/open/floor/mushroom/blue,
 /area/indoors/cave/rmh_cave/northern)
 "atr" = (
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /turf/open/openspace,
 /area/indoors/town/rmh/craft/artificer)
 "aty" = (
@@ -1349,8 +1333,7 @@
 "aue" = (
 /obj/effect/decal/edge{
 	dir = 5;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -1403,9 +1386,7 @@
 /area/indoors/town/rmh/garrison)
 "avv" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/light/fueled/wallfire/candle/l,
 /turf/open/floor/tile/diamond,
@@ -1428,8 +1409,7 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel/basement)
@@ -1439,7 +1419,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "avG" = (
 /obj/structure/table/wood/large_new{
-	dir = 2;
 	icon_state = "alt_largetable"
 	},
 /obj/effect/decal/borderfall,
@@ -1546,7 +1525,6 @@
 /area/indoors/town/rmh/farm/house)
 "ayb" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
@@ -1640,7 +1618,6 @@
 /area/under/rmh_dungeon/catacombs_town)
 "aAL" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/fluff/littlebanners{
@@ -1989,7 +1966,6 @@
 /area/under/town/rmh/basement/townhall)
 "aGK" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -2006,8 +1982,7 @@
 "aGX" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/herringbone,
@@ -2186,7 +2161,6 @@
 "aJJ" = (
 /obj/structure/fluff/railing/border/north,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
@@ -2303,7 +2277,6 @@
 /area/indoors/town/rmh/merchant)
 "aKT" = (
 /obj/machinery/light/fueled/lanternpost/fixed{
-	pixel_y = 0;
 	pixel_x = -7;
 	dir = 1
 	},
@@ -2500,7 +2473,6 @@
 /area/under/rmh_dungeon/catacombs_church)
 "aOh" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/bench/church/mid,
@@ -2759,9 +2731,7 @@
 /turf/open/floor/grass/mixyel,
 /area/outdoors/rmh_field/basinruin)
 "aSH" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/redcurtain/dir,
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/town/rmh/loudmouth)
@@ -2778,8 +2748,7 @@
 /area/indoors/town/rmh/craft/tailor)
 "aSS" = (
 /obj/effect/decal/cobbleedge{
-	dir = 10;
-	pixel_y = 0
+	dir = 10
 	},
 /obj/structure/closet/crate/chest/wicker,
 /obj/item/neuFarm/seed/sugarcane,
@@ -2888,7 +2857,6 @@
 "aVa" = (
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/structure/bookcase/fancy/random,
@@ -3048,12 +3016,10 @@
 	pixel_x = -7
 	},
 /obj/item/weapon/knife/dagger/steel{
-	pixel_x = 7;
-	pixel_y = 0
+	pixel_x = 7
 	},
 /obj/item/weapon/knife/dagger/steel{
-	pixel_x = 7;
-	pixel_y = 0
+	pixel_x = 7
 	},
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison)
@@ -3084,10 +3050,6 @@
 /obj/structure/rack/shelf/biggest,
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/merchant)
-"aXy" = (
-/obj/structure/window/openclose,
-/turf/closed/basic,
-/area/indoors/shelter/woods)
 "aXD" = (
 /obj/structure/flora/newtree,
 /turf/open/floor/dirt,
@@ -3112,7 +3074,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "aYb" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/brick,
@@ -3178,7 +3139,6 @@
 	pixel_y = 9
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/border,
@@ -3196,7 +3156,6 @@
 /area/outdoors/rmh_air)
 "aYO" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
@@ -3386,7 +3345,6 @@
 /area/outdoors/town/rmh)
 "baT" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/carpet/red,
@@ -3448,7 +3406,6 @@
 /area/under/town/rmh/sewer)
 "bbZ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -3517,7 +3474,6 @@
 /area/outdoors/rmh_air)
 "bdo" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -3576,7 +3532,6 @@
 /area/outdoors/rmh_air)
 "beq" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/wood,
@@ -3728,7 +3683,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/concrete,
@@ -3752,7 +3706,6 @@
 /area/indoors/town/rmh/bath)
 "bhO" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/bench/church/mid,
@@ -3803,9 +3756,7 @@
 /area/outdoors/rmh_field/west)
 "bja" = (
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble/alt,
 /area/outdoors/town/rmh)
@@ -3859,9 +3810,7 @@
 /area/under/town/rmh/basement/lab)
 "bjM" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 5;
@@ -3900,9 +3849,7 @@
 	},
 /obj/machinery/light/fueled/oven/south,
 /obj/machinery/light/fueled/hearth/horizontal,
-/obj/item/reagent_containers/glass/bucket/pot{
-	pixel_y = 0
-	},
+/obj/item/reagent_containers/glass/bucket/pot,
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/garrison)
 "bkc" = (
@@ -3921,7 +3868,6 @@
 /area/outdoors/mountains/rmh_mountains)
 "bkr" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -4035,8 +3981,7 @@
 	},
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_x = 32
@@ -4068,7 +4013,6 @@
 /area/indoors/cave/rmh_cave/northern)
 "bmZ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -4081,9 +4025,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/outdoors/town/rmh)
 "bnD" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/wet/lake)
 "bnH" = (
@@ -4233,7 +4175,6 @@
 /area/outdoors/rmh_field/west)
 "bpw" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/fluff/littlebanners{
@@ -4297,8 +4238,7 @@
 	pixel_y = -1
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel/basement)
@@ -4336,9 +4276,7 @@
 /obj/structure/fluff/walldeco/painting/crown{
 	pixel_x = 32
 	},
-/obj/structure/fluff/littlebanners{
-	pixel_y = 0
-	},
+/obj/structure/fluff/littlebanners,
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/tavern)
 "bqT" = (
@@ -4352,7 +4290,6 @@
 /area/indoors/cave/rmh_cave/southern)
 "bri" = (
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -4370,9 +4307,7 @@
 /obj/structure/fluff/railing/stonewall{
 	dir = 8
 	},
-/obj/structure/fluff/railing/stonewall{
-	dir = 2
-	},
+/obj/structure/fluff/railing/stonewall,
 /turf/open/floor/cobble,
 /area/outdoors/beach/rmh_beach)
 "bru" = (
@@ -4573,7 +4508,6 @@
 /area/indoors/town/rmh/witch)
 "bvw" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -4594,7 +4528,6 @@
 /area/indoors/town/rmh/magician)
 "bvN" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobblerock,
@@ -4612,13 +4545,11 @@
 "bwh" = (
 /obj/effect/decal/edge{
 	dir = 6;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 10;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -4759,7 +4690,6 @@
 /area/indoors/cave/rmh_cave/west)
 "byv" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/bench/church/r,
@@ -5149,9 +5079,7 @@
 /turf/open/floor/concrete,
 /area/under/town/rmh/basement/mages)
 "bFc" = (
-/obj/structure/fluff/walldeco/church/line{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/church/line,
 /obj/structure/chair/wood/alt,
 /turf/open/floor/church,
 /area/indoors/town/rmh/chapel/basement)
@@ -5276,8 +5204,7 @@
 	dir = 8
 	},
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/effect/decal/edge{
 	color = "#7a684b";
@@ -5415,7 +5342,6 @@
 "bKg" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -5469,9 +5395,7 @@
 /area/indoors/town/rmh/windmill)
 "bLc" = (
 /obj/structure/fluff/railing/border{
-	dir = 4;
-	pixel_x = 0;
-	pixel_y = 0
+	dir = 4
 	},
 /obj/structure/fluff/railing/border/north,
 /obj/structure/fluff/railing/corner/north_east,
@@ -5527,7 +5451,6 @@
 	},
 /obj/structure/mannequin/male{
 	density = 0;
-	dir = 2;
 	pixel_y = 15
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -5552,9 +5475,7 @@
 /turf/closed/wall/mineral/stone,
 /area/under/town/rmh/basement/basement)
 "bMj" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /turf/open/floor/cobble/alt,
 /area/under/rmh_dungeon/jergal)
 "bMm" = (
@@ -5599,7 +5520,6 @@
 /area/indoors/cave/rmh_cave/northern)
 "bNd" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/church/pale,
@@ -5702,7 +5622,6 @@
 /area/indoors/town/rmh/bank)
 "bOj" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -5855,7 +5774,6 @@
 	plane = -10
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -5871,7 +5789,6 @@
 /area/outdoors/town/rmh/roofs)
 "bQr" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -5943,9 +5860,7 @@
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/catacombs_town)
 "bRe" = (
-/obj/structure/stairs{
-	dir = 2
-	},
+/obj/structure/stairs,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/tavern)
 "bRg" = (
@@ -6086,9 +6001,7 @@
 /area/indoors/town/rmh/tavern)
 "bTI" = (
 /obj/structure/table/wood/plain_alt,
-/obj/item/candle/tin/lit{
-	pixel_y = 0
-	},
+/obj/item/candle/tin/lit,
 /obj/structure/fluff/walldeco/painting/skull{
 	pixel_x = 32
 	},
@@ -6097,7 +6010,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "bTJ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
@@ -6206,8 +6118,7 @@
 "bVw" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/tavern)
@@ -6284,7 +6195,6 @@
 /area/outdoors/rmh_field/rmh_mageporch)
 "bWj" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -6303,7 +6213,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "bWC" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -6363,8 +6272,7 @@
 "bWU" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/herringbone,
 /area/outdoors/town/rmh)
@@ -6500,9 +6408,7 @@
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/catacombs)
 "bYR" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
 "bYW" = (
@@ -6519,7 +6425,6 @@
 /area/indoors/shelter/woods)
 "bZq" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -6577,7 +6482,6 @@
 "caz" = (
 /obj/structure/rack/shelf/biggest,
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/item/weapon/hammer/iron,
@@ -6614,7 +6518,6 @@
 /area/indoors/town/rmh/craft/blacksmith)
 "caO" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/item/storage/sack{
@@ -6632,7 +6535,6 @@
 "caY" = (
 /obj/structure/stairs/stone/cw,
 /obj/structure/lever/wall{
-	dir = 2;
 	redstone_id = "innshutter";
 	pixel_x = 32
 	},
@@ -6719,9 +6621,7 @@
 /obj/structure/fluff/statue/small{
 	pixel_y = 18
 	},
-/obj/structure/table/church/end/alt{
-	pixel_y = 0
-	},
+/obj/structure/table/church/end/alt,
 /obj/machinery/light/fueled/wallfire/floorcandle/alt,
 /turf/open/floor/metal,
 /area/outdoors/town/rmh)
@@ -6774,8 +6674,7 @@
 /area/under/rmh_dungeon/catacombs)
 "cdF" = (
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/carpet/royalblack,
 /area/indoors/town/rmh/chapel/basement)
@@ -6882,8 +6781,7 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/item/reagent_containers/glass/cup/silver{
 	pixel_x = 15;
@@ -6978,7 +6876,6 @@
 /area/indoors/town/rmh/magician)
 "cfG" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/alizeriadecor/stool2,
@@ -7202,8 +7099,7 @@
 "chY" = (
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = -8;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /obj/effect/decal/alizeria/decals/wooddecal1,
 /obj/effect/decal/alizeria/decals/wooddecal4,
@@ -7366,7 +7262,6 @@
 /area/indoors)
 "ckQ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -7496,7 +7391,6 @@
 	pixel_y = 9
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -7673,7 +7567,6 @@
 	},
 /obj/structure/table/wood/plain/alto,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/fluff/railing/wood,
@@ -7717,8 +7610,7 @@
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/tile/harem1,
 /area/under/town/rmh/basement/townhall)
@@ -7766,9 +7658,7 @@
 	dir = 4
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/indoors/town/rmh/bank)
@@ -7804,9 +7694,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/southern)
 "crm" = (
-/obj/structure/table/wood/reinf_long{
-	dir = 2
-	},
+/obj/structure/table/wood/reinf_long,
 /obj/item/storage/sack{
 	pixel_y = 11;
 	pixel_x = 5
@@ -7940,15 +7828,12 @@
 /area/indoors/town/rmh/craft/apothecary)
 "ctj" = (
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -8118,7 +8003,6 @@
 /area/indoors/town/rmh/craft/artificer)
 "cwq" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -8134,9 +8018,7 @@
 /area/under/town/rmh/sewer)
 "cwG" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/town_hall)
@@ -8154,7 +8036,6 @@
 /area/indoors/town/rmh/town_hall)
 "cwN" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -8239,7 +8120,6 @@
 /area/outdoors/rmh_river)
 "cyr" = (
 /obj/structure/table/wood{
-	dir = 2;
 	icon_state = "longtable"
 	},
 /obj/item/candle/candlestick/gold/lit{
@@ -8247,7 +8127,6 @@
 	pixel_x = -5
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/item/reagent_containers/glass/carafe/water{
@@ -8401,7 +8280,6 @@
 /area/outdoors/town/rmh/roofs)
 "cBt" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/blood,
@@ -8436,7 +8314,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem1,
@@ -8508,8 +8385,7 @@
 /obj/structure/fluff/walldeco/church/line,
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 9;
-	pixel_y = 0
+	dir = 9
 	},
 /turf/open/floor/churchmarble,
 /area/indoors/town/rmh/chapel)
@@ -8551,9 +8427,7 @@
 /area/outdoors/rmh_river)
 "cEp" = (
 /obj/structure/fluff/railing/border{
-	dir = 4;
-	pixel_x = 0;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/openspace,
 /area/outdoors/rmh_field/druid)
@@ -8767,8 +8641,7 @@
 /area/indoors/town/rmh/tavern)
 "cIE" = (
 /obj/structure/fluff/walldeco/church/line{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/churchrough,
@@ -8910,7 +8783,6 @@
 /area/under/town/rmh/sewer)
 "cLe" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/item/bin/washbasin{
@@ -8952,7 +8824,6 @@
 /area/outdoors/rmh_field/north_mountain)
 "cLK" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
@@ -9163,8 +9034,7 @@
 	},
 /obj/machinery/light/fueled/wallfire/floorcandle,
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel/basement)
@@ -9178,7 +9048,6 @@
 /obj/item/natural/glass/shard,
 /obj/effect/decal/cleanable/debris/glass,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -9259,8 +9128,7 @@
 /area/under/town/rmh/basement/townhall)
 "cRl" = (
 /obj/effect/decal/cobbleedge{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/structure/fake_machine/scomm{
 	scom_tag = "Rivermist - West Gate"
@@ -9286,8 +9154,7 @@
 	},
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 10;
@@ -9325,7 +9192,6 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
@@ -9367,8 +9233,7 @@
 	},
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/item/kitchen/rollingpin,
 /obj/item/weapon/knife/villager{
@@ -9469,7 +9334,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/carpet/red,
@@ -9506,7 +9370,6 @@
 /area/under/town/rmh/sewer)
 "cVr" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
@@ -9572,7 +9435,6 @@
 	dir = 6
 	},
 /obj/item/candle/tin/lit{
-	pixel_y = 0;
 	pixel_x = -6
 	},
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -9583,7 +9445,6 @@
 	icon_state = "longtable"
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/concrete,
@@ -9781,8 +9642,7 @@
 "cYD" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/chair/stool,
 /turf/open/floor/blocks/stonered/tiny,
@@ -9869,7 +9729,6 @@
 /area/indoors/town/rmh/library)
 "daJ" = (
 /obj/structure/stairs/stone/church{
-	pixel_y = 0;
 	dir = 1
 	},
 /obj/structure/spider/stickyweb/mirespider,
@@ -9880,7 +9739,6 @@
 	dir = 8
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/border,
@@ -9924,9 +9782,7 @@
 	},
 /obj/machinery/light/fueled/wallfire/candle/l,
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fluff/railing/wood,
 /turf/open/floor/tile/brownbrick,
@@ -10221,7 +10077,6 @@
 	dir = 1
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -10232,7 +10087,6 @@
 /area/outdoors/rmh_eilistraee)
 "dhl" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -10394,9 +10248,7 @@
 /area/indoors/town/rmh/bank)
 "djq" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fluff/walldeco/bigpainting/lake{
 	pixel_y = -32;
@@ -11022,7 +10874,6 @@
 /area/indoors/town/rmh/farm/ambar)
 "dta" = (
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -11102,7 +10953,6 @@
 /area/indoors/cave/rmh_cave/safezone)
 "duh" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/cobblerockedge{
@@ -11175,7 +11025,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/concrete,
@@ -11362,7 +11211,6 @@
 /area/indoors/town/rmh/chapel)
 "dxA" = (
 /obj/structure/door/viewport{
-	dir = 2;
 	name = "Town Watch's Fort"
 	},
 /obj/effect/mapping_helpers/access/keyset/garrison/general,
@@ -11560,7 +11408,6 @@
 	},
 /obj/structure/fluff/railing/wood{
 	dir = 8;
-	pixel_y = 0;
 	pixel_x = -12
 	},
 /turf/open/floor/ruinedwood/spiral,
@@ -11592,9 +11439,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/structure/bars/grille,
 /obj/machinery/light/fueled/wallfire/candle/blue{
 	pixel_y = -32
@@ -11620,7 +11465,6 @@
 "dBN" = (
 /obj/structure/hotspring/border/fourteen,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -12014,7 +11858,6 @@
 "dIA" = (
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/curtain/redcurtain,
@@ -12025,9 +11868,7 @@
 /turf/open/floor/blocks,
 /area/under/rmh_dungeon/catacombs_town)
 "dID" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/town_hall)
 "dII" = (
@@ -12246,7 +12087,6 @@
 /area/under/town/rmh/sewer)
 "dMl" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/machinery/light/fueled/wallfire/candle/blue/l{
@@ -12294,8 +12134,7 @@
 /area/indoors)
 "dMU" = (
 /obj/effect/decal/cobbleedge{
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
@@ -12368,7 +12207,6 @@
 "dNy" = (
 /obj/structure/mannequin/male{
 	density = 0;
-	pixel_y = 0;
 	pixel_x = -10;
 	dir = 4
 	},
@@ -12377,9 +12215,7 @@
 "dNz" = (
 /obj/machinery/light/fueled/oven/north,
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/light/fueled/hearth,
 /turf/open/floor/blocks/stonered/tiny,
@@ -12403,7 +12239,6 @@
 /obj/item/natural/wood/plank,
 /obj/effect/decal/cleanable/debris/wood,
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 6
 	},
 /obj/structure/table/church,
@@ -12487,7 +12322,6 @@
 /area/indoors/town/rmh/living)
 "dPR" = (
 /obj/structure/door/viewport{
-	dir = 2;
 	name = "Blacksmith"
 	},
 /obj/effect/mapping_helpers/access/keyset/town/smith,
@@ -12700,7 +12534,6 @@
 /area/outdoors/town/rmh)
 "dTk" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
@@ -12720,7 +12553,6 @@
 /area/under/town/rmh/sewer)
 "dTD" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -12732,9 +12564,7 @@
 /turf/open/floor/wood,
 /area/indoors/town/rmh/town_hall)
 "dTU" = (
-/obj/machinery/essence/test_tube{
-	pixel_y = 0
-	},
+/obj/machinery/essence/test_tube,
 /obj/machinery/essence/test_tube{
 	pixel_y = 3
 	},
@@ -12829,7 +12659,6 @@
 /area/outdoors/rmh_field/east)
 "dVC" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/border,
@@ -12951,7 +12780,6 @@
 "dWX" = (
 /obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -12985,7 +12813,6 @@
 /area/indoors/town/rmh/craft/apothecary)
 "dXA" = (
 /obj/structure/stairs{
-	dir = 2;
 	name = "benches"
 	},
 /obj/structure/fluff/railing/border/east,
@@ -13059,11 +12886,8 @@
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/bath)
 "dYy" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/dir{
-	dir = 2;
 	color = "#a32121"
 	},
 /turf/open/floor/wood,
@@ -13096,7 +12920,6 @@
 /obj/item/bedsheet/wool,
 /obj/structure/mannequin/male{
 	density = 0;
-	dir = 2;
 	pixel_x = -10;
 	pixel_y = 25
 	},
@@ -13191,7 +13014,6 @@
 "eaA" = (
 /obj/structure/fluff/railing/border,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/table/wood/counter/end,
@@ -13274,9 +13096,7 @@
 /turf/open/openspace,
 /area/indoors/cave/rmh_cave/greenskins)
 "eca" = (
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_y = 14;
 	pixel_x = -9
@@ -13309,13 +13129,11 @@
 /area/indoors/town/rmh/magician)
 "ecB" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobbleedge{
 	dir = 4;
 	icon_state = "borderfall";
-	pixel_y = 0;
 	pixel_x = 8;
 	icon = 'icons/turf/constructed/misc.dmi'
 	},
@@ -13441,8 +13259,7 @@
 "eex" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 6;
@@ -13493,7 +13310,6 @@
 /area/under/town/rmh/basement/bank)
 "efr" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -13521,9 +13337,7 @@
 	dir = 6
 	},
 /obj/effect/decal/cleanable/dirt/dust,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "efy" = (
 /obj/structure/flora/crystal,
@@ -13624,7 +13438,6 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge_corner{
@@ -13663,7 +13476,6 @@
 	dir = 10
 	},
 /obj/item/candle/tin/lit{
-	pixel_y = 0;
 	pixel_x = 16
 	},
 /obj/effect/decal/carpet/square/black{
@@ -13880,7 +13692,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/spiral,
@@ -13977,9 +13788,7 @@
 	dir = 6
 	},
 /obj/structure/flora/grass/crawlvines,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "enc" = (
 /obj/structure/bed/inn,
@@ -14143,8 +13952,7 @@
 /area/under/town/rmh/sewer)
 "epS" = (
 /obj/structure/fluff/walldeco/chains{
-	pixel_x = 22;
-	pixel_y = 0
+	pixel_x = 22
 	},
 /turf/open/dungeon_trap,
 /area/under/town/rmh/sewer)
@@ -14268,7 +14076,6 @@
 /area/outdoors/rmh_field/west)
 "esb" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/table/vtable/v2,
@@ -14396,11 +14203,9 @@
 /area/outdoors/beach/rmh_beach)
 "etS" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/mannequin{
@@ -14416,7 +14221,6 @@
 /area/indoors/cave/rmh_cave/northern)
 "eul" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -14486,8 +14290,7 @@
 /area/indoors/town/rmh/chapel)
 "evw" = (
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/structure/fluff/railing/corner/south_east,
 /turf/open/floor/cobble/mossy,
@@ -14548,12 +14351,10 @@
 /area/indoors/town/rmh/town_hall)
 "ewP" = (
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/fluff/railing/corner/south_west,
@@ -14666,7 +14467,6 @@
 "eyC" = (
 /obj/structure/fluff/railing/border/west,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
@@ -14803,9 +14603,7 @@
 /area/indoors/cave/rmh_cave/safezone)
 "eAr" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/light/fueled/oven/north,
 /obj/machinery/light/fueled/hearth,
@@ -14817,8 +14615,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/churchmarble/gold,
 /area/under/town/rmh/sewer)
@@ -14960,8 +14757,7 @@
 /obj/structure/mannequin/male{
 	density = 0;
 	pixel_y = 27;
-	pixel_x = 8;
-	dir = 2
+	pixel_x = 8
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/structure/carpet/purple,
@@ -15033,8 +14829,7 @@
 /area/indoors/cave/rmh_cave/mine)
 "eFN" = (
 /obj/machinery/light/fueled/hearth/horizontal{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/machinery/light/fueled/oven/south,
 /turf/open/floor/concrete,
@@ -15242,9 +15037,7 @@
 /obj/effect/decal/wood/herringbone{
 	dir = 4
 	},
-/obj/structure/chair/wood/alt/chair3{
-	dir = 2
-	},
+/obj/structure/chair/wood/alt/chair3,
 /turf/open/floor/ruinedwood,
 /area/indoors)
 "eJE" = (
@@ -15333,11 +15126,9 @@
 "eKR" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -15380,8 +15171,7 @@
 "eLI" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/craft/blacksmith)
@@ -15417,8 +15207,7 @@
 "eMg" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/loudmouth)
@@ -15602,7 +15391,6 @@
 /area/outdoors/rmh_field/oldmill)
 "ePZ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
@@ -15644,9 +15432,7 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/indoors/town/rmh/chapel)
 "eRf" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/redcurtain/dir,
 /turf/open/floor/wood,
 /area/indoors/town/rmh/town_hall)
@@ -15672,7 +15458,6 @@
 	dir = 4
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/closet/crate/chest/neu_fancy,
@@ -15734,7 +15519,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "eSX" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -16037,7 +15821,6 @@
 	pixel_y = 8
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -16148,7 +15931,6 @@
 /area/outdoors/rmh_field/west)
 "faJ" = (
 /obj/structure/fluff/railing/stonewall{
-	pixel_y = 0;
 	dir = 5
 	},
 /turf/open/floor/cobblerock,
@@ -16168,7 +15950,6 @@
 /area/outdoors/rmh_field/north_mountain)
 "faX" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/desert/deserttile/tilegreyblu,
@@ -16184,8 +15965,7 @@
 	pixel_y = -1
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel/basement)
@@ -16212,9 +15992,7 @@
 /area/outdoors/town/rmh)
 "fbM" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/light/fueled/wallfire/candle/l,
 /turf/open/floor/tile/brick,
@@ -16260,9 +16038,7 @@
 /turf/open/floor/rooftop/green/north,
 /area/outdoors/town/rmh/roofs)
 "fcN" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/church,
 /area/outdoors/rmh_eilistraee)
 "fcW" = (
@@ -16330,8 +16106,7 @@
 /area/under/town/rmh/sewer)
 "fec" = (
 /obj/effect/decal/cobbleedge{
-	dir = 10;
-	pixel_y = 0
+	dir = 10
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/arena)
@@ -16475,7 +16250,6 @@
 /area/outdoors/town/rmh)
 "ffY" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -16505,9 +16279,7 @@
 /area/outdoors/town/rmh/livingquart)
 "fgv" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/indoors/town/rmh/merchant)
@@ -16531,8 +16303,7 @@
 /area/indoors/town/rmh/craft/apothecary)
 "fgZ" = (
 /obj/structure/table/wood{
-	icon_state = "tablewood1";
-	pixel_y = 0
+	icon_state = "tablewood1"
 	},
 /turf/open/floor/wood,
 /area/indoors/town/rmh/cell)
@@ -16575,7 +16346,6 @@
 /area/outdoors/rmh_field/west)
 "fiv" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/stonewall{
@@ -16656,7 +16426,6 @@
 /area/indoors/town/rmh/tavern)
 "fjY" = (
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 5
 	},
 /turf/open/floor/cobblerock,
@@ -16665,9 +16434,7 @@
 /turf/open/floor/twig,
 /area/indoors/town/rmh/witch)
 "fkc" = (
-/obj/structure/fluff/walldeco/church/line{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/church/line,
 /obj/structure/chair/wood/alt,
 /turf/open/floor/churchrough,
 /area/indoors/town/rmh/chapel/basement)
@@ -16699,7 +16466,6 @@
 /area/outdoors/town/rmh)
 "fkR" = (
 /obj/structure/window/openclose/reinforced{
-	dir = 2;
 	damage_deflection = 10
 	},
 /turf/open/floor/ruinedwood/darker,
@@ -16806,8 +16572,7 @@
 /area/indoors/town/rmh/tavern)
 "fmZ" = (
 /obj/structure/fluff/walldeco/church/line{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/churchrough,
@@ -16998,7 +16763,6 @@
 /area/indoors/town/rmh/town_hall)
 "fpP" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal{
@@ -17044,9 +16808,7 @@
 /obj/effect/decal/alizeria/decals/wooddecal8,
 /obj/structure/chair/stool,
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -17120,7 +16882,6 @@
 	dir = 8
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/mapping_helpers/access/keyset/church/general,
@@ -17456,13 +17217,10 @@
 /obj/effect/decal/edge{
 	dir = 4;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -17596,7 +17354,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -17610,8 +17367,7 @@
 /obj/effect/landmark/start/acolyte,
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/churchmarble,
 /area/indoors/town/rmh/chapel)
@@ -17725,9 +17481,7 @@
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/craft/apothecary)
 "fAF" = (
-/obj/effect/decal/cobbleedge{
-	dir = 2
-	},
+/obj/effect/decal/cobbleedge,
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/farm)
 "fAG" = (
@@ -17787,7 +17541,6 @@
 /area/indoors/town/rmh/bank)
 "fBJ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/corner/south_west,
@@ -17918,7 +17671,6 @@
 /area/outdoors/rmh_field/west)
 "fCf" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
@@ -18023,9 +17775,7 @@
 /area/indoors/town/rmh/living)
 "fDw" = (
 /obj/effect/decal/edge,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/magician)
 "fDM" = (
 /obj/effect/decal/cleanable/blood,
@@ -18167,7 +17917,6 @@
 "fHA" = (
 /obj/structure/carpet/blue,
 /obj/structure/fluff/pillow/blue{
-	dir = 2;
 	pixel_y = -10
 	},
 /turf/open/floor/cobble,
@@ -18257,7 +18006,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/signage{
@@ -18324,7 +18072,6 @@
 /obj/item/storage/sack,
 /obj/item/storage/sack,
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 4
 	},
 /turf/open/floor/cobblerock,
@@ -18397,9 +18144,7 @@
 /turf/open/floor/carpet/red,
 /area/indoors/town/rmh/tavern)
 "fLx" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /obj/structure/fluff/walldeco/vinez/r,
 /obj/item/natural/stone,
 /turf/open/floor/cobble/alt,
@@ -18462,7 +18207,6 @@
 /obj/structure/closet/crate/chest/neu_iron/corpse,
 /obj/item/burial_shroud,
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/tile/bfloorz,
@@ -18478,8 +18222,7 @@
 /area/under/town/rmh/sewer)
 "fNx" = (
 /obj/effect/decal/cobbleedge{
-	dir = 9;
-	pixel_y = 0
+	dir = 9
 	},
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/farm)
@@ -18511,9 +18254,7 @@
 /obj/effect/decal/edge{
 	dir = 4
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/magician)
 "fOB" = (
 /turf/closed/wall/mineral/decostone/long{
@@ -18681,7 +18422,6 @@
 /obj/structure/well{
 	icon = 'icons/obj/structures/rotation_devices/water_vent.dmi';
 	icon_state = "pipevent";
-	dir = 2;
 	density = 0;
 	name = "water tap";
 	pixel_y = 28
@@ -18838,13 +18578,11 @@
 /area/indoors/cave/rmh_cave/mine)
 "fSp" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 8
 	},
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = -8
@@ -18899,7 +18637,6 @@
 	pixel_x = -17
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
@@ -18930,9 +18667,7 @@
 /area/indoors/cave/rmh_cave/minotaur)
 "fTv" = (
 /obj/structure/curtain/redcurtain,
-/obj/structure/stairs{
-	dir = 2
-	},
+/obj/structure/stairs,
 /obj/structure/fluff/walldeco/painting/flower{
 	pixel_x = -32
 	},
@@ -18983,7 +18718,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/wallfire/candle/blue,
@@ -19111,8 +18845,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/churchmarble/gold,
 /area/under/town/rmh/sewer)
@@ -19191,7 +18924,6 @@
 	icon_state = "longtable_mid"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/border,
@@ -19222,7 +18954,6 @@
 /area/under/town/rmh/sewer)
 "fWw" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
@@ -19263,7 +18994,6 @@
 "fXc" = (
 /obj/structure/table/wood/counter/end,
 /obj/machinery/tanningrack{
-	pixel_y = 0;
 	pixel_x = -3;
 	layer = 5;
 	density = 0
@@ -19289,8 +19019,7 @@
 "fXi" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/rmh/living)
@@ -19308,7 +19037,6 @@
 /area/indoors/town/rmh/town_hall)
 "fXK" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -19340,7 +19068,6 @@
 "fYf" = (
 /obj/structure/table/vtable/v2,
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/fake_machine/mail{
@@ -19449,7 +19176,6 @@
 "fZW" = (
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /turf/open/floor/carpet/lord/right,
@@ -19535,7 +19261,6 @@
 /area/outdoors/rmh_field)
 "gaZ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobblerock,
@@ -19759,8 +19484,7 @@
 /area/outdoors/rmh_field/tavel/mountain)
 "gei" = (
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
@@ -19832,9 +19556,7 @@
 /area/outdoors/rmh_field/oldmill)
 "ggp" = (
 /obj/item/natural/stone,
-/obj/effect/decal/cobblerockedge/alt{
-	dir = 2
-	},
+/obj/effect/decal/cobblerockedge/alt,
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "ggr" = (
@@ -19976,7 +19698,6 @@
 /area/indoors/shelter/woods)
 "gik" = (
 /obj/effect/decal/carpet/kover_black{
-	dir = 2;
 	pixel_y = 1;
 	pixel_x = 16
 	},
@@ -19995,7 +19716,6 @@
 /area/indoors/town/vault)
 "giq" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
@@ -20098,7 +19818,6 @@
 /area/outdoors/town/rmh)
 "gjQ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/outie{
@@ -20144,7 +19863,6 @@
 "gkV" = (
 /obj/structure/fluff/railing/wood{
 	dir = 8;
-	pixel_y = 0;
 	pixel_x = -12
 	},
 /obj/structure/fluff/railing/wood/west,
@@ -20315,8 +20033,7 @@
 	icon_state = "redchurchtable_mid"
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/structure/fluff/walldeco/selune_banner{
 	pixel_y = 32
@@ -20483,7 +20200,6 @@
 	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2;
 	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/maidensigil{
@@ -20538,7 +20254,6 @@
 /area/outdoors/town/rmh/roofs)
 "gra" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -20688,8 +20403,7 @@
 	},
 /obj/effect/decal/edge{
 	dir = 6;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -20806,7 +20520,6 @@
 /area/outdoors/rmh_field/north_mountain)
 "gvL" = (
 /obj/structure/door/weak/bolt{
-	dir = 2;
 	name = "confessional door"
 	},
 /turf/open/floor/wood,
@@ -20913,7 +20626,6 @@
 /area/under/rmh_dungeon/catacombs_town)
 "gxy" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/desert/deserttile/tilegreeny,
@@ -20956,7 +20668,6 @@
 /area/outdoors/rmh_field/oldmill)
 "gyc" = (
 /obj/structure/flora/grass/crawlvines{
-	dir = 2;
 	pixel_x = 32
 	},
 /turf/open/openspace,
@@ -21262,7 +20973,6 @@
 /area/under/town/rmh/sewer)
 "gEl" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -21484,7 +21194,6 @@
 /area/outdoors/rmh_field)
 "gHs" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -21521,7 +21230,6 @@
 /area/outdoors/mountains/rmh_mountains)
 "gHW" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/herringbone,
@@ -21737,8 +21445,7 @@
 /area/outdoors/rmh_air)
 "gKN" = (
 /obj/effect/decal/cobbleedge{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/west)
@@ -21775,8 +21482,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/chapel/basement)
@@ -21845,7 +21551,6 @@
 	desc = "This totally isnt pink...";
 	icon_state = "manabloomtree";
 	icon = 'icons/obj/structures/manabloomtree.dmi';
-	plane = -6;
 	pixel_x = -36
 	},
 /obj/structure/flora/ausbushes/ywflowers,
@@ -22057,7 +21762,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "gQI" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -22087,9 +21791,7 @@
 /turf/open/floor/churchmarble,
 /area/outdoors/rmh_eilistraee)
 "gRb" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/library)
 "gRe" = (
@@ -22114,7 +21816,6 @@
 /area/under/town/rmh/basement/mages)
 "gRv" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -22260,8 +21961,7 @@
 "gUv" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -22323,9 +22023,7 @@
 /turf/open/floor/churchrough,
 /area/under/rmh_dungeon/underdarkmaze)
 "gVg" = (
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/outdoors/rmh_field/rmh_mageporch)
 "gVh" = (
 /obj/structure/flora/grass/crawlvines,
@@ -22417,9 +22115,7 @@
 /area/outdoors/bog)
 "gWR" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fake_machine/stockpile_withdraw{
 	pixel_y = -32
@@ -22462,8 +22158,7 @@
 "gXJ" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10;
-	icon_state = "cobbleedge-w";
-	pixel_y = 0
+	icon_state = "cobbleedge-w"
 	},
 /obj/item/natural/stoneblock,
 /turf/open/floor/cobblerock,
@@ -22476,8 +22171,7 @@
 "gXO" = (
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = 10;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /obj/effect/decal/alizeria/decals/wooddecal1,
 /obj/effect/decal/alizeria/decals/wooddecal3,
@@ -22501,9 +22195,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 10
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /obj/structure/fluff/walldeco/gear/small{
 	pixel_x = 11;
 	pixel_y = -1
@@ -22599,7 +22291,6 @@
 /area/indoors/town/rmh/tavern)
 "gYG" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -22685,7 +22376,6 @@
 	dir = 1
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -22743,14 +22433,12 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
 /area/under/town/rmh/basement/bank)
 "hbq" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/call_bell/townhall_servant{
@@ -22778,8 +22466,7 @@
 	color = "#575757"
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel)
@@ -22824,8 +22511,7 @@
 "hcT" = (
 /obj/effect/decal/edge{
 	dir = 5;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobblerockedge{
 	dir = 5
@@ -22855,7 +22541,6 @@
 	dir = 4
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/mirror/fancy{
@@ -22895,7 +22580,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/concrete,
@@ -22903,8 +22587,7 @@
 "hdG" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -22923,9 +22606,7 @@
 /obj/effect/decal/cobblerockedge{
 	dir = 6
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "hdR" = (
 /turf/open/openspace,
@@ -22973,7 +22654,6 @@
 "hfc" = (
 /obj/structure/bookcase/random_recipes,
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -23126,8 +22806,7 @@
 /area/indoors/town/rmh/magician)
 "hhh" = (
 /obj/structure/water_vent{
-	pixel_y = 14;
-	dir = 2
+	pixel_y = 14
 	},
 /obj/machinery/light/fueledstreet/orange/wall,
 /obj/structure/flora/grass/crawlvines,
@@ -23160,7 +22839,6 @@
 /area/under/town/rmh/basement/tavern)
 "hhz" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/rack,
@@ -23249,16 +22927,14 @@
 /area/indoors/town/rmh/chapel/basement)
 "hiR" = (
 /obj/effect/decal/cobbleedge{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /obj/machinery/light/fueled/wallfire/floorcandle,
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/arena)
 "hiX" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /turf/open/floor/cobble,
@@ -23285,7 +22961,6 @@
 /area/under/rmh_dungeon/arena)
 "hjI" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -23318,8 +22993,7 @@
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/edge{
 	dir = 6;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble/alt,
 /area/outdoors/town/rmh)
@@ -23446,7 +23120,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "hmk" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -23629,7 +23302,6 @@
 /obj/structure/hotspring,
 /obj/structure/hotspring,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -23642,7 +23314,6 @@
 /area/indoors/cave/rmh_cave/minotaur)
 "hpH" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/table/wood/counter/end,
@@ -23743,7 +23414,6 @@
 /area/indoors/town/rmh/craft/blacksmith)
 "hry" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/church,
@@ -23755,7 +23425,6 @@
 /area/indoors/town/rmh/merchant)
 "hrS" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -23793,7 +23462,6 @@
 /area/outdoors/rmh_field)
 "hsn" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -23804,9 +23472,7 @@
 /turf/open/floor/church/gold,
 /area/under/town/rmh/sewer)
 "hsG" = (
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/town_hall)
 "hsS" = (
@@ -23829,7 +23495,6 @@
 	dir = 1
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -23945,7 +23610,6 @@
 "hvf" = (
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/structure/table/wood/large/corner_new{
@@ -24077,14 +23741,12 @@
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /obj/effect/decal/edge{
 	dir = 4;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -24120,7 +23782,6 @@
 	pixel_x = 3
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -24151,7 +23812,6 @@
 /area/under/rmh_dungeon/jergal)
 "hyx" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem1,
@@ -24296,7 +23956,6 @@
 /area/indoors/town/rmh/tavern)
 "hBh" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -24331,8 +23990,7 @@
 "hBV" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/indoors/town/rmh/living)
@@ -24356,9 +24014,7 @@
 /area/outdoors/bog)
 "hCs" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /obj/structure/fake_machine/scomm{
 	pixel_y = -32;
@@ -24461,8 +24117,7 @@
 /area/indoors/cave/rmh_cave/southern)
 "hEm" = (
 /obj/structure/table/wood{
-	icon_state = "tablewood1";
-	pixel_y = 0
+	icon_state = "tablewood1"
 	},
 /obj/item/natural/cloth{
 	pixel_y = 8
@@ -24492,7 +24147,6 @@
 "hEF" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -24524,8 +24178,7 @@
 "hFF" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
 /area/indoors/town/rmh/magician)
@@ -24551,8 +24204,7 @@
 "hFN" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/desert/deserttile/tilegreeny,
 /area/indoors/town/rmh/bank)
@@ -24576,7 +24228,6 @@
 /area/under/town/rmh/basement/bank)
 "hFU" = (
 /obj/structure/table/wood/reinf_long{
-	pixel_y = 0;
 	dir = 1
 	},
 /obj/item/reagent_containers/glass/cup{
@@ -24684,7 +24335,6 @@
 "hHw" = (
 /obj/effect/mapping_helpers/access/locker,
 /obj/structure/door/viewport{
-	dir = 2;
 	name = "Artificer's Tower"
 	},
 /obj/effect/mapping_helpers/access/keyset/town/artificer,
@@ -24795,7 +24445,6 @@
 /obj/machinery/light/fueled/wallfire/candle/blue/r,
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /turf/open/floor/desert/deserttile/tilegreeny,
@@ -24882,8 +24531,7 @@
 	},
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/structure/chair/bench{
 	dir = 4;
@@ -24927,9 +24575,7 @@
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/town_hall)
 "hLJ" = (
-/obj/effect/decal/carpet/square/black{
-	pixel_y = 0
-	},
+/obj/effect/decal/carpet/square/black,
 /turf/open/floor/church,
 /area/indoors/town/rmh/chapel/basement)
 "hLM" = (
@@ -25177,8 +24823,7 @@
 /area/under/rmh_dungeon/jergal)
 "hOG" = (
 /obj/structure/flora/sakura{
-	pixel_x = -58;
-	plane = -6
+	pixel_x = -58
 	},
 /turf/open/floor/grass/eora,
 /area/indoors/cave/rmh_cave/cave_druid)
@@ -25412,8 +25057,7 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/item/candle/eora{
 	pixel_x = 9;
@@ -25482,9 +25126,7 @@
 /area/indoors/town/rmh/magician)
 "hTx" = (
 /obj/effect/decal/cleanable/dirt/paper,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "hTA" = (
 /obj/effect/decal/cobbleedge{
@@ -25544,7 +25186,6 @@
 /area/under/town/rmh/sewer)
 "hUP" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -25574,7 +25215,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "hVo" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/stool{
@@ -25761,8 +25401,7 @@
 	},
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/loudmouth)
@@ -25854,8 +25493,7 @@
 /area/indoors/town/rmh/town_hall)
 "hZE" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/cobblerock,
@@ -25918,9 +25556,7 @@
 /area/outdoors/rmh_field/oldmill)
 "iaJ" = (
 /obj/structure/fluff/canopy/green,
-/obj/structure/table/wood/large/corner_new{
-	dir = 2
-	},
+/obj/structure/table/wood/large/corner_new,
 /obj/item/storage/sack{
 	pixel_y = 4
 	},
@@ -26237,8 +25873,7 @@
 /obj/structure/fluff/railing/corner/south_east,
 /obj/effect/decal/edge{
 	dir = 9;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
 /area/indoors/town/rmh/magician)
@@ -26256,7 +25891,6 @@
 /area/indoors/town/rmh/witch)
 "ieg" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/outie{
@@ -26477,7 +26111,6 @@
 /area/outdoors/town/rmh/roofs)
 "iii" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/machinery/light/fueled/torchholder{
@@ -26516,9 +26149,7 @@
 /area/outdoors/rmh_field/oldmill)
 "iiI" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/flora/grass/crawlvines{
 	pixel_y = -32
@@ -26726,9 +26357,7 @@
 "imh" = (
 /obj/effect/decal/alizeria/decals/wooddecal7,
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -26752,7 +26381,6 @@
 /area/under/rmh_dungeon/jergal)
 "imY" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -27139,7 +26767,6 @@
 /area/outdoors/exposed/town/rmh/farm)
 "iqT" = (
 /obj/structure/bars/pipe{
-	pixel_y = 0;
 	dir = 5
 	},
 /turf/closed/wall/mineral/pipe,
@@ -27436,9 +27063,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/southern)
 "iux" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /obj/structure/fluff/walldeco/bath/wallpipes{
 	dir = 8;
 	pixel_y = -32
@@ -27515,7 +27140,6 @@
 	layer = 2
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2;
 	layer = 2
 	},
 /obj/structure/fluff/walldeco/maidensigil{
@@ -27565,9 +27189,7 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "iwq" = (
-/obj/structure/curtain/bounty/dir{
-	dir = 2
-	},
+/obj/structure/curtain/bounty/dir,
 /turf/closed/wall/mineral/wood/window,
 /area/indoors/town/rmh/herbalist)
 "iwr" = (
@@ -27588,7 +27210,6 @@
 "iwz" = (
 /obj/structure/door/viewport{
 	desc = "a large door. It seems big enough to fit a mount.";
-	dir = 2;
 	name = "Mercenaries Guild"
 	},
 /obj/effect/mapping_helpers/access/keyset/town/mercenary,
@@ -27713,11 +27334,9 @@
 	pixel_x = 1
 	},
 /obj/item/reagent_containers/glass/cup/glassware/wineglass{
-	pixel_y = 0;
 	pixel_x = 7
 	},
 /obj/item/reagent_containers/glass/cup/glassware/wineglass{
-	pixel_y = 0;
 	pixel_x = -5
 	},
 /obj/item/tray{
@@ -27789,7 +27408,6 @@
 /area/outdoors/town/rmh/roofs)
 "iyO" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/table/stone_small,
@@ -27962,7 +27580,6 @@
 "iBA" = (
 /obj/effect/decal/cleanable/blood/old,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -28101,7 +27718,6 @@
 /area/indoors/town/rmh/library)
 "iDf" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
@@ -28178,8 +27794,7 @@
 /area/indoors/cave/rmh_cave/to_underdark)
 "iEc" = (
 /obj/effect/decal/cobbleedge{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/tavern)
@@ -28237,9 +27852,7 @@
 /turf/closed/wall/mineral/stone/moss/red,
 /area/under/town/rmh/basement/farm)
 "iFV" = (
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "iGn" = (
 /turf/closed/wall/mineral/roofwall/middle{
@@ -28443,9 +28056,7 @@
 /area/indoors/town/rmh/garrison)
 "iJn" = (
 /obj/structure/fluff/railing/border/east,
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /obj/item/natural/bundle/plank{
 	amount = 6;
 	pixel_y = 9;
@@ -28522,9 +28133,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/machinery/light/fueled/wallfire/floorcandle/pink,
 /obj/item/clothing/neck/psycross/silver/sune,
 /turf/open/floor/tile/tilerg,
@@ -28541,7 +28150,6 @@
 /area/under/rmh_dungeon/jergal)
 "iKr" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/cobble,
@@ -28551,9 +28159,7 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -28586,7 +28192,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "iKZ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -28673,9 +28278,7 @@
 /turf/open/floor/ruinedwood/turned,
 /area/indoors/town/rmh/herbalist)
 "iMt" = (
-/obj/structure/chair/wood/alt/chair3{
-	dir = 2
-	},
+/obj/structure/chair/wood/alt/chair3,
 /obj/structure/carpet/red,
 /turf/open/floor/tile/brick,
 /area/indoors/town/rmh/tavern)
@@ -28687,7 +28290,6 @@
 /area/indoors/town/rmh/town_hall)
 "iMJ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -28922,7 +28524,6 @@
 /obj/structure/bookcase/fancy/random,
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /turf/open/floor/woodturned,
@@ -29045,9 +28646,7 @@
 /area/indoors/town/rmh/living)
 "iSe" = (
 /obj/structure/bars/shop,
-/obj/structure/roller{
-	dir = 2
-	},
+/obj/structure/roller,
 /turf/open/floor/metal/barograte/open,
 /area/outdoors/town/rmh)
 "iSg" = (
@@ -29061,9 +28660,7 @@
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
 "iSq" = (
-/obj/effect/decal/cobblerockedge{
-	dir = 2
-	},
+/obj/effect/decal/cobblerockedge,
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/living)
 "iSr" = (
@@ -29150,11 +28747,9 @@
 "iTN" = (
 /obj/structure/fluff/railing/corner/south_west,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/fake_machine/scomm{
@@ -29179,7 +28774,6 @@
 /area/indoors/town/rmh/town_hall)
 "iUq" = (
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 6
 	},
 /turf/open/floor/cobblerock,
@@ -29259,11 +28853,8 @@
 /turf/open/floor/tile/harem1,
 /area/under/town/rmh/basement/townhall)
 "iVg" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/dir{
-	dir = 2;
 	color = "#8a6b6b";
 	hover_color = "#8a6b6b"
 	},
@@ -29307,7 +28898,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/churchrough/rust,
@@ -29419,7 +29009,6 @@
 /area/indoors/town/rmh/garrison)
 "iXq" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/church/gold,
@@ -29478,9 +29067,7 @@
 	},
 /area/indoors/town/rmh/merchant)
 "iYp" = (
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
@@ -29551,8 +29138,7 @@
 "iYR" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10;
-	icon_state = "cobbleedge-w";
-	pixel_y = 0
+	icon_state = "cobbleedge-w"
 	},
 /turf/open/floor/grass/mixyel,
 /area/outdoors/rmh_field/camp)
@@ -29587,7 +29173,6 @@
 "jaE" = (
 /obj/structure/fluff/railing/wood{
 	dir = 8;
-	pixel_y = 0;
 	pixel_x = -12
 	},
 /obj/structure/fluff/railing/wood{
@@ -29619,7 +29204,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -29801,7 +29385,6 @@
 /area/outdoors/exposed/rmh/chapel)
 "jeZ" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -29976,8 +29559,7 @@
 /obj/structure/chair/wood/alt/chair3,
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/tavern)
@@ -30207,7 +29789,6 @@
 /area/outdoors/town/rmh)
 "jkN" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/glass,
@@ -30332,7 +29913,6 @@
 	pixel_x = -17
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -30377,7 +29957,6 @@
 /area/outdoors/rmh_eilistraee)
 "jnp" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -30395,7 +29974,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "jnw" = (
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 5
 	},
 /turf/open/floor/cobblerock,
@@ -30424,9 +30002,7 @@
 /turf/open/floor/grass/mixyel,
 /area/outdoors/rmh_air)
 "jnT" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/red,
 /turf/open/floor/blocks,
 /area/indoors/town/rmh/craft/apothecary)
@@ -30537,8 +30113,7 @@
 "jqy" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -30652,7 +30227,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/alizeria/decals/wooddecal1,
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = -8
@@ -30764,7 +30338,6 @@
 "jtR" = (
 /obj/effect/decal/cleanable/dirt/paper,
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -30828,9 +30401,7 @@
 /obj/effect/decal/cobblerockedge{
 	dir = 5
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "juI" = (
 /obj/structure/ladder,
@@ -31062,7 +30633,6 @@
 /obj/structure/bookcase/fancy/random,
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -31129,7 +30699,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/spider/stickyweb,
@@ -31228,8 +30797,7 @@
 "jCy" = (
 /obj/effect/decal/edge{
 	dir = 6;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -31331,9 +30899,7 @@
 /obj/effect/decal/cobblerockedge{
 	dir = 1
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "jDO" = (
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -31346,7 +30912,6 @@
 /area/indoors/town/rmh/magician)
 "jDW" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_color = "#992d28";
@@ -31366,13 +30931,11 @@
 /area/indoors/town/rmh/crafters_guild)
 "jEl" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 8
 	},
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = -8
@@ -31416,7 +30979,6 @@
 	},
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /turf/open/floor/desert/deserttile/tilegreeny,
@@ -31486,7 +31048,6 @@
 /area/under/town/rmh/sewer)
 "jGp" = (
 /obj/structure/fluff/railing/stonewall{
-	pixel_y = 0;
 	dir = 8
 	},
 /obj/structure/fluff/railing/stonewall{
@@ -31534,8 +31095,7 @@
 "jGD" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/pillar/sand1{
 	pixel_x = -18;
@@ -31651,13 +31211,11 @@
 "jIr" = (
 /obj/effect/decal/edge{
 	dir = 10;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 9;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -31781,8 +31339,7 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/item/reagent_containers/glass/cup/silver{
 	pixel_x = -15;
@@ -31792,7 +31349,6 @@
 /area/indoors/town/rmh/chapel)
 "jKb" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -31924,8 +31480,7 @@
 "jLY" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fluff/clutter/shrub/red{
 	pixel_y = 15
@@ -31996,9 +31551,7 @@
 /turf/open/floor/dirt,
 /area/outdoors/town/rmh)
 "jON" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/garrison)
@@ -32214,7 +31767,6 @@
 	dir = 9
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/closet/crate/chest/wickertrunk/red,
@@ -32321,14 +31873,12 @@
 "jTX" = (
 /obj/structure/fluff/railing/border/west,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/chapel)
 "jUg" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/well/fountain{
@@ -32354,8 +31904,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/churchmarble/gold,
 /area/under/town/rmh/sewer)
@@ -32442,8 +31991,7 @@
 "jWl" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -32535,8 +32083,7 @@
 "jXl" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/herringbone,
@@ -32589,9 +32136,7 @@
 /area/under/rmh_dungeon/jergal)
 "jXI" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /obj/effect/decal/borderfall{
 	dir = 8;
@@ -32663,8 +32208,7 @@
 "jYG" = (
 /obj/effect/decal/edge{
 	dir = 10;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/herringbone,
@@ -32755,7 +32299,6 @@
 /area/under/town/rmh/sewer)
 "jZO" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -33013,7 +32556,6 @@
 	dir = 4
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -33027,8 +32569,7 @@
 	pixel_y = 23;
 	anchored = 1;
 	density = 0;
-	pixel_x = 24;
-	dir = 2
+	pixel_x = 24
 	},
 /obj/structure/fake_machine/scomm{
 	scom_tag = "City Hall - Councilor Office"
@@ -33126,8 +32667,7 @@
 /area/under/town/rmh/basement/tavern)
 "kgu" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/effect/decal/cleanable/blood/old,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -33145,9 +32685,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/under/town/rmh/basement/townhall)
 "kgF" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/fluff/railing/border/west,
 /obj/structure/fluff/railing/border/east,
 /obj/structure/curtain/bounty/dir,
@@ -33178,7 +32716,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "khn" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/carpet/navy,
@@ -33327,7 +32864,6 @@
 /area/under/town/rmh/sewer)
 "kjJ" = (
 /obj/structure/table/wood/reinf_long{
-	pixel_y = 0;
 	dir = 8
 	},
 /turf/open/floor/woodturned,
@@ -33357,8 +32893,7 @@
 /obj/structure/mannequin/male,
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = 10;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /obj/structure/fluff/railing/wood/east,
 /turf/open/floor/tile/masonic/single,
@@ -33513,6 +33048,10 @@
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/craft/apothecary)
+"kmZ" = (
+/obj/structure/window/openclose,
+/turf/open/floor/ruinedwood/alizeria/tiles/wood19,
+/area/indoors/shelter/woods)
 "kng" = (
 /obj/structure/fluff/railing/corner{
 	dir = 9
@@ -33608,9 +33147,7 @@
 /turf/open/floor/metal,
 /area/under/town/rmh/sewer)
 "koW" = (
-/obj/structure/roller{
-	dir = 2
-	},
+/obj/structure/roller,
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "koZ" = (
@@ -33790,7 +33327,6 @@
 /area/under/town/rmh/sewer)
 "krU" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/well/fountain{
@@ -33854,8 +33390,7 @@
 /area/outdoors/beach/rmh_beach)
 "ktv" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing{
-	pixel_x = 13;
-	pixel_y = 0
+	pixel_x = 13
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
@@ -33874,8 +33409,7 @@
 /area/under/town/rmh/basement/mages)
 "ktO" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/item/natural/rock,
 /turf/open/floor/churchrough/rust,
@@ -34018,32 +33552,19 @@
 /area/indoors/town/rmh/library)
 "kwl" = (
 /obj/structure/closet/crate/chest/old_crate,
-/obj/item/mould/ingot{
-	pixel_y = 0
-	},
+/obj/item/mould/ingot,
 /obj/item/storage/crucible/random,
-/obj/item/mould/ingot{
-	pixel_y = 0
-	},
+/obj/item/mould/ingot,
 /obj/item/storage/crucible/random,
-/obj/item/mould/ingot{
-	pixel_y = 0
-	},
+/obj/item/mould/ingot,
 /obj/item/storage/crucible/random,
-/obj/item/mould/ingot{
-	pixel_y = 0
-	},
+/obj/item/mould/ingot,
 /obj/item/storage/crucible/random,
-/obj/item/mould/ingot{
-	pixel_y = 0
-	},
+/obj/item/mould/ingot,
 /obj/item/storage/crucible/random,
-/obj/item/mould/ingot{
-	pixel_y = 0
-	},
+/obj/item/mould/ingot,
 /obj/item/storage/crucible/random,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/torchholder/hotspring{
@@ -34072,7 +33593,6 @@
 "kwF" = (
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /turf/open/floor/ruinedwood/herringbone_clear,
@@ -34239,8 +33759,7 @@
 /area/outdoors/town/rmh/livingquart)
 "kzs" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/outie{
 	dir = 5
@@ -34353,7 +33872,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/carpet/red,
@@ -34385,7 +33903,6 @@
 "kAt" = (
 /obj/structure/window,
 /obj/structure/curtain/dir{
-	dir = 2;
 	color = "#8a6b6b";
 	hover_color = "#8a6b6b"
 	},
@@ -34393,9 +33910,7 @@
 /area/indoors/town/rmh/craft/tailor)
 "kAx" = (
 /obj/structure/fluff/railing/border{
-	dir = 4;
-	pixel_x = 0;
-	pixel_y = 0
+	dir = 4
 	},
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
@@ -34473,7 +33988,6 @@
 "kCd" = (
 /obj/structure/fluff/railing/corner/south_west,
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -34497,9 +34011,7 @@
 /turf/open/water/clean,
 /area/outdoors/rmh_air)
 "kCB" = (
-/obj/structure/flora/new_shroom/purplef{
-	dir = 2
-	},
+/obj/structure/flora/new_shroom/purplef,
 /turf/open/floor/mushroom/blue,
 /area/indoors/cave/rmh_cave/northern)
 "kCE" = (
@@ -34586,7 +34098,6 @@
 /area/under/rmh_dungeon/jergal)
 "kEE" = (
 /obj/structure/stairs/stone/church{
-	pixel_y = 0;
 	dir = 1
 	},
 /turf/open/floor/concrete,
@@ -34611,7 +34122,6 @@
 /area/indoors/town/rmh/chapel/basement)
 "kEM" = (
 /obj/structure/table/wood/reinf_long{
-	dir = 2;
 	pixel_y = 1
 	},
 /obj/machinery/essence/extractor,
@@ -34622,8 +34132,7 @@
 	dir = 10
 	},
 /obj/effect/decal/cobbleedge{
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/farm)
@@ -34689,9 +34198,7 @@
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/wet/lake)
 "kFZ" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /turf/open/floor/cobble,
 /area/under/town/rmh/sewer)
 "kGi" = (
@@ -34729,8 +34236,7 @@
 "kHk" = (
 /obj/effect/decal/cleanable/dirt/paper,
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/craft/apothecary)
@@ -34750,7 +34256,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "kHU" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -34923,8 +34428,7 @@
 "kLf" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/pillar/sand1{
 	pixel_x = -14;
@@ -34987,8 +34491,7 @@
 "kLW" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
@@ -35021,8 +34524,7 @@
 /area/indoors/town/rmh/garrison)
 "kMs" = (
 /obj/effect/decal/cobbleedge{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/cobblerock,
@@ -35196,8 +34698,7 @@
 /obj/structure/carpet/green,
 /obj/structure/fluff/pillow/green{
 	dir = 8;
-	pixel_x = -5;
-	pixel_y = 0
+	pixel_x = -5
 	},
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/alizeria/decals/wooddecal1,
@@ -35272,9 +34773,7 @@
 /turf/open/floor/tile,
 /area/under/town/rmh/basement/townhall)
 "kQj" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/tavern)
 "kQk" = (
@@ -35283,7 +34782,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/churchrough/rust,
@@ -35306,7 +34804,6 @@
 /area/indoors/town/rmh/garrison)
 "kQw" = (
 /obj/structure/table/wood/reinf_long{
-	dir = 2;
 	icon_state = "tablewood_reinf_m"
 	},
 /obj/machinery/essence/splitter,
@@ -35484,7 +34981,6 @@
 	dir = 9
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
@@ -35509,13 +35005,11 @@
 /area/under/rmh_dungeon/arena)
 "kSD" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/rack/rogue/shelf/alizeria/shelf2{
 	pixel_y = 0;
@@ -35530,7 +35024,6 @@
 /area/indoors/town/rmh/merchant)
 "kSY" = (
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 1
 	},
 /obj/structure/fluff/walldeco/vinez/r,
@@ -35837,8 +35330,7 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/cobbleedge{
-	dir = 9;
-	pixel_y = 0
+	dir = 9
 	},
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/farm)
@@ -35879,7 +35371,6 @@
 	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2;
 	layer = 2.1
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -36097,7 +35588,6 @@
 /area/indoors/town/rmh/cell)
 "lbX" = (
 /obj/structure/table/wood/large/corner_new{
-	dir = 2;
 	pixel_y = 10
 	},
 /obj/structure/flowerpot/medium{
@@ -36291,7 +35781,6 @@
 /area/under/rmh_bedrock)
 "lel" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/churchbrick,
@@ -36379,7 +35868,6 @@
 /area/outdoors/rmh_air)
 "lfw" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -36466,7 +35954,6 @@
 /area/outdoors/rmh_field)
 "lhf" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -36644,9 +36131,7 @@
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/town_hall)
 "ljo" = (
-/obj/structure/fluff/walldeco/bath/wallpipes/outie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/outie,
 /turf/open/dungeon_trap,
 /area/under/town/rmh/sewer)
 "ljt" = (
@@ -36656,7 +36141,6 @@
 /area/under/rmh_dungeon/jergal)
 "lju" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -36695,7 +36179,6 @@
 	pixel_y = 8
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -36765,9 +36248,7 @@
 /obj/machinery/light/fueledstreet/orange/wall{
 	dir = 4
 	},
-/obj/structure/fluff/railing/stonewall{
-	dir = 2
-	},
+/obj/structure/fluff/railing/stonewall,
 /turf/open/floor/grass/mixyel,
 /area/outdoors/town/rmh)
 "llA" = (
@@ -36847,7 +36328,6 @@
 /area/outdoors/rmh_magelake)
 "lni" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/blood/gibs/old,
@@ -36859,13 +36339,10 @@
 /turf/open/floor/church/green,
 /area/under/town/rmh/sewer)
 "lnl" = (
-/obj/structure/table/wood/large/corner_new{
-	dir = 2
-	},
+/obj/structure/table/wood/large/corner_new,
 /obj/effect/decal/carpet/kover_black{
 	pixel_y = -8;
-	pixel_x = 5;
-	dir = 2
+	pixel_x = 5
 	},
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/tavern)
@@ -37058,7 +36535,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fake_machine/atm,
@@ -37116,6 +36592,12 @@
 	},
 /turf/open/floor/naturalstone,
 /area/outdoors/rmh_air)
+"lsx" = (
+/obj/structure/window/openclose{
+	dir = 8
+	},
+/turf/open/floor/ruinedwood/alizeria/tiles/wood28,
+/area/indoors/shelter/woods)
 "lsy" = (
 /obj/effect/decal/cleanable/sigil/W,
 /turf/open/floor/blocks,
@@ -37135,7 +36617,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/item/candle/tin/lit{
@@ -37153,7 +36634,6 @@
 /area/indoors/town/rmh/tavern)
 "lsL" = (
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 4
 	},
 /turf/open/floor/cobblerock,
@@ -37215,9 +36695,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/cave/rmh_cave/greenskins)
 "ltR" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /obj/structure/spider/stickyweb/mirespider,
 /turf/open/floor/mushroom,
 /area/indoors/cave/rmh_cave/northern)
@@ -37406,7 +36884,6 @@
 /area/indoors/town/rmh/craft/apothecary)
 "lwT" = (
 /obj/structure/lever/wall{
-	pixel_y = 0;
 	redstone_id = "MMMin";
 	dir = 8;
 	pixel_x = -10
@@ -37498,9 +36975,7 @@
 /obj/structure/mirror/fancy{
 	pixel_y = -64
 	},
-/obj/structure/chair/wood/alt/fancy/chair5{
-	dir = 2
-	},
+/obj/structure/chair/wood/alt/fancy/chair5,
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/tile/harem1,
 /area/indoors/town/rmh/town_hall)
@@ -37526,11 +37001,9 @@
 "lzC" = (
 /obj/structure/curtain/black,
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -37657,8 +37130,7 @@
 /area/outdoors/rmh_field/north)
 "lAz" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/herringbone,
 /area/outdoors/town/rmh)
@@ -37700,9 +37172,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/structure/bars/grille,
 /obj/machinery/light/fueled/wallfire/candle/blue,
 /turf/open/floor/tile/tilerg,
@@ -37737,8 +37207,7 @@
 "lCt" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -37752,9 +37221,7 @@
 /obj/structure/fluff/railing/stonewall{
 	dir = 4
 	},
-/obj/structure/fluff/railing/stonewall{
-	dir = 2
-	},
+/obj/structure/fluff/railing/stonewall,
 /turf/open/floor/cobble,
 /area/outdoors/beach/rmh_beach)
 "lCI" = (
@@ -37784,7 +37251,6 @@
 /area/indoors/town/rmh/craft/blacksmith)
 "lDh" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -37804,7 +37270,6 @@
 /area/under/town/rmh/sewer)
 "lDx" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/fluff/pillow{
@@ -38118,11 +37583,8 @@
 /turf/closed/wall/mineral/decostone/cand,
 /area/under/town/rmh/basement/farm)
 "lIU" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/dir{
-	dir = 2;
 	color = "#8a6b6b"
 	},
 /turf/open/floor/woodturned,
@@ -38134,8 +37596,7 @@
 /obj/structure/chair/stool,
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -38193,9 +37654,7 @@
 /turf/open/openspace,
 /area/outdoors/rmh_air)
 "lKh" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/tavern)
@@ -38347,9 +37806,7 @@
 /area/under/town/rmh/sewer)
 "lMp" = (
 /obj/structure/fluff/canopy,
-/obj/structure/table/wood/large/corner_new{
-	dir = 2
-	},
+/obj/structure/table/wood/large/corner_new,
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh/livingquart)
 "lMq" = (
@@ -38786,7 +38243,6 @@
 /area/indoors/town/rmh/craft/artificer)
 "lTI" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fake_machine/vendor{
@@ -38848,12 +38304,10 @@
 /area/outdoors/town/rmh)
 "lUw" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/structure/fluff/railing/corner/south_east,
@@ -38959,7 +38413,6 @@
 	pixel_y = 8
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fake_machine/scomm{
@@ -39052,7 +38505,6 @@
 /area/under/rmh_dungeon/arena)
 "lWT" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/table/wood/plain/alto,
@@ -39113,13 +38565,11 @@
 /area/indoors/town/rmh/cell)
 "lYa" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 8
 	},
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = -8
@@ -39173,8 +38623,7 @@
 	pixel_y = -5
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/structure/fluff/railing/wood/east{
 	pixel_y = -15
@@ -39237,8 +38686,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/item/broom,
 /turf/open/floor/ruinedwood/spiral,
@@ -39319,8 +38767,7 @@
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 9;
@@ -39518,7 +38965,6 @@
 "mey" = (
 /obj/effect/decal/carpet/kover_black{
 	pixel_x = 18;
-	pixel_y = 0;
 	dir = 4
 	},
 /turf/open/floor/ruinedwood/herringbone_clear,
@@ -39573,8 +39019,7 @@
 /obj/structure/fluff/walldeco/church/line,
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 5;
-	pixel_y = 0
+	dir = 5
 	},
 /turf/open/floor/churchmarble,
 /area/indoors/town/rmh/chapel)
@@ -39661,7 +39106,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/rack/shelf/big,
@@ -39765,11 +39209,9 @@
 /area/outdoors/town/rmh/roofs)
 "mha" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/fluff/railing/corner/south_east,
@@ -39805,7 +39247,6 @@
 /area/indoors/town/rmh/merchant)
 "mhu" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -39823,8 +39264,7 @@
 "mhC" = (
 /obj/effect/decal/edge{
 	dir = 9;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 10;
@@ -39916,7 +39356,6 @@
 /area/indoors/cave/rmh_cave/safezone)
 "mjg" = (
 /obj/effect/decal/carpet{
-	pixel_y = 0;
 	dir = 4;
 	pixel_x = 14
 	},
@@ -40045,8 +39484,7 @@
 "mld" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/giantfur/smaller{
-	pixel_x = -31;
-	pixel_y = 0
+	pixel_x = -31
 	},
 /turf/open/floor/carpet/lord/center,
 /area/indoors/town/rmh/town_hall)
@@ -40201,7 +39639,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "mnB" = (
 /obj/structure/table/wood/reinf_long{
-	pixel_y = 0;
 	dir = 4
 	},
 /turf/open/floor/woodturned,
@@ -40209,8 +39646,7 @@
 "mnE" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/structure/table/wood/reinf_long{
 	dir = 4
@@ -40389,7 +39825,6 @@
 /area/indoors/town/rmh/bank)
 "mqG" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -40513,14 +39948,12 @@
 /area/under/rmh_dungeon/catacombs_town)
 "mta" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/concrete,
 /area/under/town/rmh/sewer)
 "mtl" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -40563,8 +39996,7 @@
 "mtW" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10;
-	icon_state = "cobbleedge-w";
-	pixel_y = 0
+	icon_state = "cobbleedge-w"
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/jergal)
@@ -40753,9 +40185,7 @@
 "mxs" = (
 /obj/structure/fluff/railing/corner/south_east,
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/indoors/town/rmh/bank)
@@ -40886,7 +40316,6 @@
 /area/indoors/cave/rmh_cave/wet/lake)
 "myS" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -40988,7 +40417,6 @@
 /area/under/town/rmh/sewer)
 "mAq" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -41111,7 +40539,6 @@
 /area/under/rmh_dungeon/catacombs_town)
 "mBT" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
@@ -41271,7 +40698,6 @@
 /area/outdoors/exposed/rmh/chapel)
 "mDE" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -41731,7 +41157,6 @@
 "mLD" = (
 /obj/structure/hotspring,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -41743,12 +41168,10 @@
 	name = "barber's apron"
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/tile/bfloorz,
 /area/indoors/town/rmh/craft/apothecary)
@@ -41828,9 +41251,7 @@
 /area/indoors/shelter/woods)
 "mNz" = (
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
 /area/outdoors/town/rmh)
@@ -41866,7 +41287,6 @@
 /area/under/town/rmh/sewer)
 "mOc" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/torchholder{
@@ -41876,7 +41296,6 @@
 /area/indoors/town/rmh/craft/blacksmith)
 "mOh" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/church/gold,
@@ -41906,8 +41325,7 @@
 "mOP" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
 	dir = 8
@@ -41953,8 +41371,7 @@
 /obj/effect/decal/alizeria/decals/wooddecal1,
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = 15;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /turf/open/floor/wood,
 /area/indoors/town/rmh/tavern)
@@ -41994,7 +41411,6 @@
 /area/outdoors/exposed/town/rmh/farm)
 "mQW" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/rack/rogue/shelf/alizeria/shelf2{
@@ -42031,7 +41447,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "mRi" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -42052,7 +41467,6 @@
 /area/under/town/rmh/sewer)
 "mRp" = (
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -42104,7 +41518,6 @@
 /area/outdoors/rmh_field/east)
 "mSA" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/structure/fluff/walldeco/alizeria/plants2{
@@ -42410,7 +41823,6 @@
 /area/indoors/town/rmh/craft/apothecary)
 "mXT" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/carpet/navy,
@@ -42511,7 +41923,6 @@
 /area/outdoors/rmh_field)
 "nac" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/herringbone,
@@ -42655,8 +42066,7 @@
 "ncz" = (
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = 10;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /obj/effect/decal/edge_corner{
 	dir = 4;
@@ -42760,9 +42170,7 @@
 /area/outdoors/town/rmh)
 "neG" = (
 /obj/structure/barricade/wooden/crude,
-/obj/structure/door/weak/bolt{
-	dir = 2
-	},
+/obj/structure/door/weak/bolt,
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/mine)
 "neJ" = (
@@ -42832,9 +42240,7 @@
 "nfw" = (
 /obj/effect/falling_sakura,
 /obj/effect/waterfall,
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/church,
 /area/indoors/cave/rmh_cave/wet/lake)
 "nfI" = (
@@ -42907,7 +42313,6 @@
 	dir = 1
 	},
 /obj/structure/bars/pipe{
-	dir = 2;
 	pixel_x = 10;
 	pixel_y = 10
 	},
@@ -42931,7 +42336,6 @@
 /area/outdoors/rmh_field/basinruin)
 "ngX" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -43007,7 +42411,6 @@
 	dir = 8
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -43055,7 +42458,6 @@
 /area/under/rmh_dungeon/catacombs_town)
 "niT" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -43168,7 +42570,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "nlb" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
@@ -43376,7 +42777,6 @@
 "noM" = (
 /obj/structure/fluff/railing/border/east,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/spiral,
@@ -43536,7 +42936,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -43584,7 +42983,6 @@
 /obj/effect/decal/cobbleedge{
 	dir = 4;
 	icon_state = "borderfall";
-	pixel_y = 0;
 	pixel_x = 8;
 	icon = 'icons/turf/constructed/misc.dmi'
 	},
@@ -43856,7 +43254,6 @@
 /area/under/town/rmh/basement/townhall)
 "nwM" = (
 /obj/structure/stairs{
-	dir = 2;
 	name = "benches"
 	},
 /obj/structure/fluff/railing/border/west,
@@ -43999,7 +43396,6 @@
 /area/under/town/rmh/basement/mages)
 "nzA" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -44067,7 +43463,6 @@
 /obj/structure/fluff/railing/corner/south_west,
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/effect/decal/borderfall{
@@ -44317,7 +43712,6 @@
 	redstone_id = "stewardshutter"
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -44413,8 +43807,7 @@
 	},
 /obj/effect/decal/carpet/kover_purple{
 	dir = 4;
-	pixel_x = -13;
-	pixel_y = 0
+	pixel_x = -13
 	},
 /turf/open/floor/sandstone,
 /area/indoors/town/rmh/tavern)
@@ -44506,7 +43899,6 @@
 /area/under/town/rmh/basement/lab)
 "nHY" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/desert/deserttile/tilegreyblu,
@@ -44728,7 +44120,6 @@
 /area/outdoors/town/rmh)
 "nMA" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
@@ -44753,7 +44144,6 @@
 /area/outdoors/rmh_field/west)
 "nMY" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/bench/church,
@@ -44824,7 +44214,6 @@
 /area/indoors/town/rmh/magician)
 "nOk" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -44847,8 +44236,7 @@
 /obj/structure/mannequin/male{
 	density = 0;
 	pixel_y = 27;
-	pixel_x = -7;
-	dir = 2
+	pixel_x = -7
 	},
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -44884,7 +44272,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /obj/item/storage/sack{
-	pixel_y = 0;
 	populate_contents = list(/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat)
 	},
 /obj/structure/fluff/railing/wood/east,
@@ -45041,7 +44428,6 @@
 /area/under/town/rmh/basement/townhall)
 "nSc" = (
 /obj/effect/decal/carpet/square/black{
-	dir = 2;
 	pixel_y = 8
 	},
 /turf/open/floor/tile/harem1,
@@ -45137,9 +44523,7 @@
 /turf/open/floor/metal/alt,
 /area/indoors/town/rmh/craft/artificer)
 "nTg" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "nTi" = (
@@ -45161,9 +44545,7 @@
 /area/indoors/town/rmh/craft/artificer)
 "nTM" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/mannequin/male/female,
 /obj/machinery/light/fueled/wallfire/candle/l{
@@ -45224,7 +44606,6 @@
 "nVf" = (
 /obj/structure/fluff/railing/border/north,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
@@ -45257,7 +44638,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/structure/mannequin/male{
 	density = 0;
-	dir = 2;
 	pixel_x = -10;
 	pixel_y = 25
 	},
@@ -45282,8 +44662,7 @@
 "nWz" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 5;
-	pixel_y = 0
+	dir = 5
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -45697,7 +45076,6 @@
 /area/outdoors/rmh_field/north)
 "ocq" = (
 /obj/structure/flora/ausbushes/reedbush{
-	pixel_y = 0;
 	pixel_x = -4
 	},
 /turf/open/floor/sand,
@@ -45764,7 +45142,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/blood/tracks,
@@ -45833,8 +45210,7 @@
 "odP" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fluff/statue/small{
 	pixel_y = 20
@@ -45889,9 +45265,7 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
 "oeZ" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh)
@@ -46094,8 +45468,7 @@
 /area/indoors/town/rmh/craft/blacksmith)
 "ohZ" = (
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh)
@@ -46163,7 +45536,6 @@
 /area/under/rmh_dungeon/jergal)
 "oja" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -46307,11 +45679,9 @@
 /area/outdoors/rmh_field/druid)
 "oku" = (
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/church/gold,
@@ -46322,16 +45692,13 @@
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
 "okB" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/churchmarble,
 /area/outdoors/rmh_eilistraee)
 "okE" = (
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/fluff/railing/wood/north,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -46480,8 +45847,7 @@
 /obj/structure/chair/wood/alt/chair_noble/purple,
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
 	dir = 1;
@@ -46496,8 +45862,7 @@
 /obj/item/bedsheet/wool,
 /obj/structure/mannequin/male{
 	density = 0;
-	pixel_y = 27;
-	dir = 2
+	pixel_y = 27
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood29{
 	color = "#b3afaf"
@@ -46636,8 +46001,7 @@
 "oqh" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/indoors/town/rmh/living)
@@ -46744,7 +46108,6 @@
 /area/indoors/town/rmh/tavern)
 "osg" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/flowerpot{
@@ -46810,11 +46173,9 @@
 /obj/structure/table/wood/fancy/purple,
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/fluff/railing/corner/south_east,
@@ -46941,13 +46302,11 @@
 /area/indoors/town/rmh/cell)
 "ouH" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 8
 	},
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = -8
@@ -47100,15 +46459,13 @@
 /area/outdoors/town/rmh/roofs)
 "owQ" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/churchrough/rust,
 /area/under/town/rmh/sewer)
 "owS" = (
 /obj/structure/hotspring/border,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -47286,7 +46643,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/carpet/kover_black{
 	pixel_x = 18;
-	pixel_y = 0;
 	dir = 4
 	},
 /turf/open/floor/ruinedwood/spiral,
@@ -47346,8 +46702,7 @@
 	},
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/brownbrick,
 /area/indoors/town/rmh/loudmouth)
@@ -47404,9 +46759,7 @@
 /area/indoors/cave/rmh_cave/cave_druid)
 "oAQ" = (
 /obj/effect/decal/edge_corner,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/magician)
 "oAV" = (
 /obj/effect/decal/edge_corner{
@@ -47538,7 +46891,6 @@
 /area/outdoors/rmh_field/druid)
 "oCL" = (
 /obj/structure/door/viewport{
-	dir = 2;
 	name = "Homo-lab"
 	},
 /turf/open/floor/concrete,
@@ -47617,8 +46969,7 @@
 "oDJ" = (
 /obj/structure/bookcase/fancy/random,
 /obj/machinery/light/fueled/firebowl/standing/blue{
-	pixel_x = 16;
-	pixel_y = 0
+	pixel_x = 16
 	},
 /turf/open/floor/tile/tilerg,
 /area/indoors/town/rmh/library)
@@ -47652,11 +47003,9 @@
 "oEk" = (
 /obj/structure/curtain/black,
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -47671,9 +47020,7 @@
 /area/outdoors/rmh_field)
 "oEs" = (
 /obj/structure/flora/grass/crawlvines,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "oED" = (
 /obj/machinery/light/fueled/torchholder/hotspring{
@@ -47769,7 +47116,6 @@
 /area/outdoors/town/rmh)
 "oGx" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/blood/gibs/torso,
@@ -47789,8 +47135,7 @@
 /obj/structure/fluff/railing/corner/south_west,
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/vinez/l,
 /turf/open/floor/churchbrick,
@@ -47801,7 +47146,6 @@
 "oGU" = (
 /obj/effect/decal/cleanable/blood/tracks,
 /obj/structure/door/viewport{
-	dir = 2;
 	name = "Homo-lab"
 	},
 /turf/open/floor/concrete,
@@ -47842,7 +47186,6 @@
 	dir = 9
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -48021,8 +47364,7 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 10;
-	pixel_y = 0
+	dir = 10
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -48049,14 +47391,12 @@
 /area/under/rmh_dungeon/jergal)
 "oKw" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/under/town/rmh/basement/townhall)
 "oKz" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/flora/grass/crawlvines,
@@ -48212,8 +47552,7 @@
 /obj/effect/decal/edge{
 	dir = 4;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -48611,7 +47950,6 @@
 "oTh" = (
 /obj/structure/carpet/green,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -48628,7 +47966,6 @@
 /area/indoors/town/rmh/merchant)
 "oTC" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -48706,7 +48043,6 @@
 /area/under/town/rmh/sewer)
 "oVa" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/spiral,
@@ -48735,8 +48071,7 @@
 	dir = 8
 	},
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/effect/decal/edge{
 	color = "#7a684b";
@@ -48866,6 +48201,12 @@
 /obj/structure/flora/alizeria/decor/leavesr,
 /turf/open/floor/ruinedwood/turned,
 /area/outdoors/town/rmh/roofs)
+"oYq" = (
+/obj/structure/window/openclose{
+	dir = 1
+	},
+/turf/open/floor/ruinedwood/alizeria/tiles/wood19,
+/area/indoors/shelter/woods)
 "oYw" = (
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/naturalstone,
@@ -49153,12 +48494,9 @@
 /turf/open/floor/wood,
 /area/indoors/town/rmh/craft/apothecary)
 "pcS" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir{
-	open = 0;
-	dir = 2
+	open = 0
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/library)
@@ -49251,7 +48589,6 @@
 	dir = 6
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -49328,7 +48665,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/concrete,
@@ -49516,11 +48852,8 @@
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/northern)
 "pjn" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/dir{
-	dir = 2;
 	color = "#63115b"
 	},
 /turf/open/floor/ruinedwood,
@@ -49603,8 +48936,7 @@
 "pkE" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /turf/open/floor/blocks/stonered,
@@ -49616,7 +48948,6 @@
 "pkZ" = (
 /obj/structure/fluff/railing/border,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -49643,8 +48974,7 @@
 "pld" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/wood/large/corner_new{
 	dir = 9
@@ -49730,7 +49060,6 @@
 "pmf" = (
 /obj/structure/table/church/end,
 /obj/machinery/light/fueled/wallfire/floorcandle/alt{
-	pixel_y = 0;
 	layer = 4.2;
 	pixel_x = -1
 	},
@@ -49742,7 +49071,6 @@
 /area/indoors/shelter/woods)
 "pmi" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
@@ -49863,7 +49191,6 @@
 	dir = 9
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/carpet/green,
@@ -49871,7 +49198,6 @@
 /area/indoors/town/rmh/tavern)
 "poE" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -50111,8 +49437,7 @@
 "prZ" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/under/town/rmh/basement/townhall)
@@ -50183,8 +49508,7 @@
 "pta" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/carpet/purple,
 /obj/machinery/light/fueled/wallfire/candle/l{
@@ -50317,8 +49641,7 @@
 "puI" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/tavern)
@@ -50328,7 +49651,6 @@
 /area/indoors/cave/rmh_cave/cave_druid)
 "puT" = (
 /obj/structure/stairs/stone/church{
-	pixel_y = 0;
 	dir = 1
 	},
 /turf/open/floor/church,
@@ -50381,8 +49703,7 @@
 "pvA" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /turf/open/floor/tile/diamond,
@@ -50421,9 +49742,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/outie{
 	dir = 8
 	},
-/obj/structure/water_vent{
-	dir = 2
-	},
+/obj/structure/water_vent,
 /turf/open/dungeon_trap,
 /area/under/town/rmh/sewer)
 "pwh" = (
@@ -50440,9 +49759,7 @@
 /obj/structure/fluff/statue/small{
 	pixel_y = 18
 	},
-/obj/structure/table/church/end/alt{
-	pixel_y = 0
-	},
+/obj/structure/table/church/end/alt,
 /obj/machinery/light/fueled/wallfire/floorcandle/alt,
 /obj/structure/fluff/walldeco/church/line{
 	dir = 4
@@ -50558,7 +49875,6 @@
 /area/under/town/rmh/basement/townhall)
 "pxN" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -50579,7 +49895,6 @@
 "pyh" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/cobble,
@@ -50708,8 +50023,7 @@
 	dir = 4
 	},
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood28,
 /area/indoors/shelter/woods)
@@ -50725,7 +50039,6 @@
 	layer = 2.1
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2;
 	layer = 2.1
 	},
 /obj/structure/table/wood/nice/decorated_alt,
@@ -50822,7 +50135,6 @@
 	pixel_y = -23
 	},
 /obj/structure/table/wood/reinf_long{
-	dir = 2;
 	pixel_y = 1
 	},
 /turf/open/floor/concrete,
@@ -50935,8 +50247,7 @@
 /area/under/rmh_dungeon/arena)
 "pCM" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/hexstone,
 /area/outdoors/rmh_field/rmh_mageporch)
@@ -50971,20 +50282,16 @@
 "pDH" = (
 /obj/structure/giantfur,
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
 "pDJ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
@@ -51131,7 +50438,6 @@
 /area/indoors/town/rmh/library)
 "pGo" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -51235,8 +50541,7 @@
 "pIo" = (
 /obj/structure/table/optable,
 /obj/structure/fluff/walldeco/chains{
-	pixel_x = 22;
-	pixel_y = 0
+	pixel_x = 22
 	},
 /turf/open/floor/tile/bfloorz,
 /area/under/town/rmh/sewer)
@@ -51245,8 +50550,7 @@
 	pixel_y = 7
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/ruinedwood/darker,
 /area/under/town/rmh/sewer)
@@ -51278,7 +50582,6 @@
 /area/under/town/rmh/sewer)
 "pIU" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/brick,
@@ -51341,8 +50644,7 @@
 /obj/structure/fluff/railing/corner/south_west,
 /obj/effect/decal/edge{
 	dir = 5;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
 /area/indoors/town/rmh/magician)
@@ -51355,7 +50657,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /turf/open/floor/tile/harem2,
@@ -51457,7 +50758,6 @@
 /area/indoors/town/rmh/town_hall)
 "pKO" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -51594,7 +50894,6 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/herringbone,
@@ -51744,7 +51043,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/landmark/start/tavern_wench{
@@ -51847,7 +51145,6 @@
 /area/indoors/town/rmh/magician)
 "pPQ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -51888,8 +51185,7 @@
 "pQV" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/church,
 /area/indoors/town/rmh/library)
@@ -51947,7 +51243,6 @@
 	dir = 10
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/vinez/offset,
@@ -52021,8 +51316,7 @@
 "pTN" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/vtable,
 /obj/item/candle/silver/lit{
@@ -52083,7 +51377,6 @@
 /area/under/town/rmh/sewer)
 "pUz" = (
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -52144,8 +51437,7 @@
 "pUZ" = (
 /obj/effect/decal/edge{
 	dir = 9;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 5;
@@ -52162,9 +51454,7 @@
 /obj/structure/fluff/railing/border/north{
 	layer = 2.85
 	},
-/obj/structure/fluff/globe{
-	pixel_y = 0
-	},
+/obj/structure/fluff/globe,
 /obj/structure/bookcase/random_recipes{
 	pixel_x = -32;
 	density = 0;
@@ -52189,7 +51479,6 @@
 /area/under/town/rmh/basement/farm)
 "pVr" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -52344,7 +51633,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "pXR" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/stool,
@@ -52461,7 +51749,6 @@
 "pZI" = (
 /obj/effect/decal/carpet/kover_purple{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = -12
 	},
 /turf/open/floor/woodturned,
@@ -52529,7 +51816,6 @@
 /area/outdoors/rmh_field/basinruin)
 "qbF" = (
 /obj/structure/table/wood/reinf_long{
-	dir = 2;
 	icon_state = "tablewood_reinf_m"
 	},
 /obj/machinery/essence/divider{
@@ -52553,7 +51839,6 @@
 /area/indoors/cave/rmh_cave/greenskins)
 "qbS" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobblerockedge{
@@ -52575,9 +51860,7 @@
 /obj/effect/decal/cobblerockedge{
 	dir = 10
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "qcu" = (
 /obj/structure/spider/stickyweb,
@@ -52617,7 +51900,6 @@
 	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
-	pixel_y = 0;
 	dir = 8
 	},
 /obj/structure/fluff/millstone{
@@ -52683,7 +51965,6 @@
 /area/indoors)
 "qeh" = (
 /obj/structure/bars/pipe{
-	pixel_y = 0;
 	dir = 10;
 	pixel_x = 19
 	},
@@ -52776,15 +52057,12 @@
 "qfH" = (
 /obj/structure/ladder,
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -52901,7 +52179,6 @@
 /area/indoors/town/rmh/witch)
 "qgQ" = (
 /obj/structure/stairs{
-	dir = 2;
 	name = "benches"
 	},
 /turf/open/floor/dirt/road,
@@ -52927,9 +52204,7 @@
 /obj/effect/decal/edge_corner{
 	dir = 8
 	},
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/magician)
 "qhz" = (
 /obj/machinery/light/fueled/wallfire/candle{
@@ -53020,8 +52295,7 @@
 	redstone_id = "southgate"
 	},
 /obj/effect/decal/cobbleedge{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
@@ -53047,7 +52321,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "qjk" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -53127,7 +52400,6 @@
 /area/under/town/rmh/sewer)
 "qkG" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/spiral,
@@ -53171,7 +52443,6 @@
 /obj/structure/fluff/railing/wood/west,
 /obj/structure/fluff/railing/wood,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -53209,7 +52480,6 @@
 	layer = 2
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/table/wood/plain/alto,
@@ -53408,7 +52678,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/blood/gibs/down,
@@ -53484,7 +52753,6 @@
 	dir = 10
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
@@ -53656,7 +52924,6 @@
 /area/outdoors/rmh_field)
 "qrA" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -53719,9 +52986,7 @@
 /obj/structure/bars/passage/shutter{
 	redstone_id = "apothecary_shutter"
 	},
-/obj/machinery/essence/reservoir{
-	pixel_y = 0
-	},
+/obj/machinery/essence/reservoir,
 /turf/closed/wall/mineral/wooddark/window,
 /area/indoors/town/rmh/craft/apothecary)
 "qsn" = (
@@ -53773,14 +53038,12 @@
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/rmh/tavern)
 "qtn" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/chair/bench/church,
@@ -53952,7 +53215,6 @@
 /area/indoors/cave/rmh_cave/mine)
 "qwc" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -54007,7 +53269,6 @@
 	dir = 8
 	},
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 9;
@@ -54026,8 +53287,7 @@
 "qxo" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 5;
@@ -54398,7 +53658,6 @@
 /area/under/town/rmh/sewer)
 "qDz" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/outie,
@@ -54425,7 +53684,6 @@
 /area/under/town/rmh/sewer)
 "qDO" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
@@ -54480,7 +53738,6 @@
 /area/outdoors/town/rmh)
 "qED" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/bars/pipe{
@@ -54556,7 +53813,6 @@
 /area/indoors/town/rmh/craft/artificer)
 "qFE" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/torchholder{
@@ -54748,7 +54004,6 @@
 /area/indoors/town/rmh/tavern)
 "qJp" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/table/wood/reinf_long{
@@ -54819,8 +54074,7 @@
 	},
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/rack/rogue/shelf/alizeria/shelf2,
 /turf/open/floor/blocks/stonered/tiny,
@@ -55093,8 +54347,7 @@
 "qNI" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/structure/chair/bench/couchablack{
 	pixel_y = 2
@@ -55186,7 +54439,6 @@
 	dir = 8
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -55325,8 +54577,7 @@
 /obj/structure/closet/crate/chest/old_crate,
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/living)
@@ -55379,7 +54630,6 @@
 /area/outdoors/town/rmh)
 "qSi" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt,
@@ -55414,8 +54664,7 @@
 /area/indoors/cave/rmh_cave/minotaur)
 "qSF" = (
 /obj/effect/decal/cobbleedge{
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /turf/open/floor/grass/mixyel,
 /area/outdoors/rmh_field/camp)
@@ -55521,7 +54770,6 @@
 "qUW" = (
 /obj/structure/flora/alizeria/decor/leavesr,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -55537,7 +54785,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
@@ -55632,40 +54879,31 @@
 	pixel_y = 9
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/fork/iron{
-	pixel_x = -10;
-	pixel_y = 0
+	pixel_x = -10
 	},
 /obj/item/kitchen/spoon/iron{
 	pixel_x = -5
@@ -55727,8 +54965,7 @@
 /obj/structure/rack/rogue/shelf/alizeria/shelf1,
 /obj/structure/table/wood/counter/end/right,
 /obj/item/reagent_containers/glass/bowl{
-	pixel_x = 10;
-	pixel_y = 0
+	pixel_x = 10
 	},
 /obj/item/reagent_containers/glass/bowl{
 	pixel_x = -11;
@@ -55769,7 +55006,6 @@
 "qXH" = (
 /obj/machinery/light/fueled/wallfire/candle/weak/r,
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 9;
@@ -55792,8 +55028,7 @@
 /area/outdoors/town/rmh)
 "qXO" = (
 /obj/structure/door/weak/bolt{
-	name = "Bedroom";
-	dir = 2
+	name = "Bedroom"
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
@@ -55990,7 +55225,6 @@
 "rap" = (
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/structure/fluff/railing/corner/north_east,
@@ -56352,8 +55586,7 @@
 	redstone_id = "southgate"
 	},
 /obj/effect/decal/cobbleedge{
-	dir = 4;
-	pixel_y = 0
+	dir = 4
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -56384,7 +55617,6 @@
 /area/outdoors/town/rmh)
 "res" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/bath/pool,
@@ -56518,16 +55750,13 @@
 /turf/open/floor/cobble,
 /area/indoors/cave/rmh_cave/greenskins)
 "rhu" = (
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/indoors/town/rmh/magician)
 "rhA" = (
 /obj/structure/fluff/railing/stonewall{
 	dir = 4
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -56617,7 +55846,6 @@
 	},
 /obj/structure/lever{
 	redstone_id = "tailor_shutter";
-	pixel_y = 0;
 	pixel_x = -32
 	},
 /obj/item/storage/sack,
@@ -56720,7 +55948,6 @@
 /area/outdoors/rmh_field/basinruin)
 "rkR" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = -9;
@@ -56799,7 +56026,6 @@
 /area/indoors/town/rmh/windmill)
 "rlD" = (
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -56852,8 +56078,7 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/structure/mannequin/male{
 	density = 0;
-	pixel_y = 27;
-	dir = 2
+	pixel_y = 27
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood29{
 	color = "#b3afaf"
@@ -56899,8 +56124,7 @@
 /area/indoors/town/rmh/bank)
 "rmK" = (
 /obj/effect/decal/cobbleedge{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/farm)
@@ -56928,7 +56152,6 @@
 /area/indoors/cave/rmh_cave/cave_druid)
 "rnc" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/table/vtable,
@@ -57084,17 +56307,13 @@
 /turf/open/water/bath,
 /area/under/town/rmh/basement/townhall)
 "roU" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir,
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
 "roV" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/checkeralt,
 /area/indoors/town/rmh)
@@ -57135,7 +56354,6 @@
 /obj/effect/decal/cobbleedge{
 	dir = 4;
 	icon_state = "borderfall";
-	pixel_y = 0;
 	pixel_x = 8;
 	icon = 'icons/turf/constructed/misc.dmi'
 	},
@@ -57195,7 +56413,6 @@
 /area/outdoors/rmh_field)
 "rqC" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -57221,8 +56438,7 @@
 /obj/structure/mannequin/male{
 	density = 0;
 	pixel_y = 27;
-	pixel_x = 11;
-	dir = 2
+	pixel_x = 11
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/effect/decal/alizeria/decals/wooddecal4,
@@ -57235,7 +56451,6 @@
 /area/outdoors/rmh_field/basinruin)
 "rrt" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 10
@@ -57350,7 +56565,6 @@
 	dir = 10
 	},
 /obj/item/candle/tin/lit{
-	pixel_y = 0;
 	pixel_x = 16
 	},
 /turf/open/floor/woodturned,
@@ -57371,7 +56585,6 @@
 "rsR" = (
 /obj/structure/chair/wood/alt/fancy/chair5,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/harem2,
@@ -57438,8 +56651,7 @@
 "rtV" = (
 /obj/machinery/light/fueled/firebowl/church,
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/churchmarble/gold,
 /area/under/town/rmh/sewer)
@@ -57451,9 +56663,7 @@
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/wet/lake)
 "rub" = (
-/turf/closed/wall/mineral/wooddark/end{
-	dir = 2
-	},
+/turf/closed/wall/mineral/wooddark/end,
 /area/indoors/town/rmh/tavern)
 "ruc" = (
 /obj/structure/window,
@@ -57584,8 +56794,7 @@
 /area/indoors/town/rmh/tavern)
 "rvW" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing{
-	pixel_x = -13;
-	pixel_y = 0
+	pixel_x = -13
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
@@ -57854,9 +57063,7 @@
 	},
 /area/outdoors/rmh_field/oldmill)
 "rzm" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/greencurtain/dir,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/tavern)
@@ -57867,11 +57074,9 @@
 "rzH" = (
 /obj/effect/decal/cleanable/vomit/old,
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	pixel_y = 0;
 	dir = 6
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/particle_effect/sparks,
@@ -57879,7 +57084,6 @@
 /area/under/town/rmh/sewer)
 "rzN" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobblerockedge,
@@ -57901,7 +57105,6 @@
 /area/under/rmh_dungeon/jergal)
 "rAf" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/vinez/l,
@@ -57960,8 +57163,7 @@
 /obj/structure/mannequin/male/female,
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = -10;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /obj/structure/fluff/railing/wood/west,
 /turf/open/floor/tile/masonic/single,
@@ -58001,9 +57203,7 @@
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/town_hall)
 "rBp" = (
-/obj/effect/decal/cobbleedge{
-	dir = 2
-	},
+/obj/effect/decal/cobbleedge,
 /turf/open/floor/grass/mixyel,
 /area/outdoors/rmh_field/camp)
 "rBt" = (
@@ -58311,9 +57511,7 @@
 "rHh" = (
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -58481,8 +57679,7 @@
 /area/outdoors/town/rmh)
 "rKu" = (
 /obj/effect/decal/cobbleedge{
-	dir = 9;
-	pixel_y = 0
+	dir = 9
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/arena)
@@ -58490,9 +57687,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/structure/bars/grille,
 /obj/machinery/light/fueled/wallfire/candle,
 /turf/open/floor/tile/tilerg,
@@ -58571,7 +57766,6 @@
 /area/under/rmh_dungeon/jergal)
 "rLX" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -58942,9 +58136,7 @@
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/chapel/basement)
 "rRM" = (
-/obj/structure/kybraxor{
-	pixel_y = 0
-	},
+/obj/structure/kybraxor,
 /obj/structure/floordoor/gatehatch/inner{
 	redstone_id = "gatelava"
 	},
@@ -58990,7 +58182,6 @@
 	dir = 4
 	},
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -58998,7 +58189,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "rSU" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobblerockedge{
@@ -59051,9 +58241,7 @@
 /area/indoors/town/rmh/library)
 "rTp" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fluff/wallclock/l,
 /obj/structure/fluff/littlebanners{
@@ -59076,7 +58264,6 @@
 /area/under/town/rmh/basement/blacksmith)
 "rTE" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/concrete,
@@ -59195,16 +58382,14 @@
 "rVJ" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/town_hall)
 "rVT" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/tanningrack,
 /turf/open/floor/tile/diamond,
@@ -59246,8 +58431,7 @@
 	},
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
@@ -59452,7 +58636,6 @@
 /area/indoors/town/rmh/garrison)
 "rZA" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/defeat_medical_machine{
@@ -59555,7 +58738,6 @@
 /area/outdoors/rmh_field)
 "saE" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/table/vtable,
@@ -59624,17 +58806,14 @@
 /obj/structure/fluff/railing/stonewall{
 	dir = 5
 	},
-/obj/effect/decal/cobblerockedge{
-	dir = 2
-	},
+/obj/effect/decal/cobblerockedge,
 /turf/open/floor/cobble/alt,
 /area/outdoors/beach/rmh_beach)
 "sbL" = (
 /obj/structure/fluff/railing/wood,
 /obj/machinery/light/fueled/firebowl/standing{
 	pixel_x = -10;
-	density = 0;
-	pixel_y = 0
+	density = 0
 	},
 /turf/open/floor/wood,
 /area/indoors/town/rmh/tavern)
@@ -59792,8 +58971,7 @@
 "sfc" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
 /turf/open/floor/cobble,
@@ -60035,9 +59213,7 @@
 "siJ" = (
 /obj/structure/mannequin/male{
 	density = 0;
-	pixel_y = 0;
-	pixel_x = 9;
-	dir = 2
+	pixel_x = 9
 	},
 /obj/structure/fermentation_keg/water{
 	pixel_y = -4;
@@ -60078,8 +59254,7 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel)
@@ -60181,8 +59356,7 @@
 "slL" = (
 /obj/effect/decal/edge{
 	dir = 6;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -60419,7 +59593,6 @@
 /area/outdoors/town/rmh)
 "srm" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -60487,7 +59660,6 @@
 /area/indoors/town/rmh/tavern)
 "sso" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -60524,7 +59696,6 @@
 	plane = -9
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -60695,9 +59866,7 @@
 /turf/open/floor/grass/mixyel,
 /area/indoors/cave/rmh_cave/southern)
 "svD" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir,
 /turf/open/floor/ruinedwood,
 /area/indoors/town/rmh/merchant)
@@ -60901,7 +60070,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/item/storage/sack{
-	pixel_y = 0;
 	populate_contents = list(/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat,/obj/item/reagent_containers/food/snacks/produce/grain/wheat)
 	},
 /obj/structure/closet/crate/chest/wicker,
@@ -60942,8 +60110,7 @@
 "syS" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
 	dir = 1
@@ -61127,7 +60294,6 @@
 /area/outdoors/rmh_field/basinruin)
 "sCa" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/border,
@@ -61206,7 +60372,6 @@
 /area/indoors/town/rmh/herbalist)
 "sDl" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/structure/fluff/walldeco/bigpainting{
@@ -61230,8 +60395,7 @@
 "sDp" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -61245,7 +60409,6 @@
 	layer = 2
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2;
 	layer = 2
 	},
 /turf/open/floor/tile/tilerg,
@@ -61442,9 +60605,7 @@
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/jergal)
 "sGc" = (
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /turf/open/floor/concrete,
 /area/under/town/rmh/sewer)
 "sGf" = (
@@ -61773,7 +60934,6 @@
 /area/under/town/rmh/sewer)
 "sKM" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -61878,7 +61038,6 @@
 /obj/structure/fluff/railing/wood/east,
 /obj/structure/fluff/walldeco/chains{
 	icon_state = "chains6";
-	pixel_y = 0;
 	pixel_x = -10
 	},
 /turf/open/floor/hay,
@@ -61893,7 +61052,6 @@
 /area/under/town/rmh/sewer)
 "sMT" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/cobble,
@@ -61961,8 +61119,7 @@
 	color = "#575757"
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /obj/structure/call_bell/chapel,
 /obj/machinery/light/fueled/wallfire/candle/l,
@@ -62001,7 +61158,6 @@
 /area/outdoors/rmh_field/rmh_mageporch)
 "sOm" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -62082,8 +61238,7 @@
 "sPI" = (
 /obj/structure/bars,
 /obj/structure/table/wood{
-	icon_state = "tablewood1";
-	pixel_y = 0
+	icon_state = "tablewood1"
 	},
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/cell)
@@ -62091,9 +61246,7 @@
 /obj/structure/fluff/railing/stonewall{
 	dir = 9
 	},
-/obj/effect/decal/cobblerockedge{
-	dir = 2
-	},
+/obj/effect/decal/cobblerockedge,
 /turf/open/floor/cobble/alt,
 /area/outdoors/beach/rmh_beach)
 "sPX" = (
@@ -62234,7 +61387,6 @@
 /area/indoors/town/rmh/library)
 "sTg" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/vinez/r,
@@ -62259,7 +61411,6 @@
 /area/indoors/shelter/woods)
 "sTx" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/church/green,
@@ -62375,7 +61526,6 @@
 /area/indoors/town/rmh/library)
 "sWa" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/church/line{
@@ -62429,7 +61579,6 @@
 /obj/structure/flora/grass,
 /obj/structure/flora/ausbushes/ppflowers,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -62449,7 +61598,6 @@
 /area/outdoors/town/rmh/livingquart)
 "sXx" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/church/line{
@@ -62555,9 +61703,7 @@
 /area/outdoors/mountains/rmh_mountains)
 "sYt" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/under/town/rmh/basement/townhall)
@@ -62600,9 +61746,7 @@
 /turf/open/floor/ruinedwood/spiral,
 /area/outdoors/rmh_field/west)
 "sZm" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/northern)
 "sZt" = (
@@ -62653,8 +61797,7 @@
 "taj" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/vtable/v2,
 /obj/item/natural/feather,
@@ -62738,9 +61881,7 @@
 /turf/open/floor/grass/mixyel,
 /area/outdoors/rmh_field/west)
 "tbo" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /obj/machinery/light/fueled/wallfire/candle/r,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison)
@@ -62772,7 +61913,6 @@
 /area/indoors/town/rmh/town_hall)
 "tbU" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
@@ -62835,8 +61975,7 @@
 "tdd" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobblerock,
 /area/under/rmh_dungeon/jergal)
@@ -62967,7 +62106,6 @@
 /area/indoors/town/rmh/craft/apothecary)
 "tfJ" = (
 /obj/structure/fluff/railing/stonewall{
-	pixel_y = 0;
 	dir = 6
 	},
 /turf/open/floor/cobble,
@@ -63015,9 +62153,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/machinery/light/fueled/wallfire/candle{
 	pixel_y = -32
 	},
@@ -63056,8 +62192,7 @@
 	pixel_y = -32
 	},
 /obj/structure/flora/sakura{
-	pixel_x = -58;
-	plane = -6
+	pixel_x = -58
 	},
 /turf/open/floor/grass/eora,
 /area/indoors/cave/rmh_cave/cave_druid)
@@ -63067,8 +62202,7 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel)
@@ -63088,7 +62222,6 @@
 /area/indoors/town/rmh/magician)
 "tgH" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/spider/stickyweb,
@@ -63125,8 +62258,7 @@
 /area/indoors/town/rmh/tavern)
 "tgY" = (
 /obj/structure/door/weak/bolt{
-	name = "Bedroom";
-	dir = 2
+	name = "Bedroom"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood29{
 	color = "#b3afaf"
@@ -63200,14 +62332,12 @@
 /area/under/town/rmh/basement/townhall)
 "thS" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/churchrough/rust,
 /area/under/town/rmh/sewer)
 "thU" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/outie{
@@ -63353,7 +62483,6 @@
 /area/outdoors/rmh_field/rmh_mageporch)
 "tjS" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/bars/pipe,
@@ -63565,13 +62694,11 @@
 /area/outdoors/town/rmh/roofs)
 "tnJ" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fake_machine/scomm/l{
 	scom_tag = "Tailor";
@@ -63585,7 +62712,6 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "tnL" = (
 /obj/structure/bars/pipe{
-	pixel_y = 0;
 	dir = 4
 	},
 /turf/closed/wall/mineral/pipe,
@@ -63617,8 +62743,7 @@
 	pixel_y = 9
 	},
 /obj/item/reagent_containers/glass/cup/glassware/wineglass{
-	pixel_x = -6;
-	pixel_y = 0
+	pixel_x = -6
 	},
 /obj/item/plate/pewter{
 	layer = 2.9;
@@ -63647,8 +62772,7 @@
 /area/indoors/cave/rmh_cave/to_underdark)
 "tor" = (
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/structure/fluff/railing/corner/south_west,
 /turf/open/floor/cobble/mossy,
@@ -63691,7 +62815,6 @@
 /area/under/rmh_dungeon/arena)
 "toM" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -63909,7 +63032,6 @@
 /area/under/town/rmh/sewer)
 "tsd" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -64029,9 +63151,7 @@
 /turf/open/water/bath,
 /area/indoors/town/rmh/bath)
 "ttt" = (
-/obj/structure/stairs{
-	dir = 2
-	},
+/obj/structure/stairs,
 /turf/open/floor/woodturned,
 /area/outdoors/town/rmh)
 "ttC" = (
@@ -64059,8 +63179,7 @@
 "tui" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/rmh/craft/apothecary)
@@ -64088,8 +63207,7 @@
 /area/indoors/town/rmh/cell)
 "tuN" = (
 /obj/structure/fluff/walldeco/church/line{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/structure/flora/grass/crawlvines,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -64422,7 +63540,6 @@
 "tAl" = (
 /obj/structure/curtain/black,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -64493,7 +63610,6 @@
 /area/under/rmh_dungeon/jergal)
 "tBB" = (
 /obj/structure/stairs/stone/church{
-	pixel_y = 0;
 	dir = 1
 	},
 /obj/structure/spider/stickyweb/solo,
@@ -64720,9 +63836,7 @@
 /turf/open/floor/churchmarble,
 /area/indoors/town/rmh/library)
 "tFt" = (
-/obj/structure/stairs/stone/ccw{
-	dir = 2
-	},
+/obj/structure/stairs/stone/ccw,
 /turf/open/floor/concrete,
 /area/outdoors/town/rmh)
 "tFu" = (
@@ -64768,8 +63882,7 @@
 "tGk" = (
 /obj/structure/window,
 /obj/structure/curtain/bounty/dir{
-	open = 0;
-	dir = 2
+	open = 0
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
@@ -64907,8 +64020,7 @@
 "tJl" = (
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/structure/fluff/wallclock/l,
 /turf/open/floor/tile/harem2,
@@ -64996,13 +64108,11 @@
 "tKN" = (
 /obj/effect/decal/edge{
 	dir = 10;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 6;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -65217,8 +64327,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/effect/decal/cleanable/dirt/paper{
 	dir = 8
@@ -65230,7 +64339,6 @@
 	dir = 10
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobblerock,
@@ -65286,7 +64394,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
@@ -65347,7 +64454,6 @@
 /area/outdoors/rmh_field/basinruin)
 "tQC" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -65381,7 +64487,6 @@
 "tRg" = (
 /obj/structure/flora/alizeria/decor/leavesr,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -65393,7 +64498,6 @@
 /area/outdoors/rmh_air)
 "tRv" = (
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -65451,11 +64555,9 @@
 /obj/machinery/light/fueled/oven/south,
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
-	pixel_y = 0;
 	dir = 4
 	},
 /obj/structure/rack/rogue/shelf/alizeria/shelf2{
@@ -65492,8 +64594,7 @@
 "tSs" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 6;
@@ -65671,8 +64772,7 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
@@ -65745,26 +64845,20 @@
 	dir = 4
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/concrete,
 /area/under/town/rmh/sewer)
 "tVU" = (
-/obj/structure/window/openclose/reinforced{
-	dir = 2
-	},
+/obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/bounty/dir{
-	open = 0;
-	dir = 2
+	open = 0
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/living)
 "tVV" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/rack/shelf/biggest,
 /turf/open/floor/tile/diamond,
@@ -65772,7 +64866,6 @@
 "tVZ" = (
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/fluff/pillow/magenta{
@@ -65798,9 +64891,7 @@
 /area/under/rmh_dungeon/catacombs_town)
 "tWF" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /obj/machinery/light/fueled/wallfire/big_fireplace{
 	pixel_x = -16;
@@ -65958,8 +65049,7 @@
 /area/under/rmh_dungeon/jergal)
 "tZF" = (
 /obj/machinery/light/fueled/torchholder/hotspring/standing{
-	pixel_x = 13;
-	pixel_y = 0
+	pixel_x = 13
 	},
 /turf/open/floor/dirt/road,
 /area/outdoors/town/rmh)
@@ -66008,8 +65098,7 @@
 /obj/effect/decal/edge{
 	dir = 4;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/tile/harem1,
 /area/under/town/rmh/basement/townhall)
@@ -66046,9 +65135,7 @@
 /turf/open/floor/concrete,
 /area/under/town/rmh/sewer)
 "uaZ" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/mushroom/green,
 /area/indoors/cave/rmh_cave/northern)
 "ubd" = (
@@ -66118,12 +65205,10 @@
 /area/indoors/shelter/woods)
 "uca" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/church/gold,
 /area/under/town/rmh/sewer)
@@ -66280,8 +65365,7 @@
 	pixel_y = 5
 	},
 /obj/item/reagent_containers/peppermill{
-	pixel_x = -9;
-	pixel_y = 0
+	pixel_x = -9
 	},
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/rmh/chapel/basement)
@@ -66306,7 +65390,6 @@
 "ueu" = (
 /obj/structure/window/openclose/reinforced,
 /obj/structure/curtain/dir{
-	dir = 2;
 	color = "#8a6b6b"
 	},
 /turf/open/floor/ruinedwood,
@@ -66325,7 +65408,6 @@
 "ueW" = (
 /obj/effect/landmark/quest_spawner/hard,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -66344,9 +65426,7 @@
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/southern)
 "ufl" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /obj/structure/fluff/walldeco/vinez{
 	dir = 6;
 	pixel_y = -32
@@ -66433,7 +65513,6 @@
 /area/indoors/town/rmh/library)
 "uhl" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/machinery/tanningrack,
@@ -66495,8 +65574,7 @@
 /area/under/town/rmh/sewer)
 "uib" = (
 /obj/effect/decal/cobbleedge{
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/town/rmh)
@@ -66626,11 +65704,9 @@
 /area/under/town/rmh/sewer)
 "ukd" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -66646,7 +65722,6 @@
 /area/outdoors/town/rmh)
 "uky" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -66734,9 +65809,7 @@
 /area/under/rmh_dungeon/underdarkmaze)
 "ulB" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /turf/open/floor/herringbone,
 /area/outdoors/town/rmh)
@@ -66816,7 +65889,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/carpet/red,
@@ -66844,8 +65916,7 @@
 /area/indoors/town/rmh/chapel/basement)
 "uno" = (
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/effect/decal/edge{
 	color = "#7a684b";
@@ -66996,9 +66067,7 @@
 /turf/open/lava,
 /area/indoors/cave/rmh_cave/northern)
 "upE" = (
-/obj/structure/stairs/stone{
-	dir = 2
-	},
+/obj/structure/stairs/stone,
 /turf/open/floor/cobble,
 /area/indoors/town/rmh/garrison)
 "upF" = (
@@ -67113,7 +66182,6 @@
 	dir = 10
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -67156,8 +66224,7 @@
 	pixel_y = 32
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/churchmarble/gold,
 /area/under/town/rmh/sewer)
@@ -67463,8 +66530,7 @@
 /area/indoors/cave/rmh_cave/northern)
 "uwK" = (
 /obj/effect/decal/cobbleedge{
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /turf/open/floor/cobblerock,
 /area/under/town/rmh/basement/farm)
@@ -67504,7 +66570,6 @@
 /area/under/town/rmh/sewer)
 "uxg" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -67639,7 +66704,6 @@
 /area/indoors/town/rmh/bath)
 "uzT" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -67690,8 +66754,7 @@
 "uAB" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/machinery/light/fueled/hearth/horizontal{
 	dir = 1
@@ -67717,7 +66780,6 @@
 /area/indoors/town/rmh/farm/house)
 "uAT" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/hexstone,
@@ -67866,9 +66928,7 @@
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/effect/decal/alizeria/decals/wooddecal3,
-/obj/structure/chem_separator{
-	pixel_y = 0
-	},
+/obj/structure/chem_separator,
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/craft/apothecary)
@@ -67925,8 +66985,7 @@
 "uFl" = (
 /obj/structure/fluff/railing/border/west,
 /obj/structure/fluff/walldeco/chains{
-	pixel_x = 22;
-	pixel_y = 0
+	pixel_x = 22
 	},
 /turf/open/floor/hexstone,
 /area/under/town/rmh/basement)
@@ -68048,7 +67107,6 @@
 /area/under/town/rmh/sewer)
 "uHC" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -68073,8 +67131,7 @@
 /area/indoors/town/rmh/chapel)
 "uIl" = (
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/structure/fluff/railing/wood/west{
 	pixel_y = -16
@@ -68183,12 +67240,10 @@
 /area/under/town/rmh/basement/townhall)
 "uJQ" = (
 /obj/effect/decal/cobbleedge{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/effect/decal/cobbleedge{
-	dir = 6;
-	pixel_y = 0
+	dir = 6
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/west)
@@ -68200,7 +67255,6 @@
 /obj/structure/fluff/wallclock/r,
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /turf/open/floor/desert/deserttile/tilegreeny,
@@ -68386,7 +67440,6 @@
 /area/indoors/cave/rmh_cave/west)
 "uNq" = (
 /obj/structure/stairs{
-	dir = 2;
 	name = "benches"
 	},
 /obj/structure/fluff/railing/wood,
@@ -68422,8 +67475,7 @@
 /area/under/rmh_dungeon/jergal)
 "uOe" = (
 /obj/structure/fluff/walldeco/church/line{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/structure/fluff/walldeco/church/line,
 /obj/effect/decal/cleanable/debris/stone,
@@ -68630,7 +67682,6 @@
 /area/outdoors/rmh_field)
 "uSo" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -68767,9 +67818,7 @@
 /area/indoors/town/rmh/living)
 "uUl" = (
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -68894,8 +67943,7 @@
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /turf/open/floor/tile/harem1,
 /area/under/town/rmh/basement/townhall)
@@ -69038,7 +68086,6 @@
 /area/indoors/town/rmh/merchant)
 "uXT" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
@@ -69211,9 +68258,7 @@
 /area/outdoors/town/rmh)
 "vaV" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered,
 /area/indoors/town/rmh/bank)
@@ -69229,8 +68274,7 @@
 	pixel_y = -2
 	},
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/effect/decal/carpet/square,
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
@@ -69337,9 +68381,7 @@
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
 	dir = 1
 	},
-/obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2
-	},
+/obj/structure/fluff/walldeco/bath/wallpipes/innie,
 /obj/structure/bars/grille,
 /turf/open/floor/tile/tilerg,
 /area/indoors/town/rmh/bath)
@@ -69415,7 +68457,6 @@
 "vdp" = (
 /obj/effect/decal/carpet/square/black{
 	pixel_x = 16;
-	dir = 2;
 	layer = 3.1
 	},
 /turf/open/floor/tile/diamond,
@@ -69449,9 +68490,7 @@
 /turf/open/floor/tile/brick,
 /area/indoors/town/rmh/farm/house)
 "vdU" = (
-/obj/effect/decal/cobbleedge{
-	dir = 2
-	},
+/obj/effect/decal/cobbleedge,
 /turf/open/floor/blocks,
 /area/under/town/rmh/sewer)
 "vdZ" = (
@@ -69493,8 +68532,7 @@
 /area/indoors/town/rmh/craft/artificer)
 "vex" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2
+	color = "#575757"
 	},
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/craft/apothecary)
@@ -69716,15 +68754,13 @@
 "vij" = (
 /obj/effect/decal/edge{
 	color = "#575757";
-	dir = 9;
-	pixel_y = 0
+	dir = 9
 	},
 /turf/open/floor/woodturned,
 /area/indoors/town/rmh/chapel)
 "vim" = (
 /obj/structure/fermentation_keg/random/water,
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -69810,9 +68846,7 @@
 /area/under/town/rmh/basement/farm)
 "vkS" = (
 /obj/structure/fluff/railing/border{
-	dir = 4;
-	pixel_x = 0;
-	pixel_y = 0
+	dir = 4
 	},
 /obj/structure/flora/newbranch/connector{
 	dir = 1
@@ -69980,8 +69014,7 @@
 /obj/machinery/light/fueled/wallfire/candle/l,
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/closet/crate/chest/neu,
 /obj/item/reagent_containers/food/snacks/meat/steak,
@@ -70018,7 +69051,6 @@
 /area/under/town/rmh/sewer)
 "voK" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/harem,
@@ -70123,9 +69155,7 @@
 /turf/open/water/clean/dirt/under,
 /area/outdoors/rmh_river)
 "vqR" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/naturalstone,
 /area/indoors/cave/rmh_cave/wet/lake)
 "vrb" = (
@@ -70167,9 +69197,7 @@
 /turf/open/floor/twig,
 /area/indoors/town/rmh/herbalist)
 "vrF" = (
-/obj/effect/decal/cobblerockedge{
-	dir = 2
-	},
+/obj/effect/decal/cobblerockedge,
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
 "vrH" = (
@@ -70490,7 +69518,6 @@
 	color = "#522f26"
 	},
 /obj/effect/decal/carpet/kover_darkred{
-	dir = 2;
 	pixel_x = 13;
 	layer = 3.1;
 	pixel_y = 19
@@ -70597,9 +69624,7 @@
 "vzr" = (
 /obj/item/natural/bundle/stoneblock,
 /obj/effect/decal/cleanable/dirt/dust,
-/turf/open/floor/tile/masonic{
-	dir = 2
-	},
+/turf/open/floor/tile/masonic,
 /area/under/rmh_dungeon/jergal)
 "vzu" = (
 /obj/effect/mapping_helpers/secret_door_creator/keep{
@@ -70642,7 +69667,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/wallfire/candle{
@@ -70674,7 +69698,6 @@
 /area/indoors/town/rmh/loudmouth)
 "vAg" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -70775,7 +69798,6 @@
 /area/indoors/town/rmh/magician)
 "vCf" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/blood/old,
@@ -70816,7 +69838,6 @@
 "vCG" = (
 /obj/structure/flora/grass/crawlvines,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -70862,8 +69883,7 @@
 /area/outdoors/rmh_air)
 "vDH" = (
 /obj/structure/door/weak/bolt{
-	name = "bathroom";
-	dir = 2
+	name = "bathroom"
 	},
 /turf/open/floor/concrete,
 /area/indoors/town/rmh/craft/artificer)
@@ -70937,9 +69957,7 @@
 /area/outdoors/town/rmh)
 "vFM" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 5;
@@ -71102,8 +70120,7 @@
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /obj/structure/mannequin{
 	pixel_y = 15;
@@ -71208,9 +70225,7 @@
 /area/indoors/town/rmh/chapel)
 "vKb" = (
 /obj/effect/decal/edge{
-	color = "#575757";
-	dir = 2;
-	pixel_y = 0
+	color = "#575757"
 	},
 /obj/structure/fluff/walldeco/alizeria/plants8{
 	pixel_y = -32
@@ -71264,8 +70279,7 @@
 	},
 /obj/effect/decal/edge{
 	dir = 9;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
 	dir = 10;
@@ -71287,7 +70301,6 @@
 /area/under/town/rmh/basement/mages)
 "vLn" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -71430,7 +70443,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/spider/stickyweb,
@@ -71459,7 +70471,6 @@
 	redstone_id = "southgate"
 	},
 /obj/structure/table/wood/large_new{
-	dir = 2;
 	icon_state = "alt_largetable"
 	},
 /obj/item/paper/scroll,
@@ -71553,12 +70564,9 @@
 /area/under/town/rmh/basement/mages)
 "vOO" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
-/obj/effect/decal/cobblerockedge{
-	dir = 2
-	},
+/obj/effect/decal/cobblerockedge,
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
 "vOR" = (
@@ -71624,7 +70632,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -71799,16 +70806,13 @@
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field)
 "vRs" = (
-/turf/open/floor/rooftop{
-	dir = 2
-	},
+/turf/open/floor/rooftop,
 /area/outdoors/rmh_air)
 "vRt" = (
 /obj/structure/fluff/walldeco/alizeria/plants2{
 	pixel_x = -32
 	},
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/brick,
@@ -71830,7 +70834,6 @@
 "vRM" = (
 /obj/machinery/light/fueled/oven/south,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/machinery/light/fueled/hearth{
@@ -71991,7 +70994,6 @@
 /area/under/rmh_dungeon/catacombs_church)
 "vTG" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/hexstone,
@@ -72023,9 +71025,7 @@
 "vUB" = (
 /obj/structure/fluff/statue/eilistraee,
 /obj/effect/falling_sakura,
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/church,
 /area/indoors/cave/rmh_cave/wet/lake)
 "vUG" = (
@@ -72382,7 +71382,6 @@
 /area/outdoors/town/rmh)
 "wbm" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -72525,9 +71524,7 @@
 /turf/open/floor/grass/mixyel,
 /area/under/rmh_dungeon/catacombs_town)
 "wdq" = (
-/obj/structure/fluff/railing/stonewall{
-	dir = 2
-	},
+/obj/structure/fluff/railing/stonewall,
 /turf/open/floor/cobblerock,
 /area/outdoors/beach/rmh_beach)
 "wdt" = (
@@ -72627,7 +71624,6 @@
 /area/indoors/town/rmh/tavern)
 "wfg" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
@@ -72692,8 +71688,7 @@
 /area/indoors/town/rmh/town_hall)
 "wga" = (
 /obj/effect/decal/cobbleedge{
-	dir = 10;
-	pixel_y = 0
+	dir = 10
 	},
 /obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
@@ -72772,7 +71767,6 @@
 /area/outdoors/rmh_field/druid)
 "wha" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobblerockedge,
@@ -72790,11 +71784,9 @@
 /area/indoors/town/rmh/living)
 "whI" = (
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -72990,8 +71982,7 @@
 /obj/structure/rack/shelf/biggest,
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors/town/rmh/living)
@@ -73006,7 +71997,6 @@
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -73041,7 +72031,6 @@
 /area/indoors/town/rmh/farm/ambar)
 "wkL" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/closet/crate/chest/crate,
@@ -73052,9 +72041,7 @@
 /area/under/town/rmh/basement/townhall)
 "wkM" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/fake_machine/scomm/l{
 	scom_tag = "Town Mouth"
@@ -73198,7 +72185,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fake_machine/scomm{
@@ -73212,8 +72198,7 @@
 "wmG" = (
 /obj/effect/decal/edge{
 	dir = 9;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /mob/living/carbon/human/species/skeleton/npc/warrior/skilled,
@@ -73308,9 +72293,7 @@
 	dir = 1
 	},
 /obj/effect/decal/edge{
-	dir = 2;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
 /area/outdoors/town/rmh)
@@ -73353,7 +72336,6 @@
 /area/under/rmh_dungeon/catacombs_town)
 "woR" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
@@ -73437,7 +72419,6 @@
 /area/outdoors/rmh_eilistraee)
 "wqg" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
@@ -73448,8 +72429,7 @@
 	pixel_x = 4
 	},
 /obj/item/reagent_containers/peppermill{
-	pixel_x = -5;
-	pixel_y = 0
+	pixel_x = -5
 	},
 /turf/open/floor/tile/diamond,
 /area/indoors/town/rmh/garrison)
@@ -73461,8 +72441,7 @@
 "wql" = (
 /obj/effect/decal/edge_corner{
 	dir = 8;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/effect/decal/edge{
 	dir = 4;
@@ -73590,7 +72569,6 @@
 /area/indoors/town/rmh/farm/henhouse)
 "wsK" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
@@ -73657,8 +72635,7 @@
 /area/under/town/rmh/sewer)
 "wtX" = (
 /obj/effect/decal/cobbleedge{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/machinery/light/fueled/wallfire/candle,
 /obj/structure/table/wood/reinf_long{
@@ -73949,7 +72926,6 @@
 /area/indoors/cave/rmh_cave/safezone)
 "wyB" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/edge{
@@ -73970,7 +72946,6 @@
 /area/indoors/town/rmh/magician)
 "wyM" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/desert/deserttile/tilegreeny,
@@ -73989,7 +72964,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/railing/corner/south_east,
@@ -74073,7 +73047,6 @@
 /obj/structure/mannequin/male,
 /obj/effect/decal/alizeria/decals/wooddecal3,
 /obj/effect/decal/borderfall{
-	dir = 2;
 	pixel_y = -8
 	},
 /turf/open/floor/ruinedwood/herringbone_clear,
@@ -74253,7 +73226,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal2,
 /obj/structure/mannequin/male{
 	density = 0;
-	dir = 2;
 	pixel_y = 25
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -74415,8 +73387,7 @@
 /area/indoors/town/rmh/craft/artificer)
 "wGa" = (
 /obj/structure/fluff/walldeco/church/line{
-	dir = 8;
-	pixel_y = 0
+	dir = 8
 	},
 /obj/structure/fluff/walldeco/church/line{
 	dir = 1
@@ -74440,8 +73411,7 @@
 	dir = 4
 	},
 /obj/effect/decal/edge{
-	color = "#7a684b";
-	dir = 2
+	color = "#7a684b"
 	},
 /obj/effect/decal/edge{
 	color = "#7a684b";
@@ -74515,7 +73485,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/dust,
@@ -74705,7 +73674,6 @@
 /area/under/town/rmh/basement/tavern)
 "wIU" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fake_machine/heraldboard/wall{
@@ -74730,7 +73698,6 @@
 	pixel_y = 8
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/rack/rogue/shelf/alizeria/shelf1,
@@ -74771,7 +73738,6 @@
 /area/outdoors/rmh_eilistraee)
 "wJp" = (
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 8;
@@ -74800,7 +73766,6 @@
 "wJC" = (
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/structure/fluff/railing/corner/south_east,
@@ -74881,7 +73846,6 @@
 /area/outdoors/rmh_field/north)
 "wKP" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cobblerockedge{
@@ -74910,7 +73874,6 @@
 /area/outdoors/town/rmh/livingquart)
 "wLk" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -74922,7 +73885,6 @@
 "wLw" = (
 /obj/structure/fluff/railing/wood{
 	dir = 8;
-	pixel_y = 0;
 	pixel_x = -12
 	},
 /turf/open/openspace,
@@ -74993,7 +73955,6 @@
 	layer = 2
 	},
 /obj/structure/fluff/walldeco/bath/wallpipes/innie{
-	dir = 2;
 	layer = 2
 	},
 /obj/structure/bars/grille,
@@ -75057,8 +74018,7 @@
 /obj/structure/closet/crate/chest/wickertrunk/red,
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/tile/harem,
 /area/indoors/town/rmh/merchant)
@@ -75076,7 +74036,6 @@
 /area/under/town/rmh/sewer)
 "wNX" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/paper{
@@ -75098,7 +74057,6 @@
 /area/outdoors/exposed/town/rmh/farm)
 "wOr" = (
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -75218,13 +74176,11 @@
 /obj/effect/decal/edge{
 	dir = 1;
 	color = "#3b3b3b";
-	layer = 2;
-	pixel_y = 0
+	layer = 2
 	},
 /obj/effect/decal/edge{
 	dir = 8;
-	color = "#3b3b3b";
-	pixel_y = 0
+	color = "#3b3b3b"
 	},
 /turf/open/floor/ruinedwood/alizeria/tiles/wood19,
 /area/indoors/shelter/woods)
@@ -75306,7 +74262,6 @@
 	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
-	dir = 2;
 	pixel_y = 2
 	},
 /obj/structure/bookcase/random_recipes{
@@ -75323,7 +74278,6 @@
 /area/outdoors/rmh_field)
 "wRW" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/item/natural/stone,
@@ -75393,7 +74347,6 @@
 	},
 /obj/effect/decal/borderfall{
 	dir = 4;
-	pixel_y = 0;
 	pixel_x = 8
 	},
 /obj/machinery/light/fueled/wallfire/candle/r,
@@ -75481,7 +74434,6 @@
 "wUs" = (
 /obj/machinery/light/fueled/wallfire/candle/blue/l,
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -75542,9 +74494,7 @@
 /area/indoors/town/rmh/chapel/basement)
 "wVY" = (
 /obj/structure/fluff/walldeco/church/line,
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/church,
 /area/outdoors/rmh_eilistraee)
 "wWa" = (
@@ -75774,7 +74724,6 @@
 /area/under/town/rmh/basement/basement)
 "wYH" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /turf/open/floor/tile/diamond,
@@ -75986,7 +74935,6 @@
 /area/outdoors/town/rmh)
 "xdl" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#575757"
 	},
 /turf/open/floor/cobblerock,
@@ -76009,7 +74957,6 @@
 	dir = 4
 	},
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -76059,7 +75006,6 @@
 /area/indoors/town/rmh/library)
 "xeM" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -76223,8 +75169,7 @@
 	pixel_y = 10
 	},
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/ruinedwood/darker,
 /area/under/town/rmh/sewer)
@@ -76349,8 +75294,7 @@
 	},
 /obj/structure/fake_machine/mail{
 	keycontrol = "merc";
-	pixel_x = 32;
-	density = 0
+	pixel_x = 32
 	},
 /turf/open/floor/ruinedwood/spiral,
 /area/indoors)
@@ -76531,8 +75475,7 @@
 	dir = 4
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1";
-	pixel_y = 0
+	icon_state = "tablewood1"
 	},
 /obj/item/toy/cards/deck,
 /turf/open/floor/church,
@@ -76622,8 +75565,7 @@
 	},
 /obj/machinery/light/fueled/wallfire/floorcandle/alt,
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /turf/open/floor/hexstone,
 /area/indoors/town/rmh/chapel/basement)
@@ -76739,7 +75681,6 @@
 	},
 /obj/effect/decal/cleanable/dirt/dust,
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -76858,7 +75799,6 @@
 "xri" = (
 /obj/structure/fluff/walldeco/church/line,
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy.";
 	light_inner_range = 1;
@@ -76886,7 +75826,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/borderfall{
-	pixel_y = 0;
 	dir = 8;
 	pixel_x = -8
 	},
@@ -76901,8 +75840,7 @@
 	icon_state = "chains3"
 	},
 /obj/structure/fluff/walldeco/chains{
-	pixel_x = 22;
-	pixel_y = 0
+	pixel_x = 22
 	},
 /obj/effect/decal/cleanable/blood/gibs/old,
 /obj/effect/decal/cleanable/dirt/dust,
@@ -76910,7 +75848,6 @@
 /area/under/town/rmh/sewer)
 "xrv" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/mirror{
@@ -76920,7 +75857,6 @@
 /area/under/town/rmh/basement/townhall)
 "xrK" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/dirt/paper{
@@ -77034,11 +75970,9 @@
 /obj/effect/decal/cleanable/debris/stone,
 /obj/effect/decal/cobbleedge{
 	dir = 10;
-	icon_state = "cobbleedge-w";
-	pixel_y = 0
+	icon_state = "cobbleedge-w"
 	},
 /obj/effect/decal/cobbleedge{
-	pixel_y = 0;
 	dir = 6
 	},
 /obj/structure/stairs/stone{
@@ -77360,7 +76294,6 @@
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/herringbone,
@@ -77451,7 +76384,6 @@
 /area/indoors/town/rmh/tavern)
 "xAp" = (
 /obj/structure/table/wood/large_new{
-	dir = 2;
 	icon_state = "alt_largetable"
 	},
 /obj/effect/decal/borderfall{
@@ -77530,8 +76462,7 @@
 "xCa" = (
 /obj/effect/decal/edge_corner{
 	dir = 1;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /obj/structure/table/wood/reinf_long{
 	dir = 4
@@ -77622,9 +76553,7 @@
 /area/under/town/rmh/sewer)
 "xCW" = (
 /obj/effect/decal/edge_corner{
-	dir = 2;
-	color = "#522f26";
-	pixel_y = 0
+	color = "#522f26"
 	},
 /turf/open/floor/blocks/stonered/tiny,
 /area/indoors/town/rmh/craft/apothecary)
@@ -77715,7 +76644,6 @@
 /area/indoors/cave/rmh_cave/to_underdark)
 "xEy" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/fluff/walldeco/stone{
@@ -77794,9 +76722,7 @@
 /turf/open/openspace,
 /area/outdoors/mountains/rmh_mountains)
 "xFz" = (
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/cobblerock,
 /area/indoors/cave/rmh_cave/northern)
 "xFC" = (
@@ -78019,7 +76945,6 @@
 /area/outdoors/rmh_field)
 "xIX" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/structure/flora/grass/crawlvines,
@@ -78268,7 +77193,6 @@
 /area/under/rmh_dungeon/catacombs_church)
 "xMS" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#522f26"
 	},
 /obj/effect/decal/alizeria/decals/wooddecal2,
@@ -78286,7 +77210,6 @@
 	pixel_x = 9
 	},
 /obj/item/reagent_containers/glass/bowl/clay{
-	pixel_y = 0;
 	pixel_x = -9
 	},
 /obj/item/reagent_containers/glass/bowl/clay{
@@ -78301,7 +77224,6 @@
 	pixel_y = -32
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/cobble,
@@ -78338,7 +77260,6 @@
 	pixel_y = -32
 	},
 /obj/structure/mannequin{
-	pixel_y = 0;
 	anchored = 1;
 	density = 0;
 	pixel_x = 9;
@@ -78351,7 +77272,6 @@
 /obj/effect/decal/alizeria/decals/wooddecal4,
 /obj/structure/mannequin/male{
 	density = 0;
-	pixel_y = 0;
 	pixel_x = 11;
 	dir = 8
 	},
@@ -78364,8 +77284,7 @@
 /area/indoors/cave/rmh_cave/southern)
 "xOf" = (
 /obj/effect/decal/borderfall{
-	dir = 1;
-	pixel_y = 0
+	dir = 1
 	},
 /obj/structure/mirror/fancy{
 	pixel_y = 0;
@@ -78376,7 +77295,6 @@
 "xOh" = (
 /obj/structure/fluff/railing/corner/south_east,
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/churchbrick,
@@ -78587,9 +77505,7 @@
 /turf/open/floor/herringbone,
 /area/under/rmh_dungeon/jergal)
 "xRX" = (
-/turf/open/water/river{
-	dir = 2
-	},
+/turf/open/water/river,
 /area/outdoors/rmh_field/west)
 "xRZ" = (
 /obj/effect/decal/edge_corner{
@@ -78764,7 +77680,6 @@
 /area/indoors/town/rmh/living)
 "xVb" = (
 /obj/effect/wisp/prestidigitation{
-	pixel_x = 0;
 	name = "Will-o'-the-wisp";
 	desc = "A small, fiery ball of light made up of mystical energy."
 	},
@@ -78908,7 +77823,6 @@
 /area/indoors/town/rmh/cell)
 "xXt" = (
 /obj/structure/flora/grass/crawlvines{
-	dir = 2;
 	pixel_x = 32
 	},
 /turf/open/floor/rooftop/green,
@@ -79021,7 +77935,6 @@
 /area/indoors/cave/rmh_cave/southern)
 "xZt" = (
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /obj/effect/decal/cleanable/debris/stone,
@@ -79095,9 +78008,7 @@
 	pixel_y = 6
 	},
 /obj/structure/fluff/walldeco/church/line,
-/obj/structure/flora/grass/crawlvines{
-	dir = 2
-	},
+/obj/structure/flora/grass/crawlvines,
 /turf/open/floor/church,
 /area/outdoors/rmh_eilistraee)
 "yal" = (
@@ -79118,7 +78029,6 @@
 /area/indoors/cave/rmh_cave/cave_druid)
 "yaq" = (
 /obj/structure/table/wood{
-	dir = 2;
 	icon_state = "longtable"
 	},
 /obj/structure/fake_machine/mail{
@@ -79195,8 +78105,7 @@
 /area/under/rmh_dungeon/catacombs_town)
 "ybG" = (
 /obj/effect/decal/cobbleedge{
-	dir = 10;
-	pixel_y = 0
+	dir = 10
 	},
 /turf/open/floor/cobblerock,
 /area/outdoors/rmh_field/west)
@@ -79623,7 +78532,6 @@
 	dir = 10
 	},
 /obj/effect/decal/edge{
-	dir = 2;
 	color = "#3b3b3b"
 	},
 /turf/open/floor/tile/tilerg,
@@ -79692,9 +78600,7 @@
 /turf/open/floor/ruinedwood,
 /area/under/town/rmh/sewer)
 "yiM" = (
-/obj/effect/decal/floor_selune{
-	pixel_y = -16
-	},
+/obj/effect/decal/floor_selune,
 /turf/open/floor/herringbone,
 /area/indoors/town/rmh/chapel/basement)
 "yiQ" = (
@@ -79748,7 +78654,6 @@
 /area/outdoors/rmh_field)
 "ykw" = (
 /obj/structure/stairs{
-	dir = 2;
 	name = "benches"
 	},
 /obj/structure/fluff/nest,
@@ -79779,7 +78684,6 @@
 	dir = 4
 	},
 /obj/structure/flora/new_shroom/redwall{
-	dir = 2;
 	pixel_y = 0;
 	pixel_x = 32
 	},
@@ -377913,7 +376817,7 @@ bwh
 ubW
 xvp
 vbd
-aXy
+oYq
 etm
 etm
 etm
@@ -378160,7 +377064,7 @@ etm
 etm
 etm
 etm
-aXy
+kmZ
 jwI
 wsK
 vMJ
@@ -378674,7 +377578,7 @@ etm
 etm
 etm
 etm
-aXy
+kmZ
 mcE
 oPw
 wvT
@@ -380220,9 +379124,9 @@ etm
 mrS
 rlk
 rlk
-aXy
-aXy
-aXy
+lsx
+lsx
+lsx
 rlk
 rlk
 mrS

@@ -922,7 +922,20 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	if(ishuman(C) && !pref_load)
 		random_character(C)
 	else
-		regenerate_organs(C, old_species, pref_load = pref_load)
+		// Each swapped eye or visible organ would redraw the whole body; this proc redraws once at the end.
+		var/was_building_organs = C.status_flags & BUILDING_ORGANS
+		C.status_flags |= BUILDING_ORGANS
+		try
+			regenerate_organs(C, old_species, pref_load = pref_load)
+		catch(var/exception/organ_error)
+			// A stuck flag would freeze this body's icons and limb updates for good.
+			if(!was_building_organs)
+				C.status_flags &= ~BUILDING_ORGANS
+			throw organ_error
+		if(!was_building_organs)
+			C.status_flags &= ~BUILDING_ORGANS
+			// The flag also skipped limb-supporter efficiency; the redraw and organ needs follow below.
+			C.update_limb_efficiencies()
 
 	C.mob_biotypes = inherent_biotypes
 	if(ishuman(C))
@@ -1149,6 +1162,10 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 		H.losebreath = 0
 	else if((H.health < H.crit_threshold) && !HAS_TRAIT(H, TRAIT_NOCRITDAMAGE))
 		H.adjustOxyLoss(1)
+
+/// The atom a human looks through when nothing asks for a specific one. Null keeps the mob's own eyes.
+/datum/species/proc/get_default_perspective(mob/living/carbon/human/H)
+	return null
 
 /datum/species/proc/spec_death(gibbed, mob/living/carbon/human/H)
 	return

@@ -82,8 +82,8 @@
 	// Arrow logic (distance-based)
 	var/arrowpart = ""
 	if(istype(src,/mob/living))
-		var/turf/speakturf = get_turf(speaker)
-		var/turf/sourceturf = get_turf(src)
+		var/turf/speakturf = get_turf(speaker.get_sense_anchor())
+		var/turf/sourceturf = get_turf(get_sense_anchor())
 		if(istype(speakturf) && istype(sourceturf) && !(speakturf in get_hear(7, sourceturf)))
 			switch(get_dir(src,speaker))
 				if(NORTH)

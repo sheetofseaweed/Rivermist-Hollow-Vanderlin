@@ -19,7 +19,7 @@
 /datum/quest/kill/carnal/fluid/get_objective_text()
 	var/fluid_name = required_fluid_type ? initial(required_fluid_type.name) : "creature fluid"
 	var/source_hint = fluid_kind == QUEST_FLUID_NECTAR ? "Bring her to climax over a container" : "Milk him into a container, or take his load and expel it into a bottle"
-	return "Bring [units_required] units of [fluid_name] to the marked area beside the contract ledger, then turn the contract in. [source_hint]."
+	return "Bring [units_required] units of [fluid_name] in containers to the contract ledger, carried or on the marked area beside it, then turn the contract in. [source_hint]."
 
 /datum/quest/kill/carnal/fluid/prepare_for_issuer(mob/living/carbon/human/issuer)
 	..()
@@ -72,11 +72,11 @@
 /datum/quest/kill/carnal/fluid/get_task_reward_bonus()
 	return units_required * QUEST_FLUID_REWARD_PER_UNIT
 
-/datum/quest/kill/carnal/fluid/proc/get_turn_in_containers(turf/input_point)
+/datum/quest/kill/carnal/fluid/proc/get_turn_in_containers(turf/input_point, mob/user)
 	. = list()
 	if(!required_fluid_type)
 		return
-	for(var/obj/item/reagent_containers/container in input_point)
+	for(var/obj/item/reagent_containers/container as anything in find_turn_in_goods(input_point, user, /obj/item/reagent_containers))
 		if(container.reagents?.get_reagent_amount(required_fluid_type) > 0)
 			. += container
 
@@ -85,11 +85,19 @@
 	for(var/obj/item/reagent_containers/container as anything in containers)
 		. += container.reagents.get_reagent_amount(required_fluid_type)
 
-/datum/quest/kill/carnal/fluid/has_turn_in_goods(turf/input_point)
-	return count_units(get_turn_in_containers(input_point)) >= units_required
+/datum/quest/kill/carnal/fluid/uses_turn_in_goods()
+	return TRUE
+
+/datum/quest/kill/carnal/fluid/has_turn_in_goods(turf/input_point, mob/user)
+	return count_units(get_turn_in_containers(input_point, user)) >= units_required
+
+/datum/quest/kill/carnal/fluid/get_turn_in_goods_report(turf/input_point, mob/user)
+	var/fluid_name = required_fluid_type ? initial(required_fluid_type.name) : "creature fluid"
+	var/units_found = round(count_units(get_turn_in_containers(input_point, user)), 0.1)
+	return "The ledger counts [units_found] of [units_required] units of [fluid_name] in containers on its marked area and on you."
 
 /datum/quest/kill/carnal/fluid/try_collect_turn_in_goods(turf/input_point, mob/user)
-	var/list/containers = get_turn_in_containers(input_point)
+	var/list/containers = get_turn_in_containers(input_point, user)
 	if(count_units(containers) < units_required)
 		return FALSE
 	var/units_left = units_required
