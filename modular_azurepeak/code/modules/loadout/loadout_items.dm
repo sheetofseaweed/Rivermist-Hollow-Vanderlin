@@ -974,10 +974,6 @@
 	item_path = /obj/item/clothing/face/facemask/steel/ancient/jademask/donator
 	point_cost = 4
 
-/datum/loadout_item/ap_face_muzzle
-	name = "Muzzle"
-	item_path = /obj/item/clothing/face/muzzle
-
 /datum/loadout_item/ap_face_facemask_goldmask_triumph
 	name = "Ornate Golden Mask (Goldmask)"
 	item_path = /obj/item/clothing/face/facemask/goldmask/triumph
@@ -987,14 +983,6 @@
 	name = "Ornate Golden Mask (Goldmaskc)"
 	item_path = /obj/item/clothing/face/facemask/goldmaskc/triumph
 	point_cost = 3
-
-/datum/loadout_item/ap_face_pig_cursed
-	name = "Pig Face"
-	item_path = /obj/item/clothing/face/pig/cursed
-
-/datum/loadout_item/ap_face_pig
-	name = "Pig Mask"
-	item_path = /obj/item/clothing/face/pig
 
 /datum/loadout_item/ap_face_iamcrystalclear
 	name = "Porcelain Mask"
@@ -1012,14 +1000,6 @@
 /datum/loadout_item/ap_face_ragmask_red
 	name = "Rag Mask (Red)"
 	item_path = /obj/item/clothing/face/ragmask/red
-
-/datum/loadout_item/ap_face_bandana_black
-	name = "Black Bandana"
-	item_path = /obj/item/clothing/face/bandana/black
-
-/datum/loadout_item/ap_face_bandana
-	name = "Botany Bandana"
-	item_path = /obj/item/clothing/face/bandana
 
 /datum/loadout_item/ap_face_spectacles_magi1138
 	name = "Modified Weaveshade Lens-pair"
@@ -1119,10 +1099,6 @@
 	name = "Carved Amulet"
 	item_path = /obj/item/clothing/neck/carved
 
-/datum/loadout_item/ap_neck_necklace_dope
-	name = "Gold Necklace"
-	item_path = /obj/item/clothing/neck/necklace/dope
-
 /datum/loadout_item/ap_neck_carved_porcelainamulet
 	name = "Porcelain Amulet"
 	item_path = /obj/item/clothing/neck/carved/porcelainamulet
@@ -1144,10 +1120,6 @@
 	name = "Light Forlorn Collar"
 	item_path = /obj/item/clothing/neck/collar/forlorn
 
-/datum/loadout_item/ap_neck_petcollar
-	name = "Pet Collar"
-	item_path = /obj/item/clothing/neck/petcollar
-
 /datum/loadout_item/ap_neck_bevor_aasimar
 	name = "Aasimari Gorget"
 	item_path = /obj/item/clothing/neck/bevor/aasimar
@@ -1157,22 +1129,6 @@
 	name = "Full Chain Coif"
 	item_path = /obj/item/clothing/neck/chaincoif/full/black
 	point_cost = 3
-
-/datum/loadout_item/ap_neck_stethoscope
-	name = "Stethoscope"
-	item_path = /obj/item/clothing/neck/stethoscope
-
-/datum/loadout_item/ap_neck_stripedbluescarf
-	name = "Striped Blue Scarf"
-	item_path = /obj/item/clothing/neck/stripedbluescarf
-
-/datum/loadout_item/ap_neck_stripedgreenscarf
-	name = "Striped Green Scarf"
-	item_path = /obj/item/clothing/neck/stripedgreenscarf
-
-/datum/loadout_item/ap_neck_stripedredscarf
-	name = "Striped Red Scarf"
-	item_path = /obj/item/clothing/neck/stripedredscarf
 
 /datum/loadout_item/ap_neck_mercmedal_routier
 	name = "Amnian Silvered Halo"

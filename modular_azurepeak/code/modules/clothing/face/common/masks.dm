@@ -88,52 +88,6 @@
 	item_state = "elegantjademask"
 	misc_flags = CRAFTING_TEST_EXCLUDE
 
-/obj/item/clothing/face/muzzle
-	name = "muzzle"
-	desc = ""
-	icon = 'modular_azurepeak/icons/clothing/masks.dmi'
-	mob_overlay_icon = null
-	sleeved = null
-	icon_state = "muzzle"
-	item_state = "blindfold"
-	flags_cover = MASKCOVERSMOUTH
-	w_class = WEIGHT_CLASS_SMALL
-	gas_transfer_coefficient = 0.9
-	equip_delay_other = 20
-	ported_clothing = TRUE
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/face/pig
-	name = "pig mask"
-	desc = ""
-	icon = 'modular_azurepeak/icons/clothing/masks.dmi'
-	mob_overlay_icon = null
-	sleeved = null
-	icon_state = "pig"
-	item_state = "pig"
-	flags_inv = HIDEFACE|HIDEHAIR|HIDEFACIALHAIR
-	clothing_flags = VOICEBOX_TOGGLABLE
-	w_class = WEIGHT_CLASS_SMALL
-	modifies_speech = TRUE
-	ported_clothing = TRUE
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/face/pig/handle_speech(datum/source, list/speech_args)
-	if(!CHECK_BITFIELD(clothing_flags, VOICEBOX_DISABLED))
-		speech_args[SPEECH_MESSAGE] = pick("Oink!","Squeeeeeeee!","Oink Oink!")
-
-/obj/item/clothing/face/pig/cursed
-	name = "pig face"
-	desc = ""
-	icon = 'modular_azurepeak/icons/clothing/masks.dmi'
-	mob_overlay_icon = null
-	sleeved = null
-	icon_state = "pig"
-	item_state = "pig"
-	flags_inv = HIDEFACIALHAIR
-	clothing_flags = NONE
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
 /obj/item/clothing/face/duelmask
 	name = "duelist's mask"
 	desc = "A black cloth mask for those masked duelists, doesn't grant any protection, but covers your eyes, and your identity... somehow."

@@ -1,12 +1,3 @@
-/obj/item/clothing/neck/necklace/dope
-	name = "gold necklace"
-	desc = ""
-	icon = 'modular_azurepeak/icons/clothing/neck.dmi'
-	mob_overlay_icon = null
-	sleeved = null
-	icon_state = "bling"
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
 /obj/item/clothing/neck/carved
 	name = "carved amulet"
 	desc = "You shouldn't be seeing this."

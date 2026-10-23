@@ -1,23 +1,3 @@
-/obj/item/clothing/neck/petcollar
-	name = "pet collar"
-	desc = ""
-	icon = 'modular_azurepeak/icons/clothing/neck.dmi'
-	mob_overlay_icon = null
-	sleeved = null
-	icon_state = "petcollar"
-	var/tagname = null
-	ported_clothing = TRUE
-	misc_flags = CRAFTING_TEST_EXCLUDE
-
-/obj/item/clothing/neck/petcollar/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
-	if(ishuman(M))
-		return FALSE
-	return ..()
-
-/obj/item/clothing/neck/petcollar/attack_self(mob/user, list/modifiers)
-	tagname = copytext(sanitize(input(user, "Would you like to change the name on the tag?", "Name your new pet", "Spot") as null|text),1,MAX_NAME_LEN)
-	name = "[initial(name)] - [tagname]"
-
 /obj/item/clothing/neck/collar
 	name = "collar"
 	desc = "A band of leather which signifies bondage to another."
