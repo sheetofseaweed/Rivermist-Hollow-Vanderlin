@@ -29,6 +29,8 @@
 	. = ..()
 	if(!.)
 		return FALSE
+	if(ishuman(M))
+		M.LoadComponent(/datum/component/breast_animation)
 	add_bodystorage(M, null, /datum/component/body_storage/breasts)
 	var/obj/item/organ/genitals/nipple/left/l_nip = new /obj/item/organ/genitals/nipple/left
 	var/obj/item/organ/genitals/nipple/right/r_nip = new /obj/item/organ/genitals/nipple/right
@@ -36,25 +38,20 @@
 	r_nip.Insert(M, FALSE, FALSE)
 
 
-	var/obj/item/organ/genitals/filling_organ/breasts/badonkas = M.getorganslot(ORGAN_SLOT_BREASTS)
-	if(!badonkas)
-		return TRUE
-	//Making users of big BOOBA suk dikus
-	if(badonkas.organ_size >= BREAST_SIZE_ENORMOUS)
-		M.apply_status_effect(/datum/status_effect/debuff/bigboobs/permanent/lite)
-	else if(badonkas.organ_size == BREAST_SIZE_LARGE)
-		M.apply_status_effect(/datum/status_effect/debuff/largeboobs/permanent/lite)
-	else if(badonkas.organ_size == BREAST_SIZE_SMALL)
-		M.apply_status_effect(/datum/status_effect/debuff/smallboobs/permanent/lite)
-	else if(badonkas.organ_size == BREAST_SIZE_VERY_SMALL)
-		M.apply_status_effect(/datum/status_effect/debuff/vsmallboobs/permanent/lite)
-	else if(badonkas.organ_size == BREAST_SIZE_FLAT)
-		M.apply_status_effect(/datum/status_effect/debuff/flatboobs/permanent/lite)
+	// One size status follows the visible size, replacing the per-size statuses.
+	if(ishuman(M))
+		var/mob/living/carbon/human/human_owner = M
+		human_owner.update_breast_size_effect()
 
 /obj/item/organ/genitals/filling_organ/breasts/Remove(mob/living/M, special, drop_if_replaced)
 	. = ..()
+	var/datum/component/breast_animation/breast_animation = M?.GetComponent(/datum/component/breast_animation)
+	breast_animation?.refresh()
 	var/datum/component/body_storage/breasts/comp = GetComponent(/datum/component/body_storage/breasts)
 	comp?.RemoveComponent()
+	if(ishuman(M))
+		var/mob/living/carbon/human/human_owner = M
+		human_owner.update_breast_size_effect()
 
 /obj/item/organ/genitals/filling_organ/breasts/get_availability(datum/species/owner_species, mob/living/C, datum/preferences/pref_load)
 	if(issimple(C))

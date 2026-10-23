@@ -462,7 +462,7 @@
 /mob/living/proc/defeat_is_near_death()
 	if(health <= HEALTH_THRESHOLD_DEAD)
 		return TRUE
-	if(blood_volume <= BLOOD_VOLUME_SURVIVE && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE))
+	if(blood_volume <= BLOOD_VOLUME_SURVIVE && !HAS_TRAIT(src, TRAIT_BLOODLOSS_IMMUNE) && !is_bloodless())
 		return TRUE
 	if(iscarbon(src))
 		var/mob/living/carbon/carbon_src = src

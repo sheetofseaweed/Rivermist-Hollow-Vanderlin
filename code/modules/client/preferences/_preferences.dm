@@ -1115,9 +1115,9 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		else
 			idx = (idx >= length(dir_cycle)) ? 1 : (idx + 1)
 		character_setup_preview_dir = dir_cycle[idx]
-		if(character_setup_view && character_setup_body)
-			character_setup_measure_body(character_setup_preview_dir)
-			character_setup_apply_to_view(character_setup_view, character_setup_body, character_setup_preview_dir)
+		// Through update_view, so turning never measures a dummy that a yielded render is still dressing.
+		character_setup_redraw_dir = TRUE
+		character_setup_update_view(base_changed = FALSE)
 		return TRUE
 	else if(href_list["preference"] == "character_setup_preview_background")
 		var/bg_choice = href_list["bg"]
@@ -1245,7 +1245,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			character_setup_hover_color = null
 			character_setup_hover_customizer = null
 			character_setup_render_main_only = TRUE
-			character_setup_update_view()
+			character_setup_update_view(base_changed = FALSE)
 			return TRUE
 		if(new_acc == character_setup_hover_acc && href_list["color"] == character_setup_hover_color && new_customizer == character_setup_hover_customizer)
 			return TRUE
@@ -1255,7 +1255,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		character_setup_hover_color = href_list["color"]
 		character_setup_hover_customizer = new_customizer
 		character_setup_render_main_only = TRUE
-		character_setup_update_view()
+		character_setup_update_view(base_changed = FALSE)
 		return TRUE
 
 	if(process_native_preference_link(user, href_list))
@@ -1547,7 +1547,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				write_preference(/datum/preference/text/selected_title, new_title)
 			return TRUE
 		if("nsfw_headshot")
-			var/new_nsfw_headshot = tgui_input_text(user, "Input the NSFW headshot link:", "NSFW Headshot", read_preference(/datum/preference/text/nsfw_headshot_link), encode = FALSE)
+			var/new_nsfw_headshot = tgui_input_text(user, "Input the NSFW headshot link (https, hosts: [get_image_host_names(TRUE)]):", "NSFW Headshot", read_preference(/datum/preference/text/nsfw_headshot_link), encode = FALSE)
 			if(!isnull(new_nsfw_headshot))
 				new_nsfw_headshot = trim(new_nsfw_headshot)
 				if(!length(new_nsfw_headshot) || is_valid_nsfw_headshot_link(user, new_nsfw_headshot, FALSE))
@@ -1568,7 +1568,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 				write_preference(text_link_type, new_text)
 			return TRUE
 		if("song_link")
-			var/new_song_link = tgui_input_text(user, "Input a direct MP3 link. Leave blank to clear.", "Song URL", read_preference(/datum/preference/text/song_link), encode = FALSE)
+			var/new_song_link = tgui_input_text(user, "Input a direct MP3 link (https, hosts: [get_media_host_names()]). Leave blank to clear.", "Song URL", read_preference(/datum/preference/text/song_link), encode = FALSE)
 			if(!isnull(new_song_link))
 				new_song_link = trim(new_song_link)
 				var/static/list/mp3_extension = list("mp3")
@@ -1667,7 +1667,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	to_chat(user, "<span class='notice'>You can only have a maximum of ["<span class='bold'>THREE IMAGES</span>"] in each gallery at a time.</span>")
 
 	var/title = nsfw_gallery ? "NSFW Gallery Image" : "Gallery Image"
-	var/host_list = nsfw_gallery ? "gyazo, lensdump, imgbox, catbox, imagechest, pixhost" : "gyazo, lensdump, imgbox, catbox, postimages, freeimage, imagechest, pixhost"
+	var/host_list = get_image_host_names(nsfw_gallery)
 	var/new_galleryimg = tgui_input_text(user, "Input the image link (https, hosts: [host_list]):", title, max_length = MAX_MESSAGE_LEN, encode = FALSE)
 	if(isnull(new_galleryimg))
 		return FALSE
@@ -1864,7 +1864,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 					<a class="[regular_tab_class]" href='byond://?_src_=prefs;preference=gallery;task=menu;tab=regular'>Regular</a>
 					<a class="[nsfw_tab_class]" href='byond://?_src_=prefs;preference=gallery;task=menu;tab=nsfw'>NSFW</a>
 				</div>
-				<div class="note">Direct image links from approved hosts are stored here. Each tab holds up to three images.</div>
+				<div class="note">Direct image links (https) from approved hosts are stored here. Hosts: [get_image_host_names(nsfw_gallery)]. Each tab holds up to three images.</div>
 				<div class="toolbar">
 	"}
 
@@ -2484,6 +2484,12 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			</html>
 			"}
 
+/// Host names shown in image link prompts; keep in sync with the two allowed_hosts lists below.
+/datum/preferences/proc/get_image_host_names(nsfw = FALSE)
+	if(nsfw)
+		return "gyazo, lensdump, imgbox, catbox, imagechest, pixhost, file garden"
+	return "gyazo, lensdump, imgbox, catbox, postimages, freeimage, imagechest, pixhost, file garden"
+
 /datum/preferences/proc/is_valid_headshot_link(mob/user, value, silent = FALSE, list/valid_extensions = list("jpg", "png", "jpeg", "gif"))
 	var/static/list/allowed_hosts = list(
 		"i.gyazo.com",
@@ -2498,6 +2504,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"i.postimg.cc",
 		"iili.io",
 		"cdn.imgchest.com",
+		"file.garden",
 	)
 	var/static/list/allowed_host_suffixes = list(".pixhost.to", ".pixhost.cc", ".pixho.st")
 
@@ -2516,10 +2523,15 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"thumbs2.imgbox.com",
 		"files.catbox.moe",
 		"cdn.imgchest.com",
+		"file.garden",
 	)
 	var/static/list/allowed_host_suffixes = list(".pixhost.to", ".pixhost.cc", ".pixho.st")
 
 	return is_valid_external_asset_link(user, value, silent, valid_extensions, allowed_hosts, allowed_host_suffixes, "image")
+
+/// Hosts shown in the song prompt; gyazo, lensdump and imgbox pass is_valid_media_link() but host no audio.
+/datum/preferences/proc/get_media_host_names()
+	return "catbox, file garden"
 
 /datum/preferences/proc/is_valid_media_link(mob/user, value, silent = FALSE, list/valid_extensions)
 	var/static/list/allowed_hosts = list(
@@ -2530,6 +2542,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"images2.imgbox.com",
 		"thumbs2.imgbox.com",
 		"files.catbox.moe",
+		"file.garden",
 	)
 	var/static/list/allowed_host_suffixes = list()
 

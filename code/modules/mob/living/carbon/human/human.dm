@@ -211,6 +211,11 @@
 	if(!GetComponent(/datum/component/arousal))
 		AddComponent(/datum/component/arousal)
 
+/mob/living/carbon/human/reset_perspective(atom/new_perspective)
+	if(!new_perspective)
+		new_perspective = dna?.species?.get_default_perspective(src)
+	return ..(new_perspective)
+
 /mob/living/carbon/human/Destroy()
 	QDEL_NULL(active_ooze_editor)
 	QDEL_NULL(physiology)

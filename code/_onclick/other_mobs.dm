@@ -138,6 +138,10 @@
 		if(w_class < WEIGHT_CLASS_HUGE)
 			throw_at(get_ranged_target_turf(src, get_dir(user,src), 2), 2, 2, user, FALSE)
 
+/// TRUE when this mob's mouth can reach `target`. Mobs whose mouth travels separately override it.
+/mob/living/proc/bite_reach(atom/target)
+	return target?.Adjacent(src)
+
 /mob/living/proc/bite(atom/A)
 	if(SEND_SIGNAL(src, COMSIG_LIVING_PREBITE_SELF, A) & COMPONENT_CANCEL_ATTACK_CHAIN)
 		return TRUE
@@ -298,7 +302,7 @@
 		if(INTENT_JUMP)
 			jump_action(A)
 		if(INTENT_BITE)
-			if(!A.Adjacent(src))
+			if(!bite_reach(A))
 				return
 			if(A == src)
 				return

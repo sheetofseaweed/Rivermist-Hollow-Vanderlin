@@ -1198,30 +1198,47 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	if(!can_user_access_ledger(user))
 		return FALSE
 	for(var/obj/item/paper/scroll/quest/held_scroll in user.GetAllContents(/obj/item/paper/scroll/quest))
-		var/list/mob/quest_assignees = held_scroll.get_quest_assignees(user, TRUE)
-		if((user in quest_assignees) && is_quest_ready_to_turn_in(held_scroll.assigned_quest) && can_accept_contract_quest(held_scroll.assigned_quest))
+		if(can_offer_turn_in(user, held_scroll))
 			return TRUE
 	for(var/obj/item/paper/scroll/quest/floor_scroll in input_point)
-		var/list/mob/quest_assignees = floor_scroll.get_quest_assignees(user, TRUE)
-		if((user in quest_assignees) && is_quest_ready_to_turn_in(floor_scroll.assigned_quest) && can_accept_contract_quest(floor_scroll.assigned_quest))
+		if(can_offer_turn_in(user, floor_scroll))
 			return TRUE
 	return FALSE
 
-/obj/structure/fake_machine/contractledger/proc/is_quest_ready_to_turn_in(datum/quest/quest)
+/// Turn-in is offered for a ready contract, and for an unfinished goods contract so the ledger can say what is missing.
+/obj/structure/fake_machine/contractledger/proc/can_offer_turn_in(mob/user, obj/item/paper/scroll/quest/scroll)
+	var/datum/quest/quest = scroll.assigned_quest
+	if(!quest || !(user in scroll.get_quest_assignees(user, TRUE)) || !can_accept_contract_quest(quest))
+		return FALSE
+	return is_quest_ready_to_turn_in(quest, user) || quest.uses_turn_in_goods()
+
+/obj/structure/fake_machine/contractledger/proc/is_quest_ready_to_turn_in(datum/quest/quest, mob/user)
 	if(!quest)
 		return FALSE
-	return quest.complete || quest.has_turn_in_goods(input_point)
+	return quest.complete || quest.has_turn_in_goods(input_point, user)
 
 /obj/structure/fake_machine/contractledger/proc/can_abandon_any_contract(mob/living/carbon/human/user)
 	if(!user)
 		return FALSE
 	if(!can_user_access_ledger(user))
 		return FALSE
-	var/obj/item/paper/scroll/quest/abandoned_scroll = locate() in input_point
-	if(!abandoned_scroll)
-		return FALSE
-	var/list/mob/quest_assignees = abandoned_scroll.get_quest_assignees(user, TRUE)
-	return (user in quest_assignees) && !abandoned_scroll.assigned_quest?.complete && can_accept_contract_quest(abandoned_scroll.assigned_quest)
+	return !!get_abandonable_scroll(user)
+
+/// The user's own unfinished scroll on the marked area, else one in their hands.
+/obj/structure/fake_machine/contractledger/proc/get_abandonable_scroll(mob/user)
+	var/list/obj/item/paper/scroll/quest/candidates = list()
+	for(var/obj/item/paper/scroll/quest/floor_scroll in input_point)
+		candidates += floor_scroll
+	var/obj/item/paper/scroll/quest/active_scroll = user.get_active_held_item()
+	if(istype(active_scroll))
+		candidates += active_scroll
+	for(var/obj/item/paper/scroll/quest/held_scroll in user.held_items)
+		candidates |= held_scroll
+	for(var/obj/item/paper/scroll/quest/candidate as anything in candidates)
+		var/datum/quest/quest = candidate.assigned_quest
+		if(quest && !quest.complete && (user in candidate.get_quest_assignees(user, TRUE)) && can_accept_contract_quest(quest))
+			return candidate
+	return null
 
 /obj/structure/fake_machine/contractledger/proc/get_contract_deposit_amount(mob/living/carbon/human/user, datum/quest/attached_quest)
 	if(!attached_quest)
@@ -1518,7 +1535,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	else
 		for(var/obj/item/paper/scroll/quest/held_scroll in user.GetAllContents(/obj/item/paper/scroll/quest))
 			var/list/mob/held_assignees = held_scroll.get_quest_assignees(user, TRUE)
-			if(!(user in held_assignees) || !is_quest_ready_to_turn_in(held_scroll.assigned_quest) || !can_accept_contract_quest(held_scroll.assigned_quest))
+			if(!(user in held_assignees) || !is_quest_ready_to_turn_in(held_scroll.assigned_quest, user) || !can_accept_contract_quest(held_scroll.assigned_quest))
 				continue
 			turn_in_scroll(user, held_scroll)
 			return
@@ -1529,6 +1546,12 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 				continue
 			turn_in_scroll(user, floor_scroll)
 			return
+
+		// Nothing is ready, so a carried goods contract reports what the ledger still lacks.
+		for(var/obj/item/paper/scroll/quest/held_scroll in user.GetAllContents(/obj/item/paper/scroll/quest))
+			if(held_scroll.assigned_quest?.uses_turn_in_goods() && can_offer_turn_in(user, held_scroll))
+				turn_in_scroll(user, held_scroll)
+				return
 
 	set_session_notice(user, "notice.no_completed_contract", "warning")
 
@@ -1550,6 +1573,8 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 
 	if(!completed_quest.complete)
 		completed_quest.try_collect_turn_in_goods(input_point, user)
+		if(!completed_quest.complete && completed_quest.uses_turn_in_goods())
+			to_chat(user, span_warning(completed_quest.get_turn_in_goods_report(input_point, user)))
 
 	if(completed_quest?.complete)
 		var/base_reward = completed_quest.reward_amount
@@ -1666,15 +1691,16 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 			to_chat(user, span_notice("Your refund of [refund] amna has been dispensed."))
 
 	log_quest(user.ckey, user.mind, user, "Abandon [quest_type_label]")
+	to_chat(user, span_notice("You abandon the contract \"[quest.get_title()]\"."))
 	abandoned_scroll.assigned_quest = null
 	qdel(quest)
 	qdel(abandoned_scroll)
 
 /obj/structure/fake_machine/contractledger/proc/abandon_contract(mob/user)
-	var/obj/item/paper/scroll/quest/abandoned_scroll = locate() in input_point
+	var/obj/item/paper/scroll/quest/abandoned_scroll = get_abandonable_scroll(user)
 	if(!abandoned_scroll)
 		set_session_notice(user, "notice.no_scroll_input", "warning")
-		to_chat(user, span_warning("No contract scroll found in the input area!"))
+		to_chat(user, span_warning("Hold your unfinished contract scroll, or place it on the marked area, to abandon it."))
 		return
 
 	abandon_scroll(user, abandoned_scroll)

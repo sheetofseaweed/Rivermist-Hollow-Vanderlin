@@ -206,6 +206,10 @@
 	reward_amount = calculate_reward(get_target_anchor_turf())
 	deposit_amount = calculate_deposit(reward_amount)
 
+/// A rune rescue would otherwise let the contractor retry the fight with a fresh body.
+/datum/quest/kill/fails_on_rune_rescue(mob/living/carbon/rescued)
+	return TRUE
+
 /datum/quest/kill/get_risk_score(turf/target_turf)
 	return target_risk_value + type_risk_bonus + round(max(progress_required - 1, 0) / 2)
 
