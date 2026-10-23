@@ -11,8 +11,8 @@
 
 /obj/structure/window/harem3
 	name = "harem window"
-	icon = 'modular_rmh/icons/obj/structures/roguewindow.dmi'
-	icon_state = "harem3-solid"
+	icon = 'modular_rmh/icons/obj/structures/structure.dmi'
+	icon_state = "window-solid"
 
 /obj/structure/door/viewport/stone
 	desc = "stone door"

@@ -2,7 +2,7 @@
 /obj/structure/window
 	name = "window"
 	desc = "A window of simple paned glass."
-	icon = 'icons/roguetown/misc/structure.dmi'
+	icon = 'modular_rmh/icons/obj/structures/structure.dmi'
 	icon_state = "window-solid"
 	layer = TABLE_LAYER
 	density = TRUE
