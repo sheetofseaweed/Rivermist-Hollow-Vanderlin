@@ -336,6 +336,11 @@ const en = {
     misc: 'Misc',
   } as Record<string, string>,
   searchItems: 'Search items...',
+  page: 'Page',
+  prevPage: 'Prev',
+  nextPage: 'Next',
+  firstPage: 'First page',
+  lastPage: 'Last page',
   loadoutRules:
     'Loadout items are modified: armor is minor and light, weapons deal 30% less damage, and nothing sells.',
   noLoadout: 'No items chosen. Click an item on the right.',
@@ -785,6 +790,11 @@ const ru: CharacterCreatorStrings = {
     misc: 'Разное',
   },
   searchItems: 'Поиск предметов...',
+  page: 'Страница',
+  prevPage: 'Назад',
+  nextPage: 'Вперёд',
+  firstPage: 'Первая страница',
+  lastPage: 'Последняя страница',
   loadoutRules:
     'Предметы лоадаута ослаблены: броня лёгкая и слабая, оружие наносит на 30% меньше урона, продать их нельзя.',
   noLoadout: 'Предметы не выбраны. Нажмите на предмет справа.',

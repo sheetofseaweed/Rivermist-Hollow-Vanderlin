@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { Box, Icon } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
@@ -82,6 +82,9 @@ const CATEGORIES = [
   'weapons',
   'misc',
 ];
+
+/** Catalog tiles per page; drawing all 1000+ items at once makes scrolling lag. */
+const ITEMS_PER_PAGE = 48;
 
 /** Paper doll layout from the plan, three columns. */
 const DOLL: string[] = [
@@ -179,6 +182,8 @@ export const CharacterCreatorLoadout = () => {
   const [page, setPage] = useState<Page>('items');
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
+  const [itemPage, setItemPage] = useState(0);
+  const itemsScrollRef = useRef<HTMLDivElement>(null);
   const [presetSlot, setPresetSlot] = useState(1);
   const [activeSlot, setActiveSlot] = useState<string | null>(null);
   const [miniWindow, setMiniWindow] = useState<'undies' | 'piercing' | null>(
@@ -291,13 +296,66 @@ export const CharacterCreatorLoadout = () => {
           (item.desc || '').toLowerCase().includes(lowered)
         : category === 'all' || item.category === category,
     );
+    const pageCount = Math.max(1, Math.ceil(shown.length / ITEMS_PER_PAGE));
+    const currentPage = Math.min(itemPage, pageCount - 1);
+    const isFirstPage = currentPage === 0;
+    const isLastPage = currentPage === pageCount - 1;
+    const pageItems = shown.slice(
+      currentPage * ITEMS_PER_PAGE,
+      (currentPage + 1) * ITEMS_PER_PAGE,
+    );
+    const goToPage = (next: number) => {
+      setItemPage(next);
+      if (itemsScrollRef.current) {
+        itemsScrollRef.current.scrollTop = 0;
+      }
+    };
     return (
       <div className="ccl-body">
         <Frame className="ccl-pane">{renderChosenList()}</Frame>
         <Frame className="ccl-pane">
-          <div className="cc-scroll" style={{ flex: 1, minHeight: 0 }}>
+          {pageCount > 1 ? (
+            <div className="ccl-pager">
+              <Btn
+                className="square"
+                icon="angle-double-left"
+                title={L.firstPage}
+                disabled={isFirstPage}
+                onClick={() => goToPage(0)}
+              />
+              <Btn
+                icon="angle-left"
+                disabled={isFirstPage}
+                onClick={() => goToPage(currentPage - 1)}
+              >
+                {L.prevPage}
+              </Btn>
+              <div className="ccl-page">
+                {L.page} {currentPage + 1} / {pageCount}
+              </div>
+              <Btn
+                disabled={isLastPage}
+                onClick={() => goToPage(currentPage + 1)}
+              >
+                {L.nextPage}
+                <Icon name="angle-right" />
+              </Btn>
+              <Btn
+                className="square"
+                icon="angle-double-right"
+                title={L.lastPage}
+                disabled={isLastPage}
+                onClick={() => goToPage(pageCount - 1)}
+              />
+            </div>
+          ) : null}
+          <div
+            className="cc-scroll"
+            ref={itemsScrollRef}
+            style={{ flex: 1, minHeight: 0 }}
+          >
             <div className="ccl-items">
-              {shown.map((item) => {
+              {pageItems.map((item) => {
                 const chosenSlot = chosen.find(
                   (slot) => slot.typepath === item.typepath,
                 );
@@ -640,14 +698,20 @@ export const CharacterCreatorLoadout = () => {
                     value: entry,
                     label: L.loadoutCategories[entry],
                   }))}
-                  onChange={setCategory}
+                  onChange={(value) => {
+                    setCategory(value);
+                    setItemPage(0);
+                  }}
                 />
                 <div className="cc-search">
                   <Icon className="cc-search-icon" name="search" />
                   <input
                     value={search}
                     placeholder={L.searchItems}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(event) => {
+                      setSearch(event.target.value);
+                      setItemPage(0);
+                    }}
                   />
                 </div>
               </>

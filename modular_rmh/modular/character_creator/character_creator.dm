@@ -1239,12 +1239,14 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 /// Static info for a spawnable item, shaped like the Examine Closer tooltip data. Cached per type.
 /proc/character_creator_item_info(item_path)
 	var/static/list/cache = list()
+	var/static/regex/line_breaks = regex(@"<\s*/?\s*br\s*/?\s*>", "gi")
 	if(cache[item_path])
 		return cache[item_path]
 	var/list/info = list()
 	var/obj/item/item = new item_path()
 	if(istype(item))
-		var/clean_desc = trim(GLOB.html_tags.Replace("[item.desc]", ""))
+		// Line breaks become spaces so "line.<br>Next" does not glue into one word.
+		var/clean_desc = trim(GLOB.html_tags.Replace(line_breaks.Replace("[item.desc]", " "), ""))
 		info["desc"] = clean_desc
 		info["weight"] = item.item_weight
 		info["slot_flags"] = item.slot_flags

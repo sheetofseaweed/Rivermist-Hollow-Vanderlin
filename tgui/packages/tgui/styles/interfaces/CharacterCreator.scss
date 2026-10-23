@@ -1955,6 +1955,20 @@
   flex-direction: column;
   padding: 8px;
 }
+.ccl-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.ccl-page {
+  min-width: 110px;
+  text-align: center;
+  font-family: var(--cc-serif);
+  color: var(--cc-gold);
+  white-space: nowrap;
+}
 .ccl-items {
   display: flex;
   flex-wrap: wrap;
