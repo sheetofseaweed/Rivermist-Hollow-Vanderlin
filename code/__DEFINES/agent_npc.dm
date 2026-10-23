@@ -16,6 +16,8 @@
 #define AGENT_RESULT_FAILED "failed"
 #define AGENT_RESULT_INTERRUPTED "interrupted"
 #define AGENT_RESULT_EXPIRED "expired"
+/// Dropped in flight for something more urgent. Like expired, the sidecar must not remember the answer.
+#define AGENT_RESULT_ABANDONED "abandoned"
 
 /// Reasons a response was refused before execution. Logged, never executed.
 #define AGENT_REFUSE_GENERATION "stale_generation"
@@ -253,6 +255,10 @@
 #define AGENT_MAX_AGENT_EXCHANGES 3
 /// A quiet spell this long resets that count, so two NPCs may chat again later.
 #define AGENT_AGENT_EXCHANGE_WINDOW (5 MINUTES)
+
+/// Decisions one speaker's lines and touches may buy across every NPC per window; past it they wait. Tune from Status.
+#define AGENT_SPEAKER_DECISIONS 6
+#define AGENT_SPEAKER_WINDOW (5 MINUTES)
 
 /// How long a partner's line needs no name to count as a reply. Shorter than the continuation window.
 #define AGENT_REPLY_WINDOW (30 SECONDS)

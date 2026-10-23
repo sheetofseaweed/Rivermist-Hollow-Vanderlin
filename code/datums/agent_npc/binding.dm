@@ -28,6 +28,8 @@
 	var/datum/agent_observation/last_observation
 	/// The objective being pursued, or null. Only approach and use set one.
 	var/list/current_intent
+	/// The request that chose the objective. Its verdict names it, so the sidecar remembers only what ran.
+	var/intent_request_id
 	var/intent_started_at = 0
 	/// Latch so a reflex interruption is reported once per intent, not per plan.
 	var/intent_suspended = FALSE
@@ -210,6 +212,7 @@
 	state = AGENT_BINDING_DISABLED
 	abandon_pending(reason)
 	current_intent = null
+	intent_request_id = null
 	intent_suspended = FALSE
 	// A revoked binding must not keep driving itself.
 	end_continuation()
@@ -233,8 +236,8 @@
 	next_request_at = 0
 	return TRUE
 
-/// Drop the in-flight request. The transport is drained, never simply dropped.
-/datum/agent_binding/proc/abandon_pending(reason)
+/// Drop the in-flight request, draining its transport. Expiry passes report FALSE: it sends its own verdict.
+/datum/agent_binding/proc/abandon_pending(reason, report = TRUE)
 	if(!pending)
 		return
 	// One close, both ledgers, exactly once. Releasing only the binding's side
@@ -248,11 +251,17 @@
 	// Logged for the same reason expire_pass logs: past this point the sidecar's
 	// answer is drained unread, so the loss is otherwise invisible from DM.
 	SSagent_npc?.log_agent("abandoned the in-flight request for [pawn_id]: [reason]")
+	var/request_id = pending.request_id
+	var/list/carried = pending.sent_events
 	SSagent_npc?.close_reservation(src, pending, 0, unsettled = TRUE)
 	SSagent_npc?.drain_transport(pending.release_transport())
 	QDEL_NULL(pending)
 	if(state == AGENT_BINDING_PENDING)
 		state = AGENT_BINDING_IDLE
+	// The sidecar may already hold an answer nobody will hear. The verdict drops it; the trigger goes back.
+	if(report)
+		record_result(AGENT_RESULT_ABANDONED, reason, request_id)
+		restore_events(carried)
 	update_thinking()
 
 /// The thinking bubble shows exactly while a request is in flight. Called at every state change.
@@ -262,8 +271,9 @@
 		agent.show_thinking(state == AGENT_BINDING_PENDING)
 
 /// Take on a new objective. Replaces any previous one.
-/datum/agent_binding/proc/begin_intent(list/action)
+/datum/agent_binding/proc/begin_intent(list/action, request_id)
 	current_intent = action
+	intent_request_id = request_id
 	intent_started_at = world.time
 	intent_suspended = FALSE
 
@@ -271,13 +281,15 @@
 /datum/agent_binding/proc/finish_intent(state_name, detail)
 	if(!current_intent)
 		return FALSE
+	var/request_id = intent_request_id
 	current_intent = null
+	intent_request_id = null
 	intent_suspended = FALSE
 	// An objective finishes long after its observation was built, so this is the
 	// point where staleness at execution is real rather than theoretical.
 	SSagent_npc?.note_observation_age(observation_age())
 	// A finished objective is a completed step, so it may continue the chain.
-	complete_action(state_name, detail)
+	complete_action(state_name, detail, request_id = request_id)
 	return TRUE
 
 /**
@@ -290,7 +302,7 @@
 	if(intent_suspended || !current_intent)
 		return FALSE
 	intent_suspended = TRUE
-	record_result(AGENT_RESULT_INTERRUPTED, reason)
+	record_result(AGENT_RESULT_INTERRUPTED, reason, intent_request_id)
 	return TRUE
 
 /datum/agent_binding/proc/resume_intent()
@@ -318,8 +330,8 @@
  * what lets "fetch the salt" run to completion unaided. `wait` ends the chain,
  * so an NPC with nothing to do settles instead of spinning.
  */
-/datum/agent_binding/proc/complete_action(state_name, detail, was_wait = FALSE, spoke = FALSE)
-	if(!record_result(state_name, detail))
+/datum/agent_binding/proc/complete_action(state_name, detail, was_wait = FALSE, spoke = FALSE, request_id)
+	if(!record_result(state_name, detail, request_id))
 		return FALSE
 
 	var/refusal = (state_name == AGENT_RESULT_REJECTED || state_name == AGENT_RESULT_FAILED) ? "[state_name]: [detail]" : null
@@ -533,11 +545,13 @@
  * Deliberately does NOT mark the binding dirty. A result that schedules its own
  * follow-up request is a loop: every reply produces a result, every result
  * produces a reply, and nothing external ever has to happen.
+ *
+ * request_id names the decision this settles: the sidecar remembers an answer only on a verdict naming it.
  */
-/datum/agent_binding/proc/record_result(state_name, detail)
+/datum/agent_binding/proc/record_result(state_name, detail, request_id)
 	if(state == AGENT_BINDING_DISABLED)
 		return FALSE
-	push_event("action_result", AGENT_EVENT_LOW, list("state" = state_name, "detail" = detail))
+	push_event("action_result", AGENT_EVENT_LOW, list("state" = state_name, "detail" = detail, "request_id" = request_id))
 	// The single funnel every terminal state passes through, so the outcome mix
 	// is counted here rather than at each of the five call sites.
 	SSagent_npc?.note_result(state_name)
@@ -611,6 +625,10 @@
 	if(state != AGENT_BINDING_IDLE || !dirty || pawn_gone)
 		return FALSE
 	if(world.time < next_request_at)
+		return FALSE
+	// Dead or out cold, the NPC decides nothing. What it heard before waits until it wakes.
+	var/mob/living/pawn = resolve_pawn()
+	if(pawn && pawn.stat >= UNCONSCIOUS)
 		return FALSE
 	// While an act runs the model gets no turn. Its events wait until the act ends.
 	var/datum/ai_controller/agent_social/agent = resolve_controller()

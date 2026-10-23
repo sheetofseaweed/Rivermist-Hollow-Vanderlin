@@ -46,6 +46,7 @@
 		lines += "&nbsp;&nbsp;unclear speech: [measured.ambiguous_requests] answered / [AGENT_AMBIGUOUS_ROUND_LIMIT] allowed, [measured.ambiguous_deferred] deferred"
 		// Non-zero means two NPCs were left talking to each other.
 		lines += "&nbsp;&nbsp;agent-to-agent lines held back: [measured.agent_exchanges_capped]"
+		lines += "&nbsp;&nbsp;lines held back past a speaker's [AGENT_SPEAKER_DECISIONS] per [AGENT_SPEAKER_WINDOW / (1 MINUTES)] min: [measured.speaker_deferred]"
 		lines += "&nbsp;&nbsp;actions chosen: [measured.format_counts(measured.action_counts)]"
 		lines += "&nbsp;&nbsp;outcomes: [measured.format_counts(measured.result_counts)]"
 

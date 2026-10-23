@@ -112,31 +112,52 @@
 	TEST_ASSERT_EQUAL(jointext(heard, ","), "no,no_answer,stop_asking", "Each answer must reach the model as it was given.")
 	TEST_ASSERT(!started_anything, "None of them may start anything.")
 
-/datum/unit_test/agent_initiative_a_standing_yes_skips_the_question
+/datum/unit_test/agent_initiative_a_standing_yes_covers_only_its_act
 
-/datum/unit_test/agent_initiative_a_standing_yes_skips_the_question/Run()
+/datum/unit_test/agent_initiative_a_standing_yes_covers_only_its_act/Run()
 	var/list/saved = agent_test_arm_subsystem()
 	var/list/couple = agent_test_couple()
 	var/mob/living/carbon/human/species/human/northern/agent_social/barmaid = couple[1]
 	var/mob/living/carbon/human/partner = couple[2]
 	var/datum/ai_controller/agent_social/agent = barmaid.ai_controller
-	var/intimate_type = agent.pick_advance_act(partner, AGENT_ADVANCE_INTIMATE)
-	TEST_ASSERT_NOTNULL(intimate_type, "Setup failed: an intimate act must fit them.")
 
-	agent.resolve_advance(partner, intimate_type, AGENT_ADVANCE_INTIMATE, AGENT_ADVANCE_YES_FOR_A_WHILE)
-	var/list/tender_again = agent.make_advance(partner, "tender")
-	var/datum/sex_action/tender_act = agent_test_led_act(barmaid)
-	var/tender_led = tender_act && (tender_act.type in GLOB.agent_advance_tender_acts)
-	var/list/rough_now = agent.make_advance(partner, "rough")
+	agent.resolve_advance(partner, /datum/sex_action/kissing, AGENT_ADVANCE_TENDER, AGENT_ADVANCE_YES_FOR_A_WHILE)
+	var/datum/sex_action/first = agent_test_led_act(barmaid)
+	TEST_ASSERT_NOTNULL(first, "Setup failed: the yes must start the kiss.")
+	first.stop_runtime()
+
+	// The kiss was led last, so a pick over the whole tender list would lead something else, unasked.
+	var/list/again = agent.make_advance(partner, "tender")
+	var/datum/sex_action/second = agent_test_led_act(barmaid)
+	var/second_type = second?.type
+	if(second)
+		second.stop_runtime()
+	var/list/further = agent.make_advance(partner, "intimate")
+	var/datum/sex_action/third = agent_test_led_act(barmaid)
+	var/third_type = third?.type
+	if(third)
+		third.stop_runtime()
 	var/list/scene_line = agent.describe_advances()
-	if(tender_act)
-		tender_act.stop_runtime()
 	agent_test_restore_subsystem(saved, agent.binding)
 
-	TEST_ASSERT(findtext(tender_again["detail"], "already said yes for a while"), "A standing yes covers gentler advances without asking: [tender_again["detail"]]")
-	TEST_ASSERT(tender_led, "And the act starts at once, replacing the last.")
-	TEST_ASSERT(findtext(rough_now["detail"], "cannot be asked"), "Rough is beyond an intimate standing yes, so it must be asked: [rough_now["detail"]]")
-	TEST_ASSERT(length(scene_line) && scene_line[1]["lead"] == "intimate", "The model's scene says how far it may lead.")
+	TEST_ASSERT(findtext(again["detail"], "already said yes for a while"), "A standing yes leads the act it was given to without asking: [again["detail"]]")
+	TEST_ASSERT_EQUAL(second_type, /datum/sex_action/kissing, "Only that act: a yes to a kiss is not a yes to the rest of the tender list.")
+	TEST_ASSERT(findtext(further["detail"], "cannot be asked"), "Anything else must be asked, which a body with no player cannot be: [further["detail"]]")
+	TEST_ASSERT_NULL(third_type, "Nothing else may start unasked.")
+	TEST_ASSERT(length(scene_line) && scene_line[1]["lead"] == "tender", "The model's scene says which level its standing yes is at.")
+
+/datum/unit_test/agent_initiative_the_question_says_what_a_standing_yes_covers
+
+/datum/unit_test/agent_initiative_the_question_says_what_a_standing_yes_covers/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/barmaid = agent_test_romantic_pawn()
+	var/datum/ai_controller/agent_social/agent = barmaid.ai_controller
+	var/question = agent.advance_question(/datum/sex_action/sex/other/vagina)
+	agent_test_restore_subsystem(saved, agent.binding)
+
+	TEST_ASSERT(findtext(question, "lets [barmaid.name] ride you again without asking"), "The button must name the one act it covers: [question]")
+	TEST_ASSERT(findtext(question, "anything else is still asked first"), "And say that nothing else is covered: [question]")
+	TEST_ASSERT(!findtext(question, "like this"), "Not \"lead like this\", which reads as anything of the kind: [question]")
 
 /datum/unit_test/agent_initiative_the_partner_can_always_stop_it
 

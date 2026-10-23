@@ -93,6 +93,8 @@
 	var/ambiguous_deferred = 0
 	/// Agent-to-agent lines buffered past the exchange cap. Non-zero means two NPCs were left talking.
 	var/agent_exchanges_capped = 0
+	/// Lines and touches buffered past one speaker's allowance. Tune AGENT_SPEAKER_DECISIONS from this.
+	var/speaker_deferred = 0
 	/// Queued to sent.
 	var/datum/agent_stat/queue_wait
 	/// Sent to consumed.

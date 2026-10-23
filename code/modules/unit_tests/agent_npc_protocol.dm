@@ -294,6 +294,101 @@
 	TEST_ASSERT_NOTNULL(binding.pending, "A low urgency event must not abandon an in-flight request.")
 	TEST_ASSERT(binding.dirty, "It should still mark the binding dirty for the next round trip.")
 
+// --------------------------------- verdicts name their request (review F1, 2026-10-16)
+
+/// A pending request carrying one heard line, as start_request leaves it.
+/proc/agent_test_pending_with_line(datum/agent_binding/binding, serial)
+	var/datum/agent_request/request = agent_test_request_for(binding, serial)
+	request.sent_events = list(list("event" = "heard_speech", "urgency" = AGENT_EVENT_LOW, "at" = world.time, "detail" = list("speaker" = "Bob", "text" = "hello")))
+	binding.pending = request
+	binding.state = AGENT_BINDING_PENDING
+	return request
+
+/// The action_result details in a list of events.
+/proc/agent_test_verdicts(list/events)
+	var/list/found = list()
+	for(var/list/entry as anything in agent_test_events_named(events, "action_result"))
+		found += list(entry["detail"])
+	return found
+
+/datum/unit_test/agent_npc_superseded_request_reports_abandoned_by_id
+
+/datum/unit_test/agent_npc_superseded_request_reports_abandoned_by_id/Run()
+	var/datum/agent_binding/binding = agent_test_binding()
+	var/datum/agent_request/request = agent_test_pending_with_line(binding, 41)
+	var/datum/http_request/transport = request.transport
+
+	binding.mark_dirty("attacked", AGENT_EVENT_HIGH)
+	var/list/events = binding.take_events()
+	SSagent_npc.draining -= transport
+	qdel(transport)
+	qdel(binding)
+
+	// The sidecar already holds an answer for r41; a verdict naming it is the only way it learns nobody heard.
+	var/list/verdicts = agent_test_verdicts(events)
+	TEST_ASSERT_EQUAL(length(verdicts), 1, "Abandoning must report exactly one verdict.")
+	var/list/verdict = verdicts[1]
+	TEST_ASSERT_EQUAL(verdict["state"], AGENT_RESULT_ABANDONED, "A superseded request is abandoned, not silently dropped.")
+	TEST_ASSERT_EQUAL(verdict["request_id"], "r41", "The verdict must name the request it settles.")
+	TEST_ASSERT_EQUAL(length(agent_test_events_named(events, "heard_speech")), 1, "The superseded line goes back in the ring, or the NPC forgets Bob spoke at all.")
+
+/datum/unit_test/agent_npc_expired_request_reports_once_by_id
+
+/datum/unit_test/agent_npc_expired_request_reports_once_by_id/Run()
+	var/list/saved_flight = SSagent_npc.in_flight.Copy()
+	SSagent_npc.in_flight.Cut()
+	var/datum/agent_binding/binding = agent_test_binding("verdict-expiry")
+	var/datum/agent_request/request = agent_test_pending_with_line(binding, 42)
+	var/datum/http_request/transport = request.transport
+	request.deadline = world.time - 1
+	SSagent_npc.in_flight += binding
+
+	SSagent_npc.expire_pass()
+	var/list/events = binding.take_events()
+	SSagent_npc.draining -= transport
+	qdel(transport)
+	SSagent_npc.in_flight.Cut()
+	for(var/entry in saved_flight)
+		SSagent_npc.in_flight += entry
+	qdel(binding)
+
+	var/list/verdicts = agent_test_verdicts(events)
+	TEST_ASSERT_EQUAL(length(verdicts), 1, "An expiry is one verdict, not expired and abandoned both.")
+	var/list/verdict = verdicts[1]
+	TEST_ASSERT_EQUAL(verdict["state"], AGENT_RESULT_EXPIRED, "The verdict says the request expired.")
+	TEST_ASSERT_EQUAL(verdict["request_id"], "r42", "And names it, so the sidecar drops the answer it may still hold.")
+	TEST_ASSERT_EQUAL(length(agent_test_events_named(events, "heard_speech")), 1, "The trigger is restored once, not twice.")
+
+/datum/unit_test/agent_npc_verdicts_name_the_decision_they_settle
+
+/datum/unit_test/agent_npc_verdicts_name_the_decision_they_settle/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/pawn = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/controller = pawn.ai_controller
+	var/datum/agent_binding/binding = controller?.binding
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the pawn must be bound.")
+	binding.take_events()
+
+	var/datum/agent_response/response = agent_test_decision(agent_test_say_action())
+	SSagent_npc.handle_response(binding, response, null, "r7")
+	var/list/spoken = agent_test_verdicts(binding.take_events())
+	// An objective's verdicts come later, from the walk, and still name the decision that chose it.
+	binding.begin_intent(list("name" = "approach"), "r8")
+	binding.suspend_intent("a reflex has the pawn")
+	binding.finish_intent(AGENT_RESULT_SUCCEEDED, "arrived")
+	var/list/walked = agent_test_verdicts(binding.take_events())
+	qdel(response)
+	agent_test_restore_subsystem(saved, binding)
+
+	TEST_ASSERT_EQUAL(length(spoken), 1, "Setup failed: the say must record one verdict.")
+	var/list/said = spoken[1]
+	TEST_ASSERT_EQUAL(said["request_id"], "r7", "A dispatched decision's verdict names its request.")
+	TEST_ASSERT_EQUAL(length(walked), 2, "Setup failed: interrupted, then arrived.")
+	var/list/interrupted = walked[1]
+	var/list/arrived = walked[2]
+	TEST_ASSERT_EQUAL(interrupted["request_id"], "r8", "An interruption names the objective's request.")
+	TEST_ASSERT_EQUAL(arrived["request_id"], "r8", "So does its end, however many requests went out meanwhile.")
+
 /datum/unit_test/agent_npc_event_ring_keeps_urgent_entries
 
 /datum/unit_test/agent_npc_event_ring_keeps_urgent_entries/Run()

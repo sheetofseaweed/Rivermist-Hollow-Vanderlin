@@ -38,6 +38,13 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 			return GLOB.agent_service_rough_acts
 	return list()
 
+/// The level an act is offered at, or 0. The three lists do not overlap.
+/proc/agent_advance_rank_of(act_type)
+	for(var/rank in list(AGENT_ADVANCE_TENDER, AGENT_ADVANCE_INTIMATE, AGENT_ADVANCE_ROUGH))
+		if(act_type in agent_advance_acts(rank))
+			return rank
+	return 0
+
 /// An act's menu name, turned to the one it is offered to: "Ride them" becomes "ride you".
 /proc/agent_advance_phrase(act_type)
 	var/static/regex/them = regex(@"\bthem\b", "g")
@@ -58,13 +65,20 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 	var/next_allowed = 0
 	/// world.time until which they asked it to stop asking.
 	var/blocked_until = 0
-	/// Their standing yes: the furthest level it may lead without asking, and until when.
-	var/standing_rank = 0
-	var/standing_until = 0
+	/// Their standing yeses: act type -> world.time it lapses. Each covers only the act it was said to.
+	var/list/standing_acts
 	/// Rough is only offered after they welcomed something intimate.
 	var/welcomed_intimate = FALSE
 	/// Their popup is open until then. A time, not a flag, so a popup that errors cannot block advances forever.
 	var/pending_until = 0
+
+/// The acts their standing yeses still cover.
+/datum/agent_advance_record/proc/standing_acts_now()
+	var/list/live = list()
+	for(var/act_type in standing_acts)
+		if(standing_acts[act_type] > world.time)
+			live += act_type
+	return live
 
 /datum/ai_controller/agent_social
 	/// weakref -> /datum/agent_advance_record.
@@ -117,16 +131,19 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 	var/refusal = advance_refusal(partner, rank)
 	if(refusal)
 		return list("state" = AGENT_RESULT_REJECTED, "detail" = refusal)
+	var/level = agent_advance_level_name(rank)
+	var/datum/agent_advance_record/record = advance_record(partner)
+	// A standing yes covers only the acts it was said to; the rest of the level is still asked.
+	var/list/standing = record.standing_acts_now()
+	var/standing_type = length(standing) ? pick_advance_act(partner, rank, standing) : null
+	if(standing_type)
+		if(!start_advance_act(partner, standing_type, rank))
+			return list("state" = AGENT_RESULT_FAILED, "detail" = "it did not start")
+		log_game("Agent NPC [key_name(pawn)] led [key_name(partner)] in [standing_type] on their standing yes at [AREACOORD(pawn)].")
+		return list("state" = AGENT_RESULT_SUCCEEDED, "detail" = "you took the lead ([level]) in what [partner.get_visible_name()] had already said yes for a while to")
 	var/act_type = pick_advance_act(partner, rank)
 	if(!act_type)
 		return list("state" = AGENT_RESULT_REJECTED, "detail" = "nothing like that fits the two of you right now")
-	var/level = agent_advance_level_name(rank)
-	var/datum/agent_advance_record/record = advance_record(partner)
-	if(record.standing_rank >= rank && record.standing_until > world.time)
-		if(!start_advance_act(partner, act_type, rank))
-			return list("state" = AGENT_RESULT_FAILED, "detail" = "it did not start")
-		log_game("Agent NPC [key_name(pawn)] led [key_name(partner)] in [act_type] on their standing yes at [AREACOORD(pawn)].")
-		return list("state" = AGENT_RESULT_SUCCEEDED, "detail" = "you took the lead ([level]); [partner.get_visible_name()] had already said yes for a while")
 	if(!partner.client)
 		return list("state" = AGENT_RESULT_REJECTED, "detail" = "they cannot be asked right now")
 	record.pending_until = world.time + AGENT_ADVANCE_ANSWER_TIME + 5 SECONDS
@@ -134,14 +151,17 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 	INVOKE_ASYNC(src, PROC_REF(ask_advance), partner, act_type, rank)
 	return list("state" = AGENT_RESULT_SUCCEEDED, "detail" = "you made a [level] advance to [partner.get_visible_name()]; they are deciding")
 
-/// An act at this level that both bodies allow now, never the last one when there is a choice.
-/datum/ai_controller/agent_social/proc/pick_advance_act(mob/living/partner, rank)
+/// An act at this level both bodies allow, never the last when there is a choice; only, if given, narrows it.
+/datum/ai_controller/agent_social/proc/pick_advance_act(mob/living/partner, rank, list/only)
 	var/mob/living/living_pawn = pawn
 	var/datum/sex_scene_controller/controller = living_pawn.open_sex_scene(partner, FALSE)
 	if(!controller)
 		return null
+	var/list/candidates = agent_advance_acts(rank)
+	if(only)
+		candidates = candidates & only
 	var/list/weighted = list()
-	for(var/act_type in agent_advance_acts(rank))
+	for(var/act_type in candidates)
 		var/datum/sex_action_proposal/proposal = controller.create_action_proposal(act_type, "ai")
 		if(proposal?.can_start())
 			weighted[act_type] = max(1, proposal.get_pattern_desirability())
@@ -150,10 +170,14 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 		weighted -= last_advance_act
 	return length(weighted) ? pickweight(weighted) : null
 
+/// The popup text. It says exactly what the standing yes covers: this act again, nothing else.
+/datum/ai_controller/agent_social/proc/advance_question(act_type)
+	var/phrase = agent_advance_phrase(act_type)
+	return "[pawn.name] wants to [phrase].\n\n\"[AGENT_ADVANCE_YES_FOR_A_WHILE]\" lets [pawn.name] [phrase] again without asking, for [round(AGENT_ADVANCE_STANDING_DURATION / (1 MINUTES))] minutes; anything else is still asked first. \"[AGENT_ADVANCE_STOP_ASKING]\" stops these advances for as long."
+
 /// The question, in the partner's own window. It sleeps until they answer.
 /datum/ai_controller/agent_social/proc/ask_advance(mob/living/partner, act_type, rank)
-	var/question = "[pawn.name] wants to [agent_advance_phrase(act_type)].\n\n\"[AGENT_ADVANCE_YES_FOR_A_WHILE]\" lets [pawn.name] lead like this without asking, for [round(AGENT_ADVANCE_STANDING_DURATION / (1 MINUTES))] minutes. \"[AGENT_ADVANCE_STOP_ASKING]\" stops these advances for as long."
-	var/answer = tgui_alert(partner, question, "[pawn.name]", list(AGENT_ADVANCE_YES, AGENT_ADVANCE_YES_FOR_A_WHILE, AGENT_ADVANCE_NO, AGENT_ADVANCE_STOP_ASKING), AGENT_ADVANCE_ANSWER_TIME)
+	var/answer = tgui_alert(partner, advance_question(act_type), "[pawn.name]", list(AGENT_ADVANCE_YES, AGENT_ADVANCE_YES_FOR_A_WHILE, AGENT_ADVANCE_NO, AGENT_ADVANCE_STOP_ASKING), AGENT_ADVANCE_ANSWER_TIME)
 	if(QDELETED(src))
 		return
 	resolve_advance(partner, act_type, rank, answer)
@@ -169,8 +193,7 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 		if(AGENT_ADVANCE_YES, AGENT_ADVANCE_YES_FOR_A_WHILE)
 			heard = (answer == AGENT_ADVANCE_YES) ? "yes" : "yes_for_a_while"
 			if(answer == AGENT_ADVANCE_YES_FOR_A_WHILE)
-				record.standing_rank = max(record.standing_rank, rank)
-				record.standing_until = world.time + AGENT_ADVANCE_STANDING_DURATION
+				LAZYSET(record.standing_acts, act_type, world.time + AGENT_ADVANCE_STANDING_DURATION)
 			if(rank >= AGENT_ADVANCE_INTIMATE)
 				record.welcomed_intimate = TRUE
 			// Things may have changed while they thought about it.
@@ -179,7 +202,7 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 		if(AGENT_ADVANCE_STOP_ASKING)
 			heard = "stop_asking"
 			record.blocked_until = world.time + AGENT_ADVANCE_STANDING_DURATION
-			record.standing_until = 0
+			record.standing_acts = null
 		if(AGENT_ADVANCE_NO)
 			heard = "no"
 			record.next_allowed = world.time + AGENT_ADVANCE_DECLINE_COOLDOWN
@@ -245,9 +268,15 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 		if(QDELETED(partner) || !record)
 			continue
 		var/list/entry = list()
-		if(record.standing_until > world.time)
-			entry["lead"] = agent_advance_level_name(record.standing_rank)
-			entry["lead_minutes"] = max(1, CEILING((record.standing_until - world.time) / (1 MINUTES), 1))
+		// The levels of the acts they welcomed, so the model knows which key starts one unasked.
+		var/list/levels = list()
+		var/lead_until = 0
+		for(var/act_type in record.standing_acts_now())
+			levels |= agent_advance_level_name(agent_advance_rank_of(act_type))
+			lead_until = max(lead_until, record.standing_acts[act_type])
+		if(length(levels))
+			entry["lead"] = jointext(levels, ", ")
+			entry["lead_minutes"] = max(1, CEILING((lead_until - world.time) / (1 MINUTES), 1))
 		if(record.blocked_until > world.time)
 			entry["not_now_minutes"] = max(1, CEILING((record.blocked_until - world.time) / (1 MINUTES), 1))
 		if(length(entry))

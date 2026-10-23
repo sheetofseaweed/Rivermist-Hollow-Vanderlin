@@ -69,6 +69,7 @@ SIDECARS = {
     "fake": "fake_sidecar.py",
     "claude": "claude_sidecar.py",
     "codexsale": "codex_sale_sidecar.py",
+    "local": "local_sidecar.py",
 }
 
 

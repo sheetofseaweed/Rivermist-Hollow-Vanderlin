@@ -303,6 +303,16 @@
 	TEST_ASSERT(stranger_grab_is_attack, "Anyone else's grab is still an attack.")
 	TEST_ASSERT(customer_blow_is_attack, "And a blow from the customer is still a blow.")
 
+/// A penis with full testicles, so a grip can be taken.
+/datum/unit_test/proc/agent_test_give_penis(mob/living/carbon/human/human)
+	var/obj/item/organ/genitals/penis/penis = new
+	penis.Insert(human, TRUE, FALSE)
+	var/obj/item/organ/genitals/filling_organ/testicles/testicles = new
+	testicles.Insert(human, TRUE, FALSE)
+	testicles.reagents.clear_reagents()
+	testicles.reagents.add_reagent(/datum/reagent/consumable/cum, testicles.reagents.maximum_volume)
+	return penis
+
 /datum/unit_test/agent_service_grip_needs_paid_time
 
 /datum/unit_test/agent_service_grip_needs_paid_time/Run()
@@ -314,7 +324,7 @@
 	// Empty-handed at first: a full hand also stops a grip, which would pass the unpaid check for the wrong reason.
 	var/mob/living/carbon/human/customer = allocate(/mob/living/carbon/human/species/human/northern)
 	if(!performer.getorganslot(ORGAN_SLOT_PENIS))
-		give_penis_grip_test_genitals(performer)
+		agent_test_give_penis(performer)
 	customer.zone_selected = BODY_ZONE_PRECISE_GROIN
 	TEST_ASSERT_NULL(customer.get_active_held_item(), "Setup failed: the customer's hand must be empty.")
 

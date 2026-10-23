@@ -43,8 +43,9 @@ def envelope(pawn="mob_A", name="Alice", session="s1", epoch=1, events=None):
     }
 
 
-def verdict(state, **kw):
-    return [{"event": "action_result", "detail": {"state": state}}]
+def verdict(state, request="r1"):
+    """DM's ruling on one request. envelope() sends r1, so the default names the turn just recorded."""
+    return [{"event": "action_result", "detail": {"state": state, "request_id": request}}]
 
 
 def heard(speaker, text):
@@ -543,6 +544,76 @@ class ProposalsVersusHistory(unittest.TestCase):
         self.assertEqual(decider.memory.depth(body), 1,
                          "failing to reach something still happened; only 'rejected' "
                          "means DM refused to run it at all")
+
+
+class LostAnswersAreNotMemory(unittest.TestCase):
+    """Reproduced by review 2026-10-16: an expired or superseded answer was committed as if the NPC had said it."""
+
+    def proposed(self, store, text="Good day, Bob."):
+        body = envelope(events=[heard("Bob", "hello")])
+        store.record(body, proto.build_history_text(body["events"]), {"name": "say", "text": text})
+        return body
+
+    def next_request(self, events):
+        body = envelope(events=events)
+        body["request_id"] = "r2"
+        return body
+
+    def test_an_expired_answer_never_enters_history(self):
+        store = proto.ConversationStore(max_turns=6)
+        body = self.proposed(store)
+        store.reconcile(self.next_request(verdict("expired") + [heard("Bob", "hello")]))
+        self.assertEqual(store.depth(body), 0, "DM gave up waiting, so nobody heard the answer")
+        # Dropped, not parked: a stray later verdict cannot bring it back.
+        store.reconcile(self.next_request(verdict("succeeded")))
+        self.assertEqual(store.depth(body), 0)
+
+    def test_an_abandoned_answer_never_enters_history(self):
+        store = proto.ConversationStore(max_turns=6)
+        body = self.proposed(store)
+        store.reconcile(self.next_request(verdict("abandoned")))
+        self.assertEqual(store.depth(body), 0, "a punch superseded it, so the line was never spoken")
+        store.reconcile(self.next_request(verdict("succeeded")))
+        self.assertEqual(store.depth(body), 0)
+
+    def test_a_verdict_for_another_request_settles_nothing(self):
+        store = proto.ConversationStore(max_turns=6)
+        body = self.proposed(store)
+        store.reconcile(self.next_request(verdict("succeeded", request="r7")))
+        self.assertEqual(store.depth(body), 0, "r7's verdict says nothing about r1")
+        # Still waiting, as an objective that is walking would be; its own verdict commits it.
+        store.reconcile(self.next_request(verdict("succeeded")))
+        self.assertEqual(store.depth(body), 1)
+
+    def test_a_verdict_naming_no_request_settles_nothing(self):
+        store = proto.ConversationStore(max_turns=6)
+        body = self.proposed(store)
+        store.reconcile(self.next_request([{"event": "action_result", "detail": {"state": "succeeded"}}]))
+        self.assertEqual(store.depth(body), 0)
+
+    def test_answers_waiting_together_commit_in_verdict_order(self):
+        store = proto.ConversationStore(max_turns=6)
+        first = envelope()
+        store.record(first, "first", {"name": "approach", "handle": "h1"})
+        second = envelope()
+        second["request_id"] = "r2"
+        store.record(second, "second", {"name": "say", "text": "on my way"})
+        store.reconcile(self.next_request(verdict("succeeded", request="r1") + verdict("succeeded", request="r2")))
+        self.assertEqual([turn["content"] for turn in store.history(first) if turn["role"] == "user"],
+                         ["first", "second"])
+
+    def test_answers_nobody_rules_on_are_bounded(self):
+        store = proto.ConversationStore(max_turns=6)
+        for i in range(proto.MAX_WAITING_PROPOSALS + 3):
+            body = envelope()
+            body["request_id"] = "r%d" % (i + 10)
+            store.record(body, "turn %d" % i, {"name": "wait"})
+        self.assertEqual(len(store.proposals[store.key(envelope())]), proto.MAX_WAITING_PROPOSALS)
+
+    def test_a_lost_answer_reads_as_not_having_happened(self):
+        for state in ("expired", "abandoned"):
+            line = proto.describe_events(verdict(state))[0]
+            self.assertIn("It did not happen.", line)
 
 
 class MemoryKeying(unittest.TestCase):
@@ -1070,7 +1141,7 @@ class InitiativeProtocol(unittest.TestCase):
         ])
         self.assertEqual(lines, [
             "  Lexus welcomed your advance (tender).",
-            "  Lexus welcomed your advance (intimate), and lets you lead like that without asking for a while.",
+            "  Lexus welcomed your advance (intimate), and lets you lead that same thing again without asking for a while.",
             "  Lexus declined your advance (rough).",
             "  Lexus declined your advance, and asked you not to try anything for now.",
             "  Lexus did not answer your advance.",
@@ -1082,7 +1153,9 @@ class InitiativeProtocol(unittest.TestCase):
         text = proto.build_user_message({"self": {"name": "Greta", "advances": [
             {"name": "Lexus", "lead": "intimate", "lead_minutes": 12},
             {"name": "Bob", "not_now_minutes": 9}]}}, [])
-        self.assertIn("Lexus lets you lead without asking, as far as intimate, for 12 more minutes.", text)
+        # Review 2026-10-16: "as far as intimate" read as the whole level, which DM no longer grants.
+        self.assertIn("Lexus lets you lead what they already welcomed (intimate) again without asking, for 12 more "
+                      "minutes; anything else they are asked first.", text)
         self.assertIn("Bob asked you not to try anything for 9 more minutes.", text)
 
 

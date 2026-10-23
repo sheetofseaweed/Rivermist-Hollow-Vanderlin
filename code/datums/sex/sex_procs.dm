@@ -480,9 +480,9 @@
 /mob/living/proc/is_disconnected_player_erp_body()
 	if(client)
 		return FALSE
-	// An agent NPC answers for itself, even after someone possessed it. Not when it took over a player's character.
+	// An agent NPC answers for itself. Not once it let go to a player: then the body is theirs.
 	var/datum/ai_controller/agent_social/agent = ai_controller
-	if(istype(agent) && !agent.borrowed_body)
+	if(istype(agent) && !agent.released_to_player)
 		return FALSE
 	if(!mind)
 		return FALSE

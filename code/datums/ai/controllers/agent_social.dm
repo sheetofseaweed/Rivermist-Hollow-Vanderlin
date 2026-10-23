@@ -45,8 +45,8 @@
 	var/datum/weakref/watched_offer
 	/// Who laid hands on this NPC lately: weakref -> world.time. They started it.
 	var/list/aggressors
-	/// Set when the agent took over a player's own character. Their setting for while they are away still applies.
-	var/borrowed_body = FALSE
+	/// A player took the body. The agent stopped answering for it and never binds again; Attach replaces it.
+	var/released_to_player = FALSE
 
 /datum/ai_controller/agent_social/New(atom/new_pawn)
 	// An instance, not initial() on the typepath: initial() returns null for
@@ -77,6 +77,33 @@
 		end_combat("pawn released", report = FALSE)
 	release_binding("pawn unpossessed")
 	return ..()
+
+/// A client arrived on the pawn. The agent lets go for good rather than outlive the player's absence.
+/datum/ai_controller/agent_social/on_sentience_gained()
+	. = ..()
+	release_to_player()
+
+/// Stop hearing, stop answering for consent, and drop the binding, which clears everything buffered to send.
+/datum/ai_controller/agent_social/proc/release_to_player()
+	if(released_to_player || QDELETED(pawn))
+		return FALSE
+	released_to_player = TRUE
+	show_thinking(FALSE)
+	UnregisterSignal(pawn, list(COMSIG_MOVABLE_HEAR, COMSIG_ATOM_ATTACK_HAND, COMSIG_MOB_FED, COMSIG_LIVING_ITEM_OFFERED, COMSIG_LIVING_SEX_CONSENT, COMSIG_LIVING_SEX_SCENE_REFUSED, COMSIG_LIVING_SEX_ACT_STOPPED_BY_PARTNER))
+	stop_watching_offer()
+	end_combat("a player took the body", report = FALSE)
+	release_binding("a player took the body")
+	log_game("Agent NPC control of [key_name(pawn)] ended: a player took the body.")
+	var/mob/living/living_pawn = pawn
+	if(living_pawn.client?.holder)
+		to_chat(living_pawn, span_notice("Agent control of [living_pawn.name] ended when you took the body. Attach it again after you leave to bring it back."))
+	return TRUE
+
+/// Released means inert: no reflexes or fights on a player's body while they are away.
+/datum/ai_controller/agent_social/set_ai_status(new_ai_status, run_flags = NONE)
+	if(released_to_player)
+		new_ai_status = AI_STATUS_OFF
+	return ..(new_ai_status, run_flags)
 
 /**
  * Turn overheard speech into an event the agent can answer.
@@ -177,6 +204,11 @@
 	if(!agent_speech_wakes_us(classification))
 		return buffer_speech(speaker_name, text, detail, "buffered", kind)
 
+	// One speaker buys so many decisions across every NPC; past that, lines wait. Agents have their own cap below.
+	if(!from_another_agent && SSagent_npc && !SSagent_npc.speaker_may_spend(speaker))
+		SSagent_npc.note_speaker_deferred()
+		return buffer_speech(speaker_name, text, detail, "allowance", kind)
+
 	// Rationed, not silenced, and only ever for speech we could not classify.
 	// Directed lines and attacks never reach this branch.
 	if(classification == AGENT_SPEECH_AMBIGUOUS)
@@ -205,6 +237,8 @@
 
 	// Only directed lines buy turns on hearing. Unclear ones earn them in engage_candidate(), by being answered.
 	var/replenish = !from_another_agent && classification == AGENT_SPEECH_DIRECTED
+	if(!from_another_agent)
+		SSagent_npc?.note_speaker_spend(speaker)
 	binding.mark_dirty(agent_line_event(kind, TRUE), AGENT_EVENT_LOW, detail, replenish = replenish)
 	return "sent"
 
@@ -483,7 +517,7 @@
 	if(binding && !QDELETED(binding))
 		return TRUE
 	binding = null
-	if(QDELETED(pawn) || !isliving(pawn))
+	if(QDELETED(pawn) || !isliving(pawn) || released_to_player)
 		return FALSE
 	if(!COOLDOWN_FINISHED(src, register_cooldown))
 		return FALSE
@@ -518,7 +552,7 @@
 /// Hit: fight back as the profile allows, else run. A reflex, so it must work with the sidecar down.
 /datum/ai_controller/agent_social/on_pawn_attacked(atom/source, atom/attacker, damage, attack_flags)
 	. = ..()
-	if(attacker == pawn || QDELETED(attacker) || !isliving(attacker))
+	if(released_to_player || attacker == pawn || QDELETED(attacker) || !isliving(attacker))
 		return
 
 	var/mob/living/living_attacker = attacker
@@ -622,6 +656,10 @@
 /datum/ai_controller/agent_social/proc/note_stimulus(kind, mob/living/by, list/extra)
 	if(!binding || QDELETED(binding) || QDELETED(by))
 		return "unbound"
+	// A body that cannot feel it buys nothing, or every tap on a corpse is a paid decision.
+	var/mob/living/living_pawn = pawn
+	if(!isliving(living_pawn) || living_pawn.stat >= UNCONSCIOUS)
+		return "unconscious"
 	var/list/detail = list("what" = kind, "by" = by.get_visible_name())
 	if(extra)
 		detail += extra
@@ -635,16 +673,23 @@
 	// Rough hands mean they started it, though someone who paid or was chosen may take the NPC by the hand.
 	if((kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) && !(kind == AGENT_STIMULUS_GRABBED && (by == paying_customer() || consent_until(by))))
 		note_aggressor(by)
+	var/urgency = (kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) ? AGENT_EVENT_HIGH : AGENT_EVENT_LOW
 	if(from_another_agent)
 		if(!binding.agent_exchange_allowed(by))
 			SSagent_npc?.note_agent_exchange_capped()
 			binding.push_event("physical", AGENT_EVENT_LOW, detail)
 			return "capped"
 		binding.note_agent_exchange(by)
-	else if(by.client)
-		binding.reset_agent_exchanges()
+	else
+		// The same allowance as speech: kept for the next decision, at its own urgency so the ring keeps it.
+		if(SSagent_npc && !SSagent_npc.speaker_may_spend(by))
+			SSagent_npc.note_speaker_deferred()
+			binding.push_event("physical", urgency, detail)
+			return "allowance"
+		SSagent_npc?.note_speaker_spend(by)
+		if(by.client)
+			binding.reset_agent_exchanges()
 	binding.note_candidate(by)
-	var/urgency = (kind in list(AGENT_STIMULUS_GRABBED, AGENT_STIMULUS_SHOVED, AGENT_STIMULUS_STRUCK)) ? AGENT_EVENT_HIGH : AGENT_EVENT_LOW
 	binding.mark_dirty("physical", urgency, detail, replenish = !from_another_agent)
 	return "sent"
 

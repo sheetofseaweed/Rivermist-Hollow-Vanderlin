@@ -201,18 +201,19 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	// appear to work and then do nothing at all.
 	if(target.client)
 		return "[target.name] is player controlled"
-	if(istype(target.ai_controller, /datum/ai_controller/agent_social))
-		return "[target.name] is already agent controlled"
-
-	// Read before attaching: once the agent owns the body, the away check answers for the agent.
-	var/borrowed = agent_borrows_character(target, attacher?.ckey)
+	// An agent on someone else's character vetoed their scenes after they came back, and sent what they heard.
+	if(agent_borrows_character(target, attacher?.ckey))
+		return "[target.name] is [target.mind.key]'s character; agents only take bodies nobody else has played"
+	var/datum/ai_controller/agent_social/existing = target.ai_controller
+	if(istype(existing))
+		if(!existing.released_to_player)
+			return "[target.name] is already agent controlled"
+		// It let go when a player took the body. A fresh controller replaces it.
+		agent_detach_controller(target)
 
 	var/datum/ai_controller/agent_social/controller = new(target)
 	if(QDELETED(controller) || controller.pawn != target)
 		return "the agent controller would not attach to [target.name]"
-	controller.borrowed_body = borrowed
-	if(borrowed && attacher)
-		to_chat(attacher, span_notice("[target.name] is [target.mind.key]'s character, so their setting for ERP while away still applies."))
 
 	if(source_profile)
 		QDEL_NULL(controller.profile)
@@ -224,7 +225,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	controller.ensure_registered()
 	return null
 
-/// Is this someone else's character? A body only the attaching admin ever played is not.
+/// Is this someone else's character? A body only the attaching admin ever played is not. Agents never take one.
 /proc/agent_borrows_character(mob/living/target, attacher_ckey)
 	var/owner_key = target?.mind?.key
 	return !!owner_key && ckey(owner_key) != attacher_ckey

@@ -47,6 +47,8 @@ SUBSYSTEM_DEF(agent_npc)
 	var/list/refusal_counts
 	/// Measured latency, cost and outcome mix. Never null once initialised.
 	var/datum/agent_telemetry/telemetry
+	/// Decisions each speaker bought lately, across every NPC: weakref -> world.time stamps. Pruned as it grows.
+	var/list/speaker_spends
 
 /datum/controller/subsystem/agent_npc/Initialize()
 	bindings = list()
@@ -92,6 +94,7 @@ SUBSYSTEM_DEF(agent_npc)
 	draining = SSagent_npc.draining
 	refusal_counts = SSagent_npc.refusal_counts
 	telemetry = SSagent_npc.telemetry
+	speaker_spends = SSagent_npc.speaker_spends
 	next_epoch = SSagent_npc.next_epoch
 	next_serial = SSagent_npc.next_serial
 	max_concurrent = SSagent_npc.max_concurrent
@@ -180,11 +183,11 @@ SUBSYSTEM_DEF(agent_npc)
 		// sidecar sends after this point is drained unread, so without a line
 		// here the only symptom is a 200 in the sidecar log and silence in game.
 		log_agent("expired [binding.pawn_id]: no reply within [AGENT_DEFAULT_DEADLINE / 10]s; a later answer will be discarded")
-		binding.record_result(AGENT_RESULT_EXPIRED, "deadline passed")
+		binding.record_result(AGENT_RESULT_EXPIRED, "deadline passed", binding.pending.request_id)
 		// A timeout is a transport failure: back off rather than retry instantly,
 		// and restore the trigger the timed-out request was carrying.
 		binding.note_failure(binding.pending.sent_events?.Copy())
-		binding.abandon_pending("deadline")
+		binding.abandon_pending("deadline", report = FALSE)
 		in_flight -= binding
 		if(MC_TICK_CHECK)
 			return
@@ -211,6 +214,8 @@ SUBSYSTEM_DEF(agent_npc)
 		// The events this request carried, kept past the request's own life so
 		// a transport failure can restore the trigger rather than lose it.
 		var/list/sent_events = request.sent_events?.Copy()
+		// Every verdict on this decision names it, or the sidecar cannot tell what ran.
+		var/request_id = request.request_id
 
 		in_flight -= binding
 		binding.pending = null
@@ -219,18 +224,17 @@ SUBSYSTEM_DEF(agent_npc)
 		qdel(request.release_transport())
 		qdel(request)
 
-		handle_response(binding, response, sent_events)
+		handle_response(binding, response, sent_events, request_id)
 		qdel(response)
 
-		if(round_token_budget > 0 && tokens_spent >= round_token_budget)
-			disable_all("round token budget exhausted")
+		if(check_round_budget())
 			return
 
 		if(MC_TICK_CHECK)
 			return
 
 /// Decide what a validated response means, after re-checking the world.
-/datum/controller/subsystem/agent_npc/proc/handle_response(datum/agent_binding/binding, datum/agent_response/response, list/sent_events)
+/datum/controller/subsystem/agent_npc/proc/handle_response(datum/agent_binding/binding, datum/agent_response/response, list/sent_events, request_id)
 	if(!response.ok)
 		binding.requests_refused++
 		note_refusal(response.refusal)
@@ -262,10 +266,10 @@ SUBSYSTEM_DEF(agent_npc)
 		// produces nothing in game, so it must never be silent.
 		note_refusal(AGENT_REFUSE_MODEL)
 		log_agent("model refusal for [binding.pawn_id]: [response.model_refusal]")
-		binding.record_result(AGENT_RESULT_REJECTED, response.model_refusal)
+		binding.record_result(AGENT_RESULT_REJECTED, response.model_refusal, request_id)
 		return
 
-	dispatch_decision(binding, response)
+	dispatch_decision(binding, response, request_id)
 
 /// Start work for dirty bindings, bounded by both caps.
 /datum/controller/subsystem/agent_npc/proc/start_pass()
@@ -289,6 +293,51 @@ SUBSYSTEM_DEF(agent_npc)
 			started++
 		if(MC_TICK_CHECK)
 			return
+
+/// Past the round budget every NPC goes quiet for the rest of the round, so admins are told at once.
+/datum/controller/subsystem/agent_npc/proc/check_round_budget()
+	if(round_token_budget <= 0 || tokens_spent < round_token_budget)
+		return FALSE
+	disable_all("round token budget exhausted")
+	var/notice = "Agent NPCs are all off: the round token budget ([round_token_budget]) is spent. Raise round_token_budget on SSagent_npc in View Variables, then use Agent NPC - Toggle All."
+	message_admins(notice)
+	log_admin(notice)
+	return TRUE
+
+/// May this speaker buy another decision? Counted across every NPC, so one player cannot spend the round alone.
+/datum/controller/subsystem/agent_npc/proc/speaker_may_spend(atom/movable/speaker)
+	if(!ismob(speaker) || !speaker_spends)
+		return TRUE
+	var/live = 0
+	for(var/stamp in speaker_spends[WEAKREF(speaker)])
+		if(world.time - stamp < AGENT_SPEAKER_WINDOW)
+			live++
+	return live < AGENT_SPEAKER_DECISIONS
+
+/datum/controller/subsystem/agent_npc/proc/note_speaker_spend(atom/movable/speaker)
+	if(!ismob(speaker))
+		return
+	LAZYINITLIST(speaker_spends)
+	// Pruned where it grows, over a copy: a long round would otherwise keep every speaker it ever heard.
+	for(var/datum/weakref/key as anything in speaker_spends.Copy())
+		var/list/kept = list()
+		for(var/stamp in speaker_spends[key])
+			if(world.time - stamp < AGENT_SPEAKER_WINDOW)
+				kept += stamp
+		if(length(kept))
+			speaker_spends[key] = kept
+		else
+			speaker_spends -= key
+	var/datum/weakref/speaker_key = WEAKREF(speaker)
+	var/list/stamps = speaker_spends[speaker_key] || list()
+	stamps += world.time
+	speaker_spends[speaker_key] = stamps
+
+/datum/controller/subsystem/agent_npc/proc/note_speaker_deferred()
+	if(!telemetry)
+		return FALSE
+	telemetry.speaker_deferred++
+	return TRUE
 
 /// Admission counts live reservations, not just settled spend.
 /datum/controller/subsystem/agent_npc/proc/can_afford_request()
@@ -388,7 +437,7 @@ SUBSYSTEM_DEF(agent_npc)
  * observation that was actually sent. Phase 4 adds the motor actions; this
  * stage resolves, authorises, and reports a real terminal state.
  */
-/datum/controller/subsystem/agent_npc/proc/dispatch_decision(datum/agent_binding/binding, datum/agent_response/response)
+/datum/controller/subsystem/agent_npc/proc/dispatch_decision(datum/agent_binding/binding, datum/agent_response/response, request_id)
 	var/name = response.action["name"]
 	var/mob/living/pawn = binding.resolve_pawn()
 	// Handle and key, never the text: enough to see what it aimed at without copying speech twice.
@@ -403,7 +452,7 @@ SUBSYSTEM_DEF(agent_npc)
 	// The action vocabulary is global; the profile narrows it per character.
 	if(!binding.profile_permits(name))
 		note_refusal(AGENT_REFUSE_SCHEMA)
-		binding.record_result(AGENT_RESULT_REJECTED, "[name] is not permitted for this character")
+		binding.record_result(AGENT_RESULT_REJECTED, "[name] is not permitted for this character", request_id)
 		return
 
 	// Answering makes a conversation, waiting declines it. After the permission check, so forbidden actions engage nobody.
@@ -415,54 +464,54 @@ SUBSYSTEM_DEF(agent_npc)
 	switch(name)
 		if("wait")
 			// Choosing to wait ends the self-driven chain. Buffered events stay.
-			binding.complete_action(AGENT_RESULT_SUCCEEDED, "waiting", was_wait = TRUE)
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "waiting", was_wait = TRUE, request_id = request_id)
 			return
 		if("say")
 			var/list/outcome = agent_execute_say(pawn, response.action["text"])
-			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE)
+			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE, request_id = request_id)
 			return
 		if("emote")
 			var/list/outcome = agent_execute_emote(pawn, response.action["key"])
-			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE)
+			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE, request_id = request_id)
 			return
 		if("me")
 			var/list/outcome = agent_execute_me(pawn, response.action["text"])
-			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE)
+			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE, request_id = request_id)
 			return
 		if("stand")
 			var/list/outcome = agent_execute_stand(pawn)
-			binding.complete_action(outcome["state"], outcome["detail"])
+			binding.complete_action(outcome["state"], outcome["detail"], request_id = request_id)
 			return
 		if("stop")
 			var/datum/ai_controller/agent_social/peacemaker = binding.resolve_controller()
 			if(!istype(peacemaker) || !peacemaker.end_combat("you stood down", report = FALSE))
-				binding.record_result(AGENT_RESULT_REJECTED, "you are not fighting")
+				binding.record_result(AGENT_RESULT_REJECTED, "you are not fighting", request_id)
 				return
-			binding.complete_action(AGENT_RESULT_SUCCEEDED, "stood down")
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "stood down", request_id = request_id)
 			return
 
 	// Every action from here names a handle, authorised only here against the observation actually sent.
 	var/atom/target = binding.resolve_handle(response.action["handle"])
 	if(isnull(target))
 		note_refusal(AGENT_REFUSE_SCHEMA)
-		binding.record_result(AGENT_RESULT_REJECTED, "handle was never offered, or its target is gone")
+		binding.record_result(AGENT_RESULT_REJECTED, "handle was never offered, or its target is gone", request_id)
 		return
 
 	// Carried items get handles so give can name them. They are never somewhere to walk or click.
 	var/atom/movable/movable_target = target
 	if(ismovable(movable_target) && movable_target.loc == pawn)
-		binding.record_result(AGENT_RESULT_REJECTED, "that is in your own hands")
+		binding.record_result(AGENT_RESULT_REJECTED, "that is in your own hands", request_id)
 		return
 
 	// The menu runs every trade. Haggling only moves the prices one customer sees there.
 	if(name == "haggle")
 		var/datum/component/agent_shop/shop = pawn.GetComponent(/datum/component/agent_shop)
 		if(!shop || !isliving(target) || target == pawn)
-			binding.record_result(AGENT_RESULT_REJECTED, "haggle sets prices for a customer at your shop")
+			binding.record_result(AGENT_RESULT_REJECTED, "haggle sets prices for a customer at your shop", request_id)
 			return
 		var/percent = agent_parse_percent(response.action["key"])
 		if(isnull(percent))
-			binding.record_result(AGENT_RESULT_REJECTED, "key must be a discount in percent, 0 to [AGENT_SHOP_MAX_DISCOUNT]")
+			binding.record_result(AGENT_RESULT_REJECTED, "key must be a discount in percent, 0 to [AGENT_SHOP_MAX_DISCOUNT]", request_id)
 			return
 		var/mob/living/customer = target
 		var/given = shop.set_discount(customer, percent)
@@ -472,28 +521,28 @@ SUBSYSTEM_DEF(agent_npc)
 		to_chat(customer, span_notice(given ? "[pawn] gives you [given]% better prices for a while." : "[pawn] charges you full price again."))
 		// Said back when capped, or the model goes on telling them a price the stall does not charge.
 		var/capped = given < percent ? ", the most you can give" : ""
-		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price", spoke = said?["detail"] == "spoke")
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price", spoke = said?["detail"] == "spoke", request_id = request_id)
 		return
 
 	// The model's advance. DM picks the act and asks the partner first; their answer comes back as an event.
 	if(name == "initiate")
 		var/datum/ai_controller/agent_social/suitor = binding.resolve_controller()
 		if(!istype(suitor) || !isliving(target))
-			binding.record_result(AGENT_RESULT_REJECTED, "advances are for a person, by their handle")
+			binding.record_result(AGENT_RESULT_REJECTED, "advances are for a person, by their handle", request_id)
 			return
 		var/list/advanced = suitor.make_advance(target, response.action["key"])
-		binding.complete_action(advanced["state"], advanced["detail"])
+		binding.complete_action(advanced["state"], advanced["detail"], request_id = request_id)
 		return
 
 	// The model's own yes or no to private time. DM holds it to that, logs it, and voices it.
 	if(name == "consent")
 		var/datum/ai_controller/agent_social/chooser = binding.resolve_controller()
 		if(!istype(chooser) || !isliving(target) || target == pawn)
-			binding.record_result(AGENT_RESULT_REJECTED, "consent is for a person, by their handle")
+			binding.record_result(AGENT_RESULT_REJECTED, "consent is for a person, by their handle", request_id)
 			return
 		var/answer = agent_parse_consent(response.action["key"])
 		if(isnull(answer))
-			binding.record_result(AGENT_RESULT_REJECTED, "key must be yes or no")
+			binding.record_result(AGENT_RESULT_REJECTED, "key must be yes or no", request_id)
 			return
 		var/mob/living/person = target
 		if(answer)
@@ -505,68 +554,68 @@ SUBSYSTEM_DEF(agent_npc)
 		// Live, a silent yes left the player guessing whether anything had happened.
 		var/spoke = agent_voice_answer(pawn, response.action["text"], answer)
 		if(answer)
-			binding.complete_action(AGENT_RESULT_SUCCEEDED, "you agreed to private time with [person.get_visible_name()] for the next [round(AGENT_ROMANCE_CONSENT_DURATION / (1 MINUTES))] minutes", spoke = spoke)
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "you agreed to private time with [person.get_visible_name()] for the next [round(AGENT_ROMANCE_CONSENT_DURATION / (1 MINUTES))] minutes", spoke = spoke, request_id = request_id)
 		else
-			binding.complete_action(AGENT_RESULT_SUCCEEDED, "you took back your agreement with [person.get_visible_name()]", spoke = spoke)
+			binding.complete_action(AGENT_RESULT_SUCCEEDED, "you took back your agreement with [person.get_visible_name()]", spoke = spoke, request_id = request_id)
 		return
 
 	// The melee is DM's from here on; the model chose who and how hard, within the profile and the ladder.
 	if(name == "fight")
 		var/datum/ai_controller/agent_social/fighter = binding.resolve_controller()
 		if(!istype(fighter) || !isliving(target) || target == pawn)
-			binding.record_result(AGENT_RESULT_REJECTED, "fight is for people and creatures")
+			binding.record_result(AGENT_RESULT_REJECTED, "fight is for people and creatures", request_id)
 			return
 		var/level = response.action["key"]
 		var/refusal = fighter.combat_refusal(target, level)
 		if(refusal)
-			binding.record_result(AGENT_RESULT_REJECTED, refusal)
+			binding.record_result(AGENT_RESULT_REJECTED, refusal, request_id)
 			return
 		var/started = fighter.start_combat(target, level, "chosen", binding.current_partner())
-		binding.complete_action(AGENT_RESULT_SUCCEEDED, "[started ? "fighting" : "already fighting"] them: [level]")
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, "[started ? "fighting" : "already fighting"] them: [level]", request_id = request_id)
 		return
 
 	// The offerer is already beside us and must stay there, so taking is immediate.
 	if(name == "take")
 		if(!isliving(target) || target == pawn)
-			binding.record_result(AGENT_RESULT_REJECTED, "take accepts what a person is offering you")
+			binding.record_result(AGENT_RESULT_REJECTED, "take accepts what a person is offering you", request_id)
 			return
 		var/list/taken = agent_execute_take(pawn, target)
-		binding.complete_action(taken["state"], taken["detail"])
+		binding.complete_action(taken["state"], taken["detail"], request_id = request_id)
 		return
 
 	// use clicks with whatever is held; on a person, a knife makes that a stab, and this NPC cannot fight.
 	if(name == "use" && isliving(target))
-		binding.record_result(AGENT_RESULT_REJECTED, "use is for things; to lay a hand on a person, use touch")
+		binding.record_result(AGENT_RESULT_REJECTED, "use is for things; to lay a hand on a person, use touch", request_id)
 		return
 
 	// Checked before walking anywhere, so a bad request costs no trip.
 	if(name == "touch")
 		if(!isliving(target) || target == pawn)
-			binding.record_result(AGENT_RESULT_REJECTED, "touch is for other people; use 'use' for things")
+			binding.record_result(AGENT_RESULT_REJECTED, "touch is for other people; use 'use' for things", request_id)
 			return
 		if(!(response.action["key"] in agent_touch_ways()))
-			binding.record_result(AGENT_RESULT_REJECTED, "not a way to touch someone")
+			binding.record_result(AGENT_RESULT_REJECTED, "not a way to touch someone", request_id)
 			return
 
 	if(name == "sit" && !agent_is_seat(target))
-		binding.record_result(AGENT_RESULT_REJECTED, "that is not something to sit on")
+		binding.record_result(AGENT_RESULT_REJECTED, "that is not something to sit on", request_id)
 		return
 
 	// Resolved now and kept on the blackboard: by the time the NPC arrives, the handle may mean something else.
 	var/obj/item/give_item
 	if(name == "give")
 		if(!isliving(target) || target == pawn)
-			binding.record_result(AGENT_RESULT_REJECTED, "give hands something to a person")
+			binding.record_result(AGENT_RESULT_REJECTED, "give hands something to a person", request_id)
 			return
 		var/item_handle = response.action["key"]
 		give_item = length(item_handle) ? binding.resolve_handle(item_handle) : pawn.get_active_held_item()
 		if(!isitem(give_item) || !(give_item in pawn.held_items))
-			binding.record_result(AGENT_RESULT_REJECTED, "you are not holding that")
+			binding.record_result(AGENT_RESULT_REJECTED, "you are not holding that", request_id)
 			return
 
 	var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
 	if(!istype(agent))
-		binding.record_result(AGENT_RESULT_REJECTED, "this pawn cannot act on objectives")
+		binding.record_result(AGENT_RESULT_REJECTED, "this pawn cannot act on objectives", request_id)
 		return
 
 	// Walking anywhere means getting up first. Sitting down on the seat already taken does not.
@@ -578,7 +627,7 @@ SUBSYSTEM_DEF(agent_npc)
 	agent.set_blackboard_key(BB_AGENT_OBJECTIVE_TARGET, target)
 	if(give_item)
 		agent.set_blackboard_key(BB_AGENT_GIVE_ITEM, give_item)
-	binding.begin_intent(response.action)
+	binding.begin_intent(response.action, request_id)
 
 /datum/controller/subsystem/agent_npc/proc/note_refusal(reason)
 	if(!reason)

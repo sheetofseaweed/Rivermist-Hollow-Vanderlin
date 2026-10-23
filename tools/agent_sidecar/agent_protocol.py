@@ -436,8 +436,10 @@ def build_user_message(observation, events):
     for advance in [a for a in myself.get("advances") or [] if isinstance(a, dict)]:
         name = advance.get("name", "someone")
         if advance.get("lead"):
-            lines.append("%s lets you lead without asking, as far as %s, for %s more minutes." % (
-                name, advance["lead"], advance.get("lead_minutes", "some")))
+            # A standing yes covers only what they welcomed; the level tells the model which key brings it back.
+            lines.append("%s lets you lead what they already welcomed (%s) again without asking, for %s more "
+                         "minutes; anything else they are asked first." % (
+                             name, advance["lead"], advance.get("lead_minutes", "some")))
         if advance.get("not_now_minutes"):
             lines.append("%s asked you not to try anything for %s more minutes." % (name, advance["not_now_minutes"]))
     lines.append("You are at: %s" % observation.get("here", "somewhere"))
@@ -548,7 +550,8 @@ def describe_advance(detail):
     if answer == "yes":
         return "%s welcomed your advance%s." % (who, level)
     if answer == "yes_for_a_while":
-        return "%s welcomed your advance%s, and lets you lead like that without asking for a while." % (who, level)
+        return "%s welcomed your advance%s, and lets you lead that same thing again without asking for a while." % (
+            who, level)
     if answer == "stop_asking":
         return "%s declined your advance, and asked you not to try anything for now." % who
     if answer == "no_answer":
@@ -596,6 +599,9 @@ def describe_events(events):
             # Live, a refused advance was asked for again and again, unchanged (2026-10-06).
             if detail.get("state") == "rejected":
                 line += ". It did not happen: do not try the same again unless something changes."
+            # Memory drops these answers, so say plainly that nothing came of them.
+            elif detail.get("state") in UNEXECUTED_RESULTS:
+                line += ". It did not happen."
             lines.append(line)
         else:
             lines.append("  %s" % name)
@@ -722,13 +728,22 @@ class Turn:
         self.history_text = history_text
 
 
-def latest_action_result(events):
-    """DM's verdict on the previous turn, or None if it did not report one."""
-    verdict = None
+# Verdicts meaning DM never ran the answer: refused it, gave up waiting for it, or dropped it for something urgent.
+UNEXECUTED_RESULTS = ("rejected", "expired", "abandoned")
+# Answers per character still waiting for a verdict. An objective walks for a while; older ones never get one.
+MAX_WAITING_PROPOSALS = 4
+
+
+def action_verdicts(events):
+    """DM's verdicts in this request, oldest first, as (request_id, state). A verdict naming no request settles nothing."""
+    verdicts = []
     for event in events or []:
-        if event.get("event") == "action_result":
-            verdict = (event.get("detail") or {}).get("state")
-    return verdict
+        if not isinstance(event, dict) or event.get("event") != "action_result":
+            continue
+        detail = event.get("detail") or {}
+        if isinstance(detail, dict) and detail.get("request_id"):
+            verdicts.append((detail["request_id"], detail.get("state")))
+    return verdicts
 
 
 class ConversationStore:
@@ -747,7 +762,7 @@ class ConversationStore:
         self.max_turns = max_turns
         self.lock = threading.Lock()
         self.sessions = {}
-        # Answers the model gave that DM has not yet ruled on.
+        # Answers the model gave that DM has not yet ruled on: key -> {request_id: proposal}, oldest first.
         self.proposals = {}
 
     @staticmethod
@@ -780,38 +795,50 @@ class ConversationStore:
         a transcript claiming the character did something it never did is worse
         than a shorter transcript.
 
-        The verdict arrives on the next request as an action_result event, so
-        the proposal is committed or dropped by reconcile() then.
+        The verdict arrives on a later request as an action_result event naming
+        this request, so the proposal is committed or dropped by reconcile() then.
         """
-        if self.limit(body) <= 0:
+        request_id = (body or {}).get("request_id")
+        # Nothing could ever name an unnamed request, so it could only wait to be thrown away.
+        if self.limit(body) <= 0 or not request_id:
             return
         with self.lock:
-            self.proposals[self.key(body)] = {"user_text": user_text, "action": action}
+            waiting = self.proposals.setdefault(self.key(body), {})
+            waiting[request_id] = {"user_text": user_text, "action": action}
+            while len(waiting) > MAX_WAITING_PROPOSALS:
+                del waiting[next(iter(waiting))]
 
     def reconcile(self, body):
-        """Settle the previous proposal using DM's verdict, before building."""
+        """Settle waiting proposals by the verdicts naming them, before building."""
         key = self.key(body)
         limit = self.limit(body)
         with self.lock:
-            proposal = self.proposals.pop(key, None)
             # Memory switched off for this character: forget what it held, not just stop showing it.
             if limit <= 0:
+                self.proposals.pop(key, None)
                 self.sessions.pop(key, None)
                 return
-        if not proposal:
-            return
+            waiting = self.proposals.get(key)
+            if not waiting:
+                return
+            # Only a verdict naming the request settles it: a lost or superseded answer must not become memory.
+            # "failed" and "interrupted" did happen and are worth remembering.
+            committed = []
+            for request_id, state in action_verdicts(body.get("events")):
+                proposal = waiting.pop(request_id, None)
+                if proposal and state not in UNEXECUTED_RESULTS:
+                    committed.append(proposal)
+            if not waiting:
+                self.proposals.pop(key, None)
+            if not committed:
+                return
 
-        # "rejected" means DM refused to execute it, so it never happened.
-        # "failed" and "interrupted" did happen and are worth remembering.
-        if latest_action_result(body.get("events")) == "rejected":
-            return
-
-        with self.lock:
             self.prune_other_sessions(body.get("session_id"))
             turns = self.sessions.setdefault(key, [])
-            turns.append({"role": "user", "content": proposal["user_text"]})
-            turns.append({"role": "assistant",
-                          "content": json.dumps(as_wire_action(proposal["action"]))})
+            for proposal in committed:
+                turns.append({"role": "user", "content": proposal["user_text"]})
+                turns.append({"role": "assistant",
+                              "content": json.dumps(as_wire_action(proposal["action"]))})
             # Trim whole exchanges so the list never starts on an assistant turn.
             excess = len(turns) - (limit * 2)
             if excess > 0:
@@ -859,6 +886,8 @@ class Decider:
     """Base adapter. Subclasses implement call_provider()."""
 
     name = "base"
+    # "block" blanks jailbreak lines before the model sees them; "log" only logs them. A local model needs no shield.
+    screen_mode = "block"
 
     def __init__(self, dry_run=False):
         self.dry_run = dry_run
@@ -870,6 +899,10 @@ class Decider:
 
     def describe(self):
         return {"adapter": self.name, "dry_run": self.dry_run}
+
+    def capabilities(self):
+        """What DM may rely on from this sidecar; sent with every reply. A hosted adapter advertises nothing more."""
+        return {"adapter": self.name, "explicit": False, "screening": self.screen_mode}
 
     def summary_lines(self):
         """Lines logged when the server stops. Adapters that measure their provider override this."""
@@ -938,35 +971,41 @@ def looks_like_jailbreak(text):
     return isinstance(text, str) and bool(_JAILBREAK.search(text))
 
 
-def screen_body(body):
-    """Blank every jailbreak attempt in a request before any adapter sees it. Returns what was blanked, for the log."""
+def screen_body(body, blank=True):
+    """Find every jailbreak attempt in a request, and blank it before any adapter sees it unless told not to."""
     found = []
     for event in body.get("events") or []:
         detail = event.get("detail") if isinstance(event, dict) else None
         if not isinstance(detail, dict):
             continue
+        skip = ()
         if event.get("event") in _PLAYER_LINES and looks_like_jailbreak(detail.get("text")):
             found.append("%s: %r" % (detail.get("speaker", "someone"), detail["text"]))
-            detail["text"] = ""
-            detail["screened"] = True
-        found.extend(_screen_strings(detail, "an event"))
-    found.extend(_screen_strings(body.get("observation"), "the scene"))
+            skip = ("text",)
+            if blank:
+                detail["text"] = ""
+                detail["screened"] = True
+        found.extend(_screen_strings(detail, "an event", blank, skip))
+    found.extend(_screen_strings(body.get("observation"), "the scene", blank))
     # Admins write profiles in game, and one careless line there would cost the key just the same.
-    found.extend(_screen_strings(body.get("profile"), "the character's profile"))
+    found.extend(_screen_strings(body.get("profile"), "the character's profile", blank))
     return found
 
 
-def _screen_strings(node, where):
+def _screen_strings(node, where, blank=True, skip=()):
     """Names, items and anything else a player could have written, anywhere in a dict or list."""
     found = []
     keys = node.keys() if isinstance(node, dict) else range(len(node)) if isinstance(node, list) else ()
     for key in keys:
+        if key in skip:
+            continue
         value = node[key]
         if looks_like_jailbreak(value):
             found.append("%s: %r" % (where, value))
-            node[key] = "something"
+            if blank:
+                node[key] = "something"
         elif isinstance(value, (dict, list)):
-            found.extend(_screen_strings(value, where))
+            found.extend(_screen_strings(value, where, blank))
     return found
 
 
@@ -998,6 +1037,7 @@ def make_handler(decider):
             if route == "/health":
                 payload = {"ok": True, "protocol_version": PROTOCOL_VERSION}
                 payload.update(decider.describe())
+                payload["capabilities"] = decider.capabilities()
                 return self._send(200, payload)
             if route == "/last-request":
                 with decider.lock:
@@ -1032,11 +1072,14 @@ def make_handler(decider):
 
             echo = {field: body.get(field) for field in ECHO_FIELDS}
             # The game screens speech already; this catches names, items and anything it missed.
-            for finding in screen_body(body):
-                log(decider.name, "kept from the model, looks like a jailbreak: %s" % finding)
+            blank = getattr(decider, "screen_mode", "block") != "log"
+            for finding in screen_body(body, blank=blank):
+                log(decider.name, "%s, looks like a jailbreak: %s" % (
+                    "kept from the model" if blank else "passed to the local model", finding))
             action, refusal, tokens = decider.decide(body)
 
-            payload = {"echo": echo, "tokens_used": tokens}
+            # DM reads the capabilities to learn what this sidecar is; it ignores a field it does not know.
+            payload = {"echo": echo, "tokens_used": tokens, "capabilities": decider.capabilities()}
             if refusal:
                 payload["action"] = None
                 payload["refusal"] = refusal

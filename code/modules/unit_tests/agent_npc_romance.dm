@@ -250,35 +250,66 @@
 	TEST_ASSERT(opened, "An agent NPC someone possessed and left must still answer for itself: [refusal]")
 	TEST_ASSERT_NOTNULL(advance_act, "And its own advances must still find an act; live, all seventeen were refused.")
 
-/datum/unit_test/agent_romance_borrowed_character_keeps_its_owners_setting
+/datum/unit_test/agent_attach_refuses_someone_elses_character
 
-/datum/unit_test/agent_romance_borrowed_character_keeps_its_owners_setting/Run()
+/datum/unit_test/agent_attach_refuses_someone_elses_character/Run()
 	var/list/saved = agent_test_arm_subsystem()
 	var/mob/living/carbon/human/body = allocate(/mob/living/carbon/human/species/human/northern)
-	var/mob/living/carbon/human/partner = allocate(/mob/living/carbon/human/species/human/northern)
 	var/mob/living/carbon/human/stranger = allocate(/mob/living/carbon/human/species/human/northern)
 	agent_test_leave_player_mark(body, "unit_test_player")
 	var/datum/agent_profile/barmaid/template = new()
+	// Review 2026-10-16: an agent on a logged-off player's character outlived their absence.
 	var/attach_refusal = agent_attach_controller(body, template)
-	qdel(template)
-	var/datum/ai_controller/agent_social/agent = body.ai_controller
-	TEST_ASSERT_NULL(attach_refusal, "Setup failed: attaching must succeed.")
-	agent.grant_consent(partner)
-
-	var/borrowed = agent.borrowed_body
-	var/datum/sex_scene_controller/scene = partner.open_sex_scene(body, FALSE)
-	var/opened = !isnull(scene)
-	qdel(scene)
-	var/refusal = partner.get_sex_scene_refusal(body)
+	var/attached = istype(body.ai_controller, /datum/ai_controller/agent_social)
 	var/their_own = agent_borrows_character(body, ckey("unit_test_player"))
-	var/never_played = agent_borrows_character(stranger, null)
-	agent_test_restore_subsystem(saved, agent.binding)
+	var/never_played_refusal = agent_attach_controller(stranger, template)
+	var/datum/ai_controller/agent_social/stranger_agent = stranger.ai_controller
+	qdel(template)
+	agent_test_restore_subsystem(saved, istype(stranger_agent) ? stranger_agent.binding : null)
 
-	TEST_ASSERT(borrowed, "An agent put on a logged-off player's character is borrowing it.")
-	TEST_ASSERT(!opened, "Their own setting for while they are away still decides, whatever the agent says.")
-	TEST_ASSERT(findtext(refusal, "away"), "And the partner is told why: [refusal]")
-	TEST_ASSERT(!their_own, "A body the attaching admin played themselves is not borrowed.")
-	TEST_ASSERT(!never_played, "Nor is one nobody ever played.")
+	TEST_ASSERT(findtext(attach_refusal, "unit_test_player's character"), "Attaching to someone else's character must be refused, and say whose: [attach_refusal]")
+	TEST_ASSERT(!attached, "And nothing may be attached.")
+	TEST_ASSERT(!their_own, "A body the attaching admin played themselves is still theirs to attach to.")
+	TEST_ASSERT_NULL(never_played_refusal, "So is one nobody ever played.")
+
+/datum/unit_test/agent_login_releases_the_body
+
+/datum/unit_test/agent_login_releases_the_body/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/barmaid = agent_test_romantic_pawn()
+	var/datum/ai_controller/agent_social/agent = barmaid.ai_controller
+	var/datum/agent_binding/binding = agent.binding
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the pawn must be bound.")
+	var/mob/living/carbon/human/stranger = allocate(/mob/living/carbon/human/species/human/northern)
+	var/refused_before = !barmaid.allows_sex_with(stranger)
+	binding.mark_dirty("heard_speech", AGENT_EVENT_LOW, list("speaker" = "Bob", "text" = "a whisper"))
+
+	// What Login() sends when a client arrives. Unit tests cannot make a client, but the signal is the seam.
+	SEND_SIGNAL(barmaid, COMSIG_MOB_LOGIN)
+	var/allowed_after = barmaid.allows_sex_with(stranger)
+	var/still_bound = !QDELETED(binding) || !isnull(agent.binding)
+	var/list/registered = agent.signal_procs?[barmaid]
+	var/still_hearing = !isnull(registered?[COMSIG_MOVABLE_HEAR])
+	var/still_answering = !isnull(registered?[COMSIG_LIVING_SEX_CONSENT])
+	agent.register_cooldown = 0
+	var/rebound = agent.ensure_registered()
+	SEND_SIGNAL(barmaid, COMSIG_MOB_LOGOUT)
+	var/status_after_logout = agent.ai_status
+	// An admin brings it back by attaching again, which replaces the released controller.
+	var/reattach_refusal = agent_attach_controller(barmaid, null)
+	var/datum/ai_controller/agent_social/fresh = barmaid.ai_controller
+	var/fresh_bound = istype(fresh) && fresh != agent && !isnull(fresh.binding) && !QDELETED(fresh.binding)
+	agent_test_restore_subsystem(saved, istype(fresh) ? fresh.binding : null)
+
+	TEST_ASSERT(refused_before, "Setup failed: the agent must refuse a stranger it never chose.")
+	TEST_ASSERT(allowed_after, "Once a player has the body, the agent must not answer for its consent.")
+	TEST_ASSERT(!still_answering, "The consent signal must be unregistered.")
+	TEST_ASSERT(!still_hearing, "Nor may it keep hearing what the player hears.")
+	TEST_ASSERT(!still_bound, "The binding goes, and with it every line buffered to send.")
+	TEST_ASSERT(!rebound, "It must not bind again, or the next logout ships the player's own conversation.")
+	TEST_ASSERT_EQUAL(status_after_logout, AI_STATUS_OFF, "No reflexes or fights on a player's body while they are away.")
+	TEST_ASSERT_NULL(reattach_refusal, "Attaching again must replace a released controller, not call it agent controlled.")
+	TEST_ASSERT(fresh_bound, "And the new one binds.")
 
 /datum/unit_test/agent_romance_answer_is_said_out_loud
 
