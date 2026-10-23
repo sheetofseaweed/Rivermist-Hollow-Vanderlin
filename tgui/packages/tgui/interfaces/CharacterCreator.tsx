@@ -285,10 +285,6 @@ type CreatorData = {
   body_build?: string | null;
   body_build_name?: string;
   body_build_options?: { id: string; name: string }[];
-  round_start_status: string;
-  round_start_seconds: number;
-  round_ready_players: number;
-  round_total_players: number;
   round_action_label: string;
   round_action_icon: string;
   round_action_color: string | null;
@@ -434,16 +430,6 @@ const clampScale = (value: unknown) => {
     return 1;
   }
   return Math.max(0.8, Math.min(1.25, Math.round(scale * 20) / 20));
-};
-const countdown = (seconds: number) => {
-  if (!Number.isFinite(seconds) || seconds < 0) {
-    return '—';
-  }
-  const minutes = Math.floor(seconds / 60);
-  const rest = seconds % 60;
-  return minutes > 0
-    ? `${minutes}:${String(rest).padStart(2, '0')}`
-    : `${rest}s`;
 };
 const monogram = (name: string) =>
   text(name, '?')
@@ -1271,7 +1257,6 @@ export const CharacterCreator = () => {
   const [erpTab, setErpTab] = useState<'general' | 'kinks' | 'badges'>(
     'general',
   );
-  const [roundSeconds, setRoundSeconds] = useState(-1);
 
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dollBoxRef = useRef<HTMLDivElement>(null);
@@ -1287,18 +1272,6 @@ export const CharacterCreator = () => {
     setTipAvoidRect(() => dollBoxRef.current?.getBoundingClientRect() || null);
     return () => setTipAvoidRect(() => null);
   }, []);
-
-  useEffect(() => {
-    setRoundSeconds(Number(data.round_start_seconds ?? -1));
-  }, [data.round_start_seconds]);
-
-  useEffect(() => {
-    if (roundSeconds <= 0) {
-      return;
-    }
-    const timer = setTimeout(() => setRoundSeconds(roundSeconds - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [roundSeconds]);
 
   // A picked style list belongs to the category it was opened from.
   useEffect(() => {
@@ -4584,11 +4557,6 @@ export const CharacterCreator = () => {
   );
 
   const isFullscreen = asBool(data.preferences_fullscreen);
-  const roundStatus = text(data.round_start_status, 'Unknown');
-  const roundTime =
-    roundStatus === 'Round Started' || roundStatus === 'Setting Up'
-      ? roundStatus
-      : countdown(roundSeconds);
 
   // Empty parts of the top bar move the window, like the title bar it replaces.
   const startDrag = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -4627,27 +4595,21 @@ export const CharacterCreator = () => {
         </div>
       ) : null}
       <div className="cc-grow" />
-      <div className="cc-round" title={data.round_action_tooltip}>
-        <span className="cc-muted cc-topbar-extra">{roundStatus}</span>
-        <span className="cc-round-time">{roundTime}</span>
-        <span className="cc-muted">
-          {data.round_ready_players ?? 0}/{data.round_total_players ?? 0}
-        </span>
-        <Btn
-          icon={data.round_action_icon || 'user-check'}
-          className={
-            data.round_action_color === 'bad'
-              ? 'danger'
-              : data.round_action_color
-                ? 'on'
-                : ''
-          }
-          disabled={asBool(data.round_action_disabled)}
-          onClick={() => doPref('character_setup_round_action')}
-        >
-          {text(data.round_action_label)}
-        </Btn>
-      </div>
+      <Btn
+        icon={data.round_action_icon || 'user-check'}
+        className={
+          data.round_action_color === 'bad'
+            ? 'danger'
+            : data.round_action_color
+              ? 'on'
+              : ''
+        }
+        title={data.round_action_tooltip}
+        disabled={asBool(data.round_action_disabled)}
+        onClick={() => doPref('character_setup_round_action')}
+      >
+        {text(data.round_action_label)}
+      </Btn>
       <div className="cc-grow" />
       <Btn
         className="square"

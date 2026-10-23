@@ -93,11 +93,6 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 		return null
 	return list(x1, y1, x2, y2)
 
-/proc/character_setup_push_all_prefs()
-	for(var/client/lobby_client as anything in GLOB.clients)
-		if(lobby_client?.prefs)
-			SStgui.update_uis(lobby_client.prefs)
-
 /datum/preferences/var/list/character_setup_log_counts
 /datum/preferences/var/character_setup_log_action_name = ""
 /datum/preferences/var/character_setup_log_action_tod = 0
@@ -596,7 +591,6 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 			ready_button.update_appearance(UPDATE_ICON)
 			break
 		SEND_SIGNAL(lobby_hud, COMSIG_HUD_PLAYER_READY_TOGGLE)
-	character_setup_push_all_prefs()
 	return TRUE
 
 /mob/dead/new_player/proc/character_setup_chargen_join_round()
@@ -946,64 +940,39 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 	var/mob/dead/new_player/new_player
 	if(istype(user, /mob/dead/new_player))
 		new_player = user
-	data["round_player_ready"] = new_player?.ready == PLAYER_READY_TO_PLAY
 	data["round_action_label"] = "Unavailable"
 	data["round_action_icon"] = "ban"
 	data["round_action_color"] = null
 	data["round_action_disabled"] = TRUE
 	data["round_action_tooltip"] = "This action is only available in the lobby."
-	if(SSticker)
-		var/time_remaining = SSticker.GetTimeLeft()
-		if(SSticker.HasRoundStarted())
-			data["round_start_status"] = "Round Started"
-			data["round_start_seconds"] = 0
-		else if(SSticker.current_state == GAME_STATE_SETTING_UP)
-			data["round_start_status"] = "Setting Up"
-			data["round_start_seconds"] = 0
-		else if(time_remaining > 0)
-			data["round_start_status"] = "Starts In"
-			data["round_start_seconds"] = max(0, round(time_remaining / 10))
-		else if(time_remaining == -10)
-			data["round_start_status"] = "Delayed"
-			data["round_start_seconds"] = -1
-		else
-			data["round_start_status"] = "Starting Soon"
-			data["round_start_seconds"] = 0
-		data["round_ready_players"] = SSticker.totalPlayersReady
-		data["round_total_players"] = SSticker.totalPlayers
-		if(new_player)
-			if(SSticker.IsRoundInProgress())
-				data["round_action_label"] = "Join Now"
-				data["round_action_icon"] = "sign-in-alt"
+	if(SSticker && new_player)
+		if(SSticker.IsRoundInProgress())
+			data["round_action_label"] = "Join Now"
+			data["round_action_icon"] = "sign-in-alt"
+			data["round_action_color"] = "green"
+			data["round_action_disabled"] = FALSE
+			data["round_action_tooltip"] = "Open late join choices."
+		else if(SSticker.current_state <= GAME_STATE_PREGAME)
+			if(new_player.ready == PLAYER_READY_TO_PLAY)
+				data["round_action_label"] = "Cancel Ready"
+				data["round_action_icon"] = "times"
+				data["round_action_color"] = "bad"
+				data["round_action_disabled"] = !!SSticker.job_change_locked
+				data["round_action_tooltip"] = "Cancel roundstart readiness."
+			else
+				data["round_action_label"] = "Ready"
+				data["round_action_icon"] = "user-check"
 				data["round_action_color"] = "green"
 				data["round_action_disabled"] = FALSE
-				data["round_action_tooltip"] = "Open late join choices."
-			else if(SSticker.current_state <= GAME_STATE_PREGAME)
-				if(new_player.ready == PLAYER_READY_TO_PLAY)
-					data["round_action_label"] = "Cancel Ready"
-					data["round_action_icon"] = "times"
-					data["round_action_color"] = "bad"
-					data["round_action_disabled"] = !!SSticker.job_change_locked
-					data["round_action_tooltip"] = "Cancel roundstart readiness."
-				else
-					data["round_action_label"] = "Ready"
-					data["round_action_icon"] = "user-check"
-					data["round_action_color"] = "green"
-					data["round_action_disabled"] = FALSE
-					data["round_action_tooltip"] = "Ready this character for roundstart."
-			else if(SSticker.current_state == GAME_STATE_SETTING_UP)
-				data["round_action_label"] = "Setting Up"
-				data["round_action_icon"] = "hourglass-half"
-				data["round_action_tooltip"] = "The game is starting."
-			else
-				data["round_action_label"] = "Round Finished"
-				data["round_action_icon"] = "flag-checkered"
-				data["round_action_tooltip"] = "The round has already finished."
-	else
-		data["round_start_status"] = "Unknown"
-		data["round_start_seconds"] = -1
-		data["round_ready_players"] = 0
-		data["round_total_players"] = 0
+				data["round_action_tooltip"] = "Ready this character for roundstart."
+		else if(SSticker.current_state == GAME_STATE_SETTING_UP)
+			data["round_action_label"] = "Setting Up"
+			data["round_action_icon"] = "hourglass-half"
+			data["round_action_tooltip"] = "The game is starting."
+		else
+			data["round_action_label"] = "Round Finished"
+			data["round_action_icon"] = "flag-checkered"
+			data["round_action_tooltip"] = "The round has already finished."
 
 	data["game_prefs"] = list(
 		"hotkeys" = !!hotkeys,
