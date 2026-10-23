@@ -1,7 +1,7 @@
 // Ids must resolve to the exact entries, in the exact order, each book used to send inline.
 /datum/unit_test/recipe_book_ids_match_book_caches/Run()
 	var/mob/living/carbon/human/reader = allocate(/mob/living/carbon/human)
-	TEST_ASSERT(length(GLOB.recipe_book_db), "SSatoms init should build the recipe book db.")
+	TEST_ASSERT(length(GLOB.recipe_book_db), "SSrecipe_books init should build the recipe book db.")
 	for(var/book_type in typesof(/obj/item/recipe_book))
 		var/obj/item/recipe_book/book = allocate(book_type)
 		var/list/data = book.ui_static_data(reader)
@@ -21,6 +21,20 @@
 			TEST_ASSERT(linked[i] == linked_expected[i], "[book_type] linked recipe [i] should be the cached entry.")
 		var/payload = length(json_encode(data))
 		TEST_ASSERT(payload < 64 * 1024, "[book_type] static data is [payload] bytes; recipe entries belong in the db asset.")
+
+// Fish pages read SSfishing, which inits after SSatoms; a db built too early has no bait or lure data.
+/datum/unit_test/recipe_book_db_built_after_subsystems/Run()
+	TEST_ASSERT(SSrecipe_books.initialized, "SSrecipe_books should have initialized before tests run.")
+	var/fish_pages = 0
+	var/fish_with_lures = 0
+	for(var/list/entry as anything in GLOB.recipe_book_db)
+		if(entry["type"] != "fish")
+			continue
+		fish_pages++
+		if(!isnull(entry["lures"]))
+			fish_with_lures++
+	TEST_ASSERT(fish_pages, "The recipe book db should hold fish pages.")
+	TEST_ASSERT(fish_with_lures, "No fish page has lure data; the db was built before SSfishing initialized.")
 
 // Source pages were rebuilt for every book; uncached, the db would carry one copy per book.
 /datum/unit_test/recipe_book_db_shares_source_pages/Run()

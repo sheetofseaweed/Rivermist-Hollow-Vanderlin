@@ -21,7 +21,6 @@ SUBSYSTEM_DEF(atoms)
 	InitializeAtoms()
 	initialized = INITIALIZATION_INNEW_REGULAR
 	GLOB.obtained_from_reverse = build_obtained_from_reverse()
-	init_recipe_book_db() //RMH EDITED - build recipe book caches here, not on a player's first book open
 	return ..()
 
 /datum/controller/subsystem/atoms/proc/InitializeAtoms(list/atoms)

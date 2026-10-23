@@ -5,7 +5,17 @@ GLOBAL_LIST_EMPTY(recipe_book_db_ids)
 /// "[book_type]" -> list("types", "recipes" = ids, "linked" = ids), ids in the order books used to send entries.
 GLOBAL_LIST_EMPTY(recipe_book_index)
 
-/// Builds every book's caches and the shared db, then registers the asset. Runs at the end of SSatoms init.
+/// Builds every book's caches and the shared db once every gameplay subsystem has initialized.
+SUBSYSTEM_DEF(recipe_books)
+	name = "Recipe Books"
+	init_order = INIT_ORDER_RECIPE_BOOKS
+	flags = SS_NO_FIRE
+
+/datum/controller/subsystem/recipe_books/Initialize()
+	init_recipe_book_db()
+	return ..()
+
+/// Builds every book's caches and the shared db, then registers the asset. Needs SSfishing and friends up.
 /proc/init_recipe_book_db()
 	build_recipe_book_db(check_tick = TRUE)
 	get_asset_datum(/datum/asset/json/recipe_book_db)
@@ -71,7 +81,7 @@ GLOBAL_LIST_EMPTY(recipe_book_index)
 	name = "recipe_book_db"
 	var/registered = FALSE
 
-// SSassets loads every asset before SSatoms, so stay unregistered until the db exists.
+// SSassets loads every asset long before SSrecipe_books, so stay unregistered until the db exists.
 /datum/asset/json/recipe_book_db/register()
 	if(!length(GLOB.recipe_book_index))
 		return
