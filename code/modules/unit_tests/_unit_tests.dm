@@ -105,6 +105,7 @@
 #include "reagent_id_typos.dm"
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
+#include "recipe_book_db.dm"
 #include "required_map_items.dm"
 #include "resist.dm"
 #include "rogue_inhands.dm"
