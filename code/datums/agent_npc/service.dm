@@ -233,11 +233,18 @@ GLOBAL_LIST_INIT(agent_service_rough_acts, list(
 /datum/agent_stock/service/proc/apply_pace(datum/sex_scene_controller/controller)
 	controller.set_current_force(rough ? SEX_FORCE_HIGH : SEX_FORCE_MID)
 	controller.set_current_speed(rough ? SEX_SPEED_HIGH : SEX_SPEED_MID)
+	// Rough only while the customer asked for it; the model's own pacing stops there.
+	var/datum/ai_controller/agent_social/keeper_agent = keeper?.ai_controller
+	if(istype(keeper_agent))
+		keeper_agent.pace_force_ceiling = controller.force
 
 /// Asking for it gentle also ends any rough act already running.
 /datum/agent_stock/service/proc/set_rough(new_rough, mob/living/customer)
 	rough = !!new_rough
 	to_chat(customer, span_notice(rough ? "[keeper] will be rough with you." : "[keeper] will be gentle with you."))
+	var/datum/ai_controller/agent_social/keeper_agent = keeper?.ai_controller
+	if(istype(keeper_agent))
+		keeper_agent.note_private_pace(customer, rough)
 	var/datum/sex_scene_controller/controller = keeper_controller()
 	if(!controller)
 		return
@@ -259,6 +266,10 @@ GLOBAL_LIST_INIT(agent_service_rough_acts, list(
 	watch_timer = null
 	if(QDELETED(keeper))
 		return
+	// What started or ended since the last look, for a model that takes part.
+	var/datum/ai_controller/agent_social/keeper_agent = keeper.ai_controller
+	if(istype(keeper_agent))
+		keeper_agent.note_private_acts()
 	var/mob/living/current = customer_ref?.resolve()
 	var/private = length(keeper.sex_scene?.get_actions_involving(keeper)) > 0
 	if(was_private && !private && current)

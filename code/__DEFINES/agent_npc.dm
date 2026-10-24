@@ -32,6 +32,8 @@
 #define AGENT_REFUSE_OVERSIZED "oversized_body"
 #define AGENT_REFUSE_PAWN "pawn_unavailable"
 #define AGENT_REFUSE_SCHEMA "schema_invalid"
+/// A decision that landed during an act the model was not part of. Its trigger is kept for after.
+#define AGENT_REFUSE_PRIVATE "held_for_privacy"
 /// The sidecar reached the model but could not get a usable action out of it.
 #define AGENT_REFUSE_MODEL "model_refusal"
 
@@ -168,9 +170,9 @@
 /// Other names an NPC answers to, like a Cyrillic spelling. Each is matched on every line heard.
 #define AGENT_MAX_ALIASES 4
 /// Ceiling on a profile's own memory length, in exchanges. Each remembered exchange is resent every request.
-#define AGENT_MAX_MEMORY_TURNS 20
-/// Where the menu starts an override: the sidecar's shipped --memory-turns default.
-#define AGENT_MEMORY_TURNS_START 6
+#define AGENT_MAX_MEMORY_TURNS 60
+/// Where the menu starts an override: the local sidecar's shipped --memory-turns default.
+#define AGENT_MEMORY_TURNS_START 24
 /// Attach targets are drawn from the admin's own view rather than the world.
 #define AGENT_ATTACH_RANGE 7
 
@@ -346,6 +348,28 @@
 #define AGENT_EVENT_PRIVATE_TIME "private_time"
 /// Admins hear about one player's jailbreak attempts at most this often; the game log gets every one.
 #define AGENT_JAILBREAK_ALERT_COOLDOWN (2 MINUTES)
+/// How a sidecar treats jailbreak lines, as its capabilities report it. Block until a reply says otherwise.
+#define AGENT_SCREEN_BLOCK "block"
+#define AGENT_SCREEN_LOG "log"
+
+/// Explicit scenes: the model's turn during an act comes this often, or at once for something urgent.
+#define AGENT_PRIVATE_TURN_INTERVAL (25 SECONDS)
+/// A description of its own body may run longer than an ordinary me.
+#define AGENT_PRIVATE_ME_TEXT_MAX 280
+/// Act events. Sent only while every explicit gate is open; a hosted model never hears of an act.
+#define AGENT_EVENT_PRIVATE_ACT "private_act"
+#define AGENT_EVENT_CLIMAX "climax"
+#define AGENT_EVENT_PRIVATE_PACE "private_pace"
+/// Arousal bands the model reads, over the component's 0 to MAX_AROUSAL (500) scale.
+#define AGENT_AROUSAL_WARMING 100
+#define AGENT_AROUSAL_AROUSED 250
+#define AGENT_AROUSAL_BURNING 400
+/// Orgasm progress past which a character is "close", over 0 to MAX_ORGASM_PROG (120).
+#define AGENT_CLOSE_PROGRESS 90
+/// The say key for words meant for one person beside the speaker.
+#define AGENT_VOICE_WHISPER "whisper"
+/// A memory an admin seeds for a playtest, in characters. The sidecar caps its summaries the same.
+#define AGENT_SEED_TEXT_MAX 700
 /// How long an NPC's own yes to private time with someone lasts, unless it takes it back sooner.
 #define AGENT_ROMANCE_CONSENT_DURATION (15 MINUTES)
 /// Told to the model when someone tries to start a scene it has not agreed to.
@@ -389,7 +413,9 @@
 /// world.time before which a failed walk home is not tried again.
 #define BB_AGENT_POST_RETRY_AT "BB_agent_post_retry_at"
 /// Idle this long away from its post and the NPC walks back.
-#define AGENT_POST_RETURN_DELAY (20 SECONDS)
+#define AGENT_POST_RETURN_DELAY (1 MINUTES)
+/// Someone who talked with the NPC keeps it off its post this long after their last line, while they stay in view.
+#define AGENT_POST_COMPANY_GRACE (5 MINUTES)
 /// A walk home that has not arrived by now gives up, and waits AGENT_POST_RETRY_DELAY before trying again.
 #define AGENT_POST_RETURN_TIMEOUT (60 SECONDS)
 #define AGENT_POST_RETRY_DELAY (30 SECONDS)

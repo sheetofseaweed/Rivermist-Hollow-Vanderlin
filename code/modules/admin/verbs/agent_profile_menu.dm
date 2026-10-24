@@ -37,7 +37,7 @@
 /datum/agent_profile_menu/ui_static_data(mob/user)
 	return list(
 		// Fighting, haggling and consent come from the combat limits, a shop and the romance setting, never a checkbox.
-		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions - GLOB.agent_shop_actions - GLOB.agent_romance_actions,
+		"vocabulary" = GLOB.agent_action_vocabulary - GLOB.agent_combat_actions - GLOB.agent_shop_actions - GLOB.agent_romance_actions - GLOB.agent_private_granted_actions,
 		"combatLevels" = GLOB.agent_combat_ladder.Copy(),
 		"builtins" = agent_builtin_profiles(),
 		"labelMax" = AGENT_PROFILE_LABEL_MAX,
@@ -62,6 +62,7 @@
 		"selected" = selected,
 		"targets" = build_target_list(user),
 		"subsystemEnabled" = SSagent_npc.enabled && !SSagent_npc.globally_disabled,
+		"explicitAllowed" = SSagent_npc.explicit_allowed(),
 		"registered" = length(SSagent_npc.bindings),
 	)
 
@@ -188,6 +189,14 @@
 				return TRUE
 			profile.romance = !!params["value"]
 			log_admin("[key_name(user)] turned romance [profile.romance ? "on" : "off"] for agent profile '[selected]'.")
+			return TRUE
+
+		if("set_explicit")
+			var/datum/agent_profile/profile = GLOB.agent_custom_profiles[selected]
+			if(QDELETED(profile))
+				return TRUE
+			profile.explicit = !!params["value"]
+			log_admin("[key_name(user)] turned explicit private time [profile.explicit ? "on" : "off"] for agent profile '[selected]'.")
 			return TRUE
 
 		if("toggle_action")

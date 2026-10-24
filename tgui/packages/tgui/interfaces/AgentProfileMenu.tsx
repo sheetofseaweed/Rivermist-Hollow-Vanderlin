@@ -28,6 +28,7 @@ type Profile = {
   combat_retaliate: string;
   combat_initiate: string;
   romance: BooleanLike;
+  explicit: BooleanLike;
 };
 
 type BuiltIn = Omit<Profile, 'name'> & { type: string };
@@ -45,6 +46,7 @@ type Data = {
   selected: string | null;
   targets: Target[];
   subsystemEnabled: BooleanLike;
+  explicitAllowed: BooleanLike;
   registered: number;
   vocabulary: string[];
   builtins: BuiltIn[];
@@ -243,7 +245,8 @@ function ReadOnly(props: { template?: BuiltIn }) {
         {combatLabel(template.combat_initiate)}.
       </Box>
       <Box mb={1}>
-        Romance: {template.romance ? 'its own choice' : 'refuses'}.
+        Romance: {template.romance ? 'its own choice' : 'refuses'}. Explicit in
+        private: {template.explicit ? 'allowed' : 'never'}.
       </Box>
       {TEXT_FIELDS.map((field) => (
         <Box key={field.key} mb={1}>
@@ -375,6 +378,21 @@ function Editor(props: {
           onClick={() => act('set_romance', { value: !profile.romance })}
         >
           Its own choice
+        </Button.Checkbox>
+      </Box>
+
+      <Box mb={1}>
+        <Box bold>Explicit in private</Box>
+        <Box color="label" fontSize="0.9em" mb={0.5}>
+          Whether this character may talk and describe explicitly in private
+          time. The server flag, the admin switch and an uncensored local
+          sidecar must allow it too; the Status verb shows those.
+        </Box>
+        <Button.Checkbox
+          checked={!!profile.explicit}
+          onClick={() => act('set_explicit', { value: !profile.explicit })}
+        >
+          Allowed
         </Button.Checkbox>
       </Box>
 

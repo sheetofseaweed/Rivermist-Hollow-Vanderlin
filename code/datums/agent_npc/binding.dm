@@ -69,6 +69,8 @@
 	var/pending_urgency = AGENT_EVENT_LOW
 	/// world.time floor for the next request. Enforces pacing and backoff.
 	var/next_request_at = 0
+	/// world.time before which no cadence turn is granted during an act. Something urgent ignores it.
+	var/next_private_turn_at = 0
 	/// Reset by any accepted response. Drives backoff and the retry ceiling.
 	var/consecutive_failures = 0
 	/// Set when the pawn is deleted. The subsystem sweeps these each fire.
@@ -152,6 +154,12 @@
 		// Selling company is leave to take the lead with whoever paid.
 		if(istype(shop.stock, /datum/agent_stock/service))
 			payload["permitted_actions"] |= "initiate"
+	// In private the model only talks, shows its own body, waits, takes back its yes, or stops and paces what it leads.
+	if(in_private_explicit())
+		payload["permitted_actions"] = (payload["permitted_actions"] & GLOB.agent_private_actions) | list("stop", "wait")
+		var/datum/ai_controller/agent_social/leader = resolve_controller()
+		if(leader.leads_private_act())
+			payload["permitted_actions"] |= "pace"
 	return payload
 
 /// A profile narrows the global action vocabulary. No profile, no objectives.
@@ -159,6 +167,14 @@
 	var/datum/ai_controller/agent_social/agent = resolve_controller()
 	if(!istype(agent) || !agent.profile)
 		return FALSE
+	// In private only the private actions; stop is granted there whatever the combat limits say, pace by leading.
+	if(in_private_explicit())
+		if(!(action_name in GLOB.agent_private_actions))
+			return FALSE
+		if(action_name == "stop")
+			return TRUE
+		if(action_name == "pace")
+			return agent.leads_private_act()
 	var/datum/component/agent_shop/shop = agent.pawn?.GetComponent(/datum/component/agent_shop)
 	if(action_name in GLOB.agent_shop_actions)
 		return !isnull(shop)
@@ -168,6 +184,18 @@
 
 /// Flag only. Tearing a binding down inside another datum's Destroy is asking
 /// for trouble, so the subsystem sweeps flagged bindings on its next fire.
+/// All four gates: the config flag, the admin switch, the sidecar's word, and this character's own checkbox.
+/datum/agent_binding/proc/explicit_effective()
+	var/datum/ai_controller/agent_social/agent = resolve_controller()
+	if(!istype(agent) || !agent.profile?.explicit)
+		return FALSE
+	return SSagent_npc.explicit_allowed()
+
+/// An act involving the pawn runs and every explicit gate is open: the model takes part in it.
+/datum/agent_binding/proc/in_private_explicit()
+	var/datum/ai_controller/agent_social/agent = resolve_controller()
+	return istype(agent) && agent.in_private() && explicit_effective()
+
 /datum/agent_binding/proc/on_pawn_deleted(datum/source)
 	SIGNAL_HANDLER
 	pawn_gone = TRUE
@@ -340,6 +368,10 @@
 	if(was_wait)
 		end_continuation()
 		return FALSE
+	// In private there are no follow-up turns: one answer per wake, and the cadence does the rest.
+	if(in_private_explicit())
+		end_continuation()
+		return FALSE
 	speech_streak = spoke ? speech_streak + 1 : 0
 	if(continuation_budget <= 0 || world.time > continuation_expires_at)
 		end_continuation()
@@ -372,6 +404,22 @@
 		return null
 	var/atom/movable/partner = partner_ref?.resolve()
 	return QDELETED(partner) ? null : partner
+
+/// The last person the NPC talked with, while they stay in view: slow typing is not leaving.
+/datum/agent_binding/proc/recent_company()
+	RETURN_TYPE(/mob/living)
+	if(!partner_until || world.time > partner_until + AGENT_POST_COMPANY_GRACE)
+		return null
+	var/mob/living/company = partner_ref?.resolve()
+	if(!isliving(company) || QDELETED(company) || company.stat == DEAD)
+		return null
+	// Another agent NPC is no company to keep: two of them would hold each other off their posts.
+	if(!isnull(SSagent_npc?.bindings?["[REF(company)]"]))
+		return null
+	var/mob/living/living_pawn = resolve_pawn()
+	if(!living_pawn || company.z != living_pawn.z || get_dist(living_pawn, company) > AGENT_FOCUS_RANGE)
+		return null
+	return company
 
 /// Record who just asked us something. Not a partner until the NPC answers, in engage_candidate().
 /datum/agent_binding/proc/note_candidate(atom/movable/speaker)
@@ -630,10 +678,13 @@
 	var/mob/living/pawn = resolve_pawn()
 	if(pawn && pawn.stat >= UNCONSCIOUS)
 		return FALSE
-	// While an act runs the model gets no turn. Its events wait until the act ends.
+	// While an act runs the model gets no turn, unless it takes part: then one at the cadence, or at once for something urgent.
 	var/datum/ai_controller/agent_social/agent = resolve_controller()
 	if(istype(agent) && agent.in_private())
-		return FALSE
+		if(!explicit_effective())
+			return FALSE
+		if(pending_urgency < AGENT_EVENT_HIGH && world.time < next_private_turn_at)
+			return FALSE
 	return TRUE
 
 /// Is the next request a lone probe against a provider we have given up on?

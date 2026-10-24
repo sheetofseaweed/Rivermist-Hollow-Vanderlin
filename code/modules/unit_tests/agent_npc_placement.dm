@@ -23,6 +23,79 @@
 			return found
 	return null
 
+/// A turf on this z more than AGENT_FOCUS_RANGE from the mob, or null when the level is too small.
+/proc/agent_test_far_turf(mob/living/from)
+	for(var/turf/corner in list(locate(1, 1, from.z), locate(world.maxx, world.maxy, from.z), locate(1, world.maxy, from.z), locate(world.maxx, 1, from.z)))
+		if(corner && get_dist(from, corner) > AGENT_FOCUS_RANGE)
+			return corner
+	return null
+
+/datum/unit_test/agent_npc_keeps_slow_company_before_going_home
+
+/datum/unit_test/agent_npc_keeps_slow_company_before_going_home/Run()
+	var/list/saved = agent_test_arm_subsystem()
+	var/mob/living/carbon/human/species/human/northern/agent_social/barmaid = agent_test_romantic_pawn()
+	barmaid.gender = FEMALE
+	var/datum/ai_controller/agent_social/controller = barmaid.ai_controller
+	var/datum/agent_binding/binding = controller.binding
+	var/mob/living/carbon/human/person = allocate(/mob/living/carbon/human/species/human/northern)
+	person.gender = MALE
+	person.give_genitals()
+	var/mob/living/carbon/human/species/human/northern/agent_social/other = agent_test_bound_pawn()
+	var/datum/ai_controller/agent_social/other_controller = other.ai_controller
+	var/turf/far = agent_test_far_turf(barmaid)
+	TEST_ASSERT_NOTNULL(binding, "Setup failed: the barmaid must be bound.")
+	TEST_ASSERT_NOTNULL(far, "Setup failed: the test level must have a turf out of view.")
+	controller.set_post(run_loc_floor_top_right, NORTH)
+
+	// They talked, then fell quiet for longer than a reply takes, but they are still right here.
+	binding.note_candidate(person)
+	binding.engage_candidate()
+	binding.partner_until = world.time - 1
+	var/lapsed = isnull(binding.current_partner())
+	var/company = binding.recent_company() == person
+	var/stays = controller.busy_away_from_post()
+	// Quiet for longer than the grace, and the NPC may go.
+	binding.partner_until = world.time - AGENT_POST_COMPANY_GRACE - 1
+	var/goes_after_grace = !controller.busy_away_from_post()
+	// Within the grace, but they walked out of view.
+	binding.partner_until = world.time - 1
+	var/turf/start = get_turf(person)
+	person.forceMove(far)
+	var/goes_when_left = !controller.busy_away_from_post()
+	person.forceMove(start)
+	// Another agent NPC is no company to keep.
+	binding.note_candidate(other)
+	binding.engage_candidate()
+	binding.partner_until = world.time - 1
+	var/npc_is_company = !isnull(binding.recent_company())
+	binding.end_conversation()
+	var/free_again = !controller.busy_away_from_post()
+
+	// An act is never left mid-way, even once the yes behind it has run out.
+	controller.grant_consent(person)
+	var/datum/sex_scene_controller/scene = barmaid.open_sex_scene(person, FALSE)
+	var/datum/sex_action/act = scene?.try_start_action(/datum/sex_action/rub_body, "unit_test")
+	controller.withdraw_consent(person)
+	var/consent_gone = !controller.has_live_consent()
+	var/stays_in_act = act && controller.busy_away_from_post()
+	act?.scene?.stop_action(act)
+	var/free_after_act = !controller.busy_away_from_post()
+
+	agent_test_restore_subsystem(saved, binding)
+	SSagent_npc.unregister_pawn(other_controller.binding, "test teardown")
+	TEST_ASSERT(lapsed, "Setup failed: the conversation must have lapsed.")
+	TEST_ASSERT(company, "The person it talked with, still in view, is company.")
+	TEST_ASSERT(stays, "So the NPC stays, however slowly they type.")
+	TEST_ASSERT(goes_after_grace, "Quiet past the grace, it may go home.")
+	TEST_ASSERT(goes_when_left, "Once they walk out of view, it may go home.")
+	TEST_ASSERT(!npc_is_company, "Another agent NPC is not company.")
+	TEST_ASSERT(free_again, "Nothing else holds it.")
+	TEST_ASSERT_NOTNULL(act, "Setup failed: the act must start.")
+	TEST_ASSERT(consent_gone, "Setup failed: the yes must be withdrawn.")
+	TEST_ASSERT(stays_in_act, "Mid-act, it stays even without a live yes.")
+	TEST_ASSERT(free_after_act, "The act over, nothing holds it.")
+
 /datum/unit_test/agent_npc_walks_back_to_its_post
 
 /datum/unit_test/agent_npc_walks_back_to_its_post/Run()

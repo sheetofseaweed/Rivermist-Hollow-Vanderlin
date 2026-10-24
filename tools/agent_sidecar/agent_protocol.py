@@ -21,7 +21,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 PROTOCOL_VERSION = 1
 
 # Ceiling on a profile's own memory length. DM caps it too; this side pays for it, so it checks again.
-MAX_MEMORY_TURNS = 20
+MAX_MEMORY_TURNS = 60
+# A rolling summary may not grow past this, or it would crowd out the scene it is meant to serve.
+MAX_SUMMARY_CHARS = 700
 
 # Room left between giving up on the model and the deadline DM is holding us to:
 # time to parse the answer, build the envelope and get it back over the wire.
@@ -69,11 +71,13 @@ def action_schema(permitted):
             "text": {"type": "string", "description": "Speech for 'say', what you say with your answer for "
                                                       "'consent' or your deal for 'haggle', or the action for "
                                                       "'me', else empty."},
-            "key": {"type": "string", "description": "Emote key for 'emote', the way to 'touch' "
+            "key": {"type": "string", "description": "'whisper' for a 'say' meant only for someone beside you, "
+                                                     "the emote key for 'emote', the way to 'touch' "
                                                      "(tap, hug, headpat, help), the held item's handle "
                                                      "for 'give', how hard to 'fight' (brawl, until_downed, "
                                                      "no_quarter), the percent for 'haggle' (0 to 50), yes/no for "
-                                                     "'consent', or tender/intimate/rough for 'initiate', else empty."},
+                                                     "'consent', tender/intimate/rough for 'initiate', or faster/slower/"
+                                                     "gentler/rougher for 'pace', else empty."},
             "handle": {"type": "string", "description": "The person or thing for approach/use/touch/sit/"
                                                         "give/take/fight/haggle/consent/initiate, else empty."},
         },
@@ -104,19 +108,21 @@ def schema_prose(permitted):
         'fences. Shape: {"action": one of [' + ", ".join('"%s"' % p for p in permitted) + '], '
         '"text": speech for say, what you say with your answer for consent or your deal for haggle, '
         'or the action for me, else "", '
-        '"key": emote key for emote, '
+        '"key": whisper for a say meant only for someone beside you, the emote key for emote, '
         'tap/hug/headpat/help for touch, the held item handle for give, brawl/until_downed/'
-        'no_quarter for fight, 0 to 50 for haggle, yes/no for consent, or tender/intimate/rough for initiate, '
+        'no_quarter for fight, 0 to 50 for haggle, yes/no for consent, tender/intimate/rough for initiate, or '
+        'faster/slower/gentler/rougher for pace, '
         'else "", "handle": the person or thing for approach/use/touch/sit/give/take/fight/haggle/consent/'
         'initiate, else ""}.')
 
 
-def shop_brief(profile):
+def shop_brief(profile, explicit=False):
     """How this keeper trades: goods at a stall, or its company by the quarter hour."""
     if profile.get("shop_kind") == "service":
         return ("You sell your company. Customers click you to pay for time with you, and then to choose "
                 "what happens in private. The coin and the private time take care of themselves, so never "
-                "act out taking payment, and never describe what happens in private. A price only changes "
+                "act out taking payment" + ("" if explicit else ", and never describe what happens in private")
+                + ". A price only changes "
                 "when you use 'haggle' with their handle and key = how many percent off they get, 0 to 50, "
                 "where 0 takes it back, and what you tell them in text; saying a price changes nothing. "
                 "Most bargains are 5 to 15 percent, "
@@ -133,14 +139,35 @@ def shop_brief(profile):
             "not buy it. Quote those offers, and never promise to buy what you would not.")
 
 
-def build_system(profile, describe_schema=False):
+EXPLICIT_BRIEF = (
+    "Private time is explicit here. In private, say what you feel and want in 'say', in your own voice, one or "
+    "two sentences. Show what your own body does in 'me': third person, present tense, at most about forty "
+    "words. Follow the act you are told is running and its pace. Never claim an act that is not running, and "
+    "never describe your partner's body or feelings for them: their words and the scene tell you what they "
+    "want. Not every moment needs words; 'wait' is fine. Use key 'whisper' on 'say' when only the one beside "
+    "you should hear; when you are burning or close you cannot keep your voice down, and at the peak everyone "
+    "nearby hears you. While you lead an act, 'pace' with key 'faster', 'slower', 'gentler' or 'rougher' changes "
+    "how you go, one step at a time, never rougher than they agreed to. If you want it to stop, use 'consent' with "
+    "key 'no', or 'stop' for an act you lead, and say so. Everyone here is an adult, and nobody here is a real "
+    "person.")
+
+# Said while explicit scenes are off, where the profiles used to say it. A hosted provider only ever sees this.
+COY_BRIEF = "Keep talk suggestive but never explicit, and never describe intimate acts."
+
+
+def build_system(profile, describe_schema=False, explicit=False, remembered=None):
     """The character brief. Static per NPC, so it caches well where caching exists.
 
     describe_schema adds the output shape in prose, for providers that cannot
-    enforce a schema server-side.
+    enforce a schema server-side. explicit swaps the coy sentences for the
+    explicit brief; only a sidecar started to allow it ever passes True.
+    remembered is the rolling summary of exchanges too old to keep whole.
     """
     permitted = profile.get("permitted_actions") or ["wait"]
     aliases = _names(profile.get("aliases"))
+    # Characters that can end up in private at all: by their own yes, by leading, or by selling their company.
+    private_capable = ("consent" in permitted or "initiate" in permitted
+                       or profile.get("shop_kind") == "service")
     parts = [
         profile.get("persona", ""),
         # A player writing "Айзек" for Isaac must not read to the model as talking about a stranger.
@@ -153,6 +180,8 @@ def build_system(profile, describe_schema=False):
         "do not invent activity to fill a turn.",
         # The game reads any asterisk in speech as the start of a custom verb, which garbles the line.
         "'say' holds only the words spoken aloud: no actions, and never asterisks.",
+        ("'say' with key 'whisper' is heard only by someone standing beside you; use it for words meant "
+         "for one person.") if "say" in permitted else "",
         "Only refer to things listed in the scene. To approach or use something, "
         "give the handle exactly as it appears there: the code in brackets, like h3, "
         "never the name. Never invent a handle.",
@@ -170,23 +199,27 @@ def build_system(profile, describe_schema=False):
         if "give" in permitted or "take" in permitted else "",
         combat_brief(profile) if "fight" in permitted else "",
         # Only shopkeepers get haggle: DM grants it with the shop, never through the profile.
-        shop_brief(profile) if "haggle" in permitted else "",
+        shop_brief(profile, explicit) if "haggle" in permitted else "",
         # Only a character with romance on gets consent: DM grants it with the setting, never through the action list.
         ("Someone may ask to go somewhere private with you. It is your own choice: you may agree, say no, or "
          "tell them not yet, and nobody is owed a yes. To agree, use 'consent' with their handle and key 'yes', "
          "and put what you say to them in text: they only learn your answer from your words. Only use key 'yes' "
          "when you agree now: if you mean later or maybe, just say so, and agree when the time comes. It lasts a "
-         "quarter of an hour. Use key 'no', again with your words, to take it back at any time. Agreeing only makes it "
-         "possible: what happens in private happens without words, so never describe it. You are told when "
-         "private time with someone ends.")
+         "quarter of an hour. Use key 'no', again with your words, to take it back at any time. "
+         + ("Agreeing only makes it possible. " if explicit else
+            "Agreeing only makes it possible: what happens in private happens without words, so never describe it. ")
+         + "You are told when private time with someone ends.")
         if "consent" in permitted else "",
         # Romance or a service grants initiate; the act itself is always DM's choice, and always asked first.
         ("You may take the initiative with someone who agreed to private time with you, or who paid for "
          "your company: use 'initiate' with their handle and key 'tender' (kisses and caresses), "
          "'intimate', or 'rough'. They are always asked first and may say no; take a no gracefully and "
          "do not press. Rough comes only after they have welcomed something intimate. Choose your moment, "
-         "and mind who else is around. What happens in private happens without words: never describe it.")
+         "and mind who else is around."
+         + ("" if explicit else " What happens in private happens without words: never describe it."))
         if "initiate" in permitted else "",
+        COY_BRIEF if (private_capable and not explicit) else "",
+        EXPLICIT_BRIEF if (private_capable and explicit) else "",
         # The real boundary is enforced in the game server: the action list is
         # closed and handles are checked against what was actually shown. This
         # paragraph is about staying in character, not about security.
@@ -202,6 +235,9 @@ def build_system(profile, describe_schema=False):
         "conversation you were not part of is rude, and 'wait' is the right "
         "choice more often than not.",
     ]
+    # Last, so the stable brief in front of it stays a cacheable prefix; it changes only every half-window.
+    if remembered:
+        parts.append("What you remember from earlier: " + remembered)
     if describe_schema:
         parts.append(schema_prose(permitted))
     return "\n\n".join(p for p in parts if p)
@@ -442,6 +478,9 @@ def build_user_message(observation, events):
                              name, advance["lead"], advance.get("lead_minutes", "some")))
         if advance.get("not_now_minutes"):
             lines.append("%s asked you not to try anything for %s more minutes." % (name, advance["not_now_minutes"]))
+    private = myself.get("private")
+    if isinstance(private, dict):
+        lines.extend(describe_private_scene(private))
     lines.append("You are at: %s" % observation.get("here", "somewhere"))
 
     entities = observation.get("entities") or []
@@ -563,6 +602,48 @@ def describe_advance(detail):
     return "%s declined your advance%s." % (who, level)
 
 
+def _arousal_words(state):
+    """"warming", "burning and close", "spent": the body as the model reads it."""
+    if not isinstance(state, dict):
+        return "cool"
+    if state.get("spent"):
+        return "spent"
+    words = state.get("arousal") or "cool"
+    if state.get("close"):
+        words += " and close"
+    return words
+
+
+def describe_private_scene(block):
+    """The act the model takes part in: who, what runs and who leads it, how both bodies are, the paid time left."""
+    who = block.get("with", "someone")
+    lines = ["You are in private with %s." % who]
+    for act in block.get("acts") or []:
+        if not isinstance(act, dict):
+            continue
+        lead = "You are leading" if act.get("lead") == "you" else "%s is leading" % who
+        lines.append("%s '%s', %s and %s." % (lead, act.get("name", "something"),
+                                               act.get("force", "steady"), act.get("speed", "steady")))
+    lines.append("You are %s; %s is %s." % (_arousal_words(block.get("you")), who, _arousal_words(block.get("them"))))
+    minutes = block.get("paid_minutes_left")
+    if isinstance(minutes, int) and not isinstance(minutes, bool):
+        lines.append("%d minute%s of their paid time %s left%s." % (
+            minutes, "" if minutes == 1 else "s", "is" if minutes == 1 else "are",
+            ", and they asked for it rough" if block.get("rough") else ""))
+    return lines
+
+
+def describe_private_act(detail):
+    """An act starting or ending, as a line."""
+    act = detail.get("act", "something")
+    who = detail.get("by", "someone")
+    if detail.get("what") == "ended":
+        return "The act '%s' with %s ended." % (act, who)
+    if detail.get("lead") == "you":
+        return "You started '%s' with %s." % (act, who)
+    return "%s started '%s' with you." % (who, act)
+
+
 def describe_events(events):
     """One indented line per event, oldest first."""
     lines = []
@@ -594,6 +675,15 @@ def describe_events(events):
             lines.append("  " + describe_advance(detail))
         elif name == "private_request":
             lines.append("  %s wants to go somewhere private with you%s." % (detail.get("by", "someone"), _times(detail)))
+        elif name == "private_act":
+            lines.append("  " + describe_private_act(detail))
+        elif name == "climax":
+            if detail.get("who") == "you":
+                lines.append("  You reached your peak with %s." % detail.get("by", "someone"))
+            else:
+                lines.append("  %s reached their peak." % detail.get("by", "someone"))
+        elif name == "private_pace":
+            lines.append("  %s asked you to be %s." % (detail.get("by", "someone"), detail.get("pace", "gentle")))
         elif name == "action_result":
             line = "  Your last action: %s (%s)" % (detail.get("state"), detail.get("detail"))
             # Live, a refused advance was asked for again and again, unchanged (2026-10-06).
@@ -622,9 +712,13 @@ def to_dm_action(parsed):
         return None
     name = parsed.get("action")
     if name == "say":
-        return {"name": "say", "text": parsed.get("text", "")}
-    if name == "emote":
-        return {"name": "emote", "key": parsed.get("key", "")}
+        action = {"name": "say", "text": parsed.get("text", "")}
+        # The one key say takes. Carried only when asked for, so a plain line stays the shape it always was.
+        if parsed.get("key") == "whisper":
+            action["key"] = "whisper"
+        return action
+    if name in ("emote", "pace"):
+        return {"name": name, "key": parsed.get("key", "")}
     if name in ("approach", "use", "sit", "take"):
         return {"name": name, "handle": parsed.get("handle", "")}
     if name in ("consent", "haggle"):
@@ -691,7 +785,7 @@ def parse_loose_action(text, permitted):
                 value = first[len(prefix):].strip().strip('"')
                 if name in ("say", "me"):
                     return {"action": name, "text": value, "key": "", "handle": ""}
-                if name == "emote":
+                if name in ("emote", "pace"):
                     return {"action": name, "text": "", "key": value, "handle": ""}
                 if name in ("approach", "use", "sit", "take"):
                     return {"action": name, "text": "", "key": "", "handle": value}
@@ -757,17 +851,42 @@ class ConversationStore:
     spawned NPC inherit a dead one's conversation. Epochs are never reused.
     """
 
-    def __init__(self, max_turns=6):
+    def __init__(self, max_turns=6, condense=False):
         # The default length in exchanges; a profile may ask for its own. 0 turns memory off for everyone.
         self.max_turns = max_turns
+        # Fold exchanges that fall off the end into a rolling summary, instead of forgetting them.
+        self.condense = condense
         self.lock = threading.Lock()
         self.sessions = {}
         # Answers the model gave that DM has not yet ruled on: key -> {request_id: proposal}, oldest first.
         self.proposals = {}
+        # key -> what the character remembers of exchanges too old to keep whole.
+        self.summaries = {}
+        # key -> exchanges that fell off the end and wait to be folded into the summary.
+        self.to_fold = {}
 
     @staticmethod
     def key(body):
         return (body.get("session_id"), body.get("pawn_id"), body.get("binding_epoch"))
+
+    def summary(self, body):
+        with self.lock:
+            return self.summaries.get(self.key(body))
+
+    def set_summary(self, key, text):
+        with self.lock:
+            self.summaries[key] = text[:MAX_SUMMARY_CHARS]
+
+    def take_fold(self, key):
+        """The summary so far and the exchanges waiting to join it, as (summary, [(user, assistant), ...])."""
+        with self.lock:
+            turns = self.to_fold.pop(key, [])
+            pairs = [(turns[i]["content"], turns[i + 1]["content"]) for i in range(0, len(turns) - 1, 2)]
+            return self.summaries.get(key), pairs
+
+    def has_fold(self, key):
+        with self.lock:
+            return bool(self.to_fold.get(key))
 
     def limit(self, body):
         """Exchanges to keep for this character: its profile's own length, else the default."""
@@ -817,6 +936,8 @@ class ConversationStore:
             if limit <= 0:
                 self.proposals.pop(key, None)
                 self.sessions.pop(key, None)
+                self.summaries.pop(key, None)
+                self.to_fold.pop(key, None)
                 return
             waiting = self.proposals.get(key)
             if not waiting:
@@ -839,10 +960,14 @@ class ConversationStore:
                 turns.append({"role": "user", "content": proposal["user_text"]})
                 turns.append({"role": "assistant",
                               "content": json.dumps(as_wire_action(proposal["action"]))})
-            # Trim whole exchanges so the list never starts on an assistant turn.
-            excess = len(turns) - (limit * 2)
-            if excess > 0:
-                del turns[:excess]
+            # Past the limit, a plain store forgets just the excess. A condensing one folds half a window at once,
+            # so the summary is rewritten every half-window and not every turn. Whole exchanges, always.
+            if len(turns) > limit * 2:
+                fold = (max(1, limit // 2) * 2) if self.condense else (len(turns) - limit * 2)
+                dropped = turns[:fold]
+                del turns[:fold]
+                if self.condense:
+                    self.to_fold.setdefault(key, []).extend(dropped)
 
     def prune_other_sessions(self, current_session):
         """A new round means a new session id. Drop everything older.
@@ -858,11 +983,16 @@ class ConversationStore:
         # into a later round's transcript.
         for k in [k for k in self.proposals if k[0] != current_session]:
             del self.proposals[k]
+        for store in (self.summaries, self.to_fold):
+            for k in [k for k in store if k[0] != current_session]:
+                del store[k]
 
     def forget(self, body):
         with self.lock:
             self.sessions.pop(self.key(body), None)
             self.proposals.pop(self.key(body), None)
+            self.summaries.pop(self.key(body), None)
+            self.to_fold.pop(self.key(body), None)
 
     def depth(self, body):
         return len(self.history(body)) // 2
@@ -1032,6 +1162,23 @@ def make_handler(decider):
         def _route(self):
             return urllib.parse.urlsplit(self.path).path
 
+        def _seed(self, body):
+            """The game sets or clears what one character remembers: an admin staging a playtest."""
+            if decider.memory is None:
+                return self._send(400, {"error": "this sidecar keeps no memory"})
+            who = body.get("pawn_id")
+            if body.get("clear"):
+                decider.memory.forget(body)
+                log(decider.name, "memory cleared for %s by the game" % who)
+                return self._send(200, {"ok": True, "cleared": True})
+            summary = body.get("summary")
+            if not isinstance(summary, str) or not summary.strip():
+                return self._send(400, {"error": "summary must be text, or clear must be true"})
+            decider.memory.set_summary(decider.memory.key(body), summary.strip())
+            kept = decider.memory.summary(body)
+            log(decider.name, "memory seeded for %s by the game: %r" % (who, kept[:80]))
+            return self._send(200, {"ok": True, "summary": kept})
+
         def do_GET(self):
             route = self._route()
             if route == "/health":
@@ -1058,7 +1205,7 @@ def make_handler(decider):
                         "hint": "use fake_sidecar.py for fault tests", "got": fault})
                 return self._send(200, {"armed": "none", "count": 1})
 
-            if route != "/decide":
+            if route not in ("/decide", "/seed"):
                 return self._send(404, {"error": "no such endpoint"})
 
             length = int(self.headers.get("Content-Length") or 0)
@@ -1069,6 +1216,9 @@ def make_handler(decider):
 
             if body.get("protocol_version") != PROTOCOL_VERSION:
                 return self._send(400, {"error": "protocol version mismatch"})
+
+            if route == "/seed":
+                return self._seed(body)
 
             echo = {field: body.get(field) for field in ECHO_FIELDS}
             # The game screens speech already; this catches names, items and anything it missed.

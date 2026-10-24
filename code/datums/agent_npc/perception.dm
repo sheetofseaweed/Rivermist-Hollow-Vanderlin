@@ -159,6 +159,11 @@
 		var/list/advances = agent.describe_advances()
 		if(length(advances))
 			myself["advances"] = advances
+	// The act the model takes part in, only while every explicit gate is open.
+	if(istype(agent) && agent.binding?.in_private_explicit())
+		var/list/private = agent.describe_private()
+		if(private)
+			myself["private"] = private
 	if(istype(agent) && agent.in_combat())
 		var/mob/living/foe = agent.blackboard[BB_AGENT_COMBAT_TARGET]
 		myself["fighting"] = list("name" = foe.get_visible_name(), "level" = agent.blackboard[BB_AGENT_COMBAT_LEVEL])

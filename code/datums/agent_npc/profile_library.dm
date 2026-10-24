@@ -29,6 +29,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	copy.combat_retaliate = combat_retaliate
 	copy.combat_initiate = combat_initiate
 	copy.romance = romance
+	copy.explicit = explicit
 	return copy
 
 /// A whole number of exchanges within the ceiling, or null for the sidecar default.
@@ -75,7 +76,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 			if(!istext(entry) || !(entry in GLOB.agent_action_vocabulary))
 				continue
 			// Granted by the combat limits, a shop or the romance setting instead, so a saved list cannot smuggle them in.
-			if((entry in GLOB.agent_combat_actions) || (entry in GLOB.agent_shop_actions) || (entry in GLOB.agent_romance_actions))
+			if((entry in GLOB.agent_combat_actions) || (entry in GLOB.agent_shop_actions) || (entry in GLOB.agent_romance_actions) || (entry in GLOB.agent_private_granted_actions))
 				continue
 			if(entry in cleaned)
 				continue
@@ -101,6 +102,7 @@ GLOBAL_LIST_INIT(agent_profile_text_fields, list("label", "persona", "background
 	profile.combat_initiate = agent_clean_combat_level(payload["combat_initiate"])
 	// Only a real true turns it on: a hand-edited "no" is text, and text is truthy in DM.
 	profile.romance = (payload["romance"] == TRUE)
+	profile.explicit = (payload["explicit"] == TRUE)
 	return profile
 
 /// Every built-in profile, as payloads. Instantiated, never read via initial():

@@ -19,7 +19,7 @@ GLOBAL_LIST_INIT(agent_romance_actions, list("consent", "initiate"))
 	if(istext(words) && length(words))
 		var/list/said = agent_execute_say(pawn, words)
 		if(said["state"] == AGENT_RESULT_SUCCEEDED)
-			return said["detail"] == "spoke"
+			return agent_said_words(said)
 	// Forced, or the throttle left by any recent emote swallows the answer.
 	if(!QDELETED(pawn) && pawn.stat < UNCONSCIOUS)
 		pawn.emote(answer ? "nod" : "shakehead", forced = TRUE)
@@ -120,6 +120,8 @@ GLOBAL_LIST_INIT(agent_romance_actions, list("consent", "initiate"))
 	romance_timer = null
 	if(QDELETED(pawn))
 		return
+	// What started or ended since the last look, for a model that takes part.
+	note_private_acts()
 	for(var/datum/weakref/reference as anything in consents?.Copy())
 		if(consents[reference] > world.time)
 			continue

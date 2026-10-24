@@ -64,6 +64,10 @@ FAULTS = (
 )
 
 
+# What this sidecar says it is, on every reply. --explicit and --screen change it for a test.
+CAPABILITIES = {"adapter": "fake", "explicit": False, "screening": "block"}
+
+
 class State:
     """Armed fault plus enough request history to forge stale replies."""
 
@@ -175,7 +179,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         route = self._route()
         if route == "/health":
-            self._send(200, {"ok": True, "protocol_version": PROTOCOL_VERSION})
+            self._send(200, {"ok": True, "protocol_version": PROTOCOL_VERSION, "capabilities": dict(CAPABILITIES)})
         elif route == "/control":
             with STATE.lock:
                 self._send(200, {
@@ -193,6 +197,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._handle_control()
         if route == "/decide":
             return self._handle_decide()
+        if route == "/seed":
+            # The fake keeps no memory; it only lets the game's staging verbs round-trip.
+            self._read_json()
+            return self._send(200, {"ok": True, "fake": True})
         self._send(404, {"error": "no such endpoint"})
 
     def _handle_control(self):
@@ -253,6 +261,7 @@ class Handler(BaseHTTPRequestHandler):
                 identity = older
 
         payload = decision_for(body, identity)
+        payload["capabilities"] = dict(CAPABILITIES)
 
         if fault == "refusal":
             payload["action"] = None
@@ -274,7 +283,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default="127.0.0.1", help="loopback by default; do not expose")
     parser.add_argument("--port", type=int, default=1340)
+    parser.add_argument("--explicit", action="store_true", help="advertise an uncensored model, as the local sidecar would")
+    parser.add_argument("--screen", choices=("block", "log"), default="block", help="the screen mode to advertise")
     args = parser.parse_args()
+    CAPABILITIES.update({"explicit": bool(args.explicit), "screening": args.screen})
 
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     sys.stderr.write("[fake-sidecar] listening on %s:%d\n" % (args.host, args.port))

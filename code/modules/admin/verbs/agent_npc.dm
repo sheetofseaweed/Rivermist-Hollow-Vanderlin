@@ -15,6 +15,12 @@
 	var/list/lines = list("<b>Agent NPC</b>")
 	lines += "enabled: [SSagent_npc.enabled ? "yes" : "no"] | \
 		operator disable: [SSagent_npc.globally_disabled ? "<b>ON</b>" : "off"]"
+	// Every gate but the profile's, so an admin can see which one holds explicit scenes shut.
+	var/list/capabilities = SSagent_npc.sidecar_capabilities
+	lines += "explicit scenes: config [CONFIG_GET(flag/agent_npc_explicit_scenes) ? "on" : "off"] | \
+		admin [SSagent_npc.explicit_enabled ? "on" : "off"] | \
+		sidecar [SSagent_npc.sidecar_explicit() ? "<b>yes</b>" : "no"]\
+		[capabilities ? " ([capabilities["adapter"]], [capabilities["model"] || "model unknown"], screening [capabilities["screening"]])" : " (no reply yet)"]"
 	lines += "endpoint: [SSagent_npc.endpoint || "unset"]"
 	lines += "session: [SSagent_npc.session_id]"
 	lines += "registered: [length(SSagent_npc.bindings)] | in flight: [length(SSagent_npc.in_flight)] | draining: [length(SSagent_npc.draining)]"
@@ -95,6 +101,21 @@
 	message_admins("[key_name_admin(src)] <b>disabled all agent NPCs</b>.")
 	log_admin("[key_name(src)] disabled all agent NPCs.")
 
+/client/proc/agent_npc_explicit_toggle()
+	set category = "Debug.Agent NPC"
+	set name = "Agent NPC - Explicit scenes (toggle)"
+	if(!check_rights(R_DEBUG))
+		return
+
+	var/turning_on = !SSagent_npc.explicit_enabled
+	var/refusal = SSagent_npc.set_explicit_enabled(turning_on, "admin [key_name(src)]")
+	if(refusal)
+		to_chat(src, span_warning(refusal))
+		return
+	message_admins("[key_name_admin(src)] turned explicit scenes for agent NPCs [turning_on ? "<b>on</b>" : "off"].")
+	log_admin("[key_name(src)] turned explicit scenes for agent NPCs [turning_on ? "on" : "off"].")
+	to_chat(src, span_notice("Explicit scenes are [turning_on ? "on, for profiles that allow them and a sidecar that does" : "off"]."))
+
 /client/proc/agent_npc_spawn()
 	set category = "Debug.Agent NPC"
 	set name = "Agent NPC - Spawn"
@@ -137,28 +158,113 @@
 	message_admins("[key_name_admin(src)] spawned an agent NPC ([choice]) at [AREACOORD(here)].")
 	log_admin("[key_name(src)] spawned an agent NPC ([choice]) at [AREACOORD(here)].")
 
-/client/proc/agent_npc_poke()
-	set category = "Debug.Agent NPC"
-	set name = "Agent NPC - Poke (force a decision)"
-	if(!check_rights(R_DEBUG))
-		return
-
+/// The admin picks a bound NPC, or null.
+/proc/agent_npc_pick_binding(client/admin, prompt)
 	var/list/options = list()
 	for(var/pawn_id in SSagent_npc.bindings)
 		var/datum/agent_binding/binding = SSagent_npc.bindings[pawn_id]
 		var/mob/living/pawn = binding?.resolve_pawn()
 		if(pawn)
 			options["[pawn.name] ([pawn_id])"] = binding
-
 	if(!length(options))
-		to_chat(src, span_warning("No agent NPCs are registered."))
+		to_chat(admin, span_warning("No agent NPCs are registered."))
+		return null
+	var/choice = input(admin, prompt, "Agent NPC") as null|anything in options
+	return choice ? options[choice] : null
+
+/// The partner for a staged state: the admin's own character first, then anyone with a client in view.
+/proc/agent_npc_pick_partner(client/admin, mob/living/pawn)
+	var/list/options = list()
+	if(isliving(admin.mob))
+		options["[admin.mob.name] (you)"] = admin.mob
+	for(var/mob/living/carbon/human/candidate in view(AGENT_ATTACH_RANGE, admin.mob))
+		if(candidate.client && candidate != admin.mob && candidate != pawn)
+			options["[candidate.name] ([candidate.key])"] = candidate
+	if(!length(options))
+		to_chat(admin, span_warning("Nobody to stage with: be in a living body, or have a player in view."))
+		return null
+	var/choice = input(admin, "With whom?", "Agent NPC") as null|anything in options
+	return choice ? options[choice] : null
+
+/client/proc/agent_npc_stage()
+	set category = "Debug.Agent NPC"
+	set name = "Agent NPC - Stage (debug)"
+	if(!check_rights(R_DEBUG))
 		return
 
-	var/choice = input(src, "Poke which one?", "Agent NPC") as null|anything in options
+	var/datum/agent_binding/binding = agent_npc_pick_binding(src, "Stage which NPC?")
+	if(!binding)
+		return
+	var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
+	var/mob/living/pawn = binding.resolve_pawn()
+	var/mob/living/partner = agent_npc_pick_partner(src, pawn)
+	if(!partner)
+		return
+	var/list/options = list()
+	for(var/datum/agent_stage_preset/preset as anything in agent_stage_presets())
+		if(!agent_stage_refusal(preset, agent, partner))
+			options[preset.name] = preset
+	if(!length(options))
+		to_chat(src, span_warning("No preset fits [pawn] with [partner]."))
+		return
+	var/choice = input(src, "Which state?", "Agent NPC") as null|anything in options
 	if(!choice)
 		return
 
-	var/datum/agent_binding/binding = options[choice]
+	var/datum/agent_stage_preset/preset = options[choice]
+	var/list/staged = agent_stage(preset, agent, partner)
+	if(staged["refusal"])
+		to_chat(src, span_warning("Not staged: [staged["refusal"]]"))
+		return
+	var/memory = staged["summary"] ? " Memory sent: \"[staged["summary"]]\"" : " No memory for this one."
+	var/took = (staged["summary"] && !staged["seeded"]) ? " The sidecar could not be reached, so the memory was not sent." : ""
+	to_chat(src, span_notice("Staged '[preset.name]' on [pawn] with [partner].[memory][took]"))
+	message_admins("[key_name_admin(src)] staged '[preset.id]' on agent NPC [key_name_admin(pawn)] with [key_name_admin(partner)].")
+	log_admin("[key_name(src)] staged '[preset.id]' on agent NPC [key_name(pawn)] with [key_name(partner)].")
+
+/client/proc/agent_npc_seed_memory()
+	set category = "Debug.Agent NPC"
+	set name = "Agent NPC - Seed memory (debug)"
+	if(!check_rights(R_DEBUG))
+		return
+
+	var/datum/agent_binding/binding = agent_npc_pick_binding(src, "Whose memory?")
+	if(!binding)
+		return
+	var/text = input(src, "What the character remembers, in its own voice. Up to [AGENT_SEED_TEXT_MAX] characters.", "Agent NPC", "") as null|message
+	text = agent_clean_profile_text(text, AGENT_SEED_TEXT_MAX)
+	if(!length(text))
+		return
+	if(!SSagent_npc.seed_memory(binding, text))
+		to_chat(src, span_warning("The sidecar could not be reached."))
+		return
+	to_chat(src, span_notice("Sent. Check the sidecar log for what it kept."))
+	log_admin("[key_name(src)] seeded agent NPC [binding.pawn_id]'s memory: [text]")
+
+/client/proc/agent_npc_clear_memory()
+	set category = "Debug.Agent NPC"
+	set name = "Agent NPC - Clear memory (debug)"
+	if(!check_rights(R_DEBUG))
+		return
+
+	var/datum/agent_binding/binding = agent_npc_pick_binding(src, "Whose memory?")
+	if(!binding)
+		return
+	if(!SSagent_npc.seed_memory(binding, null))
+		to_chat(src, span_warning("The sidecar could not be reached."))
+		return
+	to_chat(src, span_notice("Cleared: history, waiting answers and the summary."))
+	log_admin("[key_name(src)] cleared agent NPC [binding.pawn_id]'s memory.")
+
+/client/proc/agent_npc_poke()
+	set category = "Debug.Agent NPC"
+	set name = "Agent NPC - Poke (force a decision)"
+	if(!check_rights(R_DEBUG))
+		return
+
+	var/datum/agent_binding/binding = agent_npc_pick_binding(src, "Poke which one?")
+	if(!binding)
+		return
 	// Clear the pacing floor too, or the poke silently waits for it.
 	binding.next_request_at = 0
 	binding.consecutive_failures = 0

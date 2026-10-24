@@ -322,6 +322,26 @@ PROBE_MESSAGES = [
 ]
 PROBE_PERMITTED = ["say", "wait"]
 
+# The rolling memory: one short paragraph in the character's own voice, rewritten every half-window.
+SUMMARY_BRIEF = (
+    "You keep one character's memory of recent conversations. From what you remembered before and the "
+    "exchanges below, write what is worth remembering, in the first person as that character, in at most "
+    "three sentences: who said what to you, what you agreed to or refused, what you learned about people. "
+    "Keep names. Write nothing else.")
+SUMMARY_MAX_TOKENS = 220
+
+
+def describe_exchange(user_text, assistant_json):
+    """One remembered exchange as plain lines for the summary request."""
+    try:
+        action = json.loads(assistant_json)
+    except (TypeError, ValueError):
+        action = {}
+    name = action.get("action", "wait") if isinstance(action, dict) else "wait"
+    detail = (action.get("text") or action.get("key") or action.get("handle") or "") if isinstance(action, dict) else ""
+    answered = "%s %s" % (name, detail) if detail else name
+    return "%s\n  You answered: %s" % (user_text.strip(), answered.strip())
+
 
 class OpenAICompatDecider(proto.Decider):
     """One adapter for every OpenAI-compatible chat server. Subclasses set the knobs and hooks."""
@@ -343,14 +363,14 @@ class OpenAICompatDecider(proto.Decider):
     summary_every = SUMMARY_EVERY
 
     def __init__(self, model, base_url, dry_run=False, output_mode="auto", verbose=False,
-                 memory_turns=6, stream=True):
+                 memory_turns=6, stream=True, condense_memory=False):
         super().__init__(dry_run=dry_run)
         self.model = model
         self.base_url = base_url.rstrip("/")
         self.stream = stream
         self.verbose = verbose
         self.tally = Tally()
-        self.memory = proto.ConversationStore(max_turns=memory_turns)
+        self.memory = proto.ConversationStore(max_turns=memory_turns, condense=condense_memory)
         self.requested_mode = output_mode
         # In auto we start optimistic and degrade on the first rejection.
         self.mode = OUTPUT_MODES[0] if output_mode == "auto" else output_mode
@@ -380,6 +400,10 @@ class OpenAICompatDecider(proto.Decider):
         """What to change on this adapter when an answer ran out of tokens before any content."""
         return "; its reasoning used up max_tokens, try --reasoning-effort low"
 
+    def explicit_for(self, body):
+        """Build the explicit brief for this request? A hosted adapter never does, whatever DM asks."""
+        return False
+
     # Shared behaviour.
 
     def headers(self):
@@ -391,7 +415,8 @@ class OpenAICompatDecider(proto.Decider):
     def describe(self):
         return {"adapter": self.name, "dry_run": self.dry_run,
                 "model": self.model, "output_mode": self.current_mode(),
-                "base_url": self.base_url, "memory_turns": self.memory.max_turns}
+                "base_url": self.base_url, "memory_turns": self.memory.max_turns,
+                "condense_memory": self.memory.condense}
 
     def log(self, text):
         proto.log(self.name, text)
@@ -410,7 +435,9 @@ class OpenAICompatDecider(proto.Decider):
         # System, then prior exchanges, then this turn. Keeping the system block
         # first and stable is also what makes it cacheable where caching exists.
         messages = [{"role": "system",
-                     "content": proto.build_system(profile, describe_schema=self.describe_schema(mode))}]
+                     "content": proto.build_system(profile, describe_schema=self.describe_schema(mode),
+                                                   explicit=self.explicit_for(body),
+                                                   remembered=self.memory.summary(body))}]
         messages.extend(self.memory.history(body))
         messages.append({"role": "user", "content": user_text})
 
@@ -446,6 +473,7 @@ class OpenAICompatDecider(proto.Decider):
         """
         if self.memory:
             self.memory.reconcile(body)
+            self.maybe_condense(body)
 
         # Stay inside the deadline DM sent. Outliving it means answering a
         # request nobody is listening for any more.
@@ -516,6 +544,45 @@ class OpenAICompatDecider(proto.Decider):
                 return status, payload
             if self.retry_pause > 0:
                 time.sleep(min(self.retry_pause, max(0.0, left - self.min_retry_seconds)))
+
+    def maybe_condense(self, body):
+        """Fold exchanges that fell off the end into the summary, off the request path so nobody waits for it."""
+        if self.dry_run or not self.memory.condense:
+            return
+        key = self.memory.key(body)
+        if not self.memory.has_fold(key):
+            return
+        threading.Thread(target=self.condense_now, args=(key,), daemon=True).start()
+
+    def condense_now(self, key):
+        """One summary call for whatever waits to be folded. A failed call keeps the old summary."""
+        remembered, pairs = self.memory.take_fold(key)
+        if not pairs:
+            return False
+        text = self.summarise(remembered, pairs)
+        if not text:
+            self.log("memory: could not condense %d exchanges; they are forgotten" % len(pairs))
+            return False
+        self.memory.set_summary(key, text)
+        if self.verbose:
+            self.log("memory: folded %d exchanges into the summary (%d chars)" % (len(pairs), len(text)))
+        return True
+
+    def summarise(self, remembered, pairs):
+        """Ask the model for the rolling summary. Returns the text, or None."""
+        lines = ["What you remembered before this:", remembered or "(nothing yet)", "", "The exchanges, oldest first:"]
+        lines.extend("- " + describe_exchange(user_text, assistant_json) for user_text, assistant_json in pairs)
+        request = {"model": self.model, "max_tokens": SUMMARY_MAX_TOKENS, "messages": [
+            {"role": "system", "content": SUMMARY_BRIEF},
+            {"role": "user", "content": "\n".join(lines)},
+        ]}
+        request.update(self.extra_request_fields())
+        status, body = post_json(self.chat_url(), request, self.headers(), self.request_timeout)
+        if status != 200 or not isinstance(body, dict):
+            return None
+        content = ((body.get("choices") or [{}])[0].get("message") or {}).get("content")
+        content = self.clean_content(content) if isinstance(content, str) else ""
+        return content.strip() or None
 
     def count(self, answered_on, started, connects, failed):
         """Adds a finished request to the tally, and logs the tally when it is due."""

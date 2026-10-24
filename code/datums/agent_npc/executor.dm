@@ -46,7 +46,7 @@
 /proc/agent_result(state, detail)
 	return list("state" = state, "detail" = detail)
 
-/proc/agent_execute_say(mob/living/pawn, text)
+/proc/agent_execute_say(mob/living/pawn, text, wants_whisper = FALSE)
 	if(QDELETED(pawn) || !isliving(pawn))
 		return agent_result(AGENT_RESULT_REJECTED, "no pawn to speak with")
 	if(pawn.stat >= UNCONSCIOUS)
@@ -61,15 +61,29 @@
 	if(!cleaned && !may_act)
 		return agent_result(AGENT_RESULT_REJECTED, "nothing left after sanitising")
 
+	var/detail = "acted"
 	if(cleaned)
 		// say() only runs the IC filter when a client is present, so a clientless
 		// agent pawn bypasses it entirely. Run it here or it never runs.
 		if(CHAT_FILTER_CHECK(cleaned))
 			return agent_result(AGENT_RESULT_REJECTED, "blocked by the IC filter")
-		pawn.say(cleaned, forced = TRUE)
+		// The model chooses to whisper; who stands beside it and how far gone it is decide whether it can.
+		var/list/voice = agent_pick_voice(pawn, wants_whisper)
+		switch(voice["voice"])
+			if("whisper")
+				pawn.whisper(cleaned, forced = TRUE)
+				detail = "whispered"
+			if("shout")
+				pawn.say(agent_shouted(cleaned), forced = TRUE)
+				detail = "shouted"
+			else
+				pawn.say(cleaned, forced = TRUE)
+				detail = "spoke"
+		if(voice["note"])
+			detail += ": [voice["note"]]"
 	if(may_act)
 		agent_execute_me(pawn, jointext(actions, ", "))
-	return agent_result(AGENT_RESULT_SUCCEEDED, cleaned ? "spoke" : "acted")
+	return agent_result(AGENT_RESULT_SUCCEEDED, detail)
 
 /proc/agent_execute_emote(mob/living/pawn, key)
 	// Closed allowlist of verified keys. An agent cannot reach arbitrary emotes.
@@ -148,14 +162,14 @@
 	return jointext(words, " ")
 
 /// The NPC's own custom emote: a small action in its own words, never speech.
-/proc/agent_execute_me(mob/living/pawn, text)
+/proc/agent_execute_me(mob/living/pawn, text, cap = AGENT_ME_TEXT_MAX)
 	if(QDELETED(pawn) || !isliving(pawn))
 		return agent_result(AGENT_RESULT_REJECTED, "no pawn to act with")
 	if(pawn.stat >= UNCONSCIOUS)
 		return agent_result(AGENT_RESULT_REJECTED, "cannot act right now")
 	var/cleaned = agent_clean_emote_text(text)
 	if(cleaned)
-		cleaned = trim(copytext_char(agent_strip_own_name(pawn, cleaned), 1, AGENT_ME_TEXT_MAX + 1))
+		cleaned = trim(copytext_char(agent_strip_own_name(pawn, cleaned), 1, cap + 1))
 	if(!length(cleaned))
 		return agent_result(AGENT_RESULT_REJECTED, "nothing left after cleaning")
 	// Words belong in say, which runs language and the speech filters. An emote that talks skips both.

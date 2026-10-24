@@ -21,6 +21,8 @@ SUBSYSTEM_DEF(agent_npc)
 	/// Operator kill switch. Separate from enabled so it survives a config reload.
 	var/globally_disabled = FALSE
 	var/endpoint = ""
+	/// The sidecar's memory endpoint beside its decision one, for staging a playtest.
+	var/seed_endpoint = ""
 	var/list/default_headers
 	/// Identifies this subsystem run. Replies from an older run are refused.
 	var/session_id
@@ -34,6 +36,10 @@ SUBSYSTEM_DEF(agent_npc)
 	var/next_epoch = 1
 	/// Never reused, so no two requests in a session share an id.
 	var/next_serial = 1
+	/// Admin switch for explicit scenes. Starts from the config flag and can never exceed it.
+	var/explicit_enabled = FALSE
+	/// What the sidecar said it is, from its latest reply. Null until one arrives.
+	var/list/sidecar_capabilities
 	var/max_concurrent = 4
 	var/round_token_budget = 0
 	var/tokens_spent = 0
@@ -75,6 +81,8 @@ SUBSYSTEM_DEF(agent_npc)
 	max_concurrent = max(1, CONFIG_GET(number/agent_npc_max_concurrent))
 	round_token_budget = CONFIG_GET(number/agent_npc_round_token_budget)
 	default_headers = list("Content-Type" = "application/json")
+	seed_endpoint = agent_seed_endpoint(endpoint)
+	explicit_enabled = CONFIG_GET(flag/agent_npc_explicit_scenes)
 	enabled = TRUE
 
 	// No readiness probe here on purpose. A blocking check at init is what made
@@ -87,6 +95,7 @@ SUBSYSTEM_DEF(agent_npc)
 	enabled = SSagent_npc.enabled
 	globally_disabled = SSagent_npc.globally_disabled
 	endpoint = SSagent_npc.endpoint
+	seed_endpoint = SSagent_npc.seed_endpoint
 	default_headers = SSagent_npc.default_headers
 	session_id = SSagent_npc.session_id
 	bindings = SSagent_npc.bindings
@@ -98,6 +107,8 @@ SUBSYSTEM_DEF(agent_npc)
 	next_epoch = SSagent_npc.next_epoch
 	next_serial = SSagent_npc.next_serial
 	max_concurrent = SSagent_npc.max_concurrent
+	explicit_enabled = SSagent_npc.explicit_enabled
+	sidecar_capabilities = SSagent_npc.sidecar_capabilities
 	round_token_budget = SSagent_npc.round_token_budget
 	tokens_spent = SSagent_npc.tokens_spent
 	tokens_reserved_total = SSagent_npc.tokens_reserved_total
@@ -203,6 +214,7 @@ SUBSYSTEM_DEF(agent_npc)
 
 		var/datum/agent_request/request = binding.pending
 		var/datum/agent_response/response = agent_validate_response(request, binding)
+		note_capabilities(response.capabilities)
 
 		// Read before the request is destroyed below. Every consumed reply is
 		// measured, refused or not: a refusal still costs the same wall time.
@@ -214,6 +226,8 @@ SUBSYSTEM_DEF(agent_npc)
 		// The events this request carried, kept past the request's own life so
 		// a transport failure can restore the trigger rather than lose it.
 		var/list/sent_events = request.sent_events?.Copy()
+		// Kept for the privacy hold: a decision built before an act began carries no scene.
+		var/started_at = request.started_at
 		// Every verdict on this decision names it, or the sidecar cannot tell what ran.
 		var/request_id = request.request_id
 
@@ -224,7 +238,7 @@ SUBSYSTEM_DEF(agent_npc)
 		qdel(request.release_transport())
 		qdel(request)
 
-		handle_response(binding, response, sent_events, request_id)
+		handle_response(binding, response, sent_events, request_id, started_at)
 		qdel(response)
 
 		if(check_round_budget())
@@ -234,7 +248,7 @@ SUBSYSTEM_DEF(agent_npc)
 			return
 
 /// Decide what a validated response means, after re-checking the world.
-/datum/controller/subsystem/agent_npc/proc/handle_response(datum/agent_binding/binding, datum/agent_response/response, list/sent_events, request_id)
+/datum/controller/subsystem/agent_npc/proc/handle_response(datum/agent_binding/binding, datum/agent_response/response, list/sent_events, request_id, started_at = 0)
 	if(!response.ok)
 		binding.requests_refused++
 		note_refusal(response.refusal)
@@ -259,6 +273,16 @@ SUBSYSTEM_DEF(agent_npc)
 	if(binding.state == AGENT_BINDING_DISABLED)
 		note_refusal(AGENT_REFUSE_GENERATION)
 		log_agent("dropped a valid decision for [binding.pawn_id]: binding is disabled")
+		return
+
+	// A decision landing during an act is held unless the model takes part, and then only if it was built during the act.
+	var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
+	if(istype(agent) && agent.in_private() && (!binding.explicit_effective() || started_at < agent.private_since))
+		note_refusal(AGENT_REFUSE_PRIVATE)
+		log_agent("held a decision for [binding.pawn_id]: it landed during an act")
+		// The trigger waits for after the act, or for the next turn during it.
+		binding.restore_events(sent_events)
+		binding.set_dirty()
 		return
 
 	if(response.model_refusal)
@@ -398,7 +422,12 @@ SUBSYSTEM_DEF(agent_npc)
 
 	var/list/events = binding.take_events()
 	var/datum/agent_request/request = new()
-	var/list/body = request.prepare(binding, session_id, next_serial++, build_observation(binding), events, binding.profile_payload())
+	var/list/body = request.prepare(binding, session_id, next_serial++, build_observation(binding), events, binding.profile_payload(), binding.explicit_effective())
+
+	// A turn during an act starts the cadence clock; something urgent may still come sooner.
+	var/datum/ai_controller/agent_social/agent = binding.resolve_controller()
+	if(istype(agent) && agent.in_private())
+		binding.next_private_turn_at = world.time + AGENT_PRIVATE_TURN_INTERVAL
 
 	// Reserve before sending. Settling only completed spend lets concurrent
 	// requests overshoot the ceiling together.
@@ -442,11 +471,18 @@ SUBSYSTEM_DEF(agent_npc)
 	var/mob/living/pawn = binding.resolve_pawn()
 	// Handle and key, never the text: enough to see what it aimed at without copying speech twice.
 	var/aimed = jointext(list(response.action["handle"], response.action["key"]) - list(null, ""), " ")
-	log_agent("decision [binding.pawn_id]: [name][aimed ? " [aimed]" : ""]")
+	// Marked, so a complaint about an explicit line can be traced to the decision that made it.
+	var/marker = binding.explicit_effective() ? " (explicit)" : ""
+	log_agent("decision [binding.pawn_id]: [name][aimed ? " [aimed]" : ""][marker]")
 
 	// Counted before authorisation on purpose: a model repeatedly asking for an
 	// action its profile forbids is a prompt problem, and this is where it shows.
 	note_action(name)
+
+	// In private the model only talks, shows its own body, waits, takes back its yes, or stops what it leads.
+	if(binding.in_private_explicit() && !(name in GLOB.agent_private_actions))
+		binding.record_result(AGENT_RESULT_REJECTED, "not while you are in private", request_id)
+		return
 
 	// Authorisation check one: is this action permitted for this NPC's role?
 	// The action vocabulary is global; the profile narrows it per character.
@@ -467,7 +503,7 @@ SUBSYSTEM_DEF(agent_npc)
 			binding.complete_action(AGENT_RESULT_SUCCEEDED, "waiting", was_wait = TRUE, request_id = request_id)
 			return
 		if("say")
-			var/list/outcome = agent_execute_say(pawn, response.action["text"])
+			var/list/outcome = agent_execute_say(pawn, response.action["text"], response.action["key"] == AGENT_VOICE_WHISPER)
 			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE, request_id = request_id)
 			return
 		if("emote")
@@ -475,15 +511,31 @@ SUBSYSTEM_DEF(agent_npc)
 			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE, request_id = request_id)
 			return
 		if("me")
-			var/list/outcome = agent_execute_me(pawn, response.action["text"])
+			// Its own body in private may take a few more words than a nod at the bar.
+			var/cap = binding.in_private_explicit() ? AGENT_PRIVATE_ME_TEXT_MAX : AGENT_ME_TEXT_MAX
+			var/list/outcome = agent_execute_me(pawn, response.action["text"], cap)
 			binding.complete_action(outcome["state"], outcome["detail"], spoke = TRUE, request_id = request_id)
 			return
 		if("stand")
 			var/list/outcome = agent_execute_stand(pawn)
 			binding.complete_action(outcome["state"], outcome["detail"], request_id = request_id)
 			return
+		if("pace")
+			// Only an act the NPC leads in private, one step at a time, never rougher than was agreed.
+			var/datum/ai_controller/agent_social/leader = binding.resolve_controller()
+			if(!istype(leader) || !binding.in_private_explicit())
+				binding.record_result(AGENT_RESULT_REJECTED, "pace is for an act you lead in private", request_id)
+				return
+			var/list/paced = leader.pace_led_act(response.action["key"])
+			binding.complete_action(paced["state"], paced["detail"], request_id = request_id)
+			return
 		if("stop")
 			var/datum/ai_controller/agent_social/peacemaker = binding.resolve_controller()
+			// In private, stop ends an act the NPC leads. A partner's act is theirs; consent no ends private time instead.
+			if(istype(peacemaker) && binding.in_private_explicit())
+				var/list/stopped = peacemaker.stop_led_acts()
+				binding.complete_action(stopped["state"], stopped["detail"], request_id = request_id)
+				return
 			if(!istype(peacemaker) || !peacemaker.end_combat("you stood down", report = FALSE))
 				binding.record_result(AGENT_RESULT_REJECTED, "you are not fighting", request_id)
 				return
@@ -521,7 +573,7 @@ SUBSYSTEM_DEF(agent_npc)
 		to_chat(customer, span_notice(given ? "[pawn] gives you [given]% better prices for a while." : "[pawn] charges you full price again."))
 		// Said back when capped, or the model goes on telling them a price the stall does not charge.
 		var/capped = given < percent ? ", the most you can give" : ""
-		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price", spoke = said?["detail"] == "spoke", request_id = request_id)
+		binding.complete_action(AGENT_RESULT_SUCCEEDED, given ? "[customer.get_visible_name()] gets [given]% better prices for a while[capped]" : "[customer.get_visible_name()] pays full price", spoke = agent_said_words(said), request_id = request_id)
 		return
 
 	// The model's advance. DM picks the act and asks the partner first; their answer comes back as an event.
@@ -792,6 +844,68 @@ SUBSYSTEM_DEF(agent_npc)
 		if(!QDELETED(binding))
 			binding.reinstate()
 	log_agent("RE-ENABLED: [reason]")
+
+/// The sidecar's memory endpoint, beside its decision one.
+/proc/agent_seed_endpoint(decide_url)
+	if(!istext(decide_url) || !length(decide_url))
+		return ""
+	var/cut = findtext(decide_url, "/decide")
+	return cut ? copytext(decide_url, 1, cut) + "/seed" : decide_url + "/seed"
+
+/// What the sidecar needs to find one character's memory, and the text. A null text clears it.
+/datum/controller/subsystem/agent_npc/proc/seed_body(datum/agent_binding/binding, text)
+	var/list/body = list(
+		"protocol_version" = AGENT_PROTOCOL_VERSION,
+		"round_id" = GLOB.round_id,
+		"session_id" = session_id,
+		"pawn_id" = binding.pawn_id,
+		"binding_epoch" = binding.epoch,
+	)
+	if(isnull(text))
+		body["clear"] = TRUE
+	else
+		body["summary"] = copytext_char(text, 1, AGENT_SEED_TEXT_MAX + 1)
+	return body
+
+/// Hand the sidecar a memory for one character, or clear it. Fire and forget: the sidecar log shows what it kept.
+/datum/controller/subsystem/agent_npc/proc/seed_memory(datum/agent_binding/binding, text)
+	if(!enabled || !length(seed_endpoint) || !binding || QDELETED(binding))
+		return FALSE
+	var/datum/http_request/agent/transport = new(RUSTG_HTTP_METHOD_POST, seed_endpoint, json_encode(seed_body(binding, text)), default_headers)
+	transport.begin_async()
+	if(!transport.in_progress)
+		qdel(transport)
+		return FALSE
+	// Polled to completion like an abandoned decision; nothing reads the reply.
+	drain_transport(transport)
+	log_agent("memory [isnull(text) ? "cleared" : "seeded"] for [binding.pawn_id]")
+	return TRUE
+
+/// What the sidecar advertised with its latest reply. Learned, never configured: a swapped sidecar changes it.
+/datum/controller/subsystem/agent_npc/proc/note_capabilities(list/capabilities)
+	if(!islist(capabilities))
+		return
+	sidecar_capabilities = capabilities
+
+/// The sidecar runs an uncensored model and was started to say so. False until a reply says it.
+/datum/controller/subsystem/agent_npc/proc/sidecar_explicit()
+	return sidecar_capabilities?["explicit"] == TRUE
+
+/// How the sidecar treats jailbreak lines. Block until a reply says log: a hosted key is never trusted to a guess.
+/datum/controller/subsystem/agent_npc/proc/sidecar_screening()
+	return sidecar_capabilities?["screening"] == AGENT_SCREEN_LOG ? AGENT_SCREEN_LOG : AGENT_SCREEN_BLOCK
+
+/// The config flag is the owner's consent; the admin switch cannot exceed it. Returns a refusal, or null.
+/datum/controller/subsystem/agent_npc/proc/set_explicit_enabled(on, reason)
+	if(on && !CONFIG_GET(flag/agent_npc_explicit_scenes))
+		return "AGENT_NPC_EXPLICIT_SCENES is off in the config, so explicit scenes cannot be turned on from here."
+	explicit_enabled = !!on
+	log_agent("explicit scenes [explicit_enabled ? "on" : "off"]: [reason]")
+	return null
+
+/// Every gate but the profile's own: the config flag, the admin switch, and a sidecar that says it may.
+/datum/controller/subsystem/agent_npc/proc/explicit_allowed()
+	return CONFIG_GET(flag/agent_npc_explicit_scenes) && explicit_enabled && sidecar_explicit()
 
 /datum/controller/subsystem/agent_npc/proc/log_agent(text)
 	log_world("AGENT_NPC: [text]")

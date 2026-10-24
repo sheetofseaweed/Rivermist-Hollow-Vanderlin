@@ -16,6 +16,7 @@ import sys
 import threading
 import time
 import unittest
+import urllib.error
 import urllib.request
 from unittest import mock
 
@@ -570,6 +571,298 @@ class Bench(unittest.TestCase):
             self.assertEqual(len(fake.requests), 4)
         finally:
             fake.close()
+
+
+class ExplicitPrompt(unittest.TestCase):
+    PROFILE = {"label": "barmaid", "persona": "You are a barmaid.",
+               "permitted_actions": ["say", "me", "wait", "consent", "initiate"], "romance": True, "explicit": True}
+
+    def test_the_explicit_brief_replaces_every_never_describe(self):
+        coy = proto.build_system(self.PROFILE)
+        frank = proto.build_system(self.PROFILE, explicit=True)
+        self.assertIn("never describe it", coy)
+        self.assertIn("Keep talk suggestive but never explicit", coy)
+        self.assertNotIn("Private time is explicit here", coy)
+        self.assertIn("Private time is explicit here", frank)
+        # The brief keeps "never describe your partner's body"; the three coy sentences are what must go.
+        for coy_sentence in ("never describe it", "never describe what happens in private",
+                             "never describe intimate acts", "never explicit"):
+            self.assertNotIn(coy_sentence, frank, coy_sentence)
+        self.assertIn("Everyone here is an adult", frank)
+
+    def test_a_service_brief_follows_the_mode(self):
+        profile = dict(self.PROFILE, permitted_actions=["say", "wait", "haggle", "initiate"], shop_kind="service")
+        self.assertIn("never describe what happens in private", proto.build_system(profile))
+        frank = proto.build_system(profile, explicit=True)
+        self.assertNotIn("never describe what happens in private", frank)
+        self.assertIn("Private time is explicit here", frank)
+
+    def test_a_plain_villager_gets_neither_paragraph(self):
+        villager = {"persona": "You are a villager.", "permitted_actions": ["say", "wait"]}
+        for explicit in (False, True):
+            system = proto.build_system(villager, explicit=explicit)
+            self.assertNotIn("Private time is explicit here", system)
+            self.assertNotIn("Keep talk suggestive", system)
+
+    def test_only_a_sidecar_started_explicit_builds_the_frank_prompt(self):
+        body = small_body(explicit=True, profile=dict(self.PROFILE))
+        frank = local.LocalDecider(model="m", dry_run=True, explicit=True)
+        self.assertIn("Private time is explicit here", frank.build_turn(body).request["messages"][0]["content"])
+        coy = local.LocalDecider(model="m", dry_run=True)
+        log = io.StringIO()
+        with contextlib.redirect_stderr(log):
+            first = coy.build_turn(body).request["messages"][0]["content"]
+            coy.build_turn(body)
+        self.assertNotIn("Private time is explicit here", first)
+        self.assertIn("never describe it", first)
+        self.assertEqual(log.getvalue().count("--explicit"), 1, "said once, not once per request")
+        hosted = cs.CodexSaleDecider(dry_run=True)
+        self.assertNotIn("Private time is explicit here", hosted.build_turn(body).request["messages"][0]["content"])
+
+    def test_without_the_flag_on_the_request_nothing_changes(self):
+        body = small_body(profile=dict(self.PROFILE))
+        frank = local.LocalDecider(model="m", dry_run=True, explicit=True)
+        system = frank.build_turn(body).request["messages"][0]["content"]
+        self.assertNotIn("Private time is explicit here", system)
+        self.assertIn("never describe it", system)
+
+
+class PrivateScene(unittest.TestCase):
+    BLOCK = {"with": "Oswin",
+             "acts": [{"name": "rub body", "lead": "you", "force": "firm", "speed": "steady"},
+                      {"name": "kissing", "lead": "them", "force": "gentle", "speed": "slow"}],
+             "you": {"arousal": "warming", "close": False, "spent": False},
+             "them": {"arousal": "burning", "close": True, "spent": False},
+             "paid_minutes_left": 12, "rough": True}
+
+    def test_the_block_reads_as_a_scene(self):
+        myself = {"name": "Jessica", "condition": "fine", "private": dict(self.BLOCK)}
+        text = proto.build_user_message({"self": myself, "here": "upstairs", "entities": []}, [])
+        self.assertIn("You are in private with Oswin.", text)
+        self.assertIn("You are leading 'rub body', firm and steady.", text)
+        self.assertIn("Oswin is leading 'kissing', gentle and slow.", text)
+        self.assertIn("You are warming; Oswin is burning and close.", text)
+        self.assertIn("12 minutes of their paid time are left, and they asked for it rough.", text)
+
+    def test_spent_and_a_chosen_partner_read_plainly(self):
+        block = dict(self.BLOCK, you={"arousal": "cool", "close": False, "spent": True}, rough=False)
+        del block["paid_minutes_left"]
+        lines = proto.describe_private_scene(block)
+        self.assertIn("You are spent; Oswin is burning and close.", lines)
+        self.assertFalse(any("paid time" in line for line in lines))
+
+    def test_the_act_events_read_plainly(self):
+        events = [{"event": "private_act", "detail": {"what": "started", "act": "kissing", "lead": "them", "by": "Oswin"}},
+                  {"event": "private_act", "detail": {"what": "started", "act": "rub body", "lead": "you", "by": "Oswin"}},
+                  {"event": "private_act", "detail": {"what": "ended", "act": "kissing", "lead": "them", "by": "Oswin"}},
+                  {"event": "climax", "detail": {"who": "you", "by": "Oswin"}},
+                  {"event": "climax", "detail": {"who": "them", "by": "Oswin"}},
+                  {"event": "private_pace", "detail": {"by": "Oswin", "pace": "rough"}}]
+        lines = [line.strip() for line in proto.describe_events(events)]
+        self.assertEqual(lines, ["Oswin started 'kissing' with you.",
+                                 "You started 'rub body' with Oswin.",
+                                 "The act 'kissing' with Oswin ended.",
+                                 "You reached your peak with Oswin.",
+                                 "Oswin reached their peak.",
+                                 "Oswin asked you to be rough."])
+
+    def test_the_whisper_key_travels_on_say_only_when_asked(self):
+        self.assertEqual(proto.to_dm_action({"action": "say", "text": "Closer.", "key": "whisper", "handle": ""}),
+                         {"name": "say", "text": "Closer.", "key": "whisper"})
+        self.assertEqual(proto.to_dm_action({"action": "say", "text": "Hello.", "key": "", "handle": ""}),
+                         {"name": "say", "text": "Hello."})
+        self.assertIn("whisper", proto.action_schema(["say", "wait"])["properties"]["key"]["description"])
+        self.assertIn("whisper", proto.schema_prose(["say", "wait"]))
+
+    def test_the_brief_teaches_the_whisper(self):
+        plain = proto.build_system({"persona": "x", "permitted_actions": ["say", "wait"]})
+        self.assertIn("'say' with key 'whisper'", plain)
+        self.assertNotIn("'say' with key 'whisper'", proto.build_system({"persona": "x", "permitted_actions": ["wait"]}))
+        frank = proto.build_system({"persona": "x", "permitted_actions": ["say", "me", "wait", "consent"]}, explicit=True)
+        self.assertIn("cannot keep your voice down", frank)
+
+
+class PaceAction(unittest.TestCase):
+    def test_pace_travels_with_its_step(self):
+        self.assertEqual(proto.to_dm_action({"action": "pace", "text": "", "key": "faster", "handle": ""}),
+                         {"name": "pace", "key": "faster"})
+        self.assertEqual(proto.parse_loose_action("pace: gentler", ["say", "pace", "wait"]),
+                         {"action": "pace", "text": "", "key": "gentler", "handle": ""})
+        # No step is still pace: DM refuses the empty key, and the model learns from the result.
+        self.assertEqual(proto.to_dm_action({"action": "pace"}), {"name": "pace", "key": ""})
+
+    def test_the_schema_and_the_brief_know_pace(self):
+        self.assertIn("rougher", proto.action_schema(["say", "pace", "wait"])["properties"]["key"]["description"])
+        self.assertIn("rougher", proto.schema_prose(["say", "pace", "wait"]))
+        frank = proto.build_system({"persona": "x", "permitted_actions": ["say", "me", "wait", "consent", "pace"]}, explicit=True)
+        self.assertIn("'pace' with key 'faster', 'slower', 'gentler' or 'rougher'", frank)
+        self.assertIn("never rougher than they agreed to", frank)
+
+
+def committed_bodies(count):
+    """Bodies whose verdicts commit the previous answer, so exchanges land in history one per request."""
+    bodies = []
+    for i in range(1, count + 1):
+        events = [{"event": "heard_speech", "urgency": 2,
+                   "detail": {"speaker": "Bob", "text": "line %d" % i, "addressing": "directed"}}]
+        if i > 1:
+            events.insert(0, {"event": "action_result",
+                              "detail": {"state": "succeeded", "detail": "spoke", "request_id": "r%d" % (i - 1)}})
+        bodies.append(small_body(request_id="r%d" % i, events=events))
+    return bodies
+
+
+def summary_or_action(summary_text):
+    """A script that answers the summary request with prose and every action request with wait."""
+    def script(handler, body):
+        answer = stream_answer(WAIT) if "response_format" in body else stream_answer(summary_text)
+        return answer(handler, body)
+    return script
+
+
+class MemoryCondensation(unittest.TestCase):
+    def test_old_exchanges_wait_to_be_folded_instead_of_vanishing(self):
+        store = proto.ConversationStore(max_turns=2, condense=True)
+        plain = proto.ConversationStore(max_turns=2, condense=False)
+        for body in committed_bodies(4):
+            for keeper in (store, plain):
+                keeper.reconcile(body)
+                keeper.record(body, "What happened: " + body["events"][-1]["detail"]["text"],
+                              {"name": "say", "text": "hi"})
+        key = store.key(small_body())
+        self.assertTrue(store.has_fold(key), "past the limit, the oldest half-window waits to be folded")
+        self.assertFalse(plain.has_fold(key), "a plain store forgets as before")
+        remembered, pairs = store.take_fold(key)
+        self.assertIsNone(remembered)
+        self.assertEqual([user for user, _ in pairs], ["What happened: line 1"])
+        self.assertIn("line 2", store.history(small_body())[0]["content"], "the newest exchanges stay whole")
+        self.assertEqual(len(store.history(small_body())), 4)
+        self.assertFalse(store.has_fold(key), "taken once")
+
+    def test_the_model_writes_the_summary_and_the_brief_reads_it(self):
+        fake = _FakeLMStudio(scripts=[summary_or_action("I remember Bob was kind to me and asked after my sister.")])
+        try:
+            decider = local.LocalDecider(model="m", base_url=fake.base, output_mode="json_schema", memory_turns=2)
+            # Fold by hand, so the test does not race the background thread.
+            decider.maybe_condense = lambda body: None
+            with contextlib.redirect_stderr(io.StringIO()):
+                for body in committed_bodies(4):
+                    decider.decide(body)
+                key = decider.memory.key(small_body())
+                self.assertTrue(decider.condense_now(key))
+            self.assertEqual(decider.memory.summary(small_body()), "I remember Bob was kind to me and asked after my sister.")
+            summary_request = [body for _, _, body in fake.requests if "response_format" not in body][-1]
+            self.assertEqual(summary_request["messages"][0]["content"], compat.SUMMARY_BRIEF)
+            self.assertIn("line 1", summary_request["messages"][1]["content"])
+            self.assertIn("You answered: wait", summary_request["messages"][1]["content"])
+            system = decider.build_turn(small_body()).request["messages"][0]["content"]
+            self.assertIn("What you remember from earlier: I remember Bob was kind to me", system)
+            self.assertGreater(system.find("What you remember from earlier"), system.find("Butting into a conversation"),
+                               "the summary comes after the stable brief, so the brief stays a cacheable prefix")
+        finally:
+            fake.close()
+
+    def test_a_failed_summary_keeps_the_old_one(self):
+        fake = _FakeLMStudio(scripts=[lambda handler, body: _json(handler, 500, {"error": "busy"})])
+        try:
+            decider = local.LocalDecider(model="m", base_url=fake.base, output_mode="json_schema", memory_turns=2)
+            key = decider.memory.key(small_body())
+            decider.memory.set_summary(key, "what I knew before")
+            decider.memory.to_fold[key] = [{"role": "user", "content": "What happened: x"},
+                                           {"role": "assistant", "content": WAIT}]
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertFalse(decider.condense_now(key))
+            self.assertEqual(decider.memory.summary(small_body()), "what I knew before")
+            self.assertFalse(decider.memory.has_fold(key), "the exchanges are not retried forever")
+        finally:
+            fake.close()
+
+    def test_the_summary_is_capped_and_forgotten_with_the_rest(self):
+        store = proto.ConversationStore(max_turns=2, condense=True)
+        key = store.key(small_body())
+        store.set_summary(key, "x" * 2000)
+        self.assertEqual(len(store.summary(small_body())), proto.MAX_SUMMARY_CHARS)
+        store.forget(small_body())
+        self.assertIsNone(store.summary(small_body()))
+        store.set_summary(key, "old round")
+        store.prune_other_sessions("another-session")
+        self.assertIsNone(store.summary(small_body()), "a new round forgets the last round's summaries")
+
+    def test_only_the_local_adapter_condenses_by_default(self):
+        self.assertTrue(local.LocalDecider(model="m", dry_run=True).memory.condense)
+        self.assertFalse(local.LocalDecider(model="m", dry_run=True, condense_memory=False).memory.condense)
+        self.assertFalse(cs.CodexSaleDecider(dry_run=True).memory.condense)
+        self.assertEqual(local.LocalDecider(model="m", dry_run=True).memory.max_turns, 24)
+        self.assertEqual(cs.CodexSaleDecider(dry_run=True).memory.max_turns, 6)
+
+
+class Seeding(unittest.TestCase):
+    def serve(self, decider):
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), proto.make_handler(decider))
+        server.daemon_threads = True
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        return server, "http://127.0.0.1:%d" % server.server_address[1]
+
+    def post(self, base, route, payload):
+        request = urllib.request.Request(base + route, data=json.dumps(payload).encode("utf-8"),
+                                         headers={"Content-Type": "application/json"}, method="POST")
+        try:
+            with urllib.request.urlopen(request, timeout=3) as response:
+                return response.status, json.loads(response.read())
+        except urllib.error.HTTPError as err:
+            return err.code, json.loads(err.read())
+
+    def identity(self, **extra):
+        body = {"protocol_version": proto.PROTOCOL_VERSION, "session_id": "s", "pawn_id": "[p]", "binding_epoch": 1}
+        body.update(extra)
+        return body
+
+    def test_the_game_can_seed_and_clear_a_memory(self):
+        decider = local.LocalDecider(model="m", dry_run=True)
+        server, base = self.serve(decider)
+        try:
+            with contextlib.redirect_stderr(io.StringIO()):
+                status, reply = self.post(base, "/seed", self.identity(summary="  Oswin courted me all evening.  "))
+                self.assertEqual((status, reply["ok"], reply["summary"]), (200, True, "Oswin courted me all evening."))
+                self.assertEqual(decider.memory.summary(small_body()), "Oswin courted me all evening.")
+                self.post(base, "/decide", small_body())
+                system = decider.last_request["messages"][0]["content"]
+                self.assertIn("What you remember from earlier: Oswin courted me all evening.", system)
+                status, reply = self.post(base, "/seed", self.identity(clear=True))
+                self.assertEqual((status, reply.get("cleared")), (200, True))
+                self.assertIsNone(decider.memory.summary(small_body()))
+        finally:
+            server.shutdown()
+            server.server_close()
+
+    def test_a_seed_is_checked_like_a_decision(self):
+        decider = local.LocalDecider(model="m", dry_run=True)
+        server, base = self.serve(decider)
+        try:
+            with contextlib.redirect_stderr(io.StringIO()):
+                status, _ = self.post(base, "/seed", dict(self.identity(summary="x"), protocol_version=99))
+                self.assertEqual(status, 400, "a wrong protocol version is refused")
+                status, reply = self.post(base, "/seed", self.identity())
+                self.assertEqual(status, 400, "no text and no clear is a bad request")
+                self.assertIn("summary", reply["error"])
+                status, _ = self.post(base, "/seed", self.identity(summary=42))
+                self.assertEqual(status, 400, "a number is not a memory")
+            self.assertIsNone(decider.memory.summary(small_body()))
+        finally:
+            server.shutdown()
+            server.server_close()
+
+    def test_a_sidecar_without_memory_says_so(self):
+        decider = proto.Decider()
+        server, base = self.serve(decider)
+        try:
+            with contextlib.redirect_stderr(io.StringIO()):
+                status, reply = self.post(base, "/seed", self.identity(summary="x"))
+            self.assertEqual(status, 400)
+            self.assertIn("memory", reply["error"])
+        finally:
+            server.shutdown()
+            server.server_close()
 
 
 class CodexStillWorks(unittest.TestCase):

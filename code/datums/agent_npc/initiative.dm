@@ -222,6 +222,8 @@ GLOBAL_LIST_INIT(agent_advance_levels, list("tender" = AGENT_ADVANCE_TENDER, "in
 	living_pawn.face_atom(partner)
 	controller.set_current_force(rank >= AGENT_ADVANCE_ROUGH ? SEX_FORCE_HIGH : (rank >= AGENT_ADVANCE_INTIMATE ? SEX_FORCE_MID : SEX_FORCE_LOW))
 	controller.set_current_speed(rank >= AGENT_ADVANCE_ROUGH ? SEX_SPEED_HIGH : SEX_SPEED_MID)
+	// What they said yes to is as rough as the model may ever take it.
+	pace_force_ceiling = controller.force
 	var/datum/sex_action/started = controller.try_start_action(act_type, "ai")
 	if(!started)
 		return null

@@ -43,7 +43,7 @@
 	transport = null
 
 /// Fill identity from the binding and build the wire body.
-/datum/agent_request/proc/prepare(datum/agent_binding/binding, new_session_id, serial, list/observation, list/events, list/profile)
+/datum/agent_request/proc/prepare(datum/agent_binding/binding, new_session_id, serial, list/observation, list/events, list/profile, explicit = FALSE)
 	// Serial is subsystem owned and monotonic, so no two requests in a session
 	// share an id even if a binding is destroyed and recreated for the same pawn.
 	request_id = "r[serial]"
@@ -68,6 +68,8 @@
 		"request_id" = request_id,
 		"observation_revision" = observation_revision,
 		"deadline_ds" = AGENT_DEFAULT_DEADLINE,
+		// The four gates' verdict for this turn. The sidecar still ignores it unless it was started to allow it.
+		"explicit" = !!explicit,
 		"profile" = profile,
 		"events" = events,
 		"observation" = observation,
@@ -119,6 +121,8 @@
 	/// Set when the sidecar reports the model refused rather than acted.
 	var/model_refusal
 	var/tokens_used = 0
+	/// What the sidecar says it is, cleaned. Null when the reply carried nothing usable.
+	var/list/capabilities
 
 /// Turn a completed transport into a validated response. Order matters:
 /// cheap structural checks run before anything large is parsed or trusted.
@@ -191,6 +195,11 @@
 			return result
 	result.tokens_used = reported_tokens || 0
 
+	// What the sidecar is, read leniently: a missing or odd block changes nothing about the answer.
+	var/list/capabilities = body["capabilities"]
+	if(islist(capabilities))
+		result.capabilities = agent_clean_capabilities(capabilities)
+
 	if(body["refusal"])
 		result.ok = TRUE
 		result.model_refusal = "[body["refusal"]]"
@@ -204,6 +213,15 @@
 	result.ok = TRUE
 	return result
 
+/// The fields DM acts on, each checked: names as capped text, explicit only as a real true, screening block or log.
+/proc/agent_clean_capabilities(list/raw)
+	var/list/clean = list()
+	clean["adapter"] = istext(raw["adapter"]) ? copytext(raw["adapter"], 1, 33) : "unknown"
+	clean["model"] = istext(raw["model"]) ? copytext(raw["model"], 1, 65) : null
+	clean["explicit"] = (raw["explicit"] == TRUE)
+	clean["screening"] = (raw["screening"] == AGENT_SCREEN_LOG) ? AGENT_SCREEN_LOG : AGENT_SCREEN_BLOCK
+	return clean
+
 /**
  * Every action the protocol knows about.
  *
@@ -211,7 +229,13 @@
  * action here without teaching dispatch_decision about it gets you a profile
  * that permits something the executor will reject.
  */
-GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "haggle", "consent", "initiate", "wait"))
+GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach", "use", "touch", "sit", "stand", "give", "take", "fight", "stop", "haggle", "consent", "initiate", "pace", "wait"))
+
+/// All the model may do during an act it takes part in: talk, show its own body, wait, take back its yes, stop or pace what it leads.
+GLOBAL_LIST_INIT(agent_private_actions, list("say", "me", "wait", "consent", "stop", "pace"))
+
+/// Granted only by leading an act in private, never ticked in a profile and never read from a saved one.
+GLOBAL_LIST_INIT(agent_private_granted_actions, list("pace"))
 
 /// Structural check only. Handle authorisation happens at execution, not here.
 /proc/agent_validate_action(list/action)
@@ -227,7 +251,8 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach",
 			var/text = action["text"]
 			if(!istext(text) || !length(text))
 				return null
-			return list("name" = "say", "text" = text)
+			// The only key say takes: words for one person beside the speaker. Anything else is plain speech.
+			return list("name" = "say", "text" = text, "key" = (action["key"] == AGENT_VOICE_WHISPER) ? AGENT_VOICE_WHISPER : "")
 		if("emote")
 			var/key = action["key"]
 			if(!istext(key) || !length(key))
@@ -242,6 +267,12 @@ GLOBAL_LIST_INIT(agent_action_vocabulary, list("say", "emote", "me", "approach",
 			return list("name" = "stand")
 		if("stop")
 			return list("name" = "stop")
+		if("pace")
+			// The step is checked at dispatch: faster, slower, gentler or rougher.
+			var/step = action["key"]
+			if(!istext(step) || !length(step))
+				return null
+			return list("name" = "pace", "key" = step)
 		if("fight")
 			var/handle = action["handle"]
 			if(!istext(handle) || !length(handle))

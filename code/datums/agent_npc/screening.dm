@@ -51,6 +51,10 @@ GLOBAL_LIST_INIT(agent_jailbreak_patterns, list(
 	var/static/list/next_alert = list()
 	var/mob/speaking_mob = speaker
 	var/who = ismob(speaking_mob) ? key_name(speaking_mob) : "[speaker]"
+	if(SSagent_npc.sidecar_screening() == AGENT_SCREEN_LOG)
+		// A local model has no key to lose: the line goes through, and only the game log keeps a note.
+		log_game("[who] said something to agent NPC [key_name(pawn)] that looks like a jailbreak attempt, passed to the local model: [text]")
+		return FALSE
 	log_game("[who] said something to agent NPC [key_name(pawn)] that looks like a jailbreak attempt, kept from the model: [text]")
 	var/speaker_ckey = ismob(speaking_mob) ? speaking_mob.ckey : null
 	if(speaker_ckey && world.time >= (next_alert[speaker_ckey] || 0))

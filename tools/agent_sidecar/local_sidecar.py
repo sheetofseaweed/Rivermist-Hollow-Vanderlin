@@ -56,6 +56,8 @@ CONNECT_RETRY_PAUSE = 2.0
 TTL_SECONDS = 86400
 # Thinking off. Measured 2026-10-23 on Gemma 4 12B: 7 s to 3 s for a line, and no answer lost to a thinking cap.
 REASONING_EFFORT = "none"
+# Exchanges kept whole per character. Tokens cost nothing here; six was too few to court anyone (live, 2026-10-23).
+MEMORY_TURNS = 24
 # A first request may have to load the model into memory, which takes a while.
 LOAD_TIMEOUT = 180
 # A bench request gets the whole game deadline.
@@ -137,12 +139,12 @@ class LocalDecider(compat.OpenAICompatDecider):
     probe_max_tokens = 1024
 
     def __init__(self, model=None, base_url=DEFAULT_BASE_URL, dry_run=False, output_mode="auto",
-                 verbose=False, memory_turns=6, stream=True, explicit=False, screen_mode="block",
+                 verbose=False, memory_turns=MEMORY_TURNS, stream=True, explicit=False, screen_mode="block",
                  temperature=0.8, top_p=0.9, repeat_penalty=1.1, max_tokens=MAX_TOKENS,
                  context_min=CONTEXT_MIN, first_byte=FIRST_BYTE_TIMEOUT, idle=IDLE_TIMEOUT,
-                 think_strip=True, ttl=TTL_SECONDS, reasoning_effort=REASONING_EFFORT):
+                 think_strip=True, ttl=TTL_SECONDS, reasoning_effort=REASONING_EFFORT, condense_memory=True):
         super().__init__(model=model or "", base_url=base_url, dry_run=dry_run, output_mode=output_mode,
-                         verbose=verbose, memory_turns=memory_turns, stream=stream)
+                         verbose=verbose, memory_turns=memory_turns, stream=stream, condense_memory=condense_memory)
         self.first_byte_timeout = float(first_byte)
         self.idle_timeout = float(idle)
         self.max_tokens = int(max_tokens)
@@ -160,6 +162,8 @@ class LocalDecider(compat.OpenAICompatDecider):
         self.context_length = None
         self.schema_enforced = None
         self.token = os.environ.get(TOKEN_ENV_VAR)
+        # DM asking for explicit turns from a sidecar not started for them is said once, not per request.
+        self.explicit_refused_logged = False
 
     # Hooks.
 
@@ -186,6 +190,19 @@ class LocalDecider(compat.OpenAICompatDecider):
     def length_hint(self):
         return ("; a thinking model used the whole budget: raise --max-tokens, or turn thinking off "
                 "for this model in the server")
+
+    def explicit_for(self, body):
+        """DM's verdict counts only when this sidecar was started with --explicit."""
+        if body.get("explicit") is not True:
+            return False
+        if self.explicit:
+            return True
+        with self.lock:
+            if not self.explicit_refused_logged:
+                self.explicit_refused_logged = True
+                self.log("DM asked for an explicit turn, but this sidecar was not started with --explicit; "
+                         "the coy prompt is used")
+        return False
 
     def capabilities(self):
         """What DM may rely on from this sidecar. Sent with every reply."""
@@ -279,10 +296,11 @@ class LocalDecider(compat.OpenAICompatDecider):
                 "a longer context, for example: lms load %s --context-length %d" % (
                     self.model, self.context_length, self.context_min, self.model, self.context_min))
         self.log("model=%s context=%s output_mode=%s explicit=%s screen=%s base_url=%s auth=%s memory_turns=%d "
-                 "reasoning_effort=%s" % (
+                 "condense=%s reasoning_effort=%s" % (
                      self.model, self.context_length or "unknown", self.current_mode(),
                      "on" if self.explicit else "off", self.screen_mode, self.base_url,
-                     "token" if self.token else "none", self.memory.max_turns, self.reasoning_effort or "server's"))
+                     "token" if self.token else "none", self.memory.max_turns,
+                     "on" if self.memory.condense else "off", self.reasoning_effort or "server's"))
 
     def explicit_probe(self):
         """Does the model answer an explicit scene, or refuse? Prints the verdict and returns it."""
@@ -305,7 +323,8 @@ class LocalDecider(compat.OpenAICompatDecider):
         refused = looks_like_refusal(content) or not content.strip()
         print("explicit probe: %s" % ("REFUSED - this model will not do explicit scenes"
                                       if refused else "answered in character"))
-        print("  model said: %r" % content.strip()[:160])
+        # The whole answer: this line is what the model is judged by.
+        print("  model said: %s" % content.strip().replace("\n", "\n              "))
         return not refused
 
     # Measurement.
@@ -574,9 +593,11 @@ def main():
                         help="print every chosen action, and full model text on a refusal")
     parser.add_argument("--no-stream", action="store_true",
                         help="ask for whole answers instead of streaming; slower to notice a stall")
-    parser.add_argument("--memory-turns", type=int, default=6,
-                        help="default exchanges kept per character; a profile's memory_turns overrides it "
+    parser.add_argument("--memory-turns", type=int, default=MEMORY_TURNS,
+                        help="default exchanges kept whole per character; a profile's memory_turns overrides it "
                              "(0 here disables memory for everyone). Each one is resent every turn.")
+    parser.add_argument("--no-condense", action="store_true",
+                        help="forget exchanges past the limit instead of folding them into a rolling summary")
     args = parser.parse_args()
 
     if not host_allowed(args.host, args.expose):
@@ -588,7 +609,7 @@ def main():
         explicit=args.explicit, screen_mode=args.screen, temperature=args.temperature, top_p=args.top_p,
         repeat_penalty=args.repeat_penalty, max_tokens=args.max_tokens, context_min=args.context_min,
         first_byte=args.first_byte, idle=args.idle, think_strip=not args.no_think_strip, ttl=args.ttl,
-        reasoning_effort=args.reasoning_effort)
+        reasoning_effort=args.reasoning_effort, condense_memory=not args.no_condense)
 
     try:
         if args.probe:

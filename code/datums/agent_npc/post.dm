@@ -12,15 +12,19 @@
 /datum/ai_controller/agent_social/is_hot_pursuit_target(atom/target)
 	return (target && target == blackboard[BB_AGENT_POST]) || ..()
 
-/// Too busy to go home: fighting, fleeing, on an errand, seated by choice, in a conversation, paid for, or chosen.
+/// Too busy to go home: fighting, fleeing, on an errand, seated, talking or with company, paid for, chosen, or in an act.
 /datum/ai_controller/agent_social/proc/busy_away_from_post()
 	var/mob/living/living_pawn = pawn
 	if(in_combat() || blackboard[BB_BASIC_MOB_CURRENT_TARGET] || living_pawn.buckled)
 		return TRUE
-	if(binding && !QDELETED(binding) && (binding.current_intent || binding.current_partner()))
+	// Live, a player typing a long line lost the NPC: the conversation lapsed and it walked home mid-scene.
+	if(binding && !QDELETED(binding) && (binding.current_intent || binding.current_partner() || binding.recent_company()))
 		return TRUE
 	// A customer with paid time, or someone it said yes to, may take the NPC somewhere quieter.
 	if(paying_customer() || has_live_consent())
+		return TRUE
+	// An act is never left mid-way, even once the yes behind it has run out.
+	if(in_private())
 		return TRUE
 	return FALSE
 

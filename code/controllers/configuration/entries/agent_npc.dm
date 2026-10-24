@@ -1,5 +1,8 @@
 /datum/config_entry/flag/agent_npc_enabled
 
+/// The owner's consent to explicit scenes. The admin switch, a profile's checkbox and an uncensored sidecar must agree too.
+/datum/config_entry/flag/agent_npc_explicit_scenes
+
 /datum/config_entry/string/agent_npc_url
 	default = "http://127.0.0.1:1340/decide"
 

@@ -64,6 +64,7 @@
 	RegisterSignal(pawn, COMSIG_LIVING_SEX_CONSENT, PROC_REF(on_sex_consent))
 	RegisterSignal(pawn, COMSIG_LIVING_SEX_SCENE_REFUSED, PROC_REF(on_scene_refused))
 	RegisterSignal(pawn, COMSIG_LIVING_SEX_ACT_STOPPED_BY_PARTNER, PROC_REF(on_act_stopped_by_partner))
+	RegisterSignal(pawn, COMSIG_SEX_CLIMAX, PROC_REF(on_own_climax))
 	// Humans never get this by default, so without it on_pawn_attacked never fired in play at all.
 	pawn.AddElement(/datum/element/relay_attackers)
 	ensure_registered()
@@ -129,8 +130,9 @@
 	var/mob/living/living_pawn = pawn
 	if(!isliving(living_pawn) || living_pawn.stat >= UNCONSCIOUS || !living_pawn.can_hear())
 		return
-	// Nothing said during an act reaches the model, so none of it leaves the server.
-	if(in_private())
+	// Nothing said during an act reaches the model unless it takes part; then only the partner's words wake it.
+	var/private = in_private()
+	if(private && !binding.explicit_effective())
 		return
 
 	var/understood = living_pawn.lang_treat(
@@ -174,6 +176,9 @@
 	)
 
 	var/classification = classify_speech(speaker, understood, context)
+	// In private the partner's lines are ours; anyone else's wait for later.
+	if(private)
+		classification = is_private_participant(speaker) ? AGENT_SPEECH_DIRECTED : AGENT_SPEECH_OVERHEARD
 	detail["addressing"] = classification
 
 	// Said to the model plainly, so a nameless "yes" reads as the answer it is.
@@ -239,7 +244,9 @@
 	var/replenish = !from_another_agent && classification == AGENT_SPEECH_DIRECTED
 	if(!from_another_agent)
 		SSagent_npc?.note_speaker_spend(speaker)
-	binding.mark_dirty(agent_line_event(kind, TRUE), AGENT_EVENT_LOW, detail, replenish = replenish)
+	// The partner's words during an act are worth a turn at once; everything else keeps the cadence.
+	var/urgency = (isliving(speaker) && in_private() && is_private_participant(speaker)) ? AGENT_EVENT_HIGH : AGENT_EVENT_LOW
+	binding.mark_dirty(agent_line_event(kind, TRUE), urgency, detail, replenish = replenish)
 	return "sent"
 
 /// The event name a routed line is recorded under: answered, or only kept for later.
@@ -387,7 +394,9 @@
 		return "unseen"
 	if(!agent_can_perceive_emote(living_pawn, emoter, audible))
 		return "unseen"
-	if(in_private())
+	// In an act the model takes part in, the partner's emotes ride along; anyone else's are dropped as before.
+	var/private = in_private()
+	if(private && (!binding.explicit_effective() || !is_private_participant(emoter)))
 		return "private"
 	var/cleaned = agent_clean_emote_text(text)
 	if(!cleaned)
@@ -405,6 +414,9 @@
 
 	var/list/context = build_emote_context(emoter, cleaned)
 	var/classification = classify_emote(emoter, intentional, context)
+	// Riding along, never waking: the cadence turn reads what the partner did.
+	if(private)
+		classification = AGENT_SPEECH_OVERHEARD
 	var/screened = screen_jailbreak(emoter, cleaned)
 	var/list/detail = list(
 		"speaker" = emoter_name,
@@ -507,6 +519,7 @@
 	deltimer(romance_timer)
 	consents = null
 	private_partner = null
+	forget_private()
 	QDEL_LIST_ASSOC_VAL(advance_records)
 	release_binding("controller destroyed")
 	QDEL_NULL(profile)
@@ -639,12 +652,16 @@
 	var/datum/agent_stock/service/service = shop?.stock
 	return istype(service) ? service.current_customer() : null
 
-/// Is an act involving the NPC running? The model sits it out.
+/// Is an act involving the NPC running? The model sits it out unless explicit scenes let it in.
 /datum/ai_controller/agent_social/proc/in_private()
 	var/mob/living/living_pawn = pawn
-	if(!isliving(living_pawn) || QDELETED(living_pawn.sex_scene))
-		return FALSE
-	return length(living_pawn.sex_scene.get_actions_involving(living_pawn)) > 0
+	var/running = isliving(living_pawn) && !QDELETED(living_pawn.sex_scene) && length(living_pawn.sex_scene.get_actions_involving(living_pawn)) > 0
+	// When it began, so a decision built before the act is told apart from one built during it.
+	if(!running)
+		private_since = 0
+	else if(!private_since)
+		private_since = world.time
+	return running
 
 /datum/ai_controller/agent_social/proc/on_pawn_fed(datum/source, mob/feeder, obj/item/fed_with)
 	SIGNAL_HANDLER

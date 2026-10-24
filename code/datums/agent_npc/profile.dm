@@ -32,6 +32,8 @@
 	var/combat_initiate = AGENT_COMBAT_NONE
 	/// Own choice: the character may agree to private time with someone, and take it back. Off, it refuses.
 	var/romance = FALSE
+	/// Explicit talk in private, when the server flag, the admin switch and an uncensored sidecar all allow it.
+	var/explicit = FALSE
 
 /// Wire form. Static per NPC, so the sidecar can cache a prompt built from it.
 /datum/agent_profile/proc/to_payload()
@@ -52,6 +54,7 @@
 		"combat_retaliate" = combat_retaliate,
 		"combat_initiate" = combat_initiate,
 		"romance" = romance,
+		"explicit" = explicit,
 	)
 
 /datum/agent_profile/proc/permits(action_name)
@@ -61,6 +64,9 @@
 	// Likewise consent comes only from the romance setting.
 	if(action_name in GLOB.agent_romance_actions)
 		return romance
+	// Pace comes only from leading an act in private; the binding grants it there.
+	if(action_name in GLOB.agent_private_granted_actions)
+		return FALSE
 	return (action_name in permitted_actions)
 
 /datum/agent_profile/proc/combat_enabled()
@@ -114,8 +120,10 @@
 	background = "You know the bathhouse regulars and their habits, and the town by sight. You only know what you have seen or been told."
 	voice = "You speak warmly and teasingly, but discreetly, in plain period language. You never narrate your own actions."
 	permitted_actions = list("say", "emote", "me", "approach", "touch", "sit", "stand", "give", "take", "wait")
-	limits = "Keep talk suggestive but never explicit, and never describe intimate acts. Prices come only from what you sell, at the prices shown. What happens in private happens without words."
+	// The coy sentences live in the sidecar now, said only while explicit scenes are off.
+	limits = "Prices come only from what you sell, at the prices shown."
 	combat_retaliate = AGENT_COMBAT_BRAWL
+	explicit = TRUE
 
 /// Works the tavern floor and chooses her own company. Whether to go somewhere private is the model's call.
 /datum/agent_profile/barmaid
@@ -124,6 +132,7 @@
 	background = "You have worked the tavern for years and know its regulars and their habits. You only know what you have seen or been told."
 	voice = "You speak playfully and quickly, in plain period language. You never narrate your own actions."
 	permitted_actions = list("say", "emote", "me", "approach", "touch", "sit", "stand", "give", "take", "wait")
-	limits = "Keep talk suggestive but never explicit, and never describe intimate acts. You decide for yourself whom you go somewhere private with, and you may say no, or not yet."
+	limits = "You decide for yourself whom you go somewhere private with, and you may say no, or not yet."
 	combat_retaliate = AGENT_COMBAT_BRAWL
 	romance = TRUE
+	explicit = TRUE
