@@ -11,7 +11,7 @@
 
 	if(istype(click_intercept, /datum/buildmode) && (_key == "Shift"))
 		var/datum/buildmode/build_mode = click_intercept
-		build_mode.toggle_pixel_positioning_mode(TRUE)
+		build_mode.set_pixel_positioning(TRUE)
 
 	// If not handled by console, continue with normal key handling
 	client_keysend_amount += 1
@@ -98,7 +98,7 @@
 
 	if(istype(click_intercept, /datum/buildmode) && (_key == "Shift"))
 		var/datum/buildmode/B = click_intercept
-		B.toggle_pixel_positioning_mode(FALSE)
+		B.set_pixel_positioning(FALSE)
 
 	keys_held -= _key
 	var/movement = movement_keys[_key]

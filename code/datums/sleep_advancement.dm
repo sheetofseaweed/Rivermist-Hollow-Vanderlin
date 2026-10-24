@@ -286,7 +286,7 @@
 		</html>
 	"}
 	var/datum/browser/popup = new(user, "dreams", "<center>Dreams</center>", 350, 450, src)
-	popup.set_window_options(can_close = FALSE) // Does nothing
+	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(TRUE)
 
