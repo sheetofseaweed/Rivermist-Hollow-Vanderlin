@@ -324,11 +324,13 @@
 	. = FALSE
 	if(penis_entry.customizer_choice_type != /datum/customizer_choice/organ/genitals/penis/ovipositor)
 		var/old_size = penis_entry.penis_size
+		var/old_length = penis_entry.penis_length_cm
 		var/old_functional = penis_entry.functional
 		customizer_entries -= penis_entry
 		qdel(penis_entry)
 		penis_entry = penis_customizer.create_customizer_entry(src, /datum/customizer_choice/organ/genitals/penis/ovipositor)
 		penis_entry.penis_size = old_size
+		penis_entry.penis_length_cm = old_length
 		penis_entry.functional = old_functional
 		customizer_entries += penis_entry
 		. = TRUE

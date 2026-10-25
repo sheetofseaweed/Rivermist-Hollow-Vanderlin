@@ -104,9 +104,9 @@
 		if(INSERT_FEEDBACK_TRY_FORCE)
 			pain_amt += 3
 			if(self)
-				to_chat(user, spanify_force("I feel like \the [dildo] might fit if I just use more force."))
+				to_chat(user, spanify_force("I feel like \the [dildo] might fit with more force, or something slick."))
 			else
-				user.visible_message(spanify_force("I feel like \the [dildo] might fit in [target]'s ass if I just use more force."))
+				user.visible_message(spanify_force("I feel like \the [dildo] might fit in [target]'s ass with more force, or something slick."))
 		if(INSERT_FEEDBACK_BLOCKED)
 			if(self)
 				to_chat(user, spanify_force("My ass is blocked."))

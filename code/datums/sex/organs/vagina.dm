@@ -28,7 +28,6 @@
 	blocker = ITEM_SLOT_PANTS
 	additional_blocker = "underwear"
 	bloatable = TRUE
-	stretchable = FALSE
 	drips_as_drops = TRUE
 	// Passive egg production is enabled by a mob trait; these vars only tune the output.
 	var/oviposition_egg_production_type = null // Null keeps the default safe egg type.
@@ -64,6 +63,17 @@
 	. = ..()
 	var/datum/component/body_storage/vagina/comp = GetComponent(/datum/component/body_storage/vagina)
 	comp?.RemoveComponent()
+
+/// The gape is part of the render key, so a gaping body caches its own sprite.
+/obj/item/organ/genitals/filling_organ/vagina/get_render_key_state()
+	return "[..()]-[orifice?.gaped ? "gaped" : "tight"]"
+
+/// Redraws the body so the gaping sprite follows the gape state.
+/obj/item/organ/genitals/filling_organ/vagina/on_orifice_gape_changed(now_gaped)
+	. = ..()
+	if(iscarbon(owner))
+		var/mob/living/carbon/carbon_owner = owner
+		carbon_owner.update_body_parts(TRUE)
 
 /obj/item/organ/genitals/filling_organ/vagina/process_fluids(seconds)
 	. = ..()

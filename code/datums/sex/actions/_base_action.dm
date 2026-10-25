@@ -163,6 +163,7 @@
 		UnregisterSignal(action_user, COMSIG_SEX_CLIMAX)
 	// A scene torn down without on_finish must still free the hand on the cock.
 	unlink_penis_grip()
+	end_orifice_penetration()
 	if(scene && !QDELETED(scene))
 		scene.forget_action(src)
 	proposal_controller = null
@@ -362,9 +363,15 @@
 			cycle_interrupted = FALSE
 			continue
 
+		// Pressing against a hole that will not take it yet replaces the thrust.
+		if(orifice_pressing && run_orifice_press_cycle(action_user, action_target))
+			send_clench_prompt()
+			continue
+
 		suppress_visible_messages = begin_remote_visible_message_suppression()
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
+		on_orifice_cycle()
 		play_perform_breast_anim()
 		play_perform_motion()
 		send_clench_prompt()
@@ -730,6 +737,9 @@
 	return !!get_valid_remote_context()
 
 /datum/sex_action/proc/try_knot_on_climax(mob/living/user, mob/living/target)
+	// Nothing is inside while still pressing at the opening.
+	if(orifice_pressing)
+		return FALSE
 	if(!knot_on_finish)
 		return FALSE
 	if(!can_knot)
@@ -809,6 +819,12 @@
 	if(!storage_comp)
 		return FALSE
 
+	// Too wide is no refusal for a penetration: the act starts by pressing against the opening.
+	if(is_orifice_penetration())
+		var/width_feedback = target_organ.get_body_storage_width_feedback(item_to_check, STORAGE_LAYER_INNER, force)
+		if(width_feedback != INSERT_FEEDBACK_OK && width_feedback != INSERT_FEEDBACK_OK_FORCE)
+			return TRUE
+
 	var/fit_result = storage_comp.check_fit(target_organ, item_to_check, STORAGE_LAYER_INNER, force)
 	switch(fit_result)
 		if(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
@@ -864,6 +880,14 @@
 		if(stored_item_name)
 			item_to_store.name = stored_item_name
 
+	item_to_store.on_penetration_standin_created(src)
+	// Too wide for the opening: the act starts by pressing against it instead of failing.
+	var/width_feedback = target_o.get_body_storage_width_feedback(item_to_store, STORAGE_LAYER_INNER, use_force)
+	if(width_feedback != INSERT_FEEDBACK_OK && width_feedback != INSERT_FEEDBACK_OK_FORCE)
+		qdel(item_to_store)
+		begin_orifice_pressing(user, target, width_feedback)
+		return TRUE
+
 	// Try to fit it in the hole
 	var/success = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_TRY_INSERT, item_to_store, STORAGE_LAYER_INNER, use_force)
 	switch(success)
@@ -896,9 +920,9 @@
 
 		if(INSERT_FEEDBACK_TRY_FORCE)
 			if(self)
-				to_chat(user, spanify_force("I feel like \the [item_to_store.name] might fit in my [hole_id] if I just use more force."))
+				to_chat(user, spanify_force("I feel like \the [item_to_store.name] might fit in my [hole_id] with more force, or something slick."))
 			else
-				user.visible_message(spanify_force("I feel like my [item_to_store.name] might fit in [target]'s [hole_id] if I just use more force."))
+				user.visible_message(spanify_force("I feel like my [item_to_store.name] might fit in [target]'s [hole_id] with more force, or something slick."))
 			SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_FORCE_REMOVE, item_to_store, STORAGE_LAYER_INNER)
 			addtimer(CALLBACK(src, PROC_REF(qdel), item_to_store), 2)
 			return FALSE
@@ -986,6 +1010,7 @@
 				return FALSE
 	lock_sex_object(user, target)
 	sync_penis_grip(user, target)
+	begin_orifice_penetration(user, target)
 	sex_volume = initial(sex_volume)
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
 		sex_volume *= 0.5
@@ -1008,6 +1033,7 @@
 			remove_from_hole(target, user)
 		else
 			remove_from_hole(user, target)
+	end_orifice_penetration()
 	unlink_penis_grip()
 	unlock_sex_object(user, target)
 	sex_volume = initial(sex_volume)

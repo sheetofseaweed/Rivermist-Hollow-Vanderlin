@@ -673,6 +673,8 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 			"name" = pref.name,
 			"description" = pref.description,
 		)
+		if(pref.locked_after_spawn && has_spawned)
+			entry["lock_reason"] = pref.get_edit_lock_reason(user, src)
 		if(istype(pref, /datum/erp_preference/bitflag))
 			var/datum/erp_preference/bitflag/flag_pref = pref
 			entry["kind"] = "flags"

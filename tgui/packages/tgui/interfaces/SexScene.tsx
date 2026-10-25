@@ -26,6 +26,7 @@ type ActionEntry = {
   can_perform: Booleanish;
   user_zones: number;
   target_zones: number;
+  fit_hint?: string;
 };
 
 type ZoneOption = { name: string; value: number };
@@ -430,7 +431,11 @@ export const SexScene = () => {
             compact
             disabled={!asBool(action.can_perform) && !asBool(action.active)}
             selected={asBool(action.active)}
-            tooltip={action.name}
+            tooltip={
+              action.fit_hint
+                ? `${action.name} (${action.fit_hint})`
+                : action.name
+            }
             onClick={() =>
               act(asBool(action.active) ? 'stop' : 'action', {
                 key: action.key,
@@ -438,6 +443,11 @@ export const SexScene = () => {
             }
           >
             {action.name}
+            {action.fit_hint ? (
+              <Box as="span" color="label" fontSize="9px" ml={0.5}>
+                {action.fit_hint}
+              </Box>
+            ) : null}
           </Button>
         </Stack.Item>
         {asBool(action.active) ? (

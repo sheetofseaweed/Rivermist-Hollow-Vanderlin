@@ -186,7 +186,12 @@
 		/datum/supply_pack/medicine/antipregpot,
 		/datum/supply_pack/medicine/moon_tea,
 		/datum/supply_pack/medicine/cold_seed,
-		/datum/supply_pack/medicine/seed_sachets
+		/datum/supply_pack/medicine/seed_sachets,
+		/datum/supply_pack/narcotics/slick_balm,
+		/datum/supply_pack/narcotics/rosewater_salve,
+		/datum/supply_pack/narcotics/yielding_draught,
+		/datum/supply_pack/narcotics/maidens_knot,
+		/datum/supply_pack/narcotics/limber_draught
 	)
 	exotic_pool = list(
 		/datum/supply_pack/armor/steel/coatofplates,

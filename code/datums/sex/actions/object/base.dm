@@ -7,7 +7,7 @@
 	user_menu_zone_mask = SEX_UI_ZONE_ARMS
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	hole_id = ORGAN_SLOT_VAGINA
-	stored_item_type = /obj/item
+	stored_item_type = /obj/item/penetration_standin
 	/// The toy this runtime action started with. If it leaves the active hand, the action stops.
 	var/obj/item/selected_toy
 

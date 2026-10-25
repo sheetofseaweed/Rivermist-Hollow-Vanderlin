@@ -6,6 +6,7 @@ import {
   Dropdown,
   Icon,
   Input,
+  NumberInput,
   Section,
   Stack,
   Tabs,
@@ -119,6 +120,7 @@ type ErpPrefEntry = {
   min?: number;
   max?: number;
   choices?: string[];
+  lock_reason?: string;
 };
 
 type ErpCategory = {
@@ -155,8 +157,13 @@ type FeatureColor = {
 type FeatureExtra = {
   task: string;
   label: string;
-  kind: 'color' | 'text';
-  value: string;
+  kind: 'color' | 'text' | 'number';
+  value: string | number;
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+  readonly?: Booleanish;
 };
 
 type FeatureEntry = {
@@ -1629,6 +1636,53 @@ export const PreferencesMenu = () => {
     </Box>
   );
 
+  const renderFeatureExtraControl = (
+    feature: FeatureEntry,
+    extra: FeatureExtra,
+  ) => {
+    if (
+      extra.kind === 'number' &&
+      extra.min !== undefined &&
+      extra.max !== undefined
+    ) {
+      return (
+        <NumberInput
+          value={extra.value}
+          minValue={extra.min}
+          maxValue={extra.max}
+          step={extra.step ?? 1}
+          unit={extra.unit}
+          width="64px"
+          onChange={(value) =>
+            customizerAct(feature.key, extra.task, { value })
+          }
+        />
+      );
+    }
+    if (asBool(extra.readonly)) {
+      return <Box>{display(extra.value)}</Box>;
+    }
+    return (
+      <Button
+        compact
+        tooltip={extra.label}
+        onClick={() => customizerAct(feature.key, extra.task)}
+      >
+        {extra.kind === 'color' ? (
+          <Box
+            inline
+            width="22px"
+            height="11px"
+            verticalAlign="middle"
+            backgroundColor={swatchColor(String(extra.value))}
+          />
+        ) : (
+          display(extra.value)
+        )}
+      </Button>
+    );
+  };
+
   const renderFeatureExtras = (feature: FeatureEntry) => {
     const extras = feature.extras || [];
     if (!extras.length) {
@@ -1656,23 +1710,7 @@ export const PreferencesMenu = () => {
             <Box color="label" style={{ fontSize: '12px', lineHeight: '14px' }}>
               {extra.label}
             </Box>
-            <Button
-              compact
-              tooltip={extra.label}
-              onClick={() => customizerAct(feature.key, extra.task)}
-            >
-              {extra.kind === 'color' ? (
-                <Box
-                  inline
-                  width="22px"
-                  height="11px"
-                  verticalAlign="middle"
-                  backgroundColor={swatchColor(extra.value)}
-                />
-              ) : (
-                display(extra.value)
-              )}
-            </Button>
+            {renderFeatureExtraControl(feature, extra)}
           </Box>
         ))}
       </Box>
@@ -1745,7 +1783,9 @@ export const PreferencesMenu = () => {
                 requestHover(
                   v,
                   feature.colors?.[0]?.value ??
-                    feature.extras?.find((e) => e.kind === 'color')?.value,
+                    feature.extras
+                      ?.find((e) => e.kind === 'color')
+                      ?.value?.toString(),
                   feature.key,
                 )
               }
@@ -2990,9 +3030,14 @@ export const PreferencesMenu = () => {
                     <Box color="label" fontSize="11px">
                       {pref.description}
                     </Box>
+                    {pref.lock_reason ? (
+                      <Box color="bad" fontSize="11px">
+                        {pref.lock_reason}
+                      </Box>
+                    ) : null}
                   </Stack.Item>
                   <Stack.Item basis="45%">
-                    {renderErpPrefControl(pref, locked)}
+                    {renderErpPrefControl(pref, locked || !!pref.lock_reason)}
                   </Stack.Item>
                 </Stack>
               ))}

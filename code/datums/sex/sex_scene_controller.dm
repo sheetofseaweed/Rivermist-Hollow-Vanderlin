@@ -70,6 +70,10 @@
 		var/obj/item/organ/organ = human.getorganslot(slot)
 		if(!organ)
 			continue
+		// The organ itself may answer, such as an opening stretched around what is in it.
+		var/list/organ_effects = organ.get_sex_action_effects(context)
+		if(length(organ_effects))
+			effects += organ_effects
 		var/list/stored_items = SEND_SIGNAL(organ, COMSIG_BODYSTORAGE_GET_2D_ITEM_LIST)
 		if(!length(stored_items))
 			continue

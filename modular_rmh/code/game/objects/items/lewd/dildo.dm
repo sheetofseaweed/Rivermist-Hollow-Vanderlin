@@ -71,6 +71,8 @@
 					pleasure = 6
 				if("big")
 					pleasure = 8
+	// Storage bulk follows the girth of the chosen size.
+	body_storage_bulk = max(1, round(get_insert_girth() / ORIFICE_BULK_PER_CM))
 	update_appearance()
 	update_strapon()
 	can_custom = FALSE
@@ -87,15 +89,15 @@
 			temp.penis_type = PENIS_TYPE_PLAIN
 		if("flared")
 			temp.penis_type = PENIS_TYPE_EQUINE
+	// Strapon length in centimetres by dildo size.
 	switch(dildo_size)
 		if("small")
-			temp.organ_size = DEFAULT_PENIS_SIZE-1
+			temp.length_cm = 11
 		if("medium")
-			temp.organ_size = DEFAULT_PENIS_SIZE
-		if("big")
-			temp.organ_size = DEFAULT_PENIS_SIZE+1
-		if("huge")
-			temp.organ_size = DEFAULT_PENIS_SIZE+1 //huge doesnt exist in mobs
+			temp.length_cm = 15
+		if("big", "huge")
+			temp.length_cm = 19
+	temp.organ_size = get_penis_visual_size(temp.get_length_cm())
 	temp.always_hard = TRUE
 	temp.strapon = TRUE
 	strapon = temp

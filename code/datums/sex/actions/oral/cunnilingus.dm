@@ -48,6 +48,7 @@
 	perform_sex_action(target, user, 2, 3, 2)
 	handle_passive_ejaculation(target)
 	perform_sex_action(user, target, 0.5, 0, 0)
+	deposit_saliva_in_hole(user, target, ORGAN_SLOT_VAGINA, 0.5, 4)
 
 /datum/sex_action/cunnilingus/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)

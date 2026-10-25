@@ -180,7 +180,7 @@
 		for(var/pref_type in categories[category])
 			var/datum/erp_preference/pref = new pref_type()
 			dat += "<tr><td width='50%'><b>[pref.name]:</b><br><i>[pref.description]</i></td>"
-			dat += "<td width='50%'>[pref.show_pref_ui(src, lock_reason)]</td></tr>"
+			dat += "<td width='50%'>[pref.show_pref_ui(src, pref.get_edit_lock_reason(user, src))]</td></tr>"
 	dat += "</table>"
 	return dat
 

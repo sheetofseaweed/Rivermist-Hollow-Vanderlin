@@ -526,25 +526,27 @@
 
 /// Whose cock this action puts inside someone, or null.
 /datum/sex_action/proc/get_inserted_penis_owner(mob/living/user, mob/living/target)
-	if(!ispath(stored_item_type, /obj/item/organ/genitals/penis))
+	// A cock still pressing at the opening is not inside yet.
+	if(orifice_pressing || !ispath(stored_item_type, /obj/item/organ/genitals/penis))
 		return null
 	return get_storage_insertor(user, target)
 
 // NPC penetration skips hole storage, so each names its cock directly.
+// A warming NPC has not gone in yet.
 /datum/sex_action/npc/npc_vaginal_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
-	return user
+	return warmup_cycles_left > 0 ? null : user
 
 /datum/sex_action/npc/npc_anal_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
-	return user
+	return warmup_cycles_left > 0 ? null : user
 
 /datum/sex_action/npc/npc_throat_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
 	return user
 
 /datum/sex_action/npc/npc_vaginal_ride_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
-	return target
+	return warmup_cycles_left > 0 ? null : target
 
 /datum/sex_action/npc/npc_anal_ride_sex/get_inserted_penis_owner(mob/living/user, mob/living/target)
-	return target
+	return warmup_cycles_left > 0 ? null : target
 
 /// On start: a stroking action links to a grip, or makes one; a cock going into something is let go.
 /datum/sex_action/proc/sync_penis_grip(mob/living/user, mob/living/target)

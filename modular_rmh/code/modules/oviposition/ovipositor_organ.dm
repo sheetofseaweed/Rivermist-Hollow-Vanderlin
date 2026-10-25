@@ -87,10 +87,17 @@
 	var/obj/item/organ/genitals/penis/ovipositor/ovipositor = current_penis
 
 	if(!istype(ovipositor))
+		var/kept_length = 0
+		var/kept_size = 0
 		if(current_penis)
+			kept_length = current_penis.length_cm
+			kept_size = current_penis.organ_size
 			current_penis.Remove(owner, FALSE, FALSE)
 			qdel(current_penis)
 		ovipositor = new /obj/item/organ/genitals/penis/ovipositor()
+		if(kept_size)
+			ovipositor.length_cm = kept_length
+			ovipositor.organ_size = kept_size
 		ovipositor.Insert(owner, FALSE, FALSE)
 
 	ovipositor.set_egg_type(egg_type)
