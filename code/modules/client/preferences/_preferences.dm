@@ -268,6 +268,17 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		character_setup_static_sig = new_static_sig
 		update_static_data(user)
 	character_setup_update_view()
+	character_setup_queue_push()
+
+/// Pushes ui_data on the next tick unless it is rebuilt before then. A ui_act that returns TRUE
+/// pushes right after its handler, so an immediate push here built and sent ui_data twice per click.
+/datum/preferences/proc/character_setup_queue_push()
+	character_setup_push_serial = character_setup_data_serial
+	addtimer(CALLBACK(src, PROC_REF(character_setup_flush_push)), 1, TIMER_UNIQUE)
+
+/datum/preferences/proc/character_setup_flush_push()
+	if(character_setup_data_serial != character_setup_push_serial)
+		return
 	SStgui.update_uis(src)
 
 
@@ -1193,7 +1204,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		if(color_choice)
 			if(GLOB.colorlist[color_choice] == "CUSTOM_RGB")
 				var/current_color = smallclothes_preferences[color_pref_key] || "#FFFFFF"
-				var/new_color = input(user, "Select color:", "Custom Color", current_color) as color|null
+				var/new_color = tgui_color_picker(user, "Select color:", "Custom Color", sanitize_hexcolor(current_color, 6, TRUE, "#ffffff"))
 				if(new_color)
 					smallclothes_preferences[color_pref_key] = sanitize_hexcolor(new_color, include_crunch = 1)
 			else

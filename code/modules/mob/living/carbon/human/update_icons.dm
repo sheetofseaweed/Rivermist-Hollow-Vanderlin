@@ -2027,7 +2027,14 @@ generate/load female uniform sprites matching all previously decided variables
 					observers = null
 					break
 
+/// Set while the character setup preview dresses this mob. Organ inserts already wait for
+/// BUILDING_ORGANS, but customizers and dna redraw all limbs directly; regenerate_icons() at
+/// the end of the dressing draws them once instead.
+/mob/living/carbon/human/var/defer_body_parts_update = FALSE
+
 /mob/living/carbon/human/update_body_parts(redraw = FALSE)
+	if(defer_body_parts_update)
+		return
 	//CHECK FOR UPDATE
 	var/oldkey = icon_render_key
 	icon_render_key = generate_icon_render_key()
