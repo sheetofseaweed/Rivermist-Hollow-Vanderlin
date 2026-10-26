@@ -8,6 +8,7 @@
 	. = ..()
 	var/datum/organ_dna/penis/penis_dna = organ_dna
 	penis_dna.penis_size = organ_size
+	penis_dna.length_cm = length_cm
 	penis_dna.functional = functional
 
 /obj/item/organ/genitals/filling_organ/testicles

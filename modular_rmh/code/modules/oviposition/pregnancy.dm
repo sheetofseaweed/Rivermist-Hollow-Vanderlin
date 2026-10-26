@@ -258,6 +258,11 @@
 	if(!remove_from_host(BODYSTORAGE_REMOVE_INTERNAL))
 		return FALSE
 
+	// The egg leaves from the deep layer, which passes no opening on its own.
+	var/obj/item/organ/genitals/filling_organ/laying_hole = laying_container
+	if(istype(laying_hole) && laying_hole.orifice_type)
+		laying_hole.get_orifice().pass_through(egg.get_insert_girth(), SEX_FORCE_MID, laying_carrier)
+
 	laying_carrier.visible_message(
 		span_notice("[laying_carrier] [laying_container.get_oviposition_lay_verb()] an egg!"),
 		span_love(laying_container.get_oviposition_lay_self_message())
@@ -746,7 +751,16 @@
 	INVOKE_ASYNC(src, PROC_REF(release_hatchling), TRUE)
 
 /datum/component/internal_womb_hatchling/proc/birth_hatchling()
-	return release_hatchling(FALSE)
+	var/obj/item/organ/genitals/filling_organ/birth_hole = container
+	var/mob/living/birth_carrier = carrier
+	var/birth_girth = holder?.get_insert_girth()
+	// Inner-layer storage passes the opening on removal by itself; only deeper layers need it here.
+	var/passes_opening = istype(birth_hole) && birth_hole.orifice_type && SEND_SIGNAL(birth_hole, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, holder) != STORAGE_LAYER_INNER
+	if(!release_hatchling(FALSE))
+		return FALSE
+	if(passes_opening && !QDELETED(birth_hole))
+		birth_hole.get_orifice().pass_through(birth_girth, SEX_FORCE_MID, birth_carrier)
+	return TRUE
 
 /datum/component/internal_womb_hatchling/proc/release_hatchling(silent = FALSE)
 	if(!holder?.held_mob)

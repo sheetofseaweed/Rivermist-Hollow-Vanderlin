@@ -293,6 +293,9 @@
 		return null
 	if(!get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = FALSE))
 		return null
+	var/list/adjectives = anus.orifice?.get_examine_adjectives()
+	if(length(adjectives))
+		return "have an exposed anus, [jointext(adjectives, ", ")]."
 	return "have an exposed anus."
 
 /mob/living/carbon/human/return_character_information()
@@ -326,6 +329,8 @@
 	var/anus_summary = get_visible_anus_summary()
 	if(anus_summary)
 		data += get_character_information_line(anus_summary)
+
+	data += get_orifice_status_lines()
 
 	return data
 
@@ -621,7 +626,8 @@
 				penis = new /obj/item/organ/genitals/penis
 			else
 				penis = new penis_organ
-			penis.organ_size = rand(penis_min, penis_max)
+			penis.length_cm = get_random_penis_length()
+			penis.organ_size = get_penis_visual_size(penis.length_cm)
 			penis.Insert(src, TRUE)
 
 	else if(target_gender == FEMALE)
@@ -791,7 +797,8 @@
 				penis = new /obj/item/organ/genitals/penis
 			else
 				penis = new penis_organ
-			penis.organ_size = rand(penis_min, penis_max)
+			penis.length_cm = get_random_penis_length()
+			penis.organ_size = get_penis_visual_size(penis.length_cm)
 			penis.Insert(user, TRUE)
 	if(gender == FEMALE)
 		var/obj/item/organ/genitals/butt/buttie = user.getorganslot(ORGAN_SLOT_BUTT)
@@ -832,7 +839,8 @@
 					penis = new /obj/item/organ/genitals/penis
 				else
 					penis = new penis_organ
-				penis.organ_size = rand(penis_min, penis_max)
+				penis.length_cm = get_random_penis_length()
+				penis.organ_size = get_penis_visual_size(penis.length_cm)
 				penis.Insert(user, TRUE)
 	if(iscarbon(user))
 		var/mob/living/carbon/carbon_user = user

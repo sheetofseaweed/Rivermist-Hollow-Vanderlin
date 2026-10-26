@@ -586,7 +586,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	HTML += "</center>"
 
 	var/datum/browser/noclose/popup = new(user, "mob_occupation", "<div align='center'>Class Selection</div>", 1000, 700)
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(HTML)
 	popup.open(FALSE)
 
@@ -768,7 +767,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	dat += "</body>"
 
 	var/datum/browser/noclose/popup = new(user, "keybind_setup", "<div align='center'>Keybinds</div>", 600, 600) //no reason not to reuse the occupation window, as it's cleaner that way
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
 
@@ -806,7 +804,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	dat += "</body>"
 	var/datum/browser/noclose/popup = new(user, "antag_setup", "<div align='center'>Special Roles</div>", 265, 340)
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
 
@@ -1094,9 +1091,22 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			return TRUE
 		if(!(setup_choice_type in setup_customizer.customizer_choices) || setup_choice_type == setup_entry.customizer_choice_type)
 			return TRUE
+		// A new penis shape keeps the length and function the player already set.
+		var/kept_penis_length = 0
+		var/kept_penis_functional = TRUE
+		var/datum/customizer_entry/organ/genitals/penis/old_penis_entry = setup_entry
+		if(istype(old_penis_entry))
+			kept_penis_length = old_penis_entry.penis_length_cm
+			kept_penis_functional = old_penis_entry.functional
 		customizer_entries -= setup_entry
 		qdel(setup_entry)
-		customizer_entries += setup_customizer.create_customizer_entry(src, setup_choice_type)
+		var/datum/customizer_entry/new_entry = setup_customizer.create_customizer_entry(src, setup_choice_type)
+		var/datum/customizer_entry/organ/genitals/penis/new_penis_entry = new_entry
+		if(istype(new_penis_entry) && kept_penis_length)
+			new_penis_entry.penis_length_cm = kept_penis_length
+			new_penis_entry.functional = kept_penis_functional
+			new_penis_entry.penis_size = get_penis_visual_size(kept_penis_length)
+		customizer_entries += new_entry
 		update_menu_data(user)
 		return TRUE
 	else if(href_list["preference"] == "character_setup_preview_layer")

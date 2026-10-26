@@ -435,10 +435,16 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 /obj/structure/fake_machine/contractledger/proc/get_active_contract_count(mob/user)
 	if(!user)
 		return 0
+	// Guild roles hand their contracts out as givers, so their limit counts those too.
+	var/count_issued = is_boss_raid_issuer(user)
 	var/quest_count = 0
 	for(var/obj/item/paper/scroll/quest/quest_scroll in GLOB.quest_scrolls)
-		var/mob/quest_receiver = quest_scroll.assigned_quest?.quest_receiver_reference?.resolve()
-		if(quest_scroll.assigned_quest && !quest_scroll.assigned_quest.complete && quest_receiver == user && can_accept_contract_quest(quest_scroll.assigned_quest))
+		var/datum/quest/quest = quest_scroll.assigned_quest
+		if(!quest || quest.complete || !can_accept_contract_quest(quest))
+			continue
+		if(quest.quest_receiver_reference?.resolve() == user)
+			quest_count++
+		else if(count_issued && !quest.player_commission && quest.quest_giver_reference?.resolve() == user)
 			quest_count++
 	return quest_count
 
@@ -580,6 +586,10 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	if(mob_job.is_quest_giver)
 		return TRUE
 	return istype(mob_job, /datum/job/waterdeep_merchant) || istype(mob_job, /datum/job/waterdeep_banker) || istype(mob_job, /datum/job/innkeep)
+
+/// Brokers issue contracts as the giver, so another person can claim the scroll and work it.
+/obj/structure/fake_machine/contractledger/proc/is_contract_broker(mob/user)
+	return is_quest_handler(user) || is_boss_raid_issuer(user)
 
 /obj/structure/fake_machine/contractledger/proc/get_assigned_job(mob/user)
 	var/datum/job/assigned_job = user?.mind?.assigned_role
@@ -1306,7 +1316,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	attached_quest.requested_tier = selected_tier
 	attached_quest.prepare_for_issuer(user)
 
-	if(is_quest_handler(user))
+	if(is_contract_broker(user))
 		attached_quest.quest_giver_name = user.real_name
 		attached_quest.quest_giver_reference = WEAKREF(user)
 	else
@@ -1396,6 +1406,7 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		qdel(spawned_scroll)
 		return FALSE
 
+	SSquestboard.on_posting_claimed(posted_quest)
 	posted_quest.on_claim(user)
 	posted_quest.on_issued_from_ledger(src, user)
 	on_contract_token_issued(user, posted_quest, spawned_scroll)
@@ -1461,19 +1472,14 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 				landmark_weight = landmark_config.medium_quest_weight
 			else
 				landmark_weight = landmark_config.hard_quest_weight
-		// Weight < 1.0: probabilistic skip (e.g. 0.5 = 50% chance to skip)
-		if(landmark_weight < 1.0 && !prob(landmark_weight * 100))
-			continue
-
 		var/is_clean_landmark = !prefer_clean_landmarks || !landmark_has_nearby_ambient_mobs(landmark)
-		// Weight > 1.0: add landmark multiple times to increase pick chance
-		var/add_count = landmark_weight > 1.0 ? round(landmark_weight) : 1
+		// pickweight rolls whole numbers, so map weights such as 0.5 and 1.6 become 5 and 16.
+		var/pick_weight = max(1, round(landmark_weight * 10, 1))
 
 		if(landmark.supports_contract_tier(contract_tier))
-			for(var/i in 1 to add_count)
-				exact_landmarks += landmark
-				if(is_clean_landmark)
-					exact_clean_landmarks += landmark
+			exact_landmarks[landmark] = pick_weight
+			if(is_clean_landmark)
+				exact_clean_landmarks[landmark] = pick_weight
 			continue
 
 		var/tier_gap = landmark.get_tier_gap(contract_tier)
@@ -1481,31 +1487,22 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 			best_gap = tier_gap
 			closest_landmarks = list()
 			closest_clean_landmarks = list()
-			for(var/i in 1 to add_count)
-				closest_landmarks += landmark
-				if(is_clean_landmark)
-					closest_clean_landmarks += landmark
-		else if(tier_gap == best_gap)
-			for(var/i in 1 to add_count)
-				closest_landmarks += landmark
-				if(is_clean_landmark)
-					closest_clean_landmarks += landmark
+		if(tier_gap == best_gap)
+			closest_landmarks[landmark] = pick_weight
+			if(is_clean_landmark)
+				closest_clean_landmarks[landmark] = pick_weight
 
 	if(template)
 		qdel(template)
 
 	if(length(exact_clean_landmarks))
-		var/obj/effect/landmark/quest_spawner/chosen = pick(exact_clean_landmarks)
-		return chosen
+		return pickweight(exact_clean_landmarks)
 	if(length(exact_landmarks))
-		var/obj/effect/landmark/quest_spawner/chosen = pick(exact_landmarks)
-		return chosen
+		return pickweight(exact_landmarks)
 	if(length(closest_clean_landmarks))
-		var/obj/effect/landmark/quest_spawner/chosen = pick(closest_clean_landmarks)
-		return chosen
+		return pickweight(closest_clean_landmarks)
 	if(length(closest_landmarks))
-		var/obj/effect/landmark/quest_spawner/chosen = pick(closest_landmarks)
-		return chosen
+		return pickweight(closest_landmarks)
 	return null
 
 /obj/structure/fake_machine/contractledger/proc/landmark_has_nearby_ambient_mobs(obj/effect/landmark/quest_spawner/landmark)
@@ -1586,20 +1583,16 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 			user.put_in_hands(deadly_ring)
 			to_chat(user, span_boldnotice("Among the contract spoils, you find [deadly_ring]!"))
 
-		var/deposit_return = completed_quest.deposit_amount || completed_quest.calculate_deposit(completed_quest.reward_amount)
-
-		if(completed_quest.player_commission)
-			reward += base_reward
-		else if(is_boss_raid_issuer(user))
+		var/brokered = !completed_quest.player_commission && is_brokered_turn_in(user, completed_quest)
+		if(brokered && is_boss_raid_issuer(user))
 			reward += ROUND_UP(base_reward * QUEST_HANDLER_REWARD_MULTIPLIER)
-		else if(is_quest_handler(user))
+		else if(brokered && is_quest_handler(user))
 			reward += ROUND_UP(base_reward * QUEST_MINOR_HANDLER_REWARD_MULTIPLIER)
 		else
 			reward += base_reward
+		reward = min(reward, completed_quest.get_reward_cap())
 
-		reward += deposit_return
-		original_reward += deposit_return
-
+		// Only the earned reward is taxed; the deposit was the contractor's own coin.
 		if(taxable)
 			tax_amt = round(tax_rate * reward)
 			if(tax_amt > 0)
@@ -1607,6 +1600,10 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 				SStreasury.give_money_treasury(tax_amt, "quest completion tax - [src.name]")
 				record_featured_stat(FEATURED_STATS_TAX_PAYERS, user, tax_amt)
 				record_round_statistic(STATS_TAXES_COLLECTED, tax_amt)
+
+		var/deposit_return = return_completed_deposit(user, completed_quest)
+		reward += deposit_return
+		original_reward += deposit_return
 
 		on_contract_completed(user, completed_quest, reward, original_reward, tax_amt)
 		qdel(completed_quest)
@@ -1617,6 +1614,28 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 	else
 		set_session_notice(user, "notice.turn_in_not_ready", "warning")
 	cash_in(user, round(reward), original_reward, tax_amt)
+
+/// TRUE when the giver turns in a contract that someone else claimed and worked.
+/obj/structure/fake_machine/contractledger/proc/is_brokered_turn_in(mob/user, datum/quest/completed_quest)
+	var/mob/receiver = completed_quest.quest_receiver_reference?.resolve()
+	if(!receiver || receiver == user)
+		return FALSE
+	return completed_quest.quest_giver_reference?.resolve() == user
+
+/// Pays a completed contract's deposit back out of the treasury that holds it; returns the coin owed to the user.
+/obj/structure/fake_machine/contractledger/proc/return_completed_deposit(mob/user, datum/quest/completed_quest)
+	var/deposit = completed_quest.deposit_amount
+	if(deposit <= 0)
+		return 0
+	completed_quest.deposit_amount = 0
+	SStreasury.treasury_value -= deposit
+	var/mob/giver = completed_quest.quest_giver_reference?.resolve()
+	if(giver && giver != user && (giver in SStreasury.bank_accounts))
+		SStreasury.bank_accounts[giver] += deposit
+		SStreasury.log_entries += "-[deposit] from treasury (completed contract deposit to handler)"
+		return 0
+	SStreasury.log_entries += "-[deposit] from treasury (completed contract deposit)"
+	return deposit
 
 /obj/structure/fake_machine/contractledger/proc/cash_in(mob/user, reward, original_reward, tax_amt)
 	add_mammons_to_atom(user, reward)
@@ -1666,16 +1685,18 @@ GLOBAL_VAR_INIT(quest_preview_preload_bootstrapped, FALSE)
 		return
 
 	var/quest_type_label = quest.quest_type
-	var/refund = quest.deposit_amount || quest.calculate_deposit(quest.reward_amount)
+	// Only a charged deposit comes back; uncharged contracts must not draw on the treasury.
+	var/refund = quest.deposit_amount
+	quest.deposit_amount = 0
 
 	var/mob/giver = quest.quest_giver_reference?.resolve()
-	if(giver && (giver in SStreasury.bank_accounts))
+	if(refund > 0 && giver && (giver in SStreasury.bank_accounts))
 		SStreasury.bank_accounts[giver] += refund
 		SStreasury.treasury_value -= refund
 		SStreasury.log_entries += "-[refund] from treasury (contract refund to handler)"
 		set_session_notice(user, "notice.abandoned_issuer_return", "success")
 		to_chat(user, span_notice("The deposit has been returned to the contract giver."))
-	else if(quest.quest_receiver_reference)
+	else if(refund > 0 && quest.quest_receiver_reference)
 		var/mob/receiver = quest.quest_receiver_reference.resolve()
 		if(receiver && (receiver in SStreasury.bank_accounts))
 			SStreasury.bank_accounts[receiver] += refund

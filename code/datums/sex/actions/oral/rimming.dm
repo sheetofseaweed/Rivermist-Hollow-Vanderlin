@@ -43,6 +43,7 @@
 
 	perform_sex_action(target, user, 2, 0, 1.5)
 	handle_passive_ejaculation(target)
+	deposit_saliva_in_hole(user, target, ORGAN_SLOT_ANUS, 0.5, 4)
 
 /datum/sex_action/rimming/on_finish(mob/living/user, mob/living/target)
 	. = ..()

@@ -87,7 +87,7 @@
 	var/result
 	for(var/push in 1 to pushes)
 		var/size = beads.get_bead(beads.beads_inside + 1)
-		result = beads.push_bead(organ, use_force)
+		result = beads.push_bead(organ, use_force, user, force)
 		if(!(result in pushed_results))
 			break
 		pushed++
@@ -113,7 +113,7 @@
 		return
 	switch(result)
 		if(INSERT_FEEDBACK_TRY_FORCE)
-			to_chat(user, span_warning("The next bead will not go in without more force."))
+			to_chat(user, span_warning("The next bead will not go in without more force, or something slick."))
 		if(INSERT_FEEDBACK_STUFFED)
 			user.visible_message(span_warning("[capitalize(whose(user, target))] [hole_word] is too full to take another bead."))
 			stop_runtime()
@@ -160,7 +160,7 @@
 	var/pain = 0
 	var/last_size
 	for(var/pull in 1 to pulls)
-		var/size = beads.pull_bead(user)
+		var/size = beads.pull_bead(user, force)
 		if(!size)
 			break
 		popped++
@@ -219,14 +219,12 @@
 		return
 	var/caught = is_caught(user, target)
 	var/count = caught ? min(rand(1, 2), beads.beads_inside) : beads.beads_inside
-	var/popped = 0
 	var/pleasure = 0
 	var/pain = 0
-	for(var/pull in 1 to count)
-		var/size = beads.pull_bead(user)
-		if(!size)
-			break
-		popped++
+	// Everything torn free crosses the ring together: one passage at the widest bead.
+	var/list/sizes = beads.pull_beads(count, user, force)
+	var/popped = length(sizes)
+	for(var/size in sizes)
 		pleasure += beads.get_bead_pleasure_of(size)
 		pain += beads.get_bead_pain_of(size)
 	if(!popped)
@@ -268,7 +266,7 @@
 		return
 	var/pleasure = 0.6 + 0.25 * force
 	if(force >= SEX_FORCE_HIGH && prob(15 + 10 * (force - SEX_FORCE_HIGH)))
-		var/size = beads.pull_bead(user)
+		var/size = beads.pull_bead(user, force)
 		if(size)
 			pleasure += beads.get_bead_pleasure_of(size)
 			user.visible_message(spanify_force("[user] tugs too hard, and a [get_bead_word(size)] pops out of [whose(user, target)] [hole_word]!"))
@@ -312,6 +310,8 @@
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] pops a [get_bead_word(size)] out of [whose(user, target)] [hole_word] and pushes it back in..."))
 	playsound(target, 'sound/misc/mat/pop.ogg', 25, TRUE, -2, ignore_walls = FALSE)
+	// The outer bead pops out and back in: one passage through the ring.
+	beads.pass_bead(beads.host_organ, beads.beads_inside, force, user)
 	var/pleasure = beads.get_bead_pleasure_of(size) * 1.3
 	perform_sex_action(target, user, pleasure, cap_bead_pain(target, beads.get_bead_pain_of(size) * 0.5, force, speed), pleasure * 0.8)
 	handle_passive_ejaculation(target)
@@ -357,7 +357,7 @@
 	if(!beads)
 		stop_runtime()
 		return
-	var/size = beads.pull_bead()
+	var/size = beads.pull_bead(null, force)
 	if(!size)
 		stop_runtime()
 		return

@@ -48,6 +48,8 @@
 
 /// Pulls out at the last moment and returns an onto-the-partner climax.
 /datum/component/arousal/proc/pull_out_for_climax(datum/sex_action/action, mob/living/climaxer, mob/living/partner)
+	if(action.orifice_pressing)
+		return climax_at_opening(action, climaxer)
 	var/from_mouth = action.hole_id == BODY_ZONE_PRECISE_MOUTH
 	var/place = from_mouth ? "[partner]'s mouth" : "[partner]"
 	climaxer.visible_message(span_love("[climaxer] pulls out of [place] at the last moment and cums all over [partner.p_them()]!"))
@@ -55,6 +57,27 @@
 		climaxer.lose_virginity()
 		partner.lose_virginity()
 	climax_zone_override = from_mouth ? FLUID_COAT_FACE : action.get_climax_coat_zone(climaxer)
+	return ORGASM_LOCATION_ONTO
+
+/// A climax while still pressing at an opening stays outside and takes no virginity; null spills it the generic way.
+/datum/component/arousal/proc/climax_at_opening(datum/sex_action/action, mob/living/climaxer)
+	var/mob/living/insertor = action.get_storage_insertor(action.action_user, action.action_target)
+	var/mob/living/receiver = action.get_storage_receiver(action.action_user, action.action_target)
+	var/datum/orifice/hole = action.get_penetrated_orifice(action.action_user, action.action_target, FALSE)
+	var/opening = hole ? hole.opening_name : "[action.hole_id]"
+	var/what = action.get_pressing_noun(insertor)
+	if(climaxer != insertor)
+		climaxer.visible_message(span_love("[climaxer] climaxes as [insertor] grinds [what] against [climaxer.p_their()] [opening]!"))
+		return null
+	if(climaxer == receiver)
+		climaxer.visible_message(span_love("[climaxer] climaxes grinding [what] against [climaxer.p_their()] [opening]!"))
+		return null
+	if(!ispath(action.stored_item_type, /obj/item/organ/genitals/penis))
+		climaxer.visible_message(span_love("[climaxer] climaxes while grinding [what] against [receiver]'s [opening]!"))
+		return null
+	// The cock never got in, so the load spills over the opening it pressed at.
+	climaxer.visible_message(span_love("[climaxer] cums against [receiver]'s [opening] without ever getting inside!"))
+	climax_zone_override = FLUID_COAT_GROIN
 	return ORGASM_LOCATION_ONTO
 
 /// Everyone whose cock is inside this mob's vagina or anus right now.

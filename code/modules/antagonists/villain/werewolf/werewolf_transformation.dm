@@ -294,6 +294,7 @@
 
 	if(human_user.getorganslot(ORGAN_SLOT_PENIS))
 		var/obj/item/organ/genitals/penis/knotted/big/penis = new
+		penis.length_cm = 28
 		penis.Insert(new_werewolf, TRUE, FALSE)
 	if(human_user.getorganslot(ORGAN_SLOT_TESTICLES))
 		var/obj/item/organ/genitals/filling_organ/testicles/internal/testicles = new
