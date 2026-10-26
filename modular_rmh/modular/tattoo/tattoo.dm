@@ -282,8 +282,9 @@ GLOBAL_LIST_INIT(tattoo_ink_colors, list(
 
 /// Display name of the pigment a tattoo was inked with, matched back from its hex.
 /proc/tattoo_pigment_name(color)
+	// Loaded colours are lowercased by validate_tattoos(), so the match ignores case.
 	for(var/pigment_name in GLOB.tattoo_ink_colors)
-		if(GLOB.tattoo_ink_colors[pigment_name] == color)
+		if(cmptext(GLOB.tattoo_ink_colors[pigment_name], color))
 			return pigment_name
 	return "unknown pigment"
 
@@ -1205,6 +1206,18 @@ GLOBAL_LIST_INIT(tattoo_ink_colors, list(
 /datum/preferences/proc/ShowTattoos(mob/user)
 	var/datum/tattoo_prefs/window = new(user)
 	window.ui_interact(user)
+
+/// Tattoo caps and ids for other files, which cannot see the defines above.
+/proc/tattoo_rules()
+	var/static/list/rules = list(
+		"max_per_zone" = MAXIMUM_TATTOOS_PER_ZONE,
+		"max_length" = TATTOO_TEXT_MAX_LENGTH,
+		"lettering" = TATTOO_STYLE_LETTERING,
+		"design" = TATTOO_STYLE_DESIGN,
+		"ink" = TATTOO_MEDIUM_INK,
+		"fresh" = TATTOO_STATE_FRESH,
+	)
+	return rules
 
 #undef TATTOO_STATE_FRESH
 #undef TATTOO_STATE_FADED

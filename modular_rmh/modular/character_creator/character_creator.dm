@@ -1,7 +1,7 @@
 /// Character Creator: data and actions for the "CharacterCreator" TGUI interface, the BG3-style
 /// character setup window. It reuses every existing character setup action and only adds what the
 /// new layout needs: origins (cultures), preferred subclasses, native descriptors and markings,
-/// interface language, rivals counter, the loadout window with worn and carried items, and a
+/// interface language, rivals counter, the loadout tab with worn and carried items, and a
 /// validated character export/import. The succubus disguise and ooze reshape editors open the
 /// same interface in an appearance-only layout.
 
@@ -16,6 +16,44 @@
 /datum/preferences/var/character_creator_lang = CC_LANG_EN
 /// Preferred subclass per job title: list("Adventurer" = "/datum/job/advclass/..."). Stored per character.
 /datum/preferences/var/list/character_creator_subclasses
+/// TRUE after any character edit until the slot is saved or reloaded; DONE asks before closing.
+/datum/preferences/var/character_creator_unsaved = FALSE
+/// Counts saves, so a handler that saves on its own does not leave the flag raised.
+/datum/preferences/var/character_creator_save_count = 0
+
+/datum/asset/simple/character_creator
+	assets = list(
+		"cc_origin_map.jpg" = 'modular_rmh/icons/character_creator/origin_map.jpg',
+	)
+
+/// "pref" links that only open menus or move the view. Every other handled action marks the character unsaved.
+GLOBAL_LIST_INIT(character_creator_view_links, list(
+	"character_setup_hover", "character_setup_report_geometry", "character_setup_preview_layer",
+	"character_setup_preview_rotate", "character_setup_preview_background",
+	"character_setup_preferences_fullscreen", "character_setup_preferences_scale",
+	"character_setup_round_action", "playerquality", "ooc_preview", "triumphs", "triumph_buy_menu",
+	"keybinds", "multi", "skin_color_ref_list", "finished", "save", "load", "changeslot", "tab",
+	"defeat_guide", "voicepreview", "moanpreview", "hotkeys", "action_buttons", "tgui_fancy",
+	"tgui_lock", "winflash", "see_chat_non_mob", "ambientocclusion", "auto_fit_viewport",
+	"balloon_alerts", "runechat", "lobby_music", "hear_midis", "ambience", "background_music",
+	"allow_midround_antag", "be_voice", "pixel_size", "scaling_method", "player_language",
+))
+/// Actions that read or open things without changing the character.
+GLOBAL_LIST_INIT(character_creator_view_actions, list(
+	"job_explain", "cc_subclass_explain", "cc_export", "cc_set_lang",
+))
+
+/datum/preferences/proc/character_creator_mark_unsaved(action, list/params)
+	if(action in GLOB.character_creator_view_actions)
+		return
+	if(action == "pref")
+		var/link = params?["preference"]
+		if(link in GLOB.character_creator_view_links)
+			return
+		// Opening a sub-menu changes nothing by itself.
+		if(params?["task"] == "menu")
+			return
+	character_creator_unsaved = TRUE
 
 /// FALSE for the sandbox editors (succubus disguise, ooze reshape): they use the
 /// appearance-only layout and skip the character data they cannot change.
@@ -62,6 +100,7 @@
 
 /datum/preferences/load_character(slot)
 	. = ..()
+	character_creator_unsaved = FALSE
 	character_creator_subclasses = list()
 	character_creator_equip = list()
 	character_creator_bag = list()
@@ -79,6 +118,9 @@
 
 /datum/preferences/save_character()
 	. = ..()
+	if(.)
+		character_creator_unsaved = FALSE
+		character_creator_save_count++
 	if(!. || !path)
 		return
 	var/savefile/S = new /savefile(path)
@@ -92,45 +134,72 @@
 /datum/culture/var/character_creator_map_x
 /datum/culture/var/character_creator_map_y
 
+// Pins match the Sword Coast art in modular_rmh/icons/character_creator/origin_map.jpg.
+/datum/culture/universal/icewind
+	character_creator_map_x = 34
+	character_creator_map_y = 5
+
 /datum/culture/universal/luskan
-	character_creator_map_x = 14
-	character_creator_map_y = 20
+	character_creator_map_x = 38.8
+	character_creator_map_y = 11.8
 
 /datum/culture/universal/silvermarch
-	character_creator_map_x = 40
-	character_creator_map_y = 13
+	character_creator_map_x = 55.8
+	character_creator_map_y = 13.2
+
+/datum/culture/universal/neverwinter
+	character_creator_map_x = 39.5
+	character_creator_map_y = 18.7
 
 /datum/culture/universal/highforest
-	character_creator_map_x = 31
-	character_creator_map_y = 27
+	character_creator_map_x = 58.8
+	character_creator_map_y = 20.8
 
 /datum/culture/universal/marches
-	character_creator_map_x = 17
-	character_creator_map_y = 37
+	character_creator_map_x = 39.6
+	character_creator_map_y = 27
 
-/datum/culture/universal/duskmar
-	character_creator_map_x = 27
-	character_creator_map_y = 46
+/datum/culture/universal/waterdeep
+	character_creator_map_x = 45
+	character_creator_map_y = 36.5
 
-/datum/culture/universal/heartlands
-	character_creator_map_x = 36
+/datum/culture/universal/moonshae
+	character_creator_map_x = 30
 	character_creator_map_y = 56
 
-/datum/culture/universal/cormyr
-	character_creator_map_x = 63
-	character_creator_map_y = 45
+/datum/culture/universal/heartlands
+	character_creator_map_x = 62
+	character_creator_map_y = 60
 
+/datum/culture/universal/baldursgate
+	character_creator_map_x = 52
+	character_creator_map_y = 64
+
+/datum/culture/universal/cormyr
+	character_creator_map_x = 81.8
+	character_creator_map_y = 65.3
+
+/datum/culture/universal/amn
+	character_creator_map_x = 60
+	character_creator_map_y = 85.4
+
+// Duskmar is Rivermist's own duchy; the art has no name for it, so it sits between Amn and Calimshan.
+/datum/culture/universal/duskmar
+	character_creator_map_x = 66
+	character_creator_map_y = 89.5
+
+// Calimshan, Lantan and the Hordelands lie past the edges of the art; their pins sit on the matching edge.
 /datum/culture/universal/calimshan
-	character_creator_map_x = 24
-	character_creator_map_y = 80
+	character_creator_map_x = 72
+	character_creator_map_y = 93
 
 /datum/culture/universal/lantan
-	character_creator_map_x = 56
-	character_creator_map_y = 86
+	character_creator_map_x = 40
+	character_creator_map_y = 93
 
 /datum/culture/universal/hordelads
-	character_creator_map_x = 90
-	character_creator_map_y = 28
+	character_creator_map_x = 92
+	character_creator_map_y = 38
 
 /// Display names for abstract culture parents that group selectable sub-origins.
 /datum/preferences/proc/character_creator_origin_group_name(group_type)
@@ -450,6 +519,9 @@
 	.["cc_loadout_categories"] = character_creator_loadout_categories()
 	.["cc_species_groups"] = character_creator_species_groups()
 	.["cc_species_desc"] = character_creator_species_descriptions()
+	.["cc_loadout_catalog"] = character_creator_loadout_catalog()
+	.["cc_loadout_roles"] = character_creator_loadout_roles()
+	.["cc_loadout_locked"] = character_creator_loadout_locked(user)
 
 /datum/preferences/ui_data(mob/user)
 	. = ..()
@@ -465,6 +537,7 @@
 	.["cc_markings"] = character_creator_marking_data()
 	.["cc_rivals"] = read_preference(/datum/preference/numeric/rival_count) || 0
 	.["cc_tattoo_count"] = character_creator_tattoo_count()
+	.["cc_tattoos"] = character_creator_tattoo_data()
 	.["cc_texts"] = list(
 		"flavortext" = read_preference(/datum/preference/text/flavortext) || "",
 		"nsfwflavortext" = read_preference(/datum/preference/text/nsfwflavortext) || "",
@@ -472,10 +545,8 @@
 		"erpprefs_flavor" = read_preference(/datum/preference/text/erpprefs_flavor) || "",
 	)
 	.["cc_ooc_media"] = read_preference(/datum/preference/text/ooc_extra_link) || ""
-	// Keep an open loadout window in step with the active character slot.
-	if(character_creator_loadout_window && character_creator_loadout_window.shown_slot != default_slot)
-		character_creator_loadout_window.shown_slot = default_slot
-		SStgui.update_uis(character_creator_loadout_window)
+	.["cc_unsaved"] = character_creator_unsaved
+	.["cc_loadout"] = character_creator_loadout_data()
 
 /datum/preferences/proc/character_creator_tattoo_count()
 	. = 0
@@ -487,15 +558,22 @@
 // ---- Actions ----
 
 /datum/preferences/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+	var/saves_before = character_creator_save_count
 	. = ..()
-	if(.)
-		return
 	if(!character_creator_active())
 		return
+	if(!.)
+		. = character_creator_act(action, params, ui)
+	if(. && character_creator_save_count == saves_before)
+		character_creator_mark_unsaved(action, params)
+
+/datum/preferences/proc/character_creator_act(action, list/params, datum/tgui/ui)
 	var/mob/user = ui?.user || usr
 	if(!user || !character_setup_action_allowed(user, action, params))
-		return
+		return FALSE
 	switch(action)
+		if("cc_tattoo")
+			return character_creator_tattoo_act(user, params)
 		if("cc_set_lang")
 			character_creator_lang = (params["lang"] == CC_LANG_RU) ? CC_LANG_RU : CC_LANG_EN
 			save_preferences()
@@ -564,16 +642,96 @@
 			write_preference(/datum/preference/list_type/smallclothes_preferences, smallclothes_preferences)
 			update_menu_data(user)
 			return TRUE
-		if("cc_open_loadout")
-			if(!character_creator_loadout_window)
-				character_creator_loadout_window = new(src)
-			character_creator_loadout_window.ui_interact(user)
-			return FALSE
 		if("cc_export")
 			character_creator_export(user)
 			return FALSE
 		if("cc_import")
 			character_creator_import(user)
+			return TRUE
+		if("cc_loadout")
+			character_creator_loadout_link(user, params)
+			update_menu_data(user)
+			return TRUE
+		if("cc_loadout_equip")
+			var/slot_number = text2num("[params["slot"]]")
+			if(!isnum(slot_number) || slot_number < 1 || slot_number > 10)
+				return FALSE
+			var/slot_key = "[slot_number]"
+			var/datum/loadout_item/item = vars["loadout[slot_number]"]
+			var/slot_id = params["equip"]
+			if(!item)
+				return FALSE
+			LAZYINITLIST(character_creator_equip)
+			if(!slot_id)
+				character_creator_equip -= slot_key
+			else
+				if(!character_creator_item_fits(item.item_path, slot_id))
+					return FALSE
+				// One item per slot: whatever sat there goes back to the list.
+				for(var/other_key in character_creator_equip.Copy())
+					if(character_creator_equip[other_key] == slot_id)
+						character_creator_equip -= other_key
+				character_creator_equip[slot_key] = slot_id
+				LAZYREMOVE(character_creator_bag, slot_key)
+			update_menu_data(user)
+			return TRUE
+		if("cc_loadout_bag")
+			var/slot_number = text2num("[params["slot"]]")
+			if(!isnum(slot_number) || slot_number < 1 || slot_number > 10)
+				return FALSE
+			var/slot_key = "[slot_number]"
+			if(!vars["loadout[slot_number]"] || LAZYACCESS(character_creator_equip, slot_key))
+				return FALSE
+			LAZYINITLIST(character_creator_bag)
+			if(slot_key in character_creator_bag)
+				character_creator_bag -= slot_key
+			else
+				character_creator_bag += slot_key
+			update_menu_data(user)
+			return TRUE
+		if("cc_loadout_preset_rename")
+			var/preset_slot = text2num("[params["preset"]]")
+			if(!isnum(preset_slot) || preset_slot < 1 || preset_slot > 3)
+				return FALSE
+			var/list/meta = character_creator_preset_meta(preset_slot)
+			var/new_name = tgui_input_text(user, "Name this preset.", "Preset name", meta["name"], max_length = 32)
+			if(isnull(new_name))
+				return FALSE
+			character_creator_set_preset_meta(preset_slot, "cc_name", STRIP_HTML_SIMPLE(new_name, 32) || null)
+			update_menu_data(user)
+			return TRUE
+		if("cc_loadout_preset_role")
+			var/preset_slot = text2num("[params["preset"]]")
+			var/role = params["role"]
+			if(role && !SSjob?.GetJob(role))
+				return FALSE
+			if(!character_creator_set_preset_meta(preset_slot, "cc_role", role || null))
+				to_chat(user, span_warning("Save the preset first, then bind it to a role."))
+				return FALSE
+			update_menu_data(user)
+			return TRUE
+		if("cc_loadout_dye")
+			var/slot_number = text2num("[params["slot"]]")
+			if(!isnum(slot_number) || slot_number < 1 || slot_number > 10 || !vars["loadout[slot_number]"])
+				return FALSE
+			if(params["clear"])
+				vars["loadout_[slot_number]_hex"] = null
+			else
+				var/new_color = tgui_color_picker(user, "Choose a dye for this item.", "Item Color", sanitize_hexcolor(vars["loadout_[slot_number]_hex"], 6, TRUE, "#ffffff"))
+				if(!new_color)
+					return FALSE
+				vars["loadout_[slot_number]_hex"] = sanitize_hexcolor(new_color, include_crunch = 1)
+			update_menu_data(user)
+			return TRUE
+		if("cc_loadout_clear_all")
+			for(var/slot in 1 to 10)
+				vars["loadout[slot]"] = null
+				vars["loadout_[slot]_name"] = null
+				vars["loadout_[slot]_desc"] = null
+				vars["loadout_[slot]_hex"] = null
+			character_creator_equip = list()
+			character_creator_bag = list()
+			update_menu_data(user)
 			return TRUE
 
 // ---- Export / import ----
@@ -1108,7 +1266,6 @@
 /datum/preferences/var/list/character_creator_equip
 /// Loadout slot numbers (as text) carried in bags at spawn instead of the stash.
 /datum/preferences/var/list/character_creator_bag
-/datum/preferences/var/datum/character_creator_loadout_ui/character_creator_loadout_window
 
 GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 	"mask" = ITEM_SLOT_MASK,
@@ -1200,7 +1357,7 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 		return list("name" = null, "role" = null)
 	return list("name" = preset["cc_name"], "role" = preset["cc_role"])
 
-/// Loadout tasks from either window. Presets keep their name, role and equip marks.
+/// Loadout link tasks from the creator. Presets keep their name, role and equip marks.
 /datum/preferences/proc/character_creator_loadout_link(mob/user, list/params)
 	var/list/href_list = list()
 	for(var/key in params)
@@ -1273,47 +1430,14 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 	cache[item_path] = info
 	return info
 
-/// Separate loadout window, opened from the Attire category of the creator.
-/datum/character_creator_loadout_ui
-	var/datum/preferences/prefs
-	var/shown_slot
+/// Loadout catalog entries shared by every player. Per-player nobility locks are sent apart.
+GLOBAL_LIST_EMPTY(character_creator_loadout_catalog)
 
-/datum/character_creator_loadout_ui/New(datum/preferences/new_prefs)
-	. = ..()
-	prefs = new_prefs
-	shown_slot = prefs?.default_slot
-
-/datum/character_creator_loadout_ui/Destroy(force)
-	if(prefs?.character_creator_loadout_window == src)
-		prefs.character_creator_loadout_window = null
-	prefs = null
-	return ..()
-
-/datum/character_creator_loadout_ui/ui_state(mob/user)
-	return GLOB.always_state
-
-/datum/character_creator_loadout_ui/ui_status(mob/user, datum/ui_state/state)
-	if(!prefs || user?.client?.prefs != prefs)
-		return UI_CLOSE
-	return UI_INTERACTIVE
-
-/datum/character_creator_loadout_ui/ui_interact(mob/user, datum/tgui/ui)
-	ui = SStgui.try_update_ui(user, src, ui)
-	if(!ui)
-		ui = new(user, src, "CharacterCreatorLoadout", "Loadout", 1180, 780)
-		ui.set_autoupdate(FALSE)
-		ui.open()
-
-/datum/character_creator_loadout_ui/ui_close(mob/user)
-	. = ..()
-	qdel(src)
-
-/datum/character_creator_loadout_ui/ui_assets(mob/user)
-	return list(get_asset_datum(/datum/asset/spritesheet/loadout_items))
-
-/datum/character_creator_loadout_ui/ui_static_data(mob/user)
-	var/list/catalog = list()
+/proc/character_creator_loadout_catalog()
+	if(length(GLOB.character_creator_loadout_catalog))
+		return GLOB.character_creator_loadout_catalog
 	var/datum/asset/spritesheet/spritesheet = get_asset_datum(/datum/asset/spritesheet/loadout_items)
+	var/list/catalog = list()
 	for(var/datum/loadout_item/item as anything in GLOB.loadout_items)
 		var/obj/item/item_type = item.item_path
 		if(!item_type)
@@ -1329,118 +1453,52 @@ GLOBAL_LIST_INIT(character_creator_equip_slots, list(
 			"point_cost" = item.point_cost,
 			"typepath" = "[item.type]",
 			"icon" = spritesheet.icon_class_name(sanitize_css_class_name("loadout_item_[REF(item)]")),
-			"nobility_locked" = !item.nobility_check(user),
 			"category" = character_creator_loadout_category(item_type),
 			"fits" = fits,
 			"info" = info,
 		))
+		// The first build spawns every item for its tooltip info, so it yields between ticks.
+		CHECK_TICK
+	// A spritesheet still loading has no class names yet, so build again next time.
+	if(spritesheet.fully_generated)
+		GLOB.character_creator_loadout_catalog = catalog
+	return catalog
+
+/// Titles a loadout preset can be bound to.
+/proc/character_creator_loadout_roles()
 	var/list/roles = list()
 	for(var/datum/job/job as anything in SSjob?.joinable_occupations)
 		if(job.enabled && (job.job_flags & JOB_NEW_PLAYER_JOINABLE))
 			roles += job.title
-	return list("catalog" = catalog, "roles" = sortList(roles))
+	return sortList(roles)
 
-/datum/character_creator_loadout_ui/ui_data(mob/user)
+/// Loadout item typepaths this player may not pick.
+/proc/character_creator_loadout_locked(mob/user)
+	var/list/locked = list()
+	for(var/datum/loadout_item/item as anything in GLOB.loadout_items)
+		if(item.item_path && !item.nobility_check(user))
+			locked += "[item.type]"
+	return locked
+
+/datum/preferences/proc/character_creator_loadout_data()
 	var/list/presets = list()
 	for(var/preset_slot in 1 to 3)
-		var/list/meta = prefs.character_creator_preset_meta(preset_slot)
-		var/list/preset = prefs.vars["loadout_preset_[preset_slot]"]
+		var/list/meta = character_creator_preset_meta(preset_slot)
+		var/list/preset = vars["loadout_preset_[preset_slot]"]
 		presets += list(list(
 			"slot" = preset_slot,
 			"name" = meta["name"],
 			"role" = meta["role"],
 			"empty" = !(islist(preset) && length(preset)),
-			"summary" = prefs.get_preset_summary(preset_slot),
+			"summary" = get_preset_summary(preset_slot),
 		))
 	return list(
-		"lang" = prefs.character_creator_lang,
-		"slots" = prefs.character_setup_loadout_slots_data(),
-		"points" = prefs.character_setup_loadout_points_data(),
+		"slots" = character_setup_loadout_slots_data(),
+		"points" = character_setup_loadout_points_data(),
 		"presets" = presets,
-		"equip" = prefs.character_creator_equip || list(),
-		"bag" = prefs.character_creator_bag || list(),
+		"equip" = character_creator_equip || list(),
+		"bag" = character_creator_bag || list(),
 	)
-
-/datum/character_creator_loadout_ui/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
-	. = ..()
-	if(.)
-		return
-	var/mob/user = ui?.user || usr
-	if(!user || user.client?.prefs != prefs)
-		return FALSE
-	switch(action)
-		if("loadout")
-			prefs.character_creator_loadout_link(user, params)
-		if("equip")
-			var/slot_number = text2num("[params["slot"]]")
-			if(!isnum(slot_number) || slot_number < 1 || slot_number > 10)
-				return FALSE
-			var/slot_key = "[slot_number]"
-			var/datum/loadout_item/item = prefs.vars["loadout[slot_number]"]
-			var/slot_id = params["equip"]
-			if(!item)
-				return FALSE
-			LAZYINITLIST(prefs.character_creator_equip)
-			if(!slot_id)
-				prefs.character_creator_equip -= slot_key
-			else
-				if(!character_creator_item_fits(item.item_path, slot_id))
-					return FALSE
-				// One item per slot: whatever sat there goes back to the list.
-				for(var/other_key in prefs.character_creator_equip.Copy())
-					if(prefs.character_creator_equip[other_key] == slot_id)
-						prefs.character_creator_equip -= other_key
-				prefs.character_creator_equip[slot_key] = slot_id
-				LAZYREMOVE(prefs.character_creator_bag, slot_key)
-		if("bag")
-			var/slot_number = text2num("[params["slot"]]")
-			if(!isnum(slot_number) || slot_number < 1 || slot_number > 10)
-				return FALSE
-			var/slot_key = "[slot_number]"
-			if(!prefs.vars["loadout[slot_number]"] || LAZYACCESS(prefs.character_creator_equip, slot_key))
-				return FALSE
-			LAZYINITLIST(prefs.character_creator_bag)
-			if(slot_key in prefs.character_creator_bag)
-				prefs.character_creator_bag -= slot_key
-			else
-				prefs.character_creator_bag += slot_key
-		if("preset_rename")
-			var/preset_slot = text2num("[params["preset"]]")
-			var/list/meta = prefs.character_creator_preset_meta(preset_slot)
-			var/new_name = tgui_input_text(user, "Name this preset.", "Preset name", meta["name"], max_length = 32)
-			if(isnull(new_name))
-				return FALSE
-			prefs.character_creator_set_preset_meta(preset_slot, "cc_name", STRIP_HTML_SIMPLE(new_name, 32) || null)
-		if("preset_role")
-			var/preset_slot = text2num("[params["preset"]]")
-			var/role = params["role"]
-			if(role && !SSjob?.GetJob(role))
-				return FALSE
-			if(!prefs.character_creator_set_preset_meta(preset_slot, "cc_role", role || null))
-				to_chat(user, span_warning("Save the preset first, then bind it to a role."))
-		if("dye")
-			var/slot_number = text2num("[params["slot"]]")
-			if(!isnum(slot_number) || slot_number < 1 || slot_number > 10 || !prefs.vars["loadout[slot_number]"])
-				return FALSE
-			if(params["clear"])
-				prefs.vars["loadout_[slot_number]_hex"] = null
-			else
-				var/new_color = tgui_color_picker(user, "Choose a dye for this item.", "Item Color", sanitize_hexcolor(prefs.vars["loadout_[slot_number]_hex"], 6, TRUE, "#ffffff"))
-				if(!new_color)
-					return FALSE
-				prefs.vars["loadout_[slot_number]_hex"] = sanitize_hexcolor(new_color, include_crunch = 1)
-		if("clear_all")
-			for(var/slot in 1 to 10)
-				prefs.vars["loadout[slot]"] = null
-				prefs.vars["loadout_[slot]_name"] = null
-				prefs.vars["loadout_[slot]_desc"] = null
-				prefs.vars["loadout_[slot]_hex"] = null
-			prefs.character_creator_equip = list()
-			prefs.character_creator_bag = list()
-		else
-			return FALSE
-	prefs.update_menu_data(user)
-	return TRUE
 
 // ---- Spawn: worn, carried and stashed loadout items ----
 

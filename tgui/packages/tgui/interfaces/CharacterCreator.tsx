@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { Box, ByondUi, DmIcon, Icon } from 'tgui-core/components';
 
+import { resolveAsset } from '../assets';
 import { useBackend } from '../backend';
 import { dragStartHandler } from '../drag';
 import { Window } from '../layouts';
@@ -16,8 +17,8 @@ import {
   type CharacterCreatorStrings,
   characterCreatorStrings,
 } from './CharacterCreator.i18n';
+import { LoadoutPanel } from './CharacterCreatorLoadout';
 import { PreferencesBadges } from './PreferencesBadges';
-import { PreferencesJobs } from './PreferencesJobs';
 
 // ---------------------------------------------------------------------------
 // Data contract: legacy character setup data (character_menu_tgui.dm) plus the
@@ -128,6 +129,24 @@ type LoadoutSlotData = {
   custom_hex: string | null;
 };
 type JobChoice = { value: string };
+type StatLine = { name: string; value: number };
+type TraitLine = { name: string; desc: string };
+type SubclassDetails = {
+  title: string;
+  tutorial: string;
+  stats: StatLine[];
+  spell_points: number;
+  languages: string[];
+  traits: TraitLine[];
+  skills: { name: string; level: string }[];
+};
+type JobDetails = {
+  stats: StatLine[];
+  stat_limits: StatLine[];
+  spell_points: number;
+  traits: TraitLine[];
+  subclasses: SubclassDetails[];
+};
 type JobEntry = {
   title: string;
   tutorial: string;
@@ -135,6 +154,7 @@ type JobEntry = {
   has_info?: Booleanish;
   title_choices: JobChoice[];
   honorary_choices: JobChoice[];
+  details?: JobDetails;
 };
 type JobCategory = { name: string; color: string; jobs: JobEntry[] };
 type JobState = {
@@ -296,6 +316,11 @@ type CreatorData = {
   round_action_color: string | null;
   round_action_disabled: Booleanish;
   round_action_tooltip: string;
+  round_start_state?: string;
+  round_start_seconds?: number;
+  round_ready_players?: number;
+  round_total_players?: number;
+  cc_unsaved?: Booleanish;
   game_prefs: Record<string, Booleanish | string>;
   job_categories?: JobCategory[];
   job_states?: Record<string, JobState>;
@@ -342,15 +367,23 @@ type CreatorData = {
   cc_markings?: MarkingZone[];
   cc_rivals?: number;
   cc_tattoo_count?: number;
+  cc_tattoos?: TattooData;
 };
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-type Tab = 'character' | 'info' | 'gameplay' | 'intimacy' | 'settings';
-type Mode = 'fate' | 'mirror';
+type Tab =
+  | 'fate'
+  | 'body'
+  | 'loadout'
+  | 'info'
+  | 'gameplay'
+  | 'intimacy'
+  | 'settings';
 type FateCat =
+  | 'identity'
   | 'origin'
   | 'suborigin'
   | 'race'
@@ -371,9 +404,11 @@ type MirrorCat =
 type Overlay =
   | null
   | { kind: 'confirm_random' }
+  | { kind: 'confirm_close' }
   | { kind: 'confirm_race'; id: string };
 
 const FATE_ORDER: FateCat[] = [
+  'identity',
   'origin',
   'suborigin',
   'race',
@@ -593,6 +628,8 @@ type TileProps = {
   locked?: boolean;
   badge?: string;
   title?: string;
+  mark?: string;
+  controls?: ReactNode;
   onClick?: () => void;
   onMiddle?: () => void;
   onRight?: () => void;
@@ -600,7 +637,8 @@ type TileProps = {
 
 /** Dynamic icon tile. Real art replaces the glyph once icons exist. */
 const Tile = (props: TileProps) => {
-  const { name, icon, selected, inspected, locked, badge, title } = props;
+  const { name, icon, selected, inspected, locked, badge, title, mark } =
+    props;
   return (
     <div
       className={`cc-tile ${selected ? 'selected' : ''} ${inspected ? 'inspected' : ''} ${locked ? 'locked' : ''}`}
@@ -622,13 +660,29 @@ const Tile = (props: TileProps) => {
       {badge ? (
         <div className="cc-tile-badge" style={{ backgroundColor: badge }} />
       ) : null}
-      {locked ? <Icon className="cc-tile-lock" name="lock" /> : null}
+      {locked ? (
+        <Icon className="cc-tile-lock" name="lock" />
+      ) : mark ? (
+        <Icon className="cc-tile-mark" name={mark} />
+      ) : null}
       {icon ? (
         <Icon className="cc-tile-icon" name={icon} />
       ) : (
         <div className="cc-tile-mono">{monogram(name)}</div>
       )}
       <div className="cc-tile-name">{name}</div>
+      {props.controls ? (
+        <div
+          className="cc-tile-ctl"
+          onClick={(event) => event.stopPropagation()}
+          onContextMenu={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+        >
+          {props.controls}
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -637,10 +691,22 @@ const Switcher = (props: {
   name: string;
   onPrev: () => void;
   onNext: () => void;
+  options?: { value: string; label: string }[];
+  onPick?: (value: string) => void;
 }) => (
   <div className="cc-switcher">
     <Btn className="square" icon="chevron-left" onClick={props.onPrev} />
-    <div className="cc-switcher-name">{props.name}</div>
+    {props.options && props.onPick ? (
+      <div className="cc-switcher-pick">
+        <Select
+          value={props.name}
+          options={props.options}
+          onChange={props.onPick}
+        />
+      </div>
+    ) : (
+      <div className="cc-switcher-name">{props.name}</div>
+    )}
     <Btn className="square" icon="chevron-right" onClick={props.onNext} />
   </div>
 );
@@ -1240,8 +1306,211 @@ const TextEditor = (props: {
 };
 
 // ---------------------------------------------------------------------------
+// Tattoos: written lettering or designs, edited under the markings list
+// ---------------------------------------------------------------------------
+
+type TattooEntry = {
+  index: number;
+  text: string;
+  style: string;
+  color: string;
+  pigment: string;
+  medium: string;
+};
+type TattooZone = {
+  id: string;
+  name: string;
+  intimate: Booleanish;
+  present: Booleanish;
+  full: Booleanish;
+  entries: TattooEntry[];
+};
+type TattooData = {
+  limbs: { id: string; name: string; zones: TattooZone[] }[];
+  styles: string[];
+  pigments: { name: string; color: string }[];
+  max_per_zone: number;
+  max_length: number;
+};
+
+const TATTOO_LETTERING = 'lettering';
+
+/** Tattoo zones grouped by limb; the ink row picks style and pigment for new tattoos. */
+const TattooEditor = (props: {
+  tattoos: TattooData;
+  count: number;
+  labels: CharacterCreatorStrings;
+  onAct: (task: string, params: Record<string, unknown>) => void;
+}) => {
+  const { tattoos, count, onAct } = props;
+  const L = props.labels;
+  const [inkStyle, setInkStyle] = useState(TATTOO_LETTERING);
+  const [inkColor, setInkColor] = useState(tattoos.pigments[0]?.color ?? '');
+  const styleOptions: SelectOption[] = tattoos.styles.map((style) => ({
+    value: style,
+    label:
+      style === TATTOO_LETTERING
+        ? L.tattooStyleLettering
+        : L.tattooStyleDesign,
+  }));
+  const pigmentOptions: SelectOption[] = tattoos.pigments.map((pigment) => ({
+    value: pigment.color,
+    label: pigment.name,
+  }));
+  return (
+    <>
+      <Ornament>
+        {L.tattoos} ({count})
+      </Ornament>
+      <div className="cc-hint">{L.tattooHint}</div>
+      <div className="cc-row cc-tat-ink">
+        <span className="cc-muted">{L.tattooNewInk}</span>
+        <Select
+          value={inkStyle}
+          options={styleOptions}
+          title={L.tattooStyle}
+          onChange={setInkStyle}
+        />
+        <Swatch color={inkColor} />
+        <Select
+          value={inkColor}
+          options={pigmentOptions}
+          title={L.tattooPigment}
+          onChange={setInkColor}
+        />
+      </div>
+      <div className="cc-marking-zones">
+        {tattoos.limbs.map((limb) => (
+          <div className="cc-marking-zone" key={limb.id}>
+            <div className="cc-marking-zone-head">{limb.name}</div>
+            {limb.zones.map((zone) => {
+              const present = asBool(zone.present);
+              const full = asBool(zone.full);
+              return (
+                <div className="cc-tat-zone" key={zone.id}>
+                  <div className="cc-tat-zone-head">
+                    <span className="cc-grow">{zone.name}</span>
+                    {asBool(zone.intimate) ? (
+                      <span
+                        className="cc-tat-intimate"
+                        title={L.tattooIntimate}
+                      >
+                        <Icon name="heart" />
+                      </span>
+                    ) : null}
+                    <span
+                      className={`cc-tat-count ${full ? 'full' : ''}`}
+                      title={full ? L.tattooFull : undefined}
+                    >
+                      {zone.entries.length} / {tattoos.max_per_zone}
+                    </span>
+                    <Btn
+                      className="cc-toggle"
+                      icon="plus"
+                      title={L.tattooAdd}
+                      disabled={!present || full}
+                      onClick={() =>
+                        onAct('add', {
+                          zone: zone.id,
+                          style: inkStyle,
+                          color: inkColor,
+                        })
+                      }
+                    >
+                      {L.add}
+                    </Btn>
+                  </div>
+                  {present ? null : (
+                    <div className="cc-tat-missing">{L.tattooMissing}</div>
+                  )}
+                  {zone.entries.map((entry) => (
+                    <div className="cc-tat-entry" key={entry.index}>
+                      <div className="cc-marking-row">
+                        <div
+                          className={`cc-marking-name ${present ? 'cc-tat-text' : ''}`}
+                          title={
+                            present
+                              ? `${entry.text}\n${L.tattooEditHint}`
+                              : entry.text
+                          }
+                          onClick={
+                            present
+                              ? () =>
+                                  onAct('edit', {
+                                    zone: zone.id,
+                                    index: entry.index,
+                                  })
+                              : undefined
+                          }
+                        >
+                          {entry.style === TATTOO_LETTERING
+                            ? `"${entry.text}"`
+                            : entry.text}
+                        </div>
+                        <Btn
+                          className="square danger"
+                          icon="times"
+                          title={L.remove}
+                          onClick={() =>
+                            onAct('remove', {
+                              zone: zone.id,
+                              index: entry.index,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="cc-row cc-tat-controls">
+                        <Select
+                          value={entry.style}
+                          options={styleOptions}
+                          title={L.tattooStyle}
+                          disabled={!present}
+                          onChange={(style) =>
+                            onAct('set_style', {
+                              zone: zone.id,
+                              index: entry.index,
+                              style,
+                            })
+                          }
+                        />
+                        <Swatch color={entry.color} />
+                        <Select
+                          value={entry.color}
+                          options={pigmentOptions}
+                          placeholder={entry.pigment}
+                          title={L.tattooPigment}
+                          disabled={!present}
+                          onChange={(color) =>
+                            onAct('set_color', {
+                              zone: zone.id,
+                              index: entry.index,
+                              color,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+// ---------------------------------------------------------------------------
 // Main window
 // ---------------------------------------------------------------------------
+
+const formatSeconds = (total: number) => {
+  const safe = Math.max(0, Math.floor(total));
+  const minutes = Math.floor(safe / 60);
+  const seconds = safe % 60;
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+};
 
 export const CharacterCreator = () => {
   const { act, data } = useBackend<CreatorData>();
@@ -1249,9 +1518,8 @@ export const CharacterCreator = () => {
   const L: CharacterCreatorStrings = characterCreatorStrings[lang];
 
   const initialTab = (): Tab =>
-    data.initial_tab === 'game' ? 'settings' : 'character';
+    data.initial_tab === 'game' ? 'settings' : 'fate';
   const [tab, setTab] = useState<Tab>(initialTab());
-  const [mode, setMode] = useState<Mode>('fate');
   const [fateCat, setFateCat] = useState<FateCat>('origin');
   const [mirrorCat, setMirrorCat] = useState<MirrorCat>('head');
   const [overlay, setOverlay] = useState<Overlay>(null);
@@ -1289,6 +1557,19 @@ export const CharacterCreator = () => {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dollBoxRef = useRef<HTMLDivElement>(null);
 
+  // The lobby countdown ticks locally between data pushes.
+  const [roundSeconds, setRoundSeconds] = useState<number>(-1);
+  useEffect(() => {
+    setRoundSeconds(Number(data.round_start_seconds ?? -1));
+  }, [data.round_start_seconds]);
+  useEffect(() => {
+    if (roundSeconds <= 0) {
+      return;
+    }
+    const timer = setTimeout(() => setRoundSeconds(roundSeconds - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [roundSeconds]);
+
   // ---- Effects ----
 
   useEffect(() => {
@@ -1304,7 +1585,7 @@ export const CharacterCreator = () => {
   // A picked style list belongs to the category it was opened from.
   useEffect(() => {
     setPicker(null);
-  }, [mirrorCat, mode, tab]);
+  }, [mirrorCat, tab]);
 
   // The doll is a native map control. It stays mounted the whole time: remounting
   // it makes the window flash, so modals open inside the content frame instead.
@@ -1327,7 +1608,7 @@ export const CharacterCreator = () => {
   }, []);
 
   // When the layout moves the doll box, the map control follows on one resize event.
-  const layoutKey = `${tab}|${mode}|${menuScale}|${data.preferences_fullscreen}`;
+  const layoutKey = `${tab}|${menuScale}|${data.preferences_fullscreen}`;
   const firstLayout = useRef(true);
   useEffect(() => {
     if (firstLayout.current) {
@@ -1422,9 +1703,6 @@ export const CharacterCreator = () => {
     doPref('character_setup_preferences_scale', undefined, { scale: clamped });
   };
 
-  const loadoutAct = (task: string, extra?: Record<string, unknown>) =>
-    doPref('character_setup_loadout', task, extra);
-
   // ---- Derived data ----
 
   const features = data.features || [];
@@ -1504,11 +1782,8 @@ export const CharacterCreator = () => {
   const activeFate = fallback(FATE_ORDER, fateVisible, fateCat);
   const activeMirror = fallback(MIRROR_ORDER, mirrorVisible, mirrorCat);
 
-  const openCharacter = (nextMode?: Mode) => {
-    setTab('character');
-    if (nextMode) {
-      setMode(nextMode);
-    }
+  const openCharacter = (next: 'fate' | 'body' = 'fate') => {
+    setTab(next);
     setPicker(null);
   };
 
@@ -1588,9 +1863,12 @@ export const CharacterCreator = () => {
       <div className="cc-window" style={{ position: 'relative' }}>
         <div className="cc-frame-title">{L.originTitle}</div>
         <div className="cc-window-body cc-scroll">
-          <div className="cc-map">
-            <div className="cc-map-fog" />
-            <Icon className="cc-map-compass" name="compass" />
+          <div
+            className="cc-map"
+            style={{
+              backgroundImage: `url(${resolveAsset('cc_origin_map.jpg')})`,
+            }}
+          >
             {mapOrigins.map((origin) => (
               <div
                 key={origin.id}
@@ -1605,7 +1883,6 @@ export const CharacterCreator = () => {
                 <div className="cc-pin-label">{origin.name}</div>
               </div>
             ))}
-            <div className="cc-map-note">{L.mapPlaceholder}</div>
           </div>
           {renderOriginDetails(inspected)}
         </div>
@@ -1625,7 +1902,7 @@ export const CharacterCreator = () => {
               inspected && act('cc_set_culture', { id: inspected.id })
             }
           >
-            {L.save}
+            {L.chooseOrigin}
           </Btn>
         </div>
         {originPopup ? (
@@ -1728,7 +2005,7 @@ export const CharacterCreator = () => {
           }
         }}
       >
-        {L.save}
+        {L.chooseOrigin}
       </Btn>,
     );
   };
@@ -2095,6 +2372,8 @@ export const CharacterCreator = () => {
       <>
         <Switcher
           name={category?.name || ''}
+          options={names.map((entry) => ({ value: entry, label: entry }))}
+          onPick={(value) => setRoleCategory(value)}
           onPrev={() => setRoleCategory(cycle(names, category?.name || '', -1))}
           onNext={() => setRoleCategory(cycle(names, category?.name || '', 1))}
         />
@@ -2118,6 +2397,36 @@ export const CharacterCreator = () => {
                   state?.pref_level
                     ? PRIORITY_COLORS[state.pref_level]
                     : undefined
+                }
+                mark={
+                  (data.cc_subclasses?.[job.title] || []).length
+                    ? 'chess-knight'
+                    : undefined
+                }
+                controls={
+                  available && !locked ? (
+                    <>
+                      <span
+                        className={`cc-tile-arrow ${state?.pref_level === 3 ? 'disabled' : ''}`}
+                        title={L.raisePriority}
+                        onClick={() => raisePriority(job.title)}
+                      >
+                        <Icon name="caret-up" />
+                      </span>
+                      <span className="cc-tile-prio">
+                        {state?.pref_level
+                          ? L.priorityNames[state.pref_level]
+                          : '·'}
+                      </span>
+                      <span
+                        className={`cc-tile-arrow ${state?.pref_level ? '' : 'disabled'}`}
+                        title={L.lowerPriority}
+                        onClick={() => lowerPriority(job.title)}
+                      >
+                        <Icon name="caret-down" />
+                      </span>
+                    </>
+                  ) : null
                 }
                 onClick={() => setInspectJob(job.title)}
                 onMiddle={() => !locked && raisePriority(job.title)}
@@ -2149,9 +2458,59 @@ export const CharacterCreator = () => {
                 ))}
               </div>
             ) : null}
+            {inspectedState.status === 'available' ? (
+              <div
+                className="cc-row"
+                style={{ justifyContent: 'center', margin: '4px 0 8px' }}
+              >
+                <span className="cc-muted" style={{ fontSize: 11 }}>
+                  {L.priority}:
+                </span>
+                {[0, 1, 2, 3].map((level) => (
+                  <Btn
+                    key={level}
+                    className={
+                      (inspectedState.pref_level || 0) === level ? 'gold' : ''
+                    }
+                    disabled={locked}
+                    onClick={() =>
+                      act('job_set_pref_level', {
+                        job: inspected.title,
+                        level: level || null,
+                      })
+                    }
+                  >
+                    {level ? L.priorityNames[level] : L.none}
+                  </Btn>
+                ))}
+              </div>
+            ) : null}
             <div className="cc-desc">
               {text(inspected.tutorial, L.noDescription)}
             </div>
+            {(data.cc_subclasses?.[inspected.title] || []).length ? (
+              <Bonus title={L.subRoleTitle}>
+                <div className="cc-hint">{L.subrolesAvailable}</div>
+                <div className="cc-chips">
+                  {(data.cc_subclasses?.[inspected.title] || []).map((sub) => (
+                    <span key={sub.id} className="cc-chip">
+                      {sub.title}
+                    </span>
+                  ))}
+                </div>
+                {inspected.title === highJobTitle ? (
+                  <Btn
+                    icon="chess-knight"
+                    style={{ marginTop: 6 }}
+                    onClick={() => setFateCat('subrole')}
+                  >
+                    {L.chooseSubrole}
+                  </Btn>
+                ) : (
+                  <div className="cc-hint">{L.subroleNeedsHigh}</div>
+                )}
+              </Bonus>
+            ) : null}
             {inspectedState.status === 'available' &&
             (inspected.title_choices.length > 1 ||
               inspected.honorary_choices.length > 1) ? (
@@ -2200,24 +2559,159 @@ export const CharacterCreator = () => {
                 </div>
               </Bonus>
             ) : null}
-            <div
-              className="cc-row"
-              style={{ justifyContent: 'center', marginTop: 6 }}
-            >
-              {asBool(inspected.has_info) ? (
-                <Btn
-                  icon="question-circle"
-                  onClick={() => act('job_explain', { job: inspected.title })}
-                >
-                  {L.details}
-                </Btn>
-              ) : null}
-            </div>
-            <Placeholder>{L.roleFeaturesSoon}</Placeholder>
+            {renderJobDetails(inspected.title, inspected.details)}
           </>
         ) : null}
       </>,
       roleFooter,
+    );
+  };
+
+  const statChips = (stats: StatLine[]) =>
+    stats.map((stat) => (
+      <span
+        key={stat.name}
+        className={`cc-chip ${stat.value < 0 ? 'bad' : 'good'}`}
+      >
+        {stat.name} {stat.value > 0 ? '+' : ''}
+        {stat.value}
+      </span>
+    ));
+  const traitTerms = (traits: TraitLine[]) =>
+    traits.map((trait) => (
+      <span key={trait.name} className="cc-chip">
+        <Term label={trait.name} body={trait.desc || L.noDescription} />
+      </span>
+    ));
+  const fact = (label: string, body: ReactNode) => (
+    <div className="cc-fact">
+      <span className="cc-kv-label">{label}</span>
+      {body}
+    </div>
+  );
+
+  const subclassFacts = (sub: SubclassDetails) => (
+    <div className="cc-jobsub">
+      {sub.stats.length ? (
+        <div className="cc-chips">{statChips(sub.stats)}</div>
+      ) : null}
+      {sub.traits.length ? (
+        <div className="cc-chips">{traitTerms(sub.traits)}</div>
+      ) : null}
+      {sub.spell_points ? (
+        <div className="cc-muted">
+          {L.spellPoints}: <b>{sub.spell_points}</b>
+        </div>
+      ) : null}
+      {sub.skills.length ? (
+        <div className="cc-muted">
+          {L.notableSkills}:{' '}
+          {sub.skills
+            .map((skill) => `${skill.name} — ${skill.level}`)
+            .join(' · ')}
+        </div>
+      ) : null}
+      {sub.languages.length ? (
+        <div className="cc-muted">
+          {L.languages}: {sub.languages.join(', ')}
+        </div>
+      ) : null}
+    </div>
+  );
+
+  // Facts for the sub-role window, taken from the High role's details.
+  const renderSubclassDetails = (subTitle: string) => {
+    const sub = allJobs
+      .find((job) => job.title === highJobTitle)
+      ?.details?.subclasses.find((entry) => entry.title === subTitle);
+    if (
+      !sub ||
+      !(
+        sub.stats.length ||
+        sub.traits.length ||
+        sub.spell_points ||
+        sub.skills.length ||
+        sub.languages.length
+      )
+    ) {
+      return null;
+    }
+    return (
+      <div className="cc-jobdetails">
+        <Ornament>{L.subclassDetails}</Ornament>
+        {subclassFacts(sub)}
+        <div className="cc-hint">{L.detailsNote}</div>
+      </div>
+    );
+  };
+
+  // Class facts and subclass cards, in place of the old explain popup.
+  const renderJobDetails = (jobTitle: string, details?: JobDetails) => {
+    if (!details) {
+      return null;
+    }
+    const classFacts =
+      details.stats.length ||
+      details.stat_limits.length ||
+      details.spell_points ||
+      details.traits.length;
+    if (!classFacts && !details.subclasses.length) {
+      return null;
+    }
+    return (
+      <div className="cc-jobdetails">
+        <Ornament>{L.classDetails}</Ornament>
+        {details.stats.length
+          ? fact(
+              L.startingStats,
+              <div className="cc-chips">{statChips(details.stats)}</div>,
+            )
+          : null}
+        {details.stat_limits.length
+          ? fact(
+              L.statLimits,
+              <div>
+                <div className="cc-chips">{statChips(details.stat_limits)}</div>
+                <div className="cc-muted" style={{ fontSize: 10 }}>
+                  {L.statLimitsHint}
+                </div>
+              </div>,
+            )
+          : null}
+        {details.spell_points
+          ? fact(L.spellPoints, <b>{details.spell_points}</b>)
+          : null}
+        {details.traits.length
+          ? fact(
+              L.classTraits,
+              <div className="cc-chips">{traitTerms(details.traits)}</div>,
+            )
+          : null}
+        {details.subclasses.length ? (
+          <>
+            <div className="cc-kv-label" style={{ margin: '8px 0 4px' }}>
+              {L.subclassList} ({details.subclasses.length})
+            </div>
+            {details.subclasses.map((sub) =>
+              group(
+                `help_sub_${jobTitle}_${sub.title}`,
+                sub.title,
+                'chess-knight',
+                <>
+                  <div
+                    className="cc-desc"
+                    style={{ textAlign: 'left', padding: '4px 8px 0' }}
+                  >
+                    {sub.tutorial}
+                  </div>
+                  {subclassFacts(sub)}
+                </>,
+              ),
+            )}
+          </>
+        ) : null}
+        <div className="cc-hint">{L.detailsNote}</div>
+      </div>
     );
   };
 
@@ -2245,22 +2739,11 @@ export const CharacterCreator = () => {
         </div>
         {inspected ? (
           <>
-            <div className="cc-row" style={{ justifyContent: 'center' }}>
-              <div className="cc-name">{inspected.title}</div>
-              {asBool(inspected.has_info) ? (
-                <Btn
-                  className="square"
-                  icon="question"
-                  title={L.details}
-                  onClick={() =>
-                    act('cc_subclass_explain', { id: inspected.id })
-                  }
-                />
-              ) : null}
-            </div>
+            <div className="cc-name">{inspected.title}</div>
             <div className="cc-desc">
               {text(inspected.tutorial, L.noDescription)}
             </div>
+            {renderSubclassDetails(inspected.title)}
           </>
         ) : null}
       </>,
@@ -2395,6 +2878,53 @@ export const CharacterCreator = () => {
           {L.skills}: <Term label={L.soon} body={L.backgroundSkillsHint} />
         </div>
       </>,
+    );
+
+  const renderIdentityWindow = () =>
+    windowShell(
+      L.rail.identity,
+      <div className="cc-kv">
+        <div className="cc-kv-label">{L.nameLabel}</div>
+        <Btn
+          className="fluid"
+          icon="pen"
+          style={{ justifyContent: 'flex-start' }}
+          onClick={() => doPref('name', 'input')}
+        >
+          {text(data.real_name, L.unnamed)}
+        </Btn>
+        <div className="cc-kv-label">{L.bodyType}</div>
+        <Btn
+          className="fluid"
+          style={{ justifyContent: 'flex-start' }}
+          onClick={() => doPref('gender')}
+        >
+          {data.gender}
+        </Btn>
+        {buildRow()}
+        <div className="cc-kv-label">{L.pronouns}</div>
+        <Btn
+          className="fluid"
+          style={{ justifyContent: 'flex-start' }}
+          onClick={() => doPref('pronouns', 'input')}
+        >
+          {text(data.pronouns, L.none)}
+        </Btn>
+        <div className="cc-kv-label">{L.age}</div>
+        <Select
+          title={data.age_tooltips?.[data.age] || ''}
+          value={data.age}
+          options={(data.age_options || []).map((option) => ({
+            value: option,
+            label: option,
+          }))}
+          onChange={(value) =>
+            act('set_age', {
+              value: (data.age_options || []).indexOf(value) + 1,
+            })
+          }
+        />
+      </div>,
       <Btn className="fluid" icon="users" onClick={() => doPref('family')}>
         {L.familyBonds}
       </Btn>,
@@ -2455,6 +2985,8 @@ export const CharacterCreator = () => {
 
   const renderFate = () => {
     switch (activeFate) {
+      case 'identity':
+        return renderIdentityWindow();
       case 'suborigin':
         return renderSubOrigin();
       case 'race':
@@ -2759,6 +3291,16 @@ export const CharacterCreator = () => {
     );
   };
 
+  const renderTattoos = () =>
+    data.cc_tattoos ? (
+      <TattooEditor
+        tattoos={data.cc_tattoos}
+        count={data.cc_tattoo_count ?? 0}
+        labels={L}
+        onAct={(task, params) => act('cc_tattoo', { task, ...params })}
+      />
+    ) : null;
+
   const renderMarkings = () => {
     const markingAct = (marking_action: string, zone?: string, name?: string) =>
       doPref('character_setup_body_marking', undefined, {
@@ -2769,15 +3311,6 @@ export const CharacterCreator = () => {
     return windowShell(
       L.mirror.markings,
       <>
-        {sandbox ? null : (
-          <Btn
-            className="fluid"
-            icon="pen-nib"
-            onClick={() => doPref('tattoos', 'menu')}
-          >
-            {L.tattoos} ({data.cc_tattoo_count ?? 0})
-          </Btn>
-        )}
         <div
           className="cc-row"
           style={{ justifyContent: 'flex-end', margin: '8px 0' }}
@@ -2884,6 +3417,7 @@ export const CharacterCreator = () => {
           ))}
         </div>
         {sandbox ? null : <div className="cc-hint">{L.glowHint}</div>}
+        {sandbox ? null : renderTattoos()}
       </>,
     );
   };
@@ -3077,7 +3611,7 @@ export const CharacterCreator = () => {
         <Btn
           className="primary fluid"
           icon="box-open"
-          onClick={() => act('cc_open_loadout')}
+          onClick={() => setTab('loadout')}
         >
           {L.chooseLoadout}
         </Btn>
@@ -3527,13 +4061,27 @@ export const CharacterCreator = () => {
                   () => act('cc_ooc_media'),
                   L.oocMediaHint,
                 )}
+                <div className="cc-kv-label">{L.nsfwOocMedia}</div>
+                <Placeholder>{L.soon}</Placeholder>
+              </div>
+              <Ornament>{L.portraits}</Ornament>
+              <div className="cc-kv">
+                {kvButton(
+                  L.headshot,
+                  data.headshot ? L.urlSet : L.noUrl,
+                  () => doPref('headshot', 'input'),
+                )}
                 {kvButton(
                   L.nsfwHeadshot,
                   data.nsfw_headshot ? L.urlSet : L.noUrl,
                   () => doPref('nsfw_headshot', 'input'),
                 )}
-                <div className="cc-kv-label">{L.nsfwOocMedia}</div>
-                <Placeholder>{L.soon}</Placeholder>
+                {kvButton(L.gallery, L.open, () =>
+                  doPref('gallery', 'menu', { tab: 'regular' }),
+                )}
+                {kvButton(L.nsfwGallery, L.open, () =>
+                  doPref('gallery', 'menu', { tab: 'nsfw' }),
+                )}
               </div>
               <div className="cc-grow" />
               <div className="cc-info-foot">
@@ -3689,9 +4237,10 @@ export const CharacterCreator = () => {
           {infoBlock(
             L.classAndRoles,
             <div className="cc-kv">
-              {kvButton(L.role, text(data.high_job, L.none), () =>
-                openCharacter('fate'),
-              )}
+              {kvButton(L.role, text(data.high_job, L.none), () => {
+                openCharacter('fate');
+                setFateCat('role');
+              })}
               {kvButton(L.readyOrder, L.edit, () => doPref('multi', 'menu'))}
             </div>,
           )}
@@ -3703,9 +4252,16 @@ export const CharacterCreator = () => {
                 {data.triumphs ?? 0}
               </div>
               {kvButton(L.triumphList, L.open, () => doPref('triumphs'))}
-              {kvButton(L.triumphShop, L.open, () =>
-                doPref('triumph_buy_menu'),
-              )}
+              <div className="cc-kv-label" title={L.triumphShop}>
+                {L.triumphShop}
+              </div>
+              <Btn
+                className="fluid"
+                disabled
+                style={{ justifyContent: 'flex-start' }}
+              >
+                {L.notInUse}
+              </Btn>
             </div>,
           )}
           {infoBlock(
@@ -3731,10 +4287,17 @@ export const CharacterCreator = () => {
               )}
             </div>,
           )}
-        </div>
-        <div className="cc-info-block" style={{ marginTop: 8 }}>
-          <div className="cc-info-title">{L.roleList}</div>
-          <PreferencesJobs />
+          {infoBlock(
+            L.playerRecord,
+            <div className="cc-kv">
+              {kvButton(
+                L.playerQuality,
+                L.open,
+                () => doPref('playerquality'),
+                L.playerQualityHint,
+              )}
+            </div>,
+          )}
         </div>
       </>,
     );
@@ -3994,76 +4557,118 @@ export const CharacterCreator = () => {
     { key: 'be_voice', action: 'be_voice', label: 'be_voice' },
   ];
 
+  const SETTINGS_GROUPS: {
+    title: keyof CharacterCreatorStrings['settingsGroups'];
+    keys: string[];
+  }[] = [
+    {
+      title: 'interface',
+      keys: [
+        'hotkeys',
+        'buttons_locked',
+        'tgui_fancy',
+        'tgui_lock',
+        'windowflashing',
+      ],
+    },
+    {
+      title: 'display',
+      keys: [
+        'see_chat_non_mob',
+        'ambientocclusion',
+        'auto_fit_viewport',
+        'balloon_alerts',
+        'runechat',
+      ],
+    },
+    {
+      title: 'audio',
+      keys: ['lobby_music', 'hear_midis', 'ambience', 'background_music'],
+    },
+    { title: 'round', keys: ['allow_midround_antag', 'be_voice'] },
+  ];
+
   const renderSettings = () => {
     const game = data.game_prefs || {};
+    const toggleRow = (toggle: (typeof SETTINGS_TOGGLES)[number]) => {
+      const on = asBool(game[toggle.key] as Booleanish);
+      return (
+        <Fragment key={toggle.key}>
+          <div className="cc-kv-label">{L.settingsLabels[toggle.label]}</div>
+          <Btn
+            className={on ? 'on' : 'off'}
+            onClick={() => doPref(toggle.action)}
+          >
+            {on ? L.on : L.off}
+          </Btn>
+        </Fragment>
+      );
+    };
     return windowShell(
       L.tabs.settings,
-      <div className="cc-info-grid">
-        {infoBlock(
-          L.editor,
-          <div className="cc-kv">
-            <div className="cc-kv-label">{L.language}</div>
-            <Select
-              value={lang}
-              options={[
-                { value: 'en', label: 'English' },
-                { value: 'ru', label: 'Русский' },
-              ]}
-              onChange={(value) => act('cc_set_lang', { lang: value })}
-            />
-            <div className="cc-kv-label">{L.backdrop}</div>
-            <Select
-              value={data.background}
-              options={(data.background_options || []).map((option) => ({
-                value: option.value,
-                label: option.name,
-              }))}
-              onChange={(value) =>
-                doPref('character_setup_preview_background', undefined, {
-                  bg: value,
-                })
-              }
-            />
-          </div>,
-        )}
-        {infoBlock(
-          L.game,
-          <div className="cc-kv">
-            {SETTINGS_TOGGLES.map((toggle) => {
-              const on = asBool(game[toggle.key] as Booleanish);
-              return (
-                <Fragment key={toggle.key}>
-                  <div className="cc-kv-label">
-                    {L.settingsLabels[toggle.label]}
-                  </div>
-                  <Btn
-                    className={on ? 'on' : 'off'}
-                    onClick={() => doPref(toggle.action)}
-                  >
-                    {on ? L.on : L.off}
-                  </Btn>
-                </Fragment>
-              );
-            })}
-            {kvButton(L.pixelSize, text(game.pixel_size), () =>
-              doPref('pixel_size'),
-            )}
-            {kvButton(L.scalingMethod, text(game.scaling_method), () =>
-              doPref('scaling_method'),
-            )}
-          </div>,
-        )}
-        {infoBlock(
-          L.tools,
-          <div className="cc-kv">
-            {kvButton(L.playerLanguage, L.set, () =>
-              doPref('player_language', 'input'),
-            )}
-            {kvButton(L.keybinds, L.edit, () => doPref('keybinds', 'menu'))}
-            {kvButton(L.savePreferences, L.save, () => doPref('save'))}
-          </div>,
-        )}
-      </div>,
+      <>
+        <div className="cc-info-grid cc-settings-grid">
+          {SETTINGS_GROUPS.map((settingsGroup) =>
+            infoBlock(
+              L.settingsGroups[settingsGroup.title],
+              <div className="cc-kv">
+                {SETTINGS_TOGGLES.filter((toggle) =>
+                  settingsGroup.keys.includes(toggle.key),
+                ).map(toggleRow)}
+                {settingsGroup.title === 'display' ? (
+                  <>
+                    {kvButton(L.pixelSize, text(game.pixel_size), () =>
+                      doPref('pixel_size'),
+                    )}
+                    {kvButton(L.scalingMethod, text(game.scaling_method), () =>
+                      doPref('scaling_method'),
+                    )}
+                  </>
+                ) : null}
+              </div>,
+            ),
+          )}
+        </div>
+        <div className="cc-info-grid" style={{ marginTop: 8 }}>
+          {infoBlock(
+            L.editor,
+            <div className="cc-kv">
+              <div className="cc-kv-label">{L.language}</div>
+              <Select
+                value={lang}
+                options={[
+                  { value: 'en', label: 'English' },
+                  { value: 'ru', label: 'Русский' },
+                ]}
+                onChange={(value) => act('cc_set_lang', { lang: value })}
+              />
+              <div className="cc-kv-label">{L.backdrop}</div>
+              <Select
+                value={data.background}
+                options={(data.background_options || []).map((option) => ({
+                  value: option.value,
+                  label: option.name,
+                }))}
+                onChange={(value) =>
+                  doPref('character_setup_preview_background', undefined, {
+                    bg: value,
+                  })
+                }
+              />
+            </div>,
+          )}
+          {infoBlock(
+            L.tools,
+            <div className="cc-kv">
+              {kvButton(L.playerLanguage, L.set, () =>
+                doPref('player_language', 'input'),
+              )}
+              {kvButton(L.keybinds, L.edit, () => doPref('keybinds', 'menu'))}
+              {kvButton(L.savePreferences, L.save, () => doPref('save'))}
+            </div>,
+          )}
+        </div>
+      </>,
     );
   };
 
@@ -4090,36 +4695,6 @@ export const CharacterCreator = () => {
     >
       {sandbox ? null : (
         <>
-          <div className="cc-doll-corner tl">
-            <div
-              className="cc-corner-btn"
-              title={
-                mode === 'fate' || tab !== 'character' ? L.toMirror : L.toFate
-              }
-              onClick={() =>
-                openCharacter(
-                  tab === 'character' && mode === 'mirror' ? 'fate' : 'mirror',
-                )
-              }
-            >
-              <Icon
-                name={
-                  tab === 'character' && mode === 'mirror'
-                    ? 'scroll'
-                    : 'user-edit'
-                }
-              />
-            </div>
-          </div>
-          <div className="cc-doll-corner tr">
-            <div
-              className="cc-corner-btn"
-              title={L.randomAppearance}
-              onClick={() => setOverlay({ kind: 'confirm_random' })}
-            >
-              <Icon name="dice" />
-            </div>
-          </div>
           <div className="cc-doll-corner bl">
             <div
               className={`cc-corner-btn ${asBool(data.preview_clothes) ? 'on' : 'off'}`}
@@ -4210,38 +4785,32 @@ export const CharacterCreator = () => {
     </Frame>
   );
 
+  const portraitBox = (
+    src: string | null,
+    label: string,
+    hint: string,
+    pref: string,
+  ) => (
+    <div
+      className="cc-headshot"
+      title={hint}
+      onClick={() => doPref(pref, 'input')}
+    >
+      {src ? <img src={src} alt="" /> : <Icon name="portrait" size={2} />}
+      <div className="cc-headshot-label">{label}</div>
+    </div>
+  );
+
+  // Both portraits sit under the doll on every tab; a click sets the URL.
   const renderGallery = () => (
     <Frame className="cc-gallery">
-      <div
-        className="cc-headshot"
-        title={L.setHeadshot}
-        onClick={() => doPref('headshot', 'input')}
-      >
-        {data.headshot ? (
-          <img src={data.headshot} alt="" />
-        ) : (
-          <div style={{ textAlign: 'center' }} className="cc-muted">
-            <Icon name="portrait" size={2} />
-            <div>{L.headshot}</div>
-          </div>
-        )}
-      </div>
-      <Btn
-        className="fluid"
-        icon="images"
-        style={{ height: '100%' }}
-        onClick={() => doPref('gallery', 'menu', { tab: 'regular' })}
-      >
-        {L.gallery}
-      </Btn>
-      <Btn
-        className="fluid"
-        icon="images"
-        style={{ height: '100%' }}
-        onClick={() => doPref('gallery', 'menu', { tab: 'nsfw' })}
-      >
-        {L.nsfwGallery}
-      </Btn>
+      {portraitBox(data.headshot, L.headshot, L.setHeadshot, 'headshot')}
+      {portraitBox(
+        data.nsfw_headshot,
+        L.nsfwHeadshot,
+        L.setNsfwHeadshot,
+        'nsfw_headshot',
+      )}
     </Frame>
   );
 
@@ -4264,34 +4833,6 @@ export const CharacterCreator = () => {
         />
       </>
     ) : null;
-
-  const renderUnderDoll = () => (
-    <Frame className="cc-under-doll">
-      <div className="cc-kv-label">{L.bodyType}</div>
-      <Btn className="fluid" onClick={() => doPref('gender')}>
-        {data.gender}
-      </Btn>
-      {buildRow()}
-      <div className="cc-kv-label">{L.pronouns}</div>
-      <Btn className="fluid" onClick={() => doPref('pronouns', 'input')}>
-        {text(data.pronouns, L.none)}
-      </Btn>
-      <div className="cc-kv-label">{L.age}</div>
-      <Select
-        title={data.age_tooltips?.[data.age] || ''}
-        value={data.age}
-        options={(data.age_options || []).map((option) => ({
-          value: option,
-          label: option,
-        }))}
-        onChange={(value) =>
-          act('set_age', {
-            value: (data.age_options || []).indexOf(value) + 1,
-          })
-        }
-      />
-    </Frame>
-  );
 
   const speciesEntry = species.find((entry) => entry.id === data.species_id);
 
@@ -4331,21 +4872,12 @@ export const CharacterCreator = () => {
     );
     return (
       <Frame className="cc-card">
-        <div style={{ position: 'absolute', right: 6, top: 6, zIndex: 2 }}>
-          <div
-            className="cc-corner-btn"
-            title={L.characterList}
-            onClick={() => doPref('changeslot')}
-          >
-            <Icon name="users" />
-          </div>
-        </div>
         <div className="cc-card-scroll cc-scroll">
           <Tip
             className="cc-portrait"
-            title={L.playerQuality}
-            body={L.playerQualityHint}
-            onClick={() => doPref('playerquality')}
+            title={L.headshot}
+            body={L.setHeadshot}
+            onClick={() => doPref('headshot', 'input')}
           >
             {data.headshot ? (
               <img src={data.headshot} alt="" />
@@ -4395,12 +4927,7 @@ export const CharacterCreator = () => {
             ))}
           </div>
           <div className="cc-badges">
-            <Tip
-              className="cc-badge"
-              title={L.triumphs}
-              body={L.triumphsHint}
-              onClick={() => doPref('triumph_buy_menu')}
-            >
+            <Tip className="cc-badge" title={L.triumphs} body={L.triumphsHint}>
               <Icon name="trophy" />
               <span>{data.triumphs ?? 0}</span>
             </Tip>
@@ -4408,6 +4935,7 @@ export const CharacterCreator = () => {
               className="cc-badge"
               title={L.quirkBalance}
               body={L.quirkBalanceHint}
+              onClick={() => doPref('select_quirks')}
             >
               <Icon name="theater-masks" />
               <span>{data.cc_quirks?.balance ?? 0}</span>
@@ -4561,6 +5089,7 @@ export const CharacterCreator = () => {
   };
 
   const railValue: Record<FateCat, string> = {
+    identity: text(data.real_name, L.unnamed),
     origin: activeGroup
       ? groupName(activeGroup)
       : text(currentOrigin?.name, L.none),
@@ -4584,6 +5113,7 @@ export const CharacterCreator = () => {
     ability: `${L.quirkBalance}: ${data.cc_quirks?.balance ?? 0}`,
   };
   const FATE_ICONS: Record<FateCat, string> = {
+    identity: 'id-card',
     origin: 'globe-europe',
     suborigin: 'campground',
     race: 'users',
@@ -4607,7 +5137,7 @@ export const CharacterCreator = () => {
 
   const renderRail = () => (
     <Frame className="cc-rail cc-scroll">
-      {mode === 'fate'
+      {tab === 'fate'
         ? fateVisible.map((cat) => (
             <div
               key={cat}
@@ -4645,10 +5175,41 @@ export const CharacterCreator = () => {
               </div>
             </div>
           ))}
+      {tab === 'body' ? (
+        <div className="cc-rail-foot">
+          <Btn
+            className="fluid"
+            icon="dice"
+            title={L.randomAppearance}
+            onClick={() => setOverlay({ kind: 'confirm_random' })}
+          >
+            <span className="cc-rail-label">{L.randomAppearance}</span>
+          </Btn>
+        </div>
+      ) : null}
     </Frame>
   );
 
   const isFullscreen = asBool(data.preferences_fullscreen);
+  const unsaved = asBool(data.cc_unsaved);
+  // DONE and the close button ask first while the character has unsaved changes.
+  const requestClose = () => {
+    if (unsaved) {
+      setOverlay({ kind: 'confirm_close' });
+    } else {
+      doPref('finished');
+    }
+  };
+  const roundState = (data.round_start_state ||
+    '') as keyof CharacterCreatorStrings['roundStates'];
+  const roundLabel = roundState ? L.roundStates[roundState] || '' : '';
+  const roundText =
+    roundState === 'countdown'
+      ? `${roundLabel} ${formatSeconds(roundSeconds)}`
+      : roundLabel;
+  const readyText = data.round_total_players
+    ? `${data.round_ready_players ?? 0}/${data.round_total_players} ${L.roundReady}`
+    : '';
 
   // Empty parts of the top bar move the window, like the title bar it replaces.
   const startDrag = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -4681,11 +5242,13 @@ export const CharacterCreator = () => {
       >
         <span className="cc-topbar-extra">{L.importSave}</span>
       </Btn>
-      {tab === 'character' && mode === 'mirror' ? (
-        <div className="cc-topbar-title cc-topbar-extra">
-          {text(data.real_name, L.unnamed)}
-        </div>
-      ) : null}
+      <Btn
+        icon="users"
+        title={L.characterListHint}
+        onClick={() => doPref('changeslot')}
+      >
+        <span className="cc-topbar-extra">{L.characterList}</span>
+      </Btn>
       <div className="cc-grow" />
       <Btn
         icon={data.round_action_icon || 'user-check'}
@@ -4702,6 +5265,16 @@ export const CharacterCreator = () => {
       >
         {text(data.round_action_label)}
       </Btn>
+      {roundText || readyText ? (
+        <div className="cc-round-line cc-topbar-extra">
+          {roundText ? (
+            <span className="cc-round-time">{roundText}</span>
+          ) : null}
+          {readyText ? (
+            <span className="cc-round-ready">{readyText}</span>
+          ) : null}
+        </div>
+      ) : null}
       <div className="cc-grow" />
       <Btn
         className="square"
@@ -4732,7 +5305,7 @@ export const CharacterCreator = () => {
         className="square danger"
         icon="times"
         title={L.close}
-        onClick={() => doPref('finished')}
+        onClick={requestClose}
       />
     </div>
   );
@@ -4748,7 +5321,7 @@ export const CharacterCreator = () => {
     for (const cat of fateVisible) {
       hits.push({
         label: L.rail[cat],
-        path: L.tabs.character,
+        path: L.tabs.fate,
         run: () => {
           openCharacter('fate');
           setFateCat(cat);
@@ -4758,14 +5331,14 @@ export const CharacterCreator = () => {
     for (const cat of mirrorVisible) {
       hits.push({
         label: L.mirror[cat],
-        path: L.appearance,
+        path: L.tabs.body,
         run: () => {
-          openCharacter('mirror');
+          openCharacter('body');
           setMirrorCat(cat);
         },
       });
     }
-    // Body type, build, pronouns and age sit under the doll in the appearance view.
+    // Body type, build, pronouns and age live in the Identity window.
     const identity = [L.bodyType, L.pronouns, L.age];
     if ((data.body_build_options || []).length > 1) {
       identity.push(L.bodyBuild);
@@ -4773,38 +5346,41 @@ export const CharacterCreator = () => {
     for (const label of identity) {
       hits.push({
         label,
-        path: L.appearance,
-        run: () => openCharacter('mirror'),
+        path: L.rail.identity,
+        run: () => {
+          openCharacter('fate');
+          setFateCat('identity');
+        },
       });
     }
     hits.push(
       {
         label: L.nameLabel,
-        path: L.tabs.character,
+        path: L.tabs.fate,
         run: () => doPref('name', 'input'),
       },
       {
         label: L.headshot,
-        path: L.tabs.character,
+        path: L.tabs.fate,
         run: () => doPref('headshot', 'input'),
       },
       {
         label: L.gallery,
-        path: L.tabs.character,
+        path: L.tabs.fate,
         run: () => doPref('gallery', 'menu', { tab: 'regular' }),
       },
       {
         label: L.nsfwGallery,
-        path: L.tabs.character,
+        path: L.tabs.fate,
         run: () => doPref('gallery', 'menu', { tab: 'nsfw' }),
       },
     );
     for (const feature of features) {
       hits.push({
         label: feature.name,
-        path: `${L.appearance} › ${L.mirror[featureCat(feature)]}`,
+        path: `${L.tabs.body} › ${L.mirror[featureCat(feature)]}`,
         run: () => {
-          openCharacter('mirror');
+          openCharacter('body');
           setMirrorCat(featureCat(feature));
         },
       });
@@ -4891,7 +5467,7 @@ export const CharacterCreator = () => {
     hits.push({
       label: L.chooseLoadout,
       path: L.mirror.attire,
-      run: () => act('cc_open_loadout'),
+      run: () => setTab('loadout'),
     });
     return hits;
   };
@@ -4906,6 +5482,18 @@ export const CharacterCreator = () => {
 
   const renderNav = () => (
     <Frame className="cc-nav">
+      {(Object.keys(L.tabs) as Tab[]).map((id) => (
+        <div
+          key={id}
+          className={`cc-nav-tab ${tab === id ? 'active' : ''}`}
+          onClick={() => {
+            setTab(id);
+            setPicker(null);
+          }}
+        >
+          {L.tabs[id]}
+        </div>
+      ))}
       <div className="cc-search">
         <Icon className="cc-search-icon" name="search" />
         <input
@@ -4938,41 +5526,38 @@ export const CharacterCreator = () => {
           </div>
         ) : null}
       </div>
-      {(Object.keys(L.tabs) as Tab[]).map((id) => (
-        <div
-          key={id}
-          className={`cc-nav-tab ${tab === id ? 'active' : ''}`}
-          onClick={() => {
-            setTab(id);
-            setPicker(null);
-          }}
-        >
-          {L.tabs[id]}
-        </div>
-      ))}
     </Frame>
   );
 
   const renderDone = () => (
     <Frame className="cc-done">
       <div className="cc-done-small">
-        <div
-          className="cc-corner-btn"
-          title={L.undoHint}
-          onClick={() => doPref('load')}
-        >
-          <Icon name="undo" />
-        </div>
-        <div
-          className="cc-corner-btn"
+        <Btn
+          className={`cc-done-side ${unsaved ? 'gold' : ''}`}
+          icon="save"
           title={L.saveHint}
           onClick={() => doPref('save')}
         >
-          <Icon name="save" />
-        </div>
+          {L.save}
+        </Btn>
+        <Btn
+          className="cc-done-side"
+          icon="undo"
+          title={L.undoHint}
+          onClick={() => doPref('load')}
+        >
+          {L.revert}
+        </Btn>
       </div>
-      <div className="cc-done-main" onClick={() => doPref('finished')}>
-        {L.done}
+      <div
+        className="cc-done-main"
+        title={unsaved ? L.unsavedMark : undefined}
+        onClick={requestClose}
+      >
+        <span>{L.done}</span>
+        {unsaved ? (
+          <span className="cc-done-unsaved">{L.unsavedMark}</span>
+        ) : null}
       </div>
     </Frame>
   );
@@ -4980,6 +5565,39 @@ export const CharacterCreator = () => {
   const renderModal = () => {
     if (!overlay) {
       return null;
+    }
+    if (overlay.kind === 'confirm_close') {
+      return (
+        <div className="cc-modal-back">
+          <Frame className="cc-modal" title={L.unsavedTitle}>
+            <div className="cc-desc" style={{ marginBottom: 12 }}>
+              {L.unsavedWarning}
+            </div>
+            <div className="cc-row" style={{ justifyContent: 'center' }}>
+              <Btn onClick={() => setOverlay(null)}>{L.cancel}</Btn>
+              <Btn
+                className="danger"
+                onClick={() => {
+                  setOverlay(null);
+                  doPref('finished');
+                }}
+              >
+                {L.closeNoSave}
+              </Btn>
+              <Btn
+                className="primary"
+                onClick={() => {
+                  setOverlay(null);
+                  doPref('save');
+                  doPref('finished');
+                }}
+              >
+                {L.saveAndClose}
+              </Btn>
+            </div>
+          </Frame>
+        </div>
+      );
     }
     const isRandom = overlay.kind === 'confirm_random';
     const target =
@@ -5387,9 +6005,15 @@ export const CharacterCreator = () => {
 
   let layoutClass = 'cc-wide';
   let content: ReactNode;
-  if (tab === 'character') {
-    layoutClass = mode === 'fate' ? 'cc-fate' : 'cc-mirror';
-    content = mode === 'fate' ? renderFate() : renderMirror();
+  if (tab === 'fate') {
+    layoutClass = 'cc-fate';
+    content = renderFate();
+  } else if (tab === 'body') {
+    layoutClass = 'cc-fate';
+    content = renderMirror();
+  } else if (tab === 'loadout') {
+    layoutClass = 'cc-loadout';
+    content = <LoadoutPanel />;
   } else if (tab === 'info') {
     content = renderInfo();
   } else if (tab === 'gameplay') {
@@ -5399,8 +6023,7 @@ export const CharacterCreator = () => {
   } else {
     content = renderSettings();
   }
-  const showRail = tab === 'character';
-  const showCard = !(tab === 'character' && mode === 'mirror');
+  const showRail = tab === 'fate' || tab === 'body';
 
   const scaledStyle: CSSProperties | undefined =
     menuScale === 1
@@ -5429,21 +6052,17 @@ export const CharacterCreator = () => {
             <div className="cc-area-content">
               <Frame style={{ height: '100%' }}>
                 {content}
-                {picker && tab === 'character' && mode === 'mirror'
-                  ? renderStylePicker()
-                  : null}
+                {picker && tab === 'body' ? renderStylePicker() : null}
                 {renderModal()}
               </Frame>
             </div>
             <div className="cc-area-doll">
               {renderDoll()}
-              {tab === 'character' && mode === 'mirror'
-                ? renderUnderDoll()
-                : renderGallery()}
+              {renderGallery()}
             </div>
-            {showCard ? (
+            {tab === 'loadout' ? null : (
               <div className="cc-area-card">{renderCard()}</div>
-            ) : null}
+            )}
             <div className="cc-area-nav">{renderNav()}</div>
             <div className="cc-area-done">{renderDone()}</div>
             <TipLayer pinHint={L.pinHint} />

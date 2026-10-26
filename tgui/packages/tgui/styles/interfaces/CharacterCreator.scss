@@ -1,5 +1,5 @@
 /**
- * Character Creator, its loadout window and the succubus / ooze sandbox editors.
+ * Character Creator, its loadout tab and the succubus / ooze sandbox editors.
  * Every rule is scoped under .cc, so the styles stay inside these windows.
  */
 
@@ -17,10 +17,11 @@
   --cc-panel-2: #1d1812;
   --cc-line: #3a3024;
   --cc-gold: #c9a45c;
+  --cc-heading: #eee69c;
   --cc-gold-dim: #8a7040;
   --cc-silver: #c8ccd4;
   --cc-text: #e6dccb;
-  --cc-muted: #9b8f7c;
+  --cc-muted: #b4a791;
   --cc-bad: #c4452f;
   --cc-good: #7fae58;
   --cc-serif: Georgia, 'Palatino Linotype', 'Book Antiqua', serif;
@@ -50,33 +51,34 @@
       240px,
       1.45fr
     ) minmax(190px, 0.95fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   grid-template-areas:
     'top top top top'
+    'nav nav nav nav'
     'rail content doll card'
-    'nav nav nav done';
-}
-.cc-mirror {
-  grid-template-columns: minmax(140px, 0.72fr) minmax(340px, 2.5fr) minmax(
-      260px,
-      1.6fr
-    );
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas:
-    'top top top'
-    'rail content doll'
-    'nav nav done';
+    'rail content doll done';
 }
 .cc-wide {
   grid-template-columns: minmax(360px, 2.7fr) minmax(240px, 1.45fr) minmax(
       190px,
       0.95fr
     );
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   grid-template-areas:
     'top top top'
+    'nav nav nav'
     'content doll card'
-    'nav nav done';
+    'content doll done';
+}
+/* Loadout tab: the item panes take the card's column, the live doll stays. */
+.cc-loadout {
+  grid-template-columns: minmax(520px, 3.4fr) minmax(240px, 1.45fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'top top'
+    'nav nav'
+    'content doll'
+    'content done';
 }
 .cc-area-top {
   grid-area: top;
@@ -268,7 +270,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--cc-gold-dim);
+  color: var(--cc-heading);
   font-family: var(--cc-serif);
   font-size: 12px;
   margin: 8px 0 6px;
@@ -425,6 +427,24 @@
 .cc-topbar .cc-round {
   cursor: pointer;
 }
+.cc-round-line {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.cc-round-time {
+  font-family: var(--cc-serif);
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--cc-gold);
+}
+.cc-round-ready {
+  font-size: 11px;
+  color: var(--cc-text);
+}
 .cc-topbar-title {
   font-family: var(--cc-serif);
   color: var(--cc-gold);
@@ -455,6 +475,10 @@
   display: flex;
   flex-direction: column;
   padding: 8px 4px;
+}
+.cc-rail-foot {
+  margin-top: auto;
+  padding: 6px 2px 0;
 }
 .cc-rail-item {
   position: relative;
@@ -645,6 +669,88 @@
   margin: 6px 0;
 }
 
+/* Role tiles: priority arrows under the name, a knight mark for roles with sub-roles. */
+.cc-tile-ctl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 2px;
+  border-top: 1px solid var(--cc-line);
+  padding-top: 2px;
+}
+.cc-tile-arrow {
+  width: 20px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cc-gold);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.cc-tile-arrow:hover {
+  border-color: var(--cc-silver);
+  color: #fff;
+}
+.cc-tile-arrow.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.cc-tile-prio {
+  flex: 1;
+  font-size: 9px;
+  color: var(--cc-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.cc-tile-mark {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  font-size: 10px;
+  color: var(--cc-gold);
+}
+.cc-switcher-pick {
+  min-width: 180px;
+}
+.cc-switcher-pick .cc-select {
+  font-family: var(--cc-serif);
+  color: var(--cc-gold);
+  font-size: 13px;
+  text-align: center;
+}
+/* Inline class details under the role description. */
+.cc-jobdetails {
+  margin-top: 6px;
+  text-align: left;
+}
+.cc-fact {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0;
+}
+.cc-fact .cc-kv-label {
+  flex: 0 0 120px;
+}
+.cc-fact .cc-chips {
+  justify-content: flex-start;
+}
+.cc-jobsub {
+  padding: 4px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cc-jobsub .cc-chips {
+  justify-content: flex-start;
+}
+.cc-settings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 /* Doll */
 .cc-doll {
   flex: 1;
@@ -720,27 +826,35 @@
   min-height: 120px;
 }
 .cc-headshot {
-  grid-row: span 2;
+  position: relative;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--cc-line);
   background: #0f0c09;
+  color: var(--cc-muted);
   cursor: pointer;
   overflow: hidden;
-  min-height: 100px;
+}
+.cc-headshot:hover {
+  border-color: var(--cc-silver);
 }
 .cc-headshot img {
-  max-width: 100%;
-  max-height: 140px;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.cc-under-doll {
-  padding: 8px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 6px 8px;
-  align-items: center;
+.cc-headshot-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 2px 4px;
+  font-size: 10px;
+  text-align: center;
+  color: #f3e3bf;
+  background: rgba(12, 10, 8, 0.75);
 }
 
 /* Card */
@@ -855,8 +969,9 @@
 }
 .cc-search {
   position: relative;
-  flex: 1 1 180px;
+  flex: 0 1 260px;
   min-width: 120px;
+  margin-left: auto;
 }
 .cc-search input {
   width: 100%;
@@ -908,12 +1023,20 @@
   display: flex;
   gap: 6px;
   padding: 6px;
-  min-height: 40px;
+  min-height: 76px;
 }
 .cc-done-small {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  flex: 0 0 104px;
+}
+.cc-done-side {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  font-family: var(--cc-serif);
+  font-size: 12px;
 }
 .cc-done-main {
   flex: 1;
@@ -925,60 +1048,38 @@
   color: #f3e3bf;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
+  gap: 2px;
   align-items: center;
   justify-content: center;
+}
+.cc-done-unsaved {
+  font-size: 10px;
+  letter-spacing: 0;
+  color: #e9c27a;
 }
 .cc-done-main:hover {
   box-shadow: 0 0 10px rgba(201, 164, 92, 0.5);
 }
 
-/* Origin map placeholder: parchment, drifting fog and glinting pins. */
+/* Origin map: the realm art keeps its aspect so percent pins stay in place. */
 .cc-map {
   position: relative;
-  height: 230px;
-  min-height: 160px;
+  width: 100%;
+  aspect-ratio: 1400 / 892;
   border: 1px solid var(--cc-gold-dim);
-  background: radial-gradient(
-      circle at 30% 40%,
-      rgba(120, 96, 58, 0.55),
-      transparent 55%
-    ),
-    radial-gradient(circle at 70% 65%, rgba(90, 74, 48, 0.6), transparent 50%),
-    linear-gradient(160deg, #3b3021, #231c13 60%, #1a150f);
+  background-color: #231c13;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   overflow: hidden;
 }
-.cc-map-fog {
+/* A light dim keeps the gold pins and labels readable over the parchment. */
+.cc-map::before {
+  content: '';
   position: absolute;
-  inset: -40%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 255, 0.08),
-    transparent 60%
-  );
-  animation: cc-fog 26s linear infinite;
+  inset: 0;
+  background: rgba(12, 10, 8, 0.22);
   pointer-events: none;
-}
-@keyframes cc-fog {
-  from {
-    transform: translateX(-20%);
-  }
-  to {
-    transform: translateX(20%);
-  }
-}
-.cc-map-note {
-  position: absolute;
-  left: 8px;
-  bottom: 6px;
-  font-size: 10px;
-  color: rgba(230, 220, 203, 0.45);
-}
-.cc-map-compass {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  color: rgba(201, 164, 92, 0.5);
-  font-size: 22px;
 }
 .cc-pin {
   position: absolute;
@@ -1242,14 +1343,6 @@
 }
 
 /* Loadout */
-.cc-loadout {
-  display: grid;
-  grid-template-columns: minmax(200px, 0.9fr) minmax(280px, 2fr);
-  gap: 8px;
-  flex: 1;
-  min-height: 0;
-  padding: 8px;
-}
 .cc-loadout-slot {
   border: 1px solid #5a4630;
   background: linear-gradient(180deg, #2a2117, #1c1711);
@@ -1351,7 +1444,7 @@
 }
 .cc-info-title {
   font-family: var(--cc-serif);
-  color: var(--cc-gold);
+  color: var(--cc-heading);
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 1px;
@@ -1869,21 +1962,23 @@
         240px,
         1.4fr
       );
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
     grid-template-areas:
       'top top top'
+      'nav nav nav'
       'rail content doll'
       'rail content card'
-      'nav nav done';
+      'rail content done';
   }
   .cc-wide {
     grid-template-columns: minmax(340px, 2.4fr) minmax(240px, 1.4fr);
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
     grid-template-areas:
       'top top'
+      'nav nav'
       'content doll'
       'content card'
-      'nav done';
+      'content done';
   }
   .cc-card-scroll {
     max-height: 190px;
@@ -1900,8 +1995,7 @@
   }
 }
 @media (max-width: 880px) {
-  .cc-fate,
-  .cc-mirror {
+  .cc-fate {
     grid-template-columns: 54px minmax(280px, 2fr) minmax(220px, 1.3fr);
   }
   .cc-rail-label,
@@ -1921,22 +2015,22 @@
   }
 }
 
-// Loadout window
+// Loadout tab: header, page body and preset footer stacked inside the content frame.
 .ccl {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas: 'top' 'content' 'foot';
-}
-.ccl-top {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  padding: 10px;
+}
+.ccl-head {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  cursor: move;
-}
-.ccl-top .cc-btn,
-.ccl-top .cc-dd,
-.ccl-top input {
-  cursor: pointer;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.15);
 }
 .ccl-title {
   font-family: var(--cc-serif);
@@ -1946,28 +2040,42 @@
   padding: 0 8px;
   white-space: nowrap;
 }
+.ccl-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ccl-main > * {
+  flex: 1;
+  min-height: 0;
+}
 .ccl-body {
   display: grid;
-  grid-template-columns: minmax(230px, 0.85fr) minmax(320px, 2fr);
+  grid-template-columns: minmax(200px, 0.8fr) minmax(0, 2fr);
+  grid-template-rows: minmax(0, 1fr);
   gap: 8px;
-  min-height: 0;
-  height: 100%;
+}
+.ccl-body.equip {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 .ccl-pane {
   min-height: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   padding: 8px;
 }
 .ccl-pager {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 6px;
   margin-bottom: 8px;
 }
 .ccl-page {
-  min-width: 110px;
+  min-width: 90px;
   text-align: center;
   font-family: var(--cc-serif);
   color: var(--cc-gold);
@@ -2047,9 +2155,13 @@
   padding: 6px;
   margin-bottom: 6px;
 }
+/* Rows share the pane height and only scroll once they reach their minimum. */
 .ccl-doll {
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(74px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(60px, 1fr);
   gap: 8px;
   padding: 12px;
   background: linear-gradient(180deg, #2e2416, #191410);
@@ -2057,7 +2169,8 @@
 }
 .ccl-eq {
   position: relative;
-  min-height: 78px;
+  min-width: 0;
+  min-height: 60px;
   border: 1px solid #3a3024;
   background: #1b1d22;
   border-radius: 6px;
@@ -2146,15 +2259,29 @@
 }
 .ccl-mini {
   display: grid;
-  grid-template-columns: repeat(3, minmax(74px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
+/* The page buttons drop to a second row only when the preset controls cannot shrink further. */
 .ccl-foot {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  padding: 6px 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(201, 164, 92, 0.15);
+}
+.ccl-foot-presets {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ccl-foot-pages {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
 }
 .ccl-row-item {
   display: flex;
@@ -2176,3 +2303,96 @@
 .ccl-tip-meta {
   color: #7fa7c9;
 }
+/* Narrow windows: smaller catalog tiles keep three or more per row. */
+@media (max-width: 1120px) {
+  .ccl-items > * {
+    flex-basis: 84px;
+    width: 84px;
+  }
+  .ccl-item {
+    min-height: 92px;
+  }
+  .ccl-icon {
+    width: 48px;
+    height: 48px;
+  }
+  .ccl-icon > div {
+    transform: scale(1.45);
+  }
+  .ccl-body {
+    grid-template-columns: minmax(180px, 0.8fr) minmax(0, 2fr);
+  }
+}
+
+/* Preference badges (Intimacy tab) */
+.cc-pb-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  cursor: help;
+}
+.cc-pb-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cc-pb-text {
+  font-size: 11px;
+  margin: 4px 0;
+}
+.cc-pb-chips {
+  justify-content: flex-start;
+}
+.cc-pb-grid {
+  margin-top: 8px;
+}
+/* End of preference badges */
+
+/* Tattoo editor under the markings list */
+.cc-tat-ink {
+  margin: 4px 0 8px;
+  font-size: 11px;
+}
+.cc-tat-ink > .cc-muted {
+  white-space: nowrap;
+}
+.cc-tat-zone + .cc-tat-zone {
+  margin-top: 4px;
+}
+.cc-tat-zone-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+.cc-tat-intimate {
+  color: #c97a8a;
+  font-size: 10px;
+}
+.cc-tat-count {
+  color: var(--cc-muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.cc-tat-count.full {
+  color: var(--cc-gold);
+}
+.cc-tat-missing {
+  color: #e9a497;
+  font-size: 10px;
+  font-style: italic;
+  margin-bottom: 3px;
+}
+.cc-tat-entry {
+  margin: 0 0 5px 8px;
+}
+.cc-tat-text {
+  cursor: pointer;
+}
+.cc-tat-text:hover {
+  border-color: var(--cc-silver);
+}
+.cc-tat-controls {
+  gap: 4px;
+}
+/* End of tattoo editor */

@@ -4979,5 +4979,6 @@
 #include "modular_rmh\modular\selectable_moanpacks\moanpacks_defs.dm"
 #include "modular_rmh\modular\skirt_peeking\skirt_peeking.dm"
 #include "modular_rmh\modular\tattoo\tattoo.dm"
+#include "modular_rmh\modular\tattoo\tattoo_creator.dm"
 #include "modular_rmh\modular\wildtongue\wildtongue.dm"
 // END_INCLUDE

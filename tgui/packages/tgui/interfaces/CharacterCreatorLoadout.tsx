@@ -1,17 +1,14 @@
-import { type ReactNode, useRef, useState } from 'react';
+import { type ReactNode, useMemo, useRef, useState } from 'react';
 import { Box, Icon } from 'tgui-core/components';
 
 import { useBackend } from '../backend';
-import { dragStartHandler } from '../drag';
-import { suspendStart } from '../events/handlers/suspense';
-import { Window } from '../layouts';
-import { Btn, Frame, Select, Swatch, Tip, TipLayer } from './CharacterCreator';
+import { Btn, Frame, Select, Swatch, Tip } from './CharacterCreator';
 import {
   type CharacterCreatorStrings,
   characterCreatorStrings,
 } from './CharacterCreator.i18n';
 
-// Loadout window of the Character Creator (modular_rmh/modular/character_creator).
+// Loadout tab of the Character Creator (modular_rmh/modular/character_creator).
 // Items: pick up to 10 loadout items. Equip Items: wear them in paper doll slots.
 // Stash: items left unworn wait in the stash or, if marked, go into the bags.
 
@@ -34,7 +31,6 @@ type CatalogItem = {
   point_cost: number;
   typepath: string;
   icon: string;
-  nobility_locked: Booleanish;
   category: string;
   fits: string[];
   info: ItemInfo;
@@ -58,10 +54,7 @@ type Preset = {
   summary: string;
 };
 
-type LoadoutData = {
-  lang: string;
-  catalog: CatalogItem[];
-  roles: string[];
+type LoadoutState = {
   slots: LoadoutSlot[];
   points: { total: number; spent: number; remaining: number };
   presets: Preset[];
@@ -69,7 +62,20 @@ type LoadoutData = {
   bag: string[];
 };
 
+/** Keys of the Character Creator data this panel reads. */
+type LoadoutPanelData = {
+  cc_lang?: string;
+  cc_loadout_catalog?: CatalogItem[];
+  cc_loadout_roles?: string[];
+  cc_loadout_locked?: string[];
+  cc_loadout?: LoadoutState;
+};
+
 type Page = 'items' | 'equip' | 'stash';
+
+/** Shared fallbacks keep memoized lookups stable while data is missing. */
+const NO_ITEMS: CatalogItem[] = [];
+const NO_PATHS: string[] = [];
 
 const CATEGORIES = [
   'all',
@@ -176,9 +182,9 @@ const itemTipBody = (
   );
 };
 
-export const CharacterCreatorLoadout = () => {
-  const { act, data } = useBackend<LoadoutData>();
-  const L = characterCreatorStrings[data.lang === 'ru' ? 'ru' : 'en'];
+export const LoadoutPanel = () => {
+  const { act, data } = useBackend<LoadoutPanelData>();
+  const L = characterCreatorStrings[data.cc_lang === 'ru' ? 'ru' : 'en'];
   const [page, setPage] = useState<Page>('items');
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
@@ -190,17 +196,25 @@ export const CharacterCreatorLoadout = () => {
     null,
   );
 
-  const catalog = data.catalog || [];
-  const slots = data.slots || [];
-  const equip = data.equip || {};
-  const bag = data.bag || [];
-  const points = data.points || { total: 0, spent: 0, remaining: 0 };
-  const presets = data.presets || [];
-  const byPath = new Map(catalog.map((item) => [item.typepath, item]));
+  const catalog = data.cc_loadout_catalog || NO_ITEMS;
+  const lockedPaths = data.cc_loadout_locked || NO_PATHS;
+  const roles = data.cc_loadout_roles || NO_PATHS;
+  const loadout = data.cc_loadout;
+  const slots = loadout?.slots || [];
+  const equip = loadout?.equip || {};
+  const bag = loadout?.bag || [];
+  const points = loadout?.points || { total: 0, spent: 0, remaining: 0 };
+  const presets = loadout?.presets || [];
+  // The catalog is static data, so these lookups survive the frequent data pushes.
+  const byPath = useMemo(
+    () => new Map(catalog.map((item) => [item.typepath, item])),
+    [catalog],
+  );
+  const locked = useMemo(() => new Set(lockedPaths), [lockedPaths]);
   const chosen = slots.filter((slot) => slot.typepath);
   const firstEmpty = slots.find((slot) => !slot.typepath)?.slot;
   const loadoutAct = (task: string, extra?: Record<string, unknown>) =>
-    act('loadout', { task, ...(extra || {}) });
+    act('cc_loadout', { task, ...(extra || {}) });
 
   const slotOfEquip = (slotId: string) =>
     chosen.find((slot) => equip[String(slot.slot)] === slotId);
@@ -211,17 +225,6 @@ export const CharacterCreatorLoadout = () => {
     return !!byPath.get(slot.typepath || '')?.fits?.includes(slotId);
   };
   const unequipped = chosen.filter((slot) => !equip[String(slot.slot)]);
-
-  const startDrag = (event: React.MouseEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLElement;
-    if (
-      event.button !== 0 ||
-      target.closest('.cc-btn, .cc-dd, input, .cc-search')
-    ) {
-      return;
-    }
-    dragStartHandler(event);
-  };
 
   const itemName = (slot: LoadoutSlot) =>
     slot.custom_name || slot.item_name || '';
@@ -265,7 +268,7 @@ export const CharacterCreatorLoadout = () => {
                 </Btn>
                 <Btn
                   icon="palette"
-                  onClick={() => act('dye', { slot: slot.slot })}
+                  onClick={() => act('cc_loadout_dye', { slot: slot.slot })}
                 >
                   {slot.custom_hex ? <Swatch color={slot.custom_hex} /> : null}
                   {L.color}
@@ -360,7 +363,7 @@ export const CharacterCreatorLoadout = () => {
                   (slot) => slot.typepath === item.typepath,
                 );
                 const blocked =
-                  !!item.nobility_locked ||
+                  locked.has(item.typepath) ||
                   (!chosenSlot &&
                     (item.point_cost > points.remaining || !firstEmpty));
                 return (
@@ -462,7 +465,7 @@ export const CharacterCreatorLoadout = () => {
           style={{ position: 'absolute', inset: 0 }}
           onContextMenu={(event) => {
             event.preventDefault();
-            act('dye', { slot: worn.slot });
+            act('cc_loadout_dye', { slot: worn.slot });
           }}
         />
         {body}
@@ -492,7 +495,7 @@ export const CharacterCreatorLoadout = () => {
           <Btn
             disabled={!worn}
             onClick={() =>
-              worn && act('equip', { slot: worn.slot, equip: null })
+              worn && act('cc_loadout_equip', { slot: worn.slot, equip: null })
             }
           >
             {L.clearSlot}
@@ -516,7 +519,10 @@ export const CharacterCreatorLoadout = () => {
                   body={itemTipBody(item, L, slot)}
                   onClick={() => {
                     if (!isWorn) {
-                      act('equip', { slot: slot.slot, equip: activeSlot });
+                      act('cc_loadout_equip', {
+                        slot: slot.slot,
+                        equip: activeSlot,
+                      });
                     }
                     setActiveSlot(null);
                   }}
@@ -553,13 +559,17 @@ export const CharacterCreatorLoadout = () => {
 
   const selectedPreset = presets.find((preset) => preset.slot === presetSlot);
 
+  const roleOptions = [
+    { value: '', label: L.anyRole },
+    ...roles.map((role) => ({ value: role, label: role })),
+  ];
+  const setPresetRole = (value: string) =>
+    act('cc_loadout_preset_role', { preset: presetSlot, role: value || null });
+
   const renderEquipPage = () => (
-    <div
-      className="ccl-body"
-      style={{ gridTemplateColumns: 'minmax(260px, 1fr) minmax(260px, 1fr)' }}
-    >
+    <div className="ccl-body equip">
       <Frame className="ccl-pane" style={{ padding: 0 }}>
-        <div className="ccl-doll cc-scroll" style={{ flex: 1 }}>
+        <div className="ccl-doll cc-scroll">
           {DOLL.map(renderEquipSlot)}
           {renderSlotPopup()}
           {renderMiniWindow()}
@@ -570,16 +580,8 @@ export const CharacterCreatorLoadout = () => {
           <Select
             value={selectedPreset?.role || ''}
             placeholder={L.chooseRole}
-            options={[
-              { value: '', label: L.anyRole },
-              ...(data.roles || []).map((role) => ({
-                value: role,
-                label: role,
-              })),
-            ]}
-            onChange={(value) =>
-              act('preset_role', { preset: presetSlot, role: value || null })
-            }
+            options={roleOptions}
+            onChange={setPresetRole}
           />
           <Btn
             className="square primary"
@@ -653,7 +655,7 @@ export const CharacterCreatorLoadout = () => {
                     </div>
                   </>
                 }
-                onClick={() => act('bag', { slot: slot.slot })}
+                onClick={() => act('cc_loadout_bag', { slot: slot.slot })}
               >
                 <span className="ccl-cost">
                   <Icon name={inBag ? 'shopping-bag' : 'archive'} />
@@ -684,151 +686,126 @@ export const CharacterCreatorLoadout = () => {
     `${preset.name || `${L.preset} ${preset.slot}`}${preset.role ? ` · ${preset.role}` : ''}${preset.empty ? ` (${L.empty})` : ''}`;
 
   return (
-    <Window title={L.loadoutTitle} width={1180} height={780} theme="vanderlin">
-      <Window.Content fitted>
-        <div className="cc ccl">
-          <div className="ccl-top cc-area-top" onMouseDown={startDrag}>
-            <div className="ccl-title">{L.loadoutTitle}</div>
-            {page === 'items' ? (
-              <>
-                <Select
-                  value={category}
-                  style={{ width: 170 }}
-                  options={CATEGORIES.map((entry) => ({
-                    value: entry,
-                    label: L.loadoutCategories[entry],
-                  }))}
-                  onChange={(value) => {
-                    setCategory(value);
-                    setItemPage(0);
-                  }}
-                />
-                <div className="cc-search">
-                  <Icon className="cc-search-icon" name="search" />
-                  <input
-                    value={search}
-                    placeholder={L.searchItems}
-                    onChange={(event) => {
-                      setSearch(event.target.value);
-                      setItemPage(0);
-                    }}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="cc-grow" />
-            )}
-            <div className="ccl-title">
-              {points.spent} / {points.total} {L.points}
-            </div>
-            <Btn
-              className="square danger"
-              icon="times"
-              title={L.close}
-              onClick={() => suspendStart()}
-            />
-          </div>
-          <div className="cc-area-content" style={{ minHeight: 0 }}>
-            {body}
-          </div>
-          <Frame className="ccl-foot" style={{ gridArea: 'foot' }}>
+    <div className="ccl">
+      <div className="ccl-head">
+        <div className="ccl-title">{L.loadoutTitle}</div>
+        {page === 'items' ? (
+          <>
             <Select
-              value={String(presetSlot)}
-              style={{ width: 260 }}
-              options={presets.map((preset) => ({
-                value: String(preset.slot),
-                label: presetLabel(preset),
+              value={category}
+              style={{ width: 170, flexShrink: 0 }}
+              options={CATEGORIES.map((entry) => ({
+                value: entry,
+                label: L.loadoutCategories[entry],
               }))}
               onChange={(value) => {
-                setPresetSlot(Number(value));
-                const preset = presets.find(
-                  (entry) => entry.slot === Number(value),
-                );
-                if (preset && !preset.empty) {
-                  loadoutAct('preset_load', { slot: Number(value) });
-                }
+                setCategory(value);
+                setItemPage(0);
               }}
             />
-            {page === 'items' ? (
-              <Select
-                value={selectedPreset?.role || ''}
-                placeholder={L.chooseRole}
-                style={{ width: 200 }}
-                options={[
-                  { value: '', label: L.anyRole },
-                  ...(data.roles || []).map((role) => ({
-                    value: role,
-                    label: role,
-                  })),
-                ]}
-                onChange={(value) =>
-                  act('preset_role', {
-                    preset: presetSlot,
-                    role: value || null,
-                  })
-                }
+            <div className="cc-search">
+              <Icon className="cc-search-icon" name="search" />
+              <input
+                value={search}
+                placeholder={L.searchItems}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setItemPage(0);
+                }}
               />
-            ) : null}
-            <Btn
-              icon="pen"
-              disabled={!!selectedPreset?.empty}
-              title={selectedPreset?.empty ? L.saveFirst : undefined}
-              onClick={() => act('preset_rename', { preset: presetSlot })}
-            >
-              {L.rename}
-            </Btn>
-            <Btn
-              icon="save"
-              onClick={() => loadoutAct('preset_save', { slot: presetSlot })}
-            >
-              {L.save}
-            </Btn>
-            <Btn
-              icon="undo"
-              title={L.undoPresetHint}
-              disabled={!!selectedPreset?.empty}
-              onClick={() => loadoutAct('preset_load', { slot: presetSlot })}
-            >
-              {L.undo}
-            </Btn>
-            <Btn
-              icon="trash"
-              className="danger"
-              title={L.clearAllHint}
-              onClick={() => act('clear_all')}
-            >
-              {L.clear}
-            </Btn>
-            <div className="cc-grow" />
-            {page !== 'items' ? (
-              <Btn icon="arrow-left" onClick={() => setPage('items')}>
-                {L.back}
-              </Btn>
-            ) : null}
-            {page !== 'equip' ? (
-              <Btn
-                className="on"
-                icon="tshirt"
-                onClick={() => setPage('equip')}
-              >
-                {L.equipItems}
-              </Btn>
-            ) : null}
-            {page !== 'stash' ? (
-              <Btn
-                className="on"
-                icon="archive"
-                onClick={() => setPage('stash')}
-              >
-                {L.checkStash}
-              </Btn>
-            ) : null}
-          </Frame>
-          <TipLayer pinHint={L.pinHint} />
+            </div>
+          </>
+        ) : (
+          <div className="cc-grow" />
+        )}
+        <div className="ccl-title">
+          {points.spent} / {points.total} {L.points}
         </div>
-      </Window.Content>
-    </Window>
+      </div>
+      <div className="ccl-main">{body}</div>
+      <div className="ccl-foot">
+        <div className="ccl-foot-presets">
+          <Select
+            value={String(presetSlot)}
+            style={{ flex: '1 1 220px', minWidth: 120, maxWidth: 260 }}
+            options={presets.map((preset) => ({
+              value: String(preset.slot),
+              label: presetLabel(preset),
+            }))}
+            onChange={(value) => {
+              setPresetSlot(Number(value));
+              const preset = presets.find(
+                (entry) => entry.slot === Number(value),
+              );
+              if (preset && !preset.empty) {
+                loadoutAct('preset_load', { slot: Number(value) });
+              }
+            }}
+          />
+          {page === 'items' ? (
+            <Select
+              value={selectedPreset?.role || ''}
+              placeholder={L.chooseRole}
+              style={{ flex: '1 1 170px', minWidth: 110, maxWidth: 200 }}
+              options={roleOptions}
+              onChange={setPresetRole}
+            />
+          ) : null}
+          <Btn
+            icon="pen"
+            disabled={!!selectedPreset?.empty}
+            title={selectedPreset?.empty ? L.saveFirst : undefined}
+            onClick={() =>
+              act('cc_loadout_preset_rename', { preset: presetSlot })
+            }
+          >
+            {L.rename}
+          </Btn>
+          <Btn
+            icon="save"
+            onClick={() => loadoutAct('preset_save', { slot: presetSlot })}
+          >
+            {L.save}
+          </Btn>
+          <Btn
+            icon="undo"
+            title={L.undoPresetHint}
+            disabled={!!selectedPreset?.empty}
+            onClick={() => loadoutAct('preset_load', { slot: presetSlot })}
+          >
+            {L.undo}
+          </Btn>
+          <Btn
+            icon="trash"
+            className="danger"
+            title={L.clearAllHint}
+            onClick={() => act('cc_loadout_clear_all')}
+          >
+            {L.clear}
+          </Btn>
+        </div>
+        <div className="ccl-foot-pages">
+          {page !== 'items' ? (
+            <Btn icon="arrow-left" onClick={() => setPage('items')}>
+              {L.back}
+            </Btn>
+          ) : null}
+          {page !== 'equip' ? (
+            <Btn className="on" icon="tshirt" onClick={() => setPage('equip')}>
+              {L.equipItems}
+            </Btn>
+          ) : null}
+          {page !== 'stash' ? (
+            <Btn
+              className="on"
+              icon="archive"
+              onClick={() => setPage('stash')}
+            >
+              {L.checkStash}
+            </Btn>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 };
-
-export default CharacterCreatorLoadout;

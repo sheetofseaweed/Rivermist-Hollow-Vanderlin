@@ -192,6 +192,7 @@ GLOBAL_VAR_INIT(character_setup_debug, FALSE)
 		get_asset_datum(/datum/asset/spritesheet/character_setup_chargen),
 		get_asset_datum(/datum/asset/spritesheet/loadout_items),
 		get_asset_datum(/datum/asset/spritesheet/preference_badges),
+		get_asset_datum(/datum/asset/simple/character_creator),
 	)
 
 /datum/preferences/ui_static_data(mob/user)
@@ -594,7 +595,13 @@ GLOBAL_VAR_INIT(character_setup_debug, FALSE)
 			ready_button.update_appearance(UPDATE_ICON)
 			break
 		SEND_SIGNAL(lobby_hud, COMSIG_HUD_PLAYER_READY_TOGGLE)
+	character_setup_push_lobby_menus()
 	return TRUE
+
+/// Open lobby menus show the ready count, so every ready toggle refreshes them.
+/proc/character_setup_push_lobby_menus()
+	for(var/mob/dead/new_player/lobby_player as anything in GLOB.new_player_list)
+		lobby_player.client?.prefs?.character_setup_queue_push()
 
 /mob/dead/new_player/proc/character_setup_chargen_join_round()
 	if(!SSticker?.IsRoundInProgress())
@@ -946,6 +953,26 @@ GLOBAL_VAR_INIT(character_setup_debug, FALSE)
 	var/mob/dead/new_player/new_player
 	if(istype(user, /mob/dead/new_player))
 		new_player = user
+	if(new_player && SSticker)
+		if(SSticker.IsRoundInProgress())
+			data["round_start_state"] = "started"
+		else if(SSticker.current_state == GAME_STATE_SETTING_UP)
+			data["round_start_state"] = "setup"
+		else if(SSticker.current_state <= GAME_STATE_PREGAME)
+			var/time_remaining = SSticker.GetTimeLeft()
+			if(time_remaining > 0)
+				data["round_start_state"] = "countdown"
+				data["round_start_seconds"] = max(0, round(time_remaining / 10))
+			else if(time_remaining == -10)
+				data["round_start_state"] = "delayed"
+			else
+				data["round_start_state"] = "soon"
+			var/ready_count = 0
+			for(var/mob/dead/new_player/lobby_player as anything in GLOB.new_player_list)
+				if(lobby_player.ready == PLAYER_READY_TO_PLAY)
+					ready_count++
+			data["round_ready_players"] = ready_count
+			data["round_total_players"] = length(GLOB.new_player_list)
 	data["round_action_label"] = "Unavailable"
 	data["round_action_icon"] = "ban"
 	data["round_action_color"] = null

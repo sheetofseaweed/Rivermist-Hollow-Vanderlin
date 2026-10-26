@@ -205,6 +205,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 		base_icon_state = "not_ready"
 	update_appearance(UPDATE_ICON)
 	SEND_SIGNAL(hud, COMSIG_HUD_PLAYER_READY_TOGGLE)
+	character_setup_push_lobby_menus()
 
 ///Shown when the game has started
 /atom/movable/screen/lobby/button/join
