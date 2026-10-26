@@ -1035,7 +1035,7 @@ GLOBAL_VAR_INIT(character_setup_debug, FALSE)
 
 /datum/preferences/ui_interact(mob/user, datum/tgui/ui)
 	var/window_width = character_setup_preferences_fullscreen ? 7680 : 1360
-	var/window_height = character_setup_preferences_fullscreen ? 4320 : 880
+	var/window_height = character_setup_preferences_fullscreen ? 4320 : 800
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "CharacterCreator", "Character Creator", window_width, window_height)

@@ -6039,7 +6039,7 @@ export const CharacterCreator = () => {
     <Window
       title={L.windowTitle}
       width={isFullscreen ? 7680 : 1360}
-      height={isFullscreen ? 4320 : 880}
+      height={isFullscreen ? 4320 : 800}
       theme="vanderlin"
     >
       <Window.Content fitted>

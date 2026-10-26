@@ -48,37 +48,37 @@
 }
 .cc-fate {
   grid-template-columns: minmax(140px, 0.72fr) minmax(300px, 2fr) minmax(
-      240px,
-      1.45fr
+      220px,
+      1.2fr
     ) minmax(190px, 0.95fr);
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   grid-template-areas:
     'top top top top'
-    'nav nav nav nav'
     'rail content doll card'
-    'rail content doll done';
+    'rail content doll done'
+    'nav nav nav done';
 }
 .cc-wide {
-  grid-template-columns: minmax(360px, 2.7fr) minmax(240px, 1.45fr) minmax(
+  grid-template-columns: minmax(360px, 2.7fr) minmax(220px, 1.2fr) minmax(
       190px,
       0.95fr
     );
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   grid-template-areas:
     'top top top'
-    'nav nav nav'
     'content doll card'
-    'content doll done';
+    'content doll done'
+    'nav nav done';
 }
 /* Loadout tab: the item panes take the card's column, the live doll stays. */
 .cc-loadout {
-  grid-template-columns: minmax(520px, 3.4fr) minmax(240px, 1.45fr);
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(520px, 3.4fr) minmax(220px, 1.2fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   grid-template-areas:
     'top top'
-    'nav nav'
     'content doll'
-    'content done';
+    'content done'
+    'nav done';
 }
 .cc-area-top {
   grid-area: top;
@@ -752,6 +752,10 @@
 }
 
 /* Doll */
+/* The doll stops growing past a comfortable size, so fullscreen does not blow it up. */
+.cc-doll-frame {
+  max-height: 560px;
+}
 .cc-doll {
   flex: 1;
   min-height: 220px;
@@ -940,8 +944,11 @@
   display: flex;
   align-items: stretch;
   gap: 6px;
-  padding: 6px;
+  padding: 6px 8px;
   min-height: 40px;
+}
+.cc-nav .cc-search {
+  min-height: 28px;
 }
 .cc-nav-tab {
   display: flex;
@@ -1959,26 +1966,26 @@
 @media (max-width: 1120px) {
   .cc-fate {
     grid-template-columns: minmax(140px, 0.72fr) minmax(300px, 2fr) minmax(
-        240px,
-        1.4fr
+        220px,
+        1.2fr
       );
-    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
     grid-template-areas:
       'top top top'
-      'nav nav nav'
       'rail content doll'
       'rail content card'
-      'rail content done';
+      'rail content done'
+      'nav nav done';
   }
   .cc-wide {
-    grid-template-columns: minmax(340px, 2.4fr) minmax(240px, 1.4fr);
-    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(340px, 2.4fr) minmax(220px, 1.2fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
     grid-template-areas:
       'top top'
-      'nav nav'
       'content doll'
       'content card'
-      'content done';
+      'content done'
+      'nav done';
   }
   .cc-card-scroll {
     max-height: 190px;
