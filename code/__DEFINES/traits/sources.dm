@@ -120,3 +120,5 @@
 #define AI_ATTACK_TRAIT "ai_attack_trait"
 /// Trait from mob/living/update_transform()
 #define UPDATE_TRANSFORM_TRAIT "update_transform"
+/// Trait from being promoted to a dungeon floor boss
+#define DUNGEON_BOSS_TRAIT "dungeon_boss"

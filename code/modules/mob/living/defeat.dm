@@ -481,6 +481,10 @@
 		mult *= quirk.defeat_threshold_mult
 	return max(1, round(threshold * mult))
 
+/// Damage measured against the defeat threshold: brute, weighted burn, toxin and clone, without oxygen.
+/mob/living/proc/get_defeat_damage_pool()
+	return getBruteLoss() + (getFireLoss() * DEFEAT_BURN_DAMAGE_WEIGHT) + getToxLoss() + getCloneLoss()
+
 /// Draws a blood tax from this mob to power the resurrection rune.
 /// Stub: currently just removes the blood. TODO: deposit the drawn blood into the
 /// vampire blood bank once it exists, so the rune is literally sustained by it.

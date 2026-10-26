@@ -41,12 +41,43 @@
 				for(var/entry in sublist)
 					if(isnum(entry) || (entry in donor_exclude))
 						continue
-					// Float weights are fine - pickweight and the delve scaler
-					// both work in floats already.
+					// Floats are fine here; return_list turns the final pool into whole-number weights.
 					scaled[entry] = max(0.05, round(sublist[entry] * scale, 0.01))
 				loot_table += list(scaled)
 		qdel(donor)
 	..()
+
+/// Dungeon caches pay half the coin and roll coins and gems at a third of their usual chance.
+/datum/loot_table/dungeon/return_list(mob/looter = null, delve_level = 1, item_rarity = 1.0)
+	var/list/base_list = ..()
+	var/static/list/half_coin_types = list(
+		/obj/item/coin/gold = /obj/item/coin/electrum,
+		/obj/item/coin/gold/pile = /obj/item/coin/gold/pile/dungeon,
+		/obj/item/coin/silver = /obj/item/coin/copper/five,
+		/obj/item/coin/silver/pile = /obj/item/coin/silver/pile/dungeon,
+		/obj/item/coin/copper/pile = /obj/item/coin/copper/pile/dungeon,
+	)
+	var/list/weighted_list = list()
+	var/total_weight = 0
+	var/valuable_weight = 0
+	for(var/path in base_list)
+		var/weight = base_list[path]
+		var/final_path = half_coin_types[path] || path
+		weighted_list[final_path] += weight
+		total_weight += weight
+		if(ispath(final_path, /obj/item/coin) || ispath(final_path, /obj/item/gem))
+			valuable_weight += weight
+	// Scale valuables so their share of the pool is a third of what it was.
+	var/valuable_scale = 1
+	if(valuable_weight > 0 && valuable_weight < total_weight)
+		valuable_scale = (total_weight - valuable_weight) / (3 * total_weight - valuable_weight)
+	for(var/path in weighted_list)
+		var/weight = weighted_list[path]
+		if(ispath(path, /obj/item/coin) || ispath(path, /obj/item/gem))
+			weight *= valuable_scale
+		// pickweight rolls whole numbers, so keep two decimals of precision as integers.
+		weighted_list[path] = max(1, round(weight * 100, 1))
+	return weighted_list
 
 /// Cache table for a run floor: shallow, mid, deep. Shrines and traders roll
 /// through this; room templates pin their own tier by hand.
