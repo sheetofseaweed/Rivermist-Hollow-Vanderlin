@@ -148,7 +148,7 @@ INITIALIZE_IMMEDIATE(/atom/movable/screen/lobby)
 	if(!.)
 		return
 
-	hud.mymob.client?.setup_character()
+	hud.mymob.client?.prefs?.show_choices(hud.mymob, 4)
 
 /atom/movable/screen/lobby/button/character_setup/proc/enable_character_setup()
 	SIGNAL_HANDLER
