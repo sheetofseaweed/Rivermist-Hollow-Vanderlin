@@ -76,8 +76,13 @@ type FeatureColor = { name: string; value: string; index: string };
 type FeatureExtra = {
   task: string;
   label: string;
-  kind: 'color' | 'text';
-  value: string;
+  kind: 'color' | 'text' | 'number';
+  value: string | number;
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
+  readonly?: Booleanish;
 };
 type FeatureEntry = {
   key: string;
@@ -157,6 +162,7 @@ type ErpPrefEntry = {
   min?: number;
   max?: number;
   choices?: string[];
+  lock_reason?: string;
 };
 type ErpKink = {
   name: string;
@@ -872,7 +878,26 @@ export const Select = (props: {
   style?: CSSProperties;
 }) => {
   const [open, setOpen] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  // Opens upward when the window edge would cut the list off, as in a footer.
+  useLayoutEffect(() => {
+    if (!open) {
+      setDropUp(false);
+      return;
+    }
+    const head = ref.current?.getBoundingClientRect();
+    const list = listRef.current?.getBoundingClientRect();
+    if (
+      head &&
+      list &&
+      list.bottom > window.innerHeight &&
+      head.top > window.innerHeight - head.bottom
+    ) {
+      setDropUp(true);
+    }
+  }, [open]);
   useEffect(() => {
     if (!open) {
       return;
@@ -903,7 +928,10 @@ export const Select = (props: {
         <Icon name={open ? 'caret-up' : 'caret-down'} />
       </div>
       {open ? (
-        <div className="cc-dd-list cc-scroll">
+        <div
+          ref={listRef}
+          className={`cc-dd-list cc-scroll ${dropUp ? 'up' : ''}`}
+        >
           {props.options.map((option) => (
             <div
               key={option.value}
@@ -2494,6 +2522,61 @@ export const CharacterCreator = () => {
     const rows: ReactNode[] = [];
     for (let index = 0; index < extras.length; index++) {
       const extra = extras[index];
+      if (
+        extra.kind === 'number' &&
+        extra.min !== undefined &&
+        extra.max !== undefined
+      ) {
+        const value = Number(extra.value) || 0;
+        const step = extra.step ?? 1;
+        const min = extra.min;
+        const max = extra.max;
+        rows.push(
+          <Fragment key={extra.task}>
+            <div className="cc-field-label">{extra.label}</div>
+            <div className="cc-row">
+              <Btn
+                className="square"
+                icon="chevron-left"
+                disabled={value <= min}
+                onClick={() =>
+                  customizerAct(feature.key, extra.task, {
+                    value: Math.max(min, value - step),
+                  })
+                }
+              />
+              {/* Without a value the server asks for one in an input box. */}
+              <Btn
+                className="fluid"
+                onClick={() => customizerAct(feature.key, extra.task)}
+              >
+                {value}
+                {extra.unit ? ` ${extra.unit}` : ''}
+              </Btn>
+              <Btn
+                className="square"
+                icon="chevron-right"
+                disabled={value >= max}
+                onClick={() =>
+                  customizerAct(feature.key, extra.task, {
+                    value: Math.min(max, value + step),
+                  })
+                }
+              />
+            </div>
+          </Fragment>,
+        );
+        continue;
+      }
+      if (asBool(extra.readonly)) {
+        rows.push(
+          <Fragment key={extra.task}>
+            <div className="cc-field-label">{extra.label}</div>
+            <div className="cc-muted">{text(extra.value, L.none)}</div>
+          </Fragment>,
+        );
+        continue;
+      }
       if (extra.kind === 'text') {
         const next = extras[index + 1];
         const pairedColor = next && next.kind === 'color' ? next : null;
@@ -2514,7 +2597,7 @@ export const CharacterCreator = () => {
                   title={pairedColor.label}
                   onClick={() => customizerAct(feature.key, pairedColor.task)}
                 >
-                  <Swatch color={pairedColor.value} />
+                  <Swatch color={String(pairedColor.value)} />
                 </div>
               ) : null}
             </div>
@@ -2538,7 +2621,7 @@ export const CharacterCreator = () => {
             >
               {extra.label}
             </span>
-            <Swatch color={extra.value} />
+            <Swatch color={String(extra.value)} />
             <span style={{ width: 4 }} />
           </div>
         </div>,
@@ -3174,7 +3257,9 @@ export const CharacterCreator = () => {
     const firstColor = feature.colors?.[0];
     const hoverColor =
       firstColor?.value ??
-      feature.extras?.find((extra) => extra.kind === 'color')?.value;
+      feature.extras
+        ?.find((extra) => extra.kind === 'color')
+        ?.value?.toString();
     return (
       <div className="cc-overlay cc-overlay-full">
         <div className="cc-overlay-head">
@@ -3781,9 +3866,14 @@ export const CharacterCreator = () => {
                     <div className="cc-muted" style={{ fontSize: 10 }}>
                       {pref.description}
                     </div>
+                    {pref.lock_reason ? (
+                      <div style={{ color: 'var(--cc-bad)', fontSize: 10 }}>
+                        {pref.lock_reason}
+                      </div>
+                    ) : null}
                   </div>
                   <div style={{ maxWidth: '55%' }}>
-                    {renderErpControl(pref, locked)}
+                    {renderErpControl(pref, locked || !!pref.lock_reason)}
                   </div>
                 </div>
               )),
@@ -4065,8 +4155,10 @@ export const CharacterCreator = () => {
           style={{ backgroundColor: backdropColor }}
         >
           {data.preview_map && dollZoom > 0 ? (
+            // ByondUi re-applies the params of its first render on every resize,
+            // so a changed backdrop must remount it or a tab switch restores the old one.
             <ByondUi
-              key={data.preview_map}
+              key={`${data.preview_map}|${backdropColor}`}
               width="100%"
               height="100%"
               params={{
@@ -4673,6 +4765,40 @@ export const CharacterCreator = () => {
         },
       });
     }
+    // Body type, build, pronouns and age sit under the doll in the appearance view.
+    const identity = [L.bodyType, L.pronouns, L.age];
+    if ((data.body_build_options || []).length > 1) {
+      identity.push(L.bodyBuild);
+    }
+    for (const label of identity) {
+      hits.push({
+        label,
+        path: L.appearance,
+        run: () => openCharacter('mirror'),
+      });
+    }
+    hits.push(
+      {
+        label: L.nameLabel,
+        path: L.tabs.character,
+        run: () => doPref('name', 'input'),
+      },
+      {
+        label: L.headshot,
+        path: L.tabs.character,
+        run: () => doPref('headshot', 'input'),
+      },
+      {
+        label: L.gallery,
+        path: L.tabs.character,
+        run: () => doPref('gallery', 'menu', { tab: 'regular' }),
+      },
+      {
+        label: L.nsfwGallery,
+        path: L.tabs.character,
+        run: () => doPref('gallery', 'menu', { tab: 'nsfw' }),
+      },
+    );
     for (const feature of features) {
       hits.push({
         label: feature.name,
@@ -4734,7 +4860,11 @@ export const CharacterCreator = () => {
         });
       }
     }
-    for (const label of Object.values(L.settingsLabels)) {
+    for (const label of [
+      L.language,
+      L.backdrop,
+      ...Object.values(L.settingsLabels),
+    ]) {
       hits.push({
         label,
         path: L.tabs.settings,
@@ -4748,6 +4878,11 @@ export const CharacterCreator = () => {
       L.foodPreferences,
       L.dominantHand,
       L.voice,
+      L.voiceType,
+      L.voiceAccent,
+      L.voiceColor,
+      L.voicePack,
+      L.moans,
       L.rumours,
       L.rivals,
     ]) {

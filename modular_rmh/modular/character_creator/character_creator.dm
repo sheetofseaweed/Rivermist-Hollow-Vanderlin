@@ -411,7 +411,7 @@
 			"id" = zone,
 			"name" = capitalize(replacetext("[zone]", "_", " ")),
 			"entries" = entries,
-			"can_add" = length(entries) < MAXIMUM_MARKINGS_PER_LIMB && length(available),
+			"can_add" = !!(length(entries) < MAXIMUM_MARKINGS_PER_LIMB && length(available)),
 		))
 	return zones
 

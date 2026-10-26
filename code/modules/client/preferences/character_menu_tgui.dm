@@ -57,12 +57,15 @@
 /datum/preferences/var/character_setup_view_shown = FALSE
 /datum/preferences/var/list/character_setup_ui_heavy_cache
 /datum/preferences/var/character_setup_ui_heavy_sig
+/// Counts ui_data builds, so a queued push can tell that a later build already went out.
+/datum/preferences/var/character_setup_data_serial = 0
+/// character_setup_data_serial when the pending push was queued.
+/datum/preferences/var/character_setup_push_serial = 0
+/datum/preferences/var/character_setup_render_cooldown = 0
 
 GLOBAL_LIST_EMPTY(character_setup_chargen_ooc_messages)
 
 GLOBAL_VAR_INIT(character_setup_debug, FALSE)
-GLOBAL_VAR_INIT(character_setup_flat_origin_x, 0)
-GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 
 /proc/character_setup_glog(category, msg)
 	if(!GLOB.character_setup_debug)
@@ -739,6 +742,7 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 // ---- Live data ----
 
 /datum/preferences/ui_data(mob/user)
+	character_setup_data_serial++
 	var/list/data = list()
 	var/real_name = read_preference(/datum/preference/text/real_name)
 	var/gender = read_preference(/datum/preference/choiced/gender)
@@ -1055,6 +1059,9 @@ GLOBAL_VAR_INIT(character_setup_flat_origin_y, 0)
 			var/handled = process_link(user, href_list)
 			if(href_list["preference"] == "finished")
 				ui?.close(FALSE)
+			// Hovers and geometry reports only change the doll, whose new bounds queue their own push.
+			if(href_list["preference"] == "character_setup_hover" || href_list["preference"] == "character_setup_report_geometry")
+				return FALSE
 			return handled || TRUE
 
 		if("set_age")

@@ -1540,6 +1540,10 @@
   border: 1px solid var(--cc-gold-dim);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.75);
 }
+.cc-dd-list.up {
+  top: auto;
+  bottom: calc(100% + 2px);
+}
 .cc-dd-item {
   padding: 4px 8px;
   font-size: 11px;
