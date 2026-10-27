@@ -90,6 +90,10 @@
 	if(steam_boiler && def_zone == BODY_ZONE_CHEST)
 		steam_boiler.take_damage(boiler_damage, damage_flag = d_type, sound_effect = FALSE, armor_penetration = 100)
 
+	// Bare stockings have no armour value, so they would never feel a hit on the legs otherwise.
+	if(damage > 0 && (d_type in list(BLUNT, SLASH, STAB, PIERCE)) && (def_zone in list(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG, BODY_ZONE_PRECISE_L_FOOT, BODY_ZONE_PRECISE_R_FOOT)))
+		get_exposed_legwear()?.snag(damage * 0.5, d_type)
+
 	if(physiology)
 		protection += physiology.armor.get_rating(d_type)
 	return protection

@@ -135,6 +135,10 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define SEX_FORCE_MIN 1
 #define SEX_FORCE_MAX 4
 
+/// Per-cycle chance and damage for brutal force snagging the receiver's bare stockings.
+#define SEX_LEGWEAR_SNAG_CHANCE 15
+#define SEX_LEGWEAR_SNAG_DAMAGE 6
+
 #define SEX_MANUAL_AROUSAL_DEFAULT 1
 #define SEX_MANUAL_AROUSAL_UNAROUSED 2
 #define SEX_MANUAL_AROUSAL_PARTIAL 3

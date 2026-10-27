@@ -139,7 +139,7 @@
 	if(isliving(target))
 		var/mob/living/carbon/L = target
 		if(L)
-			if(L.stat || L.getBruteLoss() > 500)
+			if(L.stat || L.getBruteLoss() > 500 || L.has_status_effect(/datum/status_effect/defeat_knockout))
 				controller.set_blackboard_key(BB_BASIC_MOB_COCOON_TARGET, L)
 				controller.queue_behavior(/datum/ai_behavior/cocoon_target, BB_BASIC_MOB_COCOON_TARGET)
 				return SUBTREE_RETURN_FINISH_PLANNING
@@ -175,7 +175,8 @@
 		finish_action(controller, TRUE, target_key)
 		return
 
-	if (target.stat)
+	// A defeat knockout leaves the victim conscious but just as helpless.
+	if (target.stat || target.has_status_effect(/datum/status_effect/defeat_knockout))
 		if (do_after(pawn, 5 SECONDS, target))
 			if (istype(target.loc, /obj/structure/spider/cocoon))
 				finish_action(controller, TRUE, target_key)
@@ -235,7 +236,9 @@
 		var/obj/structure/spider/cocoon/cocoon = mob.loc
 		if(istype(cocoon, /obj/structure/spider/cocoon))
 			continue
-		if(mob.stat == DEAD || mob.stat == CONSCIOUS)
+		if(mob.stat == DEAD)
+			continue
+		if(mob.stat == CONSCIOUS && !mob.has_status_effect(/datum/status_effect/defeat_knockout))
 			continue
 		found |= mob
 	if(!length(found))

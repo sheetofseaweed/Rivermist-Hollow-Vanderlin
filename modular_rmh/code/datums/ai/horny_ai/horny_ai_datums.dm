@@ -798,6 +798,12 @@
 		var/turf/landing_spot = target_turf ? pick(RANGE_TURFS(2, target_turf)) : null
 		if(landing_spot)
 			stripped_item.throw_at(landing_spot, 2, 1, basic_mob, TRUE)
+		// Rough hands snag the stockings the strip just bared.
+		var/obj/item/clothing/legwears/stockings = human_target.get_exposed_legwear()
+		if(stockings && damage_chance && prob(damage_chance))
+			var/stockings_name = stockings.name
+			if(stockings.tear_open())
+				basic_mob.visible_message(span_danger("[basic_mob]'s rough handling tears [human_target]'s [stockings_name]!"))
 	return TRUE
 
 /datum/ai_behavior/horny/simple_mob/proc/strip_human_target(mob/living/basic_mob, mob/living/carbon/human/human_target)

@@ -556,6 +556,7 @@
 	var/through_clothes = get_through_clothes_multiplier(pleasure_receiver)
 	arousal_amt *= through_clothes
 	orgasm_prog_amt *= through_clothes
+	strain_legwear(pleasure_receiver)
 	return apply_sex_action_stimulation(
 		src,
 		action_user,
@@ -567,6 +568,13 @@
 		force,
 		speed,
 	)
+
+/// Brutal handling can snag the receiver's bare stockings.
+/datum/sex_action/proc/strain_legwear(mob/living/receiver)
+	if(force < SEX_FORCE_EXTREME || !ishuman(receiver) || !prob(SEX_LEGWEAR_SNAG_CHANCE))
+		return
+	var/mob/living/carbon/human/human_receiver = receiver
+	human_receiver.get_exposed_legwear()?.snag(SEX_LEGWEAR_SNAG_DAMAGE, SLASH)
 
 /datum/sex_action/proc/stop_runtime()
 	scene?.stop_action(src)

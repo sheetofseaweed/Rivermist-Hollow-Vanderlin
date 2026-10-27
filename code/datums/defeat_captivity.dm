@@ -196,6 +196,10 @@
 	var/datum/weakref/carrier_ref
 	var/turf/forced_teardown_destination
 	var/teardown_started = FALSE
+	/// Surrendered captives left here as distress NPCs, weakly keyed by REF.
+	var/list/surrendered_refs = list()
+	/// An emptied pocket that should close once its surrendered captives are gone.
+	var/close_after_surrendered = FALSE
 
 /datum/pocket_dimension/defeat_captivity/Destroy(force)
 	// Parent Destroy dispatches eject_teardown_contents() dynamically. Run our contextual pass while
@@ -206,6 +210,7 @@
 		UnregisterSignal(carrier, COMSIG_PARENT_QDELETING)
 	carrier_ref = null
 	captive_refs = null
+	surrendered_refs = null
 	forced_teardown_destination = null
 	return ..()
 
@@ -249,8 +254,41 @@
 	captive_refs -= "[REF(captivity)]"
 	if(teardown_started || !delete_when_empty || captive_count())
 		return
+	if(surrendered_count())
+		close_after_surrendered = TRUE
+		return
 	if(SSpocket_dimensions && !QDELETED(src))
 		SSpocket_dimensions.delete_instance(src)
+
+/// Keeps a surrendered captive's NPC body in the pocket instead of ejecting it with the last captive.
+/datum/pocket_dimension/defeat_captivity/proc/keep_surrendered_captive(mob/living/body)
+	if(!body || QDELETED(body) || teardown_started || !contains_turf(get_turf(body)))
+		return FALSE
+	surrendered_refs["[REF(body)]"] = WEAKREF(body)
+	RegisterSignal(body, COMSIG_PARENT_QDELETING, PROC_REF(on_surrendered_qdeleting), override = TRUE)
+	return TRUE
+
+/datum/pocket_dimension/defeat_captivity/proc/surrendered_count()
+	for(var/body_key in surrendered_refs?.Copy())
+		var/datum/weakref/body_ref = surrendered_refs[body_key]
+		var/mob/living/body = body_ref?.resolve()
+		if(body && !QDELETED(body) && contains_turf(get_turf(body)))
+			continue
+		surrendered_refs -= body_key
+		if(body)
+			UnregisterSignal(body, COMSIG_PARENT_QDELETING)
+	return length(surrendered_refs)
+
+/datum/pocket_dimension/defeat_captivity/proc/on_surrendered_qdeleting(datum/source)
+	SIGNAL_HANDLER
+	surrendered_refs?.Remove("[REF(source)]")
+	if(close_after_surrendered && !teardown_started)
+		addtimer(CALLBACK(src, PROC_REF(close_if_abandoned)), 1, TIMER_DELETE_ME)
+
+/datum/pocket_dimension/defeat_captivity/proc/close_if_abandoned()
+	if(QDELETED(src) || teardown_started || captive_count() || surrendered_count())
+		return
+	SSpocket_dimensions?.delete_instance(src)
 
 /datum/pocket_dimension/defeat_captivity/proc/can_profile_access(mob/living/user, access_action, datum/component/kidnap_captivity/captivity)
 	var/datum/defeat_captivity_profile/profile = captivity?.profile
@@ -312,6 +350,13 @@
 	if(isturf(override_destination))
 		forced_teardown_destination = override_destination
 	prune_captives()
+	// A surrendered captive is lost to the lair; never dump the body into the world.
+	for(var/body_key in surrendered_refs?.Copy())
+		var/datum/weakref/body_ref = surrendered_refs[body_key]
+		var/mob/living/body = body_ref?.resolve()
+		if(body && !QDELETED(body) && contains_turf(get_turf(body)))
+			qdel(body)
+	surrendered_refs?.Cut()
 	for(var/captive_key in captive_refs?.Copy())
 		var/datum/weakref/captive_ref = captive_refs[captive_key]
 		var/datum/component/kidnap_captivity/captivity = captive_ref?.resolve()
@@ -859,12 +904,11 @@
 	var/mob/living/carbon/human/victim = parent
 	if(!ishuman(victim))
 		return FALSE
-	var/turf/destination = get_contextual_destination()
-	if(!destination)
-		return FALSE
 	ending = TRUE
-	victim.forceMove(destination)
+	// The body stays where it lies as the lair's captive; the pocket keeps it past our removal.
+	var/datum/pocket_dimension/defeat_captivity/instance = resolve_instance()
 	victim.become_npc_in_distress(decays = TRUE, captor_faction = captor_faction)
+	instance?.keep_surrendered_captive(victim)
 	qdel(src)
 	return TRUE
 

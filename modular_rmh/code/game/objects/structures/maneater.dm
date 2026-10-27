@@ -288,11 +288,20 @@
 		// The meal sleeps between chews, so it must not run inside the victim's Move().
 		INVOKE_ASYNC(src, PROC_REF(begin_eat), victim)
 
+// Crossed() owns snatching; the core adjacency grab skipped consent, pacifism and juvenile checks.
+/obj/structure/flora/grass/maneater/real/HasProximity(atom/movable/AM)
+	return
+
 /// Mirrors ambushable() minus its five-minute post-ambush grace, so a recent ambush cannot shield the victim.
 /obj/structure/flora/grass/maneater/real/proc/can_snatch(mob/living/victim)
 	if(!victim.mind || victim.stat || (victim.status_flags & GODMODE))
 		return FALSE
-	return victim.ambushable && !HAS_TRAIT(victim, TRAIT_NOAMBUSH) && !HAS_TRAIT(victim, TRAIT_PACIFISM)
+	if(!victim.ambushable || HAS_TRAIT(victim, TRAIT_NOAMBUSH))
+		return FALSE
+	// Pacifists face only a capture they opted into; defeated victims stay exempt.
+	if(HAS_TRAIT(victim, TRAIT_PACIFISM))
+		return !victim.has_status_effect(/datum/status_effect/defeat_knockout) && victim_allows_horny_capture(victim)
+	return TRUE
 
 /obj/structure/flora/grass/maneater/real/proc/victim_allows_horny_capture(mob/living/victim)
 	if(!ishuman(victim) || victim.stat == DEAD || victim.status_flags & GODMODE)
@@ -354,6 +363,16 @@
 	for(var/obj/item/garment as anything in garments)
 		if(!garment || garment.loc != victim || !garment.canStrip(sex_proxy, victim))
 			continue
+		// Stockings are shredded where they sit rather than peeled off; already torn ones stay.
+		if(garment == victim.legwear_socks && istype(garment, /obj/item/clothing/legwears))
+			var/obj/item/clothing/legwears/stockings = garment
+			if(stockings.obj_broken)
+				continue
+			var/stockings_name = stockings.name
+			if(stockings.tear_open())
+				visible_message(span_danger("[src]'s vines rake [victim]'s [stockings_name] into ragged ladders!"))
+				strip_timer = addtimer(CALLBACK(src, PROC_REF(strip_next_garment)), strip_interval, TIMER_STOPPABLE | TIMER_DELETE_ME)
+				return garment
 		if(!victim.dropItemToGround(garment))
 			continue
 		visible_message(span_danger("[src]'s vines peel [victim]'s [garment.name] away and fling it aside!"))
@@ -572,22 +591,9 @@
 	transform = transform.Scale(0.5, 0.5)  // Start at half size
 	addtimer(CALLBACK(src, .proc/try_grow), growth_time)
 
-/obj/structure/flora/grass/maneater/real/juvenile/Crossed(atom/movable/AM)
-	. = ..()
-	if(world.time <= last_eat + 5 SECONDS)
-		return
-	if(has_buckled_mobs())
-		return
-	if(isliving(AM))
-		return
-
-	if(is_type_in_list(AM, eatablez))
-		last_eat = world.time
-		playsound(src,'sound/misc/eat.ogg', rand(30,60), TRUE)
-		AM.forceMove(src)
-		seednutrition += 10
-
-	return
+// Juveniles still eat loose food in the parent Crossed(), but never seize a living victim.
+/obj/structure/flora/grass/maneater/real/juvenile/can_snatch(mob/living/victim)
+	return FALSE
 
 /obj/structure/flora/grass/maneater/real/juvenile/proc/try_grow()
 	if(growth_stage < max_growth_stage)
