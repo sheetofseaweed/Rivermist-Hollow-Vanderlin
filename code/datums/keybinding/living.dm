@@ -151,7 +151,7 @@
 		return
 	var/mob/living/L = user.mob
 	L.stop_all_doing()
-	L.submit()
+	L.toggle_submit()
 	return TRUE
 
 

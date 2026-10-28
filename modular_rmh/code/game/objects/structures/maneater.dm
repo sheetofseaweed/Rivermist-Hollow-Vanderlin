@@ -419,10 +419,16 @@
 	visible_message(span_userdanger("[src]'s maw yawns open and swallows [victim] whole!"))
 	unbuckle_mob(victim, TRUE)
 
-	var/added_knockout = !victim.has_status_effect(/datum/status_effect/defeat_knockout)
-	if(added_knockout)
-		victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 	var/mob/living/simple_animal/hostile/retaliate/maneater_tendrils/vines = get_sex_proxy()
+	var/added_knockout = !victim.has_status_effect(/datum/status_effect/defeat_knockout)
+	// The swallow is a horny defeat, so the knockout must carry a horny snapshot, not a stale one.
+	if(added_knockout && !victim.enter_defeat(DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, vines))
+		var/datum/defeat_snapshot/snapshot = new
+		if(iscarbon(victim) && snapshot.capture_from(victim, DEFEAT_REASON_HORNY, DEFEAT_SEVERITY_NORMAL, vines))
+			victim.last_defeat_snapshot = snapshot
+		else
+			qdel(snapshot)
+		victim.apply_status_effect(/datum/status_effect/defeat_knockout)
 	if(!victim.kidnap_to_pocket(/datum/defeat_captivity_profile/carrier/maneater, vines, list("maneater"), "maneater_stomach"))
 		if(added_knockout)
 			victim.remove_status_effect(/datum/status_effect/defeat_knockout)

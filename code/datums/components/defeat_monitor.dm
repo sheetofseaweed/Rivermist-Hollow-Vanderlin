@@ -298,7 +298,7 @@
 	if(explicit_override > 0)
 		return clamp(round(explicit_override), DEFEAT_HORNY_MOB_THRESHOLD_MIN, DEFEAT_HORNY_MOB_THRESHOLD_MAX)
 	if(player_owned)
-		return clamp(round((constitution + endurance) / 2), DEFEAT_HORNY_PLAYER_THRESHOLD_MIN, DEFEAT_HORNY_PLAYER_THRESHOLD_MAX)
+		return clamp(round((constitution + endurance) / DEFEAT_HORNY_PLAYER_STAT_DIVISOR), DEFEAT_HORNY_PLAYER_THRESHOLD_MIN, DEFEAT_HORNY_PLAYER_THRESHOLD_MAX)
 	return clamp(round((constitution + endurance) / 10), DEFEAT_HORNY_MOB_THRESHOLD_MIN, DEFEAT_HORNY_MOB_THRESHOLD_MAX)
 
 /// Player-owned includes disconnected bodies whose mind is still attached.

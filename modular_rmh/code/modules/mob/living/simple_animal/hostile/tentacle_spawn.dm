@@ -227,8 +227,17 @@
 	SIGNAL_HANDLER
 	emerge_from_ground()
 
+/// A captive watching the lair must keep seeing its denizens; a vanished tentacle reads as deleted.
+/mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/proc/captive_in_view()
+	for(var/mob/living/watcher in view(vision_range, src))
+		if(watcher == src)
+			continue
+		if(watcher.GetComponent(/datum/component/kidnap_captivity) || HAS_TRAIT(watcher, TRAIT_DEFEAT_REFUSE_ADVANCES))
+			return TRUE
+	return FALSE
+
 /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/proc/hide_in_ground()
-	if(ambush_hidden || stat == DEAD)
+	if(ambush_hidden || stat == DEAD || captive_in_view())
 		return
 	ambush_hidden = TRUE
 	density = FALSE
@@ -277,13 +286,10 @@
 	var/mob/living/reserving_captor = victim.get_kidnap_reserver()
 	if(reserving_captor && (!allow_own_reservation || reserving_captor != src))
 		return FALSE
-	if(!victim.has_status_effect(/datum/status_effect/defeat_knockout))
-		return FALSE
-	if(victim.last_defeat_snapshot?.reason != DEFEAT_REASON_HORNY)
-		return FALSE
 	if(victim.GetComponent(/datum/component/kidnap_captivity))
 		return FALSE
-	return TRUE
+	// Any defender claims horny-defeated prey; bound prey needs the usual scene and quiet first.
+	return is_defeated_kidnap_prey(victim, require_pack = FALSE) || is_restrained_kidnap_prey(victim)
 
 /mob/living/simple_animal/hostile/retaliate/tentacle/ambusher/proc/begin_colony_kidnap(mob/living/victim)
 	if(!Adjacent(victim) || !is_colony_kidnap_candidate(victim) || kidnap_is_outnumbered(victim))
@@ -372,6 +378,15 @@
 /datum/ai_behavior/tentacle_colony_kidnap
 	behavior_flags = AI_BEHAVIOR_REQUIRE_MOVEMENT | AI_BEHAVIOR_MOVE_AND_PERFORM
 	required_distance = 1
+
+// A movement behaviour with no target is cancelled before its first perform; set it here.
+/datum/ai_behavior/tentacle_colony_kidnap/setup(datum/ai_controller/controller, target_key)
+	. = ..()
+	var/mob/living/victim = controller.blackboard[target_key]
+	if(QDELETED(victim))
+		return FALSE
+	set_movement_target(controller, victim)
+	return TRUE
 
 /datum/ai_behavior/tentacle_colony_kidnap/perform(seconds_per_tick, datum/ai_controller/controller, target_key)
 	. = ..()

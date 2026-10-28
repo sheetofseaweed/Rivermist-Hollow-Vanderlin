@@ -378,6 +378,10 @@
 		var/mob/living/carbon/human/th = the_target
 		if(is_horny_target_now_hostile(living_mob, th))
 			return FALSE
+		// Lair set piece: one denizen at a time takes up with a captive NPC of its own pack.
+		var/datum/component/npc_in_distress/distress = th.GetComponent(/datum/component/npc_in_distress)
+		if(distress)
+			return distress.can_be_claimed_by(living_mob)
 
 		if(is_selected_horny_target(living_mob, th))
 			return TRUE

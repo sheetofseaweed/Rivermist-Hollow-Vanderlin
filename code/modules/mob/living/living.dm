@@ -1422,32 +1422,6 @@
 
 	emote("pray", intentional = TRUE)
 
-/mob/living/verb/submit()
-	set name = "Yield"
-	set category = "IC.Interaction"
-
-	if(surrendering)
-		return
-	if(stat)
-		return
-	if(alert(src, "Yield in surrender?",,"YES","NO") != "YES")
-		return
-	if(surrendering || stat)
-		return
-	surrendering = TRUE
-
-	record_round_statistic(STATS_YIELDS)
-	changeNext_move(CLICK_CD_EXHAUSTED)
-	var/mutable_appearance/flaggy = mutable_appearance('icons/effects/effects.dmi', "surrender", ABOVE_MOB_LAYER, appearance_flags = RESET_TRANSFORM|KEEP_APART)
-	flaggy.pixel_y = 12
-	flick_overlay_view(flaggy, 150)
-	drop_all_held_items()
-	Stun(15 SECONDS)
-	visible_message("<span class='notice'>[src] yields!</span>")
-	playsound(src, 'sound/misc/surrender.ogg', 100, FALSE, -1)
-	toggle_cmode()
-	SEND_SIGNAL(src, COMSIG_LIVING_YIELDED)
-	addtimer(VARSET_CALLBACK(src, surrendering, FALSE), 15 SECONDS)
 /mob/living
 	var/had_pacifist = FALSE
 
@@ -1460,6 +1434,7 @@
 
 	return ..()
 
+/// The one yield. The combat button, the keybind and the IC tab all land here.
 /mob/living/verb/toggle_submit()
 	set name = "Toggle Yield"
 	set category = "IC"
@@ -1469,12 +1444,17 @@
 
 	if(!surrendering)
 		if(alert(src, "Yield in surrender?",,"YES","NO") == "YES")
+			if(surrendering || stat)
+				return
 			if(HAS_TRAIT(src, TRAIT_PACIFISM))
 				had_pacifist = TRUE
 			else
 				ADD_TRAIT(src, TRAIT_PACIFISM, TRAIT_GENERIC)
 			surrendering = TRUE
+			record_round_statistic(STATS_YIELDS)
 			changeNext_move(CLICK_CD_EXHAUSTED)
+			if(cmode)
+				toggle_cmode()
 			var/image/flaggy = image('icons/effects/effects.dmi',src,"surrender",ABOVE_MOB_LAYER)
 			flaggy.appearance_flags = RESET_TRANSFORM|KEEP_APART
 			flaggy.transform = null
@@ -1878,6 +1858,7 @@
 	return ..()
 
 /mob/living/proc/resist_buckle()
+	last_restraint_struggle = world.time
 	buckled.user_unbuckle_mob(src,src)
 	return TRUE
 
