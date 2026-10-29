@@ -228,9 +228,14 @@
 		else if(!profile[field] && organ)
 			// Transformation must preserve pregnancies already underway.
 			if(field == "vagina")
-				var/obj/item/organ/genitals/filling_organ/vagina/womb = organ
-				if(GetComponent(/datum/component/pregnancy) || organ.GetComponent(/datum/component/pregnancy) || (istype(womb) && (womb.pregnant || length(womb.get_oviposition_eggs()) || womb.count_internal_womb_hatchlings())))
+				var/obj/item/organ/genitals/filling_organ/vagina/hole = organ
+				var/obj/item/organ/genitals/filling_organ/womb/womb = get_womb()
+				if(GetComponent(/datum/component/pregnancy) || organ.GetComponent(/datum/component/pregnancy) || (istype(hole) && hole.carries_pregnancy()) || womb?.carries_pregnancy())
 					continue
+				// The womb goes with its vagina.
+				if(womb)
+					womb.Remove(src)
+					qdel(womb)
 			organ.Remove(src)
 			qdel(organ)
 	if(profile["penis"] != "inherit")

@@ -109,6 +109,7 @@
 		/datum/customizer/organ/genitals/penis/anthro,
 		/datum/customizer/organ/genitals/breasts/animal,
 		/datum/customizer/organ/genitals/vagina/animal,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/ears/anthro,
 		)
 	body_marking_sets = list(

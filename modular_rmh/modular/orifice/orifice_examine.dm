@@ -1,12 +1,12 @@
 // Words for the state of an opening: panel lines, menu hints and examine adjectives.
 
-/// Short adjective for how open the hole is right now.
-/datum/orifice/proc/get_stretch_adjective()
+/// Short id for how open the hole is right now; the holes window translates it.
+/datum/orifice/proc/get_stretch_id()
 	if(gaped)
-		return "gaping open"
+		return "gaping"
 	var/ratio = get_stretch_ratio()
 	if(ratio >= 1.3)
-		return "stretched wide"
+		return "wide"
 	if(ratio >= 1.1)
 		return "loosened"
 	var/rest = get_rest_girth()
@@ -17,8 +17,23 @@
 		return "loose"
 	return "snug"
 
-/// Short word for how slick the hole is.
-/datum/orifice/proc/get_lube_adjective()
+/// Short adjective for how open the hole is right now.
+/datum/orifice/proc/get_stretch_adjective()
+	switch(get_stretch_id())
+		if("gaping")
+			return "gaping open"
+		if("wide")
+			return "stretched wide"
+		if("loosened")
+			return "loosened"
+		if("tight")
+			return "tight"
+		if("loose")
+			return "loose"
+	return "snug"
+
+/// Short id for how slick the hole is; the word doubles as the adjective.
+/datum/orifice/proc/get_lube_id()
 	var/lube = get_lube_level()
 	if(lube >= LUBE_SLICK_LEVEL)
 		return "slick"
@@ -26,13 +41,27 @@
 		return "damp"
 	return "dry"
 
-/datum/orifice/proc/get_soreness_adjective()
+/datum/orifice/proc/get_lube_adjective()
+	return get_lube_id()
+
+/// Short id for soreness, or null while the hole is fine.
+/datum/orifice/proc/get_soreness_id()
 	switch(get_soreness_state())
 		if(ORIFICE_STATE_SORE)
 			return "sore"
 		if(ORIFICE_STATE_RAW)
-			return "chafed raw"
+			return "raw"
 		if(ORIFICE_STATE_OVERUSED)
+			return "overused"
+	return null
+
+/datum/orifice/proc/get_soreness_adjective()
+	switch(get_soreness_id())
+		if("sore")
+			return "sore"
+		if("raw")
+			return "chafed raw"
+		if("overused")
 			return "used past bearing"
 	return null
 

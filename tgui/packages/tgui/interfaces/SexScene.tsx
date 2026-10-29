@@ -398,6 +398,14 @@ export const SexScene = () => {
               ))}
             </Box>
           ) : null}
+          <Button
+            mt={0.5}
+            icon="circle-notch"
+            tooltip="Open the holes window"
+            onClick={() => act('view_holes')}
+          >
+            View holes
+          </Button>
         </Stack.Item>
         <Stack.Item basis="38%">
           <LabeledList>

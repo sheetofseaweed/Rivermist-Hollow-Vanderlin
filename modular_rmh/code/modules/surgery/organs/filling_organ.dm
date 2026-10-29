@@ -148,6 +148,10 @@
 	var/ended_pregnancy = FALSE
 
 	for(var/obj/item/organ/organ as anything in internal_organs)
+		var/obj/item/organ/genitals/filling_organ/filling = organ
+		if(istype(filling) && filling.pregnant)
+			filling.clear_conventional_pregnancy()
+			ended_pregnancy = TRUE
 		var/list/growing_eggs = organ.get_oviposition_eggs(TRUE)
 		if(!length(growing_eggs))
 			continue
@@ -219,7 +223,7 @@
 
 /obj/item/organ/genitals/filling_organ/on_reagent_change(changetype)
 	. = ..()
-	if(slot == ORGAN_SLOT_ANUS || slot == ORGAN_SLOT_VAGINA)
+	if(slot == ORGAN_SLOT_ANUS || slot == ORGAN_SLOT_VAGINA || slot == ORGAN_SLOT_WOMB)
 		SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
 	if(!creature_fluid_ticking && owner && !iscarbon(owner))
 		consider_creature_fluid_ticks(changetype)
@@ -337,6 +341,8 @@
 		exchange_with_stored_containers()
 	else if(!HAS_TRAIT(src, TRAIT_PASSIVE_LEAK_BLOCKED))
 		leak_reagents()
+	if(orifice_type)
+		stir_stored_toys()
 
 /// Whether the organ makes fluid now: its base setting, forced or blocked by the owner's fluid modifiers.
 /obj/item/organ/genitals/filling_organ/proc/is_producing()
@@ -774,6 +780,14 @@
 /obj/item/organ/proc/supports_oviposition_pregnancy()
 	return allows_oviposition_pregnancy && oviposition_storage_component_type
 
+/// Where an egg laid through this organ should rest: the organ itself unless a womb lies behind it.
+/obj/item/organ/proc/get_oviposition_receiver(obj/item/oviposition_egg/egg, force = FALSE)
+	return src
+
+/// The opening an egg or hatchling leaves through; internal organs name the hole in front of them.
+/obj/item/organ/proc/get_birth_canal()
+	return src
+
 /obj/item/organ/proc/get_oviposition_storage()
 	if(!supports_oviposition_pregnancy())
 		return null
@@ -937,6 +951,10 @@
 
 /obj/item/organ/genitals/filling_organ/has_conventional_pregnancy()
 	return allows_conventional_impregnation && pregnant
+
+/// TRUE while anything grows inside: a hidden pregnancy, hosted eggs or a hatchling waiting for birth.
+/obj/item/organ/genitals/filling_organ/proc/carries_pregnancy()
+	return pregnant || length(get_oviposition_eggs()) || count_internal_womb_hatchlings()
 
 /obj/item/organ/genitals/filling_organ/can_attempt_impregnation(allow_embryo_pregnancy = FALSE)
 	if(!fertility || !owner || owner.stat == DEAD)

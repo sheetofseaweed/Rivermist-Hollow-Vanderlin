@@ -34,12 +34,15 @@
 	breasts_organ.produces_fluid = lactating
 
 /datum/organ_dna/vagina
+
+/// Fertility belongs to the womb, which every vagina is paired with.
+/datum/organ_dna/womb
 	var/fertility = TRUE
 
-/datum/organ_dna/vagina/imprint_organ(obj/item/organ/organ, datum/species/species)
+/datum/organ_dna/womb/imprint_organ(obj/item/organ/organ, datum/species/species)
 	..()
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina_organ = organ
-	vagina_organ.fertility = fertility
+	var/obj/item/organ/genitals/filling_organ/womb/womb_organ = organ
+	womb_organ.fertility = fertility
 
 /datum/organ_dna/butt
 	var/butt_size = DEFAULT_BUTT_SIZE

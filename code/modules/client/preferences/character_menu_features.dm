@@ -102,10 +102,10 @@
 		list("task" = "lactating", "label" = "Lactation", "kind" = "text", "value" = breasts_entry.lactating ? "Enabled" : "Disabled"),
 	)
 
-/datum/customizer_choice/organ/genitals/vagina/character_setup_tgui_extras(datum/preferences/prefs, datum/customizer_entry/entry)
-	var/datum/customizer_entry/organ/genitals/vagina/vagina_entry = entry
+/datum/customizer_choice/organ/genitals/womb/character_setup_tgui_extras(datum/preferences/prefs, datum/customizer_entry/entry)
+	var/datum/customizer_entry/organ/genitals/womb/womb_entry = entry
 	return list(
-		list("task" = "fertile", "label" = "Fertility", "kind" = "text", "value" = vagina_entry.fertility ? "Fertile" : "Sterile"),
+		list("task" = "fertile", "label" = "Fertility", "kind" = "text", "value" = womb_entry.fertility ? "Fertile" : "Sterile"),
 	)
 
 /datum/customizer_choice/organ/genitals/belly/character_setup_tgui_extras(datum/preferences/prefs, datum/customizer_entry/entry)

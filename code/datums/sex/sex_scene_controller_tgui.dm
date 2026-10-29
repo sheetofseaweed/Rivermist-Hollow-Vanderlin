@@ -293,6 +293,12 @@
 	if(action == "select_participant")
 		return select_ui_participant("[params["ref"]]")
 
+	if(action == "view_holes")
+		var/mob/living/carbon/human/human_user = user
+		if(istype(human_user))
+			human_user.view_holes()
+		return TRUE
+
 	if(!sync_ui_selected_participant())
 		return FALSE
 

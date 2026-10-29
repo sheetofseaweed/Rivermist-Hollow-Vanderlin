@@ -774,13 +774,8 @@
 		if((grabstate == null || grabstate < src.required_grab_state))
 			return FALSE
 
-	var/hidden_slots = NONE
-	for(var/obj/item/I in target.get_equipped_items())
-		if(istype(I, /obj/item/clothing))
-			var/obj/item/clothing/C = I
-			if(C.armor_class > AC_LIGHT && !C.allow_erp_equipped && !C.genital_access) //ig we can use genital access as a general allower
-				hidden_slots |= C.body_parts_covered
-	if(location in cover_flags2body_zones(hidden_slots))
+	// The holes window asks the same question, so the garment rule lives on the mob.
+	if(target.get_sex_covering_garment(location))
 		return FALSE
 
 	if(location == BODY_ZONE_PRECISE_MOUTH)

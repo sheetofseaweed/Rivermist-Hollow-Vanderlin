@@ -127,6 +127,7 @@
 		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,

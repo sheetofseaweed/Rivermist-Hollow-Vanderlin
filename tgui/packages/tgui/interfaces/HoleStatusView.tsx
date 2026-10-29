@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Icon,
+  LabeledList,
   NumberInput,
   ProgressBar,
   Section,
@@ -94,17 +95,144 @@ type OrganData = {
   interval_seconds?: number;
 };
 
-type StatusData = {
-  nutriment: number;
-  organs: OrganData[];
+type WearData = {
+  tightness: string | null;
+  stretch: string;
+  stretch_pct: number;
+  lube: string;
+  soreness: string | null;
+  gaped: boolean;
+  gaping_soon: boolean;
+} | null;
+
+type FillData = {
+  volume: number;
+  capacity: number;
+  main_fluid: string | null;
+  seed_units: number;
+  own_units: number;
 };
 
-type ActiveTab = 'eggs' | 'settings' | 'genetics';
+type ItemData = {
+  ref: string;
+  name: string;
+  layer: 'outer' | 'inner' | 'deep';
+  can_remove: boolean;
+  can_take: boolean;
+  take_seconds: number;
+  take_fail_pct: number;
+  can_push_deeper: boolean;
+};
 
-export type OvipositionStatusLocale = {
+type InsertData = {
+  name: string;
+  reason: string | null;
+  seconds?: number;
+  fail_pct?: number;
+  fit?: string | null;
+} | null;
+
+type HoleData = {
+  id: string;
+  name: string;
+  wear: WearData;
+  fill: FillData;
+  can_hold_in: boolean;
+  items: ItemData[];
+  insert: InsertData;
+  eggs: EggData[];
+  egg_count: number;
+  hatchling_count: number;
+};
+
+type WombData = {
+  fertile: boolean;
+  contraceptive: boolean;
+  fill: FillData;
+  pregnancy_stage: number;
+  max_stage: number;
+  organ: OrganData;
+} | null;
+
+type LabourData = {
+  pushing: boolean;
+  contractions: number;
+  needed: number;
+  births: number;
+} | null;
+
+type StatusData = {
+  nutriment: number;
+  holding_in: boolean;
+  holes: HoleData[];
+  womb: WombData;
+  stomach: OrganData | null;
+  ovipositor: OrganData | null;
+  labour: LabourData;
+};
+
+type ActiveTab = 'status' | 'settings' | 'genetics';
+
+export type HoleStatusLocale = {
   windowTitle: string;
   emptyState: string;
   tabs: Record<ActiveTab, string>;
+  cards: {
+    front: string;
+    rear: string;
+    stomach: string;
+    ovipositor: string;
+    womb: string;
+  };
+  wear: {
+    title: string;
+    tightness: string;
+    feels: string;
+    lube: string;
+    soreness: string;
+    fine: string;
+    gaping: string;
+    gapingSoon: string;
+    tightnessWords: Record<string, string>;
+    stretchWords: Record<string, string>;
+    lubeWords: Record<string, string>;
+    sorenessWords: Record<string, string>;
+  };
+  fill: {
+    title: string;
+    empty: string;
+    mostly: string;
+    seed: string;
+    own: string;
+    holdingIn: string;
+  };
+  items: {
+    title: string;
+    none: string;
+    outer: string;
+    inner: string;
+    deep: string;
+    stuck: string;
+    takeOut: string;
+    pushDeeper: string;
+    insert: string;
+    holding: string;
+    fit: string;
+    seconds: string;
+    failChance: string;
+  };
+  womb: {
+    fertile: string;
+    sterile: string;
+    contraceptive: string;
+    pregnancy: string;
+    stage: string;
+    seed: string;
+    passageEggs: string;
+    labour: string;
+    contraction: string;
+    pushing: string;
+  };
   labels: {
     organ: string;
     eggsInside: string;
@@ -159,6 +287,8 @@ export type OvipositionStatusLocale = {
   eggTypes: Record<string, string>;
   traitNames: Record<string, string>;
   formatTime: (seconds: number) => string;
+  formatFill: (volume: number, capacity: number) => string;
+  formatStage: (stage: number, maxStage: number) => string;
   formatStatus: (status: string, timeLeft: number) => string;
 };
 
@@ -172,11 +302,8 @@ const statusColor = (status: string): string => {
   return 'label';
 };
 
-const resolveOrganName = (locale: OvipositionStatusLocale, organ: OrganData) =>
-  locale.organNames[organ.id] || locale.organNames[organ.title] || organ.title;
-
 const resolveEggType = (
-  locale: OvipositionStatusLocale,
+  locale: HoleStatusLocale,
   typeName?: string | null,
 ) => {
   if (!typeName) {
@@ -186,7 +313,7 @@ const resolveEggType = (
 };
 
 const resolveTraitName = (
-  locale: OvipositionStatusLocale,
+  locale: HoleStatusLocale,
   traitName?: string | null,
 ) => {
   if (!traitName) {
@@ -194,6 +321,9 @@ const resolveTraitName = (
   }
   return locale.traitNames[traitName] || traitName;
 };
+
+const word = (words: Record<string, string>, id?: string | null) =>
+  id ? words[id] || id : '';
 
 const normalizeHex = (value?: string | null): string => {
   if (!value) {
@@ -203,19 +333,33 @@ const normalizeHex = (value?: string | null): string => {
   return /^#[0-9a-fA-F]{6}$/.test(raw) ? raw : '#eee3c7';
 };
 
-export const OvipositionStatusView = (props: {
-  locale: OvipositionStatusLocale;
-}) => {
+export const HoleStatusView = (props: { locale: HoleStatusLocale }) => {
   const { locale } = props;
   const { act, data } = useBackend<StatusData>();
-  const { organs = [], nutriment = 0 } = data;
-  const [activeTab, setActiveTab] = useState<ActiveTab>('eggs');
+  const {
+    holes = [],
+    womb = null,
+    stomach = null,
+    ovipositor = null,
+    nutriment = 0,
+    holding_in = false,
+    labour = null,
+  } = data;
+  const [activeTab, setActiveTab] = useState<ActiveTab>('status');
+  const vagina = holes.find((hole) => hole.id === 'vagina') || null;
+  const anus = holes.find((hole) => hole.id === 'anus') || null;
+  const nothing = !vagina && !anus && !stomach && !ovipositor;
 
   return (
-    <Window title={locale.windowTitle} width={660} height={760}>
+    <Window
+      title={locale.windowTitle}
+      width={660}
+      height={760}
+      theme="vanderlin"
+    >
       <Window.Content scrollable>
         <Tabs textAlign="center">
-          {(['eggs', 'settings', 'genetics'] as ActiveTab[]).map((tab) => (
+          {(['status', 'settings', 'genetics'] as ActiveTab[]).map((tab) => (
             <Tabs.Tab
               key={tab}
               selected={activeTab === tab}
@@ -226,93 +370,430 @@ export const OvipositionStatusView = (props: {
           ))}
         </Tabs>
 
-        {organs.length === 0 ? (
+        {nothing && (
           <Section>
             <Box textAlign="center" color="label" py={4}>
-              <Icon name="egg" size={2} mb={2} />
+              <Icon name="circle-notch" size={2} mb={2} />
               <br />
               {locale.emptyState}
             </Box>
           </Section>
-        ) : (
-          organs.map((organ) => (
-            <OrganSection
-              key={organ.id}
-              act={act}
-              activeTab={activeTab}
-              organ={organ}
-              nutriment={nutriment}
-              locale={locale}
-            />
-          ))
+        )}
+
+        {activeTab === 'status' && (
+          <>
+            {vagina && (
+              <Section
+                title={
+                  <Box inline>
+                    <Icon name="venus" mr={1} />
+                    {locale.cards.front}
+                  </Box>
+                }
+              >
+                <HoleBody
+                  act={act}
+                  hole={vagina}
+                  holdingIn={holding_in}
+                  locale={locale}
+                />
+                {labour && (
+                  <Box bold color="bad" mt={0.5}>
+                    <Icon name="heart-pulse" mr={0.5} />
+                    {locale.womb.labour}
+                    {': '}
+                    {labour.pushing
+                      ? locale.womb.pushing
+                      : `${locale.womb.contraction} ${labour.contractions}/${labour.needed}`}
+                  </Box>
+                )}
+                {womb && (
+                  <WombBlock
+                    act={act}
+                    womb={womb}
+                    nutriment={nutriment}
+                    locale={locale}
+                  />
+                )}
+                <EggList
+                  act={act}
+                  eggs={vagina.eggs.filter((egg) => !egg.is_hatchling)}
+                  title={locale.womb.passageEggs}
+                  locale={locale}
+                />
+              </Section>
+            )}
+            {anus && (
+              <Section
+                title={
+                  <Box inline>
+                    <Icon name="circle" mr={1} />
+                    {locale.cards.rear}
+                  </Box>
+                }
+              >
+                <HoleBody
+                  act={act}
+                  hole={anus}
+                  holdingIn={holding_in}
+                  locale={locale}
+                />
+                <EggBlock act={act} eggs={anus.eggs} locale={locale} />
+                {anus.hatchling_count > 0 && (
+                  <Box mt={0.5} bold color="bad">
+                    <Icon name="baby" mr={0.5} />
+                    {locale.labels.hatchlingsInside}
+                    {': '}
+                    {anus.hatchling_count}
+                  </Box>
+                )}
+              </Section>
+            )}
+            {stomach && (
+              <Section
+                title={
+                  <Box inline>
+                    <Icon name="circle" mr={1} />
+                    {locale.cards.stomach}
+                  </Box>
+                }
+              >
+                <EggBlock act={act} eggs={stomach.eggs} locale={locale} />
+              </Section>
+            )}
+            {ovipositor && (
+              <Section
+                title={
+                  <Box inline>
+                    <Icon name="mars" mr={1} />
+                    {locale.cards.ovipositor}
+                  </Box>
+                }
+              >
+                <OrganSummary
+                  organ={ovipositor}
+                  nutriment={nutriment}
+                  locale={locale}
+                />
+                <EggActions act={act} organ={ovipositor} locale={locale} />
+              </Section>
+            )}
+          </>
+        )}
+
+        {activeTab === 'settings' && (
+          <>
+            {womb?.organ.settings?.can_configure && (
+              <Section title={locale.cards.womb}>
+                <SettingsPanel act={act} organ={womb.organ} locale={locale} />
+              </Section>
+            )}
+            {ovipositor?.settings?.can_configure && (
+              <Section title={locale.cards.ovipositor}>
+                <SettingsPanel act={act} organ={ovipositor} locale={locale} />
+              </Section>
+            )}
+            {!womb?.organ.settings?.can_configure &&
+              !ovipositor?.settings?.can_configure && (
+                <Section>
+                  <Box color="label">{locale.emptyState}</Box>
+                </Section>
+              )}
+          </>
+        )}
+
+        {activeTab === 'genetics' && (
+          <>
+            {womb && (
+              <Section title={locale.cards.womb}>
+                <GeneticsPanel act={act} organ={womb.organ} locale={locale} />
+              </Section>
+            )}
+            {vagina && vagina.eggs.length > 0 && (
+              <Section title={locale.cards.front}>
+                <ParentsList eggs={vagina.eggs} locale={locale} />
+              </Section>
+            )}
+            {anus && anus.eggs.length > 0 && (
+              <Section title={locale.cards.rear}>
+                <ParentsList eggs={anus.eggs} locale={locale} />
+              </Section>
+            )}
+            {stomach && (
+              <Section title={locale.cards.stomach}>
+                <ParentsList eggs={stomach.eggs} locale={locale} />
+              </Section>
+            )}
+            {ovipositor && (
+              <Section title={locale.cards.ovipositor}>
+                <GeneticsPanel act={act} organ={ovipositor} locale={locale} />
+              </Section>
+            )}
+          </>
         )}
       </Window.Content>
     </Window>
   );
 };
 
-const OrganSection = (props: {
+/** Wear and tear, fill and stored items of one hole. */
+const HoleBody = (props: {
   act: any;
-  activeTab: ActiveTab;
-  organ: OrganData;
-  nutriment: number;
-  locale: OvipositionStatusLocale;
+  hole: HoleData;
+  holdingIn: boolean;
+  locale: HoleStatusLocale;
 }) => {
-  const { act, activeTab, organ, nutriment, locale } = props;
-  const organTitle = resolveOrganName(locale, organ);
-  const allEggs = organ.eggs ?? [];
-  const eggItems = allEggs.filter((egg) => !egg.is_hatchling);
-  const hatchlingItems = allEggs.filter((egg) => egg.is_hatchling);
-  const countLabel = organ.egg_capacity
-    ? `${organ.egg_count}/${organ.egg_capacity}`
-    : `${organ.egg_count}`;
-
+  const { act, hole, holdingIn, locale } = props;
+  const wear = hole.wear;
   return (
-    <Section
-      title={
-        <Box inline>
-          <Icon name={organ.icon} mr={1} />
-          {locale.labels.organ}
-          {': '}
-          {organTitle}
-          {' ['}
-          {countLabel}
-          {']'}
+    <>
+      {wear && (
+        <LabeledList>
+          <LabeledList.Item label={locale.wear.tightness}>
+            {word(locale.wear.tightnessWords, wear.tightness) ||
+              locale.labels.unknown}
+          </LabeledList.Item>
+          <LabeledList.Item
+            label={locale.wear.feels}
+            color={wear.gaped ? 'bad' : wear.stretch_pct >= 110 ? 'average' : undefined}
+          >
+            {word(locale.wear.stretchWords, wear.stretch)}
+            {wear.stretch_pct > 100 ? ` (${wear.stretch_pct}%)` : ''}
+            {wear.gaping_soon ? ` - ${locale.wear.gapingSoon}` : ''}
+          </LabeledList.Item>
+          <LabeledList.Item label={locale.wear.lube}>
+            {word(locale.wear.lubeWords, wear.lube)}
+          </LabeledList.Item>
+          <LabeledList.Item
+            label={locale.wear.soreness}
+            color={wear.soreness ? 'bad' : 'good'}
+          >
+            {wear.soreness
+              ? word(locale.wear.sorenessWords, wear.soreness)
+              : locale.wear.fine}
+          </LabeledList.Item>
+          <LabeledList.Item label={locale.fill.title}>
+            <FillLine fill={hole.fill} locale={locale} />
+            {hole.can_hold_in && holdingIn ? ` - ${locale.fill.holdingIn}` : ''}
+          </LabeledList.Item>
+          <LabeledList.Item label={locale.items.title}>
+            <ItemLines act={act} items={hole.items} locale={locale} />
+          </LabeledList.Item>
+        </LabeledList>
+      )}
+      {hole.insert && (
+        <Box mt={0.5}>
+          <Button
+            icon="arrow-right-to-bracket"
+            disabled={!!hole.insert.reason}
+            tooltip={
+              hole.insert.reason ||
+              `${hole.insert.seconds ?? 0}${locale.items.seconds}` +
+                (hole.insert.fit ? `, ${locale.items.fit}: ${hole.insert.fit}` : '') +
+                (hole.insert.fail_pct
+                  ? `, ${hole.insert.fail_pct}% ${locale.items.failChance}`
+                  : '')
+            }
+            onClick={() => act('insert_item', { hole: hole.id })}
+          >
+            {locale.items.insert}: {hole.insert.name}
+          </Button>
         </Box>
-      }
-    >
-      {activeTab === 'eggs' && (
-        <>
+      )}
+    </>
+  );
+};
+
+const FillLine = (props: { fill: FillData; locale: HoleStatusLocale }) => {
+  const { fill, locale } = props;
+  if (!fill || fill.volume <= 0) {
+    return <>{locale.fill.empty}</>;
+  }
+  const parts: string[] = [locale.formatFill(fill.volume, fill.capacity)];
+  if (fill.main_fluid) {
+    parts.push(`${locale.fill.mostly} ${fill.main_fluid}`);
+  }
+  if (fill.seed_units > 0) {
+    parts.push(`${locale.fill.seed} ${fill.seed_units} u`);
+  }
+  return <>{parts.join(', ')}</>;
+};
+
+const ItemLines = (props: {
+  act: any;
+  items: ItemData[];
+  locale: HoleStatusLocale;
+}) => {
+  const { act, items, locale } = props;
+  if (!items.length) {
+    return <>{locale.items.none}</>;
+  }
+  const layers: ItemData['layer'][] = ['outer', 'inner', 'deep'];
+  return (
+    <>
+      {layers.map((layer) => {
+        const entries = items.filter((item) => item.layer === layer);
+        if (!entries.length) {
+          return null;
+        }
+        return (
+          <Box key={layer}>
+            <Box inline color="label">
+              {locale.items[layer]}
+              {': '}
+            </Box>
+            {entries.map((item) => (
+              <Box key={item.ref} inline mr={1}>
+                {item.name}
+                {item.can_remove ? '' : ` (${locale.items.stuck})`}
+                {item.can_take && (
+                  <Button
+                    ml={0.5}
+                    compact
+                    icon="hand"
+                    tooltip={
+                      `${item.take_seconds}${locale.items.seconds}` +
+                      (item.take_fail_pct
+                        ? `, ${item.take_fail_pct}% ${locale.items.failChance}`
+                        : '')
+                    }
+                    onClick={() => act('remove_item', { item_ref: item.ref })}
+                  >
+                    {locale.items.takeOut}
+                  </Button>
+                )}
+                {item.can_push_deeper && (
+                  <Button
+                    ml={0.5}
+                    compact
+                    icon="arrow-down"
+                    onClick={() => act('push_deeper', { item_ref: item.ref })}
+                  >
+                    {locale.items.pushDeeper}
+                  </Button>
+                )}
+              </Box>
+            ))}
+          </Box>
+        );
+      })}
+    </>
+  );
+};
+
+/** The womb under the front hole: fertility, seed, pregnancy, then its eggs. */
+const WombBlock = (props: {
+  act: any;
+  womb: NonNullable<WombData>;
+  nutriment: number;
+  locale: HoleStatusLocale;
+}) => {
+  const { act, womb, nutriment, locale } = props;
+  const organ = womb.organ;
+  return (
+    <Section title={locale.cards.womb} mt={1}>
+      <LabeledList>
+        <LabeledList.Item
+          label={locale.womb.fertile}
+          color={womb.fertile ? 'good' : 'label'}
+        >
+          {womb.fertile ? locale.womb.fertile : locale.womb.sterile}
+          {womb.contraceptive ? `, ${locale.womb.contraceptive}` : ''}
+        </LabeledList.Item>
+        <LabeledList.Item label={locale.womb.seed}>
+          <FillLine fill={womb.fill} locale={locale} />
+        </LabeledList.Item>
+        {womb.pregnancy_stage > 0 && (
+          <LabeledList.Item label={locale.womb.pregnancy} color="good">
+            {locale.womb.stage}{' '}
+            {locale.formatStage(womb.pregnancy_stage, womb.max_stage)}
+          </LabeledList.Item>
+        )}
+      </LabeledList>
+      {organ.is_egg_layer && (
+        <Box mt={1}>
           <OrganSummary organ={organ} nutriment={nutriment} locale={locale} />
-          <EggActions act={act} organ={organ} locale={locale} />
-          <EggList
-            act={act}
-            eggs={eggItems}
-            title={locale.labels.eggsInside}
-            locale={locale}
-          />
-          <EggList
-            act={act}
-            eggs={hatchlingItems}
-            title={locale.labels.hatchlingsInside}
-            locale={locale}
-          />
-        </>
+        </Box>
       )}
-      {activeTab === 'settings' && (
-        <SettingsPanel act={act} organ={organ} locale={locale} />
-      )}
-      {activeTab === 'genetics' && (
-        <GeneticsPanel act={act} organ={organ} locale={locale} />
+      <EggActions act={act} organ={organ} locale={locale} />
+      <EggBlock act={act} eggs={organ.eggs} locale={locale} />
+      {(organ.hatchling_count ?? 0) > 0 && (
+        <Box mt={0.5} bold color="bad">
+          <Icon name="baby" mr={0.5} />
+          {locale.labels.hatchlingsInside}
+          {': '}
+          {organ.hatchling_count}
+        </Box>
       )}
     </Section>
+  );
+};
+
+const EggBlock = (props: {
+  act: any;
+  eggs: EggData[];
+  locale: HoleStatusLocale;
+}) => {
+  const { act, eggs, locale } = props;
+  const eggItems = (eggs ?? []).filter((egg) => !egg.is_hatchling);
+  const hatchlingItems = (eggs ?? []).filter((egg) => egg.is_hatchling);
+  return (
+    <>
+      <EggList
+        act={act}
+        eggs={eggItems}
+        title={locale.labels.eggsInside}
+        locale={locale}
+      />
+      <EggList
+        act={act}
+        eggs={hatchlingItems}
+        title={locale.labels.hatchlingsInside}
+        locale={locale}
+      />
+    </>
+  );
+};
+
+const ParentsList = (props: { eggs: EggData[]; locale: HoleStatusLocale }) => {
+  const { eggs, locale } = props;
+  if (!eggs?.length) {
+    return null;
+  }
+  return (
+    <Box>
+      <Box bold color="label" mb={0.5}>
+        {locale.labels.parents}
+        {':'}
+      </Box>
+      {eggs.map((egg, index) => (
+        <Box key={egg.ref || index} ml={1} mb={0.5}>
+          <Box bold>
+            {index + 1}. {egg.name}
+          </Box>
+          <Box color="label">
+            {locale.labels.mother}
+            {': '}
+            {egg.mother_name || locale.labels.unknown}
+            {' | '}
+            {locale.labels.father}
+            {': '}
+            {egg.father_name || locale.labels.unknown}
+            {' | '}
+            {egg.fertilized
+              ? locale.labels.fertilized
+              : locale.labels.unfertilized}
+          </Box>
+        </Box>
+      ))}
+    </Box>
   );
 };
 
 const OrganSummary = (props: {
   organ: OrganData;
   nutriment: number;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { organ, nutriment, locale } = props;
   const isOvi = organ.id === 'ovipositor';
@@ -382,14 +863,6 @@ const OrganSummary = (props: {
           </Box>
         </Box>
       )}
-      {(organ.hatchling_count ?? 0) > 0 && (
-        <Box mb={0.5} bold color="bad">
-          <Icon name="baby" mr={0.5} />
-          {locale.labels.hatchlingsInside}
-          {': '}
-          {organ.hatchling_count}
-        </Box>
-      )}
     </>
   );
 };
@@ -397,9 +870,10 @@ const OrganSummary = (props: {
 const EggActions = (props: {
   act: any;
   organ: OrganData;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { act, organ, locale } = props;
+  const removable = (organ.eggs ?? []).some((egg) => egg.can_remove);
   return (
     <Stack mb={1} style={{ flexWrap: 'wrap' }}>
       {organ.id === 'ovipositor' && (
@@ -413,7 +887,7 @@ const EggActions = (props: {
           </Button>
         </Stack.Item>
       )}
-      {organ.settings?.can_configure && organ.eggs?.length > 0 && (
+      {organ.id === 'womb' && removable && (
         <Stack.Item>
           <Button
             icon="hand"
@@ -433,10 +907,10 @@ const EggList = (props: {
   act: any;
   eggs: EggData[];
   title: string;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { act, eggs, title, locale } = props;
-  if (!eggs.length) {
+  if (!eggs?.length) {
     return null;
   }
   return (
@@ -461,7 +935,7 @@ const EggList = (props: {
 const SettingsPanel = (props: {
   act: any;
   organ: OrganData;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { act, organ, locale } = props;
   const settings = organ.settings;
@@ -618,7 +1092,7 @@ const SettingsPanel = (props: {
 const GeneticsPanel = (props: {
   act: any;
   organ: OrganData;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { act, organ, locale } = props;
   const settings = organ.settings;
@@ -644,42 +1118,12 @@ const GeneticsPanel = (props: {
           ))}
         </SettingRow>
       )}
-      {organ.eggs?.length > 0 && (
-        <Box mt={1}>
-          <Box bold color="label" mb={0.5}>
-            {locale.labels.parents}
-            {':'}
-          </Box>
-          {organ.eggs.map((egg, index) => (
-            <Box key={egg.ref || index} ml={1} mb={0.5}>
-              <Box bold>
-                {index + 1}. {egg.name}
-              </Box>
-              <Box color="label">
-                {locale.labels.mother}
-                {': '}
-                {egg.mother_name || locale.labels.unknown}
-                {' | '}
-                {locale.labels.father}
-                {': '}
-                {egg.father_name || locale.labels.unknown}
-                {' | '}
-                {egg.fertilized
-                  ? locale.labels.fertilized
-                  : locale.labels.unfertilized}
-              </Box>
-            </Box>
-          ))}
-        </Box>
-      )}
+      <ParentsList eggs={organ.eggs} locale={locale} />
     </>
   );
 };
 
-const SettingRow = (props: {
-  label: string;
-  children: ReactNode;
-}) => {
+const SettingRow = (props: { label: string; children: ReactNode }) => {
   const { label, children } = props;
   return (
     <Box mb={1}>
@@ -698,7 +1142,7 @@ const TextSetting = (props: {
   organId: string;
   multiline?: boolean;
   act: any;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { label, value, field, organId, multiline, act, locale } = props;
   const displayValue = value?.length ? value : locale.labels.profileDefault;
@@ -741,7 +1185,7 @@ const ColorEditor = (props: {
   act: any;
   organ: OrganData;
   settings: OrganSettings;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { act, organ, settings, locale } = props;
   const applyColor = (color: string) =>
@@ -819,7 +1263,7 @@ const ColorEditor = (props: {
 
 const Preview = (props: {
   settings: OrganSettings;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { settings, locale } = props;
   const color = normalizeHex(settings.custom_color);
@@ -843,7 +1287,9 @@ const Preview = (props: {
           />
         </Stack.Item>
         <Stack.Item grow>
-          <Box bold>{settings.custom_name || resolveEggType(locale, settings.egg_type_name)}</Box>
+          <Box bold>
+            {settings.custom_name || resolveEggType(locale, settings.egg_type_name)}
+          </Box>
           <Box color="label">
             {resolveEggType(locale, settings.egg_type_name)}
             {' | '}
@@ -861,7 +1307,7 @@ const EggDetail = (props: {
   act: any;
   egg: EggData;
   index: number;
-  locale: OvipositionStatusLocale;
+  locale: HoleStatusLocale;
 }) => {
   const { act, egg, index, locale } = props;
   const pct = egg.progress_pct;

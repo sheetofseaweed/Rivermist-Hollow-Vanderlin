@@ -186,7 +186,7 @@
 /datum/preferences/proc/get_entry_genital_set(datum/customizer_entry/entry)
 	if(istype(entry, /datum/customizer_entry/organ/genitals/penis) || istype(entry, /datum/customizer_entry/organ/genitals/testicles))
 		return "masculine"
-	if(istype(entry, /datum/customizer_entry/organ/genitals/breasts) || istype(entry, /datum/customizer_entry/organ/genitals/vagina))
+	if(istype(entry, /datum/customizer_entry/organ/genitals/breasts) || istype(entry, /datum/customizer_entry/organ/genitals/vagina) || istype(entry, /datum/customizer_entry/organ/genitals/womb))
 		return "feminine"
 	return null
 

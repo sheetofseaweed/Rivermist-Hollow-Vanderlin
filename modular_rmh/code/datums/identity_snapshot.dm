@@ -32,10 +32,13 @@
 /obj/item/organ/genitals/filling_organ/vagina
 	organ_dna_type = /datum/organ_dna/vagina
 
-/obj/item/organ/genitals/filling_organ/vagina/imprint_organ_dna(datum/organ_dna/organ_dna)
+/obj/item/organ/genitals/filling_organ/womb
+	organ_dna_type = /datum/organ_dna/womb
+
+/obj/item/organ/genitals/filling_organ/womb/imprint_organ_dna(datum/organ_dna/organ_dna)
 	. = ..()
-	var/datum/organ_dna/vagina/vagina_dna = organ_dna
-	vagina_dna.fertility = fertility
+	var/datum/organ_dna/womb/womb_dna = organ_dna
+	womb_dna.fertility = fertility
 
 /obj/item/organ/genitals/butt
 	organ_dna_type = /datum/organ_dna/butt

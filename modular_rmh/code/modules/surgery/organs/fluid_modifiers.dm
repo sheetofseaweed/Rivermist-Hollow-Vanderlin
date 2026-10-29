@@ -66,7 +66,7 @@
 
 /// Moon Tea: seed held in the womb or rear rarely takes.
 /datum/fluid_modifier/barren_womb
-	affected_slots = list(ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS)
+	affected_slots = list(ORGAN_SLOT_WOMB, ORGAN_SLOT_VAGINA, ORGAN_SLOT_ANUS)
 	conception_multiplier = CONTRACEPTIVE_MULTIPLIER
 
 /// Cold Seed draught: seed given while it works rarely takes.
