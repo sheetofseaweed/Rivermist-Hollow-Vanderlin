@@ -16,8 +16,6 @@
 	var/datum/callback/get_user_callback
 	var/datum/callback/get_mana_required_callback
 
-	var/list/datum/attunement/attunements
-
 	var/pre_use_check_with_feedback_comsig
 	var/pre_use_check_comsig
 	var/post_use_comsig
@@ -31,7 +29,6 @@
 	pre_use_check_comsig,
 	post_use_comsig,
 	datum/callback/mana_required,
-	list/datum/attunement/attunements,
 )
 	. = ..()
 
@@ -50,7 +47,6 @@
 	else if (isnum(mana_required))
 		src.mana_required = mana_required
 
-	src.attunements = attunements
 	src.pre_use_check_with_feedback_comsig = pre_use_check_with_feedback_comsig
 	src.post_use_comsig = post_use_comsig
 
@@ -68,7 +64,7 @@
 	UnregisterSignal(parent, post_use_comsig)
 
 // TODO: Do I need the vararg?
-/// Should return the numerical value of mana needed to use whatever it is we're using. Unaffected by attunements.
+/// Should return the numerical value of mana needed to use whatever it is we're using.
 /datum/component/uses_mana/proc/get_mana_required(atom/caster, ...) // Get the mana required to cast the spell.
 	if (!isnull(get_mana_required_callback))
 		return get_mana_required_callback?.Invoke(arglist(args))
@@ -96,20 +92,14 @@
 	return usable_pools
 
 
-/// Should return TRUE if the total adjusted mana of all mana pools surpasses get_mana_required(). FALSE otherwise.
+/// Should return TRUE if all mana pools together hold at least get_mana_required(). FALSE otherwise.
 /datum/component/uses_mana/proc/is_mana_sufficient(atom/movable/user, ...)
-	var/total_effective_mana = 0
-	var/list/datum/mana_pool/provided_mana = get_mana_to_use()
+	var/total_mana = 0
 	var/required_mana = get_mana_required(arglist(args))
-	var/atom/caster = user
 
-
-	for (var/datum/mana_pool/iterated_pool as anything in provided_mana)
-		total_effective_mana += iterated_pool.get_attuned_amount(attunements, caster)
-	if (total_effective_mana > required_mana)
-		return TRUE
-	else
-		return FALSE
+	for (var/datum/mana_pool/iterated_pool as anything in get_mana_to_use())
+		total_mana += iterated_pool.amount
+	return total_mana >= required_mana
 
 /// The primary proc we will use for draining mana to simulate it being consumed to power our actions.
 /datum/component/uses_mana/proc/drain_mana(...)
@@ -117,40 +107,22 @@
 	var/mob/user = get_user_callback?.Invoke()
 
 	var/mana_consumed = -get_mana_required(arglist(args))
-	var/total_mana_consumed = -mana_consumed
 	if (isnull(mana_consumed))
 		stack_trace("mana_consumed after get_mana_required is null!")
 		return
 
 	var/list/datum/mana_pool/available_pools = get_mana_to_use()
-	var/mob/living/caster = get_parent_user()
-	var/attunement_total_value = 0
-	var/total_damage = 0
-	for(var/datum/attunement/attunement as anything in attunements)
-		attunement_total_value += attunements[attunement]
+	if (!length(available_pools))
+		return
 
 	while (mana_consumed <= -0.05)
-		var/mult
-		var/attuned_cost
 		for (var/datum/mana_pool/pool as anything in available_pools)
-			mult = pool.get_overall_attunement_mults(attunements, user)
-			attuned_cost = (mana_consumed * mult)
-			if (pool.amount < attuned_cost)
-				attuned_cost = (pool.amount)
-			var/mana_adjusted = SAFE_DIVIDE(pool.adjust_mana((attuned_cost)), mult) * (has_world_trait(/datum/world_trait/noc_wisdom) ? (is_ascendant(NOC) ? 0.7 : 0.8) : 1)
+			var/mana_adjusted = pool.adjust_mana(mana_consumed) * (has_world_trait(/datum/world_trait/noc_wisdom) ? (is_ascendant(NOC) ? 0.7 : 0.8) : 1)
 			mana_consumed -= mana_adjusted
 			record_featured_stat(FEATURED_STATS_MAGES, user, abs(mana_adjusted))
 			record_round_statistic(STATS_MANA_SPENT, abs(mana_adjusted))
 			if (available_pools.Find(pool) == available_pools.len && mana_consumed <= -0.05) // if we're at the end of the list and mana_consumed is not 0 or near 0 (floating points grrr)
 				mana_consumed = 0 // lets terminate the loop to be safe
-			if(pool.parent == caster)
-				for(var/datum/attunement/attunement as anything in attunements)
-					if(pool.negative_attunements[attunement] < 0)
-						var/composition_gain = attunement_total_value / attunements[attunement]
-						var/negative_impact_mana = total_mana_consumed * composition_gain
-						total_damage += round(negative_impact_mana * 0.1,1)
-	if(total_damage)
-		caster.mana_pool.mana_backlash(total_damage)
 
 
 
@@ -184,7 +156,7 @@
 	return get_user_callback?.Invoke()
 
 // this is basically only used to cut down on boilerplate.
-// all that remains is stuff that has to be on the spell itself to work (checking for mana cost, attunements, some of the callbacks)
+// all that remains is stuff that has to be on the spell itself to work (checking for mana cost, some of the callbacks)
 // i'll provide a sample block so this file can be a "tutorial" IG
 /datum/component/uses_mana/spell
 	can_transfer = FALSE
@@ -196,7 +168,6 @@
 	pre_use_check_comsig,
 	post_use_comsig = COMSIG_SPELL_AFTER_CAST,
 	datum/callback/mana_required,
-	list/datum/attunement/attunements
 	)
 
 	. = ..()
@@ -206,16 +177,11 @@
 /datum/action/cooldown/spell/ourspell/New(Target, original)
 	. = ..()
 
-	var/list/datum/attunement/attunements = GLOB.default_attunements.Copy()
-	attunements[MAGIC_ELEMENT_X] += SPELL_X_ATTUNEMENT // define the numeric value you want for the attunement ideally at the top, it is the value you want the spell's cost to be multiplied (done using decimals since its supposed to be a discount) by when the user is correctly attunned..
-		replace the "X" with what element you want, such as "light". Replace "SPELL" with the name of your spell.
-
 	AddComponent(/datum/component/uses_mana/spell, \ // the two main signals are pre-defined in uses_mana/spell so you don't have to copy paste it. everything here needs to be in the init since its on the spell itself.
 		activate_check_failure_callback = CALLBACK(src, PROC_REF(spell_cannot_activate)), \ // this is defined on datum/action/cooldown/spell and just sends the signal used to cancel casting. must be in this define.
 		get_user_callback = CALLBACK(src, PROC_REF(get_owner)), \ // "get_owner" is a proc on datum/action/ and must be defined in "the block"
 		mana_required = mana_cost, \ // mana_cost is defined on the spell datum action, set it to a variable at the top ideally. if you want fancier stuff, see the next line:
 		mana_required = CALLBACK(src, PROC_REF(get_mana_consumed)), \ // obviously only ever set mana required ONCE, but this is an example of what you want to do if you want to do a variable cost system, define the proc for this on the spell itself.
-		attunements = attunements, \ // see above. you can just copy paste this to every instance, if you don't want attunements just don't add this block or the two lines outside the add component
 	)
 
 	heres a sample callback for get mana required, taken from healing touch.

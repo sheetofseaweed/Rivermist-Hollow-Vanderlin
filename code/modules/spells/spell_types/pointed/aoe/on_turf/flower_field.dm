@@ -4,10 +4,6 @@
 	button_icon_state = "flower_field"
 
 	point_cost = 5
-	attunements = list(
-		/datum/attunement/earth = 0.4,
-		/datum/attunement/life = 0.3,
-	)
 
 	invocation = "May the earth bloom!"
 	invocation_type = INVOCATION_WHISPER
@@ -20,6 +16,13 @@
 	spell_flags = SPELL_RITUOS
 	aoe_radius = 3
 	ignore_openspace = TRUE
+
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Flower Field"
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_CREATION
+	required_level = MASTERY_RANK_ADEPT
 
 	var/obj/structure/flora/field/flowers
 
@@ -59,7 +62,8 @@
 /datum/action/cooldown/spell/aoe/on_turf/circle/flower_field/cast_on_thing_in_aoe(turf/victim, atom/caster)
 	if(prob(25))
 		return
-	var/obj/structure/flora/field/field = new flowers(victim)
+	// Upcasting keeps the field blooming for half as long again per level.
+	var/obj/structure/flora/field/field = new flowers(victim, initial(flowers.wilt_time) * get_upcast_duration_multiplier())
 	field.dir = pick(GLOB.cardinals)
 	for(var/mob/living/L in victim)
 		field.Crossed(L)
@@ -82,10 +86,14 @@
 	blade_dulling = DULLING_CUT
 	resistance_flags = FLAMMABLE
 	object_slowdown = 2
+	/// How long the flowers bloom before they wilt away.
+	var/wilt_time = 1 MINUTES
 
-/obj/structure/flora/field/Initialize()
+/obj/structure/flora/field/Initialize(mapload, bloom_time)
+	if(bloom_time)
+		wilt_time = bloom_time
 	. = ..()
-	addtimer(CALLBACK(src, PROC_REF(flower_decay)), 1 MINUTES)
+	addtimer(CALLBACK(src, PROC_REF(flower_decay)), wilt_time)
 
 /obj/structure/flora/field/Crossed(atom/movable/AM)
 	. = ..()

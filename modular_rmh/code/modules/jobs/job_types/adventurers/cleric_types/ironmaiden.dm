@@ -50,6 +50,13 @@
 		/datum/action/cooldown/spell/undirected/blade_ward,
 	)
 
+/datum/job/advclass/combat/adventurer_cleric/ironmaiden/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+	. = ..()
+	var/holder = spawned.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_cleric()
+		devotion.grant_to(spawned)
 
 /datum/outfit/adventurer_cleric/ironmaiden
 	name = "Iron Maiden"

@@ -42,6 +42,6 @@
 	if(!enchant_item)
 		to_chat(owner, span_warning("There is nothing to enchant!"))
 		return
-	enchantment_duration *= attuned_strength
-	enchant_item.AddComponent(/datum/component/enchanted_weapon, enchantment_duration, allows_refresh, associated_skill, enchantment, holder)
-	cooldown_time = cooldown_time || enchantment_duration
+	var/duration = enchantment_duration * get_rank_multiplier()
+	enchant_item.AddComponent(/datum/component/enchanted_weapon, duration, allows_refresh, associated_skill, enchantment, holder)
+	cooldown_time = cooldown_time || duration

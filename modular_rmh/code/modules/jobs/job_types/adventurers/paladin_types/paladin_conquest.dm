@@ -46,6 +46,7 @@
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/sacred_flame,
+		/datum/action/cooldown/spell/undirected/conquering_presence,
 	)
 
 /datum/job/advclass/combat/adventurer_paladin/conquest/after_spawn(mob/living/carbon/human/spawned, client/player_client)

@@ -14,21 +14,24 @@
 	var/summon_respects_density = TRUE
 	/// If TRUE, no two summons can be spawned in the same turf.
 	var/summon_respects_prev_spawn_points = TRUE
+	/// If TRUE, upcasts add one summon per two levels above the spell's own, up to four.
+	var/upcast_extra_summons = FALSE
 
 /datum/action/cooldown/spell/conjure/cast(atom/cast_on)
 	. = ..()
+	var/amount = get_summon_amount()
 	var/list/to_summon_in = list()
-	for(var/turf/summon_turf in range(summon_radius, cast_on))
+	for(var/turf/summon_turf in range(get_summon_radius(), cast_on))
 		if(isopenspace(summon_turf))
 			continue
 		if(summon_respects_density && summon_turf.density)
 			continue
 		to_summon_in += summon_turf
 
-	if(!summon_amount)
-		summon_amount = length(to_summon_in)
+	if(!amount)
+		amount = length(to_summon_in)
 
-	for(var/i in 1 to summon_amount)
+	for(var/i in 1 to amount)
 		if(!length(to_summon_in))
 			break
 
@@ -48,6 +51,18 @@
 				QDEL_IN(summoned_object, summon_lifespan)
 
 			post_summon(summoned_object, cast_on)
+
+/// Summons for the cast in progress. Zero fills every valid turf in range.
+/datum/action/cooldown/spell/conjure/proc/get_summon_amount()
+	if(!upcast_extra_summons || !summon_amount)
+		return summon_amount
+	return min(summon_amount + round(get_upcast_steps() / 2), 4)
+
+/// Radius for the cast in progress. Extra summons from a single point spill onto adjacent turfs.
+/datum/action/cooldown/spell/conjure/proc/get_summon_radius()
+	if(summon_radius < 1 && get_summon_amount() > 1)
+		return 1
+	return summon_radius
 
 /// Called on atoms summoned after they are created, allows extra variable editing and such of created objects
 /datum/action/cooldown/spell/conjure/proc/post_summon(atom/summoned_object, atom/cast_on)

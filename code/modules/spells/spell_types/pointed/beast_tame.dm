@@ -10,9 +10,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(
-		/datum/attunement/earth = 1,
-	)
 
 	invocation = "Be still and calm, brotherbeast."
 	invocation_type = INVOCATION_WHISPER
@@ -20,6 +17,12 @@
 	charge_required = FALSE
 	cooldown_time = 6 MINUTES
 	spell_cost = 60
+
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 3
+	slot_only = TRUE
+	required_level = MASTERY_RANK_EXPERT
 
 	var/static/list/pet_commands = list(
 		/datum/pet_command/idle,
@@ -51,7 +54,7 @@
 
 /datum/action/cooldown/spell/beast_tame/cast(mob/living/simple_animal/hostile/retaliate/cast_on)
 	. = ..()
-	if(!prob(cast_on.dendor_taming_chance))
+	if(!prob(min(cast_on.dendor_taming_chance * get_upcast_multiplier(), 100)))
 		to_chat(owner, span_warning("\The [cast_on] resists your soothing!"))
 		return
 

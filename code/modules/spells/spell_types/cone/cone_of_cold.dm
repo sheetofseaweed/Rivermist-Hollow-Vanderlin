@@ -13,9 +13,6 @@
 	respect_density = TRUE
 	delay_between_level = 0.05 SECONDS
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/ice = 0.3,
-	)
 	button_icon_state = "frostbolt"
 	charge_time = 2 SECONDS
 	charge_drain = 1
@@ -23,6 +20,13 @@
 	cooldown_time = 30 SECONDS
 	spell_cost = 25
 	spell_flags = SPELL_RITUOS
+
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Cone of Cold"
+	required_form = FORM_ICE
+	required_level = MASTERY_RANK_ADEPT
+	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/frost_bolt)
 
 	/// What flags do we pass to MakeSlippery when affecting turfs?
 	/// null / NONE / TURF_DRY means the turf is unaffected
@@ -46,7 +50,14 @@
 	/// 0 seconds mean no objects are frozen, INFINITY means infinite duration freeze
 	var/unfreeze_object_duration = 20 SECONDS
 
+	/// Upcast damage multiplier, captured at cast since the staggered layers land after it.
+	var/tmp/cone_damage_multiplier = 1
+	/// Upcast duration multiplier for frozen mobs, turfs and objects.
+	var/tmp/cone_duration_multiplier = 1
+
 /datum/action/cooldown/spell/cone/staggered/cone_of_cold/cast(atom/cast_on)
+	cone_damage_multiplier = get_upcast_multiplier()
+	cone_duration_multiplier = get_upcast_duration_multiplier()
 	. = ..()
 	new /obj/effect/temp_visual/dir_setting/icecone(get_step(cast_on, cast_on.dir), cast_on.dir)
 	playsound(cast_on, 'sound/combat/wooshes/blunt/wooshhuge (2).ogg', 50, TRUE)
@@ -57,7 +68,7 @@
 	if(!isopenturf(target_turf))
 		return
 	var/turf/open/frozen_floor = target_turf
-	frozen_floor.MakeSlippery(turf_freeze_type, unfreeze_turf_duration, permanent = (unfreeze_turf_duration == INFINITY))
+	frozen_floor.MakeSlippery(turf_freeze_type, unfreeze_turf_duration * cone_duration_multiplier, permanent = (unfreeze_turf_duration == INFINITY))
 
 /datum/action/cooldown/spell/cone/staggered/cone_of_cold/do_mob_cone_effect(mob/living/target_mob, atom/caster, level)
 	if(target_mob.can_block_magic(antimagic_flags) || target_mob == caster)
@@ -66,10 +77,17 @@
 	if(ispath(frozen_status_effect_path) && unfreeze_mob_duration > 0 SECONDS) // 0 duration = don't apply the status effect
 		var/datum/status_effect/freeze = target_mob.apply_status_effect(frozen_status_effect_path)
 		if(unfreeze_mob_duration != INFINITY)
-			freeze.duration = world.time + unfreeze_mob_duration
+			var/thaw_time = world.time + unfreeze_mob_duration * cone_duration_multiplier
+			if(freeze)
+				freeze.duration = thaw_time
+			else
+				// A target already frozen or chilled keeps its effect; the hit only lengthens a timed one.
+				freeze = target_mob.has_status_effect(frozen_status_effect_path)
+				if(freeze && freeze.duration != STATUS_EFFECT_PERMANENT)
+					freeze.duration = max(freeze.duration, thaw_time)
 
 	if(on_freeze_brute_damage || on_freeze_burn_damage)
-		target_mob.take_overall_damage(on_freeze_brute_damage, on_freeze_burn_damage, damage_type = BCLASS_BLUNT)
+		target_mob.take_overall_damage(on_freeze_brute_damage * cone_damage_multiplier, on_freeze_burn_damage * cone_damage_multiplier, damage_type = BCLASS_BLUNT)
 
 	to_chat(target_mob, span_userdanger("You feel a bitter cold!"))
 
@@ -80,7 +98,7 @@
 		return
 	if(unfreeze_object_duration == INFINITY) // Infinity duration = don't set an unfreeze timer
 		return
-	addtimer(CALLBACK(target_obj, TYPE_PROC_REF(/obj/, unfreeze)), unfreeze_object_duration)
+	addtimer(CALLBACK(target_obj, TYPE_PROC_REF(/obj/, unfreeze)), unfreeze_object_duration * cone_duration_multiplier)
 
 /obj/proc/freeze()
 	if(HAS_TRAIT(src, TRAIT_FROZEN))

@@ -10,11 +10,6 @@
 	invocation = "May you find bliss through your pain."
 	invocation_type = INVOCATION_WHISPER
 
-	attunements = list(
-		/datum/attunement/electric = 0.3,
-		/datum/attunement/aeromancy = 0.3,
-	)
-
 	charge_required = FALSE
 	cooldown_time = 2 MINUTES
 	spell_cost = 75

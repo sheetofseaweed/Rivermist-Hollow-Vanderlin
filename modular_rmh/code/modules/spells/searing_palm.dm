@@ -14,13 +14,15 @@
 
 	point_cost = 3
 	school = SCHOOL_EVOCATION
-	attunements = list(
-		/datum/attunement/fire = 0.8,
-	)
 
 	cooldown_time = 10 MINUTES
 	spell_cost = 100
 	infinite_use = TRUE
+
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Searing Palm"
+	required_form = FORM_FIRE
 
 	hand_path = /obj/item/melee/touch_attack/searing_palm
 	draw_message = span_warning("Flame crawls across my palm and clings there.")
@@ -194,7 +196,7 @@
 	cost = 3
 	node_x = RIGHT_X_TIER_1
 	node_y = RIGHT_Y_RIGHT + 50
-	prerequisites = list(/datum/spell_node/fire_affinity)
+	prerequisites = list(/datum/spell_node/create_bonfire)
 	spell_type = /datum/action/cooldown/spell/undirected/touch/searing_palm
 
 #undef SEARING_BRAND

@@ -10,7 +10,7 @@
 
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
-	associated_skill = /datum/skill/magic/holy
+	associated_skill = /datum/attribute/skill/magic/holy
 
 	invocation = "By divine will, evil and good shall not touch me!"
 	invocation_type = INVOCATION_SHOUT
@@ -18,6 +18,11 @@
 	charge_required = FALSE
 	cooldown_time = 5 MINUTES
 	spell_cost = 30
+
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 1
+	slot_only = TRUE
 
 /datum/action/cooldown/spell/undirected/protection_evil_good/can_cast_spell(feedback)
 	. = ..()
@@ -47,7 +52,7 @@
 
 /datum/status_effect/buff/protection_evil_good/on_apply()
 	. = ..()
-	is_inhumen = istype(owner.patron, /datum/patron/inhumen) || istype(owner.patron, /datum/patron/faerun/evil_gods)
+	is_inhumen = istype(owner.patron, /datum/patron/faerun/evil_gods)
 	ADD_TRAIT(owner, TRAIT_PROTECTION_EVIL_GOOD, TRAIT_STATUS_EFFECT(id))
 	ADD_TRAIT(owner, TRAIT_FEARLESS, TRAIT_STATUS_EFFECT(id))
 	owner.add_overlay(ward_overlay)

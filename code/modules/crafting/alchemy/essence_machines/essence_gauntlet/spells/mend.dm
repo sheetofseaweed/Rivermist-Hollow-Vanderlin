@@ -3,7 +3,6 @@
 	desc = "Repairs minor damage to simple objects."
 	button_icon_state = "mending"
 	cast_range = 1
-	attunements = list(/datum/attunement/earth)
 	point_cost = 3
 	essences = list(/datum/thaumaturgical_essence/earth)
 

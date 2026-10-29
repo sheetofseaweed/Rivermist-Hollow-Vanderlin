@@ -9,9 +9,6 @@
 	spell_type = SPELL_MANA
 	antimagic_flags = MAGIC_RESISTANCE_UNHOLY
 	associated_skill = /datum/attribute/skill/magic/arcane
-	attunements = list(
-		/datum/attunement/death = 1,
-	)
 
 	invocation = "Obey me."
 	invocation_type = INVOCATION_WHISPER
@@ -19,6 +16,16 @@
 	charge_required = FALSE
 	cooldown_time = 1 MINUTES
 	spell_cost = 75
+	heretical_spell = TRUE
+
+	slot_level = 3
+	slot_level_max = 3
+	slot_only = TRUE
+	slot_label = "Control Undead"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_SUMMONING
+	required_level = MASTERY_RANK_EXPERT
+	prerequisite_spells = list(/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer)
 
 	var/static/list/pet_commands = list(
 		/datum/pet_command/idle,

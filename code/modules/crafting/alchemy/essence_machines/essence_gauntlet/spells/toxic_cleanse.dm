@@ -4,7 +4,6 @@
 	button_icon_state = "detect_poison"
 	cast_range = 3
 	point_cost = 7
-	attunements = list(/datum/attunement/life, /datum/attunement/blood)
 	essences = list(/datum/thaumaturgical_essence/poison, /datum/thaumaturgical_essence/water)
 
 /datum/action/cooldown/spell/essence/toxic_cleanse/cast(atom/cast_on)
@@ -15,8 +14,9 @@
 	owner.visible_message(span_notice("[owner] cleanses all toxins from the area."))
 
 	for(var/mob/living/M in range(2, target_turf))
-		M.reagents?.remove_all_type(/datum/reagent/toxin)
-		M.reagents?.remove_all_type(/datum/reagent/poison)
+		// remove_all_type does nothing without an amount, so 999 clears each one.
+		M.reagents?.remove_all_type(/datum/reagent/toxin, 999)
+		M.reagents?.remove_all_type(/datum/reagent/poison, 999)
 		M.setToxLoss(0, TRUE, FALSE)
 		M.apply_status_effect(/datum/status_effect/buff/toxin_immunity, 300 SECONDS)
 		new /obj/effect/temp_visual/snake/twin_up(null, M)

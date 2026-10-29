@@ -42,7 +42,7 @@
 	)
 
 	spells = list(
-		/datum/action/cooldown/spell/undirected/wildrage
+		/datum/action/cooldown/spell/undirected/wildrage/rage
 	)
 
 /datum/job/advclass/combat/adventurer_barbarian/wild_magic/after_spawn(mob/living/carbon/human/spawned, client/player_client)

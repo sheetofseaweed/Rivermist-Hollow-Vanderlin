@@ -218,6 +218,28 @@
 	results = list(/datum/reagent/medicine/thornmorrow_tincture = 15)
 	mix_message = "The tincture darkens to a deep forest green and thickens slowly."
 
+/datum/chemical_reaction/recollection_draught
+	name = "Draught of Recollection"
+	id = "recollection_draught"
+	required_reagents = list(
+		/datum/reagent/water = 5,
+		/datum/reagent/medicine/manapot = 5,
+		/datum/reagent/toxin/manabloom_juice = 3
+	)
+	results = list(/datum/reagent/medicine/recollection_draught = 10)
+	mix_message = "The manabloom dissolves into a deep violet draught that smells of old parchment."
+
+/datum/chemical_reaction/second_wind_elixir
+	name = "Elixir of the Second Wind"
+	id = "second_wind_elixir"
+	required_reagents = list(
+		/datum/reagent/medicine/recollection_draught = 5,
+		/datum/reagent/medicine/healthpot = 5,
+		/datum/reagent/consumable/ethanol/aqua_vitae = 3
+	)
+	results = list(/datum/reagent/medicine/second_wind_elixir = 5)
+	mix_message = "The draught boils down into a bright golden elixir that hums with restless vigour."
+
 /datum/chemical_reaction/blistergall
 	name = "Blistergall"
 	id = "blistergall"

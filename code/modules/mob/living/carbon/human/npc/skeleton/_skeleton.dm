@@ -122,7 +122,7 @@
 	head = /obj/item/clothing/head/helmet/leather
 	shoes = /obj/item/clothing/shoes/boots
 	H.attributes.add_sheet(/datum/attribute_holder/sheet/job/skeleton_npc/greater)
-	H.set_patron(/datum/patron/inhumen/zizo)
+	H.set_patron(/datum/patron/faerun/evil_gods/Lolth)
 	ADD_TRAIT(H, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
 	H.possible_rmb_intents = list(/datum/rmb_intent/feint,\
 	/datum/rmb_intent/aimed,\

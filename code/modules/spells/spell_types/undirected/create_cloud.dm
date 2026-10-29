@@ -10,14 +10,17 @@
 	charge_required = FALSE
 	cooldown_time = 20 SECONDS
 	spell_cost = 30
+
+	slot_level = 2
+	slot_level_max = 4
+	slot_only = TRUE
+	slot_label = "Create Cloud"
+	required_form = FORM_WATER
+	required_technique = TECHNIQUE_ALTERATION
+	required_level = MASTERY_RANK_EXPERT
 	spell_flags = SPELL_RITUOS
 	invocation = "Create cloud!"
 	invocation_type = INVOCATION_SHOUT
-
-	attunements = list(
-		/datum/attunement/blood = 0.3,
-		/datum/attunement/death = 0.3,
-	)
 
 /datum/action/cooldown/spell/undirected/create_cloud/is_valid_target(atom/cast_on)
 	. = ..()
@@ -49,6 +52,9 @@
 	var/obj/item/held_item = owner.get_active_held_item()
 	var/datum/reagents/reagents = held_item.reagents
 	var/datum/effect_system/smoke_spread/chem/smoke = new
-	smoke.set_up(reagents, 3, get_turf(owner), FALSE)
+	// One tile wider for every two levels above the spell's own.
+	smoke.set_up(reagents, 3 + round(get_upcast_steps() / 2), get_turf(owner), FALSE)
+	// The smoke only copies the reagents, so the container loses what went into it.
+	reagents.remove_all(smoke.chemholder.reagents.total_volume)
 	smoke.start()
 

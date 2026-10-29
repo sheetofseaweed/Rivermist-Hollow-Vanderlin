@@ -11,6 +11,7 @@ import {
 import { storage } from 'common/storage';
 import { useBackend, useLocalState } from '../backend';
 import { Box, Button, Input, Section, Stack, Tooltip } from 'tgui-core/components';
+import type { BooleanLike } from 'tgui-core/react';
 import { Window } from '../layouts';
 
 const SEAL_SPRITESHEET_CLASS = 'attribute_seals104x104';
@@ -354,6 +355,33 @@ interface ResolvedInspectedAttribute extends Partial<AttributeFullMeta> {
   modifiers: AttributeModifier[];
 }
 
+interface ClassResourcePool {
+  name: string;
+  current: number;
+  max: number;
+  rest: string;
+}
+
+interface ClassResources {
+  archetype: string;
+  hasLadder: BooleanLike;
+  skillName: string;
+  rank: number;
+  rankName: string;
+  skillValue: number;
+  nextRankName: string | null;
+  nextRankValue: number | null;
+  current: number[];
+  maximum: number[];
+  nextMaximum: number[] | null;
+  pactLevel: number;
+  shortRests: number;
+  shortRestsMax: number;
+  unlimitedShortRests: BooleanLike;
+  longRestIn: string | null;
+  pools: ClassResourcePool[];
+}
+
 interface AttributeData {
   stats_meta?: StatMeta[];
   skills_by_category_meta?: SkillCategoryMeta[];
@@ -365,6 +393,7 @@ interface AttributeData {
   stats_values?: Record<string, AttributeValues>;
   skills_values?: Record<string, AttributeValues>;
   closely_inspected?: CloselyInspectedDynamic | null;
+  class_resources?: ClassResources | null;
 }
 
 const EMPTY_VALUES: AttributeValues = {
@@ -755,6 +784,93 @@ const DetailLine = (props: { label: string; value?: string | number | null }) =>
   );
 };
 
+// A non-breaking space keeps an entry such as "L1 4" whole when the column wraps.
+const slotEntry = (level: number, text: string | number) => `L${level}\u00a0${text}`;
+
+// "L1 4, L2 3, L3 2" for a ladder row; levels without slots are skipped.
+const ladderText = (row: number[] | null | undefined) => {
+  if (!row) {
+    return 'none';
+  }
+  const parts = row
+    .map((count, index) => (count > 0 ? slotEntry(index + 1, count) : null))
+    .filter(Boolean);
+  return parts.length ? parts.join(', ') : 'none';
+};
+
+// "L1 2/4, L2 3/3": remaining over maximum for each level that has slots.
+const slotsNowText = (info: ClassResources) => {
+  const parts = info.maximum
+    .map((max, index) =>
+      max > 0 ? slotEntry(index + 1, `${info.current[index]}/${max}`) : null,
+    )
+    .filter(Boolean);
+  return parts.length ? parts.join(', ') : 'none';
+};
+
+const nextRankText = (info: ClassResources) => {
+  if (!info.nextRankName) {
+    return 'None, the ladder is complete';
+  }
+  const target = `${info.nextRankName} at ${info.skillName} ${info.nextRankValue}`;
+  return `${target}: ${ladderText(info.nextMaximum)}`;
+};
+
+const classResourceSummary = (info: ClassResources) => {
+  const skill = `${info.skillName} (${info.rankName}, ${info.skillValue})`;
+  return `${info.archetype}; ${info.hasLadder ? 'slots' : 'powers'} follow ${skill}`;
+};
+
+const ClassResourcesSection = memo((props: { info: ClassResources }) => {
+  const { info } = props;
+  const hasLadder = !!info.hasLadder;
+
+  return (
+    <Section
+      className="AttributeMenu__panel AttributeMenu__panel--resources"
+      title={
+        <>
+          <Box as="span" className="AttributeMenu__eyebrow">Tally Sheet</Box>
+          <Box as="span" className="AttributeMenu__title">Class Resources</Box>
+        </>
+      }
+    >
+      <Box className="AttributeMenu__divider" />
+      <p className="AttributeMenu__description">{classResourceSummary(info)}</p>
+      <Box className="AttributeMenu__divider" />
+      <Box className="AttributeMenu__detailGrid">
+        {hasLadder && <DetailLine label="Slots now" value={slotsNowText(info)} />}
+        {!!info.pactLevel && (
+          <DetailLine
+            label="Pact level"
+            value={`${info.pactLevel}, every slot refills on a short rest`}
+          />
+        )}
+        {hasLadder && <DetailLine label="Next rank" value={nextRankText(info)} />}
+        <DetailLine
+          label="Short rests"
+          value={
+            info.unlimitedShortRests
+              ? 'unlimited'
+              : `${info.shortRests} / ${info.shortRestsMax}`
+          }
+        />
+        <DetailLine
+          label="Long rest"
+          value={info.longRestIn ? `ready in ${info.longRestIn}` : 'ready'}
+        />
+        {info.pools.map((pool) => (
+          <DetailLine
+            key={pool.name}
+            label={pool.name}
+            value={`${pool.current} / ${pool.max}, refilled by a ${pool.rest}`}
+          />
+        ))}
+      </Box>
+    </Section>
+  );
+});
+
 const InspectionPanel = memo((props: {
   attribute: ResolvedInspectedAttribute | null;
   act: any;
@@ -907,6 +1023,7 @@ export const AttributeMenu = () => {
     skills_values,
     show_bad_skills = false,
     closely_inspected,
+    class_resources,
   } = data;
 
   const statsMetaSafe = stats_meta || [];
@@ -1028,7 +1145,10 @@ export const AttributeMenu = () => {
               selectedName={selectedName}
               act={act}
             />
-            <InspectionPanel attribute={inspectedAttribute} act={act} />
+            <Box className="AttributeMenu__notesColumn">
+              {class_resources && <ClassResourcesSection info={class_resources} />}
+              <InspectionPanel attribute={inspectedAttribute} act={act} />
+            </Box>
           </Box>
           {showTutorial && (
             <AttributeTutorial onClose={closeTutorial} rootRef={rootRef} />

@@ -373,7 +373,8 @@
 	var/requirement_sum = requirement
 	if(count_modifiers)
 		//diceroll modifiers assume you use 1d18, so we gotta account for that
-		var/final_modifier = (get_diceroll_modifier()/18)*dice_num*dice_sides
+		// The context must reach the lookup, or every context-limited modifier is skipped.
+		var/final_modifier = (get_diceroll_modifier(context)/18)*dice_num*dice_sides
 		if(final_modifier >= 0)
 			final_modifier = CEILING(final_modifier, 1)
 		else

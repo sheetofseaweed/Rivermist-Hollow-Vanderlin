@@ -4,9 +4,6 @@
 	button_icon_state = "rayoffrost"
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/ice = 0.6,
-	)
 
 	charge_time = 2.5 SECONDS
 	charge_drain = 1
@@ -21,13 +18,26 @@
 	time = 6 SECONDS
 	max_distance = 5
 
+	slot_level = 1
+	minor_cost = SPELL_MINOR_COST_DEFAULT
+	slot_label = "Beam of Frost"
+	required_form = FORM_ICE
+	required_technique = TECHNIQUE_DESTRUCTION
+
 	var/list/hit_targets
+	/// Slot level captured at cast, since the beam outlives the cast.
+	var/beam_level
+	/// Upcast frostbite duration multiplier, captured with the level.
+	var/beam_duration_multiplier = 1
 
 /datum/action/cooldown/spell/beam/beam_of_frost/Destroy()
 	hit_targets = null
 	return ..()
 
 /datum/action/cooldown/spell/beam/beam_of_frost/cast(atom/cast_on)
+	// The parent connects the beam and freezes the first target, so capture the level first.
+	beam_level = get_effect_level()
+	beam_duration_multiplier = get_upcast_duration_multiplier()
 	. = ..()
 	addtimer(VARSET_CALLBACK(src, hit_targets, null), time + 5 DECISECONDS)
 
@@ -60,10 +70,18 @@
 		qdel(active)
 		return
 
-	var/strength = clamp(attuned_strength * extra_modifer, 0.5, 2)
+	var/strength = clamp(get_rank_multiplier() * extra_modifer, 0.5, 2)
 
-	victim.adjustFireLoss(round(20 * strength))
-	victim.apply_status_effect(/datum/status_effect/debuff/frostbite, null, strength)
+	var/damage = round(20 * strength)
+	if(beam_level == SPELL_SLOT_MINOR)
+		damage = 10 * get_cantrip_multiplier()
+		strength = 0.5
+	else if(!isnull(beam_level))
+		damage = round((15 + 10 * beam_level) * get_rank_multiplier())
+		strength = clamp(0.5 + 0.25 * beam_level, 0.5, 2)
+	victim.adjustFireLoss(damage)
+	var/datum/status_effect/debuff/frostbite/frost_type = /datum/status_effect/debuff/frostbite
+	victim.apply_status_effect(frost_type, initial(frost_type.duration) * beam_duration_multiplier, strength)
 
 	new /obj/effect/temp_visual/snap_freeze(get_turf(victim))
 

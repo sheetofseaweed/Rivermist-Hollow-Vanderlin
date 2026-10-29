@@ -2,12 +2,6 @@
 	name = "Spider Form"
 	desc = "Transform into a spider. Damage is not inherited between forms!"
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-		/datum/attunement/polymorph = 0.5,
-		/datum/attunement/aeromancy = 0.3,
-	)
-
 	charge_required = FALSE
 	cooldown_time = 50 SECONDS
 

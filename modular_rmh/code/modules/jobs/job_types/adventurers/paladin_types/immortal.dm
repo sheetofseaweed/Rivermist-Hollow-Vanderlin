@@ -40,6 +40,7 @@
 		/datum/action/cooldown/spell/diagnose/holy,
 		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/sacred_flame,
+		/datum/action/cooldown/spell/undirected/undying_sentinel,
 	)
 
 /datum/job/advclass/combat/adventurer_paladin/immortal/after_spawn(mob/living/carbon/human/spawned, client/player_client)
@@ -48,6 +49,12 @@
 		spawned.adjust_skillrank(/datum/skill/combat/polearms, 4, TRUE)
 	else
 		spawned.adjust_skillrank(/datum/skill/combat/swords, 4, TRUE)
+
+	var/holder = spawned.patron?.devotion_holder
+	if(holder)
+		var/datum/devotion/devotion = new holder()
+		devotion.make_templar()
+		devotion.grant_to(spawned)
 
 /datum/outfit/adventurer_paladin/immortal
 	name = "Immortal"

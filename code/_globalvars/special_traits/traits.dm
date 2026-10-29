@@ -326,7 +326,7 @@
 	name = "The Burdened One"
 	greet_text = span_notice("You are a true instrument of creation, the most blessed of Moradin, nothing will stop your toil, be it sleep or fatigue.")
 	weight = 10
-	allowed_patrons = list(/datum/patron/divine/malum)
+	allowed_patrons = list(/datum/patron/faerun/good_gods/Moradin)
 	req_text = "Worship Moradin, must be a carpenter, elder, smith, artificer or miner."
 	allowed_jobs = list(/datum/job/artisan, /datum/job/artisan_apprentice, /datum/job/towner) // no combat roles
 
@@ -666,7 +666,6 @@
 	character.set_skillrank(/datum/skill/combat/swords, 2, TRUE) //Average only.
 	character.adjust_spell_points(14) //Less points than Court Mage, why do Court mage get 17 points? what even?
 	character.add_spell(/datum/action/cooldown/spell/undirected/touch/prestidigitation, silent = TRUE)
-	character.generate_random_attunements(rand(4,6))
 	character.mana_pool.set_intrinsic_recharge(MANA_ALL_LEYLINES)
 	character.mana_pool.adjust_mana(100) //I don't know, they don't spawn with their full mana bar, so we give them a bit more mana at the start.
 	new /obj/item/book/granter/spellbook/master(get_turf(character))
@@ -802,7 +801,7 @@
 	name = "Adored by Baotha"
 	greet_text = span_notice("Baotha adore me so much that she gave me some goodies, dope tbh.")
 	weight = 10
-	allowed_patrons = list(/datum/patron/inhumen/baotha)
+	allowed_patrons = list(/datum/patron/faerun/evil_gods/Blissara)
 	req_text = "Have Baotha as your Patron and do not be a Iconoclast, a profane paladin or a inhumen cleric"
 	restricted_jobs = list(/datum/job/advclass/wretch/heretic, /datum/job/advclass/combat/inhumencleric, /datum/job/advclass/combat/profanepaladin)
 

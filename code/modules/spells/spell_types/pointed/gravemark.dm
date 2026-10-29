@@ -3,9 +3,13 @@
 	desc = "Adds or removes a target from the list of allies exempt from your undead's aggression."
 	button_icon_state = "raiseskele"
 	cooldown_time = 25 SECONDS
-	spell_cost = 25
+	spell_cost = SPELL_CANTRIP_COST
 	cast_range = 4
 	charge_required = FALSE
+	heretical_spell = TRUE
+
+	slot_level = 0
+	required_form = FORM_DEATH
 
 /datum/action/cooldown/spell/gravemark/is_valid_target(atom/cast_on)
 	. = ..()

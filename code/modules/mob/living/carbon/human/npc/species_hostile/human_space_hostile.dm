@@ -13,7 +13,7 @@
 	. = ..()
 	AddElement(/datum/element/ai_retaliate)
 	AddComponent(/datum/component/ai_aggro_system)
-	set_patron(/datum/patron/inhumen/graggar, TRUE)
+	set_patron(/datum/patron/faerun/evil_gods/Gruumsh, TRUE)
 	job = "Blood-drunk Human"
 	ADD_TRAIT(src, TRAIT_NOMOOD, TRAIT_GENERIC)
 	ADD_TRAIT(src, TRAIT_NOHUNGER, TRAIT_GENERIC)

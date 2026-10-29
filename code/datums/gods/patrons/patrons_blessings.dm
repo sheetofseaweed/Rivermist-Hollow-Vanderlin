@@ -160,7 +160,7 @@
 	/// Specific god -> specific blessing mapping
 	var/static/list/blessing_flavor = list(
 		/// Abyssor – The Sunken God
-		/datum/patron/divine/abyssor = list(
+		/datum/patron/faerun/evil_gods/Umberlee = list(
 			/datum/status_effect/buff/beastsense = "Abyssor whispers: \"The sea calls yer senses forth. Smell tha salt, taste tha fear.\"",
 			/datum/status_effect/buff/trollshape = "Abyssor groans: \"The abyss grants form... and hungers fer more.\"",
 			/datum/status_effect/buff/divine_beauty = "Abyssor rumbles: \"Even beauty drowns. But fer now, ye rise.\"",
@@ -177,7 +177,7 @@
 
 		/// (Repeat this block, tailored for each god)
 		/// Astrata - The Sun Queen
-		/datum/patron/divine/astrata = list(
+		/datum/patron/faerun/good_gods/Lathander = list(
 			/datum/status_effect/buff/beastsense = "Astrata commandeth: \"LET THY SIGHT BE CLEARED. THE LIGHT REVEALETH ALL.\"",
 			/datum/status_effect/buff/trollshape = "Astrata proclaimeth: \"BECOME THE HAMMER OF MINE WILL. STRIKE WITH PURPOSE.\"",
 			/datum/status_effect/buff/divine_beauty = "Astrata speaketh: \"RADIATE THY DUTY. LET NONE AVERT THEIR GAZE.\"",
@@ -193,7 +193,7 @@
 		),
 
 		/// Baotha - The Tiefling Queen
-		/datum/patron/inhumen/baotha = list(
+		/datum/patron/faerun/evil_gods/Blissara = list(
 			/datum/status_effect/buff/beastsense = "Baotha shrieks: \"See it! Smell it! Rip it apart! Or hug it! Both are valid!\"",
 			/datum/status_effect/buff/trollshape = "Baotha howls: \"Perfect. You’re gonna cause SUCH a scene!\"",
 			/datum/status_effect/buff/divine_beauty = "Baotha swoons: \"Beauty fit for a queen. I'd know.\"",
@@ -209,7 +209,7 @@
 		),
 
 		/// Dendor - The Treefather
-		/datum/patron/divine/dendor = list(
+		/datum/patron/faerun/neutral_gods/Silvanus = list(
 			/datum/status_effect/buff/beastsense = "Dendor growls: \"Beasts... hunting? Yes, of course.\"",
 			/datum/status_effect/buff/trollshape = "Dendor mutters: \"Ah. I do recall making one of these, right?\"",
 			/datum/status_effect/buff/divine_beauty = "Dendor sighs: \"Bloom... Blooming and pollen.\"",
@@ -225,7 +225,7 @@
 		),
 
 		/// Eora - The Heart of Psydon
-		/datum/patron/divine/eora = list(
+		/datum/patron/faerun/good_gods/Sune = list(
 			/datum/status_effect/buff/beastsense = "Eora whispers: \"Even the beasts know love's call.\"",
 			/datum/status_effect/buff/trollshape = "Eora coos: \"Strong arms, tender heart.\"",
 			/datum/status_effect/buff/divine_beauty = "Eora smiles: \"You shine, beloved. All gaze upon you with wonder.\"",
@@ -241,7 +241,7 @@
 		),
 
 		/// Graggar - The Warborn Beast
-		/datum/patron/inhumen/graggar = list(
+		/datum/patron/faerun/evil_gods/Gruumsh = list(
 			/datum/status_effect/buff/beastsense = "Graggar growls: \"Sniff it. Smell the fear, thu fool.\"",
 			/datum/status_effect/buff/trollshape = "Graggar roars: \"Meat swells. Thu strong. Thu crush now.\"",
 			/datum/status_effect/buff/divine_beauty = "Graggar spits: \"Pah! Pretty? WASTE! Git bloody, thu fole!\"",
@@ -257,7 +257,7 @@
 		),
 
 		/// Malum - The Iron Lord
-		/datum/patron/divine/malum = list(
+		/datum/patron/faerun/good_gods/Moradin = list(
 			/datum/status_effect/buff/beastsense = "Malum grunts: \"Even beasts know CRAFT. So should you.\"",
 			/datum/status_effect/buff/trollshape = "Malum states: \"Strong arms make stronger tools.\"",
 			/datum/status_effect/buff/divine_beauty = "Malum hammers: \"Beauty fades. STEEL remains.\"",
@@ -273,7 +273,7 @@
 		),
 
 		/// Matthios - The Bandit God
-		/datum/patron/inhumen/matthios = list(
+		/datum/patron/faerun/evil_gods/Mask = list(
 			/datum/status_effect/buff/beastsense = "Matthios laughs: \"Sniff it out, lad. Something worth stealing.\"",
 			/datum/status_effect/buff/trollshape = "Matthios grins: \"Ugly sells well in some towns, friend.\"",
 			/datum/status_effect/buff/divine_beauty = "Matthios smirks: \"Pretty coin, pretty face... both stolen easy.\"",
@@ -289,7 +289,7 @@
 		),
 
 		/// Necra - The Undermaiden
-		/datum/patron/divine/necra = list(
+		/datum/patron/faerun/neutral_gods/Jergal = list(
 			/datum/status_effect/buff/beastsense = "Necra murmurs: \"The grave knows your scent... and waits.\"",
 			/datum/status_effect/buff/trollshape = "Necra hums: \"Mass returns to earth. Let the soil remember you.\"",
 			/datum/status_effect/buff/divine_beauty = "Necra whispers: \"Even beauty rots. But for now... wear it.\"",
@@ -305,7 +305,7 @@
 		),
 
 		/// Noc - The Moon Prince
-		/datum/patron/divine/noc = list(
+		/datum/patron/faerun/neutral_gods/Mystra = list(
 			/datum/status_effect/buff/beastsense = "Noc pondereth: \"The nite sees what the day fears.\"",
 			/datum/status_effect/buff/trollshape = "Noc museth: \"Moonlight swells thy shape...\"",
 			/datum/status_effect/buff/divine_beauty = "Noc murmureth: \"A fabulous dress fixes anyone. For now, have this.\"",
@@ -321,7 +321,7 @@
 		),
 
 		/// Pestra - The Mistake
-		/datum/patron/divine/pestra = list(
+		/datum/patron/faerun/good_gods/Ilmater = list(
 			/datum/status_effect/buff/beastsense = "Pestra bemuses: \"Sniff it. Identify its substance— not that cycles of rot would harm you.\"",
 			/datum/status_effect/buff/trollshape = "Pestra wheezes: \"Thick skin, bad breath. You’re a fascinating specimen.\"",
 			/datum/status_effect/buff/divine_beauty = "Pestra muses: \"Unblemished... Curious. Beauty often masks the most virulent flaws.\"",
@@ -337,7 +337,7 @@
 		),
 
 		/// Ravox - Justice Incarnate
-		/datum/patron/divine/ravox = list(
+		/datum/patron/faerun/neutral_gods/Tempus = list(
 			/datum/status_effect/buff/beastsense = "Ravox growls: \"Smell your enemy. Hunt them down with purpose.\"",
 			/datum/status_effect/buff/trollshape = "Ravox commands: \"Let might serve justice. Let strength carry duty.\"",
 			/datum/status_effect/buff/divine_beauty = "Ravox declares: \"Wear your glory well, warrior. Let honor shine brighter.\"",
@@ -353,7 +353,7 @@
 		),
 
 		/// Xylix - The Trickster
-		/datum/patron/divine/xylix = list(
+		/datum/patron/faerun/neutral_gods/Tymora = list(
 			/datum/status_effect/buff/beastsense = "Xylix laughs: \"Sniff sniff! What's behind that tree? Chaos, I hope!\"",
 			/datum/status_effect/buff/trollshape = "Xylix grins: \"Big, dumb, and hilarious. Perfect.\"",
 			/datum/status_effect/buff/divine_beauty = "Xylix cackles: \"Shiny! Pretty! Now trip over it!\"",
@@ -369,7 +369,7 @@
 		),
 
 		/// Zizo - The Ascended Goddess
-		/datum/patron/inhumen/zizo = list(
+		/datum/patron/faerun/evil_gods/Lolth = list(
 			/datum/status_effect/buff/beastsense = "Zizo hisses: \"They crawl. They beg. They are prey, inferior. Hunt them.\"",
 			/datum/status_effect/buff/trollshape = "Zizo croons: \"This form? Power. Strength. Craft your flesh. This is my gift.\"",
 			/datum/status_effect/buff/divine_beauty = "Zizo sneers: \"They shall kneel before this visage. And they shall weep.\"",
