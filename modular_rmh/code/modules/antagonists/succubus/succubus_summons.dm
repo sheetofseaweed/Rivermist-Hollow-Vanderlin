@@ -124,6 +124,13 @@
 	. = ..()
 	parent.ai_controller?.clear_blackboard_key(BB_BASIC_MOB_CURRENT_HORNY_TARGET)
 
+// Friends point all the time; only a point made while this order is active picks a target.
+/datum/pet_command/pet_breed_other/on_target_set(mob/living/friend, atom/potential_target)
+	var/mob/living/parent = weak_parent?.resolve()
+	if(parent?.ai_controller?.blackboard[BB_ACTIVE_PET_COMMAND] != src)
+		return
+	return ..()
+
 /datum/pet_command/pet_breed_other/set_command_target(mob/living/parent, atom/target)
 	if(!isliving(target) || target == parent)
 		parent.visible_message(span_notice("[parent] turns away from [target]."))

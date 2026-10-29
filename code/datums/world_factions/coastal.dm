@@ -81,6 +81,7 @@
 		// Livestock - coastal communities
 		/datum/supply_pack/livestock/chicken,
 		/datum/supply_pack/livestock/cat,
+		/datum/supply_pack/livestock/dog,
 		// Camp shelter
 		/datum/supply_pack/tools/camp_tent
 	)
@@ -126,6 +127,7 @@
 		/datum/supply_pack/livestock/cow,
 		/datum/supply_pack/livestock/goat,
 		/datum/supply_pack/livestock/pig,
+		/datum/supply_pack/livestock/dog_pair,
 		// Medical supplies
 		/datum/supply_pack/tools/medical/surgerybag,
 		/datum/supply_pack/tools/medical/prarml,

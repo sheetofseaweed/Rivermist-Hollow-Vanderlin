@@ -77,7 +77,9 @@
 		/datum/supply_pack/rawmats/blocks,
 		/datum/supply_pack/rawmats/ash,
 		// Camp shelter
-		/datum/supply_pack/tools/camp_tent
+		/datum/supply_pack/tools/camp_tent,
+		// Livestock - hunting and herding dogs
+		/datum/supply_pack/livestock/dog
 	)
 	uncommon_pool = list(
 		// Better armor
@@ -129,7 +131,9 @@
 		/datum/supply_pack/instruments/mbox,
 		/datum/supply_pack/instruments/vocals,
 		// Materials
-		/datum/supply_pack/rawmats/sinew
+		/datum/supply_pack/rawmats/sinew,
+		// Livestock
+		/datum/supply_pack/livestock/dog_pair
 	)
 	rare_pool = list(
 		// High-end armor
