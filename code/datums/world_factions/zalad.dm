@@ -70,6 +70,7 @@
 		/datum/supply_pack/seeds/spelt,
 		/datum/supply_pack/seeds/cabbage,
 		/datum/supply_pack/seeds/turnip,
+		/datum/supply_pack/seeds/pumpkin,
 		/datum/supply_pack/luxury/spectacles_onyxa,
 		/datum/supply_pack/jewelry/nosegold,
 		/datum/supply_pack/apparel/engineering_goggles,

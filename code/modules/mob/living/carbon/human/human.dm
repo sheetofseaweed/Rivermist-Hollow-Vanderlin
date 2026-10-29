@@ -1218,7 +1218,7 @@
 	message_admins("[ADMIN_LOOKUPFLW_PP(src)] is a [mind.assigned_role.get_informed_title(src)] and has been disconnected for more than 30 seconds!")
 
 /mob/living/carbon/human/nobles_seen_servant_work()
-	if(!is_servant_job(mind.assigned_role))
+	if(!mind || !is_servant_job(mind.assigned_role))
 		return
 
 	var/list/nobles = list()
