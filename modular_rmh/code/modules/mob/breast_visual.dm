@@ -77,6 +77,7 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	RegisterSignal(parent, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
 	RegisterSignal(parent, COMSIG_MOB_EMOTE, PROC_REF(on_emote))
 	RegisterSignal(parent, COMSIG_MOB_LOGIN, PROC_REF(on_login))
+	RegisterSignals(parent, list(COMSIG_MOB_EQUIPPED_ITEM, COMSIG_MOB_UNEQUIPPED_ITEM), PROC_REF(on_equipment_changed))
 	refresh()
 
 /datum/component/breast_animation/UnregisterFromParent()
@@ -89,6 +90,8 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 		COMSIG_SEX_CLIMAX,
 		COMSIG_MOB_EMOTE,
 		COMSIG_MOB_LOGIN,
+		COMSIG_MOB_EQUIPPED_ITEM,
+		COMSIG_MOB_UNEQUIPPED_ITEM,
 	))
 	stop_jiggle()
 	remove_visual()
@@ -103,7 +106,7 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	var/mob/living/carbon/human/human = parent
 	if(QDELETED(human) || istype(human, /mob/living/carbon/human/dummy) || !human.dna?.species)
 		return null
-	if(!breast_animation_enabled(human))
+	if(!human.breast_children_allowed())
 		return null
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = human.getorganslot(ORGAN_SLOT_BREASTS)
 	if(!istype(breasts) || !ispath(breasts.accessory_type, /datum/sprite_accessory/genitals/breasts/pair))
@@ -329,13 +332,17 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	visual = null
 
 /// Plays a one-shot on every shown child, then each returns to its rest state.
-/datum/component/breast_animation/proc/play_shot(shot)
+/datum/component/breast_animation/proc/play_shot(shot, side_jiggle = TRUE)
 	if(!visual)
 		play_small_shot(shot)
 		return
+	var/mob/living/carbon/human/human = parent
+	// One-shots exist for the south view only; facing elsewhere a jiggle cycle shows the motion.
+	if(side_jiggle && human.dir != SOUTH)
+		play_side_shot()
+		return
 	if(!(visual.vis_flags & VIS_HIDE))
 		flick("pair_[size]_[shot]_front_ADJ", visual)
-	var/mob/living/carbon/human/human = parent
 	for(var/slot in garment_visuals)
 		var/atom/movable/breast_visual/child = garment_visuals[slot]
 		var/obj/item/garment = human.get_chest_slot_item(slot)
@@ -381,7 +388,17 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	set_running(FALSE)
 	// The jiggle loop never showed the run cycle, so there is nothing to settle.
 	if(!jiggling)
-		play_shot("stop")
+		play_shot("stop", side_jiggle = FALSE)
+
+/// A garment change may add or remove a plain cover; the children are re-evaluated once the slot settles.
+/datum/component/breast_animation/proc/on_equipment_changed(datum/source)
+	SIGNAL_HANDLER
+	addtimer(CALLBACK(src, PROC_REF(refresh_after_equip)), 1, TIMER_UNIQUE | TIMER_OVERRIDE)
+
+/datum/component/breast_animation/proc/refresh_after_equip()
+	if(QDELETED(src))
+		return
+	refresh()
 
 /datum/component/breast_animation/proc/on_apply_overlay(datum/source, cache_index, overlay)
 	SIGNAL_HANDLER
@@ -405,7 +422,7 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	var/delay = human.cached_multiplicative_slowdown
 	if(delay < CONFIG_GET(number/movedelay/walk_delay) + BREAST_SLOW_STEP_EXTRA)
 		return
-	play_shot(delay >= BREAST_SLOW_FULL_CYCLE ? "walk" : "walk_half")
+	play_shot(delay >= BREAST_SLOW_FULL_CYCLE ? "walk" : "walk_half", side_jiggle = FALSE)
 
 /datum/component/breast_animation/proc/on_damaged(datum/source, damage, damagetype, def_zone)
 	SIGNAL_HANDLER

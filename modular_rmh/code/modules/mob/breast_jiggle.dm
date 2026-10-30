@@ -186,6 +186,12 @@
 /// Shots rough enough to shake breasts that have no drawn frames.
 GLOBAL_LIST_INIT(breast_rough_shots, list("bounce", "pump2", "pump3", "hit", "slap_b", "fall", "land", "jump"))
 
+/// One jiggle cycle stands in for a one-shot the viewer cannot see from the side or behind.
+/datum/component/breast_animation/proc/play_side_shot()
+	if(jiggling || !visual || ((visual.vis_flags & VIS_HIDE) && !LAZYLEN(garment_visuals)))
+		return
+	start_jiggle(BREAST_JIGGLE_CYCLE, FALSE, FALSE, hop = FALSE, busy_ok = TRUE)
+
 /// Without a breasts child, a rough shot plays one generated jiggle cycle instead (sizes 1-4, quad, sextuple).
 /datum/component/breast_animation/proc/play_small_shot(shot)
 	if(jiggling || !(shot in GLOB.breast_rough_shots))

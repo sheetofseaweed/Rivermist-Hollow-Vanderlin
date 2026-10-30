@@ -335,6 +335,7 @@ GLOBAL_LIST_EMPTY(halloween_hunt_candies)
 	light_power = 1
 	light_color = "#ffb272"
 	sellprice = 25
+	misc_flags = CRAFTING_TEST_EXCLUDE
 
 /obj/item/clothing/head/hunt_pumpkin_crown/getonmobprop(tag)
 	. = ..()

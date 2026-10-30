@@ -7,28 +7,20 @@
 	var/piercing_type
 
 /datum/sprite_accessory/piercing/get_icon_state(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
-	if(owner.getorganslot(ORGAN_SLOT_BREASTS))
-		var/obj/item/organ/genitals/filling_organ/breasts/breasts = owner.getorganslot(ORGAN_SLOT_BREASTS)
-		var/tag = icon_state
-		if((breasts.organ_size == 0) || (breasts.organ_size == 1))
-			tag = tag + "-1"
-		if(breasts.organ_size == 2)
-			tag = tag + "-2"
-		if(breasts.organ_size == 3)
-			tag = tag + "-3"
-		if(breasts.organ_size == 4)
-			tag = tag + "-4"
-		if(breasts.organ_size == 5)
-			tag = tag + "-5"
-		return tag
-	else
-		var/tag = icon_state + "-1"
-		return tag
+	var/obj/item/organ/genitals/filling_organ/breasts/breasts = owner.getorganslot(ORGAN_SLOT_BREASTS)
+	// Art exists up to size 5; bigger breasts keep that placement.
+	var/size = istype(breasts) ? clamp(breasts.get_visible_size(), 1, 5) : 1
+	return "[icon_state]-[size]"
 
 /datum/sprite_accessory/piercing/adjust_appearance_list(list/appearance_list, obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
 	generic_gender_feature_adjust(appearance_list, organ, bodypart, owner, OFFSET_SUIT, OFFSET_SUIT)
 
 /datum/sprite_accessory/piercing/is_visible(obj/item/organ/organ, obj/item/bodypart/bodypart, mob/living/carbon/owner)
+	// The animated breasts child draws above this overlay, so the piercing waits for the still body.
+	if(ishuman(owner))
+		var/mob/living/carbon/human/human_owner = owner
+		if(human_owner.breast_animation_active())
+			return FALSE
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = owner.getorganslot(ORGAN_SLOT_BREASTS)
 	if(breasts)
 		if(breasts.visible_through_clothes)

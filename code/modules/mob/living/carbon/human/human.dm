@@ -817,9 +817,14 @@
 	VV_DROPDOWN_OPTION(VV_HK_SET_SPECIES, "Set Species")
 	VV_DROPDOWN_OPTION(VV_HK_CORONATE, "Coronate")
 	VV_DROPDOWN_OPTION(VV_HK_CHANGE_TITLE, "Change Title")
+	VV_DROPDOWN_OPTION(VV_HK_BREAST_TEST_PANEL, "Breast Test Panel")
 
 /mob/living/carbon/human/vv_do_topic(list/href_list)
 	. = ..()
+	if(href_list[VV_HK_BREAST_TEST_PANEL])
+		if(!check_rights(R_SPAWN))
+			return
+		open_breast_test_panel(usr)
 	if(href_list[VV_HK_COPY_OUTFIT])
 		if(!check_rights(R_SPAWN))
 			return

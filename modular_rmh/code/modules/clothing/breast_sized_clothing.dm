@@ -66,8 +66,8 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 	var/size = get_breast_sized_size(wearer)
 	if(isnull(size))
 		return null
-	// With the animation off the whole garment is one still, so nothing bounces over still breasts.
-	if(!breast_animation_enabled(wearer) && icon_exists(breast_sized_icon, "[icon_state]_f_[size]_still"))
+	// Without children the whole garment is one still, so nothing bounces over still breasts.
+	if(!wearer.breast_children_allowed() && icon_exists(breast_sized_icon, "[icon_state]_f_[size]_still"))
 		return "[size]_still"
 	var/datum/component/breast_animation/animation = wearer.GetComponent(/datum/component/breast_animation)
 	if(animation?.jiggling && icon_exists(breast_sized_icon, "[icon_state]_f_[size]_jiggle"))
@@ -150,6 +150,20 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 		if(garment.breast_sized_closed)
 			return TRUE
 	return FALSE
+
+/// A plain garment over the chest; the children would draw above it, so the body stills show instead.
+/mob/living/carbon/human/proc/wears_plain_chest_garment()
+	for(var/obj/item/item as anything in list(bra, wear_shirt, wear_armor))
+		if(item && !item.uses_breast_sized_layers(src))
+			return TRUE
+	// Cloaks drawn behind the body leave the south view clear.
+	if(cloak && cloak.alternate_worn_layer != CLOAK_BEHIND_LAYER && !cloak.uses_breast_sized_layers(src))
+		return TRUE
+	return FALSE
+
+/// Whether the breasts and garment children may draw: preference on and no plain garment over the chest.
+/mob/living/carbon/human/proc/breast_children_allowed()
+	return breast_animation_enabled(src) && !wears_plain_chest_garment()
 
 /// Rebuilds the worn sprites of sized garments; all_sheets also takes ones without a state for the current size.
 /mob/living/carbon/human/proc/update_breast_sized_worn(all_sheets = FALSE)
