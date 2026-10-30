@@ -528,6 +528,7 @@
 	var/must_flip = !giving
 
 	mob.sex_scene?.handle_pattern_climax(mob, action)
+	apply_orifice_climax_moods(mob, action)
 	playsound(parent, 'sound/misc/mat/endout.ogg', 50, TRUE, ignore_walls = FALSE)
 	// Special cases for when the user has a penis but no testicles & for eunuchs
 	if((!mob.getorganslot(ORGAN_SLOT_TESTICLES) && mob.getorganslot(ORGAN_SLOT_PENIS)) || (!mob.getorganslot(ORGAN_SLOT_TESTICLES) && !mob.getorganslot(ORGAN_SLOT_VAGINA)))
@@ -559,8 +560,8 @@
 				vag.produce_climax_fluid()
 		after_ejaculation(FALSE, mob, null, action, action_initiator, action_target, action_performer)
 	else
-		// A climaxer set to finish outside pulls their cock out first and lands on the partner, unless it fails.
-		var/pulled_out = wants_to_finish_outside(action, mob) && try_pull_out(mob, target)
+		// Still pressing at the opening, or a successful pull-out to finish outside, lands the climax outside.
+		var/pulled_out = action.orifice_pressing || (wants_to_finish_outside(action, mob) && try_pull_out(mob, target))
 		var/return_type = pulled_out ? pull_out_for_climax(action, mob, target) : action.handle_climax_message(mob, target, must_flip)
 		if(!return_type)
 			var/turf/turf = get_turf(mob)

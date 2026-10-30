@@ -103,6 +103,7 @@
 		/datum/customizer/organ/genitals/penis/anthro,
 		/datum/customizer/organ/genitals/breasts/animal,
 		/datum/customizer/organ/genitals/vagina/animal,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/ears/tajaran,
 		/datum/customizer/bodypart_feature/body_hair/optional,
 		/datum/customizer/bodypart_feature/pubic_hair,

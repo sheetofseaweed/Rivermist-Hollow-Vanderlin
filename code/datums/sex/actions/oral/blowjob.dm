@@ -59,6 +59,7 @@
 	handle_passive_ejaculation(target)
 	perform_sex_action(user, target, 1, 0, 0.2)
 	handle_passive_ejaculation(user)
+	coat_penis_with_saliva(user, target, 0.5, 3)
 
 /datum/sex_action/blowjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()

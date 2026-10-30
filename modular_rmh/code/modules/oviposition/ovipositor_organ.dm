@@ -31,8 +31,7 @@
 		to_chat(user, span_warning("The ovipositor must be attached before I can tune its egg-laying."))
 		return
 	var/mob/living/carbon/human/human_owner = owner
-	var/datum/oviposition_status_menu/menu = new(human_owner)
-	menu.ui_interact(user)
+	human_owner.open_hole_status(user)
 
 /obj/item/organ/genitals/penis/ovipositor/proc/set_egg_type(new_egg_type)
 	if(new_egg_type)
@@ -87,10 +86,17 @@
 	var/obj/item/organ/genitals/penis/ovipositor/ovipositor = current_penis
 
 	if(!istype(ovipositor))
+		var/kept_length = 0
+		var/kept_size = 0
 		if(current_penis)
+			kept_length = current_penis.length_cm
+			kept_size = current_penis.organ_size
 			current_penis.Remove(owner, FALSE, FALSE)
 			qdel(current_penis)
 		ovipositor = new /obj/item/organ/genitals/penis/ovipositor()
+		if(kept_size)
+			ovipositor.length_cm = kept_length
+			ovipositor.organ_size = kept_size
 		ovipositor.Insert(owner, FALSE, FALSE)
 
 	ovipositor.set_egg_type(egg_type)
@@ -262,52 +268,46 @@
 		return
 
 	ADD_TRAIT(owner, TRAIT_EGG_LAYER, "[type]")
-	if(ishuman(owner))
-		var/mob/living/carbon/human/human_owner = owner
-		human_owner.update_check_eggs_verb()
 
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina = owner.getorganslot(ORGAN_SLOT_VAGINA)
-	if(vagina)
+	var/obj/item/organ/genitals/filling_organ/womb/womb = owner.get_womb()
+	if(womb)
 		var/clutch = text2num(get_extra_value("clutch_size", 6))
 		if(isnull(clutch))
 			clutch = 6
-		vagina.oviposition_egg_production_limit = clamp(round(clutch), 1, OVI_EGG_MAX_CLUTCH)
+		womb.oviposition_egg_production_limit = clamp(round(clutch), 1, OVI_EGG_MAX_CLUTCH)
 		var/scale_percent = text2num(get_extra_value("egg_scale_percent", 100))
 		if(isnull(scale_percent))
 			scale_percent = 100
-		vagina.egg_scale = sanitize_oviposition_scale(scale_percent / 100)
-		vagina.custom_egg_name = sanitize_oviposition_text(get_extra_value("custom_name", ""), OVI_EGG_MAX_CUSTOM_NAME_LENGTH, FALSE)
-		vagina.custom_egg_desc = sanitize_oviposition_text(get_extra_value("custom_desc", ""), OVI_EGG_MAX_CUSTOM_DESC_LENGTH, TRUE)
-		vagina.custom_organ_desc = sanitize_oviposition_text(get_extra_value("custom_organ_desc", ""), OVI_EGG_MAX_CUSTOM_DESC_LENGTH, TRUE)
-		vagina.custom_egg_color = sanitize_oviposition_color(get_extra_value("custom_color", ""))
+		womb.egg_scale = sanitize_oviposition_scale(scale_percent / 100)
+		womb.custom_egg_name = sanitize_oviposition_text(get_extra_value("custom_name", ""), OVI_EGG_MAX_CUSTOM_NAME_LENGTH, FALSE)
+		womb.custom_egg_desc = sanitize_oviposition_text(get_extra_value("custom_desc", ""), OVI_EGG_MAX_CUSTOM_DESC_LENGTH, TRUE)
+		womb.custom_organ_desc = sanitize_oviposition_text(get_extra_value("custom_organ_desc", ""), OVI_EGG_MAX_CUSTOM_DESC_LENGTH, TRUE)
+		womb.custom_egg_color = sanitize_oviposition_color(get_extra_value("custom_color", ""))
 		var/egg_trait = get_extra_value("egg_trait", "None")
-		vagina.egg_traits = (egg_trait && egg_trait != "None") ? sanitize_oviposition_trait_list(list(egg_trait)) : list()
+		womb.egg_traits = (egg_trait && egg_trait != "None") ? sanitize_oviposition_trait_list(list(egg_trait)) : list()
 		var/auto_hatch = get_extra_value("auto_hatch", "Profile")
-		vagina.custom_auto_hatch = (auto_hatch == "Profile") ? null : (auto_hatch == "Yes")
-		vagina.resource_dependent_yield = (get_extra_value("resource_dependent", "No") == "Yes")
-		vagina.update_custom_organ_desc()
+		womb.custom_auto_hatch = (auto_hatch == "Profile") ? null : (auto_hatch == "Yes")
+		womb.resource_dependent_yield = (get_extra_value("resource_dependent", "No") == "Yes")
+		womb.update_custom_organ_desc()
 
 /datum/quirk/peculiarity/egg_layer/on_remove()
 	if(!owner)
 		return
 
 	REMOVE_TRAIT(owner, TRAIT_EGG_LAYER, "[type]")
-	if(ishuman(owner))
-		var/mob/living/carbon/human/human_owner = owner
-		human_owner.update_check_eggs_verb()
 
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina = owner.getorganslot(ORGAN_SLOT_VAGINA)
-	if(vagina)
-		vagina.oviposition_egg_production_limit = initial(vagina.oviposition_egg_production_limit)
-		vagina.custom_egg_name = ""
-		vagina.custom_egg_desc = ""
-		vagina.custom_organ_desc = ""
-		vagina.custom_egg_color = null
-		vagina.custom_auto_hatch = null
-		vagina.egg_scale = OVI_EGG_DEFAULT_SCALE
-		vagina.egg_traits = list()
-		vagina.resource_dependent_yield = FALSE
-		vagina.update_custom_organ_desc()
+	var/obj/item/organ/genitals/filling_organ/womb/womb = owner.get_womb()
+	if(womb)
+		womb.oviposition_egg_production_limit = initial(womb.oviposition_egg_production_limit)
+		womb.custom_egg_name = ""
+		womb.custom_egg_desc = ""
+		womb.custom_organ_desc = ""
+		womb.custom_egg_color = null
+		womb.custom_auto_hatch = null
+		womb.egg_scale = OVI_EGG_DEFAULT_SCALE
+		womb.egg_traits = list()
+		womb.resource_dependent_yield = FALSE
+		womb.update_custom_organ_desc()
 
 /datum/quirk/peculiarity/egg_layer/get_option_name(option)
 	return get_oviposition_egg_type_option_name(option)

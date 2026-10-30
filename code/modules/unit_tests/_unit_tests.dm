@@ -74,6 +74,7 @@
 #include "ai_planning_freezes.dm"
 #include "ai_targeting_allegiances.dm"
 #include "anchored_mobs.dm"
+#include "character_creator.dm"
 #include "chat_macros.dm"
 #include "component_tests.dm"
 #include "connect_loc.dm"
@@ -105,6 +106,7 @@
 #include "reagent_id_typos.dm"
 #include "reagent_names.dm"
 #include "reagent_recipe_collisions.dm"
+#include "recipe_book_db.dm"
 #include "required_map_items.dm"
 #include "resist.dm"
 #include "rogue_inhands.dm"
@@ -123,6 +125,7 @@
 #include "timer_sanity.dm"
 #include "unit_test.dm"
 #include "weapon_icons.dm"
+#include "womb_pairing.dm"
 // END_INCLUDE
 
 #ifdef REFERENCE_TRACKING_DEBUG //Don't try and parse this file if ref tracking isn't turned on. IE: don't parse ref tracking please mr linter

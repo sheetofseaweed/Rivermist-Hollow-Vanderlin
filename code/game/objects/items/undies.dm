@@ -26,23 +26,6 @@
 	. = ..()
 	mob_overlay_icon_base = mob_overlay_icon
 
-/obj/item/clothing/undies/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
-	if(!ishuman(interacting_with) || (user.zone_selected == BODY_ZONE_PRECISE_MOUTH && has_soaked_fluid()))
-		return ..()
-
-	var/mob/living/carbon/human/target = interacting_with
-	if(target.underwear || !get_location_accessible(target, BODY_ZONE_PRECISE_GROIN))
-		return ITEM_INTERACT_BLOCKING
-
-	user.visible_message(span_notice("[user] tries to put [src] on [target]..."))
-	if(!do_after(user, 5 SECONDS, target = target))
-		return ITEM_INTERACT_BLOCKING
-
-	if(!target.equip_to_slot_if_possible(src, ITEM_SLOT_UNDER_BOTTOM, disable_warning = TRUE))
-		return ITEM_INTERACT_BLOCKING
-
-	return ITEM_INTERACT_SUCCESS
-
 /obj/item/clothing/undies/equipped(mob/living/carbon/user, slot)
 	. = ..()
 	if(user.mouth == src)

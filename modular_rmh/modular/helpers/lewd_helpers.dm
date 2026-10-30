@@ -9,6 +9,15 @@
 					continue
 				return equipped_item
 
+/// The first worn garment heavy enough to keep sex acts off [location], or null; light clothes never count.
+/mob/living/proc/get_sex_covering_garment(location = BODY_ZONE_CHEST)
+	for(var/obj/item/clothing/garment in get_equipped_items())
+		if(garment.armor_class <= AC_LIGHT || garment.allow_erp_equipped || garment.genital_access)
+			continue
+		if(location in cover_flags2body_zones(garment.body_parts_covered))
+			return garment
+	return null
+
 /obj/item/clothing/armor
 	flags_inv = HIDEBOOB|HIDEBELLY|HIDEUNDIESTOP|HIDEUNDIESBOT|HIDECLOSEBODY
 

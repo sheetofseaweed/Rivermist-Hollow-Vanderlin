@@ -120,6 +120,10 @@
 			knotted_hole_ref = WEAKREF(affected_hole)
 			ADD_TRAIT(affected_hole, TRAIT_PASSIVE_LEAK_BLOCKED, REF(src))
 			RegisterSignal(affected_hole, list(COMSIG_ORGAN_REMOVED, COMSIG_PARENT_QDELETING), PROC_REF(on_knotted_hole_lost))
+			var/obj/item/organ/genitals/penis/penis = user.getorganslot(ORGAN_SLOT_PENIS)
+			// The swelling knot opens the hole to its girth at once.
+			if(penis && istype(affected_hole) && affected_hole.orifice_type)
+				affected_hole.get_orifice().stretch_toward(penis.get_knot_girth(), force_level, 1)
 
 	RegisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(knot_movement))
 	RegisterSignal(target, COMSIG_MOVABLE_MOVED, PROC_REF(knot_movement))
@@ -154,8 +158,6 @@
 		target.apply_status_effect(/datum/status_effect/knot_tied)
 	if(!user.has_status_effect(/datum/status_effect/knotted))
 		user.apply_status_effect(/datum/status_effect/knotted)
-
-	target.remove_status_effect(/datum/status_effect/knot_gaped)
 
 /datum/component/knotting/proc/knot_movement(atom/movable/mover, atom/oldloc, direction)
 	SIGNAL_HANDLER
@@ -408,8 +410,8 @@
 
 		if(arousal_data["arousal"] > MAX_AROUSAL / 2)
 			btm.Knockdown(10)
-			if(notify && !keep_btm_status && !btm.has_status_effect(/datum/status_effect/knot_gaped))
-				btm.apply_status_effect(/datum/status_effect/knot_gaped)
+			if(notify && !keep_btm_status)
+				gape_knotted_hole(top)
 
 		btm.Stun(80)
 		playsound(btm, pick('sound/misc/mat/pop.ogg', 'modular_rmh/sound/effects/cork_pop.ogg', 'modular_rmh/sound/effects/cork_pop (2).ogg'), 100, TRUE, -2, ignore_walls = FALSE)

@@ -1165,7 +1165,7 @@
 	var/datum/component/defeat_monitor/monitor = victim.AddComponent(/datum/component/defeat_monitor)
 
 	monitor.on_climax(victim, null, victim, grabber, grabber)
-	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 15, "Horny defeat should cache the exact encounter-start stat average.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 7, "Horny defeat should cache the exact encounter-start stat formula.")
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "A single climax should not reach this deterministic horny knockout threshold.")
 
 /datum/unit_test/defeat_horny_encounter_decays_and_recalculates
@@ -1193,7 +1193,7 @@
 	monitor.on_climax(victim, null, victim, grabber, grabber)
 	TEST_ASSERT_NULL(victim.has_status_effect(/datum/status_effect/defeat_knockout), "Climaxes from a long-expired encounter must not stack into a surprise horny defeat.")
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_count, 1, "After the encounter lull, the climax count should restart at one.")
-	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 15, "The expired encounter's threshold should be recalculated from current player stats.")
+	TEST_ASSERT_EQUAL(monitor.horny_defeat_climax_threshold, 7, "The expired encounter's threshold should be recalculated from current player stats.")
 	TEST_ASSERT_EQUAL(monitor.horny_defeat_warned_stage, 0, "Warning beats should reset with the expired encounter.")
 
 	// Completed progress stays cached through the KO itself and clears only when recovery removes it.

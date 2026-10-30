@@ -606,7 +606,7 @@
 		var/mob/living/L = usr
 		L.playsound_local(L, 'sound/misc/click.ogg', 100)
 		if(LAZYACCESS(modifiers, RIGHT_CLICK))
-			L.submit()
+			L.toggle_submit()
 		else
 			L.toggle_cmode()
 			update_appearance(UPDATE_ICON_STATE)

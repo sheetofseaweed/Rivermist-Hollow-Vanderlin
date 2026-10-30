@@ -714,7 +714,8 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 			continue
 		slots_to_iterate |= slot
 	// Remove the organs from the slots they should have nothing in
-	for(var/obj/item/organ/organ in C.internal_organs)
+	// Removing shrinks the list mid-loop and skips the next organ, so walk a copy.
+	for(var/obj/item/organ/organ in C.internal_organs.Copy())
 		if(organ.slot in slots_to_iterate)
 			continue
 		if(istype(organ, /obj/item/organ/artery)) ///these are children of the limbs not to be messed with

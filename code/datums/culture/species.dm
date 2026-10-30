@@ -1,7 +1,7 @@
 /datum/culture/species/underdark
 	name = "Underdark"
 	description = "Known by humens to be hardened by the harsh environment of the world below. \
-	To the average human , a Underdarkn could refer to anywhere from citizens of the nearest Lolth-sworn outpost, \
+	To the average human, an Underdarker could refer to anyone from citizens of the nearest Lolth-sworn outpost, \
 	to a deep culture of hermits, or even a group of dwarves who dug too deep. Regardless, none are to be trusted."
 	species = list(
 		SPEC_ID_DROW,
@@ -18,7 +18,7 @@
 	)
 
 /datum/culture/species/elven/costal
-	name = "Costal Tribes"
+	name = "Coastal Tribes"
 	description = "Known by humens to be haughty, wealthy, disconnected pricks. \
 	Much of the culture has since been absorbed by the Silver Marches. Never ask their opinions on any of the Sea Tribes."
 	pre_append = "the "

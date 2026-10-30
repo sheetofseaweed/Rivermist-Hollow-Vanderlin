@@ -65,6 +65,9 @@
 			. = "Regent [.]"
 		if(honorary_suffix)
 			. += " [honorary_suffix]"
+		var/title_suffix = get_dungeon_title_suffix()
+		if(title_suffix)
+			. += title_suffix
 
 //gets name from ID or PDA itself, ID inside PDA doesn't matter
 //Useful when player is being seen by other mobs

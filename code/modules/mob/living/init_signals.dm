@@ -138,11 +138,13 @@
 /mob/living/proc/on_restrained_trait_gain(datum/source)
 	SIGNAL_HANDLER
 	ADD_TRAIT(src, TRAIT_HANDS_BLOCKED, TRAIT_RESTRAINED)
+	restrained_since = world.time
 
 /// Called when [TRAIT_RESTRAINED] is removed from the mob.
 /mob/living/proc/on_restrained_trait_loss(datum/source)
 	SIGNAL_HANDLER
 	REMOVE_TRAIT(src, TRAIT_HANDS_BLOCKED, TRAIT_RESTRAINED)
+	restrained_since = 0
 
 /* ROGUE */
 

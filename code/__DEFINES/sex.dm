@@ -135,6 +135,10 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define SEX_FORCE_MIN 1
 #define SEX_FORCE_MAX 4
 
+/// Per-cycle chance and damage for brutal force snagging the receiver's bare stockings.
+#define SEX_LEGWEAR_SNAG_CHANCE 15
+#define SEX_LEGWEAR_SNAG_DAMAGE 6
+
 #define SEX_MANUAL_AROUSAL_DEFAULT 1
 #define SEX_MANUAL_AROUSAL_UNAROUSED 2
 #define SEX_MANUAL_AROUSAL_PARTIAL 3
@@ -291,6 +295,7 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define ORGAN_SLOT_TESTICLES "testicles"
 #define ORGAN_SLOT_BREASTS "breasts"
 #define ORGAN_SLOT_VAGINA "vagina"
+#define ORGAN_SLOT_WOMB "womb"
 #define ORGAN_SLOT_ANUS "anus"
 #define ORGAN_SLOT_BUTT "butt"
 #define ORGAN_SLOT_BELLY "belly"
@@ -439,6 +444,15 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define CONCEPTION_DOUBLE_SEED 21
 /// Conception chance multiplier while the carrier is in heat.
 #define CONCEPTION_HEAT_MULT 2
+/// Units of seed the vagina passes into the womb per intake tick; only seed in the womb can take root.
+#define WOMB_SEED_INTAKE_PER_TICK 1
+/// Time between womb intake ticks.
+#define WOMB_SEED_INTAKE_INTERVAL (20 SECONDS)
+/// Outcomes of one try to draw a toy out of a hole, from the filling organ's resolve_toy_removal().
+#define TOY_REMOVE_OUT 1
+#define TOY_REMOVE_NO_GRIP 2
+#define TOY_REMOVE_SLIPPED_DEEPER 3
+#define TOY_REMOVE_STUCK 4
 /// Morning sickness starts this long after conception, somewhere in the range.
 #define PREGNANCY_SICKNESS_MIN_DELAY (30 MINUTES)
 #define PREGNANCY_SICKNESS_MAX_DELAY (60 MINUTES)

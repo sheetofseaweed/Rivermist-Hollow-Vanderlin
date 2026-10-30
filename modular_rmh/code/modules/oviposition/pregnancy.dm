@@ -181,8 +181,13 @@
 		COOLDOWN_START(src, lay_cooldown, OVIPOSITION_LAY_COOLDOWN)
 		if(prob(20))
 			to_chat(carrier, span_warning("The egg in my [get_container_location_name()] feels ready to come out."))
+		// A ripe egg comes out through labour; only creatures still drop it on the spot.
 		if(prob(10))
-			lay_egg(get_turf(carrier), TRUE)
+			if(iscarbon(carrier))
+				var/mob/living/carbon/carbon_carrier = carrier
+				carbon_carrier.start_labour(egg, container)
+			else
+				lay_egg(get_turf(carrier), TRUE)
 
 /datum/component/pregnancy/proc/on_stage_advanced()
 	if(!carrier)
@@ -257,6 +262,11 @@
 		return FALSE
 	if(!remove_from_host(BODYSTORAGE_REMOVE_INTERNAL))
 		return FALSE
+
+	// The egg leaves from the deep layer, which passes no opening on its own.
+	var/obj/item/organ/genitals/filling_organ/laying_hole = laying_container.get_birth_canal()
+	if(istype(laying_hole) && laying_hole.orifice_type)
+		laying_hole.get_orifice().pass_through(egg.get_insert_girth(), SEX_FORCE_MID, laying_carrier)
 
 	laying_carrier.visible_message(
 		span_notice("[laying_carrier] [laying_container.get_oviposition_lay_verb()] an egg!"),
@@ -731,7 +741,10 @@
 	if(!holder?.held_mob || !carrier)
 		return
 
-	if(trigger_contractions && COOLDOWN_FINISHED(src, contraction_cooldown))
+	// Once labour has begun it carries the contractions and the birth itself.
+	var/mob/living/carbon/carbon_carrier = carrier
+	var/in_labour = istype(carbon_carrier) && carbon_carrier.has_status_effect(/datum/status_effect/labour)
+	if(trigger_contractions && !in_labour && COOLDOWN_FINISHED(src, contraction_cooldown))
 		COOLDOWN_START(src, contraction_cooldown, 25 SECONDS)
 		var/message = contraction_message || "My %CONTAINER% contracts tightly around the hatchling inside."
 		message = replacetext(message, "%CONTAINER%", location_name)
@@ -739,14 +752,26 @@
 		to_chat(carrier, span_warning(message))
 
 	if(auto_birth && birth_delay > 0 && world.time >= hatch_time + birth_delay)
-		INVOKE_ASYNC(src, PROC_REF(birth_hatchling))
+		if(istype(carbon_carrier))
+			carbon_carrier.start_labour(holder, container)
+		else
+			INVOKE_ASYNC(src, PROC_REF(birth_hatchling))
 
 /datum/component/internal_womb_hatchling/proc/handle_death(datum/source)
 	SIGNAL_HANDLER
 	INVOKE_ASYNC(src, PROC_REF(release_hatchling), TRUE)
 
 /datum/component/internal_womb_hatchling/proc/birth_hatchling()
-	return release_hatchling(FALSE)
+	var/obj/item/organ/genitals/filling_organ/birth_hole = container?.get_birth_canal()
+	var/mob/living/birth_carrier = carrier
+	var/birth_girth = holder?.get_insert_girth()
+	// Inner-layer storage passes the opening on removal by itself; only deeper layers need it here.
+	var/passes_opening = istype(birth_hole) && birth_hole.orifice_type && SEND_SIGNAL(birth_hole, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, holder) != STORAGE_LAYER_INNER
+	if(!release_hatchling(FALSE))
+		return FALSE
+	if(passes_opening && !QDELETED(birth_hole))
+		birth_hole.get_orifice().pass_through(birth_girth, SEX_FORCE_MID, birth_carrier)
+	return TRUE
 
 /datum/component/internal_womb_hatchling/proc/release_hatchling(silent = FALSE)
 	if(!holder?.held_mob)

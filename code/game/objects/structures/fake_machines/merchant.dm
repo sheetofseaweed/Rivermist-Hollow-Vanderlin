@@ -195,7 +195,7 @@ GLOBAL_VAR_INIT(sky_handler_levy, 0.5)
 				SSmerchant.extra_currency -= bounty_reward
 				E.budget2change(bounty_reward)
 				add_sale_history("[I.name] bounty", bounty_reward)
-				visible_message(span_boldnotice("[src] dispenses [bounty_reward] mammons in bounty compensation."))
+				visible_message(span_boldnotice("[src] dispenses [bounty_reward] amna in bounty compensation."))
 				sold_any = TRUE
 			if(bounty_status == TRUE)
 				I.visible_message(span_warning("[I] is sucked into the air!"))

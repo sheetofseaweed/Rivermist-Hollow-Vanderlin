@@ -34,9 +34,6 @@
 /datum/component/ovipositor/proc/register_carrier()
 	RegisterSignal(carrier, COMSIG_LIVING_LIFE, PROC_REF(handle_life))
 	RegisterSignal(carrier, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
-	if(ishuman(carrier))
-		var/mob/living/carbon/human/human_carrier = carrier
-		human_carrier.grant_check_eggs_verb(TRUE)
 
 /datum/component/ovipositor/proc/unregister_carrier()
 	UnregisterSignal(carrier, COMSIG_LIVING_LIFE)
@@ -243,27 +240,26 @@
 				to_chat(carrier, span_warning("[receiver_owner]'s body is still recovering from too many recent births and rejects another implantation."))
 			return FALSE
 
-	var/fit_result = SEND_SIGNAL(receiver, COMSIG_BODYSTORAGE_TRY_INSERT, egg, STORAGE_LAYER_DEEP, force)
+	// The hole decides where the egg rests: a free womb behind it, or its own depths.
+	var/obj/item/organ/host = receiver.get_oviposition_receiver(egg, force) || receiver
+	var/fit_result = SEND_SIGNAL(host, COMSIG_BODYSTORAGE_TRY_INSERT, egg, STORAGE_LAYER_DEEP, force)
 	switch(fit_result)
 		if(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
-			var/started_growing = receiver.start_oviposition_egg_growth(egg, carrier)
+			var/started_growing = host.start_oviposition_egg_growth(egg, carrier)
 			var/plants_maneater_seed = egg.egg_type == OVI_EGG_MANEATER
 			var/third_person_action = plants_maneater_seed ? "plants a seed in" : "lays an egg into"
 			var/first_person_action = plants_maneater_seed ? "plant a seed in" : "lay an egg into"
-			if(ishuman(receiver.owner))
-				var/mob/living/carbon/human/human_receiver = receiver.owner
-				human_receiver.grant_check_eggs_verb(TRUE)
 			carrier.visible_message(
-				span_love("[carrier] [third_person_action] [receiver.owner]'s [receiver.get_oviposition_location_name()]!"),
-				span_love("I [first_person_action] [receiver.owner]'s [receiver.get_oviposition_location_name()]!")
+				span_love("[carrier] [third_person_action] [receiver.owner]'s [host.get_oviposition_location_name()]!"),
+				span_love("I [first_person_action] [receiver.owner]'s [host.get_oviposition_location_name()]!")
 			)
 			if(receiver.owner != carrier)
-				to_chat(receiver.owner, span_love("[carrier] [third_person_action] my [receiver.get_oviposition_location_name()]!"))
+				to_chat(receiver.owner, span_love("[carrier] [third_person_action] my [host.get_oviposition_location_name()]!"))
 			if(started_growing)
 				if(plants_maneater_seed)
-					to_chat(receiver.owner, span_love("The planted seed in my [receiver.get_oviposition_location_name()] immediately begins to grow."))
+					to_chat(receiver.owner, span_love("The planted seed in my [host.get_oviposition_location_name()] immediately begins to grow."))
 				else
-					to_chat(receiver.owner, span_love("One of the eggs in my [receiver.get_oviposition_location_name()] immediately begins to grow."))
+					to_chat(receiver.owner, span_love("One of the eggs in my [host.get_oviposition_location_name()] immediately begins to grow."))
 			return TRUE
 
 	return FALSE

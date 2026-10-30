@@ -135,6 +135,7 @@
 /datum/quirk/peculiarity/extra_genitals_base/proc/copy_penis_entry(datum/customizer_entry/organ/genitals/penis/source, datum/customizer_entry/organ/genitals/penis/target)
 	copy_accessory_entry(source, target)
 	target.penis_size = source.penis_size
+	target.penis_length_cm = source.penis_length_cm
 	target.functional = source.functional
 
 /datum/quirk/peculiarity/extra_genitals_base/proc/copy_testicles_entry(datum/customizer_entry/organ/genitals/testicles/source, datum/customizer_entry/organ/genitals/testicles/target)
@@ -323,6 +324,7 @@
 		var/datum/customizer_entry/organ/genitals/penis/old_penis = current_entry
 		var/datum/customizer_entry/organ/genitals/penis/new_penis = new_entry
 		new_penis.penis_size = old_penis.penis_size
+		new_penis.penis_length_cm = old_penis.penis_length_cm
 		new_penis.functional = old_penis.functional
 	else if(part == "testicles")
 		var/datum/customizer_entry/organ/genitals/testicles/old_testicles = current_entry

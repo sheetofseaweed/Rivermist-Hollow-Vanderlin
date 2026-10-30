@@ -375,6 +375,7 @@ GLOBAL_VAR_INIT(farm_animals, FALSE)
 				/datum/pet_command/protect_owner,
 				/datum/pet_command/aggressive,
 				/datum/pet_command/calm,
+				/datum/pet_command/pet_breed_other,
 			)
 			if(!GetComponent(/datum/component/obeys_commands))
 				AddComponent(/datum/component/obeys_commands, pet_commands)

@@ -802,6 +802,8 @@
 	if(!target_organ)
 		stop_runtime()
 		return
+	// The hole sets the pace: the same time the holes window would take for this toy.
+	time_toy_insert_cycle(target_organ, stored_item)
 
 	to_chat(user, spanify_force("I start inserting \the [stored_item] into the portal..."))
 	if(user != target)
@@ -827,6 +829,13 @@
 		return
 
 	var/use_force = (force >= SEX_FORCE_HIGH)
+	// The shared slip roll: a tight, dry fit fumbles unless forced; the next cycle tries again.
+	var/obj/item/organ/genitals/filling_organ/hole = target_organ
+	if(istype(hole) && hole.roll_toy_insert_slip(stored_item, use_force))
+		to_chat(user, spanify_force("\The [stored_item] slips from my grip at the portal and will not go in."))
+		if(user != target)
+			to_chat(target, spanify_force("You feel something fumble at the portal's far side..."))
+		return
 	var/success = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_TRY_INSERT, stored_item, STORAGE_LAYER_INNER, use_force)
 	switch(success)
 		if(INSERT_FEEDBACK_OK)
@@ -909,6 +918,13 @@
 	continous = TRUE
 	var/obj/item/organ/genitals/target_organ
 	var/base_pain_amt = 1
+	/// The stored item the next cycle reaches for, chosen early so the cycle's length fits it.
+	var/obj/item/pending_toy
+
+/datum/sex_action/portal_base/portal_remove_base/Destroy()
+	target_organ = null
+	pending_toy = null
+	return ..()
 
 /datum/sex_action/portal_base/portal_remove_base/shows_on_menu(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
@@ -937,6 +953,8 @@
 /datum/sex_action/portal_base/portal_remove_base/on_start(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()
 	target_organ = target.getorganslot(hole_id)
+	// Pick the first item now so the first cycle already takes the holes window's time for it.
+	pending_toy = choose_toy_to_reach(target_organ, STORAGE_LAYER_INNER)
 	to_chat(user, span_warning("I start removing items from the portal..."))
 	var/used_sex_volume = sex_volume
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
@@ -951,14 +969,29 @@
 		stop_runtime()
 		return
 
-	var/list/interactable_items = target_organ.get_body_storage_items_for_interaction(STORAGE_LAYER_INNER, BODYSTORAGE_REMOVE_MANUAL)
-	var/obj/item/removed_item = length(interactable_items) ? pick(interactable_items) : null
-	if(removed_item && !SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_TRY_REMOVE, removed_item, STORAGE_LAYER_INNER, BODYSTORAGE_REMOVE_MANUAL))
-		removed_item = null
-	if(!removed_item)
+	var/obj/item/organ/genitals/filling_organ/hole = target_organ
+	var/obj/item/removed_item = toy_still_in_reach(hole, pending_toy, STORAGE_LAYER_INNER) ? pending_toy : choose_toy_to_reach(hole, STORAGE_LAYER_INNER)
+	pending_toy = null
+	if(!removed_item || !istype(hole))
 		to_chat(user, spanify_force("I couldn't find anything inside..."))
 		stop_runtime()
 		return
+	// The shared grip roll: the same odds, slips and passage the holes window gives.
+	switch(hole.resolve_toy_removal(removed_item, STORAGE_LAYER_INNER, user))
+		if(TOY_REMOVE_SLIPPED_DEEPER)
+			to_chat(user, spanify_force("\The [removed_item] slips from my fingers and deeper through the portal, past where I can reach."))
+			if(user != target)
+				to_chat(target, spanify_force("You feel something slipping deep inside you!"))
+			pending_toy = choose_toy_to_reach(hole, STORAGE_LAYER_INNER)
+			return
+		if(TOY_REMOVE_NO_GRIP)
+			to_chat(user, spanify_force("I can't get a grip on \the [removed_item] through the portal..."))
+			pending_toy = removed_item
+			return
+		if(TOY_REMOVE_STUCK)
+			to_chat(user, spanify_force("\The [removed_item] will not come."))
+			stop_runtime()
+			return
 
 	if(user.get_inactive_held_item())
 		user.visible_message(spanify_force("\The [removed_item] falls down on the floor..."))
@@ -971,6 +1004,7 @@
 
 	perform_sex_action(user, target, 0.5, base_pain_amt, 0.5)
 	handle_passive_ejaculation()
+	pending_toy = choose_toy_to_reach(hole, STORAGE_LAYER_INNER)
 
 /datum/sex_action/portal_base/portal_remove_base/lock_sex_object(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	. = ..()

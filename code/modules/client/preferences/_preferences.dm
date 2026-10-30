@@ -268,6 +268,17 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		character_setup_static_sig = new_static_sig
 		update_static_data(user)
 	character_setup_update_view()
+	character_setup_queue_push()
+
+/// Pushes ui_data on the next tick unless it is rebuilt before then. A ui_act that returns TRUE
+/// pushes right after its handler, so an immediate push here built and sent ui_data twice per click.
+/datum/preferences/proc/character_setup_queue_push()
+	character_setup_push_serial = character_setup_data_serial
+	addtimer(CALLBACK(src, PROC_REF(character_setup_flush_push)), 1, TIMER_UNIQUE)
+
+/datum/preferences/proc/character_setup_flush_push()
+	if(character_setup_data_serial != character_setup_push_serial)
+		return
 	SStgui.update_uis(src)
 
 
@@ -586,7 +597,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	HTML += "</center>"
 
 	var/datum/browser/noclose/popup = new(user, "mob_occupation", "<div align='center'>Class Selection</div>", 1000, 700)
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(HTML)
 	popup.open(FALSE)
 
@@ -768,7 +778,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	dat += "</body>"
 
 	var/datum/browser/noclose/popup = new(user, "keybind_setup", "<div align='center'>Keybinds</div>", 600, 600) //no reason not to reuse the occupation window, as it's cleaner that way
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
 
@@ -806,7 +815,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	dat += "</body>"
 	var/datum/browser/noclose/popup = new(user, "antag_setup", "<div align='center'>Special Roles</div>", 265, 340)
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
 
@@ -1094,9 +1102,22 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			return TRUE
 		if(!(setup_choice_type in setup_customizer.customizer_choices) || setup_choice_type == setup_entry.customizer_choice_type)
 			return TRUE
+		// A new penis shape keeps the length and function the player already set.
+		var/kept_penis_length = 0
+		var/kept_penis_functional = TRUE
+		var/datum/customizer_entry/organ/genitals/penis/old_penis_entry = setup_entry
+		if(istype(old_penis_entry))
+			kept_penis_length = old_penis_entry.penis_length_cm
+			kept_penis_functional = old_penis_entry.functional
 		customizer_entries -= setup_entry
 		qdel(setup_entry)
-		customizer_entries += setup_customizer.create_customizer_entry(src, setup_choice_type)
+		var/datum/customizer_entry/new_entry = setup_customizer.create_customizer_entry(src, setup_choice_type)
+		var/datum/customizer_entry/organ/genitals/penis/new_penis_entry = new_entry
+		if(istype(new_penis_entry) && kept_penis_length)
+			new_penis_entry.penis_length_cm = kept_penis_length
+			new_penis_entry.functional = kept_penis_functional
+			new_penis_entry.penis_size = get_penis_visual_size(kept_penis_length)
+		customizer_entries += new_entry
 		update_menu_data(user)
 		return TRUE
 	else if(href_list["preference"] == "character_setup_preview_layer")
@@ -1183,7 +1204,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		if(color_choice)
 			if(GLOB.colorlist[color_choice] == "CUSTOM_RGB")
 				var/current_color = smallclothes_preferences[color_pref_key] || "#FFFFFF"
-				var/new_color = input(user, "Select color:", "Custom Color", current_color) as color|null
+				var/new_color = tgui_color_picker(user, "Select color:", "Custom Color", sanitize_hexcolor(current_color, 6, TRUE, "#ffffff"))
 				if(new_color)
 					smallclothes_preferences[color_pref_key] = sanitize_hexcolor(new_color, include_crunch = 1)
 			else

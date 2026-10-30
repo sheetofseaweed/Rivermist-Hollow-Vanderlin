@@ -404,6 +404,8 @@
 	if(instant)
 		cuff_break = INSTANT_CUFFBREAK
 
+	// Captors read this: a struggle this recent keeps bound prey from being hauled off.
+	last_restraint_struggle = world.time
 	if(!cuff_break)
 		to_chat(src, span_notice("I try to get out of \the [I]\s..."))
 		if(do_after(src, breakouttime, timed_action_flags = (IGNORE_HELD_ITEM)))
@@ -420,6 +422,7 @@
 
 	else if(cuff_break == INSTANT_CUFFBREAK)
 		clear_cuffs(I, cuff_break)
+	last_restraint_struggle = world.time
 	I.item_flags &= ~BEING_REMOVED
 
 /mob/living/carbon/proc/uncuff()

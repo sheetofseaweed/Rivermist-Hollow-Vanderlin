@@ -148,8 +148,8 @@
 	return getorganslot(ORGAN_SLOT_BUTT)
 
 /mob/living/proc/is_fertile()
-	var/obj/item/organ/genitals/filling_organ/vagina/vagina = getorganslot(ORGAN_SLOT_VAGINA)
-	return vagina?.fertility
+	var/obj/item/organ/genitals/filling_organ/womb/womb = get_womb()
+	return womb?.fertility
 
 /mob/living/proc/is_virile()
 	var/obj/item/organ/genitals/filling_organ/testicles/testicles = getorganslot(ORGAN_SLOT_TESTICLES)
@@ -293,6 +293,9 @@
 		return null
 	if(!get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = FALSE))
 		return null
+	var/list/adjectives = anus.orifice?.get_examine_adjectives()
+	if(length(adjectives))
+		return "have an exposed anus, [jointext(adjectives, ", ")]."
 	return "have an exposed anus."
 
 /mob/living/carbon/human/return_character_information()
@@ -326,6 +329,8 @@
 	var/anus_summary = get_visible_anus_summary()
 	if(anus_summary)
 		data += get_character_information_line(anus_summary)
+
+	data += get_orifice_status_lines()
 
 	return data
 
@@ -579,10 +584,12 @@
 	return TRUE
 
 /mob/living/proc/get_gender_potion_genital_slots()
+	// The womb restores before the vagina, so the vagina's pairing hook finds it instead of making another.
 	var/static/list/gender_potion_genital_slots = list(
 		ORGAN_SLOT_PENIS,
 		ORGAN_SLOT_TESTICLES,
 		ORGAN_SLOT_BREASTS,
+		ORGAN_SLOT_WOMB,
 		ORGAN_SLOT_VAGINA
 	)
 	return gender_potion_genital_slots
@@ -621,7 +628,8 @@
 				penis = new /obj/item/organ/genitals/penis
 			else
 				penis = new penis_organ
-			penis.organ_size = rand(penis_min, penis_max)
+			penis.length_cm = get_random_penis_length()
+			penis.organ_size = get_penis_visual_size(penis.length_cm)
 			penis.Insert(src, TRUE)
 
 	else if(target_gender == FEMALE)
@@ -791,7 +799,8 @@
 				penis = new /obj/item/organ/genitals/penis
 			else
 				penis = new penis_organ
-			penis.organ_size = rand(penis_min, penis_max)
+			penis.length_cm = get_random_penis_length()
+			penis.organ_size = get_penis_visual_size(penis.length_cm)
 			penis.Insert(user, TRUE)
 	if(gender == FEMALE)
 		var/obj/item/organ/genitals/butt/buttie = user.getorganslot(ORGAN_SLOT_BUTT)
@@ -832,7 +841,8 @@
 					penis = new /obj/item/organ/genitals/penis
 				else
 					penis = new penis_organ
-				penis.organ_size = rand(penis_min, penis_max)
+				penis.length_cm = get_random_penis_length()
+				penis.organ_size = get_penis_visual_size(penis.length_cm)
 				penis.Insert(user, TRUE)
 	if(iscarbon(user))
 		var/mob/living/carbon/carbon_user = user

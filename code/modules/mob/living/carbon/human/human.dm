@@ -119,28 +119,7 @@
 	if(user == src)
 		if(get_num_arms(FALSE) < 1)
 			return
-		if(user.zone_selected == BODY_ZONE_PRECISE_GROIN)
-			if(!underwear)
-				return
-			if(underwear.locked())
-				to_chat(src, span_warning("\The [underwear] is locked on."))
-				return
-			var/under_clothes = get_location_accessible(src, BODY_ZONE_PRECISE_GROIN, skipundies = TRUE)
-			src.visible_message(span_notice("[src] begins to take off [underwear][under_clothes ? " from under their clothes" : ""]..."))
-			var/delay = under_clothes ? 20 : 40
-			if(do_after(user, delay, target = src))
-				var/obj/item/clothing/undies/removed_underwear = underwear
-				if(removed_underwear && src.dropItemToGround(removed_underwear))
-					src.put_in_hands(removed_underwear)
-		if((user.zone_selected == BODY_ZONE_L_LEG) || (user.zone_selected == BODY_ZONE_R_LEG))
-			if(!legwear_socks)
-				return
-			var/under_clothes = get_location_accessible(src, BODY_ZONE_PRECISE_R_FOOT, skipundies = TRUE) || get_location_accessible(src, BODY_ZONE_PRECISE_L_FOOT, skipundies = TRUE)
-			src.visible_message(span_notice("[src] begins to take off [legwear_socks][under_clothes ? " from under their clothes" : ""]..."))
-			var/delay = under_clothes ? 25 : 50
-			if(do_after(user, delay, target = src))
-				src.dropItemToGround(legwear_socks)
-				src.put_in_hands(legwear_socks)
+		// Underwear and stockings come off through the smallclothes drawer, not by middle-clicking yourself.
 		if(user.zone_selected == BODY_ZONE_CHEST)
 			if(try_remove_own_nipple_clamps())
 				return
@@ -1239,7 +1218,7 @@
 	message_admins("[ADMIN_LOOKUPFLW_PP(src)] is a [mind.assigned_role.get_informed_title(src)] and has been disconnected for more than 30 seconds!")
 
 /mob/living/carbon/human/nobles_seen_servant_work()
-	if(!is_servant_job(mind.assigned_role))
+	if(!mind || !is_servant_job(mind.assigned_role))
 		return
 
 	var/list/nobles = list()

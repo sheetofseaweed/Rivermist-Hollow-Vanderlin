@@ -238,6 +238,10 @@
 /obj/structure/flora/crystal,
 /turf/open/floor/dirt,
 /area/pocket_dimension)
+"DG" = (
+/obj/structure/bondage/chains/lair,
+/turf/open/floor/cobblerock,
+/area/pocket_dimension)
 "EY" = (
 /obj/effect/decal/cleanable/debris/stone,
 /mob/living/simple_animal/hostile/werewolf,
@@ -289,6 +293,10 @@
 	},
 /mob/living/simple_animal/hostile/retaliate/wolf,
 /turf/open/floor/dirt/road,
+/area/pocket_dimension)
+"NG" = (
+/obj/structure/bondage/chains/lair,
+/turf/open/floor/naturalstone,
 /area/pocket_dimension)
 "OM" = (
 /obj/effect/landmark/distress_spawner/wolfden,
@@ -391,7 +399,7 @@ Zz
 ZO
 uU
 Dh
-KL
+NG
 rF
 sJ
 sJ
@@ -430,9 +438,9 @@ bC
 dk
 kR
 tX
-KL
+NG
 uU
-Dh
+DG
 er
 sJ
 sJ

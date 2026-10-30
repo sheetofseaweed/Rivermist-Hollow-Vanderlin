@@ -40,6 +40,8 @@
 #define QUESTBOARD_POOL_MAX_DEADLY 2
 #define QUESTBOARD_POOL_MAX_LETHAL 1
 #define QUESTBOARD_POOL_MAX_MYTHIC 1
+/// Wait after a Lethal or Mythic posting is claimed before the board posts another of that tier.
+#define QUESTBOARD_HIGH_TIER_REFILL_COOLDOWN (30 MINUTES)
 
 // Regional threat removed when a quest tied to that region is completed.
 #define QUEST_THREAT_REDUCE_ROUTINE 2
@@ -60,12 +62,7 @@
 
 #define QUEST_BASE_REWARD_RETRIEVAL 8
 #define QUEST_BASE_REWARD_COURIER 8
-#define QUEST_BASE_REWARD_HUNT 8
-#define QUEST_BASE_REWARD_CLEAR_OUT 18
-#define QUEST_BASE_REWARD_RAID 28
-#define QUEST_BASE_REWARD_BOSS 40
 
-#define QUEST_KILL_COUNT_REWARD 4
 #define QUEST_CLEAR_OUT_RISK_BONUS 1
 #define QUEST_RAID_RISK_BONUS 3
 #define QUEST_BOSS_RISK_BONUS 5
@@ -89,7 +86,9 @@
 #define QUEST_BOSS_REWARD_RISK_SQUARE_MULTIPLIER 2
 #define QUEST_BOSS_REWARD_RISK_OVERFLOW_START 8
 #define QUEST_BOSS_REWARD_RISK_OVERFLOW_BONUS 15
-#define QUEST_BOSS_REWARD_MAX 2500
+#define QUEST_BOSS_REWARD_MAX 1500
+/// Share of the distance bonus a boss contract receives.
+#define QUEST_BOSS_DISTANCE_BONUS_SCALE 0.5
 
 // ===== Map difficulty and reward modifiers =====
 // Map flag bitfields for mob availability per map
@@ -114,7 +113,8 @@
 #define QUEST_MAP_REWARD_TOWN_SNOW 1.0
 #define QUEST_MAP_REWARD_BOG 1.4
 #define QUEST_MAP_REWARD_DESERT 1.3
-#define QUEST_MAP_REWARD_FROZEN 1.8
+// Frozen landmarks sit far from the ledger, so a base below the bog keeps payouts within 1.25x of it.
+#define QUEST_MAP_REWARD_FROZEN 1.15
 #define QUEST_MAP_REWARD_UNDERDARK 2.5
 #define QUEST_MAP_REWARD_SCALE 2
 

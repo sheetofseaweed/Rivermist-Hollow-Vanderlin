@@ -71,7 +71,7 @@
 			if(SHEATH_TYPE_SLIT)
 				used_name = "a genital slit"
 	else
-		used_name = "[adjective] [penis.name][arousal_modifier]"
+		used_name = "[adjective] [penis.name], about [round(penis.get_length_cm(), 1)] cm long[arousal_modifier]"
 	return "[used_name][H.get_pubic_hair_clause(ORGAN_SLOT_PENIS)]"
 
 /datum/mob_descriptor/testicles
@@ -196,7 +196,11 @@
 			arousal_modifier = ", slickened with arousal"
 		if(20 to 50)
 			arousal_modifier = ", wet with arousal"
-	return "a [vagina_type][arousal_modifier][H.get_pubic_hair_clause(ORGAN_SLOT_VAGINA)]"
+	var/orifice_clause = ""
+	var/list/orifice_adjectives = vagina.orifice?.get_examine_adjectives()
+	if(length(orifice_adjectives))
+		orifice_clause = ", [jointext(orifice_adjectives, ", ")]"
+	return "a [vagina_type][arousal_modifier][orifice_clause][H.get_pubic_hair_clause(ORGAN_SLOT_VAGINA)]"
 
 /datum/mob_descriptor/breasts
 	name = "breasts"

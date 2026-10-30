@@ -505,7 +505,7 @@
 /datum/reagent/medicine/antipregnancy/on_mob_life(mob/living/carbon/M)
 	for(var/obj/item/organ/genitals/filling_organ/forgan in M.internal_organs)
 		if(forgan.pregnant)
-			to_chat(M, "I feel something shift within my [forgan.altnames]... I am no longer pregnant.")
+			to_chat(M, "I feel something shift within my [pick(forgan.altnames)]... I am no longer pregnant.")
 			forgan.clear_conventional_pregnancy()
 	if(end_gnoll_ritual_pregnancy(M))
 		to_chat(M, span_notice("Gorellik's renewal loosens and fades from within me."))

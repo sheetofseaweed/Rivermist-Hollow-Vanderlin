@@ -163,6 +163,7 @@
 		UnregisterSignal(action_user, COMSIG_SEX_CLIMAX)
 	// A scene torn down without on_finish must still free the hand on the cock.
 	unlink_penis_grip()
+	end_orifice_penetration()
 	if(scene && !QDELETED(scene))
 		scene.forget_action(src)
 	proposal_controller = null
@@ -362,9 +363,15 @@
 			cycle_interrupted = FALSE
 			continue
 
+		// Pressing against a hole that will not take it yet replaces the thrust.
+		if(orifice_pressing && run_orifice_press_cycle(action_user, action_target))
+			send_clench_prompt()
+			continue
+
 		suppress_visible_messages = begin_remote_visible_message_suppression()
 		on_perform(action_user, action_target)
 		end_remote_visible_message_suppression(suppress_visible_messages)
+		on_orifice_cycle()
 		play_perform_breast_anim()
 		play_perform_motion()
 		send_clench_prompt()
@@ -549,6 +556,7 @@
 	var/through_clothes = get_through_clothes_multiplier(pleasure_receiver)
 	arousal_amt *= through_clothes
 	orgasm_prog_amt *= through_clothes
+	strain_legwear(pleasure_receiver)
 	return apply_sex_action_stimulation(
 		src,
 		action_user,
@@ -560,6 +568,13 @@
 		force,
 		speed,
 	)
+
+/// Brutal handling can snag the receiver's bare stockings.
+/datum/sex_action/proc/strain_legwear(mob/living/receiver)
+	if(force < SEX_FORCE_EXTREME || !ishuman(receiver) || !prob(SEX_LEGWEAR_SNAG_CHANCE))
+		return
+	var/mob/living/carbon/human/human_receiver = receiver
+	human_receiver.get_exposed_legwear()?.snag(SEX_LEGWEAR_SNAG_DAMAGE, SLASH)
 
 /datum/sex_action/proc/stop_runtime()
 	scene?.stop_action(src)
@@ -730,6 +745,9 @@
 	return !!get_valid_remote_context()
 
 /datum/sex_action/proc/try_knot_on_climax(mob/living/user, mob/living/target)
+	// Nothing is inside while still pressing at the opening.
+	if(orifice_pressing)
+		return FALSE
 	if(!knot_on_finish)
 		return FALSE
 	if(!can_knot)
@@ -756,13 +774,8 @@
 		if((grabstate == null || grabstate < src.required_grab_state))
 			return FALSE
 
-	var/hidden_slots = NONE
-	for(var/obj/item/I in target.get_equipped_items())
-		if(istype(I, /obj/item/clothing))
-			var/obj/item/clothing/C = I
-			if(C.armor_class > AC_LIGHT && !C.allow_erp_equipped && !C.genital_access) //ig we can use genital access as a general allower
-				hidden_slots |= C.body_parts_covered
-	if(location in cover_flags2body_zones(hidden_slots))
+	// The holes window asks the same question, so the garment rule lives on the mob.
+	if(target.get_sex_covering_garment(location))
 		return FALSE
 
 	if(location == BODY_ZONE_PRECISE_MOUTH)
@@ -808,6 +821,12 @@
 	var/datum/component/body_storage/storage_comp = target_organ.GetComponent(/datum/component/body_storage)
 	if(!storage_comp)
 		return FALSE
+
+	// Too wide is no refusal for a penetration: the act starts by pressing against the opening.
+	if(is_orifice_penetration())
+		var/width_feedback = target_organ.get_body_storage_width_feedback(item_to_check, STORAGE_LAYER_INNER, force)
+		if(width_feedback != INSERT_FEEDBACK_OK && width_feedback != INSERT_FEEDBACK_OK_FORCE)
+			return TRUE
 
 	var/fit_result = storage_comp.check_fit(target_organ, item_to_check, STORAGE_LAYER_INNER, force)
 	switch(fit_result)
@@ -864,6 +883,14 @@
 		if(stored_item_name)
 			item_to_store.name = stored_item_name
 
+	item_to_store.on_penetration_standin_created(src)
+	// Too wide for the opening: the act starts by pressing against it instead of failing.
+	var/width_feedback = target_o.get_body_storage_width_feedback(item_to_store, STORAGE_LAYER_INNER, use_force)
+	if(width_feedback != INSERT_FEEDBACK_OK && width_feedback != INSERT_FEEDBACK_OK_FORCE)
+		qdel(item_to_store)
+		begin_orifice_pressing(user, target, width_feedback)
+		return TRUE
+
 	// Try to fit it in the hole
 	var/success = SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_TRY_INSERT, item_to_store, STORAGE_LAYER_INNER, use_force)
 	switch(success)
@@ -896,9 +923,9 @@
 
 		if(INSERT_FEEDBACK_TRY_FORCE)
 			if(self)
-				to_chat(user, spanify_force("I feel like \the [item_to_store.name] might fit in my [hole_id] if I just use more force."))
+				to_chat(user, spanify_force("I feel like \the [item_to_store.name] might fit in my [hole_id] with more force, or something slick."))
 			else
-				user.visible_message(spanify_force("I feel like my [item_to_store.name] might fit in [target]'s [hole_id] if I just use more force."))
+				user.visible_message(spanify_force("I feel like my [item_to_store.name] might fit in [target]'s [hole_id] with more force, or something slick."))
 			SEND_SIGNAL(target_o, COMSIG_BODYSTORAGE_FORCE_REMOVE, item_to_store, STORAGE_LAYER_INNER)
 			addtimer(CALLBACK(src, PROC_REF(qdel), item_to_store), 2)
 			return FALSE
@@ -986,6 +1013,7 @@
 				return FALSE
 	lock_sex_object(user, target)
 	sync_penis_grip(user, target)
+	begin_orifice_penetration(user, target)
 	sex_volume = initial(sex_volume)
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
 		sex_volume *= 0.5
@@ -1008,6 +1036,7 @@
 			remove_from_hole(target, user)
 		else
 			remove_from_hole(user, target)
+	end_orifice_penetration()
 	unlink_penis_grip()
 	unlock_sex_object(user, target)
 	sex_volume = initial(sex_volume)

@@ -31,6 +31,40 @@
 		return "[src] has his eyes on [target], cock throbbing!"
 	return "[src] has her eyes on [target], cunt dripping!"
 
+/// What onlookers see when this mob gives up on a horny target.
+/mob/living/proc/get_horny_unsatisfied_message()
+	switch(ai_controller?.horny_pref_family_flag)
+		if(HORNY_MOB_TYPE_TENTACLES, HORNY_MOB_TYPE_MANEATERS)
+			return "[src] writhes and coils in on itself, thwarted!"
+		if(HORNY_MOB_TYPE_SPIDERS, HORNY_MOB_TYPE_BOG_BUGS)
+			return "[src] clicks its mandibles and skitters in a tight, frustrated circle!"
+		if(HORNY_MOB_TYPE_BEASTS, HORNY_MOB_TYPE_LYCANS)
+			return "[src] snarls and paws at the ground, clearly unsatisfied!"
+		if(HORNY_MOB_TYPE_LAMIAS, HORNY_MOB_TYPE_LIZARDS)
+			return "[src] hisses and lashes its tail, clearly unsatisfied!"
+		if(HORNY_MOB_TYPE_TROLLS, HORNY_MOB_TYPE_MINOTAURS)
+			return "[src] bellows and stamps the ground, clearly unsatisfied!"
+		if(HORNY_MOB_TYPE_UNDEAD)
+			return "[src] rattles and claws at the empty air, denied!"
+	return "[src] stomps on the ground, clearly unsatisfied!"
+
+/// What onlookers see when this mob is done with a horny target. heavy = sated for a long while.
+/mob/living/proc/get_horny_sated_message(mob/living/target, heavy = FALSE)
+	switch(ai_controller?.horny_pref_family_flag)
+		if(HORNY_MOB_TYPE_TENTACLES, HORNY_MOB_TYPE_MANEATERS)
+			return heavy ? "[src] slackens, its coils going limp as it releases [target] for now." : "[src] ripples with a slow, satisfied shudder."
+		if(HORNY_MOB_TYPE_SPIDERS, HORNY_MOB_TYPE_BOG_BUGS)
+			return heavy ? "[src] goes still, sated, and lets [target] be for now." : "[src] settles with a satisfied chitter."
+		if(HORNY_MOB_TYPE_BEASTS, HORNY_MOB_TYPE_LYCANS)
+			return heavy ? "[src] huffs, spent, and lets [target] go for now." : "[src] pants and shakes itself out, satisfied."
+		if(HORNY_MOB_TYPE_LAMIAS, HORNY_MOB_TYPE_LIZARDS)
+			return heavy ? "[src] uncoils with a long, lazy hiss and releases [target] for now." : "[src] flicks its tongue, satisfied."
+		if(HORNY_MOB_TYPE_TROLLS, HORNY_MOB_TYPE_MINOTAURS)
+			return heavy ? "[src] grunts, spent, and shoves [target] aside for now." : "[src] grunts, content."
+		if(HORNY_MOB_TYPE_UNDEAD)
+			return heavy ? "[src] sags, its hunger dulled, and lets [target] be for now." : "[src] rattles with a hollow, satisfied sigh."
+	return heavy ? "[src] lets out a relieved sigh and releases [target] for now." : "[src] exhales contently!"
+
 /datum/ai_behavior/horny/setup(datum/ai_controller/controller, target_key, targetting_datum_key)
 	. = ..()
 	var/datum/targetting_datum/targetting_datum = controller.blackboard[targetting_datum_key]
@@ -52,6 +86,11 @@
 		return FALSE
 
 	if(!targetting_datum.can_horny(basic_mob, target_living))
+		return FALSE
+
+	// A lair's captive NPC takes one denizen at a time; hold the claim for the whole scene.
+	var/datum/component/npc_in_distress/distress = target_living.GetComponent(/datum/component/npc_in_distress)
+	if(distress && !distress.claim_scene(basic_mob))
 		return FALSE
 
 	controller.set_blackboard_key(BB_HORNY_TIME_START, world.time)
@@ -338,6 +377,13 @@
 		controller.set_blackboard_key(BB_HORNY_KNOCKDOWN_NEED, FALSE)
 		return FALSE
 
+	// A yielding target offers no fight: ease them down, no guard roll, no stamina drain.
+	if(target_living.surrendering)
+		target_living.Knockdown(50)
+		controller.set_blackboard_key(BB_HORNY_STUN_COOLDOWN, world.time + 10 SECONDS)
+		basic_mob.visible_message(span_danger("[basic_mob] pushes the yielding [target_living] down to the ground."))
+		return TRUE
+
 	var/prob2defend
 	var/obj/item/mainhand = target_living.get_active_held_item()
 	var/obj/item/offhand = target_living.get_inactive_held_item()
@@ -346,8 +392,6 @@
 	prob2defend += CLAMP(target_living.STASPD / 20 * 50, 0, 50)
 	if(target_living.cmode)
 		prob2defend *= 1.2
-	if(target_living.surrendering)
-		prob2defend *= 0.1
 	prob2defend = CLAMP(prob2defend + 60, 0, 100)
 
 	// Once only 20% stamina remains, the takedown becomes guaranteed
@@ -356,8 +400,9 @@
 	var/down_chance = CLAMP(prob2defend, 0, 100)
 
 	if(prob(100 - down_chance))
-		target_living.SetStun(20)
-		target_living.SetKnockdown(50)
+		// Additive stuns: never cut short a stun or knockdown that already holds the target.
+		target_living.Stun(20)
+		target_living.Knockdown(50)
 		if(target_living.body_position != LYING_DOWN)
 			target_living.emote("gasp")
 		controller.set_blackboard_key(BB_HORNY_STUN_COOLDOWN, world.time + 10 SECONDS)
@@ -431,6 +476,8 @@
 	controller.set_blackboard_key(BB_HORNY_ACTIONLESS_TICKS, 0)
 	if(!length(scene_controller.get_active_actions()))
 		scene_controller.try_start_action(action_type, "ai")
+		if(length(scene_controller.get_active_actions()))
+			target_living.note_horny_scene_captor(basic_mob)
 		var/atom/interaction_anchor = get_horny_interaction_anchor(controller, basic_mob, target_living)
 		basic_mob.face_atom(interaction_anchor ? interaction_anchor : target_living)
 		var/force = rand(SEX_FORCE_MID, SEX_FORCE_MAX)
@@ -465,8 +512,9 @@
 	if(basic_mob.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_TENTACLES)
 		if(has_penis)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/tentacle, 2)
-			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle, 2)
-			if(target_has_vagina)
+			if(npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_ANUS))
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle, 2)
+			if(target_has_vagina && npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_VAGINA))
 				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/tentacle, 3)
 		if(target_has_penis)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk, 2)
@@ -474,8 +522,9 @@
 	if(basic_mob.ai_controller?.horny_pref_family_flag == HORNY_MOB_TYPE_MANEATERS)
 		if(has_penis)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/tentacle/maneater, 2)
-			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle/maneater, 2)
-			if(target_has_vagina)
+			if(npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_ANUS))
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/tentacle/maneater, 2)
+			if(target_has_vagina && npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_VAGINA))
 				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/tentacle/maneater, 3)
 		if(target_has_penis)
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/tentacle_jerk/maneater, 2)
@@ -484,8 +533,9 @@
 	// Skeletons: a funny bone gets its own acts, and one with nothing below the belt can only pet.
 	if(istype(basic_mob.getorganslot(ORGAN_SLOT_PENIS), /obj/item/organ/genitals/penis/funny_bone))
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex/funny_bone, 2)
-		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/funny_bone)
-		if(target_has_vagina)
+		if(npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_ANUS))
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex/funny_bone)
+		if(target_has_vagina && npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_VAGINA))
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex/funny_bone, 3)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_jerk_over/funny_bone)
 		return
@@ -495,8 +545,9 @@
 
 	if(has_penis)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_throat_sex, 2)
-		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex)
-		if(target_has_vagina)
+		if(npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_ANUS))
+			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_sex)
+		if(target_has_vagina && npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_VAGINA))
 			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_sex, 3)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_handjob)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_jerk_over)
@@ -504,8 +555,10 @@
 	if(has_vagina)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_facesitting, 2)
 		if(target_has_penis)
-			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_ride_sex, 3)
-			add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_ride_sex)
+			if(npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_VAGINA, TRUE))
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_vaginal_ride_sex, 3)
+			if(npc_penetration_can_fit(basic_mob, target_living, ORGAN_SLOT_ANUS, TRUE))
+				add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_anal_ride_sex)
 
 	if(has_penis || has_vagina)
 		add_weighted_horny_ai_choice(weighted_actions, /datum/sex_action/npc/npc_body_rub)
@@ -792,6 +845,12 @@
 		var/turf/landing_spot = target_turf ? pick(RANGE_TURFS(2, target_turf)) : null
 		if(landing_spot)
 			stripped_item.throw_at(landing_spot, 2, 1, basic_mob, TRUE)
+		// Rough hands snag the stockings the strip just bared.
+		var/obj/item/clothing/legwears/stockings = human_target.get_exposed_legwear()
+		if(stockings && damage_chance && prob(damage_chance))
+			var/stockings_name = stockings.name
+			if(stockings.tear_open())
+				basic_mob.visible_message(span_danger("[basic_mob]'s rough handling tears [human_target]'s [stockings_name]!"))
 	return TRUE
 
 /datum/ai_behavior/horny/simple_mob/proc/strip_human_target(mob/living/basic_mob, mob/living/carbon/human/human_target)
@@ -1140,6 +1199,8 @@
 		qdel(scene_controller)
 
 	UnregisterSignal(basic_mob, COMSIG_ATOM_WAS_ATTACKED)
+	var/datum/component/npc_in_distress/distress = finished_target?.GetComponent(/datum/component/npc_in_distress)
+	distress?.release_scene(basic_mob)
 
 	SEND_SIGNAL(basic_mob, COMSIG_SET_ERECT_STATE, 0)
 
@@ -1169,10 +1230,15 @@
 	controller.clear_blackboard_key(BB_HORNY_TIME_START)
 	if(basic_mob.is_dead())
 		return
+	// Planning handed this partner to the kidnap behaviour: no sulking, just a short pause.
+	if(!succeeded && finished_target && controller.blackboard[BB_KIDNAP_TARGET] == finished_target)
+		controller.set_blackboard_key(BB_HORNY_SEEK_COOLDOWN, world.time + failed_seek_cooldown)
+		controller.modify_cooldown(src, world.time)
+		return
 	if(!succeeded)
 		//if ran away - be angry
 		controller.set_blackboard_key(BB_HORNY_SEEK_COOLDOWN, world.time + failed_seek_cooldown)
-		basic_mob.visible_message(span_danger("[basic_mob] stomps on the ground, clearly unsatisfied!"))
+		basic_mob.visible_message(span_danger(basic_mob.get_horny_unsatisfied_message()))
 		controller.modify_cooldown(src, world.time)
 		//controller.CancelActions()
 		return
@@ -1183,12 +1249,11 @@
 	clear_completed_target_hostility(controller, finished_target)
 	var/success_cooldown = successful_seek_cooldown
 	var/datum/component/arousal/arousal_component = basic_mob.GetComponent(/datum/component/arousal)
-	var/message = span_danger("[basic_mob] exhales contently!")
-	if(arousal_component?.recent_orgasm_count >= 3)
+	var/heavily_sated = arousal_component?.recent_orgasm_count >= 3
+	if(heavily_sated)
 		success_cooldown += 3 MINUTES
-		message = span_danger("[basic_mob] lets out a releved sigh and releases [finished_target] for now.")
 	controller.set_blackboard_key(BB_HORNY_SEEK_COOLDOWN, world.time + success_cooldown)
-	basic_mob.visible_message(message)
+	basic_mob.visible_message(span_danger(basic_mob.get_horny_sated_message(finished_target, heavily_sated)))
 	controller.modify_cooldown(src, world.time)
 	//controller.CancelActions()
 

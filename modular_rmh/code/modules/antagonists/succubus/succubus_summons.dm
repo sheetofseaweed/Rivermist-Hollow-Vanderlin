@@ -111,7 +111,7 @@
 
 // --- Lustbound hound -----------------------------------------------------------------------------
 
-/datum/pet_command/succubus_lusthound_ravage
+/datum/pet_command/pet_breed_other
 	command_name = "Ravage"
 	command_desc = "Command the hound to sexually pursue a preference-compatible target."
 	radial_icon_state = "breed"
@@ -120,11 +120,18 @@
 	command_feedback = "snarls eagerly"
 	pointed_reaction = "with hungry intent"
 
-/datum/pet_command/succubus_lusthound_ravage/set_command_active(mob/living/parent, mob/living/commander, radial_command = FALSE)
+/datum/pet_command/pet_breed_other/set_command_active(mob/living/parent, mob/living/commander, radial_command = FALSE)
 	. = ..()
 	parent.ai_controller?.clear_blackboard_key(BB_BASIC_MOB_CURRENT_HORNY_TARGET)
 
-/datum/pet_command/succubus_lusthound_ravage/set_command_target(mob/living/parent, atom/target)
+// Friends point all the time; only a point made while this order is active picks a target.
+/datum/pet_command/pet_breed_other/on_target_set(mob/living/friend, atom/potential_target)
+	var/mob/living/parent = weak_parent?.resolve()
+	if(parent?.ai_controller?.blackboard[BB_ACTIVE_PET_COMMAND] != src)
+		return
+	return ..()
+
+/datum/pet_command/pet_breed_other/set_command_target(mob/living/parent, atom/target)
 	if(!isliving(target) || target == parent)
 		parent.visible_message(span_notice("[parent] turns away from [target]."))
 		return FALSE
@@ -143,12 +150,12 @@
 	controller.recalculate_idle()
 	return TRUE
 
-/datum/pet_command/succubus_lusthound_ravage/execute_action(datum/ai_controller/controller)
+/datum/pet_command/pet_breed_other/execute_action(datum/ai_controller/controller)
 	if(!controller.blackboard[BB_BASIC_MOB_CURRENT_HORNY_TARGET])
 		return SUBTREE_RETURN_FINISH_PLANNING
 	controller.clear_blackboard_key(BB_ACTIVE_PET_COMMAND)
 
-/datum/pet_command/succubus_lusthound_ravage/retrieve_command_text(atom/living_pet, atom/target)
+/datum/pet_command/pet_breed_other/retrieve_command_text(atom/living_pet, atom/target)
 	return isnull(target) ? null : "directs [living_pet]'s lust toward [target]!"
 
 /datum/ai_controller/summon/succubus_lusthound
@@ -180,7 +187,7 @@
 		/datum/pet_command/rescue_owner,
 		/datum/pet_command/aggressive,
 		/datum/pet_command/calm,
-		/datum/pet_command/succubus_lusthound_ravage,
+		/datum/pet_command/pet_breed_other,
 	)
 	var/datum/component/obeys_commands/default_commands = GetComponent(/datum/component/obeys_commands)
 	qdel(default_commands)

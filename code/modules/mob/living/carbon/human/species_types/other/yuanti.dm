@@ -92,6 +92,7 @@
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/womb,
 		)
 	body_marking_sets = list(
 		/datum/body_marking_set/aura/tranquility,

@@ -14,6 +14,7 @@
 	scene_user_slot = ORGAN_SLOT_ANUS
 	scene_target_role = SEX_SCENE_ROLE_GIVER
 	scene_target_slot = ORGAN_SLOT_PENIS
+	warms_up_orifice = TRUE
 
 /datum/sex_action/npc/npc_anal_ride_sex/shows_on_menu(mob/living/user, mob/living/target)
 	return FALSE
@@ -38,12 +39,19 @@
 
 /datum/sex_action/npc/npc_anal_ride_sex/on_start(mob/living/user, mob/living/target)
 	. = ..()
+	if(needs_orifice_warmup(user, target))
+		start_orifice_warmup(user, target)
+		return .
+	show_penetration_start(user, target)
+
+/datum/sex_action/npc/npc_anal_ride_sex/show_penetration_start(mob/living/user, mob/living/target)
 	user.visible_message(span_warning("[user] gets on top of [target] and begins riding them with their ass!"))
 	var/used_sex_volume = sex_volume
 	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
 
-
 /datum/sex_action/npc/npc_anal_ride_sex/on_perform(mob/living/user, mob/living/target)
+	if(run_orifice_warmup_cycle(user, target))
+		return
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rides [target]."))
 	var/used_sex_volume = sex_volume

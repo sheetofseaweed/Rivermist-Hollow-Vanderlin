@@ -159,6 +159,7 @@
 			"can_perform" = TRUE,
 			"user_zones" = action.user_menu_zone_mask,
 			"target_zones" = action.target_menu_zone_mask,
+			"fit_hint" = target ? action.get_orifice_fit_hint(user, target) : null,
 		))
 	for(var/datum/sex_action/action_template as anything in get_all_menu_actions())
 		if(is_action_active(action_template))
@@ -176,6 +177,7 @@
 			"can_perform" = can_start,
 			"user_zones" = action.user_menu_zone_mask,
 			"target_zones" = action.target_menu_zone_mask,
+			"fit_hint" = target ? action.get_orifice_fit_hint(user, target) : null,
 		))
 		qdel(proposal)
 	return actions_out
@@ -290,6 +292,12 @@
 
 	if(action == "select_participant")
 		return select_ui_participant("[params["ref"]]")
+
+	if(action == "view_holes")
+		var/mob/living/carbon/human/human_user = user
+		if(istype(human_user))
+			human_user.view_holes()
+		return TRUE
 
 	if(!sync_ui_selected_participant())
 		return FALSE
