@@ -51,6 +51,11 @@
 	icon_state = "rings-s"
 	piercing_type = /obj/item/piercings/rings
 
+/datum/sprite_accessory/piercing/rings/tag
+	name = "nipple tag"
+	icon_state = "n_tag"
+	piercing_type = /obj/item/piercings/rings/tag
+
 /datum/sprite_accessory/piercing/beads
 	icon = 'modular_rmh/icons/mob/sprite_accessory/piercings/beads.dmi'
 	name = "beads"
