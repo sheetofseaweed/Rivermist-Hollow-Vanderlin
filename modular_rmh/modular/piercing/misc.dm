@@ -13,6 +13,7 @@
 		/datum/sprite_accessory/piercing/rings/emerald,
 		/datum/sprite_accessory/piercing/rings/gold,
 		/datum/sprite_accessory/piercing/rings/silver,
+		/datum/sprite_accessory/piercing/rings/tag,
 		/datum/sprite_accessory/piercing/beads/emerald,
 		/datum/sprite_accessory/piercing/beads/gold,
 		/datum/sprite_accessory/piercing/beads/silver,
