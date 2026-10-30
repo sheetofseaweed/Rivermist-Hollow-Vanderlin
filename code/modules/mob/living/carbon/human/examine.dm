@@ -159,6 +159,8 @@
 	var/list/tattoo_lines = get_tattoo_description_lines()
 	if(length(tattoo_lines))
 		. |= tattoo_lines
+
+	. |= get_piercing_inscriptions(user)
 	// RMH EDITED END
 
 
