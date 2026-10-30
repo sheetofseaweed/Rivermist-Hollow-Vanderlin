@@ -55,6 +55,7 @@
 #define OVI_EGG_LEECH "leech_ovi"
 #define OVI_EGG_TENTACLE "tentacle_ovi"
 #define OVI_EGG_MANEATER "maneater_ovi"
+#define OVI_EGG_MOTHBUG "mothbug_ovi"
 
 // Oviposition customization and balance limits.
 #define OVI_EGG_MAX_CLUTCH 30

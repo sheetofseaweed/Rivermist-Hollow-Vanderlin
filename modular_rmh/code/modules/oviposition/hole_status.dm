@@ -678,6 +678,8 @@
 			return "Embryo"
 		if(OVI_EGG_MANEATER)
 			return "Maneater"
+		if(OVI_EGG_MOTHBUG)
+			return "Mothbug"
 	return "[egg_type]"
 
 /proc/get_oviposition_egg_trait_name(trait_flag)

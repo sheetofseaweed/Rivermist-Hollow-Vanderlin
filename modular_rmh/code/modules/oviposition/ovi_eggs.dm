@@ -268,6 +268,8 @@
 			profile_type = /datum/oviposition_egg_profile/tentacle
 		if(OVI_EGG_MANEATER)
 			profile_type = /datum/oviposition_egg_profile/maneater
+		if(OVI_EGG_MOTHBUG)
+			profile_type = /datum/oviposition_egg_profile/mothbug
 	return new profile_type
 
 /proc/get_species_oviposition_egg_type(mob/living/owner)
