@@ -4920,6 +4920,7 @@
 #include "modular_rmh\modular\chastity\chastity_quirk.dm"
 #include "modular_rmh\modular\chastity\chastity_recipes.dm"
 #include "modular_rmh\modular\comfy\comfy.dm"
+#include "modular_rmh\modular\components\inscription.dm"
 #include "modular_rmh\modular\defeat_recovery\trauma_providers.dm"
 #include "modular_rmh\modular\emote_panel\emote_panel.dm"
 #include "modular_rmh\modular\falling_star\falling_star.dm"
