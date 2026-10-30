@@ -79,6 +79,17 @@
 	nutriment_factor = 0
 	metabolization_rate = REAGENTS_METABOLISM
 
+/// The slime a tentacle egg leaves behind: clinging, slick and slow to fade.
+/datum/reagent/consumable/egg_slime
+	name = "Egg Slime"
+	description = "A clinging, wine-dark slime left behind by a tentacle egg. It stays slick for a long while."
+	color = "#8a4f7a"
+	taste_description = "something briny and alive"
+	lubricity = 0.9
+	lube_fade = 0.6
+	nutriment_factor = 0
+	metabolization_rate = REAGENTS_METABOLISM
+
 /datum/reagent/lubricant
 	name = "Slick Balm"
 	description = "A clear, slippery balm made for easing things in."

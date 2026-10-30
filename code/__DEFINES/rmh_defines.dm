@@ -61,6 +61,12 @@
 #define OVI_EGG_DEFAULT_SCALE 1
 #define OVI_EGG_MIN_SCALE 0.5
 #define OVI_EGG_MAX_SCALE 2
+/// Width in centimetres a ripe egg passes the opening with at scale one, unless its profile says otherwise.
+#define OVI_EGG_DEFAULT_BIRTH_GIRTH 15
+/// Residue units a trait adds to what a birth leaves in the canal, and the sting venom leaves.
+#define OVI_EGG_RESIDUE_APHRODISIAC 2
+#define OVI_EGG_RESIDUE_VENOM 0.5
+#define OVI_EGG_RESIDUE_VENOM_SORENESS 5
 #define OVI_EGG_MAX_CUSTOM_NAME_LENGTH 96
 #define OVI_EGG_MAX_CUSTOM_DESC_LENGTH 512
 #define OVI_EGG_STAGE_TIME 1 MINUTES

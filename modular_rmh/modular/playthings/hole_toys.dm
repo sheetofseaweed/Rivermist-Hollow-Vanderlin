@@ -64,6 +64,10 @@
 /obj/item/natural/worms/leech/counts_as_stored_toy()
 	return FALSE
 
+/// Batch 4 fills this: the toggleable shake for toys, eggs and births moving inside; [kind] names the cause.
+/mob/living/proc/hole_shake_hook(kind, strength = 1)
+	return
+
 // ---- Stirring ----
 
 /// Each flow tick the toys inside stir: pleasure by size and depth, and now and then a line.
@@ -88,6 +92,7 @@
 	if(pleasure <= 0)
 		return
 	SEND_SIGNAL(owner, COMSIG_SEX_GENERIC_ACTION, owner, pleasure, 0, pleasure * 0.2, owner)
+	owner.hole_shake_hook("stir", 0.5)
 	if(prob(TOY_STIR_MESSAGE_CHANCE))
 		var/hole_word = orifice?.opening_name || pick(altnames)
 		to_chat(owner, span_love(pick(
@@ -307,6 +312,7 @@
 		if(INSERT_FEEDBACK_OK, INSERT_FEEDBACK_OK_FORCE, INSERT_FEEDBACK_OK_OVERRIDE, INSERT_FEEDBACK_ALMOST_FULL)
 			update_inv_hands()
 			SEND_SIGNAL(src, COMSIG_SEX_HOLE_AFTER_INSERT, toy, hole.slot, src)
+			hole_shake_hook("insert", 1)
 			var/brim = fit == INSERT_FEEDBACK_ALMOST_FULL ? ", filling me almost to the brim" : ""
 			visible_message(span_notice("[src] works [toy] into [p_their()] [hole_word]."), span_love("[toy] slides into my [hole_word][brim]."))
 			SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, toy.get_body_storage_stir_pleasure(STORAGE_LAYER_INNER) * 2, 0, 0.5, src)
@@ -354,6 +360,7 @@
 			to_chat(src, span_warning("[toy] will not come."))
 			return FALSE
 	SEND_SIGNAL(src, COMSIG_SEX_HOLE_AFTER_REMOVE, toy, hole.slot, src)
+	hole_shake_hook("remove", 1)
 	if(!put_in_active_hand(toy))
 		toy.forceMove(get_turf(src))
 	visible_message(span_notice("[src] draws [toy] out of [p_their()] [hole_word]."), span_love("I draw [toy] out of my [hole_word]."))
@@ -395,6 +402,7 @@
 		to_chat(src, span_warning("[toy] will not go any deeper."))
 		return FALSE
 	playsound(src, 'sound/misc/mat/endin.ogg', 40, TRUE, -2, ignore_walls = FALSE)
+	hole_shake_hook("push_deeper", 1)
 	toy_voice("groan")
 	to_chat(src, span_love("[toy] settles deep inside, past where my fingers reach."))
 	SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, toy.get_body_storage_stir_pleasure(STORAGE_LAYER_DEEP), 0, 0.5, src)

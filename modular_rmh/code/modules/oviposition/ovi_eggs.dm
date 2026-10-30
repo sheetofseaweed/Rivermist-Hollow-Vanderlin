@@ -8,6 +8,10 @@
 	var/display_icon = null
 	var/display_color = null
 	var/default_scale = OVI_EGG_DEFAULT_SCALE
+	/// Width in centimetres a ripe egg of this kind passes the opening with, before the egg's own scale.
+	var/birth_girth = OVI_EGG_DEFAULT_BIRTH_GIRTH
+	/// What a birth leaves in the canal, reagent type to units; traits add theirs on top.
+	var/list/residue_reagents
 	var/list/default_traits = null
 	var/production_interval_multiplier = 1
 	var/resource_cost_multiplier = 1
@@ -88,6 +92,7 @@
 	poll_for_ghost = FALSE
 	require_ghost_to_hatch = FALSE
 	incubation_stage_duration = 4 MINUTES
+	birth_girth = 12
 	ready_message = "The spider egg in my %CONTAINER% twitches with hungry little movements."
 	hatch_message = "%EGG% splits open in a spray of web and skittering legs!"
 
@@ -101,6 +106,8 @@
 	poll_for_ghost = FALSE
 	require_ghost_to_hatch = FALSE
 	incubation_stage_duration = 7 MINUTES
+	birth_girth = 16
+	residue_reagents = list(/datum/reagent/water = 3)
 	ready_message = "The bog bug egg in my %CONTAINER% churns like a swamp creature is kicking to get free."
 	hatch_message = "%EGG% bursts with a wet pop, spilling out a ravenous bog bug!"
 
@@ -116,6 +123,8 @@
 	require_ghost_to_hatch = FALSE
 	internal_hatch_holder_bulk = 6
 	incubation_stage_duration = 1.5 MINUTES
+	birth_girth = 13
+	residue_reagents = list(/datum/reagent/consumable/egg_slime = 6)
 	ready_message = "The tentacle egg in my %CONTAINER% squirms with impatient coils."
 	hatch_message = "%EGG% splits with a wet tear, spilling out a writhing tentacle mass!"
 
@@ -130,6 +139,7 @@
 	poll_for_ghost = FALSE
 	require_ghost_to_hatch = FALSE
 	incubation_stage_duration = 4 MINUTES
+	birth_girth = 18
 	ready_message = "The green egg in my %CONTAINER% tightens around a vigorously rooting seedling."
 	hatch_message = "%EGG% peels open like a wet flower, releasing a maneater seedling!"
 
@@ -141,6 +151,7 @@
 	display_color = "#eee3c7"
 	default_scale = 1.15
 	production_interval_multiplier = 1.15
+	birth_girth = 13
 	ready_message = "The harpy egg in my %CONTAINER% feels full and heavy, like a ripe nesting egg ready to be laid."
 
 /datum/oviposition_egg_profile/avian
@@ -151,6 +162,7 @@
 	display_color = "#f0e0bd"
 	default_scale = 1.1
 	production_interval_multiplier = 1.1
+	birth_girth = 13
 	ready_message = "The avian egg in my %CONTAINER% feels heavy, warm, and ready to be laid."
 
 /datum/oviposition_egg_profile/softshell
@@ -163,6 +175,8 @@
 	production_interval_multiplier = 0.8
 	resource_cost_multiplier = 0.8
 	incubation_stage_duration = 4 MINUTES
+	birth_girth = 13
+	residue_reagents = list(/datum/reagent/consumable/egg_slime = 2)
 	ready_message = "The softshell egg in my %CONTAINER% feels pliant, warm, and ready to pass."
 
 /datum/oviposition_egg_profile/parasitic
@@ -176,6 +190,8 @@
 	production_interval_multiplier = 1.35
 	resource_cost_multiplier = 1.4
 	incubation_stage_duration = 6 MINUTES
+	birth_girth = 12
+	residue_reagents = list(/datum/reagent/consumable/egg_slime = 2)
 	ready_message = "The parasitic egg in my %CONTAINER% twitches with needy, invasive warmth."
 
 /datum/oviposition_egg_profile/embryo
@@ -190,6 +206,7 @@
 		"The embryo in my %CONTAINER% grows heavier and more alive.",
 		"A tight, restless pressure builds in my %CONTAINER%."
 	)
+	birth_girth = 24
 	ready_message = "The embryo in my %CONTAINER% is fully grown and about to hatch inside me."
 	hatch_message = "Something alive hatches from %EGG% inside my %CONTAINER%!"
 	auto_hatch_when_laid = FALSE
@@ -220,6 +237,7 @@
 	"The leech egg in my %CONTAINER% twitches with small, eager movements.",
 	"The leech egg in my %CONTAINER% feels ready to split.",
 	)
+	birth_girth = 6
 	ready_message = "The leech egg in my %CONTAINER% is ready to hatch."
 	hatch_message = "%EGG% splits open with a wet little twitch!"
 	auto_hatch_when_laid = TRUE
@@ -565,6 +583,28 @@
 
 /obj/item/oviposition_egg/proc/has_egg_trait(trait_flag)
 	return islist(egg_traits) && (trait_flag in egg_traits)
+
+/// Width this egg passes the opening with: the profile's ripe girth, scaled, and smaller while unripe.
+/obj/item/oviposition_egg/proc/get_birth_girth()
+	var/datum/oviposition_egg_profile/profile = get_egg_profile()
+	var/ripe = (profile?.birth_girth || OVI_EGG_DEFAULT_BIRTH_GIRTH) * get_egg_scale()
+	var/datum/component/pregnancy/pregnancy = get_pregnancy_component()
+	if(!pregnancy || !pregnancy.max_stage)
+		return ripe
+	return ripe * clamp(pregnancy.stage / pregnancy.max_stage, 0.5, 1)
+
+/// What a birth leaves in the canal: the profile's residue plus what the traits add, reagent type to units.
+/obj/item/oviposition_egg/proc/get_birth_residue()
+	var/datum/oviposition_egg_profile/profile = get_egg_profile()
+	var/list/residue = islist(profile?.residue_reagents) ? profile.residue_reagents.Copy() : list()
+	if(has_egg_trait(OVI_EGG_TRAIT_APHRODISIAC))
+		residue[/datum/reagent/consumable/aphrodisiac] += OVI_EGG_RESIDUE_APHRODISIAC
+	if(has_egg_trait(OVI_EGG_TRAIT_POISON))
+		residue[/datum/reagent/toxin/venom] += OVI_EGG_RESIDUE_VENOM
+	var/scale = get_egg_scale()
+	for(var/reagent_type in residue)
+		residue[reagent_type] *= scale
+	return residue
 
 /obj/item/oviposition_egg/proc/get_incubation_multiplier()
 	var/multiplier = get_egg_scale()

@@ -189,6 +189,16 @@
 			else
 				lay_egg(get_turf(carrier), TRUE)
 
+/// TRUE when the ripe egg would pass the carrier's opening within comfort, so the body looks forward to it.
+/datum/component/pregnancy/proc/ripe_passage_feels_good()
+	if(!egg || !iscarbon(carrier))
+		return FALSE
+	var/obj/item/organ/genitals/filling_organ/canal = container?.get_birth_canal()
+	if(!istype(canal) || !canal.orifice_type)
+		return FALSE
+	var/mob/living/carbon/carbon_carrier = carrier
+	return carbon_carrier.get_birth_pleasure_share(canal.get_orifice(), egg.get_birth_girth()) >= 0.66
+
 /datum/component/pregnancy/proc/on_stage_advanced()
 	if(!carrier)
 		return
@@ -204,13 +214,17 @@
 				message = "A ripe pressure builds inside my %CONTAINER%."
 
 	if(message)
-		to_chat(carrier, stage >= 3 ? span_warning(format_container_message(message)) : span_love(format_container_message(message)))
+		// Early stages read as pleasure and the ripe pressure as mixed; only a hard passage ahead reads as danger.
+		to_chat(carrier, stage >= 3 ? "<span class='love_mid'>[format_container_message(message)]</span>" : span_love(format_container_message(message)))
 
 	if(stage == max_stage)
 		var/ready_message = egg.get_ready_message()
 		if(!ready_message)
 			ready_message = "The egg in my %CONTAINER% is fully developed and wants out."
-		to_chat(carrier, span_warning(format_container_message(ready_message)))
+		if(ripe_passage_feels_good())
+			to_chat(carrier, span_love("[format_container_message(ready_message)] The thought of it sends a warm throb through me."))
+		else
+			to_chat(carrier, span_warning(format_container_message(ready_message)))
 
 	update_egg_storage_bulk()
 
@@ -263,19 +277,34 @@
 	if(!remove_from_host(BODYSTORAGE_REMOVE_INTERNAL))
 		return FALSE
 
-	// The egg leaves from the deep layer, which passes no opening on its own.
+	// The egg leaves from the deep layer, which passes no opening on its own; judge the fit before it widens.
 	var/obj/item/organ/genitals/filling_organ/laying_hole = laying_container.get_birth_canal()
+	var/girth = egg.get_birth_girth()
+	var/share = 0
+	var/ease = 0
+	var/laying_carbon = iscarbon(laying_carrier)
 	if(istype(laying_hole) && laying_hole.orifice_type)
-		laying_hole.get_orifice().pass_through(egg.get_insert_girth(), SEX_FORCE_MID, laying_carrier)
+		var/datum/orifice/opening = laying_hole.get_orifice()
+		if(laying_carbon)
+			var/mob/living/carbon/judging_carrier = laying_carrier
+			share = judging_carrier.get_birth_pleasure_share(opening, girth)
+			ease = judging_carrier.get_birth_pleasure_share(opening, girth, FALSE)
+		opening.pass_through(girth, SEX_FORCE_MID, laying_carrier)
+		laying_hole.take_birth_residue(egg)
 
 	laying_carrier.visible_message(
 		span_notice("[laying_carrier] [laying_container.get_oviposition_lay_verb()] an egg!"),
 		span_love(laying_container.get_oviposition_lay_self_message())
 	)
 	playsound(laying_carrier, 'sound/effects/wounds/splatter.ogg', 70, TRUE)
-	laying_carrier.Knockdown(60, TRUE, TRUE)
-	laying_carrier.Stun(60, TRUE, TRUE)
-	laying_carrier.adjust_stamina(forced ? 120 : 80)
+	// A hard passage floors her; an easy one only takes her breath.
+	if(ease < 0.5)
+		laying_carrier.Knockdown(60, TRUE, TRUE)
+		laying_carrier.Stun(60, TRUE, TRUE)
+	laying_carrier.adjust_stamina((forced ? 120 : 80) * (1 - ease * 0.75))
+	if(laying_carbon)
+		var/mob/living/carbon/feeling_carrier = laying_carrier
+		feeling_carrier.feel_birth_passage(share)
 
 	laid = TRUE
 	egg.forceMove(location)
@@ -435,6 +464,8 @@
 		return FALSE
 
 	holder.set_internal_bulk(egg.internal_hatch_holder_bulk)
+	// A newborn passes at the wider of its egg's birth width and its own body.
+	holder.birth_girth = max(egg.get_birth_girth(), holder.get_insert_girth())
 
 	var/datum/component/body_storage/storage = hatch_container.GetComponent(/datum/component/body_storage)
 	var/holder_layer = egg.internal_hatch_layer
@@ -764,13 +795,22 @@
 /datum/component/internal_womb_hatchling/proc/birth_hatchling()
 	var/obj/item/organ/genitals/filling_organ/birth_hole = container?.get_birth_canal()
 	var/mob/living/birth_carrier = carrier
-	var/birth_girth = holder?.get_insert_girth()
+	var/birth_girth = get_passenger_birth_girth(holder)
+	var/has_opening = istype(birth_hole) && birth_hole.orifice_type
 	// Inner-layer storage passes the opening on removal by itself; only deeper layers need it here.
-	var/passes_opening = istype(birth_hole) && birth_hole.orifice_type && SEND_SIGNAL(birth_hole, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, holder) != STORAGE_LAYER_INNER
+	var/passes_opening = has_opening && SEND_SIGNAL(birth_hole, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, holder) != STORAGE_LAYER_INNER
+	// Judge the fit before the passage widens the opening to the newborn.
+	var/share = 0
+	if(has_opening && iscarbon(birth_carrier))
+		var/mob/living/carbon/judging_carrier = birth_carrier
+		share = judging_carrier.get_birth_pleasure_share(birth_hole.get_orifice(), birth_girth)
 	if(!release_hatchling(FALSE))
 		return FALSE
 	if(passes_opening && !QDELETED(birth_hole))
 		birth_hole.get_orifice().pass_through(birth_girth, SEX_FORCE_MID, birth_carrier)
+	if(has_opening && iscarbon(birth_carrier))
+		var/mob/living/carbon/feeling_carrier = birth_carrier
+		feeling_carrier.feel_birth_passage(share)
 	return TRUE
 
 /datum/component/internal_womb_hatchling/proc/release_hatchling(silent = FALSE)
