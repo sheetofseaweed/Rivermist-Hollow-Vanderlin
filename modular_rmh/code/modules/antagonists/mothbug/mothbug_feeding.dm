@@ -1,6 +1,30 @@
-/obj/item
-	/// Bites a mothbug has taken; the item is gone once this reaches get_mothbug_bites_needed().
+/obj
+	/// Bites a mothbug has taken; the object is gone once this reaches get_mothbug_bites_needed().
 	var/moth_bites = 0
+
+/// Cloth structures a mothbug can eat whole.
+GLOBAL_LIST_INIT(mothbug_cloth_structures, typecacheof(list(
+	/obj/structure/curtain,
+	/obj/structure/carpet,
+	/obj/structure/dryclothes,
+	/obj/structure/fluff/canopy,
+	/obj/structure/fluff/celebration/canopy,
+	/obj/structure/fluff/celebration/flags,
+	/obj/structure/fluff/festive_flags,
+	/obj/structure/fluff/littlebanners,
+	/obj/structure/fluff/moonrug,
+	/obj/structure/fluff/walldeco/artificerflag,
+	/obj/structure/fluff/walldeco/customflag,
+	/obj/structure/fluff/walldeco/maidendrape,
+	/obj/structure/fluff/walldeco/masonflag,
+	/obj/structure/fluff/walldeco/psybanner,
+	/obj/structure/fluff/walldeco/selune_banner,
+	/obj/structure/fluff/walldeco/serpflag,
+	/obj/structure/fluff/walldeco/sparrowflag,
+	/obj/structure/roguetent,
+	/obj/structure/tent_wall,
+	/obj/structure/camp_shelter/tent,
+)))
 
 /proc/is_mothbug_fabric_type(path)
 	return ispath(path, /obj/item/natural/cloth) || ispath(path, /obj/item/natural/silk) || ispath(path, /obj/item/natural/fibers) || ispath(path, /obj/item/natural/fur)
@@ -12,9 +36,14 @@
 		return MOTHBUG_VALUE_SCRAP * 1.25
 	return MOTHBUG_VALUE_SCRAP
 
-/// Fabric value of a whole item, or 0 when a mothbug cannot eat it.
-/proc/get_mothbug_fabric_value(obj/item/item)
-	if(!istype(item) || QDELETED(item) || (item.resistance_flags & INDESTRUCTIBLE) || item.anvilrepair || ispath(item.smeltresult, /obj/item/ingot))
+/// Fabric value of a whole item or cloth structure, or 0 when a mothbug cannot eat it.
+/proc/get_mothbug_fabric_value(obj/target)
+	if(!isobj(target) || QDELETED(target) || (target.resistance_flags & INDESTRUCTIBLE))
+		return 0
+	if(isstructure(target))
+		return is_type_in_typecache(target, GLOB.mothbug_cloth_structures) ? MOTHBUG_VALUE_CLOTH_STRUCTURE : 0
+	var/obj/item/item = target
+	if(!istype(item) || item.anvilrepair || ispath(item.smeltresult, /obj/item/ingot))
 		return 0
 	if(istype(item, /obj/item/natural/bundle))
 		var/obj/item/natural/bundle/bundle = item
@@ -36,7 +65,10 @@
 		value *= 1.25
 	return value
 
-/proc/get_mothbug_bites_needed(obj/item/item)
+/proc/get_mothbug_bites_needed(obj/target)
+	if(!isitem(target))
+		return MOTHBUG_STRUCTURE_BITES
+	var/obj/item/item = target
 	if(item.w_class <= WEIGHT_CLASS_SMALL)
 		return 1
 	if(item.w_class >= WEIGHT_CLASS_BULKY)
@@ -62,7 +94,7 @@
 
 /datum/element/moth_eaten/Attach(datum/target)
 	. = ..()
-	if(!isitem(target))
+	if(!isobj(target))
 		return ELEMENT_INCOMPATIBLE
 	RegisterSignal(target, COMSIG_PARENT_EXAMINE, PROC_REF(on_examine))
 
@@ -70,7 +102,7 @@
 	UnregisterSignal(source, COMSIG_PARENT_EXAMINE)
 	return ..()
 
-/datum/element/moth_eaten/proc/on_examine(obj/item/source, mob/user, list/examine_list)
+/datum/element/moth_eaten/proc/on_examine(obj/source, mob/user, list/examine_list)
 	SIGNAL_HANDLER
 	examine_list += span_warning("It is riddled with small, ragged holes, as if something has been chewing it.")
 
@@ -81,7 +113,7 @@
 		to_chat(src, span_warning("I am too full of silk to eat any more."))
 	return FALSE
 
-/mob/living/simple_animal/mothbug/proc/try_eat_fabric(obj/item/food)
+/mob/living/simple_animal/mothbug/proc/try_eat_fabric(obj/food)
 	if(!can_eat_more())
 		return FALSE
 	if(is_mothbug_repelled(food))
@@ -93,13 +125,40 @@
 		return FALSE
 	return bite_fabric(food)
 
-/mob/living/simple_animal/mothbug/proc/can_reach_fabric(obj/item/food)
+/mob/living/simple_animal/mothbug/proc/can_reach_fabric(obj/food)
 	if(QDELETED(food) || stat != CONSCIOUS)
 		return FALSE
 	var/atom/holder = food.loc
 	while(holder && !isturf(holder) && !Adjacent(holder))
 		holder = holder.loc
 	return !!holder && Adjacent(holder)
+
+/// Closets offer open or close, plus anything edible inside while shut.
+/mob/living/simple_animal/mothbug/proc/use_closet(obj/structure/closet/closet)
+	var/toggle_choice = closet.opened ? "Close" : "Open"
+	var/list/choices = list()
+	choices[toggle_choice] = image(closet)
+	if(!closet.opened && can_eat_more(FALSE))
+		for(var/obj/item/item as anything in get_mothbug_edible_contents(closet))
+			choices[item] = image(item)
+	var/choice = length(choices) == 1 ? toggle_choice : show_radial_menu(src, closet, choices, require_near = TRUE, tooltips = TRUE)
+	if(!choice || QDELETED(closet))
+		return FALSE
+	if(choice == toggle_choice)
+		return toggle_closet(closet)
+	if(!(choice in get_mothbug_edible_contents(closet)))
+		return FALSE
+	visible_message(span_notice("[src] squeezes its head into [closet] and starts to chew."), span_notice("I squeeze my head into [closet] and chew at [choice]."), vision_distance = 3)
+	return try_eat_fabric(choice)
+
+/mob/living/simple_animal/mothbug/proc/toggle_closet(obj/structure/closet/closet)
+	var/opening = !closet.opened
+	if(opening && !closet.can_open(src))
+		return FALSE
+	visible_message(span_notice("[src] wedges itself into the gap and pries [closet] [opening ? "open" : "shut"]."), span_notice("I pry [closet] [opening ? "open" : "shut"]."), vision_distance = 4)
+	if(!do_after(src, MOTHBUG_CLOSET_TIME, closet) || closet.opened != !opening)
+		return FALSE
+	return closet.toggle(src)
 
 /mob/living/simple_animal/mothbug/proc/try_eat_from_container(atom/container)
 	if(!can_eat_more())
@@ -117,7 +176,7 @@
 	return try_eat_fabric(picked)
 
 /// Takes one bite from fabric; returns its base silk value before eater multipliers.
-/proc/take_mothbug_bite(obj/item/food)
+/proc/take_mothbug_bite(obj/food)
 	var/value = get_mothbug_fabric_value(food)
 	if(!value)
 		return 0
@@ -138,7 +197,7 @@
 	else if(food.moth_bites == 1)
 		food.AddElement(/datum/element/moth_eaten)
 
-/proc/destroy_eaten_fabric(obj/item/food)
+/proc/destroy_eaten_fabric(obj/food)
 	var/turf/drop_turf = get_turf(food)
 	for(var/atom/movable/inside as anything in food.contents)
 		inside.forceMove(drop_turf)
@@ -149,7 +208,7 @@
 	qdel(food)
 
 /// Takes one bite; returns the silk gained.
-/mob/living/simple_animal/mothbug/proc/bite_fabric(obj/item/food, value_multiplier = 1)
+/mob/living/simple_animal/mothbug/proc/bite_fabric(obj/food, value_multiplier = 1)
 	var/food_name = "[food]"
 	var/gained = take_mothbug_bite(food)
 	if(!gained)

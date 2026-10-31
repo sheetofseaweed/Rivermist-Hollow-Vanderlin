@@ -242,3 +242,41 @@
 		to_chat(victim, span_warning("Dusty scales fill my eyes and nose!"))
 	StartCooldown()
 	return TRUE
+
+/datum/action/cooldown/mothbug/squeeze
+	name = "Squeeze Through"
+	desc = "Middle-click a closed door beside me to flatten myself and squeeze under it, locked or not. Windows I slip through freely."
+	button_icon_state = "jaunt"
+	click_to_activate = TRUE
+	silk_cost = MOTHBUG_COST_SQUEEZE
+	cooldown_time = 5 SECONDS
+
+/datum/action/cooldown/mothbug/squeeze/Activate(atom/target)
+	var/mob/living/simple_animal/mothbug/moth = owner
+	var/obj/structure/door/door = istype(target, /obj/structure/door) ? target : (locate(/obj/structure/door) in get_turf(target))
+	if(!door || !moth.Adjacent(door) || !isturf(moth.loc))
+		moth.balloon_alert(moth, "no door beside me!")
+		return FALSE
+	if(door.door_opened)
+		moth.balloon_alert(moth, "it's open!")
+		return FALSE
+	var/direction = get_dir(moth, door)
+	if(!(direction in GLOB.cardinals))
+		moth.balloon_alert(moth, "line up with the door!")
+		return FALSE
+	var/turf/beyond = get_step(door, direction)
+	if(!beyond || beyond.is_blocked_turf(TRUE))
+		moth.balloon_alert(moth, "no room beyond!")
+		return FALSE
+	INVOKE_ASYNC(src, PROC_REF(squeeze), moth, door, beyond)
+	return TRUE
+
+/datum/action/cooldown/mothbug/squeeze/proc/squeeze(mob/living/simple_animal/mothbug/moth, obj/structure/door/door, turf/beyond)
+	moth.visible_message(span_notice("[moth] flattens itself against [door] and starts to wriggle under it."), span_notice("I flatten myself and wriggle under [door]."), vision_distance = 4)
+	if(!do_after(moth, MOTHBUG_SQUEEZE_TIME, door) || QDELETED(door) || !moth.Adjacent(door))
+		return
+	if(beyond.is_blocked_turf(TRUE) || !moth.spend_silk_charge(silk_cost))
+		return
+	moth.forceMove(beyond)
+	moth.visible_message(span_notice("[moth] wriggles out from under [door]."), span_notice("I squeeze through to the other side."), vision_distance = 4)
+	StartCooldown()

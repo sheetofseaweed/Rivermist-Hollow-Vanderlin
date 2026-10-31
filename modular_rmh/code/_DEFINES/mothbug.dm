@@ -20,6 +20,12 @@
 #define MOTHBUG_VALUE_CLOTHING 12
 #define MOTHBUG_VALUE_BULKY_CLOTHING 18
 #define MOTHBUG_VALUE_BEDSHEET 15
+/// Curtains, banners, carpets and tent cloth.
+#define MOTHBUG_VALUE_CLOTH_STRUCTURE 20
+#define MOTHBUG_STRUCTURE_BITES 4
+#define MOTHBUG_CLOSET_TIME (1.5 SECONDS)
+#define MOTHBUG_COST_SQUEEZE 20
+#define MOTHBUG_SQUEEZE_TIME (4 SECONDS)
 
 /// Hide needs a turf darker than this unless something covers the mothbug.
 #define MOTHBUG_HIDE_MAX_LIGHT 0.3
@@ -41,12 +47,12 @@
 #define MOTHBUG_COCOON_DIGEST_INTERVAL (20 SECONDS)
 #define MOTHBUG_DUST_BLUR (8 SECONDS)
 
-#define MOTHBUG_COST_TAKEOFF 3
-/// Tiles flown per point of silk spent.
-#define MOTHBUG_FLIGHT_TILES_PER_SILK 4
+/// Move delays; mothbugs ignore walk and run, so these are their whole speed. Humans run at 2.
+#define MOTHBUG_GROUND_SPEED 2.5
+#define MOTHBUG_HATCHLING_SPEED 3.5
+#define MOTHBUG_FLIGHT_SPEED 2
 #define MOTHBUG_TAKEOFF_TIME (2 SECONDS)
 #define MOTHBUG_LAND_TIME (1 SECONDS)
-#define MOTHBUG_FLIGHT_SLOWDOWN -1
 #define MOTHBUG_FLIGHT_TRAIT "mothbug_flight"
 #define MOVESPEED_ID_MOTHBUG_FLIGHT "mothbug_flight"
 

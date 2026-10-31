@@ -7,9 +7,9 @@
 	icon_dead = "mothbug_dead"
 	health = 60
 	maxHealth = 60
-	speed = 2
+	speed = MOTHBUG_GROUND_SPEED
 	density = FALSE
-	pass_flags = PASSTABLE
+	pass_flags = PASSTABLE|PASSWINDOW
 	mob_size = MOB_SIZE_SMALL
 	mob_biotypes = MOB_ORGANIC|MOB_BUG
 	see_in_dark = 8
@@ -49,6 +49,7 @@
 		/datum/action/cooldown/mothbug/wing_dust,
 		/datum/action/cooldown/mothbug/take_wing,
 		/datum/action/cooldown/mothbug/lay_egg,
+		/datum/action/cooldown/mothbug/squeeze,
 	)
 	var/list/datum/action/innate_actions = list()
 	var/hidden = FALSE
@@ -86,6 +87,10 @@
 	if(!mind || !antag_datum_type || mind.has_antag_datum(/datum/antagonist/mothbug))
 		return
 	mind.add_antag_datum(antag_datum_type)
+
+// Mothbugs have no walk or run; their speed var is their whole move delay.
+/mob/living/simple_animal/mothbug/update_move_intent_slowdown()
+	remove_movespeed_modifier(MOVESPEED_ID_MOB_WALK_RUN_CONFIG_SPEED)
 
 /mob/living/simple_animal/mothbug/death(gibbed)
 	set_mothbug_hidden(FALSE)
@@ -130,8 +135,11 @@
 		if(A != src)
 			INVOKE_ASYNC(src, PROC_REF(touch_living), A)
 		return
-	if(isitem(A) && get_mothbug_fabric_value(A))
+	if(isobj(A) && get_mothbug_fabric_value(A))
 		INVOKE_ASYNC(src, PROC_REF(try_eat_fabric), A)
+		return
+	if(istype(A, /obj/structure/closet))
+		INVOKE_ASYNC(src, PROC_REF(use_closet), A)
 		return
 	if(length(get_mothbug_edible_contents(A)))
 		INVOKE_ASYNC(src, PROC_REF(try_eat_from_container), A)
@@ -146,9 +154,9 @@
 	icon_dead = "mothling_dead"
 	health = 25
 	maxHealth = 25
-	speed = 4
+	speed = MOTHBUG_HATCHLING_SPEED
 	mob_size = MOB_SIZE_TINY
-	pass_flags = PASSTABLE|PASSMOB
+	pass_flags = PASSTABLE|PASSMOB|PASSWINDOW
 	can_be_held = TRUE
 	silk_charge = MOTHBUG_HATCHLING_START_CHARGE
 	max_silk_charge = MOTHBUG_HATCHLING_MAX_CHARGE
@@ -160,4 +168,5 @@
 		/datum/action/cooldown/mothbug/hide,
 		/datum/action/cooldown/mothbug/spin_web,
 		/datum/action/cooldown/mothbug/pupate,
+		/datum/action/cooldown/mothbug/squeeze,
 	)

@@ -1,15 +1,12 @@
 /mob/living/simple_animal/mothbug
 	var/flying = FALSE
-	/// Tiles flown since silk was last spent on flight.
-	var/flight_tiles = 0
 	/// Lets people below stab upward at a mothbug flying over open space.
 	var/obj/effect/flyer_shadow/flight_shadow
 
 /datum/action/cooldown/mothbug/take_wing
 	name = "Take Wing"
-	desc = "Take off or land. Flight is fast and rises into open sky above when there is room, but costs 1 silk every few tiles."
+	desc = "Take off or land. Flight is free, as fast as a running person, and rises into open sky above when there is room."
 	button_icon_state = "flight"
-	silk_cost = MOTHBUG_COST_TAKEOFF
 	cooldown_time = 2 SECONDS
 
 /datum/action/cooldown/mothbug/take_wing/Grant(mob/grant_to)
@@ -25,10 +22,6 @@
 	SIGNAL_HANDLER
 	if(istype(source) && source.flying)
 		source.fall_mothbug()
-
-/datum/action/cooldown/mothbug/take_wing/get_silk_cost()
-	var/mob/living/simple_animal/mothbug/moth = owner
-	return moth?.flying ? 0 : silk_cost
 
 /datum/action/cooldown/mothbug/take_wing/is_action_active(atom/movable/screen/movable/action_button/current_button)
 	var/mob/living/simple_animal/mothbug/moth = owner
@@ -47,8 +40,6 @@
 		return FALSE
 	moth.visible_message(span_notice("[moth] flutters its wings faster and faster."), span_notice("I beat my wings to take off."), vision_distance = 4)
 	if(!do_after(moth, MOTHBUG_TAKEOFF_TIME, moth, extra_checks = CALLBACK(moth, TYPE_PROC_REF(/mob/living/simple_animal/mothbug, can_take_wing))))
-		return FALSE
-	if(!moth.spend_silk_charge(silk_cost))
 		return FALSE
 	moth.start_mothbug_flight()
 	StartCooldown()
@@ -75,9 +66,8 @@
 	stop_pulling()
 	ADD_TRAIT(src, TRAIT_MOVE_FLYING, MOTHBUG_FLIGHT_TRAIT)
 	flying = TRUE
-	flight_tiles = 0
 	icon_state = "[icon_living]_fly"
-	add_movespeed_modifier(MOVESPEED_ID_MOTHBUG_FLIGHT, multiplicative_slowdown = MOTHBUG_FLIGHT_SLOWDOWN)
+	add_movespeed_modifier(MOVESPEED_ID_MOTHBUG_FLIGHT, multiplicative_slowdown = MOTHBUG_FLIGHT_SPEED - speed)
 	RegisterSignal(src, COMSIG_MOVABLE_MOVED, PROC_REF(on_flight_moved))
 	RegisterSignal(src, COMSIG_MOB_APPLY_DAMAGE, PROC_REF(on_flight_damaged))
 	playsound(src, 'sound/mobs/wingflap.ogg', 50, FALSE)
@@ -126,12 +116,6 @@
 	if(!isturf(loc))
 		end_mothbug_flight()
 		return
-	if(++flight_tiles >= MOTHBUG_FLIGHT_TILES_PER_SILK)
-		flight_tiles = 0
-		if(!spend_silk_charge(1, FALSE))
-			to_chat(src, span_warning("I have no silk left to keep my wings beating!"))
-			land_mothbug()
-			return
 	update_flight_shadow()
 
 /mob/living/simple_animal/mothbug/proc/update_flight_shadow()
