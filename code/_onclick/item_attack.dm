@@ -229,6 +229,13 @@
 
 		return result
 
+	// Out of combat, right-clicking someone with a real item offers it to them.
+	if(weapon.item_flags & ABSTRACT)
+		return
+
+	user.give(src)
+	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+
 /**
  * Called from [/mob/living/proc/attackby]
  *
