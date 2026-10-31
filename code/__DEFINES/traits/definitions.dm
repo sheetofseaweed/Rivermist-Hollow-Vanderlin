@@ -291,6 +291,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_MOB_BREEDER "mob_breeder"
 /// can't be perceived in any way, likely due to invisibility
 #define TRAIT_IMPERCEPTIBLE "imperceptible"
+/// Lying under a table; tables let this mob crawl into them
+#define TRAIT_UNDER_TABLE "under_table"
 /// Reduced turf slowdown
 #define TRAIT_LONGSTRIDER "longstrider"
 /// Dendor Path Traits

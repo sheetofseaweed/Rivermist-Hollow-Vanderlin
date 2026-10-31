@@ -122,3 +122,5 @@
 #define UPDATE_TRANSFORM_TRAIT "update_transform"
 /// Trait from being promoted to a dungeon floor boss
 #define DUNGEON_BOSS_TRAIT "dungeon_boss"
+/// Trait from /datum/component/table_crawl
+#define TABLE_CRAWL_TRAIT "table_crawl"

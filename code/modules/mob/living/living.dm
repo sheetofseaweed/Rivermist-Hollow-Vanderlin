@@ -2820,8 +2820,9 @@
 					found_ping(get_turf(M), client, "hidden")
 
 		for(var/obj/O in view(7,src))
-			if("hiddenguy" in O.vars)
-				var/mob/living/M = O.vars["hiddenguy"]
+			if(isstructure(O))
+				var/obj/structure/hiding_spot = O
+				var/mob/living/M = hiding_spot.hiddenguy
 				if(M)
 					var/sneak = GET_MOB_SKILL_VALUE_OLD(M, /datum/attribute/skill/misc/sneaking)
 					var/effective_sneak = 8 + (sneak * 2)

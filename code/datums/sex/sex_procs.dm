@@ -881,3 +881,44 @@
 	if(other in view(1, src))
 		return TRUE
 	return adjacent_or_closet(other)
+
+/// Someone hidden in furniture can be picked only by a partner already in their scene.
+/mob/living/proc/can_reach_hidden_sex_partner(mob/living/hider)
+	if(hider == src)
+		return TRUE
+	if(hider.stat == DEAD || !sex_scene || QDELETED(sex_scene) || !(hider in sex_scene.participants))
+		return FALSE
+	return in_sex_interaction_range(hider)
+
+/// Partners the ERP panel offers: closet mates, or everyone in reach plus scene partners hidden nearby.
+/mob/living/proc/get_sex_panel_candidates()
+	. = list()
+	if(istype(loc, /obj/structure/closet))
+		for(var/mob/living/occupant in loc)
+			if(occupant.stat != DEAD)
+				. += occupant
+		return
+	var/turf/our_turf = get_turf(src)
+	if(!our_turf)
+		return
+	for(var/turf/nearby in range(1, our_turf))
+		for(var/atom/movable/thing as anything in nearby)
+			if(isliving(thing))
+				var/mob/living/candidate = thing
+				if(candidate.stat != DEAD && candidate.invisibility <= see_invisible && in_sex_interaction_range(candidate))
+					. += candidate
+			else if(isstructure(thing))
+				var/obj/structure/spot = thing
+				if(!spot.hidingspot)
+					continue
+				for(var/mob/living/hider in spot)
+					if(can_reach_hidden_sex_partner(hider))
+						. += hider
+
+/// Dragging yourself onto a hiding spot reaches a scene partner tucked inside it.
+/obj/structure/MiddleMouseDrop_T(atom/movable/dragged, mob/living/user)
+	if(hidingspot && isliving(user) && !user.mmb_intent)
+		for(var/mob/living/hider in src)
+			if(hider != user && user.can_reach_hidden_sex_partner(hider))
+				return hider.MiddleMouseDrop_T(dragged, user)
+	return ..()
