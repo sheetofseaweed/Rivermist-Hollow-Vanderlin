@@ -33,6 +33,10 @@ The archives are the only copy of this art in the repository. The stencil files 
 
 The cut base's south frame has no cloth over the breasts because the body's breasts child draws above every overlay of the mob; the garment child, one layer above it, carries that cloth so breast and cloth move together.
 
+### Races with their own clothing art
+
+`CUSTOM_VARIANTS` in `pack_breast_sized.py` maps a clothing tag to a row shift (`dwarf: 3`). For each tag whose worn state `<p>_<tag>` exists (`fallgown_f_dwarf`, detail `fallgown_f_dwarf_detail`), the packer emits the whole set again as `<p>_<N>_<tag>...` (`fallgown_f_7_dwarf`, `fallgown_f_7_dwarf_front`, `fallgown_f_7_dwarf_still`, ...) with that race's worn sprite as the base and the human layers moved down by the shift: dwarf clothing art sits 4 px lower than the female art while the layers were drawn for breasts at -1. No extra drawing is needed; the game picks `<N>_<tag>` for wearers whose species has `custom_clothes`. Halflings share the dwarf tag. A race without a `<p>_<tag>` worn state keeps its plain sprite.
+
 ## Adding a garment
 
 ### What the artist draws

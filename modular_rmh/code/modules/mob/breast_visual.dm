@@ -201,7 +201,7 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	child.color = garment.color
 	child.alpha = garment.alpha
 	var/atom/movable/breast_visual/detail = LAZYACCESS(garment_detail_visuals, slot)
-	if(!garment.get_detail_tag() || !icon_exists(garment.breast_sized_icon, "[garment.icon_state]_f_detail_[size]_front"))
+	if(!garment.get_detail_tag() || !icon_exists(garment.breast_sized_icon, "[get_garment_state_prefix(garment, TRUE)]_front"))
 		if(detail)
 			remove_child(detail)
 			LAZYREMOVE(garment_detail_visuals, slot)
@@ -215,8 +215,14 @@ GLOBAL_LIST_INIT(breast_emote_shots, list(
 	detail.alpha = garment.alpha
 
 /// Rest state of a garment child for the current size and gait, the jiggle loop first.
+/// "<state>_f[_detail]_<size key>": the size key carries a custom race's clothing tag.
+/datum/component/breast_animation/proc/get_garment_state_prefix(obj/item/garment, detail)
+	var/mob/living/carbon/human/human = parent
+	var/size_key = garment.get_breast_sized_size_key(human) || "[size]"
+	return "[garment.icon_state]_f[detail ? "_detail" : ""]_[size_key]"
+
 /datum/component/breast_animation/proc/get_garment_state(obj/item/garment, detail)
-	var/prefix = "[garment.icon_state]_f[detail ? "_detail" : ""]_[size]"
+	var/prefix = get_garment_state_prefix(garment, detail)
 	if(jiggling && icon_exists(garment.breast_sized_icon, "[prefix]_jiggle_front"))
 		return "[prefix]_jiggle_front"
 	return "[prefix][running ? "_run" : ""]_front"
