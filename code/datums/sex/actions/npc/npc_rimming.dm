@@ -37,7 +37,7 @@
 	. = ..()
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rims [target]'s butt..."))
-	user.make_sucking_noise()
+	user.make_mouth_noise("lick")
 	do_thrust_animate(user, target)
 
 	perform_sex_action(user, target, 1, 0, 1)

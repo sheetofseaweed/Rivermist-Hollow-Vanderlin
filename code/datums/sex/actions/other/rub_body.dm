@@ -28,7 +28,7 @@
 	. = ..()
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] rubs [target]'s body..."))
-	user.make_sucking_noise()
+	play_rub_sound("skin", target, 25)
 
 	perform_sex_action(target, user, 0.5, 0, 0)
 	handle_passive_ejaculation(target)

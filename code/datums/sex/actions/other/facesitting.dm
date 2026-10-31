@@ -45,7 +45,7 @@
 	var/verbstring = pick(list("rubs", "smushes", "forces"))
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] [verbstring] [user.p_their()] butt against [target] face."))
-	target.make_sucking_noise()
+	target.make_mouth_noise("lick")
 	do_thrust_animate(user, target)
 
 	// The one sat on is the one who can't breathe; the sitter has nothing to hurt.

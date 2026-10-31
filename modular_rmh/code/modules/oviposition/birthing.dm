@@ -99,11 +99,16 @@
 		share = max(share, BIRTH_MASOCHIST_FLOOR)
 	return share
 
-/// The passage itself as it feels at [share]: pleasure through the arousal component, and the body's voice.
-/mob/living/carbon/proc/feel_birth_passage(share)
+/// The passage itself as it feels at [share]: pleasure, the opening's wear-aware pass and gush, and the voice.
+/mob/living/carbon/proc/feel_birth_passage(share, datum/orifice/opening)
 	if(share > 0)
 		SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, BIRTH_DELIVERY_PLEASURE * share, 0, BIRTH_DELIVERY_CLIMAX * share, src)
-	toy_voice(BIRTH_FEELS_GOOD(share) ? "sexmoanhvy" : (BIRTH_FEELS_MIXED(share) ? "groan" : "painmoan"))
+	if(opening)
+		opening.play_passage_sound("pass", 50, src)
+		addtimer(CALLBACK(opening, TYPE_PROC_REF(/datum/orifice, play_passage_sound), "gush", 40, src), 3)
+	else
+		playsound(src, 'sound/effects/wounds/splatter.ogg', 40, TRUE)
+	toy_voice(BIRTH_FEELS_GOOD(share) ? "sexmoanhvy" : (BIRTH_FEELS_MIXED(share) ? "groan" : "painmoan"), opening)
 	hole_shake_hook("birth", 2)
 
 /// A birth leaves what the egg carried in the canal: slime counts as lube, venom stings, the rest soaks in.
@@ -156,22 +161,24 @@
 	if(!SEND_SIGNAL(container, COMSIG_BODYSTORAGE_TRY_REMOVE, egg, null, BODYSTORAGE_REMOVE_MANUAL))
 		return FALSE
 	var/obj/item/organ/genitals/filling_organ/canal = container.get_birth_canal()
+	var/datum/orifice/opening
 	var/share = 0
+	var/feel = ""
 	if(istype(canal) && canal.orifice_type)
-		var/datum/orifice/opening = canal.get_orifice()
+		opening = canal.get_orifice()
 		var/girth = get_passenger_birth_girth(egg)
-		// Judge the fit before the passage widens the opening to the egg.
+		// Judge the fit and the feel before the passage widens the opening to the egg.
 		share = get_birth_pleasure_share(opening, girth)
+		feel = canal.get_hole_feel("pass")
 		opening.pass_through(girth, SEX_FORCE_MID, src)
 		canal.take_birth_residue(egg)
 	egg.forceMove(get_turf(src))
 	var/location = container.get_oviposition_location_name()
 	if(BIRTH_FEELS_GOOD(share))
-		visible_message(span_notice("[src] [container.get_oviposition_lay_verb()] [egg] with a last, shuddering push."), span_love("With a last push, the [egg.name] slides out of my [location] in a hot rush that is all pleasure."))
+		visible_message(span_notice("[src] [container.get_oviposition_lay_verb()] [egg] with a last, shuddering push."), span_love("With a last push, the [egg.name] slides out of my [location] in a hot rush that is all pleasure[feel]."))
 	else
-		visible_message(span_notice("[src] [container.get_oviposition_lay_verb()] [egg] with a last hard push."), span_love("With a last push, the [egg.name] slides out of my [location]."))
-	playsound(src, 'sound/effects/wounds/splatter.ogg', 40, TRUE)
-	feel_birth_passage(share)
+		visible_message(span_notice("[src] [container.get_oviposition_lay_verb()] [egg] with a last hard push."), span_love("With a last push, the [egg.name] slides out of my [location][feel]."))
+	feel_birth_passage(share, opening)
 	return TRUE
 
 // ---- Pushing an egg out by hand ----
@@ -263,6 +270,7 @@
 		if(share > 0)
 			SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, BIRTH_CONTRACTION_PLEASURE * share * 0.5, 0, BIRTH_CONTRACTION_CLIMAX * share * 0.5, src)
 		hole_shake_hook("push", 1)
+		opening?.play_passage_sound("contraction", 25, src)
 		if(done >= pushes)
 			break
 		if(strain_over && prob(EGG_PUSH_SLIP_CHANCE * strain_over))
@@ -404,6 +412,7 @@
 	carrier.adjust_stamina(LABOUR_CONTRACTION_STAMINA * BIRTH_COST_MULT(ease) + LABOUR_FATIGUE_STAMINA * carrier.get_birth_fatigue())
 	carrier.toy_voice(BIRTH_FEELS_GOOD(share) ? "sexmoanmed" : (BIRTH_FEELS_MIXED(share) ? "groan" : "painmoan"))
 	carrier.hole_shake_hook("contraction", 1)
+	play_canal_sound(container, "contraction", 25)
 	if(contractions_done >= contractions_needed)
 		phase = LABOUR_PHASE_PUSHING
 		next_event = world.time + LABOUR_PUSH_DELAY
@@ -414,6 +423,12 @@
 		carrier.Knockdown(LABOUR_PUSH_DELAY + 2 SECONDS, TRUE, TRUE)
 		return
 	next_event = world.time + max(LABOUR_CONTRACTION_GAP_MIN, LABOUR_CONTRACTION_GAP - contractions_done * (3 SECONDS))
+
+/// The canal's wear-aware clip for [kind], when the container births through an opening.
+/datum/status_effect/labour/proc/play_canal_sound(obj/item/organ/container, kind, vol)
+	var/obj/item/organ/genitals/filling_organ/canal = container.get_birth_canal()
+	if(istype(canal) && canal.orifice_type)
+		canal.get_orifice().play_passage_sound(kind, vol, owner)
 
 /// Pain through the opening in front of the host, scaled by how much of the passenger presses on it.
 /datum/status_effect/labour/proc/apply_pain(obj/item/passenger, obj/item/organ/container, share)

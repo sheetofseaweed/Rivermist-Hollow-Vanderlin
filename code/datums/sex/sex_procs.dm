@@ -84,14 +84,9 @@
 		return "That would put more than [SEX_SCENE_MAX_PARTICIPANTS] people in one scene."
 	return "I can't start a scene with [target]."
 
+/// The plain suck; the act-specific mouths live in make_mouth_noise().
 /mob/living/proc/make_sucking_noise()
-	var/suckyvolume = 25
-	if(rogue_sneaking || alpha <= 100)
-		suckyvolume *= 0.5
-	if(gender == FEMALE)
-		playsound(get_sense_anchor(), pick('sound/misc/mat/girlmouth (1).ogg','sound/misc/mat/girlmouth (2).ogg'), suckyvolume, TRUE, ignore_walls = FALSE)
-	else
-		playsound(get_sense_anchor(), pick('sound/misc/mat/guymouth (2).ogg','sound/misc/mat/guymouth (3).ogg','sound/misc/mat/guymouth (4).ogg','sound/misc/mat/guymouth (5).ogg'), suckyvolume, TRUE, ignore_walls = FALSE)
+	make_mouth_noise("suck")
 
 /mob/living/proc/can_do_sex()
 	return TRUE

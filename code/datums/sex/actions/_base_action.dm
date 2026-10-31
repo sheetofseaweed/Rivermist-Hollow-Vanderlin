@@ -636,6 +636,9 @@
 	if(oxyloss_amt <= 0 || affected_target.getOxyLoss() > 30)
 		return
 	affected_target.adjustOxyLoss(oxyloss_amt)
+	// The wet choke comes as the air runs short; the emote still fires on top at the old odds.
+	if(affected_target.oxyloss >= 15 && prob(35))
+		affected_target.make_mouth_noise("choke", 40)
 	if(affected_target.oxyloss >= 25 && prob(33))
 		affected_target.emote(pick(list("gag", "choke", "gasp")), forced = TRUE)
 

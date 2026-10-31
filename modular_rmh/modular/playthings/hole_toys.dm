@@ -143,8 +143,8 @@
 	if(!prob(get_toy_insert_fail_chance(toy, use_force)))
 		return FALSE
 	if(owner)
-		playsound(owner, 'sound/misc/mat/pop.ogg', 30, TRUE, -2, ignore_walls = FALSE)
-		owner.toy_voice("whimper")
+		play_hole_sound("slip", 30, 'sound/misc/mat/pop.ogg')
+		owner.toy_voice("whimper", get_orifice(FALSE))
 	return TRUE
 
 /// One try to draw [toy] out of [layer]: the grip roll, a slip deeper, the storage removal, the deep passage.
@@ -155,20 +155,22 @@
 		return TOY_REMOVE_STUCK
 	if(prob(get_toy_remove_fail_chance(toy, layer)))
 		if(owner)
-			// A grip lost on something in reach pops; a deep push that moves nothing is quiet.
+			// A grip lost on something in reach slips audibly; a deep push that moves nothing is quiet.
 			if(layer != STORAGE_LAYER_DEEP)
-				playsound(owner, 'sound/misc/mat/pop.ogg', 30, TRUE, -2, ignore_walls = FALSE)
-			owner.toy_voice("whimper")
+				play_hole_sound("slip", 30, 'sound/misc/mat/pop.ogg')
+			owner.toy_voice("whimper", get_orifice(FALSE))
 		if(layer == STORAGE_LAYER_INNER && prob(TOY_SLIP_DEEPER_CHANCE) && move_toy_deeper(toy))
 			return TOY_REMOVE_SLIPPED_DEEPER
 		return TOY_REMOVE_NO_GRIP
+	// Pick the clip before the passage widens the opening to the toy.
+	var/withdraw_clip = get_orifice(FALSE)?.get_passage_sound("withdraw")
 	if(!SEND_SIGNAL(src, COMSIG_BODYSTORAGE_TRY_REMOVE, toy, layer, BODYSTORAGE_REMOVE_MANUAL))
 		return TOY_REMOVE_STUCK
 	// Inside items pass the opening through the storage hook; deep ones have to be dragged past it here.
 	if(layer == STORAGE_LAYER_DEEP && orifice_type)
 		get_orifice().pass_through(toy.get_pass_through_girth(), SEX_FORCE_MID, performer)
 	if(owner)
-		playsound(owner, pick('modular_rmh/sound/effects/cork_pop.ogg', 'modular_rmh/sound/effects/cork_pop (2).ogg'), 40, TRUE, -2, ignore_walls = FALSE)
+		playsound(owner, withdraw_clip || pick('modular_rmh/sound/effects/cork_pop.ogg', 'modular_rmh/sound/effects/cork_pop (2).ogg'), 40, TRUE, -2, ignore_walls = FALSE)
 	return TOY_REMOVE_OUT
 
 /// Moves [toy] from the inside layer to the deep one, or puts it back when it does not fit.
@@ -181,10 +183,12 @@
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_FORCE_INSERT, toy, STORAGE_LAYER_INNER)
 	return FALSE
 
-/// A voice cue through the moan pack; the whimper stays female, others groan, the gagged gag.
-/mob/living/proc/toy_voice(key)
+/// A voice cue through the moan pack; a raw hole turns it to pain, the whimper stays female, the gagged gag.
+/mob/living/proc/toy_voice(key, datum/orifice/opening)
 	if(stat != CONSCIOUS)
 		return
+	if(opening?.get_soreness_state() >= ORIFICE_STATE_RAW)
+		key = "painmoan"
 	if(!can_speak())
 		key = "sexmoangag"
 	else if(key == "whimper" && gender != FEMALE)
@@ -214,6 +218,14 @@
 	if(!istype(hole) || QDELETED(toy))
 		return FALSE
 	return (toy in hole.get_body_storage_items_for_interaction(layer, BODYSTORAGE_REMOVE_MANUAL))
+
+/// The start cue of a storage action: [hole]'s wear-aware insert clip, or the old wet pair without an opening.
+/datum/sex_action/proc/play_toy_reach_sound(obj/item/organ/genitals/filling_organ/hole, mob/living/target, vol)
+	var/fallback = pick('sound/misc/mat/insert (1).ogg', 'sound/misc/mat/insert (2).ogg')
+	if(istype(hole) && hole.owner)
+		hole.play_hole_sound("insert", vol, fallback)
+		return
+	playsound(target, fallback, vol, TRUE, ignore_walls = FALSE)
 
 // ---- The window's self flow ----
 
@@ -297,8 +309,9 @@
 
 /mob/living/carbon/human/proc/insert_toy(obj/item/organ/genitals/filling_organ/hole, obj/item/toy)
 	var/hole_word = hole.get_orifice()?.opening_name || pick(hole.altnames)
+	var/feel = hole.get_hole_feel("insert")
 	visible_message(span_warning("[src] starts working [toy] into [p_their()] [hole_word]..."), span_love("I start working [toy] into my [hole_word]..."))
-	playsound(src, pick('sound/misc/mat/insert (1).ogg', 'sound/misc/mat/insert (2).ogg'), 40, TRUE, -2, ignore_walls = FALSE)
+	hole.play_hole_sound("insert", 40, pick('sound/misc/mat/insert (1).ogg', 'sound/misc/mat/insert (2).ogg'))
 	SEND_SIGNAL(src, COMSIG_SEX_HOLE_BEFORE_INSERT, toy, hole.slot, src)
 	if(!do_after(src, hole.get_toy_insert_time(toy), src, extra_checks = CALLBACK(src, PROC_REF(can_keep_working_toy_in), hole, toy)))
 		to_chat(src, span_warning("I stop before [toy] is in."))
@@ -314,7 +327,7 @@
 			SEND_SIGNAL(src, COMSIG_SEX_HOLE_AFTER_INSERT, toy, hole.slot, src)
 			hole_shake_hook("insert", 1)
 			var/brim = fit == INSERT_FEEDBACK_ALMOST_FULL ? ", filling me almost to the brim" : ""
-			visible_message(span_notice("[src] works [toy] into [p_their()] [hole_word]."), span_love("[toy] slides into my [hole_word][brim]."))
+			visible_message(span_notice("[src] works [toy] into [p_their()] [hole_word]."), span_love("[toy] slides into my [hole_word][brim][feel]."))
 			SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, toy.get_body_storage_stir_pleasure(STORAGE_LAYER_INNER) * 2, 0, 0.5, src)
 			return TRUE
 	to_chat(src, span_warning("[toy] will not go in after all."))
@@ -343,6 +356,7 @@
 	if(!layer)
 		return FALSE
 	var/hole_word = hole.get_orifice()?.opening_name || pick(hole.altnames)
+	var/feel = hole.get_hole_feel("withdraw")
 	visible_message(span_warning("[src] reaches in after [toy]..."), span_love("I reach into my [hole_word] after [toy]..."))
 	SEND_SIGNAL(src, COMSIG_SEX_HOLE_BEFORE_REMOVE, toy, hole.slot, src)
 	if(!do_after(src, hole.get_toy_remove_time(toy, layer), src, extra_checks = CALLBACK(src, PROC_REF(can_keep_working_toy_out), hole, toy)))
@@ -363,7 +377,7 @@
 	hole_shake_hook("remove", 1)
 	if(!put_in_active_hand(toy))
 		toy.forceMove(get_turf(src))
-	visible_message(span_notice("[src] draws [toy] out of [p_their()] [hole_word]."), span_love("I draw [toy] out of my [hole_word]."))
+	visible_message(span_notice("[src] draws [toy] out of [p_their()] [hole_word]."), span_love("I draw [toy] out of my [hole_word][feel]."))
 	SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, toy.get_body_storage_stir_pleasure(layer), 0, 0, src)
 	return TRUE
 
@@ -401,10 +415,11 @@
 	if(!hole.move_toy_deeper(toy))
 		to_chat(src, span_warning("[toy] will not go any deeper."))
 		return FALSE
-	playsound(src, 'sound/misc/mat/endin.ogg', 40, TRUE, -2, ignore_walls = FALSE)
+	hole.play_hole_sound("settle", 40, 'sound/misc/mat/endin.ogg')
 	hole_shake_hook("push_deeper", 1)
-	toy_voice("groan")
-	to_chat(src, span_love("[toy] settles deep inside, past where my fingers reach."))
+	toy_voice("groan", hole.get_orifice(FALSE))
+	var/feel = hole.get_hole_feel("settle")
+	to_chat(src, span_love("[toy] settles deep inside, past where my fingers reach[feel]."))
 	SEND_SIGNAL(src, COMSIG_SEX_GENERIC_ACTION, src, toy.get_body_storage_stir_pleasure(STORAGE_LAYER_DEEP), 0, 0.5, src)
 	return TRUE
 

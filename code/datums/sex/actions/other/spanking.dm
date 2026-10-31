@@ -34,7 +34,7 @@
 
 /datum/sex_action/spanking/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/sound = pick('sound/foley/slap.ogg', 'sound/foley/smackspecial.ogg')
+	var/sound = get_slap_sound("spank")
 	playsound(target, sound, 50, TRUE, -2, ignore_walls = FALSE)
 
 	var/msg = "[user] [get_generic_force_adjective()] spanks [target]'s butt."

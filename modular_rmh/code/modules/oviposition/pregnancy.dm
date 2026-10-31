@@ -282,13 +282,16 @@
 	var/girth = egg.get_birth_girth()
 	var/share = 0
 	var/ease = 0
+	var/feel = ""
+	var/datum/orifice/opening
 	var/laying_carbon = iscarbon(laying_carrier)
 	if(istype(laying_hole) && laying_hole.orifice_type)
-		var/datum/orifice/opening = laying_hole.get_orifice()
+		opening = laying_hole.get_orifice()
 		if(laying_carbon)
 			var/mob/living/carbon/judging_carrier = laying_carrier
 			share = judging_carrier.get_birth_pleasure_share(opening, girth)
 			ease = judging_carrier.get_birth_pleasure_share(opening, girth, FALSE)
+		feel = opening.get_passage_feel("pass")
 		opening.pass_through(girth, SEX_FORCE_MID, laying_carrier)
 		laying_hole.take_birth_residue(egg)
 
@@ -296,7 +299,11 @@
 		span_notice("[laying_carrier] [laying_container.get_oviposition_lay_verb()] an egg!"),
 		span_love(laying_container.get_oviposition_lay_self_message())
 	)
-	playsound(laying_carrier, 'sound/effects/wounds/splatter.ogg', 70, TRUE)
+	if(feel)
+		to_chat(laying_carrier, span_love("It comes [feel]."))
+	// Carbons sound the passage in feel_birth_passage; anything else keeps the old splatter.
+	if(!laying_carbon)
+		playsound(laying_carrier, 'sound/effects/wounds/splatter.ogg', 70, TRUE)
 	// A hard passage floors her; an easy one only takes her breath.
 	if(ease < 0.5)
 		laying_carrier.Knockdown(60, TRUE, TRUE)
@@ -304,7 +311,7 @@
 	laying_carrier.adjust_stamina((forced ? 120 : 80) * (1 - ease * 0.75))
 	if(laying_carbon)
 		var/mob/living/carbon/feeling_carrier = laying_carrier
-		feeling_carrier.feel_birth_passage(share)
+		feeling_carrier.feel_birth_passage(share, opening)
 
 	laid = TRUE
 	egg.forceMove(location)
@@ -801,16 +808,19 @@
 	var/passes_opening = has_opening && SEND_SIGNAL(birth_hole, COMSIG_BODYSTORAGE_FIND_ITEM_LAYER, holder) != STORAGE_LAYER_INNER
 	// Judge the fit before the passage widens the opening to the newborn.
 	var/share = 0
+	var/datum/orifice/opening = has_opening ? birth_hole.get_orifice() : null
 	if(has_opening && iscarbon(birth_carrier))
 		var/mob/living/carbon/judging_carrier = birth_carrier
-		share = judging_carrier.get_birth_pleasure_share(birth_hole.get_orifice(), birth_girth)
+		share = judging_carrier.get_birth_pleasure_share(opening, birth_girth)
 	if(!release_hatchling(FALSE))
 		return FALSE
-	if(passes_opening && !QDELETED(birth_hole))
-		birth_hole.get_orifice().pass_through(birth_girth, SEX_FORCE_MID, birth_carrier)
+	if(QDELETED(birth_hole))
+		opening = null
+	if(passes_opening && opening)
+		opening.pass_through(birth_girth, SEX_FORCE_MID, birth_carrier)
 	if(has_opening && iscarbon(birth_carrier))
 		var/mob/living/carbon/feeling_carrier = birth_carrier
-		feeling_carrier.feel_birth_passage(share)
+		feeling_carrier.feel_birth_passage(share, opening)
 	return TRUE
 
 /datum/component/internal_womb_hatchling/proc/release_hatchling(silent = FALSE)
@@ -847,7 +857,10 @@
 			span_warning(message),
 			span_love("My [location_name] clenches and forces the hatchling out!")
 		)
-		playsound(carrier, 'sound/effects/wounds/splatter.ogg', 70, TRUE)
+		// A carbon with an opening sounds the passage in feel_birth_passage; the rest keep the splatter.
+		var/obj/item/organ/genitals/filling_organ/sounding_canal = container?.get_birth_canal()
+		if(!iscarbon(carrier) || !istype(sounding_canal) || !sounding_canal.orifice_type)
+			playsound(carrier, 'sound/effects/wounds/splatter.ogg', 70, TRUE)
 		carrier.Knockdown(50, TRUE, TRUE)
 		carrier.Stun(40, TRUE, TRUE)
 		carrier.adjust_stamina(90)

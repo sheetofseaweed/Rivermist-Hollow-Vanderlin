@@ -24,7 +24,7 @@
 	. = ..()
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] works [target]'s hand over [user.p_their()] cock."))
-	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
+	play_rub_sound("handjob", user, 30)
 	perform_sex_action(user, target, 2, 0, 2)
 	perform_sex_action(target, user, 0.4, 0, 0.2)
 	handle_passive_ejaculation()

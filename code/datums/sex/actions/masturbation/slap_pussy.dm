@@ -28,7 +28,7 @@
 
 /datum/sex_action/masturbate/slap_pussy/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/sound = pick('sound/foley/slap.ogg', 'sound/foley/smackspecial.ogg')
+	var/sound = get_slap_sound("clap")
 	var/action_text = "slaps"
 	var/arousal_amt = 1.0
 	var/pain_amt = 1.4
@@ -93,7 +93,7 @@
 
 /datum/sex_action/masturbate/other/slap_pussy/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	var/sound = pick('sound/foley/slap.ogg', 'sound/foley/smackspecial.ogg')
+	var/sound = get_slap_sound("clap")
 	var/action_text = "slaps"
 	var/arousal_amt = 1.0
 	var/pain_amt = 1.4

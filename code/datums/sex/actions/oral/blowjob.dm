@@ -50,7 +50,7 @@
 
 /datum/sex_action/blowjob/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	user.make_sucking_noise()
+	user.make_mouth_noise(get_oral_noise_kind())
 	do_thrust_animate(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] sucks [target] off."))

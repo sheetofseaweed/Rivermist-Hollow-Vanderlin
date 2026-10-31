@@ -812,7 +812,7 @@
 	var/used_sex_volume = sex_volume
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
 		used_sex_volume *= 0.5
-	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
+	play_toy_reach_sound(target_organ, target, used_sex_volume)
 
 /datum/sex_action/portal_base/portal_store_base/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
 	var/pain_amt = base_pain_amt
@@ -959,7 +959,7 @@
 	var/used_sex_volume = sex_volume
 	if(user.rogue_sneaking || user.m_intent == MOVE_INTENT_SNEAK || user.alpha <= 100)
 		used_sex_volume *= 0.5
-	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), used_sex_volume, TRUE, ignore_walls = FALSE)
+	play_toy_reach_sound(target_organ, target, used_sex_volume)
 
 /datum/sex_action/portal_base/portal_remove_base/on_perform(mob/living/carbon/human/user, mob/living/carbon/human/target)
 

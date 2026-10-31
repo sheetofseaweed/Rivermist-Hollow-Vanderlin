@@ -95,7 +95,7 @@
 	var/mob/living/giver = get_giver(user)
 	if(!giver)
 		return
-	giver.make_sucking_noise()
+	giver.make_mouth_noise(get_oral_noise_kind())
 	do_thrust_animate(user, target)
 	if(can_show_action_message(user, target))
 		var/whose = (target == user) ? user.p_their() : "[target]'s"

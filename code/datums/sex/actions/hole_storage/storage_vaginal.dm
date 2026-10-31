@@ -42,7 +42,7 @@
 	// The hole sets the pace: the same time the holes window would take for this toy.
 	time_toy_insert_cycle(target_organ, dildo)
 
-	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), sex_volume, TRUE, ignore_walls = FALSE)
+	play_toy_reach_sound(target_organ, target, sex_volume)
 
 
 /datum/sex_action/hole_storage/vagina_store/on_perform(mob/living/user, mob/living/target)
@@ -68,13 +68,15 @@
 		else
 			user.visible_message(spanify_force("\The [dildo] slips from my grip and will not go into [target]'s pussy."))
 		return
+	// The feel is judged before the insert widens the opening to the toy.
+	var/feel = istype(hole) ? hole.get_hole_feel("insert") : ""
 	var/success = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_TRY_INSERT, dildo, STORAGE_LAYER_INNER, use_force)
 	switch(success)
 		if(INSERT_FEEDBACK_OK)
 			if(self)
-				to_chat(user, spanify_force("I stuff \the [dildo] in my pussy..."))
+				to_chat(user, spanify_force("I stuff \the [dildo] in my pussy[feel]..."))
 			else
-				user.visible_message(spanify_force("I stuff \the [dildo] in [target]'s pussy..."))
+				user.visible_message(spanify_force("I stuff \the [dildo] in [target]'s pussy[feel]..."))
 		if(INSERT_FEEDBACK_OK_FORCE)
 			if(prob(15))
 				var/stuffed_res = SEND_SIGNAL(target_organ, COMSIG_BODYSTORAGE_SWAP_LAYERS_RAND, STORAGE_LAYER_INNER, STORAGE_LAYER_DEEP, use_force)
@@ -178,7 +180,7 @@
 	// Pick the first item now so the first cycle already takes the holes window's time for it.
 	pending_toy = choose_toy_to_reach(target_organ, STORAGE_LAYER_INNER)
 
-	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), sex_volume, TRUE, ignore_walls = FALSE)
+	play_toy_reach_sound(target_organ, target, sex_volume)
 
 
 /datum/sex_action/hole_storage/vagina_remove/on_perform(mob/living/user, mob/living/target)
@@ -201,6 +203,7 @@
 		stop_runtime()
 		return
 	// The shared grip roll: the same odds, slips and passage the holes window gives.
+	var/feel = hole.get_hole_feel("withdraw")
 	switch(hole.resolve_toy_removal(removed_item, STORAGE_LAYER_INNER, user))
 		if(TOY_REMOVE_SLIPPED_DEEPER)
 			if(self)
@@ -222,9 +225,9 @@
 		removed_item.doMove(get_turf(user))
 	else
 		if(self)
-			to_chat(user, spanify_force("I fish out the [removed_item] from my pussy..."))
+			to_chat(user, spanify_force("I fish out the [removed_item] from my pussy[feel]..."))
 		else
-			user.visible_message(spanify_force("I fish out the [removed_item] from [target]'s pussy..."))
+			user.visible_message(spanify_force("I fish out the [removed_item] from [target]'s pussy[feel]..."))
 		removed_item.doMove(get_turf(user))
 		user.put_in_active_hand(removed_item)
 	perform_sex_action(user, target, 0.5, pain_amt, 0.5)
@@ -274,7 +277,7 @@
 	to_chat(user, span_warning("I brace myself and start pushing out items from deep inside my pussy..."))
 
 
-	playsound(target, list('sound/misc/mat/insert (1).ogg','sound/misc/mat/insert (2).ogg'), sex_volume, TRUE, ignore_walls = FALSE)
+	play_toy_reach_sound(target_organ, target, sex_volume)
 
 
 /datum/sex_action/hole_storage/vagina_remove_deep/on_perform(mob/living/user, mob/living/target)
@@ -297,6 +300,7 @@
 		stop_runtime()
 		return
 	// The shared push roll: deep items come hard, a flared base or lube helps, and they pass the opening.
+	var/feel = hole.get_hole_feel("withdraw")
 	switch(hole.resolve_toy_removal(removed_item, STORAGE_LAYER_DEEP, user))
 		if(TOY_REMOVE_NO_GRIP, TOY_REMOVE_SLIPPED_DEEPER)
 			to_chat(user, span_love("...But nothing comes out, yet I can still feel it in there."))
@@ -307,7 +311,7 @@
 			stop_runtime()
 			return
 
-	user.visible_message("<span class='love_mid'>[user] tenses up and pushes [removed_item] out of their pussy.</span>", "<span class='love_mid'>With some effort, I push out [removed_item].</span>")
+	user.visible_message("<span class='love_mid'>[user] tenses up and pushes [removed_item] out of their pussy.</span>", "<span class='love_mid'>With some effort, I push out [removed_item][feel].</span>")
 	removed_item.doMove(get_turf(user))
 
 	perform_sex_action(user, target, 0.5, pain_amt, 0.5)

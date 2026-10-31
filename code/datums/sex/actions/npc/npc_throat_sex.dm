@@ -32,7 +32,7 @@
 	. = ..()
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force(get_perform_message(user, target)))
-	playsound(target, 'sound/misc/mat/segso.ogg', 50, TRUE, -2, ignore_walls = FALSE)
+	play_throat_thrust(target, 50)
 	do_thrust_animate(user, target)
 
 	perform_sex_action(user, target, 2, 0, 2)
