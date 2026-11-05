@@ -50,6 +50,7 @@
 		/datum/action/cooldown/spell/transfrom_tree,
 		/datum/action/cooldown/spell/aoe/lightning_lure,
 		/datum/action/cooldown/spell/projectile/lightning,
+		/datum/action/cooldown/spell/undirected/arcane_recovery/natural,
 	)
 
 /datum/outfit/adventurer_druid/circle_land
@@ -85,24 +86,24 @@
 
 	switch(shape_choice)
 		if("Crow")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/crow)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/crow/wild)
 		if("Cat")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/cat)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/cat/wild)
 		if("Fox")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/fox)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/fox/wild)
 		if("Mole")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/mole)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/mole/wild)
 		if("Raccoon")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/raccoon)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/raccoon/wild)
 		if("Saiga")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/saiga)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/saiga/wild)
 		if("Smallrat")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/smallrat)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/smallrat/wild)
 		if("Spider")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/spider)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/spider/wild)
 		if("Wolf")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf/wild)
 		if("Direvolf")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf/dire)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/wolf/dire/wild)
 		if("Direbear")
-			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/direbear)
+			spawned.add_spell(/datum/action/cooldown/spell/undirected/shapeshift/direbear/wild)

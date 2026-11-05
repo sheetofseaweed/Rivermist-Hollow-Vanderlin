@@ -37,6 +37,16 @@
 	///index for the invocation type string
 	#define INVOCATION_TYPE 2
 
+// Spell slots and rests
+/// Sent to the mind after a rest completes: (rest_type)
+#define COMSIG_MIND_SPELL_REST "mind_spell_rest"
+/// Sent to the body after a rest completes: (rest_type)
+#define COMSIG_LIVING_SPELL_REST "living_spell_rest"
+/// Sent to the body when slot counts, selection, rests or features change: ()
+#define COMSIG_LIVING_SPELL_SLOTS_UPDATED "living_spell_slots_updated"
+/// Sent to the caster when a spell collects gear modifiers: (list/modifiers)
+#define COMSIG_SPELL_REQUEST_MODIFIERS "spell_request_modifiers"
+
 // Spell type signals
 
 // Pointed projectiles

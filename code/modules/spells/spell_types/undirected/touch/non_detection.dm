@@ -5,9 +5,6 @@
 	can_cast_on_self = TRUE
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/illusion = 0.4,
-	)
 	spell_flags = SPELL_RITUOS
 	cooldown_time = 10 MINUTES
 
@@ -16,8 +13,16 @@
 	drop_message = "I release my arcyne focus."
 	charges = 2
 
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Nondetection"
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_ILLUSION
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/undirected/touch/non_detection/adjust_hand_charges()
-	charges += FLOOR(attuned_strength * 1.5, 1)
+	// One spare charge above the base count.
+	charges++
 
 /datum/action/cooldown/spell/undirected/touch/non_detection/is_valid_target(atom/cast_on)
 	. = ..()
@@ -26,7 +31,7 @@
 	return isliving(cast_on)
 
 /datum/action/cooldown/spell/undirected/touch/non_detection/cast_on_hand_hit(obj/item/melee/touch_attack/hand, mob/living/victim, mob/living/carbon/caster, list/modifiers)
-	if(victim.has_status_effect(/datum/status_effect/non_detection) || HAS_TRAIT(target, TRAIT_ANTISCRYING))
+	if(victim.has_status_effect(/datum/status_effect/non_detection) || HAS_TRAIT(victim, TRAIT_ANTISCRYING))
 		to_chat(caster, span_warning("[victim] already has protection from divination magic."))
 		return FALSE
 
@@ -49,7 +54,7 @@
 	else
 		caster.visible_message("[caster] draws a glyph in the air and covers themselves in ash.")
 
-	victim.apply_status_effect(/datum/status_effect/non_detection, 1 HOURS)
+	victim.apply_status_effect(/datum/status_effect/non_detection, 1 HOURS * hand_duration_multiplier)
 
 	return TRUE
 

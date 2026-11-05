@@ -77,7 +77,7 @@
 		/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer,
 		/datum/action/cooldown/spell/gravemark,
 		/datum/action/cooldown/spell/control_undead,
-
+		/datum/action/cooldown/spell/aoe/hellfire_burst,
 	)
 
 /datum/job/advclass/combat/adventurer_paladin/oathbreaker/after_spawn(mob/living/carbon/human/spawned, client/player_client)

@@ -4,14 +4,15 @@
 	button_icon_state = "raiseskele"
 	sound = 'sound/items/beartrap.ogg'
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-	)
-
 	charge_time = 2 SECONDS
 	charge_drain = 1
 	cooldown_time = 15 SECONDS
 	spell_cost = 30
+
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Eyebite"
+	required_form = FORM_DEATH
 
 /datum/action/cooldown/spell/eyebite/is_valid_target(atom/cast_on)
 	. = ..()

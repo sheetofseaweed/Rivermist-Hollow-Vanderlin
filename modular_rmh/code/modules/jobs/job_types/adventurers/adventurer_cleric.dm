@@ -64,8 +64,8 @@
 
 	magic_user = TRUE
 	spell_points = 30
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_cleric/death_domain,
@@ -81,9 +81,9 @@
 		return
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
 	spawned.add_spell(/datum/action/cooldown/spell/undirected/protection_evil_good, source = src)
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
+
+// Shared by every domain; the domain hook grants devotion once.
+/datum/job/advclass/combat/adventurer_cleric
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 

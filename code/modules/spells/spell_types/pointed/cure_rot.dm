@@ -15,6 +15,13 @@
 	cooldown_time = 2 MINUTES
 	spell_cost = 50
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_RESTORATION
+	slot_level = 2
+	slot_level_max = 2
+	slot_only = TRUE
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/cure_rot/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

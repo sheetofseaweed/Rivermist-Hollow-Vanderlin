@@ -59,6 +59,7 @@
 
 	backpack_contents = list(
 		/obj/item/book/granter/spellbook/adept = 1,
+		/obj/item/spellbook/apprentice/starter/earth = 1,
 		/obj/item/chalk = 1,
 		/obj/item/rope/chain = 1,
 		/obj/item/reagent_containers/glass/bottle/stronghealthpot = 1,

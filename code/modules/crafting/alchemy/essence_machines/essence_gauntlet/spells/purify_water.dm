@@ -4,7 +4,6 @@
 	button_icon_state = "purify_water"
 	cast_range = 1
 	point_cost = 5
-	attunements = list(/datum/attunement/life, /datum/attunement/blood)
 	essences = list(/datum/thaumaturgical_essence/life, /datum/thaumaturgical_essence/water)
 
 /datum/action/cooldown/spell/essence/purify_water/cast(atom/cast_on)
@@ -16,7 +15,8 @@
 	new /obj/effect/temp_visual/solosnake(get_turf(target))
 
 	if(target.reagents)
-		target.reagents.remove_all_type(/datum/reagent/toxin)
-		target.reagents.remove_all_type(/datum/reagent/poison)
+		// remove_all_type does nothing without an amount, so 999 clears each, as for the gross water.
+		target.reagents.remove_all_type(/datum/reagent/toxin, 999)
+		target.reagents.remove_all_type(/datum/reagent/poison, 999)
 		target.reagents.remove_reagent(/datum/reagent/water/gross, 999)
 		target.reagents.add_reagent(/datum/reagent/water, 20)

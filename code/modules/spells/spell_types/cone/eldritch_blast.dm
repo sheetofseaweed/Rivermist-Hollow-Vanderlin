@@ -81,9 +81,6 @@
 	sound = 'sound/magic/whiteflame.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/dark = 0.3,
-	)
 
 	invocation = "Eldritch blast!"
 	invocation_type = INVOCATION_SHOUT
@@ -95,8 +92,12 @@
 	charge_drain = 1
 	charge_slowdown = 0.7
 	cooldown_time = 30 SECONDS
-	spell_cost = 25
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
+
+	slot_level = 0
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_DESTRUCTION
 
 /datum/action/cooldown/spell/cone/staggered/eldritch_blast/cast(atom/cast_on)
 	. = ..()
@@ -108,7 +109,14 @@
 		return
 	victim.apply_status_effect(/datum/status_effect/amok)
 	victim.apply_status_effect(/datum/status_effect/cloudstruck, level * 1 SECONDS)
-	victim.reagents?.add_reagent(/datum/reagent/eldritch, max(1, 6 - level))
+	victim.reagents?.add_reagent(/datum/reagent/eldritch, get_essence_dose(level))
+
+/// Essence per cone layer; slot casters scale it by cantrip rank, slotless casters keep the flat dose.
+/datum/action/cooldown/spell/cone/staggered/eldritch_blast/proc/get_essence_dose(level)
+	var/dose = max(1, 6 - level)
+	if(!get_spell_slots()?.has_slot_ladder())
+		return dose
+	return dose * get_cantrip_multiplier()
 
 
 /obj/effect/temp_visual/dir_setting/entropic

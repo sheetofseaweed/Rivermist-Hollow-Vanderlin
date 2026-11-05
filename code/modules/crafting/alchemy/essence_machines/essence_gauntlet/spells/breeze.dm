@@ -5,7 +5,6 @@
 	button_icon_state = "breeze"
 	//sound = 'sound/magic/whiff.ogg'
 	cast_range = 3
-	attunements = list(/datum/attunement/aeromancy = 0.2)
 	essences = list(/datum/thaumaturgical_essence/air)
 
 /datum/action/cooldown/spell/essence/breeze/cast(atom/cast_on)

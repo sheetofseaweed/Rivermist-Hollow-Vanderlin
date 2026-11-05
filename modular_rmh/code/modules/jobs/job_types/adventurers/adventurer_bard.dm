@@ -19,8 +19,12 @@
 
 	magic_user = TRUE
 	spell_points = 25
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	// CHARISMA_LATER: performance stands in for Charisma; no bard sheet trains arcane.
+	caster_rank_skill = /datum/attribute/skill/misc/music
+	prepares_spells = FALSE
+	form_points = 3
+	technique_points = 2
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_bard/college_lore,
@@ -30,4 +34,12 @@
 /datum/job/adventurer_bard/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
+
+// Shared by every subclass. Points match the top-level job; the mastery grants them only once.
+/datum/job/advclass/combat/adventurer_bard
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/misc/music
+	prepares_spells = FALSE
+	form_points = 3
+	technique_points = 2
 

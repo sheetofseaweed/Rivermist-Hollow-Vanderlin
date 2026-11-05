@@ -337,6 +337,7 @@
 
 /datum/action/cooldown/spell/aoe/repulse/dragon/succubus
 	name = "Barbed Tail Sweep"
+	learnable = FALSE
 	desc = "Sweep your barbed tail around you, knocking nearby enemies away."
 	aoe_radius = SUCCUBUS_TRUE_FORM_TAIL_SWEEP_RANGE
 	cooldown_time = SUCCUBUS_TRUE_FORM_TAIL_SWEEP_COOLDOWN

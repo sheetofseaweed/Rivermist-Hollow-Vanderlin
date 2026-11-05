@@ -5,9 +5,6 @@
 	point_cost = 2
 	sound = 'sound/magic/haste.ogg'
 
-	attunements = list(
-		/datum/attunement/aeromancy = 0.5,
-	)
 	school = SCHOOL_TRANSMUTATION
 
 	charge_time = 2 SECONDS
@@ -18,3 +15,12 @@
 	status_effect = /datum/status_effect/buff/haste
 	duration_scaling = TRUE
 	duration_modification = 30 SECONDS
+
+	slot_level = 3
+	slot_only = TRUE
+	concentration = TRUE
+	// One concentration target per caster, so a twinned cast would end the first haste.
+	twinnable = FALSE
+	slot_label = "Haste"
+	required_form = FORM_EARTH
+	required_level = MASTERY_RANK_EXPERT

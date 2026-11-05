@@ -885,21 +885,11 @@ GLOBAL_LIST(teleport_runes)
 	runesize = 2
 	SET_BASE_PIXEL(-64, -64)
 	pixel_z = 0
-	can_be_scribed = TRUE
+	// Kept for mapped copies; bodies carry no attunements to imbue any more.
+	can_be_scribed = FALSE
 	associated_ritual = /datum/runerituals/attunement
 	takes_all_items = TRUE
 
 /obj/effect/decal/cleanable/roguerune/arcyne/attunement/invoke(list/invokers, datum/runerituals/runeritual)
-	runeritual = associated_ritual
-	if(!..())	//VERY important. Calls parent and checks if it fails. parent/invoke has all the checks for ingredients
-		return
-	var/mob/living/user = invokers[1] //the first invoker is always the user
-	var/datum/runerituals/attunement/attune_ritual = pickritual
-
-	var/list/attunements = attune_ritual.attunement_modifiers
-
-	for(var/datum/attunement/attunement as anything in attunements)
-		user.mana_pool?.adjust_attunement(attunement, attunements[attunement])
-
-	pickritual.cleanup_atoms(selected_atoms)
-	do_invoke_glow()
+	to_chat(invokers[1], span_warning("The matrix lies dormant. The Weave no longer drinks the energies of materials."))
+	fail_invoke()

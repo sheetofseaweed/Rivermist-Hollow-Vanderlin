@@ -4,9 +4,6 @@
 	button_icon_state = "forcewall"
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/illusion = 0.3,
-	)
 	school = SCHOOL_TRANSMUTATION
 
 	charge_time = 2 SECONDS
@@ -15,19 +12,56 @@
 	cooldown_time = 35 SECONDS
 	spell_cost = 30
 	spell_flags = SPELL_RITUOS
+	slot_level = 3
+	slot_only = TRUE
+	concentration = TRUE
+	slot_label = "Forcewall"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ILLUSION
+	required_level = MASTERY_RANK_EXPERT
+	prerequisite_spells = list(/datum/action/cooldown/spell/undirected/forcewall/breakable)
+
 	var/wall_type = /obj/effect/forcefield/wizard
+	/// Walls of the current cast, dropped when concentration ends.
+	var/list/active_walls
+
+/datum/action/cooldown/spell/undirected/forcewall/Destroy()
+	active_walls = null
+	return ..()
 
 /datum/action/cooldown/spell/undirected/forcewall/cast(atom/cast_on)
 	. = ..()
+	if(uses_spell_slots())
+		on_concentration_broken(CONCENTRATION_REPLACED)
 	var/turf/ahead = get_step(owner, owner.dir)
-	new wall_type(ahead, owner, antimagic_flags)
-	if(owner.dir == SOUTH || owner.dir == NORTH)
-		new wall_type(get_step(ahead, EAST), owner, antimagic_flags)
-		new wall_type(get_step(ahead, WEST), owner, antimagic_flags)
-	else
-		new wall_type(get_step(ahead, NORTH), owner, antimagic_flags)
-		new wall_type(get_step(ahead, SOUTH), owner, antimagic_flags)
+	place_wall(ahead)
+	var/list/sides = (owner.dir == SOUTH || owner.dir == NORTH) ? list(EAST, WEST) : list(NORTH, SOUTH)
+	// The wall reaches one tile further each way for every two levels above the spell's own.
+	var/reach = 1 + round(get_upcast_steps() / 2)
+	for(var/side in sides)
+		var/turf/spot = ahead
+		for(var/i in 1 to reach)
+			spot = get_step(spot, side)
+			if(!spot)
+				break
+			place_wall(spot)
+
+/datum/action/cooldown/spell/undirected/forcewall/proc/place_wall(turf/spot)
+	var/atom/wall = new wall_type(spot, owner, antimagic_flags)
+	LAZYADD(active_walls, WEAKREF(wall))
+
+/datum/action/cooldown/spell/undirected/forcewall/on_concentration_broken(reason)
+	for(var/datum/weakref/wall_ref as anything in active_walls)
+		var/atom/wall = wall_ref.resolve()
+		if(!QDELETED(wall))
+			qdel(wall)
+	active_walls = null
 
 /datum/action/cooldown/spell/undirected/forcewall/breakable
 	name = "Lesser Forcewall"
 	wall_type = /obj/structure/forcefield/casted
+
+	slot_level = 1
+	required_level = MASTERY_RANK_NOVICE
+	prerequisite_spells = null
+	slot_label = "Lesser Forcewall"

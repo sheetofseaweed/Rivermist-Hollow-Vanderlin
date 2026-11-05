@@ -5,16 +5,16 @@
 	sound = 'sound/magic/PSY.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/dark = 0.5,
-	)
 
 	cooldown_time = 25 SECONDS
-	spell_cost = 25
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 
 	choose_target_message = "Choose who to invade the mind of."
 	target_radius = 6
 	spell_flags = SPELL_RITUOS
+	slot_level = 0
+	required_form = FORM_DEATH
+
 	var/message
 
 /datum/action/cooldown/spell/undirected/list_target/encode_thoughts/before_cast(atom/cast_on)
@@ -42,3 +42,5 @@
 	point_cost = 0
 	spell_type = SPELL_BLOOD
 	spell_flags = NONE
+	learnable = FALSE
+	slot_level = null

@@ -21,6 +21,9 @@ GLOBAL_VAR_INIT(adventurer_hugbox_duration_still, 3 MINUTES)
 
 	exp_types_granted = list(EXP_TYPE_ADVENTURER, EXP_TYPE_COMBAT)
 
+	caster_archetype = CASTER_NONE
+	caster_rank_skill = /datum/attribute/skill/combat/unarmed
+
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_barbarian/wild_magic,
 		/datum/job/advclass/combat/adventurer_barbarian/berserker,
@@ -30,6 +33,11 @@ GLOBAL_VAR_INIT(adventurer_hugbox_duration_still, 3 MINUTES)
 		/datum/job/advclass/combat/adventurer_barbarian/seaelf_reaver,
 		/datum/job/advclass/combat/adventurer_barbarian/spearmaiden,
 	)
+
+// Shared by every path so re-rolled subclasses keep the Rage pool sized by unarmed rank.
+/datum/job/advclass/combat/adventurer_barbarian
+	caster_archetype = CASTER_NONE
+	caster_rank_skill = /datum/attribute/skill/combat/unarmed
 
 /datum/job/adventurer_barbarian/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()

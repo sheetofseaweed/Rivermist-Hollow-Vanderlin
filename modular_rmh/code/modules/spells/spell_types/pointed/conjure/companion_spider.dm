@@ -44,10 +44,6 @@
 	summon_radius = 0
 	summon_lifespan = 5 MINUTES
 
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
-
 /datum/action/cooldown/spell/conjure/companion_spider/post_summon(atom/summoned_object, atom/cast_on)
 	var/mob/living/spider = summoned_object
 	var/static/list/pet_commands = list(

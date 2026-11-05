@@ -41,8 +41,8 @@ GLOBAL_LIST_EMPTY(paladin_evil_subclasses)
 
 	magic_user = TRUE
 	spell_points = 20
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_HALF
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_paladin/immortal,
@@ -58,11 +58,13 @@ GLOBAL_LIST_EMPTY(paladin_evil_subclasses)
 		return
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
 	spawned.add_spell(/datum/action/cooldown/spell/undirected/protection_evil_good, source = src)
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_templar()
-		devotion.grant_to(spawned)
+	spawned.add_spell(/datum/action/cooldown/spell/healing/lay_on_hands, source = src)
+	spawned.add_spell(/datum/action/cooldown/spell/undirected/divine_smite, source = src)
+
+// Shared by every oath; the oath hook grants devotion once.
+/datum/job/advclass/combat/adventurer_paladin
+	caster_archetype = CASTER_HALF
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 
 
 /datum/job/advclass/combat/adventurer_paladin/check_requirements(mob/living/carbon/human/to_check)

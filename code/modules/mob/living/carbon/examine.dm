@@ -157,8 +157,6 @@
 		// Excommunications
 		if(real_name in GLOB.excommunicated_players)
 			. += span_redtextbig("GOD-FORSAKEN!")
-		if(real_name in GLOB.heretical_players)
-			. += span_redtextbig("HERETIC! SHAME!")
 
 		// Outlaws
 		if(HAS_CHARACTER_TRAIT(user, TRAIT_KNOWBANDITS) && (real_name in GLOB.outlawed_players))
@@ -185,7 +183,7 @@
 
 
 		// Cabal
-		if(HAS_TRAIT(user, TRAIT_CABAL) && (istype(patron, /datum/patron/inhumen/zizo) || HAS_TRAIT(src, TRAIT_CABAL)))
+		if(HAS_TRAIT(user, TRAIT_CABAL) && (istype(patron, /datum/patron/faerun/evil_gods/Lolth) || HAS_TRAIT(src, TRAIT_CABAL)))
 			. += span_purple("A fellow seeker of Her ascension.")
 		// The disgusing inquistion section
 		var/they_pur = HAS_TRAIT(user, TRAIT_PURITAN)

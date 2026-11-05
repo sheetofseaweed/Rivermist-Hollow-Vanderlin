@@ -706,3 +706,16 @@
 	icon_state = "impregnation"
 
 //---------------------------------------------------------------------------------------------------------------------------------
+
+/// Left by slot-restoring draughts; while it lasts, further draughts do nothing.
+/datum/status_effect/debuff/arcane_sickness
+	id = "arcane_sickness"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/arcane_sickness
+	duration = 20 MINUTES
+	tick_interval = STATUS_EFFECT_NO_TICK
+
+/atom/movable/screen/alert/status_effect/debuff/arcane_sickness
+	name = "Arcane Sickness"
+	desc = "My mind is too raw to hold another draught of power."
+
+//---------------------------------------------------------------------------------------------------------------------------------

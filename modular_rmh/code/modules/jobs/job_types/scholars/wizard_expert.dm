@@ -47,8 +47,10 @@
 
 	magic_user = TRUE
 	spell_points = 40
-	attunements_max = 15
-	attunements_min = 10
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 5
+	technique_points = 2
 
 	spells = list(
 		/datum/action/cooldown/spell/aoe/knock,
@@ -93,6 +95,7 @@
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/expert = 1,
+		/obj/item/spellbook/expert/starter/arcane = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
 		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)
@@ -147,8 +150,10 @@
 
 	magic_user = TRUE
 	spell_points = 30
-	attunements_max = 15
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 4
+	technique_points = 2
 
 	spells = list(
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
@@ -187,6 +192,7 @@
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
+		/obj/item/spellbook/apprentice/starter/fire = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
 		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)

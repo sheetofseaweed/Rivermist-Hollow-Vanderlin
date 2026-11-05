@@ -24,7 +24,7 @@
 	)
 	var/chooses_name = TRUE
 	var/outfit = /datum/outfit/vamplord
-	var/patron = /datum/patron/godless/autotheist
+	var/patron = /datum/patron/faerun/godless
 
 	var/ascended = FALSE
 	// thralls to set the clan of on creation

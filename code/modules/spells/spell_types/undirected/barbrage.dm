@@ -14,6 +14,8 @@
 	cooldown_time = 1 MINUTES
 	spell_type = SPELL_STAMINA
 	spell_cost = 10
+	/// Buff the rage applies; charged subtypes use a stronger one.
+	var/datum/status_effect/rage_status = /datum/status_effect/buff/barbrage
 
 /datum/action/cooldown/spell/undirected/barbrage/is_valid_target(atom/cast_on)
 	. = ..()
@@ -24,4 +26,4 @@
 /datum/action/cooldown/spell/undirected/barbrage/cast(mob/living/cast_on)
 	. = ..()
 	cast_on.emote("rage", forced = TRUE)
-	cast_on.apply_status_effect(/datum/status_effect/buff/barbrage)
+	cast_on.apply_status_effect(rage_status)

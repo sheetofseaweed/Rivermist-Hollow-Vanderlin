@@ -341,7 +341,9 @@
 			/obj/item/book/granter/spell/magick/lightning = 2,
 			/obj/item/book/granter/spell/magick/blindness = 2,
 			/obj/item/book/granter/spell/magick/invisibility = 2,
-			/obj/item/book/granter/spell/magick/greaterfireball = 1
+			/obj/item/book/granter/spell/magick/greaterfireball = 1,
+			/obj/item/spell_scroll/random/lesser = 3,
+			/obj/item/spell_scroll/random/greater = 1
 			)
 		)
 	base_max = 1

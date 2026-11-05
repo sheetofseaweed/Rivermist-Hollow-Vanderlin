@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/projectile/falcon_disrupt
 	name = "Wings of Silvanus"
-	desc = "Summons a falcon that could deliver small items and act as a distraction."
+	desc = "Summons a falcon that could deliver small items and act as a distraction. The minor form sends one light swoop."
 	button_icon_state = "verd"
 	sound = 'sound/vo/mobs/bird/birdfly.ogg'
 	invocation = "The Treefather commands thee, TO FLY!"
@@ -8,13 +8,27 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(/datum/attunement/earth = 0.5)
 	charge_time = 1 SECONDS
 	charge_drain = 1
 	charge_slowdown = 0.7
 	cooldown_time = 50 SECONDS
 	spell_cost = 20
+
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_DESTRUCTION
+	slot_level = 1
+	minor_cost = SPELL_MINOR_COST_DEFAULT
 	projectile_type = /obj/projectile/magic/falcon_dive
+
+/// Minor sends one swoop at cantrip strength; slot casts keep the full raking dive.
+/datum/action/cooldown/spell/projectile/falcon_disrupt/ready_projectile(obj/projectile/to_fire, atom/target, mob/user, iteration)
+	. = ..()
+	var/obj/projectile/magic/falcon_dive/dive = to_fire
+	if(!istype(dive))
+		return
+	if(is_minor_cast())
+		dive.swoop_cycles = 1
+		dive.strike_damage = round(5 * get_cantrip_multiplier())
 
 /datum/action/cooldown/spell/projectile/falcon_disrupt/cast(atom/cast_on)
 	var/obj/item/send_item
@@ -115,11 +129,14 @@
 	nodamage = TRUE
 	range = 8
 	speed = 0.5
+	/// Swoops and claw damage the strike carries; the Minor form sends one light swoop.
+	var/swoop_cycles = 2
+	var/strike_damage = 10
 
 /obj/projectile/magic/falcon_dive/on_hit(atom/target, blocked = FALSE)
 	if(isliving(target))
 		var/mob/living/L = target
-		L.apply_status_effect(/datum/status_effect/debuff/falcon_strike)
+		L.apply_status_effect(/datum/status_effect/debuff/falcon_strike, null, swoop_cycles, strike_damage)
 	qdel(src)
 
 /obj/effect/falcon_strike_fx
@@ -134,10 +151,13 @@
 	var/mob/living/owner_mob
 	var/cycle_count = 0
 	var/max_cycles = 2
+	var/strike_damage = 10
 
-/obj/effect/falcon_strike_fx/Initialize(mapload, mob/living/L)
+/obj/effect/falcon_strike_fx/Initialize(mapload, mob/living/L, cycles = 2, damage = 10)
 	. = ..()
 	owner_mob = L
+	max_cycles = cycles
+	strike_damage = damage
 	if(L)
 		forceMove(get_turf(L))
 		addtimer(CALLBACK(src, PROC_REF(do_swoop)), 0)
@@ -178,9 +198,9 @@
 		if(iscarbon(owner_mob))
 			var/mob/living/carbon/carbon = owner_mob
 			var/obj/item/bodypart/head = carbon.get_bodypart(BODY_ZONE_HEAD)
-			head?.bodypart_attacked_by(BCLASS_CUT, 10)
+			head?.bodypart_attacked_by(BCLASS_CUT, strike_damage)
 		else
-			owner_mob.adjustBruteLoss(10, damage_type = BCLASS_CUT)
+			owner_mob.adjustBruteLoss(strike_damage, damage_type = BCLASS_CUT)
 		owner_mob.adjust_temp_blindness(0.4 SECONDS)
 		owner_mob.adjust_jitter(2 SECONDS)
 		to_chat(owner_mob, span_danger("the falcon scratches your face!"))
@@ -192,6 +212,13 @@
 	status_type = STATUS_EFFECT_UNIQUE
 	alert_type = /atom/movable/screen/alert/status_effect/falcon_strike
 	var/obj/effect/falcon_strike_fx/falcon_fx
+	var/swoop_cycles = 2
+	var/strike_damage = 10
+
+/datum/status_effect/debuff/falcon_strike/on_creation(mob/living/new_owner, duration_override, cycles = 2, damage = 10)
+	swoop_cycles = cycles
+	strike_damage = damage
+	return ..()
 
 /datum/status_effect/debuff/falcon_strike/on_apply()
 	. = ..()
@@ -200,9 +227,9 @@
 	var/mob/living/L = owner
 	if(!L)
 		return
-	falcon_fx = new /obj/effect/falcon_strike_fx(get_turf(L), L)
-	L.adjust_eye_blur(8 SECONDS)
-	L.Immobilize(2 SECONDS)
+	falcon_fx = new /obj/effect/falcon_strike_fx(get_turf(L), L, swoop_cycles, strike_damage)
+	L.adjust_eye_blur(swoop_cycles * 4 SECONDS)
+	L.Immobilize(swoop_cycles * 1 SECONDS)
 	return TRUE
 
 /datum/status_effect/debuff/falcon_strike/on_remove()

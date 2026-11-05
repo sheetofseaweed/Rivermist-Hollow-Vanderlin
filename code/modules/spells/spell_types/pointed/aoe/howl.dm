@@ -6,6 +6,8 @@
 	button_icon_state = "howl"
 
 	spell_type = SPELL_RAGE
+	learnable = FALSE
+	slot_level = null
 	associated_skill = null
 
 	invocation_type = INVOCATION_NONE

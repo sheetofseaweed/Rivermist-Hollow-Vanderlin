@@ -151,6 +151,12 @@
 	caster.remove_status_effect(/datum/status_effect/shapechange_mob/from_spell)
 	return unshapeshifted_mob
 
+/// Shifting back is free; only taking a beast form spends a Wild Shape charge.
+/datum/action/cooldown/spell/undirected/shapeshift/get_feature_cost()
+	if(owner && is_shifted(owner))
+		return 0
+	return ..()
+
 /// Helper proc that instantiates the mob we shapeshift into.
 /// Returns an instance of a living mob. Can be overridden.
 /datum/action/cooldown/spell/undirected/shapeshift/proc/create_shapeshift_mob(atom/loc)

@@ -20,6 +20,9 @@
 	charge_slowdown = 3
 	cooldown_time = 7 MINUTES
 	spell_cost = 100
+
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
 	keep_name = TRUE
 
 	sound = 'sound/vo/mobs/troll/aggro2.ogg'

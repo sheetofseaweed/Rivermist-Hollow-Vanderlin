@@ -105,12 +105,25 @@
 	/// Stat associated with spell enchancements.
 	var/associated_stat = STAT_INTELLIGENCE
 
-	/// Assoc list of [datum/attunement] to value.
-	var/list/attunements
+	/// Rune and wave color; defaults to the form color, else white.
+	var/spell_color
 	/// Essence type paths accepted as the cost of an essence spell.
 	var/list/essences
-	/// Value summed from caster and spell attunements to adjust some spell effects.
-	var/attuned_strength
+
+	/// Technique track this spell belongs to; null for techniqueless spells.
+	var/required_technique = null
+	/// Form track this spell belongs to; null keeps the spell out of the spellbook.
+	var/required_form = null
+	/// Points needed in the form track before the spell can be learned.
+	var/required_level = 0
+	/// Spell typepaths that must be known first.
+	var/list/prerequisite_spells
+	/// Shown in the spellbook catalogue when TRUE.
+	var/learnable = TRUE
+	/// Flags forbidden magic in the spellbook.
+	var/heretical_spell = FALSE
+	/// Gear magnitude multiplier for this spell's form and technique, gathered once per cast.
+	var/spell_magnitude_modifier = 1
 
 	// Pointed vars
 	// In the TG refactor these weren't a given but almost all our spells are pointed including most spell types.
@@ -189,6 +202,9 @@
 	if(click_to_activate && !charge_required)
 		ranged_mousepointer = 'icons/effects/mousemice/charge/spell_charged.dmi'
 
+	if(!spell_color)
+		spell_color = (required_form && GLOB.form_colors[required_form]) || "#FFFFFF"
+
 	if(!charge_required)
 		return
 	if(charge_time <= 0)
@@ -199,8 +215,9 @@
 		charge_sound_instance = sound(charge_sound)
 
 /datum/action/cooldown/spell/Destroy()
-	if(charge_required && owner)
-		cancel_casting()
+	// cancel_casting refuses once qdel marked the spell, so a charging spell drops its charge state here.
+	if(currently_charging)
+		end_charging()
 	charge_sound_instance = null
 	return ..()
 
@@ -249,6 +266,14 @@
 	. = ..()
 	if(!owner)
 		return
+
+	if(slot_level > 0 && ishuman(owner))
+		var/mob/living/carbon/human/caster = owner
+		caster.ensure_spell_slots_for_job()
+		if(caster.get_spell_slots())
+			caster.grant_spell_slot_hud()
+	if(feature_id)
+		register_feature()
 
 	// Register some signals so our button's icon stays up to date
 	if(spell_requirements & SPELL_REQUIRES_STATION)
@@ -343,6 +368,9 @@
 /datum/action/cooldown/spell/proc/on_deactivation(mob/on_who, refund_cooldown = TRUE)
 	SHOULD_CALL_PARENT(TRUE)
 
+	if(!cast_paid)
+		cast_slot_level = null
+
 	if(refund_cooldown)
 		// Only send the "deactivation" message if they're willingly disabling the ability
 		to_chat(on_who, span_smallnotice("[deactive_msg]"))
@@ -377,6 +405,7 @@
 /datum/action/cooldown/spell/PreActivate(atom/target)
 	charged = FALSE
 	if(!is_valid_target(target))
+		cast_slot_level = null
 		if(charge_required && click_to_activate)
 			to_chat(owner, span_warning("I can't cast [src] on [target]!"))
 			RegisterSignal(owner.client, COMSIG_CLIENT_MOUSEDOWN, PROC_REF(start_casting), override = TRUE)
@@ -388,19 +417,29 @@
 /datum/action/cooldown/spell/proc/get_adjusted_charge_time()
 	if(charge_time <= 0)
 		return
+	if(metamagic_applies(METAMAGIC_QUICKENED))
+		return 1 DECISECONDS
 
 	var/mob/living/living_owner = owner
 	var/new_time = charge_time
 
 	new_time -= charge_time * GET_MOB_SKILL_VALUE_OLD(living_owner, associated_skill) * 0.05
 
-	var/owner_stat = living_owner.get_stat(associated_stat)
+	var/owner_stat = living_owner.get_stat(get_associated_stat())
 	if(owner_stat > 10)
 		new_time -= charge_time * (owner_stat - 10) * 0.02
 	else
 		new_time += charge_time * (10 - owner_stat) * 0.02
 
+	new_time /= max(get_form_technique_modifiers()[SPELLMOD_CASTSPEED], 0.1)
+
 	return max(new_time, 1 DECISECONDS)
+
+/// Miracles that keep the default stat read Perception; everything else reads its own.
+/datum/action/cooldown/spell/proc/get_associated_stat()
+	if(spell_type == SPELL_MIRACLE && associated_stat == STAT_INTELLIGENCE)
+		return STAT_PERCEPTION
+	return associated_stat
 
 /// Adjust the base spell cost based on the users stats
 /datum/action/cooldown/spell/proc/get_adjusted_cost(cost_override)
@@ -414,35 +453,38 @@
 
 	new_cost -= spell_cost * GET_MOB_SKILL_VALUE_OLD(living_owner, associated_skill) * 0.03
 
-	var/owner_stat = living_owner.get_stat(associated_stat)
+	var/owner_stat = living_owner.get_stat(get_associated_stat())
 	if(owner_stat > 10)
 		new_cost -= spell_cost * (owner_stat - 10) * 0.02
 	else
 		new_cost += spell_cost * (10 - owner_stat) * 0.02
 
+	new_cost *= get_form_technique_modifiers()[SPELLMOD_COST]
+
 	return max(new_cost, 0)
 
-/// Do any attunement handling in here or any time after before_cast
-/datum/action/cooldown/spell/proc/handle_attunements()
-	SHOULD_CALL_PARENT(TRUE)
+/// Gear modifiers that match this spell's form or technique, as cost and cast-speed multipliers and a magnitude multiplier.
+/datum/action/cooldown/spell/proc/get_form_technique_modifiers()
+	var/list/result = list(SPELLMOD_COST = 1, SPELLMOD_CASTSPEED = 1, SPELLMOD_MAGNITUDE = 1)
+	if(!owner || (!required_form && !required_technique))
+		return result
 
-	var/mob/living/caster = owner
-	var/list/datum/mana_pool/usable_pools = caster.get_all_pools()
-	var/list/total_attunements = GLOB.default_attunements.Copy()
+	var/list/modifiers = list()
+	SEND_SIGNAL(owner, COMSIG_SPELL_REQUEST_MODIFIERS, modifiers)
+	if(!length(modifiers))
+		return result
 
-	for(var/datum/mana_pool/pool as anything in usable_pools)
-		for(var/negative_attunement in pool.negative_attunements)
-			total_attunements[negative_attunement] += pool.negative_attunements[negative_attunement]
-		for(var/attunement in pool.attunements)
-			total_attunements[attunement] += pool.attunements[attunement]
+	for(var/list/entry in modifiers)
+		if(required_form && entry["form"] == required_form)
+			result[SPELLMOD_COST] *= entry[SPELLMOD_COST]
+			result[SPELLMOD_CASTSPEED] *= entry[SPELLMOD_CASTSPEED]
+			result[SPELLMOD_MAGNITUDE] += entry[SPELLMOD_MAGNITUDE]
+		if(required_technique && entry["technique"] == required_technique)
+			result[SPELLMOD_COST] *= entry[SPELLMOD_COST]
+			result[SPELLMOD_CASTSPEED] *= entry[SPELLMOD_CASTSPEED]
+			result[SPELLMOD_MAGNITUDE] += entry[SPELLMOD_MAGNITUDE]
 
-	var/total_value = 1
-	for(var/datum/attunement/attunement as anything in attunements)
-		if(!(attunement in total_attunements))
-			continue
-		total_value += total_attunements[attunement] * attunements[attunement]
-
-	attuned_strength = clamp(total_value, 0.5, 2.5)
+	return result
 
 /// Checks if the owner of the spell can currently cast it.
 /// Does not check anything involving potential targets.
@@ -515,6 +557,9 @@
 			owner.balloon_alert(owner, "missing something to cast!")
 			return FALSE
 
+	if(feature_id && !feature_ready(feedback))
+		return FALSE
+
 	return TRUE
 
 /**
@@ -537,17 +582,34 @@
 /datum/action/cooldown/spell/Activate(atom/target)
 	SHOULD_NOT_OVERRIDE(TRUE)
 
+	twin_cast_active = twin_cast_ready()
+	if(uses_spell_slots())
+		cast_slot_level = get_cast_level()
+
 	// Pre-casting of the spell
 	// Pre-cast is the very last chance for a spell to cancel
 	// Stuff like target input can go here.
 	var/precast_result = before_cast(target)
 	if(precast_result & SPELL_CANCEL_CAST)
+		clear_slot_cast()
 		if(charge_required)
 			cancel_casting()
 		return FALSE
 
 	// Extra safety
 	if(!check_cost())
+		clear_slot_cast()
+		return FALSE
+
+	// Feature pools are spent before the slot, so a refused spend leaves nothing paid.
+	if(feature_id)
+		var/feature_cost = get_feature_cost()
+		if(feature_cost > 0 && !spend_feature(feature_cost))
+			clear_slot_cast()
+			return FALSE
+
+	if(uses_spell_slots() && !pay_slot_cast())
+		clear_slot_cast()
 		return FALSE
 
 	// Spell is officially being cast
@@ -556,13 +618,18 @@
 		// That way stuff like teleports or shape-shifts can be invoked before ocurring
 		spell_feedback(owner)
 
-	if(length(attunements))
-		handle_attunements()
+	spell_magnitude_modifier = min(get_form_technique_modifiers()[SPELLMOD_MAGNITUDE], SPELLMOD_MAGNITUDE_CAP)
 
 	// Actually cast the spell. Main effects go here
 	cast(target)
 
-	if(!(precast_result & SPELL_NO_IMMEDIATE_COOLDOWN))
+	// A twinned cast skips its cooldown until the second cast lands or the window closes.
+	var/twin_window = finish_metamagic(target)
+
+	if(concentration && uses_spell_slots())
+		get_spell_slots().start_concentration(src)
+
+	if(!(precast_result & SPELL_NO_IMMEDIATE_COOLDOWN) && !twin_window)
 		// The entire spell is done, start the actual cooldown at its set duration
 		StartCooldown()
 
@@ -575,6 +642,8 @@
 	// And then proceed with the aftermath of the cast
 	// Final effects that happen after all the casting is done can go here
 	after_cast(target)
+	end_twin_cast()
+	clear_slot_cast()
 	build_all_button_icons()
 
 	return TRUE
@@ -603,8 +672,12 @@
 			on_deactivation(owner, refund_cooldown = FALSE)
 			return sig_return
 
-		if(get_dist(owner, cast_on) > cast_range)
+		if(get_dist(owner, cast_on) > get_cast_range())
 			owner.balloon_alert(owner, "too far away!")
+			return sig_return | SPELL_CANCEL_CAST
+
+		if(twin_cast_active && cast_on == twin_first_target_ref?.resolve())
+			owner.balloon_alert(owner, "the twinned spell needs another target!")
 			return sig_return | SPELL_CANCEL_CAST
 
 		if((spell_type == SPELL_MIRACLE) && HAS_TRAIT(cast_on, TRAIT_ATHEISM_CURSE))
@@ -694,7 +767,7 @@
 
 	if(has_visual_effects)
 		var/mob/living/caster = owner
-		caster.finish_spell_visual_effects(attunements)
+		caster.finish_spell_visual_effects(spell_color)
 
 /// Provides feedback after a spell cast occurs, in the form of a cast sound and/or invocation
 /datum/action/cooldown/spell/proc/spell_feedback(mob/living/invoker)
@@ -710,7 +783,8 @@
 /// The invocation that accompanies the spell, called from spell_feedback() before cast().
 /datum/action/cooldown/spell/proc/invocation(mob/living/invoker)
 	//lists can be sent by reference, a string would be sent by value
-	var/list/invocation_list = list(invocation, invocation_type)
+	// Subtle metamagic silences the cast before anyone can hear it.
+	var/list/invocation_list = list(invocation, metamagic_applies(METAMAGIC_SUBTLE) ? INVOCATION_NONE : invocation_type)
 	SEND_SIGNAL(invoker, COMSIG_MOB_PRE_INVOCATION, src, invocation_list)
 	var/used_invocation_message = invocation_list[INVOCATION_MESSAGE]
 	var/used_invocation_type = invocation_list[INVOCATION_TYPE]
@@ -730,6 +804,8 @@
 
 /// When we start charging the spell called from set_click_ability or start_casting
 /datum/action/cooldown/spell/proc/on_start_charge()
+	if(uses_spell_slots())
+		cast_slot_level = get_cast_level()
 	currently_charging = TRUE
 	START_PROCESSING(SSaction_charge, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
@@ -742,7 +818,7 @@
 
 	if(has_visual_effects)
 		var/mob/living/caster = owner
-		caster.start_spell_visual_effects(attunements)
+		caster.start_spell_visual_effects(spell_color)
 
 	if(charge_message)
 		owner.balloon_alert(owner, charge_message)
@@ -761,6 +837,7 @@
 	if(success)
 		charged = TRUE
 		return
+	cast_slot_level = null
 	if(owner)
 		owner.balloon_alert(owner, "channeling was interrupted!")
 
@@ -772,8 +849,14 @@
 	currently_charging = FALSE
 	charge_started_at = null
 	charge_target_time = null
+	// Every cancel path ends here; the click failsafe must not fire on a later charge.
+	if(auto_cancel_timer)
+		deltimer(auto_cancel_timer)
+		auto_cancel_timer = null
 	STOP_PROCESSING(SSaction_charge, src)
 	build_all_button_icons(UPDATE_BUTTON_STATUS|UPDATE_BUTTON_BACKGROUND)
+	if(!owner)
+		return
 
 	if(charge_slowdown)
 		owner.remove_movespeed_modifier(MOVESPEED_ID_SPELL_CASTING)
@@ -794,6 +877,7 @@
 /datum/action/cooldown/spell/proc/cancel_casting()
 	if(QDELETED(src)) // Timer
 		return
+	cast_slot_level = null
 	charged = FALSE
 	end_charging()
 
@@ -825,7 +909,7 @@
 	next_use_time -= cooldown_time // Basically, ensures that the ability can be used now
 	build_all_button_icons()
 
-// Spell level is unused currently, it could be used for attunement thresholds
+// Spell level is unused currently
 
 /**
  * Levels the spell up a single level, reducing the cooldown.
@@ -867,7 +951,8 @@
 
 /datum/action/cooldown/spell/update_button_name(atom/movable/screen/movable/action_button/button, force)
 	name = "[get_spell_title()][initial(name)]"
-	return ..()
+	. = ..()
+	button.name = "[name][get_feature_button_suffix()]"
 
 /// Gets the title of the spell based on its level.
 /datum/action/cooldown/spell/proc/get_spell_title()
@@ -887,6 +972,11 @@
 
 /// Check if the spell is castable by cost
 /datum/action/cooldown/spell/proc/check_cost(cost_override, feedback = TRUE)
+	// Twin casts and scroll casts were paid elsewhere.
+	if(is_free_cast())
+		return TRUE
+	if(uses_spell_slots())
+		return slot_can_cast(feedback)
 	var/mob/living/caster = owner
 
 	var/used_cost = get_adjusted_cost(cost_override)
@@ -905,7 +995,7 @@
 
 	switch(spell_type)
 		if(SPELL_MANA)
-			if(!caster.has_mana_available(attunements, used_cost))
+			if(!caster.has_mana_available(used_cost))
 				if(feedback)
 					owner.balloon_alert(owner, "not enough mana to cast!")
 				return FALSE
@@ -921,12 +1011,14 @@
 			return TRUE
 
 		if(SPELL_MIRACLE)
-			//SEAWEED PLEASE LOOK HERE//DISABLED UNTIL DEVOTION AND SPELLS REWORK//
-			//var/mob/living/carbon/human/H = caster
-			//if(!istype(H) || !H.cleric?.check_devotion(spell_cost))
-				//if(feedback)
-					//owner.balloon_alert(owner, "devotion too weak!")
-				//return FALSE
+			// Only the faithful pay devotion; miracle-typed racial and antagonist powers stay free.
+			var/mob/living/carbon/human/H = caster
+			if(!istype(H) || !H.cleric)
+				return TRUE
+			if(!H.cleric.check_devotion(used_cost))
+				if(feedback)
+					owner.balloon_alert(owner, "devotion too weak!")
+				return FALSE
 
 			return TRUE
 
@@ -973,8 +1065,12 @@
  * * Cost used
  */
 /datum/action/cooldown/spell/proc/invoke_cost(cost_override, type_override, re_run = FALSE)
-	if(!owner)
+	if(!owner || is_free_cast())
 		return
+
+	// Slot spells already paid at commitment. Only paid tiers grant casting XP.
+	if(uses_spell_slots())
+		return cast_paid ? cast_slot_level * 10 : 0
 
 	var/used_cost = get_adjusted_cost(cost_override)
 
@@ -995,7 +1091,7 @@
 	switch(used_type)
 		if(SPELL_MANA)
 			var/mob/living/caster = owner
-			caster.consume_mana(attunements, used_cost)
+			caster.consume_mana(used_cost)
 
 		if(SPELL_MIRACLE)
 			var/mob/living/carbon/human/H = owner
@@ -1041,7 +1137,7 @@
 		return
 
 	var/mob/living/caster = owner
-	var/exp_to_gain = caster.get_stat(associated_stat) + (cost_in * experience_modifier) / 2
+	var/exp_to_gain = caster.get_stat(get_associated_stat()) + (cost_in * experience_modifier) / 2
 
 	var/datum/mind/owner_mind = owner.mind
 	if(owner_mind && experience_sleep || (experience_sleep_threshold && (skill_level >= experience_sleep_threshold)))

@@ -83,7 +83,7 @@
 		var/yeae = TRUE //! TRUE if we were killed on a cross and socially rejected
 		if(buckled)
 			if(istype(buckled, /obj/structure/fluff/psycross) || istype(buckled, /obj/machinery/light/fueled/campfire/pyre))
-				if((real_name in GLOB.excommunicated_players) || (real_name in GLOB.heretical_players))
+				if(real_name in GLOB.excommunicated_players)
 					yeae = FALSE
 				if(real_name in GLOB.outlawed_players)
 					yeae = FALSE

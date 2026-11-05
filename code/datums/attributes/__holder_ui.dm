@@ -182,6 +182,7 @@ GLOBAL_LIST_EMPTY(attribute_menu_name_to_datum)
 	data["show_bad_skills"] = show_bad_skills
 	data["parent"] = parent?.name
 	data["preview_image"] = preview_image_b64
+	data["class_resources"] = parent?.mind?.spell_slots?.get_ui_info()
 
 	var/list/stats_values = list()
 	for(var/stat_type in GLOB.all_stats)

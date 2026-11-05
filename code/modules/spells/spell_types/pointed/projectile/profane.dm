@@ -11,17 +11,16 @@
 	invocation = "Oblino!"
 	invocation_type = INVOCATION_SHOUT
 
-	attunements = list(
-		/datum/attunement/death = 0.3,
-		/datum/attunement/blood = 0.3,
-	)
-
 	charge_drain = 1
 	charge_time = 2 SECONDS
 	charge_slowdown = 0.3
 	cooldown_time = 10 SECONDS
 	spell_cost = 35
 	projectile_type = /obj/projectile/magic/profane
+
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_DESTRUCTION
+	heretical_spell = TRUE
 
 /datum/action/cooldown/spell/projectile/profane/before_cast(mob/living/cast_on)
 	. = ..()

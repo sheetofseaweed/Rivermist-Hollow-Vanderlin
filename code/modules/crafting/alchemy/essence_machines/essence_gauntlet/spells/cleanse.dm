@@ -4,7 +4,6 @@
 	button_icon_state = "deathdoor"
 	//sound = 'sound/magic/splash.ogg'
 	cast_range = 1
-	attunements = list(/datum/attunement/blood)
 	essences = list(/datum/thaumaturgical_essence/water)
 
 /datum/action/cooldown/spell/essence/cleanse/cast(atom/cast_on)

@@ -15,6 +15,12 @@
 	cooldown_time = 30 SECONDS
 	spell_cost = 30
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_DESTRUCTION
+	slot_level = 2
+	slot_only = TRUE
+	required_level = MASTERY_RANK_ADEPT
+
 /datum/action/cooldown/spell/undirected/divine_strike/can_cast_spell(feedback)
 	. = ..()
 	if(!.)

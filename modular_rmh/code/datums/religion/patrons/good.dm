@@ -1,5 +1,6 @@
 /datum/patron/faerun/good_gods
 	abstract_type = /datum/patron/faerun/good_gods
+	devotion_holder = /datum/devotion/faerun/good
 	name = null
 	associated_faith = /datum/faith/faerun/good_gods
 
@@ -8,6 +9,7 @@
 
 /datum/patron/faerun/good_gods/Bahamut
 	name = "Bahamut"
+	devotion_holder = /datum/devotion/faerun/good/bahamut
 	display_name = "Bahamut"
 	domain = "Justice, Protection, Nobility"
 	desc = "The Platinum Dragon, embodiment of righteous rule, mercy, and honor."
@@ -22,6 +24,7 @@
 
 /datum/patron/faerun/good_gods/Corellon
 	name = "Corellon Larethian"
+	devotion_holder = /datum/devotion/faerun/good/corellon
 	display_name = "Corellon Larethian"
 	domain = "Art, Arcana, Beauty, Elves"
 	desc = "A fluid and radiant deity of artistry, magic, and elven perfection."
@@ -36,6 +39,7 @@
 
 /datum/patron/faerun/good_gods/Eilistraee
 	name = "Eilistraee"
+	devotion_holder = /datum/devotion/faerun/good/eilistraee
 	display_name = "Eilistraee"
 	domain = "Moonlight, Redemption, Dance"
 	desc = "The Dark Maiden who offers drow a path to freedom, joy, and reconciliation."
@@ -50,6 +54,7 @@
 
 /datum/patron/faerun/good_gods/Ilmater
 	name = "Ilmater"
+	devotion_holder = /datum/devotion/faerun/good/ilmater
 	display_name = "Ilmater"
 	domain = "Endurance, Martyrdom, Compassion"
 	desc = "The Crying God who endures suffering so others may find relief."
@@ -64,6 +69,7 @@
 
 /datum/patron/faerun/good_gods/Lathander
 	name = "Lathander"
+	devotion_holder = /datum/devotion/faerun/good/lathander
 	display_name = "Lathander"
 	domain = "Dawn, Renewal, Vitality"
 	desc = "The Morninglord, ever shining with youthful zeal and new beginnings."
@@ -78,6 +84,7 @@
 
 /datum/patron/faerun/good_gods/Mielikki
 	name = "Mielikki"
+	devotion_holder = /datum/devotion/faerun/good/mielikki
 	display_name = "Mielikki"
 	domain = "Forests, Rangers, Harmony with Nature"
 	desc = "A gentle, wandering goddess who protects the wilds and its balance."
@@ -92,6 +99,7 @@
 
 /datum/patron/faerun/good_gods/Moradin
 	name = "Moradin"
+	devotion_holder = /datum/devotion/faerun/good/moradin
 	display_name = "Moradin"
 	domain = "Creation, Dwarves, Forge"
 	desc = "The All-Father, master smith who carved the dwarves from stone."
@@ -106,6 +114,7 @@
 
 /datum/patron/faerun/good_gods/Selune
 	name = "Selune"
+	devotion_holder = /datum/devotion/faerun/good/selune
 	display_name = "Selune"
 	domain = "Moon, Navigation, Protection, Change"
 	desc = "The Moonmaiden, merciful and ever-shifting, guiding wanderers in darkness."
@@ -120,6 +129,7 @@
 
 /datum/patron/faerun/good_gods/Tyr
 	name = "Tyr"
+	devotion_holder = /datum/devotion/faerun/good/tyr
 	display_name = "Tyr"
 	domain = "Justice, Law, Retribution"
 	desc = "The Maimed God who holds absolute justice above all else."
@@ -134,6 +144,7 @@
 
 /datum/patron/faerun/good_gods/Yondalla
 	name = "Yondalla"
+	devotion_holder = /datum/devotion/faerun/good/yondalla
 	display_name = "Yondalla"
 	domain = "Hearth, Fertility, Protection, Halflings"
 	desc = "The Nurturing Matriarch, guardian of halfling prosperity and peace."
@@ -148,6 +159,7 @@
 
 /datum/patron/faerun/good_gods/Sune
 	name = "Sune"
+	devotion_holder = /datum/devotion/faerun/good/sune
 	display_name = "Sune"
 	domain = "Beauty, Love, Passion"
 	desc = "Goddess of romance and artistic expression, radiant and capricious."
@@ -162,6 +174,7 @@
 
 /datum/patron/faerun/good_gods/Sharess
 	name = "Sharess"
+	devotion_holder = /datum/devotion/faerun/good/sharess
 	display_name = "Sharess"
 	domain = "Pleasure, Sensuality, Hedonism, Feline Grace"
 	desc = "The Dancing Lady, a radiant goddess of passion, freedom, indulgence, and joyful living who delights in all pleasurable experiences and the beauty of mortal desire."
@@ -176,6 +189,7 @@
 
 /datum/patron/faerun/good_gods/Torm
 	name = "Torm"
+	devotion_holder = /datum/devotion/faerun/good/torm
 	display_name = "Torm"
 	domain = "Duty, Loyalty, Law, Self-Sacrifice"
 	desc = "The True and the Loyal Fury, embodiment of unwavering duty and righteous obedience."
@@ -190,6 +204,7 @@
 
 /datum/patron/faerun/good_gods/Milil
 	name = "Milil"
+	devotion_holder = /datum/devotion/faerun/good/milil
 	display_name = "Milil"
 	domain = "Song, Poetry, Eloquence, Memory"
 	desc = "The Lord of Song, who preserves truth and history through music and verse."
@@ -204,6 +219,7 @@
 
 /datum/patron/faerun/good_gods/Deneir
 	name = "Deneir"
+	devotion_holder = /datum/devotion/faerun/good/deneir
 	display_name = "Deneir"
 	domain = "Writing, Glyphs, Maps, Recorded Knowledge"
 	desc = "The First Scribe, keeper of all written knowledge and precise truth."
@@ -218,6 +234,7 @@
 
 /datum/patron/faerun/good_gods/Garl_Glittergold
 	name = "Garl Glittergold"
+	devotion_holder = /datum/devotion/faerun/good/garl_glittergold
 	domain = "Humor, Protection, Gnomes"
 	desc = "A clever trickster whose mischief teaches wisdom and resilience."
 	flaws = "Practical jokes go too far; seldom gives straightforward answers."

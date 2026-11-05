@@ -9,13 +9,14 @@
 	school = SCHOOL_TRANSMUTATION
 	charge_required = FALSE
 	cooldown_time = 2 MINUTES
-	spell_cost = 50
+	spell_cost = 0
 
 	invocation = "Manus arcyne."
 	invocation_type = INVOCATION_WHISPER
-	attunements = list(
-		/datum/attunement/arcyne = 0.2,
-	)
+
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ALTERATION
 
 	var/tether_duration = 2 MINUTES
 	var/can_scrying = FALSE
@@ -25,6 +26,7 @@
 	desc = "Project Mage Hand through a scrying vision."
 	spell_cost = 0
 	cooldown_time = 0
+	learnable = FALSE
 
 /datum/action/cooldown/spell/mage_hand/is_valid_target(atom/cast_on)
 	. = ..()

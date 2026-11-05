@@ -1,12 +1,14 @@
-#define ALL_TEMPLE_PATRONS 		list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/necra, /datum/patron/divine/ravox, /datum/patron/divine/xylix, /datum/patron/divine/pestra, /datum/patron/divine/malum, /datum/patron/divine/eora, /datum/patron/psydon)
-#define ALL_CLERIC_PATRONS 		list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/necra, /datum/patron/divine/ravox, /datum/patron/divine/xylix, /datum/patron/divine/pestra, /datum/patron/divine/malum, /datum/patron/divine/eora, /datum/patron/psydon)
-#define ALL_PALADIN_PATRONS 	list(/datum/patron/psydon, /datum/patron/psydon/progressive, /datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/necra, /datum/patron/divine/ravox, /datum/patron/divine/xylix, /datum/patron/divine/pestra, /datum/patron/divine/malum, /datum/patron/divine/eora)
-#define ALL_TEMPLAR_PATRONS 	list(/datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/eora, /datum/patron/divine/necra, /datum/patron/divine/ravox, /datum/patron/divine/pestra, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/malum, /datum/patron/divine/xylix, /datum/patron/psydon)
-#define ALL_PROFANE_PATRONS 	list(/datum/patron/inhumen/graggar, /datum/patron/inhumen/zizo, /datum/patron/inhumen/matthios, /datum/patron/inhumen/baotha)
-#define ALL_ICONOCLAST_PATRONS  list(/datum/patron/psydon, /datum/patron/psydon/extremist, /datum/patron/divine/astrata, /datum/patron/divine/noc, /datum/patron/divine/dendor, /datum/patron/divine/abyssor, /datum/patron/divine/necra, /datum/patron/divine/ravox, /datum/patron/divine/xylix, /datum/patron/divine/pestra, /datum/patron/divine/malum, /datum/patron/divine/eora, /datum/patron/inhumen/graggar, /datum/patron/inhumen/zizo, /datum/patron/inhumen/matthios, /datum/patron/inhumen/baotha)
+#define ALL_TEMPLE_PATRONS	(subtypesof(/datum/patron/faerun/good_gods) + subtypesof(/datum/patron/faerun/neutral_gods))
+#define ALL_CLERIC_PATRONS	(subtypesof(/datum/patron/faerun) - FAERUN_PANTHEON_BASES)
+#define ALL_PALADIN_PATRONS	(subtypesof(/datum/patron/faerun/good_gods) + subtypesof(/datum/patron/faerun/neutral_gods))
+#define ALL_TEMPLAR_PATRONS	(subtypesof(/datum/patron/faerun/good_gods) + subtypesof(/datum/patron/faerun/neutral_gods))
+/// Faerun patron type lists. The pantheon bases and Godless are not real gods.
+#define FAERUN_PANTHEON_BASES	list(/datum/patron/faerun/good_gods, /datum/patron/faerun/neutral_gods, /datum/patron/faerun/evil_gods, /datum/patron/faerun/godless)
+#define ALL_PROFANE_PATRONS 	subtypesof(/datum/patron/faerun/evil_gods)
+#define ALL_ICONOCLAST_PATRONS  (subtypesof(/datum/patron/faerun) - FAERUN_PANTHEON_BASES)
 
-/// Currently same as ALL_ICONOCLAST_PATRONS, but in text format because byond sucks and won't read things properly.
-#define COLORFUL_PATRONS		list("Psydon", "Astrata", "Noc", "Dendor", "Abyssor", "Necra", "Ravox", "Xylix", "Pestra", "Malum", "Eora", "Graggar", "Zizo", "Matthios", "Baotha")
+/// Faerun god name to admin prayer colour class; only gods with a legacy colour.
+#define COLORFUL_PATRONS		list("Lathander" = "astrata", "Mystra" = "noc", "Silvanus" = "dendor", "Umberlee" = "abyssor", "Jergal" = "necra", "Tempus" = "ravox", "Tymora" = "xylix", "Ilmater" = "pestra", "Moradin" = "malum", "Sune" = "eora", "Gruumsh" = "graggar", "Lolth" = "zizo", "Mask" = "matthios", "Blissara" = "baotha")
 
 GLOBAL_LIST_INIT(curse_names, list())
 

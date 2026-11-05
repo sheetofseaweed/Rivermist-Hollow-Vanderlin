@@ -26,6 +26,7 @@
 		TRAIT_GOODLOVER,
 		TRAIT_BEAUTIFUL,
 		TRAIT_NOFIRE,
+		TRAIT_SORCERER,
 	)
 
 	spells = list(

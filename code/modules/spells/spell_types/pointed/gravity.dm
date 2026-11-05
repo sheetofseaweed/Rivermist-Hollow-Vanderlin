@@ -6,9 +6,6 @@
 	self_cast_possible = FALSE
 	spell_flags = SPELL_RITUOS
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/dark = 0.6,
-	)
 
 	//https://www.youtube.com/watch?v=MfK3Ygb7Jzk
 	invocation = "Fall."
@@ -17,6 +14,12 @@
 	charge_time = 2 SECONDS
 	cooldown_time = 25 SECONDS
 	spell_cost = 35
+
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Gravity"
+	required_form = FORM_AIR
+	required_level = MASTERY_RANK_ADEPT
 
 /datum/action/cooldown/spell/gravity/is_valid_target(atom/cast_on)
 	. = ..()
@@ -27,14 +30,16 @@
 /datum/action/cooldown/spell/gravity/cast(mob/living/cast_on)
 	. = ..()
 	new /obj/effect/temp_visual/gravity(get_turf(cast_on))
+	var/hold_time = 3 SECONDS * get_upcast_duration_multiplier()
+	var/damage_multiplier = get_upcast_multiplier()
 	if(GET_MOB_ATTRIBUTE_VALUE(cast_on, STAT_STRENGTH) >= 13)
-		cast_on.OffBalance(3 SECONDS)
-		cast_on.adjustBruteLoss(15, damage_type = BCLASS_BLUNT)
+		cast_on.OffBalance(hold_time)
+		cast_on.adjustBruteLoss(15 * damage_multiplier, damage_type = BCLASS_BLUNT)
 		to_chat(cast_on, span_userdanger("You're magically weighed down, but your strength resists!"))
 	else
-		cast_on.Knockdown(3 SECONDS)
-		cast_on.Immobilize(3 SECONDS)
-		cast_on.adjustBruteLoss(30, damage_type = BCLASS_BLUNT)
+		cast_on.Knockdown(hold_time)
+		cast_on.Immobilize(hold_time)
+		cast_on.adjustBruteLoss(30 * damage_multiplier, damage_type = BCLASS_BLUNT)
 		to_chat(cast_on, span_userdanger("You're magically weighed down and hit the ground!"))
 
 /obj/effect/temp_visual/gravity

@@ -6,9 +6,6 @@
 	sound = 'sound/magic/unmagnet.ogg'
 
 	point_cost = 3
-	attunements = list(
-		/datum/attunement/aeromancy = 0.4,
-	)
 
 	invocation = "Repel!"
 	invocation_type = INVOCATION_SHOUT
@@ -20,6 +17,11 @@
 	spell_cost = 30
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/repel
+
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Repel"
+	required_form = FORM_AIR
 
 /obj/projectile/magic/repel
 	name = "bolt of repeling"

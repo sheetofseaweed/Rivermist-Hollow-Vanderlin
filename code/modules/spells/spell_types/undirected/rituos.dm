@@ -14,10 +14,6 @@
 	cooldown_time = 3 HOURS
 	spell_cost = 120
 
-	attunements = list(
-		/datum/attunement/death = 0.5
-	)
-
 	/// Weakref to granted spell, for the dream ending
 	var/datum/weakref/granted_spell
 
@@ -80,7 +76,13 @@
 	if(!length(get_unskeletonized_bodyparts(cast_on)))
 		cast_on.adjust_stat_modifier(STATMOD_RITUAL, list(/datum/attribute/skill/magic/arcane = 30))
 		cast_on.add_spell(/datum/action/cooldown/spell/undirected/touch/prestidigitation)
-		cast_on.adjust_spell_points(18)
+		// Slot casters have no spell points; the Lesser Work pays in form mastery instead.
+		if(cast_on.mind?.is_slot_caster())
+			var/datum/spell_mastery/mastery = cast_on.mind.get_spell_mastery()
+			mastery.adjust_form_points(RITUOS_FORM_POINTS)
+			mastery.recalculate_unspent_points()
+		else
+			cast_on.adjust_spell_points(18)
 		cast_on.visible_message(
 			span_boldwarning("[cast_on]'s form swells with terrible power as they cast away almost all of \
 			the remnants of their mortal flesh, arcyne runes glowing upon their exposed bones..."),

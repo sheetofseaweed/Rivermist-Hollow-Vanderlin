@@ -39,7 +39,7 @@
 	var/has_rolled_for_stats = FALSE
 
 /mob/living/proc/init_faith()
-	patron = GLOB.patron_list[/datum/patron/godless/godless]
+	patron = GLOB.patron_list[/datum/patron/faerun/godless]
 
 /mob/living/proc/set_patron(datum/patron/new_patron, check_antag = FALSE)
 	if(!new_patron)
@@ -52,10 +52,8 @@
 		return FALSE
 	if(patron && !ispath(patron))
 		patron.on_remove(src)
-		mana_pool?.remove_attunements(patron)
 	patron = new_patron
 	patron.on_gain(src)
-	mana_pool?.set_attunements(patron)
 	return TRUE
 
 /mob/living/proc/sync_legacy_stat_cache()

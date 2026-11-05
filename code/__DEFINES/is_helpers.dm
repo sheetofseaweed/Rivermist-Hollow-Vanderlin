@@ -183,7 +183,7 @@ GLOBAL_LIST_INIT(RATS_DONT_EAT, typecacheof(list(
 //Townhall
 	#define is_burgmeister_job(job_type) (istype(job_type, /datum/job/burgmeister) || istype(job_type, /datum/job/advclass/burgmeister))
 //Chapel
-	#define is_priest_job(job_type) (istype(job_type, /datum/job/moon_priest || /datum/job/heart_priest))
+	#define is_priest_job(job_type) (istype(job_type, /datum/job/moon_priest) || istype(job_type, /datum/job/heart_priest))
 //Traders
 	#define is_merchant_job(job_type) (istype(job_type, /datum/job/waterdeep_merchant))
 	#define is_banker_job(job_type) (istype(job_type, /datum/job/waterdeep_banker))

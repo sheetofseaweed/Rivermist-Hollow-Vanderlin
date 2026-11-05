@@ -46,6 +46,7 @@
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/divine_strike,
+		/datum/action/cooldown/spell/vow_of_enmity,
 	)
 
 /datum/job/advclass/combat/adventurer_paladin/vengeance/after_spawn(mob/living/carbon/human/spawned, client/player_client)

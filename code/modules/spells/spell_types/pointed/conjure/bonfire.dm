@@ -10,7 +10,7 @@
 
 	charge_required = FALSE
 	cooldown_time = 30 SECONDS
-	spell_cost = 30
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 	invocation = "Bonfire!"
 	invocation_type = INVOCATION_SHOUT
@@ -18,3 +18,6 @@
 	summon_type = list(/obj/machinery/light/fueled/hearth/magic)
 	summon_radius = 0
 	summon_lifespan = 3 MINUTES
+
+	slot_level = 0
+	required_form = FORM_FIRE

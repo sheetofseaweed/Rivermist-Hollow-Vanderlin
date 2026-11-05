@@ -1076,7 +1076,7 @@
 	priest_job?.assign_honorary_titles(M)
 	M.mind.set_assigned_role(/datum/job/moon_priest)
 	M.job = "Priest"
-	M.set_patron(/datum/patron/divine/astrata)
+	M.set_patron(/datum/patron/faerun/good_gods/Selune)
 	var/holder = M.patron?.devotion_holder
 	if(holder)
 		var/datum/devotion/devotion = new holder()

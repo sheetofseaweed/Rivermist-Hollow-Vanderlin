@@ -156,8 +156,10 @@
 
 	magic_user = TRUE
 	spell_points = 25
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_THIRD
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/adventurers_guildmaster/eldritch_knight
 
@@ -243,6 +245,7 @@
 		/obj/item/paper = 3,
 		/obj/item/weapon/knife/dagger/steel,
 		/obj/item/paper,
+		/obj/item/spellbook/apprentice/starter/arcane,
 	)
 
 /datum/outfit/adventurers_guildmaster/eldritch_knight/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

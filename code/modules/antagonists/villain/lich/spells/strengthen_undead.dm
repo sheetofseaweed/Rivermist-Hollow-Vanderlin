@@ -4,11 +4,6 @@
 	button_icon_state = "raiseskele"
 	sound = 'sound/magic/whiteflame.ogg'
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-		/datum/attunement/death = 0.5,
-	)
-
 	charge_required = FALSE
 	cooldown_time = 15 SECONDS
 	spell_cost = 30

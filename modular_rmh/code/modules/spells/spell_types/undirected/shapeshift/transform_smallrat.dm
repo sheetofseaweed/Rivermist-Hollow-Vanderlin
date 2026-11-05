@@ -2,12 +2,6 @@
 	name = "Smallrat Form"
 	desc = "Transform into a smallrat. Damage is not inherited between forms. DON'T YOU FUCKING DARE TO CRAWL IN THERE!"
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-		/datum/attunement/polymorph = 0.5,
-		/datum/attunement/aeromancy = 0.3,
-	)
-
 	charge_required = FALSE
 	cooldown_time = 50 SECONDS
 

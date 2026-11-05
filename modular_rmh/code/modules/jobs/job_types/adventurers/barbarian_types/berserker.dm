@@ -44,7 +44,7 @@
 	)
 
 	spells = list(
-		/datum/action/cooldown/spell/undirected/barbrage
+		/datum/action/cooldown/spell/undirected/barbrage/rage
 	)
 
 /datum/job/advclass/combat/adventurer_barbarian/berserker/after_spawn(mob/living/carbon/human/spawned, client/player_client)

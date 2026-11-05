@@ -4,11 +4,6 @@
 	button_icon_state = "raiseskele"
 	sound = 'sound/magic/magnet.ogg'
 
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-		/datum/attunement/death = 1,
-	)
-
 	charge_time = 6 SECONDS
 	charge_drain = 1
 	charge_slowdown = 0.3

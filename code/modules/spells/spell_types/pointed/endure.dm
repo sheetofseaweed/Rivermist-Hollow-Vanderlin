@@ -92,7 +92,7 @@
 			user.adjustBruteLoss(25, damage_type = WOUND_DIVINE)
 			return FALSE
 
-		target.apply_status_effect(/datum/status_effect/buff/psyhealing, psyhealing)
+		target.apply_status_effect(/datum/status_effect/buff/psyhealing, null, psyhealing)
 		return TRUE
 
 	return FALSE
@@ -111,8 +111,11 @@
 	var/healing_on_tick = 1
 	var/outline_colour = "#d3d3d3"
 
-/datum/status_effect/buff/psyhealing/on_creation(mob/living/new_owner, new_healing_on_tick)
-	healing_on_tick = new_healing_on_tick
+// apply_status_effect passes the duration override second, so the healing comes third.
+/datum/status_effect/buff/psyhealing/on_creation(mob/living/new_owner, duration_override, new_healing_on_tick)
+	// A bare apply keeps the type's own healing.
+	if(!isnull(new_healing_on_tick))
+		healing_on_tick = new_healing_on_tick
 	return ..()
 
 /datum/status_effect/buff/psyhealing/on_apply()

@@ -66,7 +66,8 @@
 			if(first_time && first_time_message)
 				to_chat(target, SPAN_GOD_FIRST_FEEL(first_time_message))
 				message_admins("<span class='adminnotice'><b> SubtleMessage: [key_name_admin(user)] -> [key_name_admin(target)] :</b> [first_time_message]</span>")
-			message = "<span class='god_[ckey(chosen_god)]'>[message]</span>"
+			var/list/god_colours = COLORFUL_PATRONS
+			message = "<span class='god_[god_colours[chosen_god] || "generic"]'>[message]</span>"
 			switch(volume)
 				if("Loud")
 					message = SPAN_GOD_LOUD(message)
@@ -89,6 +90,10 @@
 
 /proc/get_god_atmosphere_message(chosen_god)
 	var/atmosphere_message
+	// Faerun names map to the legacy god whose message and colour they inherited.
+	var/list/god_colours = COLORFUL_PATRONS
+	if(god_colours[chosen_god])
+		chosen_god = capitalize(god_colours[chosen_god])
 	switch(chosen_god)
 		if("Astrata")
 			atmosphere_message = SPAN_GOD_ASTRATA("Your body feels warm… it’s as if the sun itself were beaming against your skull… amidst this sensation, the voice of a woman, authoritative, radiant, demanding absolute attention, brands itself in your head.")

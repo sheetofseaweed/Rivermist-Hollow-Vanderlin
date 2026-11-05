@@ -46,7 +46,7 @@
 		/datum/action/cooldown/spell/chill_touch,
 		/datum/action/cooldown/spell/cone/staggered/cone_of_cold/void,
 		/datum/action/cooldown/spell/control_undead,
-		/datum/action/cooldown/spell/aoe/churn_undead,
+		/datum/action/cooldown/spell/aoe/churn_undead/channel,
 		/datum/action/cooldown/spell/raise_undead,
 		/datum/action/cooldown/spell/gravemark,
 		/datum/action/cooldown/spell/undirected/soul_speak,

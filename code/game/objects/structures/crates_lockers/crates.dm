@@ -103,7 +103,7 @@
 				to_chat(user, span_info("I start unsealing the coffin.."))
 				if(!do_after(user, 5 SECONDS, src))
 					return
-				if(user.patron?.type != /datum/patron/divine/necra) // necrans don't add to the grave robber counts, though they can still get cursed.
+				if(user.patron?.type != /datum/patron/faerun/neutral_gods/Jergal) // necrans don't add to the grave robber counts, though they can still get cursed.
 					record_featured_stat(FEATURED_STATS_CRIMINALS, user)
 					record_round_statistic(STATS_GRAVES_ROBBED)
 				if(isliving(user) && src.consecrated)

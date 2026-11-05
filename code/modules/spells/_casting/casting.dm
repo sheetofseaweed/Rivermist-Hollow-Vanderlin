@@ -16,36 +16,26 @@
 
 	return usable_pools
 
-/// Check if all pools have the required amount of mana
-/mob/living/proc/has_mana_available(list/attunements, total_required_mana)
-	var/list/datum/mana_pool/provided_mana = get_all_pools()
-	var/total_effective_mana = 0
+/// Check if all pools together hold at least the required amount of mana
+/mob/living/proc/has_mana_available(total_required_mana)
+	var/total_mana = 0
 
-	for(var/datum/mana_pool/iterated_pool as anything in provided_mana)
-		total_effective_mana += iterated_pool.get_attuned_amount(attunements, src)
+	for(var/datum/mana_pool/iterated_pool as anything in get_all_pools())
+		total_mana += iterated_pool.amount
 
-	return (total_effective_mana > total_required_mana)
+	return total_mana >= total_required_mana
 
-/// Consume the given amount of mana
-/mob/living/proc/consume_mana(list/attunements, amount_to_use)
+/// Consume the given amount of mana, foci first
+/mob/living/proc/consume_mana(amount_to_use)
 	var/mana_consumed = -amount_to_use
-	var/total_mana_consumed = -mana_consumed
 
 	var/list/datum/mana_pool/available_pools = get_all_pools()
-	var/attunement_total_value = 0
-	var/total_damage = 0
-	for(var/datum/attunement/attunement as anything in attunements)
-		attunement_total_value += attunements[attunement]
+	if(!length(available_pools))
+		return
 
 	while(mana_consumed <= -0.05)
-		var/mult
-		var/attuned_cost
 		for(var/datum/mana_pool/pool as anything in available_pools)
-			mult = pool.get_overall_attunement_mults(attunements, src)
-			attuned_cost = mana_consumed * mult
-			if(pool.amount < attuned_cost)
-				attuned_cost = pool.amount
-			var/mana_adjusted = SAFE_DIVIDE(pool.adjust_mana((attuned_cost)), mult) * (has_world_trait(/datum/world_trait/noc_wisdom) ? 0.8 : 1)
+			var/mana_adjusted = pool.adjust_mana(mana_consumed) * (has_world_trait(/datum/world_trait/noc_wisdom) ? 0.8 : 1)
 			mana_consumed -= mana_adjusted
 			record_featured_stat(FEATURED_STATS_MAGES, src, abs(mana_adjusted))
 			record_round_statistic(STATS_MANA_SPENT, abs(mana_adjusted))
@@ -53,26 +43,15 @@
 			if(available_pools.Find(pool) == length(available_pools) && mana_consumed <= -0.05) // if we're at the end of the list and mana_consumed is not 0 or near 0 (floating points grrr)
 				mana_consumed = 0 // lets terminate the loop to be safe
 
-			if(pool.parent == src)
-				for(var/datum/attunement/attunement as anything in attunements)
-					if(pool.negative_attunements[attunement] < 0)
-						var/composition_gain = attunement_total_value / attunements[attunement]
-						var/negative_impact_mana = total_mana_consumed * composition_gain
-						total_damage += round(negative_impact_mana * 0.1, 1)
-	if(total_damage)
-		mana_pool.mana_backlash(total_damage)
-
 // Spell visual effect procs
 // Mob level as only mobs can cast spells
 // Living because ghosts can not use real spells
 
 /// Start effects, used for channeled spells,
 /// Creates and sets the spell_rune.
-/mob/living/proc/start_spell_visual_effects(list/attunements)
+/mob/living/proc/start_spell_visual_effects(spell_color = "#FFFFFF")
 	if(QDELETED(src))
 		return
-
-	var/spell_color = get_blended_attunement_color(attunements)
 
 	if(spell_rune)
 		QDEL_NULL(spell_rune)
@@ -98,12 +77,10 @@
 	addtimer(CALLBACK(src, PROC_REF(start_spell_particles), spell_color), 3.6 SECONDS)
 
 /// Finish effect, used by most spells.
-/// Cleans up the spell_rune if present and creates a cloud visual based on attunement.
-/mob/living/proc/finish_spell_visual_effects(list/attunements)
+/// Cleans up the spell_rune if present and creates a cloud visual in the spell's color.
+/mob/living/proc/finish_spell_visual_effects(spell_color = "#FFFFFF")
 	if(QDELETED(src))
 		return
-
-	var/spell_color = get_blended_attunement_color(attunements)
 
 	// Clean up the rune
 	if(spell_rune)

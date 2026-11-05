@@ -18,9 +18,12 @@
 	charge_drain = 1
 	charge_slowdown = 0.7
 
-	attunements = list(
-		/datum/attunement/aeromancy = 0.4,
-	)
+	slot_level = 2
+	slot_only = TRUE
+	slot_label = "Repulse"
+	required_form = FORM_AIR
+	required_technique = TECHNIQUE_CREATION
+	required_level = MASTERY_RANK_ADEPT
 
 	/// The minimum throw range of the replusion
 	var/min_throw = 3
@@ -50,17 +53,18 @@
 		// Created sparkles will disappear on their own
 		new sparkle_path(get_turf(victim), get_dir(caster, victim))
 
+	// Upcasting adds a quarter of the damage and half of the stun per level.
 	if(get_dist(victim, caster) == 0)
 		if(isliving(victim))
 			var/mob/living/victim_living = victim
-			victim_living.Paralyze(5 SECONDS)
-			victim_living.adjustBruteLoss(5, damage_type = BCLASS_BLUNT)
+			victim_living.Paralyze(5 SECONDS * get_upcast_duration_multiplier())
+			victim_living.adjustBruteLoss(5 * get_upcast_multiplier(), damage_type = BCLASS_BLUNT)
 			to_chat(victim, span_userdanger("You're slammed into the floor by [caster]!"))
 		return
 
 	if(isliving(victim))
 		var/mob/living/victim_living = victim
-		victim_living.Paralyze(3 SECONDS)
+		victim_living.Paralyze(3 SECONDS * get_upcast_duration_multiplier())
 		to_chat(victim, span_userdanger("You're thrown back by [caster]!"))
 
 	throw_victim(victim, caster)
@@ -93,6 +97,8 @@
 	cooldown_reduction_per_rank = 0
 
 	sparkle_path = /obj/effect/temp_visual/dir_setting/tailsweep
+	learnable = FALSE
+	slot_level = null
 
 /datum/action/cooldown/spell/aoe/repulse/dragon/cast(atom/target)
 	. = ..()

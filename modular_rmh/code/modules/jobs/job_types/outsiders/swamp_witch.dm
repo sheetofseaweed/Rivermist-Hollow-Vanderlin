@@ -30,11 +30,6 @@
 
 /datum/job/swamp_witch/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
 
 //SUBCLASSES
 /datum/attribute_holder/sheet/job/advclass/swamp_witch/alchemist
@@ -59,8 +54,10 @@
 
 	magic_user = TRUE
 	spell_points = 20
-	attunements_max = 5
-	attunements_min = 1
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 3
+	technique_points = 1
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/alchemist
 
@@ -150,8 +147,10 @@
 
 	magic_user = TRUE
 	spell_points = 30
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 4
+	technique_points = 2
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/cinder
 
@@ -234,8 +233,10 @@
 
 	magic_user = TRUE
 	spell_points = 30
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 4
+	technique_points = 2
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/hex
 
@@ -321,8 +322,10 @@
 
 	magic_user = TRUE
 	spell_points = 25
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	prepares_spells = FALSE
+	form_points = 3
+	technique_points = 1
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/swamp_witch/wild
 

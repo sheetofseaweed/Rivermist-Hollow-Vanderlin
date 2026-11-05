@@ -31,10 +31,15 @@
 
 /datum/action/cooldown/spell/undirected/giant_shape/cast(atom/cast_on)
 	. = ..()
+	// Every cast starts the wind-up again; the stage used to stay at the buff after the first.
+	stage = GIANT_SHAPE_STAGE_1
 	transformation()
 
 /datum/action/cooldown/spell/undirected/giant_shape/proc/transformation()
 	var/mob/living/barbarian = owner
+	// The next stage runs on a timer, so the body may be gone or dead by then.
+	if(QDELETED(barbarian) || barbarian.stat == DEAD)
+		return
 	var/next_stage_time
 	switch(stage)
 		if(GIANT_SHAPE_STAGE_1)

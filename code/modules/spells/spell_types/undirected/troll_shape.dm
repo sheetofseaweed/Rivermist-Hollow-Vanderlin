@@ -19,6 +19,12 @@
 	cooldown_time = 3.5 MINUTES
 	spell_cost = 40
 
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 2
+	slot_only = TRUE
+	required_level = MASTERY_RANK_ADEPT
+
 	sound = 'sound/vo/mobs/troll/aggro2.ogg'
 
 	// Im sorry

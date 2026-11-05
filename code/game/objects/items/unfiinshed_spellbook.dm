@@ -75,14 +75,22 @@
 		return ITEM_INTERACT_SUCCESS
 	return NONE
 
-/// Spawns a finished book, assigns its owner, and consumes the catalyst and unfinished tome.
+/// Spawns the finished book after the crafter picks tome or grimoire, consuming the catalyst and unfinished tome.
 /obj/item/spellbook_unfinished/pre_arcyne/proc/finish_book(mob/living/user, obj/item/catalyst, book_type, born_of_rock = FALSE, extra_desc)
+	book_type = choose_finish(user, book_type)
+	if(QDELETED(src) || QDELETED(catalyst))
+		return
 	playsound(src, 'sound/magic/crystal.ogg', 100, TRUE)
 	var/atom/old_loc = loc
-	var/obj/item/book/granter/spellbook/new_book = new book_type(get_turf(src))
-	new_book.owner = user
-	if(born_of_rock)
-		new_book.born_of_rock = TRUE
+	var/obj/item/new_book
+	if(ispath(book_type, /obj/item/spellbook))
+		new_book = new book_type(get_turf(src))
+	else
+		var/obj/item/book/granter/spellbook/tome = new book_type(get_turf(src))
+		tome.owner = user
+		if(born_of_rock)
+			tome.born_of_rock = TRUE
+		new_book = tome
 	if(extra_desc)
 		new_book.desc += extra_desc
 	qdel(catalyst)
@@ -90,6 +98,42 @@
 	if(ismob(old_loc))
 		var/mob/living/holder = old_loc
 		holder.put_in_hands(new_book)
+	return new_book
+
+/// Offers a grimoire of the tome's tier; no client, no answer or a slow one keeps the tome.
+/obj/item/spellbook_unfinished/pre_arcyne/proc/choose_finish(mob/living/user, tome_type)
+	var/obj/item/spellbook/grimoire_type = grimoire_for_tome(tome_type)
+	if(!grimoire_type || !user?.client)
+		return tome_type
+	var/obj/item/book/granter/spellbook/typed_tome = tome_type
+	var/list/choices = list(
+		"[initial(typed_tome.name)]" = tome_type,
+		"[initial(grimoire_type.name)]" = grimoire_type,
+	)
+	var/asked_at = world.time
+	var/choice = tgui_input_list(user, "What should the catalyst make of the bound pages?", "Finish the Book", choices, timeout = 30 SECONDS)
+	if(!choice || world.time > asked_at + 30 SECONDS)
+		return tome_type
+	return choices[choice]
+
+/// The grimoire tier that mirrors a point tome tier; null for anything else.
+/obj/item/spellbook_unfinished/pre_arcyne/proc/grimoire_for_tome(tome_type)
+	switch(tome_type)
+		if(/obj/item/book/granter/spellbook/horrible)
+			return /obj/item/spellbook/horrible
+		if(/obj/item/book/granter/spellbook/mid)
+			return /obj/item/spellbook/mid
+		if(/obj/item/book/granter/spellbook/apprentice)
+			return /obj/item/spellbook/apprentice
+		if(/obj/item/book/granter/spellbook/adept)
+			return /obj/item/spellbook/adept
+		if(/obj/item/book/granter/spellbook/expert)
+			return /obj/item/spellbook/expert
+		if(/obj/item/book/granter/spellbook/master)
+			return /obj/item/spellbook/master
+		if(/obj/item/book/granter/spellbook/legendary)
+			return /obj/item/spellbook/legendary
+	return null
 
 /obj/item/spellbook_unfinished/pre_arcyne/proc/apply_gem_catalyst(mob/living/user, obj/item/gem/gem, book_type)
 	if(!do_after(user, max(0, 100 - GET_MOB_SKILL_VALUE_OLD(user, /datum/attribute/skill/magic/arcane) * 5), target = src))

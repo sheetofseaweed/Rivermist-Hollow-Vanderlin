@@ -5,6 +5,8 @@
  */
 /datum/action/cooldown/spell/undirected/teleport
 	school = SCHOOL_TRANSLOCATION
+	// Teleports are instant; without this every new copy warns that it has no charge time.
+	charge_required = FALSE
 
 	/// What channel the teleport is done under.
 	var/teleport_channel = TELEPORT_CHANNEL_MAGIC

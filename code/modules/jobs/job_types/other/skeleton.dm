@@ -138,7 +138,7 @@
 	. = ..()
 	spawned.mind?.special_role = "Cult Summon"
 	spawned.mind?.current.job = null
-	spawned.set_patron(/datum/patron/inhumen/zizo)
+	spawned.set_patron(/datum/patron/faerun/evil_gods/Lolth)
 
 	if(spawned.dna?.species)
 		spawned.dna.species.native_language = "Undead Chant"

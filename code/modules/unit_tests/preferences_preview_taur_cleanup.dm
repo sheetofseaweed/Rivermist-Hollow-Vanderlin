@@ -4,7 +4,7 @@
 
 	prefs.write_preference(/datum/preference/choiced/gender, FEMALE)
 	prefs.write_preference(/datum/preference/choiced/age, AGE_ADULT)
-	prefs.write_preference(/datum/preference/choiced/patron, /datum/patron/divine/astrata)
+	prefs.write_preference(/datum/preference/choiced/patron, /datum/patron/faerun/good_gods/Lathander)
 
 	prefs.set_species_preference(/datum/species/yuanti)
 	prefs.features = prefs.pref_species.get_random_features()

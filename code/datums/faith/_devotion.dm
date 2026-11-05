@@ -25,6 +25,8 @@
 	/// Miracles granted to Favored Species
 	var/list/favored_miracles = list()
 	var/devotion_color = "#3C41A4"
+	/// Excommunicated: no miracle answers, slots stay but miracles refuse to cast.
+	var/forsaken = FALSE
 
 	var/list/datum/devotion_task/tasks = list()
 	var/list/viable_tasks = list()
@@ -41,13 +43,19 @@
 		return
 	update_devotion(passive_devotion_gain, passive_progression_gain)
 
+/// Binds this datum to a mob. A datum already granted refuses; the mob's older datum is retired.
 /datum/devotion/proc/grant_to(mob/living/carbon/human/holder)
-	if(!holder)
-		return
+	if(!holder || holder_mob)
+		return FALSE
+	if(holder.cleric && holder.cleric != src)
+		var/datum/devotion/old_faith = holder.cleric
+		old_faith.remove()
+		qdel(old_faith)
 	if(passive_devotion_gain || passive_progression_gain)
 		START_PROCESSING(SSprocessing, src)
 	holder_mob = holder
 	holder_mob.cleric = src
+	RegisterSignal(holder_mob, COMSIG_LIVING_SPELL_REST, PROC_REF(on_spell_rest))
 	holder_mob?.hud_used?.initialize_bloodpool()
 	holder_mob?.hud_used?.bloodpool.set_fill_color(devotion_color)
 	for(var/trait in traits)
@@ -57,6 +65,18 @@
 	add_verb(holder_mob, list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray))
 	check_progression()
 	initialize_tasks()
+	update_devotion(0)
+	return TRUE
+
+/// Long rests refill devotion, short rests restore half the cap. The forsaken get nothing.
+/datum/devotion/proc/on_spell_rest(datum/source, rest_type)
+	SIGNAL_HANDLER
+	if(forsaken)
+		return
+	if(rest_type & REST_LONG)
+		update_devotion(max_devotion)
+	else
+		update_devotion(round(max_devotion / 2))
 
 /datum/devotion/proc/initialize_tasks()
 	if(!holder_mob?.patron)
@@ -79,8 +99,11 @@
 	qdel(task)
 
 /datum/devotion/proc/remove()
+	STOP_PROCESSING(SSprocessing, src)
 	if(holder_mob)
-		holder_mob.cleric = null
+		UnregisterSignal(holder_mob, COMSIG_LIVING_SPELL_REST)
+		if(holder_mob.cleric == src)
+			holder_mob.cleric = null
 		holder_mob.remove_spells(source = src)
 		remove_verb(holder_mob, list(/mob/living/carbon/human/proc/devotionreport, /mob/living/carbon/human/proc/clericpray))
 		for(var/trait in traits)
@@ -98,6 +121,7 @@
 	. -= devotion
 	holder_mob?.hud_used?.bloodpool?.name = "Devotion: [devotion]"
 	holder_mob?.hud_used?.bloodpool?.desc = "Devotion: [devotion]/[max_devotion]"
+	holder_mob?.update_spell_slot_hud()
 	if(devotion <= 0)
 		holder_mob?.hud_used?.bloodpool?.set_value(0, 1 SECONDS)
 	else
@@ -106,6 +130,8 @@
 		SEND_SIGNAL(holder_mob, COMSIG_LIVING_DEVOTION_CHANGED, amount)
 
 /datum/devotion/proc/check_devotion(required)
+	if(forsaken)
+		return FALSE
 	return devotion >= abs(required)
 
 /datum/devotion/proc/update_progression(amount)
@@ -143,7 +169,8 @@
 						grant_miracle(favored_miracle)
 
 /datum/devotion/proc/make_priest()
-	devotion = 300
+	max_devotion = DEVOTION_CAP_PRIEST
+	devotion = max_devotion
 	progression = CLERIC_REQ_3
 	passive_devotion_gain = 1
 	miracles_extra += list(
@@ -155,20 +182,20 @@
 	)
 
 /datum/devotion/proc/make_templar()
-	devotion = 200
-	max_devotion = CLERIC_REQ_3
+	max_devotion = DEVOTION_CAP_PALADIN
+	devotion = max_devotion
 	progression = CLERIC_REQ_2
 	max_progression = CLERIC_REQ_3
 
 /datum/devotion/proc/make_cleric()
-	devotion = 200
-	max_devotion = CLERIC_REQ_3
+	max_devotion = DEVOTION_CAP_CLERIC
+	devotion = max_devotion
 	progression = CLERIC_REQ_3
 	max_progression = CLERIC_REQ_3
 
 /datum/devotion/proc/make_acolyte()
-	devotion = 150
-	max_devotion = CLERIC_REQ_3
+	max_devotion = DEVOTION_CAP_ACOLYTE
+	devotion = max_devotion
 	progression = CLERIC_REQ_3
 	max_progression = CLERIC_REQ_3
 
@@ -217,20 +244,16 @@
 /datum/devotion/proc/excommunicate()
 	if(!HAS_TRAIT(holder_mob, TRAIT_FANATICAL))
 		prayer_effectiveness = 0
-		devotion = -1
+		forsaken = TRUE
+		update_devotion(-devotion)
 		to_chat(holder_mob, span_userdanger("I have been forsaken! The gods no longer listen to my prayers nor my requests."))
 		STOP_PROCESSING(SSprocessing, src)
 
 /datum/devotion/proc/recommunicate()
 	if(!HAS_TRAIT(holder_mob, TRAIT_FANATICAL))
 		prayer_effectiveness = initial(prayer_effectiveness)
-		devotion = 0
+		forsaken = FALSE
+		update_devotion(0)
 		to_chat(holder_mob, span_boldnotice("I have been welcomed back into the folds of the gods."))
 		if(passive_devotion_gain || passive_progression_gain)
 			START_PROCESSING(SSprocessing, src)
-
-/datum/devotion/inhumen/excommunicate()
-	return
-
-/datum/devotion/inhumen/recommunicate()
-	return

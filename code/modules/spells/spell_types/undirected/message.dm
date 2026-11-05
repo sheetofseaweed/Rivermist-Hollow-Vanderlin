@@ -6,7 +6,7 @@
 	point_cost = 1
 
 	charge_required = FALSE
-	spell_cost = 30
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 	cooldown_time = 1 MINUTES
 
 	/// Ref to cliented mob we are sending to
@@ -16,6 +16,9 @@
 	/// If we try to hide our identity
 	var/anonymous = FALSE
 	spell_flags = SPELL_RITUOS
+
+	slot_level = 0
+	required_form = FORM_AIR
 
 /datum/action/cooldown/spell/undirected/message/Destroy(force, ...)
 	recipient_ref = null

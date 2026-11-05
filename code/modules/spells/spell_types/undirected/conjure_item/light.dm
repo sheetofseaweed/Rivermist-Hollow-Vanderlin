@@ -7,7 +7,7 @@
 	point_cost = 1
 
 	cooldown_time = 30 SECONDS
-	spell_cost = 50
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 
 	invocation = "Let there be light."
 	invocation_type = INVOCATION_WHISPER
@@ -16,9 +16,9 @@
 	item_type = /obj/item/flashlight/flare/light
 	item_duration = null
 
-	attunements = list(
-		/datum/attunement/light = 0.3,
-	)
+	slot_level = 0
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_CREATION
 
 /datum/action/cooldown/spell/undirected/conjure_item/light/make_item()
 	var/obj/item = ..()

@@ -5,9 +5,6 @@
 	can_cast_on_self = TRUE
 
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/light = 0.6,
-	)
 	spell_flags = SPELL_RITUOS
 	cooldown_time = 6 MINUTES
 
@@ -16,8 +13,14 @@
 	drop_message = "I release my arcyne focus."
 	charges = 3
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Darkvision"
+	required_form = FORM_DEATH
+
 /datum/action/cooldown/spell/undirected/touch/darkvision/adjust_hand_charges()
-	charges += FLOOR(attuned_strength * 1.5, 1)
+	// One spare charge above the base count.
+	charges++
 
 /datum/action/cooldown/spell/undirected/touch/darkvision/is_valid_target(atom/cast_on)
 	. = ..()
@@ -30,14 +33,14 @@
 	if(!do_after(caster, 5 SECONDS, victim))
 		return FALSE
 
-	var/duration_increase = attuned_strength * 2 MINUTES
+	var/duration_increase = get_rank_multiplier() * 2 MINUTES
 
 	if(victim != caster)
 		caster.visible_message("[caster] draws a glyph in the air and touches [victim] with an arcyne focus.")
 	else
 		caster.visible_message("[caster] draws a glyph in the air and touches themselves with an arcyne focus.")
 
-	victim.apply_status_effect(/datum/status_effect/buff/darkvision, 10 MINUTES + duration_increase)
+	victim.apply_status_effect(/datum/status_effect/buff/darkvision, (10 MINUTES + duration_increase) * hand_duration_multiplier)
 	return TRUE
 
 /obj/item/melee/touch_attack/darkvision

@@ -19,9 +19,6 @@
 	spell_type = SPELL_MIRACLE
 	antimagic_flags = MAGIC_RESISTANCE_HOLY
 	associated_skill = /datum/attribute/skill/magic/holy
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
 	var/cabal_affine = FALSE
 
 /datum/action/cooldown/spell/conjure/raise_lesser_undead/before_cast()
@@ -66,3 +63,48 @@
 	cabal_affine = TRUE
 	cooldown_time = 30 SECONDS
 	summon_lifespan = 1 MINUTES
+	upcast_extra_summons = TRUE
+
+	slot_level = 2
+	slot_level_max = 4
+	slot_only = TRUE
+	concentration = TRUE
+	slot_label = "Lesser Necromancy"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_SUMMONING
+	required_level = MASTERY_RANK_ADEPT
+
+	/// The raised skeletons, so concentration can dismiss them.
+	var/list/datum/weakref/skeleton_refs
+
+/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer/Destroy()
+	skeleton_refs = null
+	return ..()
+
+/// One raising per concentration: raising again dismisses the last skeletons.
+/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer/cast(atom/cast_on)
+	if(uses_spell_slots())
+		on_concentration_broken(CONCENTRATION_REPLACED)
+	return ..()
+
+/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer/post_summon(atom/summoned_object, atom/cast_on)
+	. = ..()
+	LAZYADD(skeleton_refs, WEAKREF(summoned_object))
+	RegisterSignal(summoned_object, COMSIG_PARENT_QDELETING, PROC_REF(on_skeleton_gone))
+
+/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer/on_concentration_broken(reason)
+	var/list/skeletons = skeleton_refs
+	skeleton_refs = null
+	for(var/datum/weakref/skeleton_ref as anything in skeletons)
+		var/mob/living/skeleton = skeleton_ref.resolve()
+		if(QDELETED(skeleton))
+			continue
+		skeleton.visible_message(span_warning("[skeleton] collapses into dust as its master's focus slips."))
+		qdel(skeleton)
+
+/datum/action/cooldown/spell/conjure/raise_lesser_undead/necromancer/proc/on_skeleton_gone(datum/source)
+	SIGNAL_HANDLER
+	// Weakrefs stop resolving during deletion, so match the reference itself.
+	LAZYREMOVE(skeleton_refs, source.weak_reference)
+	if(!LAZYLEN(skeleton_refs))
+		get_spell_slots()?.clear_concentration(src)

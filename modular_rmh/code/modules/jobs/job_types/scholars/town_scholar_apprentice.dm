@@ -52,8 +52,11 @@
 
 	magic_user = TRUE
 	spell_points = 15
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 	spells = list(
-		/datum/action/cooldown/spell/undirected/learn,
 		/datum/action/cooldown/spell/undirected/touch/prestidigitation,
 		/datum/action/cooldown/spell/undirected/conjure_item/summon_parchment,
 		/datum/action/cooldown/spell/undirected/conjure_item/summon_parchment/scroll,
@@ -95,6 +98,7 @@
 		/obj/item/textbook = 1,
 		/obj/item/natural/feather = 1,
 		/obj/item/book/granter/spellbook/apprentice,
+		/obj/item/spellbook/apprentice/starter/arcane,
 		)
 
 /datum/outfit/town_scholar_apprentice/librarian/pre_equip(mob/living/carbon/human/equipped_human, visuals_only)

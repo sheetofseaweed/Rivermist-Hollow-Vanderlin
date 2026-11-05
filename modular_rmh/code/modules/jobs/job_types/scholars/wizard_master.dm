@@ -45,8 +45,10 @@
 
 	magic_user = TRUE
 	spell_points = 70
-	attunements_max = 20
-	attunements_min = 10
+	caster_archetype = CASTER_FULL
+	prepares_spells = TRUE
+	form_points = 8
+	technique_points = 4
 	spells = list(
 		/datum/action/cooldown/spell/aoe/knock,
 		/datum/action/cooldown/spell/undirected/jaunt/ethereal_jaunt,
@@ -85,6 +87,7 @@
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/master = 1,
+		/obj/item/spellbook/master/starter/arcane = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
 		/obj/item/storage/belt/pouch/coins/rich
 	)

@@ -7,10 +7,6 @@
 	cast_range = 8
 	point_cost = 6
 	associated_skill = /datum/attribute/skill/magic/blood
-	attunements = list(
-		/datum/attunement/electric = 0.3,
-		/datum/attunement/blood = 0.7,
-	)
 
 	invocation = "Blood Bolt!!"
 	invocation_type = INVOCATION_SHOUT

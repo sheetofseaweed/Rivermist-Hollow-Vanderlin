@@ -27,7 +27,7 @@
 
 	spells = list(
 		/datum/action/cooldown/spell/vicious_mockery,
-		/datum/action/cooldown/spell/bardic_inspiration,
+		/datum/action/cooldown/spell/bardic_inspiration/bard,
 	)
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/combat/adventurer_bard/college_swords
