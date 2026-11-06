@@ -143,6 +143,8 @@
 	var/obfuscated_msg = null
 	if(!nomsg)
 		user.log_message(msg, LOG_EMOTE)
+		// visible_message skips clientless mobs, so agent NPCs would never see this otherwise.
+		SSagent_npc?.notice_emote(user, src, msg, intentional)
 		obfuscated_msg = "<b>[user]</b> [stars(msg)]"
 		msg = "<b>[user]</b> " + msg
 

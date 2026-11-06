@@ -1916,103 +1916,39 @@
 
 	return mammons_to_add - remaining_mammons // Return actual amount added
 
-// Remove mammons from an atom by modifying/deleting coins
+/// Take whole coins worth this much from the target and give change. All or nothing; returns what was taken.
 /proc/remove_mammons_from_atom(atom/movable/target, mammons_to_remove)
 	if(!target || mammons_to_remove <= 0)
 		return 0
 
-	var/static/list/coins_types = typecacheof(/obj/item/coin)
-	var/remaining_to_remove = mammons_to_remove
-	var/total_removed = 0
-
-	// Create a list of all coins sorted by value (highest first for efficient removal)
-	var/list/coin_list = list()
-	for(var/obj/item/coin/coin in target.contents)
-		if(coins_types[coin.type])
-			coin_list += coin
-
-	// Sort coins by sellprice (descending)
-	sortTim(coin_list, GLOBAL_PROC_REF(cmp_coin_value_desc))
-
-	// Remove from coins starting with highest value
-	for(var/obj/item/coin/coin in coin_list)
-		if(remaining_to_remove <= 0)
-			break
-
-		var/coin_total_value = coin.quantity * coin.sellprice
-		if(coin_total_value <= remaining_to_remove)
-			// Remove entire coin
-			remaining_to_remove -= coin_total_value
-			total_removed += coin_total_value
-			qdel(coin)
-		else
-			// Partially remove from this coin
-			var/quantity_to_remove = remaining_to_remove / coin.sellprice
-			if(quantity_to_remove >= 1)
-				coin.quantity -= quantity_to_remove
-				var/value_removed = quantity_to_remove * coin.sellprice
-				remaining_to_remove -= value_removed
-				total_removed += value_removed
-				coin.update_appearance(UPDATE_ICON_STATE | UPDATE_NAME | UPDATE_DESC)
-
-		// Also check contents recursively
-		if(remaining_to_remove > 0)
-			var/removed_from_contents = remove_mammons_from_atom_recursive(coin, remaining_to_remove)
-			remaining_to_remove -= removed_from_contents
-			total_removed += removed_from_contents
-
-	// Check other contents recursively
-	for(var/atom/movable/content in target.contents)
-		if(remaining_to_remove <= 0)
-			break
-		if(!coins_types[content.type]) // Skip coins we already processed
-			var/removed_from_content = remove_mammons_from_atom_recursive(content, remaining_to_remove)
-			remaining_to_remove -= removed_from_content
-			total_removed += removed_from_content
-
-	return total_removed
-
-// Helper function for recursive mammon removal
-/proc/remove_mammons_from_atom_recursive(atom/movable/target, mammons_to_remove)
-	if(!target || mammons_to_remove <= 0)
+	var/list/coins = list()
+	var/total = 0
+	for(var/obj/item/coin/coin in target.GetAllContents())
+		if(coin.sellprice > 0 && coin.quantity >= 1)
+			coins += coin
+			total += coin.quantity * coin.sellprice
+	if(total < mammons_to_remove)
 		return 0
 
-	var/static/list/coins_types = typecacheof(/obj/item/coin)
-	var/remaining_to_remove = mammons_to_remove
-	var/total_removed = 0
-
-	// Remove from direct coin contents first
-	for(var/obj/item/coin/coin in target.contents)
-		if(remaining_to_remove <= 0)
+	// Small coins first, so a copper debt does not break a gold piece.
+	sortTim(coins, GLOBAL_PROC_REF(cmp_coin_value_asc))
+	var/owed = mammons_to_remove
+	for(var/obj/item/coin/coin as anything in coins)
+		if(owed <= 0)
 			break
-		if(coins_types[coin.type])
-			var/coin_total_value = coin.quantity * coin.sellprice
-			if(coin_total_value <= remaining_to_remove)
-				remaining_to_remove -= coin_total_value
-				total_removed += coin_total_value
-				qdel(coin)
-			else
-				var/quantity_to_remove = remaining_to_remove / coin.sellprice
-				if(quantity_to_remove >= 1)
-					coin.quantity -= quantity_to_remove
-					var/value_removed = quantity_to_remove * coin.sellprice
-					remaining_to_remove -= value_removed
-					total_removed += value_removed
-					coin.update_appearance(UPDATE_ICON_STATE | UPDATE_NAME | UPDATE_DESC)
+		var/taken = min(coin.quantity, CEILING(owed / coin.sellprice, 1))
+		owed -= taken * coin.sellprice
+		if(taken >= coin.quantity)
+			qdel(coin)
+		else
+			coin.set_quantity(coin.quantity - taken)
+	// Coins come whole, so the last one often overpays. Fractional coins used to vanish or hand goods over free.
+	if(owed < 0)
+		add_mammons_to_atom(target, -owed)
+	return mammons_to_remove
 
-	// Then check other contents recursively
-	for(var/atom/movable/content in target.contents)
-		if(remaining_to_remove <= 0)
-			break
-		if(!coins_types[content.type])
-			var/removed = remove_mammons_from_atom_recursive(content, remaining_to_remove)
-			remaining_to_remove -= removed
-			total_removed += removed
-
-	return total_removed
-
-/proc/cmp_coin_value_desc(obj/item/coin/a, obj/item/coin/b)
-	return b.sellprice - a.sellprice
+/proc/cmp_coin_value_asc(obj/item/coin/first, obj/item/coin/second)
+	return first.sellprice - second.sellprice
 
 /proc/notify_bounty_boards_death(mob/dying_mob, mob/killer)
 	for(var/obj/structure/bounty_board/board in GLOB.bounty_boards)

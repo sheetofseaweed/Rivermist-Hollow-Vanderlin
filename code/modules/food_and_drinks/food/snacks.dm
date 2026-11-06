@@ -529,6 +529,7 @@ All foods are distributed among various categories. Use common sense.
 		if(!do_after(user, 3 SECONDS, eater))
 			return ITEM_INTERACT_BLOCKING
 		log_combat(user, eater, "fed", reagents?.log_list())
+		SEND_SIGNAL(eater, COMSIG_MOB_FED, user, src)
 
 	if(!reagents || !reagents.total_volume)
 		if(eater.satiety > -200)
