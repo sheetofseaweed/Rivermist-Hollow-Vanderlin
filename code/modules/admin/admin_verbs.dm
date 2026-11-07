@@ -221,6 +221,7 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	/client/proc/jump_to_ruin,
 	/client/proc/toggle_medal_disable,
 	/client/proc/view_runtimes,
+	/client/proc/profile_shadows,
 	/client/proc/pump_random_event,
 	/client/proc/cmd_display_init_log,
 	/client/proc/cmd_display_overlay_log,

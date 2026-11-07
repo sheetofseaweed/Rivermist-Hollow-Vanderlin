@@ -120,6 +120,7 @@
 		log_game("[key_name(usr)] AM failed due to disconnect.")
 		return
 	client.screen.Cut()
+	client.destroy_shadow_pool()
 	client.screen += client.void
 
 	remove_client_colour(/datum/client_colour/monochrome)

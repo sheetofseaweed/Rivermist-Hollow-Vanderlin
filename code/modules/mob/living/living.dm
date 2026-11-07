@@ -2340,6 +2340,8 @@
 /mob/living/onTransitZ(turf/old_turf, turf/new_turf)
 	. = ..()
 	update_z(new_turf?.z)
+	last_shadow_turf = null
+	update_dynamic_shadows(custom_glide = 0)
 
 /mob/living/MouseDrop(mob/over)
 	. = ..()

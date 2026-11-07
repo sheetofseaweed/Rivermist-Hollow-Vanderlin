@@ -666,3 +666,76 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 	var/datum/job_pack/real_pack = GLOB.job_pack_singletons[pack]
 
 	real_pack.pick_pack(usr)
+
+GLOBAL_VAR_INIT(shadow_profiling_enabled, FALSE)
+GLOBAL_VAR_INIT(shadow_profiling_start_time, 0)
+GLOBAL_VAR_INIT(shadow_total_calls, 0)
+GLOBAL_VAR_INIT(shadow_total_tick_usage, 0)
+GLOBAL_VAR_INIT(shadow_prof_rust_quads, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_matrices, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_images, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_cleanup, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_cutouts, 0)
+GLOBAL_LIST_EMPTY(shadow_prof_player_calls)
+
+/client/proc/profile_shadows()
+	set category = "Debug"
+	set name = "Profile Shadow System"
+	set desc = "Start/Stop tracking detailed shadow performance."
+
+	if(!usr.client || !usr.client.holder)
+		to_chat(usr, "У вас нет прав админа!")
+		return
+
+	if(GLOB.shadow_profiling_enabled)
+
+		var/elapsed_ds = world.time - GLOB.shadow_profiling_start_time
+		var/elapsed_sec = max(1, elapsed_ds / 10)
+		var/calls_per_sec = GLOB.shadow_total_calls / elapsed_sec
+		var/total_calls = max(1, GLOB.shadow_total_calls)
+		var/avg_cost = GLOB.shadow_total_tick_usage / total_calls
+		var/cost_rust = GLOB.shadow_prof_rust_quads / total_calls
+		var/cost_matrices = GLOB.shadow_prof_dm_matrices / total_calls
+		var/cost_images = GLOB.shadow_prof_dm_images / total_calls
+		var/cost_clean = GLOB.shadow_prof_dm_cleanup / total_calls
+		var/cost_cutouts = GLOB.shadow_prof_dm_cutouts / total_calls
+		var/ticks_per_sec = (world.tick_lag > 0) ? (10 / world.tick_lag) : 20
+		var/server_cpu_load = (calls_per_sec * avg_cost) / ticks_per_sec
+		var/msg = "<span class='notice'><b>=== SERVER-WIDE SHADOW PROFILING ===</b></span><br>"
+		msg += "Duration: <b>[elapsed_sec]s</b> | Active Moving Players: <b>[GLOB.shadow_prof_player_calls.len]</b><br>"
+		msg += "Total Calls (All Players): <b>[GLOB.shadow_total_calls]</b> (<b>[round(calls_per_sec, 0.1)]/s</b>)<br>"
+		msg += "Average Cost per Single Update: <b>[round(avg_cost, 0.01)]%</b> of a tick<br>"
+		msg += "<b>TOTAL SERVER CPU LOAD: [round(server_cpu_load, 0.1)]% of CPU capacity</b><br><br>"
+		msg += "├ <b>Rust Quads Math:</b> [round(cost_rust, 0.01)]%<br>"
+		msg += "├ <b>DM Matrix & Transform:</b> [round(cost_matrices, 0.01)]%<br>"
+		msg += "├ <b>DM Images & locate():</b> [round(cost_images, 0.01)]%<br>"
+		msg += "├ <b>DM Pool Cleanup:</b> [round(cost_clean, 0.01)]%<br>"
+		msg += "└ <b>DM Cutouts:</b> [round(cost_cutouts, 0.01)]%<br><br>"
+
+		if(GLOB.shadow_prof_player_calls.len)
+			for(var/ckey in GLOB.shadow_prof_player_calls)
+				msg += "• <b>[ckey]</b>: [GLOB.shadow_prof_player_calls[ckey]] шагов<br>"
+			msg += "<br>"
+
+		var/total_active = 0
+		var/total_pool = 0
+		for(var/client/C in GLOB.clients)
+			if(C.active_shadows) total_active += C.active_shadows.len
+			if(C.shadow_images_pool) total_pool += C.shadow_images_pool.len
+
+		msg += "Active Shadow Triangles (All Clients): <b>[total_active]</b> | In Pool: <b>[total_pool]</b><br>"
+
+		to_chat(usr, msg)
+		GLOB.shadow_profiling_enabled = FALSE
+	else
+		GLOB.shadow_total_calls = 0
+		GLOB.shadow_total_tick_usage = 0
+		GLOB.shadow_prof_rust_quads = 0
+		GLOB.shadow_prof_dm_matrices = 0
+		GLOB.shadow_prof_dm_images = 0
+		GLOB.shadow_prof_dm_cleanup = 0
+		GLOB.shadow_prof_dm_cutouts = 0
+		GLOB.shadow_prof_player_calls.Cut()
+		GLOB.shadow_profiling_start_time = world.time
+		GLOB.shadow_profiling_enabled = TRUE
+		to_chat(usr, "<span class='notice'>Server-wide Profiling STARTED.</span>")
