@@ -460,7 +460,7 @@ export const PlayersPage = () => {
                 <option value="">-- Select quirk --</option>
                 {['Boons', 'Vices', 'Peculiarities'].map((group) => (
                   <optgroup label={group} key={group}>
-                    {(target.quirk_options || [])
+                    {(data.quirk_options || [])
                       .filter((quirk) => quirk.group === group)
                       .map((quirk) => (
                         <option value={quirk.type} key={quirk.type}>

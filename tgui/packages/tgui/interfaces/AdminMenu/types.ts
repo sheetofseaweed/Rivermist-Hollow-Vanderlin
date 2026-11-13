@@ -55,7 +55,6 @@ export type PlayerDetail = {
   curses?: string;
   job_title?: string | null;
   quirks?: QuirkEntry[];
-  quirk_options?: QuirkOption[];
   languages: LanguageEntry[];
   rank?: string;
   is_admin?: boolean;
@@ -94,7 +93,6 @@ export type AdminLog = {
   page: number;
   pages: number;
   categories: { id: string; name: string; count: number }[];
-  actors: string[];
   selected_categories: string[];
   player?: string | null;
   search: string;
@@ -106,6 +104,8 @@ export type AdminMenuData = {
   // static
   verbs: VerbEntry[];
   mute_types: MuteType[];
+  /** Every quirk that can be added; the same all round, so sent once. */
+  quirk_options?: QuirkOption[];
   // dynamic
   ckey: string;
   rank: string;
@@ -121,6 +121,8 @@ export type AdminMenuData = {
   recent: string[];
   favorites: string[];
   log?: AdminLog;
+  /** Sent only when a new player appears in the Round Log. */
+  log_actors?: string[];
   active_tickets: number;
   round_time: string;
   player_count: number;

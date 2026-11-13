@@ -61,6 +61,7 @@
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AdminMobPicker", title)
+		ui.set_autoupdate(FALSE) // everything is static data
 		ui.open()
 
 /datum/admin_mob_picker/ui_close(mob/user)

@@ -65,6 +65,12 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 	var/list/pq_cache
 	/// TRUE while a log page refresh is queued.
 	var/log_refresh_queued = FALSE
+	/// Timer of the slow refresh that replaces tgui's once-a-second autoupdate.
+	var/pulse_timer
+	/// Heavy lists last sent to the window: they are left out of updates while unchanged
+	/// (tgui keeps the previous value of keys an update does not contain).
+	var/list/sent_players
+	var/sent_actor_count = -1
 	/// TRUE while a verb list refresh is queued.
 	var/verb_refresh_queued = FALSE
 
@@ -112,12 +118,50 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AdminMenu", "Admin Menu")
+		// A new window has none of the heavy lists yet.
+		sent_players = null
+		sent_actor_count = -1
 		ui.open()
 	sync_autoupdate(ui)
 
-/// The Admin Log page only changes when something is logged, so it is pushed then instead of every second.
+/**
+ * tgui would resend the whole page every second, URL-encoded (about three times its JSON size).
+ * Instead the window is refreshed after every action and by a slow pulse whose pace depends on
+ * the page: players and MC every 2 seconds, the command pages every 10, the Round Log only when
+ * something is logged.
+ */
 /datum/admin_menu/proc/sync_autoupdate(datum/tgui/ui)
-	ui?.set_autoupdate(page != "log")
+	ui?.set_autoupdate(FALSE)
+	restart_pulse()
+
+/datum/admin_menu/proc/pulse_interval()
+	switch(page)
+		if("players", "mc")
+			return 2 SECONDS
+		if("log")
+			return 0
+	return 10 SECONDS
+
+/datum/admin_menu/proc/restart_pulse()
+	if(pulse_timer)
+		deltimer(pulse_timer)
+		pulse_timer = null
+	var/interval = pulse_interval()
+	if(interval)
+		pulse_timer = addtimer(CALLBACK(src, PROC_REF(pulse)), interval, TIMER_STOPPABLE)
+
+/datum/admin_menu/proc/pulse()
+	pulse_timer = null
+	if(!LAZYLEN(open_uis))
+		return // the window is closed: stop until it opens again
+	SStgui.update_uis(src)
+	restart_pulse()
+
+/datum/admin_menu/ui_close(mob/user)
+	. = ..()
+	if(pulse_timer)
+		deltimer(pulse_timer)
+		pulse_timer = null
 
 /// Called when a new admin log entry arrives: refreshes this window soon if it shows the log.
 /datum/admin_menu/proc/queue_log_refresh()
@@ -177,6 +221,7 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 				"rights" = rights ? rights2text(rights, " ") : "",
 			))
 	data["verbs"] = verb_data
+	data["quirk_options"] = admin_menu_quirk_options()
 	data["mute_types"] = list(
 		list("name" = "IC", "flag" = MUTE_IC),
 		list("name" = "OOC", "flag" = MUTE_OOC),
@@ -211,13 +256,20 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 	data["marked"] = QDELETED(marked) ? null : "[marked] ([marked.type])"
 
 	if(page == "players")
-		data["players"] = admin_menu_player_list()
+		var/list/players = admin_menu_player_list()
+		if(players != sent_players) // the shared list is rebuilt at most every 3 seconds
+			sent_players = players
+			data["players"] = players
 		var/mob/selected = get_selected_mob()
 		data["selected"] = selected ? player_detail_data(selected) : null
 	if(page == "mc")
 		data["mc"] = controller_data(admin)
 	if(page == "log")
 		var/list/feed = round_log_page(log_categories, log_player, log_search, log_page, log_cache)
+		// Top level on purpose: tgui only keeps unchanged values for top-level keys.
+		if(sent_actor_count != length(GLOB.round_log_actors))
+			sent_actor_count = length(GLOB.round_log_actors)
+			data["log_actors"] = round_log_actor_list()
 		log_page = feed["page"]
 		feed["selected_categories"] = log_categories
 		feed["player"] = log_player
@@ -240,6 +292,8 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 			var/new_page = params["page"]
 			if(new_page in list("commands", "players", "mc", "log"))
 				page = new_page
+				sent_players = null // the new page sends its lists afresh
+				sent_actor_count = -1
 				sync_autoupdate(ui)
 			return TRUE
 
@@ -514,7 +568,6 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 		for(var/datum/quirk/quirk in human_target.quirks)
 			quirks += list(list("type" = "[quirk.type]", "name" = "[initial(quirk.name)]", "points" = quirk.point_value))
 		detail["quirks"] = quirks
-		detail["quirk_options"] = admin_menu_quirk_options()
 
 	var/list/languages = list()
 	for(var/datum/language/language as anything in GLOB.all_languages)
@@ -777,3 +830,14 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 
 #undef PLAYER_LIST_CACHE_TIME
 #undef PQ_CACHE_TIME
+
+/**
+ * Slow refresh for admin windows whose data changes only now and then. tgui's autoupdate resends
+ * everything every second (URL-encoded); call this once when the window opens, after turning
+ * autoupdate off, and it refreshes every interval for as long as a window of source is open.
+ */
+/proc/admin_ui_slow_refresh(datum/source, interval)
+	if(QDELETED(source) || !LAZYLEN(source.open_uis))
+		return
+	SStgui.update_uis(source)
+	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(admin_ui_slow_refresh), source, interval), interval, TIMER_UNIQUE)

@@ -72,7 +72,7 @@
 
 /* All other items are public. */
 /proc/log_game(text)
-	round_log_add("game", text)
+	round_log_add_from_player("game", text)
 	if (CONFIG_GET(flag/log_game))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] GAME: [text]")
 
@@ -103,7 +103,7 @@
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] LAW: [text]")
 
 /proc/log_attack(text)
-	round_log_add("attack", text)
+	round_log_add_from_player("attack", text)
 	if (CONFIG_GET(flag/log_attack))
 		WRITE_LOG(GLOB.world_attack_log, "\[[TIMETOTEXT4LOGS]\] ATTACK: [text]")
 
@@ -130,32 +130,32 @@
 		message_admins("[user ? "[ADMIN_LOOKUPFLW(user)] at [ADMIN_VERBOSEJMP(user)] " : ""][details][bomb ? " [bomb.name] at [ADMIN_VERBOSEJMP(bomb)]": ""][additional_details ? " [additional_details]" : ""].")
 
 /proc/log_say(text)
-	round_log_add("say", text)
+	round_log_add_from_player("say", text)
 	if (CONFIG_GET(flag/log_say))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] SAY: [text]")
 
 /proc/log_ooc(text)
-	round_log_add("ooc", text)
+	round_log_add_from_player("ooc", text)
 	if (CONFIG_GET(flag/log_ooc))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] OOC: [text]")
 
 /proc/log_looc(text)
-	round_log_add("looc", text)
+	round_log_add_from_player("looc", text)
 	if (CONFIG_GET(flag/log_looc))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] LOOC: [text]")
 
 /proc/log_whisper(text)
-	round_log_add("whisper", text)
+	round_log_add_from_player("whisper", text)
 	if (CONFIG_GET(flag/log_whisper))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] WHISPER: [text]")
 
 /proc/log_emote(text)
-	round_log_add("emote", text)
+	round_log_add_from_player("emote", text)
 	if (CONFIG_GET(flag/log_emote))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] EMOTE: [text]")
 
 /proc/log_prayer(text)
-	round_log_add("prayer", text)
+	round_log_add_from_player("prayer", text)
 	if (CONFIG_GET(flag/log_prayer))
 		WRITE_LOG(GLOB.world_game_log, "\[[TIMETOTEXT4LOGS]\] PRAY: [text]")
 

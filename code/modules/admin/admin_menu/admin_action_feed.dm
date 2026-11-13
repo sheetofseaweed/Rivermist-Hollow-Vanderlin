@@ -2,18 +2,20 @@
  * Round Log: what players (and admins) did this round, kept in memory so it can be read in the
  * Admin Menu instead of digging through log files that cover a three-day round.
  *
- * Fed from /atom/proc/log_message() (attacks, speech, whispers, emotes, OOC...: with the actor's
- * ckey and position, so an entry can be jumped to) and from the plain log_*() procs for lines that
- * have no actor. The log files are written exactly as before.
+ * Only player actions are kept: lines whose actor is a mob with a ckey (via /atom/proc/log_message),
+ * attacks on players by NPCs (via log_combat), plain log_*() lines caused by a player (usr has a
+ * client), and every admin line. NPC fights, NPC speech and background game logs are left out:
+ * on a map with thousands of mobs they would flood the log and cost CPU for nothing.
+ * The log files on disk are written exactly as before.
  *
- * Cost: adding an entry is O(1); its lowercase search text is made once, here. Trimming happens in
- * batches. A page with no filter is a slice; a filtered page only scans entries it has not seen yet.
+ * Cost per line: two list appends. The round time and the lowercase search text are only made
+ * when a page is shown or a search needs them.
  */
 
-/// Newest last. Entry: list("id", "time", "cat", "ckey", "text", "x", "y", "z").
+/// Newest last. Entry: list("id", "t" (world.time), "cat", "ckey", "text", "x", "y", "z").
 GLOBAL_LIST_EMPTY(round_log)
 GLOBAL_PROTECT(round_log)
-/// Lowercase "ckey text" of each entry, same order as round_log.
+/// Lowercase "ckey text" of each entry, same order as round_log; null until a search needs it.
 GLOBAL_LIST_EMPTY(round_log_search)
 GLOBAL_PROTECT(round_log_search)
 /// ckey -> TRUE for every actor seen this round.
@@ -31,7 +33,7 @@ GLOBAL_PROTECT(round_log_last_text)
 
 #define ROUND_LOG_LIMIT 20000
 #define ROUND_LOG_TRIM 1000
-#define ROUND_LOG_PAGE 150
+#define ROUND_LOG_PAGE 100
 
 /// Categories in display order, id -> label.
 /proc/round_log_categories()
@@ -86,7 +88,7 @@ GLOBAL_PROTECT(round_log_last_text)
 	var/id = ++GLOB.round_log_last_id
 	GLOB.round_log += list(list(
 		"id" = id,
-		"time" = SSticker ? ROUND_TIME() : "init", // log_game() runs before the ticker exists
+		"t" = world.time,
 		"cat" = category,
 		"ckey" = actor_ckey,
 		"text" = text,
@@ -94,9 +96,9 @@ GLOBAL_PROTECT(round_log_last_text)
 		"y" = where?.y,
 		"z" = where?.z,
 	))
-	GLOB.round_log_search += LOWER_TEXT("[actor_ckey] [text]")
+	GLOB.round_log_search += null
 	GLOB.round_log_counts[category]++
-	if(actor_ckey)
+	if(actor_ckey && !GLOB.round_log_actors[actor_ckey])
 		GLOB.round_log_actors[actor_ckey] = TRUE
 	if(length(GLOB.round_log) > ROUND_LOG_LIMIT + ROUND_LOG_TRIM)
 		GLOB.round_log.Cut(1, ROUND_LOG_TRIM + 1)
@@ -104,22 +106,60 @@ GLOBAL_PROTECT(round_log_last_text)
 	for(var/client/admin as anything in GLOB.admins)
 		admin?.holder?.admin_menu?.queue_log_refresh()
 
+/// For the plain log_*() procs: keeps the line only when a player caused it (usr has a client).
+/proc/round_log_add_from_player(category, text)
+	if(!usr?.client)
+		return
+	round_log_add(category, text)
+
 /// Kept for the admin log hooks written before the Round Log covered players.
 /proc/admin_action_feed_add(text, private = FALSE)
 	round_log_add("admin", text)
+
+/// Round time of a log entry, in the same format as ROUND_TIME().
+/proc/round_log_time(entry_time)
+	if(!SSticker)
+		return "init"
+	var/elapsed = entry_time - SSticker.round_start_time
+	var/clock = gameTimestamp("hh:mm:ss", entry_time)
+	return elapsed > MIDNIGHT_ROLLOVER ? "[round(elapsed / MIDNIGHT_ROLLOVER)]:[clock]" : clock
+
+/// Lowercase search text of entry index, made the first time a search looks at it.
+/proc/round_log_haystack(index)
+	var/haystack = GLOB.round_log_search[index]
+	if(isnull(haystack))
+		var/list/entry = GLOB.round_log[index]
+		haystack = LOWER_TEXT("[entry["ckey"]] [entry["text"]]")
+		GLOB.round_log_search[index] = haystack
+	return haystack
 
 /// Does entry index match the filter? categories: list of ids or null for all.
 /proc/round_log_matches(index, list/categories, player, list/terms)
 	var/list/entry = GLOB.round_log[index]
 	if(categories && !(entry["cat"] in categories))
 		return FALSE
-	var/haystack = GLOB.round_log_search[index]
+	if(!player && !length(terms))
+		return TRUE
+	var/haystack = round_log_haystack(index)
 	if(player && entry["ckey"] != player && !findtextEx(haystack, player))
 		return FALSE
 	for(var/term in terms)
 		if(!findtextEx(haystack, term))
 			return FALSE
 	return TRUE
+
+/// The entry as the window shows it: the stored list plus its round time.
+/proc/round_log_display(list/entry)
+	return list(
+		"id" = entry["id"],
+		"time" = round_log_time(entry["t"]),
+		"cat" = entry["cat"],
+		"ckey" = entry["ckey"],
+		"text" = entry["text"],
+		"x" = entry["x"],
+		"y" = entry["y"],
+		"z" = entry["z"],
+	)
 
 /**
  * One page of the log, newest first.
@@ -162,14 +202,11 @@ GLOBAL_PROTECT(round_log_last_text)
 	var/list/shown = list()
 	for(var/position in start to min(start + ROUND_LOG_PAGE - 1, matches))
 		var/index = filtered ? ids[length(ids) - position + 1] - first_id + 1 : total - position + 1
-		shown += list(log[index])
+		shown += list(round_log_display(log[index]))
 	var/list/category_list = list()
 	var/list/labels = round_log_categories()
 	for(var/id in labels)
 		category_list += list(list("id" = id, "name" = labels[id], "count" = GLOB.round_log_counts[id] || 0))
-	var/list/actors = list()
-	for(var/ckey in GLOB.round_log_actors)
-		actors += ckey
 	return list(
 		"entries" = shown,
 		"matches" = matches,
@@ -177,8 +214,19 @@ GLOBAL_PROTECT(round_log_last_text)
 		"page" = page,
 		"pages" = pages,
 		"categories" = category_list,
-		"actors" = sortList(actors),
 	)
+
+/// Sorted actor ckeys for the player filter. Only rebuilt when a new actor appeared.
+/proc/round_log_actor_list()
+	var/static/list/cached
+	var/static/cached_count = -1
+	if(cached_count != length(GLOB.round_log_actors))
+		cached_count = length(GLOB.round_log_actors)
+		var/list/actors = list()
+		for(var/ckey in GLOB.round_log_actors)
+			actors += ckey
+		cached = sortList(actors)
+	return cached
 
 #undef ROUND_LOG_LIMIT
 #undef ROUND_LOG_TRIM

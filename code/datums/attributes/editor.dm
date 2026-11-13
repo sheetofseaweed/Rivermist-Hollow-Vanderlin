@@ -24,7 +24,9 @@
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AttributeEditor")
+		ui.set_autoupdate(FALSE) // buffs change values on their own: refresh every 3 seconds instead
 		ui.open()
+		admin_ui_slow_refresh(src, 3 SECONDS)
 
 /datum/attribute_editor/ui_static_data(mob/user)
 	return list("skill_levels" = list(

@@ -64,7 +64,7 @@ export const LogPage = () => {
           onChange={(event) => filter({ player: event.target.value })}
         >
           <option value="">All players</option>
-          {log.actors.map((actor) => (
+          {(data.log_actors || []).map((actor) => (
             <option key={actor} value={actor}>
               {actor}
             </option>

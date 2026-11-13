@@ -141,6 +141,7 @@
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AdminSpellLibrary", "Spell Library")
+		ui.set_autoupdate(FALSE) // changes come from its own buttons; 400 spells are not resent every second
 		ui.open()
 
 /datum/admin_spell_library/ui_close(mob/user)

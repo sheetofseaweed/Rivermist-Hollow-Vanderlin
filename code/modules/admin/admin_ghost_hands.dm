@@ -311,6 +311,7 @@ GLOBAL_LIST_EMPTY(admin_ghost_inventories)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AdminGhostInventory", "Admin Inventory")
+		ui.set_autoupdate(FALSE) // refresh() pushes every change
 		ui.open()
 
 /datum/admin_ghost_inventory/proc/thing_data(obj/thing)

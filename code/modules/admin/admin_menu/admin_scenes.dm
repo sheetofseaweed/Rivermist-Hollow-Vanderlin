@@ -769,7 +769,9 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AdminScenes", "Scenes")
+		ui.set_autoupdate(FALSE) // actions refresh it; triggers and running scenes every 5 seconds
 		ui.open()
+		admin_ui_slow_refresh(src, 5 SECONDS)
 
 /datum/admin_scene_editor/ui_close(mob/user)
 	. = ..()
