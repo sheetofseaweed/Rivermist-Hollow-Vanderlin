@@ -357,9 +357,6 @@ GLOBAL_LIST_INIT(roleplay_readme, world.file2list("strings/rt/Lore_Primer.txt"))
 	if(is_race_banned(client.ckey, player_prefs.pref_species.id))
 		return JOB_UNAVAILABLE_RACE_BANNED
 
-	if(job.banned_leprosy && is_misc_banned(client.ckey, BAN_MISC_LEPROSY))
-		return JOB_UNAVAILABLE_BANNED
-
 	if(job.banned_lunatic && is_misc_banned(client.ckey, BAN_MISC_LUNATIC))
 		return JOB_UNAVAILABLE_BANNED
 

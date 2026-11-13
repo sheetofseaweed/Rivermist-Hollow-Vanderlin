@@ -227,15 +227,15 @@
 		body += "<option value=''>-- Select Quirk --</option>"
 
 		// Group quirks by category
-		for(var/category in list(QUIRK_BOON, QUIRK_VICE, QUIRK_PECULIARITY))
+		for(var/category in list(QUIRK_POSITIVE, QUIRK_NEGATIVE, QUIRK_NEUTRAL))
 			var/category_name = ""
 			switch(category)
-				if(QUIRK_BOON)
-					category_name = "Boons"
-				if(QUIRK_VICE)
-					category_name = "Vices"
-				if(QUIRK_PECULIARITY)
-					category_name = "Peculiarities"
+				if(QUIRK_POSITIVE)
+					category_name = "Positive"
+				if(QUIRK_NEGATIVE)
+					category_name = "Negative"
+				if(QUIRK_NEUTRAL)
+					category_name = "Neutral"
 
 			body += "<optgroup label='[category_name]'>"
 			for(var/quirk_data in GLOB.quirk_points_by_type[category])

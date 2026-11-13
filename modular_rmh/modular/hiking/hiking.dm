@@ -234,6 +234,7 @@ GLOBAL_LIST_EMPTY(hiked_icon_states)
 
 /mob/living/carbon/human/toggle_cmode()
 	drop_hiked_hem()
+	cover_bared_chest()
 	return ..()
 
 /// Both hands hold the gathered cloth; the first grip also listens for anything that should drop it.

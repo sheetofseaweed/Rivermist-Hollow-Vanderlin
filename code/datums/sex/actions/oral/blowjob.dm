@@ -1,6 +1,6 @@
 
 /datum/sex_action/blowjob
-	name = "Suck them off"
+	name = "Blowjob"
 	user_menu_zone_mask = SEX_UI_ZONE_MOUTH
 	target_menu_zone_mask = SEX_UI_ZONE_GENITALS
 	requires_hole_storage = TRUE
@@ -50,7 +50,7 @@
 
 /datum/sex_action/blowjob/on_perform(mob/living/user, mob/living/target)
 	. = ..()
-	user.make_sucking_noise()
+	user.make_mouth_noise(get_oral_noise_kind())
 	do_thrust_animate(user, target)
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] sucks [target] off."))
@@ -59,6 +59,7 @@
 	handle_passive_ejaculation(target)
 	perform_sex_action(user, target, 1, 0, 0.2)
 	handle_passive_ejaculation(user)
+	coat_penis_with_saliva(user, target, 0.5, 3)
 
 /datum/sex_action/blowjob/on_finish(mob/living/user, mob/living/target)
 	. = ..()

@@ -65,13 +65,18 @@
 /datum/bodypart_feature/hair/body_hair/proc/get_material_name()
 	return material
 
-/datum/bodypart_feature/hair/body_hair/proc/get_description()
+/// tint_material colours the material word with the hair colour, for viewers who want coloured descriptors.
+/datum/bodypart_feature/hair/body_hair/proc/get_description(tint_material = FALSE)
 	if(current_level <= HAIRINESS_SHAVED)
 		return null
 	var/datum/sprite_accessory/body_hair/accessory = SPRITE_ACCESSORY(accessory_type)
 	if(!accessory?.description)
 		return null
-	return replacetext(accessory.description, "%MATERIAL%", get_material_name())
+	var/material_text = get_material_name()
+	var/hair_color = tint_material ? LAZYACCESS(color_string_to_list(accessory_colors), 1) : null
+	if(hair_color)
+		material_text = "<span style='color:[sanitize_hexcolor(hair_color, 6, TRUE, "#FFFFFF")]'>[material_text]</span>"
+	return replacetext(accessory.description, "%MATERIAL%", material_text)
 
 /datum/bodypart_feature/hair/body_hair/pubic
 	name = "Pubic Hair"
@@ -190,11 +195,11 @@
 	return null
 
 /// ", framed by ..." for the host genital's examine text, else an empty string.
-/mob/living/carbon/human/proc/get_pubic_hair_clause(organ_slot)
+/mob/living/carbon/human/proc/get_pubic_hair_clause(organ_slot, mob/watcher)
 	if(organ_slot != get_pubic_hair_host_slot())
 		return ""
 	var/datum/bodypart_feature/hair/body_hair/pubic/pubic_hair_feature = get_bodypart_feature_of_slot(BODYPART_FEATURE_PUBIC_HAIR)
-	var/description = pubic_hair_feature?.get_description()
+	var/description = pubic_hair_feature?.get_description(wants_descriptor_color(watcher))
 	return description ? ", framed by [description]" : ""
 
 /mob/living/carbon/human/proc/restore_head_hair_to_natural_target()

@@ -51,7 +51,7 @@
 	var/distance_bonus_mult = 0
 	/// Map reward modifier from quest_map_config, set once at generation
 	var/map_reward_modifier = 1.0
-	/// Unscaled map reward modifier, kept for reward formulas that need their own curve
+	/// Unscaled map reward modifier; errands use it without QUEST_MAP_REWARD_SCALE
 	var/map_reward_base_modifier = 1.0
 	/// Map difficulty modifier from quest_map_config, set once at generation
 	var/map_difficulty_modifier = 1.0
@@ -746,10 +746,14 @@
 	var/workload_reward = max(0, ROUND_UP(get_workload_reward(target_turf)))
 	threat_tier = get_tier_from_risk_score(risk_score)
 	var/base_total = get_base_reward() + (risk_score * QUEST_ERRAND_REWARD_PER_RISK_POINT) + (workload_reward * QUEST_ERRAND_WORKLOAD_REWARD_MULT)
-	var/map_curve = map_reward_base_modifier * map_reward_base_modifier
-	base_total *= map_curve
+	// Errands skip the kill-contract scale; a squared curve would let remote errands outpay hunts.
+	base_total *= map_reward_base_modifier
 	base_total *= (1 + distance_bonus_mult)
 	return max(0, ROUND_UP(base_total))
+
+/// Highest reward a turn-in may pay, handler bonus included.
+/datum/quest/proc/get_reward_cap()
+	return INFINITY
 
 /datum/quest/proc/calculate_deposit(reward_override)
 	var/effective_tier = get_effective_requested_tier(null)

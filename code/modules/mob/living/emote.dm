@@ -54,7 +54,7 @@
 
 /proc/send_prayer(mob/living/follower, prayer, patron_name, bigger = FALSE)
 	var/ident_string = "[follower.key]/([follower.real_name]) (follower of [patron_name])"
-	if(follower.has_quirk(/datum/quirk/vice/addiction/godfearing))
+	if(follower.has_quirk(/datum/quirk/negative/addiction/godfearing))
 		ident_string += "[SPAN_GOD_GENERIC("(GODFEARING)")]"
 	/// Usually I hate not using spans properly, but in this case it's going to make my life easier.
 	var/lowercase_god = "generic"
@@ -140,22 +140,22 @@
 	. = ..()
 	if(.)
 		for(var/mob/living/carbon/human/L in viewers(7,user))
-			if(L.has_quirk(/datum/quirk/vice/addiction/sadist))
-				L.sate_addiction(/datum/quirk/vice/addiction/sadist)
+			if(L.has_quirk(/datum/quirk/negative/addiction/sadist))
+				L.sate_addiction(/datum/quirk/negative/addiction/sadist)
 
 /datum/emote/living/scream/painscream/run_emote(mob/user, params, type_override, intentional)
 	. = ..()
 	if(.)
 		for(var/mob/living/carbon/human/L in viewers(7,user))
-			if(L.has_quirk(/datum/quirk/vice/addiction/sadist))
-				L.sate_addiction(/datum/quirk/vice/addiction/sadist)
+			if(L.has_quirk(/datum/quirk/negative/addiction/sadist))
+				L.sate_addiction(/datum/quirk/negative/addiction/sadist)
 
 /datum/emote/living/scream/firescream/run_emote(mob/user, params, type_override, intentional)
 	. = ..()
 	if(.)
 		for(var/mob/living/carbon/human/L in viewers(7,user))
-			if(L.has_quirk(/datum/quirk/vice/addiction/sadist))
-				L.sate_addiction(/datum/quirk/vice/addiction/sadist)
+			if(L.has_quirk(/datum/quirk/negative/addiction/sadist))
+				L.sate_addiction(/datum/quirk/negative/addiction/sadist)
 
 /datum/emote/living/aggro
 	key = "aggro"
@@ -660,7 +660,6 @@
 
 /datum/emote/living/kiss/adjacentaction(mob/user, mob/target)
 	. = ..()
-	message_param = initial(message_param) // re
 	if(!user || !target)
 		return
 	if(ishuman(user) && ishuman(target))
@@ -672,27 +671,56 @@
 			to_chat(E, "<span class='warning'>I feel inexplicably repelled!</span>")
 			E.cursed_freak_out()
 
-		var/do_change
-		if(target.loc == user.loc)
-			do_change = TRUE
-		if(!do_change)
-			if(H.pulling == target)
-				do_change = TRUE
-		if(do_change)
-			if(H.zone_selected == BODY_ZONE_PRECISE_MOUTH)
-				message_param = "kisses %t deeply."
-			else if(H.zone_selected == BODY_ZONE_PRECISE_EARS)
-				message_param = "kisses %t on the ear."
-				if(E.dna.species?.id == "elf")
-					if(!E.cmode)
-						to_chat(target, span_love("It tickles..."))
-			else if(H.zone_selected == BODY_ZONE_PRECISE_R_EYE || H.zone_selected == BODY_ZONE_PRECISE_L_EYE)
-				message_param = "kisses %t on the brow."
-			else
-				message_param = "kisses %t on \the [parse_zone(H.zone_selected)]."
+		if(H.zone_selected == BODY_ZONE_PRECISE_EARS && E.dna.species?.id == "elf" && !E.cmode)
+			to_chat(target, span_love("It tickles..."))
+		H.leave_lipstick_kiss(E, H.zone_selected)
 	playsound(target, pick('sound/vo/kiss (1).ogg','sound/vo/kiss (2).ogg'), 100, FALSE, -1)
 	if(user.mind)
 		record_round_statistic(STATS_KISSES_MADE)
+
+// A target name only arrives once adjacentaction ran, so the text follows the kisser's zone.
+/datum/emote/living/kiss/select_param(mob/user, params)
+	return replacetext(get_zone_message(user.zone_selected), "%t", params)
+
+/datum/emote/living/kiss/proc/get_zone_message(zone)
+	switch(zone)
+		if(BODY_ZONE_PRECISE_MOUTH)
+			return "kisses %t on the lips."
+		if(BODY_ZONE_HEAD)
+			return "kisses %t on the cheek."
+		if(BODY_ZONE_PRECISE_SKULL)
+			return "kisses %t on the forehead."
+		if(BODY_ZONE_PRECISE_R_EYE, BODY_ZONE_PRECISE_L_EYE)
+			return "kisses %t on the brow."
+		if(BODY_ZONE_PRECISE_NOSE)
+			return "kisses %t on the tip of the nose."
+		if(BODY_ZONE_PRECISE_EARS)
+			return "kisses %t on the ear."
+		if(BODY_ZONE_PRECISE_NECK)
+			return "kisses %t on the neck."
+		if(BODY_ZONE_CHEST)
+			return "kisses %t on the chest."
+		if(BODY_ZONE_PRECISE_STOMACH)
+			return "kisses %t on the belly."
+		if(BODY_ZONE_PRECISE_GROIN)
+			return "plants a kiss on %t's crotch."
+		if(BODY_ZONE_L_ARM)
+			return "kisses %t along the left arm."
+		if(BODY_ZONE_R_ARM)
+			return "kisses %t along the right arm."
+		if(BODY_ZONE_PRECISE_L_HAND)
+			return "kisses the back of %t's left hand."
+		if(BODY_ZONE_PRECISE_R_HAND)
+			return "kisses the back of %t's right hand."
+		if(BODY_ZONE_L_LEG)
+			return "kisses %t on the left thigh."
+		if(BODY_ZONE_R_LEG)
+			return "kisses %t on the right thigh."
+		if(BODY_ZONE_PRECISE_L_FOOT)
+			return "kisses %t's left foot."
+		if(BODY_ZONE_PRECISE_R_FOOT)
+			return "kisses %t's right foot."
+	return message_param
 
 // ............... L ..................
 /datum/emote/living/laugh
@@ -1379,3 +1407,168 @@
 	else
 		to_chat(user, "<span class='warning'>You're incapable of slapping in your current state.</span>")
 */
+
+// ............... Finger snaps ..................
+/datum/emote/living/snap
+	key = "snap"
+	key_third_person = "snaps"
+	message = "finger snaps!"
+	emote_type = EMOTE_AUDIBLE | EMOTE_VISIBLE
+	hands_use_check = TRUE
+	muzzle_ignore = TRUE
+	sound = 'modular_rmh/sound/emotes/fsnap1.ogg'
+
+/mob/living/carbon/human/verb/emote_snap()
+	set name = "Snap"
+	set category = "Emotes.Noises"
+	emote("snap", intentional = TRUE)
+
+/datum/emote/living/snap/twice
+	key = "snap2"
+	key_third_person = "snaps twice"
+	message = "finger snaps twice!"
+	sound = 'modular_rmh/sound/emotes/fsnap2.ogg'
+
+/mob/living/carbon/human/verb/emote_snap2()
+	set name = "Snap Twice"
+	set category = "Emotes.Noises"
+	emote("snap2", intentional = TRUE)
+
+/datum/emote/living/snap/thrice
+	key = "snap3"
+	key_third_person = "snaps thrice"
+	message = "finger snaps thrice!"
+	sound = 'modular_rmh/sound/emotes/fsnap3.ogg'
+
+/mob/living/carbon/human/verb/emote_snap3()
+	set name = "Snap Thrice"
+	set category = "Emotes.Noises"
+	emote("snap3", intentional = TRUE)
+
+/datum/emote/living/stomp
+	key = "stomp"
+	key_third_person = "stomps"
+	message = "stomps!"
+	emote_type = EMOTE_AUDIBLE | EMOTE_VISIBLE
+	muzzle_ignore = TRUE
+	sound = 'modular_rmh/sound/emotes/stomp.ogg'
+
+/datum/emote/living/stomp/can_run_emote(mob/living/user, status_check = TRUE, intentional)
+	. = ..()
+	if(!.)
+		return
+	// A stomp needs the feet under you.
+	if(user.body_position != STANDING_UP)
+		return FALSE
+
+/mob/living/carbon/human/verb/emote_stomp()
+	set name = "Stomp"
+	set category = "Emotes.Noises"
+	emote("stomp", intentional = TRUE)
+
+/datum/emote/living/warcry
+	key = "warcry"
+	key_third_person = "warcries"
+	message = "lets out an inspiring battle cry!"
+	message_muffled = "makes a muffled shout!"
+	emote_type = EMOTE_AUDIBLE
+
+/mob/living/carbon/human/verb/emote_warcry()
+	set name = "Warcry"
+	set category = "Emotes.Noises"
+	emote("warcry", intentional = TRUE)
+
+/datum/emote/living/hmph
+	key = "hmph"
+	key_third_person = "hmphs"
+	message = "hmphs."
+	message_muffled = "makes a muffled hmph."
+	emote_type = EMOTE_AUDIBLE
+
+/mob/living/carbon/human/verb/emote_hmph()
+	set name = "Hmph"
+	set category = "Emotes.Noises"
+	emote("hmph", intentional = TRUE)
+
+/datum/emote/living/strain
+	key = "strain"
+	key_third_person = "strains"
+	message = "strains themselves!"
+	message_muffled = "strains with a muffled grunt!"
+	emote_type = EMOTE_AUDIBLE
+
+/mob/living/carbon/human/verb/emote_strain()
+	set name = "Strain"
+	set category = "Emotes.Noises"
+	emote("strain", intentional = TRUE)
+
+/mob/living/carbon/human/verb/emote_sniff()
+	set name = "Sniff"
+	set category = "Emotes.Noises"
+	emote("sniff", intentional = TRUE)
+
+/datum/emote/living/eye_roll
+	key = "eye_roll"
+	key_third_person = "rolls their eyes"
+	message = "rolls their eyes."
+	emote_type = EMOTE_VISIBLE
+
+/mob/living/carbon/human/verb/emote_eye_roll()
+	set name = "Eye Roll"
+	set category = "Emotes.Silent"
+	emote("eye_roll", intentional = TRUE)
+
+/datum/emote/living/squint
+	key = "squint"
+	key_third_person = "squints"
+	message = "squints their eyes."
+	emote_type = EMOTE_VISIBLE
+
+/mob/living/carbon/human/verb/emote_squint()
+	set name = "Squint"
+	set category = "Emotes.Silent"
+	emote("squint", intentional = TRUE)
+
+/datum/emote/living/lick
+	key = "lick"
+	key_third_person = "licks"
+	message = "licks their lips."
+	message_param = "licks %t."
+	emote_type = EMOTE_VISIBLE
+
+/mob/living/carbon/human/verb/emote_lick()
+	set name = "Lick"
+	set category = "Emotes.Silent"
+	emote("lick", intentional = TRUE, targetted = TRUE)
+
+#define FLIP_EMOTE_DURATION (0.7 SECONDS)
+
+/datum/emote/living/flip
+	key = "flip"
+	key_third_person = "flips"
+	message = "does a flip!"
+	emote_type = EMOTE_VISIBLE
+	restraint_check = TRUE
+	incapacitated_check = TRUE
+
+/datum/emote/living/flip/can_run_emote(mob/living/user, status_check = TRUE, intentional)
+	. = ..()
+	if(!.)
+		return
+	// The spin rides on the standing transform; lying or buckled bodies keep their own.
+	if(user.body_position != STANDING_UP || user.buckled || user.IsImmobilized())
+		return FALSE
+
+/datum/emote/living/flip/run_emote(mob/living/user, params, type_override, intentional, targetted)
+	. = ..()
+	if(!.)
+		return
+	user.SpinAnimation(FLIP_EMOTE_DURATION, 1)
+	user.Immobilize(FLIP_EMOTE_DURATION)
+
+/mob/living/carbon/human/verb/emote_flip()
+	set name = "Flip"
+	set category = "Emotes.Silent"
+	emote("flip", intentional = TRUE)
+
+#undef FLIP_EMOTE_DURATION

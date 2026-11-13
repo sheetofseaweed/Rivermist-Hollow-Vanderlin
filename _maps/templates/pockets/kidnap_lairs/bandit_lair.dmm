@@ -426,6 +426,10 @@
 /obj/effect/landmark/pocket_dimension/drop_spot,
 /turf/open/floor/naturalstone,
 /area/pocket_dimension)
+"vx" = (
+/obj/structure/bondage/chains/lair,
+/turf/open/floor/ruinedwood/darker,
+/area/pocket_dimension)
 "ws" = (
 /obj/effect/decal/cobblerockedge,
 /turf/open/floor/naturalstone,
@@ -556,6 +560,7 @@
 /area/pocket_dimension)
 "Cj" = (
 /obj/structure/hotspring/border,
+/obj/structure/bondage/chains/lair,
 /turf/open/floor/naturalstone,
 /area/pocket_dimension)
 "Cl" = (
@@ -1001,6 +1006,12 @@
 	},
 /turf/open/floor/twig,
 /area/pocket_dimension)
+"SC" = (
+/obj/structure/flora/grass/crawlvines,
+/obj/item/natural/stone,
+/obj/structure/bondage/chains/lair,
+/turf/open/floor/naturalstone,
+/area/pocket_dimension)
 "SG" = (
 /obj/structure/closet/crate/chest/neu,
 /obj/item/grown/log/tree/small,
@@ -1173,7 +1184,7 @@ bO
 TD
 XX
 cB
-Qf
+SC
 kX
 bd
 Lr
@@ -1382,7 +1393,7 @@ BO
 Mm
 bd
 bd
-GZ
+vx
 Qt
 cu
 bd

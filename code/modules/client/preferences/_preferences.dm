@@ -268,6 +268,17 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		character_setup_static_sig = new_static_sig
 		update_static_data(user)
 	character_setup_update_view()
+	character_setup_queue_push()
+
+/// Pushes ui_data on the next tick unless it is rebuilt before then. A ui_act that returns TRUE
+/// pushes right after its handler, so an immediate push here built and sent ui_data twice per click.
+/datum/preferences/proc/character_setup_queue_push()
+	character_setup_push_serial = character_setup_data_serial
+	addtimer(CALLBACK(src, PROC_REF(character_setup_flush_push)), 1, TIMER_UNIQUE)
+
+/datum/preferences/proc/character_setup_flush_push()
+	if(character_setup_data_serial != character_setup_push_serial)
+		return
 	SStgui.update_uis(src)
 
 
@@ -586,7 +597,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	HTML += "</center>"
 
 	var/datum/browser/noclose/popup = new(user, "mob_occupation", "<div align='center'>Class Selection</div>", 1000, 700)
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(HTML)
 	popup.open(FALSE)
 
@@ -768,7 +778,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 	dat += "</body>"
 
 	var/datum/browser/noclose/popup = new(user, "keybind_setup", "<div align='center'>Keybinds</div>", 600, 600) //no reason not to reuse the occupation window, as it's cleaner that way
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
 
@@ -806,7 +815,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 	dat += "</body>"
 	var/datum/browser/noclose/popup = new(user, "antag_setup", "<div align='center'>Special Roles</div>", 265, 340)
-	popup.set_window_options(can_close = FALSE)
 	popup.set_content(dat.Join())
 	popup.open(FALSE)
 
@@ -1094,9 +1102,22 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 			return TRUE
 		if(!(setup_choice_type in setup_customizer.customizer_choices) || setup_choice_type == setup_entry.customizer_choice_type)
 			return TRUE
+		// A new penis shape keeps the length and function the player already set.
+		var/kept_penis_length = 0
+		var/kept_penis_functional = TRUE
+		var/datum/customizer_entry/organ/genitals/penis/old_penis_entry = setup_entry
+		if(istype(old_penis_entry))
+			kept_penis_length = old_penis_entry.penis_length_cm
+			kept_penis_functional = old_penis_entry.functional
 		customizer_entries -= setup_entry
 		qdel(setup_entry)
-		customizer_entries += setup_customizer.create_customizer_entry(src, setup_choice_type)
+		var/datum/customizer_entry/new_entry = setup_customizer.create_customizer_entry(src, setup_choice_type)
+		var/datum/customizer_entry/organ/genitals/penis/new_penis_entry = new_entry
+		if(istype(new_penis_entry) && kept_penis_length)
+			new_penis_entry.penis_length_cm = kept_penis_length
+			new_penis_entry.functional = kept_penis_functional
+			new_penis_entry.penis_size = get_penis_visual_size(kept_penis_length)
+		customizer_entries += new_entry
 		update_menu_data(user)
 		return TRUE
 	else if(href_list["preference"] == "character_setup_preview_layer")
@@ -1183,7 +1204,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		if(color_choice)
 			if(GLOB.colorlist[color_choice] == "CUSTOM_RGB")
 				var/current_color = smallclothes_preferences[color_pref_key] || "#FFFFFF"
-				var/new_color = input(user, "Select color:", "Custom Color", current_color) as color|null
+				var/new_color = tgui_color_picker(user, "Select color:", "Custom Color", sanitize_hexcolor(current_color, 6, TRUE, "#ffffff"))
 				if(new_color)
 					smallclothes_preferences[color_pref_key] = sanitize_hexcolor(new_color, include_crunch = 1)
 			else
@@ -1349,6 +1370,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"winflash" = /datum/preference/toggle/windowflashing,
 		"ambientocclusion" = /datum/preference/toggle/ambientocclusion,
 		"auto_fit_viewport" = /datum/preference/toggle/auto_fit_viewport,
+		"descriptor_color" = /datum/preference/toggle/descriptor_color,
+		"hear_speech_barks" = /datum/preference/toggle/hear_speech_barks,
 	)
 	var/toggle_link_type = toggle_link_types[action]
 	if(toggle_link_type)
@@ -1437,6 +1460,16 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		if("clear_nsfw_gallery")
 			clear_gallery_images(user, TRUE)
 			show_gallery_ui(user, "nsfw")
+			return TRUE
+		if("speech_bark")
+			if(user.client?.prefs != src)
+				return FALSE
+			user.client.set_speech_bark()
+			return TRUE
+		if("speech_moans")
+			if(user.client?.prefs != src)
+				return FALSE
+			user.client.toggle_speech_moans()
 			return TRUE
 		if("voicepack")
 			var/current_voice_pack = read_preference(/datum/preference/choiced/voice_pack)
@@ -2303,8 +2336,6 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 
 			apply_trait_bans(character, parent.ckey)
 
-			if(is_misc_banned(parent.ckey, BAN_MISC_LEPROSY))
-				ADD_TRAIT(character, TRAIT_LEPROSY, TRAIT_BAN_PUNISHMENT)
 			if(is_misc_banned(parent.ckey, BAN_MISC_PUNISHMENT_CURSE))
 				ADD_TRAIT(character, TRAIT_PUNISHMENT_CURSE, TRAIT_BAN_PUNISHMENT)
 
@@ -2313,6 +2344,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		apply_character_kinks(character)
 
 	// RMH EDITED START - self-written tattoos, applied after species/bodyparts are set up
+	apply_prosthetics_to_human(character, character_setup)
 	apply_tattoos_to_human(character)
 	// RMH EDITED END
 
@@ -2487,8 +2519,8 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 /// Host names shown in image link prompts; keep in sync with the two allowed_hosts lists below.
 /datum/preferences/proc/get_image_host_names(nsfw = FALSE)
 	if(nsfw)
-		return "gyazo, lensdump, imgbox, catbox, imagechest, pixhost, file garden"
-	return "gyazo, lensdump, imgbox, catbox, postimages, freeimage, imagechest, pixhost, file garden"
+		return "gyazo, lensdump, imgbox, catbox, imagechest, pixhost, file garden, imgbb"
+	return "gyazo, lensdump, imgbox, catbox, postimages, freeimage, imagechest, pixhost, file garden, imgbb"
 
 /datum/preferences/proc/is_valid_headshot_link(mob/user, value, silent = FALSE, list/valid_extensions = list("jpg", "png", "jpeg", "gif"))
 	var/static/list/allowed_hosts = list(
@@ -2500,11 +2532,13 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"i.lensdump.com",
 		"images2.imgbox.com",
 		"thumbs2.imgbox.com",
+		"thumbs4.imgbox.com",
 		"files.catbox.moe",
 		"i.postimg.cc",
 		"iili.io",
 		"cdn.imgchest.com",
 		"file.garden",
+		"i.ibb.co",
 	)
 	var/static/list/allowed_host_suffixes = list(".pixhost.to", ".pixhost.cc", ".pixho.st")
 
@@ -2524,6 +2558,7 @@ GLOBAL_LIST_INIT(name_adjustments, list())
 		"files.catbox.moe",
 		"cdn.imgchest.com",
 		"file.garden",
+		"i.ibb.co",
 	)
 	var/static/list/allowed_host_suffixes = list(".pixhost.to", ".pixhost.cc", ".pixho.st")
 

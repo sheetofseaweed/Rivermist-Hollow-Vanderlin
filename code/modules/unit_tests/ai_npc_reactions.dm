@@ -194,7 +194,11 @@
 	corpse.death()
 	controller.set_blackboard_key(BB_BASIC_MOB_FOOD_TARGET, corpse)
 	ai_test_plan(controller)
-	ai_test_ticks(controller, 4) // one behavior runs per tick: both finders, then the meal
+	// One behavior runs per tick, and the finders queued ahead of the meal come first.
+	for(var/i in 1 to 12)
+		ai_test_ticks(controller, 1)
+		if(spider.doing())
+			break
 	return spider
 
 /// Planning now runs mid-chew, so the meal must stay planned while nothing outranks it.

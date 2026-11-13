@@ -115,6 +115,10 @@ GLOBAL_LIST_INIT(dangerous_turf_contents, typecacheof(list(
 	for(var/atom/movable/thing as anything in target_turf)
 		if(is_type_in_typecache(thing, GLOB.dangerous_turf_contents))
 			return TRUE
+		if(istype(thing, /obj/machinery/light/fueled))
+			var/obj/machinery/light/fueled/fire = thing
+			if(fire.burns_crossers())
+				return TRUE
 	return FALSE
 
 /proc/update_config_movespeed_type_lookup(update_mobs = TRUE)

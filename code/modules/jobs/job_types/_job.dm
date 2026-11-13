@@ -149,7 +149,6 @@
 	/// Stable database whitelist identifier for jobs and subclasses.
 	var/job_whitelist_id = null
 
-	var/banned_leprosy = TRUE
 	var/banned_lunatic = TRUE
 
 	var/bypass_lastclass = TRUE

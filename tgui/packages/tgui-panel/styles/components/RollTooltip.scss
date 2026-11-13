@@ -41,7 +41,7 @@ $roll-light: (
 .roll_crit_good,
 .roll_crit_bad {
   font-weight: bold;
-  animation: roll_crit_flicker 1s infinite alternate;
+  animation: roll_crit_flicker 1s 4 alternate;
 }
 
 .roll_crit_good {
@@ -165,12 +165,12 @@ $roll-light: (
 
   &--natural-high {
     filter: drop-shadow(0 0 4px map.get($roll-tooltip, good));
-    animation: RollTooltip__glow 1.2s ease-in-out infinite alternate;
+    animation: RollTooltip__glow 1.2s ease-in-out 4 alternate;
   }
 
   &--natural-low {
     filter: drop-shadow(0 0 4px map.get($roll-tooltip, bad));
-    animation: RollTooltip__glow 1.2s ease-in-out infinite alternate;
+    animation: RollTooltip__glow 1.2s ease-in-out 4 alternate;
   }
 }
 

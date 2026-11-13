@@ -393,7 +393,7 @@ GLOBAL_LIST_EMPTY(loadout_catalog_fields)
 				return TRUE
 			if(GLOB.colorlist[new_color] == "CUSTOM_RGB")
 				var/current_color = vars["loadout_[slot]_hex"] || "#FFFFFF"
-				var/newer_color = input(user, "Select color:", "Custom Color", current_color) as color|null
+				var/newer_color = tgui_color_picker(user, "Select color:", "Custom Color", sanitize_hexcolor(current_color, 6, TRUE, "#ffffff"))
 				if(newer_color)
 					vars["loadout_[slot]_hex"] = sanitize_hexcolor(newer_color, include_crunch = 1)
 			else

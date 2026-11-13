@@ -45,6 +45,7 @@
 
 	limbs_icon_m = 'modular_rmh/icons/mob/species/construct_male.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/species/construct_female.dmi'
+	lips_state_m = "construct_male"
 
 	bodypart_features = list(
 		/datum/bodypart_feature/hair/head,
@@ -78,6 +79,7 @@
 		/datum/customizer/organ/genitals/penis/anthro,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/vagina/anthro,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
 	)

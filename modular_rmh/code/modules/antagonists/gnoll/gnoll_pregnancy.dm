@@ -7,7 +7,7 @@
 	incubation_stage_duration = 5 MINUTES
 	poll_for_ghost = FALSE
 	require_ghost_to_hatch = FALSE
-	hatch_inside_host = TRUE
+	hatch_mode = OVI_HATCH_INSIDE
 	auto_hatch_when_laid = FALSE
 	allow_manual_host_removal = FALSE
 	newborn_start_scale = 1
@@ -64,14 +64,14 @@
 /proc/get_gnoll_ritual_pregnancy(mob/living/carbon/human/carrier)
 	if(!istype(carrier))
 		return null
-	var/obj/item/organ/womb = carrier.getorganslot(ORGAN_SLOT_VAGINA)
+	var/obj/item/organ/womb = carrier.get_womb()
 	for(var/obj/item/oviposition_egg/gnoll/embryo in womb?.get_oviposition_eggs())
 		var/datum/component/pregnancy/gnoll/pregnancy = embryo.GetComponent(/datum/component/pregnancy/gnoll)
 		if(pregnancy)
 			return pregnancy
 	return null
 
-/proc/start_gnoll_ritual_pregnancy(mob/living/carbon/human/carrier, mob/living/father, datum/team/gnoll/pack, obj/item/organ/genitals/filling_organ/vagina/womb)
+/proc/start_gnoll_ritual_pregnancy(mob/living/carbon/human/carrier, mob/living/father, datum/team/gnoll/pack, obj/item/organ/genitals/filling_organ/womb/womb)
 	var/obj/item/oviposition_egg/gnoll/embryo = new
 	embryo.pack_ref = WEAKREF(pack)
 	embryo.set_oviposition_mother(carrier)
@@ -98,9 +98,9 @@
 	return TRUE
 
 /proc/get_gnoll_ritual_womb(mob/living/carbon/human/carrier)
-	if(!istype(carrier) || !carrier.can_receive_oviposition_implant())
+	if(!istype(carrier) || !carrier.can_start_oviposition_gestation())
 		return null
-	var/obj/item/organ/genitals/filling_organ/vagina/womb = carrier.getorganslot(ORGAN_SLOT_VAGINA)
+	var/obj/item/organ/genitals/filling_organ/womb/womb = carrier.get_womb()
 	if(!istype(womb) || !womb.fertility || !womb.supports_oviposition_pregnancy() || length(womb.get_oviposition_eggs()) || womb.count_internal_womb_hatchlings())
 		return null
 	return womb

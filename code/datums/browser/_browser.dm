@@ -58,7 +58,8 @@
 	titlebar = TRUE,
 	border = 0
 )
-	window_options = list2params(args)
+	// Built by hand: list2params(args) emits only the values, without the names.
+	window_options = "can_close=[can_close];can_minimize=[can_minimize];can_maximize=[can_maximize];can_resize=[can_resize];titlebar=[titlebar];border=[border];"
 
 /datum/browser/proc/add_stylesheet(name, file)
 	if (istype(name, /datum/asset/spritesheet))

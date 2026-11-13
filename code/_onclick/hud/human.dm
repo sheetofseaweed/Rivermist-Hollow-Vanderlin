@@ -75,6 +75,9 @@
 	using = new /atom/movable/screen/interact_heart(null, src)
 	static_inventory += using
 
+	using = new /atom/movable/screen/hole_status_button(null, src)
+	static_inventory += using
+
 	cmode_button = new /atom/movable/screen/cmode(null, src)
 	var/atom/movable/screen/cmode/combat_mode_screen = cmode_button
 	combat_mode_screen.update_dodge_charges()

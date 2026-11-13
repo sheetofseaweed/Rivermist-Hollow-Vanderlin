@@ -1247,6 +1247,7 @@
 	if(!pixelshifted)
 		reset_offsets("pixel_shift")
 		return FALSE
+	reset_pixel_rotation()
 	pixelshifted = FALSE
 	pixelshift_x = 0
 	pixelshift_y = 0
@@ -1422,32 +1423,6 @@
 
 	emote("pray", intentional = TRUE)
 
-/mob/living/verb/submit()
-	set name = "Yield"
-	set category = "IC.Interaction"
-
-	if(surrendering)
-		return
-	if(stat)
-		return
-	if(alert(src, "Yield in surrender?",,"YES","NO") != "YES")
-		return
-	if(surrendering || stat)
-		return
-	surrendering = TRUE
-
-	record_round_statistic(STATS_YIELDS)
-	changeNext_move(CLICK_CD_EXHAUSTED)
-	var/mutable_appearance/flaggy = mutable_appearance('icons/effects/effects.dmi', "surrender", ABOVE_MOB_LAYER, appearance_flags = RESET_TRANSFORM|KEEP_APART)
-	flaggy.pixel_y = 12
-	flick_overlay_view(flaggy, 150)
-	drop_all_held_items()
-	Stun(15 SECONDS)
-	visible_message("<span class='notice'>[src] yields!</span>")
-	playsound(src, 'sound/misc/surrender.ogg', 100, FALSE, -1)
-	toggle_cmode()
-	SEND_SIGNAL(src, COMSIG_LIVING_YIELDED)
-	addtimer(VARSET_CALLBACK(src, surrendering, FALSE), 15 SECONDS)
 /mob/living
 	var/had_pacifist = FALSE
 
@@ -1460,6 +1435,7 @@
 
 	return ..()
 
+/// The one yield. The combat button, the keybind and the IC tab all land here.
 /mob/living/verb/toggle_submit()
 	set name = "Toggle Yield"
 	set category = "IC"
@@ -1469,12 +1445,17 @@
 
 	if(!surrendering)
 		if(alert(src, "Yield in surrender?",,"YES","NO") == "YES")
+			if(surrendering || stat)
+				return
 			if(HAS_TRAIT(src, TRAIT_PACIFISM))
 				had_pacifist = TRUE
 			else
 				ADD_TRAIT(src, TRAIT_PACIFISM, TRAIT_GENERIC)
 			surrendering = TRUE
+			record_round_statistic(STATS_YIELDS)
 			changeNext_move(CLICK_CD_EXHAUSTED)
+			if(cmode)
+				toggle_cmode()
 			var/image/flaggy = image('icons/effects/effects.dmi',src,"surrender",ABOVE_MOB_LAYER)
 			flaggy.appearance_flags = RESET_TRANSFORM|KEEP_APART
 			flaggy.transform = null
@@ -1796,9 +1777,9 @@
 		combat_modifier += 0.5
 
 	var/stamina_factor = 1.0
-	if(L.stamina / L.maximum_stamina < 0.5)
+	if(L.stamina / L.maximum_stamina > 0.5)
 		stamina_factor += 0.3 // Tired grabbers are weaker
-	if(stamina / maximum_stamina < 0.3)
+	if(stamina / maximum_stamina > 0.7)
 		stamina_factor -= 0.2 // But tired victims also struggle more
 
 	var/grab_count = 0
@@ -1878,6 +1859,7 @@
 	return ..()
 
 /mob/living/proc/resist_buckle()
+	last_restraint_struggle = world.time
 	buckled.user_unbuckle_mob(src,src)
 	return TRUE
 
@@ -2799,7 +2781,7 @@
 	if(m_intent != MOVE_INTENT_SNEAK)
 		visible_message(span_info("[src] looks around."), span_info("I look around."))
 	var/looktime = 5 SECONDS - (GET_MOB_ATTRIBUTE_VALUE(src, STAT_PERCEPTION) * 2)
-	if(has_quirk(/datum/quirk/boon/keen_eye))
+	if(has_quirk(/datum/quirk/positive/keen_eye))
 		looktime *= 0.25
 	if(do_after(src, looktime))
 		// var/huhsneak
@@ -2839,8 +2821,9 @@
 					found_ping(get_turf(M), client, "hidden")
 
 		for(var/obj/O in view(7,src))
-			if("hiddenguy" in O.vars)
-				var/mob/living/M = O.vars["hiddenguy"]
+			if(isstructure(O))
+				var/obj/structure/hiding_spot = O
+				var/mob/living/M = hiding_spot.hiddenguy
 				if(M)
 					var/sneak = GET_MOB_SKILL_VALUE_OLD(M, /datum/attribute/skill/misc/sneaking)
 					var/effective_sneak = 8 + (sneak * 2)

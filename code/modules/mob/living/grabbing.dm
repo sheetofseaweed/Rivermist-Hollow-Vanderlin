@@ -793,6 +793,7 @@
 					span_userdanger("[user] bites my [parse_zone(sublimb_grabbed)]![C.next_attack_msg.Join()]"), span_hear("I hear a sickening sound of chewing!"), COMBAT_MESSAGE_RANGE, user)
 	to_chat(user, span_danger("I bite [C]'s [parse_zone(sublimb_grabbed)].[C.next_attack_msg.Join()]"))
 	C.next_attack_msg.Cut()
+	user.leave_lipstick_bite(C, sublimb_grabbed)
 	if(C.client && C.stat != DEAD)
 		record_round_statistic(STATS_LIMBS_BITTEN)
 	log_combat(user, C, "limb chewed [sublimb_grabbed] ")

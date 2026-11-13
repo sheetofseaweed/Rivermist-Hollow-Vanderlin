@@ -1890,14 +1890,17 @@
 	qdel(table)
 
 /datum/unit_test/dungeon_caches_roll_no_gold_piles/Run()
-	// Gold piles hide in several donors, and the pool keeps whichever copy it meets first.
+	// Gold piles hide in several donors, and every cache coin must arrive at half value.
 	var/mob/living/carbon/human/looter = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/list/full_value_coins = list(/obj/item/coin/gold, /obj/item/coin/silver, /obj/item/coin/silver/pile, /obj/item/coin/copper/pile)
 	for(var/datum/loot_table/dungeon/table_type as anything in subtypesof(/datum/loot_table/dungeon))
 		if(IS_ABSTRACT(table_type))
 			continue
 		var/datum/loot_table/dungeon/table = new table_type
-		TEST_ASSERT(!(/obj/item/coin/gold/pile in table.return_list(null, 5, 1.0)), "[table_type] should not roll gold piles.")
-		TEST_ASSERT(!(/obj/item/coin/gold/pile in table.return_list(looter, 5, 1.0)), "[table_type] should not roll gold piles for a looter with Fortune.")
+		var/list/pool = table.return_list(null, 5, 1.0) | table.return_list(looter, 5, 1.0)
+		for(var/path in pool)
+			TEST_ASSERT(!ispath(path, /obj/item/coin/gold/pile), "[table_type] should not roll gold piles.")
+			TEST_ASSERT(!(path in full_value_coins), "[table_type] should pay [path] at half value.")
 		qdel(table)
 
 /datum/unit_test/dungeon_cache_opens_once/Run()

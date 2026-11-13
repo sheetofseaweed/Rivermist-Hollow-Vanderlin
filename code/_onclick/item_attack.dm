@@ -229,6 +229,13 @@
 
 		return result
 
+	// Out of combat, right-clicking someone with a real item offers it to them.
+	if(weapon.item_flags & ABSTRACT)
+		return
+
+	user.give(src)
+	return SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN
+
 /**
  * Called from [/mob/living/proc/attackby]
  *
@@ -253,6 +260,8 @@
 
 	if(!force)
 		return FALSE
+	if(user.spares_ally(M, TRUE))
+		return TRUE
 	if(user.used_intent)
 		if(!user.used_intent.noaa)
 			playsound(src, pick(swingsound), 100, FALSE, -1)

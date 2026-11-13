@@ -1,5 +1,5 @@
 /datum/sex_action/suck_nipples
-	name = "Suck their nipples"
+	name = "Suck nipples"
 	description = "Suck and tease their nipples, with flavor matching the shape of their chest."
 	user_menu_zone_mask = SEX_UI_ZONE_MOUTH
 	target_menu_zone_mask = SEX_UI_ZONE_BODY

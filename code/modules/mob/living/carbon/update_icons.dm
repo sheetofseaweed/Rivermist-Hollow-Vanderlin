@@ -3,9 +3,15 @@
 //IMPORTANT: Multiple animate() calls do not stack well, so try to do them all at once if you can.
 /mob/living/carbon/update_transform()
 	var/matrix/ntransform = matrix(transform) //aka transform.Copy()
+	// Apply posture and scaling without the cosmetic rotation, then put it back on top.
+	ntransform.Turn(-pixel_rotation)
 	var/final_pixel_y = pixel_y
 	var/final_dir = dir
 	var/changed = 0
+	if(pixel_rotation && lying_prev && !lying_angle)
+		// Free spinning while lying down does not survive standing up.
+		pixel_rotation = 0
+		changed++
 	if(lying_angle != lying_prev && rotate_on_lying)
 		changed++
 		ntransform.TurnTo(lying_prev , lying_angle)
@@ -23,6 +29,7 @@
 		resize = RESIZE_DEFAULT_SIZE
 
 	if(changed)
+		ntransform.Turn(pixel_rotation)
 		ADD_TRAIT(src, TRAIT_NO_FLOATING_ANIM, UPDATE_TRANSFORM_TRAIT)
 		addtimer(TRAIT_CALLBACK_REMOVE(src, TRAIT_NO_FLOATING_ANIM, UPDATE_TRANSFORM_TRAIT), 0.3 SECONDS, TIMER_UNIQUE|TIMER_OVERRIDE)
 		pixel_x = get_standard_pixel_x_offset()
@@ -110,6 +117,7 @@
 
 		var/mutable_appearance/inhand_overlay
 		var/mutable_appearance/behindhand_overlay
+		var/list/hand_offset = species?.get_held_item_offset(src, get_held_index_of_item(I)) || LAZYACCESS(offsets, OFFSET_HANDS)
 		if(I.experimental_inhand && !hide_experimental)
 			var/used_prop
 			var/list/prop
@@ -138,11 +146,11 @@
 			inhand_overlay = center_image(inhand_overlay, I.inhand_x_dimension, I.inhand_y_dimension)
 			behindhand_overlay = center_image(behindhand_overlay, I.inhand_x_dimension, I.inhand_y_dimension)
 
-			if(LAZYACCESS(offsets, OFFSET_HANDS))
-				inhand_overlay.pixel_x += offsets[OFFSET_HANDS][1]
-				inhand_overlay.pixel_y += offsets[OFFSET_HANDS][2]
-				behindhand_overlay.pixel_x += offsets[OFFSET_HANDS][1]
-				behindhand_overlay.pixel_y += offsets[OFFSET_HANDS][2]
+			if(hand_offset)
+				inhand_overlay.pixel_x += hand_offset[1]
+				inhand_overlay.pixel_y += hand_offset[2]
+				behindhand_overlay.pixel_x += hand_offset[1]
+				behindhand_overlay.pixel_y += hand_offset[2]
 			// Apply taur body offset to adjust rendering height for taurs like jdeer
 			var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 			if(T && T.body_offset_y)
@@ -167,9 +175,9 @@
 			if(get_held_index_of_item(I) % 2 == 0)
 				icon_file = I.righthand_file
 			inhand_overlay = I.build_worn_icon(age = age, default_layer = HANDS_LAYER, default_icon_file = icon_file, isinhands = TRUE)
-			if(LAZYACCESS(offsets, OFFSET_HANDS))
-				inhand_overlay.pixel_x += offsets[OFFSET_HANDS][1]
-				inhand_overlay.pixel_y += offsets[OFFSET_HANDS][2]
+			if(hand_offset)
+				inhand_overlay.pixel_x += hand_offset[1]
+				inhand_overlay.pixel_y += hand_offset[2]
 			// Apply taur body offset to adjust rendering height for taurs like jdeer
 			var/obj/item/bodypart/taur/T = get_bodypart(BODY_ZONE_TAUR)
 			if(T && T.body_offset_y)

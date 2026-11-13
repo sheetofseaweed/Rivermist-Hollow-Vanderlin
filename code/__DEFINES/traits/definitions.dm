@@ -115,6 +115,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_TAINTED_LUX "tainted_lux"
 /// Crafting is 10% faster
 #define TRAIT_QUICK_HANDS "quick_hands"
+/// Heeled shoes cost no Speed and never trip
+#define TRAIT_HEEL_WALKER "heel_walker"
 /// Immunity to stunning effects
 #define TRAIT_STUNIMMUNE "stun_immunity"
 /// Stun duration reduced (unused)
@@ -261,6 +263,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_ZOMBIE_IMMUNE "zombie_immune"
 /// prevents biting
 #define TRAIT_NO_BITE "no_bite"
+/// Can bite while a helmet or mask covers the mouth.
+#define TRAIT_BITERHELM "helmet_biter"
 /// is this guy a foreigner?
 #define TRAIT_FOREIGNER "Foreigner"
 /// mob cannot be ambushed for any reason
@@ -291,6 +295,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_MOB_BREEDER "mob_breeder"
 /// can't be perceived in any way, likely due to invisibility
 #define TRAIT_IMPERCEPTIBLE "imperceptible"
+/// Lying under a table; tables let this mob crawl into them
+#define TRAIT_UNDER_TABLE "under_table"
 /// Reduced turf slowdown
 #define TRAIT_LONGSTRIDER "longstrider"
 /// Dendor Path Traits
@@ -486,7 +492,6 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_IWASREVIVED "iwasrevived" //prevents PQ gain from reviving the same person twice
 #define TRAIT_IWASUNZOMBIFIED "iwasunzombified" //prevents PQ gain from curing a zombie twice
 #define TRAIT_ZIZOID_HUNTED "zizoidhunted" // Used to signal character has been marked by death by the Zizoid cult
-#define TRAIT_LEPROSY "Leprosy"
 #define TRAIT_NUDE_SLEEPER "Nude Sleeper"
 #define TRAIT_BEAUTIFUL "Beautiful"
 #define TRAIT_UGLY "Ugly"

@@ -59,7 +59,7 @@
 		return FALSE
 	if(check_sex_lock(giver, BODY_ZONE_PRECISE_MOUTH))
 		return FALSE
-	if(!giver.mouth_is_free())
+	if(!giver.mouth_is_free(action_user || user))
 		return FALSE
 	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
@@ -95,7 +95,7 @@
 	var/mob/living/giver = get_giver(user)
 	if(!giver)
 		return
-	giver.make_sucking_noise()
+	giver.make_mouth_noise(get_oral_noise_kind())
 	do_thrust_animate(user, target)
 	if(can_show_action_message(user, target))
 		var/whose = (target == user) ? user.p_their() : "[target]'s"
@@ -112,20 +112,20 @@
 	head_ref = null
 
 /datum/sex_action/held_head_oral/penis
-	name = "Use the held head on their cock"
+	name = "Head blowjob"
 	description = "Press the severed head you hold to a cock and set the pace. Works on yourself too."
 	receiver_slot = ORGAN_SLOT_PENIS
 	receiver_word = "cock"
 
 /datum/sex_action/held_head_oral/vagina
-	name = "Use the held head on their cunt"
+	name = "Head cunnilingus"
 	description = "Press the severed head you hold to a cunt and set the pace. Works on yourself too."
 	receiver_slot = ORGAN_SLOT_VAGINA
 	receiver_word = "cunt"
 
 // A position, not a mechanic: the head rides between the holder's thighs.
 /datum/sex_action/thigh_head
-	name = "Tuck their head between your thighs"
+	name = "Thigh-tuck head"
 	description = "Hold their severed head snug between your legs. Mostly for the feeling of it."
 	user_menu_zone_mask = SEX_UI_ZONE_LEGS
 	target_menu_zone_mask = SEX_UI_ZONE_MOUTH

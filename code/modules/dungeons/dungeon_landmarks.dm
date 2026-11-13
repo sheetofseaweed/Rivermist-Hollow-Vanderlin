@@ -43,10 +43,13 @@
 	/// When TRUE, the room pulls its boss from the run's floor config boss_pool
 	/// instead of this marker's mob_pool.
 	var/use_floor_boss_pool = TRUE
+	/// Whether the boss arrives with floor-pool escorts that scale with the party
+	var/brings_escorts = TRUE
 
 /obj/effect/landmark/dungeon/guardian/boss/test
 	name = "test boss marker"
 	use_floor_boss_pool = FALSE
+	brings_escorts = FALSE
 	mob_pool = list(/mob/living/simple_animal/hostile/boss/dungeon/test = 10)
 
 /obj/effect/landmark/dungeon/guardian/swampgob

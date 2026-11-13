@@ -162,6 +162,8 @@
 	if(HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, span_warning("I don't want to harm [src]!"))
 		return TRUE
+	if(user.spares_ally(src, TRUE))
+		return TRUE
 	var/datum/intent/bite/bitten = new()
 	if(checkdefense(bitten, user))
 		return TRUE
@@ -204,6 +206,7 @@
 	visible_message(span_danger("[user] bites [src]'s [parse_zone(user.zone_selected)]![next_attack_msg.Join()]"), \
 					span_userdanger("[user] bites my [parse_zone(user.zone_selected)]![next_attack_msg.Join()]"))
 	next_attack_msg.Cut()
+	user.leave_lipstick_bite(src, user.zone_selected)
 
 	var/obj/item/grabbing/bite/B = new()
 	if(user.equip_to_slot_or_del(B, ITEM_SLOT_MOUTH))
@@ -310,7 +313,7 @@
 				return
 			if(stat != CONSCIOUS)
 				return
-			if(is_mouth_covered())
+			if(is_mouth_covered() && !HAS_TRAIT(src, TRAIT_BITERHELM))
 				to_chat(src, span_warning("My mouth is blocked."))
 				return
 			if(HAS_TRAIT(src, TRAIT_NO_BITE))
@@ -488,8 +491,8 @@
 						record_featured_stat(FEATURED_STATS_CRIMINALS, thief)
 						record_round_statistic(STATS_ITEMS_PICKPOCKETED)
 						SEND_SIGNAL(src, COMSIG_PICKPOCKET_SUCCESS)
-					if(has_quirk(/datum/quirk/vice/addiction/kleptomaniac))
-						sate_addiction(/datum/quirk/vice/addiction/kleptomaniac)
+					if(has_quirk(/datum/quirk/negative/addiction/kleptomaniac))
+						sate_addiction(/datum/quirk/negative/addiction/kleptomaniac)
 				else
 					exp_to_gain /= 2
 					to_chat(thief, span_warning("I didn't find anything there. Perhaps I should look elsewhere."))

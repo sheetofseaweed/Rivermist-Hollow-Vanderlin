@@ -1,6 +1,6 @@
 /// Units milked per cycle before the size rate (GLOB.breast_milking_rate) and force.
 #define BREAST_MILKING_BASE_AMOUNT 3
-/// Units sprayed per cycle by "Spray them with your milk".
+/// Units sprayed per cycle by "Spray milk".
 #define BREAST_SPRAY_ACTION_AMOUNT 3
 /// Arousal for onlookers per cycle: bounce times (size - 4), and squeeze together.
 #define BREAST_SHOW_BOUNCE_AROUSAL 0.5
@@ -54,7 +54,8 @@
 // With a partner.
 
 /datum/sex_action/masturbate/other/squeeze_breasts
-	name = "Squeeze their breasts"
+	name = "Breast squeezing"
+	remote_phrase = "Squeeze their breasts"
 	description = "Knead their breasts with both hands. Bigger ones take more effort to work up."
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 
@@ -81,7 +82,7 @@
 	switch(force)
 		if(SEX_FORCE_HIGH)
 			pain = 1
-		if(SEX_FORCE_EXTREME)
+		if(SEX_FORCE_EXTREME, SEX_FORCE_UNRELENTING)
 			pain = 2.5
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force(cycle_message(user, target)))
@@ -94,7 +95,7 @@
 	user.visible_message(span_warning("[user] lets go of [target]'s breasts."))
 
 /datum/sex_action/bury_face
-	name = "Bury your face in their cleavage"
+	name = "Bury face"
 	description = "Press your face between their breasts. Big enough ones swallow it whole."
 	user_menu_zone_mask = SEX_UI_ZONE_MOUTH
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
@@ -140,7 +141,7 @@
 	add_sex_lock(target, ORGAN_SLOT_BREASTS, null, FALSE)
 
 /datum/sex_action/cleavage_smother
-	name = "Pull them into your cleavage"
+	name = "Smother them"
 	description = "Hold their face between your breasts. They cannot speak; pressed hard, they struggle for air."
 	user_menu_zone_mask = SEX_UI_ZONE_BODY
 	target_menu_zone_mask = SEX_UI_ZONE_MOUTH
@@ -189,7 +190,7 @@
 	add_sex_lock(user, ORGAN_SLOT_BREASTS, null, FALSE)
 
 /datum/sex_action/breast_press
-	name = "Press your breasts against theirs"
+	name = "Press breasts"
 	description = "Rub your chest against theirs, breast to breast."
 	user_menu_zone_mask = SEX_UI_ZONE_BODY
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
@@ -230,7 +231,7 @@
 	add_sex_lock(target, ORGAN_SLOT_BREASTS, null, FALSE)
 
 /datum/sex_action/sex/other/boobjob/hands_free
-	name = "Give them a hands-free boob job"
+	name = "Hands-free boobjob"
 
 /datum/sex_action/sex/other/boobjob/hands_free/shows_on_menu(mob/living/user, mob/living/target)
 	return ..() && get_breast_visible_size(user) >= 6
@@ -258,8 +259,7 @@
 	perform_sex_action(target, user, 2 * get_breast_paizuri_multiplier(user), 4, 2)
 
 /datum/sex_action/milk_breasts
-	name = "Milk them"
-	description = "Milk their breasts into the open container in your hand. Big full ones give more."
+	abstract_type = /datum/sex_action/milk_breasts
 	user_menu_zone_mask = SEX_UI_ZONE_ARMS
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 	requires_free_hands = TRUE
@@ -272,12 +272,12 @@
 		return null
 	return container
 
-/datum/sex_action/milk_breasts/shows_on_menu(mob/living/user, mob/living/target)
-	return user != target && get_breast_milk(target) > 0
+/datum/sex_action/milk_breasts/proc/cycle_message(mob/living/user, mob/living/target, obj/item/container)
+	return null
 
 /datum/sex_action/milk_breasts/can_perform(mob/living/user, mob/living/target)
 	. = ..()
-	if(!. || user == target || get_breast_milk(target) <= 0)
+	if(!. || get_breast_milk(target) <= 0)
 		return FALSE
 	if(!get_container(user))
 		return FALSE
@@ -286,10 +286,6 @@
 	if(check_sex_lock(target, ORGAN_SLOT_BREASTS))
 		return FALSE
 	return TRUE
-
-/datum/sex_action/milk_breasts/on_start(mob/living/user, mob/living/target)
-	. = ..()
-	user.visible_message(span_warning("[user] holds \the [get_container(user)] under [target]'s breasts and takes hold of [target.p_their()] nipples..."))
 
 /datum/sex_action/milk_breasts/on_perform(mob/living/user, mob/living/target)
 	. = ..()
@@ -306,12 +302,58 @@
 	perform_sex_action(target, user, 0.6 * get_breast_touch_multiplier(target), force >= SEX_FORCE_HIGH ? 1 : 0, 0.05)
 	handle_passive_ejaculation(target)
 
-/datum/sex_action/milk_breasts/on_finish(mob/living/user, mob/living/target)
+/datum/sex_action/milk_breasts/other
+	name = "Milk them"
+	description = "Milk their breasts into the open container in your hand. Big full ones give more."
+
+/datum/sex_action/milk_breasts/other/shows_on_menu(mob/living/user, mob/living/target)
+	return user != target && get_breast_milk(target) > 0
+
+/datum/sex_action/milk_breasts/other/can_perform(mob/living/user, mob/living/target)
+	. = ..()
+	return . && user != target
+
+/datum/sex_action/milk_breasts/other/on_start(mob/living/user, mob/living/target)
+	. = ..()
+	user.visible_message(span_warning("[user] holds \the [get_container(user)] under [target]'s breasts and takes hold of [target.p_their()] nipples..."))
+
+/datum/sex_action/milk_breasts/other/on_finish(mob/living/user, mob/living/target)
 	. = ..()
 	user.visible_message(span_warning("[user] stops milking [target]."))
 
+/datum/sex_action/milk_breasts/self
+	name = "Milk myself"
+	description = "Milk your own breasts into the open container in your hand until they run dry."
+
+/datum/sex_action/milk_breasts/self/shows_on_menu(mob/living/user, mob/living/target)
+	return user == target && get_breast_milk(user) > 0
+
+/datum/sex_action/milk_breasts/self/can_perform(mob/living/user, mob/living/target)
+	. = ..()
+	return . && user == target
+
+/datum/sex_action/milk_breasts/self/can_continue(mob/living/user, mob/living/target)
+	. = ..()
+	if(!.)
+		return FALSE
+	return !!get_container(user)
+
+/datum/sex_action/milk_breasts/self/on_start(mob/living/user, mob/living/target)
+	. = ..()
+	user.visible_message(span_warning("[user] holds \the [get_container(user)] under [user.p_their()] breasts and takes hold of [user.p_their()] nipples..."))
+
+/datum/sex_action/milk_breasts/self/on_perform(mob/living/user, mob/living/target)
+	. = ..()
+	if(get_breast_milk(user) <= 0)
+		to_chat(user, span_notice("My breasts are milked dry."))
+		stop_runtime()
+
+/datum/sex_action/milk_breasts/self/on_finish(mob/living/user, mob/living/target)
+	. = ..()
+	user.visible_message(span_warning("[user] stops milking [user.p_their()] breasts."))
+
 /datum/sex_action/spray_milk
-	name = "Spray them with your milk"
+	name = "Spray milk"
 	description = "Squeeze a stream of milk from your full breasts over them."
 	user_menu_zone_mask = SEX_UI_ZONE_BODY
 	target_menu_zone_mask = SEX_UI_ZONE_ANY
@@ -354,7 +396,7 @@
 // With your own breasts.
 
 /datum/sex_action/masturbate/heft_breasts
-	name = "Heft and drop your breasts"
+	name = "Heft breasts"
 	description = "Lift your breasts and let them fall with a bounce."
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 	do_time = 2.5 SECONDS
@@ -385,7 +427,7 @@
 	user.visible_message(span_warning("[user] lets [user.p_their()] breasts rest."))
 
 /datum/sex_action/suck_own_nipple
-	name = "Suck your own nipple"
+	name = "Suckle breast"
 	description = "Lift a breast to your mouth. Only big, bare breasts reach."
 	user_menu_zone_mask = SEX_UI_ZONE_MOUTH
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
@@ -445,7 +487,7 @@
 	return loop_shot
 
 /datum/sex_action/bounce_breasts
-	name = "Bounce your breasts for them"
+	name = "Bounce breasts"
 	description = "Make your breasts bounce for everyone watching. Onlookers get a little worked up."
 	user_menu_zone_mask = SEX_UI_ZONE_BODY
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
@@ -478,7 +520,7 @@
 	user.visible_message(span_warning("[user] lets [user.p_their()] breasts settle."))
 
 /datum/sex_action/masturbate/squeeze_together
-	name = "Squeeze your breasts together"
+	name = "Squeeze breasts"
 	description = "Press your breasts together with your hands. Onlookers get a little worked up."
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 
@@ -593,7 +635,7 @@
 		list("[user] pounds [target]'s cock with [their] [tits].", "[user]'s breasts swallow [target]'s cock completely with every bounce.",
 			"[user] relentlessly smothers [target]'s cock in [their] cleavage."))
 
-/datum/sex_action/milk_breasts/proc/cycle_message(mob/living/user, mob/living/target, obj/item/container)
+/datum/sex_action/milk_breasts/other/cycle_message(mob/living/user, mob/living/target, obj/item/container)
 	return pick_by_force(
 		list("[user] gently squeezes milk from [target]'s nipples into \the [container].", "[user] coaxes a thin stream of milk from [target] into \the [container].",
 			"[user] tenderly milks [target], drop by drop, into \the [container]."),
@@ -603,6 +645,18 @@
 			"[user] roughly squeezes [target]'s breasts, filling \the [container]."),
 		list("[user] wrings [target]'s breasts like udders, milk gushing into \the [container].", "[user] milks [target] mercilessly, squeezing out every drop.",
 			"[user] brutally milks [target], milk spraying into \the [container] and everywhere else."))
+
+/datum/sex_action/milk_breasts/self/cycle_message(mob/living/user, mob/living/target, obj/item/container)
+	var/their = user.p_their()
+	return pick_by_force(
+		list("[user] gently squeezes milk from [their] nipples into \the [container].", "[user] coaxes a thin stream of milk from [their] breasts into \the [container].",
+			"[user] tenderly milks [their] breasts, drop by drop, into \the [container]."),
+		list("[user] milks [their] breasts into \the [container] in a steady rhythm.", "[user] squeezes [their] nipples, milk splashing into \the [container].",
+			"[user] firmly milks [their] breasts into \the [container]."),
+		list("[user] milks [their] breasts hard, milk spraying into \the [container].", "[user] tugs at [their] nipples, milk streaming into \the [container].",
+			"[user] roughly squeezes [their] breasts, filling \the [container]."),
+		list("[user] wrings [their] breasts like udders, milk gushing into \the [container].", "[user] milks [their] breasts mercilessly, squeezing out every drop.",
+			"[user] brutally milks [their] breasts, milk spraying into \the [container] and everywhere else."))
 
 /datum/sex_action/spray_milk/proc/cycle_message(mob/living/user, mob/living/target, aim)
 	var/their = user.p_their()
