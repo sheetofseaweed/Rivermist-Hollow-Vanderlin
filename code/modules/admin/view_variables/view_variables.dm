@@ -35,7 +35,7 @@
 	var/no_icon = FALSE
 
 	if(isatom(thing))
-		sprite = getFlatIcon(thing)
+		sprite = vv_preview_icon(thing)
 		if(!sprite)
 			no_icon = TRUE
 
@@ -394,3 +394,17 @@ datumrefresh=[refid];[HrefToken()]' title='Reload this window (F5)'>Refresh</a>
 
 #undef ICON_STATE_CHECKED
 #undef ICON_STATE_NULL
+
+/**
+ * The small picture at the top of a VV window.
+ *
+ * getFlatIcon() blends every overlay, and without no_anim it does so for every animation frame:
+ * on an animated turf or a dressed mob that alone could stall the server for a long moment.
+ * One frame is enough for a preview, and atoms with a pile of overlays only show their base icon.
+ */
+/proc/vv_preview_icon(atom/thing)
+	if(length(thing.overlays) + length(thing.underlays) > 30)
+		if(!thing.icon)
+			return null
+		return icon(thing.icon, thing.icon_state, thing.dir, 1)
+	return getFlatIcon(thing, no_anim = TRUE)

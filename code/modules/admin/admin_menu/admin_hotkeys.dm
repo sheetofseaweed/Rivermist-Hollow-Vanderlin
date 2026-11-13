@@ -26,8 +26,26 @@
 	var/atom/hovered = user.admin_hovered_ref?.resolve()
 	if(QDELETED(hovered))
 		hovered = target
-	if(QDELETED(hovered))
+	hovered = admin_vv_pick(hovered)
+	if(!hovered)
 		to_chat(user, span_warning("Point the cursor at something on the map first."))
 		return TRUE
 	user.debug_variables(hovered)
 	return TRUE
+
+/// What Alt + B opens: the hovered mob or object, never an effect or helper drawn on top of it.
+/// If an effect was hovered, the first mob, then object, then the turf on its tile is used instead.
+/proc/admin_vv_pick(atom/hovered)
+	if(QDELETED(hovered))
+		return null
+	if(ismob(hovered) || (isobj(hovered) && !istype(hovered, /obj/effect)) || isturf(hovered))
+		return hovered
+	var/turf/spot = get_turf(hovered)
+	if(!spot)
+		return hovered
+	for(var/mob/living/creature in spot)
+		return creature
+	for(var/obj/thing in spot)
+		if(!istype(thing, /obj/effect) && thing.invisibility < INVISIBILITY_ABSTRACT)
+			return thing
+	return spot
