@@ -1126,6 +1126,8 @@
 		return
 
 	var/log_text = "[key_name(src)] [message] [loc_name(src)]"
+	var/mob/actor = src
+	round_log_add(round_log_category_of(message_type), log_text, ismob(actor) ? actor.ckey : null, get_turf(src))
 	switch(message_type)
 		if(LOG_ATTACK)
 			log_attack(log_text)

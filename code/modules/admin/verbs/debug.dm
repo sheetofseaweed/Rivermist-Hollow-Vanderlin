@@ -27,6 +27,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 /client/proc/cmd_admin_animalize(mob/M in GLOB.mob_list)
 	set category = "GameMaster.Equipping"
 	set name = "Make Simple Animal"
+	set popup_menu = FALSE // reached through the Admin.../GM.../Debug... right-click entries
 
 	if(!SSticker.HasRoundStarted())
 		alert("Wait until the game starts")
@@ -71,6 +72,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 /client/proc/cmd_get_mob(mob/M in GLOB.mob_list)
 	set category = "Admin"
 	set name = "Get Mob"
+	set popup_menu = FALSE // reached through the Admin.../GM.../Debug... right-click entries
 	set desc = ""
 	if(!check_rights(R_ADMIN))
 		return
@@ -83,6 +85,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 /client/proc/cmd_assume_direct_control(mob/M in GLOB.mob_list)
 	set category = "Admin.Admin"
 	set name = "Assume direct control"
+	set popup_menu = FALSE // reached through the Admin.../GM.../Debug... right-click entries
 	set desc = ""
 
 	src.release_direct_controle()
@@ -108,6 +111,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 /client/proc/cmd_give_control_to_player(mob/M in GLOB.mob_list, client/player in GLOB.clients)
 	set category = "Admin.Admin"
 	set name = "Give Control To Player"
+	set popup_menu = FALSE // reached through the Admin.../GM.../Debug... right-click entries
 	set desc = ""
 
 	if(M.ckey)
@@ -250,6 +254,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 /client/proc/cmd_admin_dress(mob/M in GLOB.mob_list)
 	set category = "GameMaster.Equipping"
 	set name = "Select Equipment"
+	set popup_menu = FALSE // reached through the Admin.../GM.../Debug... right-click entries
 
 	if(!(ishuman(M) || isobserver(M)))
 		return
