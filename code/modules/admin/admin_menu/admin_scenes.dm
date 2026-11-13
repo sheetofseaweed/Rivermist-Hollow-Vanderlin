@@ -297,9 +297,14 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			for(var/mob/living/candidate in range(step["range"], anchor))
 				found += candidate
 		if("trigger")
-			var/radius = isnull(run?.trigger_radius) ? step["range"] : run.trigger_radius
-			for(var/mob/living/candidate in range(radius, anchor))
-				found += candidate
+			if(run?.focus_ref) // set off by one player of an "each player" trigger: only them
+				var/mob/living/focus = run.focus_ref.resolve()
+				if(istype(focus) && !QDELETED(focus))
+					found += focus
+			else
+				var/radius = isnull(run?.trigger_radius) ? step["range"] : run.trigger_radius
+				for(var/mob/living/candidate in range(radius, anchor))
+					found += candidate
 		if("area")
 			// Walk the mob lists, not the area: an outdoor area spans most of the map, and its
 			// contents are every turf and every object on it.
@@ -346,13 +351,18 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	var/current_step = 0
 	/// Radius of the trigger that started this run; null when an admin started it.
 	var/trigger_radius
+	/// The one player this run is for, when an "each player" trigger started it. Steps aimed at
+	/// "In trigger" (targets, narration) reach only them; every other target works as usual.
+	var/datum/weakref/focus_ref
 
-/datum/admin_scene_run/New(list/scene, turf/anchor, started_by, trigger_radius)
+/datum/admin_scene_run/New(list/scene, turf/anchor, started_by, trigger_radius, mob/living/focus)
 	scene_name = scene["name"]
 	steps = deepCopyList(scene["steps"])
 	src.anchor = anchor
 	src.started_by = started_by
 	src.trigger_radius = trigger_radius
+	if(focus)
+		focus_ref = WEAKREF(focus)
 	GLOB.scene_runs += src
 
 /datum/admin_scene_run/Destroy()
@@ -415,10 +425,15 @@ GLOBAL_LIST_EMPTY(scene_runs)
 						if(get_area(listener) == place)
 							listeners += listener
 				if("trigger")
-					var/radius = isnull(trigger_radius) ? step["range"] : trigger_radius
-					for(var/mob/living/listener in range(radius, anchor))
-						if(listener.client)
-							listeners += listener
+					if(focus_ref) // an "each player" trigger: only the player who set it off
+						var/mob/focus = focus_ref.resolve()
+						if(focus?.client)
+							listeners += focus
+					else
+						var/radius = isnull(trigger_radius) ? step["range"] : trigger_radius
+						for(var/mob/living/listener in range(radius, anchor))
+							if(listener.client)
+								listeners += listener
 				else
 					for(var/mob/listener in view(step["range"], anchor))
 						listeners += listener
@@ -528,11 +543,12 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	addtimer(CALLBACK(target, TYPE_PROC_REF(/mob, clear_fullscreen), category), max(seconds, 1) SECONDS, TIMER_UNIQUE | TIMER_OVERRIDE)
 
 /// Run a scene id at anchor. Returns the run, or null when the scene is unknown.
-/proc/run_admin_scene(id, turf/anchor, started_by, delay = 0, trigger_radius)
+/// focus: the one player the run is for (an "each player" trigger), see /datum/admin_scene_run.
+/proc/run_admin_scene(id, turf/anchor, started_by, delay = 0, trigger_radius, mob/living/focus)
 	var/list/scene = load_admin_scenes()[id]
 	if(!scene || !anchor)
 		return null
-	var/datum/admin_scene_run/run = new(scene, anchor, started_by, trigger_radius)
+	var/datum/admin_scene_run/run = new(scene, anchor, started_by, trigger_radius, focus)
 	run.start(delay)
 	return run
 
@@ -625,9 +641,14 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	var/scene_id
 	var/radius = 1
-	/// "once" fires one time then deletes itself; "repeat" fires again after the cooldown.
+	/// "once" fires one time then deletes itself; "repeat" fires again after the cooldown;
+	/// "each" fires separately for every player who comes in range, the scene's "In trigger"
+	/// steps reaching only that player, and again for the same player after the cooldown (0: never).
 	var/mode = "once"
+	/// Seconds. In "each" mode it counts per player.
 	var/cooldown = 60
+	/// "each" mode: ckey -> world.time the trigger last fired for that player, this round.
+	var/list/fired_for
 	/// Seconds between being set off and the scene starting.
 	var/delay = 0
 	/// "players" (mobs with a connected player) or "living" (any living mob).
@@ -663,9 +684,9 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	else
 		watcher = new(src, radius)
 	refresh_links()
-	// Someone may already be standing in range when the trigger is placed.
+	// Someone may already be standing in range when the trigger is placed. Each of them, in "each" mode.
 	for(var/mob/living/candidate in range(radius, get_turf(src)))
-		if(try_fire(candidate))
+		if(try_fire(candidate) && mode != "each")
 			return
 
 /// Redraws a line from this trigger (A) to the point B of every teleport in its scene.
@@ -691,9 +712,19 @@ GLOBAL_LIST_EMPTY(scene_runs)
 
 /// Fires when the mob qualifies and the trigger is ready. Returns TRUE when it fired.
 /obj/effect/scene_trigger/proc/try_fire(mob/living/candidate)
-	if(!armed || world.time < next_fire || QDELETED(src))
+	if(!armed || QDELETED(src) || candidate.stat == DEAD)
 		return FALSE
-	if(candidate.stat == DEAD || (who == "players" && !candidate.client))
+	if(mode == "each")
+		// Every player on their own: no shared cooldown, only this player's last time.
+		if(!candidate.ckey || !candidate.client)
+			return FALSE
+		var/last = fired_for?[candidate.ckey]
+		if(!isnull(last) && (!cooldown || world.time < last + cooldown SECONDS))
+			return FALSE
+		LAZYSET(fired_for, candidate.ckey, world.time)
+		INVOKE_ASYNC(src, PROC_REF(fire), candidate)
+		return TRUE
+	if(world.time < next_fire || (who == "players" && !candidate.client))
 		return FALSE
 	next_fire = world.time + cooldown SECONDS // blocks repeats while the scene starts
 	INVOKE_ASYNC(src, PROC_REF(fire), candidate)
@@ -703,12 +734,15 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	fired++
 	log_admin("Scene trigger \"[scene_name()]\" at [AREACOORD(src)] set off by [cause ? key_name(cause) : "an admin"].")
 	if(cause)
-		message_admins(span_adminnotice("Scene \"[scene_name()]\" was triggered by [key_name_admin(cause)] at [ADMIN_VERBOSEJMP(src)]."))
-	run_admin_scene(scene_id, get_turf(src), "trigger placed by [placed_by]", delay SECONDS, radius)
+		message_admins(span_adminnotice("Scene \"[scene_name()]\" was triggered by [key_name_admin(cause)] at [ADMIN_VERBOSEJMP(src)][mode == "each" ? " (for this player only)" : ""]."))
+	// An "each player" trigger set off by a player runs the scene for that player alone.
+	var/mob/living/focus = (mode == "each") ? cause : null
+	run_admin_scene(scene_id, get_turf(src), "trigger placed by [placed_by]", delay SECONDS, radius, focus)
 	if(mode == "once")
 		qdel(src)
 		return
-	next_fire = world.time + cooldown SECONDS
+	if(mode == "repeat")
+		next_fire = world.time + cooldown SECONDS
 
 /// Line from a trigger to a teleport's point B. Seen only by admins and ghosts.
 /obj/effect/scene_link
@@ -807,6 +841,8 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			"where" = "[get_area_name(trigger, TRUE)] ([trigger.x], [trigger.y], [trigger.z])",
 			"radius" = trigger.radius,
 			"mode" = trigger.mode,
+			"cooldown" = trigger.cooldown,
+			"players" = LAZYLEN(trigger.fired_for),
 			"armed" = trigger.armed,
 			"fired" = trigger.fired,
 		))
@@ -1134,8 +1170,13 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			var/obj/effect/scene_trigger/trigger = new(here)
 			trigger.scene_id = scene["id"]
 			trigger.placed_by = key_name(user)
-			trigger.mode = params["mode"] == "repeat" ? "repeat" : "once"
-			trigger.cooldown = clamp(text2num("[params["cooldown"]]") || 60, 5, 3600)
+			trigger.mode = (params["mode"] in list("repeat", "each")) ? params["mode"] : "once"
+			// Per player, 0 means once for each player; a shared repeat needs a real pause.
+			var/cooldown = text2num("[params["cooldown"]]")
+			if(trigger.mode == "each")
+				trigger.cooldown = clamp(isnum(cooldown) ? cooldown : 0, 0, 3600)
+			else
+				trigger.cooldown = clamp(cooldown || 60, 5, 3600)
 			trigger.delay = clamp(text2num("[params["delay"]]") || 0, 0, 3600)
 			trigger.who = params["who"] == "living" ? "living" : "players"
 			trigger.name = "scene trigger: [scene["name"]]"

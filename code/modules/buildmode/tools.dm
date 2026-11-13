@@ -6,7 +6,13 @@
  * the catalogue shows each tool's hotkey next to its button.
  *
  * Area tools follow the mouse: the middle button (or the left button with an area tool picked)
- * is held down on the first corner and released on the opposite one.
+ * is held down on the first corner and released on the opposite one. Erasing also works as a
+ * left drag with the Delete tool, and as Ctrl + left drag with Paint area; a press that does not
+ * leave its tile stays an ordinary click (delete one object, copy).
+ *
+ * Every map position is the tile under the cursor (cursor_turf()), not the turf of the clicked
+ * object: big sprites hang over their neighbours, and in darkness or outside the field of view
+ * the click catcher gets the mouse instead of the map.
  */
 
 /datum/buildmode
@@ -23,6 +29,8 @@
 	var/area_button
 	/// Whether the drag in progress erases instead of painting.
 	var/area_erase = FALSE
+	/// The press is also an ordinary click: it only becomes a rectangle once it leaves its tile.
+	var/area_needs_move = FALSE
 	/// Outline of the dragged rectangle, shown only to the builder.
 	var/list/area_images
 
@@ -148,7 +156,7 @@
 			if(!selected_item)
 				to_chat(c, span_warning("Pick something in the catalogue first."))
 				return
-			place_selected(get_turf(object), c.mob)
+			place_selected(cursor_turf(object, modifiers), c.mob)
 		if(BM_TOOL_PIXEL)
 			if(!selected_item)
 				to_chat(c, span_warning("Pick something in the catalogue first."))
@@ -157,7 +165,7 @@
 			if(cursor)
 				place_selected(cursor[1], c.mob, cursor[2], cursor[3])
 			else
-				place_selected(get_turf(object), c.mob)
+				place_selected(cursor_turf(object, modifiers), c.mob)
 		if(BM_TOOL_COPY)
 			// After taking a copy, the next left click places it instead of copying again.
 			if(copy_object(object))
@@ -176,21 +184,53 @@
 		return null
 	if(LAZYACCESS(modifiers, MIDDLE_CLICK))
 		return LAZYACCESS(modifiers, CTRL_CLICKED) ? "erase" : "paint"
-	if(!LAZYACCESS(modifiers, LEFT_CLICK))
+	if(!LAZYACCESS(modifiers, LEFT_CLICK) || LAZYACCESS(modifiers, ALT_CLICKED) || LAZYACCESS(modifiers, SHIFT_CLICKED))
 		return null
-	if(LAZYACCESS(modifiers, CTRL_CLICKED) || LAZYACCESS(modifiers, ALT_CLICKED) || LAZYACCESS(modifiers, SHIFT_CLICKED))
-		return null
-	if(active_tool == BM_TOOL_AREA)
-		return "paint"
-	if(active_tool == BM_TOOL_ERASE)
-		return "erase"
+	var/ctrl = LAZYACCESS(modifiers, CTRL_CLICKED)
+	switch(active_tool)
+		if(BM_TOOL_AREA)
+			return ctrl ? "erase" : "paint" // Ctrl: the same as Ctrl + middle drag
+		if(BM_TOOL_ERASE, BM_TOOL_DELETE)
+			return ctrl ? null : "erase"
 	return null
 
-/// The turf under a mouse event, or null for the HUD and anything off the map.
-/proc/buildmode_event_turf(atom/object)
-	if(!isatom(object) || istype(object, /atom/movable/screen))
+/// Whether a press that starts an area drag is also an ordinary click (Ctrl + left copies, left with
+/// Delete deletes one object). Such a press only becomes a rectangle once it reaches another tile.
+/datum/buildmode/proc/area_drag_needs_move(list/modifiers)
+	if(LAZYACCESS(modifiers, MIDDLE_CLICK))
+		return FALSE
+	return LAZYACCESS(modifiers, CTRL_CLICKED) || active_tool == BM_TOOL_DELETE
+
+/**
+ * The tile under the mouse pointer for a click or mouse event on object, or null (HUD, off the map).
+ *
+ * A sprite bigger than a tile (trees, large furniture, an item shifted by its pixel offset) hangs
+ * over its neighbours. The clicked pixel (icon-x / icon-y) decides the tile, not the turf the object
+ * stands on: otherwise a copy placed beside a large original lands on the original's own tile.
+ * In darkness and outside the field of view the click catcher, a screen object, gets the mouse;
+ * its screen position is mapped to the turf, as the catcher itself does for ordinary clicks.
+ */
+/datum/buildmode/proc/cursor_turf(atom/object, list/modifiers)
+	if(!isatom(object))
 		return null
-	return get_turf(object)
+	if(istype(object, /atom/movable/screen))
+		if(!holder || !istype(object, /atom/movable/screen/click_catcher))
+			return null
+		var/screen_loc = LAZYACCESS(modifiers, SCREEN_LOC)
+		return screen_loc ? params2turf(screen_loc, get_turf(holder.eye), holder) : null
+	var/turf/base = get_turf(object)
+	if(!base || isturf(object) || object.loc != base)
+		return base
+	var/icon_x = text2num(LAZYACCESS(modifiers, ICON_X))
+	var/icon_y = text2num(LAZYACCESS(modifiers, ICON_Y))
+	if(!isnum(icon_x) || !isnum(icon_y))
+		return base
+	var/atom/movable/thing = object
+	var/tiles_x = FLOOR((icon_x - 1 + thing.pixel_x + thing.pixel_w) / world.icon_size, 1)
+	var/tiles_y = FLOOR((icon_y - 1 + thing.pixel_y + thing.pixel_z) / world.icon_size, 1)
+	if(!tiles_x && !tiles_y)
+		return base
+	return locate(base.x + tiles_x, base.y + tiles_y, base.z) || base
 
 /datum/buildmode/proc/on_client_mousedown(client/source, atom/object, location, control, params)
 	SIGNAL_HANDLER
@@ -198,7 +238,7 @@
 	var/kind = area_drag_kind(modifiers)
 	if(!kind)
 		return
-	var/turf/start = buildmode_event_turf(object)
+	var/turf/start = cursor_turf(object, modifiers)
 	if(!start)
 		return
 	clear_area()
@@ -206,13 +246,15 @@
 	area_end = start
 	area_erase = (kind == "erase")
 	area_button = LAZYACCESS(modifiers, MIDDLE_CLICK) ? MIDDLE_CLICK : LEFT_CLICK
-	draw_area()
+	area_needs_move = area_drag_needs_move(modifiers)
+	if(!area_needs_move) // a click that may stay a click shows no rectangle until it moves
+		draw_area()
 
 /datum/buildmode/proc/on_client_mousedrag(client/source, src_object, atom/over_object, src_location, over_location, src_control, over_control, params)
 	SIGNAL_HANDLER
 	if(!area_start)
 		return
-	var/turf/over = buildmode_event_turf(over_object)
+	var/turf/over = cursor_turf(over_object, params2list(params))
 	if(!over || over == area_end || over.z != area_start.z)
 		return
 	area_end = over
@@ -223,15 +265,23 @@
 	if(!area_start)
 		return
 	var/list/modifiers = params2list(params)
-	if(!LAZYACCESS(modifiers, area_button))
+	// Only the button that started the drag ends it. A release that names no button still counts.
+	var/released_button = LAZYACCESS(modifiers, LEFT_CLICK) ? LEFT_CLICK : (LAZYACCESS(modifiers, MIDDLE_CLICK) ? MIDDLE_CLICK : (LAZYACCESS(modifiers, RIGHT_CLICK) ? RIGHT_CLICK : null))
+	if(released_button && released_button != area_button)
 		return
-	var/turf/released = buildmode_event_turf(object)
-	if(released && released.z == area_start.z)
-		area_end = released
+	// The drag already tracked the far corner; the release position only matters when no drag
+	// event arrived (a press and release on two tiles faster than the mouse reports moves).
+	if(area_end == area_start)
+		var/turf/released = cursor_turf(object, modifiers)
+		if(released && released.z == area_start.z)
+			area_end = released
 	var/turf/corner_a = area_start
 	var/turf/corner_b = area_end
 	var/erase = area_erase
+	var/needs_move = area_needs_move
 	clear_area()
+	if(needs_move && corner_a == corner_b)
+		return // it stayed on one tile: the ordinary click (copy, delete one object) handles it
 	INVOKE_ASYNC(src, PROC_REF(apply_area), corner_a, corner_b, erase)
 
 /// Outlines the dragged rectangle. Only the border is drawn, so big rectangles stay cheap.
@@ -270,6 +320,7 @@
 	area_start = null
 	area_end = null
 	area_button = null
+	area_needs_move = FALSE
 
 /// Paints the rectangle with the selection, or erases the objects in it. Turfs are never erased.
 /datum/buildmode/proc/apply_area(turf/corner_a, turf/corner_b, erase)
@@ -384,5 +435,8 @@
 			copy.vars[var_name] = value
 		catch
 			continue
+	// Whatever the copied variables did, the copy stands where it was placed, never on the original.
+	if(!QDELETED(copy) && copy.loc != newloc)
+		copy.forceMove(newloc)
 	copy.update_appearance()
 	return copy

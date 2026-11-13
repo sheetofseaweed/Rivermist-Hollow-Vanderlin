@@ -53,6 +53,9 @@ type Data = {
     where: string;
     radius: number;
     mode: string;
+    cooldown: number;
+    /** "each" mode: how many players have set it off. */
+    players: number;
     armed: boolean;
     fired: number;
   }[];
@@ -724,6 +727,8 @@ export const AdminScenes = () => {
   const [radius, setRadius] = useState(2);
   const [mode, setMode] = useState('once');
   const [cooldown, setCooldown] = useState(60);
+  // "Each player" counts its pause per player; 0 = once for every player.
+  const [eachCooldown, setEachCooldown] = useState(0);
   const [triggerDelay, setTriggerDelay] = useState(0);
   const [who, setWho] = useState('players');
   const [captureRadius, setCaptureRadius] = useState(3);
@@ -784,7 +789,11 @@ export const AdminScenes = () => {
                   <div>
                     <b>{trigger.scene}</b>
                     <div className="Scenes__dim">
-                      {trigger.where} · r{trigger.radius} · {trigger.mode} · fired {trigger.fired}
+                      {trigger.where} · r{trigger.radius} ·{' '}
+                      {trigger.mode === 'each'
+                        ? `each player${trigger.cooldown ? `, every ${trigger.cooldown}s` : ', once'} · ${trigger.players} players`
+                        : trigger.mode}{' '}
+                      · fired {trigger.fired}
                     </div>
                   </div>
                   <div className="Scenes__triggerButtons">
@@ -969,14 +978,16 @@ export const AdminScenes = () => {
                     <div className="Scenes__field">
                       <span>Radius</span>
                       <Num value={radius} min={0} max={10} unit="t" onChange={setRadius} />
-                      <Choice
-                        value={who}
-                        options={[
-                          ['players', 'Players'],
-                          ['living', 'Any living'],
-                        ]}
-                        onPick={setWho}
-                      />
+                      {mode !== 'each' && (
+                        <Choice
+                          value={who}
+                          options={[
+                            ['players', 'Players'],
+                            ['living', 'Any living'],
+                          ]}
+                          onPick={setWho}
+                        />
+                      )}
                     </div>
                     <div className="Scenes__field">
                       <Choice
@@ -984,6 +995,7 @@ export const AdminScenes = () => {
                         options={[
                           ['once', 'Once'],
                           ['repeat', 'Repeat'],
+                          ['each', 'Each player'],
                         ]}
                         onPick={setMode}
                       />
@@ -993,14 +1005,41 @@ export const AdminScenes = () => {
                           <Num value={cooldown} min={5} max={3600} step={5} unit="s" width="56px" onChange={setCooldown} />
                         </>
                       )}
+                      {mode === 'each' && (
+                        <>
+                          <span>again after</span>
+                          <Num
+                            value={eachCooldown}
+                            min={0}
+                            max={3600}
+                            step={5}
+                            unit="s"
+                            width="56px"
+                            onChange={setEachCooldown}
+                          />
+                        </>
+                      )}
                       <span>delay</span>
                       <Num value={triggerDelay} min={0} max={3600} unit="s" width="52px" onChange={setTriggerDelay} />
                     </div>
+                    {mode === 'each' && (
+                      <div className="Scenes__dim">
+                        Every player who comes in range sets it off for themselves
+                        {eachCooldown ? `, and again ${eachCooldown}s later` : ', once'}. Steps aimed at
+                        "In trigger" reach only that player; other targets work as usual.
+                      </div>
+                    )}
                     <Button
                       icon="crosshairs"
                       disabled={!selected.steps.length}
                       onClick={() =>
-                        act('place_trigger', { radius, mode, cooldown, delay: triggerDelay, who })
+                        act('place_trigger', {
+                          radius,
+                          mode,
+                          cooldown: mode === 'each' ? eachCooldown : cooldown,
+                          delay: triggerDelay,
+                          who: mode === 'each' ? 'players' : who,
+                        })
                       }
                     >
                       Place trigger

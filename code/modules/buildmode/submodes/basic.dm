@@ -11,6 +11,7 @@
 	to_chat(c, span_notice("Shift + left click               = Place at the exact pixel under the cursor"))
 	to_chat(c, span_notice("Middle button drag               = Paint the rectangle with the selection"))
 	to_chat(c, span_notice("Ctrl + middle button drag        = Erase objects in the rectangle"))
+	to_chat(c, span_notice("                                   (also a left drag with Delete, or Ctrl + left drag with Paint area)"))
 	to_chat(c, span_notice("Ctrl + left click on an object   = Copy it exactly, variables included"))
 	to_chat(c, span_notice("Alt + left click                 = Pick the type of what you clicked"))
 	to_chat(c, span_notice("Right click                      = Clear the selection; with nothing selected, delete"))

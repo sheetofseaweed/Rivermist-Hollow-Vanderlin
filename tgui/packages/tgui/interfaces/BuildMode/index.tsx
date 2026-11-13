@@ -128,15 +128,15 @@ const TOOLS: Tool[] = [
     name: 'Paint area',
     icon: 'th',
     keys: 'MMB drag',
-    tip: 'Hold the button on one corner and release on the opposite one: every tile in the rectangle gets the selection.',
-    hint: 'Hold left button on one corner, release on the other: fill the rectangle',
+    tip: 'Hold the button on one corner and release on the opposite one: every tile in the rectangle gets the selection. Hold Ctrl while dragging to erase the rectangle instead.',
+    hint: 'Hold left button on one corner, release on the other: fill the rectangle (Ctrl + drag: erase it)',
   },
   {
     id: 'erase',
     name: 'Erase area',
     icon: 'eraser',
     keys: 'Ctrl+MMB drag',
-    tip: 'Drag a rectangle: objects and mindless mobs in it are deleted. Players, landmarks and turfs are kept.',
+    tip: 'Drag a rectangle: objects and mindless mobs in it are deleted. Players, landmarks and turfs are kept. Also works as a left drag with Delete picked, or Ctrl + left drag with Paint area. Ctrl+Z brings them back.',
     hint: 'Hold left button on one corner, release on the other: delete objects in the rectangle',
   },
   {
@@ -160,8 +160,8 @@ const TOOLS: Tool[] = [
     name: 'Delete',
     icon: 'trash',
     keys: 'Ctrl+RMB',
-    tip: 'Left click deletes the clicked object, or strips the top layer of a turf. Players are never deleted. Ctrl + right click does the same at any time, even when right-click deleting is locked.',
-    hint: 'Left click: delete the object, or strip the top turf layer',
+    tip: 'Left click deletes the clicked object, or strips the top layer of a turf. Drag over several tiles to erase every object in the rectangle. Players are never deleted. Ctrl + right click deletes one object at any time, even when right-click deleting is locked.',
+    hint: 'Left click: delete the object, or strip the top turf layer · drag: erase a rectangle',
   },
 ];
 
