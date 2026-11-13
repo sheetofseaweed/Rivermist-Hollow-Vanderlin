@@ -7,7 +7,8 @@
 	if(!isliving(target))
 		return ELEMENT_INCOMPATIBLE
 	target.AddElement(/datum/element/relay_attackers)
-	RegisterSignal(target, COMSIG_DO_AFTER_BEGAN, PROC_REF(on_do_after_begin))
+	// Controllers add this on every possession and never remove it, so a re-possessed pawn attaches twice.
+	RegisterSignal(target, COMSIG_DO_AFTER_BEGAN, PROC_REF(on_do_after_begin), override = TRUE)
 
 /datum/element/interrupt_on_damage/Detach(mob/living/target)
 	. = ..()

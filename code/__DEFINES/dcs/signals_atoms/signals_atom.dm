@@ -36,8 +36,10 @@
 #define COMSIG_ATOM_ATTACK_PAW "atom_attack_paw"
 /// From base of atom/animal_attack(): (/mob/user)
 #define COMSIG_ATOM_ATTACK_ANIMAL "attack_animal"
-/// From relay_attackers element: (atom/attacker, attack_flags)
+/// From relay_attackers element: (atom/attacker, damage, attack_flags)
 #define COMSIG_ATOM_WAS_ATTACKED "atom_was_attacked"
+	/// An empty hand in combat mode, whatever its intent: touches, grabs and shoves arrive this way, not only punches.
+	#define ATTACKER_EMPTY_HAND (1<<0)
 
 /* Attack signals. They should share the returned flags, to standardize the attack chain. */
 /// tool_act -> pre_attack -> target.attackby (item.attack) -> afterattack

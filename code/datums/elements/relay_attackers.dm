@@ -37,7 +37,8 @@
 	SIGNAL_HANDLER
 	if(!attacker.cmode)
 		return
-	relay_attacker(target, attacker, 10)
+	// Agent NPC: flagged so a listener can tell a punch from a grab.
+	relay_attacker(target, attacker, 10, ATTACKER_EMPTY_HAND)
 
 /datum/element/relay_attackers/proc/on_attack_npc(atom/target, mob/living/attacker)
 	SIGNAL_HANDLER
@@ -68,5 +69,5 @@
 	relay_attacker(target, thrown_by, hit_item.throwforce)
 
 /// Send out a signal identifying whoever just attacked us (usually a mob but sometimes a mech or turret)
-/datum/element/relay_attackers/proc/relay_attacker(atom/victim, atom/attacker, damage)
-	SEND_SIGNAL(victim, COMSIG_ATOM_WAS_ATTACKED, attacker, damage)
+/datum/element/relay_attackers/proc/relay_attacker(atom/victim, atom/attacker, damage, attack_flags = NONE)
+	SEND_SIGNAL(victim, COMSIG_ATOM_WAS_ATTACKED, attacker, damage, attack_flags)
