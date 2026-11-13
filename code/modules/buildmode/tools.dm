@@ -69,12 +69,15 @@
 	return template
 
 /// Builds one copy of the selection on target: an exact duplicate when copying, a fresh instance otherwise.
-/datum/buildmode/proc/spawn_one(turf/target, atom/movable/template)
+/// built_type pins the type for actions that sleep, so a new pick meanwhile does not change what they build.
+/datum/buildmode/proc/spawn_one(turf/target, atom/movable/template, built_type = selected_item)
 	var/atom/movable/built
-	if(template)
+	if(template && !QDELETED(template))
 		built = buildmode_duplicate(template, target)
 	else
-		built = new selected_item(target)
+		if(!built_type)
+			return null
+		built = new built_type(target)
 	if(QDELETED(built))
 		return null
 	built.flags_1 |= ADMIN_SPAWNED_1
@@ -257,7 +260,8 @@
 	holder.images += area_images
 	var/width = max_x - min_x + 1
 	var/height = max_y - min_y + 1
-	item_browser?.set_status("[area_erase ? "Erase" : "Paint"] area: [width] x [height] ([width * height] tiles). Release to apply.")
+	// Called on every tile the mouse crosses: the catalogue window is refreshed a few times a second, not each time.
+	item_browser?.set_status_soon("[area_erase ? "Erase" : "Paint"] area: [width] x [height] ([width * height] tiles). Release to apply.")
 
 /datum/buildmode/proc/clear_area()
 	if(holder && length(area_images))
@@ -284,39 +288,43 @@
 		if(answer != "Yes" || QDELETED(src) || !holder)
 			return
 	var/user_key = key_name(holder)
+	// Up to BM_AREA_MAX_TILES tiles of constructors or ChangeTurf(): spread over ticks (CHECK_TICK)
+	// instead of freezing the server for everyone. This proc runs async, so it may sleep.
 	if(erase)
 		var/removed = 0
-		begin_undo("erase [tiles] tiles")
+		var/datum/buildmode_undo/erase_step = begin_undo("erase [tiles] tiles")
 		for(var/turf/target as anything in region)
 			for(var/atom/movable/thing as anything in target)
 				if(!buildmode_can_erase(thing))
 					continue
-				undoable_delete(thing)
+				undoable_delete(thing, erase_step)
 				removed++
-		end_undo()
+			CHECK_TICK
+		end_undo(erase_step)
 		log_admin("Build Mode: [user_key] erased [removed] objects from [AREACOORD(corner_a)] through [AREACOORD(corner_b)].")
-		item_browser?.set_status("Erased [removed] objects on [tiles] tiles.")
+		if(!QDELETED(src))
+			item_browser?.set_status("Erased [removed] objects on [tiles] tiles.")
 		return
 	var/painting = selected_item
 	var/atom/movable/template = copy_template()
 	var/created = 0
-	begin_undo("paint [tiles] tiles")
+	var/datum/buildmode_undo/paint_step = begin_undo("paint [tiles] tiles")
 	for(var/turf/target as anything in region)
 		if(QDELETED(src))
 			break
 		if(ispath(painting, /turf))
-			undo_note_turf(target)
+			paint_step.note_turf(target)
 			var/turf/replacement = target.ChangeTurf(painting)
 			if(replacement)
 				replacement.flags_1 |= ADMIN_SPAWNED_1
 				created++
-			continue
-		var/atom/movable/built = spawn_one(target, template)
-		if(built)
-			undo_note_created(built)
-			created++
-	if(!QDELETED(src))
-		end_undo()
+		else
+			var/atom/movable/built = spawn_one(target, template, painting)
+			if(built)
+				paint_step.note_created(built)
+				created++
+		CHECK_TICK
+	end_undo(paint_step) // drops the step when the admin left build mode meanwhile
 	log_admin("Build Mode: [user_key] painted [created] of [painting][template ? " (copy)" : ""] from [AREACOORD(corner_a)] through [AREACOORD(corner_b)].")
 	if(!QDELETED(src))
 		item_browser?.set_status("Painted [created] tiles.")
@@ -345,17 +353,24 @@
 	var/atom/movable/copy = new original.type(newloc)
 	if(QDELETED(copy))
 		return null
-	var/static/list/skipped = list(
-		"type", "parent_type", "vars", "verbs", "tag", "loc", "locs", "x", "y", "z", "contents",
-		"vis_locs", "vis_contents", "overlays", "underlays", "appearance", "managed_overlays",
-		"managed_vis_overlays", "area", "ckey", "key", "client", "mind", "reagents",
-		"datum_flags", "gc_destroyed", "weak_reference", "cooldowns", "active_timers",
-		"important_recursive_contents", "pulledby", "pulling", "buckled_mobs", "orbiters",
-		"light", "light_sources", "stat", "screen_loc", "plane", "flags_1", "atom_storage",
-		"spatial_grid_key", "group", "power_supply", "atmos_adjacent_turfs", "comp_lookup",
-	)
+	// var name -> TRUE: a keyed lookup per var instead of a scan of this list (an area paint copies thousands of times).
+	var/static/list/skipped
+	if(!skipped)
+		skipped = list()
+		for(var/skipped_name in list(
+			"type", "parent_type", "vars", "verbs", "tag", "loc", "locs", "x", "y", "z", "contents",
+			"vis_locs", "vis_contents", "overlays", "underlays", "appearance", "managed_overlays",
+			"managed_vis_overlays", "area", "ckey", "key", "client", "mind", "reagents",
+			"datum_flags", "gc_destroyed", "weak_reference", "cooldowns", "active_timers",
+			"important_recursive_contents", "pulledby", "pulling", "buckled_mobs", "orbiters",
+			"light", "light_sources", "stat", "screen_loc", "plane", "flags_1", "atom_storage",
+			"spatial_grid_key", "group", "power_supply", "atmos_adjacent_turfs", "comp_lookup",
+			// Datum bookkeeping this codebase names without the "_" prefix.
+			"signal_procs", "signal_enabled", "status_traits", "open_uis",
+		))
+			skipped[skipped_name] = TRUE
 	for(var/var_name in original.vars)
-		if(var_name in skipped)
+		if(skipped[var_name])
 			continue
 		if(copytext(var_name, 1, 2) == "_") // internal lists: signals, components, traits...
 			continue

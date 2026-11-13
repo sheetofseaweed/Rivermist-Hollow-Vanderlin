@@ -3,7 +3,7 @@
  * Steps: spawn groups (picked from a searchable list or captured from the map), narration, sound,
  * doors, teleports (with a line from the trigger to point B), effects and buffs, waits, cleanup.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   DmIcon,
@@ -386,6 +386,10 @@ const SCREEN_COLORS: [string, string][] = [
 
 const NarrateEditor = (props: { step: Step; edit: (field: string, value: any) => void }) => {
   const { step, edit } = props;
+  // The text is sent when the field loses focus (or on Enter), not on every keystroke: each edit
+  // saves every scene to disk and resends the window. The draft keeps the preview live meanwhile.
+  const [draft, setDraft] = useState<string>(step.text);
+  useEffect(() => setDraft(step.text), [step.text]);
   const screen = step.display !== 'chat';
   const previewFont =
     step.font === 'pixel' ? "'Pixelify Sans', 'Pterra', sans-serif" : "'Pterra', sans-serif";
@@ -396,7 +400,8 @@ const NarrateEditor = (props: { step: Step; edit: (field: string, value: any) =>
         height="54px"
         placeholder="What the players read"
         value={step.text}
-        onChange={(value) => edit('text', value)}
+        onChange={setDraft}
+        onBlur={(value) => value !== step.text && edit('text', value)}
       />
       <div className="Scenes__field">
         <span>To</span>
@@ -504,7 +509,7 @@ const NarrateEditor = (props: { step: Step; edit: (field: string, value: any) =>
             className={`Scenes__screenPreview Scenes__screenPreview--${step.position}`}
             style={{ fontFamily: previewFont, fontSize: `${step.size}px`, color: step.color }}
           >
-            {step.text || 'Preview of the text on screen'}
+            {draft || 'Preview of the text on screen'}
           </div>
         </div>
       )}
@@ -581,10 +586,9 @@ const StepEditor = (props: { step: Step; index: number; count: number }) => {
           </div>
           <Input
             fluid
-            expensive
             placeholder="Message shown to whoever is moved (optional)"
             value={step.message}
-            onChange={(value) => edit('message', value)}
+            onBlur={(value) => value !== step.message && edit('message', value)}
           />
         </div>
       )}
@@ -633,7 +637,7 @@ const StepEditor = (props: { step: Step; index: number; count: number }) => {
                 height="48px"
                 placeholder="What the targets read (only they see it)"
                 value={step.text}
-                onChange={(value) => edit('text', value)}
+                onBlur={(value) => value !== step.text && edit('text', value)}
               />
               <div className="Scenes__field">
                 <span>Style</span>
@@ -661,10 +665,9 @@ const StepEditor = (props: { step: Step; index: number; count: number }) => {
             <span>File</span>
             <Input
               fluid
-              expensive
               placeholder="sound/..../something.ogg"
               value={step.path}
-              onChange={(value) => edit('path', value)}
+              onBlur={(value) => value !== step.path && edit('path', value)}
             />
           </div>
           <div className="Scenes__field">
@@ -858,10 +861,9 @@ export const AdminScenes = () => {
                 <div className="Scenes__titleBar">
                   <Input
                     fluid
-                    expensive
                     disabled={readOnly}
                     value={selected.name}
-                    onChange={(value) => act('rename', { name: value })}
+                    onBlur={(value) => value !== selected.name && act('rename', { name: value })}
                   />
                   <Button.Checkbox
                     checked={!!selected.shared}

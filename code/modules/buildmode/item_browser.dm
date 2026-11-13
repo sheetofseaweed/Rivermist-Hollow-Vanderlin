@@ -75,6 +75,12 @@ GLOBAL_DATUM_INIT(buildmode_catalog_state, /datum/ui_state/buildmode_catalog, ne
 	status = text
 	SStgui.update_uis(src)
 
+/// set_status() for text that changes many times a second (an area drag): every update resends
+/// the catalogue page, so the window is refreshed at most every quarter second, with the latest text.
+/datum/buildmode_item_browser/proc/set_status_soon(text)
+	status = text
+	addtimer(CALLBACK(src, PROC_REF(send_selection)), 0.25 SECONDS, TIMER_UNIQUE)
+
 /datum/buildmode_item_browser/ui_state(mob/user)
 	return GLOB.buildmode_catalog_state
 

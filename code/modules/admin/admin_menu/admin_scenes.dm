@@ -301,9 +301,12 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			for(var/mob/living/candidate in range(radius, anchor))
 				found += candidate
 		if("area")
+			// Walk the mob lists, not the area: an outdoor area spans most of the map, and its
+			// contents are every turf and every object on it.
 			var/area/place = get_area(anchor)
-			for(var/mob/living/candidate in place)
-				found += candidate
+			for(var/mob/living/candidate in (step["include"] == "players" ? GLOB.player_list : GLOB.mob_living_list))
+				if(get_area(candidate) == place)
+					found += candidate
 		if("player")
 			var/mob/living/candidate = get_mob_by_ckey(step["player"])
 			if(istype(candidate))
@@ -335,7 +338,9 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	var/list/steps
 	var/turf/anchor
 	var/started_by
-	/// Weakrefs to everything this run spawned, for the cleanup step.
+	/// What this run spawned and is still in the world, for the cleanup step. Watched with
+	/// COMSIG_PARENT_QDELETING, not weakrefs: a big spawn group would mint a REF() text per object
+	/// in creation order, the pattern that makes BYOND stop and re-sort its whole string table.
 	var/list/spawned = list()
 	var/stopped = FALSE
 	var/current_step = 0
@@ -353,7 +358,12 @@ GLOBAL_LIST_EMPTY(scene_runs)
 /datum/admin_scene_run/Destroy()
 	GLOB.scene_runs -= src
 	anchor = null
+	spawned = null // the parent unregisters the deletion watch on what is left
 	return ..()
+
+/datum/admin_scene_run/proc/forget_spawned(atom/movable/source)
+	SIGNAL_HANDLER
+	spawned -= source
 
 /datum/admin_scene_run/proc/start(delay = 0)
 	set waitfor = FALSE
@@ -390,7 +400,8 @@ GLOBAL_LIST_EMPTY(scene_runs)
 						continue
 					made.flags_1 |= ADMIN_SPAWNED_1
 					made.setDir(item["dir"])
-					spawned += WEAKREF(made)
+					spawned += made
+					RegisterSignal(made, COMSIG_PARENT_QDELETING, PROC_REF(forget_spawned), override = TRUE)
 		if("narrate")
 			if(!length(step["text"]))
 				return
@@ -456,11 +467,12 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			for(var/mob/living/target as anything in scene_targets(step, anchor, src))
 				scene_apply_effect(target, step)
 		if("cleanup")
-			for(var/datum/weakref/ref as anything in spawned)
-				var/atom/movable/made = ref.resolve()
+			var/list/made_list = spawned
+			spawned = list()
+			for(var/atom/movable/made as anything in made_list)
+				UnregisterSignal(made, COMSIG_PARENT_QDELETING) // or every qdel below rescans the list
 				if(!QDELETED(made))
 					qdel(made)
-			spawned.Cut()
 
 /proc/scene_styled_text(text, style)
 	if(!length(text))
@@ -769,9 +781,50 @@ GLOBAL_LIST_EMPTY(scene_runs)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		ui = new(user, src, "AdminScenes", "Scenes")
-		ui.set_autoupdate(FALSE) // actions refresh it; triggers and running scenes every 5 seconds
+		ui.set_autoupdate(FALSE) // actions refresh it fully; live_pulse() sends triggers and running scenes every 5 seconds
 		ui.open()
-		admin_ui_slow_refresh(src, 5 SECONDS)
+		addtimer(CALLBACK(src, PROC_REF(live_pulse)), 5 SECONDS, TIMER_UNIQUE)
+
+/**
+ * Every 5 seconds: only what changes without the admin doing anything (triggers, running scenes,
+ * players, where the admin stands). The scenes themselves, up to SCENE_MAX_STEPS steps of
+ * SCENE_MAX_ITEMS objects each, only change through actions, and those send everything.
+ * The window keeps the keys this update leaves out.
+ */
+/datum/admin_scene_editor/proc/live_pulse()
+	if(!LAZYLEN(open_uis))
+		return
+	for(var/datum/tgui/ui as anything in open_uis)
+		ui.send_update(live_data(ui.user))
+	addtimer(CALLBACK(src, PROC_REF(live_pulse)), 5 SECONDS, TIMER_UNIQUE)
+
+/datum/admin_scene_editor/proc/live_data(mob/user)
+	var/list/trigger_list = list()
+	for(var/obj/effect/scene_trigger/trigger as anything in GLOB.scene_triggers)
+		trigger_list += list(list(
+			"ref" = REF(trigger),
+			"scene" = trigger.scene_name(),
+			"where" = "[get_area_name(trigger, TRUE)] ([trigger.x], [trigger.y], [trigger.z])",
+			"radius" = trigger.radius,
+			"mode" = trigger.mode,
+			"armed" = trigger.armed,
+			"fired" = trigger.fired,
+		))
+	var/list/run_list = list()
+	for(var/datum/admin_scene_run/run as anything in GLOB.scene_runs)
+		run_list += list(list("ref" = REF(run), "scene" = run.scene_name, "step" = run.current_step, "steps" = length(run.steps)))
+	var/list/players = list()
+	for(var/mob/living/player in GLOB.player_list)
+		players += list(list("ckey" = player.ckey, "name" = "[player.real_name || player.name]"))
+	var/turf/here = get_turf(user)
+	var/datum/buildmode/build_mode = user?.client?.click_intercept
+	return list(
+		"triggers" = trigger_list,
+		"runs" = run_list,
+		"players" = players,
+		"build_selection" = istype(build_mode) && build_mode.selected_item ? "[build_mode.selected_item]" : null,
+		"here" = here ? list(here.x, here.y, here.z) : null,
+	)
 
 /datum/admin_scene_editor/ui_close(mob/user)
 	. = ..()
@@ -806,25 +859,6 @@ GLOBAL_LIST_EMPTY(scene_runs)
 		))
 	if(selected_id && !scene_visible_to(scenes[selected_id], user.ckey))
 		selected_id = null
-	var/list/trigger_list = list()
-	for(var/obj/effect/scene_trigger/trigger as anything in GLOB.scene_triggers)
-		trigger_list += list(list(
-			"ref" = REF(trigger),
-			"scene" = trigger.scene_name(),
-			"where" = "[get_area_name(trigger, TRUE)] ([trigger.x], [trigger.y], [trigger.z])",
-			"radius" = trigger.radius,
-			"mode" = trigger.mode,
-			"armed" = trigger.armed,
-			"fired" = trigger.fired,
-		))
-	var/list/run_list = list()
-	for(var/datum/admin_scene_run/run as anything in GLOB.scene_runs)
-		run_list += list(list("ref" = REF(run), "scene" = run.scene_name, "step" = run.current_step, "steps" = length(run.steps)))
-	var/list/players = list()
-	for(var/mob/living/player in GLOB.player_list)
-		players += list(list("ckey" = player.ckey, "name" = "[player.real_name || player.name]"))
-	var/turf/here = get_turf(user)
-	var/datum/buildmode/build_mode = user.client?.click_intercept
 	// Icons of the objects in the selected scene's spawn groups, for the editor.
 	var/list/icons = list()
 	if(selected_id)
@@ -837,20 +871,15 @@ GLOBAL_LIST_EMPTY(scene_runs)
 				var/atom/item_type = text2path(item["path"])
 				if(item_type)
 					icons[item["path"]] = list("[initial(item_type.icon)]", "[initial(item_type.icon_state)]", "[initial(item_type.name)]")
-	return list(
-		"icons" = icons,
-		"scenes" = scene_list,
-		"selected" = selected_id ? scenes[selected_id] : null,
-		"can_edit" = selected_id ? scene_editable_by(scenes[selected_id], user.ckey) : FALSE,
-		"triggers" = trigger_list,
-		"runs" = run_list,
-		"players" = players,
-		"build_selection" = istype(build_mode) && build_mode.selected_item ? "[build_mode.selected_item]" : null,
-		"search_query" = search_query,
-		"search_results" = search_results,
-		"status" = status,
-		"here" = here ? list(here.x, here.y, here.z) : null,
-	)
+	var/list/data = live_data(user)
+	data["icons"] = icons
+	data["scenes"] = scene_list
+	data["selected"] = selected_id ? scenes[selected_id] : null
+	data["can_edit"] = selected_id ? scene_editable_by(scenes[selected_id], user.ckey) : FALSE
+	data["search_query"] = search_query
+	data["search_results"] = search_results
+	data["status"] = status
+	return data
 
 /// Searches the spawn catalogue (the same list build mode uses) for the object picker.
 /datum/admin_scene_editor/proc/search_objects(query)

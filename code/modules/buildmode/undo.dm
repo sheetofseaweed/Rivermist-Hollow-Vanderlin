@@ -6,6 +6,14 @@
  * are not destroyed at once: they wait in nullspace while their step can still be undone, and are
  * destroyed for good when the step falls off the stack or the admin leaves build mode.
  * Mobs removed by an area erase cannot be brought back.
+ *
+ * Each action records into its own step, handed from begin_undo() to end_undo(), so an action that
+ * sleeps (a constructor, a long paint spread over ticks) never mixes with the next one.
+ *
+ * Tracked objects are watched with COMSIG_PARENT_QDELETING. A plain reference would turn every
+ * object deleted by something else while its step waits (food eaten, a torch burning out in
+ * nullspace) into a hard delete, and a weakref mints a REF() text per object: a big paint mints
+ * thousands of them in creation order, which makes BYOND stop and re-sort its whole string table.
  */
 
 #define BM_UNDO_STEPS 20
@@ -15,7 +23,7 @@
 
 /datum/buildmode_undo
 	var/label
-	/// Weakrefs to what this step created.
+	/// What this step created and is still in the world.
 	var/list/created = list()
 	/// list(turf, previous turf type), oldest first.
 	var/list/turf_changes = list()
@@ -27,20 +35,56 @@
 /datum/buildmode_undo/New(label)
 	src.label = label
 
+/datum/buildmode_undo/Destroy(force)
+	// The parent unregisters every signal this step still listens to.
+	created = null
+	turf_changes = null
+	trashed = null
+	return ..()
+
 /datum/buildmode_undo/proc/is_empty()
 	return !length(created) && !length(turf_changes) && !length(trashed)
 
-/// Destroys what this step kept aside: called when the step can no longer be undone.
+/datum/buildmode_undo/proc/note_created(atom/movable/thing)
+	created += thing
+	RegisterSignal(thing, COMSIG_PARENT_QDELETING, PROC_REF(on_tracked_deleted), override = TRUE)
+
+/datum/buildmode_undo/proc/note_turf(turf/target)
+	turf_changes += list(list(target, target.type))
+
+/// Takes thing out of the world so this step can bring it back. FALSE when the step is full.
+/datum/buildmode_undo/proc/trash(atom/movable/thing)
+	if(length(trashed) >= BM_UNDO_TRASH_LIMIT)
+		partial = TRUE
+		return FALSE
+	trashed[thing] = get_turf(thing)
+	RegisterSignal(thing, COMSIG_PARENT_QDELETING, PROC_REF(on_tracked_deleted), override = TRUE)
+	thing.moveToNullspace()
+	return TRUE
+
+/// Something else deleted a tracked object: there is nothing left to undo for it.
+/datum/buildmode_undo/proc/on_tracked_deleted(atom/movable/source)
+	SIGNAL_HANDLER
+	created -= source
+	trashed -= source
+
+/// Destroys what this step kept aside, then the step itself: called when it can no longer be undone.
 /datum/buildmode_undo/proc/expire()
-	for(var/atom/movable/thing as anything in trashed)
+	var/list/kept = trashed
+	trashed = list()
+	for(var/atom/movable/thing as anything in kept)
+		UnregisterSignal(thing, COMSIG_PARENT_QDELETING) // or every qdel below rescans the list
 		if(!QDELETED(thing))
 			qdel(thing)
-	trashed.Cut()
+	qdel(src)
 
+/// Reverts the step. Returns how many changes were reverted. The caller deletes the step.
 /datum/buildmode_undo/proc/undo()
 	var/restored = 0
-	for(var/datum/weakref/ref as anything in created)
-		var/atom/movable/thing = ref.resolve()
+	var/list/made = created
+	created = list()
+	for(var/atom/movable/thing as anything in made)
+		UnregisterSignal(thing, COMSIG_PARENT_QDELETING)
 		if(!QDELETED(thing))
 			qdel(thing)
 			restored++
@@ -50,28 +94,35 @@
 		if(target)
 			target.ChangeTurf(change[2])
 			restored++
-	for(var/atom/movable/thing as anything in trashed)
-		var/turf/home = trashed[thing]
-		if(!QDELETED(thing) && home)
+	turf_changes.Cut()
+	var/list/kept = trashed
+	trashed = list()
+	for(var/atom/movable/thing as anything in kept)
+		UnregisterSignal(thing, COMSIG_PARENT_QDELETING)
+		if(QDELETED(thing))
+			continue
+		var/turf/home = kept[thing]
+		if(home)
 			thing.forceMove(home)
 			restored++
-	trashed.Cut()
+		else
+			qdel(thing) // nowhere to go back to: do not leave it in nullspace
 	return restored
 
 /datum/buildmode
 	/// Undo steps, newest last.
 	var/list/undo_stack = list()
-	/// The step being recorded while an action runs.
-	var/datum/buildmode_undo/recording
 
-/// Starts recording an action. Every placement, turf change and deletion until end_undo() joins it.
+/// Starts an undo step for one action. Record what the action does on the returned step, then pass it to end_undo().
 /datum/buildmode/proc/begin_undo(label)
-	recording = new /datum/buildmode_undo(label)
+	return new /datum/buildmode_undo(label)
 
-/datum/buildmode/proc/end_undo()
-	var/datum/buildmode_undo/step = recording
-	recording = null
-	if(!step || step.is_empty())
+/// Files a finished step. Empty steps, and steps finished after the admin left build mode, are dropped.
+/datum/buildmode/proc/end_undo(datum/buildmode_undo/step)
+	if(!step)
+		return
+	if(QDELETED(src) || step.is_empty())
+		step.expire()
 		return
 	undo_stack += step
 	while(length(undo_stack) > BM_UNDO_STEPS)
@@ -80,24 +131,10 @@
 		oldest.expire()
 	item_browser?.send_selection()
 
-/datum/buildmode/proc/undo_note_created(atom/movable/thing)
-	recording?.created += WEAKREF(thing)
-
-/datum/buildmode/proc/undo_note_turf(turf/target)
-	recording?.turf_changes += list(list(target, target.type))
-
-/// Removes thing in an undoable way when a step is recording, deletes it otherwise.
-/datum/buildmode/proc/undoable_delete(atom/movable/thing)
-	if(!recording || ismob(thing))
+/// Removes thing so that step can bring it back. Mobs, and objects past the step's limit, are deleted for good.
+/datum/buildmode/proc/undoable_delete(atom/movable/thing, datum/buildmode_undo/step)
+	if(!step || ismob(thing) || !step.trash(thing))
 		qdel(thing)
-		return
-	if(length(recording.trashed) >= BM_UNDO_TRASH_LIMIT)
-		recording.partial = TRUE
-		qdel(thing)
-		return
-	var/turf/home = get_turf(thing)
-	thing.moveToNullspace()
-	recording.trashed[thing] = home
 
 /datum/buildmode/proc/undo_last()
 	if(!length(undo_stack))
@@ -108,6 +145,7 @@
 	var/restored = step.undo()
 	log_admin("Build Mode: [key_name(holder)] undid \"[step.label]\" ([restored] changes).")
 	item_browser?.set_status("Undone: [step.label].[step.partial ? " Only the first [BM_UNDO_TRASH_LIMIT] deleted objects could be restored." : ""]")
+	qdel(step)
 	return TRUE
 
 /datum/buildmode/proc/undo_label()
@@ -117,11 +155,10 @@
 	return step.label
 
 /datum/buildmode/proc/clear_undo()
-	for(var/datum/buildmode_undo/step as anything in undo_stack)
+	var/list/steps = undo_stack
+	undo_stack = list()
+	for(var/datum/buildmode_undo/step as anything in steps)
 		step.expire()
-	undo_stack.Cut()
-	recording?.expire()
-	recording = null
 
 #undef BM_UNDO_STEPS
 #undef BM_UNDO_TRASH_LIMIT

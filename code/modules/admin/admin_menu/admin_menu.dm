@@ -453,8 +453,10 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 	return ""
 
 /// Player list shared by every open Admin Menu, rebuilt at most every PLAYER_LIST_CACHE_TIME.
+/// A rebuild that changed nothing keeps the old list, so open windows (which compare by identity) are not sent it again.
 /proc/admin_menu_player_list()
 	var/static/list/cached
+	var/static/cached_json
 	var/static/cached_at = -INFINITY
 	if(cached && world.time < cached_at + PLAYER_LIST_CACHE_TIME)
 		return cached
@@ -492,8 +494,11 @@ GLOBAL_DATUM_INIT(admin_menu_state, /datum/ui_state/admin_menu_state, new)
 			"dead" = isliving(player) && player.stat == DEAD,
 			"old_names" = previous_names,
 		))
-	cached = players
-	return players
+	var/players_json = json_encode(players)
+	if(players_json != cached_json)
+		cached_json = players_json
+		cached = players
+	return cached
 
 /proc/cmp_admin_menu_players(mob/a, mob/b)
 	return sorttext("[b.name]", "[a.name]") || sorttext("[b.ckey]", "[a.ckey]")

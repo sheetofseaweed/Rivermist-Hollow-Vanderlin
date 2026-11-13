@@ -70,7 +70,9 @@
 
 /datum/admin_mob_picker/ui_static_data(mob/user)
 	var/list/entries = list()
-	for(var/mob/candidate as anything in GLOB.mob_list)
+	// Shuffled: the window sorts by itself, and a REF() per mob in creation order would mint thousands
+	// of rising strings at once, which makes BYOND stop and re-sort its whole string table.
+	for(var/mob/candidate as anything in shuffle(GLOB.mob_list))
 		if(QDELETED(candidate) || isnewplayer(candidate))
 			continue
 		if(candidate.client?.holder?.fakekey) // stealthed admins stay hidden

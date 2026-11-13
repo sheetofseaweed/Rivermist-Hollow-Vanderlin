@@ -227,10 +227,10 @@
 		return null
 	if(ispath(selected_item, /turf))
 		var/turf/turf_type = selected_item
-		begin_undo("place [initial(turf_type.name)]")
-		undo_note_turf(target)
+		var/datum/buildmode_undo/turf_step = begin_undo("place [initial(turf_type.name)]")
+		turf_step.note_turf(target)
 		var/turf/replacement = target.ChangeTurf(selected_item)
-		end_undo()
+		end_undo(turf_step)
 		if(replacement)
 			replacement.flags_1 |= ADMIN_SPAWNED_1
 			item_browser?.set_status("Placed [replacement.name].")
@@ -246,24 +246,23 @@
 	var/created = 0
 	var/held = 0
 	var/atom/movable/placed
-	begin_undo("place [amount] x [initial(placing_type.name)]")
+	var/datum/buildmode_undo/step = begin_undo("place [amount] x [initial(placing_type.name)]")
 	for(var/i in 1 to amount)
 		// A constructor may sleep: stop if the admin left build mode or the turf is gone.
 		if(QDELETED(src) || QDELETED(target))
 			break
-		var/atom/movable/built = spawn_one(target, template)
+		var/atom/movable/built = spawn_one(target, template, placing_type)
 		if(!built)
 			continue
 		placed = built
 		created++
-		undo_note_created(built)
+		step.note_created(built)
 		if(offset_x || offset_y)
 			built.pixel_x = built.base_pixel_x + offset_x
 			built.pixel_y = built.base_pixel_y + offset_y
 		if(in_hands && isitem(built) && !QDELETED(user) && user.put_in_hands(built, merge_stacks = FALSE))
 			held++
-	if(!QDELETED(src))
-		end_undo()
+	end_undo(step) // drops the step when the admin left build mode meanwhile
 	log_admin("Build Mode: [key_name(user)] placed [created] of [placing_type][template ? " (copy of [REF(template)])" : ""] at [AREACOORD(target)][in_hands ? ", [held] in hands" : ""].")
 	if(!QDELETED(src))
 		if(in_hands)
@@ -280,14 +279,14 @@
 		return FALSE
 	log_admin("Build Mode: [key_name(user)] deleted [object] ([object.type]) at [AREACOORD(object)].")
 	item_browser?.set_status("Deleted [object.name].")
-	begin_undo("delete [object.name]")
+	var/datum/buildmode_undo/step = begin_undo("delete [object.name]")
 	if(isturf(object))
 		var/turf/target = object
-		undo_note_turf(target)
+		step.note_turf(target)
 		target.ScrapeAway()
 	else
-		undoable_delete(object)
-	end_undo()
+		undoable_delete(object, step)
+	end_undo(step)
 	return TRUE
 
 /// Sets the copy count or the manual pixel offset used by placement.

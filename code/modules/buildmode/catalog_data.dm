@@ -106,6 +106,7 @@ GLOBAL_VAR_INIT(buildmode_catalog_warming, FALSE)
 	var/list/counts = list()
 	var/list/search_text = list()
 	var/list/entries = buildmode_catalog_entries()
+	var/list/paths = list()
 	for(var/path in entries)
 		if(can_sleep)
 			CHECK_TICK
@@ -121,6 +122,17 @@ GLOBAL_VAR_INIT(buildmode_catalog_warming, FALSE)
 			groups[subcategory] = list()
 		groups[subcategory] += path
 		counts[category]++
+		paths += path
+	// The search texts ("name path", lowercase) are made in shuffled order. In catalogue order they
+	// would be thousands of new strings in rising order, all kept: BYOND's string tree is not
+	// rebalanced on insert, so each would hang one level below the last, and once a lookup passes
+	// about a thousand levels the engine stops to re-sort every string in the world. CHECK_TICK
+	// cannot split that stall.
+	shuffle_inplace(paths)
+	for(var/path in paths)
+		if(can_sleep)
+			CHECK_TICK
+		var/list/entry = entries[path]
 		search_text[path] = LOWER_TEXT("[entry["name"]] [path]")
 	GLOB.buildmode_catalog_index_cache = list("categories" = categories, "subcategories" = subcategories, "counts" = counts, "search_text" = search_text)
 	return GLOB.buildmode_catalog_index_cache

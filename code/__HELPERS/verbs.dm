@@ -41,10 +41,12 @@
 
 	var/list/output_list = list()
 	var/admin_menu_changed = FALSE
+	// Built on first use: reading GLOB.admin_menu_verbs directly would miss the first admin login of the round.
+	var/list/admin_registry = target.holder ? get_admin_menu_verbs() : null
 	for(var/thing in verbs_list)
 		var/procpath/verb_to_add = thing
 		// Admin-granted verbs are reached through the Admin Menu, not the stat panel.
-		if(target.holder && !isnull(GLOB.admin_menu_verbs[verb_to_add]))
+		if(admin_registry && !isnull(admin_registry[verb_to_add]))
 			admin_menu_changed = TRUE
 		if(target.admin_menu_hides_verb(verb_to_add))
 			continue
@@ -99,9 +101,10 @@
 
 	var/list/output_list = list()
 	var/admin_menu_changed = FALSE
+	var/list/admin_registry = target.holder ? get_admin_menu_verbs() : null
 	for(var/thing in verbs_list)
 		var/procpath/verb_to_remove = thing
-		if(target.holder && !isnull(GLOB.admin_menu_verbs[verb_to_remove]))
+		if(admin_registry && !isnull(admin_registry[verb_to_remove]))
 			admin_menu_changed = TRUE
 		// Never listed on the panel, and the panel removes by name: do not let it drop a same-named player verb.
 		if(target.admin_menu_hides_verb(verb_to_remove))
