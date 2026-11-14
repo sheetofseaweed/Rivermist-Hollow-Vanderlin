@@ -71,7 +71,8 @@ type Data = {
 const STEP_TYPES: [string, string, string, string][] = [
   ['spawn', 'Spawn group', 'cubes', 'Several objects and mobs at once, each at its own offset'],
   ['teleport', 'Teleport', 'route', 'Move a player, an area, or everyone near A to point B'],
-  ['effect', 'Effect', 'magic', 'Shake, ringing, darkness, stun, sleep, heal, buffs and debuffs'],
+  ['effect', 'Effect', 'magic', 'Shake, ringing, darkness, stun, sleep, heal, damage, buffs and debuffs'],
+  ['explosion', 'Explosion', 'bomb', 'A blast at point A, or on each target'],
   ['narrate', 'Narrate', 'feather', 'Text to everyone in view, in the area, or the world'],
   ['sound', 'Sound', 'music', 'A sound file played where the scene runs'],
   ['doors', 'Doors', 'door-open', 'Open, close, lock or unlock doors nearby'],
@@ -89,6 +90,7 @@ const EFFECT_ICONS: Record<string, string> = {
   knockdown: 'arrow-down',
   sleep: 'bed',
   heal: 'heart',
+  damage: 'tint',
   buff: 'arrow-up',
   unbuff: 'times-circle',
   message: 'envelope',
@@ -520,6 +522,87 @@ const NarrateEditor = (props: { step: Step; edit: (field: string, value: any) =>
   );
 };
 
+/** Damage kinds of the Damage effect: the server's damage type strings (BRUTE, BURN, TOX, OXY). */
+const DAMAGE_TYPES: [string, string][] = [
+  ['brute', 'Brute'],
+  ['fire', 'Burn'],
+  ['toxin', 'Toxin'],
+  ['oxygen', 'Suffocation'],
+];
+
+/** Explosion ranges as explosion() takes them: a tile is hit while its distance is below the range. */
+const BLAST_FIELDS: [string, string, number, string][] = [
+  ['devastation', 'Devastation', 3, 'Wrecks walls and structures, kills outright'],
+  ['heavy', 'Heavy', 5, 'Heavy wounds, breaks most objects'],
+  ['light', 'Light', 7, 'Light wounds, knocks people over'],
+  ['flash', 'Flash', 10, 'Blinds those who see it'],
+  ['flame', 'Fire', 7, 'Sets the area on fire'],
+];
+
+const BLAST_PRESETS: [string, Record<string, number>][] = [
+  ['Tiny', { devastation: 0, heavy: 0, light: 1, flash: 3, flame: 0 }],
+  ['Small', { devastation: 0, heavy: 1, light: 3, flash: 4, flame: 0 }],
+  ['Medium', { devastation: 1, heavy: 2, light: 4, flash: 6, flame: 0 }],
+  ['Large', { devastation: 2, heavy: 4, light: 6, flash: 8, flame: 2 }],
+];
+
+const ExplosionEditor = (props: { step: Step; edit: (field: string, value: any) => void }) => {
+  const { step, edit } = props;
+  const onTargets = step.where === 'targets';
+  return (
+    <div className="Scenes__fields Scenes__fields--column">
+      <div className="Scenes__field">
+        <span>Where</span>
+        <Choice
+          value={step.where}
+          options={[
+            ['a', 'Point A'],
+            ['targets', 'On each target'],
+          ]}
+          onPick={(value) => edit('where', value)}
+        />
+        {!onTargets && (
+          <>
+            <span>X</span>
+            <Num value={step.dx} min={-30} max={30} onChange={(value) => edit('dx', value)} />
+            <span>Y</span>
+            <Num value={step.dy} min={-30} max={30} onChange={(value) => edit('dy', value)} />
+          </>
+        )}
+      </div>
+      {onTargets && <TargetPicker step={step} edit={edit} />}
+      <div className="Scenes__field">
+        <span>Size</span>
+        {BLAST_PRESETS.map(([label, sizes]) => (
+          <Button
+            key={label}
+            selected={Object.keys(sizes).every((field) => step[field] === sizes[field])}
+            onClick={() =>
+              Object.keys(sizes).forEach((field) => step[field] !== sizes[field] && edit(field, sizes[field]))
+            }
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
+      <div className="Scenes__field">
+        {BLAST_FIELDS.map(([field, label, max, tip]) => (
+          <Tooltip key={field} content={tip}>
+            <span className="Scenes__field">
+              <span>{label}</span>
+              <Num value={step[field]} min={0} max={max} unit="t" onChange={(value) => edit(field, value)} />
+            </span>
+          </Tooltip>
+        ))}
+      </div>
+      <div className="Scenes__dim">
+        A tile is hit while its distance is below the range: 0 = none, 1 = the centre tile only.
+        {onTargets ? ' At most 10 targets get one each.' : ''} Every explosion is announced to the admins.
+      </div>
+    </div>
+  );
+};
+
 const StepEditor = (props: { step: Step; index: number; count: number }) => {
   const { act, data } = useBackend<Data>();
   const { step, index, count } = props;
@@ -611,7 +694,7 @@ const StepEditor = (props: { step: Step; index: number; count: number }) => {
             ))}
           </div>
           <TargetPicker step={step} edit={edit} />
-          {!['heal', 'ring', 'message', 'unbuff'].includes(step.effect) && (
+          {!['heal', 'ring', 'message', 'unbuff', 'damage'].includes(step.effect) && (
             <div className="Scenes__field">
               <span>{step.effect === 'buff' ? 'Duration (0 = default)' : 'Seconds'}</span>
               <Num
@@ -632,6 +715,25 @@ const StepEditor = (props: { step: Step; index: number; count: number }) => {
           )}
           {(step.effect === 'buff' || step.effect === 'unbuff') && (
             <StatusPicker value={step.status} onPick={(value) => edit('status', value)} />
+          )}
+          {step.effect === 'damage' && (
+            <div className="Scenes__field">
+              <span>Amount</span>
+              <Num
+                value={step.damage}
+                min={1}
+                max={200}
+                step={5}
+                width="56px"
+                onChange={(value) => edit('damage', value)}
+              />
+              <Choice
+                value={step.damage_type}
+                options={DAMAGE_TYPES}
+                onPick={(value) => edit('damage_type', value)}
+              />
+              <span className="Scenes__dim">spread over the body, no critical wounds</span>
+            </div>
           )}
           {step.effect === 'message' && (
             <>
@@ -659,6 +761,8 @@ const StepEditor = (props: { step: Step; index: number; count: number }) => {
           )}
         </div>
       )}
+
+      {step.type === 'explosion' && <ExplosionEditor step={step} edit={edit} />}
 
       {step.type === 'narrate' && <NarrateEditor step={step} edit={edit} />}
 

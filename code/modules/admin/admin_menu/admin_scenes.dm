@@ -8,8 +8,10 @@
  *   sound     - a sound file at the anchor
  *   doors     - open, close, lock or unlock every door within a range of the anchor
  *   teleport  - move one player, everyone in the area, or everyone near A to point B
- *   effect    - shake, ringing, darkness, blackout, flash, stun, knockdown, sleep, heal,
- *               buff / debuff (any status effect), private message: to the same kinds of targets
+ *   effect    - shake, ringing, darkness, blackout, flash, stun, knockdown, sleep, heal, damage
+ *               (brute, burn, toxin, suffocation), buff / debuff (any status effect), private
+ *               message: to the same kinds of targets
+ *   explosion - an explosion at point A (with an offset) or on each target, sizes clamped below
  *   wait      - pause before the next step (timers inside a scene)
  *   cleanup   - delete everything this run has spawned so far
  *
@@ -31,6 +33,8 @@
 #define SCENE_MAX_STEPS 60
 #define SCENE_MAX_SCENES 200
 #define SCENE_MAX_ITEMS 100
+/// An explosion step "on each target" blows up at most this many of them.
+#define SCENE_MAX_EXPLOSIONS 10
 
 /// id -> scene: list("id", "name", "steps" = list(step lists)).
 GLOBAL_LIST_EMPTY(admin_scenes)
@@ -116,6 +120,15 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			return list(
 				"type" = "effect", "effect" = "shake", "who" = "near", "range" = 5, "player" = "",
 				"include" = "players", "seconds" = 3, "strength" = 1, "status" = "", "text" = "", "style" = "plain",
+				"damage" = 20, "damage_type" = BRUTE,
+			)
+		if("explosion")
+			// Ranges as explosion() takes them: a tile counts when its distance is below the range,
+			// so 0 is none and 1 is the centre tile only.
+			return list(
+				"type" = "explosion", "where" = "a", "dx" = 0, "dy" = 0,
+				"who" = "near", "range" = 5, "player" = "", "include" = "players",
+				"devastation" = 0, "heavy" = 1, "light" = 3, "flash" = 4, "flame" = 0,
 			)
 		if("wait")
 			return list("type" = "wait", "seconds" = 5)
@@ -135,6 +148,7 @@ GLOBAL_LIST_EMPTY(scene_runs)
 		"knockdown" = "Knockdown",
 		"sleep" = "Sleep",
 		"heal" = "Full heal",
+		"damage" = "Damage",
 		"buff" = "Apply buff / debuff",
 		"unbuff" = "Remove buff / debuff",
 		"message" = "Private message",
@@ -240,6 +254,23 @@ GLOBAL_LIST_EMPTY(scene_runs)
 		if("status")
 			var/status_type = text2path("[value]")
 			return admin_scene_status_effects_by_type()[status_type] ? "[status_type]" : ""
+		if("damage")
+			return clamp(round(text2num("[value]") || 0), 1, 200)
+		if("damage_type")
+			return (value in list(BRUTE, BURN, TOX, OXY)) ? value : BRUTE
+		if("where")
+			return value == "targets" ? "targets" : "a"
+		// Explosion sizes stay in the range of a scene, not a station-wide bomb.
+		if("devastation")
+			return clamp(round(text2num("[value]") || 0), 0, 3)
+		if("heavy")
+			return clamp(round(text2num("[value]") || 0), 0, 5)
+		if("light")
+			return clamp(round(text2num("[value]") || 0), 0, 7)
+		if("flash")
+			return clamp(round(text2num("[value]") || 0), 0, 10)
+		if("flame")
+			return clamp(round(text2num("[value]") || 0), 0, 7)
 	return value
 
 /// What a spawn may create: real objects and living mobs, nothing abstract.
@@ -479,8 +510,29 @@ GLOBAL_LIST_EMPTY(scene_runs)
 					to_chat(target, span_notice(step["message"]))
 				log_admin("Scene \"[scene_name]\" teleported [key_name(target)] to [AREACOORD(destination)].")
 		if("effect")
-			for(var/mob/living/target as anything in scene_targets(step, anchor, src))
+			var/list/targets = scene_targets(step, anchor, src)
+			for(var/mob/living/target as anything in targets)
 				scene_apply_effect(target, step)
+			if(step["effect"] == "damage" && length(targets))
+				log_admin("Scene \"[scene_name]\" dealt [step["damage"]] [step["damage_type"]] damage to [length(targets)] targets near [AREACOORD(anchor)].")
+		if("explosion")
+			var/list/centers = list()
+			if(step["where"] == "targets")
+				for(var/mob/living/target as anything in scene_targets(step, anchor, src))
+					var/turf/spot = get_turf(target)
+					if(spot)
+						centers |= spot
+					if(length(centers) >= SCENE_MAX_EXPLOSIONS)
+						break
+			else
+				var/turf/center = locate(anchor.x + step["dx"], anchor.y + step["dy"], anchor.z)
+				if(center)
+					centers += center
+			for(var/turf/center as anything in centers)
+				// explosion() tells the admins and the game log itself; flame_range 0 means no fire, not "as light".
+				explosion(center, step["devastation"], step["heavy"], step["light"], step["flash"], adminlog = TRUE, flame_range = step["flame"])
+			if(length(centers))
+				log_admin("Scene \"[scene_name]\" made [length(centers)] explosion(s) ([step["devastation"]], [step["heavy"]], [step["light"]], flash [step["flash"]], flame [step["flame"]]) from [AREACOORD(anchor)].")
 		if("cleanup")
 			var/list/made_list = spawned
 			spawned = list()
@@ -524,6 +576,9 @@ GLOBAL_LIST_EMPTY(scene_runs)
 			target.Sleeping(seconds SECONDS)
 		if("heal")
 			target.fully_heal()
+		if("damage")
+			// Spread over the body and without critical wounds: an event hurts, it does not dismember.
+			target.apply_damage(step["damage"], step["damage_type"], spread_damage = TRUE, can_crit = FALSE)
 		if("buff")
 			var/status_type = text2path(step["status"])
 			if(status_type)
@@ -998,6 +1053,25 @@ GLOBAL_LIST_EMPTY(scene_runs)
 				var/image/marker = image('icons/turf/overlays.dmi', destination, "redOverlay")
 				marker.plane = ABOVE_LIGHTING_PLANE
 				preview_images += marker
+		else if(step["type"] == "explosion" && step["where"] != "targets")
+			var/turf/center = locate(anchor.x + step["dx"], anchor.y + step["dy"], anchor.z)
+			if(!center)
+				continue
+			var/image/core = image('icons/turf/overlays.dmi', center, "redOverlay")
+			core.plane = ABOVE_LIGHTING_PLANE
+			preview_images += core
+			// The ring of the farthest tiles it damages: explosion() measures a round distance and
+			// hits a tile while that distance is below the range.
+			var/reach = max(step["devastation"], step["heavy"], step["light"])
+			if(reach > 1)
+				for(var/turf/spot as anything in RANGE_TURFS(reach, center))
+					var/distance = cheap_hypotenuse(spot.x, spot.y, center.x, center.y)
+					if(distance < reach - 1 || distance >= reach)
+						continue
+					var/image/edge = image('icons/turf/overlays.dmi', spot, "redOverlay")
+					edge.alpha = 90
+					edge.plane = ABOVE_LIGHTING_PLANE
+					preview_images += edge
 	preview_client.images += preview_images
 	addtimer(CALLBACK(src, PROC_REF(clear_preview)), 10 SECONDS, TIMER_UNIQUE | TIMER_OVERRIDE)
 	return length(preview_images)
@@ -1220,3 +1294,4 @@ GLOBAL_LIST_EMPTY(scene_runs)
 #undef SCENE_MAX_STEPS
 #undef SCENE_MAX_SCENES
 #undef SCENE_MAX_ITEMS
+#undef SCENE_MAX_EXPLOSIONS
