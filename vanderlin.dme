@@ -3455,6 +3455,7 @@
 #include "code\modules\mapping\voyage\settlements\templates\wood_houses.dm"
 #include "code\modules\mob\death.dm"
 #include "code\modules\mob\emote.dm"
+#include "code\modules\mob\fov.dm"
 #include "code\modules\mob\inventory.dm"
 #include "code\modules\mob\login.dm"
 #include "code\modules\mob\logout.dm"

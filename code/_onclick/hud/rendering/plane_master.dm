@@ -82,7 +82,7 @@
 	clear_filters()
 	if(istype(mymob) && mymob.client?.prefs?.read_preference(/datum/preference/toggle/ambientocclusion))
 		add_filter("ambient_occlusion_filter", 1, drop_shadow_filter(x=0, y=-2, size=3, offset=1, color="#04080f96"))
-
+	add_filter("wall_shadows", 2, list("type" = "layer", "render_source" = DYNAMIC_WALL_SHADOW_TARGET, "blend_mode" = BLEND_MULTIPLY, "color" = "#000000b0"))
 /atom/movable/screen/plane_master/massive_obj
 	name = "massive object plane master"
 	plane = MASSIVE_OBJ_PLANE
@@ -211,6 +211,7 @@
 	add_filter("vision_cone", 1, alpha_mask_filter(render_source = FIELD_OF_VISION_MASK_RENDER_TARGET, flags = MASK_INVERSE))
 	if(istype(mymob) && mymob.client?.prefs?.read_preference(/datum/preference/toggle/ambientocclusion))
 		add_filter("ambient_occlusion_filter", 2, drop_shadow_filter(x=0, y=-2, size=3, offset=1, color="#04080f96"))
+	add_filter("wall_shadows", 3, list("type" = "layer", "render_source" = DYNAMIC_WALL_SHADOW_TARGET, "blend_mode" = BLEND_INSET_OVERLAY, "color" = "#000000"))
 
 /atom/movable/screen/plane_master/game_world_above
 	name = "above game world plane master"
@@ -358,6 +359,7 @@
 	clear_filters()
 	if(istype(mymob) && mymob.client?.prefs?.read_preference(/datum/preference/toggle/ambientocclusion))
 		add_filter("ambient_occlusion_filter", 1, drop_shadow_filter(x=0, y=-2, size=3, offset=1.5, color="#04080f96"))
+	add_filter("wall_shadows", 2, list("type" = "layer", "render_source" = DYNAMIC_WALL_SHADOW_TARGET, "blend_mode" = BLEND_MULTIPLY, "color" = "#000000b0"))
 
 /atom/movable/screen/plane_master/game_world_walls
 	name = "game world walls"
@@ -408,3 +410,37 @@
 	appearance_flags = PLANE_MASTER
 	blend_mode = BLEND_OVERLAY
 	render_relay_plane = RENDER_PLANE_NON_GAME
+
+/atom/movable/screen/plane_master/raw_wall_shadows
+	name = "raw wall shadows plane master"
+	plane = RAW_WALL_SHADOW_PLANE
+	render_target = RAW_WALL_SHADOW_TARGET
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	appearance_flags = PLANE_MASTER
+	render_relay_plane = null
+
+/atom/movable/screen/plane_master/shadow_cutouts
+	name = "shadow cutouts plane master"
+	plane = SHADOW_CUTOUT_PLANE
+	render_target = SHADOW_CUTOUT_TARGET
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	appearance_flags = PLANE_MASTER
+	render_relay_plane = null
+
+/atom/movable/screen/plane_master/dynamic_wall_shadows
+	name = "dynamic wall shadows plane master"
+	plane = DYNAMIC_WALL_SHADOW_PLANE
+	render_target = DYNAMIC_WALL_SHADOW_TARGET
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	appearance_flags = PLANE_MASTER
+	render_relay_plane = null
+
+/atom/movable/screen/plane_master/dynamic_wall_shadows/Initialize(mapload)
+	. = ..()
+	add_filter("raw_shadows", 1, list("type" = "layer", "render_source" = RAW_WALL_SHADOW_TARGET))
+	add_filter("cutout_mask", 2, alpha_mask_filter(render_source = SHADOW_CUTOUT_TARGET, flags = MASK_INVERSE))
+	add_filter("shadow_blur", 3, gauss_blur_filter(size = 1))
+
+/atom/movable/screen/plane_master/floor/backdrop(mob/mymob)
+	. = ..()
+	add_filter("wall_shadows", 1, list("type" = "layer", "render_source" = DYNAMIC_WALL_SHADOW_TARGET, "blend_mode" = BLEND_MULTIPLY, "color" = "#000000b0"))
