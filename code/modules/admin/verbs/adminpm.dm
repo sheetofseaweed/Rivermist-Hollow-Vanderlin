@@ -5,6 +5,7 @@
 /client/proc/cmd_admin_pm_context(mob/M in GLOB.mob_list)
 	set category = null
 	set name = "Admin PM Mob"
+	set popup_menu = FALSE // reached through the Admin.../GM.../Debug... right-click entries
 	if(!holder)
 		to_chat(src, "<span class='danger'>Error: Admin-PM-Context: Only administrators may use this command.</span>")
 		return
