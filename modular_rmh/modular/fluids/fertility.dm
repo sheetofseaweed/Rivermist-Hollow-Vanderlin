@@ -10,6 +10,9 @@
 /obj/item/organ/genitals/filling_organ/proc/start_hidden_pregnancy()
 	conception_time = world.time
 	hint_conception()
+	if(owner.has_quirk(/datum/quirk/neutral/selfawaregeni))
+		to_chat(owner, span_aphrodisiac("I feel a growing warmth in my womb, I will be pregnant."))
+		owner.apply_status_effect(/datum/status_effect/debuff/impregnation)
 	morning_sickness_timer = addtimer(CALLBACK(src, PROC_REF(start_morning_sickness)), rand(PREGNANCY_SICKNESS_MIN_DELAY, PREGNANCY_SICKNESS_MAX_DELAY), TIMER_STOPPABLE)
 
 /// A small, vague hint; owners with self-aware genitals feel it more clearly.
@@ -34,6 +37,7 @@
 	owner?.remove_status_effect(/datum/status_effect/morning_sickness)
 
 /// The belly grows a stage; the first one also brings the milk in and ends morning sickness.
+///	Adding a spell upon reaching the final stage to reset the pregnancy
 /obj/item/organ/genitals/filling_organ/proc/advance_pregnancy_stage()
 	conventional_pregnancy_stage = min(conventional_pregnancy_stage + 1, PREGNANCY_MAX_STAGE)
 	to_chat(owner, span_love("I notice my belly has grown due to pregnancy..."))
@@ -44,6 +48,9 @@
 			to_chat(owner, span_love("My nipples feel damp and warm. I'm leaking milk..."))
 		start_pregnancy_lactation()
 	update_reagent_capacity()
+	if(conventional_pregnancy_stage >= PREGNANCY_MAX_STAGE)
+		var/datum/action/cooldown/spell/pregnancy_relase/S = new()
+		S.Grant(owner)
 	SEND_SIGNAL(src, COMSIG_BODYSTORAGE_CHANGED)
 
 /// A pregnancy far enough along for a seed sachet to notice.
