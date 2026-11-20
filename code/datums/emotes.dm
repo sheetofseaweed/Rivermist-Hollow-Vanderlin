@@ -143,6 +143,7 @@
 	var/obfuscated_msg = null
 	if(!nomsg)
 		user.log_message(msg, LOG_EMOTE)
+		SSagent_npc?.notice_emote(user, src, msg, intentional)
 		var/name_html = user.get_emote_name_html()
 		obfuscated_msg = "[name_html] [stars(msg)]"
 		msg = "[name_html] " + msg

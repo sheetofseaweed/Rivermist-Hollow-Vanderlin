@@ -43,6 +43,8 @@
 #define COMSIG_MOB_CHANGED_TYPE "mob_changed_type"
 /// After a mob successfully performs an emote: (datum/emote/emote)
 #define COMSIG_MOB_EMOTE "mob_emote"
+/// On a mob someone else just fed, food or drink: (mob/feeder, obj/item/fed_with)
+#define COMSIG_MOB_FED "mob_fed"
 
 /// Sent from a mob spawner after it creates a mob: (mob/living/spawned_mob)
 #define COMSIG_SPAWNER_SPAWNED "spawner_spawned"
