@@ -168,3 +168,7 @@ GLOBAL_LIST_INIT(em_mask_matrix, EM_MASK_MATRIX)
 
 /// The amount of lumcount on a tile for it to be considered dark (used to determine reading)
 #define LIGHTING_TILE_IS_DARK 0.2
+
+#define SHADOW_CELL_EMPTY 0
+#define SHADOW_CELL_WALL 1
+#define SHADOW_CELL_TREE 2

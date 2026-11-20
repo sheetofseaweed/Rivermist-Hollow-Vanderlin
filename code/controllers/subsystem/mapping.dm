@@ -114,6 +114,7 @@ SUBSYSTEM_DEF(mapping)
 	require_area_resort()
 	initialize_reserved_level(transit.z_value)
 	generate_z_level_linkages()
+	call_ext(SHADOWCAST_LIB, "byond:init_map_bounds")(world.maxx, world.maxy, world.maxz)
 	return ..()
 
 /datum/controller/subsystem/mapping/proc/generate_z_level_linkages()

@@ -9,6 +9,7 @@
 	blade_dulling = DULLING_CUT
 	opacity = 1
 	density = 1
+	plane = WALL_PLANE
 	attacked_sound = 'sound/misc/woodhit.ogg'
 	destroy_sound = 'sound/misc/woodhit.ogg'
 	climbable = FALSE
@@ -23,6 +24,8 @@
 /obj/structure/flora/newtree/Initialize()
 	. = ..()
 	GenerateTree()
+	set_shadow_cell(x, y, z, SHADOW_CELL_TREE)
+	notify_shadows_map_changed(src)
 
 /obj/structure/flora/newtree/Destroy()
 	SStreesetup.initialize_me -= src
@@ -167,6 +170,8 @@
 		if(!istype(NT, /turf/open/openspace) && !(locate(/obj/structure/table/wood/treestump) in NT)) //if i don't add the stump check it spawns however many zlevels it goes up because of src recursion
 			new /obj/structure/table/wood/treestump(NT)
 		playsound(src, 'sound/misc/treefall.ogg', 100, FALSE)
+		set_shadow_cell(x, y, z, SHADOW_CELL_EMPTY)
+		notify_shadows_map_changed(src)
 
 /obj/structure/flora/newtree/proc/build_trees()
 	var/turf/target = GET_TURF_ABOVE(get_turf(src))

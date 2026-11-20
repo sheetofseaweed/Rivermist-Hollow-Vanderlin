@@ -666,6 +666,235 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 
 	real_pack.pick_pack(usr)
 
+GLOBAL_VAR_INIT(shadow_profiling_enabled, FALSE)
+GLOBAL_VAR_INIT(shadow_profiling_start_time, 0)
+GLOBAL_VAR_INIT(shadow_total_calls, 0)
+GLOBAL_VAR_INIT(shadow_total_tick_usage, 0)
+GLOBAL_VAR_INIT(shadow_prof_rust_quads, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_matrices, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_images, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_cleanup, 0)
+GLOBAL_VAR_INIT(shadow_prof_dm_cutouts, 0)
+GLOBAL_LIST_EMPTY(shadow_prof_player_calls)
+GLOBAL_VAR_INIT(shadow_prof_max_spike, 0)
+GLOBAL_VAR_INIT(shadow_prof_spike_count, 0)
+
+/client/proc/profile_shadows()
+	set category = "Debug"
+	set name = "Profile Shadow System"
+	set desc = "Start/Stop tracking detailed shadow performance."
+
+	if(!usr.client || !usr.client.holder)
+		to_chat(usr, "У вас нет прав админа!")
+		return
+
+	if(GLOB.shadow_profiling_enabled)
+
+		var/elapsed_ds = world.time - GLOB.shadow_profiling_start_time
+		var/elapsed_sec = max(1, elapsed_ds / 10)
+		var/calls_per_sec = GLOB.shadow_total_calls / elapsed_sec
+		var/total_calls = max(1, GLOB.shadow_total_calls)
+		var/avg_cost = GLOB.shadow_total_tick_usage / total_calls
+		var/cost_rust = GLOB.shadow_prof_rust_quads / total_calls
+		var/cost_matrices = GLOB.shadow_prof_dm_matrices / total_calls
+		var/cost_images = GLOB.shadow_prof_dm_images / total_calls
+		var/cost_clean = GLOB.shadow_prof_dm_cleanup / total_calls
+		var/cost_cutouts = GLOB.shadow_prof_dm_cutouts / total_calls
+		var/ticks_per_sec = (world.tick_lag > 0) ? (10 / world.tick_lag) : 20
+		var/server_cpu_load = (calls_per_sec * avg_cost) / ticks_per_sec
+		var/msg = "<span class='notice'><b>=== SERVER-WIDE SHADOW PROFILING ===</b></span><br>"
+		msg += "Duration: <b>[elapsed_sec]s</b> | Active Moving Players: <b>[GLOB.shadow_prof_player_calls.len]</b><br>"
+		msg += "Total Calls (All Players): <b>[GLOB.shadow_total_calls]</b> (<b>[round(calls_per_sec, 0.1)]/s</b>)<br>"
+		msg += "Average Cost per Single Update: <b>[round(avg_cost, 0.01)]%</b> of a tick<br>"
+		msg += "<b>TOTAL SERVER CPU LOAD: [round(server_cpu_load, 0.1)]% of CPU capacity</b><br><br>"
+		msg += "├ <b>Rust Quads Math:</b> [round(cost_rust, 0.01)]%<br>"
+		msg += "├ <b>DM Matrix & Transform:</b> [round(cost_matrices, 0.01)]%<br>"
+		msg += "├ <b>DM Images & locate():</b> [round(cost_images, 0.01)]%<br>"
+		msg += "├ <b>DM Pool Cleanup:</b> [round(cost_clean, 0.01)]%<br>"
+		msg += "└ <b>DM Cutouts:</b> [round(cost_cutouts, 0.01)]%<br><br>"
+		msg += "<b>Max Spike:</b> [round(GLOB.shadow_prof_max_spike, 0.01)]% (Spikes >=10%: <b>[GLOB.shadow_prof_spike_count]</b>)<br>"
+
+		if(GLOB.shadow_prof_player_calls.len)
+			for(var/ckey in GLOB.shadow_prof_player_calls)
+				msg += "• <b>[ckey]</b>: [GLOB.shadow_prof_player_calls[ckey]] shadow calls<br>"
+			msg += "<br>"
+
+		var/total_active = 0
+		var/total_pool = 0
+		for(var/client/C in GLOB.clients)
+			if(C.active_shadows) total_active += C.active_shadows.len
+			if(C.shadow_images_pool) total_pool += C.shadow_images_pool.len
+
+		msg += "Active Shadow Triangles (All Clients): <b>[total_active]</b> | In Pool: <b>[total_pool]</b><br>"
+
+		to_chat(usr, msg)
+		GLOB.shadow_profiling_enabled = FALSE
+	else
+		GLOB.shadow_total_calls = 0
+		GLOB.shadow_prof_max_spike = 0
+		GLOB.shadow_prof_spike_count = 0
+		GLOB.shadow_total_tick_usage = 0
+		GLOB.shadow_prof_rust_quads = 0
+		GLOB.shadow_prof_dm_matrices = 0
+		GLOB.shadow_prof_dm_images = 0
+		GLOB.shadow_prof_dm_cleanup = 0
+		GLOB.shadow_prof_dm_cutouts = 0
+		GLOB.shadow_prof_player_calls.Cut()
+		GLOB.shadow_profiling_start_time = world.time
+		GLOB.shadow_profiling_enabled = TRUE
+		to_chat(usr, "<span class='notice'>Server-wide Profiling STARTED.</span>")
+
+GLOBAL_VAR_INIT(shadows_enabled, TRUE)
+GLOBAL_VAR_INIT(shadow_glide_points, 2)
+GLOBAL_VAR_INIT(shadow_matrix_threshold, 1.44)
+GLOBAL_VAR_INIT(shadow_auto_throttle_cpu, 85)
+
+GLOBAL_DATUM_INIT(shadow_admin_panel, /datum/shadow_admin_panel, new)
+
+/client/proc/open_shadow_admin_panel()
+	set category = "Debug"
+	set name = "Shadow Control Panel"
+	set desc = "Управление динамическими тенями на сервере."
+
+	if(!usr.client || !usr.client.holder)
+		to_chat(usr, "Нет прав доступа.")
+		return
+
+	GLOB.shadow_admin_panel.open_ui(usr)
+
+
+/datum/shadow_admin_panel
+
+/datum/shadow_admin_panel/proc/open_ui(mob/user)
+	if(!user || !user.client || !user.client.holder)
+		return
+
+	var/total_active_triangles = 0
+	var/clients_count = 0
+	for(var/client/C in GLOB.clients)
+		clients_count++
+		if(C.active_shadows)
+			total_active_triangles += C.active_shadows.len
+
+	var/list/dat = list()
+	dat += "<style>"
+	dat += "body { font-family: Verdana, sans-serif; font-size: 12px; background: #1b1b1b; color: #ddd; }"
+	dat += ".box { background: #262626; border: 1px solid #444; padding: 10px; margin-bottom: 10px; border-radius: 4px; }"
+	dat += ".btn { display: inline-block; padding: 5px 10px; margin: 3px 2px; background: #3a3a3a; color: #fff; text-decoration: none; border: 1px solid #555; border-radius: 3px; }"
+	dat += ".btn:hover { background: #505050; }"
+	dat += ".btn-on { background: #2b5c2b !important; border-color: #4a9e4a !important; font-weight: bold; }"
+	dat += ".btn-off { background: #6e2424 !important; border-color: #b03a3a !important; font-weight: bold; }"
+	dat += ".btn-active { background: #2e5578 !important; border-color: #4f94d4 !important; font-weight: bold; }"
+	dat += "</style>"
+
+	dat += "<div class='box'>"
+	dat += "<b>System Status:</b> "
+	if(GLOB.shadows_enabled)
+		dat += "<span style='color:#5cd65c; font-weight:bold;'>ENABLED</span><br>"
+		dat += "<a class='btn btn-off' href='?src=\ref[src];action=toggle'>Disable Shadows</a>"
+	else
+		dat += "<span style='color:#ff5c5c; font-weight:bold;'>DISABLED</span><br>"
+		dat += "<a class='btn btn-on' href='?src=\ref[src];action=toggle'>Enable Shadows</a>"
+	dat += "<a class='btn' href='?src=\ref[src];action=force_refresh'>Redraw All</a>"
+	dat += "<a class='btn' href='?src=\ref[src];action=refresh_ui'>Refresh Window</a>"
+	dat += "</div>"
+
+	dat += "<div class='box'>"
+	dat += "<b>Glide Smoothness (points per tile):</b> [GLOB.shadow_glide_points]<br>"
+	dat += "<i>1 = update once per tile (lowest load), 4-5 = ultra smooth</i><br>"
+	for(var/pts in list(1, 2, 3, 4, 5))
+		var/cls = (GLOB.shadow_glide_points == pts) ? "btn btn-active" : "btn"
+		dat += "<a class='[cls]' href='?src=\ref[src];action=set_glide;val=[pts]'>[pts == 1 ? "1 (Eco)" : pts]</a>"
+	dat += "</div>"
+
+	dat += "<div class='box'>"
+	dat += "<b>Matrix Delta Filter (movement threshold; higher = shadow must move more before recalculating):</b><br>"
+	var/list/thresholds = list("0" = 0, "0.5 px" = 0.25, "1.2 px" = 1.44, "2.0 px" = 4.0)
+	for(var/label in thresholds)
+		var/val = thresholds[label]
+		var/cls = (abs(GLOB.shadow_matrix_threshold - val) < 0.01) ? "btn btn-active" : "btn"
+		dat += "<a class='[cls]' href='?src=\ref[src];action=set_thresh;val=[val]'>[label]</a>"
+	dat += "</div>"
+
+	dat += "<div class='box'>"
+	dat += "<b>Auto-drop smoothness to 1 when server CPU exceeds:</b><br>"
+	for(var/cpu_lim in list(0, 70, 85, 95))
+		var/cls = (GLOB.shadow_auto_throttle_cpu == cpu_lim) ? "btn btn-active" : "btn"
+		dat += "<a class='[cls]' href='?src=\ref[src];action=set_cpu;val=[cpu_lim]'>[cpu_lim == 0 ? "Off" : "[cpu_lim]%"]</a>"
+	dat += "</div>"
+
+	dat += "<div class='box'>"
+	dat += "<b>Current Summary:</b><br>"
+	dat += "• Clients online: <b>[clients_count]</b> | Server CPU: <b>[round(world.cpu, 0.1)]%</b><br>"
+	dat += "• Active shadow triangles: <b>[total_active_triangles]</b><br>"
+	dat += "• Registered cutouts (statues): <b>[GLOB.fov_cutout_objects.len]</b>"
+	dat += "</div>"
+
+	var/datum/browser/popup = new(user, "shadow_admin_panel", "FOV Shadow Control", 460, 440)
+	popup.set_content(dat.Join())
+	popup.open()
+
+/datum/shadow_admin_panel/Topic(href, list/href_list)
+	if(..())
+		return
+	if(!usr || !usr.client || !usr.client.holder)
+		return
+
+	var/action = href_list["action"]
+	switch(action)
+		if("toggle")
+			GLOB.shadows_enabled = !GLOB.shadows_enabled
+			if(GLOB.shadows_enabled)
+				apply_shadows_all()
+				message_admins(span_adminnotice("[key_name_admin(usr)] enabled dynamic shadows server-wide."))
+				log_admin("[key_name(usr)] enabled dynamic shadows server-wide.")
+			else
+				clear_shadows_all()
+				message_admins(span_adminnotice("[key_name_admin(usr)] disabled dynamic shadows server-wide."))
+				log_admin("[key_name(usr)] disabled dynamic shadows server-wide.")
+
+		if("set_glide")
+			var/val = clamp(text2num(href_list["val"]), 1, 5)
+			GLOB.shadow_glide_points = val
+			message_admins(span_adminnotice("[key_name_admin(usr)] set shadow smoothness to [val] points/tile."))
+			log_admin("[key_name(usr)] set shadow_glide_points to [val].")
+
+		if("set_thresh")
+			var/val = clamp(text2num(href_list["val"]), 0, 16)
+			GLOB.shadow_matrix_threshold = val
+			message_admins(span_adminnotice("[key_name_admin(usr)] set shadow matrix delta threshold to [val]."))
+			log_admin("[key_name(usr)] set shadow_matrix_threshold to [val].")
+
+		if("set_cpu")
+			var/val = clamp(text2num(href_list["val"]), 0, 100)
+			GLOB.shadow_auto_throttle_cpu = val
+			message_admins(span_adminnotice("[key_name_admin(usr)] set shadow auto-throttle to [val ? "[val]% CPU" : "Off"]."))
+			log_admin("[key_name(usr)] set shadow_auto_throttle_cpu to [val].")
+
+		if("force_refresh")
+			if(GLOB.shadows_enabled)
+				apply_shadows_all()
+			else
+				clear_shadows_all()
+
+	open_ui(usr)
+
+/datum/shadow_admin_panel/proc/clear_shadows_all()
+	for(var/client/C in GLOB.clients)
+		if(C.active_shadows?.len)
+			C.clear_unused_shadows(null)
+	for(var/obj/O in GLOB.fov_cutout_objects)
+		if(O.cutout_atom)
+			O.cutout_atom.alpha = 0
+
+/datum/shadow_admin_panel/proc/apply_shadows_all()
+	for(var/client/C in GLOB.clients)
+		if(isliving(C.mob))
+			var/mob/living/L = C.mob
+			L.shadow_glide_id++
+			L.update_dynamic_shadows()
+
+
 /client/proc/debugdailysalarypayroll()
 	set category = "Debug.Debug"
 	set name = "SALARY DEBUG"
