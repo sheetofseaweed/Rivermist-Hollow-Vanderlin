@@ -37,10 +37,12 @@
 				continue
 			clamped_adjustment[thing] = list(og_adj[1], og_adj[2])
 
-/datum/attribute_holder/sheet/job/on_add(datum/attribute_holder/plagiarist)
+/datum/attribute_holder/sheet/job/on_add(datum/attribute_holder/plagiarist, skills_only = FALSE)
 	. = ..()
 	if(attribute_variance)
 		for(var/path in plagiarist.raw_attribute_list)
+			if(skills_only && !ispath(path, SKILL))
+				continue
 			if(LAZYLEN(attribute_variance[path]) < 2)
 				continue
 			var/random = rand(attribute_variance[path][1], attribute_variance[path][2])
@@ -51,6 +53,8 @@
 
 	if(clamped_adjustment)
 		for(var/path in plagiarist.raw_attribute_list)
+			if(skills_only && !ispath(path, SKILL))
+				continue
 			var/list/adj = clamped_adjustment[path]
 			if(!adj || LAZYLEN(adj) < 1)
 				continue

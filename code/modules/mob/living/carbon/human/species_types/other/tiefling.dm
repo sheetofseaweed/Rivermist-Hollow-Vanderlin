@@ -23,9 +23,7 @@
 	\n\n\
 	Though often mistrusted or feared, tieflings are no more evil than any other race, their struggles shaped by prejudice rather than destiny. \
 	\n\n\
-	(+1 INT, +2 LCK, Allure, Darkvision, Hellish Resistance, Infernal Language).\
-	\n\n\
-	Proficiencies: Arcane(3), Blood(2), Alchemy(2), Knives(2), Sneaking(2), Reading(2).\
+	(Darkvision, Hellish Resistance, Infernal Language).\
 	\n\n\
 	THIS IS A DISCRIMINATED SPECIES. PLAY AT YOUR OWN RISK."
 
@@ -33,7 +31,7 @@
 	exotic_bloodtype = /datum/blood_type/human/tiefling
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_NOFIRE, TRAIT_ALLURE)
+	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_NOFIRE)
 	inherent_sheet = /datum/attribute_holder/sheet/job/species/tieberian/inherent
 	use_skintones = TRUE
 

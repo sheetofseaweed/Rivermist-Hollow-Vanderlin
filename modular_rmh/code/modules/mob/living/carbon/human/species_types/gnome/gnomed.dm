@@ -10,9 +10,7 @@
 	n\n\
 	Their culture prizes pragmatism over joy, and while many appear dour to outsiders, svirfneblin possess a quiet resilience born of generations spent surviving in the shadows. \
 	n\n\
-	(+1 PER, +2 INT, -1 LCK, Darkvision, Sunlight Sensitivity).\
-	\n\n\
-	Proficiencies: Sneaking(4), Lockpicking(3), Knives(3), Crossbows(2), Traps(4), Alchemy(3), Mining(3), Arcane(2)."
+	(Darkvision, Sunlight Sensitivity)."
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
 	inherent_traits = list(TRAIT_TINY, TRAIT_NOMOBSWAP, TRAIT_LIGHT_STEP, TRAIT_COIN_ILLITERATE, TRAIT_LUCKY_COOK)
@@ -34,6 +32,7 @@
 
 	organs = list(
 		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,
+		ORGAN_SLOT_SPLEEN = /obj/item/organ/spleen,
 		ORGAN_SLOT_HEART = /obj/item/organ/heart,
 		ORGAN_SLOT_LUNGS = /obj/item/organ/lungs,
 		ORGAN_SLOT_EYES = /obj/item/organ/eyes/night_vision,

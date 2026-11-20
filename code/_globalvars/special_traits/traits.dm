@@ -110,7 +110,7 @@
 /datum/special_trait/beautiful
 	name = "Beautiful"
 	greet_text = span_notice("My face is a work of art")
-	weight = 100
+	weight = 0 // never rolled; looks come from Charisma
 
 /datum/special_trait/beautiful/on_apply(mob/living/carbon/human/character, silent)
 	REMOVE_TRAIT(character, TRAIT_UGLY, BE_SPECIAL_TRAIT)
@@ -471,7 +471,7 @@
 /datum/special_trait/ugly
 	name = "Ugly"
 	greet_text = span_notice("People find me repulsive.")
-	weight = 100
+	weight = 0 // never rolled; looks come from Charisma
 
 /datum/special_trait/ugly/on_apply(mob/living/carbon/human/character, silent)
 	ADD_TRAIT(character, TRAIT_UGLY, "[type]")

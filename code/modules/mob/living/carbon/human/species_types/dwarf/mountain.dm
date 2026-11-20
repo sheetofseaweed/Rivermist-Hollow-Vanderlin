@@ -39,9 +39,7 @@
 	\n\n\
 	Their lives are shaped by stone and steel, and many see perseverance itself as the highest virtue. \
 	n\n\
-	(+1 STR, 2+ CON, +1 END, Poison Resistance, Dwarvish Language).\
-	\n\n\
-	Proficiencies: Axemaces(4), Shields(4), Blacksmithing(4), Armorsmithing(4), Weaponsmithing(3), Mining(4), Masonry(3), Athletics(3)."
+	(Poison Resistance, Dwarvish Language)."
 
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, YOUNGBEARD, STUBBLE, OLDGREY)

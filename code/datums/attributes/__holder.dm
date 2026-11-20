@@ -209,8 +209,9 @@
 
 /**
  * Adds up attributes from a sheet
+ * skills_only leaves the sheet's stats out, for characters whose stats come from the character creator
  */
-/datum/attribute_holder/proc/add_sheet(datum/attribute_holder/sheet/to_add)
+/datum/attribute_holder/proc/add_sheet(datum/attribute_holder/sheet/to_add, skills_only = FALSE)
 	if(ispath(to_add, /datum/attribute_holder/sheet))
 		if(GLOB.attribute_sheets[to_add])
 			to_add = GLOB.attribute_sheets[to_add]
@@ -218,31 +219,31 @@
 			to_add = GLOB.attribute_sheets[to_add] = new to_add()
 	else if(!istype(to_add))
 		return
-	add_holder(to_add)
+	add_holder(to_add, skills_only)
 
 /**
  * Adds up another holder's attributes
  */
-/datum/attribute_holder/proc/add_holder(datum/attribute_holder/to_add)
+/datum/attribute_holder/proc/add_holder(datum/attribute_holder/to_add, skills_only = FALSE)
 	for(var/thing in to_add.raw_attribute_list)
 		//null does not mean the same as 0!
 		if(isnull(to_add.raw_attribute_list[thing]))
 			continue
 		if(ispath(thing, SKILL))
 			raw_attribute_list[thing] = clamp(raw_attribute_list[thing] + to_add.raw_attribute_list[thing], skill_min, skill_max)
-		else
+		else if(!skills_only)
 			raw_attribute_list[thing] = clamp(raw_attribute_list[thing] + to_add.raw_attribute_list[thing], attribute_min, attribute_max)
 	if(LAZYLEN(to_add.skill_xp_multipliers))
 		for(var/skill_type in to_add.skill_xp_multipliers)
 			adjust_skill_xp_multiplier(skill_type, to_add.skill_xp_multipliers[skill_type] - 1.0)
-	to_add.on_add(src)
+	to_add.on_add(src, skills_only)
 	update_attributes()
 	seed_skill_xp()
 
 /**
  * Stuff we do when another holder adds us
  */
-/datum/attribute_holder/proc/on_add(datum/attribute_holder/plagiarist)
+/datum/attribute_holder/proc/on_add(datum/attribute_holder/plagiarist, skills_only = FALSE)
 	return
 
 /**

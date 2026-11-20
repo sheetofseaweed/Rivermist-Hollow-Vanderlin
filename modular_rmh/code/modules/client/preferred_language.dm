@@ -31,3 +31,7 @@
 	preferred_ui_language = sanitize_preferred_ui_language(language_choices[selection])
 	prefs?.save_preferences()
 	to_chat(src, span_notice("Preferred UI language set to [selection]. Reopen interfaces to apply it."))
+	if(preferred_ui_language == "ru")
+		to_chat(src, span_notice("Команда Chat Translation во вкладке OOC включает машинный перевод сообщений с других языков."))
+	else
+		to_chat(src, span_notice("The Chat Translation verb in the OOC tab machine-translates chat written in other languages."))

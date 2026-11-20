@@ -23,9 +23,7 @@
 	n\n\
 	Though often aloof, High Elves see themselves as caretakers of ancient knowledge, burdened by memories of fallen empires such as Myth Drannor. \
 	n\n\
-	(+1 PER, 2+ INT, +1 SPD, Elvish Language).\
-	\n\n\
-	Proficiencies: Swords(3), Bows(3), Arcane(4), Reading(4), Music(3), Mathematics(2), Crafting(2)."
+	(Elvish Language)."
 
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS,OLDGREY)

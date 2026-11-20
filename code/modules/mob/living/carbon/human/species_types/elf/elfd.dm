@@ -27,14 +27,12 @@
 	\n\n\
 	Though often feared on the surface, not all drow follow Lolth—some reject her tyranny and seek redemption or freedom in the world above. \
 	n\n\
-	(+1 PER, +2 SPD, +1 LCK, Allure, Darkvision, Sunlight Sensitivity, Elvish Language).\
-	\n\n\
-	Proficiencies: Knives(4), Swords(3), Crossbows(3), Whipflails(3), Sneaking(4), Lockpicking(3), Arcane(3), Blood(2), Alchemy(3), Weaponsmithing(2), Traps(1).\
+	(Darkvision, Sunlight Sensitivity, Elvish Language).\
 	\n\n\
 	THIS IS A DISCRIMINATED SPECIES. PLAY AT YOUR OWN RISK."
 
 	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS,OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_ALLURE)
+	inherent_traits = list(TRAIT_NOMOBSWAP)
 	inherent_sheet = /datum/attribute_holder/sheet/job/species/dark/inherent
 	use_skintones = 1
 	disliked_food = NONE

@@ -26,16 +26,15 @@
 	\n\n\
 	Some Half-Drow struggle against prejudice and suspicion, while others leverage their mixed heritage to navigate both worlds. \
 	\n\n\
-	(+2 LCK, +1 To One Stat Of Choice, Allure, Darkvision, Sunlight Sensitivity, Elvish Language).\
-	\n\n\
-	Proficiencies: Knives(3), Swords(2), Bows(2), Sneaking(3), Lockpicking(2), Reading(2), Arcane(2).\
+	(+2 Stat Points In Character Creation, Darkvision, Sunlight Sensitivity, Elvish Language).\
 	\n\n\
 	THIS IS A DISCRIMINATED SPECIES. PLAY AT YOUR OWN RISK."
 	default_color = "FFFFFF"
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_ALLURE)
+	inherent_traits = list(TRAIT_NOMOBSWAP)
 	inherent_sheet = /datum/attribute_holder/sheet/job/species/halfdrow/inherent
+	creator_stat_points = 2
 
 	use_skintones = TRUE
 	possible_ages = NORMAL_AGES_LIST

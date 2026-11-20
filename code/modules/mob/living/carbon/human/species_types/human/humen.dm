@@ -31,14 +31,13 @@
 	\n\n\
 	While they lack the innate magic or longevity of other races, humans compensate with adaptability and determination, shaping much of Faerûn’s history through sheer will and population. \
 	\n\n\
-	(+1 To All Stats, +1 To One Stat Of Choice).\
-	\n\n\
-	Proficiencies: Swords(2), Polearms(2), Shields(2), Crafting(2), Carepntry(2), Cooking(2), Farming(2), Athletics(2), Reading(2), Riding(1)."
+	(+3 Stat Points In Character Creation)."
 
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
 	inherent_traits = list(TRAIT_NOMOBSWAP)
 	inherent_sheet = /datum/attribute_holder/sheet/job/species/northern/inherent
+	creator_stat_points = 3
 
 	order_num = 2
 
@@ -199,6 +198,10 @@
 	if(!C || !C.client)
 		return
 
+	// Creator-made characters spend this bonus as extra stat points instead.
+	if(C.uses_creator_stats())
+		return
+
 	// Disguise shifts re-fire on_species_gain but aren't true growth — no stat prompt, so
 	// cycling forms can't farm picks. Creation-time modifiers are untouched (same-id replace).
 	if(HAS_TRAIT(C, TRAIT_IDENTITY_SHIFTING))
@@ -206,11 +209,11 @@
 
 	var/list/choices = list(
 		"Strength"      = STATKEY_STR,
-		"Perception"   = STATKEY_PER,
+		"Wisdom"       = STATKEY_PER,
 		"Intelligence" = STATKEY_INT,
 		"Constitution" = STATKEY_CON,
 		"Endurance"    = STATKEY_END,
-		"Speed"        = STATKEY_SPD,
+		"Dexterity"    = STATKEY_SPD,
 		"Fortune"      = STATKEY_LCK
 	)
 
