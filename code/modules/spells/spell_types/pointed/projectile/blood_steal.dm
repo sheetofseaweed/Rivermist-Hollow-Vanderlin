@@ -5,9 +5,6 @@
 	sound = 'sound/magic/vlightning.ogg'
 
 	associated_skill = /datum/attribute/skill/magic/blood
-	attunements = list(
-		/datum/attunement/blood = 0.7,
-	)
 
 	invocation = "DR'N LF'E!"
 	invocation_type = INVOCATION_SHOUT

@@ -4,15 +4,18 @@
 	button_icon_state = "invisibility"
 	sound = 'sound/misc/stings/generic.ogg'
 	self_cast_possible = FALSE
-	attunements = list(
-		/datum/attunement/dark = 0.4,
-		/datum/attunement/polymorph = 1.2,
-	)
 
 	charge_time = 4 SECONDS
 	charge_drain = 1
 	cooldown_time = 5 MINUTES
 	spell_cost = 20
+
+	slot_level = 1
+	slot_level_max = 1
+	slot_only = TRUE
+	slot_label = "Mimicry"
+	required_form = FORM_ARCANE
+	required_technique = TECHNIQUE_ILLUSION
 
 	var/datum/weakref/old_dna_ref
 	var/old_hair

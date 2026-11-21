@@ -39,6 +39,26 @@
 	cost = 10
 	contains = list(/obj/item/paper/scroll,/obj/item/paper/scroll,/obj/item/paper/scroll,/obj/item/paper/scroll,/obj/item/paper/scroll)
 
+/datum/supply_pack/tools/spell_scroll_lesser
+	name = "Lesser Spell Scroll"
+	cost = 40
+	contains = /obj/item/spell_scroll/random/lesser
+
+/datum/supply_pack/tools/spell_scroll_greater
+	name = "Greater Spell Scroll"
+	cost = 90
+	contains = /obj/item/spell_scroll/random/greater
+
+/datum/supply_pack/tools/grimoire
+	name = "Plain Grimoire"
+	cost = 60
+	contains = /obj/item/spellbook
+
+/datum/supply_pack/tools/grimoire_adept
+	name = "Adept Grimoire"
+	cost = 240
+	contains = /obj/item/spellbook/adept
+
 /datum/supply_pack/tools/parchment
 	name = "Parchment x5"
 	cost = 8

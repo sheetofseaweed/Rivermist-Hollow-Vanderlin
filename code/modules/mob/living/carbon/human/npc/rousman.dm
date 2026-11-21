@@ -528,7 +528,6 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 
 	H.adjust_skillrank(/datum/skill/magic/arcane, 5, TRUE)
 	H.adjust_spell_points(17)
-	H.generate_random_attunements(rand(4,6))
 	H.mana_pool.set_intrinsic_recharge(MANA_ALL_LEYLINES)
 	H.mana_pool.adjust_mana(100)
 	for(var/spell in spells)

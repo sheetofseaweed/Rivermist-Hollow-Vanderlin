@@ -89,7 +89,7 @@
 	. = ..()
 	var/mob/living/carbon/human/H = owner.current
 	SSmapping.retainer.cultists |= owner
-	H.set_patron(/datum/patron/inhumen/zizo)
+	H.set_patron(/datum/patron/faerun/evil_gods/Lolth)
 
 	owner.special_role = "Zizoid Lackey"
 	H.cmode_music = 'sound/music/cmode/antag/combat_cult.ogg'
@@ -256,7 +256,7 @@
 
 	if(isliving(user))
 		var/mob/living/living_user = user
-		if(istype(living_user, /datum/patron/inhumen/zizo))
+		if(istype(living_user.patron, /datum/patron/faerun/evil_gods/Lolth))
 			to_chat(user, "It is of the [sigil_type] circle.")
 
 /obj/effect/decal/cleanable/sigil/proc/consume_ingredients(datum/ritual/R)
@@ -290,7 +290,7 @@
 	. = ..()
 	if(icon_state != "center") // fucking awful but it has to be this way
 		return
-	if(!istype(user.patron, /datum/patron/inhumen/zizo))
+	if(!istype(user.patron, /datum/patron/faerun/evil_gods/Lolth))
 		return
 	var/list/rituals_pre = list()
 	switch(sigil_type)

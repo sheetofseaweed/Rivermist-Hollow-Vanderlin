@@ -14,6 +14,13 @@
 	cooldown_time = 30 SECONDS
 	spell_cost = 125
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_SUMMONING
+	slot_level = 3
+	slot_level_max = 3
+	slot_only = TRUE
+	required_level = MASTERY_RANK_EXPERT
+
 /datum/action/cooldown/spell/attach_bodypart/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

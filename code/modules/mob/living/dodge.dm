@@ -487,6 +487,7 @@
 		dodge_modifier -= 2
 	if(user.attributes?.has_diceroll_modifier(/datum/diceroll_modifier/fervor))
 		dodge_modifier -= 1
+	dodge_modifier += get_enmity_penalty(user)
 
 	//knowing how an attack works helps dodge it
 	if(attacking_item)

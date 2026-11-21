@@ -61,6 +61,8 @@
 
 	magic_user = TRUE
 	spell_points = 30
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/holy
 
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/chapel_acolyte,
 		/datum/action/cooldown/spell/undirected/call_bird/priest,
@@ -80,13 +82,13 @@
 		/datum/action/cooldown/spell/undirected/longstrider,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
 		/datum/action/cooldown/spell/undirected/forcewall/breakable,
-		/datum/action/cooldown/spell/aoe/churn_undead,
+		/datum/action/cooldown/spell/aoe/churn_undead/channel,
 		/datum/action/cooldown/spell/aoe/abrogation,
 		/datum/action/cooldown/spell/undirected/locate_dead,
 		/datum/action/cooldown/spell/undirected/soul_speak,
 		/datum/action/cooldown/spell/projectile/moonlit_dagger,
 		/datum/action/cooldown/spell/sacred_flame,
-		/datum/action/cooldown/spell/undirected/divine_strike,
+		/datum/action/cooldown/spell/undirected/divine_strike/channel,
 		/datum/action/cooldown/spell/pointed/silence,
 	)
 

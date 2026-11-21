@@ -58,8 +58,9 @@
 		ident_string += "[SPAN_GOD_GENERIC("(GODFEARING)")]"
 	/// Usually I hate not using spans properly, but in this case it's going to make my life easier.
 	var/lowercase_god = "generic"
-	if(patron_name in COLORFUL_PATRONS)
-		lowercase_god = ckey(patron_name)//Getting the game to correctly pull this has been the biggest pain in the butt.
+	var/list/god_colours = COLORFUL_PATRONS
+	if(patron_name in god_colours)
+		lowercase_god = god_colours[patron_name]
 	var/message = SPAN_PRAYER_WRAPPER(span_admin("[span_prefix("PRAYER: ")][ident_string] [ADMIN_SM(follower)] [ADMIN_NRT(follower)] [ADMIN_FLW(follower)] prays: <span class='god_[lowercase_god]'>[html_encode(prayer)]</span>"))
 	if(bigger)
 		message = span_slightlylarger(message)

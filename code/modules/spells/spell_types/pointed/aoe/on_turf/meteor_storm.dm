@@ -6,9 +6,6 @@
 	sound = 'sound/magic/meteorstorm.ogg'
 
 	point_cost = 8
-	attunements = list(
-		/datum/attunement/fire = 1.2
-	)
 
 	charge_time = 25 SECONDS
 	charge_drain = 2
@@ -23,10 +20,20 @@
 	invocation = "METEOR STORM!!!"
 	invocation_type = INVOCATION_SHOUT
 
+	slot_level = 5
+	slot_only = TRUE
+	slot_label = "Meteor Storm"
+	required_form = FORM_FIRE
+	required_technique = TECHNIQUE_DESTRUCTION
+	required_level = MASTERY_RANK_MASTER
+	prerequisite_spells = list(/datum/action/cooldown/spell/projectile/fireball)
+
 /datum/action/cooldown/spell/aoe/on_turf/meteor_storm/cast(atom/cast_on)
 	. = ..()
 	cast_on.visible_message(span_boldwarning("Fire is raining from the sky!"))
 
 /datum/action/cooldown/spell/aoe/on_turf/meteor_storm/cast_on_thing_in_aoe(turf/victim, atom/caster)
-	if(prob(20 * attuned_strength))
+	// A level five slot storm lands a quarter of its tiles, a legacy cast a fifth.
+	var/chance = isnull(get_effect_level()) ? 20 : 25
+	if(prob(chance))
 		new /obj/effect/temp_visual/target/meteor(get_turf(victim))

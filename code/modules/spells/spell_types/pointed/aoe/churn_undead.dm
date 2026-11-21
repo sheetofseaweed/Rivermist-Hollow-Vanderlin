@@ -17,6 +17,12 @@
 	cooldown_time = 60 SECONDS
 	spell_cost = 100
 
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_ALTERATION
+	slot_level = 3
+	slot_only = TRUE
+	required_level = MASTERY_RANK_EXPERT
+
 	aoe_radius = 4
 
 /datum/action/cooldown/spell/aoe/churn_undead/is_valid_target(atom/cast_on)

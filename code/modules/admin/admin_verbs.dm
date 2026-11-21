@@ -233,6 +233,8 @@ GLOBAL_PROTECT(admin_verbs_debug)
 	/client/proc/check_timer_sources,
 	/client/proc/cmd_image_census,
 	/client/proc/debug_spell_requirements,
+	/client/proc/debug_grant_spell_slots,
+	/client/proc/debug_grant_slot_spell_pack,
 	/client/proc/cmd_regenerate_asset_cache,
 	/client/proc/cmd_clear_smart_asset_cache,
 	/client/proc/select_job_pack_debug,

@@ -1,6 +1,6 @@
 /datum/action/cooldown/spell/undirected/conjure_item/briar_claw
 	name = "Briar Claw"
-	desc = "Turns one hand into a wolf's claw."
+	desc = "Turns one hand into a wolf's claw for a minute. The minor form lasts half as long."
 	button_icon_state = "dendor"
 	invocation = "Beast-Lord, lend me the claws of a volf."
 	invocation_type = INVOCATION_WHISPER
@@ -10,15 +10,16 @@
 	spell_cost = 15
 	item_duration = 1 MINUTES
 	cooldown_time = 4 MINUTES
+
+	required_form = FORM_EARTH
+	required_technique = TECHNIQUE_CREATION
+	slot_level = 1
+	minor_cost = SPELL_MINOR_COST_DEFAULT
 	item_type = /obj/item/weapon/briar_claw/left
 	uses_component = TRUE
 	refresh_count = 0
 	delete_old = TRUE
 	item_outline = "#1bab68"
-	attunements = list(
-		/datum/attunement/blood = 0.3,
-		/datum/attunement/earth = 0.7
-	)
 
 /datum/action/cooldown/spell/undirected/conjure_item/briar_claw/can_cast_spell(feedback)
 	. = ..()
@@ -41,6 +42,8 @@
 		item_type = /obj/item/weapon/briar_claw/left
 	else
 		item_type = /obj/item/weapon/briar_claw/right
+	// The minor claw withers in half the time.
+	item_duration = is_minor_cast() ? initial(item_duration) / 2 : initial(item_duration)
 
 /obj/item/weapon/briar_claw
 	parent_type = /obj/item/weapon/werewolf_claw

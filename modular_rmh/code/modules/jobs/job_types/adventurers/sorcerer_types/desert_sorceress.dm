@@ -26,6 +26,7 @@
 	traits = list(
 		TRAIT_GOODLOVER,
 		TRAIT_NOFIRE,
+		TRAIT_SORCERER,
 	)
 
 	spells = list(

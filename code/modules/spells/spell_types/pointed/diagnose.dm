@@ -34,7 +34,12 @@
 	associated_skill = /datum/attribute/skill/magic/holy
 
 	cooldown_time = 5 SECONDS
-	spell_cost = 5
+	spell_cost = DEVOTION_MINOR_DIAGNOSE
+
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_ILLUSION
+	slot_level = 0
+	minor_cost = DEVOTION_MINOR_DIAGNOSE
 
 /datum/action/cooldown/spell/diagnose/holy/cast(mob/living/carbon/human/cast_on)
 	. = ..()

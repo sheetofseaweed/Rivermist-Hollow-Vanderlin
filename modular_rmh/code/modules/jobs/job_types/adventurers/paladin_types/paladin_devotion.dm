@@ -46,6 +46,7 @@
 		/datum/action/cooldown/spell/healing,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/blade_ward,
+		/datum/action/cooldown/spell/undirected/protection_evil_good/channel_oath,
 	)
 
 /datum/job/advclass/combat/adventurer_paladin/devotion/after_spawn(mob/living/carbon/human/spawned, client/player_client)

@@ -10,11 +10,6 @@
 	invocation =  "Have a taste of the maiden's pure-bliss..."
 	invocation_type = INVOCATION_WHISPER
 
-	attunements = list(
-		/datum/attunement/electric = 0.3,
-		/datum/attunement/aeromancy = 0.3,
-	)
-
 	charge_time = 2 SECONDS
 	cooldown_time = 10 SECONDS
 	spell_cost = 30

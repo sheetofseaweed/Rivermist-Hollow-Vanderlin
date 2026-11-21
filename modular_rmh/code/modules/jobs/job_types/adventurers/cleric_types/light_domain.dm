@@ -46,6 +46,7 @@
 		/datum/action/cooldown/spell/essence/purify_water/class_granted,
 		/datum/action/cooldown/spell/essence/neutralize/class_granted,
 		/datum/action/cooldown/spell/undirected/conjure_item/light,
+		/datum/action/cooldown/spell/aoe/preserve_life,
 	)
 
 /datum/job/advclass/combat/adventurer_cleric/light_domain/after_spawn(mob/living/carbon/human/spawned, client/player_client)

@@ -71,7 +71,7 @@
 	if(C)
 		if(C.buckled)
 			if(istype(C.buckled, /obj/structure/fluff/psycross) || istype(C.buckled, /obj/machinery/light/fueled/campfire/pyre))
-				if((C.real_name in GLOB.excommunicated_players) || (C.real_name in GLOB.heretical_players))
+				if(C.real_name in GLOB.excommunicated_players)
 					stress2give = /datum/stress_event/viewsinpunish
 			else if(istype(C.buckled, /obj/structure/guillotine))
 				stress2give = null

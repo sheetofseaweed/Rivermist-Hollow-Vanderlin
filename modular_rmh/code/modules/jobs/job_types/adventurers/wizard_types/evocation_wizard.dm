@@ -53,6 +53,7 @@
 		/obj/item/chalk = 1,
 		/obj/item/reagent_containers/glass/bottle/killersice = 1,
 		/obj/item/book/granter/spellbook/adept = 1,
+		/obj/item/spellbook/apprentice/starter/fire = 1,
 		/obj/item/weapon/knife/dagger/silver/arcyne = 1,
 		/obj/item/storage/belt/pouch/cloth/coins/mid,
 	)

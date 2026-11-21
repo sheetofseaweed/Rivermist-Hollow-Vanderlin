@@ -6,19 +6,20 @@
 
 	point_cost = 1
 	associated_skill = /datum/attribute/skill/magic/druidic
-	attunements = list(
-		/datum/attunement/earth = 0.3,
-	)
 	invocation = "Teeth of a serpent."
 	invocation_type = INVOCATION_WHISPER
 
 	charge_required = FALSE
 	cooldown_time = 60 SECONDS
-	spell_cost = 50
+	spell_cost = SPELL_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 	status_effect = /datum/status_effect/buff/primal_savagery
 	duration_scaling = TRUE
 	duration_modification = 30 SECONDS
+
+	slot_level = 0
+	required_form = FORM_LIFE
+	required_technique = TECHNIQUE_ALTERATION
 
 /datum/action/cooldown/spell/status/primal_savagery/cast(mob/living/cast_on)
 	. = ..()

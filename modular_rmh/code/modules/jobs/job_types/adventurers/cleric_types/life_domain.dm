@@ -49,6 +49,7 @@
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/blade_ward,
+		/datum/action/cooldown/spell/aoe/preserve_life,
 	)
 
 /datum/job/advclass/combat/adventurer_cleric/life_domain/after_spawn(mob/living/carbon/human/spawned, client/player_client)

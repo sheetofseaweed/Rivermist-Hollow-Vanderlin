@@ -28,8 +28,12 @@
 
 	magic_user = TRUE
 	spell_points = 25
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_THIRD
+	// The shared fighter block sizes pools by athletics; this path keeps its ladder on arcane.
+	caster_rank_skill = /datum/attribute/skill/magic/arcane
+	prepares_spells = TRUE
+	form_points = 3
+	technique_points = 1
 
 	attribute_sheet = /datum/attribute_holder/sheet/job/advclass/combat/adventurer_fighter/eldritch_knight
 
@@ -110,6 +114,7 @@
 		/obj/item/weapon/knife/dagger = 1,
 		/obj/item/reagent_containers/glass/bottle/manapot = 1,
 		/obj/item/book/granter/spellbook/apprentice = 1,
+		/obj/item/spellbook/apprentice/starter/arcane = 1,
 		/obj/item/chalk = 1
 	)
 

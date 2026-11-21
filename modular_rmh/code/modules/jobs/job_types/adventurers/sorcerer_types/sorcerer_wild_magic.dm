@@ -34,7 +34,8 @@
 
 
 	traits = list(
-		TRAIT_WILDMAGIC
+		TRAIT_WILDMAGIC,
+		TRAIT_SORCERER
 	)
 
 /datum/outfit/adventurer_sorcerer/wild_magic

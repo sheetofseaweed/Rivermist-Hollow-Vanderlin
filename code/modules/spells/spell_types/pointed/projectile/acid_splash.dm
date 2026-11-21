@@ -5,10 +5,6 @@
 	sound = 'sound/magic/whiteflame.ogg'
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/blood = 0.3,
-		/datum/attunement/death = 0.4,
-	)
 
 	invocation = "HYDRO MURIATIC!!!!"
 	invocation_type = INVOCATION_SHOUT
@@ -21,14 +17,49 @@
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/acidsplash
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Acid Splash"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_DESTRUCTION
+
 /datum/action/cooldown/spell/projectile/acid_splash/ready_projectile(obj/projectile/magic/acidsplash/to_fire, atom/target, mob/user, iteration)
 	. = ..()
-	to_fire.damage *= attuned_strength
-	to_fire.aoe_range *= attuned_strength
-	to_fire.strength_modifier *= attuned_strength
+	var/level = get_effect_level()
+	if(isnull(level))
+		to_fire.damage *= get_rank_multiplier()
+		to_fire.strength_modifier *= get_rank_multiplier()
+		return
+	switch(level)
+		if(1)
+			to_fire.damage = 10
+			to_fire.aoe_range = 1
+			to_fire.strength_modifier = 1
+		if(2)
+			to_fire.damage = 16
+			to_fire.aoe_range = 1
+			to_fire.strength_modifier = 2
+		if(3)
+			to_fire.damage = 24
+			to_fire.aoe_range = 2
+			to_fire.strength_modifier = 3
+		if(4)
+			to_fire.damage = 32
+			to_fire.aoe_range = 2
+			to_fire.strength_modifier = 4
+		if(5)
+			to_fire.damage = 40
+			to_fire.aoe_range = 3
+			to_fire.strength_modifier = 5
+	to_fire.damage *= get_rank_multiplier()
+	if(user)
+		to_chat(user, span_notice("The [get_slot_label()] forms at spell level [level]."))
 
 /datum/action/cooldown/spell/projectile/acid_splash/quietus
 	name = "Caustic Splash"
+	learnable = FALSE
+	// The coven power keeps its own 80 damage instead of the Acid Splash slot table.
+	slot_level = null
 
 	projectile_type = /obj/projectile/magic/acidsplash/quietus
 
@@ -49,6 +80,8 @@
 	cooldown_time = 1 MINUTES
 	spell_type = SPELL_STAMINA
 	spell_cost = 40
+	slot_level = null
+	learnable = FALSE
 
 	has_visual_effects = FALSE
 

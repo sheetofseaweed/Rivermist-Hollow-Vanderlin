@@ -57,7 +57,7 @@
 			priority_announce("The Sun is torn from the sky!", "Terrible Omen", 'sound/misc/gods/astrata_omen.ogg')
 			addomen(OMEN_SUNSTEAL)
 			for(var/mob/living/carbon/human/astrater as anything in GLOB.human_list)
-				if(!istype(astrater.patron, /datum/patron/divine/astrata))
+				if(!istype(astrater.patron, /datum/patron/faerun/good_gods/Lathander))
 					continue
 				to_chat(astrater, span_userdanger("You feel the pain of [astrater.patron]!"))
 				astrater.emote("painscream", intentional = FALSE)

@@ -50,11 +50,12 @@
 			A.on_life(src)
 
 	INVOKE_ASYNC(src, PROC_REF(handle_vamp_dreams))
+	var/datum/spell_slots/slots = mind?.spell_slots
+	if(slots && IsSleeping() && health > 0 && !slots.rest_in_progress && world.time >= slots.next_long_rest)
+		INVOKE_ASYNC(slots, TYPE_PROC_REF(/datum/spell_slots, use_rest), TRUE, TRUE)
 
 	if(IsSleeping())
 		if(health > 0)
-			if(has_status_effect(/datum/status_effect/debuff/sleepytime))
-				restore_all_dnd_spell_slots()
 			remove_status_effect(/datum/status_effect/debuff/trainsleep)
 			remove_status_effect(/datum/status_effect/debuff/sleepytime)
 			if(has_status_effect(/datum/status_effect/debuff/dreamytime))

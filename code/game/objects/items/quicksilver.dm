@@ -52,7 +52,7 @@
 		to_chat(user, span_warning("I do not have the divine knowledge to properly apply [src]."))
 		return
 
-	if(user.patron in typesof(/datum/patron/inhumen))
+	if(istype(user.patron, /datum/patron/faerun/evil_gods))
 		to_chat(user, span_warning("This whole anointing stuff seems like TEN nonsense. Why prevent the chaos? Besides, this paste burns my fingers."))
 		return
 
