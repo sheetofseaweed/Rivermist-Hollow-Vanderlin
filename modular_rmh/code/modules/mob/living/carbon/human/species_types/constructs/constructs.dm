@@ -11,9 +11,7 @@
 	They do not eat, breathe, or sleep, and their bodies can be repaired like finely-made machines. \
 	\n\n\
 	Instead of sleep they rest in a still Dormancy, where they recover, mend small dents and still dream. \
-	Larger damage needs a hammer and material held in the other hand; finer material mends more. Potions do nothing for them. \
-	\n\n\
-	(+1 STR, +1 CON, +1 END, -2 SPD)."
+	Larger damage needs a hammer and material held in the other hand; finer material mends more. Potions do nothing for them."
 
 	skin_tone_wording = "Material"
 	default_color = "BABBB9"
@@ -45,6 +43,7 @@
 
 	limbs_icon_m = 'modular_rmh/icons/mob/species/construct_male.dmi'
 	limbs_icon_f = 'modular_rmh/icons/mob/species/construct_female.dmi'
+	lips_state_m = "construct_male"
 
 	bodypart_features = list(
 		/datum/bodypart_feature/hair/head,
@@ -78,6 +77,7 @@
 		/datum/customizer/organ/genitals/penis/anthro,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/vagina/anthro,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
 	)
@@ -194,9 +194,7 @@
 	desc = "Awakened dolls are porcelain, wood, or lacquered companions shaped in mortal form and granted a will of their own. \
 	They are graceful, clever, and light on their feet, but their delicate frames can crack where sturdier constructs would endure. \
 	\n\n\
-	Like other constructs they rest in Dormancy instead of sleep, and are mended with a hammer and material rather than potions. \
-	\n\n\
-	(-2 STR, +2 INT, +1 SPD)."
+	Like other constructs they rest in Dormancy instead of sleep, and are mended with a hammer and material rather than potions."
 
 	inherent_traits = list(
 		TRAIT_NOHUNGER,
@@ -208,7 +206,6 @@
 		TRAIT_NOMETABOLISM,
 		TRAIT_NOPAIN,
 		TRAIT_LIMBATTACHMENT,
-		TRAIT_BEAUTIFUL,
 		TRAIT_EASYDISMEMBER,
 	)
 

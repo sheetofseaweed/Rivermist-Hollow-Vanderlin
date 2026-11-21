@@ -174,6 +174,7 @@
 #define rogueui_cloak "WEST-3,SOUTH+5"
 #define rogueui_mouth "WEST-2,SOUTH+6"
 #define rogueui_smallclothes "WEST-2,SOUTH+1"
+#define rogueui_holes "WEST-2,SOUTH"
 
 // Smallclothes drawer beside the HUD; rows match the inventory rows and clear the action palette below.
 #define rogueui_earring_l "WEST+0,SOUTH+6"

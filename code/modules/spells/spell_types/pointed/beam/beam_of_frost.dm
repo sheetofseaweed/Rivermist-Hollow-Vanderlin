@@ -29,10 +29,20 @@
 	var/beam_level
 	/// Upcast frostbite duration multiplier, captured with the level.
 	var/beam_duration_multiplier = 1
+	/// Burn damage per creature hit on a cast without slot state, before the rank multiplier.
+	var/base_damage = 20
+	/// Damage and frostbite multiplier for the creature the beam is cast on.
+	var/main_target_modifier = 1.3
 
 /datum/action/cooldown/spell/beam/beam_of_frost/Destroy()
 	hit_targets = null
 	return ..()
+
+/datum/action/cooldown/spell/beam/beam_of_frost/get_examine_effects()
+	. = ..()
+	. += "<b>DAMAGE:</b> [base_damage] burn to each creature in the beam, [round(base_damage * main_target_modifier)] to the target"
+	var/datum/status_effect/debuff/frostbite/frostbite_type = /datum/status_effect/debuff/frostbite
+	. += "<b>FROSTBITE:</b> [DisplayTimeText(initial(frostbite_type.duration))] of slowness"
 
 /datum/action/cooldown/spell/beam/beam_of_frost/cast(atom/cast_on)
 	// The parent connects the beam and freezes the first target, so capture the level first.
@@ -45,7 +55,7 @@
 	if(!isliving(victim))
 		return
 	var/mob/living/frozen_guy = victim
-	do_freeze(frozen_guy, 1.3)
+	do_freeze(frozen_guy, main_target_modifier)
 
 /datum/action/cooldown/spell/beam/beam_of_frost/beam_entered(datum/beam/source, obj/effect/ebeam/hit, atom/movable/entered)
 	if(!isliving(entered))
@@ -56,6 +66,8 @@
 	do_freeze(frozen_guy)
 
 /datum/action/cooldown/spell/beam/beam_of_frost/proc/do_freeze(mob/living/victim, extra_modifer = 1)
+	if(owner?.spares_ally(victim))
+		return
 	if(LAZYACCESS(hit_targets, victim))
 		return
 
@@ -72,7 +84,7 @@
 
 	var/strength = clamp(get_rank_multiplier() * extra_modifer, 0.5, 2)
 
-	var/damage = round(20 * strength)
+	var/damage = round(base_damage * strength)
 	if(beam_level == SPELL_SLOT_MINOR)
 		damage = 10 * get_cantrip_multiplier()
 		strength = 0.5

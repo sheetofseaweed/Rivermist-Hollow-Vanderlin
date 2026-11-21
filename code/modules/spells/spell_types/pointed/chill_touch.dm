@@ -19,6 +19,9 @@
 	slot_level = 0
 	required_form = FORM_ICE
 
+/datum/action/cooldown/spell/chill_touch/is_hostile_to(atom/cast_on)
+	return TRUE
+
 /datum/action/cooldown/spell/chill_touch/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

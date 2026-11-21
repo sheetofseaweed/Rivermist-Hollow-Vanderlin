@@ -83,7 +83,8 @@
 /obj/item/organ/genitals/filling_organ/proc/roll_conception()
 	sync_seed_ledger()
 	var/inside = get_virile_seed_units()
-	if(!LAZYLEN(seed_ledger) || inside < CONCEPTION_MIN_SEED)
+	// A staged unit can land a hair under one, so the minimum gets a little slack.
+	if(!LAZYLEN(seed_ledger) || inside < CONCEPTION_MIN_SEED - 0.01)
 		return FALSE
 	var/list/weights = get_seed_weights()
 	if(!length(weights))

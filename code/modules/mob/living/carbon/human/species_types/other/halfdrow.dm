@@ -26,16 +26,15 @@
 	\n\n\
 	Some Half-Drow struggle against prejudice and suspicion, while others leverage their mixed heritage to navigate both worlds. \
 	\n\n\
-	(+2 LCK, +1 To One Stat Of Choice, Allure, Darkvision, Sunlight Sensitivity, Elvish Language).\
-	\n\n\
-	Proficiencies: Knives(3), Swords(2), Bows(2), Sneaking(3), Lockpicking(2), Reading(2), Arcane(2).\
+	(+2 Stat Points In Character Creation, Darkvision, Sunlight Sensitivity, Elvish Language).\
 	\n\n\
 	THIS IS A DISCRIMINATED SPECIES. PLAY AT YOUR OWN RISK."
 	default_color = "FFFFFF"
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
-	inherent_traits = list(TRAIT_NOMOBSWAP, TRAIT_ALLURE)
+	inherent_traits = list(TRAIT_NOMOBSWAP)
 	inherent_sheet = /datum/attribute_holder/sheet/job/species/halfdrow/inherent
+	creator_stat_points = 2
 
 	use_skintones = TRUE
 	possible_ages = NORMAL_AGES_LIST
@@ -118,6 +117,7 @@
 		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
@@ -179,11 +179,10 @@
 		"Black-Blue"      = SKIN_TONE_DROW_BLACK_BLUE,      // #2F2F38
 		"Very Pale"       = SKIN_TONE_DROW_VERY_PALE,       // #fff0e9
 		"Light Purple"    = SKIN_TONE_DROW_LIGHT_PURPLE,    // #a191a1
-		"Mid Purple"      = SKIN_TONE_DROW_MID_PURPLE,      // #897489
-		"Dark Purple"     = SKIN_TONE_DROW_DARK_PURPLE,     // #5f5f70
-		"Depth Grey-Blue" = SKIN_TONE_DROW_DEPTH_GREY_BLUE, // #5f5f70
-		"Pink"            = SKIN_TONE_DROW_PINK,            // #897489
-		"Very Pale"		  = SKIN_COLOR_DROW_PALE,	       // #fff0e9
+		"Mid Purple"      = SKIN_TONE_DROW_MID_PURPLE,      // #7b6680
+		"Dark Purple"     = SKIN_TONE_DROW_DARK_PURPLE,     // #4f4256
+		"Depth Grey-Blue" = SKIN_TONE_DROW_DEPTH_GREY_BLUE, // #4a5163
+		"Pink"            = SKIN_TONE_DROW_PINK,            // #a07f92
 	))
 
 /datum/species/human/halfdrow/get_possible_names(gender = MALE)
@@ -229,14 +228,12 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/halfdrow/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/knives = 30,
-		/datum/attribute/skill/combat/swords = 20,
-		/datum/attribute/skill/combat/bows = 20,
-
-		/datum/attribute/skill/misc/sneaking = 30,
-		/datum/attribute/skill/misc/lockpicking = 20,
-		/datum/attribute/skill/misc/reading = 20,
-
-		/datum/attribute/skill/magic/arcane = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/knives = list(20, 30),
+		/datum/attribute/skill/combat/swords = list(20, 30),
+		/datum/attribute/skill/combat/bows = list(20, 30),
+		/datum/attribute/skill/misc/sneaking = list(20, 30),
+		/datum/attribute/skill/misc/lockpicking = list(20, 30),
+		/datum/attribute/skill/misc/reading = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)

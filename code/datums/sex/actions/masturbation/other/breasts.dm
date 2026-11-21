@@ -1,5 +1,6 @@
 /datum/sex_action/masturbate/other/breasts
-	name = "Rub their breasts"
+	name = "Breast rubbing"
+	remote_phrase = "Rub their breasts"
 	target_menu_zone_mask = SEX_UI_ZONE_BODY
 	mage_hand_overlay_zone = MAGE_HAND_ZONE_CHEST
 

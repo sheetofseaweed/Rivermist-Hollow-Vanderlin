@@ -1889,6 +1889,40 @@
 	TEST_ASSERT(food_share < 0.2, "Food should be a garnish, not the meal (share was [round(food_share * 100, 0.1)]%).")
 	qdel(table)
 
+/datum/unit_test/dungeon_caches_roll_no_gold_piles/Run()
+	// Gold piles hide in several donors, and every cache coin must arrive at half value.
+	var/mob/living/carbon/human/looter = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/list/full_value_coins = list(/obj/item/coin/gold, /obj/item/coin/silver, /obj/item/coin/silver/pile, /obj/item/coin/copper/pile)
+	for(var/datum/loot_table/dungeon/table_type as anything in subtypesof(/datum/loot_table/dungeon))
+		if(IS_ABSTRACT(table_type))
+			continue
+		var/datum/loot_table/dungeon/table = new table_type
+		var/list/pool = table.return_list(null, 5, 1.0) | table.return_list(looter, 5, 1.0)
+		for(var/path in pool)
+			TEST_ASSERT(!ispath(path, /obj/item/coin/gold/pile), "[table_type] should not roll gold piles.")
+			TEST_ASSERT(!(path in full_value_coins), "[table_type] should pay [path] at half value.")
+		qdel(table)
+
+/datum/unit_test/dungeon_cache_opens_once/Run()
+	var/mob/living/carbon/human/opener = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/mob/living/carbon/human/latecomer = allocate(/mob/living/carbon/human, run_loc_floor_bottom_left)
+	var/obj/structure/dungeon_loot_cache/cache = allocate(/obj/structure/dungeon_loot_cache, run_loc_floor_bottom_left)
+	cache.loot = new /datum/loot_table/dungeon/tier1
+	TEST_ASSERT(!cache.try_loot(opener), "A sealed cache should refuse to open.")
+	cache.unseal()
+	TEST_ASSERT(cache.try_loot(opener), "The first opener should take the spoils.")
+	TEST_ASSERT(!cache.try_loot(latecomer), "A cache should open once; the party splits one roll.")
+	TEST_ASSERT(!cache.try_loot(opener), "The opener should not roll the cache a second time.")
+
+	// Greedy Eye adds one opening, and anyone may take it, so a solo delver still benefits.
+	var/obj/structure/dungeon_loot_cache/greedy_cache = allocate(/obj/structure/dungeon_loot_cache, run_loc_floor_bottom_left)
+	greedy_cache.loot = new /datum/loot_table/dungeon/tier1
+	greedy_cache.claims_left += 1
+	greedy_cache.unseal()
+	TEST_ASSERT(greedy_cache.try_loot(opener), "The first opening should succeed.")
+	TEST_ASSERT(greedy_cache.try_loot(opener), "The extra opening should not care who takes it.")
+	TEST_ASSERT(!greedy_cache.try_loot(latecomer), "No opening should remain after the extra one.")
+
 /datum/unit_test/dungeon_free_offers_payable/Run()
 	// Banking is priced at 0 and spend_motes refuses anything <= 0, so every
 	// vendor gate must run through try_pay_offer or banking is unreachable.

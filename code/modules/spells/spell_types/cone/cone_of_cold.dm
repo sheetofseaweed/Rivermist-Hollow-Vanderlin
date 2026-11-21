@@ -55,6 +55,18 @@
 	/// Upcast duration multiplier for frozen mobs, turfs and objects.
 	var/tmp/cone_duration_multiplier = 1
 
+/datum/action/cooldown/spell/cone/staggered/cone_of_cold/get_examine_effects()
+	. = ..()
+	var/list/damage_parts = list()
+	if(on_freeze_brute_damage)
+		damage_parts += "[on_freeze_brute_damage] brute"
+	if(on_freeze_burn_damage)
+		damage_parts += "[on_freeze_burn_damage] burn"
+	if(length(damage_parts))
+		. += "<b>DAMAGE:</b> [damage_parts.Join(", ")]"
+	if(ispath(frozen_status_effect_path) && unfreeze_mob_duration > 0 SECONDS && unfreeze_mob_duration != INFINITY)
+		. += "<b>FREEZE:</b> [DisplayTimeText(unfreeze_mob_duration)]"
+
 /datum/action/cooldown/spell/cone/staggered/cone_of_cold/cast(atom/cast_on)
 	cone_damage_multiplier = get_upcast_multiplier()
 	cone_duration_multiplier = get_upcast_duration_multiplier()

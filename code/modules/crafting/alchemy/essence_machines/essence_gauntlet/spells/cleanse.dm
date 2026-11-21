@@ -16,3 +16,8 @@
 	playsound(target,  'sound/effects/splash.ogg', 50, TRUE)
 
 	target.wash(CLEAN_WASH)
+	//RMH EDITED START - cleansing magic also lifts arcane brands
+	if(ishuman(target))
+		var/mob/living/carbon/human/human_target = target
+		human_target.remove_arcane_brands()
+	//RMH EDITED END

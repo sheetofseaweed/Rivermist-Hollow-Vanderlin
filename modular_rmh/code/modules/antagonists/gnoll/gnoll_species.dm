@@ -36,6 +36,7 @@
 	no_equip = list(ITEM_SLOT_SHIRT, ITEM_SLOT_HEAD, ITEM_SLOT_MASK, ITEM_SLOT_ARMOR, ITEM_SLOT_GLOVES, ITEM_SLOT_SHOES, ITEM_SLOT_PANTS, ITEM_SLOT_CLOAK)
 	statsheet_male = /datum/attribute_holder/sheet/job/species/gnoll_champion
 	statsheet_female = /datum/attribute_holder/sheet/job/species/gnoll_champion
+	forced_attribute_sheets = TRUE
 	offset_features_m = list(OFFSET_HANDS = list(0, 2))
 	offset_features_f = list(OFFSET_HANDS = list(0, 2))
 	soundpack_m = /datum/voicepack/gnoll_champion
@@ -67,6 +68,13 @@
 	. = ..()
 	organs = organs.Copy()
 	organs[ORGAN_SLOT_EYES] = /obj/item/organ/eyes/night_vision/werewolf
+	var/static/list/paw_offsets = list(
+		"[SOUTH]" = list(list(9, 6), list(8, 5)),
+		"[NORTH]" = list(list(8, 5), list(9, 6)),
+		"[EAST]" = list(list(11, 4), list(4, 3)),
+		"[WEST]" = list(list(12, 3), list(6, 4)),
+	)
+	held_item_dir_offsets = paw_offsets
 
 /datum/species/gnoll_champion/check_roundstart_eligible()
 	return FALSE

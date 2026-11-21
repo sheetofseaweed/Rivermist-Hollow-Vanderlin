@@ -166,7 +166,7 @@
 	mappath = "_maps/templates/rmh/randomlocs/small/small_bear_1.dmm"
 	theme = DUNGEON_THEME_BEAR
 	difficulty_tier = 3
-	loot_table_type = /datum/loot_table/dungeon/tier3
+	loot_table_type = /datum/loot_table/dungeon/tier2
 	gate_hint = "Wet fur, old blood, and the musk of something enormous hang beyond."
 
 /datum/map_template/pocket/dungeon/singlet/ratfolk_camp
@@ -193,7 +193,7 @@
 	mappath = "_maps/templates/rmh/randomlocs/small/small_werewolf_1.dmm"
 	theme = DUNGEON_THEME_WEREWOLF
 	difficulty_tier = 3
-	loot_table_type = /datum/loot_table/dungeon/tier3
+	loot_table_type = /datum/loot_table/dungeon/tier2
 	gate_hint = "Cold crystal-light glints over claw marks and matted fur."
 
 /datum/map_template/pocket/dungeon/singlet/wolf_den
@@ -265,7 +265,7 @@
 	mappath = "_maps/templates/dungeons/swampgob/boss_kingshall.dmm"
 	room_kind = DUNGEON_ROOM_BOSS
 	difficulty_tier = 2
-	loot_table_type = /datum/loot_table/dungeon/tier3
+	loot_table_type = /datum/loot_table/dungeon/tier2
 	gate_hint = "Drums. Torchlight. Something vast squats on a throne of mud."
 
 // -- Drow Dungeon: occupied undercity beyond the Sunken Warrens --

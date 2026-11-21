@@ -1,34 +1,28 @@
 /datum/buildmode_mode/basic
+	name = "Basic"
 	key = "basic"
+	uses_selection = TRUE
+	pixel_placement = TRUE
 
 /datum/buildmode_mode/basic/show_help(client/c)
-	to_chat(c, "<span class='notice'>***********************************************************</span>")
-	to_chat(c, "<span class='notice'>Left Mouse Button        = Construct / Upgrade</span>")
-	to_chat(c, "<span class='notice'>Right Mouse Button       = Deconstruct / Delete / Downgrade</span>")
-	to_chat(c, "<span class='notice'>Left Mouse Button + ctrl = R-Window</span>")
-	to_chat(c, "<span class='notice'>Left Mouse Button + alt  = Airlock</span>")
-	to_chat(c, "")
-	to_chat(c, "<span class='notice'>Use the button in the upper left corner to</span>")
-	to_chat(c, "<span class='notice'>change the direction of built objects.</span>")
-	to_chat(c, "<span class='notice'>***********************************************************</span>")
+	to_chat(c, span_notice("***********************************************************"))
+	to_chat(c, span_notice("Catalogue button (grid)          = Pick what to place, and pick a tool"))
+	to_chat(c, span_notice("Left click                       = Use the tool picked in the catalogue (Place by default)"))
+	to_chat(c, span_notice("Shift + left click               = Place at the exact pixel under the cursor"))
+	to_chat(c, span_notice("Middle button drag               = Paint the rectangle with the selection"))
+	to_chat(c, span_notice("Ctrl + middle button drag        = Erase objects in the rectangle"))
+	to_chat(c, span_notice("                                   (also a left drag with Delete, or Ctrl + left drag with Paint area)"))
+	to_chat(c, span_notice("Ctrl + left click on an object   = Copy it exactly, variables included"))
+	to_chat(c, span_notice("Alt + left click                 = Pick the type of what you clicked"))
+	to_chat(c, span_notice("Right click                      = Clear the selection; with nothing selected, delete"))
+	to_chat(c, span_notice("                                   (the Tools panel can lock this; Ctrl + right click still deletes)"))
+	to_chat(c, span_notice("Ctrl + right click               = Delete the object, or strip the top turf layer"))
+	to_chat(c, span_notice("Alt + right click                = Rotate the build direction"))
+	to_chat(c, span_notice("Right click on buildmode button  = Select by typepath"))
+	to_chat(c, span_notice("***********************************************************"))
 
-/datum/buildmode_mode/basic/handle_click(client/c, list/modifiers, obj/object)
-	var/left_click = LAZYACCESS(modifiers, LEFT_CLICK)
-	var/right_click = LAZYACCESS(modifiers, RIGHT_CLICK)
-	var/ctrl_click = LAZYACCESS(modifiers, CTRL_CLICKED)
-	var/alt_click = LAZYACCESS(modifiers, ALT_CLICKED)
+/datum/buildmode_mode/basic/change_settings(client/c)
+	prompt_for_type(c)
 
-	if(istype(object,/turf) && left_click && !alt_click && !ctrl_click)
-		var/turf/T = object
-		if(isfloorturf(object))
-			T.PlaceOnTop(/turf/closed/wall/mineral/decowood)
-		log_admin("Build Mode: [key_name(c)] built [T] at [AREACOORD(T)]")
-		return
-	else if(right_click)
-		log_admin("Build Mode: [key_name(c)] deleted [object] at [AREACOORD(object)]")
-		if(isturf(object))
-			var/turf/T = object
-			T.ScrapeAway(flags = CHANGETURF_INHERIT_AIR)
-		else if(isobj(object))
-			qdel(object)
-		return
+/datum/buildmode_mode/basic/handle_click(client/c, list/modifiers, atom/object)
+	BM.handle_tool_click(c, modifiers, object)

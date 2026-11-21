@@ -43,6 +43,8 @@
 	new /obj/effect/temp_visual/arcyne_storm(victim)
 	playsound(victim, "genslash", 40, TRUE)
 	for(var/mob/living/L in victim.contents)
+		if(owner?.spares_ally(L))
+			continue
 		L.adjustBruteLoss(tick_damage, damage_type = BCLASS_CUT)
 		to_chat(L, span_userdanger("I'm cut by an arcyne force!"))
 

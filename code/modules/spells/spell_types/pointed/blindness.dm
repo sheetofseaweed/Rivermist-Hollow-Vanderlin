@@ -18,6 +18,9 @@
 	required_form = FORM_ARCANE
 	required_technique = TECHNIQUE_ILLUSION
 
+/datum/action/cooldown/spell/blindness/is_hostile_to(atom/cast_on)
+	return TRUE
+
 /datum/action/cooldown/spell/blindness/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

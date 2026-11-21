@@ -63,7 +63,7 @@
 	// deliberately excluded - a fall from a higher z-level spikes oxy hard and would otherwise KO you
 	// almost instantly. It gets its own near-lethal bar below instead.
 	// Burn is weighted down: it lands in bigger single lumps than brute, so raw parity fell far too fast.
-	var/total_damage = carbon_parent.getBruteLoss() + (carbon_parent.getFireLoss() * DEFEAT_BURN_DAMAGE_WEIGHT) + carbon_parent.getToxLoss() + carbon_parent.getCloneLoss()
+	var/total_damage = carbon_parent.get_defeat_damage_pool()
 	maybe_warn_damage_defeat(carbon_parent, total_damage, selected_threshold)
 	if(total_damage >= selected_threshold)
 		return carbon_parent.enter_defeat(DEFEAT_REASON_DAMAGE, DEFEAT_SEVERITY_NORMAL)
@@ -298,7 +298,7 @@
 	if(explicit_override > 0)
 		return clamp(round(explicit_override), DEFEAT_HORNY_MOB_THRESHOLD_MIN, DEFEAT_HORNY_MOB_THRESHOLD_MAX)
 	if(player_owned)
-		return clamp(round((constitution + endurance) / 2), DEFEAT_HORNY_PLAYER_THRESHOLD_MIN, DEFEAT_HORNY_PLAYER_THRESHOLD_MAX)
+		return clamp(round((constitution + endurance) / DEFEAT_HORNY_PLAYER_STAT_DIVISOR), DEFEAT_HORNY_PLAYER_THRESHOLD_MIN, DEFEAT_HORNY_PLAYER_THRESHOLD_MAX)
 	return clamp(round((constitution + endurance) / 10), DEFEAT_HORNY_MOB_THRESHOLD_MIN, DEFEAT_HORNY_MOB_THRESHOLD_MAX)
 
 /// Player-owned includes disconnected bodies whose mind is still attached.

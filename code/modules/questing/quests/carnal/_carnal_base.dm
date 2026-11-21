@@ -90,6 +90,10 @@
 		genders += FEMALE
 	return length(genders) ? pick(genders) : null
 
+/// Carnal contracts are not combat, so a rune rescue keeps them.
+/datum/quest/kill/carnal/fails_on_rune_rescue(mob/living/carbon/rescued)
+	return FALSE
+
 /datum/quest/kill/carnal/get_risk_score(turf/target_turf)
 	return target_risk_value + type_risk_bonus + round(max(spawned_target_count - 1, 0) / 2)
 

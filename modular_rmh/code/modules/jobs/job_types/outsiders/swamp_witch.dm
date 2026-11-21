@@ -64,7 +64,6 @@
 
 	traits = list(
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 		TRAIT_FORAGER,
 		TRAIT_LEGENDARY_ALCHEMIST,
 	)
@@ -157,7 +156,6 @@
 
 	traits = list(
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 		TRAIT_NOFIRE,
 	)
 
@@ -243,7 +241,6 @@
 
 	traits = list(
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 	)
 
 	spells = list(
@@ -332,7 +329,6 @@
 
 	traits = list(
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 		TRAIT_WILDMAGIC,
 	)
 

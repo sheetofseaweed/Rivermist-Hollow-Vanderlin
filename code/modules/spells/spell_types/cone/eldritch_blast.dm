@@ -99,6 +99,13 @@
 	required_form = FORM_DEATH
 	required_technique = TECHNIQUE_DESTRUCTION
 
+/datum/action/cooldown/spell/cone/staggered/eldritch_blast/get_examine_effects()
+	. = ..()
+	. += "<b>DAMAGE:</b> eldritch poison over time (toxin, burn, suffocation), stronger up close"
+	. += "<b>BLIND:</b> 1 to [cone_levels] seconds, longer at the far end"
+	var/datum/status_effect/amok/amok_type = /datum/status_effect/amok
+	. += "<b>AMOK:</b> [DisplayTimeText(initial(amok_type.duration))] of attacking whoever is near"
+
 /datum/action/cooldown/spell/cone/staggered/eldritch_blast/cast(atom/cast_on)
 	. = ..()
 	new /obj/effect/temp_visual/dir_setting/entropic(get_step(cast_on, cast_on.dir), cast_on.dir)

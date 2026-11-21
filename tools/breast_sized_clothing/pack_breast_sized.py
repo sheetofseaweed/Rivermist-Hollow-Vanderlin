@@ -16,6 +16,8 @@ Output: modular_rmh/icons/clothing/onmob/breast_sized/<state>.dmi with, for
     <p>_<N>_jiggle_front N 5-8: run cycle looping
     <p>_<N>_jiggle       N 5-8: cut base plus side cloth over the run cycle, looping (jiggle emote)
     <p>_<N>_still        N 5-8: the whole garment as for 0-4, no movement (animation preference off)
+    <p>_<N>_<tag>...     the same set for a race with its own clothing art (CUSTOM_VARIANTS): that race's
+                         worn sprite "<p>_<tag>" as the base, the human layers shifted down by the race's extra breast offset
 
 The south cloth of animated sizes is drawn by a vis_contents child in the game
 (modular_rmh/code/modules/mob/breast_visual.dm), so the base keeps only the cut.
@@ -38,6 +40,8 @@ from dmi import Dmi, SOUTH, DIR_ORDER  # noqa: E402
 from build_breast_anims import SHOTS, WALK, RUN, ANIM_SIZES, MOVEMENT_DELAY  # noqa: E402
 
 SRC = os.path.join(HERE, "src")
+# Clothing tag -> rows the human layers move down. Dwarf art sits 4 px lower; the layers were drawn for breasts at -1.
+CUSTOM_VARIANTS = {"dwarf": 3}
 OUT_DIR = os.path.join(ROOT, "modular_rmh/icons/clothing/onmob/breast_sized")
 SIZES = range(0, 9)
 
@@ -67,19 +71,32 @@ def find(dmi, name, movement=False):
     return None
 
 
-class Layers:
-    """Reads the archive's cells for one garment and one prefix (<state>_f or <state>_f_detail)."""
+def shift(cells, dy):
+    """Cells moved down by dy rows (up when negative); what leaves the cell is dropped."""
+    if not dy:
+        return cells
+    out = []
+    for cell in cells:
+        moved = blank(cell.size)
+        moved.paste(cell, (0, dy))
+        out.append(moved)
+    return out
 
-    def __init__(self, archive, prefix, size):
+
+class Layers:
+    """Reads the archive's cells for one garment and one prefix (<state>_f or <state>_f_detail), shifted by dy rows."""
+
+    def __init__(self, archive, prefix, size, dy=0):
         self.archive = archive
         self.prefix = prefix
         self.cell_size = size
+        self.dy = dy
 
     def cells(self, name):
         state = find(self.archive, name)
         if not state:
             return [blank(self.cell_size) for _ in range(4)]
-        return state.frames[:4]
+        return shift(state.frames[:4], self.dy)
 
     def has(self, name):
         return find(self.archive, name) is not None
@@ -141,28 +158,38 @@ def front_frame(layers, n, frame=""):
     return stack(layers.cover(n, frame), *layers.cloth(n, "_front", frame))
 
 
-def build_prefix(out, layers, base, prefix):
+def build_prefix(out, layers, base, prefix, variant=""):
+    """States for one prefix; variant ("" or "_<tag>") sits right after the size in every name."""
     for n in SIZES:
         if not layers.has("%s_%d_hide" % (prefix, n)):
             continue
+        name = "%s_%d%s" % (prefix, n, variant)
         if n not in ANIM_SIZES:
-            add_state(out, "%s_%d" % (prefix, n), [stack(cut(base, layers.hide(n)), *layers.cloth(n, ""))], 1)
+            add_state(out, name, [stack(cut(base, layers.hide(n)), *layers.cloth(n, ""))], 1)
             continue
-        add_state(out, "%s_%d_still" % (prefix, n), [stack(cut(base, layers.hide(n)), *layers.cloth(n, ""))], 1)
+        add_state(out, name + "_still", [stack(cut(base, layers.hide(n)), *layers.cloth(n, ""))], 1)
         still = base_frame(layers, base, n)
-        add_state(out, "%s_%d" % (prefix, n), [still], 1)
-        add_state(out, "%s_%d" % (prefix, n), [base_frame(layers, base, n, k) for k in WALK], MOVEMENT_DELAY, movement=True)
-        add_state(out, "%s_%d_run" % (prefix, n), [still], 1)
-        add_state(out, "%s_%d_run" % (prefix, n), [base_frame(layers, base, n, k) for k in RUN], MOVEMENT_DELAY, movement=True)
+        add_state(out, name, [still], 1)
+        add_state(out, name, [base_frame(layers, base, n, k) for k in WALK], MOVEMENT_DELAY, movement=True)
+        add_state(out, name + "_run", [still], 1)
+        add_state(out, name + "_run", [base_frame(layers, base, n, k) for k in RUN], MOVEMENT_DELAY, movement=True)
         front_still = front_frame(layers, n)
-        add_state(out, "%s_%d_front" % (prefix, n), [front_still], 1)
-        add_state(out, "%s_%d_front" % (prefix, n), [front_frame(layers, n, k) for k in WALK], MOVEMENT_DELAY, movement=True)
-        add_state(out, "%s_%d_run_front" % (prefix, n), [front_still], 1)
-        add_state(out, "%s_%d_run_front" % (prefix, n), [front_frame(layers, n, k) for k in RUN], MOVEMENT_DELAY, movement=True)
+        add_state(out, name + "_front", [front_still], 1)
+        add_state(out, name + "_front", [front_frame(layers, n, k) for k in WALK], MOVEMENT_DELAY, movement=True)
+        add_state(out, name + "_run_front", [front_still], 1)
+        add_state(out, name + "_run_front", [front_frame(layers, n, k) for k in RUN], MOVEMENT_DELAY, movement=True)
         for shot, (keys, delay) in SHOTS.items():
-            add_state(out, "%s_%d_%s_front" % (prefix, n, shot), [front_frame(layers, n, k) for k in keys], delay, loop=1)
-        add_state(out, "%s_%d_jiggle_front" % (prefix, n), [front_frame(layers, n, k) for k in RUN], 1)
-        add_state(out, "%s_%d_jiggle" % (prefix, n), [base_frame(layers, base, n, k) for k in RUN], 1)
+            add_state(out, "%s_%s_front" % (name, shot), [front_frame(layers, n, k) for k in keys], delay, loop=1)
+        add_state(out, name + "_jiggle_front", [front_frame(layers, n, k) for k in RUN], 1)
+        add_state(out, name + "_jiggle", [base_frame(layers, base, n, k) for k in RUN], 1)
+
+
+def find_variant_base(worn, prefix, tag):
+    """Worn state of a custom race for prefix: "<state>_f_<tag>", or for the detail prefix either order of the tags."""
+    if prefix.endswith("_detail"):
+        stem = prefix[:-len("_detail")]
+        return find(worn, "%s_%s_detail" % (stem, tag)) or find(worn, "%s_%s" % (prefix, tag))
+    return find(worn, "%s_%s" % (prefix, tag))
 
 
 def build(state_name, worn_path):
@@ -180,6 +207,11 @@ def build(state_name, worn_path):
         if not layers.has("%s_5_hide" % prefix):
             continue
         build_prefix(out, layers, worn_state.frames[:4], prefix)
+        for tag, dy in CUSTOM_VARIANTS.items():
+            variant_base = find_variant_base(worn, prefix, tag)
+            if not variant_base:
+                continue
+            build_prefix(out, Layers(archive, prefix, cell_size, dy), variant_base.frames[:4], prefix, "_" + tag)
     os.makedirs(OUT_DIR, exist_ok=True)
     out_path = os.path.join(OUT_DIR, state_name + ".dmi")
     out.to_file(out_path)

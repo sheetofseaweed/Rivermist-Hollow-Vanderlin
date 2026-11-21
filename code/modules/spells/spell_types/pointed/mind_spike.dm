@@ -22,6 +22,9 @@
 	required_form = FORM_ARCANE
 	required_technique = TECHNIQUE_ILLUSION
 
+/datum/action/cooldown/spell/mind_spike/is_hostile_to(atom/cast_on)
+	return TRUE
+
 /datum/action/cooldown/spell/mind_spike/cast(atom/cast_on)
 	. = ..()
 	var/turf/victim = get_turf(cast_on)
@@ -48,6 +51,8 @@
 	new /obj/effect/temp_visual/mind_spike(victim)
 	var/divisor = get_spike_divisor(level)
 	for(var/mob/living/L in victim)
+		if(owner?.spares_ally(L))
+			continue
 		var/obj/item/organ/brain/brain = L.getorganslot(ORGAN_SLOT_BRAIN)
 		if(!brain)
 			continue

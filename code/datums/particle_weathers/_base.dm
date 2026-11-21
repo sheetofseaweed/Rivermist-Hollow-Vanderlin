@@ -9,7 +9,7 @@
 	spawning = 0
 	width                  = 800  // I think this is supposed to be in pixels, but it doesn't match bounds, so idk - 800x800 seems to prevent particle-less edges
 	height                 = 800
-	count                  = 3000 // 3000 particles
+	count                  = 1000 // Clients simulate and draw each live particle every frame; 3000 doubled render CPU
 	//Set bounds to rough screensize + some extra on the side and top movement for "wind"
 	bound1                 = list(-500,-256,-10)
 	bound2                 = list(500,500,10)

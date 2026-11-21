@@ -6,7 +6,8 @@
 	count_min = 1
 	count_max = 4
 	minimum_tier = QUEST_TIER_ROUTINE
-	maximum_tier = QUEST_TIER_LETHAL
+	// Lethal would draw only a lone bog troll and pay less than Deadly.
+	maximum_tier = QUEST_TIER_DEADLY
 
 /datum/quest/kill/carnal/sate/build_title()
 	if(!target_mob_type)

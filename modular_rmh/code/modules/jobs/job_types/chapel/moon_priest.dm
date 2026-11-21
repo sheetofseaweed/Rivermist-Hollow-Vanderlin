@@ -94,7 +94,7 @@
 
 /datum/job/moon_priest/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
-	spawned.verbs |= /mob/living/carbon/human/proc/churchannouncement
+	add_verb(spawned, /mob/living/carbon/human/proc/churchannouncement)
 
 	var/holder = spawned.patron?.devotion_holder
 	if(holder)
@@ -138,7 +138,7 @@
 //ANNOUNCEMENT
 
 /mob/living/carbon/human/proc/churchannouncement()
-	set name = "Announcement"
+	set name = "Church Announcement"
 	set category = "Priest"
 	if(stat)
 		return

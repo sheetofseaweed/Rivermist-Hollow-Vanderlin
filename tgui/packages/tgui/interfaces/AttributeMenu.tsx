@@ -22,6 +22,7 @@ const SEAL_STATES = new Set([
   'intelligence',
   'willpower',
   'perception',
+  'charisma',
 ]);
 
 const SEAL_RING_RADIUS = 34;
@@ -58,7 +59,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     title: 'Character Seals',
-    body: 'The left page bears the Core Attribute seals arranged around your portrait: Strength, Speed, Endurance, Intelligence, Perception, Constitution, and Fortune. These foundations govern almost everything you do.',
+    body: 'The left page bears the Core Attribute seals arranged around your portrait: Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma, Endurance, and Fortune. These foundations govern almost everything you do.',
     target: '.AttributeMenu__panel--seals',
     popupAnchor: 'right',
   },

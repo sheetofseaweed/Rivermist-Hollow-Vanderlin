@@ -88,7 +88,7 @@
 /datum/job/acolyte/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	spawned.add_spell(/datum/action/cooldown/spell/aoe/preserve_life, source = src)
-	spawned.verbs |= /mob/living/carbon/human/proc/churchannouncement
+	add_verb(spawned, /mob/living/carbon/human/proc/churchannouncement)
 
 	var/holder = spawned.patron?.devotion_holder
 	if(holder)
@@ -299,9 +299,7 @@
 
 	traits = list(
 		TRAIT_HOLY,
-		TRAIT_ALLURE,
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 		TRAIT_EMPATH
 	)
 
@@ -380,9 +378,7 @@
 	traits = list(
 		TRAIT_HOLY,
 		TRAIT_EMPATH,
-		TRAIT_ALLURE,
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 	)
 
 /datum/outfit/acolyte/nun
@@ -460,9 +456,7 @@
 	traits = list(
 		TRAIT_HOLY,
 		TRAIT_EMPATH,
-		TRAIT_ALLURE,
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 	)
 
 /datum/outfit/acolyte/nun_regal
@@ -632,9 +626,7 @@
 
 	traits = list(
 		TRAIT_HOLY,
-		TRAIT_ALLURE,
 		TRAIT_GOODLOVER,
-		TRAIT_BEAUTIFUL,
 		TRAIT_EMPATH
 	)
 

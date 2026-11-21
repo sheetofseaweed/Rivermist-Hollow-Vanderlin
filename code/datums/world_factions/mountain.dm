@@ -77,7 +77,9 @@
 		/datum/supply_pack/rawmats/blocks,
 		/datum/supply_pack/rawmats/ash,
 		// Camp shelter
-		/datum/supply_pack/tools/camp_tent
+		/datum/supply_pack/tools/camp_tent,
+		// Livestock - hunting and herding dogs
+		/datum/supply_pack/livestock/dog
 	)
 	uncommon_pool = list(
 		// Better armor
@@ -129,7 +131,9 @@
 		/datum/supply_pack/instruments/mbox,
 		/datum/supply_pack/instruments/vocals,
 		// Materials
-		/datum/supply_pack/rawmats/sinew
+		/datum/supply_pack/rawmats/sinew,
+		// Livestock
+		/datum/supply_pack/livestock/dog_pair
 	)
 	rare_pool = list(
 		// High-end armor
@@ -143,6 +147,7 @@
 		/datum/supply_pack/armor/iron/ifull_plate,
 		/datum/supply_pack/armor/steel/elvenhelm,
 		/datum/supply_pack/armor/steel/elvenplate,
+		/datum/supply_pack/armor/steel/wardenhelm,
 		// Apparel
 		/datum/supply_pack/apparel/ridingboots,
 		/datum/supply_pack/jewelry/nosesilver,
@@ -186,7 +191,12 @@
 		/datum/supply_pack/medicine/antipregpot,
 		/datum/supply_pack/medicine/moon_tea,
 		/datum/supply_pack/medicine/cold_seed,
-		/datum/supply_pack/medicine/seed_sachets
+		/datum/supply_pack/medicine/seed_sachets,
+		/datum/supply_pack/narcotics/slick_balm,
+		/datum/supply_pack/narcotics/rosewater_salve,
+		/datum/supply_pack/narcotics/yielding_draught,
+		/datum/supply_pack/narcotics/maidens_knot,
+		/datum/supply_pack/narcotics/limber_draught
 	)
 	exotic_pool = list(
 		/datum/supply_pack/armor/steel/coatofplates,
@@ -200,6 +210,7 @@
 		/datum/supply_pack/armor/steel/chainmail_hauberk,
 		/datum/supply_pack/armor/steel/visorsallet,
 		/datum/supply_pack/armor/steel/half_plate,
+		/datum/supply_pack/armor/iron/coppergatehelm,
 		/datum/supply_pack/jewelry/goldring,
 		/datum/supply_pack/rawmats/riddle_of_steel,
 		/datum/supply_pack/luxury/talkstone,
@@ -207,7 +218,6 @@
 		/datum/supply_pack/weapons/ranged/puffer,
 		/datum/supply_pack/weapons/ammo/bullets,
 		/datum/supply_pack/weapons/ranged/musket,
-		/datum/supply_pack/portals_and_fleshlight
 	)
 
 /datum/world_faction/mountain_clans/initialize_faction_stock()

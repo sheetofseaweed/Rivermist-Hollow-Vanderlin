@@ -21,6 +21,9 @@
 	required_form = FORM_AIR
 	required_level = MASTERY_RANK_ADEPT
 
+/datum/action/cooldown/spell/gravity/is_hostile_to(atom/cast_on)
+	return TRUE
+
 /datum/action/cooldown/spell/gravity/is_valid_target(atom/cast_on)
 	. = ..()
 	if(!.)

@@ -34,6 +34,8 @@ GLOBAL_LIST_INIT(snack_slice_reverse, ensure_snack_slice_reverse())
 GLOBAL_LIST_EMPTY(book_recipe_cache)
 // Per-book linked recipe cache (passes 2-4)
 GLOBAL_LIST_EMPTY(linked_recipe_cache)
+//RMH EDITED - "mob:[path]" / "src:[path]" -> source page entry, shared by every book
+GLOBAL_LIST_EMPTY(recipe_source_page_cache)
 
 // recipe_info_path, set this on any /atom to redirect hyperlink
 // lookups to a different typepath's return_recipe_data().
@@ -78,9 +80,11 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 	var/list/data = list()
 	data["book_name"] = name
 	data["book_desc"] = desc
-	build_obtained_from_reverse()
-	data["recipes"] = get_cached_book_recipes(type, FALSE)
-	data["linked_recipes"] = get_cached_linked_recipes(type)
+	//RMH EDITED START - ids into the recipe_book_db asset; full entries reach each client once, not every open
+	var/list/ids = get_recipe_book_ids()
+	data["recipe_ids"] = ids["recipes"]
+	data["linked_ids"] = ids["linked"]
+	//RMH EDITED END
 	return data
 
 /obj/item/recipe_book/proc/get_cached_book_recipes(book_type, creation = TRUE)
@@ -90,8 +94,17 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 	var/obj/item/recipe_book/new_book = src
 	if(creation)
 		new_book = new book_type()
+	//RMH EDITED START - loop split into collect_recipe_entries() so per-reader learned recipes reuse it
+	var/list/recipes = collect_recipe_entries(new_book.types)
+	GLOB.book_recipe_cache["[book_type]"] = recipes
+	if(creation)
+		qdel(new_book)
+	return recipes
+
+/obj/item/recipe_book/proc/collect_recipe_entries(list/paths)
 	var/list/recipes = list()
-	for(var/atom/path as anything in new_book.types)
+	//RMH EDITED END
+	for(var/atom/path as anything in paths) //RMH EDITED - was new_book.types
 		if(IS_ABSTRACT(path))
 			for(var/atom/sub as anything in subtypesof(path))
 				if(IS_ABSTRACT(sub)) continue
@@ -112,11 +125,7 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 		else
 			var/list/entry = get_cached_recipe_data(path)
 			if(entry) recipes += list(entry)
-
-	GLOB.book_recipe_cache["[book_type]"] = recipes
-	if(creation)
-		qdel(new_book)
-	return recipes
+	return recipes //RMH EDITED - cache write and qdel moved up into get_cached_book_recipes()
 
 /obj/item/recipe_book/proc/get_cached_linked_recipes(book_type)
 	if(GLOB.linked_recipe_cache["[book_type]"])
@@ -154,7 +163,7 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 		var/atom/mob_path = text2path(key)
 		if(!mob_path || visited["[mob_path]"]) continue
 		visited["[mob_path]"] = TRUE
-		var/list/entry = get_mob_source_page_data(mob_path)
+		var/list/entry = get_cached_source_page(mob_path, TRUE) //RMH EDITED - was get_mob_source_page_data()
 		if(!entry) continue
 		linked += list(entry)
 		queue_item_paths_from_entry(entry, scan_queue, visited)
@@ -163,7 +172,7 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 		var/atom/src_path = text2path(key)
 		if(!src_path) continue
 		visited["[src_path]"] = TRUE
-		var/list/entry = get_source_page_data(src_path)
+		var/list/entry = get_cached_source_page(src_path, FALSE) //RMH EDITED - was get_source_page_data()
 		if(entry)
 			linked += list(entry)
 			continue
@@ -206,6 +215,14 @@ GLOBAL_LIST_EMPTY(linked_recipe_cache)
 
 	GLOB.linked_recipe_cache["[book_type]"] = linked
 	return linked
+
+//RMH EDITED START - one shared list per page, so books link the same entry and the db dedupes by reference
+/obj/item/recipe_book/proc/get_cached_source_page(atom/path, mob_page)
+	var/key = "[mob_page ? "mob" : "src"]:[path]"
+	if(!(key in GLOB.recipe_source_page_cache))
+		GLOB.recipe_source_page_cache[key] = mob_page ? get_mob_source_page_data(path) : get_source_page_data(path)
+	return GLOB.recipe_source_page_cache[key]
+//RMH EDITED END
 
 /obj/item/recipe_book/proc/get_source_page_data(atom/src_path)
 	var/list/drops = GLOB.obtained_from_reverse["[src_path]"]

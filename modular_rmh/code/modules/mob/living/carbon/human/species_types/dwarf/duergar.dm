@@ -14,9 +14,7 @@
 	n\n\
 	Though often cruel and merciless, their harsh nature is forged from generations of oppression rather than inherent malice. \
 	n\n\
-	(+1 STR, 2+ CON, +1 END, -1 LCK, Poison Resistance, Darkvision, Sunlight Sensitivity, Dwarvish Language).\
-	\n\n\
-	Proficiencies: Axemaces(4), Polearms(3), Sneaking(3), Blacksmithing(3), Smelting(3), Mining(4), Arcane(2).\
+	(Poison Resistance, Darkvision, Sunlight Sensitivity, Dwarvish Language).\
 	\n\n\
 	THIS IS A DISCRIMINATED SPECIES. PLAY AT YOUR OWN RISK."
 
@@ -39,6 +37,7 @@
 
 	organs = list(
 		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,
+		ORGAN_SLOT_SPLEEN = /obj/item/organ/spleen,
 		ORGAN_SLOT_HEART = /obj/item/organ/heart,
 		ORGAN_SLOT_LUNGS = /obj/item/organ/lungs,
 		ORGAN_SLOT_EYES = /obj/item/organ/eyes/night_vision,
@@ -127,6 +126,7 @@
 		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
@@ -189,11 +189,10 @@
 		"Black-Blue"      = SKIN_TONE_DROW_BLACK_BLUE,      // #2F2F38
 		"Very Pale"       = SKIN_TONE_DROW_VERY_PALE,       // #fff0e9
 		"Light Purple"    = SKIN_TONE_DROW_LIGHT_PURPLE,    // #a191a1
-		"Mid Purple"      = SKIN_TONE_DROW_MID_PURPLE,      // #897489
-		"Dark Purple"     = SKIN_TONE_DROW_DARK_PURPLE,     // #5f5f70
-		"Depth Grey-Blue" = SKIN_TONE_DROW_DEPTH_GREY_BLUE, // #5f5f70
-		"Pink"            = SKIN_TONE_DROW_PINK,            // #897489
-		"Very Pale"		  = SKIN_COLOR_DROW_PALE,	       // #fff0e9
+		"Mid Purple"      = SKIN_TONE_DROW_MID_PURPLE,      // #7b6680
+		"Dark Purple"     = SKIN_TONE_DROW_DARK_PURPLE,     // #4f4256
+		"Depth Grey-Blue" = SKIN_TONE_DROW_DEPTH_GREY_BLUE, // #4a5163
+		"Pink"            = SKIN_TONE_DROW_PINK,            // #a07f92
 	))
 
 /datum/species/dwarf/duergar/get_possible_names(gender = MALE)
@@ -223,18 +222,14 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/duergar/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/axesmaces = 40,
-		/datum/attribute/skill/combat/polearms = 30,
-
-		/datum/attribute/skill/misc/sneaking = 30,
-
-		/datum/attribute/skill/craft/blacksmithing = 30,
-		/datum/attribute/skill/craft/smelting = 30,
-
-		/datum/attribute/skill/labor/mining = 40,
-
-		/datum/attribute/skill/magic/arcane = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/axesmaces = list(30, 30),
+		/datum/attribute/skill/combat/polearms = list(30, 30),
+		/datum/attribute/skill/misc/sneaking = list(30, 30),
+		/datum/attribute/skill/craft/blacksmithing = list(10, 20),
+		/datum/attribute/skill/craft/smelting = list(10, 20),
+		/datum/attribute/skill/labor/mining = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)
 
 

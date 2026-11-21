@@ -10,9 +10,7 @@
 	n\n\
 	Their culture prizes pragmatism over joy, and while many appear dour to outsiders, svirfneblin possess a quiet resilience born of generations spent surviving in the shadows. \
 	n\n\
-	(+1 PER, +2 INT, -1 LCK, Darkvision, Sunlight Sensitivity).\
-	\n\n\
-	Proficiencies: Sneaking(4), Lockpicking(3), Knives(3), Crossbows(2), Traps(4), Alchemy(3), Mining(3), Arcane(2)."
+	(Darkvision, Sunlight Sensitivity)."
 
 	species_traits = list(EYECOLOR, HAIR, FACEHAIR, LIPS, STUBBLE, OLDGREY)
 	inherent_traits = list(TRAIT_TINY, TRAIT_NOMOBSWAP, TRAIT_LIGHT_STEP, TRAIT_COIN_ILLITERATE, TRAIT_LUCKY_COOK)
@@ -34,6 +32,7 @@
 
 	organs = list(
 		ORGAN_SLOT_BRAIN = /obj/item/organ/brain,
+		ORGAN_SLOT_SPLEEN = /obj/item/organ/spleen,
 		ORGAN_SLOT_HEART = /obj/item/organ/heart,
 		ORGAN_SLOT_LUNGS = /obj/item/organ/lungs,
 		ORGAN_SLOT_EYES = /obj/item/organ/eyes/night_vision,
@@ -120,6 +119,7 @@
 		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/genitals/penis/human,
 		/datum/customizer/organ/genitals/vagina/human,
+		/datum/customizer/organ/genitals/womb,
 		/datum/customizer/organ/genitals/breasts/human,
 		/datum/customizer/organ/genitals/belly/human,
 		/datum/customizer/organ/genitals/butt/human,
@@ -182,11 +182,10 @@
 		"Black-Blue"      = SKIN_TONE_DROW_BLACK_BLUE,      // #2F2F38
 		"Very Pale"       = SKIN_TONE_DROW_VERY_PALE,       // #fff0e9
 		"Light Purple"    = SKIN_TONE_DROW_LIGHT_PURPLE,    // #a191a1
-		"Mid Purple"      = SKIN_TONE_DROW_MID_PURPLE,      // #897489
-		"Dark Purple"     = SKIN_TONE_DROW_DARK_PURPLE,     // #5f5f70
-		"Depth Grey-Blue" = SKIN_TONE_DROW_DEPTH_GREY_BLUE, // #5f5f70
-		"Pink"            = SKIN_TONE_DROW_PINK,            // #897489
-		"Very Pale"		  = SKIN_COLOR_DROW_PALE,	       // #fff0e9
+		"Mid Purple"      = SKIN_TONE_DROW_MID_PURPLE,      // #7b6680
+		"Dark Purple"     = SKIN_TONE_DROW_DARK_PURPLE,     // #4f4256
+		"Depth Grey-Blue" = SKIN_TONE_DROW_DEPTH_GREY_BLUE, // #4a5163
+		"Pink"            = SKIN_TONE_DROW_PINK,            // #a07f92
 	))
 
 /datum/species/gnome/deep/on_species_gain(mob/living/carbon/C, datum/species/old_species)
@@ -207,19 +206,15 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/gnomed/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/misc/sneaking = 40,
-		/datum/attribute/skill/misc/lockpicking = 30,
-
-		/datum/attribute/skill/combat/knives = 30,
-		/datum/attribute/skill/combat/crossbows = 30,
-
-		/datum/attribute/skill/craft/traps = 40,
-		/datum/attribute/skill/craft/alchemy = 30,
-
-		/datum/attribute/skill/labor/mining = 30,
-
-		/datum/attribute/skill/magic/arcane = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/misc/sneaking = list(30, 30),
+		/datum/attribute/skill/misc/lockpicking = list(30, 30),
+		/datum/attribute/skill/combat/knives = list(30, 30),
+		/datum/attribute/skill/combat/crossbows = list(30, 30),
+		/datum/attribute/skill/craft/traps = list(20, 20),
+		/datum/attribute/skill/craft/alchemy = list(10, 20),
+		/datum/attribute/skill/labor/mining = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)
 
 

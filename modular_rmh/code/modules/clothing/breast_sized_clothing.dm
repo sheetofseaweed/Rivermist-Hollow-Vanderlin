@@ -19,24 +19,37 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 	/// Covers the whole chest: the breasts and every sized garment beneath stay hidden.
 	var/breast_sized_closed = FALSE
 
+/// Clothing tag of a race drawn with its own clothing art ("dwarf"), as build_worn_icon() gets it; else null.
+/mob/living/carbon/human/proc/get_clothing_custom_tag()
+	var/datum/species/species = dna?.species
+	if(!species?.custom_clothes)
+		return null
+	return species.custom_id || species.id
+
 /// Wearer's visible breast size when this garment has a sheet state for it, else null.
 /obj/item/proc/get_breast_sized_size(mob/living/carbon/human/wearer)
+	return text2num(get_breast_sized_size_key(wearer))
+
+/// Size part of this garment's sheet states for wearer: "<N>", or "<N>_<tag>" for a race with its own art; else null.
+/obj/item/proc/get_breast_sized_size_key(mob/living/carbon/human/wearer)
 	if(!breast_sized_icon || !ishuman(wearer))
 		return null
 	var/datum/species/species = wearer.dna?.species
-	if(!species?.sexes || species.no_boobs || species.swap_female_clothes || species.custom_clothes)
+	if(!species?.sexes || species.no_boobs || species.swap_female_clothes)
 		return null
 	if(wearer.gender != FEMALE || wearer.get_body_cut() != BODY_CUT_FEMININE)
 		return null
 	var/obj/item/organ/genitals/filling_organ/breasts/breasts = wearer.getorganslot(ORGAN_SLOT_BREASTS)
-	if(!istype(breasts) || !ispath(breasts.accessory_type, /datum/sprite_accessory/genitals/breasts/pair))
+	// Quad and sextuple breasts wear the pair-shaped sheet too; a plain fallback would hide them.
+	if(!istype(breasts) || !ispath(breasts.accessory_type, /datum/sprite_accessory/genitals/breasts))
 		return null
-	var/size = breasts.get_visible_size()
-	if(!icon_exists(breast_sized_icon, "[icon_state]_f_[size]"))
+	var/tag = wearer.get_clothing_custom_tag()
+	var/size_key = "[breasts.get_visible_size()][tag ? "_[tag]" : ""]"
+	if(!icon_exists(breast_sized_icon, "[icon_state]_f_[size_key]"))
 		return null
 	if(covered_by_plain_chest_garment(wearer))
 		return null
-	return size
+	return size_key
 
 /// A plain garment above this one hides the chest, so a sized base would poke out from under it.
 /obj/item/proc/covered_by_plain_chest_garment(mob/living/carbon/human/wearer)
@@ -60,14 +73,15 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 
 /// Size part of the sheet state build_worn_icon() uses, "<N>", "<N>_jiggle" or "<N>_run", else null.
 /obj/item/proc/get_breast_sized_worn_suffix(coom, customi, isinhands)
-	if(isinhands || coom != FEMALE_BOOB || !boobed || customi || !ishuman(loc))
+	if(isinhands || coom != FEMALE_BOOB || !boobed || !ishuman(loc))
 		return null
 	var/mob/living/carbon/human/wearer = loc
-	var/size = get_breast_sized_size(wearer)
+	// The size key already carries the wearer's custom clothing tag.
+	var/size = get_breast_sized_size_key(wearer)
 	if(isnull(size))
 		return null
-	// With the animation off the whole garment is one still, so nothing bounces over still breasts.
-	if(!breast_animation_enabled(wearer) && icon_exists(breast_sized_icon, "[icon_state]_f_[size]_still"))
+	// Without children the whole garment is one still, so nothing bounces over still breasts.
+	if(!wearer.breast_children_allowed() && icon_exists(breast_sized_icon, "[icon_state]_f_[size]_still"))
 		return "[size]_still"
 	var/datum/component/breast_animation/animation = wearer.GetComponent(/datum/component/breast_animation)
 	if(animation?.jiggling && icon_exists(breast_sized_icon, "[icon_state]_f_[size]_jiggle"))
@@ -151,6 +165,20 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 			return TRUE
 	return FALSE
 
+/// A plain garment over the chest; the children would draw above it, so the body stills show instead.
+/mob/living/carbon/human/proc/wears_plain_chest_garment()
+	for(var/obj/item/item as anything in list(bra, wear_shirt, wear_armor))
+		if(item && !item.uses_breast_sized_layers(src))
+			return TRUE
+	// Cloaks drawn behind the body leave the south view clear.
+	if(cloak && cloak.alternate_worn_layer != CLOAK_BEHIND_LAYER && !cloak.uses_breast_sized_layers(src))
+		return TRUE
+	return FALSE
+
+/// Whether the breasts and garment children may draw: preference on and no plain garment over the chest.
+/mob/living/carbon/human/proc/breast_children_allowed()
+	return breast_animation_enabled(src) && !wears_plain_chest_garment()
+
 /// Rebuilds the worn sprites of sized garments; all_sheets also takes ones without a state for the current size.
 /mob/living/carbon/human/proc/update_breast_sized_worn(all_sheets = FALSE)
 	var/obj/item/worn_bra = get_chest_slot_item(BREAST_SIZED_SLOT_BRA)
@@ -179,11 +207,15 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 	return FALSE
 
 /// is_human_part_visible(owner, HIDEBOOB|HIDEJUMPSUIT) that lets breast-sized garments through.
-/proc/breasts_visible_under_clothes(mob/living/carbon/owner)
+/// skip_under_layers ignores layers worn beneath the sized garments, such as a leotard under a gown.
+/proc/breasts_visible_under_clothes(mob/living/carbon/owner, skip_under_layers = FALSE)
 	if(!istype(owner))
 		return TRUE
+	var/list/under_layers = skip_under_layers ? list(owner.undershirt, owner.underwear, owner.legwear_socks, owner.garter, owner.armsleeves) : null
 	for(var/obj/item/item as anything in get_all_worn_items(owner))
 		if(!(item.flags_inv & (HIDEBOOB|HIDEJUMPSUIT)))
+			continue
+		if(under_layers && (item in under_layers))
 			continue
 		if(ishuman(owner) && item.uses_breast_sized_layers(owner))
 			continue
@@ -210,9 +242,9 @@ GLOBAL_LIST_INIT(breast_sized_slots, list(
 	breast_sized_icon = 'modular_rmh/icons/clothing/onmob/breast_sized/silkdress.dmi'
 
 // Princess and prince subtypes find no states for their icon_state and fall back.
+// The low neckline shows the top of the breasts, so the gown is not closed.
 /obj/item/clothing/shirt/dress/royal
 	breast_sized_icon = 'modular_rmh/icons/clothing/onmob/breast_sized/royaldress.dmi'
-	breast_sized_closed = TRUE
 
 /obj/item/clothing/bra
 	breast_sized_icon = 'modular_rmh/icons/clothing/onmob/breast_sized/bra.dmi'

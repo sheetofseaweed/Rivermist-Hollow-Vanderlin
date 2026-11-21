@@ -28,6 +28,9 @@
 	/// Shock damage of each strike at the spell's own level.
 	var/strike_damage = 50
 
+/datum/action/cooldown/spell/sundering_lightning/is_hostile_to(atom/cast_on)
+	return TRUE
+
 /datum/action/cooldown/spell/sundering_lightning/cast(atom/cast_on)
 	. = ..()
 	// The strikes fall after the cast ends, so the upcast damage is read now.
@@ -46,21 +49,32 @@
 		if(dist > last_dist)
 			last_dist = dist
 			sleep(2 + min(4 - last_dist, 12) * 0.5)
-		new /obj/effect/temp_visual/target/lightning/sundering(T, null, shock_damage)
+		new /obj/effect/temp_visual/target/lightning/party_guarded(T, null, owner, shock_damage)
 
-/// A strike that carries its cast's shock damage.
-/obj/effect/temp_visual/target/lightning/sundering
+/// A strike that spares the caster's party and carries its cast's shock damage.
+/obj/effect/temp_visual/target/lightning/party_guarded
+	var/datum/weakref/caster_ref
 	/// Shock damage dealt to everyone on the turf when the strike lands.
 	var/shock_damage = 50
 
-/obj/effect/temp_visual/target/lightning/sundering/Initialize(mapload, list/hit_atoms, shock_damage = 50)
+/obj/effect/temp_visual/target/lightning/party_guarded/Initialize(mapload, list/hit_atoms, mob/caster, shock_damage = 50)
+	caster_ref = WEAKREF(caster)
 	src.shock_damage = shock_damage
 	return ..()
 
-/obj/effect/temp_visual/target/lightning/sundering/fall(list/hit_atoms)
-	var/turf/T = get_turf(src)
+/obj/effect/temp_visual/target/lightning/party_guarded/Destroy()
+	caster_ref = null
+	return ..()
+
+/obj/effect/temp_visual/target/lightning/party_guarded/fall(list/hit_atoms)
+	var/turf/strike_turf = get_turf(src)
+	var/datum/weakref/strike_caster = caster_ref
+	var/strike_shock = shock_damage
 	sleep(duration)
-	playsound(T, 'sound/magic/lightning.ogg', 80, TRUE)
-	new /obj/effect/temp_visual/lightning(T)
-	for(var/mob/living/L in T)
-		L.electrocute_act(shock_damage)
+	playsound(strike_turf, 'sound/magic/lightning.ogg', 80, TRUE)
+	new /obj/effect/temp_visual/lightning(strike_turf)
+	var/mob/caster = strike_caster?.resolve()
+	for(var/mob/living/victim in strike_turf)
+		if(caster?.spares_ally(victim))
+			continue
+		victim.electrocute_act(strike_shock)

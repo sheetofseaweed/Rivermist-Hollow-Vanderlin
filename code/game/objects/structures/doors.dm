@@ -1,3 +1,8 @@
+#define DOOR_KICK_HARD 6
+#define DOOR_KICK_STURDY 3
+#define DOOR_KICK_MEDIUM 2
+#define DOOR_KICK_WEAK 1
+
 /obj/structure/door
 	name = "wooden door"
 	desc = "A door that can open and close."
@@ -24,7 +29,7 @@
 	/// Can people riding go through without falling off their mount
 	var/ridethrough = FALSE
 	/// If TRUE when bumped open we callback close
-	var/bump_closed = FALSE
+	var/bump_closed = TRUE
 	var/door_opened = FALSE
 	/// If we are switching states
 	var/switching_states = FALSE
@@ -39,8 +44,8 @@
 	var/windowed = FALSE
 	/// Last bump time
 	var/last_bump = null
-	/// Initial value is STR requirement to kick, then var is used as how many kicks to force open
-	var/kickthresh = 15
+	/// Number of kicks before this door is forced open.
+	var/kickthresh = DOOR_KICK_MEDIUM
 	/// Can we knock on the door
 	var/can_knock = TRUE
 	/// Are ghosts prevented from passing through
@@ -122,12 +127,11 @@
 		return
 	if(isliving(user))
 		var/mob/living/L = user
-		if(GET_MOB_ATTRIBUTE_VALUE(L, STAT_STRENGTH) < initial(kickthresh))
-			playsound(src, pick(attacked_sound), 100)
-			user.visible_message(span_warning("[user] kicks [src]! It's not effective."), \
-			span_notice("I kick [src]! It's not effective."))
-			return
-		if((prob(GET_MOB_ATTRIBUTE_VALUE(L, STAT_STRENGTH) * 0.5) || kickthresh-- == 0))
+		var/total_kicks = max(initial(kickthresh), 1)
+		var/kick_progress = 1 - (max(kickthresh, 1) / total_kicks)
+		var/integrity_bonus = (1 - clamp(get_integrity_percentage(), 0, 1)) * 50
+		var/kick_chance = clamp((GET_MOB_ATTRIBUTE_VALUE(L, STAT_STRENGTH) * 0.5) + (kick_progress * 25) + integrity_bonus, 5, 95)
+		if(prob(kick_chance) || kickthresh-- <= 1)
 			playsound(src, pick(attacked_sound), 100)
 			user.visible_message(span_warning("[user] kicks open [src]!"), \
 				span_notice("I kick open [src]!"))
@@ -274,13 +278,28 @@
 			rattle()
 			return
 		if(TryToSwitchState(AM))
-			if(isliving(AM) && bump_closed)
-				var/mob/living/M = AM
-				var/delay = (close_delay >= 0) ? close_delay : 2.5 SECONDS
-				if(M.m_intent == MOVE_INTENT_SNEAK)
-					addtimer(CALLBACK(src, PROC_REF(Close), TRUE), delay)
-				else
-					addtimer(CALLBACK(src, PROC_REF(Close), FALSE), delay)
+			if(isliving(AM))
+				bump_close_later(AM)
+
+/obj/structure/door/proc/bump_close_later(mob/user)
+	if(!bump_closed)
+		return
+	var/delay = (close_delay > 0) ? close_delay : 2.5 SECONDS
+	addtimer(CALLBACK(src, PROC_REF(bump_close), user.m_intent == MOVE_INTENT_SNEAK), delay)
+
+/obj/structure/door/proc/bump_close(silent = FALSE)
+	var/mob/bumper = last_bumper?.resolve()
+	last_bumper = null
+	if(obj_broken)
+		return
+	Close(silent)
+	if(door_opened || locked() || !bumper || !bumper.Adjacent(src))
+		return
+	var/obj/item/key = find_bump_key(bumper)
+	if(!key || !pre_lock_interact(bumper))
+		return
+	var/datum/lock/key/key_lock = lock
+	key_lock.lock(bumper, key, silent)
 
 /obj/structure/door/proc/find_bump_key(mob/user)
 	if(!istype(lock, /datum/lock/key))
@@ -304,10 +323,12 @@
 	var/datum/lock/key/key_lock = lock
 	if(!key_lock.check_access(key))
 		return FALSE
-	last_bumper = WEAKREF(user)
-	key_lock.unlock(user, key, user.m_intent == MOVE_INTENT_SNEAK)
+	var/silent = user.m_intent == MOVE_INTENT_SNEAK
+	key_lock.unlock(user, key, silent)
 	if(!locked())
-		Open()
+		last_bumper = WEAKREF(user)
+		Open(silent, user)
+		bump_close_later(user)
 	return TRUE
 
 /obj/structure/door/CanAStarPass(ID, to_dir, datum/requester)
@@ -413,7 +434,7 @@
 	SEND_SIGNAL(src, COMSIG_DOOR_OPENED, user)
 
 /obj/structure/door/proc/Close(silent = FALSE)
-	if(switching_states || !door_opened)
+	if(switching_states || !door_opened || obj_broken)
 		return
 	for(var/mob/living/L in get_turf(src))
 		return
@@ -499,7 +520,7 @@
 /obj/structure/door/weak
 	icon_state = "wood"
 	max_integrity = 500
-	kickthresh = 10
+	kickthresh = DOOR_KICK_WEAK
 	open_sound = 'sound/foley/doors/shittyopen.ogg'
 	close_sound = 'sound/foley/doors/shittyclose.ogg'
 	metalizer_result = null
@@ -526,6 +547,7 @@
 	icon_state = "donjon"
 	armor_type = /datum/armor/door/heavy
 	max_integrity = 2000
+	kickthresh = DOOR_KICK_HARD
 	damage_deflection = 15
 	resistance_flags = FIRE_PROOF
 	blade_dulling = DULLING_BASH
@@ -543,6 +565,7 @@
 /obj/structure/door/iron/bars
 	icon_state = "bars"
 	max_integrity = 1000
+	kickthresh = DOOR_KICK_STURDY
 	blade_dulling = DULLING_BASHCHOP
 	windowed = TRUE
 	opacity = FALSE
@@ -550,14 +573,16 @@
 	animate_time = 0.6 SECONDS
 	lock_sound = 'sound/foley/lock.ogg'
 	unlock_sound = 'sound/foley/unlock.ogg'
+	bump_closed = FALSE
 
 /obj/structure/door/iron/bars/cell
 	name = "cell door"
-	kickthresh = 20
+	kickthresh = DOOR_KICK_HARD
 
 /obj/structure/door/stone
 	name = "stone door"
 	icon_state = "stone"
+	kickthresh = DOOR_KICK_HARD
 	armor_type = /datum/armor/door/heavy
 	open_sound = 'sound/foley/doors/stoneopen.ogg'
 	close_sound = 'sound/foley/doors/stoneclose.ogg'
@@ -598,3 +623,7 @@
 	bump_closed = TRUE
 	close_delay =  1 SECONDS
 	animate_time = 0.4 SECONDS
+#undef DOOR_KICK_HARD
+#undef DOOR_KICK_STURDY
+#undef DOOR_KICK_MEDIUM
+#undef DOOR_KICK_WEAK

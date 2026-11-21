@@ -34,6 +34,8 @@
 	if(isnull(hold_time))
 		hold_time = duration
 	for(var/mob/living/L in range(ensnare_radius, victim))
+		if(owner?.spares_ally(L))
+			continue
 		if(L.can_block_magic(MAGIC_RESISTANCE))
 			victim.visible_message(span_warning("The tendrils of force can't seem to latch onto [L] "))
 			playsound(L, 'sound/magic/magic_nulled.ogg', 100)

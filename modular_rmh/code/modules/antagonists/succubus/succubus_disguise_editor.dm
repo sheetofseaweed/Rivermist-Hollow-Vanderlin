@@ -468,7 +468,7 @@
 			"name" = capitalize(replacetext("[zone]", "_", " ")),
 			"entries" = entries,
 			"available" = available,
-			"can_add" = length(entries) < MAXIMUM_MARKINGS_PER_LIMB && length(available),
+			"can_add" = !!(length(entries) < MAXIMUM_MARKINGS_PER_LIMB && length(available)),
 		))
 	return zones
 
@@ -550,7 +550,7 @@
 		return
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "PreferencesMenu", "Create Disguise", 1298, 874)
+		ui = new(user, src, "CharacterCreator", "Create Disguise", 1180, 800)
 		ui.set_autoupdate(FALSE)
 		ui.open()
 	character_setup_ensure_view(user, ui)

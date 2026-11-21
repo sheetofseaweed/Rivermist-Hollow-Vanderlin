@@ -22,6 +22,9 @@
 	required_form = FORM_EARTH
 	required_technique = TECHNIQUE_CREATION
 
+/datum/action/cooldown/spell/blade_burst/is_hostile_to(atom/cast_on)
+	return TRUE
+
 /datum/action/cooldown/spell/blade_burst/cast(atom/cast_on)
 	. = ..()
 	var/turf/T = get_turf(cast_on)
@@ -53,6 +56,8 @@
 	new /obj/effect/temp_visual/blade_burst(victim)
 	playsound(victim,'sound/combat/newstuck.ogg', 80, TRUE, soundping = TRUE)
 	for(var/mob/living/L in victim)
+		if(owner?.spares_ally(L))
+			continue
 		var/def_zone = pick(BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
 		L.apply_damage(scaled_damage, BRUTE, def_zone)
 		var/obj/item/bodypart/BP = L.get_bodypart(def_zone)
