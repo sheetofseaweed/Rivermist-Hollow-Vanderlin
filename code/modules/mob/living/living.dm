@@ -1088,7 +1088,7 @@
 	if(full_heal_flags)
 		fully_heal(full_heal_flags)
 
-	if(stat == DEAD && can_be_revived()) //in some cases you can't revive (e.g. no brain)
+	if(stat == DEAD && can_be_revived(full_heal_flags))
 		GLOB.dead_mob_list -= src
 		GLOB.alive_mob_list += src
 		set_suicide(FALSE)
@@ -1206,12 +1206,14 @@
 	SEND_SIGNAL(src, COMSIG_LIVING_POST_FULLY_HEAL, heal_flags)
 
 //proc called by revive(), to check if we can actually ressuscitate the mob (we don't want to revive him and have him instantly die again)
-/mob/living/proc/can_be_revived()
+/mob/living/proc/can_be_revived(full_heal_flags = NONE)
+	if(HAS_TRAIT(src, TRAIT_RUNE_SEVERED) && !(full_heal_flags & HEAL_ADMIN))
+		return FALSE
 	if(health <= HEALTH_THRESHOLD_DEAD)
 		return FALSE
 	return TRUE
 
-/mob/living/carbon/human/can_be_revived()
+/mob/living/carbon/human/can_be_revived(full_heal_flags = NONE)
 	. = ..()
 	var/obj/item/bodypart/head/H = get_bodypart(BODY_ZONE_HEAD)
 	if(!istype(H) || HAS_TRAIT(H, TRAIT_ROTTEN) || H.skeletonized)

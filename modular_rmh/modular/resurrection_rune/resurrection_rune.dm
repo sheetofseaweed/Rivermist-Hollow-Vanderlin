@@ -59,7 +59,7 @@
 	return main_fallback
 
 /proc/get_resurrection_rune_controller_for_user(mob/living/carbon/user)
-	if(!ishuman(user))
+	if(!ishuman(user) || HAS_TRAIT(user, TRAIT_RUNE_SEVERED))
 		return null
 
 	var/mob/living/carbon/human/human_user = user
@@ -115,6 +115,13 @@
 		if(!(linked_mind in rune.resrunecontroler.linked_users_minds))
 			continue
 		rune.resrunecontroler.remove_linked_mind(linked_mind)
+
+/// Remove controller registrations, pending rescues and any remaining body tag.
+/mob/living/proc/unlink_resurrection_rune()
+	unlink_mind_from_other_resurrection_runes(mind, null)
+	if(ishuman(src))
+		var/mob/living/carbon/human/body = src
+		body.rune_linked = RUNE_LINK_NONE
 
 
 /datum/action/innate/resurrection_rune_call
@@ -314,12 +321,11 @@
 	if(!linked_mind)
 		return FALSE
 
-	// Client handoffs can briefly still point at a lobby mob during spawn. Only
-	// sever a link if the mind itself is explicitly sitting in a new-player body.
+	// Inspect the mind's body directly because a client can still be in the lobby during a handoff.
 	var/mob/current_mob = linked_mind.current
 	if(!current_mob)
 		return FALSE
-	return isnewplayer(current_mob)
+	return isnewplayer(current_mob) || HAS_TRAIT(current_mob, TRAIT_RUNE_SEVERED)
 
 /datum/resurrection_rune_controller/proc/get_current_linkable_body(datum/mind/linked_mind)
 	if(!linked_mind)
@@ -491,21 +497,21 @@
 	apply_resurrection_trauma(new_body)
 
 /datum/resurrection_rune_controller/proc/add_user(mob/living/carbon/user)
-	if(!user)
-		return FALSE
-	if(!user.mind)
+	if(!user?.mind || HAS_TRAIT(user, TRAIT_RUNE_SEVERED))
 		return FALSE
 
 	return add_linked_mind(user.mind)
 
 /datum/resurrection_rune_controller/proc/add_linked_mind(datum/mind/linked_mind)
-	if(!linked_mind)
+	if(QDELETED(linked_mind))
+		return FALSE
+	var/mob/living/carbon/current_body = get_current_linkable_body(linked_mind)
+	if(current_body && HAS_TRAIT(current_body, TRAIT_RUNE_SEVERED))
 		return FALSE
 	if(linked_mind in linked_users_minds)
-		var/mob/living/carbon/existing_body = get_current_linkable_body(linked_mind)
-		if(existing_body)
+		if(current_body)
 			clear_ghost_return_action(linked_mind)
-			replace_linked_body(linked_mind, existing_body)
+			replace_linked_body(linked_mind, current_body)
 		else
 			ensure_ghost_return_action(linked_mind)
 		return TRUE
@@ -514,7 +520,6 @@
 	if(!(linked_mind in linked_users_minds))
 		linked_users_minds += linked_mind
 		RegisterSignal(linked_mind, COMSIG_PARENT_QDELETING, PROC_REF(handle_linked_mind_deletion), override = TRUE)
-	var/mob/living/carbon/current_body = get_current_linkable_body(linked_mind)
 	if(current_body)
 		clear_ghost_return_action(linked_mind)
 		replace_linked_body(linked_mind, current_body)
@@ -628,7 +633,7 @@
 		resurrecting -= target
 		clear_linked_user_rescue_state(target)
 		return
-	if(target.defeat_mode == DEFEAT_MODE_NO_RETURN)
+	if(target.get_effective_defeat_mode() == DEFEAT_MODE_NO_RETURN)
 		clear_linked_user_rescue_state(target)
 		return
 	if(target in resurrecting)
@@ -876,7 +881,7 @@
 /datum/resurrection_rune_controller/proc/can_queue_rescue_for(mob/living/carbon/user)
 	if(!user)
 		return FALSE
-	if(user.defeat_lethal_bypass || user.defeat_final_death || user.suiciding || user.defeat_mode == DEFEAT_MODE_NO_RETURN)
+	if(user.defeat_lethal_bypass || user.defeat_final_death || user.suiciding || user.get_effective_defeat_mode() == DEFEAT_MODE_NO_RETURN)
 		return FALSE
 	if(resurrections_disabled())
 		return FALSE
@@ -919,7 +924,7 @@
 /datum/resurrection_rune_controller/proc/can_offer_defeat_rune_return(mob/living/carbon/user)
 	if(!can_queue_rescue_for(user))
 		return FALSE
-	if(user.defeat_mode != DEFEAT_MODE_KO_RUNE)
+	if(user.get_effective_defeat_mode() != DEFEAT_MODE_KO_RUNE)
 		return FALSE
 	var/datum/component/kidnap_captivity/captivity = user.GetComponent(/datum/component/kidnap_captivity)
 	if(captivity)
@@ -958,7 +963,7 @@
 	return TRUE
 
 /datum/resurrection_rune_controller/proc/queue_revival(mob/living/carbon/user, is_linked = TRUE, voluntary = FALSE, allow_outlaw_redirect = TRUE, list/rune_charge_result = null)
-	if(!user)
+	if(!user || HAS_TRAIT(user, TRAIT_RUNE_SEVERED))
 		return
 	if(user in resurrecting)
 		return
@@ -976,11 +981,13 @@
 	addtimer(CALLBACK(src, PROC_REF(complete_revival), user, voluntary, allow_outlaw_redirect, rune_charge_result), RUNE_REVIVE_DELAY)
 
 /datum/resurrection_rune_controller/proc/complete_revival(mob/living/carbon/user, voluntary = FALSE, allow_outlaw_redirect = TRUE, list/rune_charge_result = null)
+	if(!(user in resurrecting))
+		return
 	var/mob/living/carbon/body = user
 	if(resurrections_disabled())
 		resurrecting -= user
 		return
-	if(body?.defeat_final_death || body?.suiciding)
+	if(body?.defeat_final_death || body?.suiciding || body?.get_effective_defeat_mode() == DEFEAT_MODE_NO_RETURN)
 		resurrecting -= user
 		return
 	if(QDELETED(body))
@@ -1753,21 +1760,57 @@
 
 	show_player_panel_next(target)
 
-/proc/admin_link_mind_to_resurrection_rune(datum/mind/linked_mind, obj/structure/resurrection_rune/rune)
+/// Called after an admin has put a client into a body that can use a resurrection rune.
+/client/proc/prompt_controlled_body_rune(mob/living/carbon/body, client/occupant)
+	set waitfor = FALSE
+	if(holder?.owner != src || !istype(body) || QDELETED(body) || QDELETED(occupant) || body.client != occupant)
+		return
+
+	var/datum/admins/acting_holder = holder
+	var/datum/mind/occupied_mind = body.mind
+	var/answer = tgui_alert(mob, "Привязать к руне?", "Руна воскрешения — [body]", list("Да", "Нет"), timeout = 30 SECONDS)
+	if(!answer || QDELETED(src) || holder != acting_holder || holder?.owner != src || QDELETED(body) || QDELETED(occupant) || body.client != occupant)
+		return
+	var/datum/mind/target_mind = body.mind
+	if(QDELETED(target_mind) || target_mind.current != body || (occupied_mind && target_mind != occupied_mind))
+		return
+
+	if(answer == "Нет")
+		ADD_TRAIT(body, TRAIT_RUNE_SEVERED, ADMIN_TRAIT)
+		log_admin("[key_name(src)] severed [key_name(body)] from resurrection runes and set them to No Return.")
+		message_admins("[key_name_admin(src)] severed [key_name(body)] from resurrection runes and set them to No Return.")
+		to_chat(src, span_notice("[body]: связь с руной разорвана. Смерть окончательная."))
+		return
+
+	var/obj/structure/resurrection_rune/rune = find_resurrection_rune_by_mind(target_mind)
+	if(!rune)
+		rune = find_resurrection_rune_by_tag(target_mind.assigned_role?.rune_linked)
+	if(!rune?.resrunecontroler)
+		rune = get_emergency_resurrection_rune()
+	if(!rune?.resrunecontroler)
+		to_chat(src, span_warning("Нет доступной руны для привязки [body]."))
+		return
+
+	var/was_severed_by_admin = HAS_TRAIT_FROM(body, TRAIT_RUNE_SEVERED, ADMIN_TRAIT)
+	REMOVE_TRAIT(body, TRAIT_RUNE_SEVERED, ADMIN_TRAIT)
+	if(!admin_link_mind_to_resurrection_rune(target_mind, rune, mob) && was_severed_by_admin)
+		ADD_TRAIT(body, TRAIT_RUNE_SEVERED, ADMIN_TRAIT)
+
+/proc/admin_link_mind_to_resurrection_rune(datum/mind/linked_mind, obj/structure/resurrection_rune/rune, mob/admin = usr)
 	if(!linked_mind)
-		to_chat(usr, span_warning("No mind selected."))
+		to_chat(admin, span_warning("No mind selected."))
 		return FALSE
 	if(!rune?.resrunecontroler)
-		to_chat(usr, span_warning("That rune has no controller."))
+		to_chat(admin, span_warning("That rune has no controller."))
 		return FALSE
 	if(!rune.resrunecontroler.add_linked_mind(linked_mind))
-		to_chat(usr, span_warning("Failed to link [get_resurrection_rune_admin_mind_label(linked_mind)] to [rune.get_management_name()]."))
+		to_chat(admin, span_warning("Failed to link [get_resurrection_rune_admin_mind_label(linked_mind)] to [rune.get_management_name()]."))
 		return FALSE
 
 	var/target_label = get_resurrection_rune_admin_mind_label(linked_mind)
-	log_admin("[key_name(usr)] linked [target_label] to resurrection rune [rune.get_management_name()].")
-	message_admins("[key_name_admin(usr)] linked [target_label] to resurrection rune [rune.get_management_name()].")
-	to_chat(usr, span_notice("Linked [target_label] to [rune.get_management_name()]."))
+	log_admin("[key_name(admin)] linked [target_label] to resurrection rune [rune.get_management_name()].")
+	message_admins("[key_name_admin(admin)] linked [target_label] to resurrection rune [rune.get_management_name()].")
+	to_chat(admin, span_notice("Linked [target_label] to [rune.get_management_name()]."))
 	return TRUE
 
 /proc/admin_unlink_mind_from_resurrection_runes(datum/mind/linked_mind)
