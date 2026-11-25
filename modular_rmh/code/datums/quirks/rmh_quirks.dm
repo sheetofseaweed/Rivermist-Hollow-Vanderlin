@@ -2,6 +2,7 @@
 	abstract_type = /datum/quirk/positive/restored
 	/// Restored boons should guarantee their bonuses after job loadout and skill setup.
 	var/list/minimum_skill_ranks = list()
+	var/skill_sheet_type
 	var/list/stashed_items = list()
 	var/list/granted_traits = list()
 	var/list/granted_languages = list()
@@ -56,6 +57,8 @@
 		return
 
 	var/mob/living/carbon/human/human_owner = owner
+	if(skill_sheet_type)
+		human_owner.attributes?.add_sheet(skill_sheet_type)
 	apply_minimum_skill_ranks(human_owner, minimum_skill_ranks)
 	grant_stashed_items(human_owner, stashed_items)
 
@@ -69,7 +72,9 @@
 		return
 
 	for(var/skill_type in skill_rank_minima)
-		human_owner.adjust_skillrank_up_to(skill_type, skill_rank_minima[skill_type], TRUE)
+		var/translated_skill = canonical_skill_type(skill_type)
+		var/minimum_level = skill_rank_minima[skill_type]
+		human_owner.clamped_adjust_skill_level(translated_skill, minimum_level, minimum_level, TRUE)
 
 /datum/quirk/positive/proc/grant_stashed_items(mob/living/carbon/human/human_owner, list/item_map)
 	if(!ishuman(human_owner))
@@ -159,15 +164,18 @@
 		"Dagger" = /obj/item/weapon/knife/dagger/steel,
 	)
 
+/datum/attribute_holder/sheet/job/training6
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/axesmaces = list(30, 30),
+		/datum/attribute/skill/labor/lumberjacking = list(30, 30),
+	)
+
 /datum/quirk/positive/training6
 	parent_type = /datum/quirk/positive/restored
 	name = "Axe Training"
 	desc = "I have trained with axes, and I'm a capable lumberjack. I've also stashed a copper axe."
 	point_value = -3
-	minimum_skill_ranks = list(
-		/datum/skill/combat/axesmaces = 30,
-		/datum/skill/labor/lumberjacking = 30,
-	)
+	skill_sheet_type = /datum/attribute_holder/sheet/job/training6
 	stashed_items = list(
 		"Axe" = /obj/item/weapon/axe/copper,
 	)
@@ -182,15 +190,18 @@
 		"Shield" = /obj/item/weapon/shield/wood,
 	)
 
+/datum/attribute_holder/sheet/job/training9
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/unarmed = list(30, 30),
+		/datum/attribute/skill/combat/wrestling = list(30, 30),
+	)
+
 /datum/quirk/positive/training9
 	parent_type = /datum/quirk/positive/restored
 	name = "Unarmed Training"
 	desc = "I have journeyman unarmed training and know how to wrestle barehanded."
 	point_value = -3
-	minimum_skill_ranks = list(
-		/datum/skill/combat/unarmed = 30,
-		/datum/skill/combat/wrestling = 30,
-	)
+	skill_sheet_type = /datum/attribute_holder/sheet/job/training9
 
 /datum/quirk/positive/mtraining1
 	parent_type = /datum/quirk/positive/restored
@@ -247,15 +258,18 @@
 		(STAT_INTELLIGENCE) = 2,
 	)
 
+/datum/attribute_holder/sheet/job/thief
+	clamped_adjustment = list(
+		/datum/attribute/skill/misc/stealing = list(40, 40),
+		/datum/attribute/skill/misc/lockpicking = list(40, 40),
+	)
+
 /datum/quirk/positive/thief
 	parent_type = /datum/quirk/positive/restored
 	name = "Thief"
 	desc = "Life's not easy around here, but I've made mine a little easier by taking from others. I'm great at picking pockets and locks, and I have some picks stashed nearby."
 	point_value = -4
-	minimum_skill_ranks = list(
-		/datum/skill/misc/stealing = 40,
-		/datum/skill/misc/lockpicking = 40,
-	)
+	skill_sheet_type = /datum/attribute_holder/sheet/job/thief
 	stashed_items = list(
 		"Lockpicks" = /obj/item/lockpickring/mundane,
 	)
@@ -276,21 +290,32 @@
 		/datum/language/thievescant,
 	)
 
+/datum/attribute_holder/sheet/job/mastercraftsmen
+	clamped_adjustment = list(
+		/datum/attribute/skill/craft/crafting = list(30, 30),
+		/datum/attribute/skill/craft/blacksmithing = list(30, 30),
+		/datum/attribute/skill/craft/carpentry = list(30, 30),
+		/datum/attribute/skill/craft/masonry = list(30, 30),
+		/datum/attribute/skill/craft/cooking = list(30, 30),
+		/datum/attribute/skill/craft/engineering = list(30, 30),
+		/datum/attribute/skill/misc/sewing = list(30, 30),
+		/datum/attribute/skill/craft/tanning = list(30, 30),
+		/datum/attribute/skill/craft/smelting = list(30, 30),
+	)
+
 /datum/quirk/positive/mastercraftsmen
 	parent_type = /datum/quirk/positive/restored
 	name = "Jack of All Trades"
 	desc = "I've always had steady hands. I'm experienced enough in most fine craftsmanship to make a career out of it, if I can procure my own tools."
 	point_value = -4
-	minimum_skill_ranks = list(
-		/datum/skill/craft/crafting = 30,
-		/datum/skill/craft/blacksmithing = 30,
-		/datum/skill/craft/carpentry = 30,
-		/datum/skill/craft/masonry = 30,
-		/datum/skill/craft/cooking = 30,
-		/datum/skill/craft/engineering = 30,
-		/datum/skill/misc/sewing = 30,
-		/datum/skill/craft/tanning = 30,
-		/datum/skill/craft/smelting = 30,
+	skill_sheet_type = /datum/attribute_holder/sheet/job/mastercraftsmen
+
+/datum/attribute_holder/sheet/job/masterbuilder
+	clamped_adjustment = list(
+		/datum/attribute/skill/craft/carpentry = list(40, 40),
+		/datum/attribute/skill/craft/masonry = list(40, 40),
+		/datum/attribute/skill/craft/engineering = list(40, 40),
+		/datum/attribute/skill/craft/crafting = list(30, 30),
 	)
 
 /datum/quirk/positive/masterbuilder
@@ -299,12 +324,7 @@
 	desc = "I have experience in putting up large structures and foundations for buildings. I can even use a sawmill if I can find one, and I have a handcart and two sacks hidden away for transporting my construction materials."
 	point_value = -2
 	preview_render = FALSE
-	minimum_skill_ranks = list(
-		/datum/skill/craft/carpentry = 40,
-		/datum/skill/craft/masonry = 40,
-		/datum/skill/craft/engineering = 40,
-		/datum/skill/craft/crafting = 30,
-	)
+	skill_sheet_type = /datum/attribute_holder/sheet/job/masterbuilder
 	stashed_items = list(
 		"Sack 1" = /obj/item/storage/sack,
 		"Sack 2" = /obj/item/storage/sack,
@@ -321,21 +341,31 @@
 
 	new /obj/structure/handcart(owner_turf)
 
+/datum/attribute_holder/sheet/job/mastersmith
+	clamped_adjustment = list(
+		/datum/attribute/skill/craft/blacksmithing = list(40, 40),
+		/datum/attribute/skill/craft/engineering = list(40, 40),
+		/datum/attribute/skill/craft/smelting = list(40, 40),
+		/datum/attribute/skill/craft/crafting = list(30, 30),
+	)
+
 /datum/quirk/positive/mastersmith
 	parent_type = /datum/quirk/positive/restored
 	name = "Practiced Smith"
 	desc = "I am a metalworker by trade, and I have the tools for my practice stashed away."
 	point_value = -4
-	minimum_skill_ranks = list(
-		/datum/skill/craft/blacksmithing = 40,
-		/datum/skill/craft/engineering = 40,
-		/datum/skill/craft/smelting = 40,
-		/datum/skill/craft/crafting = 30,
-	)
+	skill_sheet_type = /datum/attribute_holder/sheet/job/mastersmith
 	stashed_items = list(
 		"Hammer" = /obj/item/weapon/hammer,
 		"Tongs" = /obj/item/weapon/tongs,
 		"Coal" = /obj/item/ore/coal,
+	)
+
+/datum/attribute_holder/sheet/job/mastertailor
+	clamped_adjustment = list(
+		/datum/attribute/skill/misc/sewing = list(40, 40),
+		/datum/attribute/skill/craft/crafting = list(40, 40),
+		/datum/attribute/skill/misc/medicine = list(30, 30),
 	)
 
 /datum/quirk/positive/mastertailor
@@ -343,11 +373,7 @@
 	name = "Practiced Tailor"
 	desc = "I'm particularly skilled with needle, thread, and loom. I also have a needle, thread, and scissors hidden away."
 	point_value = -4
-	minimum_skill_ranks = list(
-		/datum/skill/misc/sewing = 40,
-		/datum/skill/craft/crafting = 40,
-		/datum/skill/misc/medicine = 30,
-	)
+	skill_sheet_type = /datum/attribute_holder/sheet/job/mastertailor
 	stashed_items = list(
 		"Scissors" = /obj/item/weapon/knife/scissors/steel,
 		"Needle" = /obj/item/needle,
@@ -426,3 +452,24 @@
 	desc = "I know the extent of my wounds to a terrifying scale."
 	point_value = -2
 	granted_traits = list(TRAIT_SELF_AWARE)
+
+/datum/quirk/positive/silk_weaver
+	name = "Silk Weaver"
+	desc = "I can spin silk: webs, soft bedding, and cocoons that hold the wounded until help arrives."
+	desc_hint = "Grants Weave Web, Spin Silk Bed and Weave Cocoon, and lets me pass through webs freely. Taur-Kin and Beast-Kin races only."
+	point_value = -3
+	preview_render = FALSE
+	allowed_species = list(
+		/datum/species/taur_kin,
+		/datum/species/anthromorph,
+		/datum/species/anthromorphsmall,
+	)
+
+/datum/quirk/positive/silk_weaver/on_spawn()
+	. = ..()
+	owner?.add_silk_weaving("[type]")
+
+/datum/quirk/positive/silk_weaver/on_remove()
+	if(!QDELETED(owner))
+		owner.remove_silk_weaving("[type]")
+	return ..()

@@ -250,3 +250,15 @@
 
 /// Trait source for traits an origin gives.
 #define ORIGIN_TRAIT "origin"
+
+/// Holds the silk weaving actions. Each granting feature adds it under its own source.
+#define TRAIT_SILK_WEAVER "silk_weaver"
+/// Pressure from an intact rescue cocoon. Stops blood loss without touching wounds.
+#define TRAIT_SILK_COMPRESSION "silk_compression"
+
+/// Actions granted by TRAIT_SILK_WEAVER.
+#define SILK_WEAVING_ACTIONS list(\
+	/datum/action/cooldown/silk_weaving/web,\
+	/datum/action/cooldown/silk_weaving/bed,\
+	/datum/action/cooldown/silk_weaving/cocoon,\
+)

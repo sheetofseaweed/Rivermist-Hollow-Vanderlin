@@ -1122,7 +1122,7 @@
 
 	return ..()
 
-/mob/living/carbon/can_be_revived()
+/mob/living/carbon/can_be_revived(full_heal_flags = NONE)
 	if(!getorgan(/obj/item/organ/brain) && (!mind))
 		return FALSE
 	return ..()

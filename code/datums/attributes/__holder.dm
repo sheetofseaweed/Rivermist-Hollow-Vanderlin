@@ -27,6 +27,7 @@
 	var/list/diceroll_modification //Lazy list, see attribute_modifier.dm
 	/// Diceroll modifier immunities
 	var/list/diceroll_mod_immunities //Lazy list, see attribute_modifier.dm
+	var/list/clamped_sheet_gains
 
 /datum/attribute_holder/New(mob/new_parent)
 	. = ..()
@@ -522,7 +523,7 @@
 	var/current = nulltozero(raw_attribute_list[skill_type])
 	var/target = clamp(current + delta, skill_min, skill_max)
 	if(!isnull(max_level))
-		target = min(target, max_level)
+		target = min(target, max(current, max_level))
 	if(target == current)
 		return
 	set_skill_level(skill_type, target, silent)

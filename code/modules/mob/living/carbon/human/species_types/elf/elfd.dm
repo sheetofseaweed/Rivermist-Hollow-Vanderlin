@@ -225,19 +225,16 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/dark/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/knives = 40,
-		/datum/attribute/skill/combat/swords = 30,
-		/datum/attribute/skill/combat/crossbows = 40,
-		/datum/attribute/skill/combat/whipsflails = 30,
-
-		/datum/attribute/skill/misc/sneaking = 40,
-		/datum/attribute/skill/misc/lockpicking = 30,
-
-		/datum/attribute/skill/magic/arcane = 30,
-		/datum/attribute/skill/magic/blood = 20,
-
-		/datum/attribute/skill/craft/alchemy = 30,
-		/datum/attribute/skill/craft/weaponsmithing = 20,
-		/datum/attribute/skill/craft/traps = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/knives = list(30, 30),
+		/datum/attribute/skill/combat/swords = list(10, 20),
+		/datum/attribute/skill/combat/crossbows = list(20, 20),
+		/datum/attribute/skill/combat/whipsflails = list(10, 20),
+		/datum/attribute/skill/misc/sneaking = list(10, 30),
+		/datum/attribute/skill/misc/lockpicking = list(10, 30),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
+		/datum/attribute/skill/magic/blood = list(10, 10),
+		/datum/attribute/skill/craft/alchemy = list(10, 20),
+		/datum/attribute/skill/craft/weaponsmithing = list(10, 20),
+		/datum/attribute/skill/craft/traps = list(20, 20),
 	)

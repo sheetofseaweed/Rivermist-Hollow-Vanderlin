@@ -197,6 +197,8 @@
 )
 	if(!C || !C.client)
 		return
+	if(C.dna?.species?.type != type)
+		return
 
 	// Creator-made characters spend this bonus as extra stat points instead.
 	if(C.uses_creator_stats())
@@ -238,18 +240,15 @@
 		picks--
 
 /datum/attribute_holder/sheet/job/species/northern/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/swords = 20,
-		/datum/attribute/skill/combat/polearms = 20,
-		/datum/attribute/skill/combat/shields = 20,
-
-		/datum/attribute/skill/craft/crafting = 20,
-		/datum/attribute/skill/craft/carpentry = 20,
-		/datum/attribute/skill/craft/cooking = 20,
-
-		/datum/attribute/skill/labor/farming = 20,
-
-		/datum/attribute/skill/misc/athletics = 20,
-		/datum/attribute/skill/misc/reading = 20,
-		/datum/attribute/skill/misc/riding = 10,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/swords = list(20, 30),
+		/datum/attribute/skill/combat/polearms = list(20, 30),
+		/datum/attribute/skill/combat/shields = list(20, 30),
+		/datum/attribute/skill/craft/crafting = list(20, 40),
+		/datum/attribute/skill/craft/carpentry = list(20, 20),
+		/datum/attribute/skill/craft/cooking = list(20, 20),
+		/datum/attribute/skill/labor/farming = list(20, 30),
+		/datum/attribute/skill/misc/athletics = list(20, 30),
+		/datum/attribute/skill/misc/reading = list(20, 40),
+		/datum/attribute/skill/misc/riding = list(10, 30),
 	)

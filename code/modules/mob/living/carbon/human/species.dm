@@ -1080,6 +1080,10 @@ GLOBAL_LIST_EMPTY(roundstart_species)
 	if(applies_attribute_sheets(C))
 		remove_attribute_sheets(C)
 
+	if(!HAS_TRAIT(C, TRAIT_IDENTITY_SHIFTING))
+		for(var/stat_key in list(STATKEY_STR, STATKEY_PER, STATKEY_INT, STATKEY_CON, STATKEY_END, STATKEY_SPD, STATKEY_LCK))
+			C.remove_stat_modifier("species_permanent_[stat_key]")
+
 	if(inherent_factions)
 		for(var/i in inherent_factions)
 			C.set_faction(C.get_faction() - i)

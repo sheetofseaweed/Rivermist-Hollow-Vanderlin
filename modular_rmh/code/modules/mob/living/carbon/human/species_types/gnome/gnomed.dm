@@ -206,19 +206,15 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/gnomed/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/misc/sneaking = 40,
-		/datum/attribute/skill/misc/lockpicking = 30,
-
-		/datum/attribute/skill/combat/knives = 30,
-		/datum/attribute/skill/combat/crossbows = 30,
-
-		/datum/attribute/skill/craft/traps = 40,
-		/datum/attribute/skill/craft/alchemy = 30,
-
-		/datum/attribute/skill/labor/mining = 30,
-
-		/datum/attribute/skill/magic/arcane = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/misc/sneaking = list(30, 30),
+		/datum/attribute/skill/misc/lockpicking = list(30, 30),
+		/datum/attribute/skill/combat/knives = list(30, 30),
+		/datum/attribute/skill/combat/crossbows = list(30, 30),
+		/datum/attribute/skill/craft/traps = list(20, 20),
+		/datum/attribute/skill/craft/alchemy = list(10, 20),
+		/datum/attribute/skill/labor/mining = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)
 
 

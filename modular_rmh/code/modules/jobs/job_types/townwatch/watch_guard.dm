@@ -314,7 +314,7 @@
 		/datum/attribute/skill/misc/reading = 30
 	)
 
-/datum/job/advclass/watch_guard/sentinel/after_spawn(mob/living/carbon/human/spawned, client/player_client)
+/datum/job/advclass/watch_guard/disciplinary/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	var/weapons = list("Longbow", "Crossbow")
 	var/weapon_choice = browser_input_list(spawned, "CHOOSE YOUR WEAPON.", "TAKE UP ARMS", weapons)

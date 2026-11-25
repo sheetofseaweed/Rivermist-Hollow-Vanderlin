@@ -228,14 +228,12 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/halfdrow/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/knives = 30,
-		/datum/attribute/skill/combat/swords = 20,
-		/datum/attribute/skill/combat/bows = 20,
-
-		/datum/attribute/skill/misc/sneaking = 30,
-		/datum/attribute/skill/misc/lockpicking = 20,
-		/datum/attribute/skill/misc/reading = 20,
-
-		/datum/attribute/skill/magic/arcane = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/knives = list(20, 30),
+		/datum/attribute/skill/combat/swords = list(20, 30),
+		/datum/attribute/skill/combat/bows = list(20, 30),
+		/datum/attribute/skill/misc/sneaking = list(20, 30),
+		/datum/attribute/skill/misc/lockpicking = list(20, 30),
+		/datum/attribute/skill/misc/reading = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)

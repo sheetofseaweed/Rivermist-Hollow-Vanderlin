@@ -201,18 +201,15 @@
 	C.dna.species.accent_language = C.dna.species.get_accent(C.dna.species.native_language, 1)
 
 /datum/attribute_holder/sheet/job/species/wood/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/bows = 40,
-		/datum/attribute/skill/combat/knives = 30,
-
-		/datum/attribute/skill/misc/sneaking = 40,
-		/datum/attribute/skill/misc/climbing = 30,
-		/datum/attribute/skill/misc/swimming = 20,
-
-		/datum/attribute/skill/labor/butchering = 20,
-		/datum/attribute/skill/labor/fishing = 20,
-
-		/datum/attribute/skill/magic/druidic = 30,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/bows = list(30, 30),
+		/datum/attribute/skill/combat/knives = list(30, 30),
+		/datum/attribute/skill/misc/sneaking = list(30, 30),
+		/datum/attribute/skill/misc/climbing = list(20, 40),
+		/datum/attribute/skill/misc/swimming = list(20, 40),
+		/datum/attribute/skill/labor/butchering = list(20, 40),
+		/datum/attribute/skill/labor/fishing = list(20, 40),
+		/datum/attribute/skill/magic/druidic = list(10, 10),
 	)
 
 

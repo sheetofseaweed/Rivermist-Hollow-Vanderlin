@@ -246,14 +246,12 @@
 	return last_names
 
 /datum/attribute_holder/sheet/job/species/tieberian/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/magic/arcane = 30,
-		/datum/attribute/skill/magic/blood = 20,
-
-		/datum/attribute/skill/craft/alchemy = 20,
-
-		/datum/attribute/skill/combat/knives = 20,
-
-		/datum/attribute/skill/misc/sneaking = 20,
-		/datum/attribute/skill/misc/reading = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/magic/arcane = list(10, 10),
+		/datum/attribute/skill/magic/blood = list(10, 10),
+		/datum/attribute/skill/craft/alchemy = list(10, 20),
+		/datum/attribute/skill/combat/knives = list(20, 30),
+		/datum/attribute/skill/misc/sneaking = list(20, 30),
+		/datum/attribute/skill/misc/reading = list(20, 40),
+		/datum/attribute/skill/combat/knives = list(20, 30),
 	)

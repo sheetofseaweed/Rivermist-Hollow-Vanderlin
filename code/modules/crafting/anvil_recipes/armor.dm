@@ -1132,6 +1132,12 @@
 	name = "Gold Mask"
 	created_item = /obj/item/clothing/face/facemask/goldmask
 
+/datum/anvil_recipe/armor/gold/barding
+	name = "Golden Barding (+1 Gold)"
+	additional_items = list(/obj/item/ingot/gold)
+	created_item = /obj/item/clothing/barding/gold
+	craftdiff = 4
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // --------- BLACKSTEEL -----------
 /datum/anvil_recipe/armor/blacksteel

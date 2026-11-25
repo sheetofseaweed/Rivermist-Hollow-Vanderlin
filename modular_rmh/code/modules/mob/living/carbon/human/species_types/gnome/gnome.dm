@@ -236,17 +236,14 @@
 		H.remove_status_effect(/datum/status_effect/buff/stuffed)
 
 /datum/attribute_holder/sheet/job/species/gnome/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/craft/engineering = 40,
-		/datum/attribute/skill/craft/crafting = 30,
-		/datum/attribute/skill/craft/alchemy = 30,
-
-		/datum/attribute/skill/combat/crossbows = 20,
-
-		/datum/attribute/skill/misc/reading = 40,
-		/datum/attribute/skill/labor/mathematics = 40,
-
-		/datum/attribute/skill/magic/arcane = 30,
+	clamped_adjustment = list(
+		/datum/attribute/skill/craft/engineering = list(20, 20),
+		/datum/attribute/skill/craft/crafting = list(20, 40),
+		/datum/attribute/skill/craft/alchemy = list(10, 20),
+		/datum/attribute/skill/combat/crossbows = list(20, 30),
+		/datum/attribute/skill/misc/reading = list(20, 40),
+		/datum/attribute/skill/labor/mathematics = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)
 
 

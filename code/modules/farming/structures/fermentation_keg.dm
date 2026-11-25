@@ -92,6 +92,24 @@ GLOBAL_LIST_EMPTY(custom_fermentation_recipes)
 	if(master?.glows)
 		. += emissive_appearance(icon, "filling", alpha = used_alpha)
 
+/obj/structure/fermentation_keg/onbite(mob/living/user)
+	. = ..()
+	if(.)
+		return
+	if(!reagents?.total_volume)
+		to_chat(user, span_warning("[src] is empty."))
+		return TRUE
+	user.visible_message(span_info("[user] starts drinking from [src]."))
+	if(!do_after(user, 2.5 SECONDS, src))
+		return TRUE
+	if(!reagents.total_volume)
+		to_chat(user, span_warning("[src] is empty."))
+		return TRUE
+	reagents.trans_to(user, min(5, reagents.total_volume), transfered_by = user, method = INGEST)
+	update_appearance(UPDATE_OVERLAYS)
+	playsound(user, pick('sound/items/drink_gen (1).ogg', 'sound/items/drink_gen (2).ogg', 'sound/items/drink_gen (3).ogg'), 100, TRUE)
+	return TRUE
+
 /obj/structure/fermentation_keg/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()
 	if(. == SECONDARY_ATTACK_CANCEL_ATTACK_CHAIN)

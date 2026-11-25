@@ -10,15 +10,15 @@
 	race = /datum/species/dwarf/mountain
 
 /datum/attribute_holder/sheet/job/species/mountain_dwarf
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/axesmaces = 40,
-		/datum/attribute/skill/combat/shields = 40,
-		/datum/attribute/skill/craft/blacksmithing = 40,
-		/datum/attribute/skill/craft/armorsmithing = 40,
-		/datum/attribute/skill/craft/weaponsmithing = 30,
-		/datum/attribute/skill/labor/mining = 40,
-		/datum/attribute/skill/craft/masonry = 30,
-		/datum/attribute/skill/misc/athletics = 30,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/axesmaces = list(30, 30),
+		/datum/attribute/skill/combat/shields = list(30, 30),
+		/datum/attribute/skill/craft/blacksmithing = list(10, 20),
+		/datum/attribute/skill/craft/armorsmithing = list(10, 20),
+		/datum/attribute/skill/craft/weaponsmithing = list(10, 20),
+		/datum/attribute/skill/labor/mining = list(20, 40),
+		/datum/attribute/skill/craft/masonry = list(20, 20),
+		/datum/attribute/skill/misc/athletics = list(30, 30),
 	)
 
 /datum/attribute_holder/sheet/job/species/mountain_dwarf/stats

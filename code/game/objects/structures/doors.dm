@@ -623,3 +623,7 @@
 	bump_closed = TRUE
 	close_delay =  1 SECONDS
 	animate_time = 0.4 SECONDS
+#undef DOOR_KICK_HARD
+#undef DOOR_KICK_STURDY
+#undef DOOR_KICK_MEDIUM
+#undef DOOR_KICK_WEAK

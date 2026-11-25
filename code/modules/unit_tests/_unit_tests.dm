@@ -134,6 +134,7 @@
 #include "runtime_gc_regressions.dm"
 #include "sex_armor_reach.dm"
 #include "sex_scene.dm"
+#include "silk_weaving.dm"
 #include "spawn_humans.dm"
 #include "spawn_mobs.dm"
 #include "species_whitelists.dm"

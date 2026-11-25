@@ -445,7 +445,7 @@
 		icon_state = picked_state
 		worn_state = "strap_shackles"
 		update_appearance()
-	to_chat(user, span_notice("I settle on the [lowertext(picked)] look for [src]. It is final."))
+	to_chat(user, span_notice("I settle on the [LOWER_TEXT(picked)] look for [src]. It is final."))
 
 /obj/item/rope/bdsm_shackles/iron
 	name = "iron shackles"

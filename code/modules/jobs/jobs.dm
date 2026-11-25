@@ -28,7 +28,7 @@ GLOBAL_LIST_INIT(townwatch_positions, list(
 	/datum/job/watch_veteran::title,
 	/datum/job/watch_warden::title,
 	/datum/job/watch_guard::title,
-
+	/datum/job/watch_guard/militia::title,
 ))
 
 GLOBAL_PROTECT(townwatch_positions)
@@ -140,7 +140,6 @@ GLOBAL_LIST_EMPTY(job_assignment_order)
 	sorting_order += GLOB.keep_positions
 	sorting_order += GLOB.townhall_positions
 	sorting_order += GLOB.townwatch_positions
-	GLOB.townwatch_positions += "Town Watch Militia" // Resolving new militia class
 	sorting_order += GLOB.chapel_positions
 	sorting_order += GLOB.scholars_positions
 	sorting_order += GLOB.traders_positions

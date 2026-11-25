@@ -222,18 +222,14 @@
 		qdel(D)
 
 /datum/attribute_holder/sheet/job/species/duergar/inherent
-	raw_attribute_list = list(
-		/datum/attribute/skill/combat/axesmaces = 40,
-		/datum/attribute/skill/combat/polearms = 30,
-
-		/datum/attribute/skill/misc/sneaking = 30,
-
-		/datum/attribute/skill/craft/blacksmithing = 30,
-		/datum/attribute/skill/craft/smelting = 30,
-
-		/datum/attribute/skill/labor/mining = 40,
-
-		/datum/attribute/skill/magic/arcane = 20,
+	clamped_adjustment = list(
+		/datum/attribute/skill/combat/axesmaces = list(30, 30),
+		/datum/attribute/skill/combat/polearms = list(30, 30),
+		/datum/attribute/skill/misc/sneaking = list(30, 30),
+		/datum/attribute/skill/craft/blacksmithing = list(10, 20),
+		/datum/attribute/skill/craft/smelting = list(10, 20),
+		/datum/attribute/skill/labor/mining = list(20, 40),
+		/datum/attribute/skill/magic/arcane = list(10, 10),
 	)
 
 

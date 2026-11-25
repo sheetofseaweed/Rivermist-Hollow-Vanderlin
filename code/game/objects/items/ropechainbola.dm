@@ -498,37 +498,37 @@
 	return
 
 /obj/item/rope/net/bola/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
-    // Run the normal thrown-item impact handling.
-    // Intentionally ignore its return value: a TRUE result can mean
-    // that armour or a shield blocked the ordinary thrown-item impact.
-    // That must not cancel the bola's special effects.
-    ..()
+	// Run the normal thrown-item impact handling.
+	// Intentionally ignore its return value: a TRUE result can mean
+	// that armour or a shield blocked the ordinary thrown-item impact.
+	// That must not cancel the bola's special effects.
+	..()
 
-    if(QDELETED(src) || !hit_atom || QDELETED(hit_atom) || !isliving(hit_atom))
-        return
+	if(QDELETED(src) || !hit_atom || QDELETED(hit_atom) || !isliving(hit_atom))
+		return
 
-    var/mob/living/target = hit_atom
+	var/mob/living/target = hit_atom
 
-    // Visual feedback for any living target, including simplemobs.
-    if(target.client)
-        shake_camera(target, 1, 1)
+	// Visual feedback for any living target, including simplemobs.
+	if(target.client)
+		shake_camera(target, 1, 1)
 
-    // Carbon mobs use the existing restraint mechanic when the bola catches them.
-    // Other living mobs receive a timed movement debuff.
-    var/successfully_ensnared = FALSE
-    if(iscarbon(target))
-        var/mob/living/carbon/carbon_target = target
-        successfully_ensnared = (carbon_target.legcuffed == src)
+	// Carbon mobs use the existing restraint mechanic when the bola catches them.
+	// Other living mobs receive a timed movement debuff.
+	var/successfully_ensnared = FALSE
+	if(iscarbon(target))
+		var/mob/living/carbon/carbon_target = target
+		successfully_ensnared = (carbon_target.legcuffed == src)
 
-    if(!successfully_ensnared)
-        target.apply_status_effect(/datum/status_effect/debuff/bola_slow)
+	if(!successfully_ensnared)
+		target.apply_status_effect(/datum/status_effect/debuff/bola_slow)
 
-    // Variant effects must execute even when the normal impact was blocked.
-    on_bola_impact(target, throwingdatum)
+	// Variant effects must execute even when the normal impact was blocked.
+	on_bola_impact(target, throwingdatum)
 
-    // If the bola attached as a legcuff, the target now owns it.
-    if(successfully_ensnared)
-        return
+	// If the bola attached as a legcuff, the target now owns it.
+	if(successfully_ensnared)
+		return
 
 /obj/item/rope/net/bola/electro
 	name = "Shock bola"

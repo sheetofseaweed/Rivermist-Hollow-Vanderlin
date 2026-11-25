@@ -139,7 +139,7 @@
 /datum/action/cooldown/spell/undirected/town_watch_command/can_cast_spell(feedback = TRUE)
 	if(!command_trait || !command_trait.owner || !HAS_TRAIT(command_trait.owner, TRAIT_TOWNWATCH_COMMAND))
 		if(feedback && owner)
-			owner.balloon_alert(owner, "I no longer have authority to issue orders.")
+			owner.balloon_alert(owner, UNLINT("I no longer have authority to issue orders."))
 		return FALSE
 	return TRUE
 
