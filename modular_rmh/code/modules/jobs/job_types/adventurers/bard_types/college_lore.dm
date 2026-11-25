@@ -38,7 +38,7 @@
 
 	spells = list(
 		/datum/action/cooldown/spell/vicious_mockery,
-		/datum/action/cooldown/spell/bardic_inspiration,
+		/datum/action/cooldown/spell/bardic_inspiration/bard,
 	)
 
 /datum/job/advclass/combat/adventurer_bard/college_lore/after_spawn(mob/living/carbon/human/spawned, client/player_client)

@@ -33,6 +33,9 @@
 	spell_type = SPELL_MIRACLE
 	associated_skill = /datum/attribute/skill/magic/holy
 	school = SCHOOL_TRANSMUTATION
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_CREATION
+	slot_level = 0
 
 	cooldown_time = 3 MINUTES
 
@@ -85,20 +88,23 @@
 
 		user.visible_message(
 			span_info("[user] closes [user.p_their()] eyes in prayer and extends a hand over [victim] as water begins to stream from [user.p_their()] fingertips..."),
-			span_notice("I utter forth a plea to [user.patron.name] for succour, and hold my hand out above [victim]...")
+			span_notice("I utter forth a plea to [get_god_name(user)] for succour, and hold my hand out above [victim]...")
 		)
 
 		var/holy_skill = GET_MOB_SKILL_VALUE_OLD(user, associated_skill)
 		var/drip_speed = 5.6 SECONDS - (holy_skill * 8)
 		var/fatigue_spent = 0
 		var/fatigue_used = max(3, holy_skill)
+		// Casters without a devotion datum drip for free; evil gods answer with cursed water.
+		var/datum/devotion/faith = user.cleric
+		var/cursed = istype(user.patron, /datum/patron/faerun/evil_gods)
 		while(do_after(user, drip_speed, victim))
-			if(victim.reagents.holder_full() || (user.cleric.devotion - fatigue_used <= 0))
+			if(victim.reagents.holder_full() || (faith && faith.devotion - fatigue_used <= 0))
 				break
 
 			var/water_qty = max(1, holy_skill) + 1
 			var/list/water_contents = list(/datum/reagent/water/blessed = water_qty)
-			if(user.patron.type == /datum/patron/inhumen/zizo)
+			if(cursed)
 				water_contents = list(/datum/reagent/water/cursed = water_qty)
 
 			var/datum/reagents/reagents_to_add = new()
@@ -126,7 +132,7 @@
 		// give us a buff that makes our next spoken victim really loud and also cause any linked, un-muted scom to shriek out the phrase at a 15% chance
 		var/cast_time = 50 - (holy_skill * 5)
 		user.visible_message(span_notice("[user] lowers [user.p_their()] head solemnly, whispered prayers spilling from [user.p_their()] lips..."))
-		user.audible_message(span_silver("O holy [user.patron.name], share unto me a sliver of your power..."), runechat_message = TRUE)
+		user.audible_message(span_silver("O holy [get_god_name(user)], share unto me a sliver of your power..."), runechat_message = TRUE)
 
 		if(!do_after(user, cast_time, user))
 			return FALSE
@@ -159,9 +165,9 @@
 		var/cast_time = 35 - (holy_skill * 3)
 
 		if (victim != user)
-			user.visible_message(span_notice("[user] reaches gently towards [victim], beads of light glimmering at [user.p_their()] fingertips..."), span_silver("Blessed [user.patron.name], I ask but for a light to guide the way..."))
+			user.visible_message(span_notice("[user] reaches gently towards [victim], beads of light glimmering at [user.p_their()] fingertips..."), span_silver("Blessed [get_god_name(user)], I ask but for a light to guide the way..."))
 		else
-			user.visible_message(span_notice("[user] closes [user.p_their()] eyes and places a glowing hand upon [user.p_their()] chest..."), span_silver("Blessed [user.patron.name], I ask but for a light to guide the way..."))
+			user.visible_message(span_notice("[user] closes [user.p_their()] eyes and places a glowing hand upon [user.p_their()] chest..."), span_silver("Blessed [get_god_name(user)], I ask but for a light to guide the way..."))
 
 		if(do_after(user, cast_time, victim))
 			var/light_power = clamp(4 + (holy_skill - 3), 4, 7)
@@ -176,6 +182,10 @@
 			handle_xp(user, 5)
 
 		return TRUE
+
+/// Patron name for prayers; mobs without prefs or under a curse may have none.
+/datum/action/cooldown/spell/undirected/touch/orison/proc/get_god_name(mob/living/user)
+	return user.patron?.name || "the gods"
 
 /datum/action/cooldown/spell/undirected/touch/orison/proc/handle_xp(mob/living/carbon/human/user, base_xp)
 	if(user && associated_skill)

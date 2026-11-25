@@ -52,10 +52,6 @@
 	summon_radius = 0
 	summon_lifespan = 5 MINUTES
 
-	attunements = list(
-		/datum/attunement/arcyne = 0.4,
-	)
-
 /datum/action/cooldown/spell/conjure/companion_crow/post_summon(atom/summoned_object, atom/cast_on)
 	var/mob/living/crow = summoned_object
 	var/static/list/pet_commands = list(

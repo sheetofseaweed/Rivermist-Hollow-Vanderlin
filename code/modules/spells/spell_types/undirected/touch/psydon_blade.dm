@@ -5,9 +5,6 @@
 	can_cast_on_self = TRUE
 
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/light = 0.6,
-	)
 
 	hand_path = /obj/item/melee/touch_attack/bladeofpsydon
 	draw_message = "I imagine the perfect weapon, forged by arcane knowledge, it's edge flawless. \
@@ -16,7 +13,8 @@
 	charges = 3
 
 /datum/action/cooldown/spell/undirected/touch/bladeofpsydon/adjust_hand_charges()
-	charges += FLOOR(attuned_strength * 1.5, 1)
+	// One spare charge above the base count.
+	charges++
 
 /datum/action/cooldown/spell/undirected/touch/bladeofpsydon/is_valid_target(atom/cast_on)
 	. = ..()

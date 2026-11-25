@@ -32,8 +32,8 @@
 
 	magic_user = TRUE
 	spell_points = 30
-	attunements_max = 10
-	attunements_min = 5
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/druidic
 
 	job_subclasses = list(
 		/datum/job/advclass/combat/adventurer_druid/circle_land,
@@ -41,12 +41,12 @@
 		/datum/job/advclass/combat/adventurer_druid/troll_skin,
 	)
 
+// Shared by every circle so re-rolled subclasses keep the druidic ladder.
+/datum/job/advclass/combat/adventurer_druid
+	caster_archetype = CASTER_FULL
+	caster_rank_skill = /datum/attribute/skill/magic/druidic
+
 /datum/job/adventurer_druid/after_spawn(mob/living/carbon/human/spawned, client/player_client)
 	. = ..()
 	to_chat(spawned, "<br><font color='#855b14'><span class='bold'>If I wanted to make amnas by selling my services, or completing quests, the Adventurers Guild would be a good place to start.</span></font><br>")
-	var/holder = spawned.patron?.devotion_holder
-	if(holder)
-		var/datum/devotion/devotion = new holder()
-		devotion.make_cleric()
-		devotion.grant_to(spawned)
 

@@ -24,7 +24,7 @@
 
 /datum/action/cooldown/spell/baothablessings/cast(mob/living/cast_on)
 	. = ..()
-	if(istype(cast_on.patron, /datum/patron/psydon))
+	if(istype(cast_on.patron, /datum/patron/faerun/neutral_gods/Helm))
 		cast_on.visible_message(span_info("[cast_on] stirs for a moment, the miracle dissipates."), span_notice("A dull warmth swells in your heart, only to fade as quickly as it arrived."))
 		owner.playsound_local(owner, 'sound/magic/PSY.ogg', 100, FALSE, -1)
 		playsound(cast_on, 'sound/magic/PSY.ogg', 100, FALSE, -1)

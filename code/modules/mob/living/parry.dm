@@ -66,11 +66,10 @@
 	// Protection from Evil and Good - bonus against matching creature types and vampires
 	var/datum/status_effect/buff/protection_evil_good/ward = has_status_effect(/datum/status_effect/buff/protection_evil_good)
 	var/protection_disadvantage = ward?.is_warded_against(user)
-	if(protection_disadvantage)
-		prob2defend += 15
 
 	if(body_position == LYING_DOWN)
 		parry_modifier -= 2
+	parry_modifier += get_enmity_penalty(user)
 
 	var/attacker_opposition = floor(attacker_skill / 4)
 
@@ -98,22 +97,19 @@
 			text += " Divine protection! Attacker has disadvantage!"
 		to_chat(src, span_info("[text]"))
 
-	// Check if parry is successful
-	var/parry_status = TRUE
-	if(!prob(prob2defend))
-		parry_status = FALSE
-	if(attacker_dualwielding && !defender_dualwielding) // 2 times if dualwielding
-		if(!prob(prob2defend))
-			parry_status = FALSE
-	// Protection from Evil and Good: if first roll failed, get a second chance
-	if(!parry_status && protection_disadvantage)
-		if(prob(prob2defend))
-			parry_status = TRUE
-			to_chat(src, ward.get_ward_message(user))
-			src.visible_message(ward.get_ward_message_visible(user), ignored_mobs = list(src))
-
+	// The dice decide the parry; the old percentage gate was always zero and never read.
 	var/effective_score = parry_score
 	var/roll_result = diceroll(effective_score, context = DICE_CONTEXT_PHYSICAL)
+	// A dual-wielding attacker makes the defender pass twice, unless the defender dual wields too.
+	if(attacker_dualwielding && !defender_dualwielding && (roll_result == DICE_SUCCESS || roll_result == DICE_CRIT_SUCCESS))
+		roll_result = diceroll(effective_score, context = DICE_CONTEXT_PHYSICAL)
+	// Protection from Evil and Good: a failed parry against a warded attacker gets a second roll.
+	if(protection_disadvantage && (roll_result == DICE_FAILURE || roll_result == DICE_CRIT_FAILURE))
+		var/second_roll = diceroll(effective_score, context = DICE_CONTEXT_PHYSICAL)
+		if(second_roll == DICE_SUCCESS || second_roll == DICE_CRIT_SUCCESS)
+			roll_result = second_roll
+			to_chat(src, ward.get_ward_message(user))
+			src.visible_message(ward.get_ward_message_visible(user), ignored_mobs = list(src))
 
 	// Show attacker feedback
 	if(user.client?.prefs.read_preference(/datum/preference/toggle/showrolls) && attacker_dualwielding)

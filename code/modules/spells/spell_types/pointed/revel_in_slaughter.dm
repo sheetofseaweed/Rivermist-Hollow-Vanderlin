@@ -9,9 +9,6 @@
 	associated_skill = /datum/attribute/skill/magic/holy
 	invocation = "YOUR BLOOD WILL BOIL TILL IT'S SPILLED!"
 	invocation_type = INVOCATION_SHOUT
-	attunements = list(
-		/datum/attunement/blood = 0.5,
-	)
 	charge_required = FALSE
 	cooldown_time = 5 MINUTES
 	spell_cost = 70

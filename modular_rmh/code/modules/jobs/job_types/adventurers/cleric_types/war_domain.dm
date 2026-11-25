@@ -41,8 +41,8 @@
 		/datum/action/cooldown/spell/status/guidance,
 		/datum/action/cooldown/spell/sacred_flame,
 		/datum/action/cooldown/spell/undirected/blade_ward,
-		/datum/action/cooldown/spell/aoe/churn_undead,
-		/datum/action/cooldown/spell/undirected/divine_strike
+		/datum/action/cooldown/spell/aoe/churn_undead/channel,
+		/datum/action/cooldown/spell/undirected/divine_strike/channel,
 	)
 
 /datum/job/advclass/combat/adventurer_cleric/war_domain/after_spawn(mob/living/carbon/human/spawned, client/player_client)

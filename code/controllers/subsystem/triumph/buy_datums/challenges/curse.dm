@@ -7,16 +7,16 @@
 	visible_on_active_menu = TRUE
 	manual_activation = TRUE
 	var/list/patron_curse_map = list(
-		/datum/patron/divine/astrata = /datum/curse/astrata,
-		/datum/patron/divine/ravox = /datum/curse/ravox,
-		/datum/patron/divine/necra = /datum/curse/necra,
-		/datum/patron/divine/xylix = /datum/curse/xylix,
-		/datum/patron/divine/pestra = /datum/curse/pestra,
-		/datum/patron/divine/eora = /datum/curse/eora,
-		/datum/patron/inhumen/zizo = /datum/curse/zizo/minor,
-		/datum/patron/inhumen/matthios = /datum/curse/matthios,
-		/datum/patron/inhumen/baotha = /datum/curse/baotha,
-		/datum/patron/inhumen/graggar_zizo = /datum/curse/zizo/minor,
+		/datum/patron/faerun/good_gods/Lathander = /datum/curse/astrata,
+		/datum/patron/faerun/neutral_gods/Tempus = /datum/curse/ravox,
+		/datum/patron/faerun/neutral_gods/Jergal = /datum/curse/necra,
+		/datum/patron/faerun/neutral_gods/Tymora = /datum/curse/xylix,
+		/datum/patron/faerun/good_gods/Ilmater = /datum/curse/pestra,
+		/datum/patron/faerun/good_gods/Sune = /datum/curse/eora,
+		/datum/patron/faerun/evil_gods/Lolth = /datum/curse/zizo/minor,
+		/datum/patron/faerun/evil_gods/Mask = /datum/curse/matthios,
+		/datum/patron/faerun/evil_gods/Blissara = /datum/curse/baotha,
+		/datum/patron/faerun/evil_gods/shattered_idol = /datum/curse/zizo/minor,
 	)
 
 /datum/triumph_buy/random_curse/on_after_spawn(mob/living/carbon/human/H)

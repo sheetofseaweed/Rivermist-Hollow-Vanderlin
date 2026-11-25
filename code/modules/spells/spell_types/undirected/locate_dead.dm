@@ -13,7 +13,12 @@
 
 	charge_required = FALSE
 	cooldown_time = 30 SECONDS
-	spell_cost = 15
+	spell_cost = DEVOTION_MINOR_LOCATE_DEAD
+
+	required_form = FORM_HOLY
+	required_technique = TECHNIQUE_ILLUSION
+	slot_level = 0
+	minor_cost = DEVOTION_MINOR_LOCATE_DEAD
 
 /datum/action/cooldown/spell/undirected/locate_dead/cast(atom/cast_on)
 	. = ..()

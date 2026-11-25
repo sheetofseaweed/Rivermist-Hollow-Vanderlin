@@ -78,8 +78,11 @@
 	var/outline_colour = "#c42424"
 	var/effect_color = "#FF0000"
 
-/datum/status_effect/buff/healing/on_creation(mob/living/new_owner, new_healing_on_tick)
-	healing_on_tick = new_healing_on_tick
+// apply_status_effect passes the duration override second, so the healing comes third.
+/datum/status_effect/buff/healing/on_creation(mob/living/new_owner, duration_override, new_healing_on_tick)
+	// A bare apply, as songs do, keeps the type's own healing.
+	if(!isnull(new_healing_on_tick))
+		healing_on_tick = new_healing_on_tick
 	return ..()
 
 #define MIRACLE_HEALING_FILTER "miracle_heal_glow"

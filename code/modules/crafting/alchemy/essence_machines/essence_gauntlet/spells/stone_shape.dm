@@ -5,7 +5,6 @@
 	sound = 'sound/magic/whiteflame.ogg'
 	cast_range = 2
 	point_cost = 4
-	attunements = list(/datum/attunement/time)
 	essences = list(/datum/thaumaturgical_essence/earth)
 
 /datum/action/cooldown/spell/essence/stone_shape/cast(atom/cast_on)

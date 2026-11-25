@@ -6,10 +6,6 @@
 	cast_range = 1
 
 	associated_skill = /datum/attribute/skill/magic/arcane
-	attunements = list(
-		/datum/attunement/dark = 0.3,
-		/datum/attunement/polymorph = 1.0,
-	)
 
 	charge_time = 3 SECONDS
 	charge_drain = 1

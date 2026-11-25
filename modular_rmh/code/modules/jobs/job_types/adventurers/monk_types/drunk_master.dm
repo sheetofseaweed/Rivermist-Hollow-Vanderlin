@@ -44,8 +44,8 @@
 	)
 
 	spells = list(
-		/datum/action/cooldown/spell/undirected/longstrider,
-		/datum/action/cooldown/spell/undirected/feather_falling,
+		/datum/action/cooldown/spell/undirected/longstrider/ki,
+		/datum/action/cooldown/spell/undirected/feather_falling/ki,
 	)
 
 /datum/outfit/adventurer_monk/drunk_master

@@ -4,9 +4,6 @@
 	button_icon_state = "longstride"
 
 	point_cost = 1
-	attunements = list(
-		/datum/attunement/aeromancy = 0.8,
-	)
 	school = SCHOOL_TRANSMUTATION
 
 	invocation = "Walk unopposed."
@@ -19,6 +16,12 @@
 	spell_cost = 50
 	spell_flags = SPELL_RITUOS
 
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Longstrider"
+	required_form = FORM_AIR
+	required_technique = TECHNIQUE_ALTERATION
+
 /datum/action/cooldown/spell/undirected/longstrider/cast(atom/cast_on)
 	. = ..()
 	owner.visible_message(
@@ -26,9 +29,9 @@
 		span_notice("I mutter the incantation and a dim pulse of light radiates out from me."),
 	)
 
-	var/duration_increase = max(0, attuned_strength * 2 MINUTES)
+	var/duration = max(0, get_rank_multiplier() * 2 MINUTES) * get_upcast_duration_multiplier()
 	for(var/mob/living/L in viewers(1, owner))
-		L.apply_status_effect(/datum/status_effect/buff/longstrider, duration_increase)
+		L.apply_status_effect(/datum/status_effect/buff/longstrider, duration)
 
 /datum/status_effect/buff/longstrider
 	id = "longstrider"

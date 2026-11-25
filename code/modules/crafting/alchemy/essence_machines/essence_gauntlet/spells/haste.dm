@@ -6,7 +6,6 @@
 	cast_range = 0
 	point_cost = 4
 	has_visual_effects = FALSE
-	attunements = list(/datum/attunement/aeromancy)
 	essences = list(/datum/thaumaturgical_essence/air)
 
 /datum/action/cooldown/spell/essence/haste/cast(atom/cast_on)

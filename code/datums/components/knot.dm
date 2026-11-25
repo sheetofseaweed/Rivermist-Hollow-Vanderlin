@@ -156,8 +156,8 @@
 
 /datum/component/knotting/proc/apply_knot_status_effects(mob/living/user, mob/living/target)
 	var/should_apply_fucked_stupid = FALSE
-	// Patrons are a human matter; beasts never carry Baotha's blessing.
-	if(ishuman(user) && user.patron && istype(user.patron, /datum/patron/inhumen/baotha))
+	// Patrons are a human matter; beasts never carry Blissara's blessing.
+	if(ishuman(user) && user.patron && istype(user.patron, /datum/patron/faerun/evil_gods/Blissara))
 		should_apply_fucked_stupid = TRUE
 
 	if(should_apply_fucked_stupid && !target.has_status_effect(/datum/status_effect/knot_fucked_stupid))

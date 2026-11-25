@@ -11,7 +11,7 @@
 	chooses_name = FALSE
 	ascended = 4
 	outfit = /datum/outfit/daewalker
-	patron = /datum/patron/divine/astrata
+	patron = /datum/patron/faerun/good_gods/Lathander
 	innate_traits = list(
 		TRAIT_SILVER_BLESSED,
 		TRAIT_HARDDISMEMBER,

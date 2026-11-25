@@ -15,7 +15,14 @@
 	summon_type = list(/obj/structure/spider/stickyweb)
 	summon_radius = 3
 	summon_amount = 0
+
+	slot_level = 1
+	slot_only = TRUE
+	slot_label = "Conjure Web"
+	required_form = FORM_DEATH
+	required_technique = TECHNIQUE_CREATION
 	spell_flags = SPELL_RITUOS
-	attunements = list(
-		/datum/attunement/death = 0.3,
-	)
+
+/datum/action/cooldown/spell/conjure/web/get_summon_radius()
+	// One tile wider for every two levels above the spell's own.
+	return ..() + round(get_upcast_steps() / 2)

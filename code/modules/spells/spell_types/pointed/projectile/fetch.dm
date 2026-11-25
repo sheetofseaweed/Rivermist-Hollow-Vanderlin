@@ -6,9 +6,6 @@
 	sound = 'sound/magic/magnet.ogg'
 
 	point_cost = 2
-	attunements = list(
-		/datum/attunement/aeromancy = 0.4,
-	)
 
 	//yoink
 	invocation = "YO'EIN'KAR!"
@@ -18,6 +15,9 @@
 	charge_drain = 2
 	charge_slowdown = 0.3
 	cooldown_time = 20 SECONDS
-	spell_cost = 30
+	spell_cost = SPELL_UTILITY_CANTRIP_COST
 	spell_flags = SPELL_RITUOS
 	projectile_type = /obj/projectile/magic/fetch
+
+	slot_level = 0
+	required_form = FORM_AIR

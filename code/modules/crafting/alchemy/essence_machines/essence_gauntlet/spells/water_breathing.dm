@@ -4,7 +4,6 @@
 	button_icon_state = "water_breathing"
 	cast_range = 1
 	point_cost = 4
-	attunements = list(/datum/attunement/blood)
 	essences = list(/datum/thaumaturgical_essence/water)
 
 /datum/action/cooldown/spell/essence/water_breathing/cast(atom/cast_on)
