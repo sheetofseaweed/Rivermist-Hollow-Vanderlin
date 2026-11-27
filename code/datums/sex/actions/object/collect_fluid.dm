@@ -83,7 +83,7 @@
 	user.visible_message(span_warning("[user] stops."))
 
 /datum/sex_action/collect_fluid/self/handle_climax_message(mob/living/user, mob/living/target, must_flip)
-	user.visible_message(span_love("[user] spills their release into \the [get_held_container(user)]!"))
+	user.visible_message(span_love_climax("[user] spills their release into \the [get_held_container(user)]!"))
 	return ORGASM_LOCATION_CONTAINER
 
 /datum/sex_action/collect_fluid/self/lock_sex_object(mob/living/user, mob/living/target)
@@ -154,7 +154,7 @@
 
 /datum/sex_action/collect_fluid/other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	// `user` is the climaxing partner; `target` is the one holding the container.
-	user.visible_message(span_love("[user] spills their release into the waiting container!"))
+	user.visible_message(span_love_climax("[user] spills their release into the waiting container!"))
 	return ORGASM_LOCATION_CONTAINER
 
 /datum/sex_action/collect_fluid/other/lock_sex_object(mob/living/user, mob/living/target)

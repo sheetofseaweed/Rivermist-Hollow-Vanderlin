@@ -84,7 +84,7 @@
 	handle_passive_ejaculation()
 
 /datum/sex_action/object_fuck/object_anal/handle_climax_message(mob/living/user, mob/living/target, must_flip)
-	user.visible_message(span_love("[user] cums with their ass!"))
+	user.visible_message(span_love_climax("[user] cums with their ass!"))
 	user.lose_virginity()
 	return ORGASM_LOCATION_SELF
 

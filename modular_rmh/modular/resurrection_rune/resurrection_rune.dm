@@ -12,6 +12,8 @@
 #define RUNE_THRESHOLD_FULLCRIT 30
 #define RUNE_THRESHOLD_SOFTCRIT 45
 #define RUNE_MOB_ERP_ESCAPE_ACTION_DURATION (1 MINUTES)
+/// Button on the rune call prompt that prints the full terms to chat.
+#define RUNE_CALL_CHOICE_TERMS "Full terms"
 
 /proc/find_resurrection_rune_by_tag(rune_tag)
 	if(!rune_tag || rune_tag == RUNE_LINK_NONE)
@@ -169,15 +171,24 @@
 		if(captivity)
 			captivity.offer_release_choice(rune_controller)
 			return
-		var/list/choices = list(KIDNAP_CHOICE_CALL_RUNE, "Not yet")
-		// Spell out the price before they spend a charge - the return is powerful but far from free.
-		var/confirm = tgui_alert(carbon_owner, "Calling the rune will haul you to safety and mend your wounds - but it is not free:\n\n\
-			- You are torn from where you fell and wake beside the rune, far away (a compass points back to where you were taken).\n\
-			- The violent pull may rip away your worn clothing and armor - your underwear and bags are spared.\n\
-			- A mana backlash burns away half your mana and leaves you with lingering rune-weariness on top of the injuries of your defeat.\n\
-			- The rune takes its due: a tithe of coin and a tax of your blood, both growing heavier as your charges run low.\n\
-			- This spends one of your limited rune charges. They return slowly over time; spend your last and no rune will answer until they recharge.",
-			"Answer the rune's call?", choices)
+		var/list/choices = list(KIDNAP_CHOICE_CALL_RUNE, RUNE_CALL_CHOICE_TERMS, "Not yet")
+		var/first_return = !carbon_owner.mind?.defeat_rune_first_free_used
+		var/price_line = first_return ? "It takes coin and half your mana." : "It takes coin, blood and half your mana."
+		var/charge_line = first_return ? "The rune answers freely this once and spends no charge." : "It spends one of your [carbon_owner.mind?.get_defeat_rune_charges()] rune charges."
+		var/confirm
+		// The terms button prints the long version to chat and brings the prompt back.
+		do
+			confirm = tgui_alert(carbon_owner, "The rune pulls you to safety and mends your wounds. In return:\n\n\
+				- You wake beside the rune, far from here.\n\
+				- Your worn clothing and armor may be torn away.\n\
+				- [price_line]\n\
+				- [charge_line]",
+				"Answer the rune's call?", choices)
+			if(QDELETED(src) || QDELETED(carbon_owner) || !rune_controller)
+				return
+			if(confirm == RUNE_CALL_CHOICE_TERMS)
+				show_call_terms(carbon_owner)
+		while(confirm == RUNE_CALL_CHOICE_TERMS)
 		if(confirm != KIDNAP_CHOICE_CALL_RUNE)
 			return
 		rune_controller.trigger_defeat_rune_return(carbon_owner)
@@ -189,6 +200,19 @@
 		return
 	if(rune_controller.can_offer_mob_erp_rescue(carbon_owner))
 		rune_controller.trigger_mob_erp_escape(carbon_owner)
+
+/// Prints what a rune return costs, in full, to the caller's chat.
+/datum/action/innate/resurrection_rune_call/proc/show_call_terms(mob/living/carbon/rescued)
+	var/list/terms = list(
+		span_blue("<b>What the rune's return costs</b>"),
+		"<b>Where you wake.</b> The rune pulls you from where you fell and you wake beside it, far away. It leaves a compass in your hand that points back to that place for a short while.",
+		"<b>Clothing and armor.</b> The pull may tear away what you wear. Underwear and bags stay on you, with everything inside the bags.",
+		"<b>Insured belongings.</b> Anything you insured with the Guild that lies within [RUNE_INSURANCE_PULL_RADIUS] paces of you goes to the Guild's vault. Claim it at an insurance machine.",
+		"<b>Mana and weariness.</b> A backlash burns away half your mana and leaves rune-weariness on top of the injuries of your defeat. A town healer or a shrine can mend both.",
+		"<b>Coin and blood.</b> Every return costs a tithe of coin from your account. Every return after your first also costs more coin and a tax of your blood, both heavier as your charges run low.",
+		"<b>Charges.</b> The rune answers your first call freely and spends no charge. Each one after it spends one of your [DEFEAT_RUNE_MAX_CHARGES] rune charges, and one charge comes back every [DisplayTimeText(DEFEAT_RUNE_RECHARGE_TIME)]. With none left, no rune answers until one returns.",
+	)
+	to_chat(rescued, boxed_message(terms.Join("<br>")))
 
 /datum/action/innate/resurrection_rune_return
 	name = "Return to the Rune"
@@ -666,6 +690,8 @@
 	if(linked_mind && (linked_mind?.current == target || QDELETED(linked_mind?.current)))
 		linked_mind.current = null
 	if(can_auto_remake_deleted_body(linked_mind))
+		// The body is going, so insured items still on it are saved too.
+		linked_mind.rune_insurance?.pull_to_vault(get_turf(target), target, include_body = TRUE)
 		queue_body_remake(linked_mind)
 
 /// A linked mind being deleted must be dropped from our lists, or we pin it (a hard-del leak).
@@ -1015,6 +1041,9 @@
 	playsound(get_turf(body), 'sound/magic/repulse.ogg', 100, FALSE, -1)
 	body.ExtinguishMob()
 	maybe_strip_revival_clothes(body, voluntary)
+	// After the strip, so what it tore loose is on the ground for the vault to take.
+	var/datum/mind/insured_mind = get_linked_mind_for_body(body) || body.mind
+	insured_mind?.rune_insurance?.pull_to_vault(get_turf(body), body)
 	var/outlaw_redirected = sub_rune.uses_outlaw_redirect(body, null, allow_outlaw_redirect)
 	body.forceMove(destination_turf)
 	if(outlaw_redirected)
@@ -1942,3 +1971,4 @@
 #undef RUNE_STAGE_HARD_CRIT
 #undef RUNE_STAGE_IMMEDIATE
 #undef RUNE_MOB_ERP_ESCAPE_ACTION_DURATION
+#undef RUNE_CALL_CHOICE_TERMS

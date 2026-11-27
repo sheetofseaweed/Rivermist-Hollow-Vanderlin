@@ -282,6 +282,9 @@
 		if(!QDELETED(new_spell))
 			qdel(new_spell)
 		return TRUE
+	// Essence spells cast through a gauntlet; a granted one has none, so make it free like class-granted ones.
+	if(new_spell.spell_type == SPELL_ESSENCE)
+		new_spell.spell_type = NONE
 	new_spell.Grant(target)
 	log_admin("[key_name(user)] gave [key_name(target)] the spell [spell_type].")
 	message_admins("[key_name_admin(user)] gave [key_name_admin(target)] the spell [initial(spell_type.name)] ([spell_type]).")

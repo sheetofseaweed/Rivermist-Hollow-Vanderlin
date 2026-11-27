@@ -41,11 +41,17 @@
 		return FALSE
 	if(!get_real_organ(user, ORGAN_SLOT_TAIL))
 		return FALSE
+	if(check_sex_lock(user, ORGAN_SLOT_TAIL))
+		return FALSE
 	if(!target.getorganslot(target_organ_slot))
 		return FALSE
 	if(!check_location_accessible(user, target, BODY_ZONE_PRECISE_GROIN, TRUE))
 		return FALSE
 	return TRUE
+
+/datum/sex_action/tailjob/lock_sex_object(mob/living/user, mob/living/target)
+	add_sex_lock(user, ORGAN_SLOT_TAIL)
+	add_sex_lock(target, target_organ_slot, null, FALSE)
 
 /datum/sex_action/tailjob/on_start(mob/living/user, mob/living/target)
 	. = ..()

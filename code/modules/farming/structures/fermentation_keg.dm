@@ -105,10 +105,18 @@ GLOBAL_LIST_EMPTY(custom_fermentation_recipes)
 	if(!reagents.total_volume)
 		to_chat(user, span_warning("[src] is empty."))
 		return TRUE
+	drink_gulp(user)
+	while(user.auto_consume_continues(TRUE, FALSE, reagents?.total_volume))
+		if(!user.auto_consume_wait(2.5 SECONDS, src) || !reagents?.total_volume)
+			break
+		drink_gulp(user)
+	return TRUE
+
+/// One gulp from this keg.
+/obj/structure/fermentation_keg/proc/drink_gulp(mob/living/user)
 	reagents.trans_to(user, min(5, reagents.total_volume), transfered_by = user, method = INGEST)
 	update_appearance(UPDATE_OVERLAYS)
 	playsound(user, pick('sound/items/drink_gen (1).ogg', 'sound/items/drink_gen (2).ogg', 'sound/items/drink_gen (3).ogg'), 100, TRUE)
-	return TRUE
 
 /obj/structure/fermentation_keg/attack_hand_secondary(mob/user, list/modifiers)
 	. = ..()

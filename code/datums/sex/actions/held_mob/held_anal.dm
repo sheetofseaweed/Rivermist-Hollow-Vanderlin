@@ -27,9 +27,9 @@
 
 /datum/sex_action/held_mob_fuck/anal/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
-		target.visible_message(span_love("[target] spills over [user]'s fingers!"))
+		target.visible_message(span_love_climax("[target] spills over [user]'s fingers!"))
 		return ORGASM_LOCATION_ONTO
-	user.visible_message(span_love("[user] empties themselves into [target]!"))
+	user.visible_message(span_love_climax("[user] empties themselves into [target]!"))
 	user.lose_virginity()
 	return ORGASM_LOCATION_INTO
 

@@ -86,7 +86,7 @@
 
 /datum/sex_action/object_fuck/object_anal_other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
-		target.visible_message(span_love("[user] cums with their ass due to [target]'s thrusting dildo!"))
+		target.visible_message(span_love_climax("[user] cums with their ass due to [target]'s thrusting dildo!"))
 		user.lose_virginity()
 		return ORGASM_LOCATION_SELF
 

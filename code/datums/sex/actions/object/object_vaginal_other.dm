@@ -93,7 +93,7 @@
 
 /datum/sex_action/object_fuck/object_vaginal_other/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
-		target.visible_message(span_love("[user] creams themselves around [target]'s thrusting dildo!"))
+		target.visible_message(span_love_climax("[user] creams themselves around [target]'s thrusting dildo!"))
 		user.lose_virginity()
 		return ORGASM_LOCATION_SELF
 

@@ -612,9 +612,9 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 	var/message = must_flip ? message_climax_passive : message_climax_active
 	var/location = must_flip ? passive_climax_location : active_climax_location
 	if(message)
-		user.visible_message(span_love(get_custom_message(message, user, target, "[user] climaxes!")))
+		user.visible_message(span_love_climax(get_custom_message(message, user, target, "[user] climaxes!")))
 	else
-		user.visible_message(span_love(build_default_custom_climax_message(user, target, location)))
+		user.visible_message(span_love_climax(build_default_custom_climax_message(user, target, location)))
 	return location
 
 /datum/sex_action/custom/lock_sex_object(mob/living/user, mob/living/target)

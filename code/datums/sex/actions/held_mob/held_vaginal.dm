@@ -27,10 +27,10 @@
 
 /datum/sex_action/held_mob_fuck/vaginal/handle_climax_message(mob/living/user, mob/living/target, must_flip)
 	if(must_flip)
-		target.visible_message(span_love("[target] creams themselves around [user]'s cock!"))
+		target.visible_message(span_love_climax("[target] creams themselves around [user]'s cock!"))
 		target.lose_virginity()
 		return ORGASM_LOCATION_ONTO
-	user.visible_message(span_love("[user] fills [target] to bursting!"))
+	user.visible_message(span_love_climax("[user] fills [target] to bursting!"))
 	user.lose_virginity()
 	target.lose_virginity()
 	return ORGASM_LOCATION_INTO

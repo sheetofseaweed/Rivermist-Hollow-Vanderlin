@@ -447,8 +447,8 @@
 
 /datum/sex_action/portal_base/portal_hand_base/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("I climax from the portal touch, my body trembling with pleasure!"))
-		to_chat(target, span_love("Your target shudders and reacts to your touch through the portal."))
+		to_chat(user, span_love_climax("I climax from the portal touch, my body trembling with pleasure!"))
+		to_chat(target, span_love_climax("Your target shudders and reacts to your touch through the portal."))
 		return ORGASM_LOCATION_SELF
 
 /datum/sex_action/portal_base/portal_hand_base/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -539,8 +539,8 @@
 
 /datum/sex_action/portal_base/portal_oral_base/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("I climax from the mouth on me through the portal, my body shuddering in ecstasy!"))
-		to_chat(target, span_love("You bring your target to climax through the portal!"))
+		to_chat(user, span_love_climax("I climax from the mouth on me through the portal, my body shuddering in ecstasy!"))
+		to_chat(target, span_love_climax("You bring your target to climax through the portal!"))
 		return ORGASM_LOCATION_ORAL
 
 /datum/sex_action/portal_base/portal_oral_base/on_finish(mob/living/carbon/human/user, mob/living/carbon/human/target)
@@ -629,14 +629,14 @@
 
 /datum/sex_action/portal_base/portal_penis_base/handle_climax_message(mob/living/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("I cum from the fucking through the portal, my body trembling in ecstasy!"))
-		to_chat(target, span_love(climax_message_self))
+		to_chat(user, span_love_climax("I cum from the fucking through the portal, my body trembling in ecstasy!"))
+		to_chat(target, span_love_climax(climax_message_self))
 		user.lose_virginity()
 		target.lose_virginity()
 		return ORGASM_LOCATION_SELF
 
-	to_chat(user, span_love("You cum inside your target! You shudder with pleasure."))
-	to_chat(target, span_love(climax_message_target))
+	to_chat(user, span_love_climax("You cum inside your target! You shudder with pleasure."))
+	to_chat(target, span_love_climax(climax_message_target))
 	user.lose_virginity()
 	target.lose_virginity()
 	return ORGASM_LOCATION_INTO
@@ -726,12 +726,12 @@
 
 /datum/sex_action/portal_base/portal_vagina_base/handle_climax_message(mob/living/user, mob/living/carbon/human/target, must_flip)
 	if(must_flip)
-		to_chat(user, span_love("Pleasure crests through the portal and makes me shudder in orgasm!"))
-		to_chat(target, span_love("You feel your target shudder and climax against you through the portal!"))
+		to_chat(user, span_love_climax("Pleasure crests through the portal and makes me shudder in orgasm!"))
+		to_chat(target, span_love_climax("You feel your target shudder and climax against you through the portal!"))
 		return ORGASM_LOCATION_SELF
 
-	to_chat(user, span_love("Pleasure crashes through you as you grind yourself to orgasm against the portal!"))
-	to_chat(target, span_love("The slick pressure against me through the portal shudders with climax."))
+	to_chat(user, span_love_climax("Pleasure crashes through you as you grind yourself to orgasm against the portal!"))
+	to_chat(target, span_love_climax("The slick pressure against me through the portal shudders with climax."))
 	return ORGASM_LOCATION_SELF
 
 /datum/sex_action/portal_base/portal_vagina_base/on_finish(mob/living/user, mob/living/carbon/human/target)
@@ -1119,7 +1119,7 @@
 
 
 /datum/sex_action/portal_base/portal_object_fuck/handle_climax_message(mob/living/carbon/human/user, mob/living/carbon/human/target, must_flip)
-	user.visible_message(span_love("your target cream themselves!"))
+	user.visible_message(span_love_climax("your target cream themselves!"))
 	user.lose_virginity()
 	return ORGASM_LOCATION_SELF
 
