@@ -1,0 +1,34 @@
+# Agent-controlled NPCs.
+#
+# The server talks to a sidecar process over loopback. The sidecar owns the
+# model provider and the API keys; nothing provider-specific belongs here.
+#
+# Leave this off unless a sidecar is actually running. With it off the
+# subsystem never fires and agent NPCs fall back to ordinary AI.
+
+# Uncomment to turn the subsystem on.
+AGENT_NPC_ENABLED
+
+# Decision endpoint. Keep this on loopback. Do not point it at a public host.
+AGENT_NPC_URL http://127.0.0.1:1340/decide
+
+# Requests allowed in flight across every agent NPC at once.
+AGENT_NPC_MAX_CONCURRENT 2
+
+# Token ceiling for the whole round. 0 means no ceiling.
+#
+# Deliberately finite by default. Exhausting it disables every agent NPC for the
+# rest of the round; they fall back to standing quietly rather than spending
+# unattended. Re-enable from Debug > Agent NPC > Toggle All.
+#
+# Rough guide: a decision is on the order of 1500 tokens, so this is a few
+# hundred decisions. Raise it once you have measured your own numbers.
+AGENT_NPC_ROUND_TOKEN_BUDGET 0
+
+# Explicit scenes. Off, agent NPCs never describe private time, whatever the
+# sidecar runs. On, an NPC whose profile has "Explicit in private" ticked may
+# talk and describe explicitly in private, while the admin switch (Debug >
+# Agent NPC > Explicit scenes) is on and the sidecar advertises an uncensored
+# local model (local_sidecar.py --explicit). A hosted provider never qualifies,
+# whatever is set here.
+AGENT_NPC_EXPLICIT_SCENES
