@@ -780,7 +780,7 @@ GLOBAL_LIST_INIT(sex_custom_action_templates, build_sex_custom_action_templates(
 		user.make_sucking_noise()
 		return
 	if(required_user_part == SEX_CUSTOM_PART_HANDS)
-		playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
+		playsound(user, 'sound/misc/mat/fingering.ogg', get_sound_volume(user, 30), TRUE, -2, ignore_walls = FALSE)
 		return
 	if((required_user_part in list(SEX_CUSTOM_PART_PENIS, SEX_CUSTOM_PART_THIGHS, SEX_CUSTOM_PART_BODY)) || (required_target_part in list(SEX_CUSTOM_PART_MOUTH, SEX_CUSTOM_PART_VAGINA, SEX_CUSTOM_PART_ANUS, SEX_CUSTOM_PART_ANY_GENITALS)))
 		do_thrust_animate(user, target)

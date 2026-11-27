@@ -70,7 +70,7 @@
 	if(can_show_action_message(user, target))
 		var/chosen_verb = pick("strokes themselves over \the [container]", "works themselves over \the [container]", "pleasures themselves into \the [container]")
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] [chosen_verb]..."))
-	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
+	playsound(user, 'sound/misc/mat/fingering.ogg', get_sound_volume(user, 30), TRUE, -2, ignore_walls = FALSE)
 
 	if(user.has_kink(KINK_ONOMATOPOEIA))
 		do_onomatopoeia(user)
@@ -135,7 +135,7 @@
 	. = ..()
 	if(can_show_action_message(user, target))
 		user.visible_message(spanify_force("[user] [get_generic_force_adjective()] works [target]'s release toward \the [get_held_container(user)]..."))
-	playsound(user, 'sound/misc/mat/fingering.ogg', 30, TRUE, -2, ignore_walls = FALSE)
+	playsound(user, 'sound/misc/mat/fingering.ogg', get_sound_volume(user, 30), TRUE, -2, ignore_walls = FALSE)
 
 	if(user.has_kink(KINK_ONOMATOPOEIA))
 		do_onomatopoeia(user)

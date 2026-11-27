@@ -1,4 +1,4 @@
-// Toggles whose live effect sits in a verb or in the character setup handler run that code from the Toggles window.
+// Toggles whose live effect sits in a client proc, an admin verb or the character setup handler run that code from the Toggles window.
 
 /datum/preference/toggle/crt/toggles_menu_toggle(datum/preferences/prefs)
 	if(!prefs.parent)

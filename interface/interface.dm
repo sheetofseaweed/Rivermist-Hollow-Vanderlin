@@ -280,9 +280,8 @@
 		to_chat(src, "Anti-aliased... OK")
 		winset(src, "mapwindow.map", "zoom-mode=normal")
 
-/client/verb/crtmode()
-	set category = "Preferences.Options"
-	set name = "ToggleCRT"
+/// Flips the CRT effect. Set from the Toggles window.
+/client/proc/crtmode()
 	if(!prefs)
 		return
 	if(prefs.read_preference(/datum/preference/toggle/crt))

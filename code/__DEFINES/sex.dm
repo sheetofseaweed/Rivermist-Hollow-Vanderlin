@@ -6,6 +6,9 @@ GLOBAL_LIST_INIT(sex_actions, build_sex_actions())
 #define ERP_PREFERENCE_EDIT_GRACE_PERIOD (ERP_PREFERENCE_EDIT_GRACE_MINUTES MINUTES)
 #define KINK_NOTES_MAX_LENGTH 256
 
+/// Sex action sounds are multiplied by this while the actor sneaks.
+#define SEX_SNEAK_VOLUME_MULTIPLIER 0.3
+
 #define MAGE_HAND_ACTION_MESSAGE_START "start"
 #define MAGE_HAND_ACTION_MESSAGE_PERFORM "perform"
 #define MAGE_HAND_ACTION_MESSAGE_FINISH "finish"

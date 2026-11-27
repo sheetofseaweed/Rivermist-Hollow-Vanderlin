@@ -25,7 +25,7 @@ GLOBAL_LIST_INIT(toggles_menu_categories, list("Interface", "Display", "Audio", 
 		prefs.save_preferences()
 	return TRUE
 
-/// Flips this toggle from the Toggles window. Override to call the verb that already applies it.
+/// Flips this toggle from the Toggles window. Override to call the code that already applies it.
 /datum/preference/toggle/proc/toggles_menu_toggle(datum/preferences/prefs)
 	return toggles_menu_write(prefs, !prefs.read_preference(type))
 
@@ -155,7 +155,7 @@ GLOBAL_LIST_INIT(toggles_menu_categories, list("Interface", "Display", "Audio", 
 			return eyes
 	return null
 
-/// Genitals of body the Expose/Hide genitals verb can show or hide.
+/// Genitals of body that can be shown or hidden.
 /datum/toggle_options_menu/proc/get_menu_genitals(mob/living/carbon/body)
 	var/list/genitals = list()
 	for(var/obj/item/organ/genitals/organ in body.get_exposable_genitals())
@@ -175,7 +175,7 @@ GLOBAL_LIST_INIT(toggles_menu_categories, list("Interface", "Display", "Audio", 
 			"id" = TOGGLES_MENU_EYES_ID,
 			"label" = "Glowing eyes",
 			"enabled" = !!eyes.user_glowing_pref,
-			"desc" = "Make your eyes glow. Same as Switch eyes glowing.",
+			"desc" = "Make your eyes glow.",
 		))
 	for(var/obj/item/organ/genitals/organ as anything in get_menu_genitals(body))
 		var/current = GENITAL_SHOW_HIDDEN
@@ -187,7 +187,7 @@ GLOBAL_LIST_INIT(toggles_menu_categories, list("Interface", "Display", "Audio", 
 			"id" = REF(organ),
 			"label" = capitalize(organ.name),
 			"value" = current,
-			"desc" = "Hide it, show it under your clothes, or show it above them. Same as Expose/Hide genitals.",
+			"desc" = "Hide it, show it under your clothes, or show it above them.",
 			"options" = list(
 				list("label" = "Hidden", "value" = GENITAL_SHOW_HIDDEN),
 				list("label" = "Under clothes", "value" = GENITAL_SHOW_UNDER),

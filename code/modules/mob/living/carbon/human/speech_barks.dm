@@ -178,15 +178,6 @@ GLOBAL_LIST_INIT(speech_barks, init_speech_barks())
 	for(var/client/listener as anything in listeners)
 		listener?.mob?.playsound_local(source_turf, soundpath, SPEECH_BARK_VOLUME, FALSE, pitch, max_distance = message_range + 2)
 
-/client/verb/toggle_hear_speech_barks()
-	set category = "Preferences.Sound"
-	set name = "Hear Speech Barks"
-	if(!prefs)
-		return
-	prefs.toggle_preference(/datum/preference/toggle/hear_speech_barks)
-	prefs.save_preferences()
-	to_chat(src, span_notice("You will [prefs.read_preference(/datum/preference/toggle/hear_speech_barks) ? "now" : "no longer"] hear other characters' speech barks."))
-
 /client/verb/set_speech_bark()
 	set category = "Preferences.Sound"
 	set name = "Speech Bark"
@@ -224,9 +215,8 @@ GLOBAL_LIST_INIT(speech_barks, init_speech_barks())
 	else
 		to_chat(src, span_notice("Your character no longer barks while speaking."))
 
-/client/verb/toggle_speech_moans()
-	set category = "Preferences.Options"
-	set name = "Moan While Speaking"
+/// Flips moaning instead of speech sounds at high arousal. Set from the Toggles window and character setup.
+/client/proc/toggle_speech_moans()
 	if(!prefs)
 		return
 	prefs.toggle_preference(/datum/preference/toggle/speech_moans)

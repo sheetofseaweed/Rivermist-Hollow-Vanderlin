@@ -111,18 +111,36 @@
 			else if(hated_food || hated_drink)
 				. += span_tinynotice("[P[THEY]] hate [hated_food || hated_drink].")
 
-	if(!HAS_TRAIT(src, TRAIT_FACELESS))
-		if(headshot_link)
-			var/safe_headshot_link = html_encode(headshot_link)
-			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, chat_headshot(safe_headshot_link))
-		if(flavortext || headshot_link || ooc_extra_link)
-			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];task=view_flavor_text;'>Examine Closer</a>")
-		var/has_known_gossip = length(user.mind?.get_gossip_about(mind))
-		if(O && client?.prefs)
-			has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/rumors))
-			has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/noble_gossip))
-		if(has_known_gossip)
-			LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];task=view_rumours_gossip;'>Recall Rumours & Gossip</a>")
+	var/faceless = HAS_TRAIT(src, TRAIT_FACELESS)
+	if(!faceless && headshot_link)
+		var/safe_headshot_link = html_encode(headshot_link)
+		LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, chat_headshot(safe_headshot_link))
+	add_examine_closer_link(user, examine_list)
+	if(faceless)
+		return
+	var/has_known_gossip = length(user.mind?.get_gossip_about(mind))
+	if(O && client?.prefs)
+		has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/rumors))
+		has_known_gossip ||= length(client.prefs.read_preference(/datum/preference/list_type/noble_gossip))
+	if(has_known_gossip)
+		LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];task=view_rumours_gossip;'>Recall Rumours & Gossip</a>")
+
+/mob/living/carbon/human/get_examine_noface(mob/user, list/P, list/examine_list)
+	. = ..()
+	add_examine_closer_link(user, examine_list)
+
+/// TRUE when the examine panel hides flavor text, headshots and the song from this viewer. OOC notes stay visible.
+/mob/living/carbon/human/proc/conceals_examine_panel_from(mob/user)
+	if(isobserver(user))
+		return FALSE
+	return HAS_TRAIT(src, TRAIT_FACELESS) || !is_human_part_visible(src, HIDEFACE)
+
+/// Adds the link that opens the examine panel. A concealed character still gets it when they have OOC notes.
+/mob/living/carbon/human/proc/add_examine_closer_link(mob/user, list/examine_list)
+	if(!ooc_notes && !erpprefs_flavor)
+		if(conceals_examine_panel_from(user) || !(flavortext || headshot_link || ooc_extra_link))
+			return
+	LAZYADDASSOCLIST(examine_list, EXAMINE_SECT_HEADSHOT, "<a href='byond://?src=[REF(src)];task=view_flavor_text;'>Examine Closer</a>")
 
 /mob/living/carbon/human/examine_more(mob/user)
 	. = ..()

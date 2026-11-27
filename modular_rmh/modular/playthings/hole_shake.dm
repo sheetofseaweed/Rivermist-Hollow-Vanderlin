@@ -13,14 +13,6 @@
 	should_update_preview = FALSE
 	default_value = TRUE
 
-/client/verb/toggle_hole_shake()
-	set name = "Toggle Body Shake"
-	set desc = "Let your character shake when toys, eggs, births or portals move inside them."
-	set category = "Preferences"
-	prefs.write_preference(/datum/preference/toggle/hole_shake, !prefs.read_preference(/datum/preference/toggle/hole_shake))
-	prefs.save_preferences()
-	to_chat(usr, span_notice("Body shake [prefs.read_preference(/datum/preference/toggle/hole_shake) ? "enabled" : "disabled"] for your character."))
-
 /// Whether shaker may play body shakes. Mobs without a player shake.
 /proc/hole_shake_enabled(mob/living/shaker)
 	var/datum/preferences/prefs = shaker?.client?.prefs
