@@ -136,7 +136,7 @@
 				H.visible_message("<span class='warning'>[H] runs into [src]!</span>", "<span class='warning'>I run into [src]!</span>")
 				addtimer(CALLBACK(H, TYPE_PROC_REF(/mob/living/carbon/human, Knockdown), 10), 10)
 
-/turf/closed/Initialize()
+/turf/closed/Initialize(mapload)
 	. = ..()
 	// One shared list for each wall type, in place of one copy for each wall.
 	if(islist(attacked_sound))
@@ -145,6 +145,12 @@
 		var/turf/open/openspace/target = GET_TURF_ABOVE(src)
 		if(istype(target))
 			target.ChangeTurf(above_floor)
+	if(opacity)
+		set_shadow_cell(x, y, z, SHADOW_CELL_WALL)
+	else
+		set_shadow_cell(x, y, z, SHADOW_CELL_EMPTY)
+	if(!mapload)
+		notify_shadows_map_changed(src)
 
 /turf/closed/Destroy()
 	if(above_floor)

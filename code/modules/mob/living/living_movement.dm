@@ -1,10 +1,76 @@
-/mob/living/Moved()
+/mob/living/Moved(atom/OldLoc, Dir, Forced = FALSE)
 	. = ..()
 	stop_looking()
 	update_turf_movespeed(loc)
 
 	if(m_intent == MOVE_INTENT_RUN)
 		consider_ambush()
+
+	if(Forced || !shadow_defer_client_move)
+		process_moved_shadows(OldLoc, Forced)
+
+/mob/living/proc/process_moved_shadows(atom/OldLoc, Forced = FALSE)
+	if(!client || !GLOB.shadows_enabled)
+		return
+	var/turf/old_turf = get_turf(OldLoc)
+	var/turf/new_turf = get_turf(src)
+	if(Forced || !old_turf || !new_turf || old_turf == new_turf || (old_turf.z != new_turf.z) || get_dist(old_turf, new_turf) > 1)
+		shadow_gliding = FALSE
+		shadow_glide_id++
+		update_dynamic_shadows()
+		return
+
+	var/max_points = GLOB.shadow_glide_points
+	if(GLOB.shadow_auto_throttle_cpu > 0 && world.cpu > GLOB.shadow_auto_throttle_cpu)
+		max_points = 1
+
+	var/dist_mult = (old_turf.x != new_turf.x && old_turf.y != new_turf.y) ? 1.4142135 : 1.0
+	var/ticks_to_move = 1
+	if(glide_size > 0)
+		ticks_to_move = max(1, round((world.icon_size * dist_mult) / glide_size))
+
+	var/total_points = clamp(ticks_to_move, 1, max_points)
+
+	if(total_points <= 1)
+		shadow_gliding = FALSE
+		shadow_glide_id++
+		update_dynamic_shadows()
+		return
+
+	var/total_px = (isnum(src.step_x) ? src.step_x : 0) + src.pixel_x
+	var/total_py = (isnum(src.step_y) ? src.step_y : 0) + src.pixel_y
+
+	var/start_px = old_turf.x + 0.5 + (total_px / 32.0)
+	var/start_py = old_turf.y + 0.5 + (total_py / 32.0)
+	var/end_px = new_turf.x + 0.5 + (total_px / 32.0)
+	var/end_py = new_turf.y + 0.5 + (total_py / 32.0)
+
+	var/step_ticks = max(1, floor(ticks_to_move / total_points))
+
+	shadow_glide_id++
+	smooth_shadow_glide(start_px, start_py, end_px, end_py, shadow_glide_id, total_points, step_ticks * world.tick_lag)
+
+
+
+/mob/living/proc/smooth_shadow_glide(start_px, start_py, end_px, end_py, this_id, total_points, sleep_delay)
+	set waitfor = FALSE
+	shadow_gliding = TRUE
+
+	for(var/i in 1 to total_points)
+		if(this_id != shadow_glide_id || !client)
+			return
+
+		var/progress = i / total_points
+		var/curr_px = start_px + (end_px - start_px) * progress
+		var/curr_py = start_py + (end_py - start_py) * progress
+
+		update_dynamic_shadows(curr_px, curr_py)
+
+		if(i < total_points)
+			sleep(sleep_delay)
+
+	if(this_id == shadow_glide_id)
+		shadow_gliding = FALSE
 
 /mob/living/CanAllowThrough(atom/movable/mover, turf/target)
 	. = ..()

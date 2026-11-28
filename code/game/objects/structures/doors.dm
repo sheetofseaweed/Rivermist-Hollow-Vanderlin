@@ -12,6 +12,7 @@
 	anchored = TRUE
 	opacity = TRUE
 	layer = OPEN_DOOR_LAYER
+	plane = WALL_PLANE
 	resistance_flags = FLAMMABLE
 	pass_flags_self = PASSDOORS|PASSSTRUCTURE
 	max_integrity = 1000

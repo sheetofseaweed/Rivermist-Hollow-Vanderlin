@@ -154,6 +154,8 @@
 		L.sprinted_since_last_dir_change = 0
 
 	var/old_direct = mob.dir
+	var/turf/pre_move_turf = get_turf(mob)
+	L.shadow_defer_client_move = TRUE
 
 	. = ..()
 
@@ -171,6 +173,11 @@
 		after_glide = MOVEMENT_ADJUSTED_GLIDE_SIZE(glide_delay, movement_distance)
 
 	mob.set_glide_size(after_glide)
+
+	if(!QDELETED(L))
+		L.shadow_defer_client_move = FALSE
+		if(.)
+			L.process_moved_shadows(pre_move_turf, FALSE)
 
 	move_delay += add_delay
 	if(.) // If mob is null here, we deserve the runtime

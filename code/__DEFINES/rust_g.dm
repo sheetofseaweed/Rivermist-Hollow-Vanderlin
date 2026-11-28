@@ -398,3 +398,10 @@
 /// Returns the current timestamp (with the given UTC offset in hours), formatted with the given format string.
 /// See https://docs.rs/chrono/latest/chrono/format/strftime/index.html for documentation on the formatting syntax.
 #define rustg_formatted_timestamp_tz(format, offset) RUSTG_CALL(RUST_G, "formatted_timestamp")(format, offset)
+
+#ifndef SHADOWCAST_LIB
+#define SHADOWCAST_LIB (world.system_type == MS_WINDOWS ? "shadowcast.dll" : "libshadowcast.so")
+#endif
+/proc/set_shadow_cell(x, y, z, cell_type)
+	call_ext(SHADOWCAST_LIB, "byond:set_map_cell")(x, y, z, cell_type)
+
