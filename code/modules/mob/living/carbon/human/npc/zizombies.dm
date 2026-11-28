@@ -194,6 +194,11 @@
 	H.update_transform()
 	return TRUE
 
+//RMH EDITED START - skeletons crumble away instead of lying forever
+/datum/component/rot/corpse/zizombie
+	wither_time = 30 MINUTES
+//RMH EDITED END
+
 /datum/component/rot/corpse/zizombie/process()
 	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
 		return
@@ -212,6 +217,8 @@
 		return
 	if(C.stat != DEAD)
 		qdel(src)
+		return
+	if(try_wither()) //RMH EDITED
 		return
 	var/should_update = FALSE
 	var/is_matthios = FALSE
@@ -233,9 +240,7 @@
 					T.pollute_turf(/datum/pollutant/rot, 4)
 	if(should_update)
 		if(amount > 20 MINUTES)
-			C.update_body()
-			qdel(src)
-			return
+			C.update_body() //RMH EDITED - the component stays for try_wither()
 		else if(amount > 12 MINUTES)
 			C.update_body()
 

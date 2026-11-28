@@ -2,7 +2,10 @@
 	var/amount = 0
 	var/rot_amount_per_process = 10 //1 second
 	var/last_process = 0
-	var/datum/looping_sound/fliesloop/soundloop
+	//RMH EDITED START - no flies sound; bodies nobody keeps wither away
+	/// Rot amount past which a body nobody keeps crumbles to dust. Null keeps the body forever.
+	var/wither_time
+	//RMH EDITED END
 
 /datum/component/rot/Initialize(new_amount)
 	..()
@@ -12,14 +15,7 @@
 	if(new_amount)
 		amount = new_amount
 
-	soundloop = new(parent, FALSE)
-
 	START_PROCESSING(SSroguerot, src)
-
-/datum/component/rot/Destroy()
-	if(soundloop)
-		QDEL_NULL(soundloop)
-	return ..()
 
 /datum/component/rot/process()
 	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
@@ -30,6 +26,22 @@
 	last_process = world.time
 	amount += amt2add
 	return
+
+//RMH EDITED START
+/// Crumbles the body to dust once rot passes wither_time. Player characters, and bodies that are carried, hung, buried or stored, are kept.
+/datum/component/rot/proc/try_wither()
+	if(isnull(wither_time) || amount <= wither_time)
+		return FALSE
+	var/mob/living/body = parent
+	if(!istype(body) || !isturf(body.loc) || body.buckled || body.pulledby || body.is_player_character())
+		return FALSE
+	qdel(src)
+	body.dust(drop_items = TRUE)
+	return TRUE
+//RMH EDITED END
+
+/datum/component/rot/corpse
+	wither_time = 60 MINUTES //RMH EDITED - NPC remains, after skeletonize_time
 
 /datum/component/rot/corpse/Initialize()
 	if(!iscarbon(parent))
@@ -55,6 +67,8 @@
 			return
 	if(!(C.mob_biotypes & (MOB_ORGANIC|MOB_UNDEAD)))
 		qdel(src)
+		return
+	if(!is_zombie && try_wither()) //RMH EDITED
 		return
 	var/player_body = C.is_player_character()
 	var/limb_rot_time = player_body ? 90 MINUTES : 25 MINUTES
@@ -96,25 +110,16 @@
 			is_matthios = TRUE
 		if(istype(T) && amount < 16 MINUTES && !is_matthios)
 			T.pollute_turf(/datum/pollutant/rot, 9)
-			if(soundloop && soundloop.stopped && !is_zombie)
-				soundloop.start()
-		else
-			if(soundloop && !soundloop.stopped)
-				soundloop.stop()
-	else
-		if(soundloop && !soundloop.stopped)
-			soundloop.stop()
 	if(shouldupdate)
 		if(findonerotten)
 			if(ishuman(C))
 				var/mob/living/carbon/human/H = C
 				H.skin_tone = "878f79" //elf ears
-			if(soundloop && soundloop.stopped && !is_zombie)
-				soundloop.start()
 		C.update_body()
 
 /datum/component/rot/simple
 	rot_amount_per_process = 5
+	wither_time = 20 MINUTES //RMH EDITED
 
 /datum/component/rot/simple/process()
 	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
@@ -126,23 +131,18 @@
 		qdel(R)
 		return
 	if(amount > 10 MINUTES)
-		if(soundloop && soundloop.stopped)
-			soundloop.start()
 		var/turf/open/T = get_turf(L)
 		var/is_matthios = FALSE
 		if(L.has_faction(FACTION_MATTHIOS))
 			is_matthios = TRUE
 		if(istype(T)  && amount < 16 MINUTES && !is_matthios)
 			T.pollute_turf(/datum/pollutant/rot, 9)
-	if(amount > 20 MINUTES)
-		qdel(R)
-		return L.dust(drop_items=TRUE)
+	try_wither() //RMH EDITED
 
 /datum/component/rot/gibs
 	amount = 0.005
 
 /datum/component/rot/stinky_person
-	soundloop = null
 	var/static/list/clean_moodlets = list(/datum/stress_event/clean, /datum/stress_event/clean_plus)
 
 /datum/component/rot/stinky_person/process()
@@ -157,9 +157,3 @@
 			for(clean_moodlets in stinky.get_positive_stressors())
 				return
 		T.pollute_turf(/datum/pollutant/rot, 0.25)
-
-/datum/looping_sound/fliesloop
-	mid_sounds = list('sound/misc/fliesloop.ogg')
-	mid_length = 60
-	volume = 50
-	extra_range = 0

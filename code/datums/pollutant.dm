@@ -127,25 +127,15 @@
 	color = "#fc5a8d"
 
 //Body odor
+//RMH EDITED START - body odor is a smell only; breathing it no longer gives miasma
 /datum/pollutant/fragrance/musk
 	name = "Musk"
-	pollutant_flags = POLLUTANT_SMELL|POLLUTANT_BREATHE_ACT
+	pollutant_flags = POLLUTANT_SMELL
 	smell_intensity = 1
 
 	scent = "body odor"
 	color = "#c13636"
-	var/musk_reagent = /datum/reagent/miasmagas
-
-/datum/pollutant/fragrance/musk/breathe_act(mob/living/carbon/victim, amount, total_amount)
-	. = ..()
-	if(victim.wear_mask)
-		var/obj/item/mask = victim.wear_mask
-		if(!mask.gas_transfer_coefficient)
-			return
-		if((3 / victim.wear_mask.gas_transfer_coefficient) >= amount)
-			return
-	if(amount > 3 && (amount / total_amount >= 0.25))
-		victim.reagents.add_reagent(musk_reagent, 1)
+//RMH EDITED END
 
 /datum/pollutant/fragrance/musk/brimstone
 	name = "brimstone"

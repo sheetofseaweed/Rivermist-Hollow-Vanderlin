@@ -3,11 +3,6 @@
 	stress_change = -2
 	desc = span_green("I saw a sinner get punished!")
 
-/datum/stress_event/miasmagasmaniac
-	timer = 10 SECONDS
-	stress_change = -1
-	desc = span_green("It smells like death in here.")
-
 /datum/stress_event/viewdeathmaniac
 	timer = 30 SECONDS
 	stress_change = -1

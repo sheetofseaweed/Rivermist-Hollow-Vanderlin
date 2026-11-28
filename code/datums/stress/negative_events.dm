@@ -18,11 +18,6 @@
 	stress_change = 3
 	desc = list("<span class='red'>I can't thing straight! I need to sate my vice!</span>","<span class='red'>I need it. I need it. I need it.</span>")
 
-/datum/stress_event/miasmagas
-	timer = 10 SECONDS
-	stress_change = 2
-	desc = "<span class='red'>Smells like death here.</span>"
-
 /datum/stress_event/peckish
 	stress_change = 1
 	desc = "<span class='red'>I'm peckish.</span>"

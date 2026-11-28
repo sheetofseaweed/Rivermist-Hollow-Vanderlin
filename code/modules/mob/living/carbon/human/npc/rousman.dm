@@ -239,6 +239,11 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 	ADD_TRAIT(src, TRAIT_NOHUNGER, TRAIT_GENERIC)
 	ADD_TRAIT(src, TRAIT_CRITICAL_WEAKNESS, TRAIT_GENERIC)
 
+//RMH EDITED START - skeletons crumble away instead of lying forever
+/datum/component/rot/corpse/rousman
+	wither_time = 30 MINUTES
+//RMH EDITED END
+
 /datum/component/rot/corpse/rousman/process()
 	if(HAS_TRAIT(parent, TRAIT_STASIS) || HAS_TRAIT(parent, TRAIT_NO_ROT))
 		return
@@ -257,6 +262,8 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 		return
 	if(C.stat != DEAD)
 		qdel(src)
+		return
+	if(try_wither()) //RMH EDITED
 		return
 	var/should_update = FALSE
 	var/is_matthios = FALSE
@@ -278,9 +285,7 @@ GLOBAL_LIST_EMPTY(rousman_ambush_objects)
 					T.pollute_turf(/datum/pollutant/rot, 4)
 	if(should_update)
 		if(amount > 20 MINUTES)
-			C.update_body()
-			qdel(src)
-			return
+			C.update_body() //RMH EDITED - the component stays for try_wither()
 		else if(amount > 12 MINUTES)
 			C.update_body()
 

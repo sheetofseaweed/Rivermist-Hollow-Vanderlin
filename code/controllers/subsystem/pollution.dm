@@ -32,28 +32,32 @@ SUBSYSTEM_DEF(pollution)
 	return ..()
 
 /datum/controller/subsystem/pollution/fire(resumed = FALSE)
-	var/list/current_run_cache = current_run
+	//RMH EDITED START - a pass cut by the tick limit resumes from current_run instead of restarting, so dissipation is always reached
+	var/list/current_run_cache
 	if(pollution_task == POLLUTION_TASK_PROCESS)
-		if(!current_run_cache.len)
-			current_run_cache = active_pollution.Copy()
+		if(!resumed)
+			current_run = active_pollution.Copy()
 			processed_this_run.Cut()
-		while(current_run_cache.len)
-			var/datum/pollution/pollution = current_run_cache[current_run_cache.len]
+		current_run_cache = current_run
+		while(length(current_run_cache))
+			var/datum/pollution/pollution = current_run_cache[length(current_run_cache)]
 			current_run_cache.len--
 			processed_this_run[pollution] = TRUE
 			pollution.process_cell()
-			if(TICK_CHECK)
+			if(MC_TICK_CHECK)
 				return
 		dissapation_ticker++
-		if(dissapation_ticker >= TICKS_TO_DISSIPATE)
-			pollution_task = POLLUTION_TASK_DISSIPATE
-			dissapation_ticker = 0
-			current_run_cache = all_polution.Copy()
-	if(pollution_task == POLLUTION_TASK_DISSIPATE)
-		while(current_run_cache.len)
-			var/datum/pollution/pollution = current_run_cache[current_run_cache.len]
-			current_run_cache.len--
-			pollution.scrub_amount(POLLUTION_HEIGHT_DIVISOR, FALSE, TRUE)
-			if(TICK_CHECK)
-				return
-		pollution_task = POLLUTION_TASK_PROCESS
+		if(dissapation_ticker < TICKS_TO_DISSIPATE)
+			return
+		pollution_task = POLLUTION_TASK_DISSIPATE
+		dissapation_ticker = 0
+		current_run = all_polution.Copy()
+	current_run_cache = current_run
+	while(length(current_run_cache))
+		var/datum/pollution/pollution = current_run_cache[length(current_run_cache)]
+		current_run_cache.len--
+		pollution.scrub_amount(POLLUTION_HEIGHT_DIVISOR, FALSE)
+		if(MC_TICK_CHECK)
+			return
+	pollution_task = POLLUTION_TASK_PROCESS
+	//RMH EDITED END
