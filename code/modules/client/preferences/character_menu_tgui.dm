@@ -675,7 +675,7 @@ GLOBAL_VAR_INIT(character_setup_debug, FALSE)
 		if(IS_ABSTRACT(pref_type))
 			continue
 		var/datum/erp_preference/pref = new pref_type()
-		if(pref.abstract_type == pref_type)
+		if(pref.abstract_type == pref_type || !pref.is_listed(src))
 			continue
 		var/list/entry = list(
 			"type" = "[pref_type]",

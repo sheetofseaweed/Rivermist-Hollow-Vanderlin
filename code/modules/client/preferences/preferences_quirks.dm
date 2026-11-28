@@ -518,6 +518,9 @@
 		var/is_selected = FALSE
 		if(quirk_type in quirks)
 			is_selected = TRUE
+		var/datum/quirk/listed = GLOB.quirk_singletons[quirk_type]
+		if(!is_selected && listed && !listed.is_listed(src))
+			continue
 		var/refusal = is_selected ? null : quirk_refusal_reason(quirk_type)
 		var/can_add = isnull(refusal)
 

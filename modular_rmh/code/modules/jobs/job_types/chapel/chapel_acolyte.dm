@@ -68,6 +68,8 @@
 
 	give_bank_account = 40
 
+	grants_holy_urine = TRUE
+
 	job_subclasses = list(
 		/datum/job/advclass/acolyte/base,
 		/datum/job/advclass/acolyte/selune,

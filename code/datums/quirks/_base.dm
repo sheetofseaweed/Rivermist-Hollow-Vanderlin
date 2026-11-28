@@ -212,6 +212,10 @@ GLOBAL_LIST_EMPTY(quirk_points_by_type)
 	LAZYINITLIST(extra_customization_values)
 	extra_customization_values[key] = value
 
+/// FALSE keeps this quirk out of the quirk menu unless it is already taken.
+/datum/quirk/proc/is_listed(datum/preferences/prefs)
+	return TRUE
+
 /// Check if this quirk is available for the given preferences
 /datum/quirk/proc/is_available(datum/preferences/prefs)
 	if(!prefs)
