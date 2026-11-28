@@ -61,7 +61,7 @@
 
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "elf", "wood elf", "halfelf", "drow", "halfdrow", "tiefling", "halfling", "gnome", "deep gnome", "halfling", "beastkin", "beastkin small", "half-beastkin small")
 	selection_color = JCOLOR_CHAPEL
 
 	advclass_cat_rolls = list(CAT_CHAPEL = 20)

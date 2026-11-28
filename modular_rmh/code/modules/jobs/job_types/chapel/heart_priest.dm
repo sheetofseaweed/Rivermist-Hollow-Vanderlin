@@ -33,7 +33,7 @@
 	display_order = JDO_HEART_PRIEST
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "elf", "wood elf", "halfelf", "drow", "halfdrow", "tiefling", "halfling", "gnome", "deep gnome")
 
 	outfit = /datum/outfit/heart_priest
 	selection_color = JCOLOR_CHAPEL

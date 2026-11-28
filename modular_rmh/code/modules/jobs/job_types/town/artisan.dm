@@ -9,7 +9,7 @@
 	display_order = JDO_ARTISAN
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "aasimar", "elf", "wood elf", "halfelf", "drow", "drider", "halfdrow", "tiefling", "dullahan", "harpy", "rakshari", "triton", "medicator", "fluvian", "kobold", "hollowkin", "beastkin", "beastkin small", "half-beastkin small", "taurkin", "dragonborn", "tabaxi", "lizardfolk", "gnoll", "ooze", "seelie", "yuan-ti", "halforc", "orc", "rousman", "halfling", "gnome", "deep gnome", "construct", "doll", "automaton")
 
 	selection_color = JCOLOR_TOWN
 	advclass_cat_rolls = list(CAT_ARTISAN = 20)

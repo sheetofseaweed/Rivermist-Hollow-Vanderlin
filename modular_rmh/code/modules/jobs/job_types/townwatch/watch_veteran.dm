@@ -12,7 +12,7 @@
 	spawn_positions = 1
 
 	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "aasimar", "elf", "wood elf", "halfelf", "halfling", "gnome", "deep gnome", "drow", "drider", "halfdrow", "tiefling", "dullahan", "harpy", "rakshari", "triton", "medicator", "fluvian", "seelie", "hollowkin", "beastkin", "beastkin small", "half-beastkin small", "taurkin", "dragonborn", "yuan-ti", "tabaxi", "lizardfolk", "construct", "doll")
 	selection_color = JCOLOR_TOWNWATCH
 
 	advclass_cat_rolls = list(CAT_VETERAN = 20)

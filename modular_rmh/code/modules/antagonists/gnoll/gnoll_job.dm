@@ -16,7 +16,7 @@
 	selection_color = JCOLOR_VILLAINS
 	job_flags = JOB_EQUIP_RANK | JOB_SHOW_IN_CREDITS | JOB_NEW_PLAYER_JOINABLE
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("gnoll")
 	antag_role = /datum/antagonist/gnoll
 	// Equipment is supplied once, when a calling is selected.
 	outfit = null

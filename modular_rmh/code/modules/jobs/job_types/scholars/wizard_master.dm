@@ -22,7 +22,7 @@
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_GUILD_WIZARD_MASTER
 
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "aasimar", "elf", "wood elf", "halfelf", "halfling", "gnome", "deep gnome", "drow", "drider", "halfdrow", "tiefling", "hollowkin", "beastkin", "beastkin small", "half-beastkin small", "construct", "doll")
 	allowed_ages = list(AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
 
 	outfit = /datum/outfit/guild_master_wizard

@@ -12,7 +12,7 @@
 	spawn_positions = 1
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "elf", "wood elf", "halfelf", "ooze", "halfling", "gnome", "deep gnome", "construct", "doll", "automaton")
 	selection_color = JCOLOR_TOWNWATCH
 
 	advclass_cat_rolls = list(CAT_CAPTAIN = 20)

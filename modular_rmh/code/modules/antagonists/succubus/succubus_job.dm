@@ -12,7 +12,7 @@ GLOBAL_LIST_EMPTY(succubus_sewer_insertions)
 	can_random = FALSE
 	selection_color = JCOLOR_VILLAINS
 	job_flags = (JOB_EQUIP_RANK | JOB_SHOW_IN_CREDITS | JOB_NEW_PLAYER_JOINABLE)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("tiefling")
 	job_whitelist_id = "succubus"
 	outfit = /datum/outfit/antagonist/succubus
 	antag_role = /datum/antagonist/succubus

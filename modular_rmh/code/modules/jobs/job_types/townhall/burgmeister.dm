@@ -16,7 +16,7 @@ GLOBAL_LIST_EMPTY(burgmeister_titles)
 	total_positions = 1
 	spawn_positions = 1
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "elf", "wood elf", "halfelf", "hollowkin", "beastkin", "beastkin small", "half-beastkin small", "halfling", "gnome", "deep gnome", "construct", "doll", "automaton")
 	give_bank_account = 500
 	selection_color = JCOLOR_TOWNHALL
 	can_have_apprentices = FALSE

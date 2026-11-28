@@ -26,7 +26,7 @@
 	can_random = FALSE
 	selection_color = JCOLOR_VILLAINS
 	job_flags = (JOB_EQUIP_RANK | JOB_SHOW_IN_CREDITS | JOB_NEW_PLAYER_JOINABLE)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "elf", "wood elf", "halfelf", "drow", "halfdrow", "tiefling", "beastkin", "beastkin small", "half-beastkin small", "halforc", "orc", "goblin", "rousman", "halfling", "gnome", "deep gnome")
 	job_whitelist_id = "werewolf"
 	cmode_music = 'sound/music/cmode/antag/combat_werewolf.ogg'
 	outfit = /datum/outfit/antagonist/werewolf

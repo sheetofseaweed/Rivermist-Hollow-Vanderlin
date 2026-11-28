@@ -12,7 +12,7 @@
 	total_positions = 1
 	spawn_positions = 1
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "aasimar", "elf", "wood elf", "halfelf", "halfling", "gnome", "deep gnome", "drow", "drider", "halfdrow", "tiefling", "dullahan", "harpy", "rakshari", "triton", "medicator", "fluvian", "seelie", "kobold", "hollowkin", "beastkin", "beastkin small", "half-beastkin small", "taurkin", "dragonborn", "yuan-ti", "tabaxi", "lizardfolk", "construct", "doll", "ooze", "seelie")
 	selection_color = JCOLOR_TOWNHALL
 
 	spells = list(/datum/action/cooldown/spell/undirected/list_target/convert_role/town_watch,

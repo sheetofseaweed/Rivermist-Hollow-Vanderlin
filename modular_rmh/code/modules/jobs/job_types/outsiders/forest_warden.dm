@@ -37,7 +37,7 @@
 	display_order = JDO_FOREST_WARDEN
 
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "aasimar", "elf", "wood elf", "halfelf", "drow", "drider", "halfdrow", "tiefling", "dullahan", "harpy", "rakshari", "triton", "medicator", "fluvian", "hollowkin", "beastkin", "taurkin", "dragonborn", "tabaxi", "lizardfolk", "ooze", "seelie", "yuan-ti", "rousman", "space_human", "halfling", "gnome", "deep gnome")
 
 	selection_color = JCOLOR_OUTSIDERS
 	outfit = /datum/outfit/forest_warden

@@ -9,7 +9,7 @@
 	job_flags = (JOB_ANNOUNCE_ARRIVAL | JOB_SHOW_IN_CREDITS | JOB_EQUIP_RANK | JOB_NEW_PLAYER_JOINABLE)
 	display_order = JDO_LIBRARIAN
 
-	allowed_races = ALL_RACES_LIST
+	allowed_races = list("human", "dwarf", "duergar", "aasimar", "elf", "wood elf", "halfelf", "halfling", "gnome", "deep gnome", "drow", "drider", "halfdrow", "tiefling", "dullahan", "harpy", "rakshari", "triton", "medicator", "fluvian", "seelie", "hollowkin", "beastkin", "beastkin small", "half-beastkin small", "taurkin", "dragonborn", "yuan-ti", "tabaxi", "lizardfolk", "construct", "doll", "ooze", "seelie")
 	allowed_ages = list(AGE_ADULT, AGE_MIDDLEAGED, AGE_OLD, AGE_IMMORTAL)
 
 	selection_color = JCOLOR_SCHOLARS
