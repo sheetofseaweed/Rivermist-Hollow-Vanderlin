@@ -5077,6 +5077,7 @@
 #include "modular_rmh\code\modules\mob\living\gestures.dm"
 #include "modular_rmh\code\modules\mob\living\layer_shift.dm"
 #include "modular_rmh\code\modules\mob\living\quest_emote.dm"
+#include "modular_rmh\code\modules\mob\living\roleplay_emotes.dm"
 #include "modular_rmh\code\modules\mob\living\roll_emotes.dm"
 #include "modular_rmh\code\modules\mob\living\carbon\clap_once.dm"
 #include "modular_rmh\code\modules\mob\living\carbon\human\knuckles.dm"
