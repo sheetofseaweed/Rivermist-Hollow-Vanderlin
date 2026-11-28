@@ -4669,6 +4669,7 @@
 #include "modular_rmh\code\game\objects\structures\selune_walldeco.dm"
 #include "modular_rmh\code\game\objects\structures\ship.dm"
 #include "modular_rmh\code\game\objects\structures\sign.dm"
+#include "modular_rmh\code\game\objects\structures\slotmachine.dm"
 #include "modular_rmh\code\game\objects\structures\stairs.dm"
 #include "modular_rmh\code\game\objects\structures\stalagmite.dm"
 #include "modular_rmh\code\game\objects\structures\stripper_pole.dm"
